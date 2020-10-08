@@ -15,8 +15,6 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
-use function MailPoetVendor\array_column;
-
 class SubscriberListingRepository extends ListingRepository {
   const DEFAULT_SORT_BY = 'createdAt';
 

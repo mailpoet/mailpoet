@@ -28,8 +28,6 @@ use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 
-use function MailPoetVendor\array_column;
-
 /**
  * @extends Repository<NewsletterEntity>
  */

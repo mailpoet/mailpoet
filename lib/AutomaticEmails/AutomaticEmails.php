@@ -5,8 +5,6 @@ namespace MailPoet\AutomaticEmails;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
 
-use function MailPoetVendor\array_column;
-
 class AutomaticEmails {
   const FILTER_PREFIX = 'mailpoet_automatic_email_';
 

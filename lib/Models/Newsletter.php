@@ -11,8 +11,6 @@ use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
-use function MailPoetVendor\array_column;
-
 /**
  * @property int $id
  * @property int $parentId

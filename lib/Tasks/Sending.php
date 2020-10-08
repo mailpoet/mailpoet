@@ -9,8 +9,6 @@ use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
-use function MailPoetVendor\array_column;
-
 /**
  * A facade class containing all necessary models to work with a sending queue
  * @property string|null $status

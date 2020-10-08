@@ -6,8 +6,6 @@ use MailPoet\Form\BlockWrapperRenderer;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
-use function MailPoetVendor\array_column;
-
 class Segment {
 
   /** @var BlockRendererHelper */

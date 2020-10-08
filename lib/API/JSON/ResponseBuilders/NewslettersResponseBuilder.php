@@ -11,8 +11,6 @@ use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
-use function MailPoetVendor\array_column;
-
 class NewslettersResponseBuilder {
   const DATE_FORMAT = 'Y-m-d H:i:s';
 

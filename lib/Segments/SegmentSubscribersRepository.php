@@ -13,8 +13,6 @@ use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
-use function MailPoetVendor\array_column;
-
 class SegmentSubscribersRepository {
   /** @var EntityManager */
   private $entityManager;

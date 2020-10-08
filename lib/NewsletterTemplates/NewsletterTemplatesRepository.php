@@ -6,8 +6,6 @@ use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterTemplateEntity;
 
-use function MailPoetVendor\array_column;
-
 /**
  * @extends Repository<NewsletterTemplateEntity>
  */
