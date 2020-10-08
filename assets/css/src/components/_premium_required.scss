@@ -5,10 +5,14 @@
   color: $color-text;
   display: grid;
   gap: $grid-gap;
-  grid-template-columns: 80% auto;
+  grid-template-columns: auto auto;
   max-width: 100%;
   padding: $grid-gap-medium;
   width: $grid-editor-width;
+
+  .mailpoet-badge {
+    margin-right: 6px;
+  }
 
   @include respond-to(small-screen) {
     display: block;
