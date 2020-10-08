@@ -7,6 +7,7 @@ import Listing from 'listing/listing.jsx';
 import withNpsPoll from 'nps_poll.jsx';
 import Tags from 'common/tag/tags';
 import Toggle from 'common/form/toggle/toggle';
+import FormsHeading from './heading';
 
 const columns = [
   {
@@ -154,12 +155,6 @@ const itemActions = [
 ];
 
 class FormList extends React.Component {
-  goToSelectTemplate = () => {
-    setTimeout(() => {
-      window.location = window.mailpoet_form_template_selection_url;
-    }, 200); // leave some time for the event to track
-  };
-
   updateStatus = (checked, e) => {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
@@ -251,18 +246,7 @@ class FormList extends React.Component {
   render() {
     return (
       <div>
-        <h1 className="title">
-          {MailPoet.I18n.t('pageTitle')}
-          {' '}
-          <button
-            className="page-title-action"
-            onClick={() => this.goToSelectTemplate()}
-            data-automation-id="create_new_form"
-            type="button"
-          >
-            {MailPoet.I18n.t('new')}
-          </button>
-        </h1>
+        <FormsHeading />
 
         <Listing
           limit={window.mailpoet_listing_per_page}

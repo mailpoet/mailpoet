@@ -10,9 +10,13 @@ $beamer-dot-size: 8px;
   flex-direction: row;
   height: 64px;
   justify-content: space-between;
-  margin: 0 0 20px;
+  margin: 0 0 40px;
   padding-left: $grid-gap;
   padding-right: $grid-gap;
+
+  ~ .mailpoet-tabs {
+    margin-top: -20px;
+  }
 
   .wrap & {
     margin-left: -20px;
@@ -25,6 +29,10 @@ $beamer-dot-size: 8px;
       margin-left: -10px;
       margin-right: -12px;
       top: -10px;
+
+      ~ .mailpoet-tabs {
+        margin-top: 0;
+      }
     }
   }
 }

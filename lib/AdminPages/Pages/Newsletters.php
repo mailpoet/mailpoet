@@ -151,13 +151,6 @@ class Newsletters {
       $data['free_premium_subscribers_limit'] = License::FREE_PREMIUM_SUBSCRIBERS_LIMIT;
     }
 
-    $lastAnnouncementDate = $this->settings->get('last_announcement_date');
-    $lastAnnouncementSeen = $this->userFlags->get('last_announcement_seen');
-    $data['feature_announcement_has_news'] = (
-      empty($lastAnnouncementSeen) ||
-      $lastAnnouncementSeen < $lastAnnouncementDate
-    );
-    $data['last_announcement_seen'] = $lastAnnouncementSeen;
     $data['mss_key_invalid'] = ($this->servicesChecker->isMailPoetAPIKeyValid() === false);
 
     $data['automatic_emails'] = [
