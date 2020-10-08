@@ -20,20 +20,20 @@
     "ext-pdo_mysql": "*",
     "ext-xml": "*",
     "ext-zip": "*",
-    "codeception/codeception": "4.1.6",
-    "codeception/module-asserts": "^1.2",
+    "codeception/codeception": "4.1.7",
+    "codeception/module-asserts": "^1.3",
     "codeception/module-cli": "^1.0",
     "codeception/module-db": "^1.0",
     "codeception/module-webdriver": "^1.1",
     "codeception/robo-paracept": "0.4.2",
-    "codeception/verify": "1.3.0",
+    "codeception/verify": "1.5.0",
     "composer/xdebug-handler": "^1.3",
     "consolidation/robo": "^1.3.0",
     "guzzlehttp/guzzle": "6.5.5",
     "henrikbjorn/lurker": "^1.2",
     "hoa/console": "^3.17",
     "lucatume/wp-browser": "2.6.5",
-    "phpunit/phpunit": "6.5.14",
+    "phpunit/phpunit": "7.5.20",
     "redcomponent/teststatistics": "^2.2",
     "sensiolabs/security-checker": "^5.0",
     "vlucas/phpdotenv": "3.6.0"
@@ -79,19 +79,13 @@
       "./prefixer/process.sh"
     ],
     "post-update-cmd": [
-      "@fixPHPUnit65MocksForPHP74",
-      "@fixDoctrineForPHP74",
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
     ],
     "post-install-cmd": [
-      "@fixPHPUnit65MocksForPHP74",
-      "@fixDoctrineForPHP74",
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
-    ],
-    "fixPHPUnit65MocksForPHP74": "sed -i -e 's/(string) $method->getReturnType()/(method_exists($method->getReturnType(), \"getName\") ? $method->getReturnType()->getName() : \\0)/g' vendor/phpunit/phpunit-mock-objects/src/Generator.php && sed -i -e 's/(string) $parameter->getType()/(method_exists($parameter->getType(), \"getName\") ? $parameter->getType()->getName() : \\0)/g' vendor/phpunit/phpunit-mock-objects/src/Generator.php",
-    "fixDoctrineForPHP74": "sed -i -e 's/return \\\\in_array(\\$token\\[/return $token !== null \\&\\& \\\\in_array(\\$token\\[/' vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Query/Parser.php"
+    ]
   },
   "config": {
     "platform": {
