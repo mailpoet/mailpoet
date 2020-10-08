@@ -76,6 +76,13 @@ fi
 # activate MailPoet
 wp plugin activate mailpoet/mailpoet.php
 
+if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
+  # Softlink MailPoet Premium to plugin path
+  ln -s /project/mp3premium /wp-core/wp-content/plugins/mailpoet-premium
+  # Activate MailPoet Premium
+  wp plugin activate mailpoet-premium
+fi
+
 cd /wp-core/wp-content/plugins/mailpoet
 
 /project/vendor/bin/codecept run acceptance $@
