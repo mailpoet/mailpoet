@@ -123,6 +123,47 @@ jobs:
           root: /home/circleci/mailpoet
           paths:
             - .
+  build_premium:
+    executor: wpcli_php_latest
+    resource_class: medium
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - add_ssh_keys
+      - run:
+          name: "Install Premium plugin"
+          command: |
+            # Add GitHub to known_hosts because there is no checkout step in this job
+            echo "github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" >> ~/.ssh/known_hosts
+            git clone ${MAILPOET_PREMIUM_REPO_URL} mp3premium
+      - restore_cache:
+          key: premium-tools-{{ checksum "mp3premium/tools/install.php" }}
+      - restore_cache:
+          key: premium-composer-{{ checksum "mp3premium/composer.json" }}-{{ checksum "mp3premium/composer.lock" }}
+      - run:
+          name: "Set up test environment"
+          command: |
+            # install Premium dependencies
+            MAILPOET_FREE_PATH=$(pwd)
+            cd mp3premium
+            COMPOSER_DEV_MODE=1 php tools/install.php
+            echo "MAILPOET_FREE_PATH=${MAILPOET_FREE_PATH}" > .env
+            ./tools/vendor/composer.phar validate --no-check-all --no-check-publish
+            ./do install
+            ./do compile:all --env production
+            cd ..
+      - save_cache:
+          key: premium-tools-{{ checksum "mp3premium/tools/install.php" }}
+          paths:
+            - mp3premium/tools/vendor
+      - save_cache:
+          key: premium-composer-{{ checksum "mp3premium/composer.json" }}-{{ checksum "mp3premium/composer.lock" }}
+          paths:
+            - mp3premium/vendor
+      - persist_to_workspace:
+          root: /home/circleci/mailpoet
+          paths:
+            - .
   static_analysis:
     executor: wpcli_php_mysql_latest
     resource_class: medium
@@ -208,7 +249,7 @@ jobs:
           command: |
               mkdir -m 777 -p tests/_output/exceptions
               cd tests/docker
-              docker-compose run -e SKIP_DEPS=1 -e CIRCLE_BRANCH=${CIRCLE_BRANCH} -e MULTISITE=<< parameters.multisite >> codeception << parameters.group_arg >> --steps --debug -vvv --html --xml
+              docker-compose run -e SKIP_DEPS=1 -e CIRCLE_BRANCH=${CIRCLE_BRANCH} -e CIRCLE_JOB=${CIRCLE_JOB} -e MULTISITE=<< parameters.multisite >> codeception << parameters.group_arg >> --steps --debug -vvv --html --xml
       - run:
           name: Check exceptions
           command: |
@@ -473,3 +514,18 @@ workflows:
           executor: wpcli_php_mysql_oldest
           requires:
             - build
+      - build_premium:
+          requires:
+            - build
+      - acceptance_tests:
+          name: acceptance_with_premium_latest
+          requires:
+            - build_premium
+      - unit_tests:
+          name: unit_with_premium_latest
+          requires:
+            - build_premium
+      - integration_tests:
+          name: integration_with_premium_latest
+          requires:
+            - build_premium
