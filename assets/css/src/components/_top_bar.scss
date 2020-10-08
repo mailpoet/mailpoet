@@ -14,10 +14,6 @@ $beamer-dot-size: 8px;
   padding-left: $grid-gap;
   padding-right: $grid-gap;
 
-  ~ .mailpoet-tabs {
-    margin-top: -20px;
-  }
-
   .wrap & {
     margin-left: -20px;
     margin-right: -20px;
@@ -29,10 +25,6 @@ $beamer-dot-size: 8px;
       margin-left: -10px;
       margin-right: -12px;
       top: -10px;
-
-      ~ .mailpoet-tabs {
-        margin-top: 0;
-      }
     }
   }
 }
