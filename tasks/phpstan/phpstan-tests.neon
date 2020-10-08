@@ -6,7 +6,7 @@ parameters:
     - ../../vendor/autoload.php
     - ../../vendor/codeception/codeception/autoload.php
     - ../../vendor/codeception/verify/src/Codeception/function.php
-    - ../../vendor/codeception/verify/src/Codeception/Verify.php
+    - ../../vendor/codeception/verify/src/Codeception/Verify/Verify.php
     - ../../tests/_support/_generated/AcceptanceTesterActions.php
     - ../../tests/_support/_generated/IntegrationTesterActions.php
     - ../../tests/_support/_generated/UnitTesterActions.php

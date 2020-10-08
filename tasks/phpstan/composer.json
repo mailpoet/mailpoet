@@ -2,7 +2,7 @@
     "require": {
         "phpstan/phpstan": "0.12.48",
         "phpstan/phpstan-doctrine": "0.12.20",
-        "phpstan/phpstan-phpunit": "0.12.6"
+        "phpstan/phpstan-phpunit": "0.12.16"
     },
     "autoload": {
         "psr-4": {
