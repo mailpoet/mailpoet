@@ -1,14 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { Link, withRouter } from 'react-router-dom';
 import MailPoet from 'mailpoet';
+import { TopBarWithBeamer } from 'common/top_bar/top_bar';
+import plusIcon from 'common/button/icon/plus';
 
-const ListingHeading = () => (
-  <div className="mailpoet-newsletter-listing-heading-wrapper">
-    <h1 className="mailpoet-newsletter-listing-heading title">
-      {MailPoet.I18n.t('pageTitle')}
+const ListingHeading = ({ history }) => (
+  <>
+    <TopBarWithBeamer onLogoClick={() => history.push('/')}>
       <Link
         id="mailpoet-new-email"
-        className="page-title-action"
+        className="mailpoet-button"
         to="/new"
         onClick={() => MailPoet.trackEvent(
           'Emails > Add New',
@@ -16,10 +18,18 @@ const ListingHeading = () => (
         )}
         data-automation-id="new_email"
       >
-        {MailPoet.I18n.t('new')}
+        {plusIcon}
+        <span>{MailPoet.I18n.t('new')}</span>
       </Link>
-    </h1>
-  </div>
+    </TopBarWithBeamer>
+    <h1 className="mailpoet-newsletter-listing-heading-empty title">{' '}</h1>
+  </>
 );
 
-export default ListingHeading;
+ListingHeading.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+export default withRouter(ListingHeading);

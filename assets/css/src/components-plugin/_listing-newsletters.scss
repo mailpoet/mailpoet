@@ -92,6 +92,13 @@ h1.title.mailpoet-newsletter-listing-heading {
   margin-bottom: $grid-gap;
 }
 
+// empty h1 for notices position
+h1.title.mailpoet-newsletter-listing-heading-empty {
+  height: 1px;
+  position: absolute;
+  width: 1px;
+}
+
 .mailpoet-listing-schedule {
   align-items: center;
   display: flex;
