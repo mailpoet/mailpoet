@@ -81,7 +81,7 @@ class ServicesTest extends \MailPoetTest {
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['message'])
-      ->contains($date->format($servicesEndpoint->dateTime->getDateFormat()));
+      ->stringContainsString($date->format($servicesEndpoint->dateTime->getDateFormat()));
   }
 
   public function testItRespondsWithErrorIfServiceIsUnavailableDuringMSSCheck() {
@@ -96,7 +96,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->contains(
+    expect($response->errors[0]['message'])->stringContainsString(
       $this->invokeMethod(
         $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
       )
@@ -115,7 +115,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->contains(
+    expect($response->errors[0]['message'])->stringContainsString(
       $this->invokeMethod(
         $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
       )
@@ -134,7 +134,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->contains('404');
+    expect($response->errors[0]['message'])->stringContainsString('404');
   }
 
   public function testItRespondsWithErrorIfMSSCheckThrowsAnException() {
@@ -291,7 +291,7 @@ class ServicesTest extends \MailPoetTest {
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['message'])
-      ->contains($date->format($servicesEndpoint->dateTime->getDateFormat()));
+      ->stringContainsString($date->format($servicesEndpoint->dateTime->getDateFormat()));
   }
 
   public function testItRespondsWithErrorIfServiceIsUnavailableDuringPremiumCheck() {
@@ -306,7 +306,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->contains(
+    expect($response->errors[0]['message'])->stringContainsString(
       $this->invokeMethod(
         $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
       )
@@ -325,7 +325,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->contains(
+    expect($response->errors[0]['message'])->stringContainsString(
       $this->invokeMethod(
         $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
       )
@@ -344,7 +344,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->contains('404');
+    expect($response->errors[0]['message'])->stringContainsString('404');
   }
 
   public function testItRespondsWithErrorIfPremiumCheckThrowsAnException() {

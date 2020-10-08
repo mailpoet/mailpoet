@@ -263,6 +263,6 @@ class RouterTest extends \MailPoetTest {
       'test',
       $data
     );
-    expect($result)->contains(Router::NAME . '&endpoint=router_test_mock_endpoint&action=test&data=' . $encodedData);
+    expect($result)->stringContainsString(Router::NAME . '&endpoint=router_test_mock_endpoint&action=test&data=' . $encodedData);
   }
 }

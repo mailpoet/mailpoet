@@ -61,7 +61,7 @@ class SubscriptionTest extends \MailPoetTest {
       $subscriber,
       [$this->wcSegment->id]
     );
-    expect($this->getRenderedOptinField())->contains('checked');
+    expect($this->getRenderedOptinField())->stringContainsString('checked');
   }
 
   public function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsNotSubscribed() {
@@ -73,18 +73,18 @@ class SubscriptionTest extends \MailPoetTest {
       $subscriber,
       [$this->wcSegment->id]
     );
-    expect($this->getRenderedOptinField())->notContains('checked');
+    expect($this->getRenderedOptinField())->stringNotContainsString('checked');
   }
 
   public function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsNotLoggedIn() {
     wp_set_current_user(0);
-    expect($this->getRenderedOptinField())->notContains('checked');
+    expect($this->getRenderedOptinField())->stringNotContainsString('checked');
   }
 
   public function testItDisplaysCheckboxOptinMessageFromSettings() {
     $newMessage = 'This is a test message.';
     $this->settings->set(Subscription::OPTIN_MESSAGE_SETTING_NAME, $newMessage);
-    expect($this->getRenderedOptinField())->contains($newMessage);
+    expect($this->getRenderedOptinField())->stringContainsString($newMessage);
   }
 
   public function testItsTemplateCanBeOverriddenByAHook() {
@@ -98,8 +98,8 @@ class SubscriptionTest extends \MailPoetTest {
       4
     );
     $result = $this->getRenderedOptinField();
-    expect($result)->contains($newTemplate);
-    expect($result)->contains(Subscription::CHECKOUT_OPTIN_INPUT_NAME);
+    expect($result)->stringContainsString($newTemplate);
+    expect($result)->stringContainsString(Subscription::CHECKOUT_OPTIN_INPUT_NAME);
   }
 
   public function testItDoesNotTryToSubscribeIfThereIsNoEmailInOrderData() {

@@ -82,8 +82,8 @@ class WooCommerceTest extends \MailPoetTest {
     $AM = new AutomaticEmails();
     $result = $AM->getAutomaticEmailBySlug('woocommerce');
     foreach ($result['events'] as $event) {
-      expect($event)->hasntKey('actionButtonTitle');
-      expect($event)->hasntKey('actionButtonLink');
+      expect($event)->hasNotKey('actionButtonTitle');
+      expect($event)->hasNotKey('actionButtonLink');
     }
   }
 

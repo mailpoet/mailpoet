@@ -532,7 +532,7 @@ class SubscribersTest extends \MailPoetTest {
       ]);
     } catch (UnexpectedValueException $exception) {
       expect($exception->getHttpStatusCode())->equals(APIResponse::STATUS_BAD_REQUEST);
-      expect($exception->getErrors()[Error::BAD_REQUEST])->contains('Invalid bulk action');
+      expect($exception->getErrors()[Error::BAD_REQUEST])->stringContainsString('Invalid bulk action');
     }
   }
 

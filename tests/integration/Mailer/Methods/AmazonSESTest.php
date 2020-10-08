@@ -214,7 +214,7 @@ class AmazonSESTest extends \MailPoetTest {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     $signedRequest = $this->mailer->signRequest($body);
     expect($signedRequest)
-      ->contains(
+      ->stringContainsString(
         $this->mailer->awsSigningAlgorithm . ' Credential=' .
         $this->mailer->awsAccessKey . '/' .
         $this->mailer->getCredentialScope() . ', ' .
@@ -242,7 +242,7 @@ class AmazonSESTest extends \MailPoetTest {
     );
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
-    expect($result['error']->getMessage())->contains('does not comply with RFC 2822');
+    expect($result['error']->getMessage())->stringContainsString('does not comply with RFC 2822');
   }
 
   public function testItChecksBlacklistBeforeSending() {
@@ -259,7 +259,7 @@ class AmazonSESTest extends \MailPoetTest {
     );
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
-    expect($result['error']->getMessage())->contains('AmazonSES has returned an unknown error.');
+    expect($result['error']->getMessage())->stringContainsString('AmazonSES has returned an unknown error.');
   }
 
   public function testItCanSend() {

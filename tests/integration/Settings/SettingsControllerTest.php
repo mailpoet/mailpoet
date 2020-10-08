@@ -93,7 +93,7 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->controller->set('test_key.key1.key2', 1);
     $this->assertEquals(1, $this->controller->get('test_key.key1.key2'));
     $this->controller->set('test_key.key1.key2', null);
-    $this->assertNull(null, $this->controller->get('test_key.key1.key2'));
+    $this->assertNull($this->controller->get('test_key.key1.key2'));
     $dbValue = unserialize($this->getSettingValue('test_key'));
     $this->assertNull($dbValue['key1']['key2']);
   }

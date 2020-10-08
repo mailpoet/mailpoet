@@ -23,6 +23,7 @@ $models = [
   'Form',
   'Newsletter',
   'NewsletterLink',
+  'NewsletterLink',
   'NewsletterPost',
   'NewsletterSegment',
   'NewsletterOption',
@@ -204,7 +205,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     return $method->invokeArgs($object, $parameters);
   }
 
-  public static function markTestSkipped($message = '') {
+  public static function markTestSkipped(string $message = ''): void {
     $branchName = getenv('CIRCLE_BRANCH');
     if ($branchName === 'master' || $branchName === 'release') {
       self::fail('Cannot skip tests on this branch.');

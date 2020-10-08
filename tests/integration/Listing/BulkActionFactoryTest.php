@@ -31,7 +31,7 @@ class BulkActionFactoryTest extends \MailPoetTest {
       $this->bulkActionFactory->registerAction($modelClass, $method, $actionClass);
       $this->fail('Exception was not thrown');
     } catch (\Exception $e) {
-      expect($e->getMessage())->contains('has no method');
+      expect($e->getMessage())->stringContainsString('has no method');
     }
   }
 
@@ -43,7 +43,7 @@ class BulkActionFactoryTest extends \MailPoetTest {
       $this->bulkActionFactory->registerAction($modelClass, $method, $actionClass);
       $this->fail('Exception was not thrown');
     } catch (\Exception $e) {
-      expect($e->getMessage())->contains('has no method');
+      expect($e->getMessage())->stringContainsString('has no method');
     }
   }
 
@@ -61,7 +61,7 @@ class BulkActionFactoryTest extends \MailPoetTest {
       $this->bulkActionFactory->getActionClass($modelClass, $method);
       $this->fail('Exception was not thrown');
     } catch (\Exception $e) {
-      expect($e->getMessage())->contains('has no method');
+      expect($e->getMessage())->stringContainsString('has no method');
     }
   }
 }

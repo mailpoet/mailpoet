@@ -114,7 +114,7 @@ class RendererTest extends \MailPoetTest {
       $renderer->render('non-existing-template.html', ['somekey' => 'someval']);
       self::fail('Twig exception was not rethrown');
     } catch (\Exception $e) {
-      expect($e->getMessage())->contains($exceptionMessage);
+      expect($e->getMessage())->stringContainsString($exceptionMessage);
       expect($e->getMessage())->notEquals($exceptionMessage);
     }
   }

@@ -145,7 +145,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletterSegments[0]['id'])->equals($this->segment1->id);
     expect($newsletterSegments[0]['name'])->equals('Segment 1');
     expect($newsletterSegments[1]['id'])->equals($this->segment2->id);
-    expect($newsletterSegments[1]['name'])->contains('Deleted');
+    expect($newsletterSegments[1]['name'])->stringContainsString('Deleted');
   }
 
   public function testItCanCreateOrUpdate() {

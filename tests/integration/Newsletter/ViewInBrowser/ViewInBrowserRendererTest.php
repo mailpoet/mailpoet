@@ -172,8 +172,8 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $this->subscriber,
       $this->sendingTask->queue()
     );
-    expect($renderedBody)->contains('Hello, First');
-    expect($renderedBody)->contains(Router::NAME . '&endpoint=view_in_browser');
+    expect($renderedBody)->stringContainsString('Hello, First');
+    expect($renderedBody)->stringContainsString(Router::NAME . '&endpoint=view_in_browser');
   }
 
   public function testItRewritesLinksToRouterEndpointWhenTrackingIsEnabled() {
@@ -186,7 +186,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $this->subscriber,
       $queue
     );
-    expect($renderedBody)->contains(Router::NAME . '&endpoint=track');
+    expect($renderedBody)->stringContainsString(Router::NAME . '&endpoint=track');
   }
 
   public function testItConvertsHashedLinksToUrlsWhenPreviewIsEnabledAndNewsletterWasSent() {
@@ -199,8 +199,8 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $queue
     );
     // hashed link should be replaced with a URL
-    expect($renderedBody)->notContains('[mailpoet_click_data]');
-    expect($renderedBody)->contains('<a href="http://google.com">');
+    expect($renderedBody)->stringNotContainsString('[mailpoet_click_data]');
+    expect($renderedBody)->stringContainsString('<a href="http://google.com">');
   }
 
   public function testRemovesOpenTrackingTagWhenPreviewIsEnabledAndNewsletterWasSent() {
@@ -213,8 +213,8 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $queue
     );
     // open tracking data tag should be removed
-    expect($renderedBody)->notContains('[mailpoet_open_data]');
-    expect($renderedBody)->contains('<img alt="" class="" src="">');
+    expect($renderedBody)->stringNotContainsString('[mailpoet_open_data]');
+    expect($renderedBody)->stringContainsString('<img alt="" class="" src="">');
   }
 
   public function _after() {

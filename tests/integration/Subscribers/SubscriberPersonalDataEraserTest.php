@@ -22,7 +22,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
 
   public function testExportWorksWhenSubscriberNotFound() {
     $result = $this->eraser->erase('email.that@doesnt.exists');
-    expect($result)->internalType('array');
+    expect($result)->array();
     expect($result)->hasKey('items_removed');
     expect($result['items_removed'])->equals(0);
     expect($result)->hasKey('done');

@@ -16,9 +16,9 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
 
     $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
     $result = $notice->init(true);
-    expect($result)->contains('Good news! MailPoet won’t send emails to your 50 inactive subscribers.');
-    expect($result)->contains('https://kb.mailpoet.com/article/264-inactive-subscribers');
-    expect($result)->contains('<a href="admin.php?page=mailpoet-settings#advanced" class="button button-primary">Go to the Advanced Settings</a>');
+    expect($result)->stringContainsString('Good news! MailPoet won’t send emails to your 50 inactive subscribers.');
+    expect($result)->stringContainsString('https://kb.mailpoet.com/article/264-inactive-subscribers');
+    expect($result)->stringContainsString('<a href="admin.php?page=mailpoet-settings#advanced" class="button button-primary">Go to the Advanced Settings</a>');
   }
 
   public function testItDoesntDisplayWhenDisabled() {

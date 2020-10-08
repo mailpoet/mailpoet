@@ -109,10 +109,10 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $this->accBlock['pricePosition'] = 'hidden';
     $result = $this->block->render($newsletter, $this->accBlock, true);
     $encodedResult = json_encode($result);
-    expect($encodedResult)->contains('Product 4');
-    expect($encodedResult)->contains('Product 3');
-    expect($encodedResult)->notContains('Product 2');
-    expect($encodedResult)->notContains('Product 1');
+    expect($encodedResult)->stringContainsString('Product 4');
+    expect($encodedResult)->stringContainsString('Product 3');
+    expect($encodedResult)->stringNotContainsString('Product 2');
+    expect($encodedResult)->stringNotContainsString('Product 1');
   }
 
   public function testItDoesNotRenderIfNoSendingTaskIsSupplied() {
@@ -144,10 +144,10 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $sendingTask = $this->createSendingTask($newsletter);
     $result = $this->block->render($newsletter, $this->accBlock, false, $sendingTask);
     $encodedResult = json_encode($result);
-    expect($encodedResult)->notContains('Product 4');
-    expect($encodedResult)->contains('Product 3');
-    expect($encodedResult)->contains('Product 2');
-    expect($encodedResult)->contains('Product 1');
+    expect($encodedResult)->stringNotContainsString('Product 4');
+    expect($encodedResult)->stringContainsString('Product 3');
+    expect($encodedResult)->stringContainsString('Product 2');
+    expect($encodedResult)->stringContainsString('Product 1');
   }
 
   private function createPost(string $title, string $publishDate, string $type = 'post') {

@@ -83,7 +83,7 @@ class SubscriberTest extends \MailPoetTest {
     ]);
     $subscriber->save();
     $errors = $subscriber->getErrors();
-    expect($errors[0])->contains("Unknown column 'invalid_column' in 'field list'");
+    expect($errors[0])->stringContainsString("Unknown column 'invalid_column' in 'field list'");
   }
 
   public function testItValidatesEmailAndSetsErrors() {

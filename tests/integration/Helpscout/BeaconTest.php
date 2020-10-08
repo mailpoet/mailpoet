@@ -92,8 +92,8 @@ class BeaconTest extends \MailPoetTest {
 
   public function testItReturnsCurrentThemeNameAndVersion() {
     $currentTheme = wp_get_theme();
-    expect($this->beaconData['Current Theme'])->contains($currentTheme->get('Name'));
-    expect($this->beaconData['Current Theme'])->contains($currentTheme->get('Version'));
+    expect($this->beaconData['Current Theme'])->stringContainsString($currentTheme->get('Name'));
+    expect($this->beaconData['Current Theme'])->stringContainsString($currentTheme->get('Version'));
   }
 
   public function testItReturnsActivePlugins() {
@@ -103,8 +103,8 @@ class BeaconTest extends \MailPoetTest {
   public function testItReturnsSendingMethodDetails() {
     $mta = $this->settings->get('mta');
     expect($this->beaconData['Sending Method'])->equals($mta['method']);
-    expect($this->beaconData['Sending Frequency'])->contains($mta['frequency']['emails'] . ' emails');
-    expect($this->beaconData['Sending Frequency'])->contains($mta['frequency']['interval'] . ' minutes');
+    expect($this->beaconData['Sending Frequency'])->stringContainsString($mta['frequency']['emails'] . ' emails');
+    expect($this->beaconData['Sending Frequency'])->stringContainsString($mta['frequency']['interval'] . ' minutes');
   }
 
   public function testItReturnsSomeSettings() {
@@ -131,7 +131,7 @@ class BeaconTest extends \MailPoetTest {
   }
 
   public function testItReturnsCronPingUrl() {
-    expect($this->beaconData['Cron ping URL'])->contains('&action=ping');
+    expect($this->beaconData['Cron ping URL'])->stringContainsString('&action=ping');
     // cron ping URL should react to custom filters
     $filter = function($url) {
       return str_replace(home_url(), 'http://custom_url/', $url);

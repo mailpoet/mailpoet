@@ -20,7 +20,7 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
 
   public function testExportWorksWhenSubscriberNotFound() {
     $result = $this->exporter->export('email.that@doesnt.exists');
-    expect($result)->internalType('array');
+    expect($result)->array();
     expect($result)->hasKey('data');
     expect($result['data'])->equals([]);
     expect($result)->hasKey('done');
@@ -32,7 +32,7 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
       'email' => 'email.that@has.no.newsletters',
     ]);
     $result = $this->exporter->export('email.that@has.no.newsletters');
-    expect($result)->internalType('array');
+    expect($result)->array();
     expect($result)->hasKey('data');
     expect($result['data'])->equals([]);
     expect($result)->hasKey('done');
@@ -67,7 +67,7 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
       'created_at' => '2018-01-02 15:16:17',
     ]);
     $result = $this->exporter->export('email@with.clicks');
-    expect($result['data'])->internalType('array');
+    expect($result['data'])->array();
     expect($result['data'])->count(1);
     expect($result['done'])->equals(true);
     expect($result['data'][0])->hasKey('group_id');

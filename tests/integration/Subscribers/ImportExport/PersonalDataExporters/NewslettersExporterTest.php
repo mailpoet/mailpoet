@@ -20,7 +20,7 @@ class NewslettersExporterTest extends \MailPoetTest {
 
   public function testExportWorksWhenSubscriberNotFound() {
     $result = $this->exporter->export('email.that@doesnt.exists');
-    expect($result)->internalType('array');
+    expect($result)->array();
     expect($result)->hasKey('data');
     expect($result['data'])->equals([]);
     expect($result)->hasKey('done');
@@ -32,7 +32,7 @@ class NewslettersExporterTest extends \MailPoetTest {
       'email' => 'email.that@has.no.newsletters',
     ]);
     $result = $this->exporter->export('email.that@has.no.newsletters');
-    expect($result)->internalType('array');
+    expect($result)->array();
     expect($result)->hasKey('data');
     expect($result['data'])->equals([]);
     expect($result)->hasKey('done');
@@ -54,7 +54,7 @@ class NewslettersExporterTest extends \MailPoetTest {
       'queue_id' => $queue->id(),
     ]]);
     $result = $this->exporter->export('user@with.newsletters');
-    expect($result['data'])->internalType('array');
+    expect($result['data'])->array();
     expect($result['data'])->count(1);
     expect($result['done'])->equals(true);
     expect($result['data'][0])->hasKey('group_id');
@@ -84,7 +84,7 @@ class NewslettersExporterTest extends \MailPoetTest {
     ]]);
     $result = $this->exporter->export('user1@with.newsletters');
     expect($result['data'][0]['data'][3]['name'])->equals('Email preview');
-    expect($result['data'][0]['data'][3]['value'])->contains('mailpoet_router&endpoint=view_in_browser&action=view&data=');
+    expect($result['data'][0]['data'][3]['value'])->stringContainsString('mailpoet_router&endpoint=view_in_browser&action=view&data=');
   }
 
   public function testExportOpens() {

@@ -15,7 +15,7 @@ class MigratorTest extends \MailPoetTest {
   public function testItCanGenerateTheSubscribersSql() {
     $subscriberSql = $this->migrator->subscribers();
     $expectedTable = $this->migrator->prefix . 'subscribers';
-    expect($subscriberSql)->contains($expectedTable);
+    expect($subscriberSql)->stringContainsString($expectedTable);
   }
 
   public function testItDoesNotMigrateWhenDatabaseIsUpToDate() {
