@@ -39,7 +39,7 @@ if (version_compare(get_bloginfo('version'), '5.0', '<')) {
 }
 
 // Check for minimum supported PHP version
-if (version_compare(phpversion(), '7.1.0', '<')) {
+if (version_compare(phpversion(), '7.1.8', '<')) {
   add_action('admin_notices', 'mailpoet_php_version_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
@@ -59,7 +59,7 @@ function mailpoet_wp_version_notice() {
 
 // Display PHP version error notice
 function mailpoet_php_version_notice() {
-  $noticeP1 = __('MailPoet requires PHP version 7.1 or newer (7.4 recommended). You are running version [version].', 'mailpoet');
+  $noticeP1 = __('MailPoet requires PHP version 7.1.8 or newer (7.4 recommended). You are running version [version].', 'mailpoet');
   $noticeP1 = str_replace('[version]', phpversion(), $noticeP1);
 
   $noticeP2 = __('Please read our [link]instructions[/link] on how to upgrade your site.', 'mailpoet');

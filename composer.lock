@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f65d4daee6b5da26019695106114e988",
+    "content-hash": "7906a8c85cbdb9f041c6071440146b86",
     "packages": [
         {
             "name": "mtdowling/cron-expression",
@@ -8823,7 +8823,7 @@
         "ext-zip": "*"
     },
     "platform-overrides": {
-        "php": "7.1.0"
+        "php": "7.1.8"
     },
     "plugin-api-version": "1.1.0"
 }
