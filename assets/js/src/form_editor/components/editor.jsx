@@ -79,6 +79,7 @@ export default () => {
         },
         typography: {
           fontSizes: SETTINGS_DEFAULTS.presets['font-size'],
+          customFontSize: true,
         },
       },
     },
