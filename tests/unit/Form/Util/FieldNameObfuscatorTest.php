@@ -21,7 +21,7 @@ class FieldNameObfuscatorTest extends \MailPoetUnitTest {
   }
 
   public function testObfuscateWorks() {
-    expect($this->obfuscator->obfuscate('email'))->notContains('email');
+    expect($this->obfuscator->obfuscate('email'))->stringNotContainsString('email');
   }
 
   public function testObfuscateDeobfuscateWorks() {

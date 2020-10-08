@@ -55,7 +55,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
 
   public function testItReturnsArray() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text']);
-    expect($result)->internalType('array');
+    expect($result)->array();
   }
 
   public function testItReturnsName() {
@@ -72,7 +72,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
 
   public function testItIgnoresUnknownProperties() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'unknown' => 'Unknown property']);
-    expect($result)->hasntKey('unknown');
+    expect($result)->hasNotKey('unknown');
   }
 
   public function testItReturnsParamsIfPassed() {
@@ -90,7 +90,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
   public function testItIgnoresUnknownParams() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['unknown' => 'Unknown property']]);
     expect($result)->hasKey('params');
-    expect($result['params'])->hasntKey('unknown');
+    expect($result['params'])->hasNotKey('unknown');
   }
 
   public function testItFillsLabel() {
@@ -135,7 +135,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
       ],
     ]);
     $values = $result['params']['values'];
-    expect($values)->internalType('array');
+    expect($values)->array();
     expect($values)->count(2);
     expect($values[0])->same(['value' => 'value 1', 'is_checked' => '']);
     expect($values[1])->same(['value' => 'value 2', 'is_checked' => '1']);
@@ -196,7 +196,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
       ],
     ]);
     $values = $result['params']['values'];
-    expect($values)->internalType('array');
+    expect($values)->array();
     expect($values)->count(1);
     expect($values[0])->same(['value' => 'value 1', 'is_checked' => '1']);
   }

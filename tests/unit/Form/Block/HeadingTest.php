@@ -88,8 +88,8 @@ class HeadingTest extends \MailPoetUnitTest {
         'background_color' => 'red',
       ],
     ]);
-    expect($html)->contains('style="background-color: red');
-    expect($html)->contains('class="mailpoet-heading mailpoet-has-background-color"');
+    expect($html)->stringContainsString('style="background-color: red');
+    expect($html)->stringContainsString('class="mailpoet-heading mailpoet-has-background-color"');
   }
 
   public function testItShouldRenderFontSize() {

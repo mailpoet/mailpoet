@@ -96,7 +96,7 @@ class DateTest extends \MailPoetUnitTest {
     $date = Carbon::now();
     $currentMonth = $date->format('F');
     $currentYear = $date->format('Y');
-    $currentDay = $date->format('d');
+    $currentDay = $date->format('j');
 
     $selectedMonth = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 0);
     expect($selectedMonth->textContent)->equals($currentMonth);

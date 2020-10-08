@@ -50,6 +50,6 @@ class FooterTest extends \MailPoetUnitTest {
   public function testItPrefersInlinedCssForLinks() {
     $this->block['text'] = '<p>Footer text. <a href="http://example.com" style="color:#aaaaaa;">link</a></p>';
     $output = (new Footer)->render($this->block);
-    expect($output)->contains('<a href="http://example.com" style="color:#aaaaaa;text-decoration:none">link</a>');
+    expect($output)->stringContainsString('<a href="http://example.com" style="color:#aaaaaa;text-decoration:none">link</a>');
   }
 }
