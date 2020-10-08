@@ -9,8 +9,6 @@ use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
-use function MailPoetVendor\array_column;
-
 class PurchasedProduct {
   const SLUG = 'woocommerce_product_purchased';
   /**

@@ -9,8 +9,6 @@ use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\XLSXWriter;
 
-use function MailPoetVendor\array_column;
-
 class Export {
   const SUBSCRIBER_BATCH_SIZE = 15000;
 

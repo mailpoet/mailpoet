@@ -12,8 +12,6 @@ use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
-use function MailPoetVendor\array_column;
-
 /**
  * @extends Repository<SubscriberEntity>
  */

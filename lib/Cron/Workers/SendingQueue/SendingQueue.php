@@ -23,8 +23,6 @@ use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
-use function MailPoetVendor\array_column;
-
 class SendingQueue {
   public $mailerTask;
   public $newsletterTask;

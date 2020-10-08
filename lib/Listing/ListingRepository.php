@@ -6,8 +6,6 @@ use MailPoet\Util\Helpers;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
-use function MailPoetVendor\array_column;
-
 abstract class ListingRepository {
   /** @var QueryBuilder */
   protected $queryBuilder;

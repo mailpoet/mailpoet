@@ -16,8 +16,6 @@ use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
-use function MailPoetVendor\array_column;
-
 class Import {
   public $subscribersData;
   public $segmentsIds;
