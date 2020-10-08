@@ -42,3 +42,14 @@ span.mailpoet-gap-half {
   pointer-events: none;
   touch-action: none;
 }
+
+// Media query helpers
+.small-screen {
+  display: none;
+
+  @include respond-to(small-screen) { display: block; }
+}
+
+.not-small-screen {
+  @include respond-to(small-screen) { display: none !important; }
+}
