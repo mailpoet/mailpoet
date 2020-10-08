@@ -7,7 +7,7 @@
     "doctrine/orm": "2.7.3",
     "gregwar/captcha": "^1.1",
     "monolog/monolog": "^1.23",
-    "nesbot/carbon": "1.39.1",
+    "nesbot/carbon": "2.41.3",
     "sabberworm/php-css-parser": "^8.1",
     "swiftmailer/swiftmailer": "6.2.3",
     "symfony/dependency-injection": "3.4.43",
