@@ -192,13 +192,13 @@ class AcceptanceTester extends \Codeception\Actor {
   public function assertAttributeContains($selector, $attribute, $contains) {
     $i = $this;
     $attributeValue = $i->grabAttributeFrom($selector, $attribute);
-    expect($attributeValue)->contains($contains);
+    expect($attributeValue)->stringContainsString($contains);
   }
 
   public function assertAttributeNotContains($selector, $attribute, $notContains) {
     $i = $this;
     $attributeValue = $i->grabAttributeFrom($selector, $attribute);
-    expect($attributeValue)->notContains($notContains);
+    expect($attributeValue)->stringNotContainsString($notContains);
   }
 
   public function searchFor($query, $element = '#search_input') {
