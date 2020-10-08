@@ -2,7 +2,7 @@ import React from 'react';
 import { action } from '_storybook/action';
 import Button from '../button';
 import Heading from '../../typography/heading/heading';
-import icon from './assets/icon';
+import icon from '../icon/plus';
 
 export default {
   title: 'Buttons',
