@@ -28,6 +28,7 @@ export const TopBar = ({
       <a
         role="button"
         className="mailpoet-top-bar-logo"
+        title={MailPoet.I18n.t('topBarLogoTitle')}
         onClick={onLogoClick}
         tabIndex={0}
         onKeyDown={(event) => {
