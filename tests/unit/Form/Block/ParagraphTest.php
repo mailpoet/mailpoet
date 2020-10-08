@@ -64,7 +64,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'background_color' => 'red',
       ],
     ]);
-    expect($html)->contains('style="background-color: red');
+    expect($html)->stringContainsString('style="background-color: red');
   }
 
   public function testItShouldRenderFontSize() {
@@ -104,6 +104,6 @@ class ParagraphTest extends \MailPoetUnitTest {
         'background_color' => 'red',
       ],
     ]);
-    expect($html)->contains('<p class="mailpoet_form_paragraph mailpoet-has-background-color');
+    expect($html)->stringContainsString('<p class="mailpoet_form_paragraph mailpoet-has-background-color');
   }
 }

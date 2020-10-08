@@ -105,13 +105,13 @@ class TextTest extends \MailPoetUnitTest {
   public function testItStylesHeadings() {
     $this->block['text'] = '<h1>Heading</h1><h2>Heading 2</h2>';
     $output = (new Text)->render($this->block);
-    expect($output)->contains('<h1 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading</h1>');
-    expect($output)->contains('<h2 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading 2</h2>');
+    expect($output)->stringContainsString('<h1 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading</h1>');
+    expect($output)->stringContainsString('<h2 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading 2</h2>');
   }
 
   public function testItRemovesLastLineBreak() {
     $this->block['text'] = 'hello<br />';
     $output = (new Text)->render($this->block);
-    expect($output)->notContains('<br />');
+    expect($output)->stringNotContainsString('<br />');
   }
 }

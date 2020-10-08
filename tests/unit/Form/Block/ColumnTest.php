@@ -37,7 +37,7 @@ class ColumnTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[@class="mailpoet_form_column"]');
     $style = $this->htmlParser->getAttribute($column, 'style');
-    expect($style->textContent)->contains('flex-basis:30%;');
+    expect($style->textContent)->stringContainsString('flex-basis:30%;');
   }
 
   public function testItShouldRenderVerticalAlignClass() {
@@ -46,7 +46,7 @@ class ColumnTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
-    expect($class->textContent)->contains('mailpoet_vertically_align_top');
+    expect($class->textContent)->stringContainsString('mailpoet_vertically_align_top');
   }
 
   public function testItShouldRenderCustomClass() {
@@ -55,6 +55,6 @@ class ColumnTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
-    expect($class->textContent)->contains('my-class');
+    expect($class->textContent)->stringContainsString('my-class');
   }
 }

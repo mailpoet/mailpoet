@@ -24,8 +24,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
     expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
-    expect($error->getMessage())->contains('unknown error');
-    expect($error->getMessage())->contains('MailPoet');
+    expect($error->getMessage())->stringContainsString('unknown error');
+    expect($error->getMessage())->stringContainsString('MailPoet');
   }
 
   public function testCreateConnectionError() {
@@ -61,7 +61,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->contains('The MailPoet Sending Service has stopped sending your emails for one of the following reasons');
+    expect($error->getMessage())->stringContainsString('The MailPoet Sending Service has stopped sending your emails for one of the following reasons');
   }
 
   public function testGetErrorUnauthorizedEmail() {
@@ -75,7 +75,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_AUTHORIZATION);
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->contains('The MailPoet Sending Service did not send your latest email because the address');
+    expect($error->getMessage())->stringContainsString('The MailPoet Sending Service did not send your latest email because the address');
   }
 
   public function testGetErrorPayloadTooBig() {

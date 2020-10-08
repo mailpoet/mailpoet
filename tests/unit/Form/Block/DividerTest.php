@@ -25,20 +25,20 @@ class DividerTest extends \MailPoetUnitTest {
 
   public function testItRendersOldDividerWithNoParams() {
     $result = $this->divider->render($this->block);
-    expect($result)->contains('height: 1px;');
-    expect($result)->contains("class='mailpoet_divider");
-    expect($result)->contains("class='mailpoet_spacer");
-    expect($result)->contains("border-top-style: solid;");
-    expect($result)->contains("border-top-width: 1px;");
-    expect($result)->contains("border-top-color: black;");
-    expect($result)->contains("width: 100%");
+    expect($result)->stringContainsString('height: 1px;');
+    expect($result)->stringContainsString("class='mailpoet_divider");
+    expect($result)->stringContainsString("class='mailpoet_spacer");
+    expect($result)->stringContainsString("border-top-style: solid;");
+    expect($result)->stringContainsString("border-top-width: 1px;");
+    expect($result)->stringContainsString("border-top-color: black;");
+    expect($result)->stringContainsString("width: 100%");
   }
 
   public function testItRendersClassName() {
     $block = $this->block;
     $block['params']['class_name'] = 'abc';
     $result = $this->divider->render($block);
-    expect($result)->contains("class='mailpoet_spacer abc");
+    expect($result)->stringContainsString("class='mailpoet_spacer abc");
   }
 
   public function testItRendersSpacer() {
@@ -60,12 +60,12 @@ class DividerTest extends \MailPoetUnitTest {
 
     $result = $this->divider->render($block);
 
-    expect($result)->contains('height: 12px;');
-    expect($result)->contains("class='mailpoet_divider");
-    expect($result)->contains("class='mailpoet_spacer mailpoet_has_divider");
-    expect($result)->contains("border-top-style: dotted;");
-    expect($result)->contains("border-top-width: 10px;");
-    expect($result)->contains("border-top-color: red;");
-    expect($result)->contains("width: 50%");
+    expect($result)->stringContainsString('height: 12px;');
+    expect($result)->stringContainsString("class='mailpoet_divider");
+    expect($result)->stringContainsString("class='mailpoet_spacer mailpoet_has_divider");
+    expect($result)->stringContainsString("border-top-style: dotted;");
+    expect($result)->stringContainsString("border-top-width: 10px;");
+    expect($result)->stringContainsString("border-top-color: red;");
+    expect($result)->stringContainsString("width: 50%");
   }
 }

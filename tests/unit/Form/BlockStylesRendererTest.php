@@ -40,13 +40,13 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'fontSize' => 13,
     ];
     $result = $this->renderer->renderForTextInput($styles, $settings);
-    expect($result)->contains('border-radius:10px !important;');
-    expect($result)->contains('border-color:#fff;');
-    expect($result)->contains('border-width:10px;');
-    expect($result)->contains('background-color:#dddddd;');
-    expect($result)->contains('padding:40px;');
-    expect($result)->contains('font-size:13px;');
-    expect($result)->notContains('font-weight:bold;');
+    expect($result)->stringContainsString('border-radius:10px !important;');
+    expect($result)->stringContainsString('border-color:#fff;');
+    expect($result)->stringContainsString('border-width:10px;');
+    expect($result)->stringContainsString('background-color:#dddddd;');
+    expect($result)->stringContainsString('padding:40px;');
+    expect($result)->stringContainsString('font-size:13px;');
+    expect($result)->stringNotContainsString('font-weight:bold;');
   }
 
   public function testItShouldRenderSingleButtonStyles() {
@@ -73,14 +73,14 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'fontSize' => 13,
     ];
     $result = $this->renderer->renderForButton($styles, $settings);
-    expect($result)->contains('border-radius:10px !important;');
-    expect($result)->contains('border-color:#fff;');
-    expect($result)->contains('border-width:10px;');
-    expect($result)->contains('background-color:#dddddd;');
-    expect($result)->contains('color:#eeeeee;');
-    expect($result)->contains('font-size:8px;');
-    expect($result)->contains('font-weight:bold;');
-    expect($result)->contains('padding:40px;');
+    expect($result)->stringContainsString('border-radius:10px !important;');
+    expect($result)->stringContainsString('border-color:#fff;');
+    expect($result)->stringContainsString('border-width:10px;');
+    expect($result)->stringContainsString('background-color:#dddddd;');
+    expect($result)->stringContainsString('color:#eeeeee;');
+    expect($result)->stringContainsString('font-size:8px;');
+    expect($result)->stringContainsString('font-weight:bold;');
+    expect($result)->stringContainsString('padding:40px;');
   }
 
   public function testItShouldRenderButtonGradient() {
@@ -92,7 +92,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'fontSize' => 13,
     ];
     $result = $this->renderer->renderForButton($styles, $settings);
-    expect($result)->contains('background: linear-gradient(#eee, #ddd);');
+    expect($result)->stringContainsString('background: linear-gradient(#eee, #ddd);');
   }
 
   public function testItShouldRenderSegmentInputStyles() {
@@ -116,8 +116,8 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'font_family' => 'font1',
     ];
     $result = $this->renderer->renderForButton($styles, $settings);
-    expect($result)->contains("font-family:'font1'");
+    expect($result)->stringContainsString("font-family:'font1'");
     $result = $this->renderer->renderForButton(['font_family' => 'font2'], $settings);
-    expect($result)->contains("font-family:'font2'");
+    expect($result)->stringContainsString("font-family:'font2'");
   }
 }
