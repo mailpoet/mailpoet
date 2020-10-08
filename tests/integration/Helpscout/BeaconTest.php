@@ -92,8 +92,13 @@ class BeaconTest extends \MailPoetTest {
 
   public function testItReturnsCurrentThemeNameAndVersion() {
     $currentTheme = wp_get_theme();
-    expect($this->beaconData['Current Theme'])->stringContainsString($currentTheme->get('Name'));
-    expect($this->beaconData['Current Theme'])->stringContainsString($currentTheme->get('Version'));
+    $name = $currentTheme->get('Name');
+    $version = $currentTheme->get('Version');
+    assert(is_string($name));
+    assert(is_string($version));
+    expect($version)->string();
+    expect($this->beaconData['Current Theme'])->stringContainsString($name);
+    expect($this->beaconData['Current Theme'])->stringContainsString($version);
   }
 
   public function testItReturnsActivePlugins() {
