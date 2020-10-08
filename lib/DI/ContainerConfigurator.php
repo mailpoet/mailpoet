@@ -153,7 +153,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\Scheduler::class);
     $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\StatsNotificationsRepository::class);
-    $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository::class);
+    $container->autowire(\MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository::class)->setPublic(true);
     // Cron workers
     $container->autowire(\MailPoet\Cron\Workers\Scheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\SendingQueue\SendingQueue::class)->setPublic(true);
@@ -175,7 +175,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\CustomFields\ApiDataSanitizer::class);
     $container->autowire(\MailPoet\CustomFields\CustomFieldsRepository::class);
     // Features
-    $container->autowire(\MailPoet\Features\FeaturesController::class);
+    $container->autowire(\MailPoet\Features\FeaturesController::class)->setPublic(true);
     $container->autowire(\MailPoet\Features\FeatureFlagsController::class)->setPublic(true);
     $container->autowire(\MailPoet\Features\FeatureFlagsRepository::class)->setPublic(true);
     // Form
@@ -232,7 +232,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Statistics\Track\WooCommercePurchases::class);
     $container->autowire(\MailPoet\Statistics\Track\Unsubscribes::class)->setPublic(true);
     $container->autowire(\MailPoet\Statistics\StatisticsUnsubscribesRepository::class);
-    $container->autowire(\MailPoet\Statistics\StatisticsWooCommercePurchasesRepository::class);
+    $container->autowire(\MailPoet\Statistics\StatisticsWooCommercePurchasesRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Router\Router::class)
       ->setArgument('$container', new Reference(ContainerWrapper::class));
     // Mailer
@@ -310,7 +310,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\Renderer\Preprocessor::class);
     $container->autowire(\MailPoet\Newsletter\Renderer\Renderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Segment\NewsletterSegmentRepository::class);
-    $container->autowire(\MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository::class);
+    $container->autowire(\MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\WelcomeScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\PostNotificationScheduler::class);
     $container->autowire(\MailPoet\Newsletter\Sending\ScheduledTasksRepository::class);
