@@ -205,10 +205,6 @@ class Pages {
   public function setPageTitle($pageTitle = '') {
     global $post;
 
-    if ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === null) {
-      return $this->wp->__("Hmmm... we don't have a record of you.", 'mailpoet');
-    }
-
     if (
       ($post->post_title !== $this->wp->__('MailPoet Page', 'mailpoet')) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       ||
@@ -216,6 +212,8 @@ class Pages {
     ) {
       // when it's a custom page, just return the original page title
       return $pageTitle;
+    } elseif ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === null) {
+      return $this->wp->__("Hmmm... we don't have a record of you.", 'mailpoet');
     } else {
       // when it's our own page, generate page title based on requested action
       switch ($this->action) {
