@@ -182,19 +182,21 @@ class ListingItem extends React.Component {
                 {MailPoet.I18n.t('restore')}
               </a>
             </span>
-            { ' | ' }
-            <span className="delete">
-              <a
-                className="submitdelete"
-                href="#"
-                onClick={(event) => {
-                  event.preventDefault();
-                  this.handleDeleteItem(this.props.item.id);
-                }}
-              >
-                {MailPoet.I18n.t('deletePermanently')}
-              </a>
-            </span>
+            {this.props.isItemDeletable(this.props.item) && ' | '}
+            {this.props.isItemDeletable(this.props.item) && (
+              <span className="delete">
+                <a
+                  className="submitdelete"
+                  href="#"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    this.handleDeleteItem(this.props.item.id);
+                  }}
+                >
+                  {MailPoet.I18n.t('deletePermanently')}
+                </a>
+              </span>
+            )}
           </div>
           <button
             onClick={() => this.handleToggleItem(this.props.item.id)}
@@ -253,10 +255,12 @@ ListingItem.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string,
   }),
+  isItemDeletable: PropTypes.func,
 };
 
 ListingItem.defaultProps = {
   location: undefined,
+  isItemDeletable: () => true,
 };
 
 export default ListingItem;

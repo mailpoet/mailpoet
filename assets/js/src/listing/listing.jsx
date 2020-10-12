@@ -658,6 +658,7 @@ class Listing extends React.Component {
               items={items}
               search={this.state.search}
               location={this.props.location}
+              isItemDeletable={this.props.isItemDeletable}
             />
 
           </table>
@@ -709,6 +710,7 @@ Listing.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
+  isItemDeletable: PropTypes.func,
 };
 /* eslint-enable react/require-default-props */
 
@@ -731,6 +733,7 @@ Listing.defaultProps = {
   renderExtraActions: undefined,
   onBeforeSelectFilter: undefined,
   getListingItemKey: undefined,
+  isItemDeletable: () => true,
 };
 
 export default withRouter(Listing);

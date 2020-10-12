@@ -129,6 +129,7 @@ class ListingItems extends React.Component { // eslint-disable-line react/prefer
               location={this.props.location}
               key={key}
               item={renderItem}
+              isItemDeletable={this.props.isItemDeletable}
             />
           );
         })}
@@ -170,12 +171,14 @@ ListingItems.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string,
   }),
+  isItemDeletable: PropTypes.func,
 };
 
 ListingItems.defaultProps = {
   getListingItemKey: undefined,
   search: undefined,
   location: undefined,
+  isItemDeletable: () => true,
 };
 
 export default ListingItems;
