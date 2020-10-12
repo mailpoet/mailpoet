@@ -181,6 +181,43 @@ div.mailpoet-listing-bulk-actions-container {
     tfoot th.column-primary {
       width: 100% !important;
     }
+
+    tbody th,
+    tbody td {
+      border-bottom: 0;
+      display: block !important;
+      padding: 5px 10px !important;
+
+      &:before {
+        display: none !important;
+      }
+
+      &.mailpoet-hide-on-mobile {
+        display: none !important;
+      }
+    }
+
+    .column-primary {
+      float: left !important;
+      position: static !important;
+    }
+
+    tr {
+      border-bottom: 1px solid $color-tertiary-light;
+      display: block;
+      padding-bottom: 47px;
+      position: relative;
+
+      &:after {
+        clear: both;
+        content: '';
+        display: table;
+      }
+
+      .mailpoet-listing-no-actions-on-mobile & {
+        padding-bottom: 0;
+      }
+    }
   }
 }
 
@@ -222,6 +259,10 @@ a.mailpoet-listing-title {
 
 .mailpoet-listing-actions-holder {
   position: relative;
+
+  @include respond-to(small-screen) {
+    position: static;
+  }
 }
 
 .mailpoet-listing-actions {
@@ -257,6 +298,46 @@ a.mailpoet-listing-title {
 
   tr:hover & {
     display: flex;
+  }
+
+  @include respond-to(small-screen) {
+    bottom: 10px;
+    display: flex;
+    left: 2px;
+    right: 10px;
+    top: auto;
+    width: auto;
+
+    a {
+      align-items: center;
+      background: $color-secondary-light;
+      border-radius: 4px;
+      box-sizing: border-box;
+      color: $color-secondary;
+      display: inline-flex;
+      font-size: $font-size-small;
+      font-weight: bold;
+      justify-content: center;
+      line-height: 20px;
+      max-width: 100%;
+      min-height: 32px;
+      padding: 6px 12px;
+      position: relative;
+      text-align: center;
+      text-decoration: none;
+      vertical-align: top;
+      width: 100%;
+    }
+
+    > span {
+      flex-grow: 1;
+      max-width: 50%;
+
+      &:before {
+        content: '' !important;
+        margin: 0 4px;
+      }
+    }
   }
 }
 

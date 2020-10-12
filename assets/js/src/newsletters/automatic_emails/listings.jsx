@@ -318,7 +318,7 @@ class Listings extends React.Component {
           { this.renderSettings(newsletter) }
         </td>
         { (mailpoetTrackingEnabled === true) ? (
-          <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
+          <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('statistics')}>
             <Statistics
               newsletter={newsletter}
               isSent={newsletter.total_sent > 0 && !!newsletter.statistics}

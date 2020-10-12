@@ -109,7 +109,7 @@ const itemActions = [
 function renderItem(item, actions) {
   return (
     <>
-      <td data-colname={MailPoet.I18n.t('nameColumn')}>
+      <td className="column-primary" data-colname={MailPoet.I18n.t('nameColumn')}>
         <span className="mailpoet-listing-title">
           { item.name }
         </span>

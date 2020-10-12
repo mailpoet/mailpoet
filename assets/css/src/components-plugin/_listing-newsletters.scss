@@ -124,6 +124,20 @@ h1.title.mailpoet-newsletter-listing-heading-empty {
   .mailpoet-button {
     margin-top: $grid-gap-half;
   }
+
+  @include respond-to(small-screen) {
+    clear: none !important;
+    float: right !important;
+    padding-bottom: 3px !important;
+    padding-top: 3px !important;
+  }
+}
+
+.mailpoet-listing-stats-column {
+  @include respond-to(small-screen) {
+    clear: left !important;
+    float: left !important;
+  }
 }
 
 .mailpoet-listing-status {
