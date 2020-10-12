@@ -5,6 +5,7 @@ import iconNo from './icons/no';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   name: string,
+  checked?: boolean,
   onCheck: (isChecked: boolean) => void,
   showError?: boolean,
   automationId?: string,
@@ -13,6 +14,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
 const YesNo = ({
   onCheck,
   showError,
+  checked,
   automationId,
   ...attributes
 }: Props) => (
@@ -29,6 +31,7 @@ const YesNo = ({
     <label>
       <input
         type="radio"
+        checked={checked === true}
         onChange={(e) => onCheck(true)}
         {...attributes}
       />
@@ -39,6 +42,7 @@ const YesNo = ({
     <label>
       <input
         type="radio"
+        checked={checked === false}
         onChange={(e) => onCheck(false)}
         {...attributes}
       />
