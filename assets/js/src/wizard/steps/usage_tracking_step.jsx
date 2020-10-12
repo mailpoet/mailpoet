@@ -8,11 +8,14 @@ import List from 'common/typography/list/list';
 import YesNo from 'common/form/yesno/yesno';
 
 const WelcomeWizardUsageTrackingStep = (props) => {
-  const [trackingEnabled, setTrackingEnabled] = useState(true);
-  const [libs3rdPartyEnabled, setLibs3rdPartyEnabled] = useState(true);
+  const [state, setState] = useState({
+    tracking: true,
+    libs3rdParty: true,
+  });
   function submit() {
     return false;
   }
+
   return (
     <>
       <Heading level={1}>{MailPoet.I18n.t('welcomeWizardUsageTrackingStepTitle')}</Heading>
@@ -38,8 +41,14 @@ const WelcomeWizardUsageTrackingStep = (props) => {
         <div className="mailpoet-wizard-woocommerce-option">
           <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
-              onCheck={setTrackingEnabled}
-              checked={trackingEnabled}
+              onCheck={(value) => {
+                const newState = { tracking: value, libs3rdParty: state.libs3rdParty };
+                if (value) {
+                  newState.libs3rdParty = value;
+                }
+                setState(newState);
+              }}
+              checked={state.tracking}
               name="mailpoet_tracking"
             />
           </div>
@@ -68,8 +77,14 @@ const WelcomeWizardUsageTrackingStep = (props) => {
         <div className="mailpoet-wizard-woocommerce-option">
           <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
-              onCheck={setLibs3rdPartyEnabled}
-              checked={libs3rdPartyEnabled}
+              onCheck={(value) => {
+                const newState = { libs3rdParty: value, tracking: state.tracking };
+                if (!value) {
+                  newState.tracking = value;
+                }
+                setState(newState);
+              }}
+              checked={state.libs3rdParty}
               name="mailpoet_libs_3rdParty"
             />
           </div>
