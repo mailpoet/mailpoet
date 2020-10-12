@@ -72,7 +72,6 @@ class WP {
 
     if ($subscriber !== false) {
       $data['id'] = $subscriber->id();
-      $data['deleted_at'] = null; // remove the user from the trash
       unset($data['status']); // don't override status for existing users
       unset($data['source']); // don't override status for existing users
     }
@@ -110,7 +109,6 @@ class WP {
     $updatedUsersEmails = self::updateSubscribersEmails();
     $insertedUsersEmails = self::insertSubscribers();
     self::removeUpdatedSubscribersWithInvalidEmail(array_merge($updatedUsersEmails, $insertedUsersEmails));
-    self::removeFromTrash();
     self::updateFirstNames();
     self::updateLastNames();
     self::updateFirstNameIfMissing();
@@ -228,15 +226,6 @@ class WP {
       SELECT mps.id, "%s", CURRENT_TIMESTAMP() FROM %s mps
         WHERE mps.wp_user_id > 0
     ', $wpMailpoetSubscriberSegmentTable, $wpSegment->id, $subscribersTable));
-  }
-
-  private static function removeFromTrash() {
-    $subscribersTable = Subscriber::$_table;
-    Subscriber::rawExecute(sprintf('
-      UPDATE %1$s
-      SET %1$s.deleted_at = NULL
-        WHERE %1$s.wp_user_id IS NOT NULL
-    ', $subscribersTable));
   }
 
   private static function removeOrphanedSubscribers() {

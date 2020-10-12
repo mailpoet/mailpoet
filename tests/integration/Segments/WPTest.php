@@ -227,7 +227,7 @@ class WPTest extends \MailPoetTest {
     expect($subscribers->count())->equals(3);
   }
 
-  public function testItRemovesUsersFromTrash() {
+  public function testItDoesntRemoveUsersFromTrash() {
     $id = $this->insertUser();
     WP::synchronizeUsers();
     $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
@@ -235,7 +235,7 @@ class WPTest extends \MailPoetTest {
     $subscriber->save();
     WP::synchronizeUsers();
     $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
-    expect($subscriber->deletedAt)->null();
+    expect($subscriber->deletedAt)->notNull();
   }
 
   public function testItSynchronizesDeletedWPUsersUsingHooks() {
