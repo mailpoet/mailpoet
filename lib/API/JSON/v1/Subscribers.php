@@ -460,8 +460,8 @@ class Subscribers extends APIEndpoint {
   public function delete($data = []) {
     $subscriber = $this->getSubscriber($data);
     if ($subscriber instanceof SubscriberEntity) {
-      $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
-      return $this->successResponse(null, ['count' => 1]);
+      $count = $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
+      return $this->successResponse(null, ['count' => $count]);
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet'),
