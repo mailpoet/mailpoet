@@ -284,10 +284,15 @@ const itemActions = [
   {
     name: 'trash',
     display: function display(subscriber) {
-      return Number(subscriber.wp_user_id) === 0 && Number(subscriber.is_woocommerce_user) === 0;
+      return Number(subscriber.is_woocommerce_user) === 0;
     },
   },
 ];
+
+const isItemDeletable = (subscriber) => {
+  const isDeletable = Number(subscriber.wp_user_id) === 0;
+  return isDeletable;
+};
 
 const getSegmentFromId = (segmentId) => {
   let result = false;
@@ -455,6 +460,7 @@ const SubscriberList = ({ match }) => {
         messages={messages}
         sort_by="created_at"
         sort_order="desc"
+        isItemDeletable={isItemDeletable}
       />
     </div>
   );
