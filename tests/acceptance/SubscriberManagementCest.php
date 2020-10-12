@@ -65,7 +65,7 @@ class SubscriberManagementCest {
     $i->wantTo('Add a user to global subscribers list');
     $i->login();
     $i->amOnMailPoetPage ('Subscribers');
-    $i->click(['xpath' => '//*[@id="subscribers_container"]/div/h1/a[1]']);
+    $i->click('[data-automation-id="add-new-subscribers-button"]');
     $i->fillField(['name' => 'email'], 'newglobaluser99@fakemail.fake');
     $i->fillField(['name' => 'first_name'], 'New');
     $i->fillField(['name' => 'last_name'], 'GlobalUser');

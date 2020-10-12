@@ -28,6 +28,6 @@ class SaveNotificationAsDraftCest {
     $i->click($saveAsDraftButton);
     $i->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
     $i->waitForText('Draft Test Post Notification');
-    $i->waitForText('Not Active');
+    $i->dontSeeCheckboxIsChecked('.mailpoet-form-toggle input[type="checkbox"]');
   }
 }
