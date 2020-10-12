@@ -42,6 +42,7 @@ export default function normalizeSettings(data: any): Settings {
     send_transactional_emails: disabledRadio,
     deactivate_subscriber_after_inactive_days: asEnum(['', '90', '180', '365'], '180'),
     analytics: asObject({ enabled: disabledRadio }),
+    '3rd_party_libs': asObject({ enabled: disabledRadio }),
     captcha: asObject({
       type: asEnum(['', 'built-in', 'recaptcha'], 'built-in'),
       recaptcha_site_token: text,

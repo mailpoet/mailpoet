@@ -47,6 +47,9 @@ export type Settings = {
   tracking: {
     enabled: '' | '1'
   }
+  '3rd_party_libs': {
+    enabled: '' | '1'
+  }
   send_transactional_emails: '' | '1'
   deactivate_subscriber_after_inactive_days: '' | '90' | '180' | '365'
   analytics: {

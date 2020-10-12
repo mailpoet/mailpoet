@@ -6,6 +6,7 @@ import { Label, Inputs } from 'settings/components';
 
 export default function ShareData() {
   const [enabled, setEnabled] = useSetting('analytics', 'enabled');
+  const [, set3rdPartyLibsEnabled] = useSetting('3rd_party_libs', 'enabled');
 
   return (
     <>
@@ -33,7 +34,10 @@ export default function ShareData() {
           id="share-data-enabled"
           value="1"
           checked={enabled === '1'}
-          onChange={onChange(setEnabled)}
+          onChange={onChange(() => {
+            setEnabled('1');
+            set3rdPartyLibsEnabled('1');
+          })}
           data-automation-id="analytics-yes"
         />
         <label htmlFor="share-data-enabled">
