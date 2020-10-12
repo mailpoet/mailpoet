@@ -97,10 +97,11 @@ const WelcomeWizardUsageTrackingStep = (props) => {
         <div className="mailpoet-gap" />
         <Button
           isFullWidth
-          onClick={props.allow_action}
+          type="submit"
           withSpinner={props.loading}
+          disabled={props.loading}
         >
-          {props.allow_text}
+          {MailPoet.I18n.t('continue')}
         </Button>
       </form>
     </>
@@ -108,9 +109,6 @@ const WelcomeWizardUsageTrackingStep = (props) => {
 };
 
 WelcomeWizardUsageTrackingStep.propTypes = {
-  allow_action: PropTypes.func.isRequired,
-  allow_text: PropTypes.string.isRequired,
-  skip_action: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
 };
 
