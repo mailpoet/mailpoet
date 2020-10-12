@@ -110,6 +110,7 @@ const newsletterActions = addStatsCTAAction([
   },
   {
     name: 'trash',
+    className: 'mailpoet-hide-on-mobile',
   },
 ]);
 

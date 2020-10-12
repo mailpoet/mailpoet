@@ -133,11 +133,13 @@ let newsletterActions = [
   },
   {
     name: 'edit',
+    className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('edit'),
     onClick: confirmEdit,
   },
   {
     name: 'duplicate',
+    className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('duplicate'),
     onClick: function onClick(newsletter, refresh) {
       return MailPoet.Ajax.post({
@@ -166,6 +168,7 @@ let newsletterActions = [
   },
   {
     name: 'trash',
+    className: 'mailpoet-hide-on-mobile',
   },
 ];
 newsletterActions = addStatsCTAAction(newsletterActions);

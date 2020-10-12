@@ -122,6 +122,7 @@ const newsletterActions = [
   },
   {
     name: 'edit',
+    className: 'mailpoet-hide-on-mobile',
     link: function link(newsletter) {
       return (
         <a href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}>
@@ -132,6 +133,7 @@ const newsletterActions = [
   },
   {
     name: 'duplicate',
+    className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('duplicate'),
     onClick: function onClick(newsletter, refresh) {
       return MailPoet.Ajax.post({
@@ -160,6 +162,7 @@ const newsletterActions = [
   },
   {
     name: 'trash',
+    className: 'mailpoet-hide-on-mobile',
   },
 ];
 

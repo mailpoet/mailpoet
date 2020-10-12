@@ -43,6 +43,12 @@ span.mailpoet-gap-half {
   touch-action: none;
 }
 
+.mailpoet-hide-on-mobile {
+  @include respond-to(small-screen) {
+    display: none !important;
+  }
+}
+
 // Media query helpers
 .small-screen {
   display: none;

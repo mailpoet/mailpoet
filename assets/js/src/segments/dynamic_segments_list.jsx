@@ -85,6 +85,7 @@ const messages = {
 const itemActions = [
   {
     name: 'edit',
+    className: 'mailpoet-hide-on-mobile',
     link: (item) => (
       <Link to={`/edit-segment/${item.id}`}>
         {MailPoet.I18n.t('edit')}
@@ -101,6 +102,7 @@ const itemActions = [
   },
   {
     name: 'trash',
+    className: 'mailpoet-hide-on-mobile',
   },
 ];
 

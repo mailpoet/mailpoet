@@ -266,6 +266,7 @@ const itemActions = [
   },
   {
     name: 'sendConfirmationEmail',
+    className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('resendConfirmationEmail'),
     display: function display(subscriber) {
       return subscriber.status === 'unconfirmed' && subscriber.count_confirmations < window.mailpoet_max_confirmation_emails;
@@ -285,6 +286,7 @@ const itemActions = [
   },
   {
     name: 'trash',
+    className: 'mailpoet-hide-on-mobile',
   },
 ];
 

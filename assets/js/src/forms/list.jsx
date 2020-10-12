@@ -115,6 +115,7 @@ function getFormPlacement(settings) {
 const itemActions = [
   {
     name: 'edit',
+    className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('edit'),
     link: function link(item) {
       return (
@@ -124,6 +125,7 @@ const itemActions = [
   },
   {
     name: 'duplicate',
+    className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('duplicate'),
     onClick: function onClick(item, refresh) {
       return MailPoet.Ajax.post({
@@ -151,6 +153,7 @@ const itemActions = [
   },
   {
     name: 'trash',
+    className: 'mailpoet-hide-on-mobile',
   },
 ];
 
