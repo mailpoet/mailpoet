@@ -61,7 +61,7 @@ const WizardWooCommerceStep = (props) => {
                 )
               )}
             </p>
-            <div className="mailpoet-wizard-gdpr">
+            <div className="mailpoet-wizard-note">
               <span>GDPR</span>
               {MailPoet.I18n.t('wooCommerceSetupImportGDPRInfo')}
             </div>
@@ -95,7 +95,7 @@ const WizardWooCommerceStep = (props) => {
                 )
               )}
             </p>
-            <div className="mailpoet-wizard-gdpr">
+            <div className="mailpoet-wizard-note">
               <span>GDPR</span>
               {MailPoet.I18n.t('wooCommerceSetupTrackingGDPRInfo')}
             </div>
