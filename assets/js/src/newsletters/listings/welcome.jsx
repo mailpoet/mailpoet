@@ -339,11 +339,11 @@ class NewsletterListWelcome extends React.Component {
           </a>
           { actions }
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('settings')}>
+        <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('settings')}>
           { this.renderSettings(newsletter) }
         </td>
         { (mailpoetTrackingEnabled === true) ? (
-          <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
+          <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('statistics')}>
             <Statistics
               newsletter={newsletter}
               isSent={newsletter.total_sent > 0 && !!newsletter.statistics}
@@ -353,7 +353,7 @@ class NewsletterListWelcome extends React.Component {
         <td className="column" data-colname={MailPoet.I18n.t('status')}>
           { this.renderStatus(newsletter) }
         </td>
-        <td className="column-date" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
+        <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
           { MailPoet.Date.short(newsletter.updated_at) }
           <br />
           { MailPoet.Date.time(newsletter.updated_at) }

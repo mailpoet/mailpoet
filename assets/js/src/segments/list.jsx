@@ -272,22 +272,22 @@ class SegmentList extends React.Component {
         <td data-colname={MailPoet.I18n.t('description')}>
           <abbr>{ segment.description }</abbr>
         </td>
-        <td data-colname={MailPoet.I18n.t('subscribed')}>
+        <td className="mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribed')}>
           <abbr>{ subscribed.toLocaleString() }</abbr>
         </td>
-        <td data-colname={MailPoet.I18n.t('unconfirmed')}>
+        <td className="mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('unconfirmed')}>
           <abbr>{ unconfirmed.toLocaleString() }</abbr>
         </td>
-        <td data-colname={MailPoet.I18n.t('unsubscribed')}>
+        <td className="mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('unsubscribed')}>
           <abbr>{ unsubscribed.toLocaleString() }</abbr>
         </td>
-        <td data-colname={MailPoet.I18n.t('inactive')}>
+        <td className="mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('inactive')}>
           <abbr>{ inactive.toLocaleString() }</abbr>
         </td>
-        <td data-colname={MailPoet.I18n.t('bounced')}>
+        <td className="mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('bounced')}>
           <abbr>{ bounced.toLocaleString() }</abbr>
         </td>
-        <td className="column-date" data-colname={MailPoet.I18n.t('createdOn')}>
+        <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('createdOn')}>
           { MailPoet.Date.short(segment.created_at) }
           <br />
           { MailPoet.Date.time(segment.created_at) }

@@ -45,7 +45,7 @@ class ListingItem extends React.Component {
 
     if (this.props.is_selectable === true) {
       checkbox = (
-        <th className="mailpoet-listing-check-column" scope="row">
+        <th className="mailpoet-listing-check-column mailpoet-hide-on-mobile" scope="row">
           <label className="screen-reader-text" htmlFor={`listing-row-checkbox-${this.props.item.id}`}>
             {
               `Select ${this.props.item[this.props.columns[0].name]}`
@@ -144,7 +144,7 @@ class ListingItem extends React.Component {
         });
     } else {
       itemActions = (
-        <span className="edit">
+        <span className="edit mailpoet-hide-on-mobile">
           <Link to={{
             pathname: `/edit/${this.props.item.id}`,
             state: {
@@ -193,7 +193,7 @@ class ListingItem extends React.Component {
           </div>
           <button
             onClick={() => this.handleToggleItem(this.props.item.id)}
-            className="toggle-row"
+            className="toggle-row mailpoet-hide-on-mobile"
             type="button"
           >
             <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
@@ -208,7 +208,7 @@ class ListingItem extends React.Component {
           </div>
           <button
             onClick={() => this.handleToggleItem(this.props.item.id)}
-            className="toggle-row"
+            className="toggle-row mailpoet-hide-on-mobile"
             type="button"
           >
             <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>

@@ -138,7 +138,7 @@ const renderItem = (newsletter, actions, meta) => {
       <td className="column" data-colname={MailPoet.I18n.t('status')}>
         <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />
       </td>
-      <td className="column" data-colname={MailPoet.I18n.t('lists')}>
+      <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('lists')}>
         <Tags segments={newsletter.segments} dimension="large" />
       </td>
       { (mailpoetTrackingEnabled === true) ? (
@@ -146,7 +146,7 @@ const renderItem = (newsletter, actions, meta) => {
           <Statistics newsletter={newsletter} currentTime={meta.current_time} />
         </td>
       ) : null }
-      <td className="column-date" data-colname={MailPoet.I18n.t('sentOn')}>
+      <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('sentOn')}>
         { (newsletter.sent_at) ? (
           <>
             { MailPoet.Date.short(newsletter.updated_at) }
