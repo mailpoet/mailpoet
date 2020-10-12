@@ -129,10 +129,6 @@ const WelcomeWizardStepsController = (props) => {
               illustrationUrl={window.wizard_tracking_illustration_url}
             >
               <WelcomeWizardUsageTrackingStep
-                skip_action={() => redirect(step)}
-                allow_action={activateTracking}
-                allow_text={stepsCount > 3
-                  ? MailPoet.I18n.t('allowAndContinue') : MailPoet.I18n.t('allowAndFinish')}
                 loading={loading}
               />
             </WelcomeWizardStepLayout>
