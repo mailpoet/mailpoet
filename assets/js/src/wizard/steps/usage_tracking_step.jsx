@@ -7,12 +7,15 @@ import Heading from 'common/typography/heading/heading';
 import List from 'common/typography/list/list';
 import YesNo from 'common/form/yesno/yesno';
 
-const WelcomeWizardUsageTrackingStep = (props) => {
+const WelcomeWizardUsageTrackingStep = ({ loading, submitForm }) => {
   const [state, setState] = useState({
     tracking: true,
     libs3rdParty: true,
   });
-  function submit() {
+  function submit(event) {
+    event.preventDefault();
+
+    submitForm(state.tracking, state.libs3rdParty);
     return false;
   }
 
@@ -112,8 +115,8 @@ const WelcomeWizardUsageTrackingStep = (props) => {
         <Button
           isFullWidth
           type="submit"
-          withSpinner={props.loading}
-          disabled={props.loading}
+          withSpinner={loading}
+          disabled={loading}
         >
           {MailPoet.I18n.t('continue')}
         </Button>
@@ -124,6 +127,7 @@ const WelcomeWizardUsageTrackingStep = (props) => {
 
 WelcomeWizardUsageTrackingStep.propTypes = {
   loading: PropTypes.bool.isRequired,
+  submitForm: PropTypes.func.isRequired,
 };
 
 export default WelcomeWizardUsageTrackingStep;
