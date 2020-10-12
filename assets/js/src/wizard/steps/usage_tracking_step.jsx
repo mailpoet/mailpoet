@@ -10,6 +10,7 @@ import YesNo from '../../common/form/yesno/yesno';
 
 const WelcomeWizardUsageTrackingStep = (props) => {
   const [trackingEnabled, setTrackingEnabled] = useState(true);
+  const [libs3rdPartyEnabled, setLibs3rdPartyEnabled] = useState(true);
   function submit() {
     return false;
   }
@@ -38,10 +39,9 @@ const WelcomeWizardUsageTrackingStep = (props) => {
         <div className="mailpoet-wizard-woocommerce-option">
           <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
-              onCheck={(value) => setTrackingEnabled(value)}
+              onCheck={setTrackingEnabled}
               checked={trackingEnabled}
               name="mailpoet_tracking"
-              automationId="tracking"
             />
           </div>
           <div>
@@ -49,7 +49,7 @@ const WelcomeWizardUsageTrackingStep = (props) => {
               {MailPoet.I18n.t('welcomeWizardUsageTrackingStepTrackingLabel')}
               {' '}
               <a
-                href=" https://kb.mailpoet.com/article/130-sharing-your-data-with-us"
+                href="https://kb.mailpoet.com/article/130-sharing-your-data-with-us"
                 data-beacon-article="57ce0aaac6979108399a0454"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -60,6 +60,36 @@ const WelcomeWizardUsageTrackingStep = (props) => {
             <div className="mailpoet-wizard-note">
               <span>{MailPoet.I18n.t('welcomeWizardUsageTrackingStepTrackingLabelNoteNote')}</span>
               {MailPoet.I18n.t('welcomeWizardUsageTrackingStepTrackingLabelNote')}
+            </div>
+          </div>
+        </div>
+
+        <div className="mailpoet-gap" />
+
+        <div className="mailpoet-wizard-woocommerce-option">
+          <div className="mailpoet-wizard-woocommerce-toggle">
+            <YesNo
+              onCheck={setLibs3rdPartyEnabled}
+              checked={libs3rdPartyEnabled}
+              name="mailpoet_libs_3rdParty"
+            />
+          </div>
+          <div>
+            <p>
+              {MailPoet.I18n.t('welcomeWizardUsageTrackingStepLibs3rdPartyLabel')}
+              {' '}
+              <a
+                href="https://kb.mailpoet.com/article/338-what-3rd-party-libraries-we-use"
+                data-beacon-article="5f7c7dd94cedfd0017dcece8"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {MailPoet.I18n.t('welcomeWizardUsageTrackingStepLibs3rdPartyLink')}
+              </a>
+            </p>
+            <div className="mailpoet-wizard-note">
+              <span>{MailPoet.I18n.t('welcomeWizardUsageTrackingStepLibs3rdPartyLabelNoteNote')}</span>
+              {MailPoet.I18n.t('welcomeWizardUsageTrackingStepLibs3rdPartyLabelNote')}
             </div>
           </div>
         </div>
