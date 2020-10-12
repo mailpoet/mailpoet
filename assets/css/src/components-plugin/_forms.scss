@@ -70,6 +70,10 @@ progress::-moz-progress-bar {
   justify-content: space-between;
   margin: $grid-gap auto;
   max-width: 976px;
+
+  @include respond-to(small-screen) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .mailpoet-form-actions {
@@ -81,6 +85,10 @@ progress::-moz-progress-bar {
     color: $color-text;
     font-size: $font-size;
     margin: $grid-gap 0;
+  }
+
+  @include respond-to(small-screen) {
+    grid-column: 1;
   }
 }
 

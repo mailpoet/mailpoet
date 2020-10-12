@@ -153,10 +153,10 @@ const Statistics = ({ newsletter, isSent, currentTime }) => {
   }
 
   return (
-    <div>
+    <>
       {content}
       {afterContent}
-    </div>
+    </>
   );
 };
 

@@ -11,11 +11,11 @@ const ListHeading = ({ history }) => (
     <TopBarWithBeamer onLogoClick={() => history.push('/')}>
       <Link className="mailpoet-button" to="/new">
         {plusIcon}
-        {MailPoet.I18n.t('new')}
+        <span>{MailPoet.I18n.t('new')}</span>
       </Link>
       <Link className="mailpoet-button" to="/new-segment" data-automation-id="new-segment">
         {plusIcon}
-        {MailPoet.I18n.t('newSegment')}
+        <span>{MailPoet.I18n.t('newSegment')}</span>
       </Link>
     </TopBarWithBeamer>
     <h1 className="mailpoet-newsletter-listing-heading-empty title">{' '}</h1>

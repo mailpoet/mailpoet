@@ -62,6 +62,23 @@ $beamer-dot-size: 8px;
 
 .mailpoet-top-bar-children {
   margin-right: $grid-gap;
+
+  @include respond-to(small-screen) {
+    margin-right: $grid-gap-half;
+
+    .mailpoet-button {
+      padding-left: 10px;
+      padding-right: 10px;
+
+      svg {
+        display: none;
+      }
+
+      + .mailpoet-button {
+        margin-left: $grid-gap-half !important;
+      }
+    }
+  }
 }
 
 .mailpoet-top-bar-beamer {

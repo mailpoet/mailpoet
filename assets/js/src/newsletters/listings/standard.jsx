@@ -203,14 +203,14 @@ class NewsletterListStandard extends React.Component {
           </a>
           { actions }
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('status')}>
+        <td className="column mailpoet-listing-status-column" data-colname={MailPoet.I18n.t('status')}>
           <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />
         </td>
         <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('lists')}>
           <Tags segments={newsletter.segments} dimension="large" />
         </td>
         { (mailpoetTrackingEnabled === true) ? (
-          <td className="column" data-colname={MailPoet.I18n.t('statistics')}>
+          <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('statistics')}>
             <Statistics newsletter={newsletter} currentTime={meta.current_time} />
           </td>
         ) : null }

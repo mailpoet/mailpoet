@@ -248,7 +248,7 @@ class FormList extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="mailpoet-listing-no-actions-on-mobile">
         <FormsHeading />
 
         <Listing

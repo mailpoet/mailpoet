@@ -95,10 +95,10 @@ const QueueStatus = ({ newsletter, mailerLog }) => {
   );
 
   return (
-    <div className="mailpoet-listing-status-column">
+    <>
       {isNewsletterSending && renderSentNewsletter}
       {!isNewsletterSending && renderDraftOrScheduledNewsletter}
-    </div>
+    </>
   );
 };
 QueueStatus.propTypes = {
