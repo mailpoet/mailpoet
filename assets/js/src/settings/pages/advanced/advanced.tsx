@@ -6,6 +6,7 @@ import Tracking from './tracking';
 import Transactional from './transactional';
 import InactiveSubscribers from './inactive_subscribers';
 import ShareData from './share_data';
+import { Libs3rdParty } from './libs_3rd_party';
 import Captcha from './captcha';
 import Reinstall from './reinstall';
 import Logging from './logging';
@@ -21,6 +22,7 @@ export default function Advanced() {
       <Transactional />
       <InactiveSubscribers />
       <ShareData />
+      <Libs3rdParty />
       <Captcha />
       <Reinstall />
       <Logging />
