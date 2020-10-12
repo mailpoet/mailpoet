@@ -76,7 +76,10 @@ class ListingItem extends React.Component {
 
           if (action.name === 'trash') {
             customAction = (
-              <span key={`action-${action.name}`} className="trash">
+              <span
+                key={`action-${action.name}`}
+                className={classNames(action.name, action.className)}
+              >
                 <a
                   type="button"
                   href="#"
@@ -94,7 +97,7 @@ class ListingItem extends React.Component {
               <span
                 onClick={this.props.onRefreshItems}
                 key={`action-${action.name}`}
-                className={action.name}
+                className={classNames(action.name, action.className)}
                 role="button"
                 tabIndex={index}
                 onKeyDown={(event) => {
@@ -112,7 +115,7 @@ class ListingItem extends React.Component {
             customAction = (
               <span
                 key={`action-${action.name}`}
-                className={action.name}
+                className={classNames(action.name, action.className)}
               >
                 { action.link(this.props.item, this.props.location) }
               </span>
@@ -121,7 +124,7 @@ class ListingItem extends React.Component {
             customAction = (
               <span
                 key={`action-${action.name}`}
-                className={action.name}
+                className={classNames(action.name, action.className)}
               >
                 <a
                   href="#"

@@ -108,6 +108,7 @@ const bulkActions = [
 const itemActions = [
   {
     name: 'edit',
+    className: 'mailpoet-hide-on-mobile',
     link: function link(item) {
       return (
         <Link to={`/edit/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>
@@ -119,6 +120,7 @@ const itemActions = [
   },
   {
     name: 'duplicate_segment',
+    className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('duplicate'),
     onClick: (item, refresh) => MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -144,6 +146,7 @@ const itemActions = [
   },
   {
     name: 'read_more',
+    className: 'mailpoet-hide-on-mobile',
     link: function link() {
       return (
         <a
@@ -203,12 +206,14 @@ const itemActions = [
   },
   {
     name: 'trash',
+    className: 'mailpoet-hide-on-mobile',
     display: function display(segment) {
       return !isSpecialSegment(segment) && segment.automated_emails_subjects.length === 0;
     },
   },
   {
     name: 'delete',
+    className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('moveToTrash'),
     onClick: function onClick(segment) {
       MailPoet.Notice.error(
