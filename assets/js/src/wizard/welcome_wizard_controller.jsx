@@ -53,9 +53,12 @@ const WelcomeWizardStepsController = (props) => {
     });
   }
 
-  function activateTracking() {
-    updateSettings({ analytics: { enabled: true } }).then(() => (
-      redirect(step)));
+  function submitTracking(tracking, libs3rdParty) {
+    setLoading(true);
+    updateSettings({
+      analytics: { enabled: tracking ? '1' : '' },
+      '3rd_party_libs': { enabled: libs3rdParty ? '1' : '' },
+    }).then(() => (redirect(step)));
   }
 
   function updateSender(data) {
@@ -130,6 +133,7 @@ const WelcomeWizardStepsController = (props) => {
             >
               <WelcomeWizardUsageTrackingStep
                 loading={loading}
+                submitForm={submitTracking}
               />
             </WelcomeWizardStepLayout>
           ) : null}
