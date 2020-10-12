@@ -18,7 +18,7 @@ const SubscribersHeading = ({ history, location }) => (
         }}
       >
         {plusIcon}
-        <span>{MailPoet.I18n.t('new')}</span>
+        <span data-automation-id="add-new-subscribers-button">{MailPoet.I18n.t('new')}</span>
       </Link>
       <a
         className="mailpoet-button not-small-screen"
