@@ -385,7 +385,7 @@ const SubscriberList = ({ match }) => {
         <td className="column" data-colname={MailPoet.I18n.t('lists')}>
           <Tags segments={subscribedSegments} dimension="large" />
         </td>
-        <td className="column-date" data-colname={MailPoet.I18n.t('subscribedOn')}>
+        <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribedOn')}>
           { MailPoet.Date.short(subscriber.created_at) }
           <br />
           { MailPoet.Date.time(subscriber.created_at) }

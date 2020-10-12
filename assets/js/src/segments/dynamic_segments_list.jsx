@@ -118,13 +118,13 @@ function renderItem(item, actions) {
       <td data-colname={MailPoet.I18n.t('description')}>
         <abbr>{ item.description }</abbr>
       </td>
-      <td className="column" data-colname={MailPoet.I18n.t('subscribersCountColumn')}>
+      <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribersCountColumn')}>
         { parseInt(item.count_all, 10).toLocaleString() }
       </td>
-      <td className="column" data-colname={MailPoet.I18n.t('subscribed')}>
+      <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribed')}>
         { parseInt(item.count_subscribed, 10).toLocaleString() }
       </td>
-      <td className="column-date" data-colname={MailPoet.I18n.t('updatedAtColumn')}>
+      <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('updatedAtColumn')}>
         { MailPoet.Date.short(item.created_at) }
         <br />
         { MailPoet.Date.time(item.created_at) }

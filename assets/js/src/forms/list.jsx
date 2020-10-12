@@ -216,7 +216,7 @@ class FormList extends React.Component {
     const placement = getFormPlacement(form.settings);
 
     return (
-      <div>
+      <>
         <td className={rowClasses}>
           <a
             className="mailpoet-listing-title"
@@ -237,12 +237,12 @@ class FormList extends React.Component {
         <td className="column" data-colname={MailPoet.I18n.t('status')}>
           { this.renderStatus(form) }
         </td>
-        <td className="column-date" data-colname={MailPoet.I18n.t('updatedAt')}>
+        <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('updatedAt')}>
           { MailPoet.Date.short(form.updated_at) }
           <br />
           { MailPoet.Date.time(form.updated_at) }
         </td>
-      </div>
+      </>
     );
   };
 

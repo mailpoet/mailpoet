@@ -314,7 +314,7 @@ class Listings extends React.Component {
           </a>
           { actions }
         </td>
-        <td className="column" data-colname={MailPoet.I18n.t('settings')}>
+        <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('settings')}>
           { this.renderSettings(newsletter) }
         </td>
         { (mailpoetTrackingEnabled === true) ? (
@@ -328,7 +328,7 @@ class Listings extends React.Component {
         <td className="column" data-colname={MailPoet.I18n.t('status')}>
           { this.renderStatus(newsletter) }
         </td>
-        <td className="column-date" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
+        <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
           { MailPoet.Date.short(newsletter.updated_at) }
           <br />
           { MailPoet.Date.time(newsletter.updated_at) }
