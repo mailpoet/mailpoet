@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
-import ReactStringReplace from 'react-string-replace';
-import Button from '../../common/button/button';
-import Grid from '../../common/grid';
-import Heading from '../../common/typography/heading/heading';
-import List from '../../common/typography/list/list';
-import YesNo from '../../common/form/yesno/yesno';
+import Button from 'common/button/button';
+import Grid from 'common/grid';
+import Heading from 'common/typography/heading/heading';
+import List from 'common/typography/list/list';
+import YesNo from 'common/form/yesno/yesno';
 
 const WelcomeWizardUsageTrackingStep = (props) => {
   const [trackingEnabled, setTrackingEnabled] = useState(true);
