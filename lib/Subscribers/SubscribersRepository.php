@@ -100,7 +100,8 @@ class SubscribersRepository extends Repository {
       return 0;
     }
 
-    $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids) {
+    $count = 0;
+    $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids, &$count) {
       // Delete subscriber segments
       $this->bulkRemoveFromAllSegments($ids);
 
@@ -112,13 +113,14 @@ class SubscribersRepository extends Repository {
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       $queryBuilder = $entityManager->createQueryBuilder();
-      $queryBuilder->delete(SubscriberEntity::class, 's')
+      $count = $queryBuilder->delete(SubscriberEntity::class, 's')
         ->where('s.id IN (:ids)')
+        ->andWhere('s.wpUserId IS NULL')
         ->setParameter('ids', $ids)
         ->getQuery()->execute();
     });
 
-    return count($ids);
+    return $count;
   }
 
   /**
