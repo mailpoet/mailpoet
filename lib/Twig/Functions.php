@@ -154,6 +154,11 @@ class Functions extends AbstractExtension {
         [$this, 'addReferralId'],
         ['is_safe' => ['all']]
       ),
+      new TwigFunction(
+        'is_loading_3rd_party_enabled',
+        [$this, 'libs3rdPartyEnabled'],
+        ['is_safe' => ['all']]
+      ),
     ];
   }
 
@@ -289,5 +294,9 @@ class Functions extends AbstractExtension {
 
   public function addReferralId($url) {
     return $this->referralUrlDecorator->decorate($url);
+  }
+
+  public function libs3rdPartyEnabled(): bool {
+    return $this->settings->get('3rd_party_libs.enabled') === '1';
   }
 }
