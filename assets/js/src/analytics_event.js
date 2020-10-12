@@ -29,7 +29,7 @@ function track(name, data) {
 function exportMixpanel() {
   MailPoet.forceTrackEvent = track;
 
-  if (window.mailpoet_analytics_enabled) {
+  if (window.mailpoet_analytics_enabled && MailPoet.libs3rdPartyEnabled) {
     MailPoet.trackEvent = track;
   } else {
     MailPoet.trackEvent = function emptyFunction() {};

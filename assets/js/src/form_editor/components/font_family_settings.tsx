@@ -64,20 +64,24 @@ const FontFamilySettings = ({
       style: getFontStyle(fontName),
       value: fontName,
     })),
-    {
+  ];
+  if (MailPoet.libs3rdPartyEnabled) {
+    options.push({
       key: MailPoet.I18n.t('formFontsCustom'),
       name: MailPoet.I18n.t('formFontsCustom'),
       selectable: false,
       style: disabledStyle,
-    },
-    ...customFonts.map((fontName) => ({
-      key: fontName,
-      name: fontName,
-      selectable: true,
-      style: getFontStyle(fontName),
-      value: fontName,
-    })),
-  ];
+    });
+    customFonts.forEach((fontName) => {
+      options.push({
+        key: fontName,
+        name: fontName,
+        selectable: true,
+        style: getFontStyle(fontName),
+        value: fontName,
+      });
+    });
+  }
 
   let selectedValue = options.find((item) => item.value === value);
   if (!selectedValue) {
@@ -106,6 +110,9 @@ export const CustomFontsStyleSheetLink = () => {
     (select) => select('mailpoet-form-editor').getAllCustomFonts(),
     []
   );
+  if (!MailPoet.libs3rdPartyEnabled) {
+    return null;
+  }
   const customFontsUrl = customFonts
     .map((fontName) => fontName.replace(' ', '+'))
     .map((fontName) => fontName.concat(':400,400i,700,700i'))

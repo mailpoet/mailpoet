@@ -66,7 +66,7 @@ const useNpsPoll = () => {
       });
     };
 
-    if (window.mailpoet_display_nps_poll) {
+    if (window.mailpoet_display_nps_poll && MailPoet.libs3rdPartyEnabled) {
       getTrackingData().then(({ data }) => callSatismeter(data));
     }
   }, []);
