@@ -1,14 +1,14 @@
+import React, { useState, useEffect, useCallback } from 'react';
 import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
-import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 
 import NewsletterGeneralStats from './newsletter_stats.jsx';
 import NewsletterStatsInfo from './newsletter_info.jsx';
 import PremiumBanner from './premium_banner.jsx';
+import Heading from '../../common/typography/heading/heading';
 
 const hideWPScreenOptions = () => {
   const screenOptions = document.getElementById('screen-meta-links');
@@ -24,51 +24,49 @@ const showWPScreenOptions = () => {
   }
 };
 
-
-class CampaignStatsPage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      item: {},
-      loading: true,
-    };
-  }
-
-  componentDidMount() {
-    const { match } = this.props;
-    // Scroll to top in case we're coming
-    // from the middle of a long newsletter listing
-    window.scrollTo(0, 0);
-    this.loadItem(match.params.id);
-    hideWPScreenOptions();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.match.params.id !== this.props.match.params.id) {
-      this.loadItem(this.props.match.params.id);
+type Props = {
+  match: {
+    params: {
+      id: string
     }
   }
-
-  componentWillUnmount() {
-    showWPScreenOptions();
+  history: {
+    push: (string) => void
   }
+  location: object
+};
 
-  loadItem(id) {
-    const { history } = this.props;
-    this.setState({ loading: true });
+type State = {
+  item?: {
+    id: string,
+    queue: object
+    subject: string
+    clicked_links: object[]
+  }
+  loading: boolean
+}
+
+const CampaignStatsPage = ({ match, history, location }: Props) => {
+  const [state, setState] = useState<State>({
+    item: undefined,
+    loading: true,
+  });
+
+  const loadItem = useCallback((id) => {
+    setState({ loading: true, item: state.item });
     MailPoet.Modal.loading(true);
 
     MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: window.mailpoet_display_detailed_stats ? 'stats' : 'newsletters',
-      action: window.mailpoet_display_detailed_stats ? 'get' : 'getWithStats',
+      api_version: (window as any).mailpoet_api_version,
+      endpoint: (window as any).mailpoet_display_detailed_stats ? 'stats' : 'newsletters',
+      action: (window as any).mailpoet_display_detailed_stats ? 'get' : 'getWithStats',
       data: {
         id,
       },
     }).always(() => {
       MailPoet.Modal.loading(false);
     }).done((response) => {
-      this.setState({
+      setState({
         loading: false,
         item: response.data,
       });
@@ -77,95 +75,79 @@ class CampaignStatsPage extends React.Component {
         response.errors.map((error) => error.message),
         { scroll: true }
       );
-      this.setState({
+      setState({
         loading: false,
-        item: {},
-      }, () => {
-        history.push('/');
       });
+      history.push('/');
     });
-  }
+  }, [history, state.item]);
 
-  render() {
-    const { item, loading } = this.state;
-    const newsletter = item;
-    const { match, location, history } = this.props;
-
-    if (loading || !newsletter.queue) {
-      return (
-        <div>
-          <h1 className="title">
-            {MailPoet.I18n.t('statsTitle')}
-            <Link
-              className="page-title-action"
-              to="/"
-            >
-              {MailPoet.I18n.t('backToList')}
-            </Link>
-          </h1>
-        </div>
-      );
+  useEffect(() => {
+    // Scroll to top in case we're coming
+    // from the middle of a long newsletter listing
+    (window as any).scrollTo(0, 0);
+    if (state.item?.id !== match.params.id) {
+      loadItem(match.params.id);
     }
+    hideWPScreenOptions();
+    return () => {
+      showWPScreenOptions();
+    };
+  }, [match.params.id, loadItem]);
 
+  const { item, loading } = state;
+  const newsletter = item;
+
+  if (loading) return null;
+
+  if (newsletter?.subject && !newsletter?.queue) {
     return (
-      <>
-        <TopBarWithBeamer
-          onLogoClick={() => history.push('/')}
-        />
-        <div>
-          <h1 className="title">
-            {`${MailPoet.I18n.t('statsTitle')}: ${newsletter.subject}`}
-            <Link
-              className="page-title-action"
-              to="/"
-            >
-              {MailPoet.I18n.t('backToList')}
-            </Link>
-          </h1>
-
-          <InvalidMssKeyNotice
-            mssKeyInvalid={window.mailpoet_mss_key_invalid}
-            subscribersCount={window.mailpoet_subscribers_count}
-          />
-
-          <div className="mailpoet_stat_triple-spaced">
-            <div className="mailpoet_stat_info">
-              <NewsletterStatsInfo newsletter={newsletter} />
-            </div>
-            <div className="mailpoet_stat_general">
-              <NewsletterGeneralStats newsletter={newsletter} />
-            </div>
-            <div style={{ clear: 'both' }} />
-          </div>
-
-          <h2>{MailPoet.I18n.t('clickedLinks')}</h2>
-
-          <div className="mailpoet_stat_triple-spaced">
-            {Hooks.applyFilters('mailpoet_newsletters_clicked_links_table', <PremiumBanner />, newsletter.clicked_links)}
-          </div>
-
-          <div className="mailpoet_stat_triple-spaced">
-            {Hooks.applyFilters('mailpoet_newsletters_purchased_products', null, newsletter)}
-          </div>
-
-          <h2>{MailPoet.I18n.t('subscriberEngagement')}</h2>
-          <div className="mailpoet-stat-subscriber-engagement">
-            {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
-          </div>
-        </div>
-      </>
+      <div>
+        <Heading level={1}>{newsletter.subject}</Heading>
+      </div>
     );
   }
-}
 
-CampaignStatsPage.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.object.isRequired,
-  }).isRequired,
-  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
+  return (
+    <>
+      <TopBarWithBeamer
+        onLogoClick={() => history.push('/')}
+      />
+      <div>
+        <Heading level={1}>{newsletter.subject}</Heading>
+
+        <InvalidMssKeyNotice
+          mssKeyInvalid={(window as any).mailpoet_mss_key_invalid}
+          subscribersCount={(window as any).mailpoet_subscribers_count}
+        />
+
+        <div className="mailpoet_stat_triple-spaced">
+          <div className="mailpoet_stat_info">
+            <NewsletterStatsInfo newsletter={newsletter} />
+          </div>
+          <div className="mailpoet_stat_general">
+            <NewsletterGeneralStats newsletter={newsletter} />
+          </div>
+          <div style={{ clear: 'both' }} />
+        </div>
+
+        <h2>{MailPoet.I18n.t('clickedLinks')}</h2>
+
+        <div className="mailpoet_stat_triple-spaced">
+          {Hooks.applyFilters('mailpoet_newsletters_clicked_links_table', <PremiumBanner />, newsletter.clicked_links)}
+        </div>
+
+        <div className="mailpoet_stat_triple-spaced">
+          {Hooks.applyFilters('mailpoet_newsletters_purchased_products', null, newsletter)}
+        </div>
+
+        <h2>{MailPoet.I18n.t('subscriberEngagement')}</h2>
+        <div className="mailpoet-stat-subscriber-engagement">
+          {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default withRouter(CampaignStatsPage);

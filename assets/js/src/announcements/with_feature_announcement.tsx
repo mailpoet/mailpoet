@@ -10,7 +10,7 @@ type featureAnnouncementProps = {
 
 export const withFeatureAnnouncement = <P extends object>(
   Component: React.ComponentType<P>
-): React.FC<P & featureAnnouncementProps> => {
+): React.FC<Omit<P, 'hasNews'|'onBeamerClick'>> => {
   const isBeamerInitialized = () => typeof (window as any).Beamer !== 'undefined';
   let showDot = (window as any).mailpoet_feature_announcement_has_news;
 
@@ -80,9 +80,8 @@ export const withFeatureAnnouncement = <P extends object>(
   }
 
   return ({
-    onBeamerClick,
     ...props
-  }: featureAnnouncementProps) => (
+  }: Omit<P, 'hasNews'|'onBeamerClick'>) => (
     <Component
       {...props as P}
       onBeamerClick={showBeamer}
