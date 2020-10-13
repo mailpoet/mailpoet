@@ -21,7 +21,7 @@ import NewsletterListNotification from 'newsletters/listings/notification.jsx';
 import NewsletterListNotificationHistory from 'newsletters/listings/notification_history.jsx';
 import NewsletterSendingStatus from 'newsletters/sending_status.jsx';
 import Listings from 'newsletters/automatic_emails/listings.jsx';
-import CampaignStatsPage from 'newsletters/campaign_stats/page.jsx';
+import CampaignStatsPage from 'newsletters/campaign_stats/page';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
 import RoutedTabs from 'common/tabs/routed_tabs';
