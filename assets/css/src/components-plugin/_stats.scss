@@ -1,17 +1,3 @@
-.mailpoet_stat_grey {
-  color: #707070;
-}
-
-.mailpoet_stat_big {
-  font-size: 23px;
-  font-weight: 600;
-  line-height: normal;
-}
-
-.mailpoet_stat_spaced {
-  margin-bottom: 1rem;
-}
-
 .mailpoet_stat_triple-spaced {
   margin-bottom: 3rem;
 }
@@ -19,19 +5,6 @@
 .mailpoet_stat_triple-spaced .mailpoet-premium-required,
 .mailpoet-stat-subscriber-engagement .mailpoet-premium-required {
   margin: 70px auto;
-}
-
-.mailpoet_stat_force-wrap {
-  word-break: break-all;
-}
-
-.mailpoet_stat_info {
-  float: right;
-  width: 40%;
-}
-
-.mailpoet_stat_general {
-  width: 60%;
 }
 
 @include breakpoint-max-width(520px) {
