@@ -7,7 +7,7 @@ import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 
 import { NewsletterGeneralStats } from './newsletter_general_stats';
 import { NewsletterType } from './newsletter_type';
-import NewsletterStatsInfo from './newsletter_info.jsx';
+import { NewsletterStatsInfo } from './newsletter_stats_info';
 import PremiumBanner from './premium_banner.jsx';
 import Heading from '../../common/typography/heading/heading';
 
@@ -110,8 +110,6 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
         onLogoClick={() => history.push('/')}
       />
       <div>
-        <Heading level={1}>{newsletter.subject}</Heading>
-
         <InvalidMssKeyNotice
           mssKeyInvalid={(window as any).mailpoet_mss_key_invalid}
           subscribersCount={(window as any).mailpoet_subscribers_count}
