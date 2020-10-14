@@ -6,8 +6,12 @@
 }
 
 .mailpoet-stats-info {
-  background-color: $color-white;
   box-shadow: 0 1px 0 0 $color-tertiary-light;
+}
+
+.mailpoet-stats-info,
+.mailpoet-stats-general {
+  background-color: $color-white;
   margin: 0;
   padding: $grid-gap;
   width: 100%;
@@ -53,7 +57,8 @@
 }
 
 .wrap .mailpoet-top-bar,
-.wrap .mailpoet-stats-info {
+.wrap .mailpoet-stats-info,
+.wrap .mailpoet-stats-general {
   margin-left: -20px;
   margin-right: -20px;
 }

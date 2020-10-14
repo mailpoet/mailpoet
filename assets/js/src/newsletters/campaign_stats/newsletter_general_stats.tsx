@@ -77,7 +77,7 @@ export const NewsletterGeneralStats = ({
   );
 
   return (
-    <>
+    <div className="mailpoet-stats-general">
       <Grid.ThreeColumns>
         <div>
           {MailPoet.I18n.t('statsTotalSent')}
@@ -104,6 +104,6 @@ export const NewsletterGeneralStats = ({
           {MailPoet.I18n.t('readMoreOnStats')}
         </a>
       </p>
-    </>
+    </div>
   );
 };
