@@ -51,25 +51,31 @@ export const NewsletterStatsInfo = ({
       <div className="mailpoet-stats-info-sender-preview">
         <div>
           {newsletter.sender_address && (
-            <p>
-              {MailPoet.I18n.t('statsFromAddress')}
-              {': '}
+            <div className="mailpoet-stats-info-key-value">
+              <span className="mailpoet-stats-info-key">
+                {MailPoet.I18n.t('statsFromAddress')}
+                {': '}
+              </span>
               {newsletter.sender_address}
-            </p>
+            </div>
           )}
           {newsletter.reply_to_address && (
-            <p>
-              {MailPoet.I18n.t('statsReplyToAddress')}
-              {': '}
+            <div className="mailpoet-stats-info-key-value">
+              <span className="mailpoet-stats-info-key">
+                {MailPoet.I18n.t('statsReplyToAddress')}
+                {': '}
+              </span>
               {newsletter.reply_to_address}
-            </p>
+            </div>
           )}
           {newsletter.ga_campaign && (
-            <p>
-              {MailPoet.I18n.t('googleAnalytics')}
-              {': '}
+            <div className="mailpoet-stats-info-key-value">
+              <span className="mailpoet-stats-info-key">
+                {MailPoet.I18n.t('googleAnalytics')}
+                {': '}
+              </span>
               {newsletter.ga_campaign}
-            </p>
+            </div>
           )}
         </div>
         <div>

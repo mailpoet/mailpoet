@@ -13,9 +13,14 @@
   width: 100%;
 }
 
+.mailpoet-stats-info-key {
+  font-weight: 500;
+}
+
 .mailpoet-stats-info-sender-preview {
   display: flex;
   flex-direction: row;
+  margin-top: $grid-gap-large;
 
   :first-child {
     flex-grow: 1;
