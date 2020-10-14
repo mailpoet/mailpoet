@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 
-import NewsletterGeneralStats from './newsletter_stats.jsx';
+import { NewsletterGeneralStats } from './newsletter_general_stats';
+import { NewsletterType } from './newsletter_type';
 import NewsletterStatsInfo from './newsletter_info.jsx';
 import PremiumBanner from './premium_banner.jsx';
 import Heading from '../../common/typography/heading/heading';
@@ -37,12 +38,7 @@ type Props = {
 };
 
 type State = {
-  item?: {
-    id: string,
-    queue: object
-    subject: string
-    clicked_links: object[]
-  }
+  item?: NewsletterType
   loading: boolean
 }
 
@@ -93,7 +89,7 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
     return () => {
       showWPScreenOptions();
     };
-  }, [match.params.id, loadItem]);
+  }, [match.params.id, loadItem, state.item]);
 
   const { item, loading } = state;
   const newsletter = item;
@@ -122,13 +118,9 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
         />
 
         <div className="mailpoet_stat_triple-spaced">
-          <div className="mailpoet_stat_info">
-            <NewsletterStatsInfo newsletter={newsletter} />
-          </div>
-          <div className="mailpoet_stat_general">
-            <NewsletterGeneralStats newsletter={newsletter} />
-          </div>
-          <div style={{ clear: 'both' }} />
+          <NewsletterStatsInfo newsletter={newsletter} />
+
+          <NewsletterGeneralStats newsletter={newsletter} />
         </div>
 
         <h2>{MailPoet.I18n.t('clickedLinks')}</h2>
