@@ -18,7 +18,7 @@ class StatsPageCest {
     $i->amOnMailpoetPage('Emails');
     $i->waitForText($newsletterTitle);
     $i->clickItemRowActionByItemName($newsletterTitle, 'Statistics');
-    $i->waitForText('Stats: ' . $newsletterTitle);
+    $i->waitForText($newsletterTitle);
     $i->see('This is a Premium feature');
 
     $href = $i->grabAttributeFrom('//a[span[text()="Sign Up for Free"]]', 'href');
