@@ -109,7 +109,7 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
       <TopBarWithBeamer
         onLogoClick={() => history.push('/')}
       />
-      <div>
+      <div className="mailpoet-stats-page">
         <InvalidMssKeyNotice
           mssKeyInvalid={(window as any).mailpoet_mss_key_invalid}
           subscribersCount={(window as any).mailpoet_subscribers_count}

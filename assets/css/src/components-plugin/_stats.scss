@@ -1,3 +1,31 @@
+.mailpoet-stats-page {
+  color: $color-tertiary;
+  font-family: $font-family;
+  font-size: $font-size-small;
+  line-height: 1.71;
+}
+
+.mailpoet-stats-info {
+  background-color: $color-white;
+  box-shadow: 0 1px 0 0 $color-tertiary-light;
+  margin: 0;
+  padding-bottom: $grid-gap;
+  padding-left: $grid-gap;
+  width: 100%;
+}
+
+.mailpoet-stats-segments {
+  font-weight: 500;
+
+  .mailpoet-stats-segments-segment {
+    background-color: $color-tertiary-light;
+    border-radius: 2px;
+    font-weight: normal;
+    margin-right: $grid-gap;
+    padding: 4px $grid-gap-half;
+  }
+}
+
 .mailpoet_stat_triple-spaced {
   margin-bottom: 3rem;
 }
@@ -7,12 +35,8 @@
   margin: 70px auto;
 }
 
-@include breakpoint-max-width(520px) {
-  .mailpoet_stat_info {
-    display: none;
-  }
-
-  .mailpoet_stat_general {
-    width: 100%;
-  }
+.wrap .mailpoet-top-bar,
+.wrap .mailpoet-stats-info {
+  margin-left: -20px;
+  margin-right: -20px;
 }
