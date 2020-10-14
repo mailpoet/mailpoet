@@ -2,6 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import Heading from 'common/typography/heading/heading';
 import Grid from 'common/grid';
+import { Button } from 'common';
 import { NewsletterType } from './newsletter_type';
 
 type Props = {
@@ -72,13 +73,13 @@ export const NewsletterStatsInfo = ({
           )}
         </div>
         <div>
-          <a
+          <Button
             href={newsletter.preview_url}
             target="_blank"
             rel="noopener noreferrer"
           >
             {MailPoet.I18n.t('statsPreviewNewsletter')}
-          </a>
+          </Button>
         </div>
       </div>
     </Grid.ThreeColumns>

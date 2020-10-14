@@ -9,9 +9,21 @@
   background-color: $color-white;
   box-shadow: 0 1px 0 0 $color-tertiary-light;
   margin: 0;
-  padding-bottom: $grid-gap;
-  padding-left: $grid-gap;
+  padding: $grid-gap;
   width: 100%;
+}
+
+.mailpoet-stats-info-sender-preview {
+  display: flex;
+  flex-direction: row;
+
+  :first-child {
+    flex-grow: 1;
+  }
+
+  > * {
+    flex-grow: 0;
+  }
 }
 
 .mailpoet-stats-segments {
