@@ -1,8 +1,8 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import { NewsletterType } from './newsletter_type';
 import Heading from 'common/typography/heading/heading';
 import Grid from 'common/grid';
+import { NewsletterType } from './newsletter_type';
 
 type Props = {
   newsletter: NewsletterType
@@ -21,26 +21,33 @@ export const NewsletterStatsInfo = ({
   const time = timeFormat.format(new Date(newsletterDate));
 
   return (
-    <Grid.ThreeColumns>
+    <Grid.ThreeColumns className="mailpoet-stats-info">
       <div>
         <Heading level={1}>{newsletter.subject}</Heading>
-        <p>
-          {date}
-          {' • '}
-          {time}
-        </p>
+        <div>
+          <b>
+            {date}
+            {' • '}
+            {time}
+          </b>
+        </div>
         {Array.isArray(newsletter.segments) && newsletter.segments.length && (
-          <p>
+          <div className="mailpoet-stats-segments">
             {MailPoet.I18n.t('statsToSegments')}
             {': '}
             {newsletter.segments.map((segment) => (
-              <span>{segment.name}</span>
+              <span
+                className="mailpoet-stats-segments-segment"
+                key={segment.name}
+              >
+                {segment.name}
+              </span>
             ))}
-          </p>
+          </div>
         )}
       </div>
       <div />
-      <Grid.TwoColumns>
+      <div className="mailpoet-stats-info-sender-preview">
         <div>
           {newsletter.sender_address && (
             <p>
@@ -73,7 +80,7 @@ export const NewsletterStatsInfo = ({
             {MailPoet.I18n.t('statsPreviewNewsletter')}
           </a>
         </div>
-      </Grid.TwoColumns>
+      </div>
     </Grid.ThreeColumns>
   );
 };
