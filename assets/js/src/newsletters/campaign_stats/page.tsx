@@ -115,11 +115,9 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
           subscribersCount={(window as any).mailpoet_subscribers_count}
         />
 
-        <div className="mailpoet_stat_triple-spaced">
-          <NewsletterStatsInfo newsletter={newsletter} />
+        <NewsletterStatsInfo newsletter={newsletter} />
 
-          <NewsletterGeneralStats newsletter={newsletter} />
-        </div>
+        <NewsletterGeneralStats newsletter={newsletter} />
 
         <h2>{MailPoet.I18n.t('clickedLinks')}</h2>
 
