@@ -8,6 +8,7 @@ import { NewsletterType } from './newsletter_type';
 
 type Props = {
   newsletter: NewsletterType
+  isWoocommerceActive: boolean
 }
 
 const minNewslettersSent = 20;
@@ -15,6 +16,7 @@ const minNewslettersOpened = 5;
 
 export const NewsletterGeneralStats = ({
   newsletter,
+  isWoocommerceActive,
 }: Props) => {
   const totalSent = newsletter.total_sent || 0;
 
@@ -96,7 +98,7 @@ export const NewsletterGeneralStats = ({
 
   return (
     <div className="mailpoet-stats-general">
-      <Grid.ThreeColumns>
+      <Grid.ThreeColumns className="mailpoet-stats-general-top-row">
         <div>
           <div className="mailpoet-statistics-value-small">
             {MailPoet.I18n.t('statsTotalSent')}
@@ -106,7 +108,7 @@ export const NewsletterGeneralStats = ({
             </span>
           </div>
         </div>
-        <div>
+        <div className="mailpoet-statistics-with-left-separator">
           {unsubscribed}
         </div>
         <div />
@@ -115,12 +117,17 @@ export const NewsletterGeneralStats = ({
         <div>
           {opened}
         </div>
-        <div>
+        <div className="mailpoet-statistics-with-left-separator">
           {clicked}
         </div>
-        <div>
-          {Hooks.applyFilters('mailpoet_newsletters_revenues_stats', null, newsletter.statistics.revenue)}
-        </div>
+        {isWoocommerceActive && (
+          <div className="mailpoet-statistics-with-left-separator">
+            {Hooks.applyFilters('mailpoet_newsletters_revenues_stats', null, newsletter.statistics.revenue)}
+          </div>
+        )}
+        {!isWoocommerceActive && (
+          <div />
+        )}
       </Grid.ThreeColumns>
       <p className="mailpoet-stats-general-read-more">
         <a

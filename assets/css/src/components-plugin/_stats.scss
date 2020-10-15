@@ -22,6 +22,10 @@
   font-size: $font-size;
 }
 
+.mailpoet-stats-general-top-row {
+  margin-bottom: $grid-gap;
+}
+
 .mailpoet-stats-info-key {
   font-weight: 500;
 }
@@ -73,6 +77,11 @@
     font-size: $heading-font-size-h1;
     font-weight: bold;
   }
+}
+
+.mailpoet-statistics-with-left-separator {
+  border-left: solid 1px $color-tertiary-light;
+  padding-left: $grid-gap;
 }
 
 .mailpoet_stat_triple-spaced {
