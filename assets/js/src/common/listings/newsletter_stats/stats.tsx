@@ -6,6 +6,7 @@ type StatsBadgeProps = {
   stat: string,
   rate: number,
   tooltipId?: string,
+  isInverted?: boolean,
 }
 
 const stats = {
@@ -116,6 +117,7 @@ export const StatsBadge = (props: StatsBadgeProps) => {
 
   const content = (
     <Badge
+      isInverted={props.isInverted}
       type={badgeType}
       name={badge.name}
       tooltip={tooltipText}
@@ -124,4 +126,8 @@ export const StatsBadge = (props: StatsBadgeProps) => {
   );
 
   return content;
+};
+
+StatsBadge.defaultProps = {
+  isInverted: true,
 };

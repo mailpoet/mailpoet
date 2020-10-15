@@ -7,28 +7,31 @@ type BadgeProps = {
   tooltip?: string | React.ReactNode,
   tooltipId?: string,
   type?: 'average' | 'good' | 'excellent',
+  isInverted?: boolean,
 }
 
-function Badge(props: BadgeProps) {
-  const tooltip = props.tooltip || false;
-  // tooltip ID must be unique, defaults to tooltip text
-  const tooltipId = props.tooltipId || tooltip.toString();
-
+function Badge({
+  name,
+  tooltip,
+  tooltipId,
+  type,
+  isInverted,
+}: BadgeProps) {
   return (
     <span>
       <Tag
-        isInverted
-        variant={props.type}
+        isInverted={isInverted}
+        variant={type}
         data-tip
         data-for={tooltipId}
       >
-        {props.name}
+        {name}
       </Tag>
       { tooltip && (
         <Tooltip
           place="top"
           multiline
-          id={tooltipId}
+          id={tooltipId || tooltip.toString()}
         >
           {tooltip}
         </Tooltip>
@@ -36,5 +39,9 @@ function Badge(props: BadgeProps) {
     </span>
   );
 }
+
+Badge.defaultProps = {
+  isInverted: true,
+};
 
 export default Badge;
