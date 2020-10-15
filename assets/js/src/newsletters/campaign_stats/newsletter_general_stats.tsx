@@ -2,7 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import Grid from 'common/grid';
-import StatsBadge from 'common/listings/newsletter_stats/stats';
+import { StatsBadge, getBadgeType } from 'common/listings/newsletter_stats/stats';
 
 import { NewsletterType } from './newsletter_type';
 
@@ -39,10 +39,11 @@ export const NewsletterGeneralStats = ({
     && (newsletter.statistics.opened >= minNewslettersOpened)
   );
 
+  const badgeTypeOpened = getBadgeType('opened', percentageOpened);
   const opened = (
     <>
       <div className="mailpoet-statistics-value">
-        <span className="mailpoet-statistics-value-number">
+        <span className={`mailpoet-statistics-value-number mailpoet-statistics-value-number-${badgeTypeOpened}`}>
           {percentageOpenedDisplay}
           {'% '}
         </span>
@@ -77,10 +78,11 @@ export const NewsletterGeneralStats = ({
     </>
   );
 
+  const badgeTypeClicked = getBadgeType('clicked', percentageClicked);
   const clicked = (
     <>
       <div className="mailpoet-statistics-value">
-        <span className="mailpoet-statistics-value-number">
+        <span className={`mailpoet-statistics-value-number mailpoet-statistics-value-number-${badgeTypeClicked}`}>
           {percentageClickedDisplay}
           {'% '}
         </span>
