@@ -33,8 +33,6 @@ export const NewsletterGeneralStats = ({
   const percentageOpenedDisplay = MailPoet.Num.toLocaleFixed(percentageOpened, 1);
   const percentageUnsubscribedDisplay = MailPoet.Num.toLocaleFixed(percentageUnsubscribed, 1);
 
-  const headlineClicked = `${percentageClickedDisplay}% ${MailPoet.I18n.t('percentageClicked')}`;
-
   const displayBadges = ((totalSent >= minNewslettersSent)
     && (newsletter.statistics.opened >= minNewslettersOpened)
   );
@@ -61,23 +59,13 @@ export const NewsletterGeneralStats = ({
   );
 
   const unsubscribed = (
-    <>
-      <div className="mailpoet-statistics-value-small">
-        <span className="mailpoet-statistics-value-number">
-          {percentageUnsubscribedDisplay}
-          {'% '}
-        </span>
-        {MailPoet.I18n.t('percentageUnsubscribed')}
-      </div>
-      {displayBadges && (
-        <StatsBadge
-          isInverted={false}
-          stat="unsubscribed"
-          rate={percentageUnsubscribed}
-          tooltipId={`unsubscribed-${newsletter.id || '0'}`}
-        />
-      )}
-    </>
+    <div className="mailpoet-statistics-value-small">
+      <span className="mailpoet-statistics-value-number">
+        {percentageUnsubscribedDisplay}
+        {'% '}
+      </span>
+      {MailPoet.I18n.t('percentageUnsubscribed')}
+    </div>
   );
 
   const badgeTypeClicked = getBadgeType('clicked', percentageClicked);
