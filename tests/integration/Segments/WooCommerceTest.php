@@ -269,7 +269,7 @@ class WooCommerceTest extends \MailPoetTest {
     expect($subscribers->count())->equals(4);
   }
 
-  public function testItRemovesRegisteredCustomersFromTrash() {
+  public function testItDoesntRemoveRegisteredCustomersFromTrash() {
     $user = $this->insertRegisteredCustomer();
     $this->woocommerceSegment->synchronizeCustomers();
     $subscriber = Subscriber::where("email", $user->user_email) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
@@ -281,10 +281,10 @@ class WooCommerceTest extends \MailPoetTest {
     $subscriber = Subscriber::where("email", $user->user_email) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       ->where('is_woocommerce_user', 1)
       ->findOne();
-    expect($subscriber->deletedAt)->null();
+    expect($subscriber->deletedAt)->notNull();
   }
 
-  public function testItRemovesGuestCustomersFromTrash() {
+  public function testItDoesntRemoveGuestCustomersFromTrash() {
     $guest = $this->insertGuestCustomer();
     $this->woocommerceSegment->synchronizeCustomers();
     $subscriber = Subscriber::where("email", $guest['email'])
@@ -296,7 +296,7 @@ class WooCommerceTest extends \MailPoetTest {
     $subscriber = Subscriber::where("email", $guest['email'])
       ->where('is_woocommerce_user', 1)
       ->findOne();
-    expect($subscriber->deletedAt)->null();
+    expect($subscriber->deletedAt)->notNull();
   }
 
   public function testItRemovesOrphanedSubscribers() {

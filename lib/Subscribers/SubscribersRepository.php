@@ -116,6 +116,7 @@ class SubscribersRepository extends Repository {
       $count = $queryBuilder->delete(SubscriberEntity::class, 's')
         ->where('s.id IN (:ids)')
         ->andWhere('s.wpUserId IS NULL')
+        ->andWhere('s.isWoocommerceUser = false')
         ->setParameter('ids', $ids)
         ->getQuery()->execute();
     });
