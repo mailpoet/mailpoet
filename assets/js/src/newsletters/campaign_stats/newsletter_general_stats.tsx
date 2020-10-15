@@ -94,12 +94,13 @@ export const NewsletterGeneralStats = ({
           {Hooks.applyFilters('mailpoet_newsletters_revenues_stats', null, newsletter.statistics.revenue)}
         </div>
       </Grid.ThreeColumns>
-      <p>
+      <p className="mailpoet-stats-general-read-more">
         <a
           href="https://kb.mailpoet.com/article/190-whats-a-good-email-open-rate"
           target="_blank"
           rel="noopener noreferrer"
           data-beacon-article="58f671152c7d3a057f8858e8"
+          className="mailpoet-stats-general-read-more-link"
         >
           {MailPoet.I18n.t('readMoreOnStats')}
         </a>
