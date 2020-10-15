@@ -283,14 +283,12 @@ const itemActions = [
   },
   {
     name: 'trash',
-    display: function display(subscriber) {
-      return Number(subscriber.is_woocommerce_user) === 0;
-    },
   },
 ];
 
 const isItemDeletable = (subscriber) => {
-  const isDeletable = Number(subscriber.wp_user_id) === 0;
+  const isDeletable = Number(subscriber.wp_user_id) === 0
+    && Number(subscriber.is_woocommerce_user) === 0;
   return isDeletable;
 };
 
