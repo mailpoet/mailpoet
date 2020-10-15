@@ -18,6 +18,10 @@
   width: 100%;
 }
 
+.mailpoet-stats-general {
+  font-size: $font-size;
+}
+
 .mailpoet-stats-info-key {
   font-weight: 500;
 }
@@ -54,6 +58,21 @@
   }
   margin-bottom: 0;
   text-align: right;
+}
+
+.mailpoet-statistics-value-small {
+  .mailpoet-statistics-value-number {
+    font-size: $heading-font-size-h3;
+  }
+}
+
+.mailpoet-statistics-value {
+  font-size: $heading-font-size-h3;
+
+  .mailpoet-statistics-value-number {
+    font-size: $heading-font-size-h1;
+    font-weight: bold;
+  }
 }
 
 .mailpoet_stat_triple-spaced {
