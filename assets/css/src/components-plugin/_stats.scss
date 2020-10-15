@@ -2,11 +2,12 @@
   color: $color-tertiary;
   font-family: $font-family;
   font-size: $font-size-small;
-  line-height: 1.71;
+  line-height: $line-height;
+  margin-right: -10px;
 }
 
 .mailpoet-stats-info {
-  box-shadow: 0 1px 0 0 $color-tertiary-light;
+  border-bottom: 1px solid $color-tertiary-light;
 }
 
 .mailpoet-stats-info,
