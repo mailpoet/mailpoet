@@ -548,8 +548,6 @@ class Listing extends React.Component {
 
     const tableClasses = classNames(
       'mailpoet-listing-table',
-      'wp-list-table',
-      'widefat',
       {
         'mailpoet-listing-loading': this.state.loading,
       }

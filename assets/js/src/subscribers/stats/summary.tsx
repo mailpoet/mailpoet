@@ -21,7 +21,7 @@ export default ({ totalSent, open, click }: PropTypes) => {
   return (
     <div className="mailpoet-tab-content mailpoet-subscriber-stats-summary">
       <div className="mailpoet-listing">
-        <table className="mailpoet-listing-table wp-list-table widefat">
+        <table className="mailpoet-listing-table">
           <tbody>
             <tr>
               <td>{MailPoet.I18n.t('statsSentEmail')}</td>

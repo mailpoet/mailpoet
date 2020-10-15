@@ -11,7 +11,7 @@ export type PropTypes = {
 export default ({ revenueValue, count, averageRevenueValue }: PropTypes) => (
   <div className="mailpoet-tab-content mailpoet-subscriber-stats-summary">
     <div className="mailpoet-listing">
-      <table className="mailpoet-listing-table wp-list-table widefat">
+      <table className="mailpoet-listing-table">
         <tbody>
           <tr>
             <td>Orders created</td>
