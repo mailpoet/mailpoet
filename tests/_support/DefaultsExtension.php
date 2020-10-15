@@ -87,6 +87,10 @@ class DefaultsExtension extends Extension {
     update_option('woocommerce_customer_new_account_settings', ['enabled' => 'no']);
     update_option('woocommerce_new_order_settings', ['enabled' => 'no']);
     update_option('woocommerce_customer_completed_order_settings', ['enabled' => 'no']);
+    update_option('woocommerce_onboarding_profile', ['completed' => true]);
+    update_option('woocommerce_task_list_welcome_modal_dismissed', 'yes');
+    update_option('woocommerce_task_list_hidden', 'yes');
+    delete_transient('_wc_activation_redirect');
 
     // mark all WC cron actions complete
     $tableName = ! empty($wpdb->actionscheduler_actions) ? $wpdb->actionscheduler_actions : $wpdb->prefix . 'actionscheduler_actions';// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
