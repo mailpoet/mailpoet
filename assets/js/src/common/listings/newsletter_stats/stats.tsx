@@ -8,7 +8,55 @@ type StatsBadgeProps = {
   tooltipId?: string,
 }
 
-function StatsBadge(props: StatsBadgeProps) {
+const stats = {
+  opened: {
+    badgeRanges: [30, 10, 0],
+    badgeTypes: [
+      'excellent',
+      'good',
+      'average',
+    ],
+    tooltipText: [
+      MailPoet.I18n.t('openedStatTooltipExcellent'),
+      MailPoet.I18n.t('openedStatTooltipGood'),
+      MailPoet.I18n.t('openedStatTooltipAverage'),
+    ],
+  },
+  clicked: {
+    badgeRanges: [3, 1, 0],
+    badgeTypes: [
+      'excellent',
+      'good',
+      'average',
+    ],
+    tooltipText: [
+      MailPoet.I18n.t('clickedStatTooltipExcellent'),
+      MailPoet.I18n.t('clickedStatTooltipGood'),
+      MailPoet.I18n.t('clickedStatTooltipAverage'),
+    ],
+  },
+};
+
+export const getBadgeType = (statName, rate) => {
+  const stat = stats[statName] || null;
+  if (!stat) {
+    return null;
+  }
+
+  if (rate < 0 || rate > 100) {
+    return null;
+  }
+  const len = stat.badgeRanges.length;
+  for (let i = 0; i < len; i += 1) {
+    if (rate > stat.badgeRanges[i]) {
+      return stat.badgeTypes[i];
+    }
+  }
+  // rate must be zero at this point
+  return stat.badgeTypes[len - 1];
+};
+
+export const StatsBadge = (props: StatsBadgeProps) => {
   const badges = {
     excellent: {
       name: MailPoet.I18n.t('excellentBadgeName'),
@@ -24,59 +72,14 @@ function StatsBadge(props: StatsBadgeProps) {
     },
   };
 
-  const stats = {
-    opened: {
-      badgeRanges: [30, 10, 0],
-      badgeTypes: [
-        'excellent',
-        'good',
-        'average',
-      ],
-      tooltipText: [
-        MailPoet.I18n.t('openedStatTooltipExcellent'),
-        MailPoet.I18n.t('openedStatTooltipGood'),
-        MailPoet.I18n.t('openedStatTooltipAverage'),
-      ],
-    },
-    clicked: {
-      badgeRanges: [3, 1, 0],
-      badgeTypes: [
-        'excellent',
-        'good',
-        'average',
-      ],
-      tooltipText: [
-        MailPoet.I18n.t('clickedStatTooltipExcellent'),
-        MailPoet.I18n.t('clickedStatTooltipGood'),
-        MailPoet.I18n.t('clickedStatTooltipAverage'),
-      ],
-    },
-  };
-
-  const getBadgeType = (stat, rate) => {
-    const len = stat.badgeRanges.length;
-    for (let i = 0; i < len; i += 1) {
-      if (rate > stat.badgeRanges[i]) {
-        return stat.badgeTypes[i];
-      }
-    }
-    // rate must be zero at this point
-    return stat.badgeTypes[len - 1];
-  };
+  const badgeType = getBadgeType(props.stat, props.rate);
+  const badge = badges[badgeType] || null;
+  if (!badge) {
+    return null;
+  }
 
   const stat = stats[props.stat] || null;
   if (!stat) {
-    return null;
-  }
-
-  const rate = props.rate;
-  if (rate < 0 || rate > 100) {
-    return null;
-  }
-
-  const badgeType = getBadgeType(stat, rate);
-  const badge = badges[badgeType] || null;
-  if (!badge) {
     return null;
   }
 
@@ -121,6 +124,4 @@ function StatsBadge(props: StatsBadgeProps) {
   );
 
   return content;
-}
-
-export default StatsBadge;
+};

@@ -79,6 +79,18 @@
   }
 }
 
+.mailpoet-statistics-value-number-average {
+  color: $color-stats-average;
+}
+
+.mailpoet-statistics-value-number-excellent {
+  color: $color-stats-excellent;
+}
+
+.mailpoet-statistics-value-number-good {
+  color: $color-stats-good;
+}
+
 .mailpoet-statistics-with-left-separator {
   border-left: solid 1px $color-tertiary-light;
   padding-left: $grid-gap;
