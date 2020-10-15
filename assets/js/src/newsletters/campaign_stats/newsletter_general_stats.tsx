@@ -39,7 +39,13 @@ export const NewsletterGeneralStats = ({
 
   const opened = (
     <>
-      <div>{`${percentageOpenedDisplay}% ${MailPoet.I18n.t('percentageOpened')}`}</div>
+      <div className="mailpoet-statistics-value">
+        <span className="mailpoet-statistics-value-number">
+          {percentageOpenedDisplay}
+          {'% '}
+        </span>
+        {MailPoet.I18n.t('percentageOpened')}
+      </div>
       {displayBadges && (
         <StatsBadge
           stat="opened"
@@ -52,7 +58,13 @@ export const NewsletterGeneralStats = ({
 
   const unsubscribed = (
     <>
-      <div>{`${percentageUnsubscribedDisplay}% ${MailPoet.I18n.t('percentageUnsubscribed')}`}</div>
+      <div className="mailpoet-statistics-value-small">
+        <span className="mailpoet-statistics-value-number">
+          {percentageUnsubscribedDisplay}
+          {'% '}
+        </span>
+        {MailPoet.I18n.t('percentageUnsubscribed')}
+      </div>
       {displayBadges && (
         <StatsBadge
           stat="unsubscribed"
@@ -65,7 +77,13 @@ export const NewsletterGeneralStats = ({
 
   const clicked = (
     <>
-      <div>{`${percentageClickedDisplay}% ${MailPoet.I18n.t('percentageClicked')}`}</div>
+      <div className="mailpoet-statistics-value">
+        <span className="mailpoet-statistics-value-number">
+          {percentageClickedDisplay}
+          {'% '}
+        </span>
+        {MailPoet.I18n.t('percentageClicked')}
+      </div>
       {displayBadges && (
         <StatsBadge
           stat="clicked"
@@ -80,14 +98,24 @@ export const NewsletterGeneralStats = ({
     <div className="mailpoet-stats-general">
       <Grid.ThreeColumns>
         <div>
-          {MailPoet.I18n.t('statsTotalSent')}
-          {': '}
-          {totalSent.toLocaleString()}
-          {opened}
+          <div className="mailpoet-statistics-value-small">
+            {MailPoet.I18n.t('statsTotalSent')}
+            {': '}
+            <span className="mailpoet-statistics-value-number">
+              {totalSent.toLocaleString()}
+            </span>
+          </div>
         </div>
         <div>
           {unsubscribed}
-
+        </div>
+        <div />
+      </Grid.ThreeColumns>
+      <Grid.ThreeColumns>
+        <div>
+          {opened}
+        </div>
+        <div>
           {clicked}
         </div>
         <div>
