@@ -15,7 +15,8 @@ class ListingColumn extends React.Component {
       { 'column-primary': this.props.column.is_primary },
       { sortable: this.props.column.sortable },
       this.props.column.sorted,
-      { sorted: (this.props.sort_by === this.props.column.name) }
+      { sorted: (this.props.sort_by === this.props.column.name) },
+      this.props.column.className
     );
     let label;
 
@@ -65,6 +66,7 @@ ListingColumn.propTypes = {
       PropTypes.string,
       PropTypes.number,
     ]),
+    className: PropTypes.string,
   }).isRequired,
   sort_by: PropTypes.string,
   onSort: PropTypes.func.isRequired,

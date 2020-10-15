@@ -25,22 +25,27 @@ const columns = [
   {
     name: 'subscribed',
     label: MailPoet.I18n.t('subscribed'),
+    className: 'mailpoet-listing-column-narrow',
   },
   {
     name: 'unconfirmed',
     label: MailPoet.I18n.t('unconfirmed'),
+    className: 'mailpoet-listing-column-narrow',
   },
   {
     name: 'unsubscribed',
     label: MailPoet.I18n.t('unsubscribed'),
+    className: 'mailpoet-listing-column-narrow',
   },
   {
     name: 'inactive',
     label: MailPoet.I18n.t('inactive'),
+    className: 'mailpoet-listing-column-narrow',
   },
   {
     name: 'bounced',
     label: MailPoet.I18n.t('bounced'),
+    className: 'mailpoet-listing-column-narrow',
   },
   {
     name: 'created_at',

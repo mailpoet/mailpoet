@@ -176,6 +176,13 @@ div.mailpoet-listing-bulk-actions-container {
     &:last-child a {
       justify-content: flex-end;
     }
+
+    &.mailpoet-listing-column-narrow {
+      @media screen and (max-width: 1400px) {
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+    }
   }
 
   tbody th,
