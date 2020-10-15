@@ -116,13 +116,6 @@ const baseConfig = {
         ],
       },
       {
-        include: path.resolve(__dirname, 'assets/js/src/newsletters/badges/stats.jsx'),
-        use: [
-          'expose-loader?' + globalPrefix + '.StatsBadge',
-          'babel-loader',
-        ]
-      },
-      {
         include: path.resolve(__dirname, 'assets/js/src/help-tooltip.jsx'),
         use: [
           'expose-loader?' + globalPrefix + '.HelpTooltip',
@@ -203,7 +196,6 @@ const adminConfig = {
       'help-tooltip.jsx',
       'listing/listing.jsx',
       'common/index.ts',
-      'newsletters/badges/stats.jsx',
     ],
     admin: 'webpack_admin_index.jsx',
     newsletter_editor: 'newsletter_editor/webpack_index.jsx',
