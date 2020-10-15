@@ -51,6 +51,7 @@ export const NewsletterGeneralStats = ({
       </div>
       {displayBadges && (
         <StatsBadge
+          isInverted={false}
           stat="opened"
           rate={percentageOpened}
           tooltipId={`opened-${newsletter.id || '0'}`}
@@ -70,6 +71,7 @@ export const NewsletterGeneralStats = ({
       </div>
       {displayBadges && (
         <StatsBadge
+          isInverted={false}
           stat="unsubscribed"
           rate={percentageUnsubscribed}
           tooltipId={`unsubscribed-${newsletter.id || '0'}`}
@@ -90,6 +92,7 @@ export const NewsletterGeneralStats = ({
       </div>
       {displayBadges && (
         <StatsBadge
+          isInverted={false}
           stat="clicked"
           rate={percentageClicked}
           tooltipId={`clicked-${newsletter.id || '0'}`}
