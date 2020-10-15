@@ -59,7 +59,6 @@ class WooCommerce {
           $data['source'] = Source::WOOCOMMERCE_USER;
         }
         $data['id'] = $subscriber->id();
-        $data['deleted_at'] = null; // remove the user from the trash
 
         $subscriber = Subscriber::createOrUpdate($data);
         if ($subscriber->getErrors() === false && $subscriber->id > 0) {
@@ -111,7 +110,6 @@ class WooCommerce {
     $this->markRegisteredCustomers();
     $insertedUsersEmails = $this->insertSubscribersFromOrders();
     $this->removeUpdatedSubscribersWithInvalidEmail($insertedUsersEmails);
-    $this->removeFromTrash();
     $this->updateFirstNames();
     $this->updateLastNames();
     $this->insertUsersToSegment();
@@ -293,15 +291,6 @@ class WooCommerce {
         )
     ', $subscribersTable, $subscriberSegmentTable, $wcSegment->id);
     Subscriber::rawExecute($sql);
-  }
-
-  private function removeFromTrash() {
-    $subscribersTable = Subscriber::$_table;
-    Subscriber::rawExecute(sprintf('
-      UPDATE %1$s
-      SET %1$s.deleted_at = NULL
-        WHERE %1$s.is_woocommerce_user = 1
-    ', $subscribersTable));
   }
 
   private function removeOrphanedSubscribers() {
