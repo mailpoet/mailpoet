@@ -6,13 +6,6 @@ import classNames from 'classnames';
 import Checkbox from 'common/form/checkbox/checkbox.tsx';
 
 class ListingItem extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      expanded: false,
-    };
-  }
-
   handleSelectItem = (e) => {
     this.props.onSelectItem(
       parseInt(e.target.value, 10),
@@ -32,12 +25,6 @@ class ListingItem extends React.Component {
 
   handleDeleteItem = (id) => {
     this.props.onDeleteItem(id);
-  };
-
-  handleToggleItem = () => {
-    this.setState((prevState) => ({
-      expanded: !prevState.expanded,
-    }));
   };
 
   render() {
@@ -191,13 +178,6 @@ class ListingItem extends React.Component {
               </span>
             )}
           </div>
-          <button
-            onClick={() => this.handleToggleItem(this.props.item.id)}
-            className="toggle-row mailpoet-hide-on-mobile"
-            type="button"
-          >
-            <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
-          </button>
         </div>
       );
     } else {
@@ -206,19 +186,11 @@ class ListingItem extends React.Component {
           <div className="mailpoet-listing-actions">
             { itemActions }
           </div>
-          <button
-            onClick={() => this.handleToggleItem(this.props.item.id)}
-            className="toggle-row mailpoet-hide-on-mobile"
-            type="button"
-          >
-            <span className="screen-reader-text">{MailPoet.I18n.t('showMoreDetails')}</span>
-          </button>
         </div>
       );
     }
 
     const rowClasses = classNames({
-      'is-expanded': this.state.expanded,
       'mailpoet-listing-row-selected': this.props.item.selected || this.props.selection === 'all',
       'mailpoet-listing-row-inactive': this.props.isItemInactive(this.props.item),
     });
