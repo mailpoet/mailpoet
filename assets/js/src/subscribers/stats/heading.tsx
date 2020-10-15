@@ -14,7 +14,7 @@ export default ({ email }: PropTypes) => {
   return (
     <Heading level={1}>
       {MailPoet.I18n.t('statsHeading').replace('%s', email)}
-      <Link className="page-title-action" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
+      <Link className="mailpoet-button mailpoet-button-small" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
     </Heading>
   );
 };

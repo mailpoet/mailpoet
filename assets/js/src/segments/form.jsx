@@ -35,7 +35,7 @@ const SegmentForm = (props) => (
   <div>
     <h1 className="title">
       {MailPoet.I18n.t('segment')}
-      <Link className="page-title-action" to="/">{MailPoet.I18n.t('backToList')}</Link>
+      <Link className="mailpoet-button mailpoet-button-small" to="/">{MailPoet.I18n.t('backToList')}</Link>
     </h1>
 
     <SubscribersLimitNotice />
