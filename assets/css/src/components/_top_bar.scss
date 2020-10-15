@@ -15,16 +15,18 @@ $beamer-dot-size: 8px;
   padding-right: $grid-gap;
 
   .wrap & {
-    margin-left: -20px;
-    margin-right: -20px;
-    margin-top: -10px;
-    position: relative;
+    left: -20px;
+    margin-bottom: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
 
     @include respond-to(small-screen) {
-      margin-bottom: 40px;
-      margin-left: -10px;
-      margin-right: -12px;
-      top: -10px;
+      left: -10px;
+    }
+
+    @media screen and (max-width: 600px) {
+      top: 46px;
     }
   }
 }

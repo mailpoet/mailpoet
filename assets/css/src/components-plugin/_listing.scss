@@ -1,3 +1,8 @@
+// Fix for notice being above "Screen options" button
+.notice {
+  clear: both;
+}
+
 .mailpoet-listing {
   background: $color-white;
   border: 1px solid $color-tertiary-light;

@@ -4,15 +4,16 @@
   z-index: 1;
 
   .mailpoet-top-bar ~ & {
-    margin-top: -20px;
+    top: -20px;
   }
 
+  .notice ~ &,
   .mailpoet-subscribers-in-plan ~ & {
-    margin-top: 0;
+    top: 0;
   }
 
   @include respond-to(small-screen) {
-    margin-top: 0 !important;
+    top: 0 !important;
   }
 }
 
