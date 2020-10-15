@@ -220,7 +220,7 @@ const SubscriberForm = ({ match }) => {
     <div>
       <h1 className="title">
         {MailPoet.I18n.t('subscriber')}
-        <Link className="page-title-action" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
+        <Link className="mailpoet-button mailpoet-button-small" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
       </h1>
 
       <SubscribersLimitNotice />
