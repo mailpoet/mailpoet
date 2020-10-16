@@ -779,7 +779,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releasePublish($version = null) {
-    $version = $this->releaseVersionGetNext($version);
+    $version = $this->releaseVersionGetPrepared($version);
     return $this->collectionBuilder()
       ->addCode(function () use ($version) {
         return $this->releaseCheckPullRequest($version);
@@ -820,6 +820,15 @@ class RoboFile extends \Robo\Tasks {
     if (!$version) {
       $version = $this->getReleaseVersionController()
         ->determineNextVersion();
+    }
+    $this->validateVersion($version);
+    return $version;
+  }
+
+  public function releaseVersionGetPrepared($version = null) {
+    if (!$version) {
+      $version = $this->getReleaseVersionController()
+        ->getPreparedVersion();
     }
     $this->validateVersion($version);
     return $version;
@@ -891,7 +900,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function releasePublishJira($version = null) {
-    $version = $this->releaseVersionGetNext($version);
+    $version = $this->releaseVersionGetPrepared($version);
     $jiraController = $this->createJiraController();
     $jiraVersion = $jiraController->releaseVersion($version);
     $this->say("JIRA version '$jiraVersion[name]' was released.");

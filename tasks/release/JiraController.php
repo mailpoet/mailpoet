@@ -90,6 +90,22 @@ class JiraController {
     return reset($version['values']);
   }
 
+  public function getPreparedReleaseVersion(?string $project = null): array {
+    $project = $project ?: $this->project;
+    $response = $this->httpClient->get("project/$project/version", [
+      'query' => [
+        'maxResults' => 1,
+        'orderBy' => '-sequence',
+        'status' => 'unreleased',
+      ],
+    ]);
+    $version = json_decode($response->getBody()->getContents(), true);
+    if (empty($version) || empty($version['values'])) {
+      throw new \Exception('No prepared version found');
+    }
+    return reset($version['values']);
+  }
+
   /**
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-version-post
    */

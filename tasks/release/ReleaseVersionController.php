@@ -58,6 +58,11 @@ class ReleaseVersionController {
     return $nextVersion;
   }
 
+  public function getPreparedVersion(): string {
+    $version = $this->jira->getPreparedReleaseVersion();
+    return $version['name'];
+  }
+
   private function getUnreleasedDoneIssues($project = null) {
     $project = $project ?: $this->project;
     $jql = "project = $project AND status = Done AND (fixVersion = EMPTY OR fixVersion IN unreleasedVersions()) AND updated >= -52w";
