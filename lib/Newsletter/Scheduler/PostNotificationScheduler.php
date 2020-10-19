@@ -2,13 +2,15 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Logging\LoggerFactory;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\NewsletterPost;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\NewsletterPostsRepository;
+use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Posts;
 
@@ -26,8 +28,29 @@ class PostNotificationScheduler {
   /** @var LoggerFactory */
   private $loggerFactory;
 
-  public function __construct() {
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
+  /** @var NewsletterOptionsRepository */
+  private $newsletterOptionsRepository;
+
+  /** @var NewsletterOptionFieldsRepository */
+  private $newsletterOptionFieldsRepository;
+
+  /** @var NewsletterPostsRepository */
+  private $newsletterPostsRepository;
+
+  public function __construct(
+    NewslettersRepository $newslettersRepository,
+    NewsletterOptionsRepository $newsletterOptionsRepository,
+    NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository,
+    NewsletterPostsRepository $newsletterPostsRepository
+  ) {
     $this->loggerFactory = LoggerFactory::getInstance();
+    $this->newslettersRepository = $newslettersRepository;
+    $this->newsletterOptionsRepository = $newsletterOptionsRepository;
+    $this->newsletterOptionFieldsRepository = $newsletterOptionFieldsRepository;
+    $this->newsletterPostsRepository = $newsletterPostsRepository;
   }
 
   public function transitionHook($newStatus, $oldStatus, $post) {
@@ -51,47 +74,47 @@ class PostNotificationScheduler {
       'schedule post notification hook',
       ['post_id' => $postId]
     );
-    $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_NOTIFICATION);
-    if (!count($newsletters)) return false;
+    $newsletters = $this->newslettersRepository->findActiveByTypes([NewsletterEntity::TYPE_NOTIFICATION]);
+    $this->newslettersRepository->prefetchOptions($newsletters);
+    if (!count($newsletters)) {
+      return false;
+    }
     foreach ($newsletters as $newsletter) {
-      $post = NewsletterPost::where('newsletter_id', $newsletter->id)
-        ->where('post_id', $postId)
-        ->findOne();
-      if ($post === false) {
+      $post = $this->newsletterPostsRepository->findOneBy([
+        'newsletter' => $newsletter,
+        'postId' => $postId,
+      ]);
+      if ($post === null) {
         $this->createPostNotificationSendingTask($newsletter);
       }
     }
   }
 
-  public function createPostNotificationSendingTask($newsletter) {
-    $existingNotificationHistory = Newsletter::tableAlias('newsletters')
-      ->where('newsletters.parent_id', $newsletter->id)
-      ->where('newsletters.type', Newsletter::TYPE_NOTIFICATION_HISTORY)
-      ->where('newsletters.status', Newsletter::STATUS_SENDING)
-      ->join(
-        MP_SENDING_QUEUES_TABLE,
-        'queues.newsletter_id = newsletters.id',
-        'queues'
-      )
-      ->join(
-        MP_SCHEDULED_TASKS_TABLE,
-        'queues.task_id = tasks.id',
-        'tasks'
-      )
-      ->whereNotEqual('tasks.status', ScheduledTask::STATUS_PAUSED)
-      ->findOne();
-    if ($existingNotificationHistory) {
-      return;
+  public function createPostNotificationSendingTask(NewsletterEntity $newsletter): ?SendingTask {
+    $notificationHistoryExists = $this->newslettersRepository->existsNotificationHistory($newsletter);
+    if ($notificationHistoryExists) {
+      return null;
     }
-    $nextRunDate = Scheduler::getNextRunDate($newsletter->schedule);
-    if (!$nextRunDate) return;
+
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    if (!$scheduleOption) {
+      return null;
+    }
+    $nextRunDate = Scheduler::getNextRunDate($scheduleOption->getValue());
+    if (!$nextRunDate) {
+      return null;
+    }
+
     // do not schedule duplicate queues for the same time
-    $existingQueue = SendingQueue::findTaskByNewsletterId($newsletter->id)
-      ->where('tasks.scheduled_at', $nextRunDate)
-      ->findOne();
-    if ($existingQueue) return;
+    $lastQueue = $newsletter->getLatestQueue();
+    $task = $lastQueue !== null ? $lastQueue->getTask() : null;
+    $scheduledAt = $task !== null ? $task->getScheduledAt() : null;
+    if ($scheduledAt && $scheduledAt->format('Y-m-d H:i:s') === $nextRunDate) {
+      return null;
+    }
+    
     $sendingTask = SendingTask::create();
-    $sendingTask->newsletterId = $newsletter->id;
+    $sendingTask->newsletterId = $newsletter->getId();
     $sendingTask->status = SendingQueue::STATUS_SCHEDULED;
     $sendingTask->scheduledAt = $nextRunDate;
     $sendingTask->save();
@@ -102,14 +125,22 @@ class PostNotificationScheduler {
     return $sendingTask;
   }
 
-  public function processPostNotificationSchedule($newsletter) {
-    $intervalType = $newsletter->intervalType;
-    $hour = (int)$newsletter->timeOfDay / self::SECONDS_IN_HOUR;
-    $weekDay = $newsletter->weekDay;
-    $monthDay = $newsletter->monthDay;
-    $nthWeekDay = ($newsletter->nthWeekDay === self::LAST_WEEKDAY_FORMAT) ?
-      $newsletter->nthWeekDay :
-      '#' . $newsletter->nthWeekDay;
+  public function processPostNotificationSchedule(NewsletterEntity $newsletter) {
+    $intervalTypeOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE);
+    $intervalType = $intervalTypeOption ? $intervalTypeOption->getValue() : null;
+
+    $timeOfDayOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_TIME_OF_DAY);
+    $hour = $timeOfDayOption ? (int)$timeOfDayOption->getValue() / self::SECONDS_IN_HOUR : null;
+
+    $weekDayOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_WEK_DAY);
+    $weekDay = $weekDayOption ? $weekDayOption->getValue() : null;
+
+    $monthDayOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_MONTH_DAY);
+    $monthDay = $monthDayOption ? $monthDayOption->getValue() : null;
+
+    $nthWeekDayOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY);
+    $nthWeekDay = $nthWeekDayOption ? $nthWeekDayOption->getValue() : null;
+    $nthWeekDay = ($nthWeekDay === self::LAST_WEEKDAY_FORMAT) ? $nthWeekDay : '#' . $nthWeekDay;
     switch ($intervalType) {
       case self::INTERVAL_IMMEDIATE:
       case self::INTERVAL_DAILY:
@@ -129,22 +160,20 @@ class PostNotificationScheduler {
         $schedule = '* * * * *';
         break;
     }
-    $relation = null;
-    $optionField = NewsletterOptionField::where('name', 'schedule')->findOne();
-    if ($optionField instanceof NewsletterOptionField) {
-      $relation = NewsletterOption::where('newsletter_id', $newsletter->id)
-        ->where('option_field_id', $optionField->id)
-        ->findOne();
-    } else {
+    $optionField = $this->newsletterOptionFieldsRepository->findOneBy([
+      'name' => NewsletterOptionFieldEntity::NAME_SCHEDULE,
+    ]);
+    if (!$optionField instanceof NewsletterOptionFieldEntity) {
       throw new \Exception('NewsletterOptionField for schedule doesn’t exist.');
     }
-    if (!$relation instanceof NewsletterOption) {
-      $relation = NewsletterOption::create();
-      $relation->newsletterId = $newsletter->id;
-      $relation->optionFieldId = (int)$optionField->id;
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    if ($scheduleOption === null) {
+      $scheduleOption = new NewsletterOptionEntity($newsletter, $optionField);
+      $newsletter->getOptions()->add($scheduleOption);
     }
-    $relation->value = $schedule;
-    $relation->save();
-    return $relation->value;
+    $scheduleOption->setValue($schedule);
+    $this->newsletterOptionsRepository->persist($scheduleOption);
+    $this->newsletterOptionsRepository->flush();
+    return $scheduleOption->getValue();
   }
 }

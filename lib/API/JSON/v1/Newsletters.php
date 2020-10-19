@@ -10,11 +10,12 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Listing;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -156,47 +157,52 @@ class Newsletters extends APIEndpoint {
       ]);
     }
 
-    if ($status === Newsletter::STATUS_ACTIVE && $this->subscribersFeature->check()) {
+    if ($status === NewsletterEntity::STATUS_ACTIVE && $this->subscribersFeature->check()) {
       return $this->errorResponse([
         APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),
       ], [], Response::STATUS_FORBIDDEN);
     }
 
-    $id = (isset($data['id'])) ? (int)$data['id'] : false;
-    $newsletter = Newsletter::findOneWithOptions($id);
+    $newsletter = $this->getNewsletter($data);
+    $this->newslettersRepository->prefetchOptions([$newsletter]);
 
-    if ($newsletter === false) {
+    if ($newsletter === null) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
 
     $newsletter->setStatus($status);
-    $errors = $newsletter->getErrors();
-
-    if (!empty($errors)) {
-      return $this->errorResponse($errors);
-    }
 
     // if there are past due notifications, reschedule them for the next send date
-    if ($newsletter->type === Newsletter::TYPE_NOTIFICATION && $status === Newsletter::STATUS_ACTIVE) {
-      $nextRunDate = Scheduler::getNextRunDate($newsletter->schedule);
-      $queue = $newsletter->queue()->findOne();
-      if ($queue) {
-        $queue->task()
-          ->whereLte('scheduled_at', Carbon::createFromTimestamp($this->wp->currentTime('timestamp')))
-          ->where('status', SendingQueue::STATUS_SCHEDULED)
-          ->findResultSet()
-          ->set('scheduled_at', $nextRunDate)
-          ->save();
+    if ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION && $status === NewsletterEntity::STATUS_ACTIVE) {
+      $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+      if ($scheduleOption === null) {
+        return $this->errorResponse([
+          APIError::BAD_REQUEST => __('This email has incorrect state.', 'mailpoet'),
+        ]);
+      }
+      $nextRunDate = Scheduler::getNextRunDate($scheduleOption->getValue());
+      $queues = $newsletter->getQueues();
+      foreach ($queues as $queue) {
+        $task = $queue->getTask();
+        if (
+          $task &&
+          $task->getScheduledAt() <= Carbon::createFromTimestamp($this->wp->currentTime('timestamp')) &&
+          $task->getStatus() === SendingQueueEntity::STATUS_SCHEDULED
+        ) {
+          $task->setScheduledAt(Carbon::createFromFormat('Y-m-d H:i:s', $nextRunDate));
+        }
       }
       $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
     }
 
-    $newsletter = Newsletter::findOne($newsletter->id);
-    if(!$newsletter instanceof Newsletter) return $this->errorResponse();
+    $this->newslettersRepository->flush();
+    if (!$newsletter instanceof NewsletterEntity) {
+      return $this->errorResponse();
+    }
     return $this->successResponse(
-      $newsletter->asArray()
+      $this->newslettersResponseBuilder->build($newsletter)
     );
   }
 
@@ -415,7 +421,10 @@ class Newsletters extends APIEndpoint {
         $data['type'] === Newsletter::TYPE_NOTIFICATION
       ) {
         $newsletter = Newsletter::filter('filterWithOptions', $data['type'])->findOne($newsletter->id);
-        $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
+        assert($newsletter instanceof Newsletter);
+        $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+        assert($newsletterEntity instanceof NewsletterEntity);
+        $this->postNotificationScheduler->processPostNotificationSchedule($newsletterEntity);
       }
 
       $newsletter = Newsletter::findOne($newsletter->id);

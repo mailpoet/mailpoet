@@ -251,7 +251,7 @@ class NewsletterSaveController {
     }
 
     // generate the new schedule from options and get the new "next run" date
-    $schedule = $this->postNotificationScheduler->processPostNotificationSchedule($newsletterModel);
+    $schedule = $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
     $nextRunDateString = Scheduler::getNextRunDate($schedule);
     $nextRunDate = $nextRunDateString ? Carbon::createFromFormat('Y-m-d H:i:s', $nextRunDateString) : null;
     if ($nextRunDate === false) {
