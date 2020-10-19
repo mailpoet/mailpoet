@@ -375,6 +375,13 @@ class NewsletterEntity {
     return $this->options;
   }
 
+  public function getOption(string $name): ?NewsletterOptionEntity {
+    $option = $this->options->filter(function (NewsletterOptionEntity $option) use ($name): bool {
+      return ($field = $option->getOptionField()) ? $field->getName() === $name : false;
+    })->first();
+    return $option ?: null;
+  }
+
   /**
    * @return SendingQueueEntity[]|ArrayCollection
    */
