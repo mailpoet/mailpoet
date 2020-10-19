@@ -13,6 +13,24 @@ use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="newsletter_option_fields")
  */
 class NewsletterOptionFieldEntity {
+  // names
+  public const NAME_AFTER_TIME_NUMBER = 'afterTimeNumber';
+  public const NAME_AFTER_TIME_TYPE = 'afterTimeType';
+  public const NAME_EVENT = 'event';
+  public const NAME_GROUP = 'group';
+  public const NAME_INTERVAL_TYPE = 'intervalType';
+  public const NAME_IS_SCHEDULED = 'isScheduled';
+  public const NAME_META = 'meta';
+  public const NAME_MONTH_DAY = 'monthDay';
+  public const NAME_NTH_WEEK_DAY = 'nthWeekDay';
+  public const NAME_ROLE = 'role';
+  public const NAME_SCHEDULE = 'schedule';
+  public const NAME_SCHEDULED_AT = 'scheduledAt';
+  public const NAME_SEGMENT = 'segment';
+  public const NAME_SEND_TO = 'sendTo';
+  public const NAME_TIME_OF_DAY = 'timeOfDay';
+  public const NAME_WEK_DAY = 'weekDay';
+
   use AutoincrementedIdTrait;
   use CreatedAtTrait;
   use UpdatedAtTrait;
