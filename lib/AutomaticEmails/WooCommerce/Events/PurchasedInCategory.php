@@ -116,7 +116,9 @@ class PurchasedInCategory {
 
     $schedulingCondition = function($automaticEmail) use ($orderedProductCategories, $subscriber) {
       $meta = $automaticEmail->getMeta();
-      if (empty($meta['option']) || $automaticEmail->wasScheduledForSubscriber($subscriber->id)) return false;
+
+      if (empty($meta['option'])) return false;
+      if ($automaticEmail->wasScheduledForSubscriber($subscriber->id)) return false;
 
       $metaCategories = array_column($meta['option'], 'id');
       $matchedCategories = array_intersect($metaCategories, $orderedProductCategories);
@@ -131,6 +133,12 @@ class PurchasedInCategory {
         'subscriber_id' => $subscriber->id,
       ]
     );
-    $this->scheduler->scheduleAutomaticEmail(WooCommerce::SLUG, self::SLUG, $schedulingCondition, $subscriber->id);
+    $this->scheduler->scheduleAutomaticEmail(
+      WooCommerce::SLUG,
+      self::SLUG,
+      $schedulingCondition,
+      $subscriber->id,
+      ['orderedProducts' => $orderedProductCategories]
+    );
   }
 }

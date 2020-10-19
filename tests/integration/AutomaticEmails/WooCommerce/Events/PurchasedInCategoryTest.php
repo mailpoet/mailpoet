@@ -120,6 +120,8 @@ class PurchasedInCategoryTest extends \MailPoetTest {
 
     $this->event->scheduleEmail(3);
     $scheduledTask = Sending::getByNewsletterId($newsletter->id);
+    $queue = $scheduledTask->queue();
+    expect($queue->getMeta())->equals(['orderedProducts' => ['15', '16']]);
     expect($scheduledTask)->notEmpty();
   }
 

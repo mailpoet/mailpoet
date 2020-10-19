@@ -251,6 +251,8 @@ class PurchasedProductTest extends \MailPoetTest {
     $event->scheduleEmailWhenProductIsPurchased($orderId);
     $scheduledTask = Sending::getByNewsletterId($newsletter->id);
     expect($scheduledTask)->notEmpty();
+    $queue = $scheduledTask->queue();
+    expect($queue->getMeta())->equals(['orderedProducts' => [$incorrectProductId, $productId]]);
     return $orderId;
   }
 
