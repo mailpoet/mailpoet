@@ -393,7 +393,7 @@ class Pages {
   }
 
   public function getManageLink($params) {
-    if (!$this->subscriber) return $this->wp->__('Link to subscription management page is only available to mailing lists subscribers.', 'mailpoet');
+    if (!$this->subscriber instanceof Subscriber) return __('Link to subscription management page is only available to mailing lists subscribers.', 'mailpoet');
 
     // get label or display default label
     $text = (
@@ -402,8 +402,6 @@ class Pages {
       : $this->wp->__('Manage your subscription', 'mailpoet')
     );
 
-    return '<a href="' . $this->subscriptionUrlFactory->getManageUrl(
-      $this->subscriber ?: null
-    ) . '">' . $text . '</a>';
+    return '<a href="' . $this->subscriptionUrlFactory->getManageUrl($this->subscriber) . '">' . $text . '</a>';
   }
 }
