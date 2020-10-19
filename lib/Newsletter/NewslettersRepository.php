@@ -322,6 +322,30 @@ class NewslettersRepository extends Repository {
     return count($ids);
   }
 
+  public function prefetchOptions(array $newsletters) {
+    $this->entityManager->createQueryBuilder()
+      ->select('PARTIAL n.{id}, o, opf')
+      ->from(NewsletterEntity::class, 'n')
+      ->join('n.options', 'o')
+      ->join('o.optionField', 'opf')
+      ->where('n.id IN (:newsletters)')
+      ->setParameter('newsletters', $newsletters)
+      ->getQuery()
+      ->getResult();
+  }
+
+  public function prefetchSegments(array $newsletters) {
+    $this->entityManager->createQueryBuilder()
+      ->select('PARTIAL n.{id}, ns, s')
+      ->from(NewsletterEntity::class, 'n')
+      ->join('n.newsletterSegments', 'ns')
+      ->join('ns.segment', 's')
+      ->where('n.id IN (:newsletters)')
+      ->setParameter('newsletters', $newsletters)
+      ->getQuery()
+      ->getResult();
+  }
+
   private function fetchChildrenIds(array $parentIds) {
     $ids = $this->entityManager->createQueryBuilder()->select('n.id')
       ->from(NewsletterEntity::class, 'n')
