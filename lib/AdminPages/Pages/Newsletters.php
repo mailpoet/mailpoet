@@ -189,13 +189,13 @@ class Newsletters {
           [
             'slug' => 'woocommerce_product_purchased_in_category',
             'title' => $this->wp->__('Purchased In This Category', 'mailpoet'),
-            'description' => $this->wp->__('Let MailPoet send an email to customers who purchase a product from a specific category.', 'mailpoet'),
+            'description' => $this->wp->__('Let MailPoet send an email to customers who purchase a product for the first time in a specific category.', 'mailpoet'),
             'soon' => true,
           ],
           [
             'slug' => 'woocommerce_product_purchased',
             'title' => $this->wp->__('Purchased This Product', 'mailpoet'),
-            'description' => $this->wp->__('Let MailPoet send an email to customers who purchase a specific product.', 'mailpoet'),
+            'description' => $this->wp->__('Let MailPoet send an email to customers who purchase a specific product for the first time.', 'mailpoet'),
           ],
         ],
       ],
