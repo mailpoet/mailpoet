@@ -34,7 +34,7 @@ class PurchasedInCategory {
     return [
       'slug' => self::SLUG,
       'title' => _x('Purchased In This Category', 'This is the name of a type for automatic email for ecommerce. Those emails are sent automatically every time a customer buys for the first time a product in a given category', 'mailpoet'),
-      'description' => __('Let MailPoet send an email to customers who purchase a product from a specific category.', 'mailpoet'),
+      'description' => __('Let MailPoet send an email to customers who purchase a product for the first time in a specific category.', 'mailpoet'),
       'listingScheduleDisplayText' => __('Email sent when a customer buys a product in category: %s', 'mailpoet'),
       'listingScheduleDisplayTextPlural' => __('Email sent when a customer buys a product in categories: %s', 'mailpoet'),
       'options' => [
