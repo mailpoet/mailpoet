@@ -25,6 +25,10 @@ const WizardWooCommerceStep = (props) => {
   const finishButtonText = props.isWizardStep ? MailPoet.I18n.t('wooCommerceSetupFinishButtonTextWizard')
     : MailPoet.I18n.t('wooCommerceSetupFinishButtonTextStandalone');
 
+  let importTypeChecked;
+  if (importType === 'subscribed') importTypeChecked = true;
+  if (importType === 'unsubscribed') importTypeChecked = false;
+
   return (
     <>
       <Heading level={1}>{MailPoet.I18n.t('wooCommerceSetupTitle')}</Heading>
@@ -32,12 +36,12 @@ const WizardWooCommerceStep = (props) => {
       <div className="mailpoet-gap" />
       <p>{MailPoet.I18n.t('wooCommerceSetupInfo')}</p>
       <div className="mailpoet-gap" />
-
       <form onSubmit={submit}>
         <div className="mailpoet-wizard-woocommerce-option">
           <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
               showError={submitted && importType === null}
+              checked={importTypeChecked}
               onCheck={(value) => setImportType(value ? 'subscribed' : 'unsubscribed')}
               name="mailpoet_woocommerce_import_type"
               automationId="woocommerce_import_type"
@@ -72,6 +76,7 @@ const WizardWooCommerceStep = (props) => {
           <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
               showError={submitted && allowed === null}
+              checked={allowed}
               onCheck={(value) => setAllowed(value)}
               name="mailpoet_woocommerce_tracking"
               automationId="woocommerce_tracking"
