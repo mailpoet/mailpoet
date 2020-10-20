@@ -189,7 +189,7 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $newsletterOption->setValue($event);
     $this->entityManager->persist($newsletterOption);
 
-    $this->entityManager->flush($newsletter);
+    $this->entityManager->flush();
     $this->entityManager->refresh($newsletter);
   }
 
