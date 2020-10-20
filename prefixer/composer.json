@@ -28,6 +28,7 @@
       "mkdir ../vendor-prefixed",
       "php -d memory_limit=2G ../tools/vendor/php-scoper.phar add-prefix",
       "mv ./build/* ../vendor-prefixed",
+      "php fix-carbon.php",
       "php fix-twig.php",
       "php fix-doctrine.php",
       "php fix-swiftmailer.php",
