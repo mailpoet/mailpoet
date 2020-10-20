@@ -238,6 +238,9 @@ class Functions extends AbstractExtension {
   public function installedInLastTwoWeeks() {
     $maxNumberOfWeeks = 2;
     $installedAt = Carbon::createFromFormat('Y-m-d H:i:s', $this->settings->get('installed_at'));
+    if ($installedAt === false) {
+      return false;
+    }
     return $installedAt->diffInWeeks(Carbon::now()) < $maxNumberOfWeeks;
   }
 

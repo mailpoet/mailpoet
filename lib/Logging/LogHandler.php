@@ -54,7 +54,7 @@ class LogHandler extends AbstractProcessingHandler {
   }
 
   private function purgeOldLogs() {
-    Log::whereLt('created_at', Carbon::create()->subDays(self::DAYS_TO_KEEP_LOGS)->toDateTimeString())
+    Log::whereLt('created_at', Carbon::now()->subDays(self::DAYS_TO_KEEP_LOGS)->toDateTimeString())
        ->deleteMany();
   }
 }
