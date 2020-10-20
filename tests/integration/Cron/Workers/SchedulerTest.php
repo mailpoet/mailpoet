@@ -609,7 +609,7 @@ class SchedulerTest extends \MailPoetTest {
     $task = ScheduledTask::createOrUpdate([
       'type' => 'bounce',
       'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMinute(5),
+      'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMinutes(5),
     ]);
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_DRAFT);
     $queue = $this->_createQueue($newsletter->id);
@@ -641,7 +641,7 @@ class SchedulerTest extends \MailPoetTest {
     $task = SendingTask::create();
     $task->newsletterId = $newsletter->id;
     $task->status = SendingQueue::STATUS_SCHEDULED;
-    $task->scheduledAt = Carbon::now()->subDay(1)->toDateTimeString();
+    $task->scheduledAt = Carbon::now()->subDay()->toDateTimeString();
     $task->setSubscribers([$subscriber->id]);
     $task->save();
 
@@ -664,7 +664,7 @@ class SchedulerTest extends \MailPoetTest {
     $task = SendingTask::create();
     $task->newsletterId = $newsletter->id;
     $task->status = SendingQueue::STATUS_SCHEDULED;
-    $task->scheduledAt = Carbon::now()->subDay(1)->toDateTimeString();
+    $task->scheduledAt = Carbon::now()->subDay()->toDateTimeString();
     $task->setSubscribers([$subscriber->id]);
     $task->save();
     $subscriber->delete();
@@ -695,7 +695,7 @@ class SchedulerTest extends \MailPoetTest {
     $task = SendingTask::create();
     $task->newsletterId = $newsletter->id;
     $task->status = SendingQueue::STATUS_SCHEDULED;
-    $task->scheduledAt = Carbon::now()->subDay(1)->toDateTimeString();
+    $task->scheduledAt = Carbon::now()->subDay()->toDateTimeString();
     $task->save();
 
     // scheduled task should exist
