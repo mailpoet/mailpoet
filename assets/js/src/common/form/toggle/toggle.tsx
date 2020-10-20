@@ -11,11 +11,13 @@ const Toggle = ({
   dimension,
   onCheck,
   automationId,
+  className,
   ...attributes
 }: Props) => (
   <label
     className={
       classnames({
+        [className]: className,
         'mailpoet-form-toggle': true,
         [`mailpoet-form-toggle-${dimension}`]: dimension,
         'mailpoet-disabled': attributes.disabled,

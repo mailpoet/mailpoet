@@ -15,6 +15,7 @@ type Props = {
   type?: 'button' | 'submit' | 'reset',
   target?: '_blank' | '_self' | '_parent' | '_top' | string,
   automationId?: string,
+  className?: string,
 };
 
 const Button = ({
@@ -31,6 +32,7 @@ const Button = ({
   type,
   target,
   automationId,
+  className,
 }: Props) => {
   const Element = href ? 'a' : 'button';
   return (
@@ -41,6 +43,7 @@ const Button = ({
       target={target}
       className={
         classnames(
+          className,
           'mailpoet-button',
           {
             [`mailpoet-button-${dimension}`]: dimension,

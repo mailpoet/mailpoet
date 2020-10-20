@@ -203,12 +203,13 @@ class NewsletterListWelcome extends React.Component {
     return (
       <div>
         <Toggle
+          className="mailpoet-listing-status-toggle"
           onCheck={this.updateStatus}
           data-id={newsletter.id}
           dimension="small"
           defaultChecked={newsletter.status === 'active'}
         />
-        <p>
+        <p className="mailpoet-listing-stats-description">
           <Link
             to={`/sending-status/${newsletter.id}`}
             data-automation-id={`sending_status_${newsletter.id}`}
