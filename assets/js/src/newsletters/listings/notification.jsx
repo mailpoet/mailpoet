@@ -203,6 +203,7 @@ class NewsletterListNotification extends React.Component {
 
   renderStatus = (newsletter) => (
     <Toggle
+      className="mailpoet-listing-status-toggle"
       onCheck={this.updateStatus}
       data-id={newsletter.id}
       dimension="small"
@@ -291,7 +292,7 @@ class NewsletterListNotification extends React.Component {
     const childrenCount = Number((newsletter.children_count));
     if (childrenCount === 0) {
       return (
-        <span className="mailpoet-listing-status-unknown mailpoet-font-extra-small">
+        <span className="mailpoet-listing-status-unknown mailpoet-font-extra-small mailpoet-listing-notification-status">
           {MailPoet.I18n.t('notSentYet')}
         </span>
       );
@@ -302,7 +303,8 @@ class NewsletterListNotification extends React.Component {
         data-automation-id={`history-${newsletter.id}`}
         to={`/notification/history/${newsletter.id}`}
       >
-        <Button dimension="extra-small">{ MailPoet.I18n.t('viewHistory') }</Button>
+        <Button className="mailpoet-hide-on-mobile" dimension="extra-small">{ MailPoet.I18n.t('viewHistory') }</Button>
+        <Button className="mailpoet-show-on-mobile mailpoet-listing-notification-status" dimension="small" variant="light">{ MailPoet.I18n.t('viewHistory') }</Button>
       </Link>
     );
   };

@@ -192,7 +192,7 @@ class Listings extends React.Component {
   };
 
   renderStatus = (newsletter) => {
-    const totalSent = (parseInt(newsletter.total_sent, 10))
+    const totalSent = (parseInt(newsletter.total_sent, 10) > -1)
       ? MailPoet.I18n.t('sentToXCustomers')
         .replace('%$1d', newsletter.total_sent.toLocaleString())
       : null;
@@ -200,12 +200,13 @@ class Listings extends React.Component {
     return (
       <div>
         <Toggle
+          className="mailpoet-listing-status-toggle"
           onCheck={this.updateStatus}
           data-id={newsletter.id}
           dimension="small"
           defaultChecked={newsletter.status === 'active'}
         />
-        <p>
+        <p className="mailpoet-listing-notification-status">
           { totalSent && <Link to={`/sending-status/${newsletter.id}`}>{ totalSent }</Link> }
           { !totalSent && (
             <span className="mailpoet-listing-status-unknown mailpoet-font-extra-small">

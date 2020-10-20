@@ -49,6 +49,14 @@ span.mailpoet-gap-half {
   }
 }
 
+.mailpoet-show-on-mobile {
+  display: none;
+
+  @include respond-to(small-screen) {
+    display: block;
+  }
+}
+
 // Media query helpers
 .small-screen {
   display: none;

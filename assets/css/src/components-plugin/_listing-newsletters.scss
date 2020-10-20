@@ -140,6 +140,14 @@ h1.title.mailpoet-newsletter-listing-heading-empty {
   }
 }
 
+.mailpoet-listing-status-toggle {
+  @include respond-to(small-screen) {
+    position: absolute;
+    right: 10px;
+    top: 13px;
+  }
+}
+
 .mailpoet-listing-status {
   display: flex;
   height: 24px;
@@ -157,6 +165,7 @@ h1.title.mailpoet-newsletter-listing-heading-empty {
 .mailpoet-listing-status-unknown {
   color: $color-text-light;
   font-weight: 600;
+  white-space: nowrap;
 
   .mailpoet-listing-status-percentage {
     stroke: $color-text-light;
@@ -188,6 +197,7 @@ h1.title.mailpoet-newsletter-listing-heading-empty {
   font-size: 12px;
   line-height: 24px;
   padding-left: 8px;
+  white-space: nowrap;
 }
 
 .mailpoet-listing-status-percentage-background {
@@ -200,6 +210,20 @@ h1.title.mailpoet-newsletter-listing-heading-empty {
   fill: none;
   stroke: $color-secondary;
   stroke-width: 2px;
+}
+
+.mailpoet-listing-notification-status {
+  @include respond-to(small-screen) {
+    align-items: center;
+    bottom: 10px;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    min-height: 32px;
+    position: absolute;
+    right: 10px;
+    width: calc((100% - 24px) / 2 - 5px);
+  }
 }
 
 .mailpoet-listing-stats {
@@ -235,4 +259,13 @@ h1.title.mailpoet-newsletter-listing-heading-empty {
 .mailpoet-listing-stats-tooltip-content {
   font-size: $font-size-extra-small;
   font-weight: normal;
+}
+
+.mailpoet-listing-stats-description {
+  @include respond-to(small-screen) {
+    float: right;
+    line-height: 22px !important;
+    margin: 0;
+    padding: 5px 0 !important;
+  }
 }
