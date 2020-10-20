@@ -146,11 +146,6 @@ parameters:
 			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/AbandonedCartTest.php
 
 		-
-			message: "#^Property MailPoet\\\\AutomaticEmails\\\\WooCommerce\\\\Events\\\\PurchasedInCategoryTest\\:\\:\\$woocommerceHelper \\(PHPUnit\\\\Framework\\\\MockObject\\\\MockObject\\) does not accept MailPoet\\\\WooCommerce\\\\Helper\\.$#"
-			count: 1
-			path: ../../tests/integration/AutomaticEmails/WooCommerce/Events/PurchasedInCategoryTest.php
-
-		-
 			message: "#^Cannot call method has_cap\\(\\) on WP_Role\\|null\\.$#"
 			count: 6
 			path: ../../tests/integration/Config/CapabilitiesTest.php

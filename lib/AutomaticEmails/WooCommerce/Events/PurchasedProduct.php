@@ -4,6 +4,7 @@ namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
 use MailPoet\WooCommerce\Helper as WCHelper;
@@ -120,11 +121,14 @@ class PurchasedProduct {
     }, $orderDetails->get_items());
     $orderedProducts = array_values(array_filter($orderedProducts));
 
-    $schedulingCondition = function($automaticEmail) use ($orderedProducts, $subscriber) {
+    $schedulingCondition = function(Newsletter $automaticEmail) use ($orderedProducts, $subscriber) {
       $meta = $automaticEmail->getMeta();
 
       if (empty($meta['option'])) return false;
-      if ($automaticEmail->wasScheduledForSubscriber($subscriber->id)) return false;
+      if ($automaticEmail->wasScheduledForSubscriber($subscriber->id)) {
+        $sentAllProducts = $automaticEmail->alreadySentAllProducts($subscriber->id, 'orderedProducts', $orderedProducts);
+        if ($sentAllProducts) return false;
+      }
 
       $metaProducts = array_column($meta['option'], 'id');
       $matchedProducts = array_intersect($metaProducts, $orderedProducts);

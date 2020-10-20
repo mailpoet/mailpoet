@@ -118,7 +118,10 @@ class PurchasedInCategory {
       $meta = $automaticEmail->getMeta();
 
       if (empty($meta['option'])) return false;
-      if ($automaticEmail->wasScheduledForSubscriber($subscriber->id)) return false;
+      if ($automaticEmail->wasScheduledForSubscriber($subscriber->id)) {
+        $sentAllProducts = $automaticEmail->alreadySentAllProducts($subscriber->id, 'orderedProductCategories', $orderedProductCategories);
+        if ($sentAllProducts) return false;
+      }
 
       $metaCategories = array_column($meta['option'], 'id');
       $matchedCategories = array_intersect($metaCategories, $orderedProductCategories);
@@ -138,7 +141,7 @@ class PurchasedInCategory {
       self::SLUG,
       $schedulingCondition,
       $subscriber->id,
-      ['orderedProducts' => $orderedProductCategories]
+      ['orderedProductCategories' => $orderedProductCategories]
     );
   }
 }
