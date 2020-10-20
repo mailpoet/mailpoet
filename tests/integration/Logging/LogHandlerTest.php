@@ -29,7 +29,7 @@ class LogHandlerTest extends \MailPoetTest {
       'name' => 'old name',
       'level' => '5',
       'message' => 'xyz',
-      'created_at' => Carbon::create()->subDays(100)->toDateTimeString(),
+      'created_at' => Carbon::now()->subDays(100)->toDateTimeString(),
     ]);
     $model->save();
     $random = function() {
@@ -51,11 +51,13 @@ class LogHandlerTest extends \MailPoetTest {
 
   public function testItNotPurgesOldLogs() {
     $model = Log::create();
+    $date = Carbon::create();
+    assert($date instanceof Carbon);
     $model->hydrate([
       'name' => 'old name keep',
       'level' => '5',
       'message' => 'xyz',
-      'created_at' => Carbon::create()->subDays(100)->toDateTimeString(),
+      'created_at' => $date->subDays(100)->toDateTimeString(),
     ]);
     $model->save();
     $random = function() {

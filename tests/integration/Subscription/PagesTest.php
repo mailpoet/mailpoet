@@ -54,8 +54,8 @@ class PagesTest extends \MailPoetTest {
     $subscription->confirm();
     $confirmedSubscriber = Subscriber::findOne($this->subscriber->id);
     expect($confirmedSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($confirmedSubscriber->lastSubscribedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond(1));
-    expect($confirmedSubscriber->lastSubscribedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond(1));
+    expect($confirmedSubscriber->lastSubscribedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond());
+    expect($confirmedSubscriber->lastSubscribedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond());
   }
 
   public function testItUpdatesSubscriptionOnDuplicateAttemptButDoesntSendNotification() {
@@ -72,10 +72,10 @@ class PagesTest extends \MailPoetTest {
     $subscription->confirm();
     $confirmedSubscriber = Subscriber::findOne($this->subscriber->id);
     expect($confirmedSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($confirmedSubscriber->confirmedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond(1));
-    expect($confirmedSubscriber->confirmedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond(1));
-    expect($confirmedSubscriber->lastSubscribedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond(1));
-    expect($confirmedSubscriber->lastSubscribedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond(1));
+    expect($confirmedSubscriber->confirmedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond());
+    expect($confirmedSubscriber->confirmedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond());
+    expect($confirmedSubscriber->lastSubscribedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond());
+    expect($confirmedSubscriber->lastSubscribedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond());
     expect($confirmedSubscriber->firstName)->equals('Updated first name');
   }
 
