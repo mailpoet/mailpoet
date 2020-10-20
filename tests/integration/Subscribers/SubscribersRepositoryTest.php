@@ -252,6 +252,32 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     ]))->notNull();
   }
 
+  public function testItDoesntRemovePermanentlyWordpressSubscriber(): void {
+    $subscriber = $this->createSubscriber('wpsubscriber@delete.com');
+    $subscriber->setWpUserId(1);
+    $this->repository->flush();
+    $this->entityManager->clear();
+    $subscriberId = $subscriber->getId();
+
+    $count = $this->repository->bulkDelete([$subscriber->getId()]);
+
+    expect($count)->equals(0);
+    expect($this->repository->findOneById($subscriberId))->notNull();
+  }
+
+  public function testItDoesntRemovePermanentlyWoocommerceSubscriber(): void {
+    $subscriber = $this->createSubscriber('wcsubscriber@delete.com');
+    $subscriber->setIsWoocommerceUser(true);
+    $this->repository->flush();
+    $this->entityManager->clear();
+    $subscriberId = $subscriber->getId();
+
+    $count = $this->repository->bulkDelete([$subscriberId]);
+
+    expect($count)->equals(0);
+    expect($this->repository->findOneById($subscriberId))->notNull();
+  }
+
   private function createSubscriber(string $email, ?DateTimeImmutable $deletedAt = null): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
