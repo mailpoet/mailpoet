@@ -119,7 +119,7 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
 
         <NewsletterGeneralStats
           newsletter={newsletter}
-          isWoocommerceActive={(window as any).mailpoet_woocommerce_active}
+          isWoocommerceActive={MailPoet.isWoocommerceActive}
         />
 
         <h2>{MailPoet.I18n.t('clickedLinks')}</h2>
