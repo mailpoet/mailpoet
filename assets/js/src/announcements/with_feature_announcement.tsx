@@ -3,11 +3,6 @@ import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import jQuery from 'jquery';
 
-type featureAnnouncementProps = {
-  hasNews: boolean,
-  onBeamerClick: () => {},
-}
-
 export const withFeatureAnnouncement = <P extends object>(
   Component: React.ComponentType<P>
 ): React.FC<Omit<P, 'hasNews'|'onBeamerClick'>> => {
