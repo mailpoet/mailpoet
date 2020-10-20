@@ -4,6 +4,7 @@ import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import Tag from 'common/tag/tag';
 import NewsletterStats from 'common/listings/newsletter_stats';
 import { trackStatsCTAClicked } from 'newsletters/listings/utils.jsx';
 
@@ -116,9 +117,9 @@ const Statistics = ({ newsletter, isSent, currentTime }) => {
       {openedClickedAndRevenueStats}
       {tooEarlyForStats && wrapContentInLink(
         (
-          <div className="mailpoet_badge mailpoet_badge_green">
+          <Tag className="mailpoet-listing-stats-too-early" dimension="large" variant="excellent" isInverted>
             {MailPoet.I18n.t('checkBackInHours').replace('%$1d', showStatsTimeout - sentHoursAgo)}
-          </div>
+          </Tag>
         ),
         'check-back'
       )}

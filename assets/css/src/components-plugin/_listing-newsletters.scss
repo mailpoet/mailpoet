@@ -239,6 +239,10 @@ h1.title.mailpoet-newsletter-listing-heading-empty {
   .__react_component_tooltip.show {
     opacity: 1 !important;
   }
+
+  + .mailpoet-tag {
+    margin-top: 5px;
+  }
 }
 
 .mailpoet-listing-stats a {
@@ -273,4 +277,9 @@ h1.title.mailpoet-newsletter-listing-heading-empty {
     margin: 0;
     padding: 5px 0 !important;
   }
+}
+
+.mailpoet-listing-stats-too-early {
+  margin-top: 5px;
+  max-width: 150px;
 }

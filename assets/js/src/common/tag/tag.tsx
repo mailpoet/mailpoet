@@ -6,6 +6,7 @@ type Props = {
   variant?: 'average' | 'good' | 'excellent' | 'list',
   dimension?: 'large',
   isInverted?: boolean,
+  className?: string,
   data?: string,
 }
 
@@ -14,12 +15,14 @@ const Tag = ({
   variant,
   dimension,
   isInverted,
+  className,
   ...dataAttributes
 }: Props) => (
   <div
     {...dataAttributes}
     className={
       classnames(
+        className,
         'mailpoet-tag',
         {
           [`mailpoet-tag-${variant}`]: variant,
