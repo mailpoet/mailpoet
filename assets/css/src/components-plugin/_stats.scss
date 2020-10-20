@@ -14,7 +14,7 @@
 .mailpoet-stats-general {
   background-color: $color-white;
   margin: 0;
-  padding: $grid-gap;
+  padding: 0 $grid-gap $grid-gap;
   width: 100%;
 }
 
@@ -52,7 +52,7 @@
     border-radius: 2px;
     font-weight: normal;
     margin-right: $grid-gap;
-    padding: 4px $grid-gap-half;
+    padding: 2px 4px;
   }
 }
 
