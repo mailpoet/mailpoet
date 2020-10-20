@@ -189,8 +189,13 @@ div.mailpoet-listing-bulk-actions-container {
   tbody td {
     border-bottom: 1px solid $color-tertiary-light;
     box-shadow: none;
+    max-width: 40vw;
     padding: $grid-gap-medium $grid-gap-half;
     vertical-align: middle;
+
+    @include respond-to(small-screen) {
+      max-width: none;
+    }
   }
 
   thead th.column-primary,
