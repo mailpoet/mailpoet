@@ -1,7 +1,8 @@
 import React from 'react';
+import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 import {
-  isFuture, isPast, differenceInMinutes, format,
+  isFuture, isPast, differenceInMinutes,
 } from 'date-fns';
 import t from 'common/functions/t';
 
@@ -23,25 +24,31 @@ const NewsletterStatus = ({
   const inProgress = (!scheduledFor || isPast(scheduledFor)) && processed < total;
   const sent = (!scheduledFor || isPast(scheduledFor)) && processed >= total;
   let percentage = 0;
-  let label = t('notSentYet');
+  let label = (<>{t('notSentYet')}</>);
   if (scheduled) {
     const minutesIn12Hours = 720;
     const minutesLeft = differenceInMinutes(scheduledFor, new Date());
-    label = format(scheduledFor, 'dd/LL/yyyy • p').toLocaleLowerCase();
+    label = (
+      <>
+        {MailPoet.Date.short(scheduledFor)}
+        <br />
+        {MailPoet.Date.time(scheduledFor)}
+      </>
+    );
     if (minutesLeft < minutesIn12Hours) {
       percentage = 100 * (minutesLeft / minutesIn12Hours);
     } else {
       percentage = 100;
     }
   } else if (inProgress) {
-    label = `${processed} / ${total}`;
+    label = (<>{`${processed} / ${total}`}</>);
     percentage = 100 * (processed / total);
   } else if (sent) {
-    label = `${total} / ${total}`;
+    label = (<>{`${total} / ${total}`}</>);
     percentage = 100;
   }
   if (isPaused && !sent) {
-    label = t('paused');
+    label = (<>{t('paused')}</>);
   }
   return (
     <div className={classNames({
