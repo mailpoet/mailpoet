@@ -621,8 +621,12 @@ parameters:
 			path: ../../tests/integration/Newsletter/Scheduler/AutomaticEmailTest.php
 
 		-
-			message: "#^Cannot access property \\$value on MailPoet\\\\Models\\\\NewsletterOption\\|false\\.$#"
-			count: 5
+			message: "#^Access to an undefined property MailPoet\\\\Tasks\\\\Sending\\:\\:\\$scheduledAt\\.$#"
+			count: 2
+			path: ../../tests/integration/Newsletter/Scheduler/PostNotificationTest.php
+		-
+			message: "#^Access to an undefined property MailPoet\\\\Tasks\\\\Sending\\:\\:\\$priority\\.$#"
+			count: 2
 			path: ../../tests/integration/Newsletter/Scheduler/PostNotificationTest.php
 
 		-

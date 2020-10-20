@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 use Codeception\Util\Stub;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -28,12 +29,13 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
         'revenue' => null,
       ],
     ];
-    $repository = Stub::make(NewsletterStatisticsRepository::class, [
+    $newsletterStatsRepository = Stub::make(NewsletterStatisticsRepository::class, [
       'getTotalSentCount' => $stats['total_sent'],
       'getChildrenCount' => $stats['children_count'],
       'getStatistics' => new NewsletterStatistics(4, 6, 2, 10, null),
     ]);
-    $responseBuilder = new NewslettersResponseBuilder($em, $repository);
+    $newsletterRepository = Stub::make(NewslettersRepository::class);
+    $responseBuilder = new NewslettersResponseBuilder($em, $newsletterRepository, $newsletterStatsRepository);
     $response = $responseBuilder->build($newsletter, [
       NewslettersResponseBuilder::RELATION_CHILDREN_COUNT,
       NewslettersResponseBuilder::RELATION_TOTAL_SENT,

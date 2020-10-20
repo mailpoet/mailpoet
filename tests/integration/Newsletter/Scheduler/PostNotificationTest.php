@@ -3,92 +3,129 @@
 namespace MailPoet\Newsletter\Scheduler;
 
 use MailPoet\Config\Hooks;
-use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\NewsletterPostEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\NewsletterPost;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\NewsletterPostsRepository;
+use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class PostNotificationTest extends \MailPoetTest {
 
   /** @var PostNotificationScheduler */
   private $postNotificationScheduler;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
+  /** @var NewsletterPostsRepository */
+  private $newsletterPostsRepository;
+
+  /** @var NewsletterOptionsRepository */
+  private $newsletterOptionsRepository;
+
+  /** @var NewsletterOptionFieldsRepository */
+  private $newsletterOptionFieldsRepository;
+
+  /** @var Hooks */
+  private $hooks;
+
   public function _before() {
     parent::_before();
-    $this->postNotificationScheduler = new PostNotificationScheduler;
+    $this->postNotificationScheduler = $this->diContainer->get(PostNotificationScheduler::class);
+    $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->newsletterPostsRepository = $this->diContainer->get(NewsletterPostsRepository::class);
+    $this->newsletterOptionsRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
+    $this->newsletterOptionFieldsRepository = $this->diContainer->get(NewsletterOptionFieldsRepository::class);
+    $this->hooks = $this->diContainer->get(Hooks::class);
   }
 
   public function testItCreatesPostNotificationSendingTask() {
-    $newsletter = $this->_createNewsletter();
-    $newsletter->schedule = '* 5 * * *';
+    $newsletter = $this->createNewsletter();
+    $this->createNewsletterOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* 5 * * *',
+    ]);
 
     // new queue record should be created
     $queue = $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
-    expect(SendingQueue::findMany())->count(1);
-    expect($queue->newsletterId)->equals($newsletter->id);
+    assert($queue instanceof SendingTask);
+    expect(SendingQueue::where('newsletter_id', $newsletter->getId())->findMany())->count(1);
+    expect($queue->newsletterId)->equals($newsletter->getId());
     expect($queue->status)->equals(SendingQueue::STATUS_SCHEDULED);
     expect($queue->scheduledAt)->equals(Scheduler::getNextRunDate('* 5 * * *'));
     expect($queue->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
 
     // duplicate queue record should not be created
+    $newsletterId = $newsletter->getId();
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletterId);
+    assert($newsletter instanceof NewsletterEntity);
     $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
-    expect(SendingQueue::findMany())->count(1);
+    expect(SendingQueue::where('newsletter_id', $newsletter->getId())->findMany())->count(1);
   }
 
   public function testItCreatesPostNotificationSendingTaskIfAPausedNotificationExists() {
-    $newsletter = $this->_createNewsletter();
-    $newsletter->schedule = '* 5 * * *';
+    $newsletter = $this->createNewsletter();
+    $this->createNewsletterOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* 5 * * *',
+    ]);
 
     // new queue record should be created
     $queueToBePaused = $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
+    assert($queueToBePaused instanceof SendingTask);
     $queueToBePaused->task()->pause();
 
     // another queue record should be created because the first one was paused
-    $newsletter->schedule = '* 10 * * *'; // different time to not clash with the first queue
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    assert($scheduleOption instanceof NewsletterOptionEntity);
+    $scheduleOption->setValue('* 10 * * *'); // different time to not clash with the first queue
+    $this->newsletterOptionsRepository->flush();
     $queue = $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
-    expect(SendingQueue::findMany())->count(2);
-    expect($queue->newsletterId)->equals($newsletter->id);
+    assert($queue instanceof SendingTask);
+    expect(SendingQueue::where('newsletter_id', $newsletter->getId())->findMany())->count(2);
+    expect($queue->newsletterId)->equals($newsletter->getId());
     expect($queue->status)->equals(SendingQueue::STATUS_SCHEDULED);
     expect($queue->scheduledAt)->equals(Scheduler::getNextRunDate('* 10 * * *'));
     expect($queue->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
 
     // duplicate queue record should not be created
+    $newsletterId = $newsletter->getId();
+    $this->entityManager->clear();
+    $newsletter = $this->newslettersRepository->findOneById($newsletterId);
+    assert($newsletter instanceof NewsletterEntity);
     $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
-    expect(SendingQueue::findMany())->count(2);
+    expect(SendingQueue::where('newsletter_id', $newsletter->getId())->findMany())->count(2);
   }
 
-  public function tesIttDoesNotSchedulePostNotificationWhenNotificationWasAlreadySentForPost() {
-    $newsletter = $this->_createNewsletter();
-    $newsletterPost = NewsletterPost::create();
-    $newsletterPost->newsletterId = $newsletter->id;
-    $newsletterPost->postId = 10;
-    $newsletterPost->save();
+  public function testItDoesNotSchedulePostNotificationWhenNotificationWasAlreadySentForPost() {
+    $postId = 10;
+    $newsletter = $this->createNewsletter();
+    $newsletterPost = $this->createPost($newsletter, $postId);
 
     // queue is not created when notification was already sent for the post
-    $this->postNotificationScheduler->schedulePostNotification($postId = 10);
-    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
+    $this->postNotificationScheduler->schedulePostNotification($postId);
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->getId())
       ->findOne();
     expect($queue)->false();
   }
 
   public function testItSchedulesPostNotification() {
-    $newsletter = $this->_createNewsletter();
-    $this->_createNewsletterOptions(
-      $newsletter->id,
-      [
-        'schedule' => '0 5 * * *',
-      ]
-    );
+    $newsletter = $this->createNewsletter();
+    $this->createNewsletterOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '0 5 * * *',
+    ]);
 
     // queue is created and scheduled for delivery one day later at 5 a.m.
     $this->postNotificationScheduler->schedulePostNotification($postId = 10);
@@ -97,147 +134,127 @@ class PostNotificationTest extends \MailPoetTest {
     $nextRunDate = ($currentTime->hour < 5) ?
       $currentTime :
       $currentTime->addDay();
-    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->getId())
       ->findOne();
     expect($queue->scheduledAt)->startsWith($nextRunDate->format('Y-m-d 05:00'));
   }
 
   public function testItProcessesPostNotificationScheduledForDailyDelivery() {
-    $newsletterOptionField = NewsletterOptionField::create();
-    $newsletterOptionField->name = 'schedule';
-    $newsletterOptionField->newsletterType = Newsletter::TYPE_NOTIFICATION;
-    $newsletterOptionField->save();
+    $newsletter = $this->createNewsletter();
+    $this->createNewsletterOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_DAILY,
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 50400, // 2 p.m.
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
 
-    // daily notification is scheduled at 14:00
-    $newsletter = (object)[
-      'id' => 1,
-      'intervalType' => PostNotificationScheduler::INTERVAL_DAILY,
-      'monthDay' => null,
-      'nthWeekDay' => null,
-      'weekDay' => null,
-      'timeOfDay' => 50400, // 2 p.m.
-    ];
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
-    $newsletterOption = NewsletterOption::where('newsletter_id', $newsletter->id)
-      ->where('option_field_id', $newsletterOptionField->id)
-      ->findOne();
+    
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    assert($scheduleOption instanceof NewsletterOptionEntity);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect(Scheduler::getNextRunDate($newsletterOption->value, $currentTime))
+    expect(Scheduler::getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-01 14:00:00');
   }
 
   public function testItProcessesPostNotificationScheduledForWeeklyDelivery() {
-    $newsletterOptionField = NewsletterOptionField::create();
-    $newsletterOptionField->name = 'schedule';
-    $newsletterOptionField->newsletterType = Newsletter::TYPE_NOTIFICATION;
-    $newsletterOptionField->save();
+    $newsletter = $this->createNewsletter();
 
     // weekly notification is scheduled every Tuesday at 14:00
-    $newsletter = (object)[
-      'id' => 1,
-      'intervalType' => PostNotificationScheduler::INTERVAL_WEEKLY,
-      'monthDay' => null,
-      'nthWeekDay' => null,
-      'weekDay' => Carbon::TUESDAY,
-      'timeOfDay' => 50400, // 2 p.m.
-    ];
+    $this->createNewsletterOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_WEEKLY,
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEK_DAY => Carbon::TUESDAY,
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 50400, // 2 p.m.
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
+
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
-    $newsletterOption = NewsletterOption::where('newsletter_id', $newsletter->id)
-      ->where('option_field_id', $newsletterOptionField->id)
-      ->findOne();
+    
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    assert($scheduleOption instanceof NewsletterOptionEntity);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect(Scheduler::getNextRunDate($newsletterOption->value, $currentTime))
+    expect(Scheduler::getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-03 14:00:00');
   }
 
   public function testItProcessesPostNotificationScheduledForMonthlyDeliveryOnSpecificDay() {
-    $newsletterOptionField = NewsletterOptionField::create();
-    $newsletterOptionField->name = 'schedule';
-    $newsletterOptionField->newsletterType = Newsletter::TYPE_NOTIFICATION;
-    $newsletterOptionField->save();
+    $newsletter = $this->createNewsletter();
 
     // monthly notification is scheduled every 20th day at 14:00
-    $newsletter = (object)[
-      'id' => 1,
-      'intervalType' => PostNotificationScheduler::INTERVAL_MONTHLY,
-      'monthDay' => 19, // 20th (count starts from 0)
-      'nthWeekDay' => null,
-      'weekDay' => null,
-      'timeOfDay' => 50400,// 2 p.m.
-    ];
+    $this->createNewsletterOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_MONTHLY,
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => 19,
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 50400, // 2 p.m.
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
+
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
-    $newsletterOption = NewsletterOption::where('newsletter_id', $newsletter->id)
-      ->where('option_field_id', $newsletterOptionField->id)
-      ->findOne();
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    assert($scheduleOption instanceof NewsletterOptionEntity);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect(Scheduler::getNextRunDate($newsletterOption->value, $currentTime))
+    expect(Scheduler::getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-19 14:00:00');
   }
 
   public function testItProcessesPostNotificationScheduledForMonthlyDeliveryOnLastWeekDay() {
-    $newsletterOptionField = NewsletterOptionField::create();
-    $newsletterOptionField->name = 'schedule';
-    $newsletterOptionField->newsletterType = Newsletter::TYPE_NOTIFICATION;
-    $newsletterOptionField->save();
+    $newsletter = $this->createNewsletter();
 
     // monthly notification is scheduled every last Saturday at 14:00
-    $newsletter = (object)[
-      'id' => 1,
-      'intervalType' => PostNotificationScheduler::INTERVAL_NTHWEEKDAY,
-      'monthDay' => null,
-      'nthWeekDay' => 'L', // L = last
-      'weekDay' => Carbon::SATURDAY,
-      'timeOfDay' => 50400,// 2 p.m.
-    ];
+    $this->createNewsletterOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_NTHWEEKDAY,
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => 'L', // L = last
+      NewsletterOptionFieldEntity::NAME_WEK_DAY => Carbon::SATURDAY,
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 50400, // 2 p.m.
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
+
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
-    $newsletterOption = NewsletterOption::where('newsletter_id', $newsletter->id)
-      ->where('option_field_id', $newsletterOptionField->id)
-      ->findOne();
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    assert($scheduleOption instanceof NewsletterOptionEntity);
     $currentTime = 1485694800; // Sunday, 29 January 2017 @ 1:00pm (UTC)
-    expect(Scheduler::getNextRunDate($newsletterOption->value, $currentTime))
+    expect(Scheduler::getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-02-25 14:00:00');
   }
 
   public function testItProcessesPostNotificationScheduledForImmediateDelivery() {
-    $newsletterOptionField = NewsletterOptionField::create();
-    $newsletterOptionField->name = 'schedule';
-    $newsletterOptionField->newsletterType = Newsletter::TYPE_NOTIFICATION;
-    $newsletterOptionField->save();
+    $newsletter = $this->createNewsletter();
 
     // notification is scheduled immediately (next minute)
-    $newsletter = (object)[
-      'id' => 1,
-      'intervalType' => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
-      'monthDay' => null,
-      'nthWeekDay' => null,
-      'weekDay' => null,
-      'timeOfDay' => null,
-    ];
+    $this->createNewsletterOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => null,
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
+
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
-    $newsletterOption = NewsletterOption::where('newsletter_id', $newsletter->id)
-      ->where('option_field_id', $newsletterOptionField->id)
-      ->findOne();
+    $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
+    assert($scheduleOption instanceof NewsletterOptionEntity);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect(Scheduler::getNextRunDate($newsletterOption->value, $currentTime))
+    expect(Scheduler::getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-01 13:01:00');
   }
 
   public function testUnsearchablePostTypeDoesNotSchedulePostNotification() {
-    $hook = ContainerWrapper::getInstance()->get(Hooks::class);
+    $newsletter = $this->createNewsletter();
 
-    $newsletter = $this->_createNewsletter();
-
-    $this->_createNewsletterOptions(
-      $newsletter->id,
-      [
-        'intervalType' => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
-        'schedule' => '* * * * *',
-      ]
-    );
+    $this->createNewsletterOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
 
     $this->_removePostNotificationHooks();
     register_post_type('post', ['exclude_from_search' => true]);
-    $hook->setupPostNotifications();
+    $this->hooks->setupPostNotifications();
 
     $postData = [
       'post_title' => 'title',
@@ -245,38 +262,37 @@ class PostNotificationTest extends \MailPoetTest {
     ];
     wp_insert_post($postData);
 
-    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->getId())->findOne();
     expect($queue)->equals(false);
 
     $this->_removePostNotificationHooks();
     register_post_type('post', ['exclude_from_search' => false]);
-    $hook->setupPostNotifications();
+    $this->hooks->setupPostNotifications();
 
     wp_insert_post($postData);
 
-    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->getId())->findOne();
     expect($queue)->notequals(false);
   }
 
   public function testSchedulerWontRunIfUnsentNotificationHistoryExists() {
-    $newsletter = $this->_createNewsletter();
+    $newsletter = $this->createNewsletter();
 
-    $this->_createNewsletterOptions(
-      $newsletter->id,
-      [
-        'intervalType' => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
-        'schedule' => '* * * * *',
-      ]
-    );
+    $this->createNewsletterOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
+    ]);
 
-    $notificationHistory = Newsletter::create();
-    $notificationHistory->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
-    $notificationHistory->status = Newsletter::STATUS_SENDING;
-    $notificationHistory->parentId = $newsletter->id;
-    $notificationHistory->save();
+    $notificationHistory = new NewsletterEntity();
+    $notificationHistory->setType(Newsletter::TYPE_NOTIFICATION_HISTORY);
+    $notificationHistory->setStatus(Newsletter::STATUS_SENDING);
+    $notificationHistory->setParent($newsletter);
+    $notificationHistory->setSubject($newsletter->getSubject());
+    $this->newslettersRepository->persist($notificationHistory);
+    $this->newslettersRepository->flush();
 
     $sendingTask = SendingTask::create();
-    $sendingTask->newsletterId = $notificationHistory->id;
+    $sendingTask->newsletterId = $notificationHistory->getId();
     $sendingTask->status = SendingQueue::STATUS_SCHEDULED;
     $sendingTask->save();
 
@@ -284,9 +300,13 @@ class PostNotificationTest extends \MailPoetTest {
       'post_title' => 'title',
       'post_status' => 'publish',
     ];
+
+    // because the hooks work after deserialization entityManager incorrectly, we need to remove the hooks and setup them again
+    $this->_removePostNotificationHooks();
+    $this->hooks->setupPostNotifications();
     wp_insert_post($postData);
 
-    $queue = SendingQueue::findTaskByNewsletterId($newsletter->id)->findOne();
+    $queue = SendingQueue::findTaskByNewsletterId($newsletter->getId())->findOne();
     expect($queue)->equals(false);
   }
 
@@ -298,46 +318,55 @@ class PostNotificationTest extends \MailPoetTest {
         10
       );
     }
+
   }
 
-  public function _createNewsletter() {
-    $newsletter = Newsletter::create();
-    $newsletter->type = Newsletter::TYPE_NOTIFICATION;
-    $newsletter->status = Newsletter::STATUS_ACTIVE;
-    $newsletter->save();
-    expect($newsletter->getErrors())->false();
+  private function createNewsletter(): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(Newsletter::TYPE_NOTIFICATION);
+    $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
+    $newsletter->setSubject('Testing subject');
+    $this->newslettersRepository->persist($newsletter);
+    $this->newslettersRepository->flush();
     return $newsletter;
   }
 
-  public function _createNewsletterOptions($newsletterId, $options) {
-    foreach ($options as $option => $value) {
-      $newsletterOptionField = NewsletterOptionField::where('name', $option)->findOne();
-      if (!$newsletterOptionField) {
-        $newsletterOptionField = NewsletterOptionField::create();
-        $newsletterOptionField->name = $option;
-        $newsletterOptionField->newsletterType = Newsletter::TYPE_NOTIFICATION;
-        $newsletterOptionField->save();
-        expect($newsletterOptionField->getErrors())->false();
+  private function createPost(NewsletterEntity $newsletter, int $postId): NewsletterPostEntity {
+    $newsletterPost = new NewsletterPostEntity($newsletter, $postId);
+    $this->newsletterPostsRepository->persist($newsletterPost);
+    $this->newsletterPostsRepository->flush();
+    return $newsletterPost;
+  }
+
+  private function createNewsletterOptions(NewsletterEntity $newsletter, array $options) {
+    foreach ($options as $name => $value) {    
+      $newsletterOptionField = $this->newsletterOptionFieldsRepository->findOneBy([
+        'name' => $name,
+      ]);
+      if ($newsletterOptionField === null) {
+        $newsletterOptionField = new NewsletterOptionFieldEntity();
+        $newsletterOptionField->setName($name);
+        $newsletterOptionField->setNewsletterType(NewsletterEntity::TYPE_NOTIFICATION);
+        $this->newsletterOptionFieldsRepository->persist($newsletterOptionField);
       }
 
-      $newsletterOption = NewsletterOption::create();
-      $newsletterOption->optionFieldId = (int)$newsletterOptionField->id;
-      $newsletterOption->newsletterId = $newsletterId;
-      $newsletterOption->value = $value;
-      $newsletterOption->save();
-      expect($newsletterOption->getErrors())->false();
+      $scheduleOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
+      $scheduleOption->setValue($value);
+      $newsletter->getOptions()->add($scheduleOption);
+      $this->newsletterOptionsRepository->persist($scheduleOption);
     }
+    $this->newsletterOptionsRepository->flush();
   }
 
   public function _after() {
     Carbon::setTestNow();
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
+    $this->truncateEntity(NewsletterPostEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
   }
 }
