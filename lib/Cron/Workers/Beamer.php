@@ -44,8 +44,8 @@ class Beamer extends SimpleWorker {
     return $date
       ->next(Carbon::MONDAY)
       ->startOfDay()
-      ->addDay(rand(0, 6))
-      ->addHour(rand(0, 23))
-      ->addMinute(rand(0, 59));
+      ->addDays(rand(0, 6))
+      ->addHours(rand(0, 23))
+      ->addMinutes(rand(0, 59));
   }
 }

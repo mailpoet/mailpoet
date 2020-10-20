@@ -254,6 +254,9 @@ class NewsletterSaveController {
     $schedule = $this->postNotificationScheduler->processPostNotificationSchedule($newsletterModel);
     $nextRunDateString = Scheduler::getNextRunDate($schedule);
     $nextRunDate = $nextRunDateString ? Carbon::createFromFormat('Y-m-d H:i:s', $nextRunDateString) : null;
+    if ($nextRunDate === false) {
+      throw InvalidStateException::create()->withMessage('Invalid next run date generated');
+    }
 
     // find previously scheduled jobs and reschedule them
     $scheduledTasks = $this->scheduledTasksRepository->findByNewsletterAndStatus($newsletter, ScheduledTaskEntity::STATUS_SCHEDULED);

@@ -325,9 +325,9 @@ class SendingQueue {
     $bounceTasks = ScheduledTask::findFutureScheduledByType(Bounce::TASK_TYPE);
     if (count($bounceTasks)) {
       $bounceTask = reset($bounceTasks);
-      if (Carbon::createFromTimestamp((int)current_time('timestamp'))->addHour(42)->lessThan($bounceTask->scheduledAt)) {
+      if (Carbon::createFromTimestamp((int)current_time('timestamp'))->addHours(42)->lessThan($bounceTask->scheduledAt)) {
         $randomOffset = rand(-6 * 60 * 60, 6 * 60 * 60);
-        $bounceTask->scheduledAt = Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond((36 * 60 * 60) + $randomOffset);
+        $bounceTask->scheduledAt = Carbon::createFromTimestamp((int)current_time('timestamp'))->addSeconds((36 * 60 * 60) + $randomOffset);
         $bounceTask->save();
       }
     }
