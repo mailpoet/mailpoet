@@ -369,17 +369,39 @@ class Newsletter extends Model {
   }
 
   public function wasScheduledForSubscriber($subscriberId) {
+    $query = SendingQueue::selectExpr('COUNT(*)', 'count');
+    $query = $this->getAllQueuesForSubscscriberQuery($query, $subscriberId);
     /** @var \stdClass */
-    $queue = SendingQueue::rawQuery(
-      "SELECT COUNT(*) as count
-      FROM `" . SendingQueue::$_table . "`
-      JOIN `" . ScheduledTask::$_table . "` ON " . SendingQueue::$_table . ".task_id = " . ScheduledTask::$_table . ".id
-      JOIN `" . ScheduledTaskSubscriber::$_table . "` ON " . ScheduledTask::$_table . ".id = " . ScheduledTaskSubscriber::$_table . ".task_id
-      WHERE " . ScheduledTaskSubscriber::$_table . ".subscriber_id = " . $subscriberId . "
-      AND " . SendingQueue::$_table . ".newsletter_id = " . $this->id
-    )->findOne();
+    $queue = $query->findOne();
 
     return ((int)$queue->count) > 0;
+  }
+
+  private function getAllQueuesForSubscscriberQuery($orm, $subscriberId) {
+    return $orm->tableAlias('queue')
+      ->join(ScheduledTask::$_table, ['queue.task_id', '=', 'task.id'], 'task')
+      ->join(ScheduledTaskSubscriber::$_table, ['subscriber.task_id', '=', 'task.id'], 'subscriber')
+      ->where('queue.newsletter_id', $this->id)
+      ->where('subscriber.subscriber_id', $subscriberId);
+  }
+
+  /**
+   * Check for automatic emails.
+   * Search products/categories in meta if all of the ordered products have already been sent to the subscriber.
+   */
+  public function alreadySentAllProducts(int $subscriberId, string $orderedKey, array $ordered): bool {
+    $query = SendingQueue::select('queue.*');
+    $queues = $this->getAllQueuesForSubscscriberQuery($query, $subscriberId)->findMany();
+    $sent = [];
+    foreach ($queues as $queue) {
+      $meta = $queue->getMeta();
+      if (isset($meta[$orderedKey])) {
+        $sent = array_merge($sent, $meta[$orderedKey]);
+      }
+    }
+    $notSentProducts = array_diff($ordered, $sent);
+
+    return empty($notSentProducts);
   }
 
   public static function filterWithOptions($orm, $type) {

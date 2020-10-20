@@ -21,7 +21,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class PurchasedInCategoryTest extends \MailPoetTest {
 
-  /** @var MockObject */
+  /** @var MockObject&WCHelper */
   private $woocommerceHelper;
 
   /** @var PurchasedInCategory */
@@ -37,7 +37,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     WPFunctions::set(new WPFunctions);
     WPFunctions::get()->removeAllFilters('woocommerce_payment_complete');
-    $this->woocommerceHelper = $this->makeEmpty(WCHelper::class, []);
+    $this->woocommerceHelper = $this->createMock(WCHelper::class);
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
   }
 
@@ -69,29 +69,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
   }
 
   public function testItSchedules() {
-    $newsletter = Newsletter::createOrUpdate(
-      [
-        'subject' => 'WooCommerce',
-        'preheader' => 'preheader',
-        'type' => Newsletter::TYPE_AUTOMATIC,
-        'status' => Newsletter::STATUS_ACTIVE,
-      ]
-    );
-    $this->_createNewsletterOption(
-      [
-        'group' => WooCommerce::SLUG,
-        'event' => PurchasedInCategory::SLUG,
-        'afterTimeType' => 'days',
-        'afterTimeNumber' => 1,
-        'meta' => json_encode(
-          [
-            'option' => [
-              ['id' => '15'],
-            ],
-          ]),
-      ],
-      $newsletter->id
-    );
+    $newsletter = $this->_createNewsletter();
 
     $customerEmail = 'email@example.com';
     $order = $this->getOrderMock(['15', '16']);
@@ -104,25 +82,51 @@ class PurchasedInCategoryTest extends \MailPoetTest {
       ->method('get_billing_email')
       ->will($this->returnValue($customerEmail));
 
-    $subscriber = Subscriber::createOrUpdate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $customerEmail;
-    $subscriber->isWoocommerceUser = 1;
-    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $subscriber->save();
-
-    $subscriberSegment = SubscriberSegment::create();
-    $subscriberSegment->hydrate([
-      'subscriber_id' => $subscriber->id,
-      'segment_id' => Segment::getWooCommerceSegment()->id,
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-    ]);
-    $subscriberSegment->save();
+    $this->_createSubscriber($customerEmail);
 
     $this->event->scheduleEmail(3);
     $scheduledTask = Sending::getByNewsletterId($newsletter->id);
     $queue = $scheduledTask->queue();
-    expect($queue->getMeta())->equals(['orderedProducts' => ['15', '16']]);
+    expect($queue->getMeta())->equals(['orderedProductCategories' => ['15', '16']]);
     expect($scheduledTask)->notEmpty();
+  }
+
+  public function testItSchedulesOnlyOnce() {
+    $newsletter = $this->_createNewsletter();
+
+    $customerEmail = 'email@example.com';
+    $order = $this->getOrderMock(['15', '16']);
+    $this->woocommerceHelper = $this->createMock(WCHelper::class);
+    $this->woocommerceHelper
+      ->expects($this->any())
+      ->method('wcGetOrder')
+      ->will($this->returnValue($order));
+    $order
+      ->expects($this->any())
+      ->method('get_billing_email')
+      ->will($this->returnValue($customerEmail));
+
+    $this->_createSubscriber($customerEmail);
+
+    $this->event = new PurchasedInCategory($this->woocommerceHelper);
+    $this->event->scheduleEmail(3);
+    $queue1 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    expect($queue1)->notEmpty();
+
+    $order = $this->getOrderMock(['15']);
+    $this->woocommerceHelper = $this->createMock(WCHelper::class);
+    $this->woocommerceHelper
+      ->expects($this->any())
+      ->method('wcGetOrder')
+      ->will($this->returnValue($order));
+    $order
+      ->expects($this->any())
+      ->method('get_billing_email')
+      ->will($this->returnValue($customerEmail));
+    $this->event = new PurchasedInCategory($this->woocommerceHelper);
+    $this->event->scheduleEmail(4);
+    $queue2 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    expect($queue1)->count(count($queue2));
   }
 
   private function getOrderMock($categories = ['123']) {
@@ -154,6 +158,51 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $orderMock->method('get_items')->willReturn([$orderItemProductMock]);
 
     return $orderMock;
+  }
+
+  private function _createNewsletter() {
+    $newsletter = Newsletter::createOrUpdate(
+      [
+        'subject' => 'WooCommerce',
+        'preheader' => 'preheader',
+        'type' => Newsletter::TYPE_AUTOMATIC,
+        'status' => Newsletter::STATUS_ACTIVE,
+      ]
+    );
+    $this->_createNewsletterOption(
+      [
+        'sendTo' => 'user',
+        'group' => WooCommerce::SLUG,
+        'event' => PurchasedInCategory::SLUG,
+        'afterTimeType' => 'days',
+        'afterTimeNumber' => 1,
+        'meta' => json_encode(
+          [
+            'option' => [
+              ['id' => '15'],
+            ],
+          ]),
+      ],
+      $newsletter->id
+    );
+    return $newsletter;
+  }
+
+  private function _createSubscriber($customerEmail) {
+    $subscriber = Subscriber::createOrUpdate(Fixtures::get('subscriber_template'));
+    $subscriber->email = $customerEmail;
+    $subscriber->isWoocommerceUser = 1;
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber->save();
+
+    $subscriberSegment = SubscriberSegment::create();
+    $subscriberSegment->hydrate([
+      'subscriber_id' => $subscriber->id,
+      'segment_id' => Segment::getWooCommerceSegment()->id,
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+    ]);
+    $subscriberSegment->save();
+    return $subscriber;
   }
 
   public function _createNewsletterOption(array $options, $newsletterId) {

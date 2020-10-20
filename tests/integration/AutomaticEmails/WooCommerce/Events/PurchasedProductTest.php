@@ -90,6 +90,83 @@ class PurchasedProductTest extends \MailPoetTest {
     expect($result)->isEmpty();
   }
 
+  public function testItDoesNotScheduleEmailWhenAlreadySent() {
+    $newsletter = Newsletter::createOrUpdate(
+      [
+        'subject' => 'WooCommerce',
+        'preheader' => 'preheader',
+        'type' => Newsletter::TYPE_AUTOMATIC,
+        'status' => Newsletter::STATUS_ACTIVE,
+      ]
+    );
+    $productId = 1000;
+    $this->_createNewsletterOption(
+      [
+        'sendTo' => 'user',
+        'group' => WooCommerce::SLUG,
+        'event' => PurchasedProduct::SLUG,
+        'afterTimeType' => 'days',
+        'afterTimeNumber' => 1,
+        'meta' => json_encode(
+          [
+            'option' => [
+              ['id' => $productId],
+            ],
+          ]),
+      ],
+      $newsletter->id
+    );
+    $customerEmail = 'test@example.com';
+    $subscriber = Subscriber::createOrUpdate(Fixtures::get('subscriber_template'));
+    $subscriber->email = $customerEmail;
+    $subscriber->isWoocommerceUser = 1;
+    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
+    $subscriber->save();
+
+    $subscriberSegment = SubscriberSegment::create();
+    $subscriberSegment->hydrate([
+      'subscriber_id' => $subscriber->id,
+      'segment_id' => Segment::getWooCommerceSegment()->id,
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+    ]);
+    $subscriberSegment->save();
+
+    $orderDetails = Stub::make(
+      new OrderDetails(),
+      [
+        'get_billing_email' => 'test@example.com',
+        'get_items' => function() use ($productId) {
+          return [
+            Stub::make(
+              \WC_Order_Item_Product::class,
+              [
+                'get_product_id' => $productId,
+              ]
+            ),
+          ];
+        },
+      ]
+    );
+    $orderDetails->total = 'order_total';
+    $orderId = 12;
+    $helper = Stub::make(WCHelper::class, [
+      'wcGetOrder' => $orderDetails,
+    ]);
+
+    $event = new PurchasedProduct($helper);
+
+    // ensure there are no existing scheduled tasks
+    $scheduledTask = Sending::getByNewsletterId($newsletter->id);
+    expect($scheduledTask)->false();
+
+    $event->scheduleEmailWhenProductIsPurchased($orderId);
+    $queue1 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+
+    $event->scheduleEmailWhenProductIsPurchased($orderId);
+    $queue2 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    expect($queue1)->count(count($queue2));
+  }
+
   public function testItDoesNotScheduleEmailWhenPurchasedProductDoesNotMatchConfiguredProductIds() {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_completed');
     $newsletter = Newsletter::createOrUpdate(
@@ -107,6 +184,7 @@ class PurchasedProductTest extends \MailPoetTest {
     ];
     $this->_createNewsletterOption(
       [
+        'sendTo' => 'user',
         'group' => WooCommerce::SLUG,
         'event' => PurchasedProduct::SLUG,
         'afterTimeType' => 'days',
