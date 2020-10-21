@@ -39,7 +39,7 @@ export const Libs3rdParty = () => {
         <label htmlFor="libs-3rd-party-enabled">
           {t('yes')}
         </label>
-        {' '}
+        <span className="mailpoet-gap" />
         <Radio
           id="libs-3rd-party-disabled"
           value=""

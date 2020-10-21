@@ -26,7 +26,7 @@ export default function Tracking() {
         <label htmlFor="tracking-enabled">
           {t('yes')}
         </label>
-        {' '}
+        <span className="mailpoet-gap" />
         <Radio
           id="tracking-disabled"
           value=""

@@ -55,8 +55,15 @@
     }
   }
 
-  &.mailpoet-full-width + .mailpoet-form-input.mailpoet-full-width { margin-top: $grid-gap; }
-  &:not(.mailpoet-full-width) + .mailpoet-form-input:not(.mailpoet-full-width) { margin-left: $grid-gap; }
+  &.mailpoet-full-width + .mailpoet-form-input.mailpoet-full-width,
+  &.mailpoet-full-width + .mailpoet-button.mailpoet-full-width {
+    margin-top: $grid-gap;
+  }
+
+  &:not(.mailpoet-full-width) + .mailpoet-form-input:not(.mailpoet-full-width),
+  &:not(.mailpoet-full-width) + .mailpoet-button:not(.mailpoet-full-width) {
+    margin-left: $grid-gap;
+  }
 }
 
 .mailpoet-form-input-small {

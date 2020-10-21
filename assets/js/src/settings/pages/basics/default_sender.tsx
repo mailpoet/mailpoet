@@ -31,6 +31,7 @@ export default function DefaultSender() {
       />
       <Inputs>
         <label htmlFor="sender-name">{t('from')}</label>
+        <br />
         <Input
           dimension="small"
           type="text"
@@ -40,6 +41,7 @@ export default function DefaultSender() {
           value={senderName}
           onChange={onChange(setSenderName)}
         />
+        <br />
         <Input
           dimension="small"
           type="text"
@@ -48,6 +50,7 @@ export default function DefaultSender() {
           value={senderEmail}
           onChange={onChange(setLowercaseValue(setSenderEmail))}
         />
+        <br />
         {invalidSenderEmail && (
           <span className="mailpoet_error_item mailpoet_error">
             {t('invalidEmail')}
@@ -59,7 +62,7 @@ export default function DefaultSender() {
             mssActive={isMssActive}
           />
         </div>
-        <label htmlFor="reply_to-name">Reply-to</label>
+        <label className="mailpoet-settings-inputs-row" htmlFor="reply_to-name">Reply-to</label>
         <Input
           dimension="small"
           type="text"
@@ -69,6 +72,7 @@ export default function DefaultSender() {
           value={replyToName}
           onChange={onChange(setReplyToName)}
         />
+        <br />
         <Input
           dimension="small"
           type="text"
@@ -77,6 +81,7 @@ export default function DefaultSender() {
           value={replyToEmail}
           onChange={onChange(setLowercaseValue(setReplyToEmail))}
         />
+        <br />
         {invalidReplyToEmail && (
           <span className="mailpoet_error_item mailpoet_error">
             {t('invalidEmail')}

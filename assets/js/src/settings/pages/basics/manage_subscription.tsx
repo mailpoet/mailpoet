@@ -43,9 +43,7 @@ export default function ManageSubscription() {
           automationId="subscription-manage-page-selection"
           linkAutomationId="preview_manage_subscription_page_link"
         />
-        <br />
-        <label htmlFor="subscription-segments">{t('subscribersCanChooseFrom')}</label>
-        <br />
+        <label className="mailpoet-settings-inputs-row" htmlFor="subscription-segments">{t('subscribersCanChooseFrom')}</label>
         <SegmentsSelect
           id="subscription-segments"
           value={segments}

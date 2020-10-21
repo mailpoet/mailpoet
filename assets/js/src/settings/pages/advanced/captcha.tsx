@@ -38,31 +38,33 @@ export default function Captcha() {
         htmlFor=""
       />
       <Inputs>
-        <Radio
-          id="built-in-captcha"
-          disabled={!hasBuiltInCaptcha}
-          value="built-in"
-          checked={type === 'built-in'}
-          onCheck={setType}
-        />
-        <label htmlFor="built-in-captcha">
-          {t('builtInCaptcha')}
-          {' '}
-          {!hasBuiltInCaptcha && t('disbaledBecauseExtensionMissing')}
-        </label>
-        <br />
-        <Radio
-          id="google-captcha"
-          value="recaptcha"
-          checked={type === 'recaptcha'}
-          onCheck={setType}
-        />
-        <label htmlFor="google-captcha">
-          {t('googleReCaptcha')}
-        </label>
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            id="built-in-captcha"
+            disabled={!hasBuiltInCaptcha}
+            value="built-in"
+            checked={type === 'built-in'}
+            onCheck={setType}
+          />
+          <label htmlFor="built-in-captcha">
+            {t('builtInCaptcha')}
+            {' '}
+            {!hasBuiltInCaptcha && t('disbaledBecauseExtensionMissing')}
+          </label>
+        </div>
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            id="google-captcha"
+            value="recaptcha"
+            checked={type === 'recaptcha'}
+            onCheck={setType}
+          />
+          <label htmlFor="google-captcha">
+            {t('googleReCaptcha')}
+          </label>
+        </div>
         {type === 'recaptcha' && (
-          <>
-            <br />
+          <div className="mailpoet-settings-inputs-row">
             <Input
               dimension="small"
               type="text"
@@ -88,18 +90,19 @@ export default function Captcha() {
                 {t('fillReCaptchaKeys')}
               </span>
             )}
-          </>
+          </div>
         )}
-        <br />
-        <Radio
-          id="no-captcha"
-          value=""
-          checked={type === ''}
-          onCheck={setType}
-        />
-        <label htmlFor="no-captcha">
-          {t('disable')}
-        </label>
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            id="no-captcha"
+            value=""
+            checked={type === ''}
+            onCheck={setType}
+          />
+          <label htmlFor="no-captcha">
+            {t('disable')}
+          </label>
+        </div>
       </Inputs>
     </>
   );

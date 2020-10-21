@@ -24,15 +24,16 @@ export default function EmailCustomizer() {
           checked={enabled === '1'}
           onCheck={(isChecked) => setEnabled(isChecked ? '1' : '')}
         />
-        <br />
-        <Button
-          type="button"
-          onClick={openEditor}
-          variant="light"
-          dimension="small"
-        >
-          {t('openTemplateEditor')}
-        </Button>
+        <div className="mailpoet-settings-inputs-row">
+          <Button
+            type="button"
+            onClick={openEditor}
+            variant="light"
+            dimension="small"
+          >
+            {t('openTemplateEditor')}
+          </Button>
+        </div>
       </Inputs>
     </>
   );

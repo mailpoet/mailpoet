@@ -17,7 +17,7 @@ export default (props: Props) => {
   let selectedPage = pages.find((x) => x.id === parseInt(props.value, 10));
   if (!selectedPage) selectedPage = pages[0];
   return (
-    <>
+    <div className="mailpoet-settings-inputs-row">
       <Select
         id={props.id}
         data-automation-id={props.automationId}
@@ -42,6 +42,6 @@ export default (props: Props) => {
       >
         {t('preview')}
       </a>
-    </>
+    </div>
   );
 };

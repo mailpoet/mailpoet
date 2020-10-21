@@ -32,71 +32,75 @@ export default function TaskScheduler() {
         htmlFor="cron_trigger-method"
       />
       <Inputs>
-        <Radio
-          id="cron_trigger-method-wordpress"
-          value="WordPress"
-          checked={method === 'WordPress'}
-          onCheck={setMethod}
-          data-automation-id="wordress_cron_radio"
-        />
-        <label htmlFor="cron_trigger-method-wordpress">
-          {t('websiteVisitors')}
-        </label>
-        <br />
-        <Radio
-          id="cron_trigger-method-mailpoet"
-          value="MailPoet"
-          checked={method === 'MailPoet'}
-          onCheck={setMethod}
-          data-automation-id="mailpoet_cron_radio"
-        />
-        <label htmlFor="cron_trigger-method-mailpoet">
-          {ReactStringReplace(t('mailpoetScript'),
-            /\[link\](.*?)\[\/link\]/,
-            (text) => (
-              <a
-                key={text}
-                href="https://kb.mailpoet.com/article/131-hosts-which-mailpoet-task-scheduler-wont-work"
-                data-beacon-article="57ce0b05c6979108399a0456"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {text}
-              </a>
-            ))}
-        </label>
-        <br />
-        <Radio
-          id="cron_trigger-method-cron"
-          value="Linux Cron"
-          checked={method === 'Linux Cron'}
-          onCheck={setMethod}
-          data-automation-id="linux_cron_radio"
-        />
-        <label htmlFor="cron_trigger-method-cron">
-          {t('serverCron')}
-        </label>
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            id="cron_trigger-method-wordpress"
+            value="WordPress"
+            checked={method === 'WordPress'}
+            onCheck={setMethod}
+            data-automation-id="wordress_cron_radio"
+          />
+          <label htmlFor="cron_trigger-method-wordpress">
+            {t('websiteVisitors')}
+          </label>
+        </div>
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            id="cron_trigger-method-mailpoet"
+            value="MailPoet"
+            checked={method === 'MailPoet'}
+            onCheck={setMethod}
+            data-automation-id="mailpoet_cron_radio"
+          />
+          <label htmlFor="cron_trigger-method-mailpoet">
+            {ReactStringReplace(t('mailpoetScript'),
+              /\[link\](.*?)\[\/link\]/,
+              (text) => (
+                <a
+                  key={text}
+                  href="https://kb.mailpoet.com/article/131-hosts-which-mailpoet-task-scheduler-wont-work"
+                  data-beacon-article="57ce0b05c6979108399a0456"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {text}
+                </a>
+              ))}
+          </label>
+        </div>
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            id="cron_trigger-method-cron"
+            value="Linux Cron"
+            checked={method === 'Linux Cron'}
+            onCheck={setMethod}
+            data-automation-id="linux_cron_radio"
+          />
+          <label htmlFor="cron_trigger-method-cron">
+            {t('serverCron')}
+          </label>
+        </div>
         {method === 'Linux Cron' && (
-          <>
-            <br />
-            {t('addCommandToCrontab')}
-            <br />
+          <div className="mailpoet-settings-inputs-row">
+            <div className="mailpoet-settings-inputs-row">
+              {t('addCommandToCrontab')}
+            </div>
             <Input
               dimension="small"
               type="text"
               readOnly
               value={`php ${paths.plugin}/mailpoet-cron.php ${paths.root}`}
             />
-            <br />
-            {t('withFrequency')}
-            <br />
+            <div className="mailpoet-settings-inputs-row">
+              {t('withFrequency')}
+            </div>
             <Input
               dimension="small"
               type="text"
               readOnly
               value="*/1 * * * *"
             />
-          </>
+          </div>
         )}
       </Inputs>
     </>
