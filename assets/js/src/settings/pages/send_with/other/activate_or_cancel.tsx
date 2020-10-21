@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import MailPoet from 'mailpoet';
+import Button from 'common/button/button';
 import { t } from 'common/functions';
 import { useAction } from 'settings/store/hooks';
 
@@ -13,8 +14,7 @@ export default function ActivateOrCancel() {
     await saveSettings();
     history.push('/mta');
   };
-  const cancel = async (e) => {
-    e.preventDefault();
+  const cancel = async () => {
     MailPoet.Modal.loading(true);
     await loadSettings();
     history.push('/mta');
@@ -22,20 +22,18 @@ export default function ActivateOrCancel() {
   };
   return (
     <p>
-      <button
+      <Button
         type="button"
         onClick={activate}
-        className="mailpoet_mta_setup_save button button-primary"
       >
         {t('activate')}
-      </button>
-      <a
-        href=""
+      </Button>
+      <Button
         onClick={cancel}
-        className="mailpoet_mta_setup_cancel"
+        variant="link"
       >
         {t('orCancel')}
-      </a>
+      </Button>
     </p>
   );
 }

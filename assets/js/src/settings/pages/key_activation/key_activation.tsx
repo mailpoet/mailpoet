@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import MailPoet from 'mailpoet';
 import { useSelector, useAction, useSetting } from 'settings/store/hooks';
 import { GlobalContext } from 'context';
+import Button from 'common/button/button';
 import { t } from 'common/functions';
 import Input from 'common/form/input/input';
 import { MssStatus } from 'settings/store/types';
@@ -106,7 +107,7 @@ export default function KeyActivation() {
     && apiKeyState
     && apiKeyState.is_approved === false;
 
-  const verifyKey = async (event) => {
+  const verifyKey = async () => {
     if (!state.key) {
       notices.error(<p>{t('premiumTabNoKeyNotice')}</p>, { scroll: true });
       return;
@@ -147,14 +148,14 @@ export default function KeyActivation() {
             key: event.target.value.trim() || null,
           })}
         />
-        <button
+        <Button
           type="button"
-          id="mailpoet_premium_key_verify"
-          className="button-secondary"
           onClick={verifyKey}
+          variant="light"
+          dimension="small"
         >
           {t('premiumTabVerifyButton')}
-        </button>
+        </Button>
         {state.isKeyValid !== null && Messages()}
       </Inputs>
       {showFromAddressModal && (

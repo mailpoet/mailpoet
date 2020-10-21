@@ -15,12 +15,6 @@
     }
   }
 
-  #mailpoet_premium_key_verify {
-    font-size: inherit;
-    margin-left: 3px;
-    vertical-align: inherit;
-  }
-
   .mailpoet_subitem {
     margin-left: 2em;
   }
@@ -38,13 +32,6 @@
     vertical-align: unset;
   }
 
-  .mailpoet_mta_setup_save,
-  .mailpoet_mta_setup_cancel {
-    display: inline-block;
-    font-weight: bold;
-    margin: 0 3px;
-  }
-
   .mailpoet_emails_per_second_warning {
     color: $color-editor-warning;
   }
@@ -52,10 +39,6 @@
   .mailpoet-note {
     font-style: italic;
   }
-}
-
-.mailpoet_woocommerce_editor_button {
-  margin-top: 10px;
 }
 
 label[for='mailpoet_wc_checkout_optin_segments'] span {

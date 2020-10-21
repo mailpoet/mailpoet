@@ -1,5 +1,6 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
+import Button from 'common/button/button';
 import { useAction, useSelector } from 'settings/store/hooks';
 import { GlobalContext } from 'context';
 
@@ -24,15 +25,14 @@ export default () => {
   };
   return (
     <div>
-      <button
+      <Button
         type="button"
         data-automation-id="settings-submit-button"
-        className="button button-primary"
-        disabled={isSaving || hasError}
+        isDisabled={isSaving || hasError}
         onClick={onClick}
       >
         {MailPoet.I18n.t('saveSettings')}
-      </button>
+      </Button>
     </div>
   );
 };
