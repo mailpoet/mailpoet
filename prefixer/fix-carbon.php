@@ -6,7 +6,9 @@ set_error_handler(function ($severity, $message, $file, $line) {
 });
 
 $replacements = [
-  // Fix deprecation warnings for nested ternary operators
+  // Fix for PHP 7.4 deprecation warnings for nested ternary operators without brackets
+  // This is caused by a bug in PHP Parser used within PHP Scoper. We can remove it after we update to PHP Scoper
+  // that contains updated PHP Parser.
   [
     'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/CarbonInterval.php',
     'find' => [
