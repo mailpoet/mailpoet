@@ -24,7 +24,7 @@ const Radio = ({
   >
     <input
       type="radio"
-      onChange={(e) => onCheck(e.target.name, e)}
+      onChange={(e) => onCheck(e.target.value, e)}
       {...attributes}
     />
     <span className="mailpoet-form-radio-control" />
