@@ -15,13 +15,13 @@ function renderStatusMessage(status, error, link, linkBeacon, additionalInfo) {
       noticeMessage,
       /\[link\](.*?)\[\/link\]/g,
       (match) => (
-        <a href={link} data-beacon-article={linkBeacon} key="kb-link">{match}</a>
+        <a className="mailpoet-text-link" href={link} data-beacon-article={linkBeacon} key="kb-link">{match}</a>
       )
     );
   }
 
   return (
-    <div className={`mailpoet_notice notice inline notice-${noticeType}`} style={{ marginTop: '1em' }}>
+    <div className={`mailpoet_notice notice inline notice-${noticeType}`}>
       <p>{noticeMessage}</p>
       {additionalInfo ? (<p><i>{additionalInfo}</i></p>) : null}
     </div>
@@ -38,7 +38,7 @@ function renderCronSection(data) {
     <div>
       <h4>{MailPoet.I18n.t('systemStatusCronTitle')}</h4>
       <p>
-        <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>
+        <a className="mailpoet-text-link" href={url} target="_blank" rel="noopener noreferrer">{url}</a>
       </p>
       {renderStatusMessage(status, error, 'https://kb.mailpoet.com/article/231-sending-does-not-work', '5a0257ac2c7d3a272c0d7ad6', additionalInfo)}
     </div>
