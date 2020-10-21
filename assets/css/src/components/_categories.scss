@@ -30,7 +30,9 @@
 }
 
 .mailpoet-categories-title {
+  display: inline-block;
   position: relative;
+  vertical-align: top;
 
   // Hack so the text is not jumping when changed to bold when active
   &:before {
@@ -62,7 +64,7 @@
   font-size: $font-size-extra-small;
   font-weight: 600;
   line-height: 16px;
-  margin: 1px 0 0 $grid-gap-half;
+  margin-left: $grid-gap-half;
   padding: 0 6px;
   vertical-align: top;
 

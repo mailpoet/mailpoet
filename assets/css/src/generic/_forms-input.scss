@@ -27,10 +27,7 @@
     line-height: $form-control-line-height;
     margin: 0;
     max-width: 100%;
-    padding:
-      $form-control-spacing - 1px
-      $form-control-spacing * 2
-      $form-control-spacing + 1px;
+    padding: $form-control-spacing $form-control-spacing * 2;
 
     &::placeholder {
       color: $color-text-light;
