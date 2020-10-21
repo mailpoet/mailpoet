@@ -273,6 +273,41 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     expect($settings->get('sender.address'))->same('test@example.com');
   }
 
+  public function testItCreatesNewNewsletter() {
+    $data = [
+      'subject' => 'My First Newsletter',
+      'type' => NewsletterEntity::TYPE_STANDARD,
+    ];
+
+    $newsletter = $this->saveController->save($data);
+    expect($newsletter->getSubject())->equals($data['subject']);
+    expect($newsletter->getType())->equals($data['type']);
+    expect($newsletter->getHash())->notNull();
+    expect($newsletter->getId())->notNull();
+  }
+
+  public function testItCreatesNewsletterWithDefaultSender() {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set('sender', [
+      'name' => 'Sender',
+      'address' => 'sender@test.com',
+    ]);
+    $settings->set('reply_to', [
+      'name' => 'Reply',
+      'address' => 'reply@test.com',
+    ]);
+
+    $data = [
+      'subject' => 'My First Newsletter',
+      'type' => NewsletterEntity::TYPE_STANDARD,
+    ];
+    $newsletter = $this->saveController->save($data);
+    expect($newsletter->getSenderName())->same('Sender');
+    expect($newsletter->getSenderAddress())->same('sender@test.com');
+    expect($newsletter->getReplyToName())->same('Reply');
+    expect($newsletter->getReplyToAddress())->same('reply@test.com');
+  }
+
   public function _after() {
     $this->cleanup();
   }

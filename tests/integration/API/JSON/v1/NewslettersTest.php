@@ -409,6 +409,26 @@ class NewslettersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('Please specify a type.');
   }
 
+  public function testItHasDefaultSenderAfterCreate() {
+    $data = [
+      'subject' => 'My First Newsletter',
+      'type' => Newsletter::TYPE_STANDARD,
+    ];
+
+    $settingsController = $this->diContainer->get(SettingsController::class);
+    $settingsController->set('sender', ['name' => 'Sender', 'address' => 'sender@test.com']);
+    $settingsController->set('reply_to', ['name' => 'Reply', 'address' => 'reply@test.com']);
+
+    $response = $this->endpoint->create($data);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data['subject'])->equals('My First Newsletter');
+    expect($response->data['type'])->equals(Newsletter::TYPE_STANDARD);
+    expect($response->data['sender_address'])->equals('sender@test.com');
+    expect($response->data['sender_name'])->equals('Sender');
+    expect($response->data['reply_to_address'])->equals('reply@test.com');
+    expect($response->data['reply_to_name'])->equals('Reply');
+  }
+
   public function testItCanGetListingData() {
     $segment1 = Segment::createOrUpdate(['name' => 'Segment 1']);
     $segment2 = Segment::createOrUpdate(['name' => 'Segment 2']);
