@@ -1,6 +1,7 @@
 import React from 'react';
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
+import Select from 'common/form/select/select';
 import { useSetting } from 'settings/store/hooks';
 
 export default function SendingMethod() {
@@ -33,14 +34,20 @@ export default function SendingMethod() {
     <>
       <Label title={t('method')} htmlFor="mailpoet_smtp_method" />
       <Inputs>
-        <select id="mailpoet_smtp_method" value={provider} onChange={onChange(setProvider)}>
+        <Select
+          id="mailpoet_smtp_method"
+          value={provider}
+          onChange={onChange(setProvider)}
+          isMinWidth
+          dimension="small"
+        >
           <option value="server">{t('hostOption')}</option>
           <option value="manual">{t('smtpOption')}</option>
           <optgroup label={t('selectProvider')}>
             <option value="AmazonSES">Amazon SES</option>
             <option value="SendGrid">SendGrid</option>
           </optgroup>
-        </select>
+        </Select>
       </Inputs>
     </>
   );
