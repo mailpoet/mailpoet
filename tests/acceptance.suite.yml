@@ -22,18 +22,21 @@ modules:
         dbName: wordpress
         dbUser: wordpress
         dbPassword: wordpress
-    - WPWebDriver:
+    - WPWebDriver: # https://codeception.com/docs/modules/WebDriver#configuration
         host: chrome
         url: 'http://test.local'
         browser: chrome
         port: 4444
         window_size: '1280x980'
-        restart: true
-        wait: 0
+        restart: true #  Set to false (default) to use the same browser window for all tests, or set to true to create a new window for each test. In any case, when all tests are finished the browser window is closed.
+        wait: 0 # (default: 0 seconds) - Whenever element is required and is not on page, wait for n seconds to find it before fail.
+        connection_timeout: 60 # timeout for opening a connection to remote selenium server (30 seconds by default).
+        request_timeout: 60 # timeout for a request to return something from remote selenium server (30 seconds by default).
+        pageload_timeout: 10 # amount of time to wait for a page load to complete before throwing an error (default 0 seconds).
         adminUsername: admin
         adminPassword: password
         adminPath: /wp-admin
-        log_js_errors: true
+        log_js_errors: true # Set to true to include possible JavaScript to HTML report, or set to false (default) to deactivate.
     - WPCLI:
         path: /wp-core
         throw: true
