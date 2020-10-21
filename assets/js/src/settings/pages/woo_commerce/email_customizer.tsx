@@ -1,5 +1,6 @@
 import React from 'react';
 import { t } from 'common/functions';
+import Button from 'common/button/button';
 import Checkbox from 'common/form/checkbox/checkbox';
 import { Label, Inputs } from 'settings/components';
 import { useSetting, useAction } from 'settings/store/hooks';
@@ -24,9 +25,14 @@ export default function EmailCustomizer() {
           onCheck={(isChecked) => setEnabled(isChecked ? '1' : '')}
         />
         <br />
-        <button type="button" className="button-secondary mailpoet_woocommerce_editor_button" onClick={openEditor}>
+        <Button
+          type="button"
+          onClick={openEditor}
+          variant="light"
+          dimension="small"
+        >
           {t('openTemplateEditor')}
-        </button>
+        </Button>
       </Inputs>
     </>
   );

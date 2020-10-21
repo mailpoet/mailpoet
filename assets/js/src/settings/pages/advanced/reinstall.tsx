@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Button from 'common/button/button';
 import { t } from 'common/functions';
 import { GlobalContext } from 'context';
 import { useAction } from 'settings/store/hooks';
@@ -27,14 +28,15 @@ export default function Reinstall() {
         htmlFor=""
       />
       <Inputs>
-        <button
+        <Button
           type="button"
-          className="button"
           onClick={onClick}
           data-automation-id="reinstall-button"
+          variant="light"
+          dimension="small"
         >
           {t('reinstallNow')}
-        </button>
+        </Button>
       </Inputs>
     </>
   );
