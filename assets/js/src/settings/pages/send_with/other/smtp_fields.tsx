@@ -2,6 +2,7 @@ import React from 'react';
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
 import Radio from 'common/form/radio/radio';
+import Select from 'common/form/select/select';
 import { useSetting } from 'settings/store/hooks';
 import SendingFrequency from './sending_frequency';
 
@@ -33,11 +34,17 @@ export default function SmtpFields() {
       </Inputs>
       <Label title={t('secureConnectioon')} htmlFor="mailpoet_smtp_encryption" />
       <Inputs>
-        <select id="mailpoet_smtp_encryption" value={encryption} onChange={onChange(setEncryption)}>
+        <Select
+          id="mailpoet_smtp_encryption"
+          value={encryption}
+          onChange={onChange(setEncryption)}
+          isMinWidth
+          dimension="small"
+        >
           <option value="">{t('no')}</option>
           <option value="ssl">SSL</option>
           <option value="tls">TLS</option>
-        </select>
+        </Select>
       </Inputs>
       <Label title={t('authentication')} description={t('authenticationDescription')} htmlFor="mailpoet_smtp_authentication" />
       <Inputs>

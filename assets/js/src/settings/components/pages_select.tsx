@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'settings/store/hooks';
 import { onChange, t } from 'common/functions';
+import Select from 'common/form/select/select';
 
 type Props = {
   id?: string
@@ -17,18 +18,20 @@ export default (props: Props) => {
   if (!selectedPage) selectedPage = pages[0];
   return (
     <>
-      <select
+      <Select
         id={props.id}
         data-automation-id={props.automationId}
         value={selectedPage.id}
         onChange={onChange(props.setValue)}
+        isMinWidth
+        dimension="small"
       >
         {pages.map((page) => (
           <option key={page.id} value={page.id}>
             {`${page.title}`}
           </option>
         ))}
-      </select>
+      </Select>
       {' '}
       <a
         target="_blank"

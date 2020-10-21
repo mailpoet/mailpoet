@@ -1,6 +1,7 @@
 import React from 'react';
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
+import Select from 'common/form/select/select';
 import { useSetting, useSelector } from 'settings/store/hooks';
 import SendingFrequency from './sending_frequency';
 
@@ -15,10 +16,16 @@ export default function AmazonSesFields() {
       <SendingFrequency recommendedEmails={options.emails} recommendedInterval={options.interval} />
       <Label title={t('region')} htmlFor="mailpoet_amazon_ses_region" />
       <Inputs>
-        <select id="mailpoet_amazon_ses_region" value={region} onChange={onChange(setRegion)}>
+        <Select
+          id="mailpoet_amazon_ses_region"
+          value={region}
+          onChange={onChange(setRegion)}
+          isMinWidth
+          dimension="small"
+        >
           {Object.entries(options.regions)
             .map(([label, name]) => <option key={name} value={name}>{label}</option>)}
-        </select>
+        </Select>
       </Inputs>
       <Label title={t('accessKey')} htmlFor="mailpoet_amazon_ses_access_key" />
       <Inputs>

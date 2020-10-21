@@ -3,6 +3,7 @@ import ReactStringReplace from 'react-string-replace';
 
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
+import Select from 'common/form/select/select';
 import { useSetting } from 'settings/store/hooks';
 
 const MINUTES_PER_DAY = 1440;
@@ -32,10 +33,16 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
     <>
       <Label title={t('sendingFrequency')} htmlFor="mailpoet_sending_frequency" />
       <Inputs>
-        <select id="mailpoet_sending_frequency" value={frequency} onChange={onChange(setFrequency)}>
+        <Select
+          id="mailpoet_sending_frequency"
+          value={frequency}
+          onChange={onChange(setFrequency)}
+          isMinWidth
+          dimension="small"
+        >
           <option value="auto">{t('recommendedTitle')}</option>
           <option value="manual">{t('ownFrequency')}</option>
-        </select>
+        </Select>
         {frequency === 'manual' && (
           <>
             <br />
@@ -49,14 +56,20 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
             />
             {' '}
             {t('emails')}
-            <select id="other_frequency_interval" value={frequencyInterval} onChange={onChange(setFrequencyInterval)}>
+            <Select
+              id="other_frequency_interval"
+              value={frequencyInterval}
+              onChange={onChange(setFrequencyInterval)}
+              isMinWidth
+              dimension="small"
+            >
               <option value="1">every minute</option>
               <option value="2">every 2 minutes</option>
               <option value="5">every 5 minutes (recommended)</option>
               <option value="10">every 10 minutes</option>
               <option value="15">every 15 minutes</option>
               <option value="30">every 30 minutes</option>
-            </select>
+            </Select>
           </>
         )}
         {frequency === 'auto' && (
