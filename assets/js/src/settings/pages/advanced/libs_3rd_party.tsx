@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { t, onChange } from 'common/functions';
+import { t } from 'common/functions';
+import Radio from 'common/form/radio/radio';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
@@ -29,26 +30,24 @@ export const Libs3rdParty = () => {
         htmlFor=""
       />
       <Inputs>
-        <input
-          type="radio"
+        <Radio
           id="libs-3rd-party-enabled"
           value="1"
           checked={enabled === '1'}
-          onChange={onChange(setEnabled)}
+          onCheck={setEnabled}
         />
         <label htmlFor="libs-3rd-party-enabled">
           {t('yes')}
         </label>
         {' '}
-        <input
-          type="radio"
+        <Radio
           id="libs-3rd-party-disabled"
           value=""
           checked={enabled === ''}
-          onChange={onChange((value) => {
+          onCheck={() => {
             setEnabled('');
             setAnalyticsEnabled('');
-          })}
+          }}
         />
         <label htmlFor="libs-3rd-party-disabled">
           {t('no')}

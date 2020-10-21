@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactStringReplace from 'react-string-replace';
 
-import { t, onChange } from 'common/functions';
+import { t } from 'common/functions';
+import Radio from 'common/form/radio/radio';
 import { useSetting, useSelector } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
@@ -30,24 +31,22 @@ export default function TaskScheduler() {
         htmlFor="cron_trigger-method"
       />
       <Inputs>
-        <input
-          type="radio"
+        <Radio
           id="cron_trigger-method-wordpress"
           value="WordPress"
           checked={method === 'WordPress'}
-          onChange={onChange(setMethod)}
+          onCheck={setMethod}
           data-automation-id="wordress_cron_radio"
         />
         <label htmlFor="cron_trigger-method-wordpress">
           {t('websiteVisitors')}
         </label>
         <br />
-        <input
-          type="radio"
+        <Radio
           id="cron_trigger-method-mailpoet"
           value="MailPoet"
           checked={method === 'MailPoet'}
-          onChange={onChange(setMethod)}
+          onCheck={setMethod}
           data-automation-id="mailpoet_cron_radio"
         />
         <label htmlFor="cron_trigger-method-mailpoet">
@@ -66,12 +65,11 @@ export default function TaskScheduler() {
             ))}
         </label>
         <br />
-        <input
-          type="radio"
+        <Radio
           id="cron_trigger-method-cron"
           value="Linux Cron"
           checked={method === 'Linux Cron'}
-          onChange={onChange(setMethod)}
+          onCheck={setMethod}
           data-automation-id="linux_cron_radio"
         />
         <label htmlFor="cron_trigger-method-cron">

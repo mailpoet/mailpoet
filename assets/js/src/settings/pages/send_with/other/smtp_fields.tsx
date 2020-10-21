@@ -1,6 +1,7 @@
 import React from 'react';
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
+import Radio from 'common/form/radio/radio';
 import { useSetting } from 'settings/store/hooks';
 import SendingFrequency from './sending_frequency';
 
@@ -40,10 +41,10 @@ export default function SmtpFields() {
       </Inputs>
       <Label title={t('authentication')} description={t('authenticationDescription')} htmlFor="mailpoet_smtp_authentication" />
       <Inputs>
-        <input type="radio" value="1" checked={authentication === '1'} onChange={onChange(setAuthentication)} />
+        <Radio value="1" checked={authentication === '1'} onCheck={setAuthentication} />
         {t('yes')}
         {' '}
-        <input type="radio" value="-1" checked={authentication === '-1'} onChange={onChange(setAuthentication)} />
+        <Radio value="-1" checked={authentication === '-1'} onCheck={setAuthentication} />
         {t('no')}
       </Inputs>
     </>

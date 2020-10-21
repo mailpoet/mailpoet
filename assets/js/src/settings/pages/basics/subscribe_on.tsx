@@ -1,5 +1,6 @@
 import React from 'react';
-import { t, onChange, onToggle } from 'common/functions';
+import { t, onChange } from 'common/functions';
+import Checkbox from 'common/form/checkbox/checkbox';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 
@@ -25,12 +26,11 @@ export default function SubscribeOn({ title, description, event }: Props) {
         htmlFor={`subscribe-${event}-enabled`}
       />
       <Inputs>
-        <input
-          type="checkbox"
+        <Checkbox
           id={`subscribe-${event}-enabled`}
           data-automation-id={`subscribe-${event}-checkbox`}
           checked={enabled === '1'}
-          onChange={onToggle(setEnabled)}
+          onCheck={(isChecked) => setEnabled(isChecked ? '1' : '0')}
         />
         {enabled === '1' && (
           <>

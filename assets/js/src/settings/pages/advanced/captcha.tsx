@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { t, onChange } from 'common/functions';
+import Radio from 'common/form/radio/radio';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
@@ -36,13 +37,12 @@ export default function Captcha() {
         htmlFor=""
       />
       <Inputs>
-        <input
-          type="radio"
+        <Radio
           id="built-in-captcha"
           disabled={!hasBuiltInCaptcha}
           value="built-in"
           checked={type === 'built-in'}
-          onChange={onChange(setType)}
+          onCheck={setType}
         />
         <label htmlFor="built-in-captcha">
           {t('builtInCaptcha')}
@@ -50,12 +50,11 @@ export default function Captcha() {
           {!hasBuiltInCaptcha && t('disbaledBecauseExtensionMissing')}
         </label>
         <br />
-        <input
-          type="radio"
+        <Radio
           id="google-captcha"
           value="recaptcha"
           checked={type === 'recaptcha'}
-          onChange={onChange(setType)}
+          onCheck={setType}
         />
         <label htmlFor="google-captcha">
           {t('googleReCaptcha')}
@@ -91,12 +90,11 @@ export default function Captcha() {
           </>
         )}
         <br />
-        <input
-          type="radio"
+        <Radio
           id="no-captcha"
           value=""
           checked={type === ''}
-          onChange={onChange(setType)}
+          onCheck={setType}
         />
         <label htmlFor="no-captcha">
           {t('disable')}

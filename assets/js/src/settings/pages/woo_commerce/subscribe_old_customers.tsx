@@ -2,6 +2,7 @@ import React from 'react';
 import { t, onToggle } from 'common/functions';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
+import Checkbox from 'common/form/checkbox/checkbox';
 
 export default function SubscribeOldCustomers() {
   const [enabled, setEnabled] = useSetting('mailpoet_subscribe_old_woocommerce_customers', 'enabled');
@@ -14,12 +15,11 @@ export default function SubscribeOldCustomers() {
         htmlFor="mailpoet_subscribe_old_wc_customers"
       />
       <Inputs>
-        <input
-          type="checkbox"
+        <Checkbox
           id="mailpoet_subscribe_old_wc_customers"
           data-automation-id="mailpoet_subscribe_old_wc_customers"
           checked={enabled === '1'}
-          onChange={onToggle(setEnabled, '')}
+          onCheck={(isChecked) => setEnabled(isChecked ? '1' : '')}
         />
       </Inputs>
     </>

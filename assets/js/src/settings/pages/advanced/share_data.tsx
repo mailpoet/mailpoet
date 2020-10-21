@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { t, onChange } from 'common/functions';
+import { t } from 'common/functions';
+import Radio from 'common/form/radio/radio';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
@@ -29,27 +30,25 @@ export default function ShareData() {
         htmlFor=""
       />
       <Inputs>
-        <input
-          type="radio"
+        <Radio
           id="share-data-enabled"
           value="1"
           checked={enabled === '1'}
-          onChange={onChange(() => {
+          onCheck={() => {
             setEnabled('1');
             set3rdPartyLibsEnabled('1');
-          })}
+          }}
           data-automation-id="analytics-yes"
         />
         <label htmlFor="share-data-enabled">
           {t('yes')}
         </label>
         {' '}
-        <input
-          type="radio"
+        <Radio
           id="share-data-disabled"
           value=""
           checked={enabled === ''}
-          onChange={onChange(setEnabled)}
+          onCheck={setEnabled}
           data-automation-id="analytics-no"
         />
         <label htmlFor="share-data-disabled">

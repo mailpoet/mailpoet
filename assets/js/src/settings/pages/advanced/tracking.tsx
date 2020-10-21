@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { t, onChange } from 'common/functions';
+import { t } from 'common/functions';
+import Radio from 'common/form/radio/radio';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
@@ -15,24 +16,22 @@ export default function Tracking() {
         htmlFor=""
       />
       <Inputs>
-        <input
-          type="radio"
+        <Radio
           id="tracking-enabled"
           value="1"
           checked={enabled === '1'}
-          onChange={onChange(setEnabled)}
+          onCheck={setEnabled}
           data-automation-id="tracking-enabled-radio"
         />
         <label htmlFor="tracking-enabled">
           {t('yes')}
         </label>
         {' '}
-        <input
-          type="radio"
+        <Radio
           id="tracking-disabled"
           value=""
           checked={enabled === ''}
-          onChange={onChange(setEnabled)}
+          onCheck={setEnabled}
           data-automation-id="tracking-disabled-radio"
         />
         <label htmlFor="tracking-disabled">

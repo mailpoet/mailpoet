@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { t, onChange } from 'common/functions';
+import { t } from 'common/functions';
+import Radio from 'common/form/radio/radio';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
@@ -31,47 +32,43 @@ export default function InactiveSubscribers() {
         {!trackingEnabled && <p data-automation-id="inactive-subscribers-disabled">{t('disabledBecauseTrackingIs')}</p>}
         {trackingEnabled && (
           <div data-automation-id="inactive-subscribers-enabled">
-            <input
-              type="radio"
+            <Radio
               id="inactive-subscribers-disabled"
               data-automation-id="inactive-subscribers-option-never"
               value=""
               checked={duration === ''}
-              onChange={onChange(setDuration)}
+              onCheck={setDuration}
             />
             <label htmlFor="inactive-subscribers-disabled">
               {t('never')}
             </label>
             <br />
-            <input
-              type="radio"
+            <Radio
               id="inactive-subscribers-3-months"
               value="90"
               checked={duration === '90'}
-              onChange={onChange(setDuration)}
+              onCheck={setDuration}
             />
             <label htmlFor="inactive-subscribers-3-months">
               {t('after3months')}
             </label>
             <br />
-            <input
-              type="radio"
+            <Radio
               id="inactive-subscribers-6-months"
               value="180"
               checked={duration === '180'}
-              onChange={onChange(setDuration)}
+              onCheck={setDuration}
               data-automation-id="inactive-subscribers-default"
             />
             <label htmlFor="inactive-subscribers-6-months">
               {t('after6months')}
             </label>
             <br />
-            <input
-              type="radio"
+            <Radio
               id="inactive-subscribers-12-months"
               value="365"
               checked={duration === '365'}
-              onChange={onChange(setDuration)}
+              onCheck={setDuration}
             />
             <label htmlFor="inactive-subscribers-12-months">
               {t('after12months')}
