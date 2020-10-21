@@ -1,7 +1,8 @@
 import React from 'react';
-import { t, onToggle, onChange } from 'common/functions';
+import { t, onChange } from 'common/functions';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 import { useSetting, useAction } from 'settings/store/hooks';
+import Checkbox from 'common/form/checkbox/checkbox';
 
 export default function CheckoutOptin() {
   const [enabled, setEnabled] = useSetting('woocommerce', 'optin_on_checkout', 'enabled');
@@ -21,12 +22,11 @@ export default function CheckoutOptin() {
         htmlFor="mailpoet_wc_checkout_optin"
       />
       <Inputs>
-        <input
-          type="checkbox"
+        <Checkbox
           id="mailpoet_wc_checkout_optin"
           data-automation-id="mailpoet_wc_checkout_optin"
           checked={enabled === '1'}
-          onChange={onToggle(setEnabled, '')}
+          onCheck={(isChecked) => setEnabled(isChecked ? '1' : '')}
         />
         {enabled === '1' && (
           <>

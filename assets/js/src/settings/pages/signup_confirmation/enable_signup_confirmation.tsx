@@ -1,5 +1,6 @@
 import React from 'react';
-import { t, onChange } from 'common/functions';
+import { t } from 'common/functions';
+import Radio from 'common/form/radio/radio';
 import { Label, Inputs } from 'settings/components';
 import { useSelector, useSetting } from 'settings/store/hooks';
 
@@ -40,21 +41,19 @@ export default function EnableSignupConfirmation() {
       <Inputs>
         {isMssActive ? <p>{t('signupConfirmationIsMandatory')}</p> : (
           <>
-            <input
+            <Radio
               id="signup_confirmation-enabled"
-              type="radio"
               checked={enabled === '1'}
               value="1"
-              onChange={onChange(handleChange)}
+              onCheck={handleChange}
               data-automation-id="enable_signup_confirmation"
             />
             {t('yes')}
             {' '}
-            <input
-              type="radio"
+            <Radio
               checked={enabled === ''}
               value=""
-              onChange={onChange(handleChange)}
+              onCheck={handleChange}
               data-automation-id="disable_signup_confirmation"
             />
             {t('no')}

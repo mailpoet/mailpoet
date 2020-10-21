@@ -1,5 +1,6 @@
 import React from 'react';
-import { t, onToggle } from 'common/functions';
+import { t } from 'common/functions';
+import Checkbox from 'common/form/checkbox/checkbox';
 import { Label, Inputs } from 'settings/components';
 import { useSetting, useAction } from 'settings/store/hooks';
 
@@ -16,12 +17,11 @@ export default function EmailCustomizer() {
         htmlFor="mailpoet_wc_customizer"
       />
       <Inputs>
-        <input
-          type="checkbox"
+        <Checkbox
           id="mailpoet_wc_customizer"
           data-automation-id="mailpoet_wc_customizer"
           checked={enabled === '1'}
-          onChange={onToggle(setEnabled, '')}
+          onCheck={(isChecked) => setEnabled(isChecked ? '1' : '')}
         />
         <br />
         <button type="button" className="button-secondary mailpoet_woocommerce_editor_button" onClick={openEditor}>

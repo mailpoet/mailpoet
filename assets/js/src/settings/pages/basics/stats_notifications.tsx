@@ -6,6 +6,7 @@ import {
   onToggle,
   setLowercaseValue,
 } from 'common/functions';
+import Checkbox from 'common/form/checkbox/checkbox';
 import { useSetting, useAction } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
@@ -28,19 +29,17 @@ export default function StatsNotifications() {
         htmlFor="stats-enabled"
       />
       <Inputs>
-        <input
-          type="checkbox"
+        <Checkbox
           id="stats-enabled"
           checked={enabled === '1'}
-          onChange={onToggle(setEnabled)}
+          onCheck={(isChecked) => setEnabled(isChecked ? '1' : '0')}
         />
         <label htmlFor="stats-enabled">{t('newslettersAndPostNotifs')}</label>
         <br />
-        <input
-          type="checkbox"
+        <Checkbox
           id="stats-automated"
           checked={automated === '1'}
-          onChange={onToggle(setAutomated)}
+          onCheck={(isChecked) => setAutomated(isChecked ? '1' : '0')}
         />
         <label htmlFor="stats-automated">{t('welcomeAndWcEmails')}</label>
         <br />

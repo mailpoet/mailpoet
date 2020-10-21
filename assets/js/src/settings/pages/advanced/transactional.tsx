@@ -2,6 +2,7 @@ import React from 'react';
 import ReactStringReplace from 'react-string-replace';
 
 import { t, onChange } from 'common/functions';
+import Radio from 'common/form/radio/radio';
 import { Label, Inputs } from 'settings/components';
 import { useSetting, useSelector } from 'settings/store/hooks';
 
@@ -37,12 +38,11 @@ export default function Transactional() {
         htmlFor=""
       />
       <Inputs>
-        <input
-          type="radio"
+        <Radio
           id="transactional-enabled"
           value="1"
           checked={enabled === '1'}
-          onChange={onChange(setEnabled)}
+          onCheck={setEnabled}
         />
         <label htmlFor="transactional-enabled">
           {t('transactionalCurrentMethod').replace('%1$s', methodLabel)}
@@ -64,12 +64,11 @@ export default function Transactional() {
           </span>
         </label>
         <br />
-        <input
-          type="radio"
+        <Radio
           id="transactional-disabled"
           value=""
           checked={enabled === ''}
-          onChange={onChange(setEnabled)}
+          onCheck={setEnabled}
         />
         <label htmlFor="transactional-disabled">
           {t('transactionalWP')}

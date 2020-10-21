@@ -5,6 +5,7 @@ import {
   onChange,
   setLowercaseValue,
 } from 'common/functions';
+import Radio from 'common/form/radio/radio';
 import { useSetting, useAction } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
@@ -26,19 +27,17 @@ export default function NewSubscriberNotifications() {
         htmlFor="subscriber_email_notification-enabled"
       />
       <Inputs>
-        <input
-          type="radio"
+        <Radio
           checked={enabled === '1'}
           value="1"
-          onChange={onChange(setEnabled)}
+          onCheck={setEnabled}
         />
         {t('yes')}
         {' '}
-        <input
-          type="radio"
+        <Radio
           checked={enabled === ''}
           value=""
-          onChange={onChange(setEnabled)}
+          onCheck={setEnabled}
         />
         {t('no')}
         <br />
