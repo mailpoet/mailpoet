@@ -21,7 +21,7 @@ export default function ActivateOrCancel() {
     MailPoet.Modal.loading(false);
   };
   return (
-    <p>
+    <div className="mailpoet-settings-save">
       <Button
         type="button"
         onClick={activate}
@@ -34,6 +34,6 @@ export default function ActivateOrCancel() {
       >
         {t('orCancel')}
       </Button>
-    </p>
+    </div>
   );
 }
