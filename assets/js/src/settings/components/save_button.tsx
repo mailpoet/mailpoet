@@ -24,7 +24,7 @@ export default () => {
     save();
   };
   return (
-    <div>
+    <div className="mailpoet-settings-save">
       <Button
         type="button"
         data-automation-id="settings-submit-button"
