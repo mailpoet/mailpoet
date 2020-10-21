@@ -61,6 +61,16 @@ echo '[BUILD] Fetching prefixed production libraries'
 # Should be removed before `dump-autoload` to not include the annotations classes on the autoloader.
 rm -rf vendor-prefixed/doctrine/annotations
 
+# Remove DI Container files used for container dump (no need since generated metadata are packed)
+# Should be removed before `dump-autoload` to not include the annotations classes on the autoloader.
+echo '[BUILD] Removing DI Container development dependencies'
+rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Compiler
+rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Config
+rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Dumper
+rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Loader
+rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/LazyProxy
+rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Extension
+
 ./tools/vendor/composer.phar dump-autoload
 
 # Copy release folders.
@@ -124,15 +134,6 @@ rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/demo
 rm -rf $plugin_name/vendor-prefixed/gregwar/captcha/src/Gregwar/Captcha/Font/captcha4.ttf # big font
 rm -rf $plugin_name/vendor-prefixed/cerdic/css-tidy/bin
 rm -f $plugin_name/vendor-prefixed/egulias/email-validator/psalm*.xml
-
-# Remove DI Container files
-echo '[BUILD] Removing DI Container development dependencies'
-rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Compiler
-rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Config
-rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Dumper
-rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Loader
-rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/LazyProxy
-rm -rf $plugin_name/vendor-prefixed/symfony/dependency-injection/Extension
 
 # Copy release files.
 echo '[BUILD] Copying release files'
