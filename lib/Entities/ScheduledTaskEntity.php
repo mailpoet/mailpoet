@@ -64,6 +64,11 @@ class ScheduledTaskEntity {
   private $meta;
 
   /**
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\ScheduledTaskSubscriberEntity", mappedBy="task", fetch="EXTRA_LAZY")
+   */
+  public $subscribers;
+
+  /**
    * @return string|null
    */
   public function getType() {

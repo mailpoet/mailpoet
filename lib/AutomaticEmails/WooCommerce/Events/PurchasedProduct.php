@@ -3,9 +3,11 @@
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\AutomaticEmailsRepository;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -23,6 +25,9 @@ class PurchasedProduct {
   /** @var LoggerFactory */
   private $loggerFactory;
 
+  /** @var AutomaticEmailsRepository */
+  private $repository;
+
   public function __construct(WCHelper $helper = null) {
     if ($helper === null) {
       $helper = new WCHelper();
@@ -30,6 +35,7 @@ class PurchasedProduct {
     $this->helper = $helper;
     $this->scheduler = new AutomaticEmailScheduler();
     $this->loggerFactory = LoggerFactory::getInstance();
+    $this->repository = ContainerWrapper::getInstance()->get(AutomaticEmailsRepository::class);
   }
 
   public function init() {
@@ -125,8 +131,8 @@ class PurchasedProduct {
       $meta = $automaticEmail->getMeta();
 
       if (empty($meta['option'])) return false;
-      if ($automaticEmail->wasScheduledForSubscriber($subscriber->id)) {
-        $sentAllProducts = $automaticEmail->alreadySentAllProducts($subscriber->id, 'orderedProducts', $orderedProducts);
+      if ($this->repository->wasScheduledForSubscriber($automaticEmail->id, $subscriber->id)) {
+        $sentAllProducts = $this->repository->alreadySentAllProducts($automaticEmail->id, $subscriber->id, 'orderedProducts', $orderedProducts);
         if ($sentAllProducts) return false;
       }
 
