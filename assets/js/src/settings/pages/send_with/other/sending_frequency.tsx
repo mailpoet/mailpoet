@@ -47,7 +47,7 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
         </div>
         {frequency === 'manual' && (
           <>
-            <div className="mailpoet-settings-inputs-row">
+            <div className="mailpoet-settings-inputs-row mailpoet-settings-inputs-row-centered">
               <Input
                 dimension="small"
                 id="other_frequency_emails"
@@ -57,8 +57,8 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
                 value={frequencyEmails}
                 onChange={onChange(setFrequencyEmails)}
               />
-              {' '}
-              {t('emails')}
+              <span className="mailpoet-gap" />
+              <span>{t('emails')}</span>
             </div>
             <div className="mailpoet-settings-inputs-row">
               <Select

@@ -111,6 +111,11 @@ ul.sending-method-benefits {
   }
 }
 
+.mailpoet-settings-inputs-row-centered {
+  align-items: center;
+  display: flex;
+}
+
 .mailpoet-sending-method {
   display: block;
   margin-left: $form-control-choice-height;
