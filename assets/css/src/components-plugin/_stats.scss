@@ -50,8 +50,9 @@
   .mailpoet-stats-segments-segment {
     background-color: $color-tertiary-light;
     border-radius: 2px;
+    display: inline-block;
     font-weight: normal;
-    margin-right: $grid-gap;
+    margin: 2px $grid-gap 2px 2px;
     padding: 2px 4px;
   }
 }
