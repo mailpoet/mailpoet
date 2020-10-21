@@ -21,6 +21,7 @@ use MailPoet\NotFoundException;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
+use MailPoet\Util\Security;
 use MailPoet\WP\Emoji;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -59,6 +60,9 @@ class NewsletterSaveController {
   /** @var SettingsController */
   private $settings;
 
+  /** @var Security */
+  private $security;
+
   public function __construct(
     AuthorizedEmailsController $authorizedEmailsController,
     Emoji $emoji,
@@ -70,7 +74,8 @@ class NewsletterSaveController {
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
     PostNotificationScheduler $postNotificationScheduler,
     ScheduledTasksRepository $scheduledTasksRepository,
-    SettingsController $settings
+    SettingsController $settings,
+    Security $security
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->emoji = $emoji;
@@ -83,6 +88,7 @@ class NewsletterSaveController {
     $this->postNotificationScheduler = $postNotificationScheduler;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->settings = $settings;
+    $this->security = $security;
   }
 
   public function save(array $data = []): NewsletterEntity {
@@ -97,10 +103,11 @@ class NewsletterSaveController {
       $data['body'] = $this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', $data['body']);
     }
 
-    $newsletter = $this->getNewsletter($data);
+    $newsletter = isset($data['id']) ? $this->getNewsletter($data) : $this->createNewsletter($data);
     $oldSenderAddress = $newsletter->getSenderAddress();
 
     $this->updateNewsletter($newsletter, $data);
+    $this->newslettersRepository->flush();
     if (!empty($data['segments'])) {
       $this->updateSegments($newsletter, $data['segments']);
     }
@@ -140,6 +147,29 @@ class NewsletterSaveController {
     return $newsletter;
   }
 
+  private function createNewsletter(array $data): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setUnsubscribeToken($this->security->generateUnsubscribeTokenByEntity($newsletter));
+    $newsletter->setHash(Security::generateHash());
+    // set default sender based on settings
+    if (empty($data['sender'])) {
+      $sender = $this->settings->get('sender', []);
+      $data['sender_name'] = $sender['name'] ?? '';
+      $data['sender_address'] = $sender['address'] ?? '';
+    }
+
+    // set default reply_to based on settings
+    if (empty($data['reply_to'])) {
+      $replyTo = $this->settings->get('reply_to', []);
+      $data['reply_to_name'] = $replyTo['name'] ?? '';
+      $data['reply_to_address'] = $replyTo['address'] ?? '';
+    }
+
+    $this->updateNewsletter($newsletter, $data);
+    $this->newslettersRepository->persist($newsletter);
+    return $newsletter;
+  }
+
   private function updateNewsletter(NewsletterEntity $newsletter, array $data) {
     if (array_key_exists('type', $data)) {
       $newsletter->setType($data['type']);
@@ -176,8 +206,6 @@ class NewsletterSaveController {
     if (array_key_exists('reply_to_address', $data)) {
       $newsletter->setReplyToAddress($data['reply_to_address'] ?? '');
     }
-
-    $this->newslettersRepository->flush();
   }
 
   private function updateSegments(NewsletterEntity $newsletter, array $segments) {

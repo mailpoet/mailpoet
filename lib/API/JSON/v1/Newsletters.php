@@ -8,14 +8,13 @@ use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
-use MailPoet\DI\ContainerWrapper;
+use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Listing;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -24,7 +23,6 @@ use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
-use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -191,7 +189,11 @@ class Newsletters extends APIEndpoint {
           $task->getScheduledAt() <= Carbon::createFromTimestamp($this->wp->currentTime('timestamp')) &&
           $task->getStatus() === SendingQueueEntity::STATUS_SCHEDULED
         ) {
-          $task->setScheduledAt(Carbon::createFromFormat('Y-m-d H:i:s', $nextRunDate));
+          $nextRunDate = $nextRunDate ? Carbon::createFromFormat('Y-m-d H:i:s', $nextRunDate) : null;
+          if ($nextRunDate === false) {
+            throw InvalidStateException::create()->withMessage('Invalid next run date generated');
+          }
+          $task->setScheduledAt($nextRunDate);
         }
       }
       $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
@@ -370,69 +372,13 @@ class Newsletters extends APIEndpoint {
   }
 
   public function create($data = []) {
-    $options = [];
-    if (isset($data['options'])) {
-      $options = $data['options'];
-      unset($data['options']);
+    try {
+      $newsletter = $this->newsletterSaveController->save($data);
+    } catch (ValidationException $exception) {
+      return $this->badRequest(['Please specify a type.']);
     }
-
-    $newsletter = Newsletter::createOrUpdate($data);
-    $errors = $newsletter->getErrors();
-
-    if (!empty($errors)) {
-      return $this->badRequest($errors);
-    } else {
-      // try to load template data
-      $templateId = (isset($data['template']) ? (int)$data['template'] : false);
-      $template = ContainerWrapper::getInstance()->get(NewsletterTemplatesRepository::class)->findOneById($templateId);
-      if ($template) {
-        $newsletter->body = json_encode($template->getBody());
-      } else {
-        $newsletter->body = [];
-      }
-    }
-
-    $newsletter->save();
-    $errors = $newsletter->getErrors();
-    if (!empty($errors)) {
-      return $this->badRequest($errors);
-    } else {
-      if (!empty($options)) {
-        $optionFields = NewsletterOptionField::where(
-          'newsletter_type', $newsletter->type
-        )->findArray();
-
-        foreach ($optionFields as $optionField) {
-          if (isset($options[$optionField['name']])) {
-            $relation = NewsletterOption::create();
-            $relation->newsletterId = $newsletter->id;
-            $relation->optionFieldId = $optionField['id'];
-            $relation->value = $options[$optionField['name']];
-            $relation->save();
-          }
-        }
-      }
-
-      if (
-        empty($data['id'])
-        &&
-        isset($data['type'])
-        &&
-        $data['type'] === Newsletter::TYPE_NOTIFICATION
-      ) {
-        $newsletter = Newsletter::filter('filterWithOptions', $data['type'])->findOne($newsletter->id);
-        assert($newsletter instanceof Newsletter);
-        $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
-        assert($newsletterEntity instanceof NewsletterEntity);
-        $this->postNotificationScheduler->processPostNotificationSchedule($newsletterEntity);
-      }
-
-      $newsletter = Newsletter::findOne($newsletter->id);
-      if(!$newsletter instanceof Newsletter) return $this->errorResponse();
-      return $this->successResponse(
-        $newsletter->asArray()
-      );
-    }
+    $response = $this->newslettersResponseBuilder->build($newsletter);
+    return $this->successResponse($response);
   }
 
   /** @return NewsletterEntity|null */
