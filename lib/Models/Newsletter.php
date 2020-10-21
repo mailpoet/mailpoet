@@ -368,42 +368,6 @@ class Newsletter extends Model {
     return $this;
   }
 
-  public function wasScheduledForSubscriber($subscriberId) {
-    $query = SendingQueue::selectExpr('COUNT(*)', 'count');
-    $query = $this->getAllQueuesForSubscscriberQuery($query, $subscriberId);
-    /** @var \stdClass */
-    $queue = $query->findOne();
-
-    return ((int)$queue->count) > 0;
-  }
-
-  private function getAllQueuesForSubscscriberQuery($orm, $subscriberId) {
-    return $orm->tableAlias('queue')
-      ->join(ScheduledTask::$_table, ['queue.task_id', '=', 'task.id'], 'task')
-      ->join(ScheduledTaskSubscriber::$_table, ['subscriber.task_id', '=', 'task.id'], 'subscriber')
-      ->where('queue.newsletter_id', $this->id)
-      ->where('subscriber.subscriber_id', $subscriberId);
-  }
-
-  /**
-   * Check for automatic emails.
-   * Search products/categories in meta if all of the ordered products have already been sent to the subscriber.
-   */
-  public function alreadySentAllProducts(int $subscriberId, string $orderedKey, array $ordered): bool {
-    $query = SendingQueue::select('queue.*');
-    $queues = $this->getAllQueuesForSubscscriberQuery($query, $subscriberId)->findMany();
-    $sent = [];
-    foreach ($queues as $queue) {
-      $meta = $queue->getMeta();
-      if (isset($meta[$orderedKey])) {
-        $sent = array_merge($sent, $meta[$orderedKey]);
-      }
-    }
-    $notSentProducts = array_diff($ordered, $sent);
-
-    return empty($notSentProducts);
-  }
-
   public static function filterWithOptions($orm, $type) {
     $orm = $orm->select(MP_NEWSLETTERS_TABLE . '.*');
     $optionFields = NewsletterOptionField::findArray();
