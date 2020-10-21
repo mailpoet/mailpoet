@@ -2,11 +2,21 @@
 
 namespace MailPoet\Util;
 
+use Exception;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Security {
   const HASH_LENGTH = 12;
   const UNSUBSCRIBE_TOKEN_LENGTH = 15;
+
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
+  public function __construct(NewslettersRepository $newslettersRepository) {
+    $this->newslettersRepository = $newslettersRepository;
+  }
 
   public static function generateToken($action = 'mailpoet_token') {
     return WPFunctions::get()->wpCreateNonce($action);
@@ -54,6 +64,21 @@ class Security {
     do {
       $token = self::generateRandomString(self::UNSUBSCRIBE_TOKEN_LENGTH);
       $found = $model::whereEqual('unsubscribe_token', $token)->count();
+    } while ($found > 0);
+    return $token;
+  }
+
+  public function generateUnsubscribeTokenByEntity($entity): string {
+    $repository = null;
+    if ($entity instanceof NewsletterEntity) {
+      $repository = $this->newslettersRepository;
+    } else {
+      throw new Exception('Unsupported Entity type');
+    }
+
+    do {
+      $token = self::generateRandomString(self::UNSUBSCRIBE_TOKEN_LENGTH);
+      $found = count($repository->findBy(['unsubscribeToken' => $token]));
     } while ($found > 0);
     return $token;
   }
