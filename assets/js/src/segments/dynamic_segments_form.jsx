@@ -5,6 +5,7 @@ import MailPoet from 'mailpoet';
 import Form from 'form/form.jsx';
 import PropTypes from 'prop-types';
 
+import Background from 'common/background/background';
 import wordpressRoleFields from './dynamic_segments_filters/wordpress_role.jsx';
 import emailFields from './dynamic_segments_filters/email.jsx';
 import woocommerceFields from './dynamic_segments_filters/woocommerce.jsx';
@@ -150,6 +151,7 @@ class DynamicSegmentForm extends React.Component {
     const { item, errors } = this.state;
     return (
       <>
+        <Background color="#fff" />
         <h1 className="title">
           {MailPoet.I18n.t('formPageTitle')}
           {' '}

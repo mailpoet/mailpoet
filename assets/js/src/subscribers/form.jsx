@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import Form from 'form/form.jsx';
 import ReactStringReplace from 'react-string-replace';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
+import Background from 'common/background/background';
 
 const fields = [
   {
@@ -218,8 +219,10 @@ const SubscriberForm = ({ match }) => {
   const backUrl = location.state?.backUrl || '/';
   return (
     <div>
+      <Background color="#fff" />
       <h1 className="title">
         {MailPoet.I18n.t('subscriber')}
+        {' '}
         <Link className="mailpoet-button mailpoet-button-small" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
       </h1>
 

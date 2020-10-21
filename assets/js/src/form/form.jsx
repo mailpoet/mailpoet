@@ -213,7 +213,9 @@ class Form extends React.Component {
 
     return (
       <div>
-        { beforeFormContent }
+        <div className="mailpoet-form-content-around">
+          { beforeFormContent }
+        </div>
         <form
           id={this.props.id}
           ref={this.formRef}
@@ -236,7 +238,9 @@ class Form extends React.Component {
           </div>
 
         </form>
-        { afterFormContent }
+        <div className="mailpoet-form-content-around">
+          { afterFormContent }
+        </div>
       </div>
     );
   }
