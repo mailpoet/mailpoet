@@ -14,7 +14,6 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Listing;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -255,27 +254,15 @@ class Newsletters extends APIEndpoint {
   }
 
   public function duplicate($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $newsletter = Newsletter::findOne($id);
+    $newsletter = $this->getNewsletter($data);
 
-    if ($newsletter instanceof Newsletter) {
-      $data = [
-        'subject' => sprintf(__('Copy of %s', 'mailpoet'), $newsletter->subject),
-      ];
-      $duplicate = $newsletter->duplicate($data);
-      $errors = $duplicate->getErrors();
-
-      if (!empty($errors)) {
-        return $this->errorResponse($errors);
-      } else {
-        $this->wp->doAction('mailpoet_api_newsletters_duplicate_after', $newsletter, $duplicate);
-        $duplicate = Newsletter::findOne($duplicate->id);
-        if(!$duplicate instanceof Newsletter) return $this->errorResponse();
-        return $this->successResponse(
-          $duplicate->asArray(),
-          ['count' => 1]
-        );
-      }
+    if ($newsletter instanceof NewsletterEntity) {
+      $duplicate = $this->newsletterSaveController->duplicate($newsletter);
+      $this->wp->doAction('mailpoet_api_newsletters_duplicate_after', $newsletter, $duplicate);
+      return $this->successResponse(
+        $this->newslettersResponseBuilder->build($duplicate),
+        ['count' => 1]
+      );
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
