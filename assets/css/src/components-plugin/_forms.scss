@@ -62,6 +62,11 @@ progress::-moz-progress-bar {
   border-radius: $progress-border-radius;
 }
 
+.mailpoet-form-content-around {
+  margin: 0 auto;
+  max-width: 976px;
+}
+
 .mailpoet-form-grid {
   align-items: flex-start;
   display: grid;
@@ -104,6 +109,10 @@ progress::-moz-progress-bar {
 
 .mailpoet-form-field + .mailpoet-form-field {
   margin-top: $grid-gap;
+}
+
+.mailpoet-form-field-description {
+  grid-row: span 2;
 }
 
 .mailpoet-form-field-email-header {
