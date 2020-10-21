@@ -154,6 +154,7 @@ class ManageSubscriptionLinkCest {
         continue;
       }
     }
+    $i->waitForText('Sent to 1 of 1');
     $i->see('Sent to 1 of 1');
   }
 }
