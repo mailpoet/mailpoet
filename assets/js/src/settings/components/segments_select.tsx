@@ -26,7 +26,7 @@ export default (props: Props) => {
       placeholder={props.placeholder}
       options={segments}
       onChange={(selectedValues: any) => {
-        props.setValue(selectedValues.map((x: any) => x.value));
+        props.setValue((selectedValues || []).map((x: any) => x.value));
       }}
     />
   );
