@@ -34,6 +34,7 @@
       "php fix-swiftmailer.php",
       "php fix-validator.php",
       "php fix-monolog.php",
+      "php fix-symfony-di.php",
       "php fix-symfony-polyfill.php"
     ]
   },
