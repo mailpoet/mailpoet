@@ -254,7 +254,7 @@ class CronHelperTest extends \MailPoetTest {
 
   public function testItGetsSubsiteUrlOnMultisiteEnvironment() {
     if ((boolean)getenv('MULTISITE') === true) {
-      expect($this->cronHelper->getSiteUrl())->contains(getenv('WP_TEST_MULTISITE_SLUG'));
+      expect($this->cronHelper->getSiteUrl())->stringContainsString((string)getenv('WP_TEST_MULTISITE_SLUG'));
     }
   }
 
