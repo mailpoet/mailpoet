@@ -27,6 +27,7 @@ export default function Captcha() {
             {t('captchaDescription')}
             {' '}
             <a
+              className="mailpoet-link"
               href="https://www.google.com/recaptcha/admin"
               rel="noopener noreferrer"
               target="_blank"

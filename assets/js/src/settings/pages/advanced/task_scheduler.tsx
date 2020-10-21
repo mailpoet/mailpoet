@@ -20,6 +20,7 @@ export default function TaskScheduler() {
             {t('taskCronDescription')}
             {' '}
             <a
+              className="mailpoet-link"
               href="https://kb.mailpoet.com/article/129-what-is-the-newsletter-task-scheduler"
               data-beacon-article="57ce0a7a903360649f6e5703"
               rel="noopener noreferrer"
@@ -57,6 +58,7 @@ export default function TaskScheduler() {
               /\[link\](.*?)\[\/link\]/,
               (text) => (
                 <a
+                  className="mailpoet-link"
                   key={text}
                   href="https://kb.mailpoet.com/article/131-hosts-which-mailpoet-task-scheduler-wont-work"
                   data-beacon-article="57ce0b05c6979108399a0456"

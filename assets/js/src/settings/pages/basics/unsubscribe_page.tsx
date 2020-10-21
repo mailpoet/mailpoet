@@ -28,6 +28,7 @@ export default function UnsubscribePage() {
                 /\[link\](.*?)\[\/link\]/,
                 (text) => (
                   <a
+                    className="mailpoet-link"
                     key={text}
                     href="https://kb.mailpoet.com/article/221-customize-your-unsubscribe-page"
                     rel="noopener noreferrer"
