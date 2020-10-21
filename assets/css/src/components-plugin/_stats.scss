@@ -20,6 +20,7 @@
 
 .mailpoet-stats-general {
   font-size: $font-size;
+  padding-top: $grid-gap;
 }
 
 .mailpoet-stats-general-top-row {
@@ -106,7 +107,6 @@
   margin: 70px auto;
 }
 
-.wrap .mailpoet-top-bar,
 .wrap .mailpoet-stats-info,
 .wrap .mailpoet-stats-general {
   margin-left: -20px;
