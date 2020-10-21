@@ -1,11 +1,12 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
+import Button from 'common/button/button';
 
 function KnowledgeBase() {
   return (
     <>
       <p>{MailPoet.I18n.t('knowledgeBaseIntro')}</p>
-      <ul>
+      <ul className="mailpoet-text-links">
         <li><a target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/category/116-common-problems">Common Problems</a></li>
         <li><a target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/category/165-newsletters">Newsletters</a></li>
         <li><a target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/category/156-migration-questions">Migration Questions</a></li>
@@ -15,7 +16,7 @@ function KnowledgeBase() {
         <li><a target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/category/123-newsletter-designer">Newsletter Designer</a></li>
         <li><a target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/category/121-subscribers-and-lists">Subscribers and Lists</a></li>
       </ul>
-      <a target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/" className="button button-primary">{MailPoet.I18n.t('knowledgeBaseButton')}</a>
+      <Button dimension="small" target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/">{MailPoet.I18n.t('knowledgeBaseButton')}</Button>
     </>
   );
 }
