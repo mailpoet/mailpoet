@@ -10,7 +10,7 @@
     "nesbot/carbon": "2.41.3",
     "sabberworm/php-css-parser": "^8.1",
     "swiftmailer/swiftmailer": "6.2.3",
-    "symfony/dependency-injection": "3.4.43",
+    "symfony/dependency-injection": "4.4.15",
     "symfony/polyfill-ctype": "1.18.1",
     "symfony/polyfill-iconv": "1.18.1",
     "symfony/polyfill-intl-idn": "1.18.1",
