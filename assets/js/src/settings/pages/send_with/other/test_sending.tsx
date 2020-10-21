@@ -47,6 +47,7 @@ export default function TestSending() {
               {ReactStringReplace(t('testEmailTooltip'), /\[link\](.*?)\[\/link\]/g,
                 (match, i) => (
                   <a
+                    className="mailpoet-link"
                     key={i}
                     target="_blank"
                     rel="noopener noreferrer"

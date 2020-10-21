@@ -27,6 +27,7 @@ export default function EnableSignupConfirmation() {
             {t('enableSignupConfDescription')}
             {' '}
             <a
+              className="mailpoet-link"
               href="https://kb.mailpoet.com/article/128-why-you-should-use-signup-confirmation-double-opt-in"
               data-beacon-article="57ce097f903360649f6e5700"
               rel="noopener noreferrer"

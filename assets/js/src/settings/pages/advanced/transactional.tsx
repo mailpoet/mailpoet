@@ -26,6 +26,7 @@ export default function Transactional() {
             {t('transactionalDescription')}
             {' '}
             <a
+              className="mailpoet-link"
               href="https://kb.mailpoet.com/article/292-choose-how-to-send-your-wordpress-websites-emails"
               data-beacon-article="5ddbf92504286364bc9228c5"
               rel="noopener noreferrer"
@@ -52,6 +53,7 @@ export default function Transactional() {
               /\[link\](.*?)\[\/link\]/,
               (text) => (
                 <a
+                  className="mailpoet-link"
                   key={text}
                   href="https://kb.mailpoet.com/article/292-choose-how-to-send-your-wordpress-websites-emails#attachments"
                   rel="noopener noreferrer"

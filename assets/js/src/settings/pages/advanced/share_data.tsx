@@ -18,6 +18,7 @@ export default function ShareData() {
             {t('shareDataDescription')}
             {' '}
             <a
+              className="mailpoet-link"
               href="https://kb.mailpoet.com/article/130-sharing-your-data-with-us"
               data-beacon-article="57ce0aaac6979108399a0454"
               rel="noopener noreferrer"

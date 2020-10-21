@@ -17,11 +17,12 @@ export default function Roles() {
       <Inputs>
         <p>
           {isMembersPluginActive
-            ? <a href="?page=roles">{t('manageUsingMembers')}</a>
+            ? <a className="mailpoet-link" href="?page=roles">{t('manageUsingMembers')}</a>
             : ReactStringReplace(t('installMembers'),
               /\[link\](.*?)\[\/link\]/,
               (text) => (
                 <a
+                  className="mailpoet-link"
                   key={text}
                   href="https://wordpress.org/plugins/members/"
                   rel="noopener noreferrer"

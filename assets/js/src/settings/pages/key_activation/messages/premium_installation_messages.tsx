@@ -30,6 +30,7 @@ const ErrorMessage = () => {
     /\[link\](.*?)\[\/link\]/g,
     (match, i) => (
       <a
+        className="mailpoet-link"
         key={i}
         href={links.shift()}
         target="_blank"

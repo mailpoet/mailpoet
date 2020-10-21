@@ -12,6 +12,7 @@ export default function GdprCompliant() {
       />
       <Inputs>
         <a
+          className="mailpoet-link"
           href="https://kb.mailpoet.com/article/246-guide-to-conform-to-gdpr"
           data-beacon-article="5a9e8cdd04286374f7089a8c"
           title={t('readGuide')}

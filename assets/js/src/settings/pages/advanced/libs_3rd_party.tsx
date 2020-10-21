@@ -18,6 +18,7 @@ export const Libs3rdParty = () => {
             {t('libs3rdPartyDescription')}
             {' '}
             <a
+              className="mailpoet-link"
               href="https://kb.mailpoet.com/article/338-what-3rd-party-libraries-we-use"
               data-beacon-article="5f7c7dd94cedfd0017dcece8"
               rel="noopener noreferrer"

@@ -21,6 +21,7 @@ export default function ManageSubscription() {
               /\[link\](.*?)\[\/link\]/,
               (text) => (
                 <a
+                  className="mailpoet-link"
                   key={text}
                   href="https://kb.mailpoet.com/article/222-customize-your-manage-subscription-page"
                   rel="noopener noreferrer"
