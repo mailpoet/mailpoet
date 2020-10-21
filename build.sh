@@ -55,7 +55,7 @@ mkdir vendor-prefixed
 ./tools/vendor/composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
 
 echo '[BUILD] Fetching prefixed production libraries'
-./tools/vendor/composer.phar install --prefer-dist --working-dir=./prefixer/
+./tools/vendor/composer.phar install --no-dev --prefer-dist --working-dir=./prefixer/
 
 # Remove Doctrinne Annotations (no need since generated metadata are packed)
 # Should be removed before `dump-autoload` to not include the annotations classes on the autoloader.
