@@ -1,7 +1,6 @@
 import React from 'react';
-import $ from 'jquery';
-import 'select2';
 import { useSelector } from 'settings/store/hooks';
+import ReactSelect from 'common/form/react_select/react_select';
 
 type Props = {
   id: string
@@ -11,26 +10,24 @@ type Props = {
 }
 
 export default (props: Props) => {
-  const id = props.id;
-  const setValue = React.useCallback(props.setValue, []);
-  const segments = useSelector('getSegments')();
-  React.useLayoutEffect(() => {
-    const idSelector = `#${id}`;
-    $(idSelector).select2();
-    $(idSelector).on('change', (e) => {
-      const value = Array.from(e.target.selectedOptions).map((x: any) => x.value);
-      setValue(value);
-    });
-    return () => $(idSelector).select2('destroy');
-  }, [id, setValue]);
+  const segments = useSelector('getSegments')().map((segment) => ({
+    value: segment.id,
+    label: segment.name,
+    count: segment.subscribers,
+  }));
+
+  const defaultValue = segments.filter((segment) => props.value.indexOf(segment.value) > -1);
 
   return (
-    <select id={id} data-placeholder={props.placeholder} defaultValue={props.value} multiple>
-      {segments.map((seg) => (
-        <option key={seg.id} value={seg.id}>
-          {`${seg.name} (${seg.subscribers})`}
-        </option>
-      ))}
-    </select>
+    <ReactSelect
+      isMulti
+      defaultValue={defaultValue}
+      id={props.id}
+      placeholder={props.placeholder}
+      options={segments}
+      onChange={(selectedValues: any) => {
+        props.setValue(selectedValues.map((x: any) => x.value));
+      }}
+    />
   );
 };
