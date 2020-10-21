@@ -1,5 +1,6 @@
 // Fix for notice being above "Screen options" button
-.notice {
+.notice,
+.error {
   clear: both;
 }
 
@@ -189,7 +190,7 @@ div.mailpoet-listing-bulk-actions-container {
   tbody td {
     border-bottom: 1px solid $color-tertiary-light;
     box-shadow: none;
-    max-width: 40vw;
+    max-width: 30vw;
     padding: $grid-gap-medium $grid-gap-half;
     vertical-align: middle;
 

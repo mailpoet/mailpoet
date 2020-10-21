@@ -162,7 +162,6 @@ class ListingItem extends React.Component {
                 {MailPoet.I18n.t('restore')}
               </a>
             </span>
-            {this.props.isItemDeletable(this.props.item) && ' | '}
             {this.props.isItemDeletable(this.props.item) && (
               <span className="delete">
                 <a
