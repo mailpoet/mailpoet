@@ -84,35 +84,8 @@ ul.sending-method-benefits {
   cursor: pointer;
 }
 
-.mailpoet-settings-inputs {
-  font-size: 14px;
-}
-
-.mailpoet-settings-inputs label {
-  display: inline-block;
-  margin: 2px 5px;
-}
-
-.mailpoet-settings-inputs input,
-.mailpoet-settings-inputs select,
-.mailpoet-settings-inputs textarea {
-  display: inline-block;
-  margin: 2px;
-}
-
-.mailpoet-settings-inputs input[type='checkbox'] {
-  margin-bottom: 4px;
-  margin-left: 4px;
-}
-
-.mailpoet-settings-inputs input.regular-text {
-  width: 25.5em;
-}
-
-.mailpoet-settings-inputs p {
-  font-size: 14px;
-}
-
+.mailpoet-settings-inputs,
+.mailpoet-settings-inputs p,
 .mailpoet-sending-methods {
   font-size: 14px;
 }
@@ -126,6 +99,15 @@ ul.sending-method-benefits {
 
   .mailpoet-form-input:not(:first-child) {
     margin-top: $grid-gap-half;
+  }
+}
+
+.mailpoet-settings-inputs-row {
+  display: block;
+  margin-top: $grid-gap-half;
+
+  &:first-child {
+    margin-top: 0;
   }
 }
 

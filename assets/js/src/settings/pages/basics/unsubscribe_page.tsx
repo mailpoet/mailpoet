@@ -44,9 +44,10 @@ export default function UnsubscribePage() {
         htmlFor="subscription-pages-unsubscribe"
       />
       <Inputs>
-        {t('confirmationPageTitle')}
-        :
-        <br />
+        <div className="mailpoet-settings-inputs-row">
+          {t('confirmationPageTitle')}
+          :
+        </div>
         <PagesSelect
           value={unsubscribeConfirmationPage}
           preview="confirm_unsubscribe"
@@ -54,11 +55,10 @@ export default function UnsubscribePage() {
           id="subscription-pages-unsubscribe-confirmation"
           linkAutomationId="unsubscribe_page_preview_link_confirmation"
         />
-        <br />
-        <br />
-        {t('successPageTitle')}
-        :
-        <br />
+        <div className="mailpoet-settings-inputs-row">
+          {t('successPageTitle')}
+          :
+        </div>
         <PagesSelect
           value={unsubscribePage}
           preview="unsubscribe"

@@ -34,65 +34,66 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
     <>
       <Label title={t('sendingFrequency')} htmlFor="mailpoet_sending_frequency" />
       <Inputs>
-        <Select
-          id="mailpoet_sending_frequency"
-          value={frequency}
-          onChange={onChange(setFrequency)}
-          isMinWidth
-          dimension="small"
-        >
-          <option value="auto">{t('recommendedTitle')}</option>
-          <option value="manual">{t('ownFrequency')}</option>
-        </Select>
+        <div className="mailpoet-settings-inputs-row">
+          <Select
+            id="mailpoet_sending_frequency"
+            value={frequency}
+            onChange={onChange(setFrequency)}
+            dimension="small"
+          >
+            <option value="auto">{t('recommendedTitle')}</option>
+            <option value="manual">{t('ownFrequency')}</option>
+          </Select>
+        </div>
         {frequency === 'manual' && (
           <>
-            <br />
-            <Input
-              dimension="small"
-              id="other_frequency_emails"
-              type="number"
-              min="1"
-              max="1000"
-              value={frequencyEmails}
-              onChange={onChange(setFrequencyEmails)}
-            />
-            {' '}
-            {t('emails')}
-            <Select
-              id="other_frequency_interval"
-              value={frequencyInterval}
-              onChange={onChange(setFrequencyInterval)}
-              isMinWidth
-              dimension="small"
-            >
-              <option value="1">every minute</option>
-              <option value="2">every 2 minutes</option>
-              <option value="5">every 5 minutes (recommended)</option>
-              <option value="10">every 10 minutes</option>
-              <option value="15">every 15 minutes</option>
-              <option value="30">every 30 minutes</option>
-            </Select>
+            <div className="mailpoet-settings-inputs-row">
+              <Input
+                dimension="small"
+                id="other_frequency_emails"
+                type="number"
+                min="1"
+                max="1000"
+                value={frequencyEmails}
+                onChange={onChange(setFrequencyEmails)}
+              />
+              {' '}
+              {t('emails')}
+            </div>
+            <div className="mailpoet-settings-inputs-row">
+              <Select
+                id="other_frequency_interval"
+                value={frequencyInterval}
+                onChange={onChange(setFrequencyInterval)}
+                dimension="small"
+              >
+                <option value="1">every minute</option>
+                <option value="2">every 2 minutes</option>
+                <option value="5">every 5 minutes (recommended)</option>
+                <option value="10">every 10 minutes</option>
+                <option value="15">every 15 minutes</option>
+                <option value="30">every 30 minutes</option>
+              </Select>
+            </div>
           </>
         )}
         {frequency === 'auto' && (
-          <span>
+          <div className="mailpoet-settings-inputs-row">
             {t('xEmails').replace('%1$s', frequencyEmails)}
             {' '}
             {formatInterval(frequencyInterval)}
             {'. '}
-          </span>
+          </div>
         )}
-        <span>
+        <div className="mailpoet-settings-inputs-row">
           {ReactStringReplace(
             t('thatsXEmailsPerDay').replace('%1$s', dailyEmails.toLocaleString()),
             /<strong>(.*?)<\/strong>/g,
             (match, i) => <strong key={i}>{match}</strong>
           )}
-        </span>
-        <br />
+        </div>
         {emailsPerSecond > 1 && (
-          <>
-            <br />
+          <div className="mailpoet-settings-inputs-row">
             <span className="mailpoet_emails_per_second_warning">
               {ReactStringReplace(
                 t('thatsXEmailsPerSecond').replace('%1$s', emailsPerSecond.toLocaleString()),
@@ -100,20 +101,16 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
                 (match, i) => <strong key={i}>{match}</strong>
               )}
             </span>
-            <br />
-          </>
+          </div>
         )}
         {frequency === 'manual' && (
-          <>
-            <br />
-            <span>
-              {ReactStringReplace(
-                t('frequencyWarning').replace('%1$s', emailsPerSecond.toLocaleString()),
-                /<strong>(.*?)<\/strong>/g,
-                (match, i) => <strong key={i}>{match}</strong>
-              )}
-            </span>
-          </>
+          <div className="mailpoet-settings-inputs-row">
+            {ReactStringReplace(
+              t('frequencyWarning').replace('%1$s', emailsPerSecond.toLocaleString()),
+              /<strong>(.*?)<\/strong>/g,
+              (match, i) => <strong key={i}>{match}</strong>
+            )}
+          </div>
         )}
       </Inputs>
     </>

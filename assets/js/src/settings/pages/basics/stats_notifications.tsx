@@ -29,20 +29,22 @@ export default function StatsNotifications() {
         htmlFor="stats-enabled"
       />
       <Inputs>
-        <Checkbox
-          id="stats-enabled"
-          checked={enabled === '1'}
-          onCheck={(isChecked) => setEnabled(isChecked ? '1' : '0')}
-        />
-        <label htmlFor="stats-enabled">{t('newslettersAndPostNotifs')}</label>
-        <br />
-        <Checkbox
-          id="stats-automated"
-          checked={automated === '1'}
-          onCheck={(isChecked) => setAutomated(isChecked ? '1' : '0')}
-        />
-        <label htmlFor="stats-automated">{t('welcomeAndWcEmails')}</label>
-        <br />
+        <div className="mailpoet-settings-inputs-row">
+          <Checkbox
+            id="stats-enabled"
+            checked={enabled === '1'}
+            onCheck={(isChecked) => setEnabled(isChecked ? '1' : '0')}
+          />
+          <label htmlFor="stats-enabled">{t('newslettersAndPostNotifs')}</label>
+        </div>
+        <div className="mailpoet-settings-inputs-row">
+          <Checkbox
+            id="stats-automated"
+            checked={automated === '1'}
+            onCheck={(isChecked) => setAutomated(isChecked ? '1' : '0')}
+          />
+          <label htmlFor="stats-automated">{t('welcomeAndWcEmails')}</label>
+        </div>
         <Input
           dimension="small"
           type="email"

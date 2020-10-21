@@ -63,16 +63,17 @@ export default function Transactional() {
               ))}
           </span>
         </label>
-        <br />
-        <Radio
-          id="transactional-disabled"
-          value=""
-          checked={enabled === ''}
-          onCheck={setEnabled}
-        />
-        <label htmlFor="transactional-disabled">
-          {t('transactionalWP')}
-        </label>
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            id="transactional-disabled"
+            value=""
+            checked={enabled === ''}
+            onCheck={setEnabled}
+          />
+          <label htmlFor="transactional-disabled">
+            {t('transactionalWP')}
+          </label>
+        </div>
       </Inputs>
     </>
   );

@@ -3,6 +3,7 @@ import ReactStringReplace from 'react-string-replace';
 
 import HelpTooltip from 'help-tooltip';
 import { t, onChange } from 'common/functions';
+import Button from 'common/button/button';
 import Input from 'common/form/input/input';
 import { Label, Inputs } from 'settings/components';
 import { useSetting, useAction, useSelector } from 'settings/store/hooks';
@@ -30,14 +31,14 @@ export default function TestSending() {
           value={email}
           onChange={onChange(setEmail)}
         />
-        <button
+        <Button
           type="button"
-          id="mailpoet_mta_test"
-          className="button-secondary"
+          dimension="small"
+          variant="light"
           onClick={() => sendTestEmail(email, mailer)}
         >
           {t('sendTestEmail')}
-        </button>
+        </Button>
         <HelpTooltip
           tooltipId="tooltip-settings-test"
           className="mailpoet_tooltip_icon"

@@ -43,7 +43,7 @@ export default function ShareData() {
         <label htmlFor="share-data-enabled">
           {t('yes')}
         </label>
-        {' '}
+        <span className="mailpoet-gap" />
         <Radio
           id="share-data-disabled"
           value=""
