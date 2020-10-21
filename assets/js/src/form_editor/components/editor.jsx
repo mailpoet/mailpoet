@@ -76,6 +76,8 @@ export default () => {
         color: {
           palette: SETTINGS_DEFAULTS.presets.color,
           gradients: SETTINGS_DEFAULTS.presets.gradient,
+          custom: true,
+          customGradient: true,
         },
         typography: {
           fontSizes: SETTINGS_DEFAULTS.presets['font-size'],
