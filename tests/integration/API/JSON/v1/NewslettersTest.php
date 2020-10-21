@@ -11,6 +11,7 @@ use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\Cron\CronHelper;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -379,7 +380,7 @@ class NewslettersTest extends \MailPoetTest {
 
     $hookName = 'mailpoet_api_newsletters_duplicate_after';
     expect(WPHooksHelper::isActionDone($hookName))->true();
-    expect(WPHooksHelper::getActionDone($hookName)[0] instanceof Newsletter)->true();
+    expect(WPHooksHelper::getActionDone($hookName)[0] instanceof NewsletterEntity)->true();
 
     $response = $this->endpoint->duplicate(['id' => $this->postNotification->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);

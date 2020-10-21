@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -133,6 +134,56 @@ class NewsletterSaveController {
     $this->updateQueue($newsletter, $newsletterModel, $data['options'] ?? []);
     $this->authorizedEmailsController->onNewsletterSenderAddressUpdate($newsletter, $oldSenderAddress);
     return $newsletter;
+  }
+
+  public function duplicate(NewsletterEntity $newsletter): NewsletterEntity {
+    $duplicate = clone $newsletter;
+
+    $duplicate->setSubject(sprintf(__('Copy of %s', 'mailpoet'), $newsletter->getSubject()));
+    // generate new unsubscribe token
+    $duplicate->setUnsubscribeToken($this->security->generateUnsubscribeTokenByEntity($duplicate));
+    // reset status
+    $duplicate->setStatus(NewsletterEntity::STATUS_DRAFT);
+    // reset hash
+    $duplicate->setHash(null);
+    // reset sent at date
+    $duplicate->setSentAt(null);
+
+    $this->newslettersRepository->persist($duplicate);
+    $this->newslettersRepository->flush();
+
+    // create relationships between duplicate and segments
+    foreach ($newsletter->getNewsletterSegments() as $newsletterSegment) {
+      $segment = $newsletterSegment->getSegment();
+      if (!$segment) {
+          continue;
+      }
+      $duplicateSegment = new NewsletterSegmentEntity($duplicate, $segment);
+      $duplicate->getNewsletterSegments()->add($duplicateSegment);
+      $this->newsletterSegmentRepository->persist($duplicateSegment);
+    }
+
+    // duplicate options
+    $ignoredOptions = [
+      NewsletterOptionFieldEntity::NAME_IS_SCHEDULED,
+      NewsletterOptionFieldEntity::NAME_SCHEDULED_AT,
+    ];
+    foreach ($newsletter->getOptions() as $newsletterOption) {
+      $optionField = $newsletterOption->getOptionField();
+      if (!$optionField) {
+        continue;
+      }
+      if (in_array($optionField->getName(), $ignoredOptions, true)) {
+        continue;
+      }
+      $duplicateOption = new NewsletterOptionEntity($duplicate, $optionField);
+      $duplicateOption->setValue($newsletterOption->getValue());
+      $duplicate->getOptions()->add($duplicateOption);
+      $this->newsletterOptionsRepository->persist($duplicateOption);
+    }
+    $this->newslettersRepository->flush();
+
+    return $duplicate;
   }
 
   private function getNewsletter(array $data): NewsletterEntity {
