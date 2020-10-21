@@ -94,7 +94,7 @@ class AutomatedLatestContentBlockTest extends \MailPoetTest {
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
 
     // Clear old posts
-    $posts = $this->wp->getPosts(['post_type' => 'post']);
+    $posts = $this->wp->getPosts(['post_type' => 'post', 'numberposts' => 0]);
     foreach ($posts as $post) {
       $this->wp->wpDeletePost((int)$post->ID);
     }
