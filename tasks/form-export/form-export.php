@@ -52,9 +52,7 @@ function mailpoetExportForm(int $id) {
   }
   $template = file_get_contents(__DIR__ . '/Template.php', false);
   $template = str_replace('TEMPLATE_BODY', mailpoetVarExport($form->getBody()), $template);
-  $settings = $form->getSettings();
-  $settings['success_message'] = '';
-  $settings['segments'] = [];
+  $settings = mailpoetProcessFormSettings($form->getSettings());
   $template = str_replace('TEMPLATE_ID', strtolower(preg_replace("/[^A-Za-z0-9]/", '_', $form->getName())), $template);
   $template = str_replace('TEMPLATE_ASSETS_DIR', strtolower(preg_replace("/[^A-Za-z0-9]/", '-', $form->getName())), $template);
   $template = str_replace('TEMPLATE_SETTINGS', mailpoetVarExport($settings), $template);
@@ -84,6 +82,36 @@ function mailpoetGetFormsRepository(): FormsRepository {
     die('MailPoet plugin must be active!');
   }
   return ContainerWrapper::getInstance()->get(FormsRepository::class);
+}
+
+function mailpoetProcessFormSettings(array $settings): array {
+  $settings['success_message'] = '';
+  $settings['segments'] = [];
+  $placements = [];
+  $hasActivePlacement = false;
+  foreach ($settings['form_placement'] as $type => $placement) {
+    if (!isset($placement['enabled']) || $placement['enabled'] !== '1') {
+      $placements[$type] = $type === 'others' ? [] : ['enabled' => ''];
+      continue;
+    }
+    $hasActivePlacement = true;
+    $placements[$type] = [
+      'enabled' => '1',
+    ];
+    foreach ($placement as $settingKey => $value) {
+      if (in_array($settingKey, ['styles', 'position', 'animation'])) {
+        $placements[$type][$settingKey] = $value;
+      }
+    }
+  }
+  // It is a widget type
+  if (!$hasActivePlacement) {
+    $placements['others'] = [
+      'styles' => $settings['form_placement']['others']['styles'],
+    ];
+  }
+  $settings['form_placement'] = $placements;
+  return $settings;
 }
 
 function mailpoetAddStringTranslations(string $template): string {

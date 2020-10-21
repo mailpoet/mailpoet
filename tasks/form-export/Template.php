@@ -5,16 +5,16 @@ namespace MailPoet\Form\Templates\Templates;
 use MailPoet\Form\Templates\FormTemplate;
 
 class Template extends FormTemplate {
-  const ID = 'TEMPLATE_ID';
+  const ID = 'TEMPLATE_ID'; //@todo Set proper value
 
   /** @var string */
-  protected $assetsDirectory = 'TEMPLATE_ASSETS_DIR';
+  protected $assetsDirectory = 'TEMPLATE_ASSETS_DIR'; //@todo Set proper value
 
   public function getName(): string {
-    return 'TEMPLATE_NAME';
+    return _x('TEMPLATE_NAME', 'Form template name', 'mailpoet'); //@todo Set proper value
   }
 
-  public function getThumbnailUrl(): array {
+  public function getThumbnailUrl(): string {
     return ''; //@todo Add thunbmail
   }
 
