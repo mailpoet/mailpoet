@@ -1,5 +1,6 @@
 import React from 'react';
 import { t } from 'common/functions';
+import Input from 'common/form/input/input';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 
 type Props = {
@@ -23,12 +24,12 @@ export default function Shortcode({ name, title, description }: Props) {
         htmlFor={`${name}-shortcode`}
       />
       <Inputs>
-        <input
+        <Input
+          dimension="small"
           readOnly
           type="text"
           value={shortcode}
           onClick={selectText}
-          className="regular-text"
           id={`${name}-shortcode`}
         />
         <br />

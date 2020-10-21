@@ -32,6 +32,10 @@
     &::placeholder {
       color: $color-text-light;
     }
+
+    &[rows] {
+      height: auto;
+    }
   }
 
   &.mailpoet-full-width + .mailpoet-form-textarea.mailpoet-full-width { margin-top: $grid-gap; }

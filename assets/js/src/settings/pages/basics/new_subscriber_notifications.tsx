@@ -5,6 +5,7 @@ import {
   onChange,
   setLowercaseValue,
 } from 'common/functions';
+import Input from 'common/form/input/input';
 import Radio from 'common/form/radio/radio';
 import { useSetting, useAction } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
@@ -41,7 +42,13 @@ export default function NewSubscriberNotifications() {
         />
         {t('no')}
         <br />
-        <input type="email" value={email} onChange={onChange(setLowercaseValue(setEmail))} placeholder="me@mydomain.com" />
+        <Input
+          dimension="small"
+          type="email"
+          value={email}
+          onChange={onChange(setLowercaseValue(setEmail))}
+          placeholder="me@mydomain.com"
+        />
         {hasError && (
           <div className="mailpoet_error_item mailpoet_error">
             {t('pleaseFillEmail')}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
+import Input from 'common/form/input/input';
 import Radio from 'common/form/radio/radio';
 import Select from 'common/form/select/select';
 import { useSetting } from 'settings/store/hooks';
@@ -18,19 +19,19 @@ export default function SmtpFields() {
       <SendingFrequency recommendedEmails={100} recommendedInterval={5} />
       <Label title={t('smtpHost')} description={t('smtpHostExample')} htmlFor="mailpoet_smtp_host" />
       <Inputs>
-        <input type="text" className="regular-text" id="mailpoet_smtp_host" value={host} onChange={onChange(setHost)} />
+        <Input dimension="small" type="text" id="mailpoet_smtp_host" value={host} onChange={onChange(setHost)} />
       </Inputs>
       <Label title={t('smtpPort')} htmlFor="mailpoet_smtp_port" />
       <Inputs>
-        <input type="text" id="mailpoet_smtp_port" value={port} onChange={onChange(setPort)} />
+        <Input dimension="small" type="text" id="mailpoet_smtp_port" value={port} onChange={onChange(setPort)} />
       </Inputs>
       <Label title={t('login')} htmlFor="mailpoet_smtp_login" />
       <Inputs>
-        <input type="text" id="mailpoet_smtp_login" className="regular-text" value={login} onChange={onChange(setLogin)} />
+        <Input dimension="small" type="text" id="mailpoet_smtp_login" value={login} onChange={onChange(setLogin)} />
       </Inputs>
       <Label title={t('password')} htmlFor="mailpoet_smtp_password" />
       <Inputs>
-        <input type="password" id="mailpoet_smtp_password" className="regular-text" value={password} onChange={onChange(setPassword)} />
+        <Input dimension="small" type="password" id="mailpoet_smtp_password" value={password} onChange={onChange(setPassword)} />
       </Inputs>
       <Label title={t('secureConnectioon')} htmlFor="mailpoet_smtp_encryption" />
       <Inputs>

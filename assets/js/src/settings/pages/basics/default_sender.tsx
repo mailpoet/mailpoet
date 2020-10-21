@@ -6,6 +6,7 @@ import {
   onChange,
   setLowercaseValue,
 } from 'common/functions';
+import Input from 'common/form/input/input';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import SenderEmailAddressWarning from 'common/sender_email_address_warning.jsx';
 
@@ -30,7 +31,8 @@ export default function DefaultSender() {
       />
       <Inputs>
         <label htmlFor="sender-name">{t('from')}</label>
-        <input
+        <Input
+          dimension="small"
           type="text"
           id="sender-name"
           placeholder={t('yourName')}
@@ -38,7 +40,8 @@ export default function DefaultSender() {
           value={senderName}
           onChange={onChange(setSenderName)}
         />
-        <input
+        <Input
+          dimension="small"
           type="text"
           placeholder="from@mydomain.com"
           data-automation-id="from-email-field"
@@ -57,7 +60,8 @@ export default function DefaultSender() {
           />
         </div>
         <label htmlFor="reply_to-name">Reply-to</label>
-        <input
+        <Input
+          dimension="small"
           type="text"
           id="reply_to-name"
           placeholder={t('yourName')}
@@ -65,7 +69,8 @@ export default function DefaultSender() {
           value={replyToName}
           onChange={onChange(setReplyToName)}
         />
-        <input
+        <Input
+          dimension="small"
           type="text"
           placeholder="reply_to@mydomain.com"
           data-automation-id="reply_to-email-field"

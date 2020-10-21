@@ -1,6 +1,7 @@
 import React from 'react';
 import { t, onChange } from 'common/functions';
 import Checkbox from 'common/form/checkbox/checkbox';
+import Input from 'common/form/input/input';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 
@@ -35,9 +36,9 @@ export default function SubscribeOn({ title, description, event }: Props) {
         {enabled === '1' && (
           <>
             <br />
-            <input
+            <Input
+              dimension="small"
               type="text"
-              className="regular-text"
               value={label}
               onChange={onChange(setLabel)}
             />

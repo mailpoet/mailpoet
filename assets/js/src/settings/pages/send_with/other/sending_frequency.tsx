@@ -3,6 +3,7 @@ import ReactStringReplace from 'react-string-replace';
 
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
+import Input from 'common/form/input/input';
 import Select from 'common/form/select/select';
 import { useSetting } from 'settings/store/hooks';
 
@@ -46,7 +47,8 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
         {frequency === 'manual' && (
           <>
             <br />
-            <input
+            <Input
+              dimension="small"
               id="other_frequency_emails"
               type="number"
               min="1"
