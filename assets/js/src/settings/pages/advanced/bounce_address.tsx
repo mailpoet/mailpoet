@@ -1,5 +1,6 @@
 import React from 'react';
 import { t, onChange, setLowercaseValue } from 'common/functions';
+import Input from 'common/form/input/input';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
@@ -27,7 +28,8 @@ export default function BounceAddress() {
         htmlFor="bounce-address"
       />
       <Inputs>
-        <input
+        <Input
+          dimension="small"
           type="text"
           id="bounce-address"
           placeholder="bounce@mydomain.com"

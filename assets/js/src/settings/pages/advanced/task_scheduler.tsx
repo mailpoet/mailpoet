@@ -2,6 +2,7 @@ import React from 'react';
 import ReactStringReplace from 'react-string-replace';
 
 import { t } from 'common/functions';
+import Input from 'common/form/input/input';
 import Radio from 'common/form/radio/radio';
 import { useSetting, useSelector } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
@@ -80,16 +81,17 @@ export default function TaskScheduler() {
             <br />
             {t('addCommandToCrontab')}
             <br />
-            <input
+            <Input
+              dimension="small"
               type="text"
               readOnly
-              className="large-text"
               value={`php ${paths.plugin}/mailpoet-cron.php ${paths.root}`}
             />
             <br />
             {t('withFrequency')}
             <br />
-            <input
+            <Input
+              dimension="small"
               type="text"
               readOnly
               value="*/1 * * * *"

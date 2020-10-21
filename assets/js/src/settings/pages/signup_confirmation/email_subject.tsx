@@ -1,5 +1,6 @@
 import React from 'react';
 import { t, onChange } from 'common/functions';
+import Input from 'common/form/input/input';
 import { Label, Inputs } from 'settings/components';
 import { useSetting } from 'settings/store/hooks';
 
@@ -15,7 +16,8 @@ export default function EmailSubject() {
         htmlFor="signup_confirmation-subject"
       />
       <Inputs>
-        <input
+        <Input
+          dimension="small"
           type="text"
           size={50}
           id="signup_confirmation-subject"

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
+import Input from 'common/form/input/input';
 import Select from 'common/form/select/select';
 import { useSetting, useSelector } from 'settings/store/hooks';
 import SendingFrequency from './sending_frequency';
@@ -29,7 +30,8 @@ export default function AmazonSesFields() {
       </Inputs>
       <Label title={t('accessKey')} htmlFor="mailpoet_amazon_ses_access_key" />
       <Inputs>
-        <input
+        <Input
+          dimension="small"
           type="text"
           value={accessKey}
           className="regular-text"
@@ -39,7 +41,8 @@ export default function AmazonSesFields() {
       </Inputs>
       <Label title={t('secretKey')} htmlFor="mailpoet_amazon_ses_secret_key" />
       <Inputs>
-        <input
+        <Input
+          dimension="small"
           type="text"
           value={secretKey}
           className="regular-text"

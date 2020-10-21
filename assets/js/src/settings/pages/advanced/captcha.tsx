@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { t, onChange } from 'common/functions';
+import Input from 'common/form/input/input';
 import Radio from 'common/form/radio/radio';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
@@ -62,10 +63,10 @@ export default function Captcha() {
         {type === 'recaptcha' && (
           <>
             <br />
-            <input
+            <Input
+              dimension="small"
               type="text"
               value={token}
-              className="regular-text"
               onChange={onChange(setToken)}
               placeholder={t('yourReCaptchaKey')}
             />
@@ -75,10 +76,10 @@ export default function Captcha() {
               </span>
             )}
             <br />
-            <input
+            <Input
+              dimension="small"
               type="text"
               value={secret}
-              className="regular-text"
               onChange={onChange(setSecret)}
               placeholder={t('yourReCaptchaSecret')}
             />

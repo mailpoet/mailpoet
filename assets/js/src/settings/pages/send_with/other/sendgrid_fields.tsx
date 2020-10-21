@@ -1,6 +1,7 @@
 import React from 'react';
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
+import Input from 'common/form/input/input';
 import { useSetting, useSelector } from 'settings/store/hooks';
 import SendingFrequency from './sending_frequency';
 
@@ -12,10 +13,10 @@ export default function SendGridFields() {
       <SendingFrequency recommendedEmails={options.emails} recommendedInterval={options.interval} />
       <Label title={t('apiKey')} htmlFor="mailpoet_sendgrid_api_key" />
       <Inputs>
-        <input
+        <Input
+          dimension="small"
           type="text"
           value={apiKey}
-          className="regular-text"
           onChange={onChange(setApiKey)}
           id="mailpoet_sendgrid_api_key"
         />

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { t, onChange } from 'common/functions';
+import Textarea from 'common/form/textarea/textarea';
 import { Label, Inputs } from 'settings/components';
 import { useSetting } from 'settings/store/hooks';
 
@@ -24,7 +25,7 @@ export default function EmailContent() {
         htmlFor="signup_confirmation-body"
       />
       <Inputs>
-        <textarea
+        <Textarea
           id="signup_confirmation-body"
           cols={50}
           rows={15}

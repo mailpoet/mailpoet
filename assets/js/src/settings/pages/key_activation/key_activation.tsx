@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import { useSelector, useAction, useSetting } from 'settings/store/hooks';
 import { GlobalContext } from 'context';
 import { t } from 'common/functions';
+import Input from 'common/form/input/input';
 import { MssStatus } from 'settings/store/types';
 import { Label, Inputs } from 'settings/components';
 import SetFromAddressModal from 'common/set_from_address_modal';
@@ -133,10 +134,10 @@ export default function KeyActivation() {
         description={t('premiumTabDescription')}
       />
       <Inputs>
-        <input
+        <Input
+          dimension="small"
           type="text"
           id="mailpoet_premium_key"
-          className="regular-text"
           name="premium[premium_key]"
           value={state.key || ''}
           onChange={(event) => setState({
