@@ -19,6 +19,11 @@ use MailPoet\Form\Templates\Templates\Template12FixedBar;
 use MailPoet\Form\Templates\Templates\Template12Popup;
 use MailPoet\Form\Templates\Templates\Template12SlideIn;
 use MailPoet\Form\Templates\Templates\Template12Widget;
+use MailPoet\Form\Templates\Templates\Template13BelowPages;
+use MailPoet\Form\Templates\Templates\Template13FixedBar;
+use MailPoet\Form\Templates\Templates\Template13Popup;
+use MailPoet\Form\Templates\Templates\Template13SlideIn;
+use MailPoet\Form\Templates\Templates\Template13Widget;
 use MailPoet\Form\Templates\Templates\Template17BelowPages;
 use MailPoet\Form\Templates\Templates\Template17FixedBar;
 use MailPoet\Form\Templates\Templates\Template17Popup;
@@ -111,6 +116,11 @@ class TemplateRepository {
     Template12Popup::ID => Template12Popup::class,
     Template12SlideIn::ID => Template12SlideIn::class,
     Template12Widget::ID => Template12Widget::class,
+    Template13BelowPages::ID => Template13BelowPages::class,
+    Template13FixedBar::ID => Template13FixedBar::class,
+    Template13Popup::ID => Template13Popup::class,
+    Template13SlideIn::ID => Template13SlideIn::class,
+    Template13Widget::ID => Template13Widget::class,
     Template17BelowPages::ID => Template17BelowPages::class,
     Template17FixedBar::ID => Template17FixedBar::class,
     Template17Popup::ID => Template17Popup::class,
