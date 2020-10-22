@@ -463,7 +463,7 @@ class NewsletterSend extends React.Component {
     }
 
     return (
-      <div>
+      <div className="mailpoet-form-send-email">
         <Background color="#fff" />
         <ListingHeadingStepsRoute emailType={emailType} automationId="newsletter_send_heading" />
 
