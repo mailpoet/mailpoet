@@ -5,9 +5,9 @@ import MailPoet from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import plusIcon from 'common/button/icon/plus';
 
-const SubscribersHeading = ({ history, location }) => (
+const SubscribersHeading = ({ location }) => (
   <>
-    <TopBarWithBeamer onLogoClick={() => history.push('/')}>
+    <TopBarWithBeamer>
       <Link
         className="mailpoet-button"
         to={{
@@ -40,9 +40,6 @@ const SubscribersHeading = ({ history, location }) => (
 );
 
 SubscribersHeading.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 

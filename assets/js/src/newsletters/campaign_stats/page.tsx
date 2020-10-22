@@ -106,9 +106,7 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
 
   return (
     <>
-      <TopBarWithBeamer
-        onLogoClick={() => history.push('/')}
-      />
+      <TopBarWithBeamer />
       <div className="mailpoet-stats-page">
         <InvalidMssKeyNotice
           mssKeyInvalid={(window as any).mailpoet_mss_key_invalid}

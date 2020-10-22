@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import plusIcon from 'common/button/icon/plus';
@@ -14,9 +13,9 @@ export const onAddNewForm = () => {
   }, 200); // leave some time for the event to track
 };
 
-export const FormsHeadingComponent = ({ history }) => (
+export const FormsHeading = (
   <>
-    <TopBarWithBeamer onLogoClick={() => history.push('/')}>
+    <TopBarWithBeamer>
       <Link
         className="mailpoet-button"
         to="/new"
@@ -30,11 +29,3 @@ export const FormsHeadingComponent = ({ history }) => (
     <h1 className="mailpoet-newsletter-listing-heading-empty title">{' '}</h1>
   </>
 );
-
-FormsHeadingComponent.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
-
-export const FormsHeading = withRouter(FormsHeadingComponent);
