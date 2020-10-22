@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import Background from 'common/background/background';
 import Heading from 'common/typography/heading/heading';
+import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 
 const fields = [
   {
@@ -36,6 +37,8 @@ const messages = {
 const SegmentForm = (props) => (
   <div>
     <Background color="#fff" />
+    <HideScreenOptions />
+
     <Heading level={1} className="mailpoet-title">
       <span>{MailPoet.I18n.t('segment')}</span>
       <Link className="mailpoet-button mailpoet-button-small" to="/">{MailPoet.I18n.t('backToList')}</Link>

@@ -1,6 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import Steps from '../../common/steps/steps.tsx';
+import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
+import Steps from 'common/steps/steps.tsx';
 
 export const mapPathToSteps = (location) => {
   const stepsMap = [
@@ -35,15 +36,9 @@ const getEmailTypeTitle = (emailType) => {
   return typeMap[emailType] || MailPoet.I18n.t('stepNameTypeStandard');
 };
 
-const hideWPScreenOptions = () => {
-  const screenOptions = document.getElementById('screen-meta-links');
-  if (screenOptions && screenOptions.style.display !== 'none') {
-    screenOptions.style.display = 'none';
-  }
-};
-
 const stepsListingHeading = (step, emailTypeTitle, automationId) => (
   <div className="mailpoet-newsletter-listing-heading-wrapper" data-automation-id={automationId}>
+    <HideScreenOptions />
     <Steps count={4} current={step} titles={[emailTypeTitle, MailPoet.I18n.t('stepNameTemplate'), MailPoet.I18n.t('stepNameDesign'), MailPoet.I18n.t('stepNameSend')]} />
     <h1 className="mailpoet-newsletter-listing-heading title mailpoet_hidden">{' '}</h1>
   </div>
@@ -58,7 +53,6 @@ const ListingHeadingSteps = ({
   const stepNumber = step || mapPathToSteps(location);
   const emailTypeTitle = getEmailTypeTitle(emailType);
   if (stepNumber !== null) {
-    hideWPScreenOptions();
     return stepsListingHeading(stepNumber, emailTypeTitle, automationId);
   }
   return null;
