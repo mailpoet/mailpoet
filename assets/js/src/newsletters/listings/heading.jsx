@@ -1,13 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import plusIcon from 'common/button/icon/plus';
 
-const ListingHeading = ({ history }) => (
+const ListingHeading = () => (
   <>
-    <TopBarWithBeamer onLogoClick={() => history.push('/')}>
+    <TopBarWithBeamer>
       <Link
         id="mailpoet-new-email"
         className="mailpoet-button"
@@ -26,10 +25,4 @@ const ListingHeading = ({ history }) => (
   </>
 );
 
-ListingHeading.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
-
-export default withRouter(ListingHeading);
+export default ListingHeading;

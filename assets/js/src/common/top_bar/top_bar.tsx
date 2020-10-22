@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import { useHistory } from 'react-router-dom';
 import t from 'common/functions/t';
 import { withFeatureAnnouncement } from 'announcements/with_feature_announcement';
 import { MailPoetLogo } from './mailpoet_logo';
@@ -11,19 +12,19 @@ type Props = {
   children?: React.ReactNode
   hasNews?: boolean
   onBeamerClick?: () => void
-  onLogoClick: () => void
 };
 
 export const TopBar = ({
   children,
   hasNews,
   onBeamerClick,
-  onLogoClick,
 }: Props) => {
   const buttonClasses = classNames(
     'mailpoet-top-bar-beamer',
     hasNews ? 'mailpoet-top-bar-beamer-dot' : ''
   );
+  const history = useHistory();
+  const onLogoClick = () => history.push('/');
   return (
     <div className="mailpoet-top-bar">
       <a
