@@ -5,6 +5,7 @@ import Form from 'form/form.jsx';
 import PropTypes from 'prop-types';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import Background from 'common/background/background';
+import Heading from 'common/typography/heading/heading';
 
 const fields = [
   {
@@ -35,11 +36,10 @@ const messages = {
 const SegmentForm = (props) => (
   <div>
     <Background color="#fff" />
-    <h1 className="title">
-      {MailPoet.I18n.t('segment')}
-      {' '}
+    <Heading level={1} className="mailpoet-title">
+      <span>{MailPoet.I18n.t('segment')}</span>
       <Link className="mailpoet-button mailpoet-button-small" to="/">{MailPoet.I18n.t('backToList')}</Link>
-    </h1>
+    </Heading>
 
     <SubscribersLimitNotice />
 
