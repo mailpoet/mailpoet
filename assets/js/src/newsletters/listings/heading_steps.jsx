@@ -1,7 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
-import Steps from 'common/steps/steps.tsx';
+import HideScreenOptions from '../../common/hide_screen_options/hide_screen_options.tsx';
+import Steps from '../../common/steps/steps.tsx';
 
 export const mapPathToSteps = (location) => {
   const stepsMap = [
