@@ -209,7 +209,7 @@ class Template17BelowPages extends FormTemplate {
         'others' => [],
       ],
       'backgroundColor' => '#1a1a1a',
-      'background_image_url' => $this->getAssetUrl('2714165-1.jpg'),
+      'background_image_url' => $this->getAssetUrl('2714165.jpg'),
       'background_image_display' => 'scale',
       'fontColor' => '#ffffff',
     ];
