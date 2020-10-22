@@ -9,7 +9,7 @@ $beamer-dot-size: 8px;
   display: flex;
   flex-direction: row;
   height: 64px;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin: 0 0 40px;
   padding-left: $grid-gap;
   padding-right: $grid-gap;
@@ -33,13 +33,19 @@ $beamer-dot-size: 8px;
 
 .mailpoet-top-bar-logo {
   cursor: pointer;
-  object-fit: contain;
+  position: relative;
+  top: 2px;
+
+  svg {
+    max-height: 100%;
+    max-width: 100%;
+  }
 }
 
 .mailpoet-top-bar-logo-desktop {
   display: block;
-  height: 24px;
-  width: 80px;
+  height: 30px;
+  width: 100px;
 
   @include respond-to(small-screen) {
     display: none;
@@ -56,18 +62,10 @@ $beamer-dot-size: 8px;
   }
 }
 
-.mailpoet-top-bar-content {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-}
-
 .mailpoet-top-bar-children {
-  margin-right: $grid-gap;
+  margin-left: $grid-gap;
 
   @include respond-to(small-screen) {
-    margin-right: $grid-gap-half;
-
     .mailpoet-button {
       padding-left: 10px;
       padding-right: 10px;

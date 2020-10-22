@@ -17,7 +17,7 @@ export const FormsHeading = (
   <>
     <TopBarWithBeamer>
       <Link
-        className="mailpoet-button"
+        className="mailpoet-button mailpoet-button-small"
         to="/new"
         onClick={onAddNewForm}
         data-automation-id="create_new_form"
@@ -26,6 +26,5 @@ export const FormsHeading = (
         <span>{MailPoet.I18n.t('new')}</span>
       </Link>
     </TopBarWithBeamer>
-    <h1 className="mailpoet-newsletter-listing-heading-empty title">{' '}</h1>
   </>
 );

@@ -9,7 +9,7 @@ const SubscribersHeading = ({ location }) => (
   <>
     <TopBarWithBeamer>
       <Link
-        className="mailpoet-button"
+        className="mailpoet-button mailpoet-button-small"
         to={{
           pathname: '/new',
           state: {
@@ -21,7 +21,7 @@ const SubscribersHeading = ({ location }) => (
         <span data-automation-id="add-new-subscribers-button">{MailPoet.I18n.t('new')}</span>
       </Link>
       <a
-        className="mailpoet-button not-small-screen"
+        className="mailpoet-button mailpoet-button-small not-small-screen"
         href="?page=mailpoet-import"
         data-automation-id="import-subscribers-button"
       >
@@ -29,13 +29,12 @@ const SubscribersHeading = ({ location }) => (
       </a>
       <a
         id="mailpoet_export_button"
-        className="mailpoet-button not-small-screen"
+        className="mailpoet-button mailpoet-button-small not-small-screen"
         href="?page=mailpoet-export"
       >
         {MailPoet.I18n.t('export')}
       </a>
     </TopBarWithBeamer>
-    <h1 className="mailpoet-newsletter-listing-heading-empty title">{' '}</h1>
   </>
 );
 
