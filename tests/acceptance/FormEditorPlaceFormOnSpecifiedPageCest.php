@@ -29,7 +29,7 @@ class FormEditorPlaceFormOnSpecifiedPageCest {
     $i->clickItemRowActionByItemName($formName, 'Edit');
     $i->waitForElement('[data-automation-id="form_title_input"]');
     $i->click('.form-sidebar-form-placement-panel');
-    $i->click('[data-automation-id="form-placement-option-Pop up"]');
+    $i->click('[data-automation-id="form-placement-option-Pop-up"]');
     $i->checkOption('Enable');
     $i->waitForText('Display on all posts');
     $i->selectOptionInSelect2($pageTitle, '[data-automation-id="form-placement-select-page"] input.select2-search__field');
