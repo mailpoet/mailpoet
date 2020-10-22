@@ -1,16 +1,16 @@
 import React from 'react';
 import classNames from 'classnames';
+import t from 'common/functions/t';
 import { withFeatureAnnouncement } from 'announcements/with_feature_announcement';
 import { MailPoetLogo } from './mailpoet_logo';
 import { MailPoetLogoMobile } from './mailpoet_logo_mobile';
 import { BeamerIcon } from './beamer_icon';
 import { ScreenOptionsFix } from './screen_options_fix';
-import MailPoet from '../../mailpoet';
 
 type Props = {
   children?: React.ReactNode
-  hasNews: boolean
-  onBeamerClick: () => void
+  hasNews?: boolean
+  onBeamerClick?: () => void
   onLogoClick: () => void
 };
 
@@ -29,7 +29,7 @@ export const TopBar = ({
       <a
         role="button"
         className="mailpoet-top-bar-logo"
-        title={MailPoet.I18n.t('topBarLogoTitle')}
+        title={t('topBarLogoTitle')}
         onClick={onLogoClick}
         tabIndex={0}
         onKeyDown={(event) => {
@@ -51,23 +51,27 @@ export const TopBar = ({
         <div className="mailpoet-top-bar-children">
           {children}
         </div>
-        <a
-          role="button"
-          onClick={onBeamerClick}
-          className={buttonClasses}
-          title={MailPoet.I18n.t('whatsNew')}
-          tabIndex={0}
-          onKeyDown={(event) => {
-            if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
-            ) {
-              event.preventDefault();
-              onBeamerClick();
-            }
-          }}
-        >
-          <BeamerIcon />
-        </a>
-        <span id="beamer-empty-element" />
+        {onBeamerClick && (
+          <>
+            <a
+              role="button"
+              onClick={onBeamerClick}
+              className={buttonClasses}
+              title={t('whatsNew')}
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+                ) {
+                  event.preventDefault();
+                  onBeamerClick();
+                }
+              }}
+            >
+              <BeamerIcon />
+            </a>
+            <span id="beamer-empty-element" />
+          </>
+        )}
       </div>
       <ScreenOptionsFix />
     </div>
