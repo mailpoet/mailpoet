@@ -2,7 +2,6 @@
 
 namespace MailPoet\Entities;
 
-use DateTimeImmutable;
 use DateTimeInterface;
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
@@ -161,10 +160,6 @@ class NewsletterEntity {
   public function __clone() {
     // reset ID
     $this->id = null;
-    // reset timestamps
-    $this->setCreatedAt(new DateTimeImmutable());
-    $this->setUpdatedAt(new DateTimeImmutable());
-    $this->setDeletedAt(null);
   }
 
   /**
