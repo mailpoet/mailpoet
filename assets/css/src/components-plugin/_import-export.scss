@@ -252,6 +252,10 @@ tr {
 }
 
 .mailpoet-offer-clearout-step-container {
-  font-weight: bold;
+  margin: -$grid-gap 0 !important;
   max-width: 42em;
+
+  p {
+    font-size: $font-size;
+  }
 }
