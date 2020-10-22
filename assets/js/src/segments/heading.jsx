@@ -8,16 +8,15 @@ import SubscribersInPlan from 'common/subscribers_in_plan';
 const ListHeading = () => (
   <>
     <TopBarWithBeamer>
-      <Link className="mailpoet-button" to="/new">
+      <Link className="mailpoet-button mailpoet-button-small" to="/new">
         {plusIcon}
         <span>{MailPoet.I18n.t('new')}</span>
       </Link>
-      <Link className="mailpoet-button" to="/new-segment" data-automation-id="new-segment">
+      <Link className="mailpoet-button mailpoet-button-small" to="/new-segment" data-automation-id="new-segment">
         {plusIcon}
         <span>{MailPoet.I18n.t('newSegment')}</span>
       </Link>
     </TopBarWithBeamer>
-    <h1 className="mailpoet-newsletter-listing-heading-empty title">{' '}</h1>
 
     <SubscribersInPlan
       subscribersInPlan={window.mailpoet_subscribers_in_plan_count}

@@ -48,32 +48,31 @@ export const TopBar = ({
           <MailPoetLogoMobile />
         </div>
       </a>
-      <div className="mailpoet-top-bar-content">
-        <div className="mailpoet-top-bar-children">
-          {children}
-        </div>
-        {onBeamerClick && (
-          <>
-            <a
-              role="button"
-              onClick={onBeamerClick}
-              className={buttonClasses}
-              title={t('whatsNew')}
-              tabIndex={0}
-              onKeyDown={(event) => {
-                if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
-                ) {
-                  event.preventDefault();
-                  onBeamerClick();
-                }
-              }}
-            >
-              <BeamerIcon />
-            </a>
-            <span id="beamer-empty-element" />
-          </>
-        )}
+      <div className="mailpoet-top-bar-children">
+        {children}
       </div>
+      <div className="mailpoet-flex-grow" />
+      {onBeamerClick && (
+        <div>
+          <a
+            role="button"
+            onClick={onBeamerClick}
+            className={buttonClasses}
+            title={t('whatsNew')}
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+              ) {
+                event.preventDefault();
+                onBeamerClick();
+              }
+            }}
+          >
+            <BeamerIcon />
+          </a>
+          <span id="beamer-empty-element" />
+        </div>
+      )}
       <ScreenOptionsFix />
     </div>
   );
