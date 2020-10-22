@@ -178,7 +178,10 @@ class Selection extends React.Component {
         },
         minimumInputLength: remoteQuery.minimumInputLength || 2,
       });
-    } else {
+    } else if (
+      (this.props.field.getCount !== undefined)
+      || (this.props.field.getTag !== undefined)
+    ) {
       const items = this.getItems(this.props.field);
       let selectedValues = this.getSelectedValues() || [];
       if (!Array.isArray(selectedValues)) {
