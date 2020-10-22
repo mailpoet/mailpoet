@@ -31,8 +31,8 @@ class RevenueTrackingCookieCest {
     // enable the settings
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="woocommerce_settings_tab"]');
-    $i->dontSeeCheckboxIsChecked('[data-automation-id="accept_cookie_revenue_tracking"]');
-    $i->checkOption('[data-automation-id="accept_cookie_revenue_tracking"]');
+    $i->dontSeeCheckboxIsChecked('[data-automation-id="accept_cookie_revenue_tracking"] input');
+    $i->click('[data-automation-id="accept_cookie_revenue_tracking"]');
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
 
@@ -70,8 +70,8 @@ class RevenueTrackingCookieCest {
     // dis the settings
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="woocommerce_settings_tab"]');
-    $i->seeCheckboxIsChecked('[data-automation-id="accept_cookie_revenue_tracking"]');
-    $i->uncheckOption('[data-automation-id="accept_cookie_revenue_tracking"]');
+    $i->seeCheckboxIsChecked('[data-automation-id="accept_cookie_revenue_tracking"] input');
+    $i->click('[data-automation-id="accept_cookie_revenue_tracking"]');
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
     // send any newsletter with a link

@@ -16,8 +16,8 @@ class SubscribeOnRegistrationPageCest {
     $i->login();
     //Go to settings
     $i->amOnMailPoetPage('Settings');
-    $i->checkOption('[data-automation-id="subscribe-on_register-checkbox"]');
-    $i->selectOptionInSelect2($regseg, '[data-automation-id="subscribe-on_register-segments-selection"] input.select2-search__field');
+    $i->click('[data-automation-id="subscribe-on_register-checkbox"]');
+    $i->selectOptionInSelect2($regseg, '[data-automation-id="subscribe-on_register-segments-selection"] .mailpoet-form-react-select__input input');
     //save settings
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->logOut();
@@ -50,7 +50,7 @@ class SubscribeOnRegistrationPageCest {
     $i->login();
     //Go to settings
     $i->amOnMailPoetPage('Settings');
-    $i->checkOption('[data-automation-id="subscribe-on_register-checkbox"]');
+    $i->click('[data-automation-id="subscribe-on_register-checkbox"]');
     //save settings
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->logOut();

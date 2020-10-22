@@ -39,7 +39,7 @@ export default function TaskScheduler() {
             value="WordPress"
             checked={method === 'WordPress'}
             onCheck={setMethod}
-            data-automation-id="wordress_cron_radio"
+            automationId="wordress_cron_radio"
           />
           <label htmlFor="cron_trigger-method-wordpress">
             {t('websiteVisitors')}
@@ -51,7 +51,7 @@ export default function TaskScheduler() {
             value="MailPoet"
             checked={method === 'MailPoet'}
             onCheck={setMethod}
-            data-automation-id="mailpoet_cron_radio"
+            automationId="mailpoet_cron_radio"
           />
           <label htmlFor="cron_trigger-method-mailpoet">
             {ReactStringReplace(t('mailpoetScript'),
@@ -76,7 +76,7 @@ export default function TaskScheduler() {
             value="Linux Cron"
             checked={method === 'Linux Cron'}
             onCheck={setMethod}
-            data-automation-id="linux_cron_radio"
+            automationId="linux_cron_radio"
           />
           <label htmlFor="cron_trigger-method-cron">
             {t('serverCron')}

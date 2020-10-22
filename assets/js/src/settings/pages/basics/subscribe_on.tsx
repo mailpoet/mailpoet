@@ -29,7 +29,7 @@ export default function SubscribeOn({ title, description, event }: Props) {
       <Inputs>
         <Checkbox
           id={`subscribe-${event}-enabled`}
-          data-automation-id={`subscribe-${event}-checkbox`}
+          automationId={`subscribe-${event}-checkbox`}
           checked={enabled === '1'}
           onCheck={(isChecked) => setEnabled(isChecked ? '1' : '0')}
         />

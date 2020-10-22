@@ -19,12 +19,12 @@ class AdvancedSettingsCest {
     //save + refresh
     $i->click($submitButton);
     $i->waitForText($successMessage);
-    $i->seeCheckboxIsChecked($noAnonymousData);
+    $i->seeCheckboxIsChecked($noAnonymousData . ' input');
     //repeat for Yes
     $i->click($yesAnonymousData);
     $i->click($submitButton);
     $i->waitForText($successMessage);
-    $i->seeCheckboxIsChecked($yesAnonymousData);
+    $i->seeCheckboxIsChecked($yesAnonymousData . ' input');
   }
 
   public function toggleTaskScheduler(\AcceptanceTester $i) {
@@ -143,7 +143,7 @@ class AdvancedSettingsCest {
     $i->waitForElement($trackingEnabled);
     $i->click($trackingEnabled);
     $i->waitForElement($inactiveSubscribersDefault);
-    $i->seeCheckboxIsChecked($inactiveSubscribersDefault);
+    $i->seeCheckboxIsChecked($inactiveSubscribersDefault . ' input');
 
     $i->wantTo('See that inactive subsribers is disabled when tracking is disabled');
     $trackingDisabled = '[data-automation-id="tracking-disabled-radio"]';

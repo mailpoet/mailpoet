@@ -47,7 +47,7 @@ export default function EnableSignupConfirmation() {
               checked={enabled === '1'}
               value="1"
               onCheck={handleChange}
-              data-automation-id="enable_signup_confirmation"
+              automationId="enable_signup_confirmation"
             />
             {t('yes')}
             {' '}
@@ -55,7 +55,7 @@ export default function EnableSignupConfirmation() {
               checked={enabled === ''}
               value=""
               onCheck={handleChange}
-              data-automation-id="disable_signup_confirmation"
+              automationId="disable_signup_confirmation"
             />
             {t('no')}
           </>

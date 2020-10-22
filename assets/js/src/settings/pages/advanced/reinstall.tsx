@@ -31,7 +31,7 @@ export default function Reinstall() {
         <Button
           type="button"
           onClick={onClick}
-          data-automation-id="reinstall-button"
+          automationId="reinstall-button"
           variant="light"
           dimension="small"
         >

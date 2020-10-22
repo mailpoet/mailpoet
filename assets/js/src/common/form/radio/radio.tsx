@@ -5,12 +5,14 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   onCheck: (value: string, event: ChangeEvent) => void,
   children?: React.ReactNode,
   isFullWidth?: boolean,
+  automationId?: string,
 };
 
 const Radio = ({
   children,
   isFullWidth,
   onCheck,
+  automationId,
   ...attributes
 }: Props) => (
   <label
@@ -21,6 +23,7 @@ const Radio = ({
         'mailpoet-full-width': isFullWidth,
       })
     }
+    data-automation-id={automationId}
   >
     <input
       type="radio"

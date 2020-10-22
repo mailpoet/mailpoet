@@ -20,7 +20,7 @@ export default function EmailCustomizer() {
       <Inputs>
         <Checkbox
           id="mailpoet_wc_customizer"
-          data-automation-id="mailpoet_wc_customizer"
+          automationId="mailpoet_wc_customizer"
           checked={enabled === '1'}
           onCheck={(isChecked) => setEnabled(isChecked ? '1' : '')}
         />
