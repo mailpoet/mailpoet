@@ -19,6 +19,11 @@ use MailPoet\Form\Templates\Templates\Template12FixedBar;
 use MailPoet\Form\Templates\Templates\Template12Popup;
 use MailPoet\Form\Templates\Templates\Template12SlideIn;
 use MailPoet\Form\Templates\Templates\Template12Widget;
+use MailPoet\Form\Templates\Templates\Template17BelowPages;
+use MailPoet\Form\Templates\Templates\Template17FixedBar;
+use MailPoet\Form\Templates\Templates\Template17Popup;
+use MailPoet\Form\Templates\Templates\Template17SlideIn;
+use MailPoet\Form\Templates\Templates\Template17Widget;
 use MailPoet\Form\Templates\Templates\Template1BelowPages;
 use MailPoet\Form\Templates\Templates\Template1FixedBar;
 use MailPoet\Form\Templates\Templates\Template1Popup;
@@ -101,6 +106,11 @@ class TemplateRepository {
     Template12Popup::ID => Template12Popup::class,
     Template12SlideIn::ID => Template12SlideIn::class,
     Template12Widget::ID => Template12Widget::class,
+    Template17BelowPages::ID => Template17BelowPages::class,
+    Template17FixedBar::ID => Template17FixedBar::class,
+    Template17Popup::ID => Template17Popup::class,
+    Template17SlideIn::ID => Template17SlideIn::class,
+    Template17Widget::ID => Template17Widget::class,
   ];
 
   public function __construct(CdnAssetUrl $cdnAssetUrl, WPFunctions $wp) {
