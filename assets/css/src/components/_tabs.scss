@@ -8,7 +8,9 @@
   }
 
   .notice ~ &,
+  .notice ~ div > &,
   .error ~ &,
+  .error ~ div > &,
   .mailpoet-subscribers-in-plan ~ & {
     top: 0 !important;
   }
