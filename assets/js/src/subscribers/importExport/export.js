@@ -33,6 +33,19 @@ jQuery(document).ready(function documentReady() {
   segmentsContainerElement = jQuery('#export_lists');
   subscriberFieldsContainerElement = jQuery('#export_columns');
   nextStepButton = jQuery('#mailpoet-export-button');
+
+  const templateRendered = (option) => {
+    let tpl = '';
+    if (option.tag !== undefined) {
+      tpl += `<span class="mailpoet-form-select2-tag">${option.tag}</span>`;
+    }
+    tpl += `<span class="mailpoet-form-select2-text"><span>${option.text}</span></span>`;
+    if (option.count !== undefined) {
+      tpl += `<span class="mailpoet-form-select2-count">${option.count}</span>`;
+    }
+    return tpl;
+  };
+
   renderSegmentsAndFields = function renderSegmentsFields(container, data) {
     if (container.data('select2')) {
       container
@@ -43,16 +56,10 @@ jQuery(document).ready(function documentReady() {
       .select2({
         data: data,
         width: '20em',
-        templateResult: function templateResult(item) {
-          return (item.subscriberCount > 0)
-            ? item.name + ' (' + parseInt(item.subscriberCount, 10).toLocaleString() + ')'
-            : item.name;
-        },
-        templateSelection: function templateSelection(item) {
-          return (item.subscriberCount > 0)
-            ? item.name + ' (' + parseInt(item.subscriberCount, 10).toLocaleString() + ')'
-            : item.name;
-        },
+        dropdownCssClass: 'mailpoet-form-select2-dropdown',
+        escapeMarkup: (markup) => markup,
+        templateResult: templateRendered,
+        templateSelection: templateRendered,
       })
       .on('select2:selecting', function onSelect2Selecting(selectEvent) {
         var selectElement = this;
