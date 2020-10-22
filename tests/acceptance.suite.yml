@@ -32,7 +32,6 @@ modules:
         wait: 0 # (default: 0 seconds) - Whenever element is required and is not on page, wait for n seconds to find it before fail.
         connection_timeout: 60 # timeout for opening a connection to remote selenium server (30 seconds by default).
         request_timeout: 60 # timeout for a request to return something from remote selenium server (30 seconds by default).
-        pageload_timeout: 10 # amount of time to wait for a page load to complete before throwing an error (default 0 seconds).
         adminUsername: admin
         adminPassword: password
         adminPath: /wp-admin
