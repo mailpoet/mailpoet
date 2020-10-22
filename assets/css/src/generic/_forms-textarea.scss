@@ -36,6 +36,12 @@
     &[rows] {
       height: auto;
     }
+
+    &.code {
+      font-family: Consolas, Monaco, monospace;
+      font-size: 14px;
+      line-height: 18px;
+    }
   }
 
   &.mailpoet-full-width + .mailpoet-form-textarea.mailpoet-full-width { margin-top: $grid-gap; }

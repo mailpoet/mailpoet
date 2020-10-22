@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
+import Textarea from 'common/form/textarea/textarea';
 import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
 const kbLink = 'https://kb.mailpoet.com/article/126-importing-subscribers-with-csv-files';
@@ -21,36 +22,39 @@ const MethodPaste = ({
 
   return (
     <>
-      <label htmlFor="paste_input" className="mailpoet_import_method_paste">
-        <div className="mailpoet_import_paste_texts">
-          <span className="mailpoet_import_heading">{MailPoet.I18n.t('pasteLabel')}</span>
-          <p className="description">
-            {ReactStringReplace(
-              MailPoet.I18n.t('pasteDescription'),
-              /\[link\](.*?)\[\/link\]/,
-              (match) => (
-                <a
-                  href={`${kbLink}`}
-                  data-beacon-article="57ce079f903360649f6e56fc"
-                  key="kb-link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  { match }
-                </a>
-              )
-            )}
-          </p>
-        </div>
-        <textarea
+      <div className="mailpoet-settings-label">
+        <label htmlFor="paste_input">
+          {MailPoet.I18n.t('pasteLabel')}
+        </label>
+        <p className="description">
+          {ReactStringReplace(
+            MailPoet.I18n.t('pasteDescription'),
+            /\[link\](.*?)\[\/link\]/,
+            (match) => (
+              <a
+                className="mailpoet-link"
+                href={`${kbLink}`}
+                data-beacon-article="57ce079f903360649f6e56fc"
+                key="kb-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                { match }
+              </a>
+            )
+          )}
+        </p>
+      </div>
+      <div className="mailpoet-settings-inputs">
+        <Textarea
           id="paste_input"
           rows="15"
           placeholder={placeholder}
-          className="regular-text code"
+          isCode
           onChange={onChange}
           defaultValue={data}
         />
-      </label>
+      </div>
       <PreviousNextStepButtons
         canGoNext={canFinish}
         onPreviousAction={onPrevious}

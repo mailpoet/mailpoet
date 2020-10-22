@@ -99,6 +99,7 @@ const MethodMailChimp = ({ onFinish, onPrevious }) => {
       <div className="mailpoet-settings-inputs">
         <div className="mailpoet-settings-inputs-row mailpoet-settings-inputs-row-centered">
           <Input
+            dimension="small"
             id="mailpoet_mailchimp_key_input"
             type="text"
             onChange={keyChange}

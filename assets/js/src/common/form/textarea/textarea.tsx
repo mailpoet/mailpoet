@@ -7,6 +7,7 @@ type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   dimension?: 'small',
   isFullWidth?: boolean,
   tooltip?: string,
+  isCode?: boolean,
 };
 
 const Textarea = ({
@@ -15,6 +16,7 @@ const Textarea = ({
   dimension,
   isFullWidth,
   tooltip,
+  isCode,
   ...attributes
 }: Props) => (
   <div
@@ -30,7 +32,7 @@ const Textarea = ({
       )
     }
   >
-    <textarea {...attributes} />
+    <textarea className={classnames({ code: isCode })} {...attributes} />
     {customLabel && <div className="mailpoet-form-input-label">{customLabel}</div>}
     {tooltip && (
       <>
