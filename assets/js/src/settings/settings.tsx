@@ -5,6 +5,7 @@ import Loading from 'common/loading';
 import { t } from 'common/functions';
 import RoutedTabs from 'common/tabs/routed_tabs';
 import Tab from 'common/tabs/tab';
+import { TopBar } from 'common/top_bar/top_bar';
 import {
   Advanced,
   Basics,
@@ -27,9 +28,9 @@ export default function Settings() {
   const hasWooCommerce = useSelector('hasWooCommerce')();
   return (
     <>
+      <TopBar />
       {isSaving && <Loading />}
       <Notices />
-      <h1 className="title">{t('settings')}</h1>
       <RoutedTabs activeKey="basics" onSwitch={(tabKey: string) => trackTabSwitched(tabKey)}>
         <Tab key="basics" title={t('basicsTab')} automationId="basic_settings_tab">
           <Basics />
