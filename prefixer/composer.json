@@ -18,7 +18,7 @@
     "symfony/polyfill-intl-normalizer": "1.18.1",
     "symfony/polyfill-php72": "1.18.1",
     "symfony/validator": "3.4.43",
-    "twig/twig": "2.12.5"
+    "twig/twig": "2.13.1"
   },
   "scripts": {
     "post-update-cmd": "@process",
