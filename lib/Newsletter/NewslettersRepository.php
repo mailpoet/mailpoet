@@ -322,7 +322,10 @@ class NewslettersRepository extends Repository {
     return count($ids);
   }
 
-  public function existsNotificationHistory(NewsletterEntity $newsletter): bool {
+  /**
+   * @return NewsletterEntity[]
+   */
+  public function findSendigNotificationHistoryWithPausedTask(NewsletterEntity $newsletter): array {
     $result = $this->entityManager->createQueryBuilder()
       ->select('n')
       ->from(NewsletterEntity::class, 'n')
@@ -336,9 +339,8 @@ class NewslettersRepository extends Repository {
       ->setParameter('type', NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
       ->setParameter('status', NewsletterEntity::STATUS_SENDING)
       ->setParameter('taskStatus', ScheduledTaskEntity::STATUS_PAUSED)
-      ->setMaxResults(1)
       ->getQuery()->execute();
-    return count($result) > 0;
+    return $result;
   }
 
   public function prefetchOptions(array $newsletters) {
