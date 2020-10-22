@@ -9,9 +9,11 @@ import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
 import RoutedTabs from '../common/tabs/routed_tabs';
 import Tab from '../common/tabs/tab';
+import { TopBar } from '../common/top_bar/top_bar';
 
 const App = () => (
   <GlobalContext.Provider value={useGlobalContextValue(window)}>
+    <TopBar />
     <Notices />
     <RoutedTabs activeKey="knowledgeBase">
       <Tab key="knowledgeBase" title={MailPoet.I18n.t('tabKnowledgeBaseTitle')}>

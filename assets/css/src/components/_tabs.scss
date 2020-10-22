@@ -3,14 +3,14 @@
   position: relative;
   z-index: 1;
 
-  .mailpoet-top-bar ~ & {
+  #screen-meta-links ~ .wrap .mailpoet-top-bar ~ & {
     top: -20px;
   }
 
   .notice ~ &,
   .error ~ &,
   .mailpoet-subscribers-in-plan ~ & {
-    top: 0;
+    top: 0 !important;
   }
 
   @include respond-to(small-screen) {
