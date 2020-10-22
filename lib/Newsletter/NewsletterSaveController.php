@@ -24,6 +24,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\Security;
 use MailPoet\WP\Emoji;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -64,6 +65,9 @@ class NewsletterSaveController {
   /** @var Security */
   private $security;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     AuthorizedEmailsController $authorizedEmailsController,
     Emoji $emoji,
@@ -76,7 +80,8 @@ class NewsletterSaveController {
     PostNotificationScheduler $postNotificationScheduler,
     ScheduledTasksRepository $scheduledTasksRepository,
     SettingsController $settings,
-    Security $security
+    Security $security,
+    WPFunctions $wp
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->emoji = $emoji;
@@ -90,6 +95,7 @@ class NewsletterSaveController {
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->settings = $settings;
     $this->security = $security;
+    $this->wp = $wp;
   }
 
   public function save(array $data = []): NewsletterEntity {
@@ -138,6 +144,12 @@ class NewsletterSaveController {
 
   public function duplicate(NewsletterEntity $newsletter): NewsletterEntity {
     $duplicate = clone $newsletter;
+
+    // reset timestamps
+    $createdAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $duplicate->setCreatedAt($createdAt);
+    $duplicate->setUpdatedAt($createdAt);
+    $duplicate->setDeletedAt(null);
 
     $duplicate->setSubject(sprintf(__('Copy of %s', 'mailpoet'), $newsletter->getSubject()));
     // generate new unsubscribe token
