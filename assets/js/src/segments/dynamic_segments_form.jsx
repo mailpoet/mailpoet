@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 
 import Background from 'common/background/background';
 import Heading from 'common/typography/heading/heading';
+import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 import wordpressRoleFields from './dynamic_segments_filters/wordpress_role.jsx';
 import emailFields from './dynamic_segments_filters/email.jsx';
 import woocommerceFields from './dynamic_segments_filters/woocommerce.jsx';
@@ -153,6 +154,8 @@ class DynamicSegmentForm extends React.Component {
     return (
       <>
         <Background color="#fff" />
+        <HideScreenOptions />
+
         <Heading level={1} className="mailpoet-title">
           <span>{MailPoet.I18n.t('formPageTitle')}</span>
           <Link className="mailpoet-button mailpoet-button-small" to="/segments">{MailPoet.I18n.t('backToList')}</Link>

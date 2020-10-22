@@ -8,6 +8,7 @@ import ReactStringReplace from 'react-string-replace';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import Background from 'common/background/background';
 import Heading from 'common/typography/heading/heading';
+import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 
 const fields = [
   {
@@ -221,6 +222,7 @@ const SubscriberForm = ({ match }) => {
   return (
     <div>
       <Background color="#fff" />
+      <HideScreenOptions />
 
       <Heading level={1} className="mailpoet-title">
         <span>{MailPoet.I18n.t('subscriber')}</span>

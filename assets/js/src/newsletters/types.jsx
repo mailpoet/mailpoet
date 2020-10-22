@@ -11,6 +11,7 @@ import AutomaticEmailEventGroupLogos from 'newsletters/types/automatic_emails/ev
 import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
 import ModalCloseIcon from 'common/modal/close_icon';
+import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 
 class NewsletterTypes extends React.Component {
   constructor(props) {
@@ -273,6 +274,7 @@ class NewsletterTypes extends React.Component {
 
     return (
       <>
+        <HideScreenOptions />
         <link rel="prefetch" href={window.mailpoet_editor_javascript_url} as="script" />
 
         <div className="mailpoet-newsletter-types">
