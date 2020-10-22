@@ -161,14 +161,12 @@ class Newsletters extends APIEndpoint {
     }
 
     $newsletter = $this->getNewsletter($data);
-    $this->newslettersRepository->prefetchOptions([$newsletter]);
-
     if ($newsletter === null) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
-
+    $this->newslettersRepository->prefetchOptions([$newsletter]);
     $newsletter->setStatus($status);
 
     // if there are past due notifications, reschedule them for the next send date
@@ -199,9 +197,7 @@ class Newsletters extends APIEndpoint {
     }
 
     $this->newslettersRepository->flush();
-    if (!$newsletter instanceof NewsletterEntity) {
-      return $this->errorResponse();
-    }
+
     return $this->successResponse(
       $this->newslettersResponseBuilder->build($newsletter)
     );
