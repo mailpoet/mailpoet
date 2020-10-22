@@ -6,6 +6,7 @@ $mailpoet-form-template-thumbnail-height: 316px;
   grid-gap: $grid-gap;
   grid-template-columns: repeat(auto-fill, $mailpoet-form-template-thumbnail-width + $grid-gap-half);
   justify-content: center;
+  padding-bottom: $mailpoet-form-template-thumbnail-height / 3;
   padding-top: $grid-gap-large;
 
   .mailpoet-categories {
