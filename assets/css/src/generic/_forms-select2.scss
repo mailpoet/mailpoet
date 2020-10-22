@@ -79,7 +79,8 @@
   .select2-selection__choice__remove {
     color: rgba($color-text, .4) !important;
     font-size: 22px;
-    line-height: 24px;
+    height: 24px;
+    line-height: 20px;
     margin-right: 0 !important;
     padding-top: 2px;
     position: absolute;
@@ -144,6 +145,11 @@
     &[aria-selected=true] {
       background-color: $color-secondary-light;
       color: $color-text;
+    }
+
+    &[role=group] {
+      align-items: stretch;
+      flex-direction: column;
     }
   }
 

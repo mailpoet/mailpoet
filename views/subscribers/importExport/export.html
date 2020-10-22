@@ -27,7 +27,9 @@
         </label>
       </div>
       <div class="mailpoet-settings-inputs">
-        <select id="export_lists" data-placeholder="<%= _x('Select', 'Verb') %>" multiple="multiple"></select>
+        <div class="mailpoet-form-select mailpoet-form-input">
+          <select id="export_lists" data-placeholder="<%= _x('Select', 'Verb') %>" multiple="multiple"></select>
+        </div>
       </div>
     {{/if}}
 
@@ -43,7 +45,9 @@
       </label>
     </div>
     <div class="mailpoet-settings-inputs">
-      <select id="export_columns" data-placeholder="<%= _x('Select', 'Verb') %>" multiple="multiple"></select>
+      <div class="mailpoet-form-select mailpoet-form-input">
+        <select id="export_columns" data-placeholder="<%= _x('Select', 'Verb') %>" multiple="multiple"></select>
+      </div>
     </div>
 
     <div class="mailpoet-settings-label">
