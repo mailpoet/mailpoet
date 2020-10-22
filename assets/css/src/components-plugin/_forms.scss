@@ -82,9 +82,7 @@ progress::-moz-progress-bar {
 }
 
 .mailpoet-form-actions {
-  grid-column: 2 / -1;
-  padding-top: $grid-gap + ($heading-font-size-h4 * $heading-line-height) + ($font-size * $line-height * 2);
-  text-align: right;
+  grid-column: span 2;
 
   p {
     color: $color-text;
@@ -92,8 +90,14 @@ progress::-moz-progress-bar {
     margin: $grid-gap 0;
   }
 
+  .mailpoet-form-send-email & {
+    grid-column: 2 / -1;
+    padding-top: $grid-gap + ($heading-font-size-h4 * $heading-line-height) + ($font-size * $line-height * 2);
+    text-align: right;
+  }
+
   @include respond-to(small-screen) {
-    grid-column: 1;
+    grid-column: 1 !important;
   }
 }
 
