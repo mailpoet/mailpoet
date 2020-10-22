@@ -135,7 +135,8 @@ class AddSendingKeyCest {
 
     // MSS not activated
     $i->waitForText('Your key is valid');
-    $i->waitForText('MailPoet Sending Service is not active. Activate MailPoet Sending Service');
+    $i->waitForText('MailPoet Sending Service is not active.');
+    $i->waitForText('Activate MailPoet Sending Service');
 
     // activate MSS
     $i->click('Activate MailPoet Sending Service');

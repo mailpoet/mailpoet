@@ -36,7 +36,7 @@ export default function InactiveSubscribers() {
             <div className="mailpoet-settings-inputs-row">
               <Radio
                 id="inactive-subscribers-disabled"
-                data-automation-id="inactive-subscribers-option-never"
+                automationId="inactive-subscribers-option-never"
                 value=""
                 checked={duration === ''}
                 onCheck={setDuration}
@@ -62,7 +62,7 @@ export default function InactiveSubscribers() {
                 value="180"
                 checked={duration === '180'}
                 onCheck={setDuration}
-                data-automation-id="inactive-subscribers-default"
+                automationId="inactive-subscribers-default"
               />
               <label htmlFor="inactive-subscribers-6-months">
                 {t('after6months')}

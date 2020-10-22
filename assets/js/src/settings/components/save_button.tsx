@@ -27,7 +27,7 @@ export default () => {
     <div className="mailpoet-settings-save">
       <Button
         type="button"
-        data-automation-id="settings-submit-button"
+        automationId="settings-submit-button"
         isDisabled={isSaving || hasError}
         onClick={onClick}
       >

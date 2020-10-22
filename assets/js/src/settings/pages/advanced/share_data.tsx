@@ -39,7 +39,7 @@ export default function ShareData() {
             setEnabled('1');
             set3rdPartyLibsEnabled('1');
           }}
-          data-automation-id="analytics-yes"
+          automationId="analytics-yes"
         />
         <label htmlFor="share-data-enabled">
           {t('yes')}
@@ -50,7 +50,7 @@ export default function ShareData() {
           value=""
           checked={enabled === ''}
           onCheck={setEnabled}
-          data-automation-id="analytics-no"
+          automationId="analytics-no"
         />
         <label htmlFor="share-data-disabled">
           {t('no')}

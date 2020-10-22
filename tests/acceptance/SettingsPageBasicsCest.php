@@ -52,8 +52,8 @@ class SettingsPageBasicsCest {
     $i->login();
     //go to settings and opt-in for comments
     $i->amOnMailPoetPage('Settings');
-    $i->checkOption('[data-automation-id="subscribe-on_comment-checkbox"]');
-    $i->selectOptionInSelect2('Newsletter mailing list');
+    $i->click('[data-automation-id="subscribe-on_comment-checkbox"]');
+    $i->selectOptionInSelect2('Newsletter mailing list', '[data-automation-id="subscribe-on_comment-segments-selection"] .mailpoet-form-react-select__input input');
     $i->click('[data-automation-id="settings-submit-button"]');
     //go to the post and perform commenting + opting
     $i->amOnPage('/');
@@ -87,7 +87,7 @@ class SettingsPageBasicsCest {
     $i->waitForText('test@test.com');
     //clear checkbox to hide Select2 from next test
     $i->amOnMailPoetPage('Settings');
-    $i->uncheckOption('[data-automation-id="subscribe-on_comment-checkbox"]');
+    $i->click('[data-automation-id="subscribe-on_comment-checkbox"]');
     //save settings
     $i->click('[data-automation-id="settings-submit-button"]');
     //check to make sure comment subscription form is gone

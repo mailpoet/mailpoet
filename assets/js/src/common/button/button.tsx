@@ -17,6 +17,7 @@ type Props = {
   target?: '_blank' | '_self' | '_parent' | '_top' | string,
   automationId?: string,
   className?: string,
+  data?: string,
 };
 
 const Button = ({

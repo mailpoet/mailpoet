@@ -25,7 +25,7 @@ export default function CheckoutOptin() {
       <Inputs>
         <Checkbox
           id="mailpoet_wc_checkout_optin"
-          data-automation-id="mailpoet_wc_checkout_optin"
+          automationId="mailpoet_wc_checkout_optin"
           checked={enabled === '1'}
           onCheck={(isChecked) => setEnabled(isChecked ? '1' : '')}
         />

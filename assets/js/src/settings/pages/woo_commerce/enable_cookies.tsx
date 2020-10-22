@@ -17,7 +17,7 @@ export default function EnableCookies() {
       <Inputs>
         <Checkbox
           id="mailpoet_accept_cookie_revenue_tracking"
-          data-automation-id="accept_cookie_revenue_tracking"
+          automationId="accept_cookie_revenue_tracking"
           checked={enabled === '1'}
           onCheck={(isChecked) => setEnabled(isChecked ? '1' : '')}
         />

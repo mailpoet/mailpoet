@@ -17,7 +17,7 @@ export default function SubscribeOldCustomers() {
       <Inputs>
         <Checkbox
           id="mailpoet_subscribe_old_wc_customers"
-          data-automation-id="mailpoet_subscribe_old_wc_customers"
+          automationId="mailpoet_subscribe_old_wc_customers"
           checked={enabled === '1'}
           onCheck={(isChecked) => setEnabled(isChecked ? '1' : '')}
         />
