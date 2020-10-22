@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
-import classNames from 'classnames';
-import Selection from '../../../../form/fields/selection.jsx';
+import Button from 'common/button/button';
+import Input from 'common/form/input/input';
+import Selection from 'form/fields/selection.jsx';
 import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
 const MethodMailChimp = ({ onFinish, onPrevious }) => {
@@ -69,47 +70,50 @@ const MethodMailChimp = ({ onFinish, onPrevious }) => {
   const showListsSelection = () => {
     if (!mailChimpLoadedLists) return null;
     return (
-      <div className="mailpoet_mailchimp_lists">
-        <span className="mailpoet_import_heading">{MailPoet.I18n.t('methodMailChimpSelectList')}</span>
-        <Selection
-          field={{
-            id: 'segments',
-            name: 'list-selection',
-            multiple: true,
-            placeholder: MailPoet.I18n.t('methodMailChimpSelectPlaceholder'),
-            forceSelect2: true,
-            values: mailChimpLoadedLists,
-          }}
-          onValueChange={(e) => setSelectedLists(e.target.value)}
-        />
-      </div>
+      <>
+        <div className="mailpoet-settings-label">{MailPoet.I18n.t('methodMailChimpSelectList')}</div>
+        <div className="mailpoet-settings-inputs">
+          <Selection
+            field={{
+              id: 'segments',
+              name: 'list-selection',
+              multiple: true,
+              placeholder: MailPoet.I18n.t('methodMailChimpSelectPlaceholder'),
+              forceSelect2: true,
+              values: mailChimpLoadedLists,
+            }}
+            onValueChange={(e) => setSelectedLists(e.target.value)}
+          />
+        </div>
+      </>
     );
   };
 
-  const statusClasses = classNames(
-    'mailpoet_mailchimp-key-status',
-    { 'mailpoet_mailchimp-ok': Array.isArray(mailChimpLoadedLists) }
-  );
-
   return (
-    <div className="mailpoet_import_mailchimp">
-      <div className="mailpoet_mailchimp_key">
-        <label htmlFor="mailpoet_mailchimp_key_input" className="mailpoet_mailchimp_key_input">
+    <>
+      <div className="mailpoet-settings-label">
+        <label htmlFor="mailpoet_mailchimp_key_input">
           <span className="mailpoet_import_heading">{MailPoet.I18n.t('methodMailChimpLabel')}</span>
-          <input
+        </label>
+      </div>
+      <div className="mailpoet-settings-inputs">
+        <div className="mailpoet-settings-inputs-row mailpoet-settings-inputs-row-centered">
+          <Input
             id="mailpoet_mailchimp_key_input"
             type="text"
             onChange={keyChange}
           />
-        </label>
-        <button className="button" type="button" onClick={verifyButtonClicked}>
-          {MailPoet.I18n.t('methodMailChimpVerify')}
-        </button>
-        <span className={statusClasses}>
-          { Array.isArray(mailChimpLoadedLists) && mailChimpLoadedLists.length === 0
-            ? MailPoet.I18n.t('noMailChimpLists')
-            : null}
-        </span>
+          <span className="mailpoet-gap" />
+          <Button type="button" dimension="small" onClick={verifyButtonClicked}>
+            {MailPoet.I18n.t('methodMailChimpVerify')}
+          </Button>
+          <span className="mailpoet-gap" />
+          <span>
+            { Array.isArray(mailChimpLoadedLists) && mailChimpLoadedLists.length === 0
+              ? MailPoet.I18n.t('noMailChimpLists')
+              : null}
+          </span>
+        </div>
       </div>
       {showListsSelection()}
       <PreviousNextStepButtons
@@ -117,7 +121,7 @@ const MethodMailChimp = ({ onFinish, onPrevious }) => {
         onPreviousAction={onPrevious}
         onNextAction={process}
       />
-    </div>
+    </>
   );
 };
 

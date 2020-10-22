@@ -3,35 +3,6 @@
   display: none;
 }
 
-span {
-  &.mailpoet_mailchimp-key-status {
-    &.mailpoet_mailchimp-ok {
-      &:before {
-        color: #0e90d2;
-        content: '\2713';
-        margin-left: 15px;
-      }
-    }
-
-    &.mailpoet_mailchimp-error {
-      &:before {
-        color: #900;
-        content: '\2717';
-        margin-left: 15px;
-      }
-    }
-  }
-
-  &.select2-search {
-    &.select2-search--dropdown {
-      .admin_page_mailpoet-import &,
-      .admin_page_mailpoet-export & {
-        display: none !important;
-      }
-    }
-  }
-}
-
 .subscribers_data {
   overflow: auto;
 
@@ -170,73 +141,6 @@ tr {
   .mailpoet_import_block {
     p {
       font-weight: bold;
-    }
-  }
-}
-
-.mailpoet_method_selection_step {
-  align-items: flex-start;
-  display: flex;
-  flex-direction: column;
-
-  > * {
-    margin: 10px 0;
-  }
-
-  .mailpoet_import_selection_form {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-
-    > * {
-      margin-right: 2.5em;
-    }
-  }
-
-  .mailpoet_import_heading {
-    color: #23282d;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.3;
-  }
-
-  .description {
-    color: #666;
-    font-size: 13px;
-    font-style: italic;
-    font-weight: 600;
-    margin: 2px 0 5px;
-  }
-
-  .mailpoet_import_paste_texts {
-    margin-right: 25px;
-    width: 300px;
-  }
-
-  .mailpoet_import_method_paste {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-  }
-
-  .mailpoet_import_mailchimp {
-    .mailpoet_mailchimp_key,
-    .mailpoet_mailchimp_lists {
-      align-items: center;
-      display: flex;
-      flex-wrap: nowrap;
-      margin-bottom: 40px;
-    }
-
-    .mailpoet_mailchimp_key_input {
-      align-items: center;
-      display: flex;
-      margin-right: 20px;
-    }
-
-    .mailpoet_import_heading {
-      display: block;
-      width: 300px;
     }
   }
 }

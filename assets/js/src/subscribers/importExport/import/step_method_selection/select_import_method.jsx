@@ -1,68 +1,68 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { GlobalContext } from 'context/index.jsx';
+import Radio from 'common/form/radio/radio';
+import Tag from 'common/tag/tag';
 
 function SelectImportMethod({
   activeMethod,
   onMethodChange,
 }) {
-  const { users } = React.useContext(GlobalContext);
-  const { isNewUser } = users;
-  const badgeClasses = classNames(
-    'mailpoet_badge',
-    'mailpoet_badge_video',
-    { mailpoet_badge_video_grey: !isNewUser }
-  );
   return (
     <>
-      <form className="mailpoet_import_selection_form">
+      <div className="mailpoet-settings-label">
         <span className="mailpoet_import_heading">{MailPoet.I18n.t('methodSelectionHead')}</span>
-        <label htmlFor="import-paste-method">
-          <input
-            type="radio"
+        <div className="mailpoet-settings-inputs-row">
+          <a
+            href="https://kb.mailpoet.com/article/242-video-guide-importing-subscribers-using-a-csv-file"
+            data-beacon-article="5a8e8f0204286305fbc9be9a"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Tag dimension="large" variant="excellent" isInverted>{MailPoet.I18n.t('seeVideo')}</Tag>
+          </a>
+        </div>
+      </div>
+      <div className="mailpoet-settings-inputs">
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
             name="select_method"
-            data-automation-id="import-paste-method"
+            automationId="import-paste-method"
             id="import-paste-method"
             checked={activeMethod === 'paste-method'}
-            onChange={() => onMethodChange('paste-method')}
+            onCheck={() => onMethodChange('paste-method')}
           />
-          {MailPoet.I18n.t('methodPaste')}
-        </label>
-        <label htmlFor="import-csv-method">
-          <input
-            type="radio"
+          <label htmlFor="import-paste-method">
+            {MailPoet.I18n.t('methodPaste')}
+          </label>
+        </div>
+
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
             name="select_method"
-            data-automation-id="import-csv-method"
+            automationId="import-csv-method"
             id="import-csv-method"
             checked={activeMethod === 'file-method'}
-            onChange={() => onMethodChange('file-method')}
+            onCheck={() => onMethodChange('file-method')}
           />
-          {MailPoet.I18n.t('methodUpload')}
-        </label>
-        <label htmlFor="import-mailchimp-method">
-          <input
-            type="radio"
+          <label htmlFor="import-csv-method">
+            {MailPoet.I18n.t('methodUpload')}
+          </label>
+        </div>
+
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
             name="select_method"
-            data-automation-id="import-mailchimp-method"
+            automationId="import-mailchimp-method"
             id="import-mailchimp-method"
             checked={activeMethod === 'mailchimp-method'}
-            onChange={() => onMethodChange('mailchimp-method')}
+            onCheck={() => onMethodChange('mailchimp-method')}
           />
-          {MailPoet.I18n.t('methodMailChimp')}
-        </label>
-      </form>
-      <a
-        className={badgeClasses}
-        href="https://kb.mailpoet.com/article/242-video-guide-importing-subscribers-using-a-csv-file"
-        data-beacon-article="5a8e8f0204286305fbc9be9a"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <span className="dashicons dashicons-format-video" />
-        {MailPoet.I18n.t('seeVideo')}
-      </a>
+          <label htmlFor="import-mailchimp-method">
+            {MailPoet.I18n.t('methodMailChimp')}
+          </label>
+        </div>
+      </div>
     </>
   );
 }

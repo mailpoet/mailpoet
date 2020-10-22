@@ -55,7 +55,7 @@ function StepMethodSelection({
   };
 
   return (
-    <div className="mailpoet_method_selection_step">
+    <div className="mailpoet-settings-grid">
       <SelectMethod
         activeMethod={method}
         onMethodChange={setMethod}
