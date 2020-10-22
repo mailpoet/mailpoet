@@ -31,6 +31,11 @@ use MailPoet\Form\Templates\Templates\Template13FixedBar;
 use MailPoet\Form\Templates\Templates\Template13Popup;
 use MailPoet\Form\Templates\Templates\Template13SlideIn;
 use MailPoet\Form\Templates\Templates\Template13Widget;
+use MailPoet\Form\Templates\Templates\Template14BelowPages;
+use MailPoet\Form\Templates\Templates\Template14FixedBar;
+use MailPoet\Form\Templates\Templates\Template14Popup;
+use MailPoet\Form\Templates\Templates\Template14SlideIn;
+use MailPoet\Form\Templates\Templates\Template14Widget;
 use MailPoet\Form\Templates\Templates\Template17BelowPages;
 use MailPoet\Form\Templates\Templates\Template17FixedBar;
 use MailPoet\Form\Templates\Templates\Template17Popup;
@@ -114,6 +119,7 @@ class FormEditor {
       Template11Popup::ID,
       Template12Popup::ID,
       Template13Popup::ID,
+      Template14Popup::ID,
       Template17Popup::ID,
       Template18Popup::ID,
     ],
@@ -127,6 +133,7 @@ class FormEditor {
       Template11SlideIn::ID,
       Template12SlideIn::ID,
       Template13SlideIn::ID,
+      Template14SlideIn::ID,
       Template17SlideIn::ID,
       Template18SlideIn::ID,
     ],
@@ -140,6 +147,7 @@ class FormEditor {
       Template11FixedBar::ID,
       Template12FixedBar::ID,
       Template13FixedBar::ID,
+      Template14FixedBar::ID,
       Template17FixedBar::ID,
       Template18FixedBar::ID,
     ],
@@ -153,6 +161,7 @@ class FormEditor {
       Template11BelowPages::ID,
       Template12BelowPages::ID,
       Template13BelowPages::ID,
+      Template14BelowPages::ID,
       Template17BelowPages::ID,
       Template18BelowPages::ID,
     ],
@@ -166,6 +175,7 @@ class FormEditor {
       Template11Widget::ID,
       Template12Widget::ID,
       Template13Widget::ID,
+      Template14Widget::ID,
       Template17Widget::ID,
       Template18Widget::ID,
     ],
