@@ -7,6 +7,7 @@ import Form from 'form/form.jsx';
 import ReactStringReplace from 'react-string-replace';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import Background from 'common/background/background';
+import Heading from 'common/typography/heading/heading';
 
 const fields = [
   {
@@ -220,11 +221,11 @@ const SubscriberForm = ({ match }) => {
   return (
     <div>
       <Background color="#fff" />
-      <h1 className="title">
-        {MailPoet.I18n.t('subscriber')}
-        {' '}
+
+      <Heading level={1} className="mailpoet-title">
+        <span>{MailPoet.I18n.t('subscriber')}</span>
         <Link className="mailpoet-button mailpoet-button-small" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
-      </h1>
+      </Heading>
 
       <SubscribersLimitNotice />
 

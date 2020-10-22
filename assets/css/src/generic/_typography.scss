@@ -41,6 +41,16 @@ h5.mailpoet-h5 {
   font-weight: 600;
 }
 
+.mailpoet-title {
+  align-items: center;
+  clear: both;
+  display: flex;
+
+  .mailpoet-button {
+    margin-left: $grid-gap;
+  }
+}
+
 .mailpoet-ol,
 .mailpoet-ul {
   font-size: $font-size;
