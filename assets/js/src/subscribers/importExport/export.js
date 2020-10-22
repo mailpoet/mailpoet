@@ -18,10 +18,10 @@ jQuery(document).ready(function documentReady() {
   subscribersExportTemplate = Handlebars.compile(jQuery('#mailpoet_subscribers_export_template').html());
 
   // render template
-  jQuery('#mailpoet_subscribers_export > div.inside').html(subscribersExportTemplate(window.exportData));
+  jQuery('#mailpoet-export').html(subscribersExportTemplate(window.exportData));
 
   function toggleNextStepButton(condition) {
-    var disabled = 'button-disabled';
+    var disabled = 'mailpoet-disabled';
     if (condition === 'on') {
       nextStepButton.removeClass(disabled);
     } else {
@@ -32,7 +32,7 @@ jQuery(document).ready(function documentReady() {
   // define reusable variables
   segmentsContainerElement = jQuery('#export_lists');
   subscriberFieldsContainerElement = jQuery('#export_columns');
-  nextStepButton = jQuery('a.mailpoet_export_process');
+  nextStepButton = jQuery('#mailpoet-export-button');
   renderSegmentsAndFields = function renderSegmentsFields(container, data) {
     if (container.data('select2')) {
       container
@@ -105,7 +105,7 @@ jQuery(document).ready(function documentReady() {
 
   nextStepButton.click(function nextClick() {
     var exportFormat;
-    if (jQuery(this).hasClass('button-disabled')) {
+    if (jQuery(this).hasClass('mailpoet-disabled')) {
       return;
     }
     MailPoet.Modal.loading(true);
