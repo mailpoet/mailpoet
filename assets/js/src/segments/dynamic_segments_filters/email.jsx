@@ -19,8 +19,11 @@ function loadLinks(formItems) {
   })
     .then((response) => {
       const { data } = response;
-      loadedLinks[formItems.newsletter_id] = data;
-      return data;
+      loadedLinks[formItems.newsletter_id] = data.map((link) => ({
+        id: `newsletter-${formItems.newsletter_id}-link-${link.id}`,
+        url: link.url,
+      }));
+      return loadedLinks[formItems.newsletter_id];
     })
     .fail((response) => {
       MailPoet.Notice.error(
