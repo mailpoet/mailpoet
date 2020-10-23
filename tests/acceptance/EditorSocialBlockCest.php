@@ -17,6 +17,7 @@ class EditorSocialBlockCest {
     $i->dragAndDrop('#automation_editor_block_social', '#mce_1');
     //Open settings by clicking on block
     $i->moveMouseOver($socialBlockInEditor, 3, 2);
+    $i->waitForText('View this in your browser.');
     $i->clickWithLeftButton(); // Clicks on the position where mouse cursor is
     $i->waitForElementVisible($socialBlockSettingsAssertion);
     $i->click('Done');
