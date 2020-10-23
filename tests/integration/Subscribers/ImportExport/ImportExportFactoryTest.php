@@ -54,15 +54,15 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $segments = $this->importFactory->getSegments();
     expect(count($segments))->equals(2);
     expect($segments[0]['name'])->equals('Confirmed Segment');
-    expect($segments[0]['subscriberCount'])->equals(1);
+    expect($segments[0]['count'])->equals(1);
     expect($segments[1]['name'])->equals('Unconfirmed Segment');
-    expect($segments[1]['subscriberCount'])->equals(0);
+    expect($segments[1]['count'])->equals(0);
   }
 
   public function testItCanGetPublicSegmentsForImport() {
     $segments = $this->importFactory->getSegments();
-    expect($segments[0]['subscriberCount'])->equals(1);
-    expect($segments[1]['subscriberCount'])->equals(0);
+    expect($segments[0]['count'])->equals(1);
+    expect($segments[1]['count'])->equals(0);
 
     $subscriber = Subscriber::where(
       'email', 'mike@mailpoet.com'
@@ -76,8 +76,8 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect($subscriber)->false();
 
     $segments = $this->importFactory->getSegments();
-    expect($segments[0]['subscriberCount'])->equals(0);
-    expect($segments[1]['subscriberCount'])->equals(0);
+    expect($segments[0]['count'])->equals(0);
+    expect($segments[1]['count'])->equals(0);
   }
 
   public function testItCanGetPublicSegmentsForExport() {
@@ -96,9 +96,9 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect(count($segments))->equals(2);
 
     expect($segments[0]['name'])->equals('Confirmed Segment');
-    expect($segments[0]['subscriberCount'])->equals(1);
+    expect($segments[0]['count'])->equals(1);
     expect($segments[1]['name'])->equals('Unconfirmed Segment');
-    expect($segments[1]['subscriberCount'])->equals(1);
+    expect($segments[1]['count'])->equals(1);
   }
 
   public function testItCanGetSubscriberFields() {
@@ -176,19 +176,23 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $select2FieldsWithoutCustomFields = [
       [
         'name' => 'Actions',
+        'text' => 'Actions',
         'children' => [
           [
             'id' => 'ignore',
             'name' => 'Ignore field...',
+            'text' => 'Ignore field...',
           ],
           [
             'id' => 'create',
             'name' => 'Create new field...',
+            'text' => 'Create new field...',
           ],
         ],
       ],
       [
         'name' => 'System fields',
+        'text' => 'System fields',
         'children' => $importExportFactory->formatSubscriberFields(
           $importExportFactory->getSubscriberFields()
         ),
@@ -199,6 +203,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       [
         [
           'name' => 'User fields',
+          'text' => 'User fields',
           'children' => $importExportFactory->formatSubscriberCustomFields(
             $importExportFactory->getSubscriberCustomFields()
           ),
@@ -221,19 +226,23 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $select2FieldsWithoutCustomFields = [
       [
         'name' => 'Actions',
+        'text' => 'Actions',
         'children' => [
           [
             'id' => 'select',
             'name' => 'Select all...',
+            'text' => 'Select all...',
           ],
           [
             'id' => 'deselect',
             'name' => 'Deselect all...',
+            'text' => 'Deselect all...',
           ],
         ],
       ],
       [
         'name' => 'System fields',
+        'text' => 'System fields',
         'children' => $importExportFactory->formatSubscriberFields(
           $importExportFactory->getSubscriberFields()
         ),
@@ -244,6 +253,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       [
         [
           'name' => 'User fields',
+          'text' => 'User fields',
           'children' => $importExportFactory->formatSubscriberCustomFields(
             $importExportFactory->getSubscriberCustomFields()
           ),
