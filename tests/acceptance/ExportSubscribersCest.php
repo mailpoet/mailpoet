@@ -22,7 +22,7 @@ class ExportSubscribersCest {
     //choose new list
     $i->selectOptionInSelect2($segmentName);
     //export
-    $i->click('.button-primary.mailpoet_export_process');
+    $i->click('#mailpoet-export-button');
     $i->waitForText('3 subscribers were exported. Get the exported file here.');
     $i->seeNoJSErrors();
   }
