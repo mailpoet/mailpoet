@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
+import Radio from 'common/form/radio/radio';
 import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
 function InitialQuestion({
@@ -14,34 +15,40 @@ function InitialQuestion({
   }
 
   return (
-    <>
-      <h4>{MailPoet.I18n.t('validationStepHeading')}</h4>
-      <label htmlFor="existing-list">
-        <input
-          data-automation-id="mailpoet_import_validation_step_option1"
-          type="radio"
-          id="existing-list"
-          checked={importSource === 'existing-list'}
-          onChange={() => setImportSource('existing-list')}
-        />
-        {MailPoet.I18n.t('validationStepRadio1')}
-      </label>
-      <label htmlFor="address-book">
-        <input
-          data-automation-id="mailpoet_import_validation_step_option2"
-          type="radio"
-          id="address-book"
-          checked={importSource === 'address-book'}
-          onChange={() => setImportSource('address-book')}
-        />
-        {MailPoet.I18n.t('validationStepRadio2')}
-      </label>
+    <div className="mailpoet-settings-grid">
+      <div className="mailpoet-settings-label">
+        {MailPoet.I18n.t('validationStepHeading')}
+      </div>
+      <div className="mailpoet-settings-inputs">
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            automationId="mailpoet_import_validation_step_option1"
+            id="existing-list"
+            checked={importSource === 'existing-list'}
+            onCheck={() => setImportSource('existing-list')}
+          />
+          <label htmlFor="existing-list">
+            {MailPoet.I18n.t('validationStepRadio1')}
+          </label>
+        </div>
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            automationId="mailpoet_import_validation_step_option2"
+            id="address-book"
+            checked={importSource === 'address-book'}
+            onCheck={() => setImportSource('address-book')}
+          />
+          <label htmlFor="address-book">
+            {MailPoet.I18n.t('validationStepRadio2')}
+          </label>
+        </div>
+      </div>
       <PreviousNextStepButtons
         canGoNext={isFormValid()}
         onPreviousAction={() => history.push('step_method_selection')}
         onNextAction={() => onSubmit(importSource)}
       />
-    </>
+    </div>
   );
 }
 
