@@ -7,6 +7,7 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
   isFullWidth?: boolean,
   isMinWidth?: boolean,
   iconStart?: JSX.Element,
+  automationId?: string,
 };
 
 const Select = React.forwardRef(({
@@ -15,6 +16,7 @@ const Select = React.forwardRef(({
   isFullWidth,
   isMinWidth,
   iconStart,
+  automationId,
   ...attributes
 }: Props, ref?: React.Ref<HTMLSelectElement>) => (
   <div
@@ -32,7 +34,7 @@ const Select = React.forwardRef(({
     }
   >
     {iconStart}
-    <select {...attributes} ref={ref}>
+    <select {...attributes} ref={ref} data-automation-id={automationId}>
       {children}
     </select>
   </div>

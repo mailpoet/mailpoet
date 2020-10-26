@@ -11,7 +11,7 @@ class SubscriberManageImportExportCest {
     $this->uploadCsvFile($i, 'MailPoetImportBigList.csv');
 
     // I see validation step, select a wrong source and should be blocked
-    $i->waitForElement('[data-automation-id="mailpoet_import_validation_step"]');
+    $i->waitForElement('[data-automation-id="mailpoet_import_validation_step_option2"]');
     $i->checkOption('[data-automation-id="mailpoet_import_validation_step_option2"]');
     $i->click('[data-automation-id="import-next-step"]');
     $i->waitForElement('[data-automation-id="import_wrong_source_block"]');
@@ -20,7 +20,7 @@ class SubscriberManageImportExportCest {
     $i->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');
     $this->proceedThroughClearout($i);
     $this->uploadCsvFile($i, 'MailPoetImportBigList.csv');
-    $i->waitForElement('[data-automation-id="mailpoet_import_validation_step"]');
+    $i->waitForElement('[data-automation-id="mailpoet_import_validation_step_option1"]');
     $i->checkOption('[data-automation-id="mailpoet_import_validation_step_option1"]');
     $i->click('[data-automation-id="import-next-step"]');
     $i->waitForElement('[data-automation-id="last_sent_to_list"]');
@@ -33,7 +33,7 @@ class SubscriberManageImportExportCest {
     $i->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');
     $this->proceedThroughClearout($i);
     $this->uploadCsvFile($i, 'MailPoetImportBigList.csv');
-    $i->waitForElement('[data-automation-id="mailpoet_import_validation_step"]');
+    $i->waitForElement('[data-automation-id="mailpoet_import_validation_step_option1"]');
     $i->checkOption('[data-automation-id="mailpoet_import_validation_step_option1"]');
     $i->click('[data-automation-id="import-next-step"]');
     $i->waitForElement('[data-automation-id="last_sent_to_list"]');

@@ -28,10 +28,7 @@ function StepInputValidation({ stepMethodSelectionData, history }) {
   }
 
   return (
-    <div
-      className="mailpoet_import_validation_step"
-      data-automation-id="mailpoet_import_validation_step"
-    >
+    <>
       {importSource === undefined && (
         <InitialQuestion
           onSubmit={setImportSource}
@@ -52,7 +49,7 @@ function StepInputValidation({ stepMethodSelectionData, history }) {
       {importSource === 'existing-list' && lastSent === 'notRecently' && (
         <OfferClearout />
       )}
-    </div>
+    </>
   );
 }
 
