@@ -44,20 +44,6 @@ class FormFactory {
     return $this->createFormFromTemplate(TemplateRepository::INITIAL_FORM_TEMPLATE);
   }
 
-  /**
-   * @param int $defaultSegmentId
-   * @return FormEntity|null
-   */
-  public function ensureDefaultFormExists(int $defaultSegmentId) {
-    if ($this->formRepository->count()) {
-      return null;
-    }
-    return $this->createFormFromTemplate(
-      TemplateRepository::DEFAULT_FORM_TEMPLATE,
-      ['segments' => [(string)$defaultSegmentId]]
-    );
-  }
-
   private function getDefaultSuccessMessage() {
     if ($this->settings->get('signup_confirmation.enabled')) {
       return __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet');

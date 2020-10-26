@@ -457,7 +457,7 @@ class MP2MigratorTest extends \MailPoetTest {
     $this->initImport();
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importForms');
-    expect(Form::count())->equals(3);
+    expect(Form::count())->equals(2);
 
     // Check a form data
     $this->initImport();
@@ -505,7 +505,7 @@ class MP2MigratorTest extends \MailPoetTest {
     ]);
     $this->invokeMethod($this->MP2Migrator, 'importForms');
     $table = MP_FORMS_TABLE;
-    $form = $wpdb->get_row("SELECT * FROM $table WHERE id=" . 2);
+    $form = $wpdb->get_row("SELECT * FROM $table WHERE id=" . 1);
     expect($form->name)->equals($name);
     $settings = unserialize(($form->settings));
     expect($settings['on_success'])->equals('message');

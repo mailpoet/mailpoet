@@ -11,7 +11,6 @@ use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\UserFlagEntity;
-use MailPoet\Form\FormFactory;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Form;
@@ -48,8 +47,6 @@ class Populator {
   /** @var ReferralDetector  */
   private $referralDetector;
   const TEMPLATES_NAMESPACE = '\MailPoet\Config\PopulatorData\Templates\\';
-  /** @var FormFactory */
-  private $formFactory;
   /** @var FormsRepository */
   private $formsRepository;
 
@@ -58,14 +55,12 @@ class Populator {
     WPFunctions $wp,
     Captcha $captcha,
     ReferralDetector $referralDetector,
-    FormsRepository $formsRepository,
-    FormFactory $formFactory
+    FormsRepository $formsRepository
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->captcha = $captcha;
     $this->referralDetector = $referralDetector;
-    $this->formFactory = $formFactory;
     $this->prefix = Env::$dbPrefix;
     $this->models = [
       'newsletter_option_fields',
@@ -156,8 +151,7 @@ class Populator {
 
     array_map([$this, 'populate'], $this->models);
 
-    $defaultSegment = $this->createDefaultSegment();
-    $this->createDefaultForm($defaultSegment);
+    $this->createDefaultSegment();
     $this->createDefaultSettings();
     $this->createDefaultUsersFlags();
     $this->createMailPoetPage();
@@ -358,10 +352,6 @@ class Populator {
       $defaultSegment->save();
     }
     return $defaultSegment;
-  }
-
-  private function createDefaultForm(Segment $defaultSegment) {
-    $this->formFactory->ensureDefaultFormExists((int)$defaultSegment->id());
   }
 
   protected function newsletterOptionFields() {
