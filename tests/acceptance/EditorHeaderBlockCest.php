@@ -18,6 +18,7 @@ class EditorHeaderBlockCest {
     $i->dragAndDrop('#automation_editor_block_header', '#mce_0');
     //Open settings by clicking on block
     $i->moveMouseOver($headerInEditor, 3, 2);
+    // add one additional check because it needs a bit of time to click on the settings icon
     $i->waitForElement($headerInEditor);
     $i->waitForText('View this in your browser.');
     $i->click($headerSettingsIcon);
