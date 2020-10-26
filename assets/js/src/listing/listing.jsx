@@ -591,11 +591,13 @@ class Listing extends React.Component {
       extraActions = this.props.renderExtraActions(this.state);
     }
 
+    const listingClassName = classNames('mailpoet-listing', this.props.className);
+
     return (
       <>
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         { this.state.meta.mta_method && <MailerError {...this.state.meta} /> }
-        <div className="mailpoet-listing">
+        <div className={listingClassName}>
           <div className="mailpoet-listing-header">
             { groups }
             <div>
@@ -708,6 +710,7 @@ Listing.propTypes = {
     push: PropTypes.func.isRequired,
   }).isRequired,
   isItemDeletable: PropTypes.func,
+  className: PropTypes.string,
 };
 /* eslint-enable react/require-default-props */
 
@@ -731,6 +734,7 @@ Listing.defaultProps = {
   getListingItemKey: undefined,
   isItemDeletable: () => true,
   isItemInactive: () => false,
+  className: undefined,
 };
 
 export default withRouter(Listing);
