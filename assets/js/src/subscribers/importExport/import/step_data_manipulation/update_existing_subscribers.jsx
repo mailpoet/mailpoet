@@ -1,32 +1,38 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
+import Radio from 'common/form/radio/radio';
 
 function UpdateExistingSubscribers({ updateExistingSubscribers, setUpdateExistingSubscribers }) {
   return (
-    <div className="mailpoet_update_existing_subscribers">
-      <div className="mailpoet_label_description">{MailPoet.I18n.t('updateExistingSubscribers')}</div>
-      <label htmlFor="update_existing_subscribers">
-        <input
+    <>
+      <div className="mailpoet-settings-label">
+        {MailPoet.I18n.t('updateExistingSubscribers')}
+      </div>
+      <div className="mailpoet-settings-inputs">
+        <Radio
           id="update_existing_subscribers"
-          type="radio"
           name="update_existing_subscribers"
+          value="1"
           checked={updateExistingSubscribers}
-          onChange={() => setUpdateExistingSubscribers(true)}
+          onCheck={() => setUpdateExistingSubscribers(true)}
         />
-        {MailPoet.I18n.t('updateExistingSubscribersYes')}
-      </label>
-      <label htmlFor="dont_update_existing_subscribers">
-        <input
+        <label htmlFor="update_existing_subscribers">
+          {MailPoet.I18n.t('updateExistingSubscribersYes')}
+        </label>
+        <span className="mailpoet-gap" />
+        <Radio
           id="dont_update_existing_subscribers"
-          type="radio"
           name="update_existing_subscribers"
+          value=""
           checked={!updateExistingSubscribers}
-          onChange={() => setUpdateExistingSubscribers(false)}
+          onCheck={() => setUpdateExistingSubscribers(false)}
         />
-        {MailPoet.I18n.t('updateExistingSubscribersNo')}
-      </label>
-    </div>
+        <label htmlFor="dont_update_existing_subscribers">
+          {MailPoet.I18n.t('updateExistingSubscribersNo')}
+        </label>
+      </div>
+    </>
   );
 }
 
