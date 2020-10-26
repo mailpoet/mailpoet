@@ -17,7 +17,7 @@
     "symfony/polyfill-mbstring": "1.18.1",
     "symfony/polyfill-intl-normalizer": "1.18.1",
     "symfony/polyfill-php72": "1.18.1",
-    "symfony/validator": "3.4.43",
+    "symfony/validator": "4.4.15",
     "twig/twig": "2.13.1"
   },
   "scripts": {
