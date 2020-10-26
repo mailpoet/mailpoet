@@ -208,7 +208,7 @@ class Template13Widget extends FormTemplate {
       'fontSize' => '15',
       'fontColor' => '#1e1e1e',
       'backgroundColor' => '#ffffff',
-      'background_image_url' => $this->getAssetUrl('pic-684x1024-1.jpg'),
+      'background_image_url' => $this->getAssetUrl('pic-684x1024.jpg'),
     ];
   }
 
