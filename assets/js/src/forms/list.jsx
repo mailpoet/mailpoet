@@ -7,7 +7,8 @@ import Listing from 'listing/listing.jsx';
 import withNpsPoll from 'nps_poll.jsx';
 import Tags from 'common/tag/tags';
 import Toggle from 'common/form/toggle/toggle';
-import FormsHeading from './heading';
+import { FormsHeading, goToSelectTemplate } from './heading';
+import { Button } from '../common';
 
 const columns = [
   {
@@ -80,6 +81,12 @@ const messages = {
     }
     MailPoet.Notice.success(message);
   },
+  onNoItemsFound: () => (
+    <div className="mailpoet-forms-add-new-row">
+      <p>{MailPoet.I18n.t('noItemsFound')}</p>
+      <Button onClick={goToSelectTemplate}>{MailPoet.I18n.t('new')}</Button>
+    </div>
+  ),
 };
 
 const bulkActions = [
@@ -253,6 +260,7 @@ class FormList extends React.Component {
 
         <Listing
           limit={window.mailpoet_listing_per_page}
+          className="mailpoet-forms-listing"
           location={this.props.location}
           params={this.props.match.params}
           messages={messages}
