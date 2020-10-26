@@ -12,39 +12,49 @@ use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\Cron\CronHelper;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Listing\Handler;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
-use MailPoetVendor\Idiorm\ORM;
 
 class NewslettersTest extends \MailPoetTest {
+
+  /** @var NewsletterEntity */
   public $postNotification;
-  /** @var Newsletter */
+
+  /** @var NewsletterEntity */
   public $newsletter;
+
   /** @var Newsletters */
   private $endpoint;
 
@@ -54,10 +64,30 @@ class NewslettersTest extends \MailPoetTest {
   /** @var NewslettersRepository */
   private $newsletterRepository;
 
+  /** @var NewsletterOptionFieldsRepository */
+  private $newsletterOptionFieldsRepository;
+
+  /** @var NewsletterOptionsRepository */
+  private $newsletterOptionsRepository;
+
+  /** @var SegmentsRepository */
+  private $segmentRepository;
+
+  /** @var NewsletterSegmentRepository */
+  private $newsletterSegmentRepository;
+
+  /** @var NewslettersResponseBuilder */
+  private $newslettersResponseBuilder;
+
   public function _before() {
     parent::_before();
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->newsletterRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
+    $this->newsletterOptionFieldsRepository = ContainerWrapper::getInstance()->get(NewsletterOptionFieldsRepository::class);
+    $this->newsletterOptionsRepository = ContainerWrapper::getInstance()->get(NewsletterOptionsRepository::class);
+    $this->segmentRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
+    $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
+    $this->newslettersResponseBuilder = ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class);
     $this->endpoint = Stub::copy(
       ContainerWrapper::getInstance()->get(Newsletters::class),
       [
@@ -71,41 +101,26 @@ class NewslettersTest extends \MailPoetTest {
         ),
       ]
     );
-    $this->newsletter = Newsletter::createOrUpdate(
-      [
-        'subject' => 'My Standard Newsletter',
-        'body' => Fixtures::get('newsletter_body_template'),
-        'type' => Newsletter::TYPE_STANDARD,
-      ]);
+    $this->newsletter = $this->createNewsletter('My Standard Newsletter', NewsletterEntity::TYPE_STANDARD);
+    $this->postNotification = $this->createNewsletter('My Post Notification', NewsletterEntity::TYPE_NOTIFICATION);
 
-    $this->postNotification = Newsletter::createOrUpdate(
-      [
-        'subject' => 'My Post Notification',
-        'body' => Fixtures::get('newsletter_body_template'),
-        'type' => Newsletter::TYPE_NOTIFICATION,
-      ]);
-
-    NewsletterOptionField::createOrUpdate(
-      [
-        'name' => 'isScheduled',
-        'newsletter_type' => 'standard',
-      ]);
-    NewsletterOptionField::createOrUpdate(
-      [
-        'name' => 'scheduledAt',
-        'newsletter_type' => 'standard',
-      ]);
+    $this->createNewsletterOptionField(NewsletterOptionFieldEntity::NAME_IS_SCHEDULED, NewsletterEntity::TYPE_STANDARD);
+    $this->createNewsletterOptionField(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT, NewsletterEntity::TYPE_STANDARD);
+    $this->createNewsletterOptionField(NewsletterOptionFieldEntity::NAME_SCHEDULE, NewsletterEntity::TYPE_NOTIFICATION);
   }
 
   public function testItKeepsUnsentNewslettersAtTheTopWhenSortingBySentAtDate() {
+    /** @var NewsletterEntity[] */
     $sentNewsletters = [];
     for ($i = 1; $i <= 3; $i++) {
-      $sentNewsletters[$i] = Newsletter::create();
-      $sentNewsletters[$i]->type = Newsletter::TYPE_STANDARD;
-      $sentNewsletters[$i]->subject = 'Sent newsletter ' . $i;
-      $sentNewsletters[$i]->sentAt = '2017-01-0' . $i . ' 01:01:01';
-      $sentNewsletters[$i]->save();
-    };
+      $sentAt = Carbon::createFromFormat('Y-m-d H:i:s', "2017-01-0{$i} 01:01:01");
+      if (!$sentAt) {
+        continue;
+      }
+      $sentNewsletters[$i] = $this->createNewsletter("Sent newsletter {$i}", NewsletterEntity::TYPE_STANDARD);
+      $sentNewsletters[$i]->setSentAt($sentAt);
+    }
+    $this->newsletterRepository->flush();
 
     // sorting by ASC order retains unsent newsletters at the top
     $response = $this->endpoint->listing(
@@ -118,10 +133,10 @@ class NewslettersTest extends \MailPoetTest {
       ]
     );
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data[0]['id'])->equals($this->newsletter->id);
-    expect($response->data[1]['id'])->equals($sentNewsletters[1]->id);
-    expect($response->data[2]['id'])->equals($sentNewsletters[2]->id);
-    expect($response->data[3]['id'])->equals($sentNewsletters[3]->id);
+    expect($response->data[0]['id'])->equals($this->newsletter->getId());
+    expect($response->data[1]['id'])->equals($sentNewsletters[1]->getId());
+    expect($response->data[2]['id'])->equals($sentNewsletters[2]->getId());
+    expect($response->data[3]['id'])->equals($sentNewsletters[3]->getId());
 
     // sorting by DESC order retains unsent newsletters at the top
     $response = $this->endpoint->listing(
@@ -134,10 +149,10 @@ class NewslettersTest extends \MailPoetTest {
       ]
     );
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data[0]['id'])->equals($this->newsletter->id);
-    expect($response->data[1]['id'])->equals($sentNewsletters[3]->id);
-    expect($response->data[2]['id'])->equals($sentNewsletters[2]->id);
-    expect($response->data[3]['id'])->equals($sentNewsletters[1]->id);
+    expect($response->data[0]['id'])->equals($this->newsletter->getId());
+    expect($response->data[1]['id'])->equals($sentNewsletters[3]->getId());
+    expect($response->data[2]['id'])->equals($sentNewsletters[2]->getId());
+    expect($response->data[3]['id'])->equals($sentNewsletters[1]->getId());
   }
 
   public function testItCanGetANewsletter() {
@@ -159,15 +174,16 @@ class NewslettersTest extends \MailPoetTest {
       'cronHelper' => $this->cronHelper,
       'subscribersFeature' => Stub::make(SubscribersFeature::class),
     ]);
-    $response = $this->endpoint->get(['id' => $this->newsletter->id]);
+    $response = $this->endpoint->get(['id' => $this->newsletter->getId()]);
+    
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
-      Newsletter::findOne($this->newsletter->id)
-        ->withSegments()
-        ->withOptions()
-        ->withSendingQueue()
-        ->asArray()
-    );
+    $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
+    assert($newsletter instanceof NewsletterEntity);
+    expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletter, [
+      NewslettersResponseBuilder::RELATION_SEGMENTS,
+      NewslettersResponseBuilder::RELATION_OPTIONS,
+      NewslettersResponseBuilder::RELATION_QUEUE,
+    ]));
     $hookName = 'mailpoet_api_newsletters_get_after';
     expect(WPHooksHelper::isFilterApplied($hookName))->true();
     expect(WPHooksHelper::getFilterApplied($hookName)[0])->array();
@@ -175,7 +191,7 @@ class NewslettersTest extends \MailPoetTest {
 
   public function testItCanSaveANewsletter() {
     $newsletterData = [
-      'id' => $this->newsletter->id,
+      'id' => $this->newsletter->getId(),
       'type' => 'Updated type',
       'subject' => 'Updated subject',
       'preheader' => 'Updated preheader',
@@ -189,18 +205,18 @@ class NewslettersTest extends \MailPoetTest {
 
     $response = $this->endpoint->save($newsletterData);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
-    assert($updatedNewsletter instanceof Newsletter); // PHPStan
-    expect($response->data)->equals($updatedNewsletter->asArray());
-    expect($updatedNewsletter->type)->equals('Updated type');
-    expect($updatedNewsletter->subject)->equals('Updated subject');
-    expect($updatedNewsletter->preheader)->equals('Updated preheader');
-    expect($updatedNewsletter->body)->equals('{"value":"Updated body"}');
-    expect($updatedNewsletter->senderName)->equals('Updated sender name');
-    expect($updatedNewsletter->senderAddress)->equals('Updated sender address');
-    expect($updatedNewsletter->replyToName)->equals('Updated reply-to name');
-    expect($updatedNewsletter->replyToAddress)->equals('Updated reply-to address');
-    expect($updatedNewsletter->gaCampaign)->equals('Updated GA campaign');
+    $updatedNewsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
+    assert($updatedNewsletter instanceof NewsletterEntity); // PHPStan
+    expect($response->data)->equals($this->newslettersResponseBuilder->build($updatedNewsletter));
+    expect($updatedNewsletter->getType())->equals('Updated type');
+    expect($updatedNewsletter->getSubject())->equals('Updated subject');
+    expect($updatedNewsletter->getPreheader())->equals('Updated preheader');
+    expect($updatedNewsletter->getBody())->equals(['value' => 'Updated body']);
+    expect($updatedNewsletter->getSenderName())->equals('Updated sender name');
+    expect($updatedNewsletter->getSenderAddress())->equals('Updated sender address');
+    expect($updatedNewsletter->getReplyToName())->equals('Updated reply-to name');
+    expect($updatedNewsletter->getReplyToAddress())->equals('Updated reply-to address');
+    expect($updatedNewsletter->getGaCampaign())->equals('Updated GA campaign');
   }
 
   public function testItReturnsErrorIfSubscribersLimitReached() {
@@ -209,8 +225,8 @@ class NewslettersTest extends \MailPoetTest {
       'subscribersFeature' => Stub::make(SubscribersFeature::class, ['check' => true]),
     ]);
     $res = $endpoint->setStatus([
-      'id' => $this->newsletter->id,
-      'status' => Newsletter::STATUS_ACTIVE,
+      'id' => $this->newsletter->getId(),
+      'status' => NewsletterEntity::STATUS_ACTIVE,
     ]);
     expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
   }
@@ -219,27 +235,27 @@ class NewslettersTest extends \MailPoetTest {
     // set status to sending
     $response = $this->endpoint->setStatus
     ([
-       'id' => $this->newsletter->id,
-       'status' => Newsletter::STATUS_SENDING,
+       'id' => $this->newsletter->getId(),
+       'status' => NewsletterEntity::STATUS_SENDING,
      ]
     );
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['status'])->equals(Newsletter::STATUS_SENDING);
+    expect($response->data['status'])->equals(NewsletterEntity::STATUS_SENDING);
 
     // set status to draft
     $response = $this->endpoint->setStatus(
       [
-        'id' => $this->newsletter->id,
-        'status' => Newsletter::STATUS_DRAFT,
+        'id' => $this->newsletter->getId(),
+        'status' => NewsletterEntity::STATUS_DRAFT,
       ]
     );
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['status'])->equals(Newsletter::STATUS_DRAFT);
+    expect($response->data['status'])->equals(NewsletterEntity::STATUS_DRAFT);
 
     // no status specified throws an error
     $response = $this->endpoint->setStatus(
       [
-        'id' => $this->newsletter->id,
+        'id' => $this->newsletter->getId(),
       ]
     );
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
@@ -249,7 +265,7 @@ class NewslettersTest extends \MailPoetTest {
     // invalid newsletter id throws an error
     $response = $this->endpoint->setStatus(
       [
-        'status' => Newsletter::STATUS_DRAFT,
+        'status' => NewsletterEntity::STATUS_DRAFT,
       ]
     );
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
@@ -258,38 +274,30 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   public function testItReschedulesPastDuePostNotificationsWhenStatusIsSetBackToActive() {
-    $newsletterOptionField = NewsletterOptionField::create();
-    $newsletterOptionField->name = 'schedule';
-    $newsletterOptionField->newsletterType = Newsletter::TYPE_NOTIFICATION;
-    $newsletterOptionField->save();
     $schedule = sprintf('0 %d * * *', Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->hour); // every day at current hour
     $randomFutureDate = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addDays(10)->format('Y-m-d H:i:s'); // 10 days from now
-    $newsletterOption = NewsletterOption::createOrUpdate(
-      [
-        'newsletter_id' => $this->postNotification->id,
-        'option_field_id' => $newsletterOptionField->id,
-        'value' => $schedule,
-      ]
-    );
+    $this->createOrUpdateNewsletterOption($this->postNotification, NewsletterOptionFieldEntity::NAME_SCHEDULE, $schedule);
+
     $sendingQueue1 = SendingTask::create();
-    $sendingQueue1->newsletterId = $this->postNotification->id;
+    $sendingQueue1->newsletterId = $this->postNotification->getId();
     $sendingQueue1->scheduledAt = Scheduler::getPreviousRunDate($schedule);
     $sendingQueue1->status = SendingQueue::STATUS_SCHEDULED;
     $sendingQueue1->save();
     $sendingQueue2 = SendingTask::create();
-    $sendingQueue2->newsletterId = $this->postNotification->id;
+    $sendingQueue2->newsletterId = $this->postNotification->getId();
     $sendingQueue2->scheduledAt = $randomFutureDate;
     $sendingQueue2->status = SendingQueue::STATUS_SCHEDULED;
     $sendingQueue2->save();
     $sendingQueue3 = SendingTask::create();
-    $sendingQueue3->newsletterId = $this->postNotification->id;
+    $sendingQueue3->newsletterId = $this->postNotification->getId();
     $sendingQueue3->scheduledAt = Scheduler::getPreviousRunDate($schedule);
     $sendingQueue3->save();
 
+    $this->entityManager->clear();
     $this->endpoint->setStatus(
       [
-        'id' => $this->postNotification->id,
-        'status' => Newsletter::STATUS_ACTIVE,
+        'id' => $this->postNotification->getId(),
+        'status' => NewsletterEntity::STATUS_ACTIVE,
       ]
     );
     $tasks = ScheduledTask::findMany();
@@ -302,23 +310,13 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   public function testItSchedulesPostNotificationsWhenStatusIsSetBackToActive() {
-    $newsletterOptionField = NewsletterOptionField::create();
-    $newsletterOptionField->name = 'schedule';
-    $newsletterOptionField->newsletterType = Newsletter::TYPE_NOTIFICATION;
-    $newsletterOptionField->save();
     $schedule = '* * * * *';
-    NewsletterOption::createOrUpdate(
-      [
-        'newsletter_id' => $this->postNotification->id,
-        'option_field_id' => $newsletterOptionField->id,
-        'value' => $schedule,
-      ]
-    );
+    $this->createOrUpdateNewsletterOption($this->postNotification, NewsletterOptionFieldEntity::NAME_SCHEDULE, $schedule);
 
     $this->endpoint->setStatus(
       [
-        'id' => $this->postNotification->id,
-        'status' => Newsletter::STATUS_ACTIVE,
+        'id' => $this->postNotification->getId(),
+        'status' => NewsletterEntity::STATUS_ACTIVE,
       ]
     );
     $tasks = ScheduledTask::findMany();
@@ -326,34 +324,34 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   public function testItCanRestoreANewsletter() {
-    $this->newsletterRepository->bulkTrash([$this->newsletter->id]);
+    $this->newsletterRepository->bulkTrash([$this->newsletter->getId()]);
+    $this->entityManager->clear();
 
-    $trashedNewsletter = Newsletter::findOne($this->newsletter->id);
-    expect($trashedNewsletter->deletedAt)->notNull();
+    $trashedNewsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
+    assert($trashedNewsletter instanceof NewsletterEntity);
+    expect($trashedNewsletter->getDeletedAt())->notNull();
 
-    $response = $this->endpoint->restore(['id' => $this->newsletter->id]);
+    $response = $this->endpoint->restore(['id' => $this->newsletter->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
-      Newsletter::findOne($this->newsletter->id)
-        ->asArray()
-    );
+    $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
+    assert($newsletter instanceof NewsletterEntity);
+    expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
     expect($response->data['deleted_at'])->null();
     expect($response->meta['count'])->equals(1);
   }
 
   public function testItCanTrashANewsletter() {
-    $response = $this->endpoint->trash(['id' => $this->newsletter->id]);
+    $response = $this->endpoint->trash(['id' => $this->newsletter->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
-      Newsletter::findOne($this->newsletter->id)
-        ->asArray()
-    );
+    $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
+    assert($newsletter instanceof NewsletterEntity);
+    expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
     expect($response->data['deleted_at'])->notNull();
     expect($response->meta['count'])->equals(1);
   }
 
   public function testItCanDeleteANewsletter() {
-    $response = $this->endpoint->delete(['id' => $this->newsletter->id]);
+    $response = $this->endpoint->delete(['id' => $this->newsletter->getId()]);
     expect($response->data)->isEmpty();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(1);
@@ -369,41 +367,35 @@ class NewslettersTest extends \MailPoetTest {
       'subscribersFeature' => Stub::make(SubscribersFeature::class),
     ]);
 
-    $response = $this->endpoint->duplicate(['id' => $this->newsletter->id]);
+    $response = $this->endpoint->duplicate(['id' => $this->newsletter->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
-      Newsletter::where('subject', 'Copy of My Standard Newsletter')
-        ->findOne()
-        ->asArray()
-    );
+    $newsletterCopy = $this->newsletterRepository->findOneBy(['subject' => 'Copy of My Standard Newsletter']);
+    assert($newsletterCopy instanceof NewsletterEntity);
+    expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletterCopy));
     expect($response->meta['count'])->equals(1);
 
     $hookName = 'mailpoet_api_newsletters_duplicate_after';
     expect(WPHooksHelper::isActionDone($hookName))->true();
     expect(WPHooksHelper::getActionDone($hookName)[0] instanceof NewsletterEntity)->true();
 
-    $response = $this->endpoint->duplicate(['id' => $this->postNotification->id]);
+    $response = $this->endpoint->duplicate(['id' => $this->postNotification->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
-      Newsletter::where('subject', 'Copy of My Post Notification')
-        ->findOne()
-        ->asArray()
-    );
+    $newsletterCopy = $this->newsletterRepository->findOneBy(['subject' => 'Copy of My Post Notification']);
+    assert($newsletterCopy instanceof NewsletterEntity);
+    expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletterCopy));
     expect($response->meta['count'])->equals(1);
   }
 
   public function testItCanCreateANewsletter() {
     $data = [
       'subject' => 'My New Newsletter',
-      'type' => Newsletter::TYPE_STANDARD,
+      'type' => NewsletterEntity::TYPE_STANDARD,
     ];
     $response = $this->endpoint->create($data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
-      Newsletter::where('subject', 'My New Newsletter')
-        ->findOne()
-        ->asArray()
-    );
+    $newsletter = $this->newsletterRepository->findOneBy(['subject' => 'My New Newsletter']);
+    assert($newsletter instanceof NewsletterEntity);
+    expect($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
 
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
@@ -413,7 +405,7 @@ class NewslettersTest extends \MailPoetTest {
   public function testItHasDefaultSenderAfterCreate() {
     $data = [
       'subject' => 'My First Newsletter',
-      'type' => Newsletter::TYPE_STANDARD,
+      'type' => NewsletterEntity::TYPE_STANDARD,
     ];
 
     $settingsController = $this->diContainer->get(SettingsController::class);
@@ -423,7 +415,7 @@ class NewslettersTest extends \MailPoetTest {
     $response = $this->endpoint->create($data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['subject'])->equals('My First Newsletter');
-    expect($response->data['type'])->equals(Newsletter::TYPE_STANDARD);
+    expect($response->data['type'])->equals(NewsletterEntity::TYPE_STANDARD);
     expect($response->data['sender_address'])->equals('sender@test.com');
     expect($response->data['sender_name'])->equals('Sender');
     expect($response->data['reply_to_address'])->equals('reply@test.com');
@@ -431,35 +423,13 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   public function testItCanGetListingData() {
-    $segment1 = Segment::createOrUpdate(['name' => 'Segment 1']);
-    $segment2 = Segment::createOrUpdate(['name' => 'Segment 2']);
+    $segment1 = $this->createSegment('Segment 1');
+    $segment2 = $this->createSegment('Segment 2');
 
-    $newsletterSegment = NewsletterSegment::create();
-    $newsletterSegment->hydrate(
-      [
-        'newsletter_id' => $this->newsletter->id,
-        'segment_id' => $segment1->id,
-      ]
-    );
-    $newsletterSegment->save();
-
-    $newsletterSegment = NewsletterSegment::create();
-    $newsletterSegment->hydrate(
-      [
-        'newsletter_id' => $this->newsletter->id,
-        'segment_id' => $segment2->id,
-      ]
-    );
-    $newsletterSegment->save();
-
-    $newsletterSegment = NewsletterSegment::create();
-    $newsletterSegment->hydrate(
-      [
-        'newsletter_id' => $this->postNotification->id,
-        'segment_id' => $segment2->id,
-      ]
-    );
-    $newsletterSegment->save();
+    $this->createNewsletterSegment($this->newsletter, $segment1);
+    $this->createNewsletterSegment($this->newsletter, $segment2);
+    $this->createNewsletterSegment($this->postNotification, $segment2);
+    $this->entityManager->clear();
 
     $response = $this->endpoint->listing();
 
@@ -476,55 +446,33 @@ class NewslettersTest extends \MailPoetTest {
     // 1st subscriber has 2 segments
     expect($response->data[0]['segments'])->count(2);
     expect($response->data[0]['segments'][0]['id'])
-      ->equals($segment1->id);
+      ->equals($segment1->getId());
     expect($response->data[0]['segments'][1]['id'])
-      ->equals($segment2->id);
+      ->equals($segment2->getId());
 
     // 2nd subscriber has 1 segment
     expect($response->data[1]['segments'])->count(1);
     expect($response->data[1]['segments'][0]['id'])
-      ->equals($segment2->id);
+      ->equals($segment2->getId());
   }
 
   public function testItCanFilterListing() {
     // create 2 segments
-    $segment1 = Segment::createOrUpdate(['name' => 'Segment 1']);
-    $segment2 = Segment::createOrUpdate(['name' => 'Segment 2']);
+    $segment1 = $this->createSegment('Segment 1');
+    $segment2 = $this->createSegment('Segment 2');
 
     // link standard newsletter to the 2 segments
-    $newsletterSegment = NewsletterSegment::create();
-    $newsletterSegment->hydrate(
-      [
-        'newsletter_id' => $this->newsletter->id,
-        'segment_id' => $segment1->id,
-      ]
-    );
-    $newsletterSegment->save();
-
-    $newsletterSegment = NewsletterSegment::create();
-    $newsletterSegment->hydrate
-    ([
-       'newsletter_id' => $this->newsletter->id,
-       'segment_id' => $segment2->id,
-     ]
-    );
-    $newsletterSegment->save();
+    $this->createNewsletterSegment($this->newsletter, $segment1);
+    $this->createNewsletterSegment($this->newsletter, $segment2);
 
     // link post notification to the 2nd segment
-    $newsletterSegment = NewsletterSegment::create();
-    $newsletterSegment->hydrate(
-      [
-        'newsletter_id' => $this->postNotification->id,
-        'segment_id' => $segment2->id,
-      ]
-    );
-    $newsletterSegment->save();
+    $this->createNewsletterSegment($this->postNotification, $segment2);
 
     // filter by 1st segment
     $response = $this->endpoint->listing(
       [
         'filter' => [
-          'segment' => $segment1->id,
+          'segment' => $segment1->getId(),
         ],
       ]
     );
@@ -533,13 +481,13 @@ class NewslettersTest extends \MailPoetTest {
 
     // we should only get the standard newsletter
     expect($response->meta['count'])->equals(1);
-    expect($response->data[0]['subject'])->equals($this->newsletter->subject);
+    expect($response->data[0]['subject'])->equals($this->newsletter->getSubject());
 
     // filter by 2nd segment
     $response = $this->endpoint->listing(
       [
         'filter' => [
-          'segment' => $segment2->id,
+          'segment' => $segment2->getId(),
         ],
       ]
     );
@@ -565,7 +513,7 @@ class NewslettersTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(2);
     expect($response->data)->count(1);
     expect($response->data[0]['subject'])->equals(
-      $this->postNotification->subject
+      $this->postNotification->getSubject()
     );
 
     // get 1st page (limit items per page to 1)
@@ -581,14 +529,14 @@ class NewslettersTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(2);
     expect($response->data)->count(1);
     expect($response->data[0]['subject'])->equals(
-      $this->newsletter->subject
+      $this->newsletter->getSubject()
     );
   }
 
   public function testItCanBulkDeleteSelectionOfNewsletters() {
     $selectionIds = [
-      $this->newsletter->id,
-      $this->postNotification->id,
+      $this->newsletter->getId(),
+      $this->postNotification->getId(),
     ];
 
     $response = $this->endpoint->bulkAction(
@@ -643,7 +591,7 @@ class NewslettersTest extends \MailPoetTest {
 
     $data = [
       'subscriber' => $subscriber,
-      'id' => $this->newsletter->id,
+      'id' => $this->newsletter->getId(),
     ];
     $response = $endpoint->sendPreview($data);
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -661,7 +609,7 @@ class NewslettersTest extends \MailPoetTest {
 
     $data = [
       'subscriber' => $subscriber,
-      'id' => $this->newsletter->id,
+      'id' => $this->newsletter->getId(),
     ];
     $response = $endpoint->sendPreview($data);
     expect($response->errors[0]['message'])->equals('The email could not be sent: failed');
@@ -669,7 +617,7 @@ class NewslettersTest extends \MailPoetTest {
 
   public function testItReturnsBrowserPreviewUrlWithoutProtocol() {
     $data = [
-      'id' => $this->newsletter->id,
+      'id' => $this->newsletter->getId(),
       'body' => 'fake body',
     ];
 
@@ -708,14 +656,15 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
+    $this->truncateEntity(NewsletterSegmentEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
   }
 
   private function createNewslettersEndpointWithMocks(array $mocks): Newsletters {
@@ -733,5 +682,56 @@ class NewslettersTest extends \MailPoetTest {
       $mocks['sendPreviewController'] ?? $this->diContainer->get(SendPreviewController::class),
       $this->diContainer->get(NewsletterSaveController::class)
     );
+  }
+
+  private function createNewsletter(string $subject, string $type): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject($subject);
+    $newsletter->setBody(Fixtures::get('newsletter_body_template'));
+    $newsletter->setType($type);
+    $newsletter->setHash(Security::generateHash());
+    $this->newsletterRepository->persist($newsletter);
+    $this->newsletterRepository->flush();
+    return $newsletter;
+  }
+
+  private function createNewsletterOptionField(string $name, string $type): NewsletterOptionFieldEntity {
+    $optionField = new NewsletterOptionFieldEntity();
+    $optionField->setName($name);
+    $optionField->setNewsletterType($type);
+    $this->newsletterOptionFieldsRepository->persist($optionField);
+    $this->newsletterOptionFieldsRepository->flush();
+    return $optionField;
+  }
+
+  private function createOrUpdateNewsletterOption(NewsletterEntity $newsletter, string $name, string $value): NewsletterOptionEntity {
+    $option = $newsletter->getOption($name);
+    if (!$option) {
+      $optionField = $this->newsletterOptionFieldsRepository->findOneBy(['name' => $name]);
+      assert($optionField instanceof NewsletterOptionFieldEntity);
+      $option = new NewsletterOptionEntity($newsletter, $optionField);
+      $newsletter->getOptions()->add($option);      
+    }
+    $option->setValue($value);
+    $this->newsletterOptionsRepository->persist($option);
+    $this->newsletterOptionsRepository->flush();
+    return $option;
+  }
+
+  private function createSegment(string $name): SegmentEntity {
+    $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, 'some description');
+    $this->segmentRepository->persist($segment);
+    $this->segmentRepository->flush();
+    return $segment;
+  }
+
+  private function createNewsletterSegment(
+    NewsletterEntity $newsletter,
+    SegmentEntity $segment
+  ): NewsletterSegmentEntity {
+    $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
+    $this->newsletterSegmentRepository->persist($newsletterSegment);
+    $this->newsletterSegmentRepository->flush();
+    return $newsletterSegment;
   }
 }
