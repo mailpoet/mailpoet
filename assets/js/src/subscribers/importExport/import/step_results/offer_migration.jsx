@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
+import Button from 'common/button/button';
+import Heading from 'common/typography/heading/heading';
 
 const OfferMigration = ({
   subscribersCount,
@@ -8,8 +10,9 @@ const OfferMigration = ({
   if (subscribersCount < 2000) return null;
 
   return (
-    <div className="mailpoet_offer_migration">
-      <h2>{MailPoet.I18n.t('offerMigrationHead')}</h2>
+    <>
+      <br />
+      <Heading level={2}>{MailPoet.I18n.t('offerMigrationHead')}</Heading>
       <p>
         {MailPoet.I18n.t('offerMigrationSubhead')}
         :
@@ -20,16 +23,16 @@ const OfferMigration = ({
         <li>{MailPoet.I18n.t('offerMigrationList3')}</li>
         <li>{MailPoet.I18n.t('offerMigrationList4')}</li>
       </ul>
-      <a
+      <Button
+        variant="dark"
         type="button"
-        className="button-primary wysija"
         href="https://www.mailpoet.com/concierge-migration/"
         target="_blank"
         rel="noopener noreferrer"
       >
         {MailPoet.I18n.t('offerMigrationCTA')}
-      </a>
-    </div>
+      </Button>
+    </>
   );
 };
 

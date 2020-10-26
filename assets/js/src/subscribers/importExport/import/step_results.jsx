@@ -5,6 +5,7 @@ import _ from 'underscore';
 import { withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
+import Button from 'common/button/button';
 import OfferMigration from './step_results/offer_migration.jsx';
 
 function ResultMessage({ subscribersCount, segments, initialMessage }) {
@@ -116,23 +117,25 @@ function StepResults({
           addedToSegmentWithWelcomeNotification={addedToSegmentWithWelcomeNotification}
         />
       </div>
-      <button
-        type="button"
-        className="button-primary wysija"
-        onClick={() => history.push('step_method_selection')}
-      >
-        {MailPoet.I18n.t('importAgain')}
-      </button>
-      &nbsp;&nbsp;
-      <button
-        type="button"
-        className="button-primary wysija"
-        onClick={() => {
-          window.location.href = 'admin.php?page=mailpoet-subscribers';
-        }}
-      >
-        {MailPoet.I18n.t('viewSubscribers')}
-      </button>
+      <div className="mailpoet-settings-grid">
+        <div className="mailpoet-settings-save">
+          <Button
+            variant="light"
+            type="button"
+            onClick={() => history.push('step_method_selection')}
+          >
+            {MailPoet.I18n.t('importAgain')}
+          </Button>
+          <Button
+            type="button"
+            onClick={() => {
+              window.location.href = 'admin.php?page=mailpoet-subscribers';
+            }}
+          >
+            {MailPoet.I18n.t('viewSubscribers')}
+          </Button>
+        </div>
+      </div>
       <OfferMigration
         subscribersCount={totalNumberOfSubscribers}
       />
