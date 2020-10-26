@@ -11,7 +11,7 @@ class Template14SlideIn extends FormTemplate {
   protected $assetsDirectory = 'template-14';
 
   public function getName(): string {
-    return _x('Lifestyle Blog', 'Form template name', 'mailpoet'); //@todo Set proper value
+    return _x('Lifestyle Blog', 'Form template name', 'mailpoet');
   }
 
   public function getThumbnailUrl(): string {
@@ -42,7 +42,7 @@ class Template14SlideIn extends FormTemplate {
                   'title' => '',
                   'caption' => '',
                   'link_destination' => 'none',
-                  'link' => 'http://mailpoet.info/pic-2/',
+                  'link' => '',
                   'href' => '',
                   'link_class' => '',
                   'rel' => '',
@@ -95,7 +95,7 @@ class Template14SlideIn extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => '<span style="font-family: Karla" data-font="Karla" class="mailpoet-has-font">' . _x('SIGN UP TO RECEIVE THE LATEST LIFESTYLE TIPS &amp; TRICKS, PLUS SOME EXCLUSIVE GOODIES!', 'Text in a web form', 'mailpoet') . '</span>',
+                  'content' => '<span style="font-family: Karla" data-font="Karla" class="mailpoet-has-font">' . _x('SIGN UP TO RECEIVE THE LATEST LIFESTYLE TIPS & TRICKS, PLUS SOME EXCLUSIVE GOODIES!', 'Text in a web form', 'mailpoet') . '</span>',
                   'drop_cap' => '0',
                   'align' => 'center',
                   'font_size' => '15',
