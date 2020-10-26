@@ -60,10 +60,7 @@ function StepDataManipulation({
     return null;
   }
   return (
-    <div
-      className="mailpoet_data_manipulation_step"
-      data-automation-id="import_data_manipulation_step"
-    >
+    <div data-automation-id="import_data_manipulation_step">
       <Warnings
         stepMethodSelectionData={stepMethodSelectionData}
       />
@@ -72,26 +69,30 @@ function StepDataManipulation({
         subscribers={stepMethodSelectionData.subscribers}
         header={stepMethodSelectionData.header}
       />
-      <SelectSegment setSelectedSegments={setSelectedSegments} />
-      <NewSubscribersStatus
-        newSubscribersStatus={newSubscribersStatus}
-        setNewSubscribersStatus={setNewSubscribersStatus}
-      />
-      <ExistingSubscribersStatus
-        existingSubscribersStatus={existingSubscribersStatus}
-        setExistingSubscribersStatus={setExistingSubscribersStatus}
-      />
-      <UpdateExistingSubscribers
-        setUpdateExistingSubscribers={setUpdateExistingSubscribers}
-        updateExistingSubscribers={updateExistingSubscribers}
-      />
-      <PreviousNextStepButtons
-        canGoNext={selectedSegments.length > 0}
-        onPreviousAction={() => (
-          history.push(getPreviousStepLink(stepMethodSelectionData, subscribersLimitForValidation))
-        )}
-        onNextAction={importSubscribers}
-      />
+      <div className="mailpoet-settings-grid">
+        <SelectSegment setSelectedSegments={setSelectedSegments} />
+        <NewSubscribersStatus
+          newSubscribersStatus={newSubscribersStatus}
+          setNewSubscribersStatus={setNewSubscribersStatus}
+        />
+        <ExistingSubscribersStatus
+          existingSubscribersStatus={existingSubscribersStatus}
+          setExistingSubscribersStatus={setExistingSubscribersStatus}
+        />
+        <UpdateExistingSubscribers
+          setUpdateExistingSubscribers={setUpdateExistingSubscribers}
+          updateExistingSubscribers={updateExistingSubscribers}
+        />
+        <PreviousNextStepButtons
+          canGoNext={selectedSegments.length > 0}
+          onPreviousAction={() => (
+            history.push(
+              getPreviousStepLink(stepMethodSelectionData, subscribersLimitForValidation)
+            )
+          )}
+          onNextAction={importSubscribers}
+        />
+      </div>
     </div>
   );
 }

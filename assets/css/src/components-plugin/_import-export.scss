@@ -73,53 +73,7 @@ tr {
   }
 }
 
-.mailpoet_data_manipulation_step {
-  align-items: flex-start;
-  display: flex;
-  flex-direction: column;
-
-  > * {
-    margin: 10px 0;
-  }
-
-  .mailpoet_label_description {
-    padding: 20px 10px 20px 0;
-    width: 310px;
-  }
-
-  .mailpoet_import_select_segment {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-
-    label {
-      align-items: center;
-      display: flex;
-      flex-direction: row;
-    }
-
-    .mailpoet_create_segment {
-      margin-left: 15px;
-    }
-  }
-
-  .mailpoet_update_existing_subscribers {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-
-    label {
-      margin-right: 4px;
-    }
-
-    .mailpoet_label_description {
-      font-weight: 400;
-    }
-  }
-}
-
-.mailpoet_subscribers_data_parse_results_details_show,
-.mailpoet_create_segment {
+.mailpoet_subscribers_data_parse_results_details_show {
   cursor: pointer;
 }
 

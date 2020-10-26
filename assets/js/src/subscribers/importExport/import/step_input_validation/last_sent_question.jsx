@@ -26,7 +26,7 @@ function LastSentQuestion({ onSubmit }) {
       </div>
       <div className="mailpoet-settings-inputs">
         <Select
-          value={value}
+          defaultValue={value}
           onChange={handleChange}
           automationId="last_sent_to_list"
         >

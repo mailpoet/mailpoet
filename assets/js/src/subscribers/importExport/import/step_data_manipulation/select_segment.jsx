@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import { GlobalContext } from 'context/index.jsx';
 
+import Button from 'common/button/button';
 import { createSelection, destroySelection } from './generate_segment_selection.jsx';
 import createNewSegment from './create_new_segment.jsx';
 
@@ -26,38 +27,31 @@ function SelectSegment({ setSelectedSegments }) {
   };
 
   return (
-    <div className="mailpoet_import_select_segment">
-      <label htmlFor="mailpoet_segments_select">
-        <div className="mailpoet_label_description">
-          <b>{MailPoet.I18n.t('pickLists')}</b>
+    <>
+      <div className="mailpoet-settings-label">
+        <label htmlFor="mailpoet_segments_select">
+          {MailPoet.I18n.t('pickLists')}
           <p className="description">
             {MailPoet.I18n.t('pickListsDescription')}
           </p>
+        </label>
+      </div>
+      <div className="mailpoet-settings-inputs">
+        <div className="mailpoet-settings-inputs-row mailpoet-settings-inputs-row-centered">
+          <select
+            id="mailpoet_segments_select"
+            data-placeholder={MailPoet.I18n.t('select')}
+            multiple="multiple"
+          >
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+            <option />
+          </select>
+          <Button variant="link" onClick={() => createNewSegment(onCreateNewSegment)}>
+            {MailPoet.I18n.t('createANewList')}
+          </Button>
         </div>
-        <select
-          id="mailpoet_segments_select"
-          data-placeholder={MailPoet.I18n.t('select')}
-          multiple="multiple"
-        >
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-          <option />
-        </select>
-      </label>
-      <a
-        className="mailpoet_create_segment"
-        onClick={() => createNewSegment(onCreateNewSegment)}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(event) => {
-          if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))) {
-            event.preventDefault();
-            createNewSegment(onCreateNewSegment);
-          }
-        }}
-      >
-        {MailPoet.I18n.t('createANewList')}
-      </a>
-    </div>
+      </div>
+    </>
   );
 }
 
