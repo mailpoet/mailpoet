@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.5
-Stable tag: 3.53.0
+Stable tag: 3.54.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.54.0 - 2020-10-26 =
+* Improved: allow different "Purchased in this Category" emails to be sent to single user;
+* Improved: allow different "Purchased this Product" emails to be sent to a single user;
+* Improved: redesigned listings.
 
 = 3.53.0 - 2020-10-20 =
 * Improved: minor changes and fixes.
