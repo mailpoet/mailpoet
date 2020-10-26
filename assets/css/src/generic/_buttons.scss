@@ -7,13 +7,14 @@
   color: #fff;
   cursor: pointer;
   display: inline-flex;
+  font-family: inherit;
   font-size: $font-size;
   font-weight: bold;
   justify-content: center;
   line-height: 24px;
   max-width: 100%;
   min-height: 40px;
-  padding: 8px 20px;
+  padding: 9px 20px 7px;
   position: relative;
   text-align: center;
   text-decoration: none;
@@ -53,7 +54,7 @@
   font-size: $font-size-extra-small;
   line-height: 16px;
   min-height: 24px;
-  padding: 4px 9px;
+  padding: 5px 9px 3px;
 
   svg {
     height: 10px;
@@ -65,7 +66,7 @@
   font-size: $font-size-small;
   line-height: 20px;
   min-height: 32px;
-  padding: 6px 12px;
+  padding: 7px 12px 5px;
 
   svg {
     height: 12px;
@@ -75,7 +76,7 @@
 
 .mailpoet-button-large {
   min-height: 48px;
-  padding: 12px 24px;
+  padding: 13px 24px 11px;
 }
 
 .mailpoet-button-light {
