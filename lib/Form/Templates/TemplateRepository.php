@@ -2,7 +2,6 @@
 
 namespace MailPoet\Form\Templates;
 
-use MailPoet\Form\Templates\Templates\DefaultForm;
 use MailPoet\Form\Templates\Templates\InitialForm;
 use MailPoet\Form\Templates\Templates\Template10BelowPages;
 use MailPoet\Form\Templates\Templates\Template10FixedBar;
@@ -70,7 +69,6 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class TemplateRepository {
   const INITIAL_FORM_TEMPLATE = InitialForm::ID;
-  const DEFAULT_FORM_TEMPLATE = DefaultForm::ID;
 
   /** @var CdnAssetUrl */
   private $cdnAssetUrl;
@@ -80,7 +78,6 @@ class TemplateRepository {
 
   private $templates = [
     InitialForm::ID => InitialForm::class,
-    DefaultForm::ID => DefaultForm::class,
     Template1BelowPages::ID => Template1BelowPages::class,
     Template1FixedBar::ID => Template1FixedBar::class,
     Template1Popup::ID => Template1Popup::class,

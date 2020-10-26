@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Newsletter;
 
 use MailPoet\Config\Populator;
-use MailPoet\Form\FormFactory;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Newsletter;
@@ -46,8 +45,7 @@ class ShortcodesTest extends \MailPoetTest {
       WPFunctions::get(),
       new Captcha,
       $referralDetector,
-      $this->diContainer->get(FormsRepository::class),
-      $this->diContainer->get(FormFactory::class)
+      $this->diContainer->get(FormsRepository::class)
     );
     $populator->up();
     $this->wPUser = $this->_createWPUser();

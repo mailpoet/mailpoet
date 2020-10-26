@@ -70,17 +70,6 @@ class FormFactoryTest extends \MailPoetTest {
     expect($formSettings['segments'])->equals([1, 2, 3]);
   }
 
-  public function testItCanEnsureDefaultFormExists() {
-    $this->cleanup();
-    $formEntity = $this->formFactory->ensureDefaultFormExists(2);
-    assert($formEntity instanceof FormEntity);
-    $formSettings = $formEntity->getSettings() ?? [];
-    expect($formSettings['segments'])->equals(['2']);
-    // Doesn't create any form if some exists
-    $formEntity = $this->formFactory->ensureDefaultFormExists(2);
-    expect($formEntity)->null();
-  }
-
   public function _after() {
     parent::_after();
     $this->cleanup();
