@@ -52,7 +52,7 @@ class Template14Widget extends FormTemplate {
         'type' => 'paragraph',
         'id' => 'paragraph',
         'params' => [
-          'content' => '<span style="font-family: Karla" data-font="Karla" class="mailpoet-has-font">' . _x('SIGN UP TO RECEIVE THE LATEST LIFESTYLE TIPS &amp; TRICKS, PLUS SOME EXCLUSIVE GOODIES!', 'Text in a web form', 'mailpoet') . '</span>',
+          'content' => '<span style="font-family: Karla" data-font="Karla" class="mailpoet-has-font">' . _x('SIGN UP TO RECEIVE THE LATEST LIFESTYLE TIPS & TRICKS, PLUS SOME EXCLUSIVE GOODIES!', 'Text in a web form', 'mailpoet') . '</span>',
           'drop_cap' => '0',
           'align' => 'center',
           'font_size' => '14',

@@ -42,7 +42,7 @@ class Template13BelowPages extends FormTemplate {
                   'title' => '',
                   'caption' => '',
                   'link_destination' => 'none',
-                  'link' => 'http://mailpoet.info/pic/',
+                  'link' => '',
                   'href' => '',
                   'link_class' => '',
                   'rel' => '',
@@ -161,7 +161,7 @@ class Template13BelowPages extends FormTemplate {
                 'type' => 'paragraph',
                 'id' => 'paragraph',
                 'params' => [
-                  'content' => '<span style="font-family: Titillium Web" data-font="Titillium Web" class="mailpoet-has-font"><strong>' . $this->replaceLinkTags(_x('We don’t spam! Read our [link]privacy policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</strong></span>',
+                  'content' => '<span style="font-family: Titillium Web" data-font="Titillium Web" class="mailpoet-has-font">' . $this->replaceLinkTags(_x('We don’t spam! Read our [link]privacy policy[/link] for more info.', 'Text in a web form.', 'mailpoet'), '#') . '</span>',
                   'drop_cap' => '0',
                   'align' => 'center',
                   'font_size' => '13',

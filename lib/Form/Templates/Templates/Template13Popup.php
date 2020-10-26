@@ -42,7 +42,7 @@ class Template13Popup extends FormTemplate {
                   'title' => '',
                   'caption' => '',
                   'link_destination' => 'none',
-                  'link' => 'http://mailpoet.info/pic/',
+                  'link' => '',
                   'href' => '',
                   'link_class' => '',
                   'rel' => '',
