@@ -67,7 +67,7 @@ class Template3Popup extends FormTemplate {
       [
         'type' => 'text',
         'params' => [
-          'label' => _x('Email', 'Form label', 'mailpoet'),
+          'label' => _x('Email Address', 'Form label', 'mailpoet'),
           'class_name' => '',
           'required' => '1',
           'label_within' => '1',

@@ -22,7 +22,7 @@ class InitialForm extends FormTemplate {
         'name' => __('Email', 'mailpoet'),
         'type' => 'text',
         'params' => [
-          'label' => __('Email', 'mailpoet'),
+          'label' => __('Email Address', 'mailpoet'),
           'required' => true,
           'label_within' => true,
         ],
