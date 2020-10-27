@@ -3,8 +3,7 @@
 namespace MailPoet\Doctrine\Validator;
 
 use MailPoet\Doctrine\Annotations\AnnotationReaderProvider;
-use MailPoet\Doctrine\MetadataCache;
-use MailPoetVendor\Symfony\Component\Validator\Mapping\Cache\DoctrineCache;
+use MailPoet\Doctrine\PSRMetadataCache;
 use MailPoetVendor\Symfony\Component\Validator\Validation;
 
 class ValidatorFactory {
@@ -34,8 +33,7 @@ class ValidatorFactory {
 
     // metadata cache (for production cache is pre-generated at build time)
     $isReadOnly = !$annotationReader;
-    $metadataCache = new MetadataCache(self::METADATA_DIR, $isReadOnly);
-    $builder->setMetadataCache(new DoctrineCache($metadataCache));
+    $builder->setMappingCache(new PSRMetadataCache(self::METADATA_DIR, $isReadOnly));
 
     return $builder->getValidator();
   }
