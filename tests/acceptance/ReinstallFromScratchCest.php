@@ -45,8 +45,7 @@ class ReinstallFromScratchCest {
     $i->seeInCurrentUrl('#/new');
     // Check forms
     $i->amOnMailpoetPage('Forms');
-    $i->waitForText('My First Form', 30, '[data-automation-id="listing_item_1"]');
-    $i->seeNumberOfElements('[data-automation-id^=listing_item_]', 1);
+    $i->waitForText('No forms were found. Why not create a new one?', 30);
     // Check lists
     $i->amOnMailpoetPage('Lists');
     $i->waitForText('WordPress Users', 30, '[data-automation-id="listing_item_1"]');
