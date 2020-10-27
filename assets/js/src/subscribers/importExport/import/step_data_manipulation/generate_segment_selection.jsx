@@ -7,21 +7,25 @@ export function createSelection(segments, onSelectionChange) {
   if (segmentSelectElement.data('select2')) {
     return;
   }
+  const templateRendered = (option) => {
+    let tpl = '';
+    if (option.tag) {
+      tpl += `<span class="mailpoet-form-select2-tag">${option.tag}</span>`;
+    }
+    tpl += `<span class="mailpoet-form-select2-text"><span>${option.text}</span></span>`;
+    if (option.count) {
+      tpl += `<span class="mailpoet-form-select2-count">${option.count}</span>`;
+    }
+    return tpl;
+  };
   segmentSelectElement.html('');
   segmentSelectElement
     .select2({
       data: segments,
-      width: '20em',
-      templateResult(item) {
-        const i = item;
-        i.subscriberCount = parseInt(i.subscriberCount, 10);
-        return `${i.name} (${i.subscriberCount.toLocaleString()})`;
-      },
-      templateSelection(item) {
-        const i = item;
-        i.subscriberCount = parseInt(i.subscriberCount, 10);
-        return `${i.name} (${i.subscriberCount.toLocaleString()})`;
-      },
+      dropdownCssClass: 'mailpoet-form-select2-dropdown',
+      escapeMarkup: (markup) => markup,
+      templateResult: templateRendered,
+      templateSelection: templateRendered,
     })
     .change((event) => {
       const segmentSelectionNotice = jQuery('[data-id="notice_segmentSelection"]');
