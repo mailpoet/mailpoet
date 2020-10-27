@@ -5,7 +5,10 @@
     <script id="new_segment_template" type="text/x-handlebars-template">
       <p>
         <label><%= __('Name') %>:</label>
-        <input id="new_segment_name" type="text" name="name"/>
+        <br/>
+        <div class="mailpoet-form-input">
+          <input id="new_segment_name" type="text" name="name" />
+        </div>
       </p>
       <p class="mailpoet_validation_error" data-error="segment_name_required">
         <%= __('Please specify a name.') %>
@@ -16,16 +19,14 @@
       <p>
         <label><%= __('Description') %>:</label>
         <br/>
-        <textarea id="new_segment_description" cols="40" rows="3" name="description"/>
+        <div class="mailpoet-form-textarea">
+          <textarea id="new_segment_description" cols="40" rows="3" name="description" />
+        </div>
       </p>
 
-      <hr/>
-
       <p class="mailpoet_align_right">
-        <input type="submit" value="<%= __('Done') %>" id="new_segment_process"
-         class="button-primary "/>
-        <input type="submit" value="<%= __('Cancel') %>" id="new_segment_cancel"
-         class="button-primary"/>
+        <input type="submit" value="<%= __('Cancel') %>" id="new_segment_cancel" class="mailpoet-button mailpoet-button-light"/>
+        <input type="submit" value="<%= __('Done') %>" id="new_segment_process" class="mailpoet-button"/>
       </p>
 
       </form>

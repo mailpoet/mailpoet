@@ -87,7 +87,7 @@ MailPoet.Modal = {
     popup: '<div id="mailpoet_popup" class="mailpoet_popup" tabindex="-1">'
         + '<div class="mailpoet_popup_wrapper">'
         + '<a href="javascript:;" id="mailpoet_modal_close" class="mailpoet_modal_close">' + closeModalImage + '</a>'
-        + '<div id="mailpoet_popup_title" class="mailpoet_popup_title"><h2></h2></div>'
+        + '<div id="mailpoet_popup_title" class="mailpoet_popup_title"><h2 class="mailpoet-h2"></h2></div>'
         + '<div class="mailpoet_popup_body clearfix"></div>'
         + '</div>'
         + '</div>',
