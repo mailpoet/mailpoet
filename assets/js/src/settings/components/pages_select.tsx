@@ -20,7 +20,7 @@ export default (props: Props) => {
     <div className="mailpoet-settings-inputs-row mailpoet-settings-inputs-row-centered">
       <Select
         id={props.id}
-        data-automation-id={props.automationId}
+        automationId={props.automationId}
         value={selectedPage.id}
         onChange={onChange(props.setValue)}
         isMinWidth

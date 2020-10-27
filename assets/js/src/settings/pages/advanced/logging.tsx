@@ -19,7 +19,7 @@ export default function Logging() {
           id="logging-level"
           value={level}
           onChange={onChange(setLevel)}
-          data-automation-id="logging-select-box"
+          automationId="logging-select-box"
           isMinWidth
           dimension="small"
         >
