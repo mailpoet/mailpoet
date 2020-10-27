@@ -17,6 +17,7 @@ const BelowPostsSettings = () => {
 
   return (
     <>
+      <p>{MailPoet.I18n.t('placeFormBellowPagesDescription')}</p>
       <ToggleControl
         label={MailPoet.I18n.t('enable')}
         checked={isActive}
