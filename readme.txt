@@ -184,10 +184,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 3.54.0 - 2020-10-26 =
+= 3.54.0 - 2020-10-27 =
+* Added: new form templates;
 * Improved: allow different "Purchased in this Category" emails to be sent to single user;
 * Improved: allow different "Purchased this Product" emails to be sent to a single user;
-* Improved: redesigned listings.
+* Improved: redesigned listings;
+* Fixed: missing custom color link for some of the form blocks.
 
 = 3.53.0 - 2020-10-20 =
 * Improved: minor changes and fixes.
