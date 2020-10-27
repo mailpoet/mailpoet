@@ -7,7 +7,7 @@ import Listing from 'listing/listing.jsx';
 import withNpsPoll from 'nps_poll.jsx';
 import Tags from 'common/tag/tags';
 import Toggle from 'common/form/toggle/toggle';
-import { FormsHeading, goToSelectTemplate } from './heading';
+import { FormsHeading, onAddNewForm } from './heading';
 import { Button } from '../common';
 
 const columns = [
@@ -84,7 +84,7 @@ const messages = {
   onNoItemsFound: () => (
     <div className="mailpoet-forms-add-new-row">
       <p>{MailPoet.I18n.t('noItemsFound')}</p>
-      <Button onClick={goToSelectTemplate}>{MailPoet.I18n.t('new')}</Button>
+      <Button onClick={onAddNewForm}>{MailPoet.I18n.t('new')}</Button>
     </div>
   ),
 };

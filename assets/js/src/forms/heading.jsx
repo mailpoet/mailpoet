@@ -5,7 +5,10 @@ import MailPoet from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import plusIcon from 'common/button/icon/plus';
 
-export const goToSelectTemplate = () => {
+export const onAddNewForm = () => {
+  MailPoet.trackEvent('Forms > Add New', {
+    'MailPoet Free version': MailPoet.version,
+  });
   setTimeout(() => {
     window.location = window.mailpoet_form_template_selection_url;
   }, 200); // leave some time for the event to track
@@ -17,7 +20,7 @@ export const FormsHeadingComponent = ({ history }) => (
       <Link
         className="mailpoet-button"
         to="/new"
-        onClick={goToSelectTemplate}
+        onClick={onAddNewForm}
         data-automation-id="create_new_form"
       >
         {plusIcon}
