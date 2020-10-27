@@ -5,6 +5,7 @@ import Button from 'common/button/button';
 
 const PreviousNextStepButtons = ({
   hidePrevious,
+  isLastStep,
   canGoNext,
   onPreviousAction,
   onNextAction,
@@ -25,7 +26,7 @@ const PreviousNextStepButtons = ({
         }
       }}
     >
-      {MailPoet.I18n.t('nextStep')}
+      {MailPoet.I18n.t(isLastStep ? 'import' : 'nextStep')}
     </Button>
   </div>
 );
@@ -33,12 +34,14 @@ const PreviousNextStepButtons = ({
 PreviousNextStepButtons.propTypes = {
   canGoNext: PropTypes.bool,
   hidePrevious: PropTypes.bool,
+  isLastStep: PropTypes.bool,
   onPreviousAction: PropTypes.func,
   onNextAction: PropTypes.func,
 };
 
 PreviousNextStepButtons.defaultProps = {
   hidePrevious: false,
+  isLastStep: false,
   canGoNext: true,
   onPreviousAction: () => {},
   onNextAction: () => {},

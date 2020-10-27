@@ -91,6 +91,7 @@ function StepDataManipulation({
             )
           )}
           onNextAction={importSubscribers}
+          isLastStep
         />
       </div>
     </div>
