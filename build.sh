@@ -127,7 +127,6 @@ rm -rf $plugin_name/vendor-prefixed/swiftmailer/swiftmailer/tests
 rm -rf $plugin_name/vendor-prefixed/symfony/service-contracts/Tests
 rm -rf $plugin_name/vendor-prefixed/symfony/translation/Tests
 rm -rf $plugin_name/vendor-prefixed/symfony/translation-contracts/Tests
-rm -rf $plugin_name/vendor-prefixed/twig/twig/test
 
 # Remove risky files from 3rd party extensions
 echo '[BUILD] Removing risky and demo files from vendor libraries'

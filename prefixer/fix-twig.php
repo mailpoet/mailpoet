@@ -230,3 +230,6 @@ foreach ($replacements as $singleFile) {
 
 // Remove unwanted class aliases in lib/Twig
 exec("rm -rf ../vendor-prefixed/twig/twig/lib/Twig");
+exec("rm ../vendor-prefixed/twig/twig/drupal_test.sh");
+exec("rm ../vendor-prefixed/twig/twig/README.rst");
+exec("rm -rf ../vendor-prefixed/twig/twig/src/Test");
