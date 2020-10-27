@@ -76,7 +76,7 @@ export default () => {
           {templates[selectedCategory].map((template, index) => (
             <TemplateBox
               key={template.id}
-              onSelect={() => selectTemplate(template.id)}
+              onSelect={() => selectTemplate(template.id, template.name)}
               label={template.name}
               automationId={`select_template_${template.id}`}
               className="mailpoet-form-template"
