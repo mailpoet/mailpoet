@@ -22,7 +22,7 @@ class FormEditorUpdateNewFormCest {
       'post_title' => 'Form Test',
       'post_content' => '
         Regular form:
-          [mailpoet_form id="2"]
+          [mailpoet_form id="1"]
       ',
       'post_status' => 'publish',
     ]);

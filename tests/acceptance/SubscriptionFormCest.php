@@ -13,6 +13,9 @@ class SubscriptionFormCest {
   /** @var string */
   private $subscriberEmail;
 
+  /** @var string|null */
+  private $formId;
+
   public function __construct() {
     $this->subscriberEmail = 'test-form@example.com';
   }
@@ -24,6 +27,10 @@ class SubscriptionFormCest {
       ->withConfirmationEmailBody()
       ->withConfirmationEmailEnabled();
 
+    $formName = 'Subscription Acceptance Test Form';
+    $formFactory = new Form();
+    $this->formId = $formFactory->withName($formName)->create()->id;
+
     $i->havePostInDatabase([
       'post_author' => 1,
       'post_type' => 'page',
@@ -31,7 +38,7 @@ class SubscriptionFormCest {
       'post_title' => 'Form Test',
       'post_content' => '
         Regular form:
-          [mailpoet_form id="1"]
+          [mailpoet_form id="' . $this->formId . '"]
         Iframe form:
           <iframe class="mailpoet_form_iframe" id="mailpoet_form_iframe" tabindex="0" src="http://test.local?mailpoet_form_iframe=1" width="100%" height="100%" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
       ',
@@ -40,12 +47,9 @@ class SubscriptionFormCest {
   }
 
   public function subscriptionFormWidget(\AcceptanceTester $i) {
-    $formName = 'Subscription Acceptance Test Form';
-    $formFactory = new Form();
-    $form = $formFactory->withName($formName)->create();
     $i->wantTo('Subscribe using form widget');
 
-    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->id", '--title=Subscribe to Our Newsletter']);
+    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$this->formId", '--title=Subscribe to Our Newsletter']);
     //login to avoid time limit for subscribing
     $i->login();
     $i->amOnPage('/');
