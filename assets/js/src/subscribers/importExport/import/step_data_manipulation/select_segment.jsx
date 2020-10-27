@@ -38,14 +38,16 @@ function SelectSegment({ setSelectedSegments }) {
       </div>
       <div className="mailpoet-settings-inputs">
         <div className="mailpoet-settings-inputs-row mailpoet-settings-inputs-row-centered">
-          <select
-            id="mailpoet_segments_select"
-            data-placeholder={MailPoet.I18n.t('select')}
-            multiple="multiple"
-          >
-            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-            <option />
-          </select>
+          <div className="mailpoet-form-select mailpoet-form-input">
+            <select
+              id="mailpoet_segments_select"
+              data-placeholder={MailPoet.I18n.t('select')}
+              multiple="multiple"
+            >
+              {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+              <option />
+            </select>
+          </div>
           <Button variant="link" onClick={() => createNewSegment(onCreateNewSegment)}>
             {MailPoet.I18n.t('createANewList')}
           </Button>
