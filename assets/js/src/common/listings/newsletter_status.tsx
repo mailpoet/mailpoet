@@ -11,6 +11,7 @@ type NewsletterStatusProps = {
   processed?: number,
   total?: number,
   isPaused?: boolean,
+  status?: string,
 }
 
 const NewsletterStatus = ({
@@ -18,11 +19,13 @@ const NewsletterStatus = ({
   processed,
   total,
   isPaused,
+  status,
 }: NewsletterStatusProps) => {
   const unknown = !scheduledFor && !processed && !total;
   const scheduled = scheduledFor && isFuture(scheduledFor);
   const inProgress = (!scheduledFor || isPast(scheduledFor)) && processed < total;
   const sent = (!scheduledFor || isPast(scheduledFor)) && processed >= total;
+  const sentWithoutQueue = status === 'sent' && total === undefined;
   let percentage = 0;
   let label = (<>{t('notSentYet')}</>);
   if (scheduled) {
@@ -46,8 +49,11 @@ const NewsletterStatus = ({
   } else if (sent) {
     label = (<>{`${total} / ${total}`}</>);
     percentage = 100;
+  } else if (sentWithoutQueue) {
+    label = (<>{t('sent')}</>);
+    percentage = 100;
   }
-  if (isPaused && !sent) {
+  if (isPaused && !sent && !sentWithoutQueue) {
     label = (<>{t('paused')}</>);
   }
   return (
@@ -56,7 +62,7 @@ const NewsletterStatus = ({
       'mailpoet-listing-status-unknown': unknown,
       'mailpoet-listing-status-scheduled': scheduled,
       'mailpoet-listing-status-in-progress': inProgress,
-      'mailpoet-listing-status-sent': sent,
+      'mailpoet-listing-status-sent': sent || sentWithoutQueue,
     })}
     >
       {scheduled && <ScheduledIcon />}

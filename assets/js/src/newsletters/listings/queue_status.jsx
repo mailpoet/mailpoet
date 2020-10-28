@@ -81,6 +81,7 @@ const QueueStatus = ({ newsletter, mailerLog }) => {
           scheduledFor={newsletterDate}
           total={parseInt(newsletter.queue.count_total, 10)}
           isPaused={isMtaPaused}
+          status={newsletter.status}
         />
       </Link>
       {(newsletter.queue.status !== 'completed' && !isMtaPaused) && <QueueSending newsletter={newsletter} />}
@@ -91,6 +92,7 @@ const QueueStatus = ({ newsletter, mailerLog }) => {
     <NewsletterStatus
       scheduledFor={newsletterDate}
       isPaused={newsletter.queue.status === 'scheduled' && isMtaPaused}
+      status={newsletter.status}
     />
   );
 
