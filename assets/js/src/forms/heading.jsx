@@ -13,18 +13,16 @@ export const onAddNewForm = () => {
   }, 200); // leave some time for the event to track
 };
 
-export const FormsHeading = (
-  <>
-    <TopBarWithBeamer>
-      <Link
-        className="mailpoet-button mailpoet-button-small"
-        to="/new"
-        onClick={onAddNewForm}
-        data-automation-id="create_new_form"
-      >
-        {plusIcon}
-        <span>{MailPoet.I18n.t('new')}</span>
-      </Link>
-    </TopBarWithBeamer>
-  </>
+export const FormsHeading = () => (
+  <TopBarWithBeamer>
+    <Link
+      className="mailpoet-button mailpoet-button-small"
+      to="/new"
+      onClick={onAddNewForm}
+      data-automation-id="create_new_form"
+    >
+      {plusIcon}
+      <span>{MailPoet.I18n.t('new')}</span>
+    </Link>
+  </TopBarWithBeamer>
 );
