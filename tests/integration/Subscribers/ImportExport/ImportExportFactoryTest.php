@@ -176,23 +176,19 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $select2FieldsWithoutCustomFields = [
       [
         'name' => 'Actions',
-        'text' => 'Actions',
         'children' => [
           [
             'id' => 'ignore',
             'name' => 'Ignore field...',
-            'text' => 'Ignore field...',
           ],
           [
             'id' => 'create',
             'name' => 'Create new field...',
-            'text' => 'Create new field...',
           ],
         ],
       ],
       [
         'name' => 'System fields',
-        'text' => 'System fields',
         'children' => $importExportFactory->formatSubscriberFields(
           $importExportFactory->getSubscriberFields()
         ),
@@ -203,7 +199,6 @@ class ImportExportFactoryTest extends \MailPoetTest {
       [
         [
           'name' => 'User fields',
-          'text' => 'User fields',
           'children' => $importExportFactory->formatSubscriberCustomFields(
             $importExportFactory->getSubscriberCustomFields()
           ),
@@ -226,23 +221,19 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $select2FieldsWithoutCustomFields = [
       [
         'name' => 'Actions',
-        'text' => 'Actions',
         'children' => [
           [
             'id' => 'select',
             'name' => 'Select all...',
-            'text' => 'Select all...',
           ],
           [
             'id' => 'deselect',
             'name' => 'Deselect all...',
-            'text' => 'Deselect all...',
           ],
         ],
       ],
       [
         'name' => 'System fields',
-        'text' => 'System fields',
         'children' => $importExportFactory->formatSubscriberFields(
           $importExportFactory->getSubscriberFields()
         ),
@@ -253,7 +244,6 @@ class ImportExportFactoryTest extends \MailPoetTest {
       [
         [
           'name' => 'User fields',
-          'text' => 'User fields',
           'children' => $importExportFactory->formatSubscriberCustomFields(
             $importExportFactory->getSubscriberCustomFields()
           ),
