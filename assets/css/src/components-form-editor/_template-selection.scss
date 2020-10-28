@@ -27,11 +27,19 @@ $mailpoet-form-template-thumbnail-height: 316px;
 }
 
 .template-selection-header {
-  align-items: center;
   background: $color-input-background;
   border-bottom: 1px solid $color-tertiary-light;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-items: center;
   padding: $grid-gap-half;
+
+  .mailpoet-h4 {
+    grid-column-start: 2;
+  }
+
+  .mailpoet-button {
+    align-self: center;
+    margin-left: auto;
+  }
 }

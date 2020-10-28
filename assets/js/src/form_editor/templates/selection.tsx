@@ -6,6 +6,7 @@ import Background from 'common/background/background';
 import Loading from 'common/loading';
 import TemplateBox from 'common/template_box/template_box';
 import Heading from 'common/typography/heading/heading';
+import { Button } from 'common';
 import Notice from 'notices/notice';
 import { TemplateData } from './store/types';
 
@@ -63,6 +64,12 @@ export default () => {
       ))}
       <div className="template-selection-header">
         <Heading level={4}>{MailPoet.I18n.t('selectTemplate')}</Heading>
+        <Button
+          automationId="create_blank_form"
+          onClick={() => selectTemplate('initial_form', 'Blank template')}
+        >
+          {MailPoet.I18n.t('createBlankTemplate')}
+        </Button>
       </div>
       {selectTemplateFailed && <Notice type="error" scroll renderInPlace><p>{MailPoet.I18n.t('createFormError')}</p></Notice>}
       <div className="template-selection" data-automation-id="template_selection_list">
