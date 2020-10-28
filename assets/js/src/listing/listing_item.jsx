@@ -47,6 +47,7 @@ class ListingItem extends React.Component {
             onChange={this.handleSelectItem}
             disabled={this.props.selection === 'all'}
             id={`listing-row-checkbox-${this.props.item.id}`}
+            automationId={`listing-row-checkbox-${this.props.item.id}`}
           />
         </th>
       );

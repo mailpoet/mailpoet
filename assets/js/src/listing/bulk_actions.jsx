@@ -82,6 +82,7 @@ class ListingBulkActions extends React.Component {
           { this.props.bulk_actions.map((action) => (
             <a
               href="#"
+              data-automation-id={`action-${action.name}`}
               key={`action-${action.name}`}
               onClick={(e) => {
                 e.preventDefault();
