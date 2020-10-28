@@ -8,11 +8,7 @@ export function createSelection(segments, onSelectionChange) {
     return;
   }
   const templateRendered = (option) => {
-    let tpl = '';
-    if (option.tag) {
-      tpl += `<span class="mailpoet-form-select2-tag">${option.tag}</span>`;
-    }
-    tpl += `<span class="mailpoet-form-select2-text"><span>${option.text}</span></span>`;
+    let tpl = `<span class="mailpoet-form-select2-text"><span>${option.name}</span></span>`;
     if (option.count) {
       tpl += `<span class="mailpoet-form-select2-count">${option.count}</span>`;
     }

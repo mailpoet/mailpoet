@@ -40,7 +40,6 @@ class ImportExportFactory {
       return [
         'id' => $segment['id'],
         'name' => $segment['name'],
-        'text' => $segment['name'], // Required select2 property
         'count' => $segment['subscribers'],
       ];
     }, $segments);
@@ -70,7 +69,6 @@ class ImportExportFactory {
       return [
         'id' => $fieldId,
         'name' => $fieldName,
-        'text' => $fieldName,
         'type' => ($fieldId === 'confirmed_at') ? 'date' : null,
         'custom' => false,
       ];
@@ -86,7 +84,6 @@ class ImportExportFactory {
       return [
         'id' => $field['id'],
         'name' => $field['name'],
-        'text' => $field['name'],
         'type' => $field['type'],
         'params' => unserialize($field['params']),
         'custom' => true,
@@ -102,42 +99,35 @@ class ImportExportFactory {
         [
           'id' => 'ignore',
           'name' => __('Ignore field...', 'mailpoet'),
-          'text' => __('Ignore field...', 'mailpoet'),
         ],
         [
           'id' => 'create',
           'name' => __('Create new field...', 'mailpoet'),
-          'text' => __('Create new field...', 'mailpoet'),
         ],
       ] :
       [
         [
           'id' => 'select',
           'name' => __('Select all...', 'mailpoet'),
-          'text' => __('Select all...', 'mailpoet'),
         ],
         [
           'id' => 'deselect',
           'name' => __('Deselect all...', 'mailpoet'),
-          'text' => __('Deselect all...', 'mailpoet'),
         ],
       ];
     $select2Fields = [
       [
         'name' => __('Actions', 'mailpoet'),
-        'text' => __('Actions', 'mailpoet'),
         'children' => $actions,
       ],
       [
         'name' => __('System fields', 'mailpoet'),
-        'text' => __('System fields', 'mailpoet'),
         'children' => $this->formatSubscriberFields($subscriberFields),
       ],
     ];
     if ($subscriberCustomFields) {
       array_push($select2Fields, [
         'name' => __('User fields', 'mailpoet'),
-        'text' => __('User fields', 'mailpoet'),
         'children' => $this->formatSubscriberCustomFields(
           $subscriberCustomFields
         ),
