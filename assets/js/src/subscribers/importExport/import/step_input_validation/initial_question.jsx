@@ -25,7 +25,8 @@ function InitialQuestion({
             automationId="mailpoet_import_validation_step_option1"
             id="existing-list"
             checked={importSource === 'existing-list'}
-            onCheck={() => setImportSource('existing-list')}
+            value="existing-list"
+            onCheck={setImportSource}
           />
           <label htmlFor="existing-list">
             {MailPoet.I18n.t('validationStepRadio1')}
@@ -36,7 +37,8 @@ function InitialQuestion({
             automationId="mailpoet_import_validation_step_option2"
             id="address-book"
             checked={importSource === 'address-book'}
-            onCheck={() => setImportSource('address-book')}
+            value="address-book"
+            onCheck={setImportSource}
           />
           <label htmlFor="address-book">
             {MailPoet.I18n.t('validationStepRadio2')}
