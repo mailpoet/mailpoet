@@ -246,6 +246,7 @@ const bulkActions = [
             onClick={submitModal}
             dimension="small"
             variant="light"
+            automationId="bulk-unsubscribe-confirm"
           >
             {MailPoet.I18n.t('apply')}
           </Button>
