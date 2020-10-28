@@ -104,7 +104,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     // don't restored subscriber
     $subscriberTwo = $this->repository->findOneById($subscriberTwoId);
     assert($subscriberTwo instanceof SubscriberEntity);
-    expect($subscriberTwo->getDeletedAt())->notNull(); 
+    expect($subscriberTwo->getDeletedAt())->notNull();
     expect($this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriberTwoId]))->notNull();
     expect($this->subscriberCustomFieldRepository->findOneBy(['subscriber' => $subscriberTwoId]))->notNull();
   }
@@ -141,7 +141,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     ]))->notNull();
 
     // subscriber with removed segment two
-    expect($this->repository->findOneById($subscriberTwoId))->notNull(); 
+    expect($this->repository->findOneById($subscriberTwoId))->notNull();
     expect($this->subscriberSegmentRepository->findOneBy([
       'subscriber' => $subscriberTwoId,
       'segment' => $segmentTwoId,
@@ -150,6 +150,30 @@ class SubscribersRepositoryTest extends \MailPoetTest {
       'subscriber' => $subscriberTwoId,
       'segment' => $segmentOneId,
     ]))->notNull();
+  }
+
+  public function testItBulkUnsubscribes(): void {
+    $subscriberOne = $this->createSubscriber('one@removeAll.com', new DateTimeImmutable());
+    $subscriberTwo = $this->createSubscriber('two@removeAll.com', new DateTimeImmutable());
+
+    $subscriberOneId = $subscriberOne->getId();
+    $subscriberTwoId = $subscriberTwo->getId();
+
+    $this->repository->bulkUnsubscribe([$subscriberOneId]);
+
+    $this->entityManager->clear();
+
+    // subscriber with removed segments
+    $unsubscribedSubscriber = $this->repository->findOneById($subscriberOneId);
+    expect($unsubscribedSubscriber)->notNull();
+    assert($unsubscribedSubscriber instanceof SubscriberEntity);
+    expect($unsubscribedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    // subscriber still subscribed
+    $subscribedSubscriber = $this->repository->findOneById($subscriberTwoId);
+    expect($subscribedSubscriber)->notNull();
+    assert($subscribedSubscriber instanceof SubscriberEntity);
+    expect($subscribedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItBulkRemoveSubscriberFromAllSegments(): void {
@@ -176,7 +200,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     expect($this->subscriberSegmentRepository->findBy(['subscriber' => $subscriberOneId]))->count(0);
 
     // subscriber with segments
-    expect($this->repository->findOneById($subscriberTwoId))->notNull(); 
+    expect($this->repository->findOneById($subscriberTwoId))->notNull();
     expect($this->subscriberSegmentRepository->findOneBy([
       'subscriber' => $subscriberTwoId,
       'segment' => $segmentOneId,
@@ -208,7 +232,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     ]))->notNull();
 
     // subscriber without segment
-    expect($this->repository->findOneById($subscriberTwoId))->notNull(); 
+    expect($this->repository->findOneById($subscriberTwoId))->notNull();
     expect($this->subscriberSegmentRepository->findBy(['subscriber' => $subscriberTwoId]))->count(0);
   }
 
@@ -241,7 +265,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     ]))->notNull();
 
     // subscriber which stay in segment two
-    expect($this->repository->findOneById($subscriberTwoId))->notNull(); 
+    expect($this->repository->findOneById($subscriberTwoId))->notNull();
     expect($this->subscriberSegmentRepository->findOneBy([
       'subscriber' => $subscriberTwoId,
       'segment' => $segmentOneId,
@@ -283,6 +307,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $subscriber->setEmail($email);
     $subscriber->setFirstName('John');
     $subscriber->setLastName('Doe');
+    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriber->setDeletedAt($deletedAt);
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
