@@ -5,6 +5,7 @@ import NewsletterStatus from '../newsletter_status';
 import Heading from '../../typography/heading/heading';
 
 MailPoet.I18n.add('notSentYet', 'Not sent yet!');
+MailPoet.I18n.add('sent', 'Sent');
 MailPoet.I18n.add('paused', 'Paused');
 
 export default {
@@ -48,6 +49,11 @@ export const NewsletterStatuses = () => {
       <NewsletterStatus total={500} processed={500} />
       <NewsletterStatus total={1000} processed={1200} />
       <NewsletterStatus total={1000} processed={1200} isPaused />
+
+      <div className="mailpoet-gap" />
+
+      <Heading level={3}>Sent without queue</Heading>
+      <NewsletterStatus status="sent" />
     </>
   );
 };
