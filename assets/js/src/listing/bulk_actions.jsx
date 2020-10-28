@@ -35,7 +35,7 @@ class ListingBulkActions extends React.Component {
       const submitModal = () => this.handleApplyAction(actionName);
       const closeModal = () => this.setState({ extra: false });
       this.setState({
-        extra: action.onSelect(submitModal, closeModal),
+        extra: action.onSelect(submitModal, closeModal, this.props),
       });
       return;
     }

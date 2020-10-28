@@ -227,6 +227,32 @@ const bulkActions = [
     label: MailPoet.I18n.t('moveToTrash'),
     onSuccess: messages.onTrash,
   },
+  {
+    name: 'unsubscribe',
+    label: MailPoet.I18n.t('unsubscribe'),
+    onSelect: (submitModal, closeModal, bulkActionProps) => {
+      const count = (bulkActionProps.selection !== 'all')
+        ? bulkActionProps.selected_ids.length
+        : bulkActionProps.count;
+      return (
+        <Modal
+          title={MailPoet.I18n.t('unsubscribe')}
+          onRequestClose={closeModal}
+          isDismissible
+        >
+          <p>{MailPoet.I18n.t('unsubscribeConfirm').replace('%s', count.toLocaleString())}</p>
+          <span className="mailpoet-gap-half" />
+          <Button
+            onClick={submitModal}
+            dimension="small"
+            variant="light"
+          >
+            {MailPoet.I18n.t('apply')}
+          </Button>
+        </Modal>
+      );
+    },
+  },
 ];
 
 const itemActions = [
