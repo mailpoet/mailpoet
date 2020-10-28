@@ -9,8 +9,8 @@ import YesNo from 'common/form/yesno/yesno';
 
 const WelcomeWizardUsageTrackingStep = ({ loading, submitForm }) => {
   const [state, setState] = useState({
-    tracking: true,
-    libs3rdParty: true,
+    tracking: undefined,
+    libs3rdParty: undefined,
   });
   function submit(event) {
     event.preventDefault();
