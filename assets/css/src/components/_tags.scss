@@ -14,14 +14,14 @@
   border-radius: 3px;
   color: $color-tertiary;
   display: inline-block;
-  font-size: 12px;
+  font-size: $font-size-extra-small;
   font-weight: normal;
   line-height: 14px;
   padding: 2px 4px;
 }
 
 .mailpoet-tag-large {
-  font-size: 14px;
+  font-size: $font-size-small;
   min-width: 50px;
   padding: 4px 9px;
   text-align: center;
