@@ -412,6 +412,7 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function placeOrder() {
     $i = $this;
+    $i->waitForText('Place order');
     $i->click('Place order');
     $i->waitForText('Your order has been received');
   }
