@@ -513,6 +513,8 @@ class Subscribers extends APIEndpoint {
       $count = $this->subscribersRepository->bulkAddToSegment($segment, $ids);
     } elseif ($data['action'] === 'moveToList' && $segment instanceof SegmentEntity) {
       $count = $this->subscribersRepository->bulkMoveToSegment($segment, $ids);
+    } elseif ($data['action'] === 'unsubscribe') {
+      $count = $this->subscribersRepository->bulkUnsubscribe($ids);
     } else {
       throw UnexpectedValueException::create()
         ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
