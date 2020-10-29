@@ -10,6 +10,7 @@ use MailPoet\Config\Activator;
 use MailPoet\Config\Populator;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Referrals\ReferralDetector;
+use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Captcha;
@@ -23,20 +24,21 @@ class SetupTest extends \MailPoetTest {
   }
 
   public function testItCanReinstall() {
-    $wp = Stub::make(new WPFunctions, [
+    $wpStub = Stub::make(new WPFunctions, [
       'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
 
     $settings = SettingsController::getInstance();
-    $referralDetector = new ReferralDetector($wp, $settings);
+    $referralDetector = new ReferralDetector($wpStub, $settings);
     $populator = new Populator(
       $settings,
-      $wp,
+      $wpStub,
       new Captcha(),
       $referralDetector,
-      $this->diContainer->get(FormsRepository::class)
+      $this->diContainer->get(FormsRepository::class),
+      $this->diContainer->get(WP::class)
     );
-    $router = new Setup($wp, new Activator($settings, $populator));
+    $router = new Setup($wpStub, new Activator($settings, $populator));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 

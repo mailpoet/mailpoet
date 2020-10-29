@@ -34,18 +34,23 @@ class Segments extends APIEndpoint {
   /** @var WooCommerce */
   private $wooCommerceSync;
 
+  /** @var WP */
+  private $wpSegment;
+
   public function __construct(
     Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
     SegmentsRepository $segmentsRepository,
     SegmentsResponseBuilder $segmentsResponseBuilder,
-    WooCommerce $wooCommerce
+    WooCommerce $wooCommerce,
+    WP $wpSegment
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
     $this->wooCommerceSync = $wooCommerce;
     $this->segmentsRepository = $segmentsRepository;
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
+    $this->wpSegment = $wpSegment;
   }
 
   public function get($data = []) {
@@ -179,7 +184,7 @@ class Segments extends APIEndpoint {
       if ($data['type'] === Segment::TYPE_WC_USERS) {
         $this->wooCommerceSync->synchronizeCustomers();
       } else {
-        WP::synchronizeUsers();
+        $this->wpSegment->synchronizeUsers();
       }
     } catch (\Exception $e) {
       return $this->errorResponse([

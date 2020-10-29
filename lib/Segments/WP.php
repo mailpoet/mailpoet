@@ -16,7 +16,7 @@ use MailPoet\Subscribers\Source;
 use MailPoetVendor\Idiorm\ORM;
 
 class WP {
-  public static function synchronizeUser($wpUserId, $oldWpUserData = false) {
+  public function synchronizeUser($wpUserId, $oldWpUserData = false) {
     $wpUser = \get_userdata($wpUserId);
     if ($wpUser === false) return;
 
@@ -25,13 +25,13 @@ class WP {
 
     $currentFilter = current_filter();
     if (in_array($currentFilter, ['delete_user', 'deleted_user', 'remove_user_from_blog'])) {
-      self::deleteSubscriber($subscriber);
+      $this->deleteSubscriber($subscriber);
     } else {
-      self::updateSubscriber($currentFilter, $wpUser, $subscriber, $oldWpUserData);
+      $this->updateSubscriber($currentFilter, $wpUser, $subscriber, $oldWpUserData);
     }
   }
 
-  private static function deleteSubscriber($subscriber) {
+  private function deleteSubscriber($subscriber) {
     if ($subscriber !== false) {
       // unlink subscriber from wp user and delete
       $subscriber->set('wp_user_id', null);
@@ -39,7 +39,7 @@ class WP {
     }
   }
 
-  private static function updateSubscriber($currentFilter, $wpUser, $subscriber = false, $oldWpUserData = false) {
+  private function updateSubscriber($currentFilter, $wpUser, $subscriber = false, $oldWpUserData = false) {
     $wpSegment = Segment::getWPSegment();
     if (!$wpSegment) return;
 
@@ -60,13 +60,14 @@ class WP {
       $firstName = $wpUser->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     }
     $signupConfirmationEnabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
+    $status = $signupConfirmationEnabled ? Subscriber::STATUS_UNCONFIRMED : Subscriber::STATUS_SUBSCRIBED;
     // subscriber data
     $data = [
       'wp_user_id' => $wpUser->ID,
       'email' => $wpUser->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       'first_name' => $firstName,
       'last_name' => $lastName,
-      'status' => $signupConfirmationEnabled ? Subscriber::STATUS_UNCONFIRMED : Subscriber::STATUS_SUBSCRIBED,
+      'status' => $status,
       'source' => Source::WORDPRESS_USER,
     ];
 
@@ -104,22 +105,21 @@ class WP {
     }
   }
 
-  public static function synchronizeUsers() {
-
-    $updatedUsersEmails = self::updateSubscribersEmails();
-    $insertedUsersEmails = self::insertSubscribers();
-    self::removeUpdatedSubscribersWithInvalidEmail(array_merge($updatedUsersEmails, $insertedUsersEmails));
-    self::updateFirstNames();
-    self::updateLastNames();
-    self::updateFirstNameIfMissing();
-    self::insertUsersToSegment();
-    self::removeOrphanedSubscribers();
-    self::markSpammyWordpressUsersAsUnconfirmed();
+  public function synchronizeUsers() {
+    $updatedUsersEmails = $this->updateSubscribersEmails();
+    $insertedUsersEmails = $this->insertSubscribers();
+    $this->removeUpdatedSubscribersWithInvalidEmail(array_merge($updatedUsersEmails, $insertedUsersEmails));
+    $this->updateFirstNames();
+    $this->updateLastNames();
+    $this->updateFirstNameIfMissing();
+    $this->insertUsersToSegment();
+    $this->removeOrphanedSubscribers();
+    $this->markSpammyWordpressUsersAsUnconfirmed();
 
     return true;
   }
 
-  private static function removeUpdatedSubscribersWithInvalidEmail($updatedEmails) {
+  private function removeUpdatedSubscribersWithInvalidEmail($updatedEmails) {
     $validator = new ModelValidator();
     $invalidWpUserIds = array_map(function($item) {
       return $item['id'];
@@ -133,7 +133,7 @@ class WP {
     ORM::for_table(Subscriber::$_table)->whereIn('wp_user_id', $invalidWpUserIds)->delete_many();
   }
 
-  private static function updateSubscribersEmails() {
+  private function updateSubscribersEmails() {
     global $wpdb;
     Subscriber::rawExecute('SELECT NOW();');
     $startTime = Subscriber::getLastStatement()->fetch(\PDO::FETCH_COLUMN);
@@ -151,7 +151,7 @@ class WP {
       ', $subscribersTable, $startTime))->findArray();
   }
 
-  private static function insertSubscribers() {
+  private function insertSubscribers() {
     global $wpdb;
     $subscribersTable = Subscriber::$_table;
     $signupConfirmationEnabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
@@ -179,7 +179,7 @@ class WP {
     return $inserterdUserIds;
   }
 
-  private static function updateFirstNames() {
+  private function updateFirstNames() {
     global $wpdb;
     $subscribersTable = Subscriber::$_table;
     Subscriber::rawExecute(sprintf('
@@ -192,7 +192,7 @@ class WP {
     ', $subscribersTable, $wpdb->usermeta));
   }
 
-  private static function updateLastNames() {
+  private function updateLastNames() {
     global $wpdb;
     $subscribersTable = Subscriber::$_table;
     Subscriber::rawExecute(sprintf('
@@ -205,7 +205,7 @@ class WP {
     ', $subscribersTable, $wpdb->usermeta));
   }
 
-  private static function updateFirstNameIfMissing() {
+  private function updateFirstNameIfMissing() {
     global $wpdb;
     $subscribersTable = Subscriber::$_table;
     Subscriber::rawExecute(sprintf('
@@ -217,7 +217,7 @@ class WP {
     ', $subscribersTable, $wpdb->users));
   }
 
-  private static function insertUsersToSegment() {
+  private function insertUsersToSegment() {
     $wpSegment = Segment::getWPSegment();
     $subscribersTable = Subscriber::$_table;
     $wpMailpoetSubscriberSegmentTable = SubscriberSegment::$_table;
@@ -228,7 +228,7 @@ class WP {
     ', $wpMailpoetSubscriberSegmentTable, $wpSegment->id, $subscribersTable));
   }
 
-  private static function removeOrphanedSubscribers() {
+  private function removeOrphanedSubscribers() {
     // remove orphaned wp segment subscribers (not having a matching wp user id),
     // e.g. if wp users were deleted directly from the database
     global $wpdb;
@@ -243,7 +243,7 @@ class WP {
       ->delete();
   }
 
-  private static function markSpammyWordpressUsersAsUnconfirmed() {
+  private function markSpammyWordpressUsersAsUnconfirmed() {
     global $wpdb;
     $query = '
       UPDATE %s as subscribers

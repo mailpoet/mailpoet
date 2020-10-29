@@ -3,14 +3,11 @@
 namespace MailPoet\Test\Subscription;
 
 use MailPoet\Config\Populator;
-use MailPoet\Form\FormsRepository;
 use MailPoet\Models\Subscriber;
-use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscribers\LinkTokens;
-use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -24,15 +21,8 @@ class UrlTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->settings = SettingsController::getInstance();
-    $referralDetector = new ReferralDetector(WPFunctions::get(), $this->settings);
-    $populator = new Populator(
-      $this->settings,
-      WPFunctions::get(),
-      new Captcha,
-      $referralDetector,
-      $this->diContainer->get(FormsRepository::class)
-    );
+    $this->settings = $this->diContainer->get(SettingsController::class);
+    $populator = $this->diContainer->get(Populator::class);
     $populator->up();
     $this->url = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, new LinkTokens);
   }

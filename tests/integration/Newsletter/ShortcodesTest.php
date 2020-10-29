@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Newsletter;
 
 use MailPoet\Config\Populator;
-use MailPoet\Form\FormsRepository;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
@@ -12,10 +11,8 @@ use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Newsletter\Url as NewsletterUrl;
-use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
-use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
@@ -39,14 +36,7 @@ class ShortcodesTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
-    $referralDetector = new ReferralDetector(WPFunctions::get(), $this->settings);
-    $populator = new Populator(
-      $this->settings,
-      WPFunctions::get(),
-      new Captcha,
-      $referralDetector,
-      $this->diContainer->get(FormsRepository::class)
-    );
+    $populator = $this->diContainer->get(Populator::class);
     $populator->up();
     $this->wPUser = $this->_createWPUser();
     $this->wPPost = $this->_createWPPost();

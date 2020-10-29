@@ -14,7 +14,6 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Form\FormsRepository;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
@@ -30,14 +29,12 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscribers\LinkTokens;
-use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
@@ -72,15 +69,8 @@ class SendingQueueTest extends \MailPoetTest {
     parent::_before();
     $wpUsers = get_users();
     wp_set_current_user($wpUsers[0]->ID);
-    $this->settings = SettingsController::getInstance();
-    $referralDetector = new ReferralDetector(WPFunctions::get(), $this->settings);
-    $populator = new Populator(
-      $this->settings,
-      WPFunctions::get(),
-      new Captcha,
-      $referralDetector,
-      $this->diContainer->get(FormsRepository::class)
-    );
+    $this->settings = $this->diContainer->get(SettingsController::class);
+    $populator = $this->diContainer->get(Populator::class);
     $populator->up();
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'john@doe.com';
