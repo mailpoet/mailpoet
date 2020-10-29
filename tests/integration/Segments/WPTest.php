@@ -4,7 +4,6 @@ namespace MailPoet\Test\Segments;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -19,6 +18,16 @@ class WPTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
+  /** @var WP */
+  private $wpSegment;
+
+  public function _before() {
+    parent::_before();
+    $this->settings = $this->diContainer->get(SettingsController::class);
+    $this->wpSegment = $this->diContainer->get(WP::class);
+    $this->cleanData();
+  }
+
   public function testSynchronizeUserKeepsStatusOfOldUser() {
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
@@ -27,7 +36,7 @@ class WPTest extends \MailPoetTest {
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'wp_user_id' => $id,
     ]);
-    WP::synchronizeUser($id);
+    $this->wpSegment->synchronizeUser($id);
     $dbSubscriber = Subscriber::findOne($subscriber->id);
     expect($dbSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
@@ -40,7 +49,7 @@ class WPTest extends \MailPoetTest {
       'wp_user_id' => null,
     ]);
     $id = $this->insertUser($randomNumber);
-    WP::synchronizeUser($id);
+    $this->wpSegment->synchronizeUser($id);
     $dbSubscriber = Subscriber::where('wp_user_id', $id)->findOne();
     expect($dbSubscriber->status)->equals($subscriber->status);
   }
@@ -49,7 +58,7 @@ class WPTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation', ['enabled' => '0']);
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
-    WP::synchronizeUser($id);
+    $this->wpSegment->synchronizeUser($id);
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wpSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
@@ -58,7 +67,7 @@ class WPTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation', ['enabled' => '1']);
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
-    WP::synchronizeUser($id);
+    $this->wpSegment->synchronizeUser($id);
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wpSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
@@ -67,7 +76,7 @@ class WPTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation', ['enabled' => '0']);
     $this->insertUser();
     $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscribers = Subscriber::whereLike("email", "user-sync-test%")->findMany();
     expect(count($subscribers))->equals(2);
     expect($subscribers[0]->status)->equals(Subscriber::STATUS_SUBSCRIBED);
@@ -78,7 +87,7 @@ class WPTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation', ['enabled' => '1']);
     $this->insertUser();
     $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscribers = Subscriber::whereLike("email", "user-sync-test%")->findMany();
     expect(count($subscribers))->equals(2);
     expect($subscribers[0]->status)->equals(Subscriber::STATUS_UNCONFIRMED);
@@ -96,7 +105,7 @@ class WPTest extends \MailPoetTest {
     $this->settings->set('subscribe.on_register.enabled', '1');
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
-    WP::synchronizeUser($id);
+    $this->wpSegment->synchronizeUser($id);
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wpSubscriber->countConfirmations)->equals(1);
     expect($wpSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
@@ -106,7 +115,7 @@ class WPTest extends \MailPoetTest {
     $this->settings->set('subscribe.on_register.enabled', '1');
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
-    WP::synchronizeUser($id);
+    $this->wpSegment->synchronizeUser($id);
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wpSubscriber->countConfirmations)->equals(0);
     expect($wpSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
@@ -116,7 +125,7 @@ class WPTest extends \MailPoetTest {
     $this->settings->set('subscribe.on_register.enabled', '0');
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
-    WP::synchronizeUser($id);
+    $this->wpSegment->synchronizeUser($id);
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wpSubscriber->countConfirmations)->equals(0);
     expect($wpSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
@@ -125,9 +134,9 @@ class WPTest extends \MailPoetTest {
   public function testItSynchronizeNewUsers() {
     $this->insertUser();
     $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(3);
   }
@@ -139,7 +148,7 @@ class WPTest extends \MailPoetTest {
       'status' => Subscriber::STATUS_SUBSCRIBED,
     ]);
     $id = $this->insertUser($randomNumber);
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wpSubscriber)->notEmpty();
     expect($wpSubscriber->id)->equals($subscriber->id);
@@ -148,27 +157,27 @@ class WPTest extends \MailPoetTest {
 
   public function testItSynchronizeEmails() {
     $id = $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $this->updateWPUserEmail($id, 'user-sync-test-xx@email.com');
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
     expect($subscriber->email)->equals('user-sync-test-xx@email.com');
   }
 
   public function testRemovesUsersWithEmptyEmailsFromSunscribersDuringSynchronization() {
     $id = $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $this->updateWPUserEmail($id, '');
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     expect(Subscriber::where('wp_user_id', $id)->count())->equals(0);
     $this->deleteWPUser($id);
   }
 
   public function testRemovesUsersWithInvalidEmailsFromSunscribersDuringSynchronization() {
     $id = $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $this->updateWPUserEmail($id, 'ivalid.@email.com');
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     expect(Subscriber::where('wp_user_id', $id)->count())->equals(0);
     $this->deleteWPUser($id);
   }
@@ -176,7 +185,7 @@ class WPTest extends \MailPoetTest {
   public function testItDoesNotSynchronizeEmptyEmailsForNewUsers() {
     $id = $this->insertUser();
     $this->updateWPUserEmail($id, '');
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
     expect($subscriber)->isEmpty();
     $this->deleteWPUser($id);
@@ -184,27 +193,27 @@ class WPTest extends \MailPoetTest {
 
   public function testItSynchronizeFirstNames() {
     $id = $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     update_user_meta((int)$id, 'first_name', 'First name');
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
     expect($subscriber->firstName)->equals('First name');
   }
 
   public function testItSynchronizeLastNames() {
     $id = $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     update_user_meta((int)$id, 'last_name', 'Last name');
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
     expect($subscriber->lastName)->equals('Last name');
   }
 
   public function testItSynchronizeFirstNamesUsingDisplayName() {
     $id = $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $this->updateWPUserDisplayName($id, 'First name');
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
     expect($subscriber->firstName)->equals('First name');
   }
@@ -213,7 +222,7 @@ class WPTest extends \MailPoetTest {
     $id = $this->insertUser();
     update_user_meta((int)$id, 'first_name', 'First name');
     $this->updateWPUserDisplayName($id, 'display_name');
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
     expect($subscriber->firstName)->equals('First name');
   }
@@ -222,18 +231,18 @@ class WPTest extends \MailPoetTest {
     $this->insertUser();
     $this->insertUser();
     $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscribers = Segment::getWPSegment()->subscribers()->whereIn('wp_user_id', $this->userIds);
     expect($subscribers->count())->equals(3);
   }
 
   public function testItDoesntRemoveUsersFromTrash() {
     $id = $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
     $subscriber->deletedAt = Carbon::now();
     $subscriber->save();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
     expect($subscriber->deletedAt)->notNull();
   }
@@ -241,7 +250,7 @@ class WPTest extends \MailPoetTest {
   public function testItSynchronizesDeletedWPUsersUsingHooks() {
     $id = $this->insertUser();
     $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(2);
     wp_delete_user((int)$id);
@@ -252,9 +261,9 @@ class WPTest extends \MailPoetTest {
   public function testItRemovesOrphanedSubscribers() {
     $this->insertUser();
     $id = $this->insertUser();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $this->deleteWPUser($id);
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscribers = Segment::getWPSegment()->subscribers()->whereIn('wp_user_id', $this->userIds);
     expect($subscribers->count())->equals(1);
   }
@@ -290,7 +299,7 @@ class WPTest extends \MailPoetTest {
     $subscriber3->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber3->save();
     $this->clearEmail($subscriber3);
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(3);
     $dbSubscriber = Subscriber::findOne($subscriber3->id);
@@ -315,7 +324,7 @@ class WPTest extends \MailPoetTest {
     $association->save();
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(1);
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $subscribersCount = $this->getSubscribersCount(0);
     expect($subscribersCount)->equals(0);
   }
@@ -340,7 +349,7 @@ class WPTest extends \MailPoetTest {
     $association->save();
     $dbSubscriber = Subscriber::findOne($subscriber->id);
     expect($dbSubscriber)->notEmpty();
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $dbSubscriber = Subscriber::findOne($subscriber->id);
     expect($dbSubscriber)->isEmpty();
   }
@@ -354,7 +363,7 @@ class WPTest extends \MailPoetTest {
       'wp_user_id' => $id,
     ]);
     update_user_meta((int)$id, 'default_password_nag', '1');
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $dbSubscriber = Subscriber::findOne($subscriber->id);
     expect($dbSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
@@ -377,15 +386,9 @@ class WPTest extends \MailPoetTest {
     wp_update_user(['ID' => $id, 'user_status' => 2]);
     $db = ORM::getDb();
     $db->exec(sprintf('UPDATE %s SET `user_status` = 2 WHERE ID = %s', $wpdb->users, $id));
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $dbSubscriber = Subscriber::findOne($subscriber->id);
     expect($dbSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
-  }
-
-  public function _before() {
-    parent::_before();
-    $this->settings = ContainerWrapper::getInstance()->get(SettingsController::class);
-    $this->cleanData();
   }
 
   public function _after() {

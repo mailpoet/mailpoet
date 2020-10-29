@@ -34,6 +34,9 @@ class SubscriptionTest extends \MailPoetTest {
   /** @var ConfirmationEmailMailer & MockObject */
   private $confirmationEmailMailer;
 
+  /** @var WP */
+  private $wpSegment;
+
   public function _before() {
     $this->orderId = 123; // dummy
     $this->settings = SettingsController::getInstance();
@@ -41,6 +44,7 @@ class SubscriptionTest extends \MailPoetTest {
     $this->confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
     $this->subscription = new Subscription($this->settings, $this->confirmationEmailMailer, $wp);
     $this->wcSegment = Segment::getWooCommerceSegment();
+    $this->wpSegment = $this->diContainer->get(WP::class);
 
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
@@ -53,7 +57,7 @@ class SubscriptionTest extends \MailPoetTest {
   }
 
   public function testItDisplaysACheckedCheckboxIfCurrentUserIsSubscribed() {
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $wpUsers = get_users();
     wp_set_current_user($wpUsers[0]->ID);
     $subscriber = Subscriber::getCurrentWPUser();
@@ -65,7 +69,7 @@ class SubscriptionTest extends \MailPoetTest {
   }
 
   public function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsNotSubscribed() {
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
     $wpUsers = get_users();
     wp_set_current_user($wpUsers[0]->ID);
     $subscriber = Subscriber::getCurrentWPUser();

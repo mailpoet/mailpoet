@@ -49,17 +49,21 @@ class Populator {
   const TEMPLATES_NAMESPACE = '\MailPoet\Config\PopulatorData\Templates\\';
   /** @var FormsRepository */
   private $formsRepository;
+  /** @var WP */
+  private $wpSegment;
 
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     Captcha $captcha,
     ReferralDetector $referralDetector,
-    FormsRepository $formsRepository
+    FormsRepository $formsRepository,
+    WP $wpSegment
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->captcha = $captcha;
+    $this->wpSegment = $wpSegment;
     $this->referralDetector = $referralDetector;
     $this->prefix = Env::$dbPrefix;
     $this->models = [
@@ -337,7 +341,7 @@ class Populator {
     Segment::getWooCommerceSegment();
 
     // Synchronize WP Users
-    WP::synchronizeUsers();
+    $this->wpSegment->synchronizeUsers();
 
     // Default segment
     $defaultSegment = Segment::where('type', 'default')->orderByAsc('id')->limit(1)->findOne();

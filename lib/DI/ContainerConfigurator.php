@@ -90,7 +90,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Config
     $container->autowire(\MailPoet\Config\AccessControl::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Activator::class)->setPublic(true);
-    $container->autowire(\MailPoet\Config\Populator::class);
+    $container->autowire(\MailPoet\Config\Populator::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Changelog::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\DatabaseInitializer::class);
     $container->autowire(\MailPoet\Config\Hooks::class)->setPublic(true);
@@ -249,6 +249,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository::class);
     // Segments
     $container->autowire(\MailPoet\Segments\WooCommerce::class)->setPublic(true);
+    $container->autowire(\MailPoet\Segments\WP::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\SubscribersFinder::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\SegmentsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\SegmentSubscribersRepository::class)->setPublic(true);

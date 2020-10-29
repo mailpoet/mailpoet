@@ -19,12 +19,20 @@ class WooCommerce {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var WP */
+  private $wpSegment;
+
   private $mailpoetEmailCollation;
   private $wpPostmetaValueCollation;
 
-  public function __construct(SettingsController $settings, WPFunctions $wp) {
+  public function __construct(
+    SettingsController $settings,
+    WPFunctions $wp,
+    WP $wpSegment
+  ) {
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->wpSegment = $wpSegment;
   }
 
   public function synchronizeRegisteredCustomer($wpUserId, $currentFilter = null) {
@@ -105,7 +113,7 @@ class WooCommerce {
   public function synchronizeCustomers() {
     $this->getColumnCollation();
 
-    WP::synchronizeUsers(); // synchronize registered users
+    $this->wpSegment->synchronizeUsers(); // synchronize registered users
 
     $this->markRegisteredCustomers();
     $insertedUsersEmails = $this->insertSubscribersFromOrders();
