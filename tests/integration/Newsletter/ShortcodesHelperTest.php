@@ -2,13 +2,20 @@
 
 namespace MailPoet\Test\Newsletter;
 
-use MailPoet\Models\CustomField;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Newsletter\Shortcodes\ShortcodesHelper;
-use MailPoetVendor\Idiorm\ORM;
 
 class ShortcodesHelperTest extends \MailPoetTest {
+  /** @var ShortcodesHelper */
+  private $shortcodesHelper;
+
+  public function _before() {
+    $this->truncateEntity(CustomFieldEntity::class);
+    $this->shortcodesHelper = $this->diContainer->get(ShortcodesHelper::class);
+  }
+
   public function testGetsShortcodes() {
-    $shortcodes = ShortcodesHelper::getShortcodes();
+    $shortcodes = $this->shortcodesHelper->getShortcodes();
     expect(array_keys($shortcodes))->equals(
       [
         'Subscriber',
@@ -21,21 +28,18 @@ class ShortcodesHelperTest extends \MailPoetTest {
   }
 
   public function testItGetsCustomShortShortcodes() {
-    $shortcodes = ShortcodesHelper::getShortcodes();
+    $shortcodes = $this->shortcodesHelper->getShortcodes();
     expect(count($shortcodes['Subscriber']))->equals(5);
-    $customField = CustomField::create();
-    $customField->name = 'name';
-    $customField->type = 'type';
-    $customField->save();
-    $shortcodes = ShortcodesHelper::getShortcodes();
+    $customField = new CustomFieldEntity();
+    $customField->setName('name');
+    $customField->setType('type');
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $shortcodes = $this->shortcodesHelper->getShortcodes();
     expect(count($shortcodes['Subscriber']))->equals(6);
     $customSubscriberShortcode = end($shortcodes['Subscriber']);
-    expect($customSubscriberShortcode['text'])->equals($customField->name);
+    expect($customSubscriberShortcode['text'])->equals($customField->getName());
     expect($customSubscriberShortcode['shortcode'])
-      ->equals('[subscriber:cf_' . $customField->id . ']');
-  }
-
-  public function _after() {
-    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+      ->equals('[subscriber:cf_' . $customField->getId() . ']');
   }
 }

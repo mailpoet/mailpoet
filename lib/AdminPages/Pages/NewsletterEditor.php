@@ -36,6 +36,9 @@ class NewsletterEditor {
   /** @var ServicesChecker */
   private $servicesChecker;
 
+  /** @var ShortcodesHelper */
+  private $shortcodesHelper;
+
   public function __construct(
     PageRenderer $pageRenderer,
     SettingsController $settings,
@@ -43,6 +46,7 @@ class NewsletterEditor {
     WooCommerceHelper $woocommerceHelper,
     WPFunctions $wp,
     TransactionalEmails $wcTransactionalEmails,
+    ShortcodesHelper $shortcodesHelper,
     ServicesChecker $servicesChecker
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -52,6 +56,7 @@ class NewsletterEditor {
     $this->wp = $wp;
     $this->wcTransactionalEmails = $wcTransactionalEmails;
     $this->servicesChecker = $servicesChecker;
+    $this->shortcodesHelper = $shortcodesHelper;
   }
 
   public function render() {
@@ -84,7 +89,7 @@ class NewsletterEditor {
     }
 
     $data = [
-      'shortcodes' => ShortcodesHelper::getShortcodes(),
+      'shortcodes' => $this->shortcodesHelper->getShortcodes(),
       'settings' => $this->settings->getAll(),
       'editor_tutorial_seen' => $this->userFlags->get('editor_tutorial_seen'),
       'current_wp_user' => array_merge($subscriberData, $this->wp->wpGetCurrentUser()->to_array()),
