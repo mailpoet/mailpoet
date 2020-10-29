@@ -26,6 +26,9 @@ $mailpoet-form-template-thumbnail-height: 316px;
   }
 }
 
+/**
+ The header uses grid to position heading in center (second column) and a new form button on right (third column)
+ */
 .template-selection-header {
   background: $color-input-background;
   border-bottom: 1px solid $color-tertiary-light;
