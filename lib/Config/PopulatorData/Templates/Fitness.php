@@ -16,7 +16,7 @@ class Fitness {
 
   public function get() {
     return [
-      'name' => WPFunctions::get()->__("Fitness", 'mailpoet'),
+      'name' => WPFunctions::get()->__("Abandoned Cart – Fitness", 'mailpoet'),
       'categories' => json_encode(['woocommerce', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
