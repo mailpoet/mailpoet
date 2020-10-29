@@ -25,7 +25,7 @@ class Fitness {
   }
 
   private function getThumbnail() {
-    return $this->template_image_url . '/fitness-thumbnail.20201028.jpg';
+    return $this->template_image_url . '/thumbnail.20201028.jpg';
   }
 
   private function getBody() {
