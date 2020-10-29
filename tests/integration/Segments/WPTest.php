@@ -4,11 +4,15 @@ namespace MailPoet\Test\Segments;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
+use Codeception\Stub;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -389,6 +393,80 @@ class WPTest extends \MailPoetTest {
     $this->wpSegment->synchronizeUsers();
     $dbSubscriber = Subscriber::findOne($subscriber->id);
     expect($dbSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+  }
+
+  public function testItAddsNewUserToDisabledWpSegmentAsUnconfirmedAndTrashed() {
+    $segment = Segment::getWPSegment();
+    $segment->deletedAt = Carbon::now();
+    $segment->save();
+    $id = $this->insertUser();
+    $wp = $worker = Stub::make(
+      $this->diContainer->get(Functions::class),
+      [
+        'currentFilter' => 'user_register',
+      ],
+      $this
+    );
+    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class));
+    $wpSegment->synchronizeUser($id);
+    $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
+    expect($subscriber->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    expect($subscriber->deletedAt)->equals(Carbon::now(), 1);
+  }
+
+  public function testItDoesNotSendConfirmationEmailForNewUserWhenWPSegmentIsDisabledOnRegisterEnabled() {
+    $segment = Segment::getWPSegment();
+    $segment->deletedAt = Carbon::now();
+    $segment->save();
+    $this->settings->set('sender', [
+      'address' => 'sender@mailpoet.com',
+      'name' => 'Sender',
+    ]);
+
+    // signup confirmation enabled, subscribe on-register enabled
+    $this->settings->set('signup_confirmation.enabled', '1');
+    $this->settings->set('subscribe.on_register.enabled', '1');
+    $id = $this->insertUser();
+    $wp = $worker = Stub::make(
+      $this->diContainer->get(Functions::class),
+      [
+        'currentFilter' => 'user_register',
+      ],
+      $this
+    );
+    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class));
+    $wpSegment->synchronizeUser($id);
+    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
+    expect($wpSubscriber->countConfirmations)->equals(0);
+  }
+
+  public function testItDoesNotTrashNewUsersWhoHaveSomeSegmentsToDisabledWPSegment() {
+    $this->disableWpSegment();
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => 'user-sync-test' . $randomNumber . '@example.com',
+      'status' => Subscriber::STATUS_SUBSCRIBED,
+      'wp_user_id' => null,
+    ]);
+    $segment = Segment::createOrUpdate(['name' => 'Test Segment', 'description' => '']);
+    $subscriberSegment = SubscriberSegment::create();
+    $subscriberSegment->subscriberId = $subscriber->id;
+    $subscriberSegment->segmentId = $segment->id;
+    $subscriberSegment->save();
+
+    $wp = $worker = Stub::make(
+      $this->diContainer->get(Functions::class),
+      [
+        'currentFilter' => 'user_register',
+      ],
+      $this
+    );
+    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class));
+    $wpSegment->synchronizeUser($id);
+    $subscriber1 = Subscriber::where("wp_user_id", $id)->findOne();
+    expect($subscriber1->status)->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    expect($subscriber1->deletedAt)->null();
   }
 
   public function _after() {

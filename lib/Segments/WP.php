@@ -3,6 +3,8 @@
 namespace MailPoet\Segments;
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\ModelValidator;
 use MailPoet\Models\Segment;
 use MailPoet\Models\StatisticsClicks;
@@ -13,6 +15,8 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
+use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class WP {
@@ -24,6 +28,13 @@ class WP {
    */
   private $newWPUsers = [];
 
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(WPFunctions $wp) {
+    $this->wp = $wp;
+  }
+
   public function synchronizeUser($wpUserId, $oldWpUserData = false) {
     $wpUser = \get_userdata($wpUserId);
     if ($wpUser === false) return;
@@ -31,7 +42,7 @@ class WP {
     $subscriber = Subscriber::where('wp_user_id', $wpUser->ID)
       ->findOne();
 
-    $currentFilter = current_filter();
+    $currentFilter = $this->wp->currentFilter();
     // Delete
     if (in_array($currentFilter, ['delete_user', 'deleted_user', 'remove_user_from_blog'])) {
       return $this->deleteSubscriber($subscriber);
@@ -56,14 +67,14 @@ class WP {
     $wpSegment = Segment::getWPSegment();
     if (!$wpSegment) return;
 
+    // Remember that user was newly added
+    if ($currentFilter === 'user_register') {
+      $this->newWPUsers[$wpUser->ID] = true;
+    }
+
     // find subscriber by email when is false
     if (!$subscriber) {
       $subscriber = Subscriber::where('email', $wpUser->user_email)->findOne(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    }
-
-    $scheduleWelcomeNewsletter = false;
-    if (in_array($currentFilter, ['profile_update', 'user_register'])) {
-      $scheduleWelcomeNewsletter = true;
     }
 
     // get first name & last name
@@ -90,10 +101,22 @@ class WP {
       unset($data['source']); // don't override status for existing users
     }
 
-    $subscriber = Subscriber::createOrUpdate($data);
-    if ($currentFilter === 'user_register') {
-      $this->newWPUsers[$wpUser->ID] = true;
+    $addingNewUserToDisabledWPSegment = $wpSegment->deletedAt !== null && $this->isNewWpUser($wpUser->ID);
+
+    $otherActiveSegments = [];
+    if ($subscriber) {
+      $subscriber = $subscriber->withSegments();
+      $otherActiveSegments = array_filter($subscriber->segments ?? [], function ($segment) {
+        return $segment['type'] !== SegmentEntity::TYPE_WP_USERS && $segment['deleted_at'] === null;
+      });
     }
+    // When WP Segment is disabled force trashed state and unconfirmed status for new WPUsers without active segment
+    if ($addingNewUserToDisabledWPSegment && !$otherActiveSegments) {
+      $data['deleted_at'] = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+      $data['status'] = SubscriberEntity::STATUS_UNCONFIRMED;
+    }
+
+    $subscriber = Subscriber::createOrUpdate($data);
     if ($subscriber->getErrors() === false && $subscriber->id > 0) {
       // add subscriber to the WP Users segment
       SubscriberSegment::subscribeToSegments(
@@ -102,7 +125,12 @@ class WP {
       );
 
       $subscribeOnRegisterEnabled = SettingsController::getInstance()->get('subscribe.on_register.enabled');
-      $sendConfirmationEmail = $signupConfirmationEnabled && $subscribeOnRegisterEnabled && $currentFilter !== 'profile_update';
+      $sendConfirmationEmail =
+        $signupConfirmationEnabled
+        && $subscribeOnRegisterEnabled
+        && $currentFilter !== 'profile_update'
+        && !$addingNewUserToDisabledWPSegment;
+
       if ($sendConfirmationEmail && ($subscriber->status === Subscriber::STATUS_UNCONFIRMED)) {
         /** @var ConfirmationEmailMailer $confirmationEmailMailer */
         $confirmationEmailMailer = ContainerWrapper::getInstance()->get(ConfirmationEmailMailer::class);
@@ -110,6 +138,10 @@ class WP {
       }
 
       // welcome email
+      $scheduleWelcomeNewsletter = false;
+      if (in_array($currentFilter, ['profile_update', 'user_register'])) {
+        $scheduleWelcomeNewsletter = true;
+      }
       if ($scheduleWelcomeNewsletter === true) {
         $scheduler = new WelcomeScheduler();
         $scheduler->scheduleWPUserWelcomeNotification(
