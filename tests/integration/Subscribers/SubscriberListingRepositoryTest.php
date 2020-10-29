@@ -190,6 +190,31 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->tester->deleteWordPressUser($wpUserEmail);
   }
 
+  public function testLoadSubscribersWithoutSegment() {
+    $list = $this->createSegmentEntity();
+    $regularSubscriber = $this->createSubscriberEntity();
+    $regularSubscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createSubscriberSegmentEntity($list, $regularSubscriber);
+
+    $deletedList = $this->createSegmentEntity();
+    $deletedList->setDeletedAt(new \DateTimeImmutable());
+    $subscriberOnDeletedList = $this->createSubscriberEntity();
+    $subscriberOnDeletedList->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createSubscriberSegmentEntity($deletedList, $subscriberOnDeletedList);
+
+    $subscriberWithoutList = $this->createSubscriberEntity();
+
+    $this->entityManager->flush();
+
+    $this->listingData['filter'] = ['segment' => SubscriberListingRepository::FILTER_WITHOUT_LIST];
+    $this->listingData['sort_by'] = 'id';
+    $data = $this->repository->getData($this->getListingDefinition());
+    expect(count($data))->equals(2);
+    expect($data[0]->getEmail())->equals($subscriberOnDeletedList->getEmail());
+    expect($data[1]->getEmail())->equals($subscriberWithoutList->getEmail());
+    $this->listingData['sort_by'] = '';
+  }
+
   private function createSubscriberEntity(): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $rand = rand(0, 100000);
