@@ -2,110 +2,116 @@
 
 namespace MailPoet\Newsletter\Shortcodes;
 
-use MailPoet\Models\CustomField;
+use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Models\NewsletterLink;
-use MailPoet\WP\Functions as WPFunctions;
 
 class ShortcodesHelper {
-  public static function getShortcodes() {
+  /** @var CustomFieldsRepository */
+  private $customFieldsRepository;
+
+  public function __construct(CustomFieldsRepository $customFieldsRepository) {
+    $this->customFieldsRepository = $customFieldsRepository;
+  }
+
+  public function getShortcodes(): array {
     $shortcodes = [
-      WPFunctions::get()->__('Subscriber', 'mailpoet') => [
+      __('Subscriber', 'mailpoet') => [
         [
-          'text' => WPFunctions::get()->__('First Name', 'mailpoet'),
+          'text' => __('First Name', 'mailpoet'),
           'shortcode' => '[subscriber:firstname | default:reader]',
         ],
         [
-          'text' => WPFunctions::get()->__('Last Name', 'mailpoet'),
+          'text' => __('Last Name', 'mailpoet'),
           'shortcode' => '[subscriber:lastname | default:reader]',
         ],
         [
-          'text' => WPFunctions::get()->__('Email Address', 'mailpoet'),
+          'text' => __('Email Address', 'mailpoet'),
           'shortcode' => '[subscriber:email]',
         ],
         [
-          'text' => WPFunctions::get()->__('WordPress User Display Name', 'mailpoet'),
+          'text' => __('WordPress User Display Name', 'mailpoet'),
           'shortcode' => '[subscriber:displayname | default:member]',
         ],
         [
-          'text' => WPFunctions::get()->__('Total Number of Subscribers', 'mailpoet'),
+          'text' => __('Total Number of Subscribers', 'mailpoet'),
           'shortcode' => '[subscriber:count]',
         ],
       ],
-      WPFunctions::get()->__('Newsletter', 'mailpoet') => [
+      __('Newsletter', 'mailpoet') => [
         [
-          'text' => WPFunctions::get()->__('Newsletter Subject', 'mailpoet'),
+          'text' => __('Newsletter Subject', 'mailpoet'),
           'shortcode' => '[newsletter:subject]',
         ],
       ],
-      WPFunctions::get()->__('Post Notifications', 'mailpoet') => [
+      __('Post Notifications', 'mailpoet') => [
         [
-          'text' => WPFunctions::get()->__('Total Number of Posts or Pages', 'mailpoet'),
+          'text' => __('Total Number of Posts or Pages', 'mailpoet'),
           'shortcode' => '[newsletter:total]',
         ],
         [
-          'text' => WPFunctions::get()->__('Most Recent Post Title', 'mailpoet'),
+          'text' => __('Most Recent Post Title', 'mailpoet'),
           'shortcode' => '[newsletter:post_title]',
         ],
         [
-          'text' => WPFunctions::get()->__('Issue Number', 'mailpoet'),
+          'text' => __('Issue Number', 'mailpoet'),
           'shortcode' => '[newsletter:number]',
         ],
       ],
-      WPFunctions::get()->__('Date', 'mailpoet') => [
+      __('Date', 'mailpoet') => [
         [
-          'text' => WPFunctions::get()->__('Current day of the month number', 'mailpoet'),
+          'text' => __('Current day of the month number', 'mailpoet'),
           'shortcode' => '[date:d]',
         ],
         [
-          'text' => WPFunctions::get()->__('Current day of the month in ordinal form, i.e. 2nd, 3rd, 4th, etc.', 'mailpoet'),
+          'text' => __('Current day of the month in ordinal form, i.e. 2nd, 3rd, 4th, etc.', 'mailpoet'),
           'shortcode' => '[date:dordinal]',
         ],
         [
-          'text' => WPFunctions::get()->__('Full name of current day', 'mailpoet'),
+          'text' => __('Full name of current day', 'mailpoet'),
           'shortcode' => '[date:dtext]',
         ],
         [
-          'text' => WPFunctions::get()->__('Current month number', 'mailpoet'),
+          'text' => __('Current month number', 'mailpoet'),
           'shortcode' => '[date:m]',
         ],
         [
-          'text' => WPFunctions::get()->__('Full name of current month', 'mailpoet'),
+          'text' => __('Full name of current month', 'mailpoet'),
           'shortcode' => '[date:mtext]',
         ],
         [
-          'text' => WPFunctions::get()->__('Year', 'mailpoet'),
+          'text' => __('Year', 'mailpoet'),
           'shortcode' => '[date:y]',
         ],
       ],
-      WPFunctions::get()->__('Links', 'mailpoet') => [
+      __('Links', 'mailpoet') => [
         [
-          'text' => WPFunctions::get()->__('Unsubscribe link', 'mailpoet'),
+          'text' => __('Unsubscribe link', 'mailpoet'),
           'shortcode' => sprintf(
             '<a target="_blank" href="%s">%s</a>',
             NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE,
-            WPFunctions::get()->__('Unsubscribe', 'mailpoet')
+            __('Unsubscribe', 'mailpoet')
           ),
         ],
         [
-          'text' => WPFunctions::get()->__('Edit subscription page link', 'mailpoet'),
+          'text' => __('Edit subscription page link', 'mailpoet'),
           'shortcode' => sprintf(
             '<a target="_blank" href="%s">%s</a>',
             '[link:subscription_manage_url]',
-            WPFunctions::get()->__('Manage subscription', 'mailpoet')
+            __('Manage subscription', 'mailpoet')
           ),
         ],
         [
-          'text' => WPFunctions::get()->__('View in browser link', 'mailpoet'),
+          'text' => __('View in browser link', 'mailpoet'),
           'shortcode' => sprintf(
             '<a target="_blank" href="%s">%s</a>',
             '[link:newsletter_view_in_browser_url]',
-            WPFunctions::get()->__('View in your browser', 'mailpoet')
+            __('View in your browser', 'mailpoet')
           ),
         ],
       ],
     ];
-    $customFields = self::getCustomFields();
-    if ($customFields) {
+    $customFields = $this->getCustomFields();
+    if (count($customFields) > 0) {
       $shortcodes[__('Subscriber', 'mailpoet')] = array_merge(
         $shortcodes[__('Subscriber', 'mailpoet')],
         $customFields
@@ -114,13 +120,12 @@ class ShortcodesHelper {
     return $shortcodes;
   }
 
-  public static function getCustomFields() {
-    $customFields = CustomField::findMany();
-    if (!$customFields) return false;
+  public function getCustomFields(): array {
+    $customFields = $this->customFieldsRepository->findAll();
     return array_map(function($customField) {
       return [
-        'text' => $customField->name,
-        'shortcode' => '[subscriber:cf_' . $customField->id . ']',
+        'text' => $customField->getName(),
+        'shortcode' => '[subscriber:cf_' . $customField->getId() . ']',
       ];
     }, $customFields);
   }
