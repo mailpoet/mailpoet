@@ -16,6 +16,8 @@ use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class SubscriberListingRepository extends ListingRepository {
+  public const FILTER_WITHOUT_LIST = 'without-list';
+
   const DEFAULT_SORT_BY = 'createdAt';
 
   private static $supportedStatuses = [
@@ -86,6 +88,14 @@ class SubscriberListingRepository extends ListingRepository {
   protected function applyListingDefinition(QueryBuilder $queryBuilder, ListingDefinition $definition) {
     $filters = $definition->getFilters();
     if (!$filters || !isset($filters['segment'])) {
+      return;
+    }
+    if ($filters['segment'] === self::FILTER_WITHOUT_LIST) {
+      $queryBuilder->leftJoin('s.subscriberSegments', 'ssg', Join::WITH, (string)$queryBuilder->expr()->eq('ssg.status', ':statusSubscribed'))
+        ->leftJoin('ssg.segment', 'sg', Join::WITH, (string)$queryBuilder->expr()->isNull('sg.deletedAt'))
+        ->andWhere('s.deletedAt IS NULL')
+        ->andWhere('sg.id IS NULL')
+        ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
       return;
     }
     $segment = $this->entityManager->find(SegmentEntity::class, (int)$filters['segment']);
@@ -218,7 +228,7 @@ class SubscriberListingRepository extends ListingRepository {
 
     $withoutSegmentList = [
       'label' => $subscribersWithoutSegmentLabel,
-      'value' => 'none',
+      'value' => self::FILTER_WITHOUT_LIST,
     ];
 
     $segmentList = [];
