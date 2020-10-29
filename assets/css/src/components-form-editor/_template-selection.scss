@@ -37,6 +37,10 @@ $mailpoet-form-template-thumbnail-height: 316px;
   justify-items: center;
   padding: $grid-gap-half;
 
+  @include respond-to(small-screen) {
+    display: flex;
+  }
+
   .mailpoet-h4 {
     grid-column-start: 2;
   }
