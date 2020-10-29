@@ -16,6 +16,14 @@ use MailPoet\Subscribers\Source;
 use MailPoetVendor\Idiorm\ORM;
 
 class WP {
+
+  /**
+   * Cache for newly created WP users. Method `synchronizeUser` may be triggered multiple times within a request.
+   * This property is used to remember which WP users were newly created so that we can distinguish them in subsequent calls.
+   * @var array
+   */
+  private $newWPUsers = [];
+
   public function synchronizeUser($wpUserId, $oldWpUserData = false) {
     $wpUser = \get_userdata($wpUserId);
     if ($wpUser === false) return;
@@ -24,11 +32,15 @@ class WP {
       ->findOne();
 
     $currentFilter = current_filter();
+    // Delete
     if (in_array($currentFilter, ['delete_user', 'deleted_user', 'remove_user_from_blog'])) {
-      $this->deleteSubscriber($subscriber);
-    } else {
-      $this->updateSubscriber($currentFilter, $wpUser, $subscriber, $oldWpUserData);
+      return $this->deleteSubscriber($subscriber);
     }
+    return $this->createOrUpdateSubscriber($currentFilter, $wpUser, $subscriber, $oldWpUserData);
+  }
+
+  private function isNewWpUser($wpUserId) {
+    return isset($this->newWPUsers[$wpUserId]);
   }
 
   private function deleteSubscriber($subscriber) {
@@ -39,7 +51,8 @@ class WP {
     }
   }
 
-  private function updateSubscriber($currentFilter, $wpUser, $subscriber = false, $oldWpUserData = false) {
+  private function createOrUpdateSubscriber($currentFilter, $wpUser, $subscriber = false, $oldWpUserData = false) {
+    // Add or update
     $wpSegment = Segment::getWPSegment();
     if (!$wpSegment) return;
 
@@ -78,6 +91,9 @@ class WP {
     }
 
     $subscriber = Subscriber::createOrUpdate($data);
+    if ($currentFilter === 'user_register') {
+      $this->newWPUsers[$wpUser->ID] = true;
+    }
     if ($subscriber->getErrors() === false && $subscriber->id > 0) {
       // add subscriber to the WP Users segment
       SubscriberSegment::subscribeToSegments(
