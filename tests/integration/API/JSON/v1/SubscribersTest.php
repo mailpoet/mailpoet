@@ -29,6 +29,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
@@ -101,7 +102,8 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(SubscribersResponseBuilder::class),
       $container->get(SubscriberListingRepository::class),
       $container->get(SegmentsRepository::class),
-      $obfuscator
+      $obfuscator,
+      $container->get(WelcomeScheduler::class)
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
@@ -109,7 +111,6 @@ class SubscribersTest extends \MailPoetTest {
     $this->segment2 = new SegmentEntity('Segment 2', SegmentEntity::TYPE_DEFAULT, 'Segment 2');
     $this->entityManager->persist($this->segment1);
     $this->entityManager->persist($this->segment2);
-
 
     $this->subscriber1 = new SubscriberEntity();
     $this->subscriber1->setEmail('john@mailpoet.com');

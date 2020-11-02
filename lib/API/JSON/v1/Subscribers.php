@@ -87,6 +87,9 @@ class Subscribers extends APIEndpoint {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var WelcomeScheduler */
+  private $welcomeScheduler;
+
   public function __construct(
     SubscriberActions $subscriberActions,
     RequiredCustomFieldValidator $requiredCustomFieldValidator,
@@ -102,7 +105,8 @@ class Subscribers extends APIEndpoint {
     SubscribersResponseBuilder $subscribersResponseBuilder,
     SubscriberListingRepository $subscriberListingRepository,
     SegmentsRepository $segmentsRepository,
-    FieldNameObfuscator $fieldNameObfuscator
+    FieldNameObfuscator $fieldNameObfuscator,
+    WelcomeScheduler $welcomeScheduler
   ) {
     $this->subscriberActions = $subscriberActions;
     $this->requiredCustomFieldValidator = $requiredCustomFieldValidator;
@@ -119,6 +123,7 @@ class Subscribers extends APIEndpoint {
     $this->subscribersResponseBuilder = $subscribersResponseBuilder;
     $this->subscriberListingRepository = $subscriberListingRepository;
     $this->segmentsRepository = $segmentsRepository;
+    $this->welcomeScheduler = $welcomeScheduler;
   }
 
   public function get($data = []) {
@@ -380,8 +385,7 @@ class Subscribers extends APIEndpoint {
     }
 
     if (!empty($newSegments)) {
-      $scheduler = new WelcomeScheduler();
-      $scheduler->scheduleSubscriberWelcomeNotification($subscriber->id, $newSegments);
+      $this->welcomeScheduler->scheduleSubscriberWelcomeNotification($subscriber->id, $newSegments);
     }
 
     return $this->successResponse(
