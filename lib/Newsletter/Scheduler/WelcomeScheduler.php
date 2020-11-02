@@ -2,13 +2,31 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class WelcomeScheduler {
 
   const WORDPRESS_ALL_ROLES = 'mailpoet_all';
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
+  public function __construct(
+    SubscribersRepository $subscribersRepository,
+    SegmentsRepository $segmentsRepository
+  ) {
+    $this->subscribersRepository = $subscribersRepository;
+    $this->segmentsRepository = $segmentsRepository;
+  }
 
   public function scheduleSubscriberWelcomeNotification($subscriberId, $segments) {
     $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_WELCOME);
@@ -18,10 +36,13 @@ class WelcomeScheduler {
       if ($newsletter->event === 'segment' &&
         in_array($newsletter->segment, $segments)
       ) {
-        $result[] = $this->createWelcomeNotificationSendingTask($newsletter, $subscriberId);
+        $sendingTask = $this->createWelcomeNotificationSendingTask($newsletter, $subscriberId);
+        if ($sendingTask) {
+          $result[] = $sendingTask;
+        }
       }
     }
-    return $result;
+    return $result ?: false;
   }
 
   public function scheduleWPUserWelcomeNotification(
@@ -53,6 +74,22 @@ class WelcomeScheduler {
   }
 
   public function createWelcomeNotificationSendingTask($newsletter, $subscriberId) {
+    $subscriber = $this->subscribersRepository->findOneById($subscriberId);
+    if (!($subscriber instanceof SubscriberEntity) || $subscriber->getDeletedAt() !== null) {
+      return;
+    }
+    if ($newsletter->event === 'segment') {
+      $segment = $this->segmentsRepository->findOneById((int)$newsletter->segment);
+      if ((!$segment instanceof SegmentEntity) || $segment->getDeletedAt() !== null) {
+        return;
+      }
+    }
+    if ($newsletter->event === 'user') {
+      $segment = $this->segmentsRepository->getWPUsersSegment();
+      if ((!$segment instanceof SegmentEntity) || $segment->getDeletedAt() !== null) {
+        return;
+      }
+    }
     $previouslyScheduledNotification = SendingQueue::joinWithSubscribers()
       ->where('queues.newsletter_id', $newsletter->id)
       ->where('subscribers.subscriber_id', $subscriberId)
