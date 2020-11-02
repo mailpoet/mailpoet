@@ -1,11 +1,15 @@
 $mailpoet-form-template-thumbnail-width: 480px;
 $mailpoet-form-template-thumbnail-height: 316px;
 
-.mailpoet-templates {
+@mixin formTemplatesGrid() {
   display: grid;
   grid-gap: $grid-gap;
   grid-template-columns: repeat(auto-fill, $mailpoet-form-template-thumbnail-width + $grid-gap-half);
   justify-content: center;
+}
+
+.mailpoet-templates {
+  @include formTemplatesGrid;
   padding-bottom: $mailpoet-form-template-thumbnail-height / 3;
   padding-top: $grid-gap-large;
 
@@ -26,27 +30,37 @@ $mailpoet-form-template-thumbnail-height: 316px;
   }
 }
 
+$templates-one-column-breakpoint: 2 * ($mailpoet-form-template-thumbnail-width + $grid-gap-half) + $grid-gap + 160;
 /**
  The header uses grid to position heading in center (second column) and a new form button on right (third column)
  */
 .template-selection-header {
+  @include formTemplatesGrid;
   background: $color-input-background;
   border-bottom: 1px solid $color-tertiary-light;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-row-gap: 0;
   justify-items: center;
-  padding: $grid-gap-half;
+  padding: $grid-gap 0;
+  position: relative;
 
-  @include respond-to(small-screen) {
-    display: flex;
+  @include breakpoint-min-width($templates-one-column-breakpoint) {
+    justify-items: right;
   }
 
   .mailpoet-h4 {
-    grid-column-start: 2;
+    // Keep heading centered when we are sure there are 2 or more columns
+
+    @include breakpoint-min-width($templates-one-column-breakpoint) {
+      left: 50%;
+      margin-top: 0;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
   }
 
   .mailpoet-button {
     align-self: center;
-    margin-left: auto;
+    grid-column-end: -1;
   }
 }
