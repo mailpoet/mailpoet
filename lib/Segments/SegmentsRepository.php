@@ -13,6 +13,10 @@ class SegmentsRepository extends Repository {
     return SegmentEntity::class;
   }
 
+  public function getWPUsersSegment() {
+    return $this->findOneBy(['type' => SegmentEntity::TYPE_WP_USERS]);
+  }
+
   public function getCountsPerType(): array {
     $results = $this->doctrineRepository->createQueryBuilder('s')
       ->select('s.type, COUNT(s) as cnt')
