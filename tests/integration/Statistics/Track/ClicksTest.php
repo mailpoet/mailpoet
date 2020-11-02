@@ -4,9 +4,13 @@ namespace MailPoet\Test\Statistics\Track;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
-use MailPoet\Models\ScheduledTask;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
@@ -16,7 +20,6 @@ use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Cookies;
-use MailPoetVendor\Idiorm\ORM;
 
 class ClicksTest extends \MailPoetTest {
   public $trackData;
@@ -32,40 +35,48 @@ class ClicksTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    $this->cleanup();
     // create newsletter
-    $newsletter = Newsletter::create();
-    $newsletter->type = 'type';
-    $newsletter->subject = 'Subject';
-    $this->newsletter = $newsletter->save();
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType('type');
+    $newsletter->setSubject('Subject');
+    $this->newsletter = $newsletter;
+    $this->entityManager->persist($newsletter);
     // create subscriber
-    $subscriber = Subscriber::create();
-    $subscriber->email = 'test@example.com';
-    $subscriber->firstName = 'First';
-    $subscriber->lastName = 'Last';
-    $this->subscriber = $subscriber->save();
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('test@example.com');
+    $subscriber->setFirstName('First');
+    $subscriber->setLastName('Last');
+    $this->subscriber = $subscriber;
+    $this->entityManager->persist($subscriber);
     // create queue
-    $queue = SendingTask::create();
-    $queue->newsletterId = $newsletter->id;
-    $queue->setSubscribers([$subscriber->id]);
-    $queue->updateProcessedSubscribers([$subscriber->id]);
-    $this->queue = $queue->save();
+    $task = new ScheduledTaskEntity();
+    $task->setType('sending');
+    $this->entityManager->persist($task);
+    $queue = new SendingQueueEntity();
+    $queue->setTask($task);
+    $queue->setNewsletter($newsletter);
+    $this->queue = $queue;
+    $this->entityManager->persist($queue);
+
     // create link
-    $link = NewsletterLink::create();
-    $link->hash = 'hash';
-    $link->url = 'url';
-    $link->newsletterId = $newsletter->id;
-    $link->queueId = $queue->id;
-    $this->link = $link->save();
+    $link = new NewsletterLinkEntity($newsletter, $queue, 'url', 'hash');
+    $this->link = $link;
+    $this->entityManager->persist($link);
+    $this->entityManager->flush();
+    $subscriberModel = Subscriber::findOne($subscriber->getId());
     $linkTokens = new LinkTokens;
     // build track data
     $this->trackData = (object)[
       'queue' => $queue,
       'subscriber' => $subscriber,
       'newsletter' => $newsletter,
-      'subscriber_token' => $linkTokens->getToken($subscriber),
+      'subscriber_token' => $linkTokens->getToken($subscriberModel),
       'link' => $link,
       'preview' => false,
     ];
+    $queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->getId()));
+    $queue->updateProcessedSubscribers([$subscriberModel->id]);
     // instantiate class
     $this->settingsController = Stub::makeEmpty(SettingsController::class, [
       'get' => false,
@@ -88,7 +99,8 @@ class ClicksTest extends \MailPoetTest {
 
   public function testItDoesNotTrackEventsFromWpUserWhenPreviewIsEnabled() {
     $data = $this->trackData;
-    $data->subscriber->wp_user_id = 99;
+    $this->subscriber->setWpUserId(99);
+    $this->entityManager->flush();
     $data->preview = true;
     $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
       'redirectToUrl' => null,
@@ -183,13 +195,13 @@ class ClicksTest extends \MailPoetTest {
     expect($link)->equals('http://example.com/?email=test@example.com&newsletter_subject=Subject');
   }
 
-  public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
+  public function cleanup() {
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(NewsletterLinkEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(StatisticsOpenEntity::class);
+    $this->truncateEntity(StatisticsClickEntity::class);
   }
 }

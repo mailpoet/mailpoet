@@ -3,20 +3,19 @@
 namespace MailPoet\Test\Router\Endpoints;
 
 use Codeception\Stub;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\Track;
-use MailPoet\Settings\SettingsController;
-use MailPoet\Statistics\Track\Clicks;
-use MailPoet\Statistics\Track\Opens;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\Util\Cookies;
-use MailPoetVendor\Idiorm\ORM;
 
 class TrackTest extends \MailPoetTest {
   public $track;
@@ -29,40 +28,48 @@ class TrackTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     // create newsletter
-    $newsletter = Newsletter::create();
-    $newsletter->type = 'type';
-    $this->newsletter = $newsletter->save();
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType('type');
+    $newsletter->setSubject('Subject');
+    $this->newsletter = $newsletter;
+    $this->entityManager->persist($newsletter);
     // create subscriber
-    $subscriber = Subscriber::create();
-    $subscriber->email = 'test@example.com';
-    $subscriber->firstName = 'First';
-    $subscriber->lastName = 'Last';
-    $this->subscriber = $subscriber->save();
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('test@example.com');
+    $subscriber->setFirstName('First');
+    $subscriber->setLastName('Last');
+    $subscriber->setLinkToken('token');
+    $this->subscriber = $subscriber;
+    $this->entityManager->persist($subscriber);
     // create queue
-    $queue = SendingTask::create();
-    $queue->newsletterId = $newsletter->id;
-    $queue->setSubscribers([$subscriber->id]);
-    $queue->updateProcessedSubscribers([$subscriber->id]);
-    $this->queue = $queue->save();
+    $task = new ScheduledTaskEntity();
+    $task->setType('sending');
+    $this->entityManager->persist($task);
+    $queue = new SendingQueueEntity();
+    $queue->setTask($task);
+    $queue->setNewsletter($newsletter);
+    $this->queue = $queue;
+    $this->entityManager->persist($queue);
     // create link
-    $link = NewsletterLink::create();
-    $link->hash = 'hash';
-    $link->url = 'url';
-    $link->newsletterId = $newsletter->id;
-    $link->queueId = $queue->id;
-    $this->link = $link->save();
+    $link = new NewsletterLinkEntity($newsletter, $queue, 'url', 'hash');
+    $this->link = $link;
+    $this->entityManager->persist($link);
+    $this->entityManager->flush();
+    $subscriberModel = Subscriber::findOne($subscriber->getId());
     $linkTokens = new LinkTokens;
     // build track data
     $this->trackData = [
-      'queue_id' => $queue->id,
-      'subscriber_id' => $subscriber->id,
-      'newsletter_id' => $newsletter->id,
-      'subscriber_token' => $linkTokens->getToken($subscriber),
-      'link_hash' => $link->hash,
+      'queue_id' => $queue->getId(),
+      'subscriber_id' => $subscriber->getId(),
+      'newsletter_id' => $newsletter->getId(),
+      'subscriber_token' => $linkTokens->getToken($subscriberModel),
+      'link_hash' => $link->getHash(),
       'preview' => false,
     ];
+    $queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->getId()));
+    $queue->updateProcessedSubscribers([$subscriberModel->id]);
     // instantiate class
-    $this->track = new Track(new Clicks(SettingsController::getInstance(), new Cookies()), new Opens(), new LinkTokens());
+    $this->track = $this->diContainer->get(Track::class);
   }
 
   public function testItReturnsFalseWhenTrackDataIsMissing() {
@@ -89,7 +96,8 @@ class TrackTest extends \MailPoetTest {
         'newsletter' => $this->newsletter,
       ]
     );
-    $data->subscriber->email = 'random@email.com';
+    $data->subscriber->setEmail('random@email.com');
+    $this->entityManager->flush();
     $track = Stub::make(Track::class, [
       'linkTokens' => new LinkTokens,
       'terminate' => function($code) {
@@ -106,9 +114,17 @@ class TrackTest extends \MailPoetTest {
         'queue' => $this->queue,
         'subscriber' => $this->subscriber,
         'newsletter' => $this->newsletter,
+        'subscriber_token' => $this->subscriber->getLinkToken(),
       ]
     );
-    $data->subscriber->id = 99;
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('test1@example.com');
+    $subscriber->setFirstName('First');
+    $subscriber->setLastName('Last');
+    $subscriber->setLinkToken($this->subscriber->getLinkToken());
+    $this->entityManager->persist($subscriber);
+    $this->entityManager->flush();
+    $data->subscriber->setId($subscriber->getId());
     expect($this->track->_validateTrackData($data))->false();
   }
 
@@ -121,7 +137,8 @@ class TrackTest extends \MailPoetTest {
         'newsletter' => $this->newsletter,
       ]
     );
-    $data->subscriber->wp_user_id = 99;
+    $this->subscriber->setWpUserId(99);
+    $this->entityManager->flush();
     $data->preview = true;
     expect($this->track->_validateTrackData($data))->equals($data);
   }
@@ -138,7 +155,7 @@ class TrackTest extends \MailPoetTest {
     $data = $this->trackData;
     $data['newsletter_id'] = false;
     $processedData = $this->track->_processTrackData($data);
-    expect($processedData->newsletter->id)->equals($this->newsletter->id);
+    expect($processedData->newsletter->getId())->equals($this->newsletter->getId());
   }
 
   public function testItProcessesTrackData() {
@@ -179,12 +196,11 @@ class TrackTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(NewsletterLinkEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
   }
 }

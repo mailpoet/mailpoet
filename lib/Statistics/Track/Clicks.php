@@ -2,6 +2,10 @@
 
 namespace MailPoet\Statistics\Track;
 
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
@@ -35,19 +39,23 @@ class Clicks {
     if (!$data || empty($data->link)) {
       return $this->abort();
     }
+    /** @var SubscriberEntity $subscriber */
     $subscriber = $data->subscriber;
+    /** @var SendingQueueEntity $queue */
     $queue = $data->queue;
+    /** @var NewsletterEntity $newsletter */
     $newsletter = $data->newsletter;
+    /** @var NewsletterLinkEntity $link */
     $link = $data->link;
-    $wpUserPreview = ($data->preview && $subscriber->isWPUser());
+    $wpUserPreview = ($data->preview && ($subscriber->getWpUserId() > 0));
     // log statistics only if the action did not come from
     // a WP user previewing the newsletter
     if (!$wpUserPreview) {
       $statisticsClicks = StatisticsClicks::createOrUpdateClickCount(
-        $link->id,
-        $subscriber->id,
-        $newsletter->id,
-        $queue->id
+        $link->getId(),
+        $subscriber->getId(),
+        $newsletter->getId(),
+        $queue->getId()
       );
       $this->sendRevenueCookie($statisticsClicks);
       $this->sendAbandonedCartCookie($subscriber);
@@ -55,7 +63,7 @@ class Clicks {
       $openEvent = new Opens();
       $openEvent->track($data, $displayImage = false);
     }
-    $url = $this->processUrl($link->url, $newsletter, $subscriber, $queue, $wpUserPreview);
+    $url = $this->processUrl($link->getUrl(), $newsletter, $subscriber, $queue, $wpUserPreview);
     $this->redirectToUrl($url);
   }
 
@@ -90,7 +98,13 @@ class Clicks {
     }
   }
 
-  public function processUrl($url, $newsletter, $subscriber, $queue, $wpUserPreview) {
+  public function processUrl(
+    string $url,
+    NewsletterEntity $newsletter,
+    SubscriberEntity $subscriber,
+    SendingQueueEntity $queue,
+    bool $wpUserPreview
+  ) {
     if (preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
       if (!$shortcode['action']) $this->abort();
       $url = Link::processShortcodeAction(

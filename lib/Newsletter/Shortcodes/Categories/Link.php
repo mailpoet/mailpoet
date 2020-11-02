@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -127,6 +128,9 @@ class Link {
   private static function getSendingQueueId($queue) {
     if ($queue instanceof Sending) {
       return (int)$queue->id;
+    }
+    if ($queue instanceof SendingQueueEntity) {
+      return $queue->getId();
     }
     return null;
   }

@@ -5,11 +5,11 @@ namespace MailPoet\Newsletter\Shortcodes;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Shortcodes {
+  const SHORTCODE_CATEGORY_NAMESPACE = 'MailPoet\Newsletter\Shortcodes\Categories\\';
   public $newsletter;
   public $subscriber;
   public $queue;
   public $wpUserPreview;
-  const SHORTCODE_CATEGORY_NAMESPACE = 'MailPoet\Newsletter\Shortcodes\Categories\\';
 
   public function __construct(
     $newsletter = false,

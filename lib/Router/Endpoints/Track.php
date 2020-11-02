@@ -3,15 +3,16 @@
 namespace MailPoet\Router\Endpoints;
 
 use MailPoet\Config\AccessControl;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
+use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
+use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Subscribers\LinkTokens;
-use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Track {
@@ -35,10 +36,34 @@ class Track {
   /** @var LinkTokens */
   private $linkTokens;
 
-  public function __construct(Clicks $clicks, Opens $opens, LinkTokens $linkTokens) {
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
+  /** @var NewsletterLinkRepository */
+  private $newsletterLinkRepository;
+
+  public function __construct(
+    Clicks $clicks,
+    Opens $opens,
+    SendingQueuesRepository $sendingQueuesRepository,
+    SubscribersRepository $subscribersRepository,
+    NewslettersRepository $newslettersRepository,
+    NewsletterLinkRepository $newsletterLinkRepository,
+    LinkTokens $linkTokens
+  ) {
     $this->clicks = $clicks;
     $this->opens = $opens;
     $this->linkTokens = $linkTokens;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
+    $this->subscribersRepository = $subscribersRepository;
+    $this->newslettersRepository = $newslettersRepository;
+    $this->newsletterLinkRepository = $newsletterLinkRepository;
   }
 
   public function click($data) {
@@ -57,34 +82,33 @@ class Track {
     ) {
       return false;
     }
-    $data->queue = SendingQueue::findOne($data->queue_id); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    if ($data->queue instanceof SendingQueue) {
-      $data->queue = SendingTask::createFromQueue($data->queue);
-    }
-    $data->subscriber = Subscriber::findOne($data->subscriber_id) ?: null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $data->newsletter = (!empty($data->queue->newsletter_id)) ? // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      Newsletter::findOne($data->queue->newsletter_id) : // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      false;
+    $data->queue = $this->sendingQueuesRepository->findOneById($data->queue_id);// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $data->subscriber = $this->subscribersRepository->findOneById($data->subscriber_id); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $data->newsletter = $this->newslettersRepository->findOneById($data->newsletter_id); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     if (!empty($data->link_hash)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      $data->link = NewsletterLink::where('hash', $data->link_hash) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        ->where('queue_id', $data->queue_id) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        ->findOne();
+      $data->link = $this->newsletterLinkRepository->findOneBy([
+        'hash' => $data->link_hash, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        'queue' => $data->queue_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      ]);
     }
     return $this->_validateTrackData($data);
   }
 
   public function _validateTrackData($data) {
     if (!$data->subscriber || !$data->queue || !$data->newsletter) return false;
-    $subscriberTokenMatch = $this->linkTokens->verifyToken($data->subscriber, $data->subscriber_token); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $subscriberModel = Subscriber::findOne($data->subscriber->getId());
+    $subscriberTokenMatch = $this->linkTokens->verifyToken($subscriberModel, $data->subscriber_token); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     if (!$subscriberTokenMatch) {
       $this->terminate(403);
     }
     // return if this is a WP user previewing the newsletter
-    if ($data->subscriber->isWPUser() && $data->preview) {
+    if ($subscriberModel->isWPUser() && $data->preview) {
       return $data;
     }
     // check if the newsletter was sent to the subscriber
-    return ($data->queue->isSubscriberProcessed($data->subscriber->id)) ?
+    $queue = SendingQueue::findOne($data->queue_id); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    if (!$queue instanceof SendingQueue) return false;
+    return ($queue->isSubscriberProcessed($data->subscriber->getId())) ?
       $data :
       false;
   }
