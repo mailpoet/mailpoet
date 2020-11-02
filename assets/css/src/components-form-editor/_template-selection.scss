@@ -34,7 +34,7 @@ $templates-one-column-breakpoint: 2 * ($mailpoet-form-template-thumbnail-width +
 /**
  The header uses grid to position heading in center (second column) and a new form button on right (third column)
  */
-.template-selection-header {
+.mailpoet-template-selection-header {
   @include formTemplatesGrid;
   background: $color-input-background;
   border-bottom: 1px solid $color-tertiary-light;
