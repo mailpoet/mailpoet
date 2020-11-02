@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.5
-Stable tag: 3.54.0
+Stable tag: 3.54.1
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,15 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.54.1 - 2020-11-02 =
+* Added: option to bulk unsubscribe subscribers;
+* Improved: removed default form, added button to create new form;
+* Improved: new font;
+* Improved: skip form templates, build form from scratch;
+* Improved: you can now disable all 3rd party libraries in settings;
+* Improved: added Abandoned Cart Content block to templates for new users;
+* Improved: redesigned import, export and settings pages.
 
 = 3.54.0 - 2020-10-27 =
 * Added: new form templates;
