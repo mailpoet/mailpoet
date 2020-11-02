@@ -94,6 +94,19 @@ jQuery(($) => {
     });
   }
 
+  function hideSucessMessage(form) {
+    // hide success message
+    form.find('.mailpoet_validate_success').hide();
+    // show all form elements
+    form.children().css('visibility', '');
+    // remove class that form was successfully send
+    form.removeClass('mailpoet_form_successfully_send');
+    // show elements marked with a class
+    form.find('.mailpoet_form_hide_on_success').each(function hideOnSuccess() {
+      $(this).show();
+    });
+  }
+
   function showForm(formDiv, showOverlay = false) {
     const form = formDiv.find('form');
     let delay = form.data('delay');
@@ -191,6 +204,10 @@ jQuery(($) => {
         // Disable form submit in preview mode
         const formDiv = form.parent('.mailpoet_form');
         if (formDiv && formDiv.data('is-preview')) {
+          displaySuccessMessage(form);
+          setTimeout(() => {
+            hideSucessMessage(form);
+          }, 2500);
           return false;
         }
         const formData = form.mailpoetSerializeObject() || {};
