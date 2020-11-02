@@ -81,6 +81,19 @@ jQuery(($) => {
     }
   }
 
+  function displaySuccessMessage(form) {
+    // hide all form elements instead of .mailpoet_message
+    form.children().not('.mailpoet_message').css('visibility', 'hidden');
+    // add class that form was successfully send
+    form.toggleClass('mailpoet_form_successfully_send');
+    // display success message
+    form.find('.mailpoet_validate_success').show();
+    // hide elements marked with a class
+    form.find('.mailpoet_form_hide_on_success').each(function hideOnSuccess() {
+      $(this).hide();
+    });
+  }
+
   function showForm(formDiv, showOverlay = false) {
     const form = formDiv.find('form');
     let delay = form.data('delay');
@@ -232,12 +245,7 @@ jQuery(($) => {
               // go to page
               window.location.href = response.meta.redirect_url;
             } else {
-              // display success message
-              form.find('.mailpoet_validate_success').show();
-              // hide elements marked with a class
-              form.find('.mailpoet_form_hide_on_success').each(function hideOnSuccess() {
-                $(this).hide();
-              });
+              displaySuccessMessage(form);
             }
 
             // reset form
