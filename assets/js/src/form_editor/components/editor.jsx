@@ -107,9 +107,11 @@ export default () => {
                 settings={editorSettings}
                 useSubRegistry={false}
               >
-                <div className="interface-interface-skeleton__left-sidebar">
-                  {isInserterOpen && (<Inserter setIsInserterOpened={setIsInserterOpen} />)}
-                </div>
+                {(isInserterOpen) && (
+                  <div className="interface-interface-skeleton__left-sidebar">
+                    <Inserter setIsInserterOpened={setIsInserterOpen} />
+                  </div>
+                )}
                 <div className="interface-interface-skeleton__content">
                   <Notices />
                   <Popover.Slot name="block-toolbar" />
@@ -128,9 +130,11 @@ export default () => {
                     </div>
                   </BlockSelectionClearer>
                 </div>
-                <div className="interface-interface-skeleton__sidebar">
-                  { sidebarOpened ? <Sidebar /> : null }
-                </div>
+                {(sidebarOpened) && (
+                  <div className="interface-interface-skeleton__sidebar">
+                    <Sidebar />
+                  </div>
+                )}
               </BlockEditorProvider>
             </div>
             <FormStyles />
