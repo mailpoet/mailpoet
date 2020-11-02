@@ -72,7 +72,7 @@ export default () => {
         </Button>
       </div>
       {selectTemplateFailed && <Notice type="error" scroll renderInPlace><p>{MailPoet.I18n.t('createFormError')}</p></Notice>}
-      <div className="template-selection" data-automation-id="template_selection_list">
+      <div data-automation-id="template_selection_list">
         <Background color="#fff" />
         <div className="mailpoet-templates">
           <Categories
