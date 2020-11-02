@@ -31,8 +31,12 @@ class WP {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(WPFunctions $wp) {
+  /** @var WelcomeScheduler */
+  private $welcomeScheduler;
+
+  public function __construct(WPFunctions $wp, WelcomeScheduler $welcomeScheduler) {
     $this->wp = $wp;
+    $this->welcomeScheduler = $welcomeScheduler;
   }
 
   public function synchronizeUser($wpUserId, $oldWpUserData = false) {
@@ -143,8 +147,7 @@ class WP {
         $scheduleWelcomeNewsletter = true;
       }
       if ($scheduleWelcomeNewsletter === true) {
-        $scheduler = new WelcomeScheduler();
-        $scheduler->scheduleWPUserWelcomeNotification(
+        $this->welcomeScheduler->scheduleWPUserWelcomeNotification(
           $subscriber->id,
           (array)$wpUser,
           (array)$oldWpUserData
