@@ -62,7 +62,7 @@ export default () => {
           index < 4 && (<link key={`thumbnail_prefetch_${template.id}`} rel="preload" href={template.thumbnail} as="image" />)
         ))
       ))}
-      <div className="template-selection-header">
+      <div className="mailpoet-template-selection-header">
         <Heading level={4}>{MailPoet.I18n.t('selectTemplate')}</Heading>
         <Button
           automationId="create_blank_form"
