@@ -387,6 +387,11 @@ class NewsletterEntity {
     return $option ?: null;
   }
 
+  public function getOptionValue(string $name) {
+    $option = $this->getOption($name);
+    return $option ? $option->getValue() : null;
+  }
+
   /**
    * @return SendingQueueEntity[]|ArrayCollection
    */
