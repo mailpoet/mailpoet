@@ -262,6 +262,22 @@ class WPTest extends \MailPoetTest {
     expect($subscribersCount)->equals(1);
   }
 
+  public function testItSynchronizesNewUsersToDisabledWPSegmentAsUnconfirmedAndTrashed() {
+    $this->disableWpSegment();
+    $this->settings->set('signup_confirmation.enabled', '1');
+    $id = $this->insertUser();
+    $id2 = $this->insertUser();
+    $this->wpSegment->synchronizeUsers();
+    $subscribersCount = $this->getSubscribersCount();
+    expect($subscribersCount)->equals(2);
+    $subscriber1 = Subscriber::where("wp_user_id", $id)->findOne();
+    expect($subscriber1->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    expect($subscriber1->deletedAt)->equals(Carbon::now(), 1);
+    $subscriber2 = Subscriber::where("wp_user_id", $id2)->findOne();
+    expect($subscriber2->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    expect($subscriber2->deletedAt)->equals(Carbon::now(), 1);
+  }
+
   public function testItRemovesOrphanedSubscribers() {
     $this->insertUser();
     $id = $this->insertUser();
@@ -396,9 +412,7 @@ class WPTest extends \MailPoetTest {
   }
 
   public function testItAddsNewUserToDisabledWpSegmentAsUnconfirmedAndTrashed() {
-    $segment = Segment::getWPSegment();
-    $segment->deletedAt = Carbon::now();
-    $segment->save();
+    $this->disableWpSegment();
     $id = $this->insertUser();
     $wp = $worker = Stub::make(
       $this->diContainer->get(Functions::class),
@@ -415,9 +429,7 @@ class WPTest extends \MailPoetTest {
   }
 
   public function testItDoesNotSendConfirmationEmailForNewUserWhenWPSegmentIsDisabledOnRegisterEnabled() {
-    $segment = Segment::getWPSegment();
-    $segment->deletedAt = Carbon::now();
-    $segment->save();
+    $this->disableWpSegment();
     $this->settings->set('sender', [
       'address' => 'sender@mailpoet.com',
       'name' => 'Sender',
@@ -574,5 +586,11 @@ class WPTest extends \MailPoetTest {
       UPDATE ' . MP_SUBSCRIBERS_TABLE . '
       SET `email` = "" WHERE `id` = ' . $subscriber->id
     );
+  }
+
+  private function disableWpSegment() {
+    $segment = Segment::getWPSegment();
+    $segment->deletedAt = Carbon::now();
+    $segment->save();
   }
 }
