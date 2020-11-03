@@ -1,13 +1,20 @@
+/* eslint-disable no-undef */
 import React from 'react';
 import {
   Button,
+  MenuGroup,
+  DropdownMenu,
   ToolbarItem,
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { plus } from '@wordpress/icons';
+import {
+  moreVertical,
+  plus,
+} from '@wordpress/icons';
 import { __, _x } from '@wordpress/i18n';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
+import FeatureToggle from './feature_toggle';
 
 const Header = ({ isInserterOpened, setIsInserterOpened }) => {
   const sidebarOpened = useSelect(
@@ -22,6 +29,7 @@ const Header = ({ isInserterOpened, setIsInserterOpened }) => {
     (select) => select('mailpoet-form-editor').getIsPreviewShown(),
     []
   );
+  const isFullsScreen = true;
   const { toggleSidebar, saveForm, showPreview } = useDispatch('mailpoet-form-editor');
 
   return (
@@ -53,6 +61,22 @@ const Header = ({ isInserterOpened, setIsInserterOpened }) => {
           isPressed={sidebarOpened}
           className="mailpoet-editor-header-button"
         />
+        <DropdownMenu
+          icon={moreVertical}
+          label="More tools & options"
+        >
+          {() => (
+            <MenuGroup label="View" className="mailpoet-dropdown-menu-group">
+              <FeatureToggle
+                shortcut="Ctrl+Shift+Alt+F"
+                label="Fullscreen mode"
+                info="Work without distraction"
+                isActive={isFullsScreen}
+                onToggle={() => console.log('click')}
+              />
+            </MenuGroup>
+          )}
+        </DropdownMenu>
       </div>
       <div className="edit-post-header__toolbar">
         <div className="toolbar">
