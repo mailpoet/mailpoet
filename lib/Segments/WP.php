@@ -21,13 +21,6 @@ use MailPoetVendor\Idiorm\ORM;
 
 class WP {
 
-  /**
-   * Cache for newly created WP users. Method `synchronizeUser` may be triggered multiple times within a request.
-   * This property is used to remember which WP users were newly created so that we can distinguish them in subsequent calls.
-   * @var array
-   */
-  private $newWPUsers = [];
-
   /** @var WPFunctions */
   private $wp;
 
@@ -54,10 +47,6 @@ class WP {
     return $this->createOrUpdateSubscriber($currentFilter, $wpUser, $subscriber, $oldWpUserData);
   }
 
-  private function isNewWpUser($wpUserId) {
-    return isset($this->newWPUsers[$wpUserId]);
-  }
-
   private function deleteSubscriber($subscriber) {
     if ($subscriber !== false) {
       // unlink subscriber from wp user and delete
@@ -70,11 +59,6 @@ class WP {
     // Add or update
     $wpSegment = Segment::getWPSegment();
     if (!$wpSegment) return;
-
-    // Remember that user was newly added
-    if ($currentFilter === 'user_register') {
-      $this->newWPUsers[$wpUser->ID] = true;
-    }
 
     // find subscriber by email when is false
     if (!$subscriber) {
@@ -105,7 +89,7 @@ class WP {
       unset($data['source']); // don't override status for existing users
     }
 
-    $addingNewUserToDisabledWPSegment = $wpSegment->deletedAt !== null && $this->isNewWpUser($wpUser->ID);
+    $addingNewUserToDisabledWPSegment = $wpSegment->deletedAt !== null && $currentFilter === 'user_register';
 
     $otherActiveSegments = [];
     if ($subscriber) {
