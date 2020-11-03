@@ -2,10 +2,13 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -20,21 +23,31 @@ class WelcomeScheduler {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function __construct(
     SubscribersRepository $subscribersRepository,
-    SegmentsRepository $segmentsRepository
+    SegmentsRepository $segmentsRepository,
+    NewslettersRepository $newslettersRepository,
+    ScheduledTasksRepository $scheduledTasksRepository
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->segmentsRepository = $segmentsRepository;
+    $this->newslettersRepository = $newslettersRepository;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
   }
 
   public function scheduleSubscriberWelcomeNotification($subscriberId, $segments) {
-    $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_WELCOME);
+    $newsletters = $this->newslettersRepository->findActiveByTypes([NewsletterEntity::TYPE_WELCOME]);
     if (empty($newsletters)) return false;
     $result = [];
     foreach ($newsletters as $newsletter) {
-      if ($newsletter->event === 'segment' &&
-        in_array($newsletter->segment, $segments)
+      if ($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EVENT) === 'segment' &&
+        in_array($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SEGMENT), $segments)
       ) {
         $sendingTask = $this->createWelcomeNotificationSendingTask($newsletter, $subscriberId);
         if ($sendingTask) {
@@ -50,59 +63,58 @@ class WelcomeScheduler {
     $wpUser,
     $oldUserData = false
   ) {
-    $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_WELCOME);
+    $newsletters = $this->newslettersRepository->findActiveByTypes([NewsletterEntity::TYPE_WELCOME]);
     if (empty($newsletters)) return false;
     foreach ($newsletters as $newsletter) {
-      if ($newsletter->event === 'user') {
-        if (!empty($oldUserData['roles'])) {
-          // do not schedule welcome newsletter if roles have not changed
-          $oldRole = $oldUserData['roles'];
-          $newRole = $wpUser['roles'];
-          if ($newsletter->role === self::WORDPRESS_ALL_ROLES ||
-            !array_diff($oldRole, $newRole)
-          ) {
-            continue;
-          }
-        }
-        if ($newsletter->role === self::WORDPRESS_ALL_ROLES ||
-          in_array($newsletter->role, $wpUser['roles'])
+      if ($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EVENT) !== 'user') {
+        continue;
+      }
+      $newsletterRole = $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_ROLE);
+      if (!empty($oldUserData['roles'])) {
+        // do not schedule welcome newsletter if roles have not changed
+        $oldRole = $oldUserData['roles'];
+        $newRole = $wpUser['roles'];
+        if ($newsletterRole === self::WORDPRESS_ALL_ROLES ||
+          !array_diff($oldRole, $newRole)
         ) {
-          $this->createWelcomeNotificationSendingTask($newsletter, $subscriberId);
+          continue;
         }
+      }
+      if ($newsletterRole === self::WORDPRESS_ALL_ROLES ||
+        in_array($newsletterRole, $wpUser['roles'])
+      ) {
+        $this->createWelcomeNotificationSendingTask($newsletter, $subscriberId);
       }
     }
   }
 
-  public function createWelcomeNotificationSendingTask($newsletter, $subscriberId) {
+  public function createWelcomeNotificationSendingTask(NewsletterEntity $newsletter, $subscriberId) {
     $subscriber = $this->subscribersRepository->findOneById($subscriberId);
     if (!($subscriber instanceof SubscriberEntity) || $subscriber->getDeletedAt() !== null) {
       return;
     }
-    if ($newsletter->event === 'segment') {
-      $segment = $this->segmentsRepository->findOneById((int)$newsletter->segment);
+    if ($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EVENT) === 'segment') {
+      $segment = $this->segmentsRepository->findOneById((int)$newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SEGMENT));
       if ((!$segment instanceof SegmentEntity) || $segment->getDeletedAt() !== null) {
         return;
       }
     }
-    if ($newsletter->event === 'user') {
+    if ($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EVENT) === 'user') {
       $segment = $this->segmentsRepository->getWPUsersSegment();
       if ((!$segment instanceof SegmentEntity) || $segment->getDeletedAt() !== null) {
         return;
       }
     }
-    $previouslyScheduledNotification = SendingQueue::joinWithSubscribers()
-      ->where('queues.newsletter_id', $newsletter->id)
-      ->where('subscribers.subscriber_id', $subscriberId)
-      ->findOne();
+    $previouslyScheduledNotification = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($newsletter, $subscriberId);
     if (!empty($previouslyScheduledNotification)) return;
     $sendingTask = SendingTask::create();
-    $sendingTask->newsletterId = $newsletter->id;
+    $sendingTask->newsletterId = $newsletter->getId();
     $sendingTask->setSubscribers([$subscriberId]);
     $sendingTask->status = SendingQueue::STATUS_SCHEDULED;
     $sendingTask->priority = SendingQueue::PRIORITY_HIGH;
     $sendingTask->scheduledAt = Scheduler::getScheduledTimeWithDelay(
-      $newsletter->afterTimeType,
-      $newsletter->afterTimeNumber
+      $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE),
+      $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER)
     );
     return $sendingTask->save();
   }

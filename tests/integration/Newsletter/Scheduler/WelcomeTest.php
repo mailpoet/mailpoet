@@ -2,6 +2,9 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
@@ -32,25 +35,29 @@ class WelcomeTest extends \MailPoetTest {
   /** @var SegmentEntity */
   private $wpSegment;
 
+  /** @var NewsletterEntity */
+  private $newsletter;
+
   public function _before() {
     parent::_before();
     $this->welcomeScheduler = $this->diContainer->get(WelcomeScheduler::class);
     $this->subscriber = $this->createSubscriber('welcome_test_1@example.com');
     $this->segment = $this->createSegment('welcome_segment');
     $this->wpSegment = $this->createSegment('Wordpress', SegmentEntity::TYPE_WP_USERS);
+    $this->newsletter = $this->createWelcomeNewsletter();
   }
 
   public function testItDoesNotCreateDuplicateWelcomeNotificationSendingTasks() {
-    $newsletter = (object)[
-      'id' => 1,
+    $newsletter = $this->configureNewsletterWithOptions($this->newsletter, [
       'afterTimeNumber' => 2,
       'afterTimeType' => 'hours',
       'event' => 'segment',
       'segment' => $this->segment->getId(),
-    ];
+    ]);
+
     $existingSubscriber = $this->subscriber->getId();
     $existingQueue = SendingTask::create();
-    $existingQueue->newsletterId = $newsletter->id;
+    $existingQueue->newsletterId = $newsletter->getId();
     $existingQueue->setSubscribers([$existingSubscriber]);
     $existingQueue->save();
 
@@ -65,15 +72,14 @@ class WelcomeTest extends \MailPoetTest {
   }
 
   public function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInHours() {
-    $newsletter = (object)[
-      'id' => 1,
+    // queue is scheduled delivery in 2 hours
+    $newsletter = $this->configureNewsletterWithOptions($this->newsletter, [
       'afterTimeNumber' => 2,
+      'afterTimeType' => 'hours',
       'event' => 'segment',
       'segment' => $this->segment->getId(),
-    ];
+    ]);
 
-    // queue is scheduled delivery in 2 hours
-    $newsletter->afterTimeType = 'hours';
     $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $queue = SendingQueue::findTaskByNewsletterId(1)
       ->findOne();
@@ -86,15 +92,14 @@ class WelcomeTest extends \MailPoetTest {
   }
 
   public function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInDays() {
-    $newsletter = (object)[
-      'id' => 1,
+    // queue is scheduled for delivery in 2 days
+    $newsletter = $this->configureNewsletterWithOptions($this->newsletter, [
       'afterTimeNumber' => 2,
+      'afterTimeType' => 'days',
       'event' => 'segment',
       'segment' => $this->segment->getId(),
-    ];
+    ]);
 
-    // queue is scheduled for delivery in 2 days
-    $newsletter->afterTimeType = 'days';
     $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
@@ -107,15 +112,14 @@ class WelcomeTest extends \MailPoetTest {
   }
 
   public function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInWeeks() {
-    $newsletter = (object)[
-      'id' => 1,
+    // queue is scheduled for delivery in 2 weeks
+    $newsletter = $this->configureNewsletterWithOptions($this->newsletter, [
       'afterTimeNumber' => 2,
+      'afterTimeType' => 'weeks',
       'event' => 'segment',
       'segment' => $this->segment->getId(),
-    ];
+    ]);
 
-    // queue is scheduled for delivery in 2 weeks
-    $newsletter->afterTimeType = 'weeks';
     $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
@@ -128,15 +132,14 @@ class WelcomeTest extends \MailPoetTest {
   }
 
   public function testItCreatesWelcomeNotificationSendingTaskScheduledToSendImmediately() {
-    $newsletter = (object)[
-      'id' => 1,
+    // queue is scheduled for immediate delivery
+    $newsletter = $this->configureNewsletterWithOptions($this->newsletter, [
       'afterTimeNumber' => 2,
+      'afterTimeType' => null,
       'event' => 'segment',
       'segment' => $this->segment->getId(),
-    ];
+    ]);
 
-    // queue is scheduled for immediate delivery
-    $newsletter->afterTimeType = null;
     $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
@@ -426,6 +429,37 @@ class WelcomeTest extends \MailPoetTest {
       $newsletterOption->save();
       expect($newsletterOption->getErrors())->false();
     }
+  }
+
+  private function createWelcomeNewsletter($status = NewsletterEntity::STATUS_ACTIVE): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Welcome Newsletter');
+    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter->setStatus($status);
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    return $newsletter;
+  }
+
+  private function configureNewsletterWithOptions(NewsletterEntity $newsletter, array $options) {
+    foreach ($options as $optionFieldName => $optionValue) {
+      $optionField = $this->entityManager->getRepository(NewsletterOptionFieldEntity::class)->findOneBy([
+        'name' => $optionFieldName,
+        'newsletterType' => NewsletterEntity::TYPE_WELCOME,
+      ]);
+      if (!$optionField instanceof NewsletterOptionFieldEntity) {
+        $optionField = new NewsletterOptionFieldEntity();
+        $optionField->setNewsletterType(NewsletterEntity::TYPE_WELCOME);
+        $optionField->setName($optionFieldName);
+        $this->entityManager->persist($optionField);
+      }
+      $option = new NewsletterOptionEntity($newsletter, $optionField);
+      $option->setValue($optionValue);
+      $this->entityManager->persist($option);
+      $newsletter->getOptions()->add($option);
+    }
+    $this->entityManager->flush();
+    return $newsletter;
   }
 
   private function createSubscriber($email): SubscriberEntity {
