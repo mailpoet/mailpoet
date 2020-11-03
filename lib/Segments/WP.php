@@ -204,9 +204,17 @@ class WP {
 
   private function insertSubscribers() {
     global $wpdb;
+    $wpSegment = Segment::getWPSegment();
+    if (!$wpSegment) return;
+    if ($wpSegment->deletedAt !== null) {
+      $subscriberStatus = SubscriberEntity::STATUS_UNCONFIRMED;
+      $deletedAt = 'CURRENT_TIMESTAMP()';
+    } else {
+      $signupConfirmationEnabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
+      $subscriberStatus = $signupConfirmationEnabled ? SubscriberEntity::STATUS_UNCONFIRMED : SubscriberEntity::STATUS_SUBSCRIBED;
+      $deletedAt = 'null';
+    }
     $subscribersTable = Subscriber::$_table;
-    $signupConfirmationEnabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
-
     $inserterdUserIds = ORM::for_table($wpdb->users)->raw_query(sprintf(
       'SELECT %2$s.id, %2$s.user_email as email FROM %2$s
         LEFT JOIN %1$s AS mps ON mps.wp_user_id = %2$s.id
@@ -215,8 +223,8 @@ class WP {
 
     Subscriber::rawExecute(sprintf(
       '
-        INSERT IGNORE INTO %1$s(wp_user_id, email, status, created_at, source)
-        SELECT wu.id, wu.user_email, "%4$s", CURRENT_TIMESTAMP(), "%3$s" FROM %2$s wu
+        INSERT IGNORE INTO %1$s(wp_user_id, email, status, created_at, `source`, deleted_at)
+        SELECT wu.id, wu.user_email, "%4$s", CURRENT_TIMESTAMP(), "%3$s", %5$s FROM %2$s wu
           LEFT JOIN %1$s mps ON wu.id = mps.wp_user_id
           WHERE mps.wp_user_id IS NULL AND wu.user_email != ""
         ON DUPLICATE KEY UPDATE wp_user_id = wu.id
@@ -224,7 +232,8 @@ class WP {
       $subscribersTable,
       $wpdb->users,
       Source::WORDPRESS_USER,
-      $signupConfirmationEnabled ? Subscriber::STATUS_UNCONFIRMED : Subscriber::STATUS_SUBSCRIBED
+      $subscriberStatus,
+      $deletedAt
     ));
 
     return $inserterdUserIds;
