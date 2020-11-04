@@ -42,6 +42,13 @@ export default () => {
     // We just keep it null
   }
 
+  let fullscreenStatus = null;
+  try {
+    fullscreenStatus = JSON.parse(window.localStorage.getItem('mailpoet_form_view_options'));
+  } catch (e) {
+    fullscreenStatus = 'disabled';
+  }
+
   const defaultState = {
     formBlocks,
     formData: mapFormDataAfterLoading(formData),
@@ -63,6 +70,7 @@ export default () => {
       openedPanels: ['basic-settings'],
     },
     previewSettings,
+    fullscreenStatus,
     editorUrl: window.location.href,
     previewPageUrl: window.mailpoet_form_preview_page,
     closeIconsUrl: window.mailpoet_close_icons_url,

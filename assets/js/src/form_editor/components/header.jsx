@@ -29,8 +29,16 @@ const Header = ({ isInserterOpened, setIsInserterOpened }) => {
     (select) => select('mailpoet-form-editor').getIsPreviewShown(),
     []
   );
-  const isFullsScreen = true;
-  const { toggleSidebar, saveForm, showPreview } = useDispatch('mailpoet-form-editor');
+  const isFullscreen = useSelect(
+    (select) => select('mailpoet-form-editor').isFullscreenEnabled(),
+    []
+  );
+  const {
+    toggleSidebar,
+    saveForm,
+    showPreview,
+    toggleFullscreen,
+  } = useDispatch('mailpoet-form-editor');
 
   return (
     <div className="edit-post-header">
@@ -71,8 +79,8 @@ const Header = ({ isInserterOpened, setIsInserterOpened }) => {
                 shortcut="Ctrl+Shift+Alt+F"
                 label="Fullscreen mode"
                 info="Work without distraction"
-                isActive={isFullsScreen}
-                onToggle={() => console.log('click')}
+                isActive={isFullscreen}
+                onToggle={() => toggleFullscreen(!isFullscreen)}
               />
             </MenuGroup>
           )}

@@ -21,6 +21,18 @@ export function toggleForm(enabled) {
   };
 }
 
+export function* toggleFullscreen(toggleTo) {
+  yield {
+    type: 'STORE_LOCALLY',
+    key: 'mailpoet_form_view_options',
+    value: toggleTo,
+  };
+  yield {
+    type: 'TOGGLE_FULLSCREEN',
+    toggleTo,
+  };
+}
+
 export function changeFormBlocks(blocks) {
   return {
     type: 'CHANGE_FORM_BLOCKS',

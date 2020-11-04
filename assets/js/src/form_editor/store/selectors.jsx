@@ -19,6 +19,9 @@ export default {
   isFormEnabled(state) {
     return state.formData.status === 'enabled';
   },
+  isFullscreenEnabled(state) {
+    return state.fullscreenStatus;
+  },
   getSidebarOpened(state) {
     return state.sidebarOpened;
   },
