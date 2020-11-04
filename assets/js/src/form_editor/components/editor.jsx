@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '@wordpress/core-data';
 import { select, useSelect, useDispatch } from '@wordpress/data';
 import {
@@ -43,6 +43,10 @@ export default () => {
     (sel) => sel('mailpoet-form-editor').getSidebarOpened(),
     []
   );
+  const isFullscreen = useSelect(
+    (sel) => sel('mailpoet-form-editor').isFullscreenEnabled(),
+    []
+  );
   const canUserUpload = useSelect(
     (sel) => sel('core').canUser('create', 'media'),
     []
@@ -62,6 +66,14 @@ export default () => {
   );
 
   const { blocksChangedInBlockEditor } = useDispatch('mailpoet-form-editor');
+
+  useEffect(() => {
+    if (isFullscreen) {
+      document.body.classList.add('is-fullscreen-mode');
+    } else {
+      document.body.classList.remove('is-fullscreen-mode');
+    }
+  }, [isFullscreen]);
 
   // Editor settings - see @wordpress/block-editor/src/store/defaults.js
   const editorSettings = {

@@ -34,6 +34,7 @@ import {
   disableForm,
   enableForm,
 } from './reducers/toggle_form';
+import toggleFullscreen from './reducers/toggle_fullscreen';
 
 const createCustomFieldStarted = createCustomFieldStartedFactory(MailPoet);
 const saveFormStarted = saveFormStartedFactory(MailPoet);
@@ -42,6 +43,7 @@ export default (defaultState) => (state = defaultState, action) => {
   switch (action.type) {
     case 'ENABLE_FORM': return enableForm(state);
     case 'DISABLE_FORM': return disableForm(state);
+    case 'TOGGLE_FULLSCREEN': return toggleFullscreen(state, action);
     case 'CREATE_CUSTOM_FIELD_DONE': return createCustomFieldDone(state, action);
     case 'CREATE_CUSTOM_FIELD_FAILED': return createCustomFieldFailed(state, action);
     case 'CREATE_CUSTOM_FIELD_STARTED': return createCustomFieldStarted(state, action);
