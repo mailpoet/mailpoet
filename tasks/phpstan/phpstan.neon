@@ -4,6 +4,13 @@ parameters:
   bootstrapFiles:
     - ../../vendor/autoload.php
     - bootstrap.php
+  scanFiles:
+    - PremiumContainerConfigurator.php
+    - woocommerce.php
+    - ../../vendor-prefixed/twig/twig/src/Extension/CoreExtension.php # phpstan can't find \MailPoetVendor\twig_include function
+  scanDirectories:
+    - ../../../../../wp-includes
+    - ../../../../../wp-admin/includes/
   inferPrivatePropertyTypeFromConstructor: true
   parallel:
     processTimeout: 300.0
