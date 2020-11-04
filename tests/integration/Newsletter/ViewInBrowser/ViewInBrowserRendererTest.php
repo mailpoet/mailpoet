@@ -10,6 +10,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -153,6 +154,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     $viewInBrowser = new ViewInBrowserRenderer(
       $emoji,
       $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Renderer::class)
     );
     $renderedBody = $viewInBrowser->render(

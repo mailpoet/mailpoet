@@ -27,9 +27,17 @@ class Clicks {
   /** @var Cookies */
   private $cookies;
 
-  public function __construct(SettingsController $settingsController, Cookies $cookies) {
+  /** @var Shortcodes */
+  private $shortcodes;
+
+  public function __construct(
+    SettingsController $settingsController,
+    Cookies $cookies,
+    Shortcodes $shortcodes
+  ) {
     $this->settingsController = $settingsController;
     $this->cookies = $cookies;
+    $this->shortcodes = $shortcodes;
   }
 
   /**
@@ -115,8 +123,11 @@ class Clicks {
         $wpUserPreview
       );
     } else {
-      $shortcodes = new Shortcodes($newsletter, $subscriber, $queue, $wpUserPreview);
-      $url = $shortcodes->replace($url);
+      $this->shortcodes->setQueue($queue);
+      $this->shortcodes->setNewsletter($newsletter);
+      $this->shortcodes->setSubscriber($subscriber);
+      $this->shortcodes->setWpUserPreview($wpUserPreview);
+      $url = $this->shortcodes->replace($url);
     }
     return $url;
   }

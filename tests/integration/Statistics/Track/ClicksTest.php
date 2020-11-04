@@ -15,6 +15,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Subscribers\LinkTokens;
@@ -75,13 +76,15 @@ class ClicksTest extends \MailPoetTest {
       'link' => $link,
       'preview' => false,
     ];
-    $queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->getId()));
+    $queue = SendingQueue::findOne($queue->getId());
+    assert($queue instanceof SendingQueue);
+    $queue = SendingTask::createFromQueue($queue);
     $queue->updateProcessedSubscribers([$subscriberModel->id]);
     // instantiate class
     $this->settingsController = Stub::makeEmpty(SettingsController::class, [
       'get' => false,
     ], $this);
-    $this->clicks = new Clicks($this->settingsController, new Cookies());
+    $this->clicks = new Clicks($this->settingsController, new Cookies(), $this->diContainer->get(Shortcodes::class));
   }
 
   public function testItAbortsWhenTrackDataIsEmptyOrMissingLink() {
