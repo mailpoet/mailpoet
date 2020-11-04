@@ -350,11 +350,6 @@ class Initializer {
       'mailpoet_newsletters_translations_after',
       [$this, 'includeAutomaticEmailsData']
     );
-
-    WPFunctions::get()->addAction(
-      'mailpoet_newsletter_editor_after_javascript',
-      [$this, 'includeAutomaticEmailsData']
-    );
   }
 
   private function setupWoocommerceTransactionalEmails() {
