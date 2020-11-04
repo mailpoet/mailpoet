@@ -34,10 +34,12 @@
       var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email) | escape('js') %>';
       var mailpoet_feature_flags = <%= json_encode(mailpoet_feature_flags) %>;
 
+      var mailpoet_woocommerce_automatic_emails = <%= json_encode(automatic_emails) %>;
+      var mailpoet_woocommerce_optin_on_checkout = "<%= woocommerce_optin_on_checkout %>";
+
       var mailpoet_woocommerce_active = <%= json_encode(is_woocommerce_active) %>;
       var mailpoet_woocommerce_transactional_email_id = <%= json_encode(woocommerce_transactional_email_id) %>;
       var mailpoet_display_detailed_stats = <%= json_encode(display_detailed_stats) %>;
-      var mailpoet_automatic_emails = <%= json_encode(automatic_emails) %>;
       var mailpoet_last_announcement_seen = <%= json_encode(last_announcement_seen) %>;
       var mailpoet_user_locale = '<%= get_locale() %>';
       var mailpoet_congratulations_success_images = [
@@ -383,7 +385,6 @@
     'soon': __('Soon'),
     'beta': __('Beta'),
     'errorWhileTakingScreenshot': __('An error occurred while saving the template in "Recently sent"'),
-    'selectAutomaticEmailsEventsHeading': __('Select %$1s events'),
     'cronNotAccessibleNotice': __('Oops! There seems to be an issue with the sending on your website. [link]See our guide[/link] to solve this yourself.'),
 
     'whatsNew': __("What’s new"),
@@ -435,6 +436,17 @@
 
     'gaCampaignLine': __('Google Analytics Campaign'),
     'gaCampaignTip': __('For example, “Spring email”. [link]Read the guide.[/link]'),
+
+    'automaticEmail': __('Automatic Email'),
+    'tip': __('Tip:'),
+    'selectAutomaticEmailsEventsConditionsHeading': __("Select %1s events conditions"),
+    'sendAutomaticEmailWhenHeading': __('Send this %1s Automatic Email when...'),
+    'automaticEmailActivated': __('Your %1s Automatic Email is now activated!'),
+    'automaticEmailActivationFailed': __('Your %1s Automatic Email could not be activated, please check the settings.'),
+    'automaticEmailEventOptionsNotConfigured': __('You need to configure email options before this email can be sent.'),
+    'sentToXCustomers': __('Sent to %$1d customers'),
+    'wooCommerceEmailsWarning': __('WooCommerce emails won’t be sent to new customers because the opt-in on checkout is disabled. Enable it so they can immediately get your emails after their first purchase.'),
+    'wooCommerceEmailsWarningLink': __('Edit WooCommerce settings'),
   }) %>
   <% include('mss_pitch_translations.html') %>
 <% endblock %>
