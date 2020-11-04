@@ -3,6 +3,7 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 use MailPoet\Config\Menu;
@@ -62,6 +63,9 @@ class Newsletters {
   /** @var AddToNewslettersSegments */
   private $addToNewslettersSegments;
 
+  /** @var AutomaticEmails */
+  private $automaticEmails;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -74,7 +78,8 @@ class Newsletters {
     SubscribersFeature $subscribersFeature,
     ServicesChecker $servicesChecker,
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
-    AddToNewslettersSegments $addToNewslettersSegments
+    AddToNewslettersSegments $addToNewslettersSegments,
+    AutomaticEmails $automaticEmails
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -88,6 +93,7 @@ class Newsletters {
     $this->servicesChecker = $servicesChecker;
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
     $this->addToNewslettersSegments = $addToNewslettersSegments;
+    $this->automaticEmails = $automaticEmails;
   }
 
   public function render() {
@@ -153,46 +159,8 @@ class Newsletters {
 
     $data['mss_key_invalid'] = ($this->servicesChecker->isMailPoetAPIKeyValid() === false);
 
-    $data['automatic_emails'] = [
-      [
-        'slug' => 'woocommerce',
-        'premium' => true,
-        'title' => $this->wp->__('WooCommerce', 'mailpoet'),
-        'description' => $this->wp->__('Automatically send an email based on your customers’ purchase behavior. Enhance your customer service and start increasing sales with WooCommerce follow up emails.', 'mailpoet'),
-        'events' => [
-          [
-            'slug' => 'woocommerce_abandoned_shopping_cart',
-            'title' => $this->wp->__('Abandoned Shopping Cart', 'mailpoet'),
-            'description' => $this->wp->__('Send an email to identified visitors who have items in their shopping carts but left your website without checking out. Can convert up to 20% of abandoned carts.', 'mailpoet'),
-            'soon' => true,
-            'badge' => [
-              'text' => $this->wp->__('Must-have', 'mailpoet'),
-              'style' => 'red',
-            ],
-          ],
-          [
-            'slug' => 'woocommerce_first_purchase',
-            'title' => $this->wp->__('First Purchase', 'mailpoet'),
-            'description' => $this->wp->__('Let MailPoet send an email to customers who make their first purchase.', 'mailpoet'),
-            'badge' => [
-              'text' => $this->wp->__('Must-have', 'mailpoet'),
-              'style' => 'red',
-            ],
-          ],
-          [
-            'slug' => 'woocommerce_product_purchased_in_category',
-            'title' => $this->wp->__('Purchased In This Category', 'mailpoet'),
-            'description' => $this->wp->__('Let MailPoet send an email to customers who purchase a product for the first time in a specific category.', 'mailpoet'),
-            'soon' => true,
-          ],
-          [
-            'slug' => 'woocommerce_product_purchased',
-            'title' => $this->wp->__('Purchased This Product', 'mailpoet'),
-            'description' => $this->wp->__('Let MailPoet send an email to customers who purchase a specific product for the first time.', 'mailpoet'),
-          ],
-        ],
-      ],
-    ];
+    $data['automatic_emails'] = $this->automaticEmails->getAutomaticEmails();
+    $data['woocommerce_optin_on_checkout'] = $this->settings->get('woocommerce.optin_on_checkout.enabled', false);
 
     $data['is_new_user'] = $this->installation->isNewInstallation();
     $data['sent_newsletters_count'] = (int)Newsletter::where('status', Newsletter::STATUS_SENT)->count();
