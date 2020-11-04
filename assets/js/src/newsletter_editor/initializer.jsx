@@ -53,7 +53,7 @@ const initializeEditor = (config) => {
         });
       });
 
-      renderHeading(newsletter.type);
+      renderHeading(newsletter.type === 'automatic' ? newsletter.options?.group : newsletter.type);
 
       if (newsletter.status === 'sending' && newsletter.queue && newsletter.queue.status === null) {
         MailPoet.Ajax.post({
