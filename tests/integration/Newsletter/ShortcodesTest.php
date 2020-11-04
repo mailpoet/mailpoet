@@ -9,6 +9,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\Newsletter as NewsletterModel;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
@@ -36,18 +37,22 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    $this->cleanup();
     $this->settings = SettingsController::getInstance();
     $populator = $this->diContainer->get(Populator::class);
     $populator->up();
     $this->wPUser = $this->_createWPUser();
     $this->wPPost = $this->_createWPPost();
     $this->subscriber = $this->_createSubscriber();
+    $this->entityManager->persist($this->subscriber);
     $this->newsletter = $this->_createNewsletter();
+    $this->entityManager->persist($this->newsletter);
     $this->shortcodesObject = $this->diContainer->get(Shortcodes::class);
     $this->shortcodesObject->setNewsletter($this->newsletter);
     $this->shortcodesObject->setSubscriber($this->subscriber);
     $this->settings->set('tracking.enabled', false);
     $this->subscriptionUrlFactory = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, new LinkTokens);
+    $this->entityManager->flush();
   }
 
   public function testItCanExtractShortcodes() {
@@ -98,21 +103,22 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testItCanProcessDateShortcodes() {
+    $date = $this->diContainer->get(Date::class);
     $shortcodeDetails = ['action' => 'd'];
-    expect(Date::process($shortcodeDetails))->equals(date_i18n('d', WPFunctions::get()->currentTime('timestamp')));
+    expect($date->process($shortcodeDetails))->equals(date_i18n('d', WPFunctions::get()->currentTime('timestamp')));
     $shortcodeDetails = ['action' => 'dordinal'];
-    expect(Date::process($shortcodeDetails))->equals(date_i18n('jS', WPFunctions::get()->currentTime('timestamp')));
+    expect($date->process($shortcodeDetails))->equals(date_i18n('jS', WPFunctions::get()->currentTime('timestamp')));
     $shortcodeDetails = ['action' => 'dtext'];
-    expect(Date::process($shortcodeDetails))->equals(date_i18n('l', WPFunctions::get()->currentTime('timestamp')));
+    expect($date->process($shortcodeDetails))->equals(date_i18n('l', WPFunctions::get()->currentTime('timestamp')));
     $shortcodeDetails = ['action' => 'm'];
-    expect(Date::process($shortcodeDetails))->equals(date_i18n('m', WPFunctions::get()->currentTime('timestamp')));
+    expect($date->process($shortcodeDetails))->equals(date_i18n('m', WPFunctions::get()->currentTime('timestamp')));
     $shortcodeDetails = ['action' => 'mtext'];
-    expect(Date::process($shortcodeDetails))->equals(date_i18n('F', WPFunctions::get()->currentTime('timestamp')));
+    expect($date->process($shortcodeDetails))->equals(date_i18n('F', WPFunctions::get()->currentTime('timestamp')));
     $shortcodeDetails = ['action' => 'y'];
-    expect(Date::process($shortcodeDetails))->equals(date_i18n('Y', WPFunctions::get()->currentTime('timestamp')));
+    expect($date->process($shortcodeDetails))->equals(date_i18n('Y', WPFunctions::get()->currentTime('timestamp')));
     // allow custom date formats (http://php.net/manual/en/function.date.php)
     $shortcodeDetails = ['action' => 'custom', 'action_argument' => 'format', 'action_argument_value' => 'U F'];
-    expect(Date::process($shortcodeDetails))->equals(date_i18n('U F', WPFunctions::get()->currentTime('timestamp')));
+    expect($date->process($shortcodeDetails))->equals(date_i18n('U F', WPFunctions::get()->currentTime('timestamp')));
   }
 
   public function testItCanProcessNewsletterShortcodes() {
@@ -186,20 +192,16 @@ class ShortcodesTest extends \MailPoetTest {
     $result =
       $shortcodesObject->process(['[subscriber:displayname]']);
     expect($result[0])->equals($this->wPUser->user_login);
-    $subscribers = Subscriber::where('status', 'subscribed')
-      ->findMany();
+    $subscribers = Subscriber::whereIn('status', [
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      SubscriberEntity::STATUS_UNCONFIRMED,
+      SubscriberEntity::STATUS_INACTIVE,
+    ])->findMany();
     $subscriberCount = count($subscribers);
     $result =
       $shortcodesObject->process(['[subscriber:count]']);
     expect($result[0])->equals($subscriberCount);
     $this->subscriber->setStatus('unsubscribed');
-    $result =
-      $shortcodesObject->process(['[subscriber:count]']);
-    expect($result[0])->equals($subscriberCount - 1);
-    $this->subscriber->setStatus('bounced');
-    $result =
-      $shortcodesObject->process(['[subscriber:count]']);
-    expect($result[0])->equals($subscriberCount - 1);
   }
 
   public function testItCanProcessSubscriberCustomFieldShortcodes() {
@@ -213,7 +215,7 @@ class ShortcodesTest extends \MailPoetTest {
     $result = $shortcodesObject->process(
       ['[subscriber:cf_' . $customField->getId() . ']']
     );
-    expect($result[0])->false();
+    expect($result[0])->null();
     $subscriberCustomField = new SubscriberCustomFieldEntity($subscriber, $customField, 'custom_field_value');
     $this->entityManager->persist($subscriberCustomField);
     $this->entityManager->flush();
@@ -242,6 +244,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItReturnsShortcodeWhenTrackingEnabled() {
     $shortcodesObject = $this->shortcodesObject;
+    $shortcodesObject->setWpUserPreview(false);
     // Returns URL when tracking is not enabled
     $shortcode = '[link:subscription_unsubscribe_url]';
     $result =
@@ -278,6 +281,8 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItReturnsDefaultLinksWhenPreviewIsEnabled() {
     $shortcodesObject = $this->shortcodesObject;
     $shortcodesObject->setWpUserPreview(true);
+    $shortcodesObject->setSubscriber(null);
+    $newsletterModel = NewsletterModel::where('id', $this->newsletter->getId())->findOne();
     $shortcodes = [
       '[link:subscription_unsubscribe_url]',
       '[link:subscription_instant_unsubscribe_url]',
@@ -288,7 +293,7 @@ class ShortcodesTest extends \MailPoetTest {
       $this->subscriptionUrlFactory->getConfirmUnsubscribeUrl(null),
       $this->subscriptionUrlFactory->getUnsubscribeUrl(null),
       $this->subscriptionUrlFactory->getManageUrl(null),
-      NewsletterUrl::getViewInBrowserUrl($this->newsletter),
+      NewsletterUrl::getViewInBrowserUrl($newsletterModel),
     ];
     $result = $shortcodesObject->process($shortcodes);
     // hash is returned
@@ -299,19 +304,21 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItCanProcessCustomLinkShortcodes() {
     $shortcodesObject = $this->shortcodesObject;
+    $shortcodesObject->setWpUserPreview(false);
     $shortcode = '[link:shortcode]';
     $result = $shortcodesObject->process([$shortcode]);
-    expect($result[0])->false();
-    add_filter('mailpoet_newsletter_shortcode_link', function(
-      $shortcode, $newsletter, $subscriber, $queue) {
+    expect($result[0])->null();
+    remove_all_filters('mailpoet_newsletter_shortcode_link');
+    add_filter('mailpoet_newsletter_shortcode_link', function($shortcode, $newsletter, $subscriber, $queue) {
       if ($shortcode === '[link:shortcode]') return 'success';
     }, 10, 4);
+
     $result = $shortcodesObject->process([$shortcode]);
     expect($result[0])->equals('success');
     $this->settings->set('tracking.enabled', true);
     // tracking function only works during sending, so queue object must not be false
     $shortcodesObject->setQueue($this->_createQueue());
-    $result = $shortcodesObject->process([$shortcode]);
+    $result = $shortcodesObject->process([$shortcode], 'x');
     expect($result[0])->equals($shortcode);
   }
 
@@ -359,12 +366,16 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function _after() {
+    $this->cleanup();
+  }
+
+  public function cleanup() {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(CustomFieldEntity::class);
     $this->truncateEntity(SubscriberCustomFieldEntity::class);
-    wp_delete_post($this->wPPost, true);
-    wp_delete_user($this->wPUser->ID);
+    if ($this->wPPost) wp_delete_post($this->wPPost, true);
+    if ($this->wPUser) wp_delete_user($this->wPUser->ID);
   }
 }

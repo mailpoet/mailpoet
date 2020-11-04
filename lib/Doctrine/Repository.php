@@ -37,6 +37,10 @@ abstract class Repository {
     return $this->doctrineRepository->findBy($criteria, $orderBy, $limit, $offset);
   }
 
+  public function countBy(array $criteria): int {
+    return $this->doctrineRepository->count($criteria);
+  }
+
   /**
    * @param array $criteria
    * @param array|null $orderBy

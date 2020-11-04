@@ -26,9 +26,8 @@ class ShortcodesTest extends \MailPoetTest {
     $queue = $newsletter = (object)[
       'id' => 1,
     ];
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate([
-      'email' => 'test@xample. com',
+    $subscriber = Subscriber::createOrUpdate([
+      'email' => 'test@xample.com',
       'first_name' => 'John',
       'last_name' => 'Doe',
     ]);

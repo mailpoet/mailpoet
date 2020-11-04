@@ -7,7 +7,7 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\StatisticsClicks;
-use MailPoet\Newsletter\Shortcodes\Categories\Link;
+use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Cookies;
@@ -30,14 +30,19 @@ class Clicks {
   /** @var Shortcodes */
   private $shortcodes;
 
+  /** @var LinkShortcodeCategory */
+  private $linkShortcodeCategory;
+
   public function __construct(
     SettingsController $settingsController,
     Cookies $cookies,
-    Shortcodes $shortcodes
+    Shortcodes $shortcodes,
+    LinkShortcodeCategory $linkShortcodeCategory
   ) {
     $this->settingsController = $settingsController;
     $this->cookies = $cookies;
     $this->shortcodes = $shortcodes;
+    $this->linkShortcodeCategory = $linkShortcodeCategory;
   }
 
   /**
@@ -96,7 +101,7 @@ class Clicks {
       $this->cookies->set(
         self::ABANDONED_CART_COOKIE_NAME,
         [
-          'subscriber_id' => $subscriber->id,
+          'subscriber_id' => $subscriber->getId(),
         ],
         [
           'expires' => time() + self::ABANDONED_CART_COOKIE_EXPIRY,
@@ -115,7 +120,7 @@ class Clicks {
   ) {
     if (preg_match('/\[link:(?P<action>.*?)\]/', $url, $shortcode)) {
       if (!$shortcode['action']) $this->abort();
-      $url = Link::processShortcodeAction(
+      $url = $this->linkShortcodeCategory->processShortcodeAction(
         $shortcode['action'],
         $newsletter,
         $subscriber,

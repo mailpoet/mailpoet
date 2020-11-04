@@ -309,6 +309,10 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\Segment\NewsletterSegmentRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Shortcodes\ShortcodesHelper::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Shortcodes\Shortcodes::class)->setPublic(true);
+    $container->autowire(\MailPoet\Newsletter\Shortcodes\Categories\Date::class)->setPublic(true);
+    $container->autowire(\MailPoet\Newsletter\Shortcodes\Categories\Link::class)->setPublic(true);
+    $container->autowire(\MailPoet\Newsletter\Shortcodes\Categories\Newsletter::class)->setPublic(true);
+    $container->autowire(\MailPoet\Newsletter\Shortcodes\Categories\Subscriber::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\WelcomeScheduler::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Scheduler\PostNotificationScheduler::class)->setPublic(true);

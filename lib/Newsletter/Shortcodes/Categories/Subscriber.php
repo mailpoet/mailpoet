@@ -2,52 +2,67 @@
 
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
-use MailPoet\Models\Subscriber as SubscriberModel;
-use MailPoet\Models\SubscriberCustomField;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Subscribers\SubscriberCustomFieldRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
-class Subscriber {
-  /**
-   * @param \MailPoet\Models\Subscriber|false|mixed $subscriber
-   */
-  public static function process(
-    $shortcodeDetails,
-    $newsletter,
-    $subscriber
+class Subscriber implements CategoryInterface {
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  /** @var SubscriberCustomFieldRepository */
+  private $subscriberCustomFieldRepository;
+
+  public function __construct(
+    SubscribersRepository $subscribersRepository,
+    SubscriberCustomFieldRepository $subscriberCustomFieldRepository
   ) {
-    if ($subscriber !== false && !($subscriber instanceof SubscriberModel)) {
-      return $shortcodeDetails['shortcode'];
-    }
+    $this->subscribersRepository = $subscribersRepository;
+    $this->subscriberCustomFieldRepository = $subscriberCustomFieldRepository;
+  }
+
+  public function process(
+    array $shortcodeDetails,
+    NewsletterEntity $newsletter = null,
+    SubscriberEntity $subscriber = null,
+    SendingQueueEntity $queue = null,
+    string $content = '',
+    bool $wpUserPreview = false
+  ): ?string {
     $defaultValue = ($shortcodeDetails['action_argument'] === 'default') ?
       $shortcodeDetails['action_argument_value'] :
       '';
     switch ($shortcodeDetails['action']) {
       case 'firstname':
-        return (!empty($subscriber->firstName)) ? $subscriber->firstName : $defaultValue;
+        return (($subscriber instanceof SubscriberEntity) && !empty($subscriber->getFirstName())) ? $subscriber->getFirstName() : $defaultValue;
       case 'lastname':
-        return (!empty($subscriber->lastName)) ? $subscriber->lastName : $defaultValue;
+        return (($subscriber instanceof SubscriberEntity) && !empty($subscriber->getLastName())) ? $subscriber->getLastName() : $defaultValue;
       case 'email':
-        return ($subscriber) ? $subscriber->email : false;
+        return ($subscriber instanceof SubscriberEntity) ? $subscriber->getEmail() : $defaultValue;
       case 'displayname':
-        if ($subscriber && $subscriber->wpUserId) {
-          $wpUser = WPFunctions::get()->getUserdata($subscriber->wpUserId);
+        if (($subscriber instanceof SubscriberEntity) && $subscriber->getWpUserId()) {
+          $wpUser = WPFunctions::get()->getUserdata($subscriber->getWpUserId());
           return $wpUser->user_login; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         }
         return $defaultValue;
       case 'count':
-        return SubscriberModel::filter('subscribed')
-          ->count();
+        return (string)$this->subscribersRepository->getTotalSubscribers();
       default:
         if (preg_match('/cf_(\d+)/', $shortcodeDetails['action'], $customField) &&
-          !empty($subscriber->id)
+          !empty($subscriber->getId())
         ) {
-          $customField = SubscriberCustomField
-            ::where('subscriber_id', $subscriber->id)
-            ->where('custom_field_id', $customField[1])
-            ->findOne();
-          return ($customField instanceof SubscriberCustomField) ? $customField->value : false;
+          $customField = $this->subscriberCustomFieldRepository->findOneBy([
+            'subscriber' => $subscriber,
+            'customField' => $customField[1],
+          ]);
+          return ($customField instanceof SubscriberCustomFieldEntity) ? $customField->getValue() : null;
         }
-        return false;
+        return null;
     }
   }
 }

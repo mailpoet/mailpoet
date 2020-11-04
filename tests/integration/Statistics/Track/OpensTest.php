@@ -4,11 +4,16 @@ namespace MailPoet\Test\Statistics\Track;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
+use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -23,29 +28,43 @@ class OpensTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    $this->cleanup();
     // create newsletter
-    $newsletter = Newsletter::create();
-    $newsletter->type = 'type';
-    $this->newsletter = $newsletter->save();
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType('type');
+    $newsletter->setSubject('subject');
+    $this->entityManager->persist($newsletter);
+    $this->newsletter = $newsletter;
     // create subscriber
-    $subscriber = Subscriber::create();
-    $subscriber->email = 'test@example.com';
-    $subscriber->firstName = 'First';
-    $subscriber->lastName = 'Last';
-    $this->subscriber = $subscriber->save();
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('test@example.com');
+    $subscriber->setFirstName('First');
+    $subscriber->setLastName('Last');
+    $subscriber->setLinkToken('token');
+    $this->subscriber = $subscriber;
+    $this->entityManager->persist($subscriber);
     // create queue
-    $queue = SendingTask::create();
-    $queue->newsletterId = $newsletter->id;
-    $queue->setSubscribers([$subscriber->id]);
-    $queue->updateProcessedSubscribers([$subscriber->id]);
-    $this->queue = $queue->save();
+    $task = new ScheduledTaskEntity();
+    $task->setType(SendingTask::TASK_TYPE);
+    $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $this->entityManager->persist($task);
+
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setTask($task);
+    $queue->setSubscribers((string)$subscriber->getId());
+    $newsletter->getQueues()->add($queue);
+    $this->entityManager->persist($queue);
+    $this->entityManager->flush();
+
+    $this->queue = $queue;
     $linkTokens = new LinkTokens;
     // build track data
     $this->trackData = (object)[
       'queue' => $queue,
       'subscriber' => $subscriber,
       'newsletter' => $newsletter,
-      'subscriber_token' => $linkTokens->getToken($subscriber),
+      'subscriber_token' => $linkTokens->getToken(SubscriberModel::findOne('test@example.com')),
       'preview' => false,
     ];
     // instantiate class
@@ -62,7 +81,7 @@ class OpensTest extends \MailPoetTest {
 
   public function testItDoesNotTrackOpenEventFromWpUserWhenPreviewIsEnabled() {
     $data = $this->trackData;
-    $data->subscriber->wp_user_id = 99;
+    $data->subscriber->setWpUserId(99);
     $data->preview = true;
     $opens = Stub::make($this->opens, [
       'returnResponse' => null,
@@ -101,6 +120,10 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function _after() {
+    $this->cleanup();
+  }
+
+  public function cleanup() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
