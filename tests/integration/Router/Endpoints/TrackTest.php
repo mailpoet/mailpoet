@@ -27,6 +27,7 @@ class TrackTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    $this->cleanup();
     // create newsletter
     $newsletter = new NewsletterEntity();
     $newsletter->setType('type');
@@ -48,12 +49,15 @@ class TrackTest extends \MailPoetTest {
     $queue = new SendingQueueEntity();
     $queue->setTask($task);
     $queue->setNewsletter($newsletter);
+    $queue->setSubscribers((string)$subscriber->getId());
     $this->queue = $queue;
     $this->entityManager->persist($queue);
     // create link
     $link = new NewsletterLinkEntity($newsletter, $queue, 'url', 'hash');
     $this->link = $link;
     $this->entityManager->persist($link);
+    $scheduledTaskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber, 1);
+    $this->entityManager->persist($scheduledTaskSubscriber);
     $this->entityManager->flush();
     $subscriberModel = Subscriber::findOne($subscriber->getId());
     $linkTokens = new LinkTokens;
@@ -162,10 +166,10 @@ class TrackTest extends \MailPoetTest {
 
   public function testItProcessesTrackData() {
     $processedData = $this->track->_processTrackData($this->trackData);
-    expect($processedData->queue->id)->equals($this->queue->id);
-    expect($processedData->subscriber->id)->equals($this->subscriber->id);
-    expect($processedData->newsletter->id)->equals($this->newsletter->id);
-    expect($processedData->link->id)->equals($this->link->id);
+    expect($processedData->queue->getId())->equals($this->queue->getId());
+    expect($processedData->subscriber->getId())->equals($this->subscriber->getId());
+    expect($processedData->newsletter->getId())->equals($this->newsletter->getId());
+    expect($processedData->link->getId())->equals($this->link->getId());
   }
 
   public function testItGetsProperHashWhenDuplicateHashesExist() {
@@ -175,16 +179,16 @@ class TrackTest extends \MailPoetTest {
     $newsletter = $newsletter->save();
     $queue = SendingTask::create();
     $queue->newsletterId = $newsletter->id;
-    $queue->setSubscribers([$this->subscriber->id]);
-    $queue->updateProcessedSubscribers([$this->subscriber->id]);
+    $queue->setSubscribers([$this->subscriber->getId()]);
+    $queue->updateProcessedSubscribers([$this->subscriber->getId()]);
     $queue->save();
     $trackData = $this->trackData;
     $trackData['queue_id'] = $queue->id;
     $trackData['newsletter_id'] = $newsletter->id;
     // create another link with the same hash but different queue ID
     $link = NewsletterLink::create();
-    $link->hash = $this->link->hash;
-    $link->url = $this->link->url;
+    $link->hash = $this->link->getHash();
+    $link->url = $this->link->getUrl();
     $link->newsletterId = $trackData['newsletter_id'];
     $link->queueId = $trackData['queue_id'];
     $link = $link->save();
@@ -194,10 +198,14 @@ class TrackTest extends \MailPoetTest {
 
     // assert that the fetched link ID belong to the newly created link
     $processedData = $this->track->_processTrackData($trackData);
-    expect($processedData->link->id)->equals($link->id);
+    expect($processedData->link->getId())->equals($link->id);
   }
 
   public function _after() {
+    $this->cleanup();
+  }
+
+  private function cleanup() {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(NewsletterLinkEntity::class);

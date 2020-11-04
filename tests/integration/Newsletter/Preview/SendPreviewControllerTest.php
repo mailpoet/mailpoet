@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter\Preview;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MetaInfo;
@@ -25,6 +26,8 @@ class SendPreviewControllerTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
     $this->subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     $newsletter = new NewsletterEntity();
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
@@ -33,8 +36,23 @@ class SendPreviewControllerTest extends \MailPoetTest {
     $newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $newsletter->setHash(Security::generateHash());
     $this->entityManager->persist($newsletter);
+
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('test@subscriber.com');
+    $subscriber->setWpUserId(5);
+    $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
+
+    $wpUser = new \stdClass();
+    $wpUser->ID = 5;
+    $wp = $this->make(WPFunctions::class, ['wpGetCurrentUser' => $wpUser]);
+    WPFunctions::set($wp);
+    
     $this->newsletter = $newsletter;
+  }
+
+  public function _after() {
+    WPFunctions::set(new WPFunctions());
   }
 
   public function testItCanSendAPreview() {
@@ -71,8 +89,8 @@ class SendPreviewControllerTest extends \MailPoetTest {
       new MetaInfo(),
       $this->diContainer->get(Renderer::class),
       new WPFunctions(),
-      $this->diContainer->get(Shortcodes::class),
-      $this->diContainer->get(SubscribersRepository::class)
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(Shortcodes::class)
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
@@ -100,8 +118,8 @@ class SendPreviewControllerTest extends \MailPoetTest {
       new MetaInfo(),
       $this->diContainer->get(Renderer::class),
       new WPFunctions(),
-      $this->diContainer->get(Shortcodes::class),
-      $this->diContainer->get(SubscribersRepository::class)
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(Shortcodes::class)
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }

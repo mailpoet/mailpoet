@@ -4,6 +4,7 @@ namespace MailPoet\Router\Endpoints;
 
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
@@ -84,7 +85,10 @@ class Track {
     }
     $data->queue = $this->sendingQueuesRepository->findOneById($data->queue_id);// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $data->subscriber = $this->subscribersRepository->findOneById($data->subscriber_id); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $data->newsletter = $this->newslettersRepository->findOneById($data->newsletter_id); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $data->newsletter = (isset($data->newsletter_id)) ? $this->newslettersRepository->findOneById($data->newsletter_id) : null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    if (!$data->newsletter && ($data->queue instanceof SendingQueueEntity)) {
+      $data->newsletter = $data->queue->getNewsletter();
+    }
     if (!empty($data->link_hash)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       $data->link = $this->newsletterLinkRepository->findOneBy([
         'hash' => $data->link_hash, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
@@ -108,6 +112,7 @@ class Track {
     // check if the newsletter was sent to the subscriber
     $queue = SendingQueue::findOne($data->queue_id); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     if (!$queue instanceof SendingQueue) return false;
+
     return ($queue->isSubscriberProcessed($data->subscriber->getId())) ?
       $data :
       false;

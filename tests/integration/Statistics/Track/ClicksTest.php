@@ -15,6 +15,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Clicks;
@@ -84,12 +85,22 @@ class ClicksTest extends \MailPoetTest {
     $this->settingsController = Stub::makeEmpty(SettingsController::class, [
       'get' => false,
     ], $this);
-    $this->clicks = new Clicks($this->settingsController, new Cookies(), $this->diContainer->get(Shortcodes::class));
+    $this->clicks = new Clicks(
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(LinkShortcodeCategory::class)
+    );
   }
 
   public function testItAbortsWhenTrackDataIsEmptyOrMissingLink() {
     // abort function should be called twice:
-    $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+    ], [
       'abort' => Expected::exactly(2),
     ], $this);
     $data = $this->trackData;
@@ -105,7 +116,12 @@ class ClicksTest extends \MailPoetTest {
     $this->subscriber->setWpUserId(99);
     $this->entityManager->flush();
     $data->preview = true;
-    $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+    ], [
       'redirectToUrl' => null,
     ], $this);
     $clicks->track($data);
@@ -115,7 +131,12 @@ class ClicksTest extends \MailPoetTest {
 
   public function testItTracksClickAndOpenEvent() {
     $data = $this->trackData;
-    $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+    ], [
       'redirectToUrl' => null,
     ], $this);
     $clicks->track($data);
@@ -124,14 +145,24 @@ class ClicksTest extends \MailPoetTest {
   }
 
   public function testItRedirectsToUrlAfterTracking() {
-    $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+    ], [
       'redirectToUrl' => Expected::exactly(1),
     ], $this);
     $clicks->track($this->trackData);
   }
 
   public function testItIncrementsClickEventCount() {
-    $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+    ], [
       'redirectToUrl' => null,
     ], $this);
     $clicks->track($this->trackData);
@@ -152,7 +183,12 @@ class ClicksTest extends \MailPoetTest {
   }
 
   public function testItFailsToConvertsInvalidShortcodeToUrl() {
-    $clicks = Stub::construct($this->clicks, [$this->settingsController, new Cookies()], [
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+    ], [
       'abort' => Expected::exactly(1),
     ], $this);
     // should call abort() method if shortcode action does not exist

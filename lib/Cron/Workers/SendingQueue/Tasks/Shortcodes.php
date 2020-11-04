@@ -27,19 +27,19 @@ class Shortcodes {
     /** @var SubscribersRepository $subscribersRepository */
     $subscribersRepository = ContainerWrapper::getInstance()->get(SubscribersRepository::class);
 
-    if ($queue instanceof Sending || $queue instanceof SendingQueue) {
+    if (($queue instanceof Sending || $queue instanceof SendingQueue) && $queue->id) {
       $queue = $sendingQueueRepository->findOneById($queue->id);
     }
     if ($queue instanceof SendingQueueEntity) {
       $shortcodes->setQueue($queue);
     }
-    if ($newsletter instanceof \MailPoet\Models\Newsletter) {
+    if ($newsletter instanceof \MailPoet\Models\Newsletter && $newsletter->id) {
       $newsletter = $newsletterRepository->findOneById($newsletter->id);
     }
     if ($newsletter instanceof NewsletterEntity) {
       $shortcodes->setNewsletter($newsletter);
     }
-    if ($subscriber instanceof Subscriber) {
+    if ($subscriber instanceof Subscriber && $subscriber->id) {
       $subscriber = $subscribersRepository->findOneById($subscriber->id);
     }
     if ($subscriber instanceof SubscriberEntity) {

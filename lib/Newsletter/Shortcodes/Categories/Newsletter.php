@@ -2,45 +2,59 @@
 
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
-use MailPoet\Models\Newsletter as NewsletterModel;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 
-class Newsletter {
-  public static function process(
-    $shortcodeDetails,
-    $newsletter,
-    $subscriber,
-    $queue,
-    $content
-  ) {
+class Newsletter implements CategoryInterface {
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
+  public function __construct(NewslettersRepository $newslettersRepository) {
+    $this->newslettersRepository = $newslettersRepository;
+  }
+
+  public function process(
+    array $shortcodeDetails,
+    NewsletterEntity $newsletter = null,
+    SubscriberEntity $subscriber = null,
+    SendingQueueEntity $queue = null,
+    string $content = '',
+    bool $wpUserPreview = false
+  ): ?string {
     switch ($shortcodeDetails['action']) {
       case 'subject':
-        return ($newsletter) ? $newsletter->subject : false;
+        return ($newsletter instanceof NewsletterEntity) ? $newsletter->getSubject() : null;
 
       case 'total':
-        return substr_count($content, 'data-post-id');
+        return (string)substr_count($content, 'data-post-id');
 
       case 'post_title':
         preg_match_all('/data-post-id="(\d+)"/ism', $content, $posts);
         $postIds = array_unique($posts[1]);
-        $latestPost = (!empty($postIds)) ? self::getLatestWPPost($postIds) : false;
-        return ($latestPost) ? $latestPost['post_title'] : false;
+        $latestPost = (!empty($postIds)) ? $this->getLatestWPPost($postIds) : null;
+        return ($latestPost) ? $latestPost['post_title'] : null;
 
       case 'number':
-        if ($newsletter->type !== NewsletterModel::TYPE_NOTIFICATION_HISTORY) return false;
-        $sentNewsletters =
-          NewsletterModel::where('parent_id', $newsletter->parentId)
-            ->where('status', NewsletterModel::STATUS_SENT)
-            ->count();
-        return ++$sentNewsletters;
+        if (!($newsletter instanceof NewsletterEntity)) return null;
+        if ($newsletter->getType() !== NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
+          return null;
+        }
+        $sentNewsletters = $this->newslettersRepository->countBy([
+          'parent' => $newsletter->getParent(),
+          'status' => NewsletterEntity::STATUS_SENT,
+        ]);
+        return (string)++$sentNewsletters;
 
       default:
-        return false;
+        return null;
     }
   }
 
-  public static function ensureConsistentQueryType(\WP_Query $query) {
+  public function ensureConsistentQueryType(\WP_Query $query) {
     // Queries with taxonomies are autodetected as 'is_archive=true' and 'is_home=false'
     // while queries without them end up being 'is_archive=false' and 'is_home=true'.
     // This is to fix that by always enforcing constistent behavior.
@@ -48,10 +62,10 @@ class Newsletter {
     $query->is_home = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
-  private static function getLatestWPPost($postIds) {
+  private function getLatestWPPost($postIds) {
     // set low priority to execute 'ensureConstistentQueryType' before any other filter
     $filterPriority = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
-    WPFunctions::get()->addAction('pre_get_posts', [get_called_class(), 'ensureConsistentQueryType'], $filterPriority);
+    WPFunctions::get()->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
     $posts = new \WP_Query(
       [
         'post_type' => WPPosts::getTypes(),
@@ -62,7 +76,7 @@ class Newsletter {
         'order' => 'DESC',
       ]
     );
-    WPFunctions::get()->removeAction('pre_get_posts', [get_called_class(), 'ensureConsistentQueryType'], $filterPriority);
+    WPFunctions::get()->removeAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
     return (!empty($posts->posts[0])) ?
       $posts->posts[0]->to_array() :
       false;

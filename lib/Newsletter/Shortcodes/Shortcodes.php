@@ -5,6 +5,11 @@ namespace MailPoet\Newsletter\Shortcodes;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\Shortcodes\Categories\CategoryInterface;
+use MailPoet\Newsletter\Shortcodes\Categories\Date;
+use MailPoet\Newsletter\Shortcodes\Categories\Link;
+use MailPoet\Newsletter\Shortcodes\Categories\Newsletter;
+use MailPoet\Newsletter\Shortcodes\Categories\Subscriber;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Shortcodes {
@@ -21,6 +26,30 @@ class Shortcodes {
 
   /** @var bool */
   private $wpUserPreview = false;
+
+  /** @var Date */
+  private $dateCategory;
+
+  /** @var Link */
+  private $linkCategory;
+
+  /** @var Newsletter */
+  private $newsletterCategory;
+
+  /** @var Subscriber */
+  private $subscriberCategory;
+
+  public function __construct(
+    Date $dateCategory,
+    Link $linkCategory,
+    Newsletter $newsletterCategory,
+    Subscriber $subscriberCategory
+  ) {
+    $this->dateCategory = $dateCategory;
+    $this->linkCategory = $linkCategory;
+    $this->newsletterCategory = $newsletterCategory;
+    $this->subscriberCategory = $subscriberCategory;
+  }
 
   public function setNewsletter(NewsletterEntity $newsletter): void {
     $this->newsletter = $newsletter;
@@ -65,26 +94,36 @@ class Shortcodes {
     return $match;
   }
 
-  public function process($shortcodes, $content = false) {
+  public function process($shortcodes, $content = '') {
     $processedShortcodes = [];
     foreach ($shortcodes as $shortcode) {
       $shortcodeDetails = $this->match($shortcode);
       $shortcodeDetails['shortcode'] = $shortcode;
       $shortcodeDetails['category'] = !empty($shortcodeDetails['category']) ?
         $shortcodeDetails['category'] :
-        false;
+        '';
       $shortcodeDetails['action'] = !empty($shortcodeDetails['action']) ?
         $shortcodeDetails['action'] :
-        false;
+        '';
       $shortcodeDetails['action_argument'] = !empty($shortcodeDetails['argument']) ?
         $shortcodeDetails['argument'] :
-        false;
+        '';
       $shortcodeDetails['action_argument_value'] = !empty($shortcodeDetails['argument_value']) ?
         $shortcodeDetails['argument_value'] :
         false;
-      $shortcodeClass =
-        Shortcodes::SHORTCODE_CATEGORY_NAMESPACE . ucfirst($shortcodeDetails['category']);
-      if (!class_exists($shortcodeClass)) {
+
+      $category = strtolower($shortcodeDetails['category']);
+      $categoryClass = $this->getCategoryObject($category);
+      if ($categoryClass instanceof CategoryInterface) {
+        $processedShortcodes[] = $categoryClass->process(
+          $shortcodeDetails,
+          $this->newsletter,
+          $this->subscriber,
+          $this->queue,
+          $content,
+          $this->wpUserPreview
+        );
+      } else {
         $customShortcode = WPFunctions::get()->applyFilters(
           'mailpoet_newsletter_shortcode',
           $shortcode,
@@ -98,14 +137,7 @@ class Shortcodes {
           false :
           $customShortcode;
       }
-      $processedShortcodes[] = $shortcodeClass::process(
-        $shortcodeDetails,
-        $this->newsletter,
-        $this->subscriber,
-        $this->queue,
-        $content,
-        $this->wpUserPreview
-      );
+
     }
     return $processedShortcodes;
   }
@@ -124,5 +156,18 @@ class Shortcodes {
     );
     $shortcodes = array_intersect_key($shortcodes, $processedShortcodes);
     return str_replace($shortcodes, $processedShortcodes, $content);
+  }
+
+  private function getCategoryObject($category): ?CategoryInterface {
+    if ($category === 'link') {
+      return $this->linkCategory;
+    } elseif ($category === 'date') {
+      return $this->dateCategory;
+    } elseif ($category === 'newsletter') {
+      return $this->newsletterCategory;
+    } elseif ($category === 'subscriber') {
+      return $this->subscriberCategory;
+    }
+    return null;
   }
 }
