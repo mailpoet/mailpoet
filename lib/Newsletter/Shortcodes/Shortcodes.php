@@ -2,24 +2,42 @@
 
 namespace MailPoet\Newsletter\Shortcodes;
 
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Shortcodes {
   const SHORTCODE_CATEGORY_NAMESPACE = 'MailPoet\Newsletter\Shortcodes\Categories\\';
-  public $newsletter;
-  public $subscriber;
-  public $queue;
-  public $wpUserPreview;
 
-  public function __construct(
-    $newsletter = false,
-    $subscriber = false,
-    $queue = false,
-    $wpUserPreview = false
-  ) {
+  /** @var NewsletterEntity|null */
+  private $newsletter;
+
+  /** @var SubscriberEntity|null */
+  private $subscriber;
+
+  /** @var SendingQueueEntity|null */
+  private $queue;
+
+  /** @var bool */
+  private $wpUserPreview = false;
+
+  public function setNewsletter(NewsletterEntity $newsletter): void {
     $this->newsletter = $newsletter;
+  }
+
+  public function setSubscriber(SubscriberEntity $subscriber = null): void {
     $this->subscriber = $subscriber;
+  }
+
+  public function setQueue(SendingQueueEntity $queue): void {
     $this->queue = $queue;
+  }
+
+  /**
+   * @param bool $wpUserPreview
+   */
+  public function setWpUserPreview(bool $wpUserPreview): void {
     $this->wpUserPreview = $wpUserPreview;
   }
 
@@ -48,48 +66,47 @@ class Shortcodes {
   }
 
   public function process($shortcodes, $content = false) {
-    $_this = $this;
-    $processedShortcodes = array_map(
-      function($shortcode) use ($content, $_this) {
-        $shortcodeDetails = $_this->match($shortcode);
-        $shortcodeDetails['shortcode'] = $shortcode;
-        $shortcodeDetails['category'] = !empty($shortcodeDetails['category']) ?
-          $shortcodeDetails['category'] :
-          false;
-        $shortcodeDetails['action'] = !empty($shortcodeDetails['action']) ?
-          $shortcodeDetails['action'] :
-          false;
-        $shortcodeDetails['action_argument'] = !empty($shortcodeDetails['argument']) ?
-          $shortcodeDetails['argument'] :
-          false;
-        $shortcodeDetails['action_argument_value'] = !empty($shortcodeDetails['argument_value']) ?
-          $shortcodeDetails['argument_value'] :
-          false;
-        $shortcodeClass =
-          Shortcodes::SHORTCODE_CATEGORY_NAMESPACE . ucfirst($shortcodeDetails['category']);
-        if (!class_exists($shortcodeClass)) {
-          $customShortcode = WPFunctions::get()->applyFilters(
-            'mailpoet_newsletter_shortcode',
-            $shortcode,
-            $_this->newsletter,
-            $_this->subscriber,
-            $_this->queue,
-            $content,
-            $_this->wpUserPreview
-          );
-          return ($customShortcode === $shortcode) ?
-            false :
-            $customShortcode;
-        }
-        return $shortcodeClass::process(
-          $shortcodeDetails,
-          $_this->newsletter,
-          $_this->subscriber,
-          $_this->queue,
+    $processedShortcodes = [];
+    foreach ($shortcodes as $shortcode) {
+      $shortcodeDetails = $this->match($shortcode);
+      $shortcodeDetails['shortcode'] = $shortcode;
+      $shortcodeDetails['category'] = !empty($shortcodeDetails['category']) ?
+        $shortcodeDetails['category'] :
+        false;
+      $shortcodeDetails['action'] = !empty($shortcodeDetails['action']) ?
+        $shortcodeDetails['action'] :
+        false;
+      $shortcodeDetails['action_argument'] = !empty($shortcodeDetails['argument']) ?
+        $shortcodeDetails['argument'] :
+        false;
+      $shortcodeDetails['action_argument_value'] = !empty($shortcodeDetails['argument_value']) ?
+        $shortcodeDetails['argument_value'] :
+        false;
+      $shortcodeClass =
+        Shortcodes::SHORTCODE_CATEGORY_NAMESPACE . ucfirst($shortcodeDetails['category']);
+      if (!class_exists($shortcodeClass)) {
+        $customShortcode = WPFunctions::get()->applyFilters(
+          'mailpoet_newsletter_shortcode',
+          $shortcode,
+          $this->newsletter,
+          $this->subscriber,
+          $this->queue,
           $content,
-          $_this->wpUserPreview
+          $this->wpUserPreview
         );
-      }, $shortcodes);
+        $processedShortcodes[] = ($customShortcode === $shortcode) ?
+          false :
+          $customShortcode;
+      }
+      $processedShortcodes[] = $shortcodeClass::process(
+        $shortcodeDetails,
+        $this->newsletter,
+        $this->subscriber,
+        $this->queue,
+        $content,
+        $this->wpUserPreview
+      );
+    }
     return $processedShortcodes;
   }
 

@@ -66,7 +66,9 @@ class TrackTest extends \MailPoetTest {
       'link_hash' => $link->getHash(),
       'preview' => false,
     ];
-    $queue = SendingTask::createFromQueue(SendingQueue::findOne($queue->getId()));
+    $queue = SendingQueue::findOne($queue->getId());
+    assert($queue instanceof SendingQueue);
+    $queue = SendingTask::createFromQueue($queue);
     $queue->updateProcessedSubscribers([$subscriberModel->id]);
     // instantiate class
     $this->track = $this->diContainer->get(Track::class);

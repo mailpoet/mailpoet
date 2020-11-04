@@ -9,7 +9,9 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Newsletter\Url;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
@@ -68,7 +70,9 @@ class SendPreviewControllerTest extends \MailPoetTest {
       $mailer,
       new MetaInfo(),
       $this->diContainer->get(Renderer::class),
-      new WPFunctions()
+      new WPFunctions(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(SubscribersRepository::class)
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
@@ -95,7 +99,9 @@ class SendPreviewControllerTest extends \MailPoetTest {
       $mailer,
       new MetaInfo(),
       $this->diContainer->get(Renderer::class),
-      new WPFunctions()
+      new WPFunctions(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(SubscribersRepository::class)
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }

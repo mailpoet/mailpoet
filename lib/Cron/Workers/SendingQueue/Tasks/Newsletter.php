@@ -46,7 +46,12 @@ class Newsletter {
   /** @var Emoji */
   private $emoji;
 
-  public function __construct(WPFunctions $wp = null, PostsTask $postsTask = null, GATracking $gaTracking = null, Emoji $emoji = null) {
+  public function __construct(
+    WPFunctions $wp = null,
+    PostsTask $postsTask = null,
+    GATracking $gaTracking = null,
+    Emoji $emoji = null
+  ) {
     $settings = SettingsController::getInstance();
     $this->trackingEnabled = (boolean)$settings->get('tracking.enabled');
     if ($wp === null) {

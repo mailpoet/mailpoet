@@ -3,11 +3,13 @@
 namespace MailPoet\Test\Newsletter;
 
 use MailPoet\Config\Populator;
-use MailPoet\Models\CustomField;
+use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Newsletter\Url as NewsletterUrl;
@@ -15,17 +17,16 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Idiorm\ORM;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
 class ShortcodesTest extends \MailPoetTest {
-  public $newsletterId;
-  public $wPPost;
-  public $wPUser;
-  public $renderedNewsletter;
-  public $newsletter;
-  public $subscriber;
+  private $wPPost;
+  private $wPUser;
+  /** @var NewsletterEntity */
+  private $newsletter;
+  /** @var SubscriberEntity */
+  private $subscriber;
   /** @var Shortcodes */
   private $shortcodesObject;
   /** @var SettingsController */
@@ -42,10 +43,9 @@ class ShortcodesTest extends \MailPoetTest {
     $this->wPPost = $this->_createWPPost();
     $this->subscriber = $this->_createSubscriber();
     $this->newsletter = $this->_createNewsletter();
-    $this->shortcodesObject = new Shortcodes(
-      $this->newsletter,
-      $this->subscriber
-    );
+    $this->shortcodesObject = $this->diContainer->get(Shortcodes::class);
+    $this->shortcodesObject->setNewsletter($this->newsletter);
+    $this->shortcodesObject->setSubscriber($this->subscriber);
     $this->settings->set('tracking.enabled', false);
     $this->subscriptionUrlFactory = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, new LinkTokens);
   }
@@ -123,7 +123,7 @@ class ShortcodesTest extends \MailPoetTest {
       '<a href="#">not post</a>';
     $result =
       $shortcodesObject->process(['[newsletter:subject]'], $content);
-    expect($result[0])->equals($this->newsletter->subject);
+    expect($result[0])->equals($this->newsletter->getSubject());
     $result =
       $shortcodesObject->process(['[newsletter:total]'], $content);
     expect($result[0])->equals(2);
@@ -136,65 +136,42 @@ class ShortcodesTest extends \MailPoetTest {
   public function itCanProcessPostNotificationNewsletterNumberShortcode() {
     // create first post notification
     $postNotificationHistory = $this->_createNewsletter(
-      $parentId = $this->newsletterId,
+      $parentId = $this->newsletter,
       $type = Newsletter::TYPE_NOTIFICATION_HISTORY
     );
-    $shortcodesObject = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $postNotificationHistory,
-      $this->subscriber
-    );
-    $result = $shortcodesObject->process(['[newsletter:number]']);
+    $this->shortcodesObject->setNewsletter($postNotificationHistory);
+    $result = $this->shortcodesObject->process(['[newsletter:number]']);
     expect($result['0'])->equals(1);
 
     // create another post notification
     $postNotificationHistory = $this->_createNewsletter(
-      $parentId = $this->newsletterId,
+      $parentId = $this->newsletter,
       $type = Newsletter::TYPE_NOTIFICATION_HISTORY
     );
-    $shortcodesObject = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $postNotificationHistory,
-      $this->subscriber
-    );
-    $result = $shortcodesObject->process(['[newsletter:number]']);
+    $this->shortcodesObject->setNewsletter($postNotificationHistory);
+    $result = $this->shortcodesObject->process(['[newsletter:number]']);
     expect($result['0'])->equals(2);
   }
 
   public function testSubscriberShortcodesRequireSubscriberObjectOrFalseValue() {
     // when subscriber is empty, default value is returned
-    $shortcodesObject = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $this->newsletter,
-      $subscriber = false
-    );
-    $result = $shortcodesObject->process(['[subscriber:firstname | default:test]']);
+    $this->shortcodesObject->setSubscriber(null);
+    $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
     expect($result[0])->equals('test');
     // when subscriber is an object, proper value is returned
-    $shortcodesObject = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $this->newsletter,
-      $this->subscriber
-    );
-    $result = $shortcodesObject->process(['[subscriber:firstname | default:test]']);
-    expect($result[0])->equals($this->subscriber->first_name);
-    // when subscriber is not empty and not an object, shortcode is returned
-    $shortcodesObject = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $this->newsletter,
-      $subscriber = []
-    );
-    $result = $shortcodesObject->process(['[subscriber:firstname | default:test]']);
-    expect($result[0])->equals('[subscriber:firstname | default:test]');
+    $this->shortcodesObject->setSubscriber($this->subscriber);
+    $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
+    expect($result[0])->equals($this->subscriber->getFirstName());
   }
 
   public function testSubscriberFirstAndLastNameShortcodesReturnDefaultValueWhenDataIsEmpty() {
     // when subscriber exists but first or last names are empty, default value is returned
     $subscriber = $this->subscriber;
-    $subscriber->firstName = '';
-    $subscriber->lastName = '';
-    $shortcodesObject = new \MailPoet\Newsletter\Shortcodes\Shortcodes(
-      $this->newsletter,
-      $subscriber
-    );
-    $result = $shortcodesObject->process(['[subscriber:firstname | default:test]']);
+    $subscriber->setFirstName('');
+    $subscriber->setLastName('');
+    $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
     expect($result[0])->equals('test');
-    $result = $shortcodesObject->process(['[subscriber:lastname | default:test]']);
+    $result = $this->shortcodesObject->process(['[subscriber:lastname | default:test]']);
     expect($result[0])->equals('test');
   }
 
@@ -202,10 +179,10 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodesObject = $this->shortcodesObject;
     $result =
       $shortcodesObject->process(['[subscriber:firstname]']);
-    expect($result[0])->equals($this->subscriber->first_name);
+    expect($result[0])->equals($this->subscriber->getFirstName());
     $result =
       $shortcodesObject->process(['[subscriber:lastname]']);
-    expect($result[0])->equals($this->subscriber->last_name);
+    expect($result[0])->equals($this->subscriber->getLastName());
     $result =
       $shortcodesObject->process(['[subscriber:displayname]']);
     expect($result[0])->equals($this->wPUser->user_login);
@@ -215,13 +192,11 @@ class ShortcodesTest extends \MailPoetTest {
     $result =
       $shortcodesObject->process(['[subscriber:count]']);
     expect($result[0])->equals($subscriberCount);
-    $this->subscriber->status = 'unsubscribed';
-    $this->subscriber->save();
+    $this->subscriber->setStatus('unsubscribed');
     $result =
       $shortcodesObject->process(['[subscriber:count]']);
     expect($result[0])->equals($subscriberCount - 1);
-    $this->subscriber->status = 'bounced';
-    $this->subscriber->save();
+    $this->subscriber->setStatus('bounced');
     $result =
       $shortcodesObject->process(['[subscriber:count]']);
     expect($result[0])->equals($subscriberCount - 1);
@@ -230,23 +205,22 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItCanProcessSubscriberCustomFieldShortcodes() {
     $shortcodesObject = $this->shortcodesObject;
     $subscriber = $this->subscriber;
-    $customField = CustomField::create();
-    $customField->name = 'custom_field_name';
-    $customField->type = 'text';
-    $customField->save();
+    $customField = new CustomFieldEntity();
+    $customField->setName('custom_field_name');
+    $customField->setType('text');
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
     $result = $shortcodesObject->process(
-      ['[subscriber:cf_' . $customField->id . ']']
+      ['[subscriber:cf_' . $customField->getId() . ']']
     );
     expect($result[0])->false();
-    $subscriberCustomField = SubscriberCustomField::create();
-    $subscriberCustomField->subscriberId = $subscriber->id;
-    $subscriberCustomField->customFieldId = (int)$customField->id;
-    $subscriberCustomField->value = 'custom_field_value';
-    $subscriberCustomField->save();
+    $subscriberCustomField = new SubscriberCustomFieldEntity($subscriber, $customField, 'custom_field_value');
+    $this->entityManager->persist($subscriberCustomField);
+    $this->entityManager->flush();
     $result = $shortcodesObject->process(
-      ['[subscriber:cf_' . $customField->id . ']']
+      ['[subscriber:cf_' . $customField->getId() . ']']
     );
-    expect($result[0])->equals($subscriberCustomField->value);
+    expect($result[0])->equals($subscriberCustomField->getValue());
   }
 
   public function testItCanProcessLinkShortcodes() {
@@ -288,7 +262,7 @@ class ShortcodesTest extends \MailPoetTest {
       '[link:newsletter_view_in_browser_url]',
     ];
     // tracking function only works during sending, so queue object must not be false
-    $shortcodesObject->queue = true;
+    $shortcodesObject->setQueue($this->_createQueue());
     $result = $shortcodesObject->process($initialShortcodes);
     foreach ($result as $index => $transformedShortcode) {
       // 1. result must not contain a link
@@ -303,7 +277,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItReturnsDefaultLinksWhenPreviewIsEnabled() {
     $shortcodesObject = $this->shortcodesObject;
-    $shortcodesObject->wpUserPreview = true;
+    $shortcodesObject->setWpUserPreview(true);
     $shortcodes = [
       '[link:subscription_unsubscribe_url]',
       '[link:subscription_instant_unsubscribe_url]',
@@ -336,7 +310,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->equals('success');
     $this->settings->set('tracking.enabled', true);
     // tracking function only works during sending, so queue object must not be false
-    $shortcodesObject->queue = true;
+    $shortcodesObject->setQueue($this->_createQueue());
     $result = $shortcodesObject->process([$shortcode]);
     expect($result[0])->equals($shortcode);
   }
@@ -351,54 +325,45 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function _createWPUser() {
-    $wPUser = wp_create_user('phoenix_test_user', 'pass', 'phoenix@test.com');
+    wp_create_user('phoenix_test_user', 'pass', 'phoenix@test.com');
     $wPUser = get_user_by('login', 'phoenix_test_user');
     return $wPUser;
   }
 
-  public function _createSubscriber() {
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate(
-      [
-        'first_name' => 'Donald',
-        'last_name' => 'Trump',
-        'email' => 'mister@trump.com',
-        'status' => Subscriber::STATUS_SUBSCRIBED,
-        'WP_user_id' => $this->wPUser->ID,
-      ]
-    );
-    $subscriber->save();
-    return Subscriber::findOne($subscriber->id);
+  public function _createSubscriber(): SubscriberEntity {
+    $subscriber = new SubscriberEntity();
+    $subscriber->setFirstName('Donald');
+    $subscriber->setLastName('Trump');
+    $subscriber->setEmail('mister@trump.com');
+    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $subscriber->setWpUserId($this->wPUser->ID);
+    return $subscriber;
   }
 
-  public function _createNewsletter($parentId = null, $type = Newsletter::TYPE_NOTIFICATION) {
-    $newsletter = Newsletter::create();
-    $newsletter->hydrate(
-      [
-        'subject' => 'some subject',
-        'type' => $type,
-        'status' => Newsletter::STATUS_SENT,
-        'parent_id' => $parentId,
-      ]
-    );
-    $newsletter->save();
-    return Newsletter::findOne($newsletter->id);
+  public function _createNewsletter(NewsletterEntity $parent = null, $type = Newsletter::TYPE_NOTIFICATION): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('some subject');
+    $newsletter->setType($type);
+    $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
+    if ($parent) {
+      $newsletter->setParent($parent);
+    }
+    return $newsletter;
   }
 
-  public function _createQueue() {
-    $queue = SendingQueue::create();
-    $queue->newsletterId = $this->newsletter['id'];
-    $queue->status = 'completed';
-    $queue->save();
-    return SendingQueue::findOne($queue->id);
+  /** @return SendingQueueEntity */
+  public function _createQueue(): SendingQueueEntity {
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($this->newsletter);
+    return $queue;
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(CustomFieldEntity::class);
+    $this->truncateEntity(SubscriberCustomFieldEntity::class);
     wp_delete_post($this->wPPost, true);
     wp_delete_user($this->wPUser->ID);
   }

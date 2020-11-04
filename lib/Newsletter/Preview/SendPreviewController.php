@@ -3,12 +3,13 @@
 namespace MailPoet\Newsletter\Preview;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SendPreviewController {
@@ -24,25 +25,29 @@ class SendPreviewController {
   /** @var Renderer */
   private $renderer;
 
+  /** @var Shortcodes */
+  private $shortcodes;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     Mailer $mailer,
     MetaInfo $mailerMetaInfo,
     Renderer $renderer,
-    WPFunctions $wp
+    WPFunctions $wp,
+    SubscribersRepository $subscribersRepository,
+    Shortcodes $shortcodes
   ) {
     $this->mailer = $mailer;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->wp = $wp;
     $this->renderer = $renderer;
+    $this->shortcodes = $shortcodes;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function sendPreview(NewsletterEntity $newsletter, string $emailAddress) {
-    // Renderer and Shortcodes need old Newsletter model, until they're rewritten to use Doctrine
-    $newsletterModel = Newsletter::findOne($newsletter->getId());
-    if (!$newsletterModel) {
-      throw new SendPreviewException("Newsletter with ID '{$newsletter->getId()}' not found");
-    }
-
     $renderedNewsletter = $this->renderer->renderAsPreview($newsletter);
     $divider = '***MailPoet***';
     $dataForShortcodes = array_merge(
@@ -52,19 +57,21 @@ class SendPreviewController {
 
     $body = implode($divider, $dataForShortcodes);
 
-    $subscriber = Subscriber::getCurrentWPUser() ?: false;
-    $shortcodes = new Shortcodes(
-      $newsletterModel,
-      $subscriber,
-      $queue = false,
-      $wpUserPreview = true
-    );
+    $subscriber = Subscriber::getCurrentWPUser();
+    if ($subscriber instanceof Subscriber) {
+      $subscriber = $this->subscribersRepository->findOneById($subscriber->id);
+    }
+    $this->shortcodes->setNewsletter($newsletter);
+    if ($subscriber instanceof SubscriberEntity) {
+      $this->shortcodes->setSubscriber($subscriber);
+    }
+    $this->shortcodes->setWpUserPreview(true);
 
-    list(
+    [
       $renderedNewsletter['subject'],
       $renderedNewsletter['body']['html'],
-      $renderedNewsletter['body']['text']
-    ) = explode($divider, $shortcodes->replace($body));
+      $renderedNewsletter['body']['text'],
+    ] = explode($divider, $this->shortcodes->replace($body));
     $renderedNewsletter['id'] = $newsletter->getId();
 
     $extraParams = [
