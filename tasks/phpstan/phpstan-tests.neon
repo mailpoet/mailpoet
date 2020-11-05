@@ -2,8 +2,8 @@ parameters:
   level: 8
   tmpDir: ../../temp/phpstan
   bootstrapFiles:
-    - bootstrap.php
     - ../../vendor/autoload.php
+    - bootstrap.php
     - ../../vendor/codeception/codeception/autoload.php
     - ../../vendor/codeception/verify/src/Codeception/function.php
     - ../../vendor/codeception/verify/src/Codeception/Verify/Verify.php
@@ -15,6 +15,12 @@ parameters:
     - ../../tests/acceptance
     - ../../tests/integration
     - ../../tests/unit
+    - ../../../../../wp-includes
+    - ../../../../../wp-admin/includes/
+  scanFiles:
+      - PremiumContainerConfigurator.php
+      - woocommerce.php
+      - function-stubs.php
   dynamicConstantNames:
     - WP_DEBUG
   ignoreErrors:
