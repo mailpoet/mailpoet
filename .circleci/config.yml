@@ -165,15 +165,16 @@ jobs:
           paths:
             - .
   static_analysis:
-    executor: wpcli_php_mysql_latest
+    executor: wpcli_php_latest
     resource_class: medium
     steps:
     - attach_workspace:
         at: /home/circleci/mailpoet
     - run:
-        name: "Set up environment"
+        name: "Setup WordPress Source"
         command: |
-          source ./.circleci/setup.bash && setup php7
+          wp core download --path=wordpress --allow-root --version=latest
+          echo "WP_ROOT=/home/circleci/mailpoet/wordpress" >> .env
     - run:
         name: "Static analysis"
         command: ./do qa:phpstan
