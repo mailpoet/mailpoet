@@ -30,7 +30,7 @@ class SubscriberEntity {
 
   /**
    * @ORM\Column(type="bigint", nullable=true)
-   * @var int|null
+   * @var string|null
    */
   private $wpUserId;
 
@@ -133,14 +133,14 @@ class SubscriberEntity {
    * @return int|null
    */
   public function getWpUserId() {
-    return $this->wpUserId;
+    return $this->wpUserId ? (int)$this->wpUserId : null;
   }
 
   /**
    * @param int|null $wpUserId
    */
   public function setWpUserId($wpUserId) {
-    $this->wpUserId = $wpUserId;
+    $this->wpUserId = $wpUserId ? (string)$wpUserId : null;
   }
 
   /**

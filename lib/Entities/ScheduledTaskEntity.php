@@ -58,7 +58,7 @@ class ScheduledTaskEntity {
   private $processedAt;
 
   /**
-   * @ORM\Column(type="json")
+   * @ORM\Column(type="json", nullable=true)
    * @var array|null
    */
   private $meta;
