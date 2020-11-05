@@ -85,7 +85,7 @@ const messages = {
   onNoItemsFound: () => (
     <div className="mailpoet-forms-add-new-row">
       <p>{MailPoet.I18n.t('noItemsFound')}</p>
-      <Button onClick={onAddNewForm} iconStart={plusIcon}>{MailPoet.I18n.t('new')}</Button>
+      <Button onClick={onAddNewForm} automationId="add_new_form" iconStart={plusIcon}>{MailPoet.I18n.t('new')}</Button>
     </div>
   ),
 };

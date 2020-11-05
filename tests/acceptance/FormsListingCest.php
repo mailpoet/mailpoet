@@ -8,7 +8,6 @@ class FormsListingCest {
   public function formsListing(\AcceptanceTester $i) {
     $i->wantTo('Open forms listings page');
     $formName = 'Test Form';
-    $newFormButton = '.mailpoet-button';
     $form = new Form();
     $form->withName($formName);
     $form->create();
@@ -17,9 +16,8 @@ class FormsListingCest {
     $i->amOnMailpoetPage('Forms');
     $i->waitForText($formName, 5, '.mailpoet-listing-table');
     $i->seeNoJSErrors();
-    $i->seeNumberOfElements($newFormButton, 1);
     $i->clickItemRowActionByItemName($formName, 'Move to trash');
     $i->waitForText('No forms were found. Why not create a new one?');
-    $i->seeNumberOfElements($newFormButton, 2);
+    $i->waitForElementVisible('[data-automation-id="add_new_form"]');
   }
 }
