@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '@wordpress/core-data';
 import { select, useSelect, useDispatch } from '@wordpress/data';
 import {
@@ -27,6 +27,7 @@ import FormStyles from './form_styles.jsx';
 import Preview from './preview/preview';
 import FormStylingBackground from './form_styling_background.jsx';
 import { CustomFontsStyleSheetLink } from './font_family_settings';
+import Fullscreen from './fullscreen';
 
 /**
  * This component renders the form editor app.
@@ -41,10 +42,6 @@ export default () => {
   const [isInserterOpen, setIsInserterOpen] = useState(false);
   const sidebarOpened = useSelect(
     (sel) => sel('mailpoet-form-editor').getSidebarOpened(),
-    []
-  );
-  const isFullscreen = useSelect(
-    (sel) => sel('mailpoet-form-editor').isFullscreenEnabled(),
     []
   );
   const canUserUpload = useSelect(
@@ -66,14 +63,6 @@ export default () => {
   );
 
   const { blocksChangedInBlockEditor } = useDispatch('mailpoet-form-editor');
-
-  useEffect(() => {
-    if (isFullscreen) {
-      document.body.classList.add('is-fullscreen-mode');
-    } else {
-      document.body.classList.remove('is-fullscreen-mode');
-    }
-  }, [isFullscreen]);
 
   // Editor settings - see @wordpress/block-editor/src/store/defaults.js
   const editorSettings = {
@@ -150,6 +139,7 @@ export default () => {
               </BlockEditorProvider>
             </div>
             <FormStyles />
+            <Fullscreen />
           </div>
           <Popover.Slot />
         </SlotFillProvider>
