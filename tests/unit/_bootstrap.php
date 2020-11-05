@@ -1,7 +1,7 @@
 <?php
 
 if (!function_exists('__')) {
-  function __($text) {
+  function __($text, $domain) {
     return $text;
   }
 }
