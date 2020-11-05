@@ -17,6 +17,10 @@ define('WEEK_IN_SECONDS', 7 * DAY_IN_SECONDS);
 define('MONTH_IN_SECONDS', 30 * DAY_IN_SECONDS);
 define('YEAR_IN_SECONDS', 365 * DAY_IN_SECONDS);
 define('MAILPOET_VERSION', '1.0.0');
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'wordpress');
+define('DB_USER', 'wordpress');
+define('DB_PASSWORD', '12345');
 
 // Define Database Tables constants
 $dbConfig = new \MailPoet\Config\Database();
