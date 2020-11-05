@@ -8,8 +8,6 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 
-require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
 // The "created_at" column must be NULL in some tables to avoid "there can be only one
 // TIMESTAMP column with CURRENT_TIMESTAMP" error on MySQL version < 5.6.5 that occurs
 // even when other timestamp is simply "NOT NULL".
@@ -60,7 +58,8 @@ class Migrator {
 
   public function up() {
     global $wpdb;
-
+    // Ensure dbDelta function
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     $output = [];
     foreach ($this->models as $model) {
       $modelMethod = Helpers::underscoreToCamelCase($model);
