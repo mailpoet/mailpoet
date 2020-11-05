@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React from 'react';
 import {
   Button,
@@ -71,14 +70,17 @@ const Header = ({ isInserterOpened, setIsInserterOpened }) => {
         />
         <DropdownMenu
           icon={moreVertical}
-          label="More tools & options"
+          label={__('More tools & options')}
         >
           {() => (
-            <MenuGroup label="View" className="mailpoet-dropdown-menu-group">
+            <MenuGroup
+              label={_x('View', 'noun')}
+              className="mailpoet-dropdown-menu-group"
+            >
               <FeatureToggle
                 shortcut="Ctrl+Shift+Alt+F"
-                label="Fullscreen mode"
-                info="Work without distraction"
+                label={__('Fullscreen mode')}
+                info={__('Work without distraction')}
                 isActive={isFullscreen}
                 onToggle={() => toggleFullscreen(!isFullscreen)}
               />
