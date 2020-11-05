@@ -1,0 +1,4 @@
+parameters:
+  scanDirectories:
+    - WP_ROOT/wp-includes
+    - WP_ROOT/wp-admin/includes/

@@ -8,9 +8,6 @@ parameters:
     - PremiumContainerConfigurator.php
     - woocommerce.php
     - ../../vendor-prefixed/twig/twig/src/Extension/CoreExtension.php # phpstan can't find \MailPoetVendor\twig_include function
-  scanDirectories:
-    - ../../../../../wp-includes
-    - ../../../../../wp-admin/includes/
   inferPrivatePropertyTypeFromConstructor: true
   parallel:
     processTimeout: 300.0
@@ -49,6 +46,7 @@ parameters:
   excludes_analyse:
     - ../../lib/Config/PopulatorData/Templates
 includes:
+  - _phpstan-wp-source.neon # Config file that adds paths to WP source code. Generated from phpstan-wp-source.neon by Robo
   - vendor/phpstan/phpstan-doctrine/extension.neon
   - vendor/phpstan/phpstan-doctrine/rules.neon
   - phpstan-baseline.neon # https://medium.com/@ondrejmirtes/phpstans-baseline-feature-lets-you-hold-new-code-to-a-higher-standard-e77d815a5dff
