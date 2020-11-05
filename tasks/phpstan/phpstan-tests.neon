@@ -15,8 +15,6 @@ parameters:
     - ../../tests/acceptance
     - ../../tests/integration
     - ../../tests/unit
-    - ../../../../../wp-includes
-    - ../../../../../wp-admin/includes/
   scanFiles:
       - PremiumContainerConfigurator.php
       - woocommerce.php
@@ -37,6 +35,7 @@ parameters:
   checkMissingTypehints: false
 
 includes:
+  - _phpstan-wp-source.neon # Config file that adds paths to WP source code. Generated from phpstan-wp-source.neon by Robo
   - vendor/phpstan/phpstan-doctrine/extension.neon
   - vendor/phpstan/phpstan-phpunit/extension.neon
   - extensions/CodeceptionExtension/extension.neon
