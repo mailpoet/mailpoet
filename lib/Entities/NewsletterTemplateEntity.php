@@ -39,7 +39,7 @@ class NewsletterTemplateEntity {
   private $categories = '[]';
 
   /**
-   * @ORM\Column(type="json")
+   * @ORM\Column(type="json", nullable=true)
    * @Assert\NotBlank()
    * @var array|null
    */

@@ -72,7 +72,7 @@ class SendingQueueEntity {
   private $countToProcess = 0;
 
   /**
-   * @ORM\Column(type="json")
+   * @ORM\Column(type="json", nullable=true)
    * @var array|null
    */
   private $meta;

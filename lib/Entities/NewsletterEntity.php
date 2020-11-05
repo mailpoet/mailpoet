@@ -97,7 +97,7 @@ class NewsletterEntity {
   private $preheader = '';
 
   /**
-   * @ORM\Column(type="json")
+   * @ORM\Column(type="json", nullable=true)
    * @var array|null
    */
   private $body;
