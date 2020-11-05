@@ -22,4 +22,12 @@ define('MAILPOET_VERSION', '1.0.0');
 $dbConfig = new \MailPoet\Config\Database();
 $dbConfig->defineTables();
 
+// This needs to be set because \MailPoet\Doctrine\TablePrefixMetadataFactory can't construct without it
+MailPoet\Config\Env::$dbPrefix = 'wp_';
 
+// Classes needed in runtime
+MailPoet\Mailer\WordPress\PHPMailerLoader::load();
+require_once(ABSPATH . 'wp-includes/class-wp-widget.php'); // We extend this class it is need in runtime
+// Load tracy
+$tracyPath = __DIR__ . '/../../tools/vendor/tracy.phar';
+require_once($tracyPath);
