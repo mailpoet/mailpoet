@@ -15,7 +15,7 @@ class SettingsUnsubscribePageCest {
   public function createNewUnsubscribeConfirmationPage(\AcceptanceTester $i) {
     $i->wantTo('Make a custom unsubscribe confirmation page');
     $pageTitle = 'Custom Unsubscribe Confirmation';
-    $pageContent = '[mailpoet_page]';
+    $pageContent = 'This is custom unsubscribe confirmation page [mailpoet_page]';
     $i->login();
     $i->cli(['post', 'create', '--post_type=page', "--post_title=$pageTitle", "--post_content=$pageContent"]);
     $i->amOnMailPoetPage('Settings');
@@ -26,7 +26,7 @@ class SettingsUnsubscribePageCest {
     $i->waitForText('Settings saved');
     $i->click('[data-automation-id="unsubscribe_page_preview_link_confirmation"]');
     $i->switchToNextTab();
-    $i->waitForText($pageTitle);
+    $i->waitForText('This is custom unsubscribe confirmation page');
     $i->waitForText('Simply click on this link to stop receiving emails from us.');
     $i->waitForText('Yes, unsubscribe me');
   }
@@ -34,7 +34,7 @@ class SettingsUnsubscribePageCest {
   public function createNewUnsubscribeSuccessPage(\AcceptanceTester $i) {
     $i->wantTo('Make a custom unsubscribe success page');
     $pageTitle = 'Custom Unsubscribe Success';
-    $pageContent = '[mailpoet_page]';
+    $pageContent = 'This is custom unsubscribe success page [mailpoet_page]';
     $i->login();
     $i->cli(['post', 'create', '--post_type=page', "--post_title=$pageTitle", "--post_content=$pageContent"]);
     $i->amOnMailPoetPage('Settings');
@@ -43,17 +43,8 @@ class SettingsUnsubscribePageCest {
     //save settings and then verify the page
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
-    $i->click('[data-automation-id="unsubscribe_page_preview_link_confirmation"]');
+    $i->click('[data-automation-id="unsubscribe_page_preview_link"]');
     $i->switchToNextTab();
-    $i->waitForText($pageTitle);
-  }
-
-  public function simpleTest(\AcceptanceTester $i) {
-    $i->wantTo('make a simple test');
-    $i->login();
-    $i->amOnMailPoetPage('Settings');
-    $i->click('[data-automation-id="unsubscribe_page_preview_link_confirmation"]');
-    $i->switchToNextTab();
-    
+    $i->waitForText('This is custom unsubscribe success page');
   }
 }
