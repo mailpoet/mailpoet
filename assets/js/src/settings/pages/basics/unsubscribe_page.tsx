@@ -54,6 +54,7 @@ export default function UnsubscribePage() {
           preview="confirm_unsubscribe"
           setValue={setUnsubscribeConfirmationPage}
           id="subscription-pages-unsubscribe-confirmation"
+          automationId="unsubscribe-confirmation-page-selection"
           linkAutomationId="unsubscribe_page_preview_link_confirmation"
         />
         <div className="mailpoet-settings-inputs-row">
@@ -65,6 +66,7 @@ export default function UnsubscribePage() {
           preview="unsubscribe"
           setValue={setUnsubscribePage}
           id="subscription-pages-unsubscribe"
+          automationId="unsubscribe-success-page-selection"
           linkAutomationId="unsubscribe_page_preview_link"
         />
       </Inputs>
