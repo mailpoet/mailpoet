@@ -21,9 +21,6 @@ class SettingsUnsubscribePageCest {
     $i->amOnMailPoetPage('Settings');
     $i->click(['css' => '[data-automation-id="unsubscribe-confirmation-page-selection"]']);
     $i->checkOption('[data-automation-id="unsubscribe-confirmation-page-selection"]', $pageTitle);
-    //save settings and then verify the page
-    $i->click('[data-automation-id="settings-submit-button"]');
-    $i->waitForText('Settings saved');
     $i->click('[data-automation-id="unsubscribe_page_preview_link_confirmation"]');
     $i->switchToNextTab();
     $i->waitForText('This is custom unsubscribe confirmation page');
@@ -40,9 +37,6 @@ class SettingsUnsubscribePageCest {
     $i->amOnMailPoetPage('Settings');
     $i->click(['css' => '[data-automation-id="unsubscribe-success-page-selection"]']);
     $i->checkOption('[data-automation-id="unsubscribe-success-page-selection"]', $pageTitle);
-    //save settings and then verify the page
-    $i->click('[data-automation-id="settings-submit-button"]');
-    $i->waitForText('Settings saved');
     $i->click('[data-automation-id="unsubscribe_page_preview_link"]');
     $i->switchToNextTab();
     $i->waitForText('This is custom unsubscribe success page');
