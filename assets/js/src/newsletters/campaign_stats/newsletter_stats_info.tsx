@@ -13,23 +13,15 @@ export const NewsletterStatsInfo = ({
   newsletter,
 }: Props) => {
   const newsletterDate = newsletter.queue.scheduled_at || newsletter.queue.created_at;
-  const dateFormat = Intl.DateTimeFormat(navigator.language);
-  const date = dateFormat.format(new Date(newsletterDate));
-  // https://github.com/microsoft/TypeScript/issues/35865#issuecomment-706723685
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
-  const timeFormat = new Intl.DateTimeFormat(navigator.language, { timeStyle: 'short' });
-  const time = timeFormat.format(new Date(newsletterDate));
-
   return (
     <Grid.ThreeColumns className="mailpoet-stats-info">
       <div>
         <Heading level={1}>{newsletter.subject}</Heading>
         <div>
           <b>
-            {date}
+            {MailPoet.Date.short(newsletterDate)}
             {' • '}
-            {time}
+            {MailPoet.Date.time(newsletterDate)}
           </b>
         </div>
         {Array.isArray(newsletter.segments) && newsletter.segments.length && (
