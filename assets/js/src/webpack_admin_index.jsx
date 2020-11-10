@@ -4,7 +4,6 @@
 // This is to avoid undefined import order & messy WebPack config.
 // Code can be gradually refactored to avoid side effects completely.
 
-import 'newsletters/automatic_emails.jsx'; // side effect - sets up automatic emails via hooks
 import 'subscribers/subscribers.jsx'; // side effect - renders ReactDOM to document
 import 'newsletters/newsletters.jsx'; // side effect - renders ReactDOM to window
 import 'segments/segments.jsx'; // side effect - renders ReactDOM to document

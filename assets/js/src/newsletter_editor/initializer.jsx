@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ListingHeadingSteps from 'newsletters/listings/heading_steps.jsx';
+import fetchAutomaticEmailShortcodes from 'newsletters/automatic_emails/fetch_editor_shortcodes.jsx';
 import displayTutorial from './tutorial.jsx';
 
 const renderHeading = (newsletterType) => {
@@ -37,7 +38,7 @@ const initializeEditor = (config) => {
     .done((response) => {
       const newsletter = response.data;
 
-      Promise.resolve(Hooks.applyFilters('mailpoet_newsletters_editor_extend_config', config, newsletter)).then((extendedConfig) => {
+      Promise.resolve(fetchAutomaticEmailShortcodes(config, newsletter)).then((extendedConfig) => {
         const blockDefaults = {
           ...extendedConfig.blockDefaults,
           container: {},

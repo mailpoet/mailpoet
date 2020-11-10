@@ -7,11 +7,11 @@ import Form from 'form/form.jsx';
 import StandardNewsletterFields from 'newsletters/send/standard.jsx';
 import NotificationNewsletterFields from 'newsletters/send/notification.jsx';
 import WelcomeNewsletterFields from 'newsletters/send/welcome.jsx';
+import AutomaticEmailFields from 'newsletters/send/automatic.jsx';
 import HelpTooltip from 'help-tooltip.jsx';
 import jQuery from 'jquery';
 import Background from 'common/background/background';
 import { fromUrl } from 'common/thumbnail.ts';
-import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
@@ -19,6 +19,8 @@ import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import slugify from 'slugify';
 import { GlobalContext } from 'context/index.jsx';
+
+const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
 const generateGaTrackingCampaignName = (id, subject) => {
   const name = slugify(subject, { lower: true })
@@ -68,7 +70,12 @@ class NewsletterSend extends React.Component {
     switch (newsletter.type) {
       case 'notification': return NotificationNewsletterFields;
       case 'welcome': return WelcomeNewsletterFields;
-      default: return Hooks.applyFilters('mailpoet_newsletters_send_newsletter_fields', StandardNewsletterFields, newsletter);
+      case 'automatic':
+        if (automaticEmails[newsletter.options.group]) {
+          return AutomaticEmailFields;
+        }
+        // fall through
+      default: return StandardNewsletterFields;
     }
   };
 
@@ -206,6 +213,7 @@ class NewsletterSend extends React.Component {
           switch (response.data.type) {
             case 'notification':
             case 'welcome':
+            case 'automatic':
               return this.activateNewsletter(response);
             default:
               return this.sendNewsletter(response);
@@ -219,20 +227,14 @@ class NewsletterSend extends React.Component {
     });
   };
 
-  sendNewsletter = (newsletter) => MailPoet.Ajax.post(
-    Hooks.applyFilters(
-      'mailpoet_newsletters_send_server_request_parameters',
-      {
-        api_version: window.mailpoet_api_version,
-        endpoint: 'sendingQueue',
-        action: 'add',
-        data: {
-          newsletter_id: this.state.item.id,
-        },
-      },
-      this.state.item
-    )
-  ).done((response) => {
+  sendNewsletter = (newsletter) => MailPoet.Ajax.post({
+    api_version: window.mailpoet_api_version,
+    endpoint: 'sendingQueue',
+    action: 'add',
+    data: {
+      newsletter_id: this.state.item.id,
+    },
+  }).done((response) => {
     // save template in recently sent category
     this.saveTemplate(newsletter, () => {
       if (window.mailpoet_show_congratulate_after_first_newsletter) {
@@ -241,11 +243,8 @@ class NewsletterSend extends React.Component {
         return;
       }
       // redirect to listing based on newsletter type
-      this.props.history.push(Hooks.applyFilters('mailpoet_newsletters_send_server_request_response_redirect', `/${this.state.item.type || ''}`, this.state.item));
-      const customResponse = Hooks.applyFilters('mailpoet_newsletters_send_server_request_response', this.state.item, response);
-      if (_.isFunction(customResponse)) {
-        customResponse();
-      } else if (response.data.status === 'scheduled') {
+      this.props.history.push(`/${this.state.item.type || ''}`);
+      if (response.data.status === 'scheduled') {
         this.context.notices.success(
           <p>{MailPoet.I18n.t('newsletterHasBeenScheduled')}</p>
         );
@@ -288,10 +287,14 @@ class NewsletterSend extends React.Component {
         return;
       }
       // redirect to listing based on newsletter type
-      this.props.history.push(`/${this.state.item.type || ''}`);
       const opts = this.state.item.options;
+      this.props.history.push((this.state.item.type === 'automatic') ? `/${opts.group}` : `/${this.state.item.type || ''}`);
       // display success message depending on newsletter type
-      if (response.data.type === 'welcome') {
+      if (this.state.item.type === 'automatic' && automaticEmails[opts.group]) {
+        this.context.notices.success(
+          <p>{MailPoet.I18n.t('automaticEmailActivated').replace('%1s', automaticEmails[opts.group].title)}</p>
+        );
+      } else if (response.data.type === 'welcome') {
         this.context.notices.success(
           <p>{MailPoet.I18n.t('welcomeEmailActivated')}</p>
         );
