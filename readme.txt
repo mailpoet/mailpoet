@@ -185,7 +185,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = 3.54.2 - 2020-11-10 =
-* Improved: expanding form editor to a fullscreen;
+* Improved: fullscreen option added to the form editor;
 * Fixed: Form editor is now again usable on mobile devices.
 
 = 3.54.1 - 2020-11-02 =
