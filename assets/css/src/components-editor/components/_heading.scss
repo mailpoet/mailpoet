@@ -1,6 +1,10 @@
 .mailpoet_heading_form_field {
   margin-bottom: 5px;
   margin-top: 5px;
+
+  &:first-child {
+    margin-top: 0 !important;
+  }
 }
 
 .mailpoet_input_title,
