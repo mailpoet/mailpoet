@@ -10,17 +10,19 @@ class EditorHeaderBlockCest {
     $headerInEditor = ('[data-automation-id="header"]');
     $headerSettingsIcon = ('[data-automation-id="settings_tool"]');
     $headerSettingsAssertion = ('[data-automation-id="header_done_button"]');
+    $footer = '[data-automation-id="footer"]';
     $newsletter = (new Newsletter())
       ->loadBodyFrom('newsletterWithTextNoHeader.json')
       ->create();
     $i->login();
     $i->amEditingNewsletter($newsletter->id);
     $i->dragAndDrop('#automation_editor_block_header', '#mce_0');
-    //Open settings by clicking on block
+    //Prevent flakyness by adding footer mouse over and some checks
+    $i->moveMouseOver($footer, 3, 2);
     $i->moveMouseOver($headerInEditor, 3, 2);
-    // add one additional check because it needs a bit of time to click on the settings icon
     $i->waitForElement($headerInEditor);
     $i->waitForText('View this in your browser.');
+    //Open settings by clicking on block
     $i->click($headerSettingsIcon);
     $i->waitForElementVisible($headerSettingsAssertion);
     $i->click($headerSettingsAssertion);
