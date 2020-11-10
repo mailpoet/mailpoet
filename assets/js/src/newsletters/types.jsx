@@ -274,7 +274,7 @@ class NewsletterTypes extends React.Component {
 
     return (
       <>
-        <HideScreenOptions />
+        {this.props.hideScreenOptions && <HideScreenOptions />}
         <link rel="prefetch" href={window.mailpoet_editor_javascript_url} as="script" />
 
         <div className="mailpoet-newsletter-types">
@@ -300,10 +300,12 @@ NewsletterTypes.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
+  hideScreenOptions: PropTypes.bool,
 };
 
 NewsletterTypes.defaultProps = {
   filter: null,
+  hideScreenOptions: true,
 };
 
 export default withRouter(NewsletterTypes);

@@ -353,6 +353,7 @@ class NewsletterListNotification extends React.Component {
         {this.state.newslettersCount === 0 && (
           <NewsletterTypes
             filter={(type) => type.slug === 'notification'}
+            hideScreenOptions={false}
           />
         )}
         {this.state.newslettersCount !== 0 && (
