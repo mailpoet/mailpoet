@@ -1,5 +1,4 @@
 .mailpoet-categories {
-  column-gap: $grid-gap-large;
   display: flex;
   flex-wrap: wrap;
   font-family: $font-family;
@@ -7,13 +6,14 @@
   line-height: 16px;
   list-style: none;
   margin: 0;
-  padding: $grid-gap 0;
+  padding: $grid-gap 0 1px; // 1px to prevent https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Mastering_margin_collapsing
   row-gap: $grid-gap;
 }
 
 .mailpoet-categories-item {
   color: $color-text-light;
   font-size: $font-size;
+  margin-bottom: $grid-gap;
   padding-bottom: $grid-gap;
   text-decoration: none;
 
@@ -26,6 +26,10 @@
   &.active {
     color: $color-secondary;
     font-weight: bold;
+  }
+
+  + .mailpoet-categories-item {
+    margin-left: $grid-gap-large;
   }
 }
 
