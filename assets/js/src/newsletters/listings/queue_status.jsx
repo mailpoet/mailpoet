@@ -2,6 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import parseDate from 'date-fns/parseJSON';
 import APIErrorsNotice from 'notices/api_errors_notice.tsx';
 import Button from 'common/button/button';
 import NewsletterStatus from 'common/listings/newsletter_status';
@@ -68,7 +69,7 @@ QueueSending.propTypes = {
 const QueueStatus = ({ newsletter, mailerLog }) => {
   let newsletterDate = newsletter.sent_at || newsletter.queue.scheduled_at;
   if (newsletterDate) {
-    newsletterDate = new Date(newsletterDate);
+    newsletterDate = parseDate(newsletterDate);
   }
   const isNewsletterSending = newsletter.queue && newsletter.queue.status !== 'scheduled';
   const isMtaPaused = mailerLog.status === 'paused';
