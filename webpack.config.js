@@ -338,6 +338,7 @@ const testConfig = {
       'assets/js/src',
       'tests/javascript_newsletter_editor/newsletter_editor'
     ],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
       'sticky-kit': 'vendor/jquery.sticky-kit.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
