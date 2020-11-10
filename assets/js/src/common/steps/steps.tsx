@@ -1,6 +1,7 @@
 import range from 'lodash/range';
 import React from 'react';
 import classNames from 'classnames';
+import { ContentWrapperFix } from './content_wrapper_fix';
 
 type Props = {
   count: number,
@@ -22,6 +23,7 @@ const Steps = ({ count, current, titles }: Props) => (
         {titles[i - 1] && <div className="mailpoet-step-title" data-title={titles[i - 1] || ''}>{titles[i - 1] || ''}</div>}
       </div>
     ))}
+    <ContentWrapperFix />
   </div>
 );
 
