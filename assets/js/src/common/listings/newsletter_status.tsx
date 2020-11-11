@@ -44,10 +44,10 @@ const NewsletterStatus = ({
       percentage = 100;
     }
   } else if (inProgress) {
-    label = (<>{`${processed} / ${total}`}</>);
+    label = (<>{`${MailPoet.Num.toLocaleFixed(processed)} / ${MailPoet.Num.toLocaleFixed(total)}`}</>);
     percentage = 100 * (processed / total);
   } else if (sent) {
-    label = (<>{`${total} / ${total}`}</>);
+    label = (<>{`${MailPoet.Num.toLocaleFixed(total)} / ${MailPoet.Num.toLocaleFixed(total)}`}</>);
     percentage = 100;
   } else if (sentWithoutQueue) {
     label = (<>{t('sent')}</>);
