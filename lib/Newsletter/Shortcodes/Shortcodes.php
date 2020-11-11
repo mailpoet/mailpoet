@@ -63,9 +63,6 @@ class Shortcodes {
     $this->queue = $queue;
   }
 
-  /**
-   * @param bool $wpUserPreview
-   */
   public function setWpUserPreview(bool $wpUserPreview): void {
     $this->wpUserPreview = $wpUserPreview;
   }
