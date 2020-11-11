@@ -4,6 +4,7 @@ namespace MailPoet\Test\Config;
 
 use MailPoet\Config\Database;
 use MailPoet\Config\Env;
+use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Idiorm\ORM;
 
 class DatabaseTest extends \MailPoetTest {
@@ -28,7 +29,8 @@ class DatabaseTest extends \MailPoetTest {
   }
 
   public function testItSetsDBDriverOptions() {
-    $this->database->init($this->connection->getWrappedConnection());
+    $connection = $this->diContainer->get(Connection::class);
+    $this->database->init($connection->getWrappedConnection()->getConnection());
     $result = ORM::for_table("")
       ->raw_query(
         'SELECT ' .

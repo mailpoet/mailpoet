@@ -17,6 +17,6 @@ class DatabaseInitializer {
 
     // pass the same PDO connection to legacy Database object
     $database = new Database();
-    $database->init($connection->getWrappedConnection());
+    $database->init($connection->getWrappedConnection()->getConnection());
   }
 }
