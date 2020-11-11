@@ -13,8 +13,6 @@ use MailPoet\Newsletter\Shortcodes\Categories\Subscriber;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Shortcodes {
-  const SHORTCODE_CATEGORY_NAMESPACE = 'MailPoet\Newsletter\Shortcodes\Categories\\';
-
   /** @var NewsletterEntity|null */
   private $newsletter;
 
