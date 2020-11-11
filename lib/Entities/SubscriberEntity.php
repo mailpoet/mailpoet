@@ -143,6 +143,10 @@ class SubscriberEntity {
     $this->wpUserId = $wpUserId ? (string)$wpUserId : null;
   }
 
+  public function isWPUser(): bool {
+    return $this->getWpUserId() > 0;
+  }
+
   /**
    * @return bool
    */
