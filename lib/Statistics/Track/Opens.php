@@ -18,7 +18,7 @@ class Opens {
     $queue = $data->queue;
     /** @var NewsletterEntity $newsletter */
     $newsletter = $data->newsletter;
-    $wpUserPreview = ($data->preview && ($subscriber->getWpUserId() > 0));
+    $wpUserPreview = ($data->preview && ($subscriber->isWPUser()));
     // log statistics only if the action did not come from
     // a WP user previewing the newsletter
     if (!$wpUserPreview) {

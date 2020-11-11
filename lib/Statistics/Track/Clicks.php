@@ -60,7 +60,7 @@ class Clicks {
     $newsletter = $data->newsletter;
     /** @var NewsletterLinkEntity $link */
     $link = $data->link;
-    $wpUserPreview = ($data->preview && ($subscriber->getWpUserId() > 0));
+    $wpUserPreview = ($data->preview && ($subscriber->isWPUser()));
     // log statistics only if the action did not come from
     // a WP user previewing the newsletter
     if (!$wpUserPreview) {
