@@ -13,8 +13,8 @@ class BlackFridayNotice {
 
   public function init($shouldDisplay) {
     $shouldDisplay = $shouldDisplay
-      && (time() <= strtotime('2019-11-30 23:59:59'))
-      && (time() >= strtotime('2019-11-08 00:00:00'))
+      && (time() <= strtotime('2020-12-06 12:00:00'))
+      && (time() >= strtotime('2020-11-23 12:00:00'))
       && !get_transient(self::OPTION_NAME);
     if ($shouldDisplay) {
       $this->display();
