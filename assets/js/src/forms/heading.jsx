@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
+import Button from 'common/button/button';
 import plusIcon from 'common/button/icon/plus';
 
 export const onAddNewForm = () => {
@@ -13,16 +13,22 @@ export const onAddNewForm = () => {
   }, 200); // leave some time for the event to track
 };
 
-export const FormsHeading = () => (
-  <TopBarWithBeamer>
-    <Link
-      className="mailpoet-button mailpoet-button-small"
-      to="/new"
-      onClick={onAddNewForm}
-      data-automation-id="create_new_form"
-    >
-      {plusIcon}
-      <span>{MailPoet.I18n.t('new')}</span>
-    </Link>
-  </TopBarWithBeamer>
-);
+export const FormsHeading = () => {
+  const [loading, setLoading] = useState(false);
+  return (
+    <TopBarWithBeamer>
+      <Button
+        dimension="small"
+        onClick={() => {
+          setLoading(true);
+          onAddNewForm();
+        }}
+        withSpinner={loading}
+        automationId="create_new_form"
+        iconStart={plusIcon}
+      >
+        {MailPoet.I18n.t('new')}
+      </Button>
+    </TopBarWithBeamer>
+  );
+};
