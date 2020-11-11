@@ -29,7 +29,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     $connection = $connectionFactory->createConnection();
 
     expect($connection)->isInstanceOf(SerializableConnection::class);
-    expect($connection->getWrappedConnection())->isInstanceOf(PDO::class);
+    expect($connection->getWrappedConnection()->getConnection())->isInstanceOf(PDO::class);
     expect($connection->getDriver())->isInstanceOf(PDOMySql\Driver::class);
     expect($connection->getDatabasePlatform())->isInstanceOf(MySqlPlatform::class);
     expect($connection->getHost())->equals(Env::$dbHost);
@@ -80,7 +80,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     Env::$dbHost = '::ffff:' . gethostbyname($this->envBackup['db_host']);
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
-    expect($connection->getWrappedConnection())->isInstanceOf(PDO::class);
+    expect($connection->getWrappedConnection()->getConnection())->isInstanceOf(PDO::class);
     expect($connection->executeQuery('SELECT 1')->fetchColumn())->same('1');
   }
 

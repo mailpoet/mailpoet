@@ -3,6 +3,7 @@
 namespace MailPoet\Doctrine;
 
 use MailPoet\Config\Env;
+use MailPoet\Doctrine\Driver\Driver;
 use MailPoet\Doctrine\Types\BigIntType;
 use MailPoet\Doctrine\Types\JsonOrSerializedType;
 use MailPoet\Doctrine\Types\JsonType;
@@ -30,6 +31,7 @@ class ConnectionFactory {
     $connectionParams = [
       'wrapperClass' => SerializableConnection::class,
       'driver' => self::DRIVER,
+      'driverClass' => Driver::class,
       'platform' => new $platformClass,
       'user' => Env::$dbUsername,
       'password' => Env::$dbPassword,
