@@ -10,6 +10,9 @@ class AutomaticEmails {
 
   private $wp;
 
+  /** @var array|null */
+  private $automaticEmails;
+
   public $availableGroups = [
     'WooCommerce',
   ];
@@ -45,6 +48,10 @@ class AutomaticEmails {
   public function getAutomaticEmails() {
     global $wp_filter; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 
+    if ($this->automaticEmails) {
+      return $this->automaticEmails;
+    }
+
     // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $registeredGroups = preg_grep('!^' . self::FILTER_PREFIX . '(.*?)$!', array_keys($wp_filter));
 
@@ -65,6 +72,8 @@ class AutomaticEmails {
       // keys associative automatic email array by slug
       $automaticEmails[$automaticEmail['slug']] = $automaticEmail;
     }
+
+    $this->automaticEmails = $automaticEmails;
 
     return $automaticEmails;
   }
@@ -136,6 +145,8 @@ class AutomaticEmails {
     array_map(function($group) use($self) {
       $self->wp->removeAllFilters($group);
     }, $registeredGroups);
+
+    $this->automaticEmails = null;
   }
 
   private function displayGroupWarning($group) {

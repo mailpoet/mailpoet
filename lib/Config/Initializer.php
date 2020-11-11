@@ -344,6 +344,7 @@ class Initializer {
   public function setupAutomaticEmails() {
     $automaticEmails = new AutomaticEmails();
     $automaticEmails->init();
+    $automaticEmails->getAutomaticEmails();
   }
 
   private function setupWoocommerceTransactionalEmails() {
