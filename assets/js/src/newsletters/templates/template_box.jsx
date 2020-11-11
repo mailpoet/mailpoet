@@ -125,6 +125,7 @@ class TemplateBox extends React.Component {
         onSelect={this.onSelect}
         onDelete={readonly === false ? this.onDelete : undefined}
         automationId={`select_template_${index}`}
+        className="mailpoet-template-two-lines"
       >
         { preview }
       </TemplateBoxWrap>

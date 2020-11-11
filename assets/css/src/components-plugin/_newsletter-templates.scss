@@ -31,15 +31,25 @@
 .mailpoet-template-info {
   align-items: center;
   display: flex;
-  gap: $grid-gap;
   justify-content: space-between;
   padding: $grid-gap;
   white-space: nowrap;
 
   h5 {
-    margin: 0;
+    margin: 0 $grid-gap 0 0;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .mailpoet-template-two-lines & {
+    flex-wrap: wrap;
+    justify-content: center;
+
+    h5 {
+      margin: 0 0 $grid-gap-half 0;
+      text-align: center;
+      width: 100%;
+    }
   }
 }
