@@ -142,7 +142,7 @@ class ShortcodesTest extends \MailPoetTest {
   public function itCanProcessPostNotificationNewsletterNumberShortcode() {
     // create first post notification
     $postNotificationHistory = $this->_createNewsletter(
-      $parentId = $this->newsletter,
+      $this->newsletter,
       $type = Newsletter::TYPE_NOTIFICATION_HISTORY
     );
     $this->shortcodesObject->setNewsletter($postNotificationHistory);
@@ -151,7 +151,7 @@ class ShortcodesTest extends \MailPoetTest {
 
     // create another post notification
     $postNotificationHistory = $this->_createNewsletter(
-      $parentId = $this->newsletter,
+      $this->newsletter,
       $type = Newsletter::TYPE_NOTIFICATION_HISTORY
     );
     $this->shortcodesObject->setNewsletter($postNotificationHistory);
