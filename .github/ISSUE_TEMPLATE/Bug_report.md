@@ -1,6 +1,10 @@
 ---
 name: Bug report
 about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
 **Describe the bug**
@@ -27,4 +31,3 @@ If applicable, add screenshots to help explain your problem.
 - MailPoet version: [e.g: 3.46.13]
 
 **Additional context**
-
