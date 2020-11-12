@@ -52,7 +52,7 @@ const Notice = ({
   if (hidden) return null;
 
   const content = (
-    <div ref={elementRef} className={`mailpoet_base_notice mailpoet_${type}_notice`}>
+    <div ref={elementRef} className={`notice ${type}`}>
       {children}
       {closable && (
         <button type="button" className="notice-dismiss" onClick={close}>

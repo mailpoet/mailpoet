@@ -8,27 +8,3 @@
 .mailpoet_notice_server {
   margin: 20px 20px 0 2px;
 }
-
-.mailpoet_base_notice {
-  background: #fff;
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
-  margin: 5px 0 15px;
-  padding: 1px 12px;
-  position: relative;
-}
-
-.mailpoet_success_notice {
-  border-left: 4px solid #46b450;
-}
-
-.mailpoet_error_notice {
-  border-left: 4px solid #dc3232;
-}
-
-.mailpoet_warning_notice {
-  border-left: 4px solid #ffb900;
-}
-
-.mailpoet_info_notice {
-  border-left: 4px solid #00a0d2;
-}
