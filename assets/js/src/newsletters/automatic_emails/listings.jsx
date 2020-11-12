@@ -376,7 +376,7 @@ class Listings extends React.Component {
     if (window.mailpoet_woocommerce_optin_on_checkout === '1') return null;
 
     return (
-      <div className="mailpoet_base_notice mailpoet_error_notice">
+      <div className="notice error">
         <p>{MailPoet.I18n.t('wooCommerceEmailsWarning')}</p>
         <p>
           <a href="?page=mailpoet-settings#woocommerce">{MailPoet.I18n.t('wooCommerceEmailsWarningLink')}</a>
