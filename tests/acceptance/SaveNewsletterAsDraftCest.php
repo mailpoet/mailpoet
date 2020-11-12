@@ -6,6 +6,7 @@ class SaveNewsletterAsDraftCest {
   public function saveStandardNewsletterAsDraft(\AcceptanceTester $i) {
     $i->wantTo('Create standard newsletter and save as a draft');
 
+    $inactiveNewsletterUI = '.mailpoet-listing-row-inactive';
     $newsletterTitle = 'Testing Newsletter ' . \MailPoet\Util\Security::generateRandomString();
     $segmentName = $i->createListWithSubscriber();
 
@@ -32,5 +33,7 @@ class SaveNewsletterAsDraftCest {
     $i->selectOptionInSelect2($segmentName);
     $i->click('Save as draft and close');
     $i->waitForText($newsletterTitle);
+    $i->waitForText('Not sent yet');
+    $i->seeElement($inactiveNewsletterUI);
   }
 }
