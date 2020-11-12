@@ -30,10 +30,12 @@ class Settings {
     ) {
       return;
     }
+    echo $this->renderer->render('woocommerce/settings_button.html', [
+      'woocommerce_template_id' => $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID),
+    ]);
     if (!(bool)$this->settings->get('woocommerce.use_mailpoet_editor')) {
       return;
     }
-
     echo $this->renderer->render('woocommerce/settings_overlay.html', [
       'woocommerce_template_id' => $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID),
     ]);
