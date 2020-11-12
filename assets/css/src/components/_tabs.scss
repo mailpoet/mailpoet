@@ -13,7 +13,8 @@
   .error ~ &,
   .error ~ div > &,
   .error ~ .wrap &,
-  .mailpoet-subscribers-in-plan ~ & {
+  .mailpoet-subscribers-in-plan ~ &,
+  #mailpoet_notices:not(:empty) ~ div > & {
     top: 0 !important;
   }
 
