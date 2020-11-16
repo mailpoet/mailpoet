@@ -10,7 +10,7 @@ type Props = {
   isActive: boolean;
   label: string;
   info: string|undefined;
-  onToggle: () => any;
+  onToggle: () => void;
 }
 
 const FeatureToggle = ({
@@ -19,7 +19,7 @@ const FeatureToggle = ({
   info,
   onToggle,
 }: Props) => {
-  let content: any;
+  let content: JSX.Element | string;
   if (info) {
     content = (
       <span className="components-menu-item__info-wrapper">

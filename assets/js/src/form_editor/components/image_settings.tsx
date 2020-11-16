@@ -6,9 +6,9 @@ import { Button, SelectControl } from '@wordpress/components';
 type Props = {
   name: string;
   imageUrl?: string;
-  onImageUrlChange: (value: string) => any;
+  onImageUrlChange: (value: string) => void;
   imageDisplay?: string;
-  onImageDisplayChange: (value: string) => any;
+  onImageDisplayChange: (value: string) => void;
 }
 
 const ImageSettings = ({

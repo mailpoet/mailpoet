@@ -15,6 +15,10 @@ export const fromDom = async (element) => {
   return canvas.toDataURL('image/jpeg');
 };
 
+interface ThumbnailIframe extends HTMLIFrameElement {
+  onError?: () => void;
+}
+
 /**
  * Generates a thumbnail from an URL.
  *
@@ -22,7 +26,7 @@ export const fromDom = async (element) => {
  * @return {Promise<String>} DataURL of the generated image.
  */
 export const fromUrl = (url) => new Promise((resolve, reject) => {
-  const iframe = document.createElement('iframe');
+  const iframe: ThumbnailIframe = document.createElement('iframe');
   const protocol = document.location.href.startsWith('https://') ? 'https:' : 'http:';
   iframe.src = protocol + url.replace(/^https?:/, '');
   iframe.style.opacity = '0';
@@ -44,7 +48,7 @@ export const fromUrl = (url) => new Promise((resolve, reject) => {
     reject(MailPoet.I18n.t('errorWhileTakingScreenshot'));
   };
   iframe.onerror = onError;
-  (iframe as any).onError = onError;
+  iframe.onError = onError;
   iframe.className = 'mailpoet-template-iframe';
   try {
     document.body.appendChild(iframe);
@@ -65,7 +69,7 @@ export const fromNewsletter = (data) => new Promise((resolve, reject) => {
     json.body = JSON.stringify(json.body);
   }
   MailPoet.Ajax.post({
-    api_version: (window as any).mailpoet_api_version,
+    api_version: MailPoet.apiVersion,
     endpoint: 'newsletters',
     action: 'showPreview',
     data: json,

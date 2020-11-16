@@ -22,6 +22,7 @@ export function useSetting<
   Key3 extends keyof Settings[Key1][Key2]>
   (key1: Key1, key2: Key2, key3: Key3): ValueAndSetter<Settings[Key1][Key2][Key3]>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useSetting(...path: string[]): [any, (value: any) => any] {
   const getValue = useSelector('getSetting');
   const setValue = useAction('setSetting');

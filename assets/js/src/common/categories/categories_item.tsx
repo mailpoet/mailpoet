@@ -9,7 +9,7 @@ export type Category = {
 };
 
 type Props = Category & {
-  onSelect: (name: string) => any;
+  onSelect: (name: string) => void;
   active?: boolean;
 };
 

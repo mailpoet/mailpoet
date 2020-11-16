@@ -18,7 +18,7 @@ const standardFonts = [
 ];
 
 type Props = {
-  onChange: (value: string|undefined) => any;
+  onChange: (value: string|undefined) => void;
   value?: string;
   name: string;
   hideLabelFromVision?: boolean;

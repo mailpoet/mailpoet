@@ -21,7 +21,12 @@ const handleSave = (address: string | null) => MailPoet.Ajax.post({
   },
 });
 
-const getErrorMessage = (error: any | null): string => {
+type error = {
+  error: string;
+  message: string;
+}
+
+const getErrorMessage = (error: error | null): string => {
   if (!error) {
     return MailPoet.I18n.t('setFromAddressEmailUnknownError');
   }
@@ -71,11 +76,12 @@ const removeUnauthorizedEmailNotices = () => {
 
 type Props = {
   onRequestClose: () => void;
-  setAuthorizedAddress?: (address: string) => any;
+  setAuthorizedAddress?: (address: string) => void;
 };
 
 const SetFromAddressModal = ({ onRequestClose, setAuthorizedAddress }: Props) => {
   const [address, setAddress] = useState(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = React.useContext<any>(GlobalContext);
 
   return (

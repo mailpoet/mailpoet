@@ -4,15 +4,33 @@ import ReactStringReplace from 'react-string-replace';
 import jQuery from 'jquery';
 import { noop } from 'lodash';
 
+interface FeatureAnnouncementWindow extends Window {
+  Beamer: {
+    show: () => void;
+  };
+  mailpoet_feature_announcement_has_news: boolean;
+  mailpoet_update_available: boolean;
+  beamer_config: {
+    product_id: string;
+    selector: string;
+    language: string;
+    callback: () => void;
+    filter?: string;
+  };
+  mailpoet_user_locale: string;
+}
+
+declare let window: FeatureAnnouncementWindow;
+
 export const withFeatureAnnouncement = <P extends object>(
   Component: React.ComponentType<P>
 ): React.FC<Omit<P, 'hasNews'|'onBeamerClick'>> => {
-  const isBeamerInitialized = () => typeof (window as any).Beamer !== 'undefined';
-  let showDot = (window as any).mailpoet_feature_announcement_has_news;
+  const isBeamerInitialized = () => typeof window.Beamer !== 'undefined';
+  let showDot = window.mailpoet_feature_announcement_has_news;
   let beamerCallback;
 
   function showPluginUpdateNotice() {
-    if (!(window as any).mailpoet_update_available || document.getElementById('mailpoet_update_notice')) {
+    if (!window.mailpoet_update_available || document.getElementById('mailpoet_update_notice')) {
       return;
     }
     const updateMailPoetNotice = ReactStringReplace(
@@ -38,19 +56,18 @@ export const withFeatureAnnouncement = <P extends object>(
 
   function loadBeamer() {
     // eslint-disable-next-line @typescript-eslint/camelcase
-    (window as any).beamer_config = {
-      // eslint-disable-next-line @typescript-eslint/camelcase
+    window.beamer_config = {
       product_id: 'VvHbhYWy7118',
       selector: '#beamer-empty-element',
-      language: (window as any).mailpoet_user_locale,
+      language: window.mailpoet_user_locale,
       callback: beamerCallback,
     };
-    if ((window as any).mailpoet_woocommerce_active) {
-      (window as any).beamer_config.filter = 'woocommerce';
+    if (MailPoet.isWoocommerceActive) {
+      window.beamer_config.filter = 'woocommerce';
     }
     MailPoet.Modal.loading(true);
     // eslint-disable-next-line @typescript-eslint/camelcase
-    (window as any).mailpoet_feature_announcement_has_news = false;
+    window.mailpoet_feature_announcement_has_news = false;
     const s = document.createElement('script');
     s.type = 'text/javascript';
     s.src = 'https://app.getbeamer.com/js/beamer-embed.js';
@@ -68,7 +85,7 @@ export const withFeatureAnnouncement = <P extends object>(
     showDot = false;
     beamerCallback = noop; // We show Beamer panel only on first callback after initialization
     MailPoet.Modal.loading(false);
-    (window as any).Beamer.show();
+    window.Beamer.show();
     updateLastAnnouncementSeenValue();
     showPluginUpdateNotice();
   }

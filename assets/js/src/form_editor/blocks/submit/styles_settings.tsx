@@ -16,7 +16,7 @@ import FontFamilySettings from '../../components/font_family_settings';
 
 type Props = {
   styles: InputBlockStyles;
-  onChange: (styles: InputBlockStyles) => any;
+  onChange: (styles: InputBlockStyles) => void;
   formInputPadding: number;
   formFontFamily?: string;
 }

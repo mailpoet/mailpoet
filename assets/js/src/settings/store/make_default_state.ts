@@ -23,6 +23,7 @@ function getMssStatus(keyValid, data): MssStatus {
   return mssActive ? MssStatus.VALID_MSS_ACTIVE : MssStatus.VALID_MSS_NOT_ACTIVE;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function makeDefaultState(window: any): State {
   const pages = window.mailpoet_pages;
   const paths = window.mailpoet_paths;

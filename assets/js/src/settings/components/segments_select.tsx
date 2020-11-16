@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { useSelector } from 'settings/store/hooks';
 import ReactSelect from 'common/form/react_select/react_select';
@@ -6,7 +7,7 @@ type Props = {
   id: string;
   value: string[];
   placeholder?: string;
-  setValue: (x: string[]) => any;
+  setValue: (x: string[]) => void;
 }
 
 export default (props: Props) => {

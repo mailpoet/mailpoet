@@ -1,1 +1,3 @@
-export default (value: string): boolean => (window as any).mailpoet_email_regex.test(value);
+import MailPoet from 'mailpoet';
+
+export default (value: string): boolean => MailPoet.emailRegex.test(value);

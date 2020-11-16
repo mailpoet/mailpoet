@@ -6,7 +6,7 @@ import PlacementSettingsPanel from 'form_editor/components/form_settings/form_pl
 import SidebarHeader from './sidebar_header';
 
 type Props = {
-  onClose: () => any;
+  onClose: () => void;
 }
 
 export default ({ onClose }: Props) => {

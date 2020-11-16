@@ -6,8 +6,8 @@ type Props = {
   name: string;
   colorValue: string|undefined;
   gradientValue: string|undefined;
-  onColorChange: (value: string|undefined) => any;
-  onGradientChange: (value: string|undefined) => any;
+  onColorChange: (value: string|undefined) => void;
+  onGradientChange: (value: string|undefined) => void;
 }
 
 const ColorGradientSettings = ({

@@ -4,10 +4,12 @@ import { STORE_NAME } from 'settings/store';
 import { Action } from 'settings/store/types';
 import { updateKeyActivationState } from './mss_and_premium';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function setSetting(path: string[], value: any): Action {
   return { type: 'SET_SETTING', path, value };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function setSettings(value: any): Action {
   return { type: 'SET_SETTINGS', value };
 }

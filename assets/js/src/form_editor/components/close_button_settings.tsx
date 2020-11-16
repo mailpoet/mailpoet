@@ -6,7 +6,7 @@ import SelectionItem from './form_settings/selection_item';
 type CloseButtonProps = {
   label: string;
   active: boolean;
-  onClick: () => any;
+  onClick: () => void;
   iconUrl: string;
 }
 
@@ -35,7 +35,7 @@ const CloseButton = ({
 type Props = {
   name: string;
   value?: string|undefined;
-  onChange: (value: string|undefined) => any;
+  onChange: (value: string|undefined) => void;
 }
 
 const CloseButtonsSettings = ({

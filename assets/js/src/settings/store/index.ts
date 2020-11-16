@@ -7,6 +7,7 @@ import makeDefaultState from './make_default_state';
 
 export const STORE_NAME = 'mailpoet-settings';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const initStore = (window: any) => registerStore(STORE_NAME, {
   reducer: createReducer(makeDefaultState(window)),
   actions,

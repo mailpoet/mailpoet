@@ -30,7 +30,6 @@
   "rules": {
     "@typescript-eslint/await-thenable":  "off",
     "@typescript-eslint/explicit-function-return-type":  "off",
-    "@typescript-eslint/no-explicit-any":  "off",
     // PropTypes
     "react/prop-types": 0,
     "react/jsx-props-no-spreading": 0,
@@ -38,6 +37,7 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     // Exceptions
+    "@typescript-eslint/no-explicit-any":  "error", // make it an error instead of warning - we treat them the same, this is more visible
     "@typescript-eslint/camelcase": ["error", { "properties": "never" }], // we need this to interact with the server
     "react/jsx-filename-extension": 0,
     "arrow-parens": ["error", "always"],

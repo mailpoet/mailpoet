@@ -15,7 +15,7 @@ type Props = {
   value: SizeDefinition|undefined;
   defaultPercentValue?: number;
   defaultPixelValue?: number;
-  onChange: (value: SizeDefinition) => any;
+  onChange: (value: SizeDefinition) => void;
 }
 
 export const SizeSettings = ({

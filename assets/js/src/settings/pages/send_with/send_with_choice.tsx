@@ -6,6 +6,12 @@ import { useSelector, useAction, useSetting } from 'settings/store/hooks';
 import { MssStatus, PremiumStatus } from 'settings/store/types';
 import { t } from 'common/functions';
 
+interface SendWithChoiceWindow extends Window {
+  mailpoet_free_plan_url: string;
+}
+
+declare let window: SendWithChoiceWindow;
+
 export default function SendWithChoice() {
   const history = useHistory();
   const isMssActive = useSelector('isMssActive')();
@@ -13,7 +19,7 @@ export default function SendWithChoice() {
   const { mssStatus, premiumStatus } = useSelector('getKeyActivationState')();
   const isMssKeyValid = mssStatus !== null && mssStatus !== MssStatus.INVALID;
   const isPremiumKeyValid = premiumStatus !== null && premiumStatus !== PremiumStatus.INVALID;
-  const freePlanUrl = (window as any).mailpoet_free_plan_url;
+  const freePlanUrl = window.mailpoet_free_plan_url;
   const setSetting = useAction('setSetting');
   const saveSettings = useAction('saveSettings');
   const activateMss = async () => {

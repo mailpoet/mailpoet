@@ -2,7 +2,7 @@ import React from 'react';
 import CategoriesItem, { Category } from './categories_item';
 
 type Props = {
-  onSelect: (name: string) => any;
+  onSelect: (name: string) => void;
   categories: Category[];
   active: string;
 };

@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+  CSSProperties,
+  LegacyRef,
+} from 'react';
 import classnames from 'classnames';
 import Select, { Props as ReactSelectProps } from 'react-select';
 
@@ -8,7 +11,13 @@ export type Props = ReactSelectProps & {
   iconStart?: JSX.Element;
 };
 
-const LabelRenderer = (data: any) => (
+type LabelRenderer = {
+  tag: React.ReactNode;
+  label: React.ReactNode;
+  count: React.ReactNode;
+};
+
+const LabelRenderer = (data: LabelRenderer) => (
   <div className="mailpoet-form-react-select-option">
     {data.tag && <span className="mailpoet-form-react-select-tag">{data.tag}</span>}
     <span className="mailpoet-form-react-select-text"><span>{data.label}</span></span>
@@ -16,7 +25,21 @@ const LabelRenderer = (data: any) => (
   </div>
 );
 
-const Option = (props: any) => {
+type Option = {
+  data: {
+    style: CSSProperties;
+    tag: React.ReactNode;
+    label: React.ReactNode;
+    count: React.ReactNode;
+  };
+  isDisabled: boolean;
+  isFocused: boolean;
+  isSelected: boolean;
+  innerProps: object;
+  innerRef: LegacyRef<HTMLDivElement>;
+};
+
+const Option = (props: Option) => {
   let style = {};
   if (props.data?.style) {
     style = props.data.style;
@@ -40,6 +63,7 @@ const Option = (props: any) => {
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SingleValue = (props: any) => (
   <div
     {...props.innerProps} // eslint-disable-line react/jsx-props-no-spreading
@@ -54,7 +78,17 @@ const SingleValue = (props: any) => (
   </div>
 );
 
-const MultiValueLabel = (props: any) => (
+type MultiValueLabel = {
+  data: {
+    style: CSSProperties;
+    tag: React.ReactNode;
+    label: React.ReactNode;
+    count: React.ReactNode;
+  };
+  innerProps: object;
+};
+
+const MultiValueLabel = (props: MultiValueLabel) => (
   <div
     {...props.innerProps} // eslint-disable-line react/jsx-props-no-spreading
     className="mailpoet-form-react-select__multi-value__label"
