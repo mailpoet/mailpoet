@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { setWith, clone } from 'lodash';
 import {
   State, Action, KeyActivationState, MssStatus, PremiumStatus, TestEmailState,
 } from './types';
@@ -9,7 +9,7 @@ export default function createReducer(defaultValue: State) {
   return (state: State = defaultValue, action: Action): State => {
     switch (action.type) {
       case 'SET_SETTING':
-        return _.setWith(_.clone(state), ['data', ...action.path], action.value, _.clone);
+        return setWith(clone(state), ['data', ...action.path], action.value, clone);
       case 'SET_SETTINGS':
         return { ...state, data: normalizeSettings(action.value) };
       case 'SET_ERROR_FLAG':
