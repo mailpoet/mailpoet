@@ -7,13 +7,22 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
+use MailPoet\Segments\WP;
 use MailPoet\Subscribers\ImportExport\Import\MailChimp;
 use MailPoetVendor\Carbon\Carbon;
 
 class ImportExport extends APIEndpoint {
+
+  /** @var WP */
+  private $wpSegment;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
   ];
+
+  public function __construct(WP $wpSegment) {
+    $this->wpSegment = $wpSegment;
+  }
 
   public function getMailChimpLists($data) {
     try {
@@ -55,6 +64,7 @@ class ImportExport extends APIEndpoint {
   public function processImport($data) {
     try {
       $import = new \MailPoet\Subscribers\ImportExport\Import\Import(
+        $this->wpSegment,
         json_decode($data, true)
       );
       $process = $import->process();

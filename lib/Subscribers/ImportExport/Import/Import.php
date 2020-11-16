@@ -8,6 +8,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Segments\WP;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\Source;
 use MailPoet\Util\DateConverter;
@@ -31,7 +32,11 @@ class Import {
   const DB_QUERY_CHUNK_SIZE = 100;
   const STATUS_DONT_UPDATE = 'dont_update';
 
-  public function __construct($data) {
+  /** @var WP */
+  private $wpSegment;
+
+  public function __construct(WP $wpSegment, $data) {
+    $this->wpSegment = $wpSegment;
     $this->validateImportData($data);
     $this->subscribersData = $this->transformSubscribersData(
       $data['subscribers'],
@@ -445,7 +450,7 @@ class Import {
   }
 
   public function synchronizeWPUsers($wpUsers) {
-    return array_walk($wpUsers, '\MailPoet\Segments\WP::synchronizeUser');
+    return array_walk($wpUsers, [$this->wpSegment, 'synchronizeUser']);
   }
 
   public function addSubscribersToSegments($subscribersIds, $segmentsIds) {
