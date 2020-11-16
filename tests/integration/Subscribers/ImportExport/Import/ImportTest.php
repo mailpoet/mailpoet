@@ -7,6 +7,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Segments\WP;
 use MailPoet\Subscribers\ImportExport\Import\Import;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -19,7 +20,11 @@ class ImportTest extends \MailPoetTest {
   public $segment2;
   public $segment1;
 
+  /** @var WP */
+  private $wpSegment;
+
   public function _before() {
+    $this->wpSegment = $this->diContainer->get(WP::class);
     $customField = CustomField::create();
     $customField->name = 'country';
     $customField->type = 'text';
@@ -61,7 +66,7 @@ class ImportTest extends \MailPoetTest {
       'last_name',
       'email',
     ];
-    $this->import = new Import($this->testData);
+    $this->import = new Import($this->wpSegment, $this->testData);
     $this->subscribersData = $this->import->transformSubscribersData(
       $this->testData['subscribers'],
       $this->testData['columns']
@@ -145,7 +150,7 @@ class ImportTest extends \MailPoetTest {
       'existingSubscribersStatus' => Import::STATUS_DONT_UPDATE,
       'updateSubscribers' => true,
     ];
-    $import = new Import($data);
+    $import = new Import($this->wpSegment, $data);
     try {
       $import->process();
       self::fail('No valid subscribers found exception not thrown.');
@@ -219,7 +224,7 @@ class ImportTest extends \MailPoetTest {
       'existingSubscribersStatus' => Import::STATUS_DONT_UPDATE,
       'updateSubscribers' => true,
     ];
-    $import = new Import($data);
+    $import = new Import($this->wpSegment, $data);
     $subscribersData = [
       'data' => $import->subscribersData,
       'fields' => $import->subscribersFields,
@@ -437,7 +442,7 @@ class ImportTest extends \MailPoetTest {
     $data['columns']['status'] = ['index' => 4];
     $data['subscribers'][0][] = 'unsubscribed';
     $data['subscribers'][1][] = 'unsubscribed';
-    $import = new Import($data);
+    $import = new Import($this->wpSegment, $data);
     $result = $import->process();
     $newSubscribers = Subscriber::whereAnyIs([
       ['email' => $data['subscribers'][0][2]],
@@ -461,7 +466,7 @@ class ImportTest extends \MailPoetTest {
     $data['columns']['last_subscribed_at'] = ['index' => 4];
     $data['subscribers'][0][] = '2018-12-12 12:12:00';
     $data['subscribers'][1][] = '2018-12-12 12:12:00';
-    $import = new Import($data);
+    $import = new Import($this->wpSegment, $data);
     $existingSubscriber = Subscriber::create();
     $existingSubscriber->hydrate(
       [
@@ -476,6 +481,18 @@ class ImportTest extends \MailPoetTest {
     expect($updatedSubscriber->lastSubscribedAt)->equals('2017-12-12 12:12:00');
   }
 
+  public function testItSynchronizesWpUsers() {
+    $this->tester->createWordPressUser('mary@jane.com', 'editor');
+    $beforeImport = Subscriber::where('email', 'mary@jane.com')->findOne();
+    $data = $this->testData;
+    $import = new Import($this->wpSegment, $data);
+    $import->process();
+    $imported = Subscriber::where('email', 'mary@jane.com')->findOne();
+    expect($imported->firstName)->equals($beforeImport->firstName); // Subscriber name was synchronized from WP
+    expect($imported->firstName)->notEquals('Mary');
+    $this->tester->deleteWordPressUser('mary@jane.com');
+  }
+
   public function testItDoesUpdateStatusExistingSubscriberWhenExistingSubscribersStatusIsSet() {
     $data = $this->testData;
     $data['existingSubscribersStatus'] = Subscriber::STATUS_SUBSCRIBED;
@@ -488,7 +505,7 @@ class ImportTest extends \MailPoetTest {
         'status' => Subscriber::STATUS_UNSUBSCRIBED,
         'last_subscribed_at' => '2020-08-08 08:08:00',
       ]);
-    $import = new Import($data);
+    $import = new Import($this->wpSegment, $data);
     $import->process();
     $updatedSubscriber = Subscriber::where('email', $existingSubscriber->email)->findOne();
     expect($updatedSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
@@ -497,7 +514,7 @@ class ImportTest extends \MailPoetTest {
   public function testItDoesStatusNewSubscriberWhenNewSubscribersStatusIsSet() {
     $data = $this->testData;
     $data['newSubscribersStatus'] = Subscriber::STATUS_UNSUBSCRIBED;
-    $import = new Import($data);
+    $import = new Import($this->wpSegment, $data);
     $import->process();
     $newSubscriber = Subscriber::where('email', 'Adam@Smith.com')->findOne();
     expect($newSubscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
