@@ -1,6 +1,4 @@
 import React from 'react';
-import MailPoet from 'mailpoet';
-import Tag from 'common/tag/tag';
 
 export type PropTypes = {
   count: number

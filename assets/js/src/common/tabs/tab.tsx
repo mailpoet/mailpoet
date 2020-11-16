@@ -10,11 +10,6 @@ type Props = {
 };
 
 const Tab = ({
-  title = null,
-  iconStart = null,
-  iconEnd = null,
-  route = null,
-  automationId = null,
   children,
 }: Props) => (
   <>

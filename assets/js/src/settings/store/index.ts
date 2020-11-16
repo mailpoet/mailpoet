@@ -1,5 +1,4 @@
 import { registerStore } from '@wordpress/data';
-import { Settings } from './types';
 import * as actions from './actions';
 import * as selectors from './selectors';
 import * as controls from './controls';

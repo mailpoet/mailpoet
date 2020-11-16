@@ -32,7 +32,7 @@ const YesNo = ({
       <input
         type="radio"
         checked={checked === true}
-        onChange={(e) => onCheck(true)}
+        onChange={() => onCheck(true)}
         {...attributes}
       />
       <span className="mailpoet-form-yesno-control mailpoet-form-yesno-yes">
@@ -43,7 +43,7 @@ const YesNo = ({
       <input
         type="radio"
         checked={checked === false}
-        onChange={(e) => onCheck(false)}
+        onChange={() => onCheck(false)}
         {...attributes}
       />
       <span className="mailpoet-form-yesno-control mailpoet-form-yesno-no">

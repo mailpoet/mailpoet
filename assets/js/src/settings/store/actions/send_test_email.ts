@@ -1,5 +1,3 @@
-import MailPoet from 'mailpoet';
-
 import { t } from 'common/functions';
 import { Settings } from 'settings/store/types';
 

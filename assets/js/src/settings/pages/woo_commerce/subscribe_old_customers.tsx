@@ -1,5 +1,5 @@
 import React from 'react';
-import { t, onToggle } from 'common/functions';
+import { t } from 'common/functions';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 import Checkbox from 'common/form/checkbox/checkbox';

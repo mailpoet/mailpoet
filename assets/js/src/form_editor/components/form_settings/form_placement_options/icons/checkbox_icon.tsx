@@ -2,7 +2,6 @@ import React from 'react';
 import {
   SVG,
   Path,
-  Rect,
   G,
 } from '@wordpress/components';
 

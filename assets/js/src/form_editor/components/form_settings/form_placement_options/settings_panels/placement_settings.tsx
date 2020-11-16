@@ -5,7 +5,6 @@ import { ToggleControl } from '@wordpress/components';
 import {
   assocPath,
   compose,
-  __,
   cond,
   identity,
   sortBy,

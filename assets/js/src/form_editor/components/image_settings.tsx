@@ -2,7 +2,6 @@ import React from 'react';
 import { MediaUpload } from '@wordpress/block-editor';
 import MailPoet from 'mailpoet';
 import { Button, SelectControl } from '@wordpress/components';
-import { customFieldTypes } from '../blocks/add_custom_field/add_custom_field_form';
 
 type Props = {
   name: string,
