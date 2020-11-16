@@ -55,14 +55,6 @@ const Tabs = ({
   const [activeTab, setActiveTab] = useState(activeKey);
   const [isOpen, setIsOpen] = useState(false);
 
-  // when activeKey changed by a prop let's reflect that in the state
-  useEffect(() => {
-    switchTab(activeKey);
-  }, [activeKey]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const validChildren = validateChildren(children);
-  const activeChild = getActiveChild(activeTab, validChildren);
-
   const switchTab = (tabKey: string) => {
     setIsOpen(false);
     if (tabKey !== activeTab) {
@@ -70,6 +62,14 @@ const Tabs = ({
       onSwitch(tabKey);
     }
   };
+
+  // when activeKey changed by a prop let's reflect that in the state
+  useEffect(() => {
+    switchTab(activeKey);
+  }, [activeKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const validChildren = validateChildren(children);
+  const activeChild = getActiveChild(activeTab, validChildren);
 
   const title = (props) => (
     <>

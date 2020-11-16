@@ -9,23 +9,7 @@ export const withFeatureAnnouncement = <P extends object>(
 ): React.FC<Omit<P, 'hasNews'|'onBeamerClick'>> => {
   const isBeamerInitialized = () => typeof (window as any).Beamer !== 'undefined';
   let showDot = (window as any).mailpoet_feature_announcement_has_news;
-
-  let beamerCallback = () => {
-    if (!isBeamerInitialized()) {
-      return;
-    }
-    showBeamer();
-  };
-
-  function updateLastAnnouncementSeenValue() {
-    const data = { last_announcement_seen: Math.floor(Date.now() / 1000) };
-    MailPoet.Ajax.post({
-      api_version: (window as any).mailpoet_api_version,
-      endpoint: 'user_flags',
-      action: 'set',
-      data,
-    });
-  }
+  let beamerCallback;
 
   function showPluginUpdateNotice() {
     if (!(window as any).mailpoet_update_available || document.getElementById('mailpoet_update_notice')) {
@@ -39,6 +23,16 @@ export const withFeatureAnnouncement = <P extends object>(
     jQuery('#beamerOverlay').append(
       `<p id="mailpoet_update_notice" class="mailpoet_in_beamer_update_notice">${updateMailPoetNotice}</p>`
     );
+  }
+
+  function updateLastAnnouncementSeenValue() {
+    const data = { last_announcement_seen: Math.floor(Date.now() / 1000) };
+    MailPoet.Ajax.post({
+      api_version: (window as any).mailpoet_api_version,
+      endpoint: 'user_flags',
+      action: 'set',
+      data,
+    });
   }
 
   function loadBeamer() {
@@ -74,6 +68,13 @@ export const withFeatureAnnouncement = <P extends object>(
     updateLastAnnouncementSeenValue();
     showPluginUpdateNotice();
   }
+
+  beamerCallback = () => {
+    if (!isBeamerInitialized()) {
+      return;
+    }
+    showBeamer();
+  };
 
   return ({
     ...props

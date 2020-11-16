@@ -32,6 +32,35 @@ export default function KeyActivation() {
     await setUnauthorizedAddresses(null);
   };
 
+  const showFromAddressModal = state.fromAddressModalCanBeShown
+    && state.mssStatus === MssStatus.VALID_MSS_ACTIVE
+    && (!senderAddress || unauthorizedAddresses);
+
+  const showPendingApprovalNotice = state.inProgress === false
+    && state.mssStatus === MssStatus.VALID_MSS_ACTIVE
+    && apiKeyState
+    && apiKeyState.is_approved === false;
+
+  const verifyKey = async () => {
+    if (!state.key) {
+      notices.error(<p>{t('premiumTabNoKeyNotice')}</p>, { scroll: true });
+      return;
+    }
+    await setState({
+      mssStatus: null,
+      premiumStatus: null,
+      premiumInstallationStatus: null,
+    });
+    MailPoet.Modal.loading(true);
+    setState({ inProgress: true });
+    await verifyMssKey(state.key);
+    await sendCongratulatoryMssEmail();
+    await verifyPremiumKey(state.key);
+    setState({ inProgress: false });
+    MailPoet.Modal.loading(false);
+    setState({ fromAddressModalCanBeShown: true });
+  };
+
   function Messages() {
     if (state.code === 503) {
       return (
@@ -97,35 +126,6 @@ export default function KeyActivation() {
       </div>
     );
   }
-
-  const showFromAddressModal = state.fromAddressModalCanBeShown
-    && state.mssStatus === MssStatus.VALID_MSS_ACTIVE
-    && (!senderAddress || unauthorizedAddresses);
-
-  const showPendingApprovalNotice = state.inProgress === false
-    && state.mssStatus === MssStatus.VALID_MSS_ACTIVE
-    && apiKeyState
-    && apiKeyState.is_approved === false;
-
-  const verifyKey = async () => {
-    if (!state.key) {
-      notices.error(<p>{t('premiumTabNoKeyNotice')}</p>, { scroll: true });
-      return;
-    }
-    await setState({
-      mssStatus: null,
-      premiumStatus: null,
-      premiumInstallationStatus: null,
-    });
-    MailPoet.Modal.loading(true);
-    setState({ inProgress: true });
-    await verifyMssKey(state.key);
-    await sendCongratulatoryMssEmail();
-    await verifyPremiumKey(state.key);
-    setState({ inProgress: false });
-    MailPoet.Modal.loading(false);
-    setState({ fromAddressModalCanBeShown: true });
-  };
 
   return (
     <div className="mailpoet-settings-grid">

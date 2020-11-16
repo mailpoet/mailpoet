@@ -4,6 +4,25 @@ import {
 } from './types';
 import normalizeSettings from './normalize_settings';
 
+function getPremiumStatus(keyValid, premiumInstalled): PremiumStatus {
+  const pluginActive = !!MailPoet.premiumVersion;
+  if (!keyValid) {
+    return PremiumStatus.INVALID;
+  }
+  if (pluginActive) {
+    return PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE;
+  }
+  return premiumInstalled
+    ? PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE
+    : PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED;
+}
+
+function getMssStatus(keyValid, data): MssStatus {
+  if (!keyValid) return MssStatus.INVALID;
+  const mssActive = data.mta.method === 'MailPoet';
+  return mssActive ? MssStatus.VALID_MSS_ACTIVE : MssStatus.VALID_MSS_NOT_ACTIVE;
+}
+
 export default function makeDefaultState(window: any): State {
   const pages = window.mailpoet_pages;
   const paths = window.mailpoet_paths;
@@ -51,23 +70,4 @@ export default function makeDefaultState(window: any): State {
   return {
     data, flags, save, keyActivation, segments, pages, paths, hosts, testEmail,
   };
-}
-
-function getPremiumStatus(keyValid, premiumInstalled): PremiumStatus {
-  const pluginActive = !!MailPoet.premiumVersion;
-  if (!keyValid) {
-    return PremiumStatus.INVALID;
-  }
-  if (pluginActive) {
-    return PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE;
-  }
-  return premiumInstalled
-    ? PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE
-    : PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED;
-}
-
-function getMssStatus(keyValid, data): MssStatus {
-  if (!keyValid) return MssStatus.INVALID;
-  const mssActive = data.mta.method === 'MailPoet';
-  return mssActive ? MssStatus.VALID_MSS_ACTIVE : MssStatus.VALID_MSS_NOT_ACTIVE;
 }

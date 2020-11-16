@@ -2,6 +2,51 @@ import _ from 'lodash';
 import { t } from 'common/functions';
 import { Settings } from './types';
 
+function asString(defaultValue: string) {
+  return (value: any): string => {
+    if (value === undefined) return defaultValue;
+    if (!value) return '';
+    return `${value}`;
+  };
+}
+
+function asStringArray(defaultValue: string[]) {
+  return (value: any): string[] => {
+    if (!_.isArray(value)) return defaultValue;
+    return value.map(asString(''));
+  };
+}
+
+function asBoolean<T, F>(trueValue: T, falseValue: F, defaultValue: T | F) {
+  return (value: any): T | F => {
+    if (value === undefined) return defaultValue;
+    if (value === trueValue || value === falseValue) return value;
+    if (value) return trueValue;
+    return falseValue;
+  };
+}
+
+function asEnum(choices: string[], defaultValue: string) {
+  return (value: any): string => {
+    if (!choices.includes(value)) return defaultValue;
+    return value;
+  };
+}
+
+function asObject<T extends Schema>(schema: T) {
+  return (value: any): SchemaResult<T> => {
+    const object = Object.keys(schema).reduce((result, field) => ({
+      [field]: schema[field](value ? value[field] : undefined),
+      ...result,
+    }), {});
+    return object as SchemaResult<T>;
+  };
+}
+
+function asIs<T>(value: T): T {
+  return value;
+}
+
 export default function normalizeSettings(data: any): Settings {
   const text = asString('');
   const disabledCheckbox = asBoolean('1', '0', '0');
@@ -127,37 +172,6 @@ export default function normalizeSettings(data: any): Settings {
   return settingsSchema(data) as Settings;
 }
 
-function asString(defaultValue: string) {
-  return (value: any): string => {
-    if (value === undefined) return defaultValue;
-    if (!value) return '';
-    return `${value}`;
-  };
-}
-
-function asStringArray(defaultValue: string[]) {
-  return (value: any): string[] => {
-    if (!_.isArray(value)) return defaultValue;
-    return value.map(asString(''));
-  };
-}
-
-function asBoolean<T, F>(trueValue: T, falseValue: F, defaultValue: T | F) {
-  return (value: any): T | F => {
-    if (value === undefined) return defaultValue;
-    if (value === trueValue || value === falseValue) return value;
-    if (value) return trueValue;
-    return falseValue;
-  };
-}
-
-function asEnum(choices: string[], defaultValue: string) {
-  return (value: any): string => {
-    if (!choices.includes(value)) return defaultValue;
-    return value;
-  };
-}
-
 type Schema = {
   [key: string]: ReturnType<
     | typeof asString
@@ -169,17 +183,4 @@ type Schema = {
 }
 type SchemaResult<T extends Schema> = {
   [key in keyof T]: ReturnType<T[key]>
-}
-function asObject<T extends Schema>(schema: T) {
-  return (value: any): SchemaResult<T> => {
-    const object = Object.keys(schema).reduce((result, field) => ({
-      [field]: schema[field](value ? value[field] : undefined),
-      ...result,
-    }), {});
-    return object as SchemaResult<T>;
-  };
-}
-
-function asIs<T>(value: T): T {
-  return value;
 }
