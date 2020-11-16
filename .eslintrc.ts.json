@@ -34,7 +34,6 @@
     "@typescript-eslint/no-empty-function":  "off",
     "@typescript-eslint/no-explicit-any":  "off",
     "@typescript-eslint/no-use-before-define": "off",
-    "@typescript-eslint/unbound-method":  "off",
     // PropTypes
     "react/prop-types": 0,
     "react/jsx-props-no-spreading": 0,
