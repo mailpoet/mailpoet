@@ -318,10 +318,8 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->wp
       ->expects($this->once())
       ->method('setTransient');
-    $form1 = new FormEntity('My Form');
-    $form2 = new FormEntity('My Form');
 
-    $this->repository->expects($this->once())->method('findBy')->willReturn([$form1, $form2]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([]);
 
     $this->hook->display('content');
   }
@@ -333,7 +331,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->wp
       ->expects($this->once())
       ->method('getTransient')
-      ->willReturn(['post' => true]);
+      ->willReturn('1');
     $this->repository->expects($this->never())->method('findBy');
 
     $this->hook->display('content');

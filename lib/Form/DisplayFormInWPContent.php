@@ -59,7 +59,6 @@ class DisplayFormInWPContent {
 
     $forms = $this->getForms();
     if (count($forms) === 0) {
-      $this->saveNoForms();
       return $content;
     }
 
@@ -81,16 +80,13 @@ class DisplayFormInWPContent {
     }
     // this code ensures that we display the form only on a page which is related to single post
     if (!$this->wp->isSingle() && !$this->wp->isPage()) return false;
-    $cache = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
-    if (isset($cache[$this->wp->getPostType()])) return false;
+    $noFormsCache = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
+    if ($noFormsCache === '1') return false;
     return true;
   }
 
   private function saveNoForms() {
-    $stored = $this->wp->getTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY);
-    if (!is_array($stored)) $stored = [];
-    $stored[$this->wp->getPostType()] = true;
-    $this->wp->setTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY, $stored);
+    $this->wp->setTransient(DisplayFormInWPContent::NO_FORM_TRANSIENT_KEY, '1');
   }
 
   /**
@@ -101,6 +97,9 @@ class DisplayFormInWPContent {
       'deletedAt' => null,
       'status' => FormEntity::STATUS_ENABLED,
     ], ['updatedAt' => 'ASC']);
+    if (count($forms) === 0) {
+      $this->saveNoForms();
+    }
     $forms = $this->filterOneFormInEachDisplayType($forms);
     return $forms;
   }
