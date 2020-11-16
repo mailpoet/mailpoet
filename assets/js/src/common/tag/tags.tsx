@@ -1,10 +1,14 @@
 import React from 'react';
 import Tag from './tag';
 
+type Segment = {
+  name: string;
+}
+
 type Props = {
   children?: React.ReactNode;
   dimension?: 'large';
-  segments?: any[];
+  segments?: Segment[];
   strings?: string[];
 }
 

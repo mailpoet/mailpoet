@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Omits the first item in a tuple type
  * Tail<[number, string, boolean]> gives [string, boolean]

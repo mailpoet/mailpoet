@@ -15,7 +15,12 @@ import {
   ServiceUnavailableMessage,
 } from './messages';
 
+type KeyState = {
+  is_approved: boolean;
+}
+
 export default function KeyActivation() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = useContext<any>(GlobalContext);
   const state = useSelector('getKeyActivationState')();
   const setState = useAction('updateKeyActivationState');
@@ -39,7 +44,7 @@ export default function KeyActivation() {
   const showPendingApprovalNotice = state.inProgress === false
     && state.mssStatus === MssStatus.VALID_MSS_ACTIVE
     && apiKeyState
-    && apiKeyState.is_approved === false;
+    && (apiKeyState as KeyState).is_approved === false;
 
   const verifyKey = async () => {
     if (!state.key) {

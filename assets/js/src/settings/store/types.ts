@@ -86,7 +86,7 @@ export type Settings = {
       | 'expiring'
       | 'already_used'
       | 'check_error';
-      data: any;
+      data: object;
     };
   };
   mailpoet_smtp_provider: 'server' | 'manual' | 'AmazonSES' | 'SendGrid';
@@ -123,7 +123,7 @@ export type Settings = {
       | 'expiring'
       | 'already_used'
       | 'check_error';
-      data: any;
+      data: object;
     };
   };
   authorized_emails_addresses_check: null | {
@@ -236,24 +236,26 @@ export type State = {
   };
   save: {
     inProgress: boolean;
-    error: any;
+    error: string[];
   };
   testEmail: {
     state: TestEmailState;
-    error: any;
+    error: string[];
   };
   keyActivation: KeyActivationState;
   hosts: Hosts;
 }
 
 export type Action =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   | { type: 'SET_SETTING'; value: any; path: string[] }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   | { type: 'SET_SETTINGS'; value: any }
   | { type: 'SET_ERROR_FLAG'; value: boolean }
   | { type: 'SAVE_STARTED' }
   | { type: 'SAVE_DONE' }
-  | { type: 'SAVE_FAILED'; error: any }
+  | { type: 'SAVE_FAILED'; error: string[] }
   | { type: 'UPDATE_KEY_ACTIVATION_STATE'; fields: Partial<KeyActivationState> }
   | { type: 'START_TEST_EMAIL_SENDING' }
   | { type: 'TEST_EMAIL_SUCCESS' }
-  | { type: 'TEST_EMAIL_FAILED'; error: any }
+  | { type: 'TEST_EMAIL_FAILED'; error: string[] }

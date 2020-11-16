@@ -39,7 +39,7 @@ const OtherSettings = () => {
     event.preventDefault();
     MailPoet.trackEvent('Forms > Embed', {
       'Embed type': type,
-      'MailPoet Free version': (window as any).mailpoet_version,
+      'MailPoet Free version': MailPoet.version,
     });
     if (type === 'php') {
       return setCopyAreaContent(formExports.php);

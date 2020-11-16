@@ -22,7 +22,7 @@ const ActivatingMessage = () => (
   </div>
 );
 
-type PremiumNotInstalledMessageProps = { callback: () => any }
+type PremiumNotInstalledMessageProps = { callback: () => void }
 const PremiumNotInstalledMessage = ({ callback }: PremiumNotInstalledMessageProps) => (
   <div className="mailpoet_error">
     {MailPoet.I18n.t('premiumTabPremiumNotInstalledMessage')}
@@ -33,7 +33,7 @@ const PremiumNotInstalledMessage = ({ callback }: PremiumNotInstalledMessageProp
   </div>
 );
 
-type PremiumNotActiveMessageProps = { callback: () => any }
+type PremiumNotActiveMessageProps = { callback: () => void }
 const PremiumNotActiveMessage = ({ callback }: PremiumNotActiveMessageProps) => (
   <div className="mailpoet_error">
     {MailPoet.I18n.t('premiumTabPremiumNotActiveMessage')}
@@ -56,8 +56,8 @@ NotValidMessage.defaultProps = {
 
 type Props = {
   keyMessage?: string;
-  activationCallback: () => any;
-  installationCallback: () => any;
+  activationCallback: () => void;
+  installationCallback: () => void;
   installationStatus: PremiumInstallationStatus;
 }
 export default function PremiumMessages(props: Props) {

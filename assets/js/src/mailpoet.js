@@ -18,6 +18,7 @@ var MailPoet = {
   listingPerPage: window.mailpoet_listing_per_page,
   libs3rdPartyEnabled: window.mailpoet_3rd_party_libs_enabled,
   apiVersion: window.mailpoet_api_version,
+  emailRegex: window.mailpoet_email_regex,
   getShortcodeLinks: () => (window.mailpoet_shortcode_links ? window.mailpoet_shortcode_links : []),
 };
 

@@ -8,10 +8,12 @@ import { Label, Inputs } from 'settings/components';
 
 export default function Reinstall() {
   const reinstall = useAction('reinstall');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = React.useContext<any>(GlobalContext);
   const onClick = async () => {
     if (window.confirm(t('reinstallConfirmation'))) { // eslint-disable-line
-      type Result = { type: 'SAVE_FAILED' | 'SAVE_DONE'; error?: any }
+      type Result = { type: 'SAVE_FAILED' | 'SAVE_DONE'; error?: string[] }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const action = (await reinstall()) as any as Result;
       if (action.type === 'SAVE_FAILED') {
         notices.error(action.error.map((err) => <p>{err}</p>), { scroll: true });

@@ -29,6 +29,14 @@ type State = {
   loading: boolean;
 }
 
+interface PageWindow extends Window {
+  mailpoet_display_detailed_stats: boolean;
+  mailpoet_mss_key_invalid: boolean;
+  mailpoet_subscribers_count: number;
+}
+
+declare let window: PageWindow;
+
 const CampaignStatsPage = ({ match, history, location }: Props) => {
   const [state, setState] = useState<State>({
     item: undefined,
@@ -41,8 +49,8 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
 
     MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
-      endpoint: (window as any).mailpoet_display_detailed_stats ? 'stats' : 'newsletters',
-      action: (window as any).mailpoet_display_detailed_stats ? 'get' : 'getWithStats',
+      endpoint: window.mailpoet_display_detailed_stats ? 'stats' : 'newsletters',
+      action: window.mailpoet_display_detailed_stats ? 'get' : 'getWithStats',
       data: {
         id,
       },
@@ -68,7 +76,7 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
   useEffect(() => {
     // Scroll to top in case we're coming
     // from the middle of a long newsletter listing
-    (window as any).scrollTo(0, 0);
+    window.scrollTo(0, 0);
     if (state.item?.id !== match.params.id) {
       loadItem(match.params.id);
     }
@@ -94,8 +102,8 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
 
       <div className="mailpoet-stats-page">
         <InvalidMssKeyNotice
-          mssKeyInvalid={(window as any).mailpoet_mss_key_invalid}
-          subscribersCount={(window as any).mailpoet_subscribers_count}
+          mssKeyInvalid={window.mailpoet_mss_key_invalid}
+          subscribersCount={window.mailpoet_subscribers_count}
         />
 
         <NewsletterStatsInfo newsletter={newsletter} />

@@ -3,7 +3,7 @@ import { t } from 'common/functions';
 import { Settings } from './types';
 
 function asString(defaultValue: string) {
-  return (value: any): string => {
+  return (value: unknown): string => {
     if (value === undefined) return defaultValue;
     if (!value) return '';
     return `${value}`;
@@ -11,13 +11,14 @@ function asString(defaultValue: string) {
 }
 
 function asStringArray(defaultValue: string[]) {
-  return (value: any): string[] => {
+  return (value: unknown): string[] => {
     if (!_.isArray(value)) return defaultValue;
     return value.map(asString(''));
   };
 }
 
 function asBoolean<T, F>(trueValue: T, falseValue: F, defaultValue: T | F) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (value: any): T | F => {
     if (value === undefined) return defaultValue;
     if (value === trueValue || value === falseValue) return value;
@@ -27,14 +28,14 @@ function asBoolean<T, F>(trueValue: T, falseValue: F, defaultValue: T | F) {
 }
 
 function asEnum(choices: string[], defaultValue: string) {
-  return (value: any): string => {
+  return (value: string): string => {
     if (!choices.includes(value)) return defaultValue;
     return value;
   };
 }
 
 function asObject<T extends Schema>(schema: T) {
-  return (value: any): SchemaResult<T> => {
+  return (value: unknown): SchemaResult<T> => {
     const object = Object.keys(schema).reduce((result, field) => ({
       [field]: schema[field](value ? value[field] : undefined),
       ...result,
@@ -47,7 +48,7 @@ function asIs<T>(value: T): T {
   return value;
 }
 
-export default function normalizeSettings(data: any): Settings {
+export default function normalizeSettings(data: object): Settings {
   const text = asString('');
   const disabledCheckbox = asBoolean('1', '0', '0');
   const enabledCheckbox = asBoolean('1', '0', '1');

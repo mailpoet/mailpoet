@@ -10,6 +10,7 @@ export default () => {
   const hasError = useSelector('hasErrorFlag')();
   const error = useSelector('getSavingError')();
   const save = useAction('saveSettings');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = React.useContext<any>(GlobalContext);
   const showError = notices.error;
   const showSuccess = notices.success;

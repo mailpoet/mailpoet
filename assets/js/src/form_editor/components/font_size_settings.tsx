@@ -7,7 +7,7 @@ import { __experimentalUseEditorFeature } from '@wordpress/block-editor';
 type Props = {
   name: string;
   value: number|undefined;
-  onChange: (value: string|undefined) => any;
+  onChange: (value: string|undefined) => void;
 }
 
 const FontSizeSettings = ({

@@ -8,7 +8,7 @@ import BlockSettings from './block_settings.jsx';
 import SidebarHeader from './sidebar_header';
 
 type Props = {
-  onClose: () => any;
+  onClose: () => void;
 };
 
 export default ({ onClose }: Props) => {

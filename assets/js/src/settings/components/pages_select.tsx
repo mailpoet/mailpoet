@@ -8,7 +8,7 @@ type Props = {
   value: string;
   automationId?: string;
   linkAutomationId?: string;
-  setValue: (x: string) => any;
+  setValue: (x: string) => void;
   preview: 'manage' | 'unsubscribe' | 'confirm' | 'confirm_unsubscribe';
 }
 

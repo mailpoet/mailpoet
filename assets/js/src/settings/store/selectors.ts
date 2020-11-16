@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { t } from 'common/functions';
 import { State, Settings } from './types';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getSetting(state: State, path: string[]): any {
   return _.get(state.data, path);
 }
@@ -22,7 +23,7 @@ export function hasSavingError(state: State): boolean {
   return state.save.error !== null;
 }
 
-export function getSavingError(state: State): any {
+export function getSavingError(state: State): string[] {
   return state.save.error;
 }
 

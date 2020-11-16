@@ -3,7 +3,7 @@ import Button from 'common/button/button';
 import MailPoet from 'mailpoet';
 
 type Props = {
-  onProceed?: () => any;
+  onProceed?: () => void;
 }
 
 export default ({ onProceed }: Props) => (
