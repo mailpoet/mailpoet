@@ -6,7 +6,7 @@ import Modal from 'common/modal/modal';
 import { GlobalContext } from 'context';
 import { noop } from 'lodash';
 
-const mailPoetApiVersion = (window as any).mailpoet_api_version as string;
+const mailPoetApiVersion = MailPoet.apiVersion as string;
 
 /**
  * @param {string|null} address

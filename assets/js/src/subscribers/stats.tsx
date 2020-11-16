@@ -36,7 +36,7 @@ export const SubscriberStats = () => {
 
   useEffect(() => {
     MailPoet.Ajax.post({
-      api_version: (window as any).mailpoet_api_version,
+      api_version: MailPoet.apiVersion,
       endpoint: 'subscriberStats',
       action: 'get',
       data: {

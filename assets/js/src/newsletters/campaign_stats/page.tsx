@@ -40,7 +40,7 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
     MailPoet.Modal.loading(true);
 
     MailPoet.Ajax.post({
-      api_version: (window as any).mailpoet_api_version,
+      api_version: MailPoet.apiVersion,
       endpoint: (window as any).mailpoet_display_detailed_stats ? 'stats' : 'newsletters',
       action: (window as any).mailpoet_display_detailed_stats ? 'get' : 'getWithStats',
       data: {
