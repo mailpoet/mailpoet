@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
+import { noop } from 'lodash';
 
 const ESCAPE = 27;
 
@@ -16,7 +17,7 @@ function ModalOverlay({
   isDismissible = true,
   shouldCloseOnEsc = true,
   shouldCloseOnClickOutside = true,
-  onRequestClose = () => {},
+  onRequestClose = noop,
   className = '',
   children,
 }: Props) {

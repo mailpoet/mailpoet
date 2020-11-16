@@ -1,5 +1,6 @@
 import classnames from 'classnames';
 import React, { useEffect, useState } from 'react';
+import { noop } from 'lodash';
 
 import Tab from './tab';
 
@@ -47,7 +48,7 @@ type Props = {
 
 const Tabs = ({
   activeKey,
-  onSwitch = () => {},
+  onSwitch = noop,
   automationId = null,
   children,
 }: Props) => {

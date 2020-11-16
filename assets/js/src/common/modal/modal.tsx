@@ -1,5 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
+import { noop } from 'lodash';
 
 import ModalFrame from './frame';
 import ModalHeader from './header';
@@ -23,7 +24,7 @@ function Modal({
   isDismissible = true,
   shouldCloseOnEsc = true,
   shouldCloseOnClickOutside = true,
-  onRequestClose = () => {},
+  onRequestClose = noop,
   fullScreen = false,
   contentClassName = '',
   overlayClassName = '',

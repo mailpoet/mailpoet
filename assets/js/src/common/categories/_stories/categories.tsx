@@ -1,3 +1,4 @@
+import { noop } from 'lodash';
 import React from 'react';
 import Categories from '../categories';
 
@@ -17,9 +18,9 @@ export const CategoriesWithCount = () => {
 
   return (
     <>
-      <Categories onSelect={() => {}} categories={categories} active={categories[0].name} />
-      <Categories onSelect={() => {}} categories={categories} active={categories[2].name} />
-      <Categories onSelect={() => {}} categories={categories} active={categories[4].name} />
+      <Categories onSelect={noop} categories={categories} active={categories[0].name} />
+      <Categories onSelect={noop} categories={categories} active={categories[2].name} />
+      <Categories onSelect={noop} categories={categories} active={categories[4].name} />
     </>
   );
 };
@@ -35,9 +36,9 @@ export const CategoriesWithoutCount = () => {
 
   return (
     <>
-      <Categories onSelect={() => {}} categories={categories} active={categories[0].name} />
-      <Categories onSelect={() => {}} categories={categories} active={categories[2].name} />
-      <Categories onSelect={() => {}} categories={categories} active={categories[4].name} />
+      <Categories onSelect={noop} categories={categories} active={categories[0].name} />
+      <Categories onSelect={noop} categories={categories} active={categories[2].name} />
+      <Categories onSelect={noop} categories={categories} active={categories[4].name} />
     </>
   );
 };

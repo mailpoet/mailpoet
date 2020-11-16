@@ -4,6 +4,7 @@ import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import Modal from 'common/modal/modal';
 import { GlobalContext } from 'context';
+import { noop } from 'lodash';
 
 const mailPoetApiVersion = (window as any).mailpoet_api_version as string;
 
@@ -146,7 +147,7 @@ const SetFromAddressModal = ({ onRequestClose, setAuthorizedAddress }: Props) =>
 };
 
 SetFromAddressModal.defaultProps = {
-  setAuthorizedAddress: () => {},
+  setAuthorizedAddress: noop,
 };
 
 export default SetFromAddressModal;
