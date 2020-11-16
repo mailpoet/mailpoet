@@ -62,6 +62,7 @@ const baseConfig = {
     new CleanWebpackPlugin(),
   ],
   module: {
+    noParse: /node_modules\/lodash\/lodash\.js/,
     rules: [
       {
         test: /\.(j|t)sx?$/,
