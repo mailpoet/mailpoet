@@ -18,6 +18,16 @@ const TransactionalEmailsProposeOptInNotice = ({
   apiVersion,
 }: Props) => {
   const [hidden, setHidden] = useState(false);
+  const saveNoticeDismissed = () => {
+    MailPoet.Ajax.post({
+      api_version: apiVersion,
+      endpoint: 'UserFlags',
+      action: 'set',
+      data: {
+        transactional_emails_opt_in_notice_dismissed: '1',
+      },
+    });
+  };
   const enable = () => {
     setHidden(true);
     MailPoet.Ajax.post({
@@ -29,17 +39,6 @@ const TransactionalEmailsProposeOptInNotice = ({
       },
     });
     saveNoticeDismissed();
-  };
-
-  const saveNoticeDismissed = () => {
-    MailPoet.Ajax.post({
-      api_version: apiVersion,
-      endpoint: 'UserFlags',
-      action: 'set',
-      data: {
-        transactional_emails_opt_in_notice_dismissed: '1',
-      },
-    });
   };
 
   if (mailpoetInstalledDaysAgo < 30) return null;

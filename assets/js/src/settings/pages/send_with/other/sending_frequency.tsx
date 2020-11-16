@@ -10,6 +10,14 @@ import { useSetting } from 'settings/store/hooks';
 const MINUTES_PER_DAY = 1440;
 const SECONDS_PER_DAY = 86400;
 
+function formatInterval(minutes: string): string {
+  const value = Math.floor(parseInt(minutes, 10));
+  if (value > 60) return t('everyHours').replace('%1$d', `${value / 60}`);
+  if (value === 60) return t('everyHour');
+  if (value > 1) return t('everyMinutes').replace('%1$d', `${value}`);
+  return t('everyMinute');
+}
+
 type Props = {
   recommendedEmails: number;
   recommendedInterval: number;
@@ -115,12 +123,4 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
       </Inputs>
     </>
   );
-}
-
-function formatInterval(minutes: string): string {
-  const value = Math.floor(parseInt(minutes, 10));
-  if (value > 60) return t('everyHours').replace('%1$d', `${value / 60}`);
-  if (value === 60) return t('everyHour');
-  if (value > 1) return t('everyMinutes').replace('%1$d', `${value}`);
-  return t('everyMinute');
 }
