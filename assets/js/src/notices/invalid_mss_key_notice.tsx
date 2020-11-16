@@ -3,8 +3,8 @@ import Notice from 'notices/notice';
 import MailPoet from 'mailpoet';
 
 type Props = {
-  mssKeyInvalid: boolean,
-  subscribersCount: number,
+  mssKeyInvalid: boolean;
+  subscribersCount: number;
 }
 
 const InvalidMssKeyNotice = ({ mssKeyInvalid, subscribersCount }: Props) => {

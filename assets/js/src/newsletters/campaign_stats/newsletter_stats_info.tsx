@@ -6,7 +6,7 @@ import { Button } from 'common';
 import { NewsletterType } from './newsletter_type';
 
 type Props = {
-  newsletter: NewsletterType
+  newsletter: NewsletterType;
 }
 
 export const NewsletterStatsInfo = ({

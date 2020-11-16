@@ -3,11 +3,11 @@ import classnames from 'classnames';
 import Tooltip from 'common/tooltip/tooltip';
 
 type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
-  customLabel?: string,
-  dimension?: 'small',
-  isFullWidth?: boolean,
-  tooltip?: string,
-  isCode?: boolean,
+  customLabel?: string;
+  dimension?: 'small';
+  isFullWidth?: boolean;
+  tooltip?: string;
+  isCode?: boolean;
 };
 
 const Textarea = ({

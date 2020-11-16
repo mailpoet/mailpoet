@@ -15,18 +15,18 @@ import Heading from '../../common/typography/heading/heading';
 type Props = {
   match: {
     params: {
-      id: string
-    }
-  }
+      id: string;
+    };
+  };
   history: {
-    push: (string) => void
-  }
-  location: object
+    push: (string) => void;
+  };
+  location: object;
 };
 
 type State = {
-  item?: NewsletterType
-  loading: boolean
+  item?: NewsletterType;
+  loading: boolean;
 }
 
 const CampaignStatsPage = ({ match, history, location }: Props) => {

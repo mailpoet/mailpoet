@@ -5,12 +5,12 @@ import Tooltip from '../tooltip/tooltip';
 import Tag from '../tag/tag';
 
 type NewsletterStatsProps = {
-  opened: number,
-  clicked: number,
-  revenues?: string,
-  hideBadges?: boolean,
-  newsletterId?: number, // used for tooltip IDs
-  wrapContentInLink?: (content: React.ReactNode, idPrefix: string) => any,
+  opened: number;
+  clicked: number;
+  revenues?: string;
+  hideBadges?: boolean;
+  newsletterId?: number; // used for tooltip IDs
+  wrapContentInLink?: (content: React.ReactNode, idPrefix: string) => any;
 }
 
 const NewsletterStats = ({

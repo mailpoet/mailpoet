@@ -12,7 +12,7 @@ import {
 import Selection from '../../selection';
 
 type Props = {
-  settingsPlacementKey: string
+  settingsPlacementKey: string;
 }
 
 const PlacementSettings = ({ settingsPlacementKey }: Props) => {

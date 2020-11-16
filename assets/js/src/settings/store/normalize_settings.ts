@@ -165,7 +165,7 @@ type Schema = {
     | typeof asBoolean
     | typeof asEnum
     | typeof asObject
-  >
+  >;
 }
 type SchemaResult<T extends Schema> = {
   [key in keyof T]: ReturnType<T[key]>

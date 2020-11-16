@@ -2,15 +2,15 @@ import React from 'react';
 import classNames from 'classnames';
 
 export type Category = {
-  name: string,
-  label: string,
-  count?: number | string,
-  automationId?: string,
+  name: string;
+  label: string;
+  count?: number | string;
+  automationId?: string;
 };
 
 type Props = Category & {
-  onSelect: (name: string) => any,
-  active?: boolean,
+  onSelect: (name: string) => any;
+  active?: boolean;
 };
 
 const CategoriesItem = ({

@@ -1,3 +1,3 @@
 export type LocationState = {
-  backUrl?: string,
+  backUrl?: string;
 };

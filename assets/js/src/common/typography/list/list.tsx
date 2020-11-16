@@ -1,8 +1,8 @@
 import React from 'react';
 
 type Props = {
-  children: React.ReactNode,
-  isOrdered?: boolean,
+  children: React.ReactNode;
+  isOrdered?: boolean;
 };
 
 const List = ({

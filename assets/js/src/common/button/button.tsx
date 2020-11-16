@@ -2,22 +2,22 @@ import React from 'react';
 import classnames from 'classnames';
 
 type Props = {
-  children?: React.ReactNode,
-  dimension?: 'extra-small' | 'small' | 'large',
-  variant?: 'light' | 'dark' | 'link' | 'link-dark',
-  withSpinner?: boolean, // also disables href and onClick (via pointer-events in CSS)
-  isDisabled?: boolean, // also disables href and onClick (via pointer-events in CSS)
-  isFullWidth?: boolean,
-  iconStart?: JSX.Element,
-  iconEnd?: JSX.Element,
-  onClick?: () => void,
-  href?: string,
-  rel?: string,
-  type?: 'button' | 'submit' | 'reset',
-  target?: '_blank' | '_self' | '_parent' | '_top' | string,
-  automationId?: string,
-  className?: string,
-  data?: string,
+  children?: React.ReactNode;
+  dimension?: 'extra-small' | 'small' | 'large';
+  variant?: 'light' | 'dark' | 'link' | 'link-dark';
+  withSpinner?: boolean; // also disables href and onClick (via pointer-events in CSS)
+  isDisabled?: boolean; // also disables href and onClick (via pointer-events in CSS)
+  isFullWidth?: boolean;
+  iconStart?: JSX.Element;
+  iconEnd?: JSX.Element;
+  onClick?: () => void;
+  href?: string;
+  rel?: string;
+  type?: 'button' | 'submit' | 'reset';
+  target?: '_blank' | '_self' | '_parent' | '_top' | string;
+  automationId?: string;
+  className?: string;
+  data?: string;
 };
 
 const Button = ({

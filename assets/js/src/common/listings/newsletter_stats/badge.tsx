@@ -3,11 +3,11 @@ import Tag from '../../tag/tag';
 import Tooltip from '../../tooltip/tooltip';
 
 type BadgeProps = {
-  name: string,
-  tooltip?: string | React.ReactNode,
-  tooltipId?: string,
-  type?: 'average' | 'good' | 'excellent',
-  isInverted?: boolean,
+  name: string;
+  tooltip?: string | React.ReactNode;
+  tooltipId?: string;
+  type?: 'average' | 'good' | 'excellent';
+  isInverted?: boolean;
 }
 
 function Badge({

@@ -15,10 +15,10 @@ import { InputBlockStyles } from 'form_editor/store/form_data_types';
 import FontFamilySettings from '../../components/font_family_settings';
 
 type Props = {
-  styles: InputBlockStyles,
-  onChange: (styles: InputBlockStyles) => any,
-  formInputPadding: number,
-  formFontFamily?: string,
+  styles: InputBlockStyles;
+  onChange: (styles: InputBlockStyles) => any;
+  formInputPadding: number;
+  formFontFamily?: string;
 }
 
 const StylesSettings = ({

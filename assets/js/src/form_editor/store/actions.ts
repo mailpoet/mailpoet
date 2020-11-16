@@ -150,8 +150,8 @@ export function saveFormFailed(message = undefined) {
 }
 
 export type CHANGE_ACTIVE_SIDEBAR = {
-  type: 'CHANGE_ACTIVE_SIDEBAR',
-  sidebar: 'default' | 'placement_settings',
+  type: 'CHANGE_ACTIVE_SIDEBAR';
+  sidebar: 'default' | 'placement_settings';
 };
 
 export function changeActiveSidebar(

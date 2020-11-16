@@ -1,12 +1,12 @@
 import React from 'react';
 
 type Props = {
-  title?: string,
-  iconStart?: JSX.Element,
-  iconEnd?: JSX.Element,
-  route?: string,
-  automationId?: string,
-  children: React.ReactNode
+  title?: string;
+  iconStart?: JSX.Element;
+  iconEnd?: JSX.Element;
+  route?: string;
+  automationId?: string;
+  children: React.ReactNode;
 };
 
 const Tab = ({

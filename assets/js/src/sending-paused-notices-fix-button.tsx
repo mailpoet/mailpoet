@@ -6,7 +6,7 @@ import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
 
 type Props = {
-  onRequestClose?: () => void,
+  onRequestClose?: () => void;
 };
 
 const App = ({ onRequestClose }: Props) => {

@@ -34,7 +34,7 @@ const Notice = ({
 
   React.useEffect(() => {
     if (timeout) {
-      timeoutRef.current = setTimeout(close, timeout as number);
+      timeoutRef.current = setTimeout(close, timeout);
     }
     return () => (timeoutRef.current ? clearTimeout(timeoutRef.current) : null);
   }, [close, timeout]);

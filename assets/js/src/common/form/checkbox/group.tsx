@@ -4,15 +4,15 @@ import Checkbox from './checkbox';
 type CheckboxValueType = string | string[] | number;
 
 type CheckboxProps = InputHTMLAttributes<HTMLInputElement> & {
-  label: string,
+  label: string;
 }
 
 type Props = {
-  name: string,
-  options: CheckboxProps[],
-  defaultValue?: CheckboxValueType[]
-  isFullWidth?: boolean,
-  onChange?: (values: CheckboxValueType[]) => void,
+  name: string;
+  options: CheckboxProps[];
+  defaultValue?: CheckboxValueType[];
+  isFullWidth?: boolean;
+  onChange?: (values: CheckboxValueType[]) => void;
 };
 
 const CheckboxGroup = ({
@@ -42,7 +42,7 @@ const CheckboxGroup = ({
     <div>
       {options.map(({ label, value, ...attributes }: CheckboxProps) => (
         <Checkbox
-          checked={values.indexOf(value) !== -1}
+          checked={values.includes(value)}
           key={label}
           name={name}
           value={value}

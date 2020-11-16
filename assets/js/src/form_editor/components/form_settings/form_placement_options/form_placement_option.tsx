@@ -2,11 +2,11 @@ import React from 'react';
 import SelectionItem from '../selection_item';
 
 type Props = {
-  label: string,
-  icon: JSX.Element,
-  active: boolean,
-  canBeActive?: boolean,
-  onClick: () => void,
+  label: string;
+  icon: JSX.Element;
+  active: boolean;
+  canBeActive?: boolean;
+  onClick: () => void;
 }
 
 const FormPlacementOption = ({

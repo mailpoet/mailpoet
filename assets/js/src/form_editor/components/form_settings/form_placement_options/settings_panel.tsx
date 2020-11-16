@@ -7,7 +7,7 @@ import FixedBarSettings from './settings_panels/fixed_bar_settings';
 import SlideInSettings from './settings_panels/slide_in_settings';
 
 type Props = {
-  activePanel: string
+  activePanel: string;
 }
 
 const SettingsPanel = ({ activePanel }: Props) => (

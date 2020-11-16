@@ -18,10 +18,10 @@ const standardFonts = [
 ];
 
 type Props = {
-  onChange: (value: string|undefined) => any,
-  value?: string,
-  name: string,
-  hideLabelFromVision?: boolean
+  onChange: (value: string|undefined) => any;
+  value?: string;
+  name: string;
+  hideLabelFromVision?: boolean;
 }
 
 const FontFamilySettings = ({

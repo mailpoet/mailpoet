@@ -3,11 +3,11 @@ import ColorGradientControl from '@wordpress/block-editor/build-module/component
 import { __experimentalUseEditorFeature } from '@wordpress/block-editor';
 
 type Props = {
-  name: string,
-  colorValue: string|undefined
-  gradientValue: string|undefined
-  onColorChange: (value: string|undefined) => any
-  onGradientChange: (value: string|undefined) => any
+  name: string;
+  colorValue: string|undefined;
+  gradientValue: string|undefined;
+  onColorChange: (value: string|undefined) => any;
+  onGradientChange: (value: string|undefined) => any;
 }
 
 const ColorGradientSettings = ({

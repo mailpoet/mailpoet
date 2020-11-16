@@ -4,9 +4,9 @@ import classNames from 'classnames';
 import { ContentWrapperFix } from './content_wrapper_fix';
 
 type Props = {
-  count: number,
-  current: number,
-  titles?: string[]
+  count: number;
+  current: number;
+  titles?: string[];
 };
 
 const Steps = ({ count, current, titles }: Props) => (

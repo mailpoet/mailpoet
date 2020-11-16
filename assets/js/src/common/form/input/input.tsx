@@ -3,12 +3,12 @@ import classnames from 'classnames';
 import Tooltip from 'common/tooltip/tooltip';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
-  customLabel?: string,
-  dimension?: 'small',
-  isFullWidth?: boolean,
-  iconStart?: JSX.Element,
-  iconEnd?: JSX.Element,
-  tooltip?: string,
+  customLabel?: string;
+  dimension?: 'small';
+  isFullWidth?: boolean;
+  iconStart?: JSX.Element;
+  iconEnd?: JSX.Element;
+  tooltip?: string;
 };
 
 const Input = ({

@@ -4,12 +4,12 @@ import { onChange, t } from 'common/functions';
 import Select from 'common/form/select/select';
 
 type Props = {
-  id?: string
-  value: string
-  automationId?: string
-  linkAutomationId?: string
-  setValue: (x: string) => any
-  preview: 'manage' | 'unsubscribe' | 'confirm' | 'confirm_unsubscribe'
+  id?: string;
+  value: string;
+  automationId?: string;
+  linkAutomationId?: string;
+  setValue: (x: string) => any;
+  preview: 'manage' | 'unsubscribe' | 'confirm' | 'confirm_unsubscribe';
 }
 
 export default (props: Props) => {

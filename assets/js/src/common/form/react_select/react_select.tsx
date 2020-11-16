@@ -3,9 +3,9 @@ import classnames from 'classnames';
 import Select, { Props as ReactSelectProps } from 'react-select';
 
 export type Props = ReactSelectProps & {
-  dimension?: 'small',
-  isFullWidth?: boolean,
-  iconStart?: JSX.Element,
+  dimension?: 'small';
+  isFullWidth?: boolean;
+  iconStart?: JSX.Element;
 };
 
 const LabelRenderer = (data: any) => (

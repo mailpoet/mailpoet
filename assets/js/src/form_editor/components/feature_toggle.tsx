@@ -7,10 +7,10 @@ import {
 import { check } from '@wordpress/icons';
 
 type Props = {
-  isActive: boolean,
-  label: string,
-  info: string|undefined,
-  onToggle: () => any
+  isActive: boolean;
+  label: string;
+  info: string|undefined;
+  onToggle: () => any;
 }
 
 const FeatureToggle = ({

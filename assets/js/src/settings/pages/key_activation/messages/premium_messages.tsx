@@ -55,10 +55,10 @@ NotValidMessage.defaultProps = {
 };
 
 type Props = {
-  keyMessage?: string
-  activationCallback: () => any
-  installationCallback: () => any
-  installationStatus: PremiumInstallationStatus
+  keyMessage?: string;
+  activationCallback: () => any;
+  installationCallback: () => any;
+  installationStatus: PremiumInstallationStatus;
 }
 export default function PremiumMessages(props: Props) {
   const { premiumStatus: status } = useSelector('getKeyActivationState')();

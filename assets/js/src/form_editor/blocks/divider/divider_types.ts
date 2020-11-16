@@ -10,7 +10,7 @@ export enum Style {
 }
 
 export interface Attributes {
-  className: string,
+  className: string;
   height: number;
   type: Types;
   style: Style;

@@ -2,8 +2,8 @@ import React from 'react';
 import classnames from 'classnames';
 
 type Props = {
-  children?: React.ReactNode,
-  className?: string,
+  children?: React.ReactNode;
+  className?: string;
 };
 
 const TwoColumnsList = ({ children, className }: Props) => (

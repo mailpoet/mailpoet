@@ -2,10 +2,10 @@ import React from 'react';
 import Tag from './tag';
 
 type Props = {
-  children?: React.ReactNode,
-  dimension?: 'large',
-  segments?: any[],
-  strings?: string[],
+  children?: React.ReactNode;
+  dimension?: 'large';
+  segments?: any[];
+  strings?: string[];
 }
 
 const Tags = ({

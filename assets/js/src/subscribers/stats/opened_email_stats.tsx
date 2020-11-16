@@ -7,12 +7,12 @@ import NoAccessInfo from './no_access_info';
 
 type Props = {
   params: {
-    id: string,
-  },
-  location: Location,
+    id: string;
+  };
+  location: Location;
 };
 
-const OpenedEmailsStats = ({ params, location }:Props) => (
+const OpenedEmailsStats = ({ params, location }: Props) => (
   <>
     <Heading level={4}>
       {MailPoet.I18n.t('openedEmailsHeading')}

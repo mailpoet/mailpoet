@@ -1,9 +1,9 @@
 import React from 'react';
 
 export type PropTypes = {
-  count: number
-  revenueValue: string
-  averageRevenueValue: string
+  count: number;
+  revenueValue: string;
+  averageRevenueValue: string;
 }
 
 export default ({ revenueValue, count, averageRevenueValue }: PropTypes) => (

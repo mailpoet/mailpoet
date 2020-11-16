@@ -12,8 +12,8 @@ import {
 import Tabs, { Props as TabProps } from './tabs';
 
 const RouterAwareTabs = (props: TabProps & {
-  keyPathMap: { [key: string]: string },
-  routerPrefix?: string,
+  keyPathMap: { [key: string]: string };
+  routerPrefix?: string;
 }) => {
   const match = useRouteMatch();
   const history = useHistory();
@@ -40,8 +40,8 @@ const RouterAwareTabs = (props: TabProps & {
 };
 
 type Props = TabProps & {
-  routerType?: 'hash' | 'browser' | 'switch-only',
-  routerPrefix?: string,
+  routerType?: 'hash' | 'browser' | 'switch-only';
+  routerPrefix?: string;
 };
 
 const RoutedTabs = ({

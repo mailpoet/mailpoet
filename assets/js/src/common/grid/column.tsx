@@ -2,10 +2,10 @@ import React from 'react';
 import classnames from 'classnames';
 
 type Props = {
-  children?: React.ReactNode,
-  align?: 'center',
-  className?: string,
-  dimension?: 'small',
+  children?: React.ReactNode;
+  align?: 'center';
+  className?: string;
+  dimension?: 'small';
 };
 
 const Column = ({
