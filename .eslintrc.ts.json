@@ -29,7 +29,6 @@
   },
   "rules": {
     "@typescript-eslint/await-thenable":  "off",
-    "@typescript-eslint/camelcase":  "off",
     "@typescript-eslint/explicit-function-return-type":  "off",
     "@typescript-eslint/no-explicit-any":  "off",
     // PropTypes
@@ -39,6 +38,7 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     // Exceptions
+    "@typescript-eslint/camelcase": ["error", { "properties": "never" }], // we need this to interact with the server
     "react/jsx-filename-extension": 0,
     "arrow-parens": ["error", "always"],
     "comma-dangle": ["error", "always-multiline"],

@@ -26,9 +26,10 @@ export const withFeatureAnnouncement = <P extends object>(
   }
 
   function updateLastAnnouncementSeenValue() {
+    // eslint-disable-next-line @typescript-eslint/camelcase
     const data = { last_announcement_seen: Math.floor(Date.now() / 1000) };
     MailPoet.Ajax.post({
-      api_version: (window as any).mailpoet_api_version,
+      api_version: MailPoet.apiVersion,
       endpoint: 'user_flags',
       action: 'set',
       data,
@@ -36,7 +37,9 @@ export const withFeatureAnnouncement = <P extends object>(
   }
 
   function loadBeamer() {
+    // eslint-disable-next-line @typescript-eslint/camelcase
     (window as any).beamer_config = {
+      // eslint-disable-next-line @typescript-eslint/camelcase
       product_id: 'VvHbhYWy7118',
       selector: '#beamer-empty-element',
       language: (window as any).mailpoet_user_locale,
@@ -46,6 +49,7 @@ export const withFeatureAnnouncement = <P extends object>(
       (window as any).beamer_config.filter = 'woocommerce';
     }
     MailPoet.Modal.loading(true);
+    // eslint-disable-next-line @typescript-eslint/camelcase
     (window as any).mailpoet_feature_announcement_has_news = false;
     const s = document.createElement('script');
     s.type = 'text/javascript';
