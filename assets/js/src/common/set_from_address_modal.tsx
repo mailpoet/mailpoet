@@ -7,7 +7,11 @@ import { GlobalContext } from 'context';
 
 const mailPoetApiVersion = (window as any).mailpoet_api_version as string;
 
-const handleSave = async (address: string | null) => MailPoet.Ajax.post({
+/**
+ * @param {string|null} address
+ * @returns {Promise}
+ */
+const handleSave = (address: string | null) => MailPoet.Ajax.post({
   api_version: mailPoetApiVersion,
   endpoint: 'settings',
   action: 'setAuthorizedFromAddress',
