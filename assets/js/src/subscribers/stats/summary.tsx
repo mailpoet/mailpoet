@@ -3,9 +3,9 @@ import MailPoet from 'mailpoet';
 import Tag from 'common/tag/tag';
 
 export type PropTypes = {
-  totalSent: number
-  open: number
-  click: number
+  totalSent: number;
+  open: number;
+  click: number;
 }
 
 export default ({ totalSent, open, click }: PropTypes) => {

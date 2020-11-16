@@ -6,10 +6,10 @@ import PlacementSettingsPanel from 'form_editor/components/form_settings/form_pl
 import SidebarHeader from './sidebar_header';
 
 type Props = {
-  onClose: () => any,
+  onClose: () => any;
 }
 
-export default ({ onClose }:Props) => {
+export default ({ onClose }: Props) => {
   const previewSettings = useSelect(
     (select) => select('mailpoet-form-editor').getPreviewSettings(),
     []

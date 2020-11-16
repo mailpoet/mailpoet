@@ -2,9 +2,9 @@ import React, { ChangeEvent, InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
-  dimension?: 'small',
-  onCheck: (isChecked: boolean, event: ChangeEvent) => void,
-  automationId?: string,
+  dimension?: 'small';
+  onCheck: (isChecked: boolean, event: ChangeEvent) => void;
+  automationId?: string;
 };
 
 const Toggle = ({

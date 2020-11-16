@@ -4,12 +4,12 @@ import Heading from 'common/typography/heading/heading';
 import Button from 'common/button/button';
 
 type Props = {
-  label: string,
-  onSelect: () => void,
-  children: React.ReactNode,
-  onDelete?: () => void,
-  automationId?: string,
-  className?: string
+  label: string;
+  onSelect: () => void;
+  children: React.ReactNode;
+  onDelete?: () => void;
+  automationId?: string;
+  className?: string;
 }
 
 const TemplateBox = ({

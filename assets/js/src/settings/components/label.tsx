@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
 
 type Props = {
-  title: string
-  description?: ReactNode
-  htmlFor: string
+  title: string;
+  description?: ReactNode;
+  htmlFor: string;
 }
 
 export default ({ title, description, htmlFor }: Props) => (

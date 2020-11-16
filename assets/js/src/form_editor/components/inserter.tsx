@@ -8,7 +8,7 @@ import {
 } from '@wordpress/block-editor';
 
 type Props = {
-  setIsInserterOpened: (boolean) => {}
+  setIsInserterOpened: (boolean) => {};
 }
 
 const Inserter = ({

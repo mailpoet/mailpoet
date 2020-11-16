@@ -2,20 +2,20 @@ import React, { useState } from 'react';
 import { RangeControl, RadioControl } from '@wordpress/components';
 
 export type SizeDefinition = {
-  value: number|undefined,
-  unit: 'percent'|'pixel',
+  value: number|undefined;
+  unit: 'percent'|'pixel';
 };
 
 type Props = {
-  label: string,
-  minPercents?: number,
-  maxPercents?: number,
-  minPixels?: number,
-  maxPixels?: number,
-  value: SizeDefinition|undefined,
-  defaultPercentValue?: number,
-  defaultPixelValue?: number,
-  onChange: (value: SizeDefinition) => any,
+  label: string;
+  minPercents?: number;
+  maxPercents?: number;
+  minPixels?: number;
+  maxPixels?: number;
+  value: SizeDefinition|undefined;
+  defaultPercentValue?: number;
+  defaultPixelValue?: number;
+  onChange: (value: SizeDefinition) => any;
 }
 
 export const SizeSettings = ({

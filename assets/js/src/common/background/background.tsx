@@ -1,7 +1,7 @@
 import React from 'react';
 
 type Props = {
-  color: string,
+  color: string;
 };
 
 const Background = ({ color }: Props) => (

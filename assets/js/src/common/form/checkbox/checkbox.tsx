@@ -2,10 +2,10 @@ import React, { ChangeEvent, InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
-  onCheck: (isChecked: boolean, event: ChangeEvent) => void,
-  children?: React.ReactNode,
-  isFullWidth?: boolean,
-  automationId?: string,
+  onCheck: (isChecked: boolean, event: ChangeEvent) => void;
+  children?: React.ReactNode;
+  isFullWidth?: boolean;
+  automationId?: string;
 };
 
 const Checkbox = ({

@@ -3,11 +3,11 @@ import Notice from 'notices/notice';
 import MailPoet from 'mailpoet';
 
 type Props = {
-  mailpoetInstalledDaysAgo: number,
-  sendTransactionalEmails: boolean,
-  noticeDismissed: string,
-  mtaMethod: string,
-  apiVersion: string,
+  mailpoetInstalledDaysAgo: number;
+  sendTransactionalEmails: boolean;
+  noticeDismissed: string;
+  mtaMethod: string;
+  apiVersion: string;
 }
 
 const TransactionalEmailsProposeOptInNotice = ({

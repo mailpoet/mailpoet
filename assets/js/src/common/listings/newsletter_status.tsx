@@ -7,11 +7,11 @@ import {
 import t from 'common/functions/t';
 
 type NewsletterStatusProps = {
-  scheduledFor?: Date,
-  processed?: number,
-  total?: number,
-  isPaused?: boolean,
-  status?: string,
+  scheduledFor?: Date;
+  processed?: number;
+  total?: number;
+  isPaused?: boolean;
+  status?: string;
 }
 
 const NewsletterStatus = ({
@@ -73,7 +73,7 @@ const NewsletterStatus = ({
 };
 
 type CircularProgressProps = {
-  percentage: number
+  percentage: number;
 }
 
 const CircularProgress = ({ percentage }: CircularProgressProps) => {

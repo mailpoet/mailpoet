@@ -18,8 +18,8 @@ import {
 } from './divider_types';
 
 type Props = {
-  attributes: Attributes,
-  setAttributes: (attribute) => void,
+  attributes: Attributes;
+  setAttributes: (attribute) => void;
 };
 
 const DividerEdit = ({ attributes, setAttributes }: Props) => {

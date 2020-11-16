@@ -3,10 +3,10 @@ import { useSelector } from 'settings/store/hooks';
 import ReactSelect from 'common/form/react_select/react_select';
 
 type Props = {
-  id: string
-  value: string[]
-  placeholder?: string
-  setValue: (x: string[]) => any
+  id: string;
+  value: string[];
+  placeholder?: string;
+  setValue: (x: string[]) => any;
 }
 
 export default (props: Props) => {
@@ -16,7 +16,7 @@ export default (props: Props) => {
     count: segment.subscribers,
   }));
 
-  const defaultValue = segments.filter((segment) => props.value.indexOf(segment.value) > -1);
+  const defaultValue = segments.filter((segment) => props.value.includes(segment.value));
 
   return (
     <ReactSelect

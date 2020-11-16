@@ -3,10 +3,10 @@ import MailPoet from 'mailpoet';
 import Badge from './badge';
 
 type StatsBadgeProps = {
-  stat: string,
-  rate: number,
-  tooltipId?: string,
-  isInverted?: boolean,
+  stat: string;
+  rate: number;
+  tooltipId?: string;
+  isInverted?: boolean;
 }
 
 const stats = {

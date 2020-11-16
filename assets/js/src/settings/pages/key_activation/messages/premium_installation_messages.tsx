@@ -49,7 +49,7 @@ const ErrorMessage = () => {
 };
 
 type Props = {
-  installationStatus: PremiumInstallationStatus
+  installationStatus: PremiumInstallationStatus;
 }
 export default function PremiumInstallationMessages(props: Props) {
   switch (props.installationStatus) {

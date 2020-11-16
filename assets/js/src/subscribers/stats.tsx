@@ -13,17 +13,17 @@ import WoocommerceRevenues from './stats/woocommerce_revenues';
 import OpenedEmailsStats from './stats/opened_email_stats';
 
 export type StatsType = {
-  email: string
-  total_sent: number
-  open: number
-  click: number
+  email: string;
+  total_sent: number;
+  open: number;
+  click: number;
   woocommerce: {
-    currency: string
-    value: number
-    count: number
-    formatted: string
-    formatted_average: string
-  }
+    currency: string;
+    value: number;
+    count: number;
+    formatted: string;
+    formatted_average: string;
+  };
 }
 
 export const SubscriberStats = () => {

@@ -3,7 +3,7 @@ import React from 'react';
 import Heading from '../typography/heading/heading';
 
 type Props = {
-  title: string,
+  title: string;
 };
 
 const ModalHeader = ({ title }: Props) => (

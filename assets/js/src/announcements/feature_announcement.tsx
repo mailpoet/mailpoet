@@ -4,8 +4,8 @@ import MailPoet from 'mailpoet';
 import { withFeatureAnnouncement } from './with_feature_announcement';
 
 type props = {
-  hasNews: boolean
-  onBeamerClick: () => {}
+  hasNews: boolean;
+  onBeamerClick: () => {};
 }
 
 function FeatureAnnouncement({ hasNews, onBeamerClick }: props) {

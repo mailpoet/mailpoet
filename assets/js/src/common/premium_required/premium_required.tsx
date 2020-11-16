@@ -3,9 +3,9 @@ import Badge from 'common/badge/badge';
 import Heading from 'common/typography/heading/heading';
 
 type Props = {
-  title: string,
-  message: React.ReactNode,
-  actionButton: React.ReactNode,
+  title: string;
+  message: React.ReactNode;
+  actionButton: React.ReactNode;
 };
 
 const PremiumRequired = ({ title, message, actionButton }: Props) => (

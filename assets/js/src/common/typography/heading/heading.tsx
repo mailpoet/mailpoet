@@ -2,8 +2,8 @@ import React, { HTMLAttributes } from 'react';
 import classNames from 'classnames';
 
 type Props = HTMLAttributes<HTMLHeadingElement> & {
-  children: React.ReactNode,
-  level: 0 | 1 | 2 | 3 | 4 | 5,
+  children: React.ReactNode;
+  level: 0 | 1 | 2 | 3 | 4 | 5;
 };
 
 const Heading = ({

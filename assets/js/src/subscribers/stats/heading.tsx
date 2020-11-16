@@ -5,7 +5,7 @@ import Heading from 'common/typography/heading/heading';
 import { LocationState } from 'subscribers/location_state';
 
 export type PropTypes = {
-  email: string
+  email: string;
 }
 
 export default ({ email }: PropTypes) => {

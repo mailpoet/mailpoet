@@ -3,8 +3,8 @@ import MailPoet from 'mailpoet';
 import { Button } from '@wordpress/components';
 
 type Props = {
-  closeSidebar: () => any,
-  children: React.ReactNode,
+  closeSidebar: () => any;
+  children: React.ReactNode;
 }
 
 const SidebarHeader = ({ children, closeSidebar }: Props) => (

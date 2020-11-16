@@ -32,8 +32,8 @@ const MssNotActiveMessage = ({ activationCallback }: MssNotActiveMessageProps) =
 
 
 type Props = {
-  keyMessage?: string
-  activationCallback: () => any,
+  keyMessage?: string;
+  activationCallback: () => any;
 }
 export default function MssMessages(props: Props) {
   const { mssStatus } = useSelector('getKeyActivationState')();

@@ -4,13 +4,13 @@ import HelpTooltip from 'help-tooltip.jsx';
 import ReactStringReplace from 'react-string-replace';
 
 type Props = {
-  subscribersInPlan: number | false,
-  subscribersInPlanLimit: number | false,
-  mailpoetSubscribers: number | false,
-  mailpoetSubscribersLimit: number | false,
-  hasPremiumSupport: boolean,
-  wpUsersCount: number | false,
-  mssActive: boolean,
+  subscribersInPlan: number | false;
+  subscribersInPlanLimit: number | false;
+  mailpoetSubscribers: number | false;
+  mailpoetSubscribersLimit: number | false;
+  hasPremiumSupport: boolean;
+  wpUsersCount: number | false;
+  mssActive: boolean;
 };
 
 const SubscribersInPlan = ({

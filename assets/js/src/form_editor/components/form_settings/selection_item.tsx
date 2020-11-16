@@ -5,14 +5,14 @@ import SettingsIcon from './form_placement_options/icons/settings_icon';
 import CheckIcon from './form_placement_options/icons/checkbox_icon';
 
 type Props = {
-  label: string
-  active: boolean
-  displaySettingsIcon?: boolean
-  canBeActive?: boolean
-  onClick: () => void
-  className?: string
-  children: React.ReactNode
-  automationId?: string
+  label: string;
+  active: boolean;
+  displaySettingsIcon?: boolean;
+  canBeActive?: boolean;
+  onClick: () => void;
+  className?: string;
+  children: React.ReactNode;
+  automationId?: string;
 }
 
 const SelectionItem = ({

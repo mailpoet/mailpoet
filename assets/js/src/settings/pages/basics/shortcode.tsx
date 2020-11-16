@@ -4,9 +4,9 @@ import Input from 'common/form/input/input';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 
 type Props = {
-  name: 'mailpoet_archive' | 'mailpoet_subscribers_count'
-  title: string
-  description: string
+  name: 'mailpoet_archive' | 'mailpoet_subscribers_count';
+  title: string;
+  description: string;
 }
 
 export default function Shortcode({ name, title, description }: Props) {

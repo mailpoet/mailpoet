@@ -4,11 +4,11 @@ import MailPoet from 'mailpoet';
 import { Button, SelectControl } from '@wordpress/components';
 
 type Props = {
-  name: string,
-  imageUrl?: string,
-  onImageUrlChange: (value: string) => any,
-  imageDisplay?: string,
-  onImageDisplayChange: (value: string) => any,
+  name: string;
+  imageUrl?: string;
+  onImageUrlChange: (value: string) => any;
+  imageDisplay?: string;
+  onImageDisplayChange: (value: string) => any;
 }
 
 const ImageSettings = ({

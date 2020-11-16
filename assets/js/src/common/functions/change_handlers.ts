@@ -7,6 +7,6 @@ export function onChange(setter: Setter) {
   return (e: Event) => setter(e.target.value);
 }
 
-export function onToggle(setter: Setter, falseValue: string = '0') {
+export function onToggle(setter: Setter, falseValue = '0') {
   return (e: Event) => setter(e.target.checked ? '1' : falseValue);
 }

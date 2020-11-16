@@ -4,15 +4,15 @@ import Radio from './radio';
 type RadioValueType = string | string[] | number;
 
 type RadioProps = InputHTMLAttributes<HTMLInputElement> & {
-  label: string,
+  label: string;
 }
 
 type Props = {
-  name: string,
-  options: RadioProps[],
-  defaultValue?: RadioValueType,
-  isFullWidth?: boolean,
-  onChange?: (value: RadioValueType) => void,
+  name: string;
+  options: RadioProps[];
+  defaultValue?: RadioValueType;
+  isFullWidth?: boolean;
+  onChange?: (value: RadioValueType) => void;
 };
 
 const RadioGroup = ({

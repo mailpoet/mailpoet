@@ -7,15 +7,15 @@ import ModalOverlay from './overlay';
 import ModalCloseIcon from './close_icon';
 
 type Props = {
-  title?: string,
-  isDismissible?: boolean,
-  shouldCloseOnEsc?: boolean,
-  shouldCloseOnClickOutside?: boolean,
-  onRequestClose?: () => void,
-  fullScreen?: boolean,
-  contentClassName?: string,
-  overlayClassName?: string,
-  children: React.ReactNode,
+  title?: string;
+  isDismissible?: boolean;
+  shouldCloseOnEsc?: boolean;
+  shouldCloseOnClickOutside?: boolean;
+  onRequestClose?: () => void;
+  fullScreen?: boolean;
+  contentClassName?: string;
+  overlayClassName?: string;
+  children: React.ReactNode;
 };
 
 function Modal({

@@ -2,7 +2,7 @@ import React from 'react';
 import Notice from 'notices/notice';
 
 type Props = {
-  errors: Array<{ message: string }>
+  errors: Array<{ message: string }>;
 }
 
 const APIErrorsNotice = ({ errors }: Props) => {

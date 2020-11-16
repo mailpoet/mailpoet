@@ -2,10 +2,10 @@ import React, { ChangeEvent, InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
-  onCheck: (value: string, event: ChangeEvent) => void,
-  children?: React.ReactNode,
-  isFullWidth?: boolean,
-  automationId?: string,
+  onCheck: (value: string, event: ChangeEvent) => void;
+  children?: React.ReactNode;
+  isFullWidth?: boolean;
+  automationId?: string;
 };
 
 const Radio = ({

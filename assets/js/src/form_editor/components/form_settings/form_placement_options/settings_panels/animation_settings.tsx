@@ -5,7 +5,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { SelectControl } from '@wordpress/components';
 
 type Props = {
-  settingsPlacementKey: string
+  settingsPlacementKey: string;
 }
 
 const AnimationSettings = ({ settingsPlacementKey }: Props) => {

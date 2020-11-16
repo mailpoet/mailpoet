@@ -1,9 +1,9 @@
 export type TemplateType = {
-  id: string
-  name: string
-  thumbnail: string,
+  id: string;
+  name: string;
+  thumbnail: string;
 };
 
 export type TemplateData = {
-  [formType: string]: Array<TemplateType>
+  [formType: string]: Array<TemplateType>;
 }

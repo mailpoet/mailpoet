@@ -4,11 +4,11 @@ import iconYes from './icons/yes';
 import iconNo from './icons/no';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
-  name: string,
-  checked?: boolean,
-  onCheck: (isChecked: boolean) => void,
-  showError?: boolean,
-  automationId?: string,
+  name: string;
+  checked?: boolean;
+  onCheck: (isChecked: boolean) => void;
+  showError?: boolean;
+  automationId?: string;
 };
 
 const YesNo = ({

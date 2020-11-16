@@ -2,9 +2,9 @@ import React from 'react';
 import classnames from 'classnames';
 
 type Props = {
-  children?: React.ReactNode,
-  className?: string,
-  verticalAlign?: 'center',
+  children?: React.ReactNode;
+  className?: string;
+  verticalAlign?: 'center';
 };
 
 const SpaceBetween = ({

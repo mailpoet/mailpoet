@@ -2,12 +2,12 @@ import React, { SelectHTMLAttributes } from 'react';
 import classnames from 'classnames';
 
 type Props = SelectHTMLAttributes<HTMLSelectElement> & {
-  children?: React.ReactNode,
-  dimension?: 'small',
-  isFullWidth?: boolean,
-  isMinWidth?: boolean,
-  iconStart?: JSX.Element,
-  automationId?: string,
+  children?: React.ReactNode;
+  dimension?: 'small';
+  isFullWidth?: boolean;
+  isMinWidth?: boolean;
+  iconStart?: JSX.Element;
+  automationId?: string;
 };
 
 const Select = React.forwardRef(({

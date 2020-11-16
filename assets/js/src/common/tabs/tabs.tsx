@@ -33,16 +33,16 @@ const getActiveChild = (activeTab: string, children: React.ReactElement[]): Reac
     (child) => React.isValidElement(child) && child.key === activeTab
   );
   if (activeChild) {
-    return (activeChild as React.ReactElement);
+    return (activeChild);
   }
   throw new Error(`Child <Tab> with key ${activeTab} not found in <Tabs> children`);
 };
 
 type Props = {
-  activeKey: string,
-  onSwitch?: (tabKey: string) => void,
-  automationId?: string,
-  children: React.ReactNode,
+  activeKey: string;
+  onSwitch?: (tabKey: string) => void;
+  automationId?: string;
+  children: React.ReactNode;
 };
 
 const Tabs = ({

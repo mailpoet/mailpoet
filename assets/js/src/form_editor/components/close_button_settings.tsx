@@ -4,10 +4,10 @@ import { useSelect } from '@wordpress/data';
 import SelectionItem from './form_settings/selection_item';
 
 type CloseButtonProps = {
-  label: string
-  active: boolean
-  onClick: () => any
-  iconUrl: string
+  label: string;
+  active: boolean;
+  onClick: () => any;
+  iconUrl: string;
 }
 
 const CloseButton = ({
@@ -33,9 +33,9 @@ const CloseButton = ({
 );
 
 type Props = {
-  name: string
-  value?: string|undefined
-  onChange: (value: string|undefined) => any
+  name: string;
+  value?: string|undefined;
+  onChange: (value: string|undefined) => any;
 }
 
 const CloseButtonsSettings = ({

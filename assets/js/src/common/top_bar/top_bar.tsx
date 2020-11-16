@@ -9,9 +9,9 @@ import { BeamerIcon } from './beamer_icon';
 import { ScreenOptionsFix } from './screen_options_fix';
 
 type Props = {
-  children?: React.ReactNode
-  hasNews?: boolean
-  onBeamerClick?: () => void
+  children?: React.ReactNode;
+  hasNews?: boolean;
+  onBeamerClick?: () => void;
 };
 
 export const TopBar = ({

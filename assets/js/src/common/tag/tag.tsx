@@ -2,12 +2,12 @@ import React from 'react';
 import classnames from 'classnames';
 
 type Props = {
-  children?: React.ReactNode,
-  variant?: 'average' | 'good' | 'excellent' | 'list',
-  dimension?: 'large',
-  isInverted?: boolean,
-  className?: string,
-  data?: string,
+  children?: React.ReactNode;
+  variant?: 'average' | 'good' | 'excellent' | 'list';
+  dimension?: 'large';
+  isInverted?: boolean;
+  className?: string;
+  data?: string;
 }
 
 const Tag = ({

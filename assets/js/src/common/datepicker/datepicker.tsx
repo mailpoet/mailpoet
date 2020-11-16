@@ -3,10 +3,10 @@ import classnames from 'classnames';
 import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker';
 
 type Props = ReactDatePickerProps & {
-  dimension?: 'small',
-  isFullWidth?: boolean,
-  iconStart?: JSX.Element,
-  iconEnd?: JSX.Element,
+  dimension?: 'small';
+  isFullWidth?: boolean;
+  iconStart?: JSX.Element;
+  iconEnd?: JSX.Element;
 };
 
 const Datepicker = ({

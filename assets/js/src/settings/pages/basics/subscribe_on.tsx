@@ -6,9 +6,9 @@ import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 
 type Props = {
-  title: string
-  description: string
-  event: 'on_comment' | 'on_register'
+  title: string;
+  description: string;
+  event: 'on_comment' | 'on_register';
 }
 
 export default function SubscribeOn({ title, description, event }: Props) {

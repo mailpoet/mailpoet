@@ -1,8 +1,8 @@
 import React from 'react';
 
 type Props = {
-  variant?: 'light' | 'dark'
-  size?: number
+  variant?: 'light' | 'dark';
+  size?: number;
 };
 
 const Loader = ({ variant, size }: Props) => {

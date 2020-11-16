@@ -11,8 +11,8 @@ const MINUTES_PER_DAY = 1440;
 const SECONDS_PER_DAY = 86400;
 
 type Props = {
-  recommendedEmails: number
-  recommendedInterval: number
+  recommendedEmails: number;
+  recommendedInterval: number;
 }
 export default function SendingFrequency({ recommendedEmails, recommendedInterval }: Props) {
   const [frequency, setFrequency] = useSetting('mailpoet_sending_frequency');

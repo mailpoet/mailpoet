@@ -5,12 +5,12 @@ import Button from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
 
 type Props = {
-  limitReached: boolean
-  limitValue: number
-  subscribersCountTowardsLimit: number
-  premiumActive: boolean
-  hasValidApiKey: boolean
-  hasPremiumSupport: boolean
+  limitReached: boolean;
+  limitValue: number;
+  subscribersCountTowardsLimit: number;
+  premiumActive: boolean;
+  hasValidApiKey: boolean;
+  hasPremiumSupport: boolean;
 }
 
 const NoAccessInfo = ({

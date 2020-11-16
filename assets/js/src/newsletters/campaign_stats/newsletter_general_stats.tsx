@@ -7,8 +7,8 @@ import { StatsBadge, getBadgeType } from 'common/listings/newsletter_stats/stats
 import { NewsletterType } from './newsletter_type';
 
 type Props = {
-  newsletter: NewsletterType
-  isWoocommerceActive: boolean
+  newsletter: NewsletterType;
+  isWoocommerceActive: boolean;
 }
 
 const minNewslettersSent = 20;
