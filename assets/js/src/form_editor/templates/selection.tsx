@@ -80,7 +80,7 @@ export default () => {
             active={selectedCategory}
             onSelect={selectCategory}
           />
-          {templates[selectedCategory].map((template, index) => (
+          {templates[selectedCategory].map((template) => (
             <TemplateBox
               key={template.id}
               onSelect={() => selectTemplate(template.id, template.name)}

@@ -1,5 +1,4 @@
 import React from 'react';
-import { action } from '_storybook/action';
 import Select from '../select';
 import Heading from '../../../typography/heading/heading';
 import icon from './assets/icon';

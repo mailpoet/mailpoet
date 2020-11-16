@@ -3,7 +3,7 @@ import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { curry } from 'lodash';
-import { assocPath, compose, __ } from 'lodash/fp';
+import { assocPath } from 'lodash/fp';
 import { TextareaControl } from '@wordpress/components';
 import { SizeSettings } from 'form_editor/components/size_settings';
 

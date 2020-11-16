@@ -1,5 +1,4 @@
 import React from 'react';
-import { addHours, subHours } from 'date-fns';
 import MailPoet from 'mailpoet';
 import NewsletterStats from '../newsletter_stats';
 import Heading from '../../typography/heading/heading';

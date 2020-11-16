@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactStringReplace from 'react-string-replace';
 
-import { t, onChange } from 'common/functions';
+import { t } from 'common/functions';
 import Radio from 'common/form/radio/radio';
 import { Label, Inputs } from 'settings/components';
 import { useSetting, useSelector } from 'settings/store/hooks';
