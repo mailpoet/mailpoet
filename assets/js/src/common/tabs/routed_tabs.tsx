@@ -8,6 +8,7 @@ import {
   useHistory,
   useRouteMatch,
 } from 'react-router-dom';
+import { noop } from 'lodash';
 
 import Tabs, { Props as TabProps } from './tabs';
 
@@ -48,7 +49,7 @@ const RoutedTabs = ({
   routerType = 'hash',
   routerPrefix = '/',
   activeKey,
-  onSwitch = () => {},
+  onSwitch = noop,
   automationId = null,
   children,
 }: Props) => {

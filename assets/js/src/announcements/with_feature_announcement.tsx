@@ -2,6 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import jQuery from 'jquery';
+import { noop } from 'lodash';
 
 export const withFeatureAnnouncement = <P extends object>(
   Component: React.ComponentType<P>
@@ -67,7 +68,7 @@ export const withFeatureAnnouncement = <P extends object>(
       return;
     }
     showDot = false;
-    beamerCallback = () => {}; // We show Beamer panel only on first callback after initialization
+    beamerCallback = noop; // We show Beamer panel only on first callback after initialization
     MailPoet.Modal.loading(false);
     (window as any).Beamer.show();
     updateLastAnnouncementSeenValue();

@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import SetFromAddressModal from 'common/set_from_address_modal';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
+import { noop } from 'lodash';
 
 type Props = {
   onRequestClose?: () => void;
@@ -36,7 +37,7 @@ const App = ({ onRequestClose }: Props) => {
 };
 
 App.defaultProps = {
-  onRequestClose: () => {},
+  onRequestClose: noop,
 };
 
 // nothing is actually rendered to the container because the <Modal> component uses
