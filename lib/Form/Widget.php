@@ -215,7 +215,7 @@ class Widget extends \WP_Widget {
     $body = (isset($form['body']) ? $form['body'] : []);
     $output = '';
 
-    if (!empty($body)) {
+    if (!empty($body) && isset($form['settings']) && is_array($form['settings'])) {
       $formId = $this->id_base . '_' . $form['id']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       $data = [
         'form_html_id' => $formId,

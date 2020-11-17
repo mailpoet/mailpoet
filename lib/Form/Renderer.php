@@ -45,7 +45,7 @@ class Renderer {
   }
 
   public function renderHTML(array $form = []): string {
-    if (isset($form['body']) && !empty($form['body'])) {
+    if (isset($form['body']) && !empty($form['body']) && is_array($form['settings'])) {
       return $this->renderBlocks($form['body'], $form['settings'] ?? []);
     }
     return '';
