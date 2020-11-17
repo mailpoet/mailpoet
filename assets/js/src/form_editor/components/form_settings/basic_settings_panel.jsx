@@ -12,6 +12,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import { isEqual } from 'lodash';
 import Selection from './selection.jsx';
 import FormTitle from '../form_title';
 
@@ -43,6 +44,12 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
   const { changeFormSettings, toggleForm } = useDispatch('mailpoet-form-editor');
 
   const onSegmentsChange = (e) => {
+    // We don't want to update state when is same
+    // It's a workaround because selection.jsx call handleChange,
+    // when segments are restored from history
+    if (isEqual(settings.segments, e.target.value)) {
+      return;
+    }
     changeFormSettings({
       ...settings,
       segments: e.target.value,
