@@ -53,6 +53,7 @@ export const NewsletterGeneralStats = ({
           stat="opened"
           rate={percentageOpened}
           tooltipId={`opened-${newsletter.id || '0'}`}
+          tooltipPlace="right"
         />
       )}
     </>
@@ -84,6 +85,7 @@ export const NewsletterGeneralStats = ({
           stat="clicked"
           rate={percentageClicked}
           tooltipId={`clicked-${newsletter.id || '0'}`}
+          tooltipPlace="right"
         />
       )}
     </>
