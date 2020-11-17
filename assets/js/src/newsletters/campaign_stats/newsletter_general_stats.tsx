@@ -128,7 +128,6 @@ export const NewsletterGeneralStats = ({
           target="_blank"
           rel="noopener noreferrer"
           data-beacon-article="58f671152c7d3a057f8858e8"
-          className="mailpoet-stats-general-read-more-link"
         >
           {MailPoet.I18n.t('readMoreOnStats')}
         </a>

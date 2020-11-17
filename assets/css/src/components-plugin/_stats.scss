@@ -49,11 +49,13 @@
 }
 
 .mailpoet-stats-general-read-more {
-  .mailpoet-stats-general-read-more-link {
-    color: $color-text-light;
-  }
+  font-weight: bold;
   margin-bottom: 0;
   text-align: right;
+
+  a {
+    color: $color-text-light;
+  }
 }
 
 .mailpoet-statistics-value-small {
