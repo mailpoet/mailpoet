@@ -1,4 +1,5 @@
 import React from 'react';
+import { Place } from 'react-tooltip';
 import Tag from '../../tag/tag';
 import Tooltip from '../../tooltip/tooltip';
 
@@ -6,6 +7,7 @@ type BadgeProps = {
   name: string;
   tooltip?: string | React.ReactNode;
   tooltipId?: string;
+  tooltipPlace?: Place,
   type?: 'average' | 'good' | 'excellent';
   isInverted?: boolean;
 }
@@ -14,6 +16,7 @@ function Badge({
   name,
   tooltip,
   tooltipId,
+  tooltipPlace,
   type,
   isInverted,
 }: BadgeProps) {
@@ -29,7 +32,7 @@ function Badge({
       </Tag>
       { tooltip && (
         <Tooltip
-          place="top"
+          place={tooltipPlace || 'top'}
           multiline
           id={tooltipId || tooltip.toString()}
         >

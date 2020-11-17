@@ -1,11 +1,13 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
+import { Place } from 'react-tooltip';
 import Badge from './badge';
 
 type StatsBadgeProps = {
   stat: string;
   rate: number;
   tooltipId?: string;
+  tooltipPlace?: Place,
   isInverted?: boolean;
 }
 
@@ -122,6 +124,7 @@ export const StatsBadge = (props: StatsBadgeProps) => {
       name={badge.name}
       tooltip={tooltipText}
       tooltipId={tooltipId}
+      tooltipPlace={props.tooltipPlace}
     />
   );
 
