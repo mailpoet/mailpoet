@@ -109,3 +109,42 @@
 .mailpoet-stat-subscriber-engagement .mailpoet-premium-required {
   margin: 70px auto;
 }
+
+.mailpoet-stats-products {
+  display: grid;
+  grid-gap: $grid-gap;
+  grid-template-columns: 1fr 1fr;
+}
+
+.mailpoet-stats-product {
+  background: #fff;
+  border: 1px solid $color-tertiary-light;
+  border-radius: $form-control-border-radius;
+  display: grid;
+  grid-gap: $grid-gap;
+  grid-template-columns: 176px 1fr;
+  height: 136px;
+}
+
+.mailpoet-stats-product-image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.mailpoet-stats-product-info {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .mailpoet-h5 {
+    font-weight: bold;
+    margin: 0 0 $grid-gap;
+  }
+
+  p {
+    font-size: $font-size-small;
+    margin: 0;
+  }
+}
