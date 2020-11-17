@@ -16,7 +16,7 @@ export const NewsletterStatsInfo = ({
   const newsletterDate = newsletter.queue.scheduled_at || newsletter.queue.created_at;
   return (
     <Grid.ThreeColumns className="mailpoet-stats-info">
-      <div>
+      <div className="mailpoet-grid-span-two-columns">
         <Heading level={1}>{newsletter.subject}</Heading>
         <div>
           <b>
@@ -33,7 +33,6 @@ export const NewsletterStatsInfo = ({
           </div>
         )}
       </div>
-      <div />
       <div className="mailpoet-stats-info-sender-preview">
         <div>
           {newsletter.sender_address && (

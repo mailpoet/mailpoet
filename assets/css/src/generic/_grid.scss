@@ -54,3 +54,7 @@
   column-gap: $grid-gap;
   columns: 2 auto;
 }
+
+.mailpoet-grid-span-two-columns {
+  grid-column: span 2;
+}
