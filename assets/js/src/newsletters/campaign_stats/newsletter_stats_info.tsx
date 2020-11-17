@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import Heading from 'common/typography/heading/heading';
 import Grid from 'common/grid';
 import { Button } from 'common';
+import Tags from 'common/tag/tags';
 import { NewsletterType } from './newsletter_type';
 
 type Props = {
@@ -25,17 +26,10 @@ export const NewsletterStatsInfo = ({
           </b>
         </div>
         {Array.isArray(newsletter.segments) && newsletter.segments.length && (
-          <div className="mailpoet-stats-segments">
-            {MailPoet.I18n.t('statsToSegments')}
+          <div>
+            <span className="mailpoet-stats-info-key">{MailPoet.I18n.t('statsToSegments')}</span>
             {': '}
-            {newsletter.segments.map((segment) => (
-              <span
-                className="mailpoet-stats-segments-segment"
-                key={segment.name}
-              >
-                {segment.name}
-              </span>
-            ))}
+            <Tags dimension="large" segments={newsletter.segments} />
           </div>
         )}
       </div>
