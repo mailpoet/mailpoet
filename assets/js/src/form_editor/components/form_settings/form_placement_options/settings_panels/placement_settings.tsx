@@ -6,6 +6,7 @@ import {
   assocPath,
   compose,
   cond,
+  isEqual,
   identity,
   sortBy,
 } from 'lodash/fp';
@@ -87,6 +88,10 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
               id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].pages.selected.join()}`,
             }}
             onValueChange={(e) => {
+              const selected = formSettings.formPlacement[settingsPlacementKey].pages.selected;
+              if (isEqual(selected, e.target.value)) {
+                return;
+              }
               compose([
                 changeFormSettings,
                 assocPath(`formPlacement.${settingsPlacementKey}.pages.selected`, e.target.value),
@@ -139,6 +144,10 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
             id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].posts.selected.join()}`,
           }}
           onValueChange={(e) => {
+            const selected = formSettings.formPlacement[settingsPlacementKey].posts.selected;
+            if (isEqual(selected, e.target.value)) {
+              return;
+            }
             compose([
               changeFormSettings,
               assocPath(`formPlacement.${settingsPlacementKey}.posts.selected`, e.target.value),
@@ -171,6 +180,10 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
               id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].categories.join()}`,
             }}
             onValueChange={(e) => {
+              const selected = formSettings.formPlacement[settingsPlacementKey].categories;
+              if (isEqual(selected, e.target.value)) {
+                return;
+              }
               compose([
                 changeFormSettings,
                 assocPath(`formPlacement.${settingsPlacementKey}.categories`, e.target.value),
@@ -207,6 +220,10 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
               id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].tags.join()}`,
             }}
             onValueChange={(e) => {
+              const selected = formSettings.formPlacement[settingsPlacementKey].tags;
+              if (isEqual(selected, e.target.value)) {
+                return;
+              }
               compose([
                 changeFormSettings,
                 assocPath(`formPlacement.${settingsPlacementKey}.tags`, e.target.value),
