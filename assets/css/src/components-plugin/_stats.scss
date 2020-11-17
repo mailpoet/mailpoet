@@ -39,9 +39,9 @@
 }
 
 .mailpoet-stats-info-sender-preview {
+  align-self: flex-end;
   display: flex;
   flex-direction: row;
-  margin-top: $grid-gap-large;
 
   :first-child {
     flex-grow: 1;
