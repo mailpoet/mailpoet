@@ -35,33 +35,27 @@ export const NewsletterStatsInfo = ({
       </div>
       <div className="mailpoet-stats-info-sender-preview">
         <div>
-          {newsletter.sender_address && (
-            <div className="mailpoet-stats-info-key-value">
-              <span className="mailpoet-stats-info-key">
-                {MailPoet.I18n.t('statsFromAddress')}
-                {': '}
-              </span>
-              {newsletter.sender_address}
-            </div>
-          )}
-          {newsletter.reply_to_address && (
-            <div className="mailpoet-stats-info-key-value">
-              <span className="mailpoet-stats-info-key">
-                {MailPoet.I18n.t('statsReplyToAddress')}
-                {': '}
-              </span>
-              {newsletter.reply_to_address}
-            </div>
-          )}
-          {newsletter.ga_campaign && (
-            <div className="mailpoet-stats-info-key-value">
-              <span className="mailpoet-stats-info-key">
-                {MailPoet.I18n.t('googleAnalytics')}
-                {': '}
-              </span>
-              {newsletter.ga_campaign}
-            </div>
-          )}
+          <div className="mailpoet-stats-info-key-value">
+            <span className="mailpoet-stats-info-key">
+              {MailPoet.I18n.t('statsFromAddress')}
+              {': '}
+            </span>
+            {newsletter.sender_address ? newsletter.sender_address : '-'}
+          </div>
+          <div className="mailpoet-stats-info-key-value">
+            <span className="mailpoet-stats-info-key">
+              {MailPoet.I18n.t('statsReplyToAddress')}
+              {': '}
+            </span>
+            {newsletter.reply_to_address ? newsletter.reply_to_address : '-'}
+          </div>
+          <div className="mailpoet-stats-info-key-value">
+            <span className="mailpoet-stats-info-key">
+              {MailPoet.I18n.t('googleAnalytics')}
+              {': '}
+            </span>
+            {newsletter.ga_campaign ? newsletter.ga_campaign : '-'}
+          </div>
         </div>
         <div>
           <Button
