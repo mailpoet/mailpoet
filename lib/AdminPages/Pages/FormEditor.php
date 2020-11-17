@@ -211,11 +211,7 @@ class FormEditor {
     if (isset($_GET['action']) && $_GET['action'] === 'create') {
       $this->createForm();
     }
-    $form = Form::findOne((int)$_GET['id']);
-    if ($form instanceof Form) {
-      $form = $form->asArray();
-    }
-    $form['styles'] = $this->formRenderer->getCustomStyles($form);
+    $form = $this->getFormData((int)$_GET['id']);
     $customFields = $this->customFieldsRepository->findAll();
     $dateTypes = $this->dateBlock->getDateTypes();
     $data = [
@@ -335,6 +331,21 @@ class FormEditor {
       }
     }
     return $translations;
+  }
+
+  private function getFormData(int $id) {
+    $form = Form::findOne($id);
+    if (!$form instanceof Form) {
+      return null;
+    }
+    $form = $form->asArray();
+    $form['styles'] = $this->formRenderer->getCustomStyles($form);
+    // Use empty settings in case they are corrupted or missing
+    if (!is_array($form['settings'])) {
+      $initialFormTemplate = $this->templatesRepository->getFormTemplate(TemplateRepository::INITIAL_FORM_TEMPLATE);
+      $form['settings'] = $initialFormTemplate->getSettings();
+    }
+    return $form;
   }
 
   private function getAllPosts() {
