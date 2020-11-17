@@ -128,6 +128,15 @@ div.mailpoet-listing-bulk-actions-container {
     width: calc(100% + 2 * #{$grid-gap});
   }
 
+  .mailpoet-listing-no-space & {
+    border-top: 0;
+    margin: -$grid-gap;
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+  }
+
   a {
     text-decoration: none;
   }
