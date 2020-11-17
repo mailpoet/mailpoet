@@ -7,7 +7,7 @@ type StatsBadgeProps = {
   stat: string;
   rate: number;
   tooltipId?: string;
-  tooltipPlace?: Place,
+  tooltipPlace?: Place;
   isInverted?: boolean;
 }
 
