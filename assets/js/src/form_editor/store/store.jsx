@@ -50,6 +50,8 @@ export default () => {
   }
 
   const defaultState = {
+    editorHistory: [],
+    editorHistoryOffset: 0,
     formBlocks,
     formData: mapFormDataAfterLoading(formData),
     dateSettingData,

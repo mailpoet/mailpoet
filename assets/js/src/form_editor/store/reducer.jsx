@@ -35,6 +35,10 @@ import {
   enableForm,
 } from './reducers/toggle_form';
 import toggleFullscreen from './reducers/toggle_fullscreen';
+import {
+  createHistoryRecord,
+  historyMove,
+} from './reducers/history_record';
 
 const createCustomFieldStarted = createCustomFieldStartedFactory(MailPoet);
 const saveFormStarted = saveFormStartedFactory(MailPoet);
@@ -71,6 +75,8 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'DELETE_CUSTOM_FIELD_DONE': return customFieldDeleteDone(state, action);
     case 'DELETE_CUSTOM_FIELD_FAILED': return customFieldDeleteFailed(state, action);
     case 'CHANGE_ACTIVE_SIDEBAR': return changeActiveSidebar(state, action);
+    case 'CREATE_HISTORY_RECORD': return createHistoryRecord(state, action);
+    case 'HISTORY_MOVE': return historyMove(state, action);
     default:
       return state;
   }
