@@ -119,9 +119,7 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
 
         <Tabs activeKey="clicked">
           <Tab key="clicked" title={MailPoet.I18n.t('clickedLinks')}>
-            <div className="mailpoet_stat_triple-spaced">
-              {Hooks.applyFilters('mailpoet_newsletters_clicked_links_table', <PremiumBanner />, newsletter.clicked_links)}
-            </div>
+            {Hooks.applyFilters('mailpoet_newsletters_clicked_links_table', <PremiumBanner />, newsletter.clicked_links)}
           </Tab>
 
           {Hooks.applyFilters('mailpoet_newsletters_purchased_products', null, newsletter)}
