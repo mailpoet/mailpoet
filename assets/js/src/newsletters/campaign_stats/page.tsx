@@ -5,12 +5,14 @@ import { withRouter } from 'react-router-dom';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
+import Tabs from 'common/tabs/tabs';
+import Tab from 'common/tabs/tab';
+import Heading from 'common/typography/heading/heading';
 
 import { NewsletterGeneralStats } from './newsletter_general_stats';
 import { NewsletterType } from './newsletter_type';
 import { NewsletterStatsInfo } from './newsletter_stats_info';
 import PremiumBanner from './premium_banner.jsx';
-import Heading from '../../common/typography/heading/heading';
 
 type Props = {
   match: {
@@ -113,20 +115,21 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
           isWoocommerceActive={MailPoet.isWoocommerceActive}
         />
 
-        <h2>{MailPoet.I18n.t('clickedLinks')}</h2>
+        <Tabs activeKey="clicked">
+          <Tab key="clicked" title={MailPoet.I18n.t('clickedLinks')}>
+            <div className="mailpoet_stat_triple-spaced">
+              {Hooks.applyFilters('mailpoet_newsletters_clicked_links_table', <PremiumBanner />, newsletter.clicked_links)}
+            </div>
+          </Tab>
 
-        <div className="mailpoet_stat_triple-spaced">
-          {Hooks.applyFilters('mailpoet_newsletters_clicked_links_table', <PremiumBanner />, newsletter.clicked_links)}
-        </div>
-
-        <div className="mailpoet_stat_triple-spaced">
           {Hooks.applyFilters('mailpoet_newsletters_purchased_products', null, newsletter)}
-        </div>
 
-        <h2>{MailPoet.I18n.t('subscriberEngagement')}</h2>
-        <div className="mailpoet-stat-subscriber-engagement">
-          {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
-        </div>
+          <Tab key="engagement" title={MailPoet.I18n.t('subscriberEngagement')}>
+            <div className="mailpoet-stat-subscriber-engagement">
+              {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
+            </div>
+          </Tab>
+        </Tabs>
       </div>
     </>
   );
