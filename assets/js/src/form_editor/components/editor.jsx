@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '@wordpress/core-data';
-import { select, useSelect, useDispatch } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import {
   DropZoneProvider,
   Popover,
@@ -44,6 +44,11 @@ export default () => {
     (sel) => sel('mailpoet-form-editor').getSidebarOpened(),
     []
   );
+  const formBlocks = useSelect(
+    (sel) => sel('mailpoet-form-editor').getFormBlocks(),
+    []
+  );
+
   const canUserUpload = useSelect(
     (sel) => sel('core').canUser('create', 'media'),
     []
@@ -102,7 +107,7 @@ export default () => {
             </div>
             <div className="interface-interface-skeleton__body">
               <BlockEditorProvider
-                value={select('mailpoet-form-editor').getFormBlocks()}
+                value={formBlocks}
                 onInput={blocksChangedInBlockEditor}
                 onChange={blocksChangedInBlockEditor}
                 settings={editorSettings}
