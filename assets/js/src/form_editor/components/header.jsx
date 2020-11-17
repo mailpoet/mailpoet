@@ -14,6 +14,8 @@ import { __, _x } from '@wordpress/i18n';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import FeatureToggle from './feature_toggle';
+import HistoryUndo from './history_undo';
+import HistoryRedo from './history_redo';
 
 const Header = ({ isInserterOpened, setIsInserterOpened }) => {
   const sidebarOpened = useSelect(
@@ -89,7 +91,7 @@ const Header = ({ isInserterOpened, setIsInserterOpened }) => {
         </DropdownMenu>
       </div>
       <div className="edit-post-header__toolbar">
-        <div className="toolbar">
+        <div className="toolbar edit-post-header-toolbar">
           <Button
             isSecondary
             href="?page=mailpoet-forms#/"
@@ -110,6 +112,8 @@ const Header = ({ isInserterOpened, setIsInserterOpened }) => {
               'Generic label for block inserter button'
             )}
           />
+          <HistoryUndo />
+          <HistoryRedo />
         </div>
       </div>
     </div>
