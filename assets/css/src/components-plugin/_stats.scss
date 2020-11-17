@@ -10,20 +10,24 @@
   }
 }
 
-.mailpoet-stats-info {
-  border-bottom: 1px solid $color-tertiary-light;
-}
-
 .mailpoet-stats-info,
 .mailpoet-stats-general {
   background-color: $color-white;
   margin: 0;
-  padding: 0 $grid-gap $grid-gap;
+  padding: $grid-gap;
+}
+
+.mailpoet-stats-info {
+  border-bottom: 1px solid $color-tertiary-light;
+  line-height: 24px;
+
+  .mailpoet-h1 {
+    margin-top: $grid-gap-half;
+  }
 }
 
 .mailpoet-stats-general {
   font-size: $font-size;
-  padding-top: $grid-gap;
 }
 
 .mailpoet-stats-general-top-row {
