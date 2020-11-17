@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.5
-Stable tag: 3.54.2
+Stable tag: 3.54.3
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.54.3 - 2020-11-17 =
+* Added: button to WooCommerce Email Customizer in WooCommerce Emails settings;
+* Improved: form's success message design;
+* Fixed: showing "Not sent yet" for sent emails in Safari;
+* Fixed: various UI issues;
+* Fixed: subscribers import issue;
+* Fixed: short email templates names.
 
 = 3.54.2 - 2020-11-10 =
 * Improved: fullscreen option added to the form editor;
