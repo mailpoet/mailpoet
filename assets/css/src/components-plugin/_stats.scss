@@ -8,6 +8,22 @@
   .mailpoet-tabs {
     margin: $grid-gap;
   }
+
+  @include respond-to(small-screen) {
+    margin-left: -10px;
+
+    .mailpoet-listing-table {
+      tr {
+        padding-bottom: 5px;
+      }
+
+      td {
+        float: none !important;
+        padding: 5px 10px !important;
+        text-align: left !important;
+      }
+    }
+  }
 }
 
 .mailpoet-stats-info,
@@ -28,6 +44,12 @@
 
 .mailpoet-stats-general {
   font-size: $font-size;
+
+  .mailpoet-grid-three-columns {
+    @include respond-to(small-screen) {
+      border-bottom: 1px solid $color-tertiary-light;
+    }
+  }
 }
 
 .mailpoet-stats-general-top-row {
@@ -92,6 +114,13 @@
 .mailpoet-statistics-with-left-separator {
   border-left: solid 1px $color-tertiary-light;
   padding-left: $grid-gap;
+
+  @include respond-to(small-screen) {
+    border-left: 0;
+    border-top: solid 1px $color-tertiary-light;
+    padding-left: 0;
+    padding-top: $grid-gap;
+  }
 }
 
 .mailpoet_stat_triple-spaced {
@@ -107,6 +136,11 @@
   display: grid;
   grid-gap: $grid-gap;
   grid-template-columns: 1fr 1fr;
+
+  @include respond-to(small-screen) {
+    grid-template-columns: 1fr;
+    padding-top: $grid-gap;
+  }
 }
 
 .mailpoet-stats-product {
@@ -117,12 +151,21 @@
   grid-gap: $grid-gap;
   grid-template-columns: 176px 1fr;
   height: 136px;
+
+  @include respond-to(small-screen) {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
 }
 
 .mailpoet-stats-product-image {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
+
+  @include respond-to(small-screen) {
+    height: 136px;
+  }
 }
 
 .mailpoet-stats-product-info {
@@ -139,5 +182,9 @@
   p {
     font-size: $font-size-small;
     margin: 0;
+  }
+
+  @include respond-to(small-screen) {
+    padding: 0 $grid-gap $grid-gap;
   }
 }
