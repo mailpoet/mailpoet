@@ -26,6 +26,17 @@ class Selection extends React.Component {
         .trigger('change');
     }
 
+    if (
+      (this.props.item !== undefined && prevProps.item !== undefined)
+      && this.allowMultipleValues()
+      && _.isArray(this.props.item[this.props.field.name])
+      && !_.isEqual(this.props.item[this.props.field.name], prevProps.item[this.props.field.name])
+    ) {
+      jQuery(`#${this.selectRef.current.id}`)
+        .val(this.getSelectedValues())
+        .trigger('change');
+    }
+
     if (this.isSelect2Initialized()
       && (this.getFieldId(this.props) !== this.getFieldId(prevProps))
       && this.props.field.resetSelect2OnUpdate !== undefined
