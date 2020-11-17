@@ -187,4 +187,18 @@ export default {
       return result;
     }, null);
   },
+  getEditorHistoryOffset(state) {
+    return state.editorHistoryOffset;
+  },
+  hasEditorUndo(state) {
+    let offset = state.editorHistoryOffset;
+    if (state.editorHistory.length > 1) {
+      offset = state.editorHistoryOffset + 1;
+    }
+
+    return state.editorHistory.length > 0 && offset < state.editorHistory.length;
+  },
+  hasEditorRedo(state) {
+    return state.editorHistoryOffset > 0;
+  },
 };

@@ -33,15 +33,21 @@ export function* toggleFullscreen(toggleTo) {
   };
 }
 
-export function changeFormBlocks(blocks) {
-  return {
+export function* changeFormBlocks(blocks) {
+  yield {
+    type: 'CREATE_HISTORY_RECORD',
+  };
+  yield {
     type: 'CHANGE_FORM_BLOCKS',
     blocks,
   };
 }
 
-export function changeFormName(name) {
-  return {
+export function* changeFormName(name) {
+  yield {
+    type: 'CREATE_HISTORY_RECORD',
+  };
+  yield {
     type: 'CHANGE_FORM_NAME',
     name,
   };
@@ -67,8 +73,11 @@ export function deleteCustomFieldFailed(message = undefined) {
     message,
   };
 }
-export function changeFormStyles(styles) {
-  return {
+export function* changeFormStyles(styles) {
+  yield {
+    type: 'CREATE_HISTORY_RECORD',
+  };
+  yield {
     type: 'CHANGE_FORM_STYLES',
     styles,
   };
@@ -122,8 +131,11 @@ export function createCustomFieldFailed(message = undefined) {
   };
 }
 
-export function changeFormSettings(settings) {
-  return {
+export function* changeFormSettings(settings) {
+  yield {
+    type: 'CREATE_HISTORY_RECORD',
+  };
+  yield {
     type: 'CHANGE_FORM_SETTINGS',
     settings,
   };
@@ -293,5 +305,25 @@ export function* applyStylesToAllTextInputs(styles) {
   yield {
     type: 'APPLY_STYLES_TO_ALL_TEXT_INPUTS',
     styles,
+  };
+}
+
+export function createHistoryRecord() {
+  return {
+    type: 'CREATE_HISTORY_RECORD',
+  };
+}
+
+export function* historyMove(action) {
+  const editorHistoryOffset = select('mailpoet-form-editor').getEditorHistoryOffset();
+  if (editorHistoryOffset === 0) {
+    yield {
+      type: 'CREATE_HISTORY_RECORD',
+      action,
+    };
+  }
+  yield {
+    type: 'HISTORY_MOVE',
+    action,
   };
 }
