@@ -64,6 +64,10 @@
   &:not(.mailpoet-full-width) + .mailpoet-button:not(.mailpoet-full-width) {
     margin-left: $grid-gap;
   }
+
+  &.mailpoet-min-width {
+    max-width: $grid-column;
+  }
 }
 
 .mailpoet-form-input-small {
@@ -80,5 +84,9 @@
   svg {
     height: $form-control-icon-small;
     width: $form-control-icon-small;
+  }
+
+  &.mailpoet-min-width {
+    max-width: $grid-column-small;
   }
 }
