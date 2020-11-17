@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
+import RemoveWrapMargin from 'common/remove_wrap_margin/remove_wrap_margin';
 import Tabs from 'common/tabs/tabs';
 import Tab from 'common/tabs/tab';
 import Heading from 'common/typography/heading/heading';
@@ -100,6 +101,7 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
   return (
     <>
       <HideScreenOptions />
+      <RemoveWrapMargin />
       <TopBarWithBeamer />
 
       <div className="mailpoet-stats-page">

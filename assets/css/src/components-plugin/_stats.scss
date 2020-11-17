@@ -3,7 +3,11 @@
   font-family: $font-family;
   font-size: $font-size-small;
   line-height: $line-height;
-  margin-right: -10px;
+  margin-left: -20px;
+
+  .mailpoet-tabs {
+    margin: $grid-gap;
+  }
 }
 
 .mailpoet-stats-info {
@@ -15,7 +19,6 @@
   background-color: $color-white;
   margin: 0;
   padding: 0 $grid-gap $grid-gap;
-  width: 100%;
 }
 
 .mailpoet-stats-general {
@@ -105,10 +108,4 @@
 .mailpoet_stat_triple-spaced .mailpoet-premium-required,
 .mailpoet-stat-subscriber-engagement .mailpoet-premium-required {
   margin: 70px auto;
-}
-
-.wrap .mailpoet-stats-info,
-.wrap .mailpoet-stats-general {
-  margin-left: -20px;
-  margin-right: -20px;
 }
