@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import codemirror from 'codemirror';
 import 'codemirror/mode/css/css'; // Side effect
 import PropTypes from 'prop-types';
@@ -7,15 +7,27 @@ const CodemirrorWrap = ({ options, value, onChange }) => {
   const textArea = useRef(null);
   const editor = useRef(null);
 
+  const changeEvent = useCallback((doc) => {
+    onChange(doc.getValue());
+  }, [onChange]);
+
   useEffect(() => {
     editor.current = codemirror.fromTextArea(textArea.current, options);
-    editor.current.on('change', (doc) => onChange(doc.getValue()));
+    editor.current.on('change', changeEvent);
     return () => {
       if (editor.current) {
         editor.current.toTextArea();
       }
     };
-  }, [options, onChange]);
+  }, [options, changeEvent]);
+
+  useEffect(() => {
+    if (editor.current.getValue() !== value) {
+      editor.current.off('change', changeEvent);
+      editor.current.setValue(value);
+      editor.current.on('change', changeEvent);
+    }
+  }, [value, changeEvent]);
 
   return (
     <textarea

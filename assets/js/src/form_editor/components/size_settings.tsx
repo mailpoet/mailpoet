@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RangeControl, RadioControl } from '@wordpress/components';
 
 export type SizeDefinition = {
@@ -30,6 +30,11 @@ export const SizeSettings = ({
   onChange,
 }: Props) => {
   const [localValue, setLocalValue] = useState(value ?? { unit: 'pixel', value: undefined });
+
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
   return (
     <div className="mailpoet-size-settings-control">
       <h3 className="mailpoet-styles-settings-heading">{label}</h3>
