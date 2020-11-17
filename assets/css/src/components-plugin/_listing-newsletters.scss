@@ -255,12 +255,19 @@ h1.title.mailpoet-newsletter-listing-heading {
 
 .mailpoet-listing-stats-tooltip-title {
   font-size: $font-size-extra-small;
+  font-weight: bold;
   text-align: center;
 }
 
 .mailpoet-listing-stats-tooltip-content {
   font-size: $font-size-extra-small;
   font-weight: normal;
+
+  .mailpoet-tag {
+    margin-top: 3px;
+    min-width: 60px;
+    text-align: center;
+  }
 }
 
 .mailpoet-listing-stats-description {
