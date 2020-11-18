@@ -43,19 +43,15 @@ class FormEditorAddListSelectionCest {
 
     // Reload the page and check that data were saved
     $i->reloadPage();
-    $this->checkListSelectionInForm($i);
+    $i->waitForElement('[data-automation-id="mailpoet_list_selection_block"]');
+    $i->click('[data-automation-id="mailpoet_list_selection_block"]');
+    $i->seeInField('[data-automation-id="settings_first_name_label_input"]', 'Choose your list:');
+    $i->waitForText($secondSegmentName);
 
     // Go back to the forms list and verify the attached list
     $i->amOnMailpoetPage('Forms');
     $i->waitForText($formName);
     $i->waitForText('User choice:');
     $i->waitForText($secondSegmentName);
-  }
-
-  private function checkListSelectionInForm($i) {
-    $i->waitForElement('[data-automation-id="mailpoet_list_selection_block"]');
-    $i->click('[data-automation-id="mailpoet_list_selection_block"]');
-    $i->seeInField('[data-automation-id="settings_first_name_label_input"]', 'Choose your list:');
-    $i->seeOptionIsSelected('[data-automation-id="select_list_selections_list"]', $secondSegmentName);
   }
 }
