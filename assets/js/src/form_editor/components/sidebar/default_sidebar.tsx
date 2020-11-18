@@ -40,6 +40,7 @@ export default ({ onClose }: Props) => {
             <button
               onClick={() => switchDefaultSidebarTab('form')}
               className={classnames('components-button edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'form' })}
+              data-automation-id="mailpoet_form_settings_tab"
               type="button"
             >
               {MailPoet.I18n.t('form')}
@@ -49,6 +50,7 @@ export default ({ onClose }: Props) => {
             <button
               onClick={() => switchDefaultSidebarTab('block')}
               className={classnames('components-button edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'block' })}
+              data-automation-id="mailpoet_block_settings_tab"
               type="button"
             >
               {__('Block')}
