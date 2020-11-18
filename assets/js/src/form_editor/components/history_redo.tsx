@@ -9,9 +9,9 @@ function HistoryRedo(props) {
     (select) => select('mailpoet-form-editor').hasEditorRedo(),
     []
   );
-  const { historyMove } = useDispatch('mailpoet-form-editor');
+  const { historyRedo } = useDispatch('mailpoet-form-editor');
   const redoAction = () => {
-    historyMove('redo');
+    historyRedo();
   };
   return (
     <Button

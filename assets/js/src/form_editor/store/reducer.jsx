@@ -37,13 +37,14 @@ import {
 import toggleFullscreen from './reducers/toggle_fullscreen';
 import {
   createHistoryRecord,
-  historyMove,
+  historyUndo,
+  historyRedo,
 } from './reducers/history_record';
 
 const createCustomFieldStarted = createCustomFieldStartedFactory(MailPoet);
 const saveFormStarted = saveFormStartedFactory(MailPoet);
 
-export default (defaultState) => (state = defaultState, action) => {
+const mainReducer = (state, action) => {
   switch (action.type) {
     case 'ENABLE_FORM': return enableForm(state);
     case 'DISABLE_FORM': return disableForm(state);
@@ -75,9 +76,27 @@ export default (defaultState) => (state = defaultState, action) => {
     case 'DELETE_CUSTOM_FIELD_DONE': return customFieldDeleteDone(state, action);
     case 'DELETE_CUSTOM_FIELD_FAILED': return customFieldDeleteFailed(state, action);
     case 'CHANGE_ACTIVE_SIDEBAR': return changeActiveSidebar(state, action);
-    case 'CREATE_HISTORY_RECORD': return createHistoryRecord(state, action);
-    case 'HISTORY_MOVE': return historyMove(state, action);
+    case 'HISTORY_UNDO': return historyUndo(state);
+    case 'HISTORY_REDO': return historyRedo(state);
     default:
       return state;
   }
+};
+
+const undoRedoReducer = (state, action) => {
+  if (
+    action.type === 'CHANGE_FORM_BLOCKS'
+    || action.type === 'CHANGE_FORM_NAME'
+    || action.type === 'CHANGE_FORM_SETTINGS'
+    || action.type === 'CHANGE_FORM_STYLES'
+  ) {
+    return createHistoryRecord(state);
+  }
+
+  return state;
+};
+
+export default (defaultState) => (state = defaultState, action) => {
+  const stateAfterUndo = undoRedoReducer(state, action);
+  return mainReducer(stateAfterUndo, action);
 };

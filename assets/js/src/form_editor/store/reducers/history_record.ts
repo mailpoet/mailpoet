@@ -54,14 +54,15 @@ export const createHistoryRecord = (state) => {
   };
 };
 
-export const historyMove = (state, action) => {
+const historyMove = (state, increment: number) => {
   let offset = state.editorHistoryOffset;
 
-  if (action.action === 'undo') {
-    offset += 1;
-  } else if (action.action === 'redo') {
-    offset -= 1;
+  // When we move undo, then we need save current state as last record in history
+  if (offset === 0) {
+    createHistoryRecord(state);
   }
+
+  offset += increment;
 
   const index = state.editorHistory.length - (offset + 1);
   let formBlocksHistory;
@@ -81,3 +82,8 @@ export const historyMove = (state, action) => {
     formData: formDataHistory,
   };
 };
+
+
+export const historyUndo = (state) => (historyMove(state, 1));
+
+export const historyRedo = (state) => (historyMove(state, -1));
