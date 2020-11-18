@@ -39,6 +39,7 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
 
   return (
     <ParagraphEdit className={attributes.className}>
+      <div data-automation-id="mailpoet_list_selection_block">
       <Settings
         label={attributes.label}
         onLabelChanged={(label) => (setAttributes({ label }))}
@@ -55,6 +56,7 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
         {attributes.label}
       </span>
       {renderValues()}
+      </div>
     </ParagraphEdit>
   );
 };

@@ -73,6 +73,7 @@ const SegmentSelectSettings = ({
             {segmentsListToBeAdded.length ? (
               <SelectControl
                 label={`${MailPoet.I18n.t('blockSegmentSelectListLabel')}:`}
+                data-automation-id="select_list_selections_list"
                 options={[
                   {
                     label: MailPoet.I18n.t('settingsPleaseSelectList'),
