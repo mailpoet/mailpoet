@@ -83,7 +83,7 @@ const CustomRadioEdit = ({ attributes, setAttributes, clientId }) => {
   return (
     <ParagraphEdit className={attributes.className}>
       {inspectorControls}
-      <span className="mailpoet_radio_label">{getLabel()}</span>
+      <span className="mailpoet_radio_label" data-automation-id="editor_custom_field_radio_buttons_block">{getLabel()}</span>
       {Array.isArray(attributes.values) && attributes.values.map((value) => (
         <div key={value.id}>
           <label>

@@ -51,6 +51,7 @@ const CustomFieldSettings = ({
     return (
       <SelectControl
         label={MailPoet.I18n.t('customFieldDateFormat')}
+        data-automation-id="settings_custom_date_order"
         value={localDateFormat}
         onChange={(value) => setLocalDateFormat(value)}
         options={dateFormats.map((format) => ({
@@ -75,6 +76,7 @@ const CustomFieldSettings = ({
       />
       <SelectControl
         label={MailPoet.I18n.t('customFieldDateType')}
+        data-automation-id="settings_custom_date_type"
         value={localDateType}
         onChange={(value) => {
           setLocalDateType(value);

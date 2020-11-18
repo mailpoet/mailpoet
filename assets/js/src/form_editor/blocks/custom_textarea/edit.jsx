@@ -84,6 +84,7 @@ const CustomTextAreaEdit = ({
           />
           <SelectControl
             label={`${MailPoet.I18n.t('customFieldNumberOfLines')}:`}
+            data-automation-id="settings_custom_text_area_number_of_lines"
             value={attributes.lines}
             options={[
               {

@@ -45,6 +45,7 @@ const CustomFieldSettings = ({
       />
       <SelectControl
         label={`${MailPoet.I18n.t('customFieldValidateFor')}:`}
+        data-automation-id="settings_custom_text_input_validation_type"
         options={[
           {
             label: MailPoet.I18n.t('customFieldValidateNothing'),
