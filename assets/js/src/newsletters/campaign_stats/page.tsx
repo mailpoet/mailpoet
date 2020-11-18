@@ -125,9 +125,7 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
           {Hooks.applyFilters('mailpoet_newsletters_purchased_products', null, newsletter)}
 
           <Tab key="engagement" title={MailPoet.I18n.t('subscriberEngagement')}>
-            <div className="mailpoet-stat-subscriber-engagement">
-              {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
-            </div>
+            {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
           </Tab>
         </Tabs>
       </div>
