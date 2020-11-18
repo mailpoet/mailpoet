@@ -86,7 +86,7 @@ class FormEditorCreateCustomFieldCest {
     // Reload page and check data were saved
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="editor_custom_text_input"]');
-    $i->assertAttributeContains('[data-automation-id="editor_custom_text_input"]', 'placeholder' , 'My updated custom text input');
+    $i->assertAttributeContains('[data-automation-id="editor_custom_text_input"]', 'placeholder', 'My updated custom text input');
   }
 
   public function createCustomTextArea(\AcceptanceTester $i) {
@@ -135,7 +135,7 @@ class FormEditorCreateCustomFieldCest {
     // Reload page and check data were saved
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="editor_custom_textarea_input"]');
-    $i->assertAttributeContains('[data-automation-id="editor_custom_textarea_input"]', 'placeholder' , 'My updated custom text area');
+    $i->assertAttributeContains('[data-automation-id="editor_custom_textarea_input"]', 'placeholder', 'My updated custom text area');
     $i->click('[data-automation-id="editor_custom_textarea_input"]');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_area_number_of_lines"]', '3 lines');
   }
@@ -305,14 +305,14 @@ class FormEditorCreateCustomFieldCest {
 
   private function checkCustomTextAreaInForm($i) {
     $i->waitForElement('[data-automation-id="editor_custom_textarea_input"]');
-    $i->assertAttributeContains('[data-automation-id="editor_custom_textarea_input"]', 'placeholder' , 'My custom text area');
+    $i->assertAttributeContains('[data-automation-id="editor_custom_textarea_input"]', 'placeholder', 'My custom text area');
     $i->click('[data-automation-id="editor_custom_textarea_input"]');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
   }
 
   private function checkCustomTextInputInForm($i) {
     $i->waitForElement('[data-automation-id="editor_custom_text_input"]');
-    $i->assertAttributeContains('[data-automation-id="editor_custom_text_input"]', 'placeholder' , 'My custom text input');
+    $i->assertAttributeContains('[data-automation-id="editor_custom_text_input"]', 'placeholder', 'My custom text input');
     $i->click('[data-automation-id="editor_custom_text_input"]');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
   }
