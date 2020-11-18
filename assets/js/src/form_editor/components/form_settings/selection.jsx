@@ -26,6 +26,9 @@ class Selection extends React.Component {
         .trigger('change');
     }
 
+    // After change data in store this component didn't call trigger for change
+    // It happened only when component allowed multipleValues
+    // Following lines are modified lines on top for multipeValues
     if (
       (this.props.item !== undefined && prevProps.item !== undefined)
       && this.allowMultipleValues()
