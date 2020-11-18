@@ -26,11 +26,13 @@ const SkipDisplayingDetailedStats = () => {
   );
 
   return (
-    <PremiumRequired
-      title={MailPoet.I18n.t('premiumFeature')}
-      message={description}
-      actionButton={ctaButton}
-    />
+    <div className="mailpoet-stats-premium-required">
+      <PremiumRequired
+        title={MailPoet.I18n.t('premiumFeature')}
+        message={description}
+        actionButton={ctaButton}
+      />
+    </div>
   );
 };
 
@@ -51,19 +53,21 @@ const PremiumBanner = () => {
       : `https://account.mailpoet.com/?s=${window.mailpoet_subscribers_count + 1}`;
 
     return (
-      <PremiumRequired
-        title={title}
-        message={(<p>{youReachedTheLimit}</p>)}
-        actionButton={(
-          <Button
-            target="_blank"
-            rel="noopener noreferrer"
-            href={upgradeLink}
-          >
-            {MailPoet.I18n.t('upgradeNow')}
-          </Button>
-        )}
-      />
+      <div className="mailpoet-stats-premium-required">
+        <PremiumRequired
+          title={title}
+          message={(<p>{youReachedTheLimit}</p>)}
+          actionButton={(
+            <Button
+              target="_blank"
+              rel="noopener noreferrer"
+              href={upgradeLink}
+            >
+              {MailPoet.I18n.t('upgradeNow')}
+            </Button>
+          )}
+        />
+      </div>
     );
   }
   return null;
