@@ -187,16 +187,15 @@ export default {
       return result;
     }, null);
   },
-  getEditorHistoryOffset(state) {
-    return state.editorHistoryOffset;
-  },
   hasEditorUndo(state) {
-    let offset = state.editorHistoryOffset;
+    let length = state.editorHistory.length;
+    // We add a record with the current state at the end of the history on click,
+    // then we have to decrease the length by this record for correct behavior
     if (state.editorHistory.length > 1) {
-      offset = state.editorHistoryOffset + 1;
+      length -= 1;
     }
 
-    return state.editorHistory.length > 0 && offset < state.editorHistory.length;
+    return length > 0 && length > state.editorHistoryOffset;
   },
   hasEditorRedo(state) {
     return state.editorHistoryOffset > 0;
