@@ -114,7 +114,7 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
   return (
     <ParagraphEdit className={attributes.className}>
       {inspectorControls}
-      <span className="mailpoet_checkbox_label">{getLabel()}</span>
+      <span className="mailpoet_checkbox_label" data-automation-id="editor_custom_field_checkbox_block">{getLabel()}</span>
       <div>
         <label>
           <input
