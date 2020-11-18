@@ -9,9 +9,9 @@ function HistoryUndo(props) {
     (select) => select('mailpoet-form-editor').hasEditorUndo(),
     []
   );
-  const { historyMove } = useDispatch('mailpoet-form-editor');
+  const { historyUndo } = useDispatch('mailpoet-form-editor');
   const undoAction = () => {
-    historyMove('undo');
+    historyUndo();
   };
   return (
     <Button
