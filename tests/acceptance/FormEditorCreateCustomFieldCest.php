@@ -6,14 +6,28 @@ use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 
 class FormEditorCreateCustomFieldCest {
-  public function createCustomSelect(\AcceptanceTester $i) {
-    $i->wantTo('Create custom field: select');
+  private function prepareTheForm(\AcceptanceTester $i) {
     $segmentFactory = new Segment();
     $segmentName = 'Fancy List';
     $segment = $segmentFactory->withName($segmentName)->create();
     $formName = 'My fancy form';
     $form = new Form();
     $form->withName($formName)->withSegments([$segment])->create();
+  }
+
+  private function editTheForm($i) {
+    $formName = 'My fancy form';
+    $i->login();
+    $i->amOnMailPoetPage('Forms');
+    $i->waitForText($formName);
+    $i->clickItemRowActionByItemName($formName, 'Edit');
+    $i->waitForElement('[data-automation-id="form_title_input"]');
+  }
+
+  public function createCustomSelect(\AcceptanceTester $i) {
+    $i->wantTo('Create custom field: select');
+    // Prepare the form for testing
+    $this->prepareTheForm($i);
     
     // Go and edit the form
     $this->editTheForm($i);
@@ -45,12 +59,8 @@ class FormEditorCreateCustomFieldCest {
 
   public function createCustomTextInput(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: text input');
-    $segmentFactory = new Segment();
-    $segmentName = 'Fancy List';
-    $segment = $segmentFactory->withName($segmentName)->create();
-    $formName = 'My fancy form';
-    $form = new Form();
-    $form->withName($formName)->withSegments([$segment])->create();
+    // Prepare the form for testing
+    $this->prepareTheForm($i);
     
     // Go and edit the form
     $this->editTheForm($i);
@@ -91,12 +101,8 @@ class FormEditorCreateCustomFieldCest {
 
   public function createCustomTextArea(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: text area');
-    $segmentFactory = new Segment();
-    $segmentName = 'Fancy List';
-    $segment = $segmentFactory->withName($segmentName)->create();
-    $formName = 'My fancy form';
-    $form = new Form();
-    $form->withName($formName)->withSegments([$segment])->create();
+    // Prepare the form for testing
+    $this->prepareTheForm($i);
     
     // Go and edit the form
     $this->editTheForm($i);
@@ -142,12 +148,8 @@ class FormEditorCreateCustomFieldCest {
 
   public function createCustomRadioButtons(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: radio buttons');
-    $segmentFactory = new Segment();
-    $segmentName = 'Fancy List';
-    $segment = $segmentFactory->withName($segmentName)->create();
-    $formName = 'My fancy form';
-    $form = new Form();
-    $form->withName($formName)->withSegments([$segment])->create();
+    // Prepare the form for testing
+    $this->prepareTheForm($i);
     
     // Go and edit the form
     $this->editTheForm($i);
@@ -170,7 +172,7 @@ class FormEditorCreateCustomFieldCest {
 
     // Reload page and check data were saved
     $i->reloadPage();
-    $this->checkCustomRadioButtonsInForm($i);
+    $this->checkCustomRadioButtonsInForm($i, 'Option 1');
 
     // Change text input validation
     $i->fillField('[data-automation-id="custom_field_value_settings_value"][value="Option 1"]', 'New option');
@@ -183,19 +185,13 @@ class FormEditorCreateCustomFieldCest {
     
     // Reload page and check data were saved
     $i->reloadPage();
-    $i->waitForElement('[data-automation-id="editor_custom_field_radio_buttons_block"]');
-    $i->click('[data-automation-id="editor_custom_field_radio_buttons_block"]');
-    $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="New option"]');
+    $this->checkCustomRadioButtonsInForm($i, 'New option');
   }
 
   public function createCustomCheckbox(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: checkbox');
-    $segmentFactory = new Segment();
-    $segmentName = 'Fancy List';
-    $segment = $segmentFactory->withName($segmentName)->create();
-    $formName = 'My fancy form';
-    $form = new Form();
-    $form->withName($formName)->withSegments([$segment])->create();
+    // Prepare the form for testing
+    $this->prepareTheForm($i);
     
     // Go and edit the form
     $this->editTheForm($i);
@@ -207,7 +203,7 @@ class FormEditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Checkbox');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom checkbox');
-    $i->fillField('[data-automation-id="custom_field_value_settings_value"]', 'Option 1');
+    $i->fillField('[data-automation-id="settings_custom_checkbox_value"]', 'Option 1');
 
     // Save the custom field
     $this->saveCustomFieldBlock($i);
@@ -217,10 +213,10 @@ class FormEditorCreateCustomFieldCest {
 
     // Reload page and check data were saved
     $i->reloadPage();
-    $this->checkCustomCheckboxInForm($i);
+    $this->checkCustomCheckboxInForm($i, 'Option 1');
 
     // Change text input validation
-    $i->fillField('[data-automation-id="custom_field_value_settings_value"][value="Option 1"]', 'New option');
+    $i->fillField('[data-automation-id="settings_custom_checkbox_value"][value="Option 1"]', 'New option');
     $i->click('Update custom field');
     $i->waitForText('Custom field saved.');
 
@@ -230,19 +226,13 @@ class FormEditorCreateCustomFieldCest {
     
     // Reload page and check data were saved
     $i->reloadPage();
-    $i->waitForElement('[data-automation-id="editor_custom_field_checkbox_block"]');
-    $i->click('[data-automation-id="editor_custom_field_checkbox_block"]');
-    $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="New option"]');
+    $this->checkCustomCheckboxInForm($i, 'New option');
   }
 
   public function createCustomDate(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: date');
-    $segmentFactory = new Segment();
-    $segmentName = 'Fancy List';
-    $segment = $segmentFactory->withName($segmentName)->create();
-    $formName = 'My fancy form';
-    $form = new Form();
-    $form->withName($formName)->withSegments([$segment])->create();
+    // Prepare the form for testing
+    $this->prepareTheForm($i);
     
     // Go and edit the form
     $this->editTheForm($i);
@@ -255,7 +245,7 @@ class FormEditorCreateCustomFieldCest {
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Date');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom date');
     $i->selectOption('[data-automation-id="settings_custom_date_type"]', 'Year, month');
-    $i->selectOption('[data-automation-id="settings_custom_date_order"]', 'YYYY/MM');
+    $i->selectOption('[data-automation-id="settings_custom_date_format"]', 'YYYY/MM');
 
     // Save the custom field
     $this->saveCustomFieldBlock($i);
@@ -267,9 +257,9 @@ class FormEditorCreateCustomFieldCest {
     $i->reloadPage();
     $this->checkCustomDateInForm($i);
 
-    // Change date type to year and verify you don't see the date order
+    // Change date type and verify you don't see format anymore
     $i->selectOption('[data-automation-id="settings_custom_date_type"]', 'Year');
-    $i->dontSee('[data-automation-id="settings_custom_date_order"]');
+    $i->dontSee('[data-automation-id="settings_custom_date_format"]');
 
     // Update label and save the form
     $i->fillField('[data-automation-id="settings_custom_date_label_input"]', 'My updated custom date');
@@ -286,20 +276,20 @@ class FormEditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="editor_custom_date_label"]');
     $i->click('[data-automation-id="editor_custom_date_label"]');
     $i->seeOptionIsSelected('[data-automation-id="settings_custom_date_type"]', 'Year, month');
-    $i->seeOptionIsSelected('[data-automation-id="settings_custom_date_order"]', 'YYYY/MM');
+    $i->seeOptionIsSelected('[data-automation-id="settings_custom_date_format"]', 'YYYY/MM');
   }
 
-  private function checkCustomCheckboxInForm($i) {
+  private function checkCustomCheckboxInForm($i, $name) {
     $i->waitForElement('[data-automation-id="editor_custom_field_checkbox_block"]');
     $i->click('[data-automation-id="editor_custom_field_checkbox_block"]');
-    $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="Option 1"]');
+    $i->waitForElement('[data-automation-id="settings_custom_checkbox_value"][value="'.$name.'"]');
   }
 
-  private function checkCustomRadioButtonsInForm($i) {
+  private function checkCustomRadioButtonsInForm($i, $name) {
     $i->waitForElement('[data-automation-id="editor_custom_field_radio_buttons_block"]');
     $i->click('[data-automation-id="editor_custom_field_radio_buttons_block"]');
     $i->waitForElement('[data-automation-id="custom_field_settings"]');
-    $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="Option 1"]');
+    $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="'.$name.'"]');
     $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="Option 2"]');
   }
 
@@ -330,14 +320,5 @@ class FormEditorCreateCustomFieldCest {
     $i->waitForText('Custom field saved', 10, '.automation-dismissible-notices');
     $i->seeNoJSErrors();
     $i->click('.automation-dismissible-notices .components-notice__dismiss');
-  }
-
-  private function editTheForm($i) {
-    $formName = 'My fancy form';
-    $i->login();
-    $i->amOnMailPoetPage('Forms');
-    $i->waitForText($formName);
-    $i->clickItemRowActionByItemName($formName, 'Edit');
-    $i->waitForElement('[data-automation-id="form_title_input"]');
   }
 }
