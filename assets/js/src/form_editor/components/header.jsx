@@ -112,8 +112,12 @@ const Header = ({ isInserterOpened, setIsInserterOpened }) => {
               'Generic label for block inserter button'
             )}
           />
-          <HistoryUndo />
-          <HistoryRedo />
+          <HistoryUndo
+            data-automation-id="form_undo_button"
+          />
+          <HistoryRedo
+            data-automation-id="form_redo_button"
+          />
         </div>
       </div>
     </div>
