@@ -53,7 +53,7 @@ const CustomFieldSettings = ({
         />
         <input
           value={localCheckboxLabel}
-          data-automation-id="custom_field_value_settings_value"
+          data-automation-id="settings_custom_checkbox_value"
           type="text"
           onChange={(event) => setLocalCheckboxLabel(event.target.value)}
         />
