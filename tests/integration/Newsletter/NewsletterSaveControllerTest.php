@@ -273,6 +273,17 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     expect($settings->get('sender.address'))->same('test@example.com');
   }
 
+  public function testItDuplicatesNewsletter() {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
+    $duplicate = $this->saveController->duplicate($newsletter);
+    expect($duplicate->getSubject())->equals('Copy of ' . $newsletter->getSubject());
+    expect($duplicate->getHash())->string();
+    expect($duplicate->getHash())->notEmpty();
+    expect($duplicate->getHash())->notEquals($newsletter->getHash());
+    expect($duplicate->getBody())->equals($newsletter->getBody());
+    expect($duplicate->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
+  }
+
   public function testItCreatesNewNewsletter() {
     $data = [
       'subject' => 'My First Newsletter',

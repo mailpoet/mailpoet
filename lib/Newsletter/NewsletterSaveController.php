@@ -157,7 +157,7 @@ class NewsletterSaveController {
     // reset status
     $duplicate->setStatus(NewsletterEntity::STATUS_DRAFT);
     // reset hash
-    $duplicate->setHash(null);
+    $duplicate->setHash(Security::generateHash());
     // reset sent at date
     $duplicate->setSentAt(null);
 
