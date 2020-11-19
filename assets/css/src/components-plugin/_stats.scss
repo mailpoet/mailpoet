@@ -9,6 +9,23 @@
     margin: $grid-gap;
   }
 
+  .mailpoet-listing-table td,
+  .mailpoet-listing-table p {
+    font-size: $font-size-small;
+  }
+
+  .mailpoet-stats-link {
+    color: $color-text;
+    font-weight: 600;
+    text-decoration: underline;
+
+    &:hover,
+    &:focus {
+      color: $color-secondary;
+      text-decoration: none;
+    }
+  }
+
   @include respond-to(small-screen) {
     margin-left: -10px;
 
