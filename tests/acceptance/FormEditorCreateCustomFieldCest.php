@@ -282,14 +282,14 @@ class FormEditorCreateCustomFieldCest {
   private function checkCustomCheckboxInForm($i, $name) {
     $i->waitForElement('[data-automation-id="editor_custom_field_checkbox_block"]');
     $i->click('[data-automation-id="editor_custom_field_checkbox_block"]');
-    $i->waitForElement('[data-automation-id="settings_custom_checkbox_value"][value="'.$name.'"]');
+    $i->waitForElement('[data-automation-id="settings_custom_checkbox_value"][value="' . $name . '"]');
   }
 
   private function checkCustomRadioButtonsInForm($i, $name) {
     $i->waitForElement('[data-automation-id="editor_custom_field_radio_buttons_block"]');
     $i->click('[data-automation-id="editor_custom_field_radio_buttons_block"]');
     $i->waitForElement('[data-automation-id="custom_field_settings"]');
-    $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="'.$name.'"]');
+    $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="' . $name . '"]');
     $i->waitForElement('[data-automation-id="custom_field_value_settings_value"][value="Option 2"]');
   }
 
