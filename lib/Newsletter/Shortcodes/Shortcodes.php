@@ -76,7 +76,7 @@ class Shortcodes {
     preg_match_all($regex, $content, $shortcodes);
     $shortcodes = $shortcodes[0];
     return (count($shortcodes)) ?
-      array_unique($shortcodes) :
+      array_values(array_unique($shortcodes)) :
       false;
   }
 
@@ -149,7 +149,6 @@ class Shortcodes {
       $shortcodes,
       ($contentSource) ? $contentSource : $content
     );
-    $shortcodes = array_intersect_key($shortcodes, $processedShortcodes);
     return str_replace($shortcodes, $processedShortcodes, $content);
   }
 
