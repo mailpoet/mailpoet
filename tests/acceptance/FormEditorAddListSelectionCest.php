@@ -10,12 +10,12 @@ class FormEditorAddListSelectionCest {
     $i->wantTo('Add list selection block to the editor');
     $segmentFactory = new Segment();
     $firstSegmentName = 'First fancy list';
-    $segment = $segmentFactory->withName($firstSegmentName)->create();
-    $secondSegmentName = 'Second fancy list';
-    $segment = $segmentFactory->withName($secondSegmentName)->create();
+    $formSegment = $segmentFactory->withName($firstSegmentName)->create();
     $formName = 'My fancy form';
     $form = new Form();
-    $form->withName($formName)->withSegments([$segment])->create();
+    $form->withName($formName)->withSegments([$formSegment])->create();
+    $secondSegmentName = 'Second fancy list';
+    $segmentFactory->withName($secondSegmentName)->create();
     
     $i->login();
     $i->amOnMailPoetPage('Forms');
