@@ -3,6 +3,8 @@ import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { undo as undoIcon } from '@wordpress/icons';
+import { displayShortcut } from '@wordpress/keycodes';
+import { useShortcut } from '@wordpress/keyboard-shortcuts';
 
 function HistoryUndo(props) {
   const hasUndo = useSelect(
@@ -10,14 +12,38 @@ function HistoryUndo(props) {
     []
   );
   const { historyUndo } = useDispatch('mailpoet-form-editor');
+  const { registerShortcut } = useDispatch('core/keyboard-shortcuts');
+
   const undoAction = () => {
     historyUndo();
   };
+
+  useShortcut(
+    // Shortcut name
+    'mailpoet-form-editor/undo',
+    // Shortcut callback
+    (event) => {
+      historyUndo();
+      event.preventDefault();
+    },
+  );
+
+  registerShortcut({
+    name: 'mailpoet-form-editor/undo',
+    category: 'block',
+    description: __('Undo your last changes.'),
+    keyCombination: {
+      modifier: 'primary',
+      character: 'z',
+    },
+  });
+
   return (
     <Button
       {...props}
       icon={undoIcon}
       label={__('Undo')}
+      shortcut={displayShortcut.primary('z')}
       aria-disabled={!hasUndo}
       onClick={hasUndo ? undoAction : undefined}
       className="editor-history__undo"

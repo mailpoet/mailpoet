@@ -3,6 +3,8 @@ import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { redo as redoIcon } from '@wordpress/icons';
+import { displayShortcut } from '@wordpress/keycodes';
+import { useShortcut } from '@wordpress/keyboard-shortcuts';
 
 function HistoryRedo(props) {
   const hasRedo = useSelect(
@@ -10,14 +12,38 @@ function HistoryRedo(props) {
     []
   );
   const { historyRedo } = useDispatch('mailpoet-form-editor');
+  const { registerShortcut } = useDispatch('core/keyboard-shortcuts');
+
   const redoAction = () => {
     historyRedo();
   };
+
+  useShortcut(
+    // Shortcut name
+    'mailpoet-form-editor/redo',
+    // Shortcut callback
+    (event) => {
+      redoAction();
+      event.preventDefault();
+    },
+  );
+
+  registerShortcut({
+    name: 'mailpoet-form-editor/redo',
+    category: 'block',
+    description: __('Redo your last undo.'),
+    keyCombination: {
+      modifier: 'primaryShift',
+      character: 'z',
+    },
+  });
+
   return (
     <Button
       {...props}
       icon={redoIcon}
       label={__('Redo')}
+      shortcut={displayShortcut.primaryShift('z')}
       aria-disabled={!hasRedo}
       onClick={hasRedo ? redoAction : undefined}
       className="editor-history__redo"
