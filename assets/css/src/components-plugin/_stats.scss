@@ -134,7 +134,7 @@
 .mailpoet-stats-products {
   display: grid;
   grid-gap: $grid-gap;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
 
   @include respond-to(small-screen) {
     grid-template-columns: 1fr;
@@ -146,6 +146,7 @@
   background: #fff;
   border: 1px solid $color-tertiary-light;
   border-radius: $form-control-border-radius;
+  color: $color-text;
   display: grid;
   grid-gap: $grid-gap;
   grid-template-columns: 176px 1fr;
@@ -154,6 +155,22 @@
   @include respond-to(small-screen) {
     grid-template-columns: 1fr;
     height: auto;
+  }
+}
+
+a.mailpoet-stats-product {
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    box-shadow: 0 2px 4px 0 rgba($color-tertiary-light, .4), 0 10px 30px 0 $color-tertiary-light;
+    color: $color-text;
+    text-decoration: none;
+
+    .mailpoet-h5 {
+      color: $color-secondary;
+    }
   }
 }
 
