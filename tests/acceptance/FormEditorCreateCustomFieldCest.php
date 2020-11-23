@@ -15,7 +15,7 @@ class FormEditorCreateCustomFieldCest {
     $form->withName($formName)->withSegments([$segment])->create();
   }
 
-  private function editTheForm($i) {
+  private function openFormInEditor($i) {
     $formName = 'My fancy form';
     $i->login();
     $i->amOnMailPoetPage('Forms');
@@ -24,63 +24,44 @@ class FormEditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="form_title_input"]');
   }
 
-  public function createCustomSelect(\AcceptanceTester $i) {
-    $i->wantTo('Create custom field: select');
+  public function _before(\AcceptanceTester $i) {
     // Prepare the form for testing
     $this->prepareTheForm($i);
-    
     // Go and edit the form
-    $this->editTheForm($i);
-
+    $this->openFormInEditor($i);
     // Insert create custom field block
     $i->addFromBlockInEditor('Create Custom Field');
+  }
 
-    // Configure custom select custom field
+  public function createCustomSelect(\AcceptanceTester $i) {
+    $i->wantTo('Create custom field: select');
+    // Configure, check and save the custom field block
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Select');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom select');
     $i->waitForElement('[data-automation-id="custom_field_value_settings"]');
     $i->fillField('[data-automation-id="custom_field_value_settings_value"]', 'First option'); // Configure first option
     $i->click('[data-automation-id="custom_field_values_add_item"]'); // Add second option
-
-    // Save the custom field
     $this->saveCustomFieldBlock($i);
-
-    // Check field was added correctly
     $this->checkCustomSelectInForm($i);
 
-    // Save the form
+    // Save, reload and check data were saved
     $i->saveFormInEditor();
-
-    // Reload page and check data were saved
     $i->reloadPage();
     $this->checkCustomSelectInForm($i);
   }
 
   public function createCustomTextInput(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: text input');
-    // Prepare the form for testing
-    $this->prepareTheForm($i);
-    
-    // Go and edit the form
-    $this->editTheForm($i);
-
-    // Insert create custom field block
-    $i->addFromBlockInEditor('Create Custom Field');
-
-    // Configure custom select custom field
+    // Configure, check and save the custom field block
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Text Input');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom text input');
     $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
-
-    // Save the custom field
     $this->saveCustomFieldBlock($i);
 
-    // Save the form
+    // Save, reload and check data were saved
     $i->saveFormInEditor();
-
-    // Reload page and check data were saved
     $i->reloadPage();
     $this->checkCustomTextInputInForm($i);
 
@@ -101,28 +82,15 @@ class FormEditorCreateCustomFieldCest {
 
   public function createCustomTextArea(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: text area');
-    // Prepare the form for testing
-    $this->prepareTheForm($i);
-    
-    // Go and edit the form
-    $this->editTheForm($i);
-
-    // Insert create custom field block
-    $i->addFromBlockInEditor('Create Custom Field');
-
-    // Configure custom select custom field
+    // Configure, check and save the custom field block
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Text Area');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom text area');
     $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
-
-    // Save the custom field
     $this->saveCustomFieldBlock($i);
 
-    // Save the form
+    // Save, reload and check data were saved
     $i->saveFormInEditor();
-
-    // Reload page and check data were saved
     $i->reloadPage();
     $this->checkCustomTextAreaInForm($i);
 
@@ -148,29 +116,16 @@ class FormEditorCreateCustomFieldCest {
 
   public function createCustomRadioButtons(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: radio buttons');
-    // Prepare the form for testing
-    $this->prepareTheForm($i);
-    
-    // Go and edit the form
-    $this->editTheForm($i);
-
-    // Insert create custom field block
-    $i->addFromBlockInEditor('Create Custom Field');
-
-    // Configure custom select custom field
+    // Configure, check and save the custom field block
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Radio buttons');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom radio buttons');
     $i->fillField('[data-automation-id="custom_field_value_settings_value"]', 'Option 1');
     $i->click('[data-automation-id="custom_field_values_add_item"]');
-
-    // Save the custom field
     $this->saveCustomFieldBlock($i);
 
-    // Save the form
+    // Save, reload and check data were saved
     $i->saveFormInEditor();
-
-    // Reload page and check data were saved
     $i->reloadPage();
     $this->checkCustomRadioButtonsInForm($i, 'Option 1');
 
@@ -190,28 +145,15 @@ class FormEditorCreateCustomFieldCest {
 
   public function createCustomCheckbox(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: checkbox');
-    // Prepare the form for testing
-    $this->prepareTheForm($i);
-    
-    // Go and edit the form
-    $this->editTheForm($i);
-
-    // Insert create custom field block
-    $i->addFromBlockInEditor('Create Custom Field');
-
-    // Configure custom select custom field
+    // Configure, check and save the custom field block
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Checkbox');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom checkbox');
     $i->fillField('[data-automation-id="settings_custom_checkbox_value"]', 'Option 1');
-
-    // Save the custom field
     $this->saveCustomFieldBlock($i);
 
-    // Save the form
+    // Save, reload and check data were saved
     $i->saveFormInEditor();
-
-    // Reload page and check data were saved
     $i->reloadPage();
     $this->checkCustomCheckboxInForm($i, 'Option 1');
 
@@ -231,29 +173,16 @@ class FormEditorCreateCustomFieldCest {
 
   public function createCustomDate(\AcceptanceTester $i) {
     $i->wantTo('Create custom field: date');
-    // Prepare the form for testing
-    $this->prepareTheForm($i);
-    
-    // Go and edit the form
-    $this->editTheForm($i);
-
-    // Insert create custom field block
-    $i->addFromBlockInEditor('Create Custom Field');
-
-    // Configure custom select custom field
+    // Configure, check and save the custom field block
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
     $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Date');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom date');
     $i->selectOption('[data-automation-id="settings_custom_date_type"]', 'Year, month');
     $i->selectOption('[data-automation-id="settings_custom_date_format"]', 'YYYY/MM');
-
-    // Save the custom field
     $this->saveCustomFieldBlock($i);
 
-    // Save the form
+    // Save, reload and check data were saved
     $i->saveFormInEditor();
-
-    // Reload page and check data were saved
     $i->reloadPage();
     $this->checkCustomDateInForm($i);
 
