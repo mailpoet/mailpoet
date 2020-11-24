@@ -19,6 +19,7 @@ import classnames from 'classnames';
 import { global as SETTINGS_DEFAULTS } from '../store/experimental-default-theme.json';
 import fetchLinkSuggestions from '../utils/link_suggestions';
 import Header from './header.jsx';
+import { Tutorial } from './tutorial';
 import Sidebar from './sidebar/sidebar';
 import Inserter from './inserter';
 import Notices from './notices.jsx';
@@ -150,6 +151,7 @@ export default () => {
         </SlotFillProvider>
       </DropZoneProvider>
       <Preview />
+      <Tutorial />
     </>
   );
 };
