@@ -98,7 +98,7 @@ class BlocksRenderer {
     $this->paragraph = $paragraph;
   }
 
-  public function renderBlock(array $block = [], array $formSettings): string {
+  public function renderBlock(array $block, array $formSettings): string {
     $html = '';
     switch ($block['type']) {
       case 'html':
