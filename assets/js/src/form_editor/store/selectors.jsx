@@ -174,6 +174,12 @@ export default {
   getAllWooCommerceTags(state) {
     return state.allWooCommerceTags;
   },
+  getTutorialSeen(state) {
+    return state.tutorialSeen;
+  },
+  getTutorialUrl(state) {
+    return state.tutorialUrl;
+  },
   /**
    * Goes thru all parents of the block and return
    * the attribute value from the closest parent which has the attribute defined

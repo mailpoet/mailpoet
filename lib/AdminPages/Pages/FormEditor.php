@@ -78,6 +78,7 @@ use MailPoet\Models\Segment;
 use MailPoet\Router\Endpoints\FormPreview;
 use MailPoet\Router\Router;
 use MailPoet\Settings\Pages;
+use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FormEditor {
@@ -107,6 +108,9 @@ class FormEditor {
 
   /** @var TemplateRepository */
   private $templatesRepository;
+
+  /** @var UserFlagsController */
+  private $userFlags;
 
   private $activeTemplates = [
     FormEntity::DISPLAY_TYPE_POPUP => [
@@ -190,6 +194,7 @@ class FormEditor {
     WPFunctions $wp,
     FormFactory $formsFactory,
     Localizer $localizer,
+    UserFlagsController $userFlags,
     TemplateRepository $templateRepository
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -201,6 +206,7 @@ class FormEditor {
     $this->formsFactory = $formsFactory;
     $this->localizer = $localizer;
     $this->templatesRepository = $templateRepository;
+    $this->userFlags = $userFlags;
   }
 
   public function render() {
@@ -234,6 +240,7 @@ class FormEditor {
       'month_names' => $this->dateBlock->getMonthNames(),
       'sub_menu' => 'mailpoet-forms',
       'custom_fields' => $this->customFieldsResponseBuilder->buildBatch($customFields),
+      'editor_tutorial_seen' => $this->userFlags->get('form_editor_tutorial_seen'),
       'preview_page_url' => $this->getPreviewPageUrl(),
       'custom_fonts' => CustomFonts::FONTS,
       'translations' => $this->getGutenbergScriptsTranslations(),
