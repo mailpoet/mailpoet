@@ -84,7 +84,7 @@ export default () => {
     allWooCommerceProducts: window.mailpoet_woocommerce_products,
     allWooCommerceCategories: window.mailpoet_woocommerce_categories,
     allWooCommerceTags: window.mailpoet_woocommerce_tags,
-    tutorialSeen: window.mailpoet_tutorial_seen,
+    tutorialSeen: window.mailpoet_tutorial_seen === '1',
     tutorialUrl: window.mailpoet_tutorial_url,
   };
 

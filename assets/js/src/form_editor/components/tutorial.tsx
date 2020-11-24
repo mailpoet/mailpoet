@@ -1,21 +1,24 @@
 import React from 'react';
 import Modal from 'common/modal/modal';
-import { useSelect } from '@wordpress/data';
-import MailPoet from 'mailpoet';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 export const Tutorial = () => {
   const url = useSelect(
     (select) => select('mailpoet-form-editor').getTutorialUrl(),
     []
   );
+  const tutorialSeen = useSelect(
+    (select) => select('mailpoet-form-editor').getTutorialSeen(),
+    []
+  );
+  const { tutorialDismissed } = useDispatch('mailpoet-form-editor');
+
+  if (tutorialSeen) {
+    return null;
+  }
 
   function onClose() {
-    MailPoet.Ajax.post({
-      api_version: MailPoet.apiVersion,
-      endpoint: 'user_flags',
-      action: 'set',
-      data: { form_editor_tutorial_seen: 1 },
-    });
+    tutorialDismissed();
   }
 
   return (

@@ -307,3 +307,12 @@ export function historyRedo() {
     type: 'HISTORY_REDO',
   };
 }
+
+export function* tutorialDismissed() {
+  yield {
+    type: 'TUTORIAL_DISMISS',
+  };
+  yield {
+    type: 'TUTORIAL_DISMISSED',
+  };
+}

@@ -7,6 +7,7 @@ import changeFormName from './reducers/change_form_name.jsx';
 import changeFormSettings from './reducers/change_form_settings.jsx';
 import changeFormStyles from './reducers/change_form_styles.jsx';
 import removeNotice from './reducers/remove_notice.jsx';
+import { tutorialDismiss } from './reducers/tutorial_dismiss';
 import {
   showPreview,
   hidePreview,
@@ -78,6 +79,7 @@ const mainReducer = (state, action) => {
     case 'CHANGE_ACTIVE_SIDEBAR': return changeActiveSidebar(state, action);
     case 'HISTORY_UNDO': return historyUndo(state);
     case 'HISTORY_REDO': return historyRedo(state);
+    case 'TUTORIAL_DISMISSED': return tutorialDismiss(state);
     default:
       return state;
   }

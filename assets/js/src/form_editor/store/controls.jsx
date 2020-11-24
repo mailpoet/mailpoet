@@ -167,6 +167,15 @@ export default {
     dispatch('core/block-editor').resetBlocks(updatedBlocks);
   },
 
+  TUTORIAL_DISMISS() {
+    MailPoet.Ajax.post({
+      api_version: MailPoet.apiVersion,
+      endpoint: 'user_flags',
+      action: 'set',
+      data: { form_editor_tutorial_seen: 1 },
+    });
+  },
+
   /**
    * We want to ensure that email input and submit are always present.
    * @param actionData {{type: string, blocks: Object[]}} blocks property contains editor blocks
