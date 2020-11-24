@@ -20,10 +20,16 @@ class UserFlags {
 
   public function withDefaultFlags() {
     $this->withEditorTutorialSeen();
+    $this->withFormEditorTutorialSeen();
   }
 
   public function withEditorTutorialSeen() {
     $this->withFlag('editor_tutorial_seen', 1);
+    return $this;
+  }
+
+  public function withFormEditorTutorialSeen() {
+    $this->withFlag('form_editor_tutorial_seen', 1);
     return $this;
   }
 
