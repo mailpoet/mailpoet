@@ -14,7 +14,7 @@ use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 
 class ConfigurationFactoryTest extends \MailPoetTest {
   public function testItSetsUpBasicOptions() {
-    $configurationFactory = new ConfigurationFactory(false, new AnnotationReaderProvider());
+    $configurationFactory = new ConfigurationFactory(new AnnotationReaderProvider(), false);
     $configuration = $configurationFactory->createConfiguration();
 
     expect($configuration)->isInstanceOf(Configuration::class);
@@ -36,12 +36,12 @@ class ConfigurationFactoryTest extends \MailPoetTest {
 
   public function testItSetsUpEnvironmentSpecificOptions() {
     // dev mode
-    $configurationFactory = new ConfigurationFactory(true, new AnnotationReaderProvider());
+    $configurationFactory = new ConfigurationFactory(new AnnotationReaderProvider(), true);
     $configuration = $configurationFactory->createConfiguration();
     expect($configuration->getAutoGenerateProxyClasses())->equals(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
     // production mode
-    $configurationFactory = new ConfigurationFactory(false, new AnnotationReaderProvider());
+    $configurationFactory = new ConfigurationFactory(new AnnotationReaderProvider(), false);
     $configuration = $configurationFactory->createConfiguration();
     expect($configuration->getAutoGenerateProxyClasses())->equals(AbstractProxyFactory::AUTOGENERATE_NEVER);
   }
