@@ -26,6 +26,7 @@ class AmazonSES {
   public $dateWithoutTime;
   private $availableRegions = [
     'US East (N. Virginia)' => 'us-east-1',
+    'US East (Ohio) => 'us-east-2',
     'US West (Oregon)' => 'us-west-2',
     'EU (Ireland)' => 'eu-west-1',
     'EU (London)' => 'eu-west-2',
