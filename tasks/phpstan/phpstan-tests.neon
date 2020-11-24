@@ -25,6 +25,7 @@ parameters:
     - '/Parameter #1 \$cssOrXPath of method AcceptanceTester::moveMouseOver\(\) expects string\|null, array<string, string> given./'
     - '/Function expect invoked with 1 parameter, 0 required\./'
     - '/(with|has) no (return )?typehint specified/' # exclude level 6 errors
+    - '/Call to method getName\(\) on an unknown class _generated\\([a-zA-Z])*Cookie/' # codeception generate incorrect return type in ../../tests/_support/_generated
   excludes_analyse:
     - ../../tests/_support/_generated
     - ../../tests/unit/Entities/SubscriberEntityTest.php
