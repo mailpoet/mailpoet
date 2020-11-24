@@ -1038,7 +1038,7 @@ class RoboFile extends \Robo\Tasks {
       \MailPoet\Config\Env::$dbPrefix = ''; // ensure some prefix is set
     }
     $annotationReaderProvider = new \MailPoet\Doctrine\Annotations\AnnotationReaderProvider();
-    $configuration = (new \MailPoet\Doctrine\ConfigurationFactory(true, $annotationReaderProvider))->createConfiguration();
+    $configuration = (new \MailPoet\Doctrine\ConfigurationFactory($annotationReaderProvider, true))->createConfiguration();
     $platformClass = \MailPoet\Doctrine\ConnectionFactory::PLATFORM_CLASS;
     return \MailPoetVendor\Doctrine\ORM\EntityManager::create([
       'driver' => \MailPoet\Doctrine\ConnectionFactory::DRIVER,

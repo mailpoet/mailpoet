@@ -10,7 +10,7 @@ use MailPoetVendor\Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 
 $annotationReaderProvider = new AnnotationReaderProvider();
 $annotationReader = $annotationReaderProvider->getAnnotationReader();
-$configuration = (new ConfigurationFactory(false, $annotationReaderProvider))->createConfiguration();
+$configuration = (new ConfigurationFactory($annotationReaderProvider, false))->createConfiguration();
 $configuration->setMetadataDriverImpl(
   new class($annotationReader, [ConfigurationFactory::ENTITY_DIR]) extends AnnotationDriver {
     // Returning 'isTransient' = true means 'do not try to load Doctrine metadata' (which is true for most classes).

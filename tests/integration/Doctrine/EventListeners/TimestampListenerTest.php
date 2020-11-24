@@ -83,7 +83,7 @@ class TimestampListenerTest extends \MailPoetTest {
 
   private function createEntityManager() {
     $annotationReaderProvider = new AnnotationReaderProvider();
-    $configurationFactory = new ConfigurationFactory(false, $annotationReaderProvider);
+    $configurationFactory = new ConfigurationFactory($annotationReaderProvider, false);
     $configuration = $configurationFactory->createConfiguration();
 
     $metadataDriver = $configuration->newDefaultAnnotationDriver([__DIR__], false);
