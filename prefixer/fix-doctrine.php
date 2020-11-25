@@ -19,6 +19,14 @@ foreach ($files as $file) {
   }
 }
 
+// Fix Throwable interface incompatibility in DriverException
+$file = __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/DriverException.php';
+$data = file_get_contents($file);
+// Throwable already has getMessage() there is no need to add it in DriverException.
+$data = str_replace('public function getMessage();', '// public function getMessage();', $data);
+file_put_contents($file, $data);
+
+
 // cleanup file types by extension
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name '*.xsd' -delete");
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'phpstan.neon' -delete");
