@@ -17,24 +17,6 @@ const InstallingMessage = () => (
   </div>
 );
 
-const ActivatingMessage = () => (
-  <div className="mailpoet_success_item mailpoet_success">
-    {MailPoet.I18n.t('premiumTabPremiumActivatingMessage')}
-  </div>
-);
-
-type PremiumNotInstalledMessageProps = { callback: () => void }
-const PremiumNotInstalledMessage = ({ callback }: PremiumNotInstalledMessageProps) => (
-  <>
-    <div className="mailpoet_error mailpoet_install_premium_message">
-      {MailPoet.I18n.t('premiumTabPremiumNotInstalledMessage')}
-    </div>
-    <Button onClick={callback}>
-      {MailPoet.I18n.t('premiumTabPremiumInstallMessage')}
-    </Button>
-  </>
-);
-
 type PremiumNotActiveMessageProps = { callback: () => void }
 const PremiumNotActiveMessage = ({ callback }: PremiumNotActiveMessageProps) => (
   <>
@@ -59,7 +41,6 @@ NotValidMessage.defaultProps = {
 
 type Props = {
   keyMessage?: string;
-  activationCallback: () => void;
   installationCallback: () => void;
   installationStatus: PremiumInstallationStatus;
 }
@@ -76,13 +57,6 @@ export default function PremiumMessages(props: Props) {
   }
 
   switch (displayStatus) {
-    case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED:
-      return (
-        <>
-          <PremiumNotInstalledMessage callback={props.installationCallback} />
-          <PremiumInstallationMessages installationStatus={props.installationStatus} />
-        </>
-      );
     case PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE:
       return (
         <>
@@ -93,7 +67,7 @@ export default function PremiumMessages(props: Props) {
     case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE:
       return (
         <>
-          <PremiumNotActiveMessage callback={props.activationCallback} />
+          <PremiumNotActiveMessage callback={props.installationCallback} />
           <PremiumInstallationMessages installationStatus={props.installationStatus} />
         </>
       );
@@ -101,13 +75,6 @@ export default function PremiumMessages(props: Props) {
       return (
         <>
           <InstallingMessage />
-          <PremiumInstallationMessages installationStatus={props.installationStatus} />
-        </>
-      );
-    case PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_ACTIVATED:
-      return (
-        <>
-          <ActivatingMessage />
           <PremiumInstallationMessages installationStatus={props.installationStatus} />
         </>
       );

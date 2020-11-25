@@ -100,7 +100,6 @@ export default function KeyActivation() {
             keyMessage={state.premiumMessage}
             installationStatus={state.premiumInstallationStatus}
             installationCallback={installPremiumPlugin}
-            activationCallback={() => activatePremiumPlugin(false)}
           />
         )}
 
