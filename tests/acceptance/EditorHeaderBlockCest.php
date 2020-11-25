@@ -24,6 +24,8 @@ class EditorHeaderBlockCest {
     $i->waitForText('View this in your browser.');
     //Open settings by clicking on block
     $i->click($headerSettingsIcon);
+    $i->wait(0.35); // CSS animation
+    $i->scrollTo($headerSettingsAssertion);
     $i->waitForElementVisible($headerSettingsAssertion);
     $i->click($headerSettingsAssertion);
   }
