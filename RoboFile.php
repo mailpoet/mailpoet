@@ -1,4 +1,5 @@
 <?php
+require_once './tests/_support/SplitTestsByGroups.php';
 
 // phpcs:ignore PSR1.Classes.ClassDeclaration
 class RoboFile extends \Robo\Tasks {
