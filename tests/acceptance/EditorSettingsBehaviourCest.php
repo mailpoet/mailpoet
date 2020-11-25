@@ -45,6 +45,7 @@ class EditorSettingsBehaviourCest {
     $i->click(self::ALC_OVERLAY_SELECTOR);
     $i->waitForElementVisible(self::SETTINGS_PANEL_SELECTOR);
     $i->wait(0.35); // CSS animation
+    $i->scrollTo('[data-automation-id="text_block_in_editor"]');
     $i->click(self::BUTTON_1_SELECTOR);
     $i->waitForElementNotVisible(self::SETTINGS_PANEL_SELECTOR);
 
