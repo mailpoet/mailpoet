@@ -28,8 +28,8 @@ class UserFlags {
     return $this;
   }
 
-  public function withFormEditorTutorialSeen() {
-    $this->withFlag('form_editor_tutorial_seen', 1);
+  public function withFormEditorTutorialSeen($value = 1) {
+    $this->withFlag('form_editor_tutorial_seen', $value);
     return $this;
   }
 
