@@ -78,7 +78,6 @@ use MailPoet\Models\Segment;
 use MailPoet\Router\Endpoints\FormPreview;
 use MailPoet\Router\Router;
 use MailPoet\Settings\Pages;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -112,9 +111,6 @@ class FormEditor {
 
   /** @var UserFlagsController */
   private $userFlags;
-
-  /** @var SettingsController */
-  private $settings;
 
   private $activeTemplates = [
     FormEntity::DISPLAY_TYPE_POPUP => [
@@ -199,7 +195,6 @@ class FormEditor {
     FormFactory $formsFactory,
     Localizer $localizer,
     UserFlagsController $userFlags,
-    SettingsController $settings,
     TemplateRepository $templateRepository
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -212,7 +207,6 @@ class FormEditor {
     $this->localizer = $localizer;
     $this->templatesRepository = $templateRepository;
     $this->userFlags = $userFlags;
-    $this->settings = $settings;
   }
 
   public function render() {
@@ -257,7 +251,6 @@ class FormEditor {
       'products' => $this->getWooCommerceProducts(),
       'product_categories' => $this->getWooCommerceCategories(),
       'product_tags' => $this->getWooCommerceTags(),
-      'installed_at' => $this->settings->get('installed_at'),
     ];
     $this->wp->wpEnqueueMedia();
     $this->pageRenderer->displayPage('form/editor.html', $data);

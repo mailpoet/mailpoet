@@ -11,7 +11,6 @@ var MailPoet = {
   isWoocommerceActive: window.mailpoet_woocommerce_active,
   premiumActive: window.mailpoet_premium_active,
   subscribersLimit: window.mailpoet_subscribers_limit,
-  installedAt: window.mailpoet_installed_at,
   subscribersLimitReached: window.mailpoet_subscribers_limit_reached,
   subscribersCountTowardsLimit: window.mailpoet_premium_subscribers_count,
   hasPremiumSupport: window.mailpoet_has_premium_support,
