@@ -109,15 +109,14 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
                 });
               }}
             />
-            <div data-automation-id="settings_toggle_enable_divider">
             <ToggleControl
               label={MailPoet.I18n.t('blockSpacerEnableDivider')}
+              className="mailpoet-automation-divider-togle-enable"
               checked={attributes.type === Types.Divider}
               onChange={(checked) => setAttributes({
                 type: checked ? Types.Divider : Types.Spacer,
               })}
             />
-            </div>
             {(
               (attributes.type === Types.Divider) && (dividerSettings)
             )}

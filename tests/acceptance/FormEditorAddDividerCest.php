@@ -26,12 +26,12 @@ class FormEditorAddDividerCest {
 
     // Check and modify divider & spacer block
     $i->assertAttributeContains('[data-automation-id="editor_divider_block"]', 'style', 'border-top: 1px solid black;');
-    $i->click('[data-automation-id="settings_toggle_enable_divider"]');
+    $i->click('.mailpoet-automation-divider-togle-enable');
     $i->assertAttributeNotContains('[data-automation-id="editor_divider_block"]', 'style', 'border-top: 1px solid black;');
     $i->clearFormField('.mailpoet-automation-spacer-height-size input[type="number"]');
     $i->fillField('.mailpoet-automation-spacer-height-size input[type="number"]', 50);
     $i->assertAttributeContains('[data-automation-id="editor_spacer_block"]', 'style', 'height: 50px;');
-    $i->click('[data-automation-id="settings_toggle_enable_divider"]');
+    $i->click('.mailpoet-automation-divider-togle-enable');
     $i->selectOption('[data-automation-id="settings_divider_style"]', 'Dotted');
     $i->seeInField('.mailpoet-automation-styles-divider-height input[type="number"]', 1);
     $i->clearFormField('.mailpoet-automation-styles-divider-height input[type="number"]');
