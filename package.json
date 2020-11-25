@@ -26,6 +26,18 @@
     "build-storybook": "build-storybook",
     "postinstall": "./tasks/npm_post_install.sh"
   },
+  "lint-staged": {
+    "*.{scss,css}": "npm run stylelint",
+    "*.js": "eslint -c .eslintrc.es5.json --ignore-pattern helpscout.js --max-warnings 0",
+    "*.jsx": "eslint -c .eslintrc.es6.json --max-warnings 0",
+    "*.{tsx,ts}": "eslint -c .eslintrc.ts.json --max-warnings 0",
+    "*.php": "phplint"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "dependencies": {
     "@babel/runtime": "^7.10.2",
     "@babel/runtime-corejs3": "^7.10.2",
