@@ -59,11 +59,9 @@ array_map($destroy, $models);
 $entityManager = ContainerWrapper::getInstance(WP_DEBUG)->get(EntityManager::class);
 foreach ($entities as $entity) {
   $tableName = $entityManager->getClassMetadata($entity)->getTableName();
-  $connection->transactional(function(Connection $connection) use ($tableName) {
-    $connection->query('SET FOREIGN_KEY_CHECKS=0');
-    $connection->executeUpdate("TRUNCATE $tableName");
-    $connection->query('SET FOREIGN_KEY_CHECKS=1');
-  });
+  $connection->query('SET FOREIGN_KEY_CHECKS=0');
+  $connection->executeUpdate("TRUNCATE $tableName");
+  $connection->query('SET FOREIGN_KEY_CHECKS=1');
 }
 
 // save plugin version to avoid running migrations (that cause $GLOBALS serialization errors)
@@ -218,11 +216,9 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $classMetadata = $this->entityManager->getClassMetadata($entityName);
     $tableName = $classMetadata->getTableName();
     $connection = $this->entityManager->getConnection();
-    $connection->transactional(function(Connection $connection) use ($tableName) {
-      $connection->query('SET FOREIGN_KEY_CHECKS=0');
-      $connection->executeUpdate("TRUNCATE $tableName");
-      $connection->query('SET FOREIGN_KEY_CHECKS=1');
-    });
+    $connection->query('SET FOREIGN_KEY_CHECKS=0');
+    $connection->executeUpdate("TRUNCATE $tableName");
+    $connection->query('SET FOREIGN_KEY_CHECKS=1');
   }
 }
 
