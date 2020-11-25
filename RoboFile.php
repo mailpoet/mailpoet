@@ -55,7 +55,6 @@ class RoboFile extends \Robo\Tasks {
         $file = $changedFile->getResource()->getResource();
         $this->taskExecStack()
           ->stopOnFail()
-          ->exec('npm run stylelint -- "' . $file . '"')
           ->exec('npm run scss')
           ->exec('npm run autoprefixer')
           ->run();
