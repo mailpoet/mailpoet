@@ -1,8 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import { useSelector } from 'settings/store/hooks/index';
-import { PremiumInstallationStatus, PremiumStatus } from 'settings/store/types';
-import PremiumInstallationMessages from './premium_installation_messages';
+import { PremiumStatus } from 'settings/store/types';
 import Button from '../../../../common/button/button';
 
 const ActiveMessage = () => (
@@ -11,21 +10,19 @@ const ActiveMessage = () => (
   </div>
 );
 
-const InstallingMessage = () => (
-  <div className="mailpoet_success_item mailpoet_success">
-    {MailPoet.I18n.t('premiumTabPremiumInstallingMessage')}
-  </div>
-);
-
-type PremiumNotActiveMessageProps = { callback: () => void }
-const PremiumNotActiveMessage = ({ callback }: PremiumNotActiveMessageProps) => (
+type PremiumNotActiveMessageProps = {
+  url?: string;
+}
+const PremiumNotActiveMessage = (props: PremiumNotActiveMessageProps) => (
   <>
     <div className="mailpoet_error mailpoet_install_premium_message">
       {MailPoet.I18n.t('premiumTabPremiumNotActiveMessage')}
     </div>
-    <Button onClick={callback}>
-      {MailPoet.I18n.t('premiumTabPremiumActivateMessage')}
-    </Button>
+    {props.url && (
+      <Button href={props.url}>
+        {MailPoet.I18n.t('premiumTabPremiumActivateMessage')}
+      </Button>
+    )}
   </>
 );
 
@@ -41,48 +38,27 @@ NotValidMessage.defaultProps = {
 
 type Props = {
   keyMessage?: string;
-  installationCallback: () => void;
-  installationStatus: PremiumInstallationStatus;
 }
 export default function PremiumMessages(props: Props) {
-  const { premiumStatus: status } = useSelector('getKeyActivationState')();
+  const { premiumStatus: status, downloadUrl } = useSelector('getKeyActivationState')();
 
-  // when activity sub-messages shown, keep the top-level installing/activating messages
-  let displayStatus = status;
-  const premiumInstallationStatusName = PremiumInstallationStatus[props.installationStatus] ?? '';
-  if (premiumInstallationStatusName.startsWith('INSTALL_')) {
-    displayStatus = PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_INSTALLED;
-  } else if (premiumInstallationStatusName.startsWith('ACTIVATE_')) {
-    displayStatus = PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_ACTIVATED;
-  }
-
-  switch (displayStatus) {
+  switch (status) {
     case PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE:
       return (
         <>
           <ActiveMessage />
-          <PremiumInstallationMessages installationStatus={props.installationStatus} />
         </>
       );
     case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE:
       return (
         <>
-          <PremiumNotActiveMessage callback={props.installationCallback} />
-          <PremiumInstallationMessages installationStatus={props.installationStatus} />
-        </>
-      );
-    case PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_INSTALLED:
-      return (
-        <>
-          <InstallingMessage />
-          <PremiumInstallationMessages installationStatus={props.installationStatus} />
+          <PremiumNotActiveMessage url={downloadUrl} />
         </>
       );
     case PremiumStatus.INVALID:
       return (
         <>
           <NotValidMessage message={props.keyMessage} />
-          <PremiumInstallationMessages installationStatus={props.installationStatus} />
         </>
       );
     default:

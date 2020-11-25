@@ -25,10 +25,6 @@ class AddSendingKeyCest {
     // validate key, activate MSS, install & activate Premium plugin
     $i->waitForText('Your key is valid');
     $i->waitForText('MailPoet Sending Service is active');
-    $i->waitForText('MailPoet Premium plugin is being installed');
-    $i->waitForText('downloading MailPoet Premium…');
-    $i->waitForText('activating MailPoet Premium…');
-    $i->waitForText('MailPoet Premium is active!');
     $i->waitForText('It’s time to set your default FROM address!');
     $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
     $i->dontSee('A test email was sent to');
@@ -37,7 +33,6 @@ class AddSendingKeyCest {
     $i->reloadPage();
     $i->waitForText('Your key is valid');
     $i->waitForText('MailPoet Sending Service is active');
-    $i->waitForText('MailPoet Premium is active');
     $i->dontSee('A test email was sent to');
 
     // test modal for authorized FROM address
@@ -73,48 +68,6 @@ class AddSendingKeyCest {
     $i->dontSee('Note: your account is pending approval by MailPoet.');
     $i->dontSee('Rest assured, this only takes just a couple of hours. Until then, you can still send email previews to yourself. Any active automatic emails, like Welcome Emails, will be paused.');
     $i->dontSee('A test email was sent to');
-  }
-
-  public function installAndActivatePremiumPlugin(\AcceptanceTester $i, Scenario $scenario) {
-    $i->wantTo('Install and activate Premium plugin');
-
-    $mailPoetSendingKey = getenv('WP_TEST_MAILER_MAILPOET_API');
-    if (!$mailPoetSendingKey) {
-      $scenario->skip("Skipping, 'WP_TEST_MAILER_MAILPOET_API' not set.");
-    }
-
-    $settings = new Settings();
-    $settings->withSendingMethodMailPoet();
-    $settings->withValidPremiumKey($mailPoetSendingKey);
-
-    $keyActivationTab = '[data-automation-id="activation_settings_tab"]';
-    $i->login();
-    $i->amOnMailPoetPage('Settings');
-    $i->click($keyActivationTab);
-
-    // Premium plugin not installed
-    $i->waitForText('Your key is valid');
-    $i->waitForText('MailPoet Sending Service is active');
-    $i->waitForText('MailPoet Premium is not installed. Install MailPoet Premium plugin');
-
-    // install Premium plugin
-    $i->click('Install MailPoet Premium plugin');
-    $i->waitForText('downloading MailPoet Premium…');
-    $i->waitForText('activating MailPoet Premium…');
-    $i->waitForText('MailPoet Premium is active!');
-
-    // deactivate Premium plugin
-    $i->cli(['plugin', 'deactivate', 'mailpoet-premium']);
-    $i->reloadPage();
-    $i->waitForText('Your key is valid');
-    $i->waitForText('MailPoet Sending Service is active');
-    $i->waitForText('MailPoet Premium is not active. Activate MailPoet Premium plugin');
-
-    // activate Premium plugin
-    $i->click('Activate MailPoet Premium plugin');
-    $i->waitForText('activating MailPoet Premium…');
-    $i->waitForText('MailPoet Premium is active!');
-    $i->dontSee('downloading MailPoet Premium…');
   }
 
   public function activateMss(\AcceptanceTester $i, Scenario $scenario) {

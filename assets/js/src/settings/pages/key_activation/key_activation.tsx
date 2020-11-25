@@ -26,8 +26,6 @@ export default function KeyActivation() {
   const setState = useAction('updateKeyActivationState');
   const verifyMssKey = useAction('verifyMssKey');
   const verifyPremiumKey = useAction('verifyPremiumKey');
-  const installPremiumPlugin = useAction('installPremiumPlugin');
-  const activatePremiumPlugin = useAction('activatePremiumPlugin');
   const sendCongratulatoryMssEmail = useAction('sendCongratulatoryMssEmail');
   const [senderAddress, setSenderAddress] = useSetting('sender', 'address');
   const [unauthorizedAddresses, setUnauthorizedAddresses] = useSetting('authorized_emails_addresses_check');
@@ -98,8 +96,6 @@ export default function KeyActivation() {
         {state.premiumStatus !== null && (
           <PremiumMessages
             keyMessage={state.premiumMessage}
-            installationStatus={state.premiumInstallationStatus}
-            installationCallback={installPremiumPlugin}
           />
         )}
 

@@ -210,6 +210,7 @@ export type KeyActivationState = {
   inProgress: boolean;
   congratulatoryMssEmailSentTo: string|null;
   code?: number;
+  downloadUrl?: string;
 }
 
 export enum TestEmailState {

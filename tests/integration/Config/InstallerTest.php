@@ -84,22 +84,10 @@ class InstallerTest extends \MailPoetTest {
     $status = Installer::getPremiumStatus();
     expect(isset($status['premium_plugin_active']))->true();
     expect(isset($status['premium_plugin_installed']))->true();
-    expect(isset($status['premium_install_url']))->true();
-    expect(isset($status['premium_activate_url']))->true();
   }
 
   public function testItChecksIfAPluginIsInstalled() {
     expect(Installer::isPluginInstalled(Env::$pluginName))->true();
     expect(Installer::isPluginInstalled('some-non-existent-plugin-123'))->false();
-  }
-
-  public function testItGetsPluginInstallUrl() {
-    expect(Installer::getPluginInstallationUrl(Env::$pluginName))
-      ->startsWith(home_url() . '/wp-admin/update.php?action=install-plugin&plugin=mailpoet&_wpnonce=');
-  }
-
-  public function testItGetsPluginActivateUrl() {
-    expect(Installer::getPluginActivationUrl(Env::$pluginName))
-      ->startsWith(home_url() . '/wp-admin/plugins.php?action=activate&plugin=mailpoet/mailpoet.php&_wpnonce=');
   }
 }
