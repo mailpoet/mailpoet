@@ -31,6 +31,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
     <>
       <SelectControl
         label={MailPoet.I18n.t('blockDividerStyle')}
+        data-automation-id="settings_divider_style"
         value={attributes.style}
         onChange={(style) => (setAttributes({ style }))}
         options={[
@@ -41,6 +42,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
       />
       <RangeControl
         label={MailPoet.I18n.t('blockDividerDividerHeight')}
+        className="mailpoet-automation-styles-divider-height"
         value={attributeDividerHeight}
         min={1}
         max={40}
@@ -58,6 +60,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
       />
       <RangeControl
         label={MailPoet.I18n.t('blockDividerDividerWidth')}
+        className="mailpoet-automation-styles-divider-width"
         value={attributeDividerWidth}
         min={1}
         max={100}
@@ -88,6 +91,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
           <PanelBody title={MailPoet.I18n.t('formSettingsStyles')} initialOpen>
             <RangeControl
               label={MailPoet.I18n.t('blockSpacerHeight')}
+              className="mailpoet-automation-spacer-height-size"
               value={attributeHeight}
               min={1}
               max={400}
@@ -105,6 +109,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
                 });
               }}
             />
+            <div data-automation-id="settings_toggle_enable_divider">
             <ToggleControl
               label={MailPoet.I18n.t('blockSpacerEnableDivider')}
               checked={attributes.type === Types.Divider}
@@ -112,6 +117,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
                 type: checked ? Types.Divider : Types.Spacer,
               })}
             />
+            </div>
             {(
               (attributes.type === Types.Divider) && (dividerSettings)
             )}
@@ -121,6 +127,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
 
       <div
         className={classnames('mailpoet_spacer', attributes.className)}
+        data-automation-id="editor_spacer_block"
         style={{
           height: attributeHeight,
           display: 'flex',
@@ -130,7 +137,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
           justifyContent: 'center',
         }}
       >
-        <div className="mailpoet_divider" style={dividerStyles} />
+        <div className="mailpoet_divider" data-automation-id="editor_divider_block" style={dividerStyles} />
       </div>
     </>
   );
