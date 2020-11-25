@@ -46,7 +46,14 @@ function Modal({
           <ModalHeader title={title} />
         ) }
         { isDismissible && (
-          <button type="button" onClick={onRequestClose} className="mailpoet-modal-close">{ModalCloseIcon}</button>
+          <button
+            type="button"
+            onClick={onRequestClose}
+            className="mailpoet-modal-close"
+            data-automation-id="mailpoet-modal-close"
+          >
+            {ModalCloseIcon}
+          </button>
         ) }
         <div
           className="mailpoet-modal-content"

@@ -26,7 +26,7 @@ export const Tutorial = () => {
       isDismissible
       onRequestClose={onClose}
     >
-      <div className="mailpoet_drag_and_drop_tutorial">
+      <div className="mailpoet_drag_and_drop_tutorial" data-automation-id="form-editor-tutorial">
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video
           style={{ height: '640px' }}
