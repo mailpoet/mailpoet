@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import { useSelector } from 'settings/store/hooks/index';
 import { PremiumInstallationStatus, PremiumStatus } from 'settings/store/types';
 import PremiumInstallationMessages from './premium_installation_messages';
+import Button from '../../../../common/button/button';
 
 const ActiveMessage = () => (
   <div className="mailpoet_success_item mailpoet_success">
@@ -24,24 +25,26 @@ const ActivatingMessage = () => (
 
 type PremiumNotInstalledMessageProps = { callback: () => void }
 const PremiumNotInstalledMessage = ({ callback }: PremiumNotInstalledMessageProps) => (
-  <div className="mailpoet_error">
-    {MailPoet.I18n.t('premiumTabPremiumNotInstalledMessage')}
-    {' '}
-    <button type="button" className="button-link" onClick={callback}>
+  <>
+    <div className="mailpoet_error mailpoet_install_premium_message">
+      {MailPoet.I18n.t('premiumTabPremiumNotInstalledMessage')}
+    </div>
+    <Button onClick={callback}>
       {MailPoet.I18n.t('premiumTabPremiumInstallMessage')}
-    </button>
-  </div>
+    </Button>
+  </>
 );
 
 type PremiumNotActiveMessageProps = { callback: () => void }
 const PremiumNotActiveMessage = ({ callback }: PremiumNotActiveMessageProps) => (
-  <div className="mailpoet_error">
-    {MailPoet.I18n.t('premiumTabPremiumNotActiveMessage')}
-    {' '}
-    <button type="button" className="button-link" onClick={callback}>
+  <>
+    <div className="mailpoet_error mailpoet_install_premium_message">
+      {MailPoet.I18n.t('premiumTabPremiumNotActiveMessage')}
+    </div>
+    <Button onClick={callback}>
       {MailPoet.I18n.t('premiumTabPremiumActivateMessage')}
-    </button>
-  </div>
+    </Button>
+  </>
 );
 
 type NotValidMessageProps = { message?: string }
