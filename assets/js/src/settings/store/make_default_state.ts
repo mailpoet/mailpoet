@@ -63,6 +63,7 @@ export default function makeDefaultState(window: any): State {
     key: data.premium.premium_key || data.mta.mailpoet_api_key,
     inProgress: false,
     congratulatoryMssEmailSentTo: null,
+    downloadUrl: window.mailpoet_premium_plugin_download_url,
   };
   const testEmail = {
     state: TestEmailState.NONE,

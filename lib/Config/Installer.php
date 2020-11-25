@@ -42,31 +42,20 @@ class Installer {
     $premiumPluginActive = License::getLicense();
     $premiumPluginInstalled = $premiumPluginActive || self::isPluginInstalled($slug);
     $premiumPluginInitialized = defined('MAILPOET_PREMIUM_INITIALIZED') && MAILPOET_PREMIUM_INITIALIZED;
-    $premiumInstallUrl = $premiumPluginInstalled ? '' : self::getPluginInstallationUrl($slug);
+    $installer = new Installer(self::PREMIUM_PLUGIN_SLUG);
+    $pluginInformation = $installer->retrievePluginInformation();
 
     return [
       'premium_plugin_active' => $premiumPluginActive,
       'premium_plugin_installed' => $premiumPluginInstalled,
       'premium_plugin_initialized' => $premiumPluginInitialized,
-      'premium_install_url' => $premiumInstallUrl,
+      'premium_plugin_info' => $pluginInformation,
     ];
   }
 
   public static function isPluginInstalled($slug) {
     $installedPlugin = self::getInstalledPlugin($slug);
     return !empty($installedPlugin);
-  }
-
-  public static function getPluginInstallationUrl($slug) {
-    $installUrl = WPFunctions::get()->addQueryArg(
-      [
-        'action'   => 'install-plugin',
-        'plugin'   => $slug,
-        '_wpnonce' => WPFunctions::get()->wpCreateNonce('install-plugin_' . $slug),
-      ],
-      WPFunctions::get()->selfAdminUrl('update.php')
-    );
-    return $installUrl;
   }
 
   private static function getInstalledPlugin($slug) {

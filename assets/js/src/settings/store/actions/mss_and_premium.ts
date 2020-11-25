@@ -4,29 +4,12 @@ import MailPoet from 'mailpoet';
 import { STORE_NAME } from 'settings/store';
 
 import {
-  Action, KeyActivationState, MssStatus, PremiumStatus, PremiumInstallationStatus,
+  Action, KeyActivationState, MssStatus, PremiumStatus,
 } from 'settings/store/types';
 import { setSettings } from './settings';
 
 export function updateKeyActivationState(fields: Partial<KeyActivationState>): Action {
   return { type: 'UPDATE_KEY_ACTIVATION_STATE', fields };
-}
-
-export function* installPremiumPlugin() {
-  yield updateKeyActivationState({
-    premiumStatus: PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_INSTALLED,
-    premiumInstallationStatus: PremiumInstallationStatus.INSTALL_INSTALLING,
-  });
-  const call = yield {
-    type: 'CALL_API',
-    endpoint: 'premium',
-    action: 'installPlugin',
-  };
-  if (call && !call.success) {
-    yield updateKeyActivationState({
-      premiumInstallationStatus: PremiumInstallationStatus.INSTALL_INSTALLING_ERROR,
-    });
-  }
 }
 
 export function* verifyMssKey(key: string) {
@@ -98,6 +81,7 @@ export function* verifyPremiumKey(key: string) {
     premiumMessage: null,
     premiumStatus: status,
     code: res?.meta?.code,
+    downloadUrl: res?.meta?.premium_plugin_info?.download_link,
   });
 
   MailPoet.trackEvent(
