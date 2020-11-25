@@ -12,32 +12,6 @@ export function updateKeyActivationState(fields: Partial<KeyActivationState>): A
   return { type: 'UPDATE_KEY_ACTIVATION_STATE', fields };
 }
 
-export function* activatePremiumPlugin(isAfterInstall) {
-  const doneStatus = isAfterInstall
-    ? PremiumInstallationStatus.INSTALL_DONE
-    : PremiumInstallationStatus.ACTIVATE_DONE;
-  const errorStatus = isAfterInstall
-    ? PremiumInstallationStatus.INSTALL_ACTIVATING_ERROR
-    : PremiumInstallationStatus.ACTIVATE_ERROR;
-  yield updateKeyActivationState({
-    premiumStatus: PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_ACTIVATED,
-    premiumInstallationStatus: isAfterInstall
-      ? PremiumInstallationStatus.INSTALL_ACTIVATING
-      : PremiumInstallationStatus.ACTIVATE_ACTIVATING,
-  });
-  const call = yield {
-    type: 'CALL_API',
-    endpoint: 'premium',
-    action: 'activatePlugin',
-  };
-  if (call && !call.success) {
-    yield updateKeyActivationState({ premiumInstallationStatus: errorStatus });
-    return false;
-  }
-  yield updateKeyActivationState({ premiumInstallationStatus: doneStatus });
-  return true;
-}
-
 export function* installPremiumPlugin() {
   yield updateKeyActivationState({
     premiumStatus: PremiumStatus.VALID_PREMIUM_PLUGIN_BEING_INSTALLED,
@@ -52,9 +26,7 @@ export function* installPremiumPlugin() {
     yield updateKeyActivationState({
       premiumInstallationStatus: PremiumInstallationStatus.INSTALL_INSTALLING_ERROR,
     });
-    return false;
   }
-  return yield* activatePremiumPlugin(true);
 }
 
 export function* verifyMssKey(key: string) {
@@ -115,29 +87,23 @@ export function* verifyPremiumKey(key: string) {
       code: res?.meta?.code,
     });
   }
+  const pluginActive = res.meta.premium_plugin_active;
 
-  yield updateKeyActivationState({ premiumMessage: null });
-  // install/activate Premium plugin
-  let pluginInstalled = res.meta.premium_plugin_installed;
-  let pluginActive = res.meta.premium_plugin_active;
-
-  if (!pluginInstalled) {
-    pluginInstalled = yield* installPremiumPlugin();
+  let status = PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE;
+  if (pluginActive) {
+    status = PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE;
   }
 
-  if (pluginInstalled && !pluginActive) {
-    pluginActive = yield* activatePremiumPlugin(!res.meta.premium_plugin_installed);
-  }
-
-  if (pluginInstalled && pluginActive) {
-    yield updateKeyActivationState({ premiumStatus: PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE });
-  }
+  yield updateKeyActivationState({
+    premiumMessage: null,
+    premiumStatus: status,
+    code: res?.meta?.code,
+  });
 
   MailPoet.trackEvent(
     'User has validated a Premium key',
     {
       'MailPoet Free version': MailPoet.version,
-      'Premium plugin is active': pluginActive,
     }
   );
 

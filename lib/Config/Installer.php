@@ -43,14 +43,12 @@ class Installer {
     $premiumPluginInstalled = $premiumPluginActive || self::isPluginInstalled($slug);
     $premiumPluginInitialized = defined('MAILPOET_PREMIUM_INITIALIZED') && MAILPOET_PREMIUM_INITIALIZED;
     $premiumInstallUrl = $premiumPluginInstalled ? '' : self::getPluginInstallationUrl($slug);
-    $premiumActivateUrl = $premiumPluginActive ? '' : self::getPluginActivationUrl($slug);
 
     return [
       'premium_plugin_active' => $premiumPluginActive,
       'premium_plugin_installed' => $premiumPluginInstalled,
       'premium_plugin_initialized' => $premiumPluginInitialized,
       'premium_install_url' => $premiumInstallUrl,
-      'premium_activate_url' => $premiumActivateUrl,
     ];
   }
 
@@ -69,22 +67,6 @@ class Installer {
       WPFunctions::get()->selfAdminUrl('update.php')
     );
     return $installUrl;
-  }
-
-  public static function getPluginActivationUrl($slug) {
-    $pluginFile = self::getPluginFile($slug);
-    if (empty($pluginFile)) {
-      return false;
-    }
-    $activateUrl = WPFunctions::get()->addQueryArg(
-      [
-        'action'   => 'activate',
-        'plugin'   => $pluginFile,
-        '_wpnonce' => WPFunctions::get()->wpCreateNonce('activate-plugin_' . $pluginFile),
-      ],
-      WPFunctions::get()->selfAdminUrl('plugins.php')
-    );
-    return $activateUrl;
   }
 
   private static function getInstalledPlugin($slug) {
