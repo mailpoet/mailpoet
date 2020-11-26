@@ -35,8 +35,17 @@ class SMTP {
   private $wp;
 
   public function __construct(
-    $host, $port, $authentication, $login = null, $password = null, $encryption,
-    $sender, $replyTo, $returnPath, SMTPMapper $errorMapper) {
+    $host,
+    $port,
+    $authentication,
+    $encryption,
+    $sender,
+    $replyTo,
+    $returnPath,
+    SMTPMapper $errorMapper,
+    $login = null,
+    $password = null
+  ) {
     $this->wp = new WPFunctions;
     $this->host = $host;
     $this->port = $port;

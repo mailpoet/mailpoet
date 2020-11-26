@@ -98,13 +98,13 @@ class Mailer {
           $this->mailerConfig['host'],
           $this->mailerConfig['port'],
           $this->mailerConfig['authentication'],
-          $this->mailerConfig['login'],
-          $this->mailerConfig['password'],
           $this->mailerConfig['encryption'],
           $this->sender,
           $this->replyTo,
           $this->returnPath,
-          new SMTPMapper()
+          new SMTPMapper(),
+          $this->mailerConfig['login'],
+          $this->mailerConfig['password']
         );
         break;
       default:

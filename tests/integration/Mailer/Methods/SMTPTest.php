@@ -51,13 +51,13 @@ class SMTPTest extends \MailPoetTest {
       $this->settings['host'],
       $this->settings['port'],
       $this->settings['authentication'],
-      $this->settings['login'],
-      $this->settings['password'],
       $this->settings['encryption'],
       $this->sender,
       $this->replyTo,
       $this->returnPath,
-      new SMTPMapper()
+      new SMTPMapper(),
+      $this->settings['login'],
+      $this->settings['password']
     );
     $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
     $this->newsletter = [
@@ -91,13 +91,13 @@ class SMTPTest extends \MailPoetTest {
       $this->settings['host'],
       $this->settings['port'],
       $this->settings['authentication'],
-      $this->settings['login'],
-      $this->settings['password'],
       $this->settings['encryption'],
       $this->sender,
       $this->replyTo,
       $returnPath = false,
-      new SMTPMapper()
+      new SMTPMapper(),
+      $this->settings['login'],
+      $this->settings['password']
     );
     expect($mailer->returnPath)->equals($this->sender['from_email']);
   }
