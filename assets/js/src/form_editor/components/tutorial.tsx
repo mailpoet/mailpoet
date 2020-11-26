@@ -1,6 +1,9 @@
 import React from 'react';
-import Modal from 'common/modal/modal';
 import { useSelect, useDispatch } from '@wordpress/data';
+
+import Modal from 'common/modal/modal';
+import Heading from 'common/typography/heading/heading';
+import MailPoet from 'mailpoet';
 
 export const Tutorial = () => {
   const url = useSelect(
@@ -27,6 +30,7 @@ export const Tutorial = () => {
       onRequestClose={onClose}
     >
       <div className="mailpoet_drag_and_drop_tutorial" data-automation-id="form-editor-tutorial">
+        <Heading level={2}>{MailPoet.I18n.t('tutorialHeading')}</Heading>
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video
           style={{ height: '640px' }}
