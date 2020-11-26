@@ -83,6 +83,9 @@
     "post-install-cmd": [
       "./tools/vendor/composer.phar --working-dir=tasks/code_sniffer install",
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
+    ],
+    "pre-autoload-dump": [
+      "php ./tasks/fix-phpunit.php"
     ]
   },
   "config": {
