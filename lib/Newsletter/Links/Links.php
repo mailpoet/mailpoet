@@ -215,7 +215,7 @@ class Links {
   }
 
   private static function hash($extractedLinks, $savedLinks) {
-    $processedLinks = array_map(function(&$link) {
+    $processedLinks = array_map(function($link) {
       $link['type'] = Links::LINK_TYPE_URL;
       $link['link'] = $link['url'];
       $link['processed_link'] = self::DATA_TAG_CLICK . '-' . $link['hash'];
