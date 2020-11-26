@@ -35,12 +35,24 @@ class FormEditorTextInputStylesCest {
     // Check element has styles
     $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
     $i->assertAttributeContains('[data-automation-id="editor_first_name_label"]', 'style', 'font-weight: bold;');
+
     // Apply to all
     $i->click('[data-automation-id="styles_apply_to_all"]');
-    // Check email block has styles too
+
+    // Add heading block and write some title
+    $i->addFromBlockInEditor('Heading');
+    $i->fillField('[data-title="Heading"]', 'Lorem Ipsum');
+    $i->see('Lorem Ipsum');
+
+    // Add paragraph block and write some text
+    $i->addFromBlockInEditor('Paragraph');
+    $i->fillField('[data-title="Paragraph"]', 'Lorem ipsum dolor sit amet');
+    $i->see('Lorem ipsum dolor sit amet');
+
+    // Check email block has styles too and save the form
     $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
-    // Save form
     $i->saveFormInEditor();
+
     // Reload page and check data were saved
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');
