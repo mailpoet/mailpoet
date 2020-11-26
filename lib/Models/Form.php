@@ -73,7 +73,7 @@ class Form extends Model {
         continue;
       }
 
-      if ($field['id'] > 0) {
+      if ((int)$field['id'] > 0) {
         $fields[] = 'cf_' . $field['id'];
       } else {
         $fields[] = $field['id'];
