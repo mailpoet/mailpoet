@@ -10,8 +10,11 @@ if (!file_exists(__DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/
   exit;
 }
 
+// Rename Match interface source file to Matcher
+exec('mv ' . __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/Builder/Match.php ' . __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/Builder/MockMatch.php');
+
+// Fixes for PHP8 Compatibility
 $replacements = [
-  // Fixes for PHP8 Compatibility
   [
     'file' => __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/MockMethod.php',
     'find' => [
@@ -21,6 +24,52 @@ $replacements = [
       '$class = $parameter->hasType() && $parameter->getType() && !$parameter->getType()->isBuiltin() ? new ReflectionClass($parameter->getType()->getName()) : null;',
     ],
   ],
+  // Renaming Match Interface
+  [
+    'file' => __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/Builder/MockMatch.php',
+    'find' => [
+      'interface Match extends Stub',
+    ],
+    'replace' => [
+      'interface MockMatch extends Stub',
+    ],
+  ],
+  [
+    'file' => __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/Builder/NamespaceMatch.php',
+    'find' => [
+      '* @return Match',
+      ', Match $builder',
+      'Match  $builder',
+    ],
+    'replace' => [
+      '* @return MockMatch',
+      ', MockMatch $builder',
+      'MockMatch $builder',
+    ],
+  ],
+  [
+    'file' => __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/InvocationMocker.php',
+    'find' => [
+      'use PHPUnit\Framework\MockObject\Builder\Match;',
+      '* @var Match[]',
+      ', Match $builder',
+    ],
+    'replace' => [
+      'use PHPUnit\Framework\MockObject\Builder\MockMatch;',
+      '* @var MockMatch[]',
+      ', MockMatch $builder',
+    ],
+  ],
+  [
+    'file' => __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/Builder/ParametersMatch.php',
+    'find' => [
+      'interface ParametersMatch extends Match',
+    ],
+    'replace' => [
+      'interface ParametersMatch extends MockMatch',
+    ],
+  ],
+
 ];
 
 // Apply replacements
