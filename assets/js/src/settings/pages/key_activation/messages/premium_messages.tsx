@@ -16,11 +16,11 @@ type PremiumNotActiveMessageProps = {
 const PremiumNotActiveMessage = (props: PremiumNotActiveMessageProps) => (
   <>
     <div className="mailpoet_error mailpoet_install_premium_message">
-      {MailPoet.I18n.t('premiumTabPremiumNotActiveMessage')}
+      {MailPoet.I18n.t('premiumTabPremiumNotInstalledMessage')}
     </div>
     {props.url && (
       <Button href={props.url}>
-        {MailPoet.I18n.t('premiumTabPremiumActivateMessage')}
+        {MailPoet.I18n.t('premiumTabPremiumDownloadMessage')}
       </Button>
     )}
   </>
