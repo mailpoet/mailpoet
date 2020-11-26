@@ -2,7 +2,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import { useSelector } from 'settings/store/hooks/index';
 import { PremiumStatus } from 'settings/store/types';
-import Button from '../../../../common/button/button';
+import Button from 'common/button/button';
 
 const ActiveMessage = () => (
   <div className="mailpoet_success_item mailpoet_success">
