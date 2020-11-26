@@ -178,6 +178,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     $orderDetails->total = 'order_total';
     $helper = Stub::make(WCHelper::class, [
       'wcGetOrder' => $orderDetails,
+      'wcGetCustomerOrderCount' => 0,
     ]);
 
     $customerEmail = 'test@example.com';
@@ -248,6 +249,7 @@ class FirstPurchaseTest extends \MailPoetTest {
 
     $dateCreated = new \DateTime('2018-12-12');
     $helper = Stub::make(WCHelper::class, [
+      'wcGetCustomerOrderCount' => 0,
       'wcGetOrder' => function($orderId) use ($customerEmail, $dateCreated) {
         $orderDetails = Stub::construct(
           new OrderDetails(),
