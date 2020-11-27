@@ -88,6 +88,10 @@ export default function mapFormDataBeforeSaving(data) {
     },
   };
 
+  if (mappedData.settings.font_family === '') {
+    delete mappedData.settings.font_family;
+  }
+
   delete mappedData.settings.formPlacement;
   delete mappedData.settings.successValidationColor;
   delete mappedData.settings.errorValidationColor;

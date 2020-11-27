@@ -49,7 +49,7 @@ const FontFamilySettings = ({
       key: MailPoet.I18n.t('formFontsDefaultTheme'),
       name: MailPoet.I18n.t('formFontsDefaultTheme'),
       selectable: true,
-      value: undefined,
+      value: '',
     },
     {
       key: MailPoet.I18n.t('formFontsStandard'),
