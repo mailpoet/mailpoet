@@ -34,7 +34,7 @@ class RequirementsChecker {
 
     $className = get_class($filter);
     $ref = new \ReflectionClass($className);
-    $constants = $ref->getConstants();
+    $constants = $ref->getConstants() ?? [];
     if (!array_key_exists('SEGMENT_TYPE', $constants)) {
       return true;
     }

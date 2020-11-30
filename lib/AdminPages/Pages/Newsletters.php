@@ -133,8 +133,9 @@ class Newsletters {
     $data['roles'] = $wp_roles->get_names(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $data['roles']['mailpoet_all'] = $this->wp->__('In any WordPress role', 'mailpoet');
 
-    $installedAtDateTime = new \DateTime($data['settings']['installed_at']);
-    $data['installed_days_ago'] = (int)$installedAtDateTime->diff(new \DateTime())->format('%a');
+    $installedAtDiff = (new \DateTime($this->settings->get('installed_at')))->diff(new \DateTime());
+    $data['installed_days_ago'] = $installedAtDiff instanceof \DateInterval ? (int)$installedAtDiff->format('%a') : null;
+
     $data['subscribers_limit'] = $this->subscribersFeature->getSubscribersLimit();
     $data['subscribers_limit_reached'] = $this->subscribersFeature->check();
     $data['has_valid_api_key'] = $this->subscribersFeature->hasValidApiKey();

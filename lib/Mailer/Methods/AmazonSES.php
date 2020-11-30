@@ -168,7 +168,7 @@ class AmazonSES {
         'Authorization' => $this->signRequest($body),
         'X-Amz-Date' => $this->date,
       ],
-      'body' => urldecode(http_build_query($body, null, '&')),
+      'body' => urldecode(http_build_query($body, '', '&')),
     ];
   }
 
@@ -209,7 +209,7 @@ class AmazonSES {
       'x-amz-date:' . $this->date,
       '',
       'host;x-amz-date',
-      hash($this->hashAlgorithm, urldecode(http_build_query($body, null, '&'))),
+      hash($this->hashAlgorithm, urldecode(http_build_query($body, '', '&'))),
     ]);
   }
 
