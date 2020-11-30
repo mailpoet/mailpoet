@@ -88,7 +88,7 @@ class SendGrid {
       'headers' => [
         'Authorization' => $this->auth(),
       ],
-      'body' => http_build_query($body, null, '&'),
+      'body' => http_build_query($body, '', '&'),
     ];
   }
 }

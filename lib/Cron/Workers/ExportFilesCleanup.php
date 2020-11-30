@@ -19,7 +19,7 @@ class ExportFilesCleanup extends SimpleWorker {
       $name = $file->getPathname();
       $created = $file->getMTime();
       $now = new Carbon();
-      if (Carbon::createFromTimestamp($created)->lessThan($now->subDays(self::DELETE_FILES_AFTER_X_DAYS))) {
+      if (Carbon::createFromTimestamp((int)$created)->lessThan($now->subDays(self::DELETE_FILES_AFTER_X_DAYS))) {
         unlink($name);
       };
     }

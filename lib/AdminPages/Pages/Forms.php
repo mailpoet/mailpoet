@@ -64,9 +64,8 @@ class Forms {
       $data['site_url'] = $this->wp->siteUrl();
       $data['premium_plugin_active'] = License::getLicense();
       $data['current_wp_user_firstname'] = $this->wp->wpGetCurrentUser()->user_firstname;
-      $installedAtDateTime = new \DateTime($this->settings->get('installed_at'));
-      $data['installed_days_ago'] = (int)$installedAtDateTime->diff(new \DateTime())->format('%a');
-
+      $installedAtDiff = (new \DateTime($this->settings->get('installed_at')))->diff(new \DateTime());
+      $data['installed_days_ago'] = $installedAtDiff instanceof \DateInterval ? (int)$installedAtDiff->format('%a') : null;
       $data['display_nps_survey'] = true;
       $this->userFlags->set('display_new_form_editor_nps_survey', false);
     }

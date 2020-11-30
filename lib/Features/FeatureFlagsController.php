@@ -36,9 +36,6 @@ class FeatureFlagsController {
       ),
       $flags
     );
-    if ($flagsMap === false) {
-      $flagsMap = [];
-    }
 
     $output = [];
     foreach ($this->featuresController->getDefaults() as $name => $default) {

@@ -60,6 +60,10 @@ class PostContentManager {
       $tagsNotBeingStripped = array_merge($tagsNotBeingStripped, ['<figure>', '<img>', '<h1>', '<h2>', '<h3>']);
     }
 
+    if (is_array($content)) {
+      $content = implode(' ', $content);
+    }
+
     $content = strip_tags($content, implode('', $tagsNotBeingStripped));
     if ($withPostClass) {
       $content = str_replace('<p', '<p class="' . self::WP_POST_CLASS . '"', WPFunctions::get()->wpautop($content));
