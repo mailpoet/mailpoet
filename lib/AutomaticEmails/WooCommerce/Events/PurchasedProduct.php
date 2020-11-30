@@ -66,11 +66,9 @@ class PurchasedProduct {
       'listingScheduleDisplayText' => WPFunctions::get()->__('Email sent when a customer buys product: %s', 'mailpoet'),
       'listingScheduleDisplayTextPlural' => WPFunctions::get()->__('Email sent when a customer buys products: %s', 'mailpoet'),
       'options' => [
-        'type' => 'remote',
         'multiple' => true,
-        'remoteQueryMinimumInputLength' => 3,
-        'remoteQueryFilter' => 'woocommerce_product_purchased_get_products',
-        'placeholder' => WPFunctions::get()->__('Start typing to search for products...', 'mailpoet'),
+        'endpoint' => 'products',
+        'placeholder' => __('Search products', 'mailpoet'),
       ],
     ];
   }

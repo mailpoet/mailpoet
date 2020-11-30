@@ -45,10 +45,8 @@ class PurchasedInCategory {
       'listingScheduleDisplayTextPlural' => __('Email sent when a customer buys a product in categories: %s', 'mailpoet'),
       'options' => [
         'multiple' => true,
-        'type' => 'remote',
-        'remoteQueryMinimumInputLength' => 3,
-        'remoteQueryFilter' => 'woocommerce_product_purchased_get_categories',
-        'placeholder' => _x('Start typing to search for categories…', 'Search input for product category (ecommerce)', 'mailpoet'),
+        'endpoint' => 'product_categories',
+        'placeholder' => _x('Search category', 'Search input for product category (ecommerce)', 'mailpoet'),
       ],
     ];
   }

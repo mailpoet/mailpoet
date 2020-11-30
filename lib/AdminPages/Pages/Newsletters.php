@@ -168,6 +168,27 @@ class Newsletters {
     $data['display_detailed_stats'] = Installer::getPremiumStatus()['premium_plugin_initialized'];
     $data['newsletters_templates_recently_sent_count'] = $this->newsletterTemplatesRepository->getRecentlySentCount();
 
+    $data['product_categories'] = $this->wp->getCategories(['taxonomy' => 'product_cat']);
+
+    usort($data['product_categories'], function ($a, $b) {
+      return strcmp($a->catName, $b->catName);
+    });
+
+    $data['products'] = $this->getProducts();
+
     $this->pageRenderer->displayPage('newsletters.html', $data);
+  }
+
+  private function getProducts() {
+    $products = $this->wp->getResultsFromWpDb(
+      "SELECT `ID`, `post_title` FROM {$this->wp->getWPTableName('posts')} WHERE `post_type` = %s ORDER BY `post_title` ASC;",
+      'product'
+    );
+    return array_map(function ($product) {
+      return [
+        'title' => $product->post_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        'ID' => $product->ID,
+      ];
+    }, $products);
   }
 }
