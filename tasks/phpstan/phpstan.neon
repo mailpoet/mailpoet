@@ -50,3 +50,4 @@ includes:
   - vendor/phpstan/phpstan-doctrine/extension.neon
   - vendor/phpstan/phpstan-doctrine/rules.neon
   - phpstan-baseline.neon # https://medium.com/@ondrejmirtes/phpstans-baseline-feature-lets-you-hold-new-code-to-a-higher-standard-e77d815a5dff
+  - php7-ignore-errors-libs.php # Errors that are ignored when run on PHP7
