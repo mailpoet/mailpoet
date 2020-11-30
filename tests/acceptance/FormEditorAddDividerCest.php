@@ -21,10 +21,10 @@ class FormEditorAddDividerCest {
     $i->clickItemRowActionByItemName($formName, 'Edit');
     $i->waitForElement('[data-automation-id="form_title_input"]');
 
-    // Add divider & spacer block
+    $i->wantTo('Add divider & spacer block');
     $i->addFromBlockInEditor('Divider / Spacer');
 
-    // Check and modify divider & spacer block
+    $i->wantTo('Check and modify divider & spacer block');
     $i->assertAttributeContains('[data-automation-id="editor_divider_block"]', 'style', 'border-top: 1px solid black;');
     $i->click('.mailpoet-automation-divider-togle-enable');
     $i->assertAttributeNotContains('[data-automation-id="editor_divider_block"]', 'style', 'border-top: 1px solid black;');
@@ -40,7 +40,7 @@ class FormEditorAddDividerCest {
     $i->clearFormField('.mailpoet-automation-styles-divider-width input[type="number"]');
     $i->fillField('.mailpoet-automation-styles-divider-width input[type="number"]', 10);
 
-    // Save and reload page to check if data were saved
+    $i->wantTo('Save and reload page to check if data were saved');
     $i->saveFormInEditor();
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');
