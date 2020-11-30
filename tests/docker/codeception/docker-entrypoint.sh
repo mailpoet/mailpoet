@@ -45,8 +45,36 @@ else
   wp core multisite-install $WP_CORE_INSTALL_PARAMS
 fi
 
+# Load Composer dependencies
+# Set SKIP_DEPS environment flag to not download them. E.g. you have downloaded them yourself
+# Example: docker-compose run -e SKIP_DEPS=1 codeception ...
+if [[ -z "${SKIP_DEPS}" ]]; then
+  cd /project
+  ./tools/vendor/composer.phar install
+  cd - >/dev/null
+fi
+
 # install WooCommerce (activate & deactivate it to populate DB for backup)
-wp plugin install woocommerce
+if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
+  cd /wp-core/wp-content/plugins
+  WOOCOMMERCE_SOURCE_ZIP="/wp-core/wp-content/plugins/mailpoet/tools/vendor/woocommerce.zip"
+  WOOCOMMERCE_TARGET_ZIP="/wp-core/wp-content/plugins/woocommerce.zip"
+  # download woocommerce plugin if file doesn't exist
+  if [ -f "$WOOCOMMERCE_SOURCE_ZIP" ]; then
+    echo "Copy Woocommerce plugin from $WOOCOMMERCE_SOURCE_ZIP"
+    cp "$WOOCOMMERCE_SOURCE_ZIP" "$WOOCOMMERCE_TARGET_ZIP"
+  else
+    DOWNLOAD_URL=$(curl -s https://api.github.com/repos/woocommerce/woocommerce/releases/latest \
+            | grep browser_download_url \
+            | grep woocommerce \
+            | cut -d '"' -f 4)
+    echo "Downloading Woocommerce plugin from $DOWNLOAD_URL"
+    curl -s -L --create-dirs -o "$WOOCOMMERCE_TARGET_ZIP" "$DOWNLOAD_URL"
+  fi
+
+  echo "Unzip Woocommerce plugin from $WOOCOMMERCE_TARGET_ZIP"
+  unzip -q -o "$WOOCOMMERCE_TARGET_ZIP"
+fi
 wp plugin activate woocommerce
 wp plugin deactivate woocommerce
 
@@ -63,15 +91,6 @@ CONFIG+="define('DISABLE_WP_CRON', true);\n"
 CONFIG+="if (!isset(\$_SERVER['SERVER_NAME'])) \$_SERVER['SERVER_NAME'] = '';\n"
 
 sed -i "s/define( *'WP_DEBUG', false *);/$CONFIG/" ./wp-config.php
-
-# Load Composer dependencies
-# Set SKIP_DEPS environment flag to not download them. E.g. you have downloaded them yourself
-# Example: docker-compose run -e SKIP_DEPS=1 codeception ...
-if [[ -z "${SKIP_DEPS}" ]]; then
-  cd /project
-  ./tools/vendor/composer.phar install
-  cd - >/dev/null
-fi
 
 # activate MailPoet
 wp plugin activate mailpoet/mailpoet.php
