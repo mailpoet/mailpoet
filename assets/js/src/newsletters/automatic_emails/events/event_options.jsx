@@ -5,36 +5,38 @@ import PropTypes from 'prop-types';
 
 const APIEndpoint = 'automatic_emails';
 
-class EventOptions extends React.Component {
-  static getEventOptionsValues(eventOptions) {
-    const values = (eventOptions && eventOptions.values) ? eventOptions.values : [];
+function getEventOptionsValues(eventOptions) {
+  const values = (eventOptions && eventOptions.values) ? eventOptions.values : [];
 
-    return (values) ? values.map((value) => ({
-      id: value.id,
-      name: value.name,
-    })) : values;
+  return (values) ? values.map((value) => ({
+    id: value.id,
+    name: value.name,
+  })) : values;
+}
+
+export const EventOptions = ({
+  eventOptions,
+  eventSlug,
+  selected,
+  emailSlug,
+  onValueChange,
+}) => {
+  function handleEventOptionChange(e) {
+    if (onValueChange) {
+      onValueChange({ eventOptionValue: e.target.value });
+    }
   }
 
-  constructor(props) {
-    super(props);
-
-    this.handleEventOptionChange = this.handleEventOptionChange.bind(this);
-  }
-
-  displayEventOptions() {
-    const {
-      eventOptions, eventSlug, selected, emailSlug,
-    } = this.props;
-
+  function displayEventOptions() {
     if (!eventOptions) return eventOptions;
 
-    const props = {
+    const fieldProps = {
       field: {
         id: `event_options_${eventSlug}`,
         name: `event_options_${eventSlug}`,
         forceSelect2: true,
         resetSelect2OnUpdate: true,
-        values: this.constructor.getEventOptionsValues(eventOptions),
+        values: getEventOptionsValues(eventOptions),
         multiple: eventOptions.multiple || false,
         placeholder: eventOptions.placeholder || false,
         extendSelect2Options: {
@@ -46,11 +48,11 @@ class EventOptions extends React.Component {
         ),
         selected: () => selected,
       },
-      onValueChange: this.handleEventOptionChange,
+      onValueChange: handleEventOptionChange,
     };
 
     if (eventOptions.type === 'remote') {
-      props.field = _.extend(props.field, {
+      fieldProps.field = _.extend(fieldProps.field, {
         remoteQuery: {
           minimumInputLength: eventOptions.remoteQueryMinimumInputLength || null,
           endpoint: APIEndpoint,
@@ -67,29 +69,20 @@ class EventOptions extends React.Component {
     return (
       <>
         <Selection
-          field={props.field}
-          onValueChange={props.onValueChange}
+          field={fieldProps.field}
+          onValueChange={fieldProps.onValueChange}
         />
         <div className="mailpoet-gap" />
       </>
     );
   }
 
-  handleEventOptionChange(e) {
-    const { onValueChange } = this.props;
-    if (onValueChange) {
-      onValueChange({ eventOptionValue: e.target.value });
-    }
-  }
-
-  render() {
-    return (
-      <div>
-        <div className="event-option-selection">{this.displayEventOptions()}</div>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <div className="event-option-selection">{displayEventOptions()}</div>
+    </div>
+  );
+};
 
 EventOptions.propTypes = {
   selected: PropTypes.array, // eslint-disable-line react/forbid-prop-types
