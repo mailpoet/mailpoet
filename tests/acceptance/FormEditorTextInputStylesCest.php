@@ -20,10 +20,10 @@ class FormEditorTextInputStylesCest {
     $i->clickItemRowActionByItemName($formName, 'Edit');
     $i->waitForElement('[data-automation-id="form_title_input"]');
 
-    // Add first name
+    $i->wantTo('Add first name');
     $i->addFromBlockInEditor('First name');
 
-    // Apply some styles to first name
+    $i->wantTo('Apply some styles to first name');
     $i->click('.mailpoet-automation-input-styles-panel');
     $i->waitForElement('[data-automation-id="input_styles_settings"]');
     $i->click('.mailpoet-automation-inherit-theme-toggle input'); // Display custom settings
@@ -32,35 +32,37 @@ class FormEditorTextInputStylesCest {
     $i->fillField('.mailpoet-automation-styles-border-size input[type="number"]', 10); // Set border size
     $i->click('.mailpoet-automation-label-within-input-toggle input'); // Toggle lable to be rendered outside the input
 
-    // Check element has styles
+    $i->wantTo('Check element has styles');
     $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
     $i->assertAttributeContains('[data-automation-id="editor_first_name_label"]', 'style', 'font-weight: bold;');
 
-    // Apply to all
+    $i->wantTo('Apply to all');
     $i->click('[data-automation-id="styles_apply_to_all"]');
 
-    // Add heading block and write some title
+    $i->wantTo('Add heading block and write some title');
     $i->addFromBlockInEditor('Heading');
     $i->fillField('[data-title="Heading"]', 'Lorem Ipsum');
     $i->see('Lorem Ipsum');
 
-    // Add paragraph block and write some text
+    $i->wantTo('Add paragraph block and write some text');
     $i->addFromBlockInEditor('Paragraph');
     $i->fillField('[data-title="Paragraph"]', 'Lorem ipsum dolor sit amet');
     $i->see('Lorem ipsum dolor sit amet');
 
-    // Check email block has styles too and save the form
+    $i->wantTo('Check email block has styles too and save the form');
     $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
     $i->saveFormInEditor();
 
-    // Reload page and check data were saved
+    $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');
     $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
     $i->assertAttributeContains('[data-automation-id="editor_first_name_label"]', 'style', 'font-weight: bold;');
     $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
+    $i->see('Lorem Ipsum');
+    $i->see('Lorem ipsum dolor sit amet');
 
-    // Check styles are applied on frontend page
+    $i->wantTo('Check styles are applied on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
     $i->assertAttributeContains('[data-automation-id="form_first_name"]', 'style', 'border-width: 10px;');
