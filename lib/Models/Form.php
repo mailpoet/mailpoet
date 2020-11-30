@@ -16,10 +16,16 @@ class Form extends Model {
   public static $_table = MP_FORMS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
   public function getSettings() {
+    if (is_array($this->settings) || $this->settings === null) {
+      return $this->settings;
+    }
     return WPFunctions::get()->isSerialized($this->settings) ? unserialize($this->settings) : $this->settings;
   }
 
   public function getBody() {
+    if (is_array($this->body) || $this->body === null) {
+      return $this->body;
+    }
     return WPFunctions::get()->isSerialized($this->body) ? unserialize($this->body) : $this->body;
   }
 

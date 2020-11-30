@@ -91,7 +91,7 @@ class SendingQueue extends Model {
    * Used only for checking processed subscribers in old queues
    */
   private function getSubscribers() {
-    if (!is_serialized($this->subscribers)) {
+    if (is_array($this->subscribers) || $this->subscribers === null || !is_serialized($this->subscribers)) {
       return $this->subscribers;
     }
     $subscribers = unserialize($this->subscribers);

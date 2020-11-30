@@ -36,7 +36,7 @@ class CustomField extends Model {
     if (isset($model['params'])) {
       $model['params'] = (is_array($this->params))
         ? $this->params
-        : unserialize($this->params);
+        : ($this->params !== null ? unserialize($this->params) : false);
     }
     return $model;
   }
