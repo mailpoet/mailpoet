@@ -6,6 +6,10 @@ $tools = [
   'https://github.com/nette/tracy/releases/download/v2.7.2/tracy.phar' => 'tracy.phar',
 ];
 
+$repositories = [
+  'woocommerce.zip' => 'woocommerce/woocommerce',
+];
+
 // ensure installation in dev-mode only
 $isDevMode = (bool)getenv('COMPOSER_DEV_MODE');
 if (!$isDevMode) {
@@ -19,23 +23,53 @@ if (!file_exists($vendorDir)) {
   mkdir($vendorDir);
 }
 
-// download all tools
-foreach ($tools as $url => $path) {
-  $pharPath = "$vendorDir/$path";
-  $pharInfoPath = "$pharPath.info";
-
+function downloadFile($url, $filePath, $fileInfoPath) {
   fwrite(STDERR, "Downloading '$url'...");
-  if (file_exists($pharPath) && file_exists($pharInfoPath) && file_get_contents($pharInfoPath) === $url) {
+  if (file_exists($filePath) && file_exists($fileInfoPath) && file_get_contents($fileInfoPath) === $url) {
     fwrite(STDERR, " skipped (already exists).\n");
-    continue;
+    return;
   }
 
   $resource = fopen($url, 'r');
   if ($resource === false) {
     throw new \RuntimeException("Could not connect to '$url'");
   }
-  file_put_contents($pharPath, $resource);
-  file_put_contents($pharInfoPath, $url);
-  chmod($pharPath, 0755);
+  file_put_contents($filePath, $resource);
+  file_put_contents($fileInfoPath, $url);
+  chmod($filePath, 0755);
   fwrite(STDERR, " done.\n");
+}
+
+// download all tools
+foreach ($tools as $url => $path) {
+  $pharPath = "$vendorDir/$path";
+  $pharInfoPath = "$pharPath.info";
+
+  downloadFile($url, $pharPath, $pharInfoPath);
+}
+
+$curl = curl_init();
+foreach ($repositories as $filename => $repository) {
+  curl_setopt_array($curl, [
+    CURLOPT_URL => "https://api.github.com/repos/{$repository}/releases/latest",
+    CURLOPT_HTTPGET => true,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER => [
+      'User-Agent: Awesome-Octocat-App',
+      'Content-Type: application/json',
+      'Accept: application/json',
+    ],
+  ]);
+
+  $result = curl_exec($curl);
+  curl_close($curl);
+
+  $result = json_decode($result, true);
+  $assets = reset($result['assets']);
+  $fileUrl = $assets['browser_download_url'];
+
+  $zipPath = "$vendorDir/$filename";
+  $zipInfoPath = "$zipPath.info";
+
+  downloadFile($fileUrl, $zipPath, $zipInfoPath);
 }
