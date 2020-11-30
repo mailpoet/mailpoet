@@ -1,11 +1,30 @@
 import React from 'react';
 import Selection from 'form/fields/selection.jsx';
 import _ from 'underscore';
-import PropTypes from 'prop-types';
 
 const APIEndpoint = 'automatic_emails';
 
-function getEventOptionsValues(eventOptions) {
+type EventOptions = {
+  values: {
+    id: string;
+    name: string;
+  }[];
+  multiple: boolean;
+  placeholder: string;
+  type: string;
+  remoteQueryMinimumInputLength: number;
+  remoteQueryFilter: string;
+}
+
+type Props = {
+  eventOptions: EventOptions;
+  eventSlug: string;
+  selected: string[];
+  emailSlug: string;
+  onValueChange: (value) => void;
+}
+
+function getEventOptionsValues(eventOptions: EventOptions) {
   const values = (eventOptions && eventOptions.values) ? eventOptions.values : [];
 
   return (values) ? values.map((value) => ({
@@ -20,7 +39,7 @@ export const EventOptions = ({
   selected,
   emailSlug,
   onValueChange,
-}) => {
+}: Props) => {
   function handleEventOptionChange(e) {
     if (onValueChange) {
       onValueChange({ eventOptionValue: e.target.value });
@@ -82,14 +101,6 @@ export const EventOptions = ({
       <div className="event-option-selection">{displayEventOptions()}</div>
     </div>
   );
-};
-
-EventOptions.propTypes = {
-  selected: PropTypes.array, // eslint-disable-line react/forbid-prop-types
-  eventOptions: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  eventSlug: PropTypes.string.isRequired,
-  emailSlug: PropTypes.string.isRequired,
-  onValueChange: PropTypes.func,
 };
 
 EventOptions.defaultProps = {
