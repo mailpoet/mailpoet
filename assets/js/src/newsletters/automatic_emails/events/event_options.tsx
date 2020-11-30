@@ -2,25 +2,20 @@ import React from 'react';
 import Selection from 'form/fields/selection.jsx';
 import _ from 'underscore';
 
-const APIEndpoint = 'automatic_emails';
-
 type EventOptions = {
-  values: {
+  values?: {
     id: string;
     name: string;
   }[];
   multiple: boolean;
   placeholder: string;
-  type: string;
-  remoteQueryMinimumInputLength: number;
-  remoteQueryFilter: string;
+  endpoint: string;
 }
 
 type Props = {
   eventOptions: EventOptions;
   eventSlug: string;
   selected: string[];
-  emailSlug: string;
   onValueChange: (value) => void;
 }
 
@@ -37,7 +32,6 @@ export const EventOptions = ({
   eventOptions,
   eventSlug,
   selected,
-  emailSlug,
   onValueChange,
 }: Props) => {
   function handleEventOptionChange(e) {
@@ -51,38 +45,39 @@ export const EventOptions = ({
 
     const fieldProps = {
       field: {
-        id: `event_options_${eventSlug}`,
         name: `event_options_${eventSlug}`,
         forceSelect2: true,
+        endpoint: eventOptions.endpoint,
         resetSelect2OnUpdate: true,
         values: getEventOptionsValues(eventOptions),
         multiple: eventOptions.multiple || false,
         placeholder: eventOptions.placeholder || false,
-        extendSelect2Options: {
-          minimumResultsForSearch: Infinity,
-        },
         transformChangedValue: (value, valueTextPair) => _.map(
           valueTextPair,
           (data) => ({ id: data.id, name: data.text })
         ),
         selected: () => selected,
+        getLabel: undefined,
+        getValue: undefined,
       },
       onValueChange: handleEventOptionChange,
+      item: {
+        action: '',
+      },
     };
 
-    if (eventOptions.type === 'remote') {
-      fieldProps.field = _.extend(fieldProps.field, {
-        remoteQuery: {
-          minimumInputLength: eventOptions.remoteQueryMinimumInputLength || null,
-          endpoint: APIEndpoint,
-          method: 'get_event_options',
-          data: {
-            filter: eventOptions.remoteQueryFilter || null,
-            email_slug: emailSlug,
-            event_slug: eventSlug,
-          },
-        },
-      });
+    if (eventOptions.endpoint === 'product_categories') {
+      fieldProps.field.getLabel = _.property('cat_name');
+      fieldProps.field.name = 'category_id';
+      fieldProps.field.getValue = _.property('term_id');
+      fieldProps.item = { action: 'purchasedCategory' };
+    }
+
+    if (eventOptions.endpoint === 'products') {
+      fieldProps.field.getLabel = _.property('title');
+      fieldProps.field.getValue = _.property('ID');
+      fieldProps.field.name = 'product_id';
+      fieldProps.item = { action: 'purchasedProduct' };
     }
 
     return (
@@ -90,6 +85,7 @@ export const EventOptions = ({
         <Selection
           field={fieldProps.field}
           onValueChange={fieldProps.onValueChange}
+          item={fieldProps.item}
         />
         <div className="mailpoet-gap" />
       </>
