@@ -41,13 +41,13 @@ class FormEditorTextInputStylesCest {
 
     $i->wantTo('Add heading block and write some title');
     $i->addFromBlockInEditor('Heading');
-    $i->fillField('[data-title="Heading"]', 'Lorem Ipsum');
-    $i->see('Lorem Ipsum');
+    $i->fillField('[data-title="Heading"]', 'Heading Lorem');
+    $i->see('Heading Lorem');
 
     $i->wantTo('Add paragraph block and write some text');
     $i->addFromBlockInEditor('Paragraph');
-    $i->fillField('[data-title="Paragraph"]', 'Lorem ipsum dolor sit amet');
-    $i->see('Lorem ipsum dolor sit amet');
+    $i->fillField('[data-title="Paragraph"]', 'Paragraph ipsum dolor');
+    $i->see('Paragraph ipsum dolor');
 
     $i->wantTo('Check email block has styles too and save the form');
     $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
@@ -59,8 +59,8 @@ class FormEditorTextInputStylesCest {
     $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
     $i->assertAttributeContains('[data-automation-id="editor_first_name_label"]', 'style', 'font-weight: bold;');
     $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
-    $i->see('Lorem Ipsum');
-    $i->see('Lorem ipsum dolor sit amet');
+    $i->see('Heading Lorem');
+    $i->see('Paragraph ipsum dolor');
 
     $i->wantTo('Check styles are applied on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
