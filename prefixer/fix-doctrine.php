@@ -26,6 +26,12 @@ $data = file_get_contents($file);
 $data = str_replace('public function getMessage();', '// public function getMessage();', $data);
 file_put_contents($file, $data);
 
+// Fix ResultStatement interface issues
+$file = __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/ResultStatement.php';
+$data = file_get_contents($file);
+$data = str_replace('@param int|null     $fetchArgument', '@param int|string|null    $fetchArgument', $data);
+$data = str_replace('@param mixed[]|null $ctorArgs', '@param mixed|null $ctorArgs', $data);
+file_put_contents($file, $data);
 
 // cleanup file types by extension
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name '*.xsd' -delete");

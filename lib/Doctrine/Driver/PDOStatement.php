@@ -153,7 +153,7 @@ class PDOStatement implements \IteratorAggregate, Statement {
   }
 
   public function errorCode() {
-    return $this->statement->errorCode();
+    return $this->statement->errorCode() ?? '';
   }
 
   public function errorInfo() {

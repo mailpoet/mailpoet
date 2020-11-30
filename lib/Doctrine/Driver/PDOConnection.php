@@ -3,6 +3,7 @@
 namespace MailPoet\Doctrine\Driver;
 
 use MailPoet\InvalidStateException;
+use MailPoet\RuntimeException;
 
 class PDOConnection implements \MailPoetVendor\Doctrine\DBAL\Driver\Connection, \MailPoetVendor\Doctrine\DBAL\Driver\ServerInfoAwareConnection {
   /** @var \PDO */
@@ -39,15 +40,21 @@ class PDOConnection implements \MailPoetVendor\Doctrine\DBAL\Driver\Connection, 
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getServerVersion() {
-    return $this->connection->getAttribute(\PDO::ATTR_SERVER_VERSION);
+    $version = $this->connection->getAttribute(\PDO::ATTR_SERVER_VERSION);
+    return is_scalar($version) ? (string)$version : '';
   }
 
   public function prepare($prepareString, $driverOptions = []) {
     try {
-      return $this->createStatement(
-        $this->connection->prepare($prepareString, $driverOptions)
-      );
+      $preparedStatement = $this->connection->prepare($prepareString, $driverOptions);
+      if ($preparedStatement === false) {
+        throw new RuntimeException('Unable to prepare PDOStatement for ' . $prepareString);
+      }
+      return $this->createStatement($preparedStatement);
     } catch (\PDOException $exception) {
       throw new \MailPoetVendor\Doctrine\DBAL\Driver\PDOException($exception);
     }
@@ -92,10 +99,14 @@ class PDOConnection implements \MailPoetVendor\Doctrine\DBAL\Driver\Connection, 
   public function lastInsertId($name = null) {
     try {
       if ($name === null) {
-        return $this->connection->lastInsertId();
+        $lastId = $this->connection->lastInsertId();
+      } else {
+        $lastId = $this->connection->lastInsertId($name);
       }
-
-      return $this->connection->lastInsertId($name);
+      if ($lastId === false) {
+        return '';
+      }
+      return $lastId;
     } catch (\PDOException $exception) {
       throw new \MailPoetVendor\Doctrine\DBAL\Driver\PDOException($exception);
     }
