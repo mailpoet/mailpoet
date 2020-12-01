@@ -74,8 +74,8 @@ const ImportSubscribers = () => {
                   updatedSubscribers={stepDataManipulationData.updated}
                   segments={stepDataManipulationData.segments}
                   addedToSegmentWithWelcomeNotification={
-                  stepDataManipulationData.added_to_segment_with_welcome_notification
-                }
+                    stepDataManipulationData.added_to_segment_with_welcome_notification
+                  }
                 />
               )}
             />
