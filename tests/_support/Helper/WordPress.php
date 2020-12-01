@@ -37,7 +37,11 @@ function override($func, $args) {
   if ($callback) {
     return call_user_func_array($callback, $args);
   }
-  return call_user_func_array('\\' . $func, $args);
+  $func = '\\' . $func;
+  if (!is_callable($func)) {
+    throw new \RuntimeException("Function $func doesn't exist.");
+  }
+  return call_user_func_array($func, $args);
 }
 
 function get_terms($key) {

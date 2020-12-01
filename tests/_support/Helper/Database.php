@@ -21,6 +21,9 @@ class Database extends \Codeception\Module {
     $fullFilename = Env::$path . '/tests/_data/' . $filename . '.sql';
     $sql = file_get_contents($fullFilename);
     $sql = preg_replace('/`wp_/', '`' . $wpdb->prefix, $sql); // Use the current database prefix
+    if (!is_string($sql)) {
+      throw new \RuntimeException('Empty or missing ' . $fullFilename);
+    }
     $db->exec($sql);
   }
 }

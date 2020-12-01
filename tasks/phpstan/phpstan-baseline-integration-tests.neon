@@ -673,8 +673,3 @@ parameters:
 			message: "#^Cannot call method getBody\\(\\) on MailPoet\\\\Entities\\\\NewsletterEntity\\|null\\.$#"
 			count: 1
 			path: ../../tests/integration/WooCommerce/TransactionalEmailsTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$argument of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
-			count: 1
-			path: ../../tests/integration/_bootstrap.php

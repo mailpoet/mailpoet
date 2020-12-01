@@ -67,7 +67,11 @@ class CleanupExtension extends Extension {
   }
 
   public function cleanupEnvironment(TestEvent $event) {
-    $this->rootConnection->exec(file_get_contents(self::DB_BACKUP_PATH));
+    $backupSql = file_get_contents(self::DB_BACKUP_PATH);
+    if (!is_string($backupSql)) {
+      throw new \RuntimeException('Missing or empty DB backup file: ' . self::DB_BACKUP_PATH);
+    }
+    $this->rootConnection->exec($backupSql);
     exec('rm -rf ' . self::MAILHOG_DATA_PATH . '/*', $output);
 
     // cleanup EntityManager for data factories that are using it

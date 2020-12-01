@@ -50,7 +50,11 @@ $entities = [
 
 $connection = ContainerWrapper::getInstance(WP_DEBUG)->get(Connection::class);
 $destroy = function($model) use ($connection) {
-  $class = new \ReflectionClass('\MailPoet\Models\\' . $model);
+  $modelName = '\MailPoet\Models\\' . $model;
+  if (!class_exists($modelName)) {
+    throw new \RuntimeException("Class $modelName doesn't exist.");
+  }
+  $class = new \ReflectionClass($modelName);
   $table = $class->getStaticPropertyValue('_table');
   $connection->executeUpdate("TRUNCATE $table");
 };

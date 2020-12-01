@@ -623,6 +623,9 @@ class WooCommerceTest extends \MailPoetTest {
              "2017-01-02 12:31:12"
            )', $wpdb->users));
     $id = $db->lastInsertId();
+    if (!is_string($id)) {
+      throw new \RuntimeException('Unexpected error when creating WP user.');
+    }
     // add customer role
     $user = new WPUserWithExtraProps($id);
     $user->add_role('customer');

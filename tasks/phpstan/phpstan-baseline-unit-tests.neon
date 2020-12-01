@@ -6,24 +6,9 @@ parameters:
 			path: ../../tests/DataFactories/Newsletter.php
 
 		-
-			message: "#^Parameter \\#1 \\$query of method PDO\\:\\:exec\\(\\) expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../tests/_support/CleanupExtension.php
-
-		-
 			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|false given\\.$#"
 			count: 1
 			path: ../../tests/_support/Helper/Database.php
-
-		-
-			message: "#^Parameter \\#1 \\$query of method PDO\\:\\:exec\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../tests/_support/Helper/Database.php
-
-		-
-			message: "#^Parameter \\#1 \\$function of function call_user_func_array expects callable\\(\\)\\: mixed, string given\\.$#"
-			count: 1
-			path: ../../tests/_support/Helper/WordPress.php
 
 		-
 			message: "#^Property MailPoet\\\\Test\\\\WP\\\\ReadmeTest\\:\\:\\$data \\(string\\) does not accept string\\|false\\.$#"
