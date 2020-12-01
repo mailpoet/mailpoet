@@ -40,19 +40,23 @@ const CheckboxGroup = ({
 
   return (
     <div>
-      {options.map(({ label, value, ...attributes }: CheckboxProps) => (
-        <Checkbox
-          checked={values.includes(value)}
-          key={label}
-          name={name}
-          value={value}
-          onCheck={(isChecked) => handleChange(value, isChecked)}
-          isFullWidth={isFullWidth}
-          {...attributes} // eslint-disable-line react/jsx-props-no-spreading
-        >
-          {label}
-        </Checkbox>
-      ))}
+      {options.map((props: CheckboxProps) => {
+        const { label, ...attributes } = props;
+        const value = (props.value as CheckboxValueType);
+        return (
+          <Checkbox
+            checked={values.includes(value)}
+            key={label}
+            name={name}
+            value={value}
+            onCheck={(isChecked) => handleChange(value, isChecked)}
+            isFullWidth={isFullWidth}
+            {...attributes} // eslint-disable-line react/jsx-props-no-spreading
+          >
+            {label}
+          </Checkbox>
+        );
+      })}
     </div>
   );
 };

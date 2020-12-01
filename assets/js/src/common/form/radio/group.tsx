@@ -31,19 +31,23 @@ const RadioGroup = ({
 
   return (
     <div>
-      {options.map(({ label, value, ...attributes }: RadioProps) => (
-        <Radio
-          checked={currentValue === value}
-          key={label}
-          name={name}
-          value={value}
-          onCheck={() => handleChange(value)}
-          isFullWidth={isFullWidth}
-          {...attributes} // eslint-disable-line react/jsx-props-no-spreading
-        >
-          {label}
-        </Radio>
-      ))}
+      {options.map((props: RadioProps) => {
+        const { label, ...attributes } = props;
+        const value = (props.value as RadioValueType);
+        return (
+          <Radio
+            checked={currentValue === value}
+            key={label}
+            name={name}
+            value={value}
+            onCheck={() => handleChange(value)}
+            isFullWidth={isFullWidth}
+            {...attributes} // eslint-disable-line react/jsx-props-no-spreading
+          >
+            {label}
+          </Radio>
+        );
+      })}
     </div>
   );
 };
