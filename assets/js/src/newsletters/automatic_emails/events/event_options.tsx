@@ -57,8 +57,8 @@ export const EventOptions = ({
           (data) => ({ id: data.id, name: data.text })
         ),
         selected: () => selected,
-        getLabel: undefined,
-        getValue: undefined,
+        getLabel: _.property('name'),
+        getValue: _.property('id'),
       },
       onValueChange: handleEventOptionChange,
       item: {
@@ -67,15 +67,11 @@ export const EventOptions = ({
     };
 
     if (eventOptions.endpoint === 'product_categories') {
-      fieldProps.field.getLabel = _.property('cat_name');
       fieldProps.field.name = 'category_id';
-      fieldProps.field.getValue = _.property('term_id');
       fieldProps.item = { action: 'purchasedCategory' };
     }
 
     if (eventOptions.endpoint === 'products') {
-      fieldProps.field.getLabel = _.property('title');
-      fieldProps.field.getValue = _.property('ID');
       fieldProps.field.name = 'product_id';
       fieldProps.item = { action: 'purchasedProduct' };
     }

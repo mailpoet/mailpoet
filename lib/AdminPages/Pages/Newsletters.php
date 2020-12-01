@@ -23,6 +23,7 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WooCommerce\TransactionalEmails;
+use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
 use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -66,6 +67,9 @@ class Newsletters {
   /** @var AutomaticEmails */
   private $automaticEmails;
 
+  /** @var WPPostListLoader */
+  private $wpPostListLoader;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -79,6 +83,7 @@ class Newsletters {
     ServicesChecker $servicesChecker,
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
     AddToNewslettersSegments $addToNewslettersSegments,
+    WPPostListLoader $wpPostListLoader,
     AutomaticEmails $automaticEmails
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -94,6 +99,7 @@ class Newsletters {
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
     $this->addToNewslettersSegments = $addToNewslettersSegments;
     $this->automaticEmails = $automaticEmails;
+    $this->wpPostListLoader = $wpPostListLoader;
   }
 
   public function render() {
@@ -168,27 +174,10 @@ class Newsletters {
     $data['display_detailed_stats'] = Installer::getPremiumStatus()['premium_plugin_initialized'];
     $data['newsletters_templates_recently_sent_count'] = $this->newsletterTemplatesRepository->getRecentlySentCount();
 
-    $data['product_categories'] = $this->wp->getCategories(['taxonomy' => 'product_cat']);
+    $data['product_categories'] = $this->wpPostListLoader->getWooCommerceCategories();
 
-    usort($data['product_categories'], function ($a, $b) {
-      return strcmp($a->catName, $b->catName);
-    });
-
-    $data['products'] = $this->getProducts();
+    $data['products'] = $this->wpPostListLoader->getProducts();
 
     $this->pageRenderer->displayPage('newsletters.html', $data);
-  }
-
-  private function getProducts() {
-    $products = $this->wp->getResultsFromWpDb(
-      "SELECT `ID`, `post_title` FROM {$this->wp->getWPTableName('posts')} WHERE `post_type` = %s ORDER BY `post_title` ASC;",
-      'product'
-    );
-    return array_map(function ($product) {
-      return [
-        'title' => $product->post_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        'ID' => $product->ID,
-      ];
-    }, $products);
   }
 }
