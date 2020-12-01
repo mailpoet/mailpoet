@@ -4,6 +4,8 @@ declare(strict_types = 1);
 # see https://github.com/phpstan/phpstan/issues/4060
 $config = [];
 
+$config['parameters']['phpVersion'] = 80000;
+
 if (PHP_VERSION_ID < 80000) {
   $config['parameters']['ignoreErrors'][] = [
     'message' => '#^Else branch is unreachable because ternary operator condition is always true#',
@@ -26,7 +28,7 @@ if (PHP_VERSION_ID < 80000) {
     'count' => 1,
   ];
   $config['parameters']['ignoreErrors'][] = [
-    'message' => '#^Cannot access offset \(int\|string\) on array\|false#',
+    'message' => '#^Cannot access offset \\(int\\|string\\) on array\\|false#',
     'path' => __DIR__ . '/../../lib/Features/FeatureFlagsController.php',
     'count' => 1,
   ];
