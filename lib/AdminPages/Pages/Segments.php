@@ -11,6 +11,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Segments {
@@ -32,12 +33,16 @@ class Segments {
   /** @var WooCommerceHelper */
   private $woocommerceHelper;
 
+  /** @var WPPostListLoader */
+  private $wpPostListLoader;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
     ServicesChecker $servicesChecker,
     WPFunctions $wp,
     WooCommerceHelper $woocommerceHelper,
+    WPPostListLoader $wpPostListLoader,
     SubscribersFeature $subscribersFeature
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -46,6 +51,7 @@ class Segments {
     $this->servicesChecker = $servicesChecker;
     $this->wp = $wp;
     $this->woocommerceHelper = $woocommerceHelper;
+    $this->wpPostListLoader = $wpPostListLoader;
   }
 
   public function render() {
@@ -85,28 +91,11 @@ class Segments {
       ->where('type', Newsletter::TYPE_STANDARD)
       ->orderByExpr('ISNULL(sent_at) DESC, sent_at DESC')->findArray();
 
-    $data['product_categories'] = $this->wp->getCategories(['taxonomy' => 'product_cat']);
+    $data['product_categories'] = $this->wpPostListLoader->getWooCommerceCategories();
 
-    usort($data['product_categories'], function ($a, $b) {
-      return strcmp($a->catName, $b->catName);
-    });
-
-    $data['products'] = $this->getProducts();
+    $data['products'] = $this->wpPostListLoader->getProducts();
     $data['is_woocommerce_active'] = $this->woocommerceHelper->isWooCommerceActive();
 
     $this->pageRenderer->displayPage('segments.html', $data);
-  }
-
-  private function getProducts() {
-    $products = $this->wp->getResultsFromWpDb(
-      "SELECT `ID`, `post_title` FROM {$this->wp->getWPTableName('posts')} WHERE `post_type` = %s ORDER BY `post_title` ASC;",
-      'product'
-    );
-    return array_map(function ($product) {
-      return [
-        'title' => $product->post_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        'ID' => $product->ID,
-      ];
-    }, $products);
   }
 }

@@ -30,15 +30,7 @@
       var mailpoet_transactional_emails_opt_in_notice_dismissed = '<%= transactional_emails_opt_in_notice_dismissed %>';
       var mailpoet_mss_key_invalid = <%= mss_key_invalid ? 'true' : 'false' %>;
       var mailpoet_product_categories = <%= json_encode(product_categories)  %>;
-      mailpoet_product_categories = mailpoet_product_categories.map(function(category) {
-        category.id = category.cat_ID;
-        return category;
-      });
       var mailpoet_products = <%= json_encode(products) %>;
-      mailpoet_products = mailpoet_products.map(function(product) {
-        product.id = product.ID;
-        return product;
-      });
 
       var has_mss_key_specified = <%= json_encode(has_mss_key_specified) %>;
       var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email) | escape('js') %>';

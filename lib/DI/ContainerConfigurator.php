@@ -346,6 +346,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // WordPress
     $container->autowire(\MailPoet\WP\Emoji::class)->setPublic(true);
     $container->autowire(\MailPoet\WP\Functions::class)->setPublic(true);
+    $container->autowire(\MailPoet\WP\AutocompletePostListLoader::class)->setPublic(true);
     // Third party classes
     $container->autowire(\MailPoetVendor\CSS::class)->setClass(\MailPoetVendor\CSS::class)->setPublic(true);
     $container->autowire(\MailPoetVendor\csstidy::class)->setClass(\MailPoetVendor\csstidy::class);

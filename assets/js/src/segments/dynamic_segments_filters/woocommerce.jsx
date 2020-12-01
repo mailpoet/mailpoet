@@ -18,8 +18,8 @@ const categoriesField = {
   resetSelect2OnUpdate: true,
   placeholder: MailPoet.I18n.t('selectWooPurchasedCategory'),
   forceSelect2: true,
-  getLabel: _.property('cat_name'),
-  getValue: _.property('term_id'),
+  getLabel: _.property('name'),
+  getValue: _.property('id'),
 };
 
 const productsField = {
@@ -29,8 +29,8 @@ const productsField = {
   resetSelect2OnUpdate: true,
   placeholder: MailPoet.I18n.t('selectWooPurchasedProduct'),
   forceSelect2: true,
-  getLabel: _.property('title'),
-  getValue: _.property('ID'),
+  getLabel: _.property('name'),
+  getValue: _.property('id'),
 };
 
 export default (formItems) => {
