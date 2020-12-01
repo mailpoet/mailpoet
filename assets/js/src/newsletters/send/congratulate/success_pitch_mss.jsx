@@ -18,10 +18,10 @@ function PitchMss(props) {
           <Heading level={4}>{MailPoet.I18n.t('congratulationsMSSPitchSubHeader')}</Heading>
           <p>
             {
-            MailPoet.I18n.t(props.subscribersCount < 1000
-              ? 'welcomeWizardMSSFreeSubtitle'
-              : 'welcomeWizardMSSNotFreeSubtitle')
-          }
+              MailPoet.I18n.t(props.subscribersCount < 1000
+                ? 'welcomeWizardMSSFreeSubtitle'
+                : 'welcomeWizardMSSNotFreeSubtitle')
+            }
           </p>
           <Heading level={5}>
             {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}

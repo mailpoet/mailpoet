@@ -61,34 +61,34 @@ function StepMethodSelection({
         onMethodChange={setMethod}
       />
       { method === 'paste-method' && (
-      <MethodPaste
-        onPrevious={previousStep}
-        onValueChange={setPastedCsvData}
-        onFinish={processLocal}
-        canFinish={!!pastedCsvData.trim()}
-        data={pastedCsvData}
-      />
+        <MethodPaste
+          onPrevious={previousStep}
+          onValueChange={setPastedCsvData}
+          onFinish={processLocal}
+          canFinish={!!pastedCsvData.trim()}
+          data={pastedCsvData}
+        />
       )}
       { method === 'file-method' && (
-      <MethodUpload
-        onPrevious={previousStep}
-        onValueChange={setFile}
-        onFinish={processLocal}
-        canFinish={!!file}
-        data={file}
-      />
+        <MethodUpload
+          onPrevious={previousStep}
+          onValueChange={setFile}
+          onFinish={processLocal}
+          canFinish={!!file}
+          data={file}
+        />
       )}
       { method === 'mailchimp-method' && (
-      <MethodMailChimp
-        onPrevious={previousStep}
-        onFinish={(data) => {
-          MailPoet.trackEvent('Subscribers import started', {
-            source: 'MailChimp',
-            'MailPoet Free version': window.mailpoet_version,
-          });
-          finish(data);
-        }}
-      />
+        <MethodMailChimp
+          onPrevious={previousStep}
+          onFinish={(data) => {
+            MailPoet.trackEvent('Subscribers import started', {
+              source: 'MailChimp',
+              'MailPoet Free version': window.mailpoet_version,
+            });
+            finish(data);
+          }}
+        />
       )}
       { method === undefined && (
         <PreviousNextStepButtons
