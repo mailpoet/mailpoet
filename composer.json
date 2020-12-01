@@ -65,7 +65,8 @@
     "psr-4": {
       "MailPoetTasks\\Release\\": "tasks/release",
       "MailPoet\\Test\\DataFactories\\": "tests/DataFactories",
-      "MailPoet\\Test\\DataGenerator\\": "tests/DataGenerator"
+      "MailPoet\\Test\\DataGenerator\\": "tests/DataGenerator",
+      "MailPoet\\Test\\SplitTests\\": "tests/SplitTests"
     }
   },
   "scripts": {

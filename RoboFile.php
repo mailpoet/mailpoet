@@ -1,11 +1,10 @@
 <?php
-require_once './tests/_support/SplitTestsByGroups.php';
 
 // phpcs:ignore PSR1.Classes.ClassDeclaration
 class RoboFile extends \Robo\Tasks {
   const ZIP_BUILD_PATH = __DIR__ . '/mailpoet.zip';
 
-  use \Codeception\Task\SplitTestsByGroups;
+  use \MailPoet\Test\SplitTests\SplitTestFilesByGroups;
 
   public function __construct() {
 

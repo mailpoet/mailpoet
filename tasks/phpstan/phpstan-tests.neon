@@ -29,7 +29,6 @@ parameters:
   excludes_analyse:
     - ../../tests/_support/_generated
     - ../../tests/unit/Entities/SubscriberEntityTest.php
-    - ../../tests/_support/SplitTestsByGroups.php
 
   # exclude level 6 errors
   checkGenericClassInNonGenericObjectType: false
