@@ -1,39 +1,14 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Offset 'host' does not exist on array\\('port' \\=\\> int, \\?'scheme' \\=\\> string, \\?'host' \\=\\> string, \\?'user' \\=\\> string, \\?'pass' \\=\\> string, \\?'path' \\=\\> string, \\?'query' \\=\\> string, \\?'fragment' \\=\\> string\\)\\.$#"
-			count: 3
-			path: ../../lib/Cron/CronHelper.php
-
-		-
-			message: "#^Offset 'scheme' does not exist on array\\('port' \\=\\> int, \\?'scheme' \\=\\> string, \\?'host' \\=\\> string, \\?'user' \\=\\> string, \\?'pass' \\=\\> string, \\?'path' \\=\\> string, \\?'query' \\=\\> string, \\?'fragment' \\=\\> string\\)\\.$#"
-			count: 2
-			path: ../../lib/Cron/CronHelper.php
-
-		-
-			message: "#^Parameter \\#1 \\$str of function strtolower expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../lib/Cron/CronHelper.php
-
-		-
 			message: "#^Property MailPoet\\\\Cron\\\\DaemonHttpRunner\\:\\:\\$daemon \\(MailPoet\\\\Cron\\\\Daemon\\) does not accept MailPoet\\\\Cron\\\\Daemon\\|null\\.$#"
 			count: 1
 			path: ../../lib/Cron/DaemonHttpRunner.php
 
 		-
-			message: "#^Cannot call method createNotificationHistory\\(\\) on bool\\|MailPoet\\\\Models\\\\Newsletter\\.$#"
-			count: 1
-			path: ../../lib/Cron/Workers/Scheduler.php
-
-		-
 			message: "#^Parameter \\#1 \\$newsletter of method MailPoet\\\\Cron\\\\Workers\\\\StatsNotifications\\\\Scheduler\\:\\:schedule\\(\\) expects MailPoet\\\\Entities\\\\NewsletterEntity, MailPoet\\\\Entities\\\\NewsletterEntity\\|null given\\.$#"
 			count: 1
 			path: ../../lib/Cron/Workers/SendingQueue/SendingQueue.php
-
-		-
-			message: "#^Parameter \\#1 \\$time of function strtotime expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../lib/Cron/Workers/SimpleWorker.php
 
 		-
 			message: "#^Cannot call method getNewsletterRenderedSubject\\(\\) on MailPoet\\\\Entities\\\\SendingQueueEntity\\|null\\.$#"
@@ -81,31 +56,6 @@ parameters:
 			path: ../../lib/DynamicSegments/Persistence/Saver.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of function is_serialized expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../lib/Entities/SettingEntity.php
-
-		-
-			message: "#^Parameter \\#1 \\$variable_representation of function unserialize expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../lib/Entities/SettingEntity.php
-
-		-
-			message: "#^Parameter \\#1 \\$variable_representation of function unserialize expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../lib/Models/CustomField.php
-
-		-
-			message: "#^Parameter \\#1 \\$variable_representation of function unserialize expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../lib/Models/DynamicSegmentFilter.php
-
-		-
-			message: "#^Parameter \\#1 \\$variable_representation of function unserialize expects string, array\\|string given\\.$#"
-			count: 2
-			path: ../../lib/Models/Form.php
-
-		-
 			message: "#^Parameter \\#1 \\$data of function is_serialized expects string, array\\|string given\\.$#"
 			count: 2
 			path: ../../lib/Models/Form.php
@@ -121,16 +71,6 @@ parameters:
 			path: ../../lib/Models/Model.php
 
 		-
-			message: "#^Cannot call method set\\(\\) on static\\(MailPoet\\\\Models\\\\Model\\)\\|true\\.$#"
-			count: 1
-			path: ../../lib/Models/Model.php
-
-		-
-			message: "#^Cannot call method save\\(\\) on static\\(MailPoet\\\\Models\\\\Model\\)\\|true\\.$#"
-			count: 1
-			path: ../../lib/Models/Model.php
-
-		-
 			message: "#^Parameter \\#1 \\$json of function json_decode expects string, object\\|string given\\.$#"
 			count: 1
 			path: ../../lib/Models/Newsletter.php
@@ -141,34 +81,9 @@ parameters:
 			path: ../../lib/Models/ScheduledTask.php
 
 		-
-			message: "#^Method MailPoet\\\\Models\\\\ScheduledTask\\:\\:findOneScheduledByNewsletterIdAndSubscriberId\\(\\) should return MailPoet\\\\Models\\\\ScheduledTask\\|null but returns MailPoet\\\\Models\\\\ScheduledTask\\|true\\|null\\.$#"
-			count: 1
-			path: ../../lib/Models/ScheduledTask.php
-
-		-
-			message: "#^Cannot call method asArray\\(\\) on bool\\|MailPoet\\\\Models\\\\SubscriberSegment\\.$#"
-			count: 1
-			path: ../../lib/Models/Segment.php
-
-		-
-			message: "#^Parameter \\#1 \\$data of function is_serialized expects string, array\\|string given\\.$#"
-			count: 1
-			path: ../../lib/Models/SendingQueue.php
-
-		-
-			message: "#^Parameter \\#1 \\$variable_representation of function unserialize expects string, array\\|string given\\.$#"
-			count: 1
-			path: ../../lib/Models/SendingQueue.php
-
-		-
 			message: "#^Parameter \\#1 \\$json of function json_decode expects string, object\\|string\\|null given\\.$#"
 			count: 1
 			path: ../../lib/Models/SendingQueue.php
-
-		-
-			message: "#^Parameter \\#1 \\$str of function strip_tags expects string, array\\|string given\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/Editor/PostContentManager.php
 
 		-
 			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, string\\|null given\\.$#"
@@ -180,15 +95,6 @@ parameters:
 			count: 1
 			path: ../../lib/Newsletter/Links/Links.php
 
-		-
-			message: "#^Parameter \\#2 \\$function_to_add of method MailPoet\\\\WP\\\\Functions\\:\\:addAction\\(\\) expects callable\\(\\)\\: mixed, array\\(string, 'ensureConsistentQue…'\\) given\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/Shortcodes/Categories/Newsletter.php
-
-		-
-			message: "#^Parameter \\#2 \\$function_to_remove of method MailPoet\\\\WP\\\\Functions\\:\\:removeAction\\(\\) expects callable\\(\\)\\: mixed, array\\(string, 'ensureConsistentQue…'\\) given\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/Shortcodes/Categories/Newsletter.php
 		-
 			message: "#^Cannot access property \\$ID on int\\|WP_Post\\.$#"
 			count: 1
@@ -205,26 +111,6 @@ parameters:
 			path: ../../lib/Config/MP2Migrator.php
 
 		-
-			message: "#^Parameter \\#1 \\$argument of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
-			count: 1
-			path: ../../lib/Doctrine/MetadataCache.php
-
-		-
-			message: "#^Method MailPoet\\\\DynamicSegments\\\\FreePluginConnectors\\\\SubscribersBulkActionHandler\\:\\:apply\\(\\) should return array but return statement is missing\\.$#"
-			count: 1
-			path: ../../lib/DynamicSegments/FreePluginConnectors/SubscribersBulkActionHandler.php
-
-		-
-			message: "#^Parameter \\#1 \\$template of method MailPoet\\\\Newsletter\\\\Renderer\\\\Renderer\\:\\:injectContentIntoTemplate\\(\\) expects string, bool\\|string given\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/Renderer/Renderer.php
-
-		-
-			message: "#^Cannot access offset 'type' on \\(array\\)\\|true\\.$#"
-			count: 1
-			path: ../../lib/Segments/BulkAction.php
-
-		-
 			message: "#^Undefined variable\\: \\$grandparent$#"
 			count: 1
 			path: ../../lib/Util/DOM.php
@@ -233,21 +119,3 @@ parameters:
 			message: "#^Unreachable statement \\- code above always terminates\\.$#"
 			count: 1
 			path: ../../lib/Util/DOM.php
-
-		-
-			message: "#^Parameter \\#1 \\$newsletter of method MailPoet\\\\Entities\\\\NewsletterTemplateEntity\\:\\:setNewsletter\\(\\) expects MailPoet\\\\Entities\\\\NewsletterEntity\\|null, object given\\.$#"
-			count: 1
-			path: ../../lib/NewsletterTemplates/NewsletterTemplatesRepository.php
-
-		-
-			message: "#^Parameter \\#2 \\$segment of class MailPoet\\\\Entities\\\\NewsletterSegmentEntity constructor expects MailPoet\\\\Entities\\\\SegmentEntity, object given\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/NewsletterSaveController.php
-		-
-			message: "#^Class PHPMailer\\\\PHPMailer\\\\PHPMailer not found\\.$#"
-			count: 1
-			path: ../../lib/Mailer/WordPress/PHPMailerLoader.php
-		-
-			message: "#^Class PHPMailer\\\\PHPMailer\\\\Exception not found\\.$#"
-			count: 1
-			path: ../../lib/Mailer/WordPress/PHPMailerLoader.php
