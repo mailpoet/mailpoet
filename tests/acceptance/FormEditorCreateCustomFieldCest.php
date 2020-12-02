@@ -2,8 +2,8 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Test\DataFactories\Form;
 use Codeception\Util\Locator;
+use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 
 class FormEditorCreateCustomFieldCest {
