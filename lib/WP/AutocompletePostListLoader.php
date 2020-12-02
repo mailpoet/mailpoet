@@ -25,6 +25,30 @@ class AutocompletePostListLoader {
     return $this->formatTerms($this->wp->getCategories(['taxonomy' => 'product_cat', 'orderby' => 'name']));
   }
 
+  public function getPosts() {
+    global $wpdb;
+    $optionList = $wpdb->get_results('SELECT ID, post_title FROM ' . $wpdb->posts . " WHERE post_type='post' ORDER BY `post_title` ASC;");
+    return $this->formatPosts($optionList);
+  }
+
+  public function getPages() {
+    global $wpdb;
+    $optionList = $wpdb->get_results('SELECT ID, post_title FROM ' . $wpdb->posts . " WHERE post_type='page' ORDER BY `post_title` ASC;");
+    return $this->formatPosts($optionList);
+  }
+
+  public function getWooCommerceTags() {
+    return $this->formatTerms($this->wp->getTerms('product_tag'));
+  }
+
+  public function getCategories() {
+    return $this->formatTerms($this->wp->getCategories());
+  }
+
+  public function getTags() {
+    return $this->formatTerms($this->wp->getTags());
+  }
+
   private function formatPosts($posts) {
     if (empty($posts)) return [];
     $result = [];
