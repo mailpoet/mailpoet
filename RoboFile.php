@@ -491,13 +491,17 @@ class RoboFile extends \Robo\Tasks {
     }
   }
 
-  public function qaPhpstan() {
+  public function qaPhpstan(array $opts=['php-version' => null]) {
     $dir = __DIR__;
     $task = implode(' ', [
       'WP_ROOT="' . getenv('WP_ROOT') . '"',
       'php -d memory_limit=-1',
       "$dir/tasks/phpstan/vendor/bin/phpstan analyse ",
     ]);
+
+    if ($opts['php-version'] !== null) {
+      $task = "ANALYSIS_PHP_VERSION={$opts['php-version']} $task";
+    }
 
     // PHPStan must be run out of main plugin directory to avoid its autoloading
     // from vendor/autoload.php where some dev dependencies cause conflicts.
