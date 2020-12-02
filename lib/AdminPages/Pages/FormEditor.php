@@ -79,6 +79,7 @@ use MailPoet\Router\Endpoints\FormPreview;
 use MailPoet\Router\Router;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\UserFlagsController;
+use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FormEditor {
@@ -111,6 +112,9 @@ class FormEditor {
 
   /** @var UserFlagsController */
   private $userFlags;
+
+  /** @var WPPostListLoader */
+  private $wpPostListLoader;
 
   private $activeTemplates = [
     FormEntity::DISPLAY_TYPE_POPUP => [
@@ -195,6 +199,7 @@ class FormEditor {
     FormFactory $formsFactory,
     Localizer $localizer,
     UserFlagsController $userFlags,
+    WPPostListLoader $wpPostListLoader,
     TemplateRepository $templateRepository
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -207,6 +212,7 @@ class FormEditor {
     $this->localizer = $localizer;
     $this->templatesRepository = $templateRepository;
     $this->userFlags = $userFlags;
+    $this->wpPostListLoader = $wpPostListLoader;
   }
 
   public function render() {
@@ -244,13 +250,13 @@ class FormEditor {
       'preview_page_url' => $this->getPreviewPageUrl(),
       'custom_fonts' => CustomFonts::FONTS,
       'translations' => $this->getGutenbergScriptsTranslations(),
-      'posts' => $this->getAllPosts(),
-      'pages' => $this->getAllPages(),
-      'categories' => $this->getAllCategories(),
-      'tags' => $this->getAllTags(),
-      'products' => $this->getWooCommerceProducts(),
-      'product_categories' => $this->getWooCommerceCategories(),
-      'product_tags' => $this->getWooCommerceTags(),
+      'posts' => $this->wpPostListLoader->getPosts(),
+      'pages' => $this->wpPostListLoader->getPages(),
+      'categories' => $this->wpPostListLoader->getCategories(),
+      'tags' => $this->wpPostListLoader->getTags(),
+      'products' => $this->wpPostListLoader->getProducts(),
+      'product_categories' => $this->wpPostListLoader->getWooCommerceCategories(),
+      'product_tags' => $this->wpPostListLoader->getWooCommerceTags(),
     ];
     $this->wp->wpEnqueueMedia();
     $this->pageRenderer->displayPage('form/editor.html', $data);
@@ -353,64 +359,5 @@ class FormEditor {
       $form['settings'] = $initialFormTemplate->getSettings();
     }
     return $form;
-  }
-
-  private function getAllPosts() {
-    global $wpdb;
-    $optionList = $wpdb->get_results('SELECT ID, post_title FROM ' . $wpdb->posts . " WHERE post_type='post'");
-    return $this->formatPosts($optionList);
-  }
-
-  private function getWooCommerceProducts() {
-    global $wpdb;
-    $optionList = $wpdb->get_results('SELECT ID, post_title FROM ' . $wpdb->posts . " WHERE post_type='product'");
-    return $this->formatPosts($optionList);
-  }
-
-  private function getAllPages() {
-    global $wpdb;
-    $optionList = $wpdb->get_results('SELECT ID, post_title FROM ' . $wpdb->posts . " WHERE post_type='page'");
-    return $this->formatPosts($optionList);
-  }
-
-  private function getWooCommerceCategories() {
-    return $this->formatTerms($this->wp->getCategories(['taxonomy' => 'product_cat']));
-  }
-
-  private function getWooCommerceTags() {
-    return $this->formatTerms($this->wp->getTerms('product_tag'));
-  }
-
-  private function getAllCategories() {
-    return $this->formatTerms($this->wp->getCategories());
-  }
-
-  private function getAllTags() {
-    return $this->formatTerms($this->wp->getTags());
-  }
-
-  private function formatPosts($posts) {
-    if (empty($posts)) return [];
-    $result = [];
-    foreach ($posts as $post) {
-      $result[] = [
-        'id' => $post->ID,
-        'name' => $post->post_title,// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      ];
-    }
-    return $result;
-  }
-
-  private function formatTerms($terms) {
-    if (empty($terms)) return [];
-    if (!is_array($terms)) return []; // there can be instance of WP_Error instead of list of terms if woo commerce is not active
-    $result = [];
-    foreach ($terms as $term) {
-      $result[] = [
-        'id' => $term->term_id,// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        'name' => $term->name,
-      ];
-    }
-    return $result;
   }
 }
