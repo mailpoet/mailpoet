@@ -32,18 +32,24 @@ class Shortcodes {
     }
     if ($queue instanceof SendingQueueEntity) {
       $shortcodes->setQueue($queue);
+    } else {
+      $shortcodes->setQueue(null);
     }
     if ($newsletter instanceof \MailPoet\Models\Newsletter && $newsletter->id) {
       $newsletter = $newsletterRepository->findOneById($newsletter->id);
     }
     if ($newsletter instanceof NewsletterEntity) {
       $shortcodes->setNewsletter($newsletter);
+    } else {
+      $shortcodes->setNewsletter(null);
     }
     if ($subscriber instanceof Subscriber && $subscriber->id) {
       $subscriber = $subscribersRepository->findOneById($subscriber->id);
     }
     if ($subscriber instanceof SubscriberEntity) {
       $shortcodes->setSubscriber($subscriber);
+    } else {
+      $shortcodes->setSubscriber(null);
     }
     return $shortcodes->replace($content, $contentSource);
   }

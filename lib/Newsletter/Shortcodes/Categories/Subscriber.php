@@ -34,18 +34,21 @@ class Subscriber implements CategoryInterface {
     string $content = '',
     bool $wpUserPreview = false
   ): ?string {
+    if (!($subscriber instanceof SubscriberEntity)) {
+      return $shortcodeDetails['shortcode'];
+    }
     $defaultValue = ($shortcodeDetails['action_argument'] === 'default') ?
       $shortcodeDetails['action_argument_value'] :
       '';
     switch ($shortcodeDetails['action']) {
       case 'firstname':
-        return (($subscriber instanceof SubscriberEntity) && !empty($subscriber->getFirstName())) ? $subscriber->getFirstName() : $defaultValue;
+        return (!empty($subscriber->getFirstName())) ? $subscriber->getFirstName() : $defaultValue;
       case 'lastname':
-        return (($subscriber instanceof SubscriberEntity) && !empty($subscriber->getLastName())) ? $subscriber->getLastName() : $defaultValue;
+        return !empty($subscriber->getLastName()) ? $subscriber->getLastName() : $defaultValue;
       case 'email':
-        return ($subscriber instanceof SubscriberEntity) ? $subscriber->getEmail() : $defaultValue;
+        return $subscriber->getEmail();
       case 'displayname':
-        if (($subscriber instanceof SubscriberEntity) && $subscriber->getWpUserId()) {
+        if ($subscriber->getWpUserId()) {
           $wpUser = WPFunctions::get()->getUserdata($subscriber->getWpUserId());
           return $wpUser->user_login; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         }
