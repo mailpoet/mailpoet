@@ -48,7 +48,7 @@ class Text {
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
-    $html .= '<input type="' . $type . '" class="mailpoet_text" data-automation-id="form_custom_text" ';
+    $html .= '<input type="' . $type . '" class="mailpoet_text" ';
 
     $html .= 'name="data[' . $name . ']" ';
 

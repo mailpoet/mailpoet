@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Form;
+use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Segment;
 
 class FormEditorCreateCustomFieldCest {
@@ -88,7 +89,8 @@ class FormEditorCreateCustomFieldCest {
     $i->wantTo('Check custom text input on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
-    $i->fillField('[data-automation-id="form_custom_text"]', 'Lorem ipsum dolor');
+    $i->seeElement(Locator::find('input', ['placeholder' => 'My updated custom text input']));
+    $i->fillField(Locator::find('input', ['placeholder' => 'My updated custom text input']), 'Lorem ipsum dolor');
   }
 
   public function createCustomTextArea(\AcceptanceTester $i) {
