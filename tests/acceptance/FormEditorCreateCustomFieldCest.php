@@ -54,8 +54,9 @@ class FormEditorCreateCustomFieldCest {
     $i->wantTo('Check custom select on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
-    $i->selectOption('[data-automation-id="form_custom_select"]', 'First option');
-    $i->selectOption('[data-automation-id="form_custom_select"]', 'Option 2');
+    $i->see('My custom select');
+    $i->see('First option');
+    $i->see('Option 2');
   }
 
   public function createCustomTextInput(\AcceptanceTester $i) {

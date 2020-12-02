@@ -41,7 +41,6 @@ class Select {
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
     $html .= '<select
       class="mailpoet_select"
-      data-automation-id="form_custom_select"
       name="' . $fieldName . '" '
       . $automationId
       . 'style="' . $this->blockStylesRenderer->renderForSelect([], $formSettings) . '"'
