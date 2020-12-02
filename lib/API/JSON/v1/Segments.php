@@ -9,12 +9,14 @@ use MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Listing;
 use MailPoet\Models\Segment;
 use MailPoet\Segments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WooCommerce;
 use MailPoet\Segments\WP;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Segments extends APIEndpoint {
@@ -37,6 +39,9 @@ class Segments extends APIEndpoint {
   /** @var SegmentSaveController */
   private $segmentSavecontroller;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   /** @var WooCommerce */
   private $wooCommerceSync;
 
@@ -49,6 +54,7 @@ class Segments extends APIEndpoint {
     SegmentsRepository $segmentsRepository,
     SegmentsResponseBuilder $segmentsResponseBuilder,
     SegmentSaveController $segmentSavecontroller,
+    SubscribersRepository $subscribersRepository,
     WooCommerce $wooCommerce,
     WP $wpSegment
   ) {
@@ -58,6 +64,7 @@ class Segments extends APIEndpoint {
     $this->segmentsRepository = $segmentsRepository;
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
     $this->segmentSavecontroller = $segmentSavecontroller;
+    $this->subscribersRepository = $subscribersRepository;
     $this->wpSegment = $wpSegment;
   }
 
@@ -115,6 +122,15 @@ class Segments extends APIEndpoint {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
     if ($segment instanceof Segment) {
+      // When the segment is of type WP_USERS we want to restore all its subscribers
+      if ($segment->type === SegmentEntity::TYPE_WP_USERS) {
+        $subscribers = $this->subscribersRepository->findBySegment((int)$segment->id);
+        $subscriberIds = array_map(function (SubscriberEntity $subscriberEntity): int {
+          return (int)$subscriberEntity->getId();
+        }, $subscribers);
+        $this->subscribersRepository->bulkRestore($subscriberIds);
+      }
+
       $segment->restore();
       $segment = Segment::findOne($segment->id);
       if(!$segment instanceof Segment) return $this->errorResponse();
@@ -133,6 +149,15 @@ class Segments extends APIEndpoint {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $segment = Segment::findOne($id);
     if ($segment instanceof Segment) {
+      // When the segment is of type WP_USERS we want to trash all subscribers who aren't subscribed in another list
+      if ($segment->type === SegmentEntity::TYPE_WP_USERS) {
+        $subscribers = $this->subscribersRepository->findExclusiveSubscribersBySegment((int)$segment->id);
+        $subscriberIds = array_map(function (SubscriberEntity $subscriberEntity): int {
+          return (int)$subscriberEntity->getId();
+        }, $subscribers);
+        $this->subscribersRepository->bulkTrash($subscriberIds);
+      }
+
       $segment->trash();
       $segment = Segment::findOne($segment->id);
       if(!$segment instanceof Segment) return $this->errorResponse();
