@@ -2,13 +2,16 @@
 
 namespace MailPoet\API\JSON\v1;
 
+use InvalidArgumentException;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
+use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing;
 use MailPoet\Models\Segment;
+use MailPoet\Segments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WooCommerce;
 use MailPoet\Segments\WP;
@@ -31,6 +34,9 @@ class Segments extends APIEndpoint {
   /** @var SegmentsResponseBuilder */
   private $segmentsResponseBuilder;
 
+  /** @var SegmentSaveController */
+  private $segmentSavecontroller;
+
   /** @var WooCommerce */
   private $wooCommerceSync;
 
@@ -42,6 +48,7 @@ class Segments extends APIEndpoint {
     Listing\Handler $listingHandler,
     SegmentsRepository $segmentsRepository,
     SegmentsResponseBuilder $segmentsResponseBuilder,
+    SegmentSaveController $segmentSavecontroller,
     WooCommerce $wooCommerce,
     WP $wpSegment
   ) {
@@ -50,6 +57,7 @@ class Segments extends APIEndpoint {
     $this->wooCommerceSync = $wooCommerce;
     $this->segmentsRepository = $segmentsRepository;
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
+    $this->segmentSavecontroller = $segmentSavecontroller;
     $this->wpSegment = $wpSegment;
   }
 
@@ -88,18 +96,19 @@ class Segments extends APIEndpoint {
   }
 
   public function save($data = []) {
-    $segment = Segment::createOrUpdate($data);
-    $errors = $segment->getErrors();
-
-    if (!empty($errors)) {
-      return $this->badRequest($errors);
-    } else {
-      $segment = Segment::findOne($segment->id);
-      if(!$segment instanceof Segment) return $this->errorResponse();
-      return $this->successResponse(
-        $segment->asArray()
-      );
+    try {
+      $segment = $this->segmentSavecontroller->save($data);
+    } catch (ValidationException $exception) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST  => __('Please specify a name.', 'mailpoet'),
+      ]);
+    } catch (InvalidArgumentException $exception) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST  => __('Another record already exists. Please specify a different "name".', 'mailpoet'),
+      ]);
     }
+    $response = $this->segmentsResponseBuilder->build($segment);
+    return $this->successResponse($response);
   }
 
   public function restore($data = []) {
