@@ -18,7 +18,8 @@ anchors:
     multisite: 1
     requires:
       - unit_tests
-      - static_analysis
+      - static_analysis_php7
+      - static_analysis_php8
     <<: *only_master_and_release
 
 executors:
@@ -167,6 +168,10 @@ jobs:
   static_analysis:
     executor: wpcli_php_latest
     resource_class: medium
+    parameters:
+      php_version:
+        type: integer
+        default: 100
     steps:
     - attach_workspace:
         at: /home/circleci/mailpoet
@@ -177,7 +182,7 @@ jobs:
           echo "WP_ROOT=/home/circleci/mailpoet/wordpress" >> .env
     - run:
         name: "Static analysis"
-        command: ./do qa:phpstan
+        command: ./do qa:phpstan --php-version=<< parameters.php_version >>
   qa_js:
     executor: wpcli_php_latest
     steps:
@@ -374,6 +379,13 @@ workflows:
           requires:
             - build
       - static_analysis:
+          name: static_analysis_php7
+          php_version: 70100
+          requires:
+            - build
+      - static_analysis:
+          name: static_analysis_php8
+          php_version: 80000
           requires:
             - build
       - qa_js:
@@ -387,7 +399,8 @@ workflows:
           group_arg: -g acceptance_group_1
           requires:
             - unit_tests
-            - static_analysis
+            - static_analysis_php7
+            - static_analysis_php8
             - qa_js
             - qa_php
       - acceptance_tests:
@@ -395,7 +408,8 @@ workflows:
           group_arg: -g acceptance_group_2
           requires:
             - unit_tests
-            - static_analysis
+            - static_analysis_php7
+            - static_analysis_php8
             - qa_js
             - qa_php
       - acceptance_tests:
@@ -403,7 +417,8 @@ workflows:
           group_arg: -g acceptance_group_3
           requires:
             - unit_tests
-            - static_analysis
+            - static_analysis_php7
+            - static_analysis_php8
             - qa_js
             - qa_php
       - acceptance_tests:
@@ -411,7 +426,8 @@ workflows:
           group_arg: -g acceptance_group_4
           requires:
             - unit_tests
-            - static_analysis
+            - static_analysis_php7
+            - static_analysis_php8
             - qa_js
             - qa_php
       - acceptance_tests:
@@ -419,7 +435,8 @@ workflows:
           group_arg: -g acceptance_group_5
           requires:
             - unit_tests
-            - static_analysis
+            - static_analysis_php7
+            - static_analysis_php8
             - qa_js
             - qa_php
       - js_tests:
@@ -428,7 +445,8 @@ workflows:
       - integration_tests:
           requires:
             - unit_tests
-            - static_analysis
+            - static_analysis_php7
+            - static_analysis_php8
             - qa_js
             - qa_php
       - acceptance_tests:
@@ -458,7 +476,8 @@ workflows:
           run_command: ./do test:multisite-integration --xml
           requires:
             - unit_tests
-            - static_analysis
+            - static_analysis_php7
+            - static_analysis_php8
             - qa_js
             - qa_php
       - build_release_zip:
