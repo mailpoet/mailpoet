@@ -55,6 +55,30 @@ class SubscribersRepository extends Repository {
     return (int)$query->getSingleScalarResult();
   }
 
+  public function findBySegment(int $segmentId): array {
+    return $this->entityManager
+    ->createQueryBuilder()
+    ->select('s')
+    ->from(SubscriberEntity::class, 's')
+    ->join('s.subscriberSegments', 'ss', Join::WITH, 'ss.segment = :segment')
+    ->setParameter('segment', $segmentId)
+    ->getQuery()->getResult();
+  }
+
+  public function findExclusiveSubscribersBySegment(int $segmentId): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('s')
+      ->from(SubscriberEntity::class, 's')
+      ->join('s.subscriberSegments', 'ss', Join::WITH, 'ss.segment = :segment')
+      ->leftJoin('s.subscriberSegments', 'ss2', Join::WITH, 'ss2.segment <> :segment AND ss2.status = :subscribed')
+      ->leftJoin('ss2.segment', 'seg', Join::WITH, 'seg.deletedAt IS NULL')
+      ->groupBy('s.id')
+      ->andHaving('COUNT(seg.id) = 0')
+      ->setParameter('segment', $segmentId)
+      ->setParameter('subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
+      ->getQuery()->getResult();
+  }
+
   /**
    * @return int - number of processed ids
    */
