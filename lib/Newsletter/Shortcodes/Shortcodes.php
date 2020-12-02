@@ -49,7 +49,7 @@ class Shortcodes {
     $this->subscriberCategory = $subscriberCategory;
   }
 
-  public function setNewsletter(NewsletterEntity $newsletter): void {
+  public function setNewsletter(NewsletterEntity $newsletter = null): void {
     $this->newsletter = $newsletter;
   }
 
@@ -57,7 +57,7 @@ class Shortcodes {
     $this->subscriber = $subscriber;
   }
 
-  public function setQueue(SendingQueueEntity $queue): void {
+  public function setQueue(SendingQueueEntity $queue = null): void {
     $this->queue = $queue;
   }
 

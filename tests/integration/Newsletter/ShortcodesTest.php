@@ -160,14 +160,19 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testSubscriberShortcodesRequireSubscriberObjectOrFalseValue() {
-    // when subscriber is empty, default value is returned
+    // when subscriber is empty, original value is returned
     $this->shortcodesObject->setSubscriber(null);
     $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
-    expect($result[0])->equals('test');
+    expect($result[0])->equals('[subscriber:firstname | default:test]');
     // when subscriber is an object, proper value is returned
     $this->shortcodesObject->setSubscriber($this->subscriber);
     $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
     expect($result[0])->equals($this->subscriber->getFirstName());
+    // when subscriber hasn't name, the default value is returned
+    $this->subscriber->setFirstName('');
+    $this->shortcodesObject->setSubscriber($this->subscriber);
+    $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
+    expect($result[0])->equals('test');
   }
 
   public function testSubscriberFirstAndLastNameShortcodesReturnDefaultValueWhenDataIsEmpty() {
