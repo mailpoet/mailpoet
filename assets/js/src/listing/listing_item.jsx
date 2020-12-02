@@ -76,7 +76,9 @@ class ListingItem extends React.Component {
                     this.handleTrashItem(this.props.item.id);
                   }}
                 >
-                  {MailPoet.I18n.t('moveToTrash')}
+                  {this.props.isItemToggleable(this.props.item)
+                    ? MailPoet.I18n.t('trashAndDisable')
+                    : MailPoet.I18n.t('moveToTrash')}
                 </a>
               </span>
             );
@@ -160,7 +162,9 @@ class ListingItem extends React.Component {
                   this.handleRestoreItem(this.props.item.id);
                 }}
               >
-                {MailPoet.I18n.t('restore')}
+                {this.props.isItemToggleable(this.props.item)
+                  ? MailPoet.I18n.t('restoreAndEnable')
+                  : MailPoet.I18n.t('restore')}
               </a>
             </span>
             {this.props.isItemDeletable(this.props.item) && (
@@ -226,11 +230,13 @@ ListingItem.propTypes = {
     pathname: PropTypes.string,
   }),
   isItemDeletable: PropTypes.func,
+  isItemToggleable: PropTypes.func,
 };
 
 ListingItem.defaultProps = {
   location: undefined,
   isItemDeletable: () => true,
+  isItemToggleable: () => false,
 };
 
 export default ListingItem;

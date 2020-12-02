@@ -110,6 +110,11 @@ const bulkActions = [
   },
 ];
 
+const isItemDeletable = (segment) => {
+  const isDeletable = !isSpecialSegment(segment);
+  return isDeletable;
+};
+
 const itemActions = [
   {
     name: 'edit',
@@ -212,8 +217,8 @@ const itemActions = [
   {
     name: 'trash',
     className: 'mailpoet-hide-on-mobile',
-    display: function display(segment) {
-      return !isSpecialSegment(segment) && segment.automated_emails_subjects.length === 0;
+    display: function display(segmt) {
+      return !isWooCommerceCustomersSegment(segmt) && segmt.automated_emails_subjects.length === 0;
     },
   },
   {
@@ -231,6 +236,23 @@ const itemActions = [
     },
     display: function display(segment) {
       return !isSpecialSegment(segment) && segment.automated_emails_subjects.length > 0;
+    },
+  },
+  {
+    name: 'delete_wp_users',
+    className: 'mailpoet-hide-on-mobile',
+    label: MailPoet.I18n.t('trashAndDisable'),
+    onClick: function onClick(segment) {
+      MailPoet.Notice.error(
+        MailPoet.I18n.t('trashDisallowed').replace(
+          '%$1s',
+          segment.automated_emails_subjects.map((subject) => `'${subject}'`).join(', ')
+        ),
+        { scroll: true }
+      );
+    },
+    display: function display(segment) {
+      return isWPUsersSegment(segment) && segment.automated_emails_subjects.length > 0;
     },
   },
 ];
@@ -323,6 +345,8 @@ class SegmentList extends React.Component {
           item_actions={itemActions}
           sort_by="name"
           sort_order="asc"
+          isItemDeletable={isItemDeletable}
+          isItemToggleable={isWPUsersSegment}
         />
       </div>
     );

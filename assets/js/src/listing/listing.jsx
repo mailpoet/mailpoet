@@ -658,6 +658,7 @@ class Listing extends React.Component {
               search={this.state.search}
               location={this.props.location}
               isItemDeletable={this.props.isItemDeletable}
+              isItemToggleable={this.props.isItemToggleable}
             />
 
           </table>
@@ -710,6 +711,7 @@ Listing.propTypes = {
     push: PropTypes.func.isRequired,
   }).isRequired,
   isItemDeletable: PropTypes.func,
+  isItemToggleable: PropTypes.func,
   className: PropTypes.string,
 };
 /* eslint-enable react/require-default-props */
@@ -734,6 +736,7 @@ Listing.defaultProps = {
   getListingItemKey: undefined,
   isItemDeletable: () => true,
   isItemInactive: () => false,
+  isItemToggleable: () => false,
   className: undefined,
 };
 
