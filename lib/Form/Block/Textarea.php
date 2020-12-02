@@ -35,7 +35,7 @@ class Textarea {
     $lines = (isset($block['params']['lines']) ? (int)$block['params']['lines'] : 1);
     $html .= $this->inputStylesRenderer->renderPlaceholderStyles($block, 'textarea[name="data[' . $name . ']"]');
 
-    $html .= '<textarea class="mailpoet_textarea" rows="' . $lines . '" ';
+    $html .= '<textarea class="mailpoet_textarea" data-automation-id="form_custom_text_area" rows="' . $lines . '" ';
 
     $html .= 'name="data[' . $name . ']"';
 

@@ -44,6 +44,6 @@ class Divider {
       "width: $width%",
     ];
     $style = implode(";", $dividerStyles);
-    return "<div class='mailpoet_divider' style='$style'></div>";
+    return "<div class='mailpoet_divider' data-automation-id='form_divider' style='$style'></div>";
   }
 }

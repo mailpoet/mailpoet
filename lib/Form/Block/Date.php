@@ -63,7 +63,7 @@ class Date {
         $html .= $this->getDays($block);
         $html .= '</select>';
       } else if ($dateSelector === 'MM') {
-        $html .= '<select class="mailpoet_select mailpoet_date_month" ';
+        $html .= '<select class="mailpoet_select mailpoet_date_month" data-automation-id="form_date_month" ';
         $html .= ' style="' . $this->blockStylesRenderer->renderForSelect([], $formSettings) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a month', 'mailpoet'),
@@ -72,7 +72,7 @@ class Date {
         $html .= $this->getMonths($block);
         $html .= '</select>';
       } else if ($dateSelector === 'YYYY') {
-        $html .= '<select class="mailpoet_date_year" ';
+        $html .= '<select class="mailpoet_date_year" data-automation-id="form_date_year" ';
         $html .= ' style="' . $this->blockStylesRenderer->renderForSelect([], $formSettings) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a year', 'mailpoet'),

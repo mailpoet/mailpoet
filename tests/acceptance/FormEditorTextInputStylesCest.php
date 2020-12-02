@@ -68,5 +68,7 @@ class FormEditorTextInputStylesCest {
     $i->assertAttributeContains('[data-automation-id="form_first_name"]', 'style', 'border-width: 10px;');
     $i->assertAttributeContains('[data-automation-id="form_first_name_label"]', 'style', 'font-weight: bold;');
     $i->assertAttributeContains('[data-automation-id="form_email"]', 'style', 'border-width: 10px;');
+    $i->see('Heading Lorem');
+    $i->see('Paragraph ipsum dolor');
   }
 }

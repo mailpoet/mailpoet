@@ -13,7 +13,7 @@ class FormEditorAddDividerCest {
     $segment = $segmentFactory->withName($segmentName)->create();
     $formName = 'My fancy form';
     $form = new Form();
-    $form->withName($formName)->withSegments([$segment])->create();
+    $form->withName($formName)->withSegments([$segment])->withDisplayBelowPosts()->create();
 
     $i->login();
     $i->amOnMailPoetPage('Forms');
@@ -49,5 +49,12 @@ class FormEditorAddDividerCest {
     $i->seeInField('.mailpoet-automation-spacer-height-size input[type="number"]', 50);
     $i->seeInField('.mailpoet-automation-styles-divider-height input[type="number"]', 10);
     $i->seeInField('.mailpoet-automation-styles-divider-width input[type="number"]', 10);
+
+    $i->wantTo('Check divider on front end');
+    $postUrl = $i->createPost('Title', 'Content');
+    $i->amOnUrl($postUrl);
+    $i->assertAttributeContains('[data-automation-id="form_divider"]', 'style', 'height: 10px;');
+    $i->assertAttributeContains('[data-automation-id="form_divider"]', 'style', 'width: 10%;');
+    $i->assertAttributeContains('[data-automation-id="form_divider"]', 'style', 'border-top: 10px dotted black;');
   }
 }
