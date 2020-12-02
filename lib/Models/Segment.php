@@ -341,6 +341,9 @@ class Segment extends Model {
       $ids = array_map(function($segment) {
         return $segment->id;
       }, $segments);
+      if (!$ids) {
+        return;
+      }
       SubscriberSegment::whereIn('segment_id', $ids)
         ->deleteMany();
       Segment::whereIn('id', $ids)->deleteMany();
