@@ -50,7 +50,9 @@ class ManageListsCest {
     $i->login();
     $i->amOnMailpoetPage('Lists');
 
-    // Edit existing list
+    $i->wantTo('Edit existing list');
+    $i->waitForText('Lists');
+    $i->scrollTo('[data-automation-id="dynamic-segments-tab"]');
     $i->clickItemRowActionByItemName($newListTitle, 'Edit');
     $i->clearFormField('#field_name');
     $i->fillField('Name', $editedListTitle);
@@ -60,7 +62,8 @@ class ManageListsCest {
     $i->see($editedListTitle, '[data-automation-id="listing_item_4"]');
     $i->seeNoJSErrors();
 
-    // Trash existing list
+    $i->wantTo('Trash existing list');
+    $i->scrollTo('[data-automation-id="dynamic-segments-tab"]');
     $i->clickItemRowActionByItemName($editedListTitle, 'Move to trash');
     $i->waitForText('1 list was moved to the trash. Note that deleting a list does not delete its subscribers.');
     $i->waitForElementVisible('[data-automation-id="filters_trash"]');
@@ -69,19 +72,21 @@ class ManageListsCest {
     $i->waitForText($editedListTitle);
     $i->seeNoJSErrors();
 
-    // Restore trashed list
+    $i->wantTo('Restore trashed list');
+    $i->scrollTo('[data-automation-id="dynamic-segments-tab"]');
     $i->clickItemRowActionByItemName($editedListTitle, 'Restore');
     $i->waitForText('1 list has been restored from the Trash.');
     $i->seeInCurrentURL(urlencode('group[all]'));
     $i->waitForText($editedListTitle);
     $i->seeNoJSErrors();
 
-    // Trash and delete existing list
+    $i->wantTo('Trash and delete existing list');
     $segmentFactory = new Segment();
     $segmentFactory
       ->withName($newListTitle . '2')
       ->withDescription($newListDesc)
       ->create();
+    $i->scrollTo('[data-automation-id="dynamic-segments-tab"]');
     $i->clickItemRowActionByItemName($editedListTitle, 'Move to trash');
     $i->waitForElementVisible('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
@@ -96,7 +101,7 @@ class ManageListsCest {
   }
 
   public function emptyTrash(\AcceptanceTester $i) {
-    // Trash and delete existing list
+    $i->wantTo('Trash existing list by clicking on Empty Trash button');
     $newListTitle = 'Empty Trash List';
     $newListDesc = 'Description';
     $segmentFactory = new Segment();

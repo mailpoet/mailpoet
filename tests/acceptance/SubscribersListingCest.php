@@ -40,6 +40,7 @@ class SubscribersListingCest {
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
 
+    $i->waitForText($disallowedEmail);
     $i->moveMouseOver(['xpath' => '//*[text()="' . $disallowedEmail . '"]//ancestor::tr']);
     $i->dontSee('Resend confirmation email', '//*[text()="' . $disallowedEmail . '"]//ancestor::tr');
 
@@ -73,6 +74,7 @@ class SubscribersListingCest {
     $i->amOnMailpoetPage('Subscribers');
 
     $i->wantTo('Select first two subscribers and unsubscribe them');
+    $i->waitForText('subscriber1@example.com');
     $i->click("[data-automation-id='listing-row-checkbox-$subscriber1->id']");
     $i->click("[data-automation-id='listing-row-checkbox-$subscriber2->id']");
 
