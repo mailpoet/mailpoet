@@ -32,6 +32,9 @@ class PermanentNotices {
   /** @var HeadersAlreadySentNotice */
   private $headersAlreadySentNotice;
 
+  /** @var DeprecatedShortcodeNotice */
+  private $deprecatedShortcodeNotice;
+
   public function __construct(WPFunctions $wp) {
     $this->wp = $wp;
     $this->phpVersionWarnings = new PHPVersionWarnings();
@@ -41,6 +44,7 @@ class PermanentNotices {
     $this->inactiveSubscribersNotice = new InactiveSubscribersNotice(SettingsController::getInstance(), $wp);
     $this->blackFridayNotice = new BlackFridayNotice();
     $this->headersAlreadySentNotice = new HeadersAlreadySentNotice(SettingsController::getInstance(), $wp);
+    $this->deprecatedShortcodeNotice = new DeprecatedShortcodeNotice();
   }
 
   public function init() {
@@ -75,6 +79,9 @@ class PermanentNotices {
     $this->headersAlreadySentNotice->init(
       Menu::isOnMailPoetAdminPage($excludeWizard)
     );
+    $this->deprecatedShortcodeNotice->init(
+      Menu::isOnMailPoetAdminPage($excludeWizard)
+    );
   }
 
   public function ajaxDismissNoticeHandler() {
@@ -94,6 +101,9 @@ class PermanentNotices {
         break;
       case (InactiveSubscribersNotice::OPTION_NAME):
         $this->inactiveSubscribersNotice->disable();
+        break;
+      case (DeprecatedShortcodeNotice::OPTION_NAME):
+        $this->deprecatedShortcodeNotice->disable();
         break;
     }
   }
