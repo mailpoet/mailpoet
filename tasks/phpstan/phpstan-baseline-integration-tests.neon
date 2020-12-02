@@ -46,16 +46,6 @@ parameters:
 			path: ../../tests/integration/API/JSON/v1/ImportExportTest.php
 
 		-
-			message: "#^Cannot call method asArray\\(\\) on MailPoet\\\\Models\\\\Segment\\|false\\.$#"
-			count: 5
-			path: ../../tests/integration/API/JSON/v1/SegmentsTest.php
-
-		-
-			message: "#^Cannot access property \\$deletedAt on MailPoet\\\\Models\\\\Segment\\|false\\.$#"
-			count: 1
-			path: ../../tests/integration/API/JSON/v1/SegmentsTest.php
-
-		-
 			message: "#^Cannot access property \\$status on MailPoet\\\\Models\\\\ScheduledTask\\|false\\.$#"
 			count: 1
 			path: ../../tests/integration/API/JSON/v1/SendingQueueTest.php
