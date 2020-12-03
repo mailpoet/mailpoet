@@ -9,10 +9,13 @@ use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\CustomField;
+use MailPoet\Segments\SegmentsRepository;
 
 class SubscribersRepositoryTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $repository;
+  /** @var SegmentsRepository */
+  private $segmentRepository;
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
   /** @var SubscriberCustomFieldRepository */
@@ -22,6 +25,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     parent::_before();
     $this->cleanup();
     $this->repository = $this->diContainer->get(SubscribersRepository::class);
+    $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
     $this->subscriberCustomFieldRepository = $this->diContainer->get(SubscriberCustomFieldRepository::class);
   }
@@ -81,7 +85,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
   public function testItBulkDeleteSubscribers(): void {
     $subscriberOne = $this->createSubscriber('one@delete.com', new DateTimeImmutable());
     $subscriberTwo = $this->createSubscriber('two@delete.com', new DateTimeImmutable());
-    $segmentOne = $this->createSegment('One Delete');
+    $segmentOne = $this->segmentRepository->createOrUpdate('One Delete');
     $this->createSubscriberSegment($segmentOne, $subscriberOne);
     $this->createSubscriberSegment($segmentOne, $subscriberTwo);
     $customField = $this->createCustomField('CF');
@@ -112,8 +116,8 @@ class SubscribersRepositoryTest extends \MailPoetTest {
   public function testItBulkRemoveSubscribersFromSegment(): void {
     $subscriberOne = $this->createSubscriber('one@remove.com', new DateTimeImmutable());
     $subscriberTwo = $this->createSubscriber('two@remove.com', new DateTimeImmutable());
-    $segmentOne = $this->createSegment('One Remove');
-    $segmentTwo = $this->createSegment('Two Remove');
+    $segmentOne = $this->segmentRepository->createOrUpdate('One Remove');
+    $segmentTwo = $this->segmentRepository->createOrUpdate('Two Remove');
     $this->createSubscriberSegment($segmentOne, $subscriberOne);
     $this->createSubscriberSegment($segmentOne, $subscriberTwo);
     $this->createSubscriberSegment($segmentTwo, $subscriberOne);
@@ -179,8 +183,8 @@ class SubscribersRepositoryTest extends \MailPoetTest {
   public function testItBulkRemoveSubscriberFromAllSegments(): void {
     $subscriberOne = $this->createSubscriber('one@removeAll.com', new DateTimeImmutable());
     $subscriberTwo = $this->createSubscriber('two@removeAll.com', new DateTimeImmutable());
-    $segmentOne = $this->createSegment('One Remove All');
-    $segmentTwo = $this->createSegment('Two Remove All');
+    $segmentOne = $this->segmentRepository->createOrUpdate('One Remove All');
+    $segmentTwo = $this->segmentRepository->createOrUpdate('Two Remove All');
     $this->createSubscriberSegment($segmentOne, $subscriberOne);
     $this->createSubscriberSegment($segmentOne, $subscriberTwo);
     $this->createSubscriberSegment($segmentTwo, $subscriberOne);
@@ -214,7 +218,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
   public function testItBulkAddSubscribersToSegment(): void {
     $subscriberOne = $this->createSubscriber('one@add.com', new DateTimeImmutable());
     $subscriberTwo = $this->createSubscriber('two@add.com', new DateTimeImmutable());
-    $segmentOne = $this->createSegment('One Add');
+    $segmentOne = $this->segmentRepository->createOrUpdate('One Add');
 
     $subscriberOneId = $subscriberOne->getId();
     $subscriberTwoId = $subscriberTwo->getId();
@@ -239,8 +243,8 @@ class SubscribersRepositoryTest extends \MailPoetTest {
   public function testItBulMoveSubscribersToSegment(): void {
     $subscriberOne = $this->createSubscriber('one@move.com', new DateTimeImmutable());
     $subscriberTwo = $this->createSubscriber('two@move.com', new DateTimeImmutable());
-    $segmentOne = $this->createSegment('One Move');
-    $segmentTwo = $this->createSegment('Two Move');
+    $segmentOne = $this->segmentRepository->createOrUpdate('One Move');
+    $segmentTwo = $this->segmentRepository->createOrUpdate('Two Move');
     $this->createSubscriberSegment($segmentOne, $subscriberOne);
     $this->createSubscriberSegment($segmentTwo, $subscriberTwo);
 
@@ -312,13 +316,6 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
     return $subscriber;
-  }
-
-  private function createSegment(string $name): SegmentEntity {
-    $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, 'some description');
-    $this->entityManager->persist($segment);
-    $this->entityManager->flush();
-    return $segment;
   }
 
   private function createSubscriberSegment(SegmentEntity $segment, SubscriberEntity $subscriber): SubscriberSegmentEntity {

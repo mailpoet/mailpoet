@@ -423,8 +423,8 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   public function testItCanGetListingData() {
-    $segment1 = $this->createSegment('Segment 1');
-    $segment2 = $this->createSegment('Segment 2');
+    $segment1 = $this->segmentRepository->createOrUpdate('Segment 1');
+    $segment2 = $this->segmentRepository->createOrUpdate('Segment 2');
 
     $this->createNewsletterSegment($this->newsletter, $segment1);
     $this->createNewsletterSegment($this->newsletter, $segment2);
@@ -458,8 +458,8 @@ class NewslettersTest extends \MailPoetTest {
 
   public function testItCanFilterListing() {
     // create 2 segments
-    $segment1 = $this->createSegment('Segment 1');
-    $segment2 = $this->createSegment('Segment 2');
+    $segment1 = $this->segmentRepository->createOrUpdate('Segment 1');
+    $segment2 = $this->segmentRepository->createOrUpdate('Segment 2');
 
     // link standard newsletter to the 2 segments
     $this->createNewsletterSegment($this->newsletter, $segment1);
@@ -716,13 +716,6 @@ class NewslettersTest extends \MailPoetTest {
     $this->newsletterOptionsRepository->persist($option);
     $this->newsletterOptionsRepository->flush();
     return $option;
-  }
-
-  private function createSegment(string $name): SegmentEntity {
-    $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, 'some description');
-    $this->segmentRepository->persist($segment);
-    $this->segmentRepository->flush();
-    return $segment;
   }
 
   private function createNewsletterSegment(

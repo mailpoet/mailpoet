@@ -45,9 +45,9 @@ class SegmentsTest extends \MailPoetTest {
     $this->subscriberRepository = ContainerWrapper::getInstance()->get(SubscribersRepository::class);
     $this->subscriberSegmentRepository = ContainerWrapper::getInstance()->get(SubscriberSegmentRepository::class);
 
-    $this->segment1 = $this->createSegment('Segment 1');
-    $this->segment2 = $this->createSegment('Segment 2');
-    $this->segment3 = $this->createSegment('Segment 3');
+    $this->segment1 = $this->segmentRepository->createOrUpdate('Segment 1');
+    $this->segment2 = $this->segmentRepository->createOrUpdate('Segment 2');
+    $this->segment3 = $this->segmentRepository->createOrUpdate('Segment 3');
   }
 
   public function testItCanGetASegment(): void {
@@ -199,13 +199,6 @@ class SegmentsTest extends \MailPoetTest {
     $this->entityManager->persist($subscriberSegment);
     $this->entityManager->flush();
     return $subscriberSegment;
-  }
-
-  private function createSegment(string $name): SegmentEntity {
-    $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, '');
-    $this->entityManager->persist($segment);
-    $this->entityManager->flush();
-    return $segment;
   }
 
   private function createSubsriber(string $email): SubscriberEntity {
