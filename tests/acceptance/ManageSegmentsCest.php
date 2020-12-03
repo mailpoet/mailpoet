@@ -5,6 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
+use MailPoet\Test\DataFactories\User;
 
 class ManageSegmentsCest {
   public function _before() {
@@ -20,9 +21,10 @@ class ManageSegmentsCest {
     $wpAuthorEmail = 'test-author@example.com';
     $segmentTitle = 'User Role Segment Test';
 
-    $this->createUser('Test Admin', 'admin', $wpAdminEmail);
-    $this->createUser('Test Editor', 'editor', $wpEditorEmail);
-    $this->createUser('Test Author', 'author', $wpAuthorEmail);
+    $userFactory = new User();
+    $userFactory->createUser('Test Admin', 'admin', $wpAdminEmail);
+    $userFactory->createUser('Test Editor', 'editor', $wpEditorEmail);
+    $userFactory->createUser('Test Author', 'author', $wpAuthorEmail);
 
     $segmentFactory = new DynamicSegment();
     $segment = $segmentFactory
@@ -150,17 +152,5 @@ class ManageSegmentsCest {
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle, 20);
-  }
-
-  private function createUser($name, $role, $email) {
-    $userId = wp_create_user($name, "$name-password", $email);
-    assert(is_int($userId));
-    $user = get_user_by('ID', $userId);
-    assert($user instanceof \WP_User);
-    foreach ($user->roles as $defaultRole) {
-      $user->remove_role($defaultRole);
-    }
-    $user->add_role($role);
-    return $user;
   }
 }
