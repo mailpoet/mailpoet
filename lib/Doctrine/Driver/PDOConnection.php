@@ -52,7 +52,7 @@ class PDOConnection implements \MailPoetVendor\Doctrine\DBAL\Driver\Connection, 
     try {
       $preparedStatement = $this->connection->prepare($prepareString, $driverOptions);
       if ($preparedStatement === false) {
-        throw new RuntimeException('Unable to prepare PDOStatement for ' . $prepareString);
+        throw new RuntimeException('Unable to prepare PDOStatement.');
       }
       return $this->createStatement($preparedStatement);
     } catch (\PDOException $exception) {
