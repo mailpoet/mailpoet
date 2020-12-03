@@ -13,14 +13,18 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
   /** @var SegmentSubscribersRepository */
   private $repository;
 
+  /** @var SegmentsRepository */
+  private $segmentRepository;
+
   public function _before() {
     parent::_before();
+    $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->repository = $this->diContainer->get(SegmentSubscribersRepository::class);
     $this->cleanup();
   }
 
   public function testItReturnsOnlySubscribedSubscribersForStaticSegment() {
-    $segment = $this->createSegmentEntity();
+    $segment = $this->segmentRepository->createOrUpdate('Segment' . rand(0, 10000));
 
     $this->createSubscriberEntity(); // Subscriber without segment
 
@@ -101,12 +105,6 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     $subscriber->setSource(Source::API);
     $this->entityManager->persist($subscriber);
     return $subscriber;
-  }
-
-  private function createSegmentEntity(): SegmentEntity {
-    $segment = new SegmentEntity('Segment' . rand(0, 10000), SegmentEntity::TYPE_DEFAULT, 'Segment description');
-    $this->entityManager->persist($segment);
-    return $segment;
   }
 
   private function createSubscriberSegmentEntity(SegmentEntity $segment, SubscriberEntity $subscriber): SubscriberSegmentEntity {

@@ -8,9 +8,13 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
 
 class SubscriberListingRepositoryTest extends \MailPoetTest {
+
+  /** @var SegmentsRepository */
+  private $segmentRepository;
 
   /** @var SubscriberListingRepository */
   private $repository;
@@ -30,6 +34,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   ];
 
   public function _before() {
+    $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->repository = new SubscriberListingRepository(
       $this->entityManager,
       $this->diContainer->get(FilterHandler::class),
@@ -41,12 +46,12 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   public function testItBuildsFilters() {
     $this->createSubscriberEntity(); // subscriber without a list
     $subscriberWithDeletedList = $this->createSubscriberEntity();
-    $deletedList = $this->createSegmentEntity();
+    $deletedList = $this->segmentRepository->createOrUpdate('Segment 1');
     $deletedList->setDeletedAt(new \DateTimeImmutable());
     $this->createSubscriberSegmentEntity($deletedList, $subscriberWithDeletedList);
 
     $subscriberUnsubscribedFromAList = $this->createSubscriberEntity();
-    $list = $this->createSegmentEntity();
+    $list = $this->segmentRepository->createOrUpdate('Segment 2');
     $subscriberSegment = $this->createSubscriberSegmentEntity($list, $subscriberUnsubscribedFromAList);
     $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
 
@@ -68,7 +73,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   }
 
   public function testItBuildsGroups() {
-    $list = $this->createSegmentEntity();
+    $list = $this->segmentRepository->createOrUpdate('Segment 3');
 
     $this->createSubscriberEntity(); // subscriber without a list
 
@@ -124,7 +129,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   public function testLoadAllSubscribers() {
     $this->createSubscriberEntity(); // subscriber without a list
 
-    $list = $this->createSegmentEntity();
+    $list = $this->segmentRepository->createOrUpdate('Segment 4');
     $subscriberUnsubscribedFromAList = $this->createSubscriberEntity();
     $subscriberSegment = $this->createSubscriberSegmentEntity($list, $subscriberUnsubscribedFromAList);
     $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
@@ -152,7 +157,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   }
 
   public function testLoadSubscribersInDefaultSegment() {
-    $list = $this->createSegmentEntity();
+    $list = $this->segmentRepository->createOrUpdate('Segment 5');
     $subscriberUnsubscribedFromAList = $this->createSubscriberEntity();
     $subscriberSegment = $this->createSubscriberSegmentEntity($list, $subscriberUnsubscribedFromAList);
     $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
@@ -191,12 +196,12 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
   }
 
   public function testLoadSubscribersWithoutSegment() {
-    $list = $this->createSegmentEntity();
+    $list = $this->segmentRepository->createOrUpdate('Segment 6');
     $regularSubscriber = $this->createSubscriberEntity();
     $regularSubscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $this->createSubscriberSegmentEntity($list, $regularSubscriber);
 
-    $deletedList = $this->createSegmentEntity();
+    $deletedList = $this->segmentRepository->createOrUpdate('Segment 7');
     $deletedList->setDeletedAt(new \DateTimeImmutable());
     $subscriberOnDeletedList = $this->createSubscriberEntity();
     $subscriberOnDeletedList->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
@@ -225,12 +230,6 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $subscriber->setSource(Source::API);
     $this->entityManager->persist($subscriber);
     return $subscriber;
-  }
-
-  private function createSegmentEntity(): SegmentEntity {
-    $segment = new SegmentEntity('Segment' . rand(0, 10000), SegmentEntity::TYPE_DEFAULT, 'Segment description');
-    $this->entityManager->persist($segment);
-    return $segment;
   }
 
   private function createDynamicSegmentEntity(): SegmentEntity {

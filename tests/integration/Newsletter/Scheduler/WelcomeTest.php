@@ -10,11 +10,15 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class WelcomeTest extends \MailPoetTest {
+
+  /** @var SegmentsRepository */
+  private $segmentRepository;
 
   /** @var WelcomeScheduler */
   private $welcomeScheduler;
@@ -33,10 +37,13 @@ class WelcomeTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->welcomeScheduler = $this->diContainer->get(WelcomeScheduler::class);
     $this->subscriber = $this->createSubscriber('welcome_test_1@example.com');
-    $this->segment = $this->createSegment('welcome_segment');
-    $this->wpSegment = $this->createSegment('Wordpress', SegmentEntity::TYPE_WP_USERS);
+    $this->segment = $this->segmentRepository->createOrUpdate('welcome_segment');
+    $this->wpSegment = $this->segmentRepository->createOrUpdate('Wordpress');
+    $this->wpSegment->setType(SegmentEntity::TYPE_WP_USERS);
+    $this->segmentRepository->flush();
     $this->newsletter = $this->createWelcomeNewsletter();
   }
 
@@ -185,8 +192,8 @@ class WelcomeTest extends \MailPoetTest {
       ]
     );
 
-    $segment2 = $this->createSegment('Segment 2');
-    $segment3 = $this->createSegment('Segment 3');
+    $segment2 = $this->segmentRepository->createOrUpdate('Segment 2');
+    $segment3 = $this->segmentRepository->createOrUpdate('Segment 3');
 
     // queue is created and scheduled for delivery one day later
     $result = $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
@@ -443,13 +450,6 @@ class WelcomeTest extends \MailPoetTest {
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
     return $subscriber;
-  }
-
-  private function createSegment($name, $type = SegmentEntity::TYPE_DEFAULT): SegmentEntity {
-    $segment = new SegmentEntity($name, $type, $name);
-    $this->entityManager->persist($segment);
-    $this->entityManager->flush();
-    return $segment;
   }
 
   public function _after() {

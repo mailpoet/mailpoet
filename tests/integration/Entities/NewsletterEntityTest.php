@@ -5,20 +5,25 @@ namespace MailPoet\Entities;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Segments\SegmentsRepository;
 
 class NewsletterEntityTest extends \MailPoetTest {
   
   /** @var NewslettersRepository */
   private $newsletterRepository;
 
+  /** @var SegmentsRepository */
+  private $segmentRepository;
+
   public function _before() {
     $this->cleanup();
     $this->newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
   }
 
   public function testItRemovesOrphanedSegmentRelations() {
     $newsletter = $this->createNewsletter();
-    $segment = $this->createSegment();
+    $segment = $this->segmentRepository->createOrUpdate('Segment', 'Segment description');
     $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
     $this->entityManager->persist($newsletterSegment);
     $this->entityManager->flush();
@@ -84,12 +89,6 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletter->setSubject('Subject');
     $this->entityManager->persist($newsletter);
     return $newsletter;
-  }
-
-  private function createSegment(): SegmentEntity {
-    $segment = new SegmentEntity('Segment', SegmentEntity::TYPE_DEFAULT, 'Segment description');
-    $this->entityManager->persist($segment);
-    return $segment;
   }
 
   private function createOptionField(string $name): NewsletterOptionFieldEntity {
