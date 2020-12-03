@@ -2,7 +2,10 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Models\Segment as SegmentModel;
+use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\User;
 
 class ManageListsCest {
   public function viewLists(\AcceptanceTester $i) {
@@ -129,5 +132,75 @@ class ManageListsCest {
     $i->seeNoJSErrors();
     $i->click('[data-automation-id="filters_all"]');
     $i->see('List to keep');
+  }
+
+  public function disableAndEnableWPUserList(\AcceptanceTester $i) {
+    $listName = 'WordPress Users';
+
+    $userFactory = new User();
+    $userFactory->createUser('Test User', 'editor', 'test-editor@example.com');
+
+    $i->wantTo('Disable WP User list by clicking on Trash and disable button');
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForText($listName, 5, '[data-automation-id="listing_item_1"]');
+    $i->clickItemRowActionByItemName($listName, 'Trash and disable');
+    $i->waitForText('1 list was moved to the trash. Note that deleting a list does not delete its subscribers.');
+    $i->seeNoJSErrors();
+
+    $i->wantTo('See WP User list in the Trash');
+    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
+    $i->waitForText($listName);
+    $i->seeNoJSErrors();
+
+    $i->wantTo('Check trashed WP User');
+    $i->amOnMailPoetPage('Subscribers');
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');    
+    $i->waitForText('test-editor@example.com', 5);
+
+    $i->reloadPage();
+
+    $i->wantTo('Enable WP User list by clicking on Restore and enable button');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForElementVisible('[data-automation-id="filters_trash"]');
+    $i->clickItemRowActionByItemName($listName, 'Restore and enable');
+    $i->seeNoJSErrors();
+
+    $i->wantTo('See WP User list in the Trash');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForText($listName, 5, '[data-automation-id="listing_item_1"]');
+    $i->seeNoJSErrors();
+
+    $i->wantTo('Check WP User is restored');
+    $i->amOnMailPoetPage('Subscribers');  
+    $i->waitForText('test-editor@example.com', 5);
+  }
+
+  public function cannotDisableWPUserList(\AcceptanceTester $i) {
+    $listName = 'WordPress Users';
+    $subject = 'Blocking Post Notification';
+
+    $segment = SegmentModel::findOne(1);
+    assert($segment instanceof SegmentModel);
+
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory
+      ->withSubject($subject)
+      ->withSegments([$segment])
+      ->withPostNotificationsType()
+      ->create();
+
+    $i->wantTo('Cannot disable WP User list by clicking on Trash and disable button');
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForText($listName, 5, '[data-automation-id="listing_item_1"]');
+    $i->clickItemRowActionByItemName($listName, 'Trash and disable');
+    $i->waitForText("List cannot be deleted because it’s used for '{$subject}' email");
+    $i->seeNoJSErrors();
   }
 }
