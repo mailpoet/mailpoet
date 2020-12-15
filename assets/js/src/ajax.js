@@ -70,7 +70,6 @@ MailPoet.Ajax = {
   },
   request: function request(method, options) {
     var params;
-    var deferred;
     // set options
     this.init(options);
 
@@ -85,14 +84,16 @@ MailPoet.Ajax = {
     }
 
     // ajax request
-    deferred = jQuery[method](
+    const deferred = jQuery.Deferred();
+    jQuery[method](
       this.options.url,
       params,
       null,
       'json'
-    ).then(function resultHandler(data) {
-      return data;
-    }, _.partial(requestFailed, MailPoet.I18n.t('ajaxFailedErrorMessage')));
+    ).then(deferred.resolve, (failedXhr) => {
+      const errorData = requestFailed(MailPoet.I18n.t('ajaxFailedErrorMessage'), failedXhr);
+      deferred.reject(errorData);
+    });
 
     // clear options
     this.options = {};
