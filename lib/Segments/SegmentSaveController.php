@@ -16,18 +16,17 @@ class SegmentSaveController {
   }
 
   public function save(array $data = []): SegmentEntity {
-    $this->checkSegmenUniqueName($data['name'] ?? '');
-
     $id = isset($data['id']) ? (int)$data['id'] : null;
     $name = $data['name'] ?? '';
     $description = $data['description'] ?? '';
+    
+    $this->checkSegmenUniqueName($name, $id);
 
     return $this->segmentsRepository->createOrUpdate($name, $description, $id);
   }
 
-  private function checkSegmenUniqueName(string $name): void {
-    $segment = $this->segmentsRepository->findOneBy(['name' => $name]);
-    if ($segment) {
+  private function checkSegmenUniqueName(string $name, ?int $id): void {
+    if (!$this->segmentsRepository->isNameUnique($name, $id)) {
       throw new InvalidArgumentException("Segment with name: '{$name}' already exists.");
     }
   }

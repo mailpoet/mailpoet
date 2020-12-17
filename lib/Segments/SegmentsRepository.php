@@ -33,6 +33,23 @@ class SegmentsRepository extends Repository {
     return $countMap;
   }
 
+  public function isNameUnique(string $name, ?int $id): bool {
+    $qb = $this->doctrineRepository->createQueryBuilder('s')
+      ->select('s')
+      ->where('s.name = :name')
+      ->setParameter('name', $name);
+
+    if ($id !== null) {
+      $qb->andWhere('s.id != :id')
+        ->setParameter('id', $id);
+    }
+
+    $results = $qb->getQuery()
+      ->getResult();
+
+    return count($results) === 0;
+  }
+
   public function createOrUpdate(
     string $name,
     string $description = '',
