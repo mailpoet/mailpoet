@@ -209,27 +209,20 @@ class Forms extends APIEndpoint {
 
     // check if the user gets to pick his own lists
     // or if it's selected by the admin
-    $hasSegmentSelection = false;
+    $formEntity = new FormEntity($name);
+    $formEntity->setBody($body);
+    $listSelectionBlocks = $formEntity->getBlocksByType(FormEntity::SEGMENT_SELECTION_BLOCK_TYPE);
     $listSelection = [];
-    foreach ($body as $i => $block) {
-      if ($block['type'] === 'segment') {
-        $hasSegmentSelection = true;
-        if (!empty($block['params']['values'])) {
-          $listSelection = array_filter(
-            array_map(function($segment) {
-              return (isset($segment['id'])
-                ? $segment['id']
-                : null
-              );
-            }, $block['params']['values'])
-          );
-        }
-        break;
-      }
+    foreach ($listSelectionBlocks as $listSelectionBlock) {
+      $listSelection = array_unique(
+        array_merge(
+          $listSelection, array_column($listSelectionBlock['params']['values'] ?? [], 'id')
+        )
+      );
     }
 
     // check list selection
-    if ($hasSegmentSelection === true) {
+    if (count($listSelectionBlocks)) {
       $settings['segments_selected_by'] = 'user';
       $settings['segments'] = $listSelection;
     } else {

@@ -133,6 +133,36 @@ class FormsTest extends \MailPoetTest {
     expect($response->data['settings']['segments'])->equals([1, 3]);
   }
 
+  public function testItCanExtractListsFromNestedListSelectionBlock() {
+    $response = $this->endpoint->create();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
+    $form = Form::findOne($response->data['id'])->asArray();
+    $form['body'][] = [
+      'type' => 'segment',
+      'params' => [
+        'values' => [['id' => 2], ['id' => 4]],
+      ],
+    ];
+
+    $form['body'] = [
+      [
+        'type' => 'columns',
+        'body' => [
+          [
+            'type' => 'column',
+            'body' => $form['body'],
+          ],
+        ],
+      ],
+    ];
+
+    $response = $this->endpoint->saveEditor($form);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data['settings']['segments_selected_by'])->equals('user');
+    expect($response->data['settings']['segments'])->equals([2, 4]);
+  }
+
   public function testItCanRestoreAForm() {
     $this->form1->trash();
 
