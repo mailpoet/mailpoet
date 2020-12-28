@@ -89,23 +89,6 @@ class Form extends Model {
     return $fields ?: false;
   }
 
-  public function filterSegments(array $segmentIds = []) {
-    $settings = $this->getSettings();
-    if (empty($settings['segments'])) {
-      return [];
-    }
-
-    if (!empty($settings['segments_selected_by'])
-      && $settings['segments_selected_by'] == 'user'
-    ) {
-      $segmentIds = array_intersect($segmentIds, $settings['segments']);
-    } else {
-      $segmentIds = $settings['segments'];
-    }
-
-    return $segmentIds;
-  }
-
   public static function search($orm, $search = '') {
     return $orm->whereLike('name', '%' . $search . '%');
   }

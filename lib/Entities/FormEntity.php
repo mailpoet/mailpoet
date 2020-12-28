@@ -190,4 +190,8 @@ class FormEntity {
     }
     return $listSelection;
   }
+
+  public function getSettingsSegmentIds(): array {
+    return $this->settings['segments'] ?? [];
+  }
 }
