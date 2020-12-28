@@ -112,6 +112,25 @@ class FormsTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['is_widget'])->false();
     expect($response->data['name'])->equals('Updated form');
+    expect($response->data['settings']['segments_selected_by'])->equals('admin');
+  }
+
+  public function testItCanExtractListsFromListSelectionBlock() {
+    $response = $this->endpoint->create();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
+    $form = Form::findOne($response->data['id'])->asArray();
+    $form['body'][] = [
+      'type' => 'segment',
+      'params' => [
+        'values' => [['id' => 1], ['id' => 3]],
+      ],
+    ];
+
+    $response = $this->endpoint->saveEditor($form);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data['settings']['segments_selected_by'])->equals('user');
+    expect($response->data['settings']['segments'])->equals([1, 3]);
   }
 
   public function testItCanRestoreAForm() {
