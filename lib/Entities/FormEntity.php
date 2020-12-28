@@ -177,4 +177,17 @@ class FormEntity {
     }
     return $found;
   }
+
+  public function getSegmentBlocksSegmentIds(): array {
+    $listSelectionBlocks = $this->getBlocksByType(FormEntity::SEGMENT_SELECTION_BLOCK_TYPE);
+    $listSelection = [];
+    foreach ($listSelectionBlocks as $listSelectionBlock) {
+      $listSelection = array_unique(
+        array_merge(
+          $listSelection, array_column($listSelectionBlock['params']['values'] ?? [], 'id')
+        )
+      );
+    }
+    return $listSelection;
+  }
 }
