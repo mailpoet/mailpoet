@@ -68,4 +68,23 @@ class FormEntityTest extends \MailPoetUnitTest {
     expect($columns)->count(1);
     expect($columns[0]['body'])->count(2);
   }
+
+  public function testGetSegmentSelectionSegmentIds() {
+    $formEntity = new FormEntity('Test' );
+    $formEntity->setBody($this->body);
+    $segmentIds = $formEntity->getSegmentBlocksSegmentIds();
+    expect($segmentIds)->isEmpty();
+
+    // Add segment selection block to second columns
+    $body = $this->body;
+    $body[0]['body'][1]['body'][] = [
+      'type' => 'segment',
+      'params' => [
+        'values' => [['id' => 1], ['id' => 3]],
+      ],
+    ];
+    $formEntity->setBody($body);
+    $segmentIds = $formEntity->getSegmentBlocksSegmentIds();
+    expect($segmentIds)->equals([1, 3]);
+  }
 }

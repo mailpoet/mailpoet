@@ -211,18 +211,10 @@ class Forms extends APIEndpoint {
     // or if it's selected by the admin
     $formEntity = new FormEntity($name);
     $formEntity->setBody($body);
-    $listSelectionBlocks = $formEntity->getBlocksByType(FormEntity::SEGMENT_SELECTION_BLOCK_TYPE);
-    $listSelection = [];
-    foreach ($listSelectionBlocks as $listSelectionBlock) {
-      $listSelection = array_unique(
-        array_merge(
-          $listSelection, array_column($listSelectionBlock['params']['values'] ?? [], 'id')
-        )
-      );
-    }
+    $listSelection = $formEntity->getSegmentBlocksSegmentIds();
 
     // check list selection
-    if (count($listSelectionBlocks)) {
+    if (count($listSelection)) {
       $settings['segments_selected_by'] = 'user';
       $settings['segments'] = $listSelection;
     } else {
