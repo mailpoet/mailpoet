@@ -40,13 +40,10 @@ class DeprecatedShortcodeNotice {
 
   public function display() {
     $errorString = __('MailPoet recently changed how custom email shortcodes work, you may need to update your custom shortcodes.', 'mailpoet');
-    $getInTouchString = __('[link]See the documentation for necessary changes[/link]', 'mailpoet');
-    $error = Helpers::replaceLinkTags($errorString, 'https://kb.mailpoet.com/article/160-create-a-custom-shortcode', [
+    $linkString = __('[link]See the documentation for necessary changes[/link]', 'mailpoet');
+    $error = $errorString . '<br><br>' . Helpers::replaceLinkTags($linkString, 'https://kb.mailpoet.com/article/160-create-a-custom-shortcode', [
       'target' => '_blank',
       'data-beacon-article' => '581f6faac697914aa838044f',
-    ]);
-    $error .= '<br><br>' . Helpers::replaceLinkTags($getInTouchString, 'https://www.mailpoet.com/let-us-handle-your-php-upgrade/', [
-      'target' => '_blank',
       'class' => 'mailpoet-button mailpoet-button-small',
     ]);
 
