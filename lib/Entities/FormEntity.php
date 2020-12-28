@@ -27,6 +27,22 @@ class FormEntity {
   const STATUS_ENABLED = 'enabled';
   const STATUS_DISABLED = 'disabled';
 
+  const HTML_BLOCK_TYPE = 'html';
+  const HEADING_BLOCK_TYPE = 'heading';
+  const IMAGE_BLOCK_TYPE = 'image';
+  const PARAGRAPH_BLOCK_TYPE = 'paragraph';
+  const DIVIDER_BLOCK_TYPE = 'divider';
+  const CHECKBOX_BLOCK_TYPE = 'checkbox';
+  const RADIO_BLOCK_TYPE = 'radio';
+  const SEGMENT_SELECTION_BLOCK_TYPE = 'segment';
+  const DATE_BLOCK_TYPE = 'date';
+  const SELECT_BLOCK_TYPE = 'select';
+  const TEXT_BLOCK_TYPE = 'text';
+  const TEXTAREA_BLOCK_TYPE = 'textarea';
+  const SUBMIT_BLOCK_TYPE = 'submit';
+  const COLUMNS_BLOCK_TYPE = 'columns';
+  const COLUMN_BLOCK_TYPE = 'column';
+
   /**
    * @ORM\Column(type="string")
    * @var string

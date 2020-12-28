@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form;
 
+use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Block\Checkbox;
 use MailPoet\Form\Block\Column;
 use MailPoet\Form\Block\Columns;
@@ -101,55 +102,55 @@ class BlocksRenderer {
   public function renderBlock(array $block, array $formSettings): string {
     $html = '';
     switch ($block['type']) {
-      case 'html':
+      case FormEntity::HTML_BLOCK_TYPE:
         $html .= $this->html->render($block, $formSettings);
         break;
 
-      case 'heading':
+      case FormEntity::HEADING_BLOCK_TYPE:
         $html .= $this->heading->render($block);
         break;
 
-      case 'image':
+      case FormEntity::IMAGE_BLOCK_TYPE:
         $html .= $this->image->render($block);
         break;
 
-      case 'paragraph':
+      case FormEntity::PARAGRAPH_BLOCK_TYPE:
         $html .= $this->paragraph->render($block);
         break;
 
-      case 'divider':
+      case FormEntity::DIVIDER_BLOCK_TYPE:
         $html .= $this->divider->render($block);
         break;
 
-      case 'checkbox':
+      case FormEntity::CHECKBOX_BLOCK_TYPE:
         $html .= $this->checkbox->render($block, $formSettings);
         break;
 
-      case 'radio':
+      case FormEntity::RADIO_BLOCK_TYPE:
         $html .= $this->radio->render($block, $formSettings);
         break;
 
-      case 'segment':
+      case FormEntity::SEGMENT_SELECTION_BLOCK_TYPE:
         $html .= $this->segment->render($block, $formSettings);
         break;
 
-      case 'date':
+      case FormEntity::DATE_BLOCK_TYPE:
         $html .= $this->date->render($block, $formSettings);
         break;
 
-      case 'select':
+      case FormEntity::SELECT_BLOCK_TYPE:
         $html .= $this->select->render($block, $formSettings);
         break;
 
-      case 'text':
+      case FormEntity::TEXT_BLOCK_TYPE:
         $html .= $this->text->render($block, $formSettings);
         break;
 
-      case 'textarea':
+      case FormEntity::TEXTAREA_BLOCK_TYPE:
         $html .= $this->textarea->render($block, $formSettings);
         break;
 
-      case 'submit':
+      case FormEntity::SUBMIT_BLOCK_TYPE:
         $html .= $this->submit->render($block, $formSettings);
         break;
     }
@@ -159,11 +160,11 @@ class BlocksRenderer {
   public function renderContainerBlock(array $block, string $content) {
     $html = '';
     switch ($block['type']) {
-      case 'columns':
+      case FormEntity::COLUMNS_BLOCK_TYPE:
         $html .= $this->columns->render($block, $content);
         break;
 
-      case 'column':
+      case FormEntity::COLUMN_BLOCK_TYPE:
         $html .= $this->column->render($block, $content);
         break;
     }
