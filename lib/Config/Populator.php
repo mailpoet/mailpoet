@@ -194,14 +194,16 @@ class Populator {
         'captcha' => $mailpoetPageId,
         'confirm_unsubscribe' => $mailpoetPageId,
       ]);
-    } elseif (
-      (empty($subscription['captcha']) || $subscription['captcha'] !== $mailpoetPageId)
-      || (empty($subscription['confirm_unsubscribe']) || $subscription['confirm_unsubscribe'] !== $mailpoetPageId)
-    ) {
+    } else {
       // For existing installations
+      $captchaPageSetting = (empty($subscription['captcha']) || $subscription['captcha'] !== $mailpoetPageId)
+        ? $mailpoetPageId : $subscription['captcha'];
+      $confirmUnsubPageSetting = empty($subscription['confirm_unsubscribe'])
+        ? $mailpoetPageId : $subscription['confirm_unsubscribe'];
+
       $this->settings->set('subscription.pages', array_merge($subscription, [
-        'captcha' => $mailpoetPageId,
-        'confirm_unsubscribe' => $mailpoetPageId,
+        'captcha' => $captchaPageSetting,
+        'confirm_unsubscribe' => $confirmUnsubPageSetting,
       ]));
     }
   }
