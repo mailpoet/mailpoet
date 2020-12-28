@@ -161,4 +161,20 @@ class FormEntity {
       'deleted_at' => $this->getDeletedAt(),
     ];
   }
+
+  public function getBlocksByType(string $type, array $blocks = null): array {
+    $found = [];
+    if ($blocks === null) {
+      $blocks = $this->getBody() ?? [];
+    }
+    foreach ($blocks as $block) {
+      if ($block['type'] === $type) {
+        $found[] = $block;
+      }
+      if (isset($block['body']) && is_array($block['body']) && !empty($block['body'])) {
+        $found = array_merge($found, $this->getBlocksByType($type, $block['body']));
+      }
+    }
+    return $found;
+  }
 }
