@@ -66,6 +66,7 @@ export default (formItems) => loadLinks(formItems).then((links) => {
       placeholder: MailPoet.I18n.t('selectLinkPlaceholder'),
       forceSelect2: true,
       getLabel: (link) => link.url,
+      getValue: (item) => item.id.split('-').pop(), // turn 'newsletter-123-link-456' back into 456
       values: links,
     }];
   }
