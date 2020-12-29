@@ -73,13 +73,13 @@ class EditorProductsCest {
       ->withName(self::PRODUCT_NAME . ' 2')
       ->withDescription(self::PRODUCT_DESCRIPTION . ' 2')
       ->withShortDescription(self::PRODUCT_SHORT_DESCRIPTION . ' 2')
-      ->withImages(['https://via.placeholder.com/600x400.jpg'])
+      ->withImages(['https://dummyimage.com/600x400.png'])
       ->create();
     $this->productFactory
       ->withName(self::PRODUCT_NAME)
       ->withDescription(self::PRODUCT_DESCRIPTION)
       ->withShortDescription(self::PRODUCT_SHORT_DESCRIPTION)
-      ->withImages(['https://via.placeholder.com/600x400.jpg'])
+      ->withImages(['https://dummyimage.com/600x400.png'])
       ->create();
 
   }
