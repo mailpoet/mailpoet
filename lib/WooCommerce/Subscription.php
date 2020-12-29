@@ -23,16 +23,21 @@ class Subscription {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var Helper */
+  private $wcHelper;
+
   /** @var ConfirmationEmailMailer */
   private $confirmationEmailMailer;
 
   public function __construct(
     SettingsController $settings,
     ConfirmationEmailMailer $confirmationEmailMailer,
-    WPFunctions $wp
+    WPFunctions $wp,
+    Helper $wcHelper
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->wcHelper = $wcHelper;
     $this->confirmationEmailMailer = $confirmationEmailMailer;
   }
 
@@ -54,11 +59,15 @@ class Subscription {
   }
 
   private function getSubscriptionField($inputName, $checked, $labelString) {
-    return '<p class="form-row">
-      <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox" data-automation-id="woo-commerce-subscription-opt-in">
-      <input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="' . $this->wp->escAttr($inputName) . '" id="' . $this->wp->escAttr($inputName) . '" ' . ($checked ? 'checked' : '') . ' />
-        <span class="woocommerce-terms-and-conditions-checkbox-text">' . $this->wp->escHtml($labelString) . '</label>
-    </p>';
+    return $this->wcHelper->woocommerceFormField(
+      $this->wp->escAttr($inputName),
+      [
+        'type' => 'checkbox',
+        'label' => $this->wp->escHtml($labelString),
+        'custom_attributes' => ['data-automation-id' => 'woo-commerce-subscription-opt-in'],
+      ],
+      $checked ? '1' : '0'
+    );
   }
 
   private function isCurrentUserSubscribed() {
