@@ -26,11 +26,6 @@ parameters:
 			path: ../../tests/integration/API/JSON/v1/DynamicSegmentsTest.php
 
 		-
-			message: "#^Cannot call method asArray\\(\\) on MailPoet\\\\Models\\\\Form\\|false\\.$#"
-			count: 7
-			path: ../../tests/integration/API/JSON/v1/FormsTest.php
-
-		-
 			message: "#^Cannot access property \\$deletedAt on MailPoet\\\\Models\\\\Form\\|false\\.$#"
 			count: 1
 			path: ../../tests/integration/API/JSON/v1/FormsTest.php
