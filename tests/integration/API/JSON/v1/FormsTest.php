@@ -45,7 +45,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->get(['id' => $this->form1->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Form::findOne($this->form1->id)->asArray()
+      $this->reloadForm((int)$this->form1->id)->asArray()
     );
   }
 
@@ -68,7 +68,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Form::findOne($response->data['id'])->asArray()
+      $this->reloadForm((int)$response->data['id'])->asArray()
     );
     expect($response->data['name'])->equals('');
   }
@@ -78,7 +78,7 @@ class FormsTest extends \MailPoetTest {
     $formId = $response->data['id'];
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Form::where('id', $formId)->findOne()->asArray()
+      $this->reloadForm((int)$formId)->asArray()
     );
     $response->data['styles'] = '/* Custom Styles */';
 
@@ -105,7 +105,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $form = Form::findOne($response->data['id'])->asArray();
+    $form = $this->reloadForm((int)$response->data['id'])->asArray();
     $form['name'] = 'Updated form';
 
     $response = $this->endpoint->saveEditor($form);
@@ -119,7 +119,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $form = Form::findOne($response->data['id'])->asArray();
+    $form = $this->reloadForm((int)$response->data['id'])->asArray();
     $form['body'][] = [
       'type' => 'segment',
       'params' => [
@@ -137,7 +137,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $form = Form::findOne($response->data['id'])->asArray();
+    $form = $this->reloadForm((int)$response->data['id'])->asArray();
     $form['body'][] = [
       'type' => 'segment',
       'params' => [
@@ -172,7 +172,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->restore(['id' => $this->form1->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Form::findOne($this->form1->id)->asArray()
+      $this->reloadForm((int)$this->form1->id)->asArray()
     );
     expect($response->data['deleted_at'])->null();
     expect($response->meta['count'])->equals(1);
@@ -182,7 +182,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->trash(['id' => $this->form2->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Form::findOne($this->form2->id)->asArray()
+      $this->reloadForm((int)$this->form2->id)->asArray()
     );
     expect($response->data['deleted_at'])->notNull();
     expect($response->meta['count'])->equals(1);
@@ -198,8 +198,10 @@ class FormsTest extends \MailPoetTest {
   public function testItCanDuplicateAForm() {
     $response = $this->endpoint->duplicate(['id' => $this->form1->id]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
+    $form = Form::where('name', 'Copy of Form 1')->findOne();
+    assert($form instanceof Form);
     expect($response->data)->equals(
-      Form::where('name', 'Copy of Form 1')->findOne()->asArray()
+      $form->asArray()
     );
     expect($response->meta['count'])->equals(1);
   }
@@ -233,8 +235,7 @@ class FormsTest extends \MailPoetTest {
       'id' => $this->form1->id,
     ]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    $form = Form::findOne($this->form1->id);
-    assert($form instanceof Form);
+    $form = $this->reloadForm((int)$this->form1->id);
     expect($form->status)->equals(FormEntity::STATUS_ENABLED);
 
     $response = $this->endpoint->setStatus([
@@ -242,8 +243,7 @@ class FormsTest extends \MailPoetTest {
       'id' => $this->form1->id,
     ]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    $form = Form::findOne($this->form1->id);
-    assert($form instanceof Form);
+    $form = $this->reloadForm((int)$this->form1->id);
     expect($form->status)->equals(FormEntity::STATUS_DISABLED);
 
     $response = $this->endpoint->setStatus([
@@ -262,6 +262,12 @@ class FormsTest extends \MailPoetTest {
       'id' => $this->form1->id,
     ]);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+  }
+
+  private function reloadForm(int $id): Form {
+    $reloaded = Form::findOne($id);
+    assert($reloaded instanceof Form);
+    return $reloaded;
   }
 
   public function _after() {
