@@ -509,9 +509,6 @@ class RoboFile extends \Robo\Tasks {
       // temp dir
       ->taskExec('mkdir -p ' . __DIR__ . '/temp')
       ->taskExec('rm -rf ' . __DIR__ . '/temp/phpstan')
-      // Generate config with correct path to WP source
-      ->taskExec("cp -rf $dir/tasks/phpstan/phpstan-wp-source.neon $dir/tasks/phpstan/_phpstan-wp-source.neon")
-      ->taskExec("sed -i 's+WP_ROOT+" . getenv('WP_ROOT') . "+g' $dir/tasks/phpstan/_phpstan-wp-source.neon")
       // lib
       ->taskExec($task)
       ->arg("$dir/lib")
