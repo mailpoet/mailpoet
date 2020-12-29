@@ -6,6 +6,7 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
+use MailPoet\WP\Functions as WPFunctions;
 
 class InstallerTest extends \MailPoetTest {
   public $installer;
@@ -29,7 +30,7 @@ class InstallerTest extends \MailPoetTest {
       $this
     );
     $installer->init();
-    apply_filters('plugins_api', null, null, null);
+    WPFunctions::get()->applyFilters('plugins_api', null, null, null);
   }
 
   public function testItGetsPluginInformation() {
