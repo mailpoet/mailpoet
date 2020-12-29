@@ -71,5 +71,8 @@ if (!$requirementsCheckResults[RequirementsChecker::TEST_PDO_EXTENSION] ||
   return;
 }
 
+// Ensure functions like get_plugins, etc.
+require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+
 $initializer = MailPoet\DI\ContainerWrapper::getInstance()->get(MailPoet\Config\Initializer::class);
 $initializer->init();
