@@ -17,6 +17,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\CustomField;
@@ -103,7 +104,8 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(SubscriberListingRepository::class),
       $container->get(SegmentsRepository::class),
       $obfuscator,
-      $container->get(WelcomeScheduler::class)
+      $container->get(WelcomeScheduler::class),
+      $container->get(FormsRepository::class)
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
@@ -137,7 +139,15 @@ class SubscribersTest extends \MailPoetTest {
     );
 
     $this->form = new FormEntity('My Form');
-    $this->form->setBody(Fixtures::get('form_body_template'));
+    $body = Fixtures::get('form_body_template');
+    // Add segment selection block
+    $body[] = [
+      'type' => 'segment',
+      'params' => [
+        'values' => [['id' => $this->segment1->getId()], ['id' => $this->segment2->getId()]],
+      ],
+    ];
+    $this->form->setBody($body);
     $this->form->setSettings([
       'segments_selected_by' => 'user',
       'segments' => [
@@ -579,6 +589,21 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
   }
 
+  public function testItCanSubscribeToSelectedSegment() {
+    $response = $this->endpoint->subscribe([
+      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'form_id' => $this->form->getId(),
+      $this->obfuscatedSegments => [$this->segment2->getId()],
+    ]);
+
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
+    $subscriber = $subscriberRepository->findOneBy(['email' => 'toto@mailpoet.com']);
+    $segments = $subscriber->getSegments();
+    expect($segments->count())->equals(1);
+    expect($segments->get(0)->getId())->equals($this->segment2->getId());
+  }
+
   public function testItCannotSubscribeWithoutReCaptchaWhenEnabled() {
     $this->settings->set('captcha', ['type' => Captcha::TYPE_RECAPTCHA]);
     $response = $this->endpoint->subscribe([
@@ -660,6 +685,7 @@ class SubscribersTest extends \MailPoetTest {
     $settings = $this->form->getSettings();
     $settings['segments_selected_by'] = 'admin';
     $this->form->setSettings($settings);
+    $this->form->setBody(Fixtures::get('form_body_template')); // Body without select segments block
     $this->entityManager->flush();
 
     $response = $this->endpoint->subscribe([
@@ -682,6 +708,7 @@ class SubscribersTest extends \MailPoetTest {
     $settings['segments_selected_by'] = 'admin';
     $settings['segments'] = [];
     $this->form->setSettings($settings);
+    $this->form->setBody(Fixtures::get('form_body_template')); // Body without select segments block
     $this->entityManager->flush();
 
     $response = $this->endpoint->subscribe([
