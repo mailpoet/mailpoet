@@ -35,6 +35,10 @@ class Helper {
     return get_woocommerce_currency();
   }
 
+  public function woocommerceFormField($key, $args, $value) {
+    return woocommerce_form_field($key, $args, $value);
+  }
+
   public function wcLightOrDark($color, $dark, $light) {
     return wc_light_or_dark($color, $dark, $light);
   }
