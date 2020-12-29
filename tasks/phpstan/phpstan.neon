@@ -22,7 +22,6 @@ parameters:
       count: 2
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
-    - WP_DEBUG
     - MAILPOET_PREMIUM_INITIALIZED
   doctrine:
     objectManagerLoader: create-entity-manager.php
@@ -37,8 +36,8 @@ parameters:
   excludes_analyse:
     - ../../lib/Config/PopulatorData/Templates
 includes:
-  - _phpstan-wp-source.neon # Config file that adds paths to WP source code. Generated from phpstan-wp-source.neon by Robo
   - vendor/phpstan/phpstan-doctrine/extension.neon
   - vendor/phpstan/phpstan-doctrine/rules.neon
+  - vendor/szepeviktor/phpstan-wordpress/extension.neon
   - phpstan-baseline.neon # https://medium.com/@ondrejmirtes/phpstans-baseline-feature-lets-you-hold-new-code-to-a-higher-standard-e77d815a5dff
   - php-version-dependent-config-libs.php # PHP version detection + configuraton dependent on PHP version

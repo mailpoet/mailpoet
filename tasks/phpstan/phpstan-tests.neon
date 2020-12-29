@@ -19,8 +19,6 @@ parameters:
       - PremiumContainerConfigurator.php
       - woocommerce.php
       - function-stubs.php
-  dynamicConstantNames:
-    - WP_DEBUG
   ignoreErrors:
     - '/Parameter #1 \$cssOrXPath of method AcceptanceTester::moveMouseOver\(\) expects string\|null, array<string, string> given./'
     - '/Function expect invoked with 1 parameter, 0 required\./'
@@ -37,9 +35,9 @@ parameters:
   checkMissingTypehints: false
 
 includes:
-  - _phpstan-wp-source.neon # Config file that adds paths to WP source code. Generated from phpstan-wp-source.neon by Robo
   - vendor/phpstan/phpstan-doctrine/extension.neon
   - vendor/phpstan/phpstan-phpunit/extension.neon
+  - vendor/szepeviktor/phpstan-wordpress/extension.neon
   - extensions/CodeceptionExtension/extension.neon
   - phpstan-baseline-unit-tests.neon # https://medium.com/@ondrejmirtes/phpstans-baseline-feature-lets-you-hold-new-code-to-a-higher-standard-e77d815a5dff
   - phpstan-baseline-integration-tests.neon # https://medium.com/@ondrejmirtes/phpstans-baseline-feature-lets-you-hold-new-code-to-a-higher-standard-e77d815a5dff

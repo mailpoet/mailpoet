@@ -291,7 +291,7 @@ parameters:
 			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/PostsTest.php
 
 		-
-			message: "#^Cannot access property \\$post_title on array\\|WP_Post\\|null\\.$#"
+			message: "#^Cannot access property \\$post_title on WP_Post\\|null\\.$#"
 			count: 1
 			path: ../../tests/integration/Cron/Workers/SendingQueue/Tasks/ShortcodesTest.php
 
@@ -595,7 +595,7 @@ parameters:
 			path: ../../tests/integration/Newsletter/Scheduler/PostNotificationTest.php
 
 		-
-			message: "#^Cannot access property \\$post_title on array\\|WP_Post\\|null\\.$#"
+			message: "#^Cannot access property \\$post_title on WP_Post\\|null\\.$#"
 			count: 1
 			path: ../../tests/integration/Newsletter/ShortcodesTest.php
 
