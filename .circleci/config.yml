@@ -171,15 +171,10 @@ jobs:
     parameters:
       php_version:
         type: integer
-        default: 100
+        default: 70100
     steps:
     - attach_workspace:
         at: /home/circleci/mailpoet
-    - run:
-        name: "Setup WordPress Source"
-        command: |
-          wp core download --path=wordpress --allow-root --version=latest
-          echo "WP_ROOT=/home/circleci/mailpoet/wordpress" >> .env
     - run:
         name: "Static analysis"
         command: ./do qa:phpstan --php-version=<< parameters.php_version >>
