@@ -3,7 +3,6 @@
 namespace MailPoet\Doctrine\Driver;
 
 use MailPoet\InvalidStateException;
-use MailPoet\RuntimeException;
 
 class PDOConnection implements \MailPoetVendor\Doctrine\DBAL\Driver\Connection, \MailPoetVendor\Doctrine\DBAL\Driver\ServerInfoAwareConnection {
   /** @var \PDO */
@@ -51,9 +50,6 @@ class PDOConnection implements \MailPoetVendor\Doctrine\DBAL\Driver\Connection, 
   public function prepare($prepareString, $driverOptions = []) {
     try {
       $preparedStatement = $this->connection->prepare($prepareString, $driverOptions);
-      if ($preparedStatement === false) {
-        throw new RuntimeException('Unable to prepare PDOStatement.');
-      }
       return $this->createStatement($preparedStatement);
     } catch (\PDOException $exception) {
       throw new \MailPoetVendor\Doctrine\DBAL\Driver\PDOException($exception);
@@ -99,14 +95,9 @@ class PDOConnection implements \MailPoetVendor\Doctrine\DBAL\Driver\Connection, 
   public function lastInsertId($name = null) {
     try {
       if ($name === null) {
-        $lastId = $this->connection->lastInsertId();
-      } else {
-        $lastId = $this->connection->lastInsertId($name);
+        return $this->connection->lastInsertId();
       }
-      if ($lastId === false) {
-        return '';
-      }
-      return $lastId;
+      return $this->connection->lastInsertId($name);
     } catch (\PDOException $exception) {
       throw new \MailPoetVendor\Doctrine\DBAL\Driver\PDOException($exception);
     }

@@ -134,7 +134,7 @@ class Newsletters {
     $data['roles']['mailpoet_all'] = $this->wp->__('In any WordPress role', 'mailpoet');
 
     $installedAtDiff = (new \DateTime($this->settings->get('installed_at')))->diff(new \DateTime());
-    $data['installed_days_ago'] = $installedAtDiff instanceof \DateInterval ? (int)$installedAtDiff->format('%a') : null;
+    $data['installed_days_ago'] = (int)$installedAtDiff->format('%a');
 
     $data['subscribers_limit'] = $this->subscribersFeature->getSubscribersLimit();
     $data['subscribers_limit_reached'] = $this->subscribersFeature->check();
