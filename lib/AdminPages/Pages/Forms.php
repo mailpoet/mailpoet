@@ -65,7 +65,7 @@ class Forms {
       $data['premium_plugin_active'] = License::getLicense();
       $data['current_wp_user_firstname'] = $this->wp->wpGetCurrentUser()->user_firstname;
       $installedAtDiff = (new \DateTime($this->settings->get('installed_at')))->diff(new \DateTime());
-      $data['installed_days_ago'] = $installedAtDiff instanceof \DateInterval ? (int)$installedAtDiff->format('%a') : null;
+      $data['installed_days_ago'] = (int)$installedAtDiff->format('%a');
       $data['display_nps_survey'] = true;
       $this->userFlags->set('display_new_form_editor_nps_survey', false);
     }
