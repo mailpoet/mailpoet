@@ -27,6 +27,9 @@ parameters:
   excludes_analyse:
     - ../../tests/_support/_generated
     - ../../tests/unit/Entities/SubscriberEntityTest.php
+  parallel:
+    processTimeout: 300.0
+    maximumNumberOfProcesses: 4
 
   # exclude level 6 errors
   checkGenericClassInNonGenericObjectType: false
