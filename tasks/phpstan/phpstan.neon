@@ -11,6 +11,7 @@ parameters:
   inferPrivatePropertyTypeFromConstructor: true
   parallel:
     processTimeout: 300.0
+    maximumNumberOfProcesses: 4
   ignoreErrors:
     - '#Function members_register_.+ not found#'
     - '#Call to an undefined method MailPoetVendor\\Idiorm\\IdiormResultSet::set\(\)#'
