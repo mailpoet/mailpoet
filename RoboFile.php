@@ -494,7 +494,6 @@ class RoboFile extends \Robo\Tasks {
   public function qaPhpstan(array $opts=['php-version' => null]) {
     $dir = __DIR__;
     $task = implode(' ', [
-      'WP_ROOT="' . getenv('WP_ROOT') . '"',
       'php -d memory_limit=-1',
       "$dir/tasks/phpstan/vendor/bin/phpstan analyse ",
     ]);
