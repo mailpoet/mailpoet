@@ -30,8 +30,10 @@ class Form extends React.Component {
     }
   }
 
-  componentDidUpdate() {
-    if (this.props.params.id === undefined && this.state.loading) {
+  componentDidUpdate(prevProps) {
+    if (this.props.params.id === undefined
+      && prevProps.location.pathname !== this.props.location.pathname
+    ) {
       setImmediate(() => {
         this.setState({
           loading: false,
@@ -250,6 +252,9 @@ Form.propTypes = {
   params: PropTypes.shape({
     id: PropTypes.string,
   }),
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }),
   item: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   errors: PropTypes.arrayOf(PropTypes.object),
   endpoint: PropTypes.string,
@@ -276,6 +281,7 @@ Form.propTypes = {
 
 Form.defaultProps = {
   params: {},
+  location: {},
   errors: undefined,
   fields: undefined,
   item: undefined,
