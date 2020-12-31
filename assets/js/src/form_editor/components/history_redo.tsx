@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -28,15 +28,17 @@ function HistoryRedo(props) {
     },
   );
 
-  registerShortcut({
-    name: 'mailpoet-form-editor/redo',
-    category: 'block',
-    description: __('Redo your last undo.'),
-    keyCombination: {
-      modifier: 'primaryShift',
-      character: 'z',
-    },
-  });
+  useEffect(() => {
+    registerShortcut({
+      name: 'mailpoet-form-editor/redo',
+      category: 'block',
+      description: __('Redo your last undo.'),
+      keyCombination: {
+        modifier: 'primaryShift',
+        character: 'z',
+      },
+    });
+  }, [registerShortcut]);
 
   return (
     <Button

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -28,15 +28,17 @@ function HistoryUndo(props) {
     },
   );
 
-  registerShortcut({
-    name: 'mailpoet-form-editor/undo',
-    category: 'block',
-    description: __('Undo your last changes.'),
-    keyCombination: {
-      modifier: 'primary',
-      character: 'z',
-    },
-  });
+  useEffect(() => {
+    registerShortcut({
+      name: 'mailpoet-form-editor/undo',
+      category: 'block',
+      description: __('Undo your last changes.'),
+      keyCombination: {
+        modifier: 'primary',
+        character: 'z',
+      },
+    });
+  }, [registerShortcut]);
 
   return (
     <Button
