@@ -6,7 +6,7 @@ parameters:
     - bootstrap.php
   scanFiles:
     - PremiumContainerConfigurator.php
-    - woocommerce.php
+    - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
     - ../../vendor-prefixed/twig/twig/src/Extension/CoreExtension.php # phpstan can't find \MailPoetVendor\twig_include function
   inferPrivatePropertyTypeFromConstructor: true
   parallel:

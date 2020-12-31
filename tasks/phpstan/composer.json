@@ -1,5 +1,6 @@
 {
     "require": {
+        "php-stubs/woocommerce-stubs": "^4.8",
         "phpstan/phpstan": "0.12.64",
         "phpstan/phpstan-doctrine": "0.12.26",
         "phpstan/phpstan-phpunit": "0.12.17",
