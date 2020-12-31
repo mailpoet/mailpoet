@@ -47,7 +47,7 @@ class Template13FixedBar extends FormTemplate {
                   'link_class' => '',
                   'rel' => '',
                   'link_target' => '',
-                  'id' => '304',
+                  'id' => '',
                   'size_slug' => 'large',
                   'width' => '',
                   'height' => '',

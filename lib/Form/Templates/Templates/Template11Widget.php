@@ -50,7 +50,7 @@ class Template11Widget extends FormTemplate {
           'link_class' => '',
           'rel' => '',
           'link_target' => '',
-          'id' => '299',
+          'id' => '',
           'size_slug' => 'large',
           'width' => '68',
           'height' => '69',
