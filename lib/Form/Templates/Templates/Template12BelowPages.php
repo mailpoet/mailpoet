@@ -47,7 +47,7 @@ class Template12BelowPages extends FormTemplate {
                   'link_class' => '',
                   'rel' => '',
                   'link_target' => '',
-                  'id' => '294',
+                  'id' => '',
                   'size_slug' => 'large',
                   'width' => '',
                   'height' => '',
