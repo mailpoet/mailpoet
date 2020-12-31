@@ -195,6 +195,56 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->tester->deleteWordPressUser($wpUserEmail);
   }
 
+  public function testReturnsCorrectCountForSubscribersInDynamicSegment() {
+    $wpUserEmail1 = 'user-role-test1@example.com';
+    $wpUserEmail2 = 'user-role-test2@example.com';
+    $wpUserEmail3 = 'user-role-test3@example.com';
+    $this->tester->deleteWordPressUser($wpUserEmail1);
+    $this->tester->deleteWordPressUser($wpUserEmail2);
+    $this->tester->deleteWordPressUser($wpUserEmail3);
+    $this->tester->createWordPressUser($wpUserEmail1, 'editor');
+    $this->tester->createWordPressUser($wpUserEmail2, 'editor');
+    $this->tester->createWordPressUser($wpUserEmail3, 'editor');
+    $list = $this->createDynamicSegmentEntity();
+    $this->entityManager->flush();
+
+    $this->listingData['filter'] = ['segment' => $list->getId()];
+    $this->listingData['limit'] = 2;
+    $this->listingData['offset'] = 2;
+    $data = $this->repository->getData($this->getListingDefinition());
+    expect(count($data))->equals(1);
+    expect($data[0]->getEmail())->equals($wpUserEmail3);
+    $count = $this->repository->getCount($this->getListingDefinition());
+    expect($count)->equals(3);
+    $this->tester->deleteWordPressUser($wpUserEmail1);
+    $this->tester->deleteWordPressUser($wpUserEmail2);
+    $this->tester->deleteWordPressUser($wpUserEmail3);
+    $this->listingData['limit'] = 20;
+    $this->listingData['offset'] = 0;
+  }
+
+  public function testSearchForSubscribersInDynamicSegment() {
+    $wpUserEmail1 = 'user-role-test1@example.com';
+    $wpUserEmail2 = 'user-role-test2@example.com';
+    $this->tester->deleteWordPressUser($wpUserEmail1);
+    $this->tester->deleteWordPressUser($wpUserEmail2);
+    $this->tester->createWordPressUser($wpUserEmail1, 'editor');
+    $this->tester->createWordPressUser($wpUserEmail2, 'editor');
+    $list = $this->createDynamicSegmentEntity();
+    $this->entityManager->flush();
+
+    $this->listingData['filter'] = ['segment' => $list->getId()];
+    $this->listingData['search'] = 'user-role-test2';
+    $data = $this->repository->getData($this->getListingDefinition());
+    expect(count($data))->equals(1);
+    expect($data[0]->getEmail())->equals($wpUserEmail2);
+    $count = $this->repository->getCount($this->getListingDefinition());
+    expect($count)->equals(1); // Count should be affected by search
+    $this->tester->deleteWordPressUser($wpUserEmail1);
+    $this->tester->deleteWordPressUser($wpUserEmail2);
+    $this->listingData['search'] = '';
+  }
+
   public function testLoadSubscribersWithoutSegment() {
     $list = $this->segmentRepository->createOrUpdate('Segment 6');
     $regularSubscriber = $this->createSubscriberEntity();

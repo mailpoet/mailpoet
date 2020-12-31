@@ -11,6 +11,7 @@ use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
@@ -48,6 +49,50 @@ class SubscriberListingRepository extends ListingRepository {
     $this->segmentSubscribersRepository = $segmentSubscribersRepository;
   }
 
+  public function getData(ListingDefinition $definition): array {
+    $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
+    if ($dynamicSegment === null) {
+      return parent::getData($definition);
+    }
+    return $this->getDataForDynamicSegment($definition, $dynamicSegment);
+  }
+
+  public function getCount(ListingDefinition $definition): int {
+    $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
+    if ($dynamicSegment === null) {
+      return parent::getCount($definition);
+    }
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $subscribersIdsQuery = $this->entityManager
+      ->getConnection()
+      ->createQueryBuilder()
+      ->select("count(DISTINCT $subscribersTable.id)")
+      ->from($subscribersTable);
+    $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $dynamicSegment);
+    return (int)$subscribersIdsQuery->execute()->fetchColumn();
+  }
+
+  public function getActionableIds(ListingDefinition $definition): array {
+    $ids = $definition->getSelection();
+    if (!empty($ids)) {
+      return $ids;
+    }
+    $dynamicSegment = $this->getDynamicSegmentFromFilters($definition);
+    if ($dynamicSegment === null) {
+      return parent::getActionableIds($definition);
+    }
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $subscribersIdsQuery = $this->entityManager
+      ->getConnection()
+      ->createQueryBuilder()
+      ->select("DISTINCT $subscribersTable.id")
+      ->from($subscribersTable);
+    $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $dynamicSegment);
+    $idsStatement = $subscribersIdsQuery->execute();
+    $result = $idsStatement->fetchAll();
+    return array_column($result, 'id');
+  }
+
   protected function applySelectClause(QueryBuilder $queryBuilder) {
     $queryBuilder->select("PARTIAL s.{id,email,firstName,lastName,status,createdAt,countConfirmations,wpUserId,isWoocommerceUser}");
   }
@@ -81,13 +126,7 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
-    // Filtering for subscribers is handled in self::applyDefinition
-    // because other parameters are needed for performance reasons
-  }
-
-  protected function applyListingDefinition(QueryBuilder $queryBuilder, ListingDefinition $definition) {
-    $filters = $definition->getFilters();
-    if (!$filters || !isset($filters['segment'])) {
+    if (!isset($filters['segment'])) {
       return;
     }
     if ($filters['segment'] === self::FILTER_WITHOUT_LIST) {
@@ -107,7 +146,6 @@ class SubscriberListingRepository extends ListingRepository {
         ->setParameter('ssSegment', $segment->getId());
       return;
     }
-    $this->applyDynamicSegmentsFilter($queryBuilder, $definition, $segment);
   }
 
   protected function applyParameters(QueryBuilder $queryBuilder, array $parameters) {
@@ -266,44 +304,19 @@ class SubscriberListingRepository extends ListingRepository {
     return ['segment' => $segmentList];
   }
 
-  private function applyDynamicSegmentsFilter(
-    QueryBuilder $queryBuilder,
-    ListingDefinition $definition,
-    SegmentEntity $segment
-  ) {
+  private function getDataForDynamicSegment(ListingDefinition $definition, SegmentEntity $segment) {
+    $queryBuilder = clone $this->queryBuilder;
+    $sortBy = Helpers::underscoreToCamelCase($definition->getSortBy()) ?: self::DEFAULT_SORT_BY;
+    $this->applySelectClause($queryBuilder);
+    $this->applyFromClause($queryBuilder);
+
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscribersIdsQuery = $this->entityManager
       ->getConnection()
       ->createQueryBuilder()
       ->select("DISTINCT $subscribersTable.id")
       ->from($subscribersTable);
-
-    // Apply dynamic segments filters
-    foreach ($segment->getDynamicFilters() as $filter) {
-      $subscribersIdsQuery = $this->dynamicSegmentsFilter->apply($subscribersIdsQuery, $filter);
-    }
-
-    // Apply group, search, order and paging to fetch only necessary ids
-    // This id done for performance reasons instead of fetching all IDs in dynamic segment
-    if ($definition->getSearch()) {
-      $search = Helpers::escapeSearch((string)$definition->getSearch());
-      $subscribersIdsQuery
-        ->andWhere("$subscribersTable.email LIKE :search or $subscribersTable.first_name LIKE :search or $subscribersTable.last_name LIKE :search")
-        ->setParameter('search', "%$search%");
-    }
-    if ($definition->getGroup()) {
-      if ($definition->getGroup() === 'trash') {
-        $subscribersIdsQuery->andWhere("$subscribersTable.deleted_at IS NOT NULL");
-      } else {
-        $subscribersIdsQuery->andWhere("$subscribersTable.deleted_at IS NULL");
-      }
-      if (in_array($definition->getGroup(), self::$supportedStatuses)) {
-        $subscribersIdsQuery
-          ->andWhere("$subscribersTable.status = :status")
-          ->setParameter('status', $definition->getGroup());
-      }
-    }
-    $sortBy = $definition->getSortBy() ?: self::DEFAULT_SORT_BY;
+    $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $segment);
     $subscribersIdsQuery->orderBy("$subscribersTable." . Helpers::camelCaseToUnderscore($sortBy), $definition->getSortOrder());
     $subscribersIdsQuery->setFirstResult($definition->getOffset());
     $subscribersIdsQuery->setMaxResults($definition->getLimit());
@@ -318,9 +331,58 @@ class SubscriberListingRepository extends ListingRepository {
     $ids = array_column($result, 'id');
     if (count($ids)) {
       $queryBuilder->andWhere('s.id IN (:subscriberIds)')
-      ->setParameter('subscriberIds', $ids);
+        ->setParameter('subscriberIds', $ids);
     } else {
       $queryBuilder->andWhere('0 = 1'); // Don't return any subscribers if no ids found
     }
+    $this->applySorting($queryBuilder, $sortBy, $definition->getSortOrder());
+    return $queryBuilder->getQuery()->getResult();
+  }
+
+  private function applyConstraintsForDynamicSegment(
+    DBALQueryBuilder $subscribersQuery,
+    ListingDefinition $definition,
+    SegmentEntity $segment
+  ) {
+    // Apply dynamic segments filters
+    foreach ($segment->getDynamicFilters() as $filter) {
+      $subscribersQuery = $this->dynamicSegmentsFilter->apply($subscribersQuery, $filter);
+    }
+    // Apply group, search to fetch only necessary ids
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    if ($definition->getSearch()) {
+      $search = Helpers::escapeSearch((string)$definition->getSearch());
+      $subscribersQuery
+        ->andWhere("$subscribersTable.email LIKE :search or $subscribersTable.first_name LIKE :search or $subscribersTable.last_name LIKE :search")
+        ->setParameter('search', "%$search%");
+    }
+    if ($definition->getGroup()) {
+      if ($definition->getGroup() === 'trash') {
+        $subscribersQuery->andWhere("$subscribersTable.deleted_at IS NOT NULL");
+      } else {
+        $subscribersQuery->andWhere("$subscribersTable.deleted_at IS NULL");
+      }
+      if (in_array($definition->getGroup(), self::$supportedStatuses)) {
+        $subscribersQuery
+          ->andWhere("$subscribersTable.status = :status")
+          ->setParameter('status', $definition->getGroup());
+      }
+    }
+    return $subscribersQuery;
+  }
+
+  private function getDynamicSegmentFromFilters(ListingDefinition $definition): ?SegmentEntity {
+    $filters = $definition->getFilters();
+    if (!$filters || !isset($filters['segment'])) {
+      return null;
+    }
+    if ($filters['segment'] === self::FILTER_WITHOUT_LIST) {
+      return null;
+    }
+    $segment = $this->entityManager->find(SegmentEntity::class, (int)$filters['segment']);
+    if (!$segment instanceof SegmentEntity) {
+      return null;
+    }
+    return $segment->isStatic() ? null : $segment;
   }
 }
