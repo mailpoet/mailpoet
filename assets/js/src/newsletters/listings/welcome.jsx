@@ -372,6 +372,7 @@ class NewsletterListWelcome extends React.Component {
           <NewsletterTypes
             filter={(type) => type.slug === 'welcome'}
             hideScreenOptions={false}
+            hideClosingButton
           />
         )}
         {this.state.newslettersCount !== 0 && (

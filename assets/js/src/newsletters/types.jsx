@@ -278,9 +278,11 @@ class NewsletterTypes extends React.Component {
         <link rel="prefetch" href={window.mailpoet_editor_javascript_url} as="script" />
 
         <div className="mailpoet-newsletter-types">
-          <div className="mailpoet-newsletter-types-close">
-            <button type="button" onClick={() => this.props.history.push('/')} className="mailpoet-modal-close">{ModalCloseIcon}</button>
-          </div>
+          {!this.props.hideClosingButton && (
+            <div className="mailpoet-newsletter-types-close">
+              <button type="button" onClick={() => this.props.history.push('/')} className="mailpoet-modal-close">{ModalCloseIcon}</button>
+            </div>
+          )}
 
           {types.map((type) => this.renderType(type), this)}
 
@@ -301,11 +303,13 @@ NewsletterTypes.propTypes = {
     push: PropTypes.func.isRequired,
   }).isRequired,
   hideScreenOptions: PropTypes.bool,
+  hideClosingButton: PropTypes.bool,
 };
 
 NewsletterTypes.defaultProps = {
   filter: null,
   hideScreenOptions: true,
+  hideClosingButton: false,
 };
 
 export default withRouter(NewsletterTypes);
