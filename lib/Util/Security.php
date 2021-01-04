@@ -49,12 +49,12 @@ class Security {
    */
   public static function generateHash($length = null) {
     $length = ($length) ? $length : self::HASH_LENGTH;
-    $authKey = '';
+    $authKey = self::generateRandomString(64);
     if (defined('AUTH_KEY')) {
       $authKey = AUTH_KEY;
     }
     return substr(
-      md5($authKey . self::generateRandomString(64)),
+      hash_hmac('sha512', self::generateRandomString(64), $authKey),
       0,
       $length
     );
