@@ -396,6 +396,7 @@ class Listings extends React.Component {
           <NewsletterTypes
             filter={(type) => type.slug === 'woocommerce'}
             hideScreenOptions={false}
+            hideClosingButton
           />
         )}
         {this.state.newslettersCount !== 0 && (
