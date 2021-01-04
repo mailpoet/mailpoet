@@ -739,7 +739,7 @@ class RoboFile extends \Robo\Tasks {
     $this->taskGitStack()
       ->stopOnFail()
       ->checkout('master')
-      ->pull()
+      ->exec('git pull --ff-only')
       ->run();
     // make sure release branch doesn't exist on github
     $releaseBranchStatus = $this->taskGitStack()
