@@ -12,6 +12,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Listing;
 use MailPoet\Models\Segment;
+use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Segments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WooCommerce;
@@ -42,6 +43,9 @@ class Segments extends APIEndpoint {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var NewsletterSegmentRepository */
+  private $newsletterSegmentRepository;
+
   /** @var WooCommerce */
   private $wooCommerceSync;
 
@@ -55,6 +59,7 @@ class Segments extends APIEndpoint {
     SegmentsResponseBuilder $segmentsResponseBuilder,
     SegmentSaveController $segmentSavecontroller,
     SubscribersRepository $subscribersRepository,
+    NewsletterSegmentRepository $newsletterSegmentRepository,
     WooCommerce $wooCommerce,
     WP $wpSegment
   ) {
@@ -65,6 +70,7 @@ class Segments extends APIEndpoint {
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
     $this->segmentSavecontroller = $segmentSavecontroller;
     $this->subscribersRepository = $subscribersRepository;
+    $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->wpSegment = $wpSegment;
   }
 
@@ -84,15 +90,24 @@ class Segments extends APIEndpoint {
     $listingData = $this->listingHandler->get('\MailPoet\Models\Segment', $data);
 
     $data = [];
+    $segmendIds = array_map(function(Segment $segment): int {
+      return (int)$segment->id;
+    }, $listingData['items']);
+    $scheduledNewsletterSubjectsMap = $this->newsletterSegmentRepository->getScheduledNewsletterSubjectsBySegmentIds($segmendIds);
+
     foreach ($listingData['items'] as $segment) {
       $segment->subscribersUrl = WPFunctions::get()->adminUrl(
         'admin.php?page=mailpoet-subscribers#/filter[segment=' . $segment->id . ']'
       );
 
-      $data[] = $segment
+      $segmentData = $segment
         ->withSubscribersCount()
         ->withAutomatedEmailsSubjects()
         ->asArray();
+
+      $segmentData['scheduled_emails_subjects'] = $scheduledNewsletterSubjectsMap[$segment->id] ?? [];
+      
+      $data[] = $segmentData;
     }
 
     return $this->successResponse($data, [
