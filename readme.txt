@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.5
-Stable tag: 3.56.2
+Stable tag: 3.57.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.57.0 - 2021-01-04 =
+* Improved: better customization of subscribe checkbox in checkout;
+* Fixed: issues with saving Lists;
+* Fixed: listing subscribers from dynamic segments;
+* Fixed: list selection block in forms;
+* Fixed: segmenting by specific clicked link;
+* Fixed: custom unsubscribe page being reset after plugin update.
 
 = 3.56.2 - 2020-12-22 =
 * Fixed: segment description editing.
