@@ -218,7 +218,9 @@ const itemActions = [
     name: 'trash',
     className: 'mailpoet-hide-on-mobile',
     display: function display(segmt) {
-      return !isWooCommerceCustomersSegment(segmt) && segmt.automated_emails_subjects.length === 0;
+      return !isWooCommerceCustomersSegment(segmt)
+        && segmt.automated_emails_subjects.length === 0
+        && segmt.scheduled_emails_subjects.length === 0;
     },
   },
   {
@@ -226,16 +228,24 @@ const itemActions = [
     className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('moveToTrash'),
     onClick: function onClick(segment) {
+      const subjects = [
+        ...segment.automated_emails_subjects,
+        ...segment.scheduled_emails_subjects,
+      ];
       MailPoet.Notice.error(
         MailPoet.I18n.t('trashDisallowed').replace(
           '%$1s',
-          segment.automated_emails_subjects.map((subject) => `'${subject}'`).join(', ')
+          subjects.map((subject) => `'${subject}'`).join(', ')
         ),
         { scroll: true }
       );
     },
     display: function display(segment) {
-      return !isSpecialSegment(segment) && segment.automated_emails_subjects.length > 0;
+      return !isSpecialSegment(segment)
+        && (
+          segment.automated_emails_subjects.length > 0
+          || segment.scheduled_emails_subjects.length > 0
+        );
     },
   },
   {
@@ -243,16 +253,24 @@ const itemActions = [
     className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('trashAndDisable'),
     onClick: function onClick(segment) {
+      const subjects = [
+        ...segment.automated_emails_subjects,
+        ...segment.scheduled_emails_subjects,
+      ];
       MailPoet.Notice.error(
         MailPoet.I18n.t('trashDisallowed').replace(
           '%$1s',
-          segment.automated_emails_subjects.map((subject) => `'${subject}'`).join(', ')
+          subjects.map((subject) => `'${subject}'`).join(', ')
         ),
         { scroll: true }
       );
     },
     display: function display(segment) {
-      return isWPUsersSegment(segment) && segment.automated_emails_subjects.length > 0;
+      return isWPUsersSegment(segment)
+        && (
+          segment.automated_emails_subjects.length > 0
+          || segment.scheduled_emails_subjects.length > 0
+        );
     },
   },
 ];
