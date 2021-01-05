@@ -2,7 +2,6 @@
 
 namespace MailPoet\Models;
 
-use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -162,6 +161,9 @@ class Segment extends Model {
     return $wcSegment;
   }
 
+  /**
+   * @deprecated Use the non static implementation in \MailPoet\Segments\WooCommerce::shouldShowWooCommerceSegment instead
+   */
   public static function shouldShowWooCommerceSegment() {
     $woocommerceHelper = new WCHelper();
     $isWoocommerceActive = $woocommerceHelper->isWooCommerceActive();
@@ -187,29 +189,6 @@ class Segment extends Model {
       $types[] = Segment::TYPE_WC_USERS;
     }
     return $types;
-  }
-
-  // TODO REMOVE
-  public static function groups() {
-    $allQuery = Segment::getPublished();
-    $allQuery->whereNotEqual('type', DynamicSegment::TYPE_DYNAMIC);
-    if (!Segment::shouldShowWooCommerceSegment()) {
-      $allQuery->whereNotEqual('type', self::TYPE_WC_USERS);
-    }
-    return [
-      [
-        'name' => 'all',
-        'label' => WPFunctions::get()->__('All', 'mailpoet'),
-        'count' => $allQuery->count(),
-      ],
-      [
-        'name' => 'trash',
-        'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
-        'count' => Segment::getTrashed()
-          ->whereNotEqual('type', DynamicSegment::TYPE_DYNAMIC)
-          ->count(),
-      ],
-    ];
   }
 
   public static function groupBy($orm, $group = null) {

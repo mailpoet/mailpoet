@@ -12,7 +12,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Listing;
 use MailPoet\Models\Segment;
-use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Segments\SegmentListingRepository;
 use MailPoet\Segments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
@@ -43,9 +42,6 @@ class Segments extends APIEndpoint {
 
   /** @var SubscribersRepository */
   private $subscribersRepository;
-
-  /** @var NewsletterSegmentRepository */
-  private $newsletterSegmentRepository;
 
   /** @var WooCommerce */
   private $wooCommerceSync;
@@ -97,15 +93,6 @@ class Segments extends APIEndpoint {
     $filters = $this->segmentListingRepository->getFilters($definition);
     $groups = $this->segmentListingRepository->getGroups($definition);
     $segments = $this->segmentsResponseBuilder->buildForListing($items);
-
-//    $data = [];
-//    foreach ($listingData['items'] as $segment) {
-//
-//      $segmentData = $segment
-//        ->withSubscribersCount()
-//        ->asArray();
-      //$data[] = $segmentData;
-//    }
 
     return $this->successResponse($segments, [
       'count' => $count,
