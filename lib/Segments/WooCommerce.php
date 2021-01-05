@@ -9,6 +9,8 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -25,14 +27,34 @@ class WooCommerce {
   private $mailpoetEmailCollation;
   private $wpPostmetaValueCollation;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  /** @var WCHelper */
+  private $woocommerceHelper;
+
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
+    WCHelper $woocommerceHelper,
+    SubscribersRepository $subscribersRepository,
     WP $wpSegment
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->wpSegment = $wpSegment;
+    $this->subscribersRepository = $subscribersRepository;
+    $this->woocommerceHelper = $woocommerceHelper;
+  }
+
+  public function shouldShowWooCommerceSegment() {
+    $isWoocommerceActive = $this->woocommerceHelper->isWooCommerceActive();
+    $woocommerceUserExists = $this->subscribersRepository->woocommerceUserExists();
+
+    if (!$isWoocommerceActive && !$woocommerceUserExists) {
+      return false;
+    }
+    return true;
   }
 
   public function synchronizeRegisteredCustomer($wpUserId, $currentFilter = null) {

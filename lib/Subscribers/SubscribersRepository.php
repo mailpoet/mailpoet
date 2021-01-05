@@ -213,6 +213,23 @@ class SubscribersRepository extends Repository {
     return count($subscribers);
   }
 
+  public function woocommerceUserExists(): bool {
+    $subscribers = $this->entityManager
+      ->createQueryBuilder()
+      ->select('s')
+      ->from(SubscriberEntity::class, 's')
+      ->join(SubscriberSegmentEntity::class, 'ss')
+      ->join(SegmentEntity::class, 'segment')
+      ->where('segment.type = :segmentType')
+      ->setParameter('segmentType', SegmentEntity::TYPE_WC_USERS)
+      ->andWhere('s.isWoocommerceUser = true')
+      ->getQuery()
+      ->setMaxResults(1)
+      ->execute();
+
+    return count($subscribers) > 0;
+  }
+
    /**
    * @return int - number of processed ids
    */
