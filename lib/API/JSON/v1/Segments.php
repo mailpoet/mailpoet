@@ -100,16 +100,10 @@ class Segments extends APIEndpoint {
 
 //    $data = [];
 //    foreach ($listingData['items'] as $segment) {
-//      $scheduledNewsletterSubjectsMap = $this->newsletterSegmentRepository->getScheduledNewsletterSubjectsBySegmentIds($segmendIds);
-//      $segment->subscribersUrl = WPFunctions::get()->adminUrl(
-//        'admin.php?page=mailpoet-subscribers#/filter[segment=' . $segment->id . ']'
-//      );
 //
 //      $segmentData = $segment
 //        ->withSubscribersCount()
-//        ->withAutomatedEmailsSubjects()
 //        ->asArray();
- //       $segmentData['scheduled_emails_subjects'] = $scheduledNewsletterSubjectsMap[$segment->id] ?? [];
       //$data[] = $segmentData;
 //    }
 
