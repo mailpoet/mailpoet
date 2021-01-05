@@ -64,7 +64,6 @@ class Segments extends APIEndpoint {
     SegmentsResponseBuilder $segmentsResponseBuilder,
     SegmentSaveController $segmentSavecontroller,
     SubscribersRepository $subscribersRepository,
-    NewsletterSegmentRepository $newsletterSegmentRepository,
     WooCommerce $wooCommerce,
     WP $wpSegment
   ) {
@@ -75,7 +74,6 @@ class Segments extends APIEndpoint {
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
     $this->segmentSavecontroller = $segmentSavecontroller;
     $this->subscribersRepository = $subscribersRepository;
-    $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->wpSegment = $wpSegment;
     $this->segmentListingRepository = $segmentListingRepository;
   }
