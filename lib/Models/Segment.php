@@ -126,29 +126,6 @@ class Segment extends Model {
     return $this;
   }
 
-  public function withAutomatedEmailsSubjects() {
-    $automatedEmails = NewsletterSegment::tableAlias('relation')
-      ->where('relation.segment_id', $this->id)
-      ->join(
-        MP_NEWSLETTERS_TABLE,
-        'newsletters.id = relation.newsletter_id',
-        'newsletters'
-      )
-      ->whereIn('newsletters.type', [
-        NewsletterEntity::TYPE_AUTOMATIC,
-        NewsletterEntity::TYPE_WELCOME,
-        NewsletterEntity::TYPE_NOTIFICATION,
-      ])
-      ->select('newsletters.subject')
-      ->findMany();
-
-    $this->automatedEmailsSubjects = array_map(function($email) {
-      return $email->subject;
-    }, $automatedEmails);
-
-    return $this;
-  }
-
   public static function getWPSegment() {
     $wpSegment = self::where('type', self::TYPE_WP_USERS)->findOne();
 
@@ -212,10 +189,7 @@ class Segment extends Model {
     return $types;
   }
 
-  public static function search($orm, $search = '') {
-    return $orm->whereLike('name', '%' . $search . '%');
-  }
-
+  // TODO REMOVE
   public static function groups() {
     $allQuery = Segment::getPublished();
     $allQuery->whereNotEqual('type', DynamicSegment::TYPE_DYNAMIC);
@@ -304,15 +278,6 @@ class Segment extends Model {
       'HAVING subscribers) ' .
       'ORDER BY name'
     )->findArray();
-  }
-
-  public static function listingQuery(array $data = []) {
-    $query = self::select('*');
-    $query->whereIn('type', Segment::getSegmentTypes());
-    if (isset($data['group'])) {
-      $query->filter('groupBy', $data['group']);
-    }
-    return $query;
   }
 
   public static function getPublic() {
