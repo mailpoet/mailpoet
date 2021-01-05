@@ -13,6 +13,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Listing;
 use MailPoet\Models\Segment;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Segments\SegmentListingRepository;
 use MailPoet\Segments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WooCommerce;
@@ -52,10 +53,14 @@ class Segments extends APIEndpoint {
   /** @var WP */
   private $wpSegment;
 
+  /** @var SegmentListingRepository */
+  private $segmentListingRepository;
+
   public function __construct(
     Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
     SegmentsRepository $segmentsRepository,
+    SegmentListingRepository $segmentListingRepository,
     SegmentsResponseBuilder $segmentsResponseBuilder,
     SegmentSaveController $segmentSavecontroller,
     SubscribersRepository $subscribersRepository,
@@ -72,6 +77,7 @@ class Segments extends APIEndpoint {
     $this->subscribersRepository = $subscribersRepository;
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->wpSegment = $wpSegment;
+    $this->segmentListingRepository = $segmentListingRepository;
   }
 
   public function get($data = []) {
@@ -87,33 +93,32 @@ class Segments extends APIEndpoint {
   }
 
   public function listing($data = []) {
-    $listingData = $this->listingHandler->get('\MailPoet\Models\Segment', $data);
+    $definition = $this->listingHandler->getListingDefinition($data);
+    $items = $this->segmentListingRepository->getData($definition);
+    $count = $this->segmentListingRepository->getCount($definition);
+    $filters = $this->segmentListingRepository->getFilters($definition);
+    $groups = $this->segmentListingRepository->getGroups($definition);
+    $segments = $this->segmentsResponseBuilder->buildForListing($items);
 
-    $data = [];
-    $segmendIds = array_map(function(Segment $segment): int {
-      return (int)$segment->id;
-    }, $listingData['items']);
-    $scheduledNewsletterSubjectsMap = $this->newsletterSegmentRepository->getScheduledNewsletterSubjectsBySegmentIds($segmendIds);
+//    $data = [];
+//    foreach ($listingData['items'] as $segment) {
+//      $scheduledNewsletterSubjectsMap = $this->newsletterSegmentRepository->getScheduledNewsletterSubjectsBySegmentIds($segmendIds);
+//      $segment->subscribersUrl = WPFunctions::get()->adminUrl(
+//        'admin.php?page=mailpoet-subscribers#/filter[segment=' . $segment->id . ']'
+//      );
+//
+//      $segmentData = $segment
+//        ->withSubscribersCount()
+//        ->withAutomatedEmailsSubjects()
+//        ->asArray();
+ //       $segmentData['scheduled_emails_subjects'] = $scheduledNewsletterSubjectsMap[$segment->id] ?? [];
+      //$data[] = $segmentData;
+//    }
 
-    foreach ($listingData['items'] as $segment) {
-      $segment->subscribersUrl = WPFunctions::get()->adminUrl(
-        'admin.php?page=mailpoet-subscribers#/filter[segment=' . $segment->id . ']'
-      );
-
-      $segmentData = $segment
-        ->withSubscribersCount()
-        ->withAutomatedEmailsSubjects()
-        ->asArray();
-
-      $segmentData['scheduled_emails_subjects'] = $scheduledNewsletterSubjectsMap[$segment->id] ?? [];
-      
-      $data[] = $segmentData;
-    }
-
-    return $this->successResponse($data, [
-      'count' => $listingData['count'],
-      'filters' => $listingData['filters'],
-      'groups' => $listingData['groups'],
+    return $this->successResponse($segments, [
+      'count' => $count,
+      'filters' => $filters,
+      'groups' => $groups,
     ]);
   }
 
