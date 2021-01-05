@@ -3,9 +3,19 @@
 namespace MailPoet\API\JSON\ResponseBuilders;
 
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\WP\Functions;
 
 class SegmentsResponseBuilder {
   const DATE_FORMAT = 'Y-m-d H:i:s';
+
+  /** @var Functions */
+  private $wp;
+
+  public function __construct(
+    Functions $wp
+  ) {
+    $this->wp = $wp;
+  }
 
   /**
    * @return array
@@ -40,7 +50,11 @@ class SegmentsResponseBuilder {
       'updated_at' => $segment->getUpdatedAt()->format(self::DATE_FORMAT),
       'deleted_at' => ($deletedAt = $segment->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'automated_emails_subjects' => [], // TODO
+      'scheduled_emails_subjects' => [], // TODO
       'subscribers_count' => [], // TODO
+      'subscribers_url' => $this->wp->adminUrl(
+        'admin.php?page=mailpoet-subscribers#/filter[segment=' . $segment->getId() . ']'
+      ),
     ];
   }
 }
