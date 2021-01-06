@@ -82,6 +82,10 @@ class Segment extends Model {
       ->delete();
   }
 
+  /**
+   * @deprecated Use the version in \MailPoet\Segments\SegmentSubscribersRepository::getSubscribersStatisticsCount
+   * @return $this
+   */
   public function withSubscribersCount() {
     $query = SubscriberSegment::tableAlias('relation')
       ->where('relation.segment_id', $this->id)

@@ -4,6 +4,7 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\WP\Functions;
 
 class SegmentsResponseBuilder {
@@ -15,12 +16,17 @@ class SegmentsResponseBuilder {
   /** @var NewsletterSegmentRepository */
   private $newsletterSegmentRepository;
 
+  /** @var SegmentSubscribersRepository */
+  private $segmentSubscriberRepository;
+
   public function __construct(
     Functions $wp,
+    SegmentSubscribersRepository $segmentSubscriberRepository,
     NewsletterSegmentRepository $newsletterSegmentRepository
   ) {
     $this->wp = $wp;
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
+    $this->segmentSubscriberRepository = $segmentSubscriberRepository;
   }
 
   /**
@@ -62,7 +68,7 @@ class SegmentsResponseBuilder {
       'deleted_at' => ($deletedAt = $segment->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'automated_emails_subjects' => $automatedNewsletterSubjectsMap[$segment->getId()] ?? [],
       'scheduled_emails_subjects' => $scheduledNewsletterSubjectsMap[$segment->getId()] ?? [],
-      'subscribers_count' => [], // TODO
+      'subscribers_count' => $this->segmentSubscriberRepository->getSubscribersStatisticsCount($segment),
       'subscribers_url' => $this->wp->adminUrl(
         'admin.php?page=mailpoet-subscribers#/filter[segment=' . $segment->getId() . ']'
       ),

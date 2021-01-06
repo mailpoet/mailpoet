@@ -16,7 +16,7 @@ class SegmentsResponseBuilderTest extends \MailPoetTest {
     $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, $description);
     $em->persist($segment);
     $em->flush();
-    $responseBuilder = new SegmentsResponseBuilder();
+    $responseBuilder = $di->get(SegmentsResponseBuilder::class);
     $response = $responseBuilder->build($segment);
 
     expect($response['name'])->equals($name);
