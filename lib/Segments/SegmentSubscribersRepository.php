@@ -141,4 +141,47 @@ class SegmentSubscribersRepository {
     }
     return $statement;
   }
+
+  public function getSubscribersStatisticsCount(SegmentEntity $segment) {
+    $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $queryBuilder = $this->entityManager
+      ->getConnection()
+      ->createQueryBuilder()
+      ->from($subscriberSegmentTable, 'subscriber_segment')
+      ->where('subscriber_segment.segment_id = :segment_id')
+      ->setParameter('segment_id', $segment->getId())
+      ->andWhere('subscribers.deleted_at is null')
+      ->join('subscriber_segment', $subscribersTable, 'subscribers', 'subscribers.id = subscriber_segment.subscriber_id')
+      ->addSelect('SUM(
+          CASE WHEN subscribers.status = :status_subscribed AND subscriber_segment.status = :status_subscribed
+            THEN 1 ELSE 0 END
+      ) as :status_subscribed')
+      ->addSelect('SUM(
+        CASE WHEN subscribers.status = :status_unsubscribed OR subscriber_segment.status = :status_unsubscribed
+          THEN 1 ELSE 0 END
+      ) as :status_unsubscribed')
+      ->addSelect('SUM(
+        CASE WHEN subscribers.status = :status_inactive AND subscriber_segment.status != :status_unsubscribed
+          THEN 1 ELSE 0 END
+      ) as :status_inactive')
+      ->addSelect('SUM(
+        CASE WHEN subscribers.status = :status_unconfirmed  AND subscriber_segment.status != :status_unsubscribed
+          THEN 1 ELSE 0 END
+      ) as :status_unconfirmed')
+      ->addSelect('SUM(
+        CASE WHEN subscribers.status = :status_bounced AND subscriber_segment.status != :status_unsubscribed
+          THEN 1 ELSE 0 END
+      ) as :status_bounced')
+
+      ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
+      ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
+      ->setParameter('status_unconfirmed', SubscriberEntity::STATUS_UNCONFIRMED)
+      ->setParameter('status_bounced', SubscriberEntity::STATUS_BOUNCED);
+
+    $statement = $this->executeQuery($queryBuilder);
+    $result = $statement->fetch();
+    return $result;
+  }
 }
