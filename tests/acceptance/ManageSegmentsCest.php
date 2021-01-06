@@ -18,12 +18,14 @@ class ManageSegmentsCest {
 
     $wpAdminEmail = 'test-admin@example.com';
     $wpEditorEmail = 'test-editor@example.com';
+    $wpEditorEmail2 = 'test-editor2@example.com';
     $wpAuthorEmail = 'test-author@example.com';
     $segmentTitle = 'User Role Segment Test';
 
     $userFactory = new User();
     $userFactory->createUser('Test Admin', 'admin', $wpAdminEmail);
     $userFactory->createUser('Test Editor', 'editor', $wpEditorEmail);
+    $userFactory->createUser('Test Editor 2', 'editor', $wpEditorEmail2);
     $userFactory->createUser('Test Author', 'author', $wpAuthorEmail);
 
     $segmentFactory = new DynamicSegment();
@@ -46,6 +48,17 @@ class ManageSegmentsCest {
     $i->dontSee($wpAdminEmail);
     $i->dontSee($wpAuthorEmail);
     $i->seeNoJSErrors();
+
+    $i->wantTo('Set pagination to 1 user per page and check if pagination is present');
+    $i->click('#show-settings-link');
+    $i->fillField('#mailpoet_subscribers_per_page', '1');
+    $i->click('#screen-options-apply');
+    $i->wait(2); // to avoid flakyness, required to wait a bit
+    $i->waitForElement('.mailpoet-listing-pages-next');
+    $i->waitForText($wpEditorEmail, 20);
+    $i->click('.mailpoet-listing-pages-next');
+    $i->waitForText($wpEditorEmail2, 20);
+    $i->makeScreenshot('ss1');
   }
 
   public function createEditTrashRestoreAndDeleteExistingSegment(\AcceptanceTester $i) {
@@ -55,7 +68,7 @@ class ManageSegmentsCest {
     $segmentDesc = 'Lorem ipsum dolor sit amet';
     $segmentEditedDesc = 'Lorem ipsum dolor sit amet EDITED';
     
-    // Prepare (2) additional segments for the test
+    $i->wantTo('Prepare (2) additional segments for the test');
     $segmentFactory = new DynamicSegment();
     $segment = $segmentFactory
       ->withName($segmentTitle . ' TRASHED 1')
@@ -68,7 +81,7 @@ class ManageSegmentsCest {
       ->withDeleted()
       ->create();
     
-    // Create a new segment
+    $i->wantTo('Create a new segment');
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
@@ -83,7 +96,7 @@ class ManageSegmentsCest {
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
 
-    // Edit existing segment
+    $i->wantTo('Edit existing segment');
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->fillField(['name' => 'name'], $segmentEditedTitle);
@@ -96,14 +109,14 @@ class ManageSegmentsCest {
     $i->waitForText($segmentEditedTitle);
     $i->seeNoJSErrors();
 
-    // Trash existing segment
+    $i->wantTo('Trash existing segment');
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Move to trash');
     $i->waitForText('1 segment was moved to the trash.');
     $i->click('[data-automation-id="filters_trash"]');
     $i->waitForText($segmentEditedTitle);
     $i->seeNoJSErrors();
 
-    // Restore trashed segment
+    $i->wantTo('Restore trashed segment');
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Restore');
     $i->waitForText('1 segment has been restored from the Trash.');
     $i->seeInCurrentURL(urlencode('group[trash]'));
@@ -111,7 +124,7 @@ class ManageSegmentsCest {
     $i->waitForText($segmentEditedTitle);
     $i->seeNoJSErrors();
     
-    // Trash and delete existing segment
+    $i->wantTo('Trash and delete existing segment');
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Move to trash');
     $i->waitForText('1 segment was moved to the trash.');
     $i->click('[data-automation-id="filters_trash"]');
@@ -122,7 +135,7 @@ class ManageSegmentsCest {
     $i->waitForText($segmentTitle . ' TRASHED 1');
     $i->waitForText($segmentTitle . ' TRASHED 2');
 
-    // Empty trash from other (2) segments
+    $i->wantTo('Empty trash from other (2) segments');
     $i->click('[data-automation-id="empty_trash"]');
     $i->waitForText('2 segments were permanently deleted.');
     $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->id . '"]';
