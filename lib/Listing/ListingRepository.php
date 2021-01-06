@@ -30,7 +30,7 @@ abstract class ListingRepository {
     $this->applyFromClause($queryBuilder);
     $this->applyConstraints($queryBuilder, $definition);
     $alias = $queryBuilder->getRootAliases()[0];
-    $queryBuilder->select("COUNT($alias)");
+    $queryBuilder->select("COUNT(DISTINCT $alias)");
     return (int)$queryBuilder->getQuery()->getSingleScalarResult();
   }
 
