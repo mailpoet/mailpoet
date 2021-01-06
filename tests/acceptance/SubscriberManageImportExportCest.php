@@ -136,6 +136,8 @@ class SubscriberManageImportExportCest {
     $i->click('Create a new list', '[data-automation-id="import_data_manipulation_step"]');
     $i->fillField('input#new_segment_name', $newListName);
     $i->fillField('textarea#new_segment_description', 'This is just a simple list.');
+    $i->seeInField('input#new_segment_name', $newListName);
+    $i->seeInField('textarea#new_segment_description', 'This is just a simple list.');
     $i->click('input#new_segment_process');
     // trigger dropdown to display selections and search for recently created list
     $i->waitForElementVisible('input.select2-search__field');
