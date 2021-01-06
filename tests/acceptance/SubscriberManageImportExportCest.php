@@ -93,14 +93,31 @@ class SubscriberManageImportExportCest {
     $this->pasteSimpleList($i);
     $i->click('[data-automation-id="import-next-step"]');
     $this->chooseListAndConfirm($i);
-    $i->see('3 subscribers added to "Newsletter mailing list".');
+    $i->waitForText('3 subscribers added to "Newsletter mailing list".');
+    $this->checkForImportedSubscribers($i);
+  }
+
+  public function importWPUsersAsSubscribers(\AcceptanceTester $i) {
+    $i->wantTo('Try to import the existing WP users as subscribers');
+    $i->cli(['user', 'create', 'johndoe', 'johndoe@example.com', '--role=subscriber', '--first_name=John', '--last_name=Doe']);
+    $i->cli(['user', 'create', 'janedoe', 'janedoe@example.com', '--role=subscriber', '--first_name=John', '--last_name=Doe']);
+    $i->cli(['user', 'create', 'jamesdoe', 'jamesdoe@example.com', '--role=subscriber', '--first_name=John', '--last_name=Doe']);
+    $i->login();
+    $i->amOnMailPoetPage ('Subscribers');
+    $i->click('[data-automation-id="import-subscribers-button"]');
+    $this->proceedThroughClearout($i);
+    $this->pasteSimpleList($i);
+    $i->click('[data-automation-id="import-next-step"]');
+    $this->chooseListAndConfirm($i);
+    $i->waitForText('3 existing subscribers were updated and added to "Newsletter mailing list".');
+    $this->checkForImportedSubscribers($i);
+  }
+
+  private function checkForImportedSubscribers(\AcceptanceTester $i) {
     $i->click('View subscribers');
-    $i->searchFor('mailpoet1@yopmail.com');
-    $i->waitForText('mailpoet1@yopmail.com');
-    $i->searchFor('mailpoet2@yopmail.com');
-    $i->waitForText('mailpoet2@yopmail.com');
-    $i->searchFor('mailpoet3@yopmail.com');
-    $i->waitForText('mailpoet3@yopmail.com');
+    $i->waitForText('johndoe@example.com');
+    $i->waitForText('janedoe@example.com');
+    $i->waitForText('jamesdoe@example.com');
     $i->seeNoJSErrors();
   }
 
@@ -108,9 +125,9 @@ class SubscriberManageImportExportCest {
     $i->waitForText('Paste the data into a text box');
     $i->click('[data-automation-id="import-paste-method"]');
     $i->fillField('textarea#paste_input',
-    'mailpoet1@yopmail.com, John, Doe
-    mailpoet2@yopmail.com, Jane, Doe
-    mailpoet3@yopmail.com, James, Doe');
+    'johndoe@example.com, John, Doe
+    janedoe@example.com, Jane, Doe
+    jamesdoe@example.com, James, Doe');
   }
 
   private function uploadCsvFile(\AcceptanceTester $i, $fileName = 'MailPoetImportList.csv') {
