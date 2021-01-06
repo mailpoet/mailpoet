@@ -223,7 +223,13 @@ class AcceptanceTester extends \Codeception\Actor {
 
     $subscriberFactory = new Subscriber();
     $subscriberEmail = \MailPoet\Util\Security::generateRandomString() . '@domain.com';
-    $subscriberFactory->withSegments([$segment])->withEmail($subscriberEmail)->create();
+    $subscriberFirstName = 'John';
+    $subscriberLastName = 'Doe';
+    $subscriberFactory->withSegments([$segment])
+      ->withEmail($subscriberEmail)
+      ->withFirstName($subscriberFirstName)
+      ->withLastName($subscriberLastName)
+      ->create();
 
     return $segmentName;
   }
