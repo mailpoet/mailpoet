@@ -15,17 +15,17 @@ class ReceiveStandardEmailCest {
   }
 
   public function receiveStandardEmail(\AcceptanceTester $i) {
+    $i->wantTo('Receive a standard newsletter as a subscriber');
     $this->settings->withCronTriggerMethod('WordPress');
 
     // try some special characters in the subject to ensure they are received correctly
     $specialChars = '… © & ěščřžýáíéůėę€żąß∂‍‍‍';
 
-    $newsletterTitle = 'Receive Test ' . $specialChars;
+    $newsletterTitle = 'Hi, [subscriber:firstname | default:reader] [subscriber:lastname | default:reader] ' . $specialChars;
     $standardTemplate = '[data-automation-id="select_template_0"]';
     $titleElement = '[data-automation-id="newsletter_title"]';
     $sendFormElement = '[data-automation-id="newsletter_send_form"]';
     $segmentName = $i->createListWithSubscriber();
-    $i->wantTo('Receive a standard newsletter as a subscriber');
 
     $i->wantTo('Create a wp user with wp role subscriber');
     $i->cli(['user', 'create', 'narwhal', 'standardtest@example.com', '--role=subscriber']);
@@ -50,7 +50,7 @@ class ReceiveStandardEmailCest {
     $i->waitForEmailSendingOrSent();
 
     $i->wantTo('confirm newsletter is received');
-    $i->checkEmailWasReceived($newsletterTitle);
-    $i->click(Locator::contains('span.subject', $newsletterTitle));
+    $i->checkEmailWasReceived('Hi, John Doe ' . $specialChars);
+    $i->click(Locator::contains('span.subject', 'Hi, John Doe ' . $specialChars));
   }
 }
