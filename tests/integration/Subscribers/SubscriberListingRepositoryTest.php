@@ -257,6 +257,11 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $subscriberOnDeletedList->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $this->createSubscriberSegmentEntity($deletedList, $subscriberOnDeletedList);
 
+    $subscriberInBothLists = $this->createSubscriberEntity();
+    $subscriberInBothLists->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createSubscriberSegmentEntity($list, $subscriberInBothLists);
+    $this->createSubscriberSegmentEntity($deletedList, $subscriberInBothLists);
+
     $subscriberWithoutList = $this->createSubscriberEntity();
 
     $this->entityManager->flush();
