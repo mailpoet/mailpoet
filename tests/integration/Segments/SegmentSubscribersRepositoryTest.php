@@ -90,6 +90,61 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     $this->tester->deleteWordPressUser($wpUserEmail);
   }
 
+  public function testGetSubscribersStatisticsCount() {
+    $segment = $this->segmentRepository->createOrUpdate('Segment' . rand(0, 10000));
+    $this->entityManager->persist($segment);
+    $subscribersData = [
+      ['status' => SubscriberEntity::STATUS_UNSUBSCRIBED],
+      ['status' => SubscriberEntity::STATUS_SUBSCRIBED],
+      ['status' => SubscriberEntity::STATUS_UNCONFIRMED],
+      ['status' => SubscriberEntity::STATUS_BOUNCED],
+    ];
+    $subscriberSegments = [];
+    $subscribers = [];
+
+    // normal subscribers
+    foreach ($subscribersData as $subscriberData) {
+      $subscriber = $this->createSubscriberEntity();
+      $subscriber->setStatus($subscriberData['status']);
+      $subscriberSegments[] = $this->createSubscriberSegmentEntity($segment, $subscriber);
+      $subscribers[] = $subscriber;
+    }
+    $this->entityManager->flush();
+
+    $subscribersCount = $this->repository->getSubscribersStatisticsCount($segment);
+    expect($subscribersCount[SubscriberEntity::STATUS_SUBSCRIBED])->equals(1);
+    expect($subscribersCount[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(1);
+    expect($subscribersCount[SubscriberEntity::STATUS_UNCONFIRMED])->equals(1);
+    expect($subscribersCount[SubscriberEntity::STATUS_BOUNCED])->equals(1);
+
+    // unsubscribed from this particular segment
+    foreach ($subscriberSegments as $subscriberSegment) {
+      $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    }
+    $this->entityManager->flush();
+
+    $subscribersCount = $this->repository->getSubscribersStatisticsCount($segment);
+    expect($subscribersCount[SubscriberEntity::STATUS_SUBSCRIBED])->equals(0);
+    expect($subscribersCount[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(4);
+    expect($subscribersCount[SubscriberEntity::STATUS_UNCONFIRMED])->equals(0);
+    expect($subscribersCount[SubscriberEntity::STATUS_BOUNCED])->equals(0);
+
+    // trashed subscribers
+    foreach ($subscriberSegments as $subscriberSegment) {
+      $subscriberSegment->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    }
+    foreach ($subscribers as $subscriber) {
+      $subscriber->setDeletedAt(new \DateTimeImmutable());
+    }
+    $this->entityManager->flush();
+
+    $subscribersCount = $this->repository->getSubscribersStatisticsCount($segment);
+    expect($subscribersCount[SubscriberEntity::STATUS_SUBSCRIBED])->equals(0);
+    expect($subscribersCount[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(0);
+    expect($subscribersCount[SubscriberEntity::STATUS_UNCONFIRMED])->equals(0);
+    expect($subscribersCount[SubscriberEntity::STATUS_BOUNCED])->equals(0);
+  }
+
   public function _after() {
     parent::_after();
     $this->cleanup();
