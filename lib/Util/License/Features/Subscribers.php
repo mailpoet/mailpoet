@@ -35,9 +35,6 @@ class Subscribers {
   }
 
   public function getSubscribersCount() {
-    if ($this->hasPremiumSupport()) {
-      return $this->subscribersRepository->getTotalSubscribersWithoutWPUsers();
-    }
     return $this->subscribersRepository->getTotalSubscribers();
   }
 

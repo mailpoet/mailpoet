@@ -152,7 +152,7 @@ class SubscribersTest extends \MailPoetUnitTest {
     expect($subscribersFeature->check())->false();
   }
 
-  public function testCheckReturnsFalseIfPremiumPremiumSupportAndReachedLimit() {
+  public function testCheckReturnsTrueIfPremiumSupportAndReachedLimit() {
     $subscribersFeature = $this->constructWith([
       'has_mss_key' => false,
       'mss_key_state' => 'valid',
@@ -163,9 +163,8 @@ class SubscribersTest extends \MailPoetUnitTest {
       'premium_subscribers_limit' => 2500,
       'mss_subscribers_limit' => 500,
       'support_tier' => 'premium',
-      'subscribers_count_without_wp_users' => 10,
     ]);
-    expect($subscribersFeature->check())->false();
+    expect($subscribersFeature->check())->true();
   }
 
   private function constructWith($specs) {
@@ -182,9 +181,6 @@ class SubscribersTest extends \MailPoetUnitTest {
     $subscribersRepository = Stub::make(SubscribersRepository::class, [
       'getTotalSubscribers' => function() use($specs) {
         return $specs['subscribers_count'];
-      },
-      'getTotalSubscribersWithoutWPUsers' => function() use($specs) {
-        return $specs['subscribers_count_without_wp_users'];
       },
     ]);
 
