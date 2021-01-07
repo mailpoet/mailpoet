@@ -4,6 +4,8 @@ import MailPoet from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import plusIcon from 'common/button/icon/plus';
 import SubscribersInPlan from 'common/subscribers_in_plan';
+import SubscribersLimitNotice from 'notices/subscribers_limit_notice';
+import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 
 const ListHeading = () => (
   <>
@@ -21,6 +23,12 @@ const ListHeading = () => (
     <SubscribersInPlan
       subscribersInPlan={MailPoet.subscribersCount}
       subscribersInPlanLimit={MailPoet.subscribersLimit}
+    />
+
+    <SubscribersLimitNotice />
+    <InvalidMssKeyNotice
+      mssKeyInvalid={MailPoet.hasInvalidMssApiKey}
+      subscribersCount={MailPoet.subscribersCount}
     />
   </>
 );
