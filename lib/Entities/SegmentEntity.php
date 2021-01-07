@@ -25,6 +25,9 @@ class SegmentEntity {
   const TYPE_DEFAULT = 'default';
   const TYPE_DYNAMIC = 'dynamic';
 
+  const SEGMENT_ENABLED = 'active';
+  const SEGMENT_DISABLED = 'disabled';
+
   /**
    * @ORM\Column(type="string")
    * @Assert\NotBlank()

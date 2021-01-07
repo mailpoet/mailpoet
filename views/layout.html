@@ -69,6 +69,7 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   var mailpoet_feature_flags = <%= json_encode(feature_flags) %>;
   var mailpoet_referral_id = <%= json_encode(referral_id) %>;
   var mailpoet_feature_announcement_has_news = <%= json_encode(feature_announcement_has_news) %>;
+  var mailpoet_wp_segment_state = <%= json_encode(wp_segment_state) %>;
 </script>
 
 <!-- javascripts -->
@@ -89,6 +90,7 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   'freeVersionLimit': __('Our free version is limited to [subscribersLimit] subscribers.'),
   'yourPlanLimit': __('Your plan is limited to [subscribersLimit] subscribers.'),
   'youNeedToUpgrade': __('You need to upgrade now to be able to continue using MailPoet.'),
+  'youCanDisableWPUsersList': __('If you do not send emails to your WordPress Users list, you can [link]disable it[/link] to lower your number of subscribers.'),
   'upgradeNow': __('Upgrade Now'),
   'refreshMySubscribers': __('I’ve upgraded my subscription, refresh subscriber limit'),
 

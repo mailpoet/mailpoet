@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactStringReplace from 'react-string-replace';
 import MailPoet from 'mailpoet';
 import Notice from 'notices/notice.tsx';
 
@@ -21,6 +22,14 @@ const SubscribersLimitNotice = () => {
     window.location.reload();
   };
 
+  const youCanDisableWpSegmentMessage = ReactStringReplace(
+    MailPoet.I18n.t('youCanDisableWPUsersList'),
+    /\[link](.*?)\[\/link]/g,
+    (match) => (
+      <a key="goToSegments" href="?page=mailpoet-segments">{match}</a>
+    )
+  );
+
   return (
     <Notice type="error" timeout={false} closable={false} renderInPlace>
       <h3>{title}</h3>
@@ -28,6 +37,12 @@ const SubscribersLimitNotice = () => {
         {youReachedTheLimit}
         {' '}
         {MailPoet.I18n.t('youNeedToUpgrade')}
+        {MailPoet.wpSegmentState === 'active' ? (
+          <>
+            <br />
+            {youCanDisableWpSegmentMessage}
+          </>
+        ) : null}
       </p>
       <p>
         <a

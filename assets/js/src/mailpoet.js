@@ -21,6 +21,7 @@ var MailPoet = {
   libs3rdPartyEnabled: window.mailpoet_3rd_party_libs_enabled,
   apiVersion: window.mailpoet_api_version,
   emailRegex: window.mailpoet_email_regex,
+  wpSegmentState: window.mailpoet_wp_segment_state,
   getShortcodeLinks: () => (window.mailpoet_shortcode_links ? window.mailpoet_shortcode_links : []),
 };
 
