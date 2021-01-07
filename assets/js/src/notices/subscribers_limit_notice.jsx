@@ -4,18 +4,18 @@ import MailPoet from 'mailpoet';
 import Notice from 'notices/notice.tsx';
 
 const SubscribersLimitNotice = () => {
-  if (!window.mailpoet_subscribers_limit_reached) return null;
-  const hasValidApiKey = window.mailpoet_has_valid_api_key;
+  if (!MailPoet.subscribersLimitReached) return null;
+  const hasValidApiKey = MailPoet.hasValidApiKey;
   const title = MailPoet.I18n.t('subscribersLimitNoticeTitle')
-    .replace('[subscribersLimit]', window.mailpoet_subscribers_limit);
+    .replace('[subscribersLimit]', MailPoet.subscribersLimit);
   const youReachedTheLimit = MailPoet.I18n.t(hasValidApiKey ? 'yourPlanLimit' : 'freeVersionLimit')
-    .replace('[subscribersLimit]', window.mailpoet_subscribers_limit);
+    .replace('[subscribersLimit]', MailPoet.subscribersLimit);
   const upgradeLink = hasValidApiKey
     ? 'https://account.mailpoet.com/upgrade'
     : `https://account.mailpoet.com/?s=${window.mailpoet_subscribers_count + 1}`;
   const refreshSubscribers = async () => {
     await MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
+      api_version: MailPoet.apiVersion,
       endpoint: 'services',
       action: 'recheckKeys',
     });
