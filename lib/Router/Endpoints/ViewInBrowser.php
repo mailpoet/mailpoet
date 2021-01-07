@@ -38,7 +38,9 @@ class ViewInBrowser {
   }
 
   private function abort() {
+    global $wp_query;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     WPFunctions::get()->statusHeader(404);
+    $wp_query->set_404();// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     exit;
   }
 }
