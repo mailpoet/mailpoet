@@ -35,7 +35,12 @@ class AssetsController {
     $this->wp->wpPrintScripts('jquery');
     $this->wp->wpPrintScripts('mailpoet_vendor');
     $this->wp->wpPrintScripts('mailpoet_public');
-    echo '<script src="' . self::RECAPTCHA_API_URL . '" async defer></script>';
+    
+    $captcha = $this->settings->get('captcha');
+    if (!empty($captcha['type']) && $captcha['type'] === Captcha::TYPE_RECAPTCHA) {
+      echo '<script src="' . self::RECAPTCHA_API_URL . '" async defer></script>';
+    } 
+
     $scripts = ob_get_contents();
     ob_end_clean();
     if ($scripts === false) {
