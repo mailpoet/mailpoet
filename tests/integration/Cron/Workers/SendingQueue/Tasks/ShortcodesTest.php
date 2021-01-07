@@ -23,9 +23,13 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testItCanReplaceShortcodes() {
-    $queue = $newsletter = (object)[
+    $newsletter = (object)[
       'id' => 1,
     ];
+    $queue = SendingQueue::createOrUpdate([
+      'task_id' => 1,
+      'newsletter_id' => 1,
+    ]);
     $subscriber = Subscriber::createOrUpdate([
       'email' => 'test@xample.com',
       'first_name' => 'John',
