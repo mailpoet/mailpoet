@@ -426,8 +426,8 @@ const SubscriberList = ({ match }) => {
       <SubscribersHeading />
 
       <SubscribersInPlan
-        subscribersInPlan={window.mailpoet_subscribers_in_plan_count}
-        subscribersInPlanLimit={window.mailpoet_subscribers_limit}
+        subscribersInPlan={MailPoet.subscribersCount}
+        subscribersInPlanLimit={MailPoet.subscribersLimit}
       />
 
       <SubscribersLimitNotice />
