@@ -4,12 +4,12 @@ namespace MailPoet\Analytics;
 
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronTrigger;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -33,13 +33,17 @@ class Reporter {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var SubscribersFeature */
+  private $subscribersFeature;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
     ServicesChecker $servicesChecker,
     SettingsController $settings,
     WooCommerceHelper $woocommerceHelper,
-    WPFunctions $wp
+    WPFunctions $wp,
+    SubscribersFeature $subscribersFeature
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
@@ -47,6 +51,7 @@ class Reporter {
     $this->settings = $settings;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wp = $wp;
+    $this->subscribersFeature = $subscribersFeature;
   }
 
   public function getData() {
@@ -73,7 +78,7 @@ class Reporter {
       'users_can_register' => $this->wp->getOption('users_can_register') ? 'yes' : 'no',
       'MailPoet Free version' => MAILPOET_VERSION,
       'MailPoet Premium version' => (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A',
-      'Total number of subscribers' => Subscriber::getTotalSubscribers(),
+      'Total number of subscribers' => $this->subscribersFeature->getSubscribersCount(),
       'Sending Method' => isset($mta['method']) ? $mta['method'] : null,
       'Date of plugin installation' => $this->settings->get('installed_at'),
       'Subscribe in comments' => (boolean)$this->settings->get('subscribe.on_comment.enabled', false),
@@ -144,7 +149,7 @@ class Reporter {
       'welcomeEmails' => $newsletters['welcome_newsletters_count'],
       'postnotificationEmails' => $newsletters['notifications_count'],
       'woocommerceEmails' => $newsletters['automatic_emails_count'],
-      'subscribers' => Subscriber::getTotalSubscribers(),
+      'subscribers' => $this->subscribersFeature->getSubscribersCount(),
       'lists' => isset($segments['default']) ? (int)$segments['default'] : 0,
       'sendingMethod' => isset($mta['method']) ? $mta['method'] : null,
       'woocommerceIsInstalled' => $this->woocommerceHelper->isWooCommerceActive(),

@@ -6,9 +6,9 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Menu;
 use MailPoet\Config\MP2Migrator;
 use MailPoet\Features\FeaturesController;
-use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -28,18 +28,23 @@ class WelcomeWizard {
   /** @var FeaturesController */
   private $featuresController;
 
+  /** @var SubscribersFeature */
+  private $subscribersFeature;
+
   public function __construct(
     PageRenderer $pageRenderer,
     SettingsController $settings,
     WooCommerceHelper $woocommerceHelper,
     WPFunctions $wp,
-    FeaturesController $featuresController
+    FeaturesController $featuresController,
+    SubscribersFeature $subscribersFeature
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->settings = $settings;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wp = $wp;
     $this->featuresController = $featuresController;
+    $this->subscribersFeature = $subscribersFeature;
   }
 
   public function render() {
@@ -51,7 +56,7 @@ class WelcomeWizard {
       'sender' => $this->settings->get('sender'),
       'admin_email' => $this->wp->getOption('admin_email'),
       'current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
-      'subscriber_count' => Subscriber::getTotalSubscribers(),
+      'subscriber_count' => $this->subscribersFeature->getSubscribersCount(),
       'has_mss_key_specified' => Bridge::isMSSKeySpecified(),
     ];
     $data['mailpoet_feature_flags'] = $this->featuresController->getAllFlags();

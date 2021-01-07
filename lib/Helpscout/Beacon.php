@@ -4,10 +4,10 @@ namespace MailPoet\Helpscout;
 
 use MailPoet\Cron\CronHelper;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Beacon {
@@ -17,9 +17,13 @@ class Beacon {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(SettingsController $settings, WPFunctions $wp) {
+  /** @var SubscribersFeature */
+  private $subscribersFeature;
+
+  public function __construct(SettingsController $settings, WPFunctions $wp, SubscribersFeature $subscribersFeature) {
     $this->settings = $settings;
     $this->wp = $wp;
+    $this->subscribersFeature = $subscribersFeature;
   }
 
   public function getData() {
@@ -67,7 +71,7 @@ class Beacon {
       'Default FROM address' => $this->settings->get('sender.address'),
       'Default Reply-To address' => $this->settings->get('reply_to.address'),
       'Bounce Email Address' => $this->settings->get('bounce.address'),
-      'Total number of subscribers' => Subscriber::getTotalSubscribers(),
+      'Total number of subscribers' => $this->subscribersFeature->getSubscribersCount(),
       'Plugin installed at' => $this->settings->get('installed_at'),
     ];
   }
