@@ -32,6 +32,7 @@ import ListingHeadingDisplay from 'newsletters/listings/heading_display.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import TransactionalEmailsProposeOptInNotice from 'notices/transactional_emails_propose_opt_in_notice';
+import PropTypes from 'prop-types';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
@@ -138,6 +139,19 @@ const getAutomaticEmailsRoutes = () => {
   return routes;
 };
 
+const NewNewsletter = ({ history }) => (
+  <NewsletterTypes
+    history={history}
+    hideClosingButton={window.mailpoet_newsletters_count === 0}
+  />
+);
+
+NewNewsletter.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
 const routes = [
   ...getAutomaticEmailsRoutes(),
 
@@ -166,7 +180,7 @@ const routes = [
   /* Newsletter: type selection */
   {
     path: '/new',
-    component: NewsletterTypes,
+    component: NewNewsletter,
   },
   /* Template selection */
   {
