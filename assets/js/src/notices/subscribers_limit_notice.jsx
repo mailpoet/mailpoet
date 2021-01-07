@@ -12,7 +12,7 @@ const SubscribersLimitNotice = () => {
     .replace('[subscribersLimit]', MailPoet.subscribersLimit);
   const upgradeLink = hasValidApiKey
     ? 'https://account.mailpoet.com/upgrade'
-    : `https://account.mailpoet.com/?s=${window.mailpoet_subscribers_count + 1}`;
+    : `https://account.mailpoet.com/?s=${MailPoet.subscribersCount + 1}`;
   const refreshSubscribers = async () => {
     await MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
