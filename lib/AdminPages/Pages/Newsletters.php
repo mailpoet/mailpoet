@@ -13,7 +13,6 @@ use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -155,7 +154,7 @@ class Newsletters {
     $data['premium_plugin_active'] = License::getLicense();
     $data['is_woocommerce_active'] = $this->woocommerceHelper->isWooCommerceActive();
     $data['is_mailpoet_update_available'] = array_key_exists(Env::$pluginPath, $this->wp->getPluginUpdates());
-    $data['subscriber_count'] = Subscriber::getTotalSubscribers();
+    $data['subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
     $data['newsletters_count'] = Newsletter::count();
     $data['mailpoet_feature_flags'] = $this->featuresController->getAllFlags();
     $data['transactional_emails_opt_in_notice_dismissed'] = $this->userFlags->get('transactional_emails_opt_in_notice_dismissed');
