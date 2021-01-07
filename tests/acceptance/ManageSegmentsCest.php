@@ -58,7 +58,6 @@ class ManageSegmentsCest {
     $i->waitForText($wpEditorEmail, 20);
     $i->click('.mailpoet-listing-pages-next');
     $i->waitForText($wpEditorEmail2, 20);
-    $i->makeScreenshot('ss1');
   }
 
   public function createEditTrashRestoreAndDeleteExistingSegment(\AcceptanceTester $i) {
