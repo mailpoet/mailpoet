@@ -21,7 +21,7 @@ const OpenedEmailsStats = ({ params, location }: Props) => (
       <NoAccessInfo
         limitReached={MailPoet.subscribersLimitReached}
         limitValue={MailPoet.subscribersLimit}
-        subscribersCountTowardsLimit={MailPoet.subscribersCountTowardsLimit}
+        subscribersCountTowardsLimit={MailPoet.subscribersCount}
         premiumActive={MailPoet.premiumActive}
         hasValidApiKey={MailPoet.hasValidApiKey}
         hasPremiumSupport={MailPoet.hasPremiumSupport}

@@ -12,7 +12,6 @@ var MailPoet = {
   premiumActive: window.mailpoet_premium_active,
   subscribersLimit: window.mailpoet_subscribers_limit,
   subscribersLimitReached: window.mailpoet_subscribers_limit_reached,
-  subscribersCountTowardsLimit: window.mailpoet_premium_subscribers_count,
   subscribersCount: window.mailpoet_subscribers_in_plan_count,
   hasPremiumSupport: window.mailpoet_has_premium_support,
   hasValidApiKey: window.mailpoet_has_valid_api_key,
