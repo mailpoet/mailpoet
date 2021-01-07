@@ -493,6 +493,9 @@ class Subscriber extends Model {
     return null;
   }
 
+  /**
+   * @deprecated Use MailPoet\Util\License\Features\Subscribers::getSubscribersCount or \MailPoet\Subscribers\SubscribersRepository::getTotalSubscribers
+   */
   public static function getTotalSubscribers() {
     return self::whereIn('status', [
       self::STATUS_SUBSCRIBED,
