@@ -677,11 +677,22 @@ class MP2MigratorTest extends \MailPoetTest {
     expect($mta['authentication'])->equals(1);
   }
 
+  public function testIgnoresInvalidBounceAddress() {
+    $this->loadMP2OptionsFixtures([
+      'bounce_email' => 'invalid',
+    ]);
+
+    $this->invokeMethod($this->MP2Migrator, 'importSettings');
+
+    $bounce = $this->settings->get('bounce');
+    expect($bounce['address'])->equals('');
+  }
+
   /**
    * Load some MP2 fixtures
    *
    */
-  private function loadMP2OptionsFixtures() {
+  private function loadMP2OptionsFixtures($options = []) {
     $wysijaOptions = [
       'from_name' => 'Sender',
       'replyto_name' => 'Reply',
@@ -799,6 +810,8 @@ class MP2MigratorTest extends \MailPoetTest {
       'rolescap---contributor---style_tab' => false,
       'rolescap---subscriber---style_tab' => false,
     ];
+
+    $wysijaOptions = array_merge($wysijaOptions, $options);
     update_option('wysija', base64_encode(serialize($wysijaOptions)));
   }
 }

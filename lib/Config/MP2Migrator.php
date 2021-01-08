@@ -1021,7 +1021,7 @@ class MP2Migrator {
 
     // Bounce
     $bounce = $this->settings->get('bounce');
-    $bounce['address'] = isset($options['bounce_email']) ? $options['bounce_email'] : '';
+    $bounce['address'] = isset($options['bounce_email']) && WPFunctions::get()->isEmail($options['bounce_email']) ? $options['bounce_email'] : '';
     $this->settings->set('bounce', $bounce);
 
     // Notification
