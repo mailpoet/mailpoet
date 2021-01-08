@@ -16,10 +16,12 @@ class ManageSegmentsCest {
   public function viewUserRoleSegmentSubscribers(\AcceptanceTester $i) {
     $i->wantTo('View WP user role segment subscribers');
 
-    $wpAdminEmail = 'test-admin@example.com';
-    $wpEditorEmail = 'test-editor@example.com';
-    $wpEditorEmail2 = 'test-editor2@example.com';
-    $wpAuthorEmail = 'test-author@example.com';
+
+    $wpAdminEmail = rand(1, 100000) . 'test-admin@example.com';
+    $wpEditorEmail = rand(1, 100000) . 'test-editor@example.com';
+    $wpEditorEmail2 = rand(1, 100000) . 'test-editor2@example.com';
+    $wpAuthorEmail = rand(1, 100000) . 'test-author@example.com';
+
     $segmentTitle = 'User Role Segment Test';
 
     $userFactory = new User();
@@ -66,8 +68,9 @@ class ManageSegmentsCest {
     $segmentEditedTitle = 'User Segment EDITED';
     $segmentDesc = 'Lorem ipsum dolor sit amet';
     $segmentEditedDesc = 'Lorem ipsum dolor sit amet EDITED';
-    
+
     $i->wantTo('Prepare (2) additional segments for the test');
+
     $segmentFactory = new DynamicSegment();
     $segment = $segmentFactory
       ->withName($segmentTitle . ' TRASHED 1')
@@ -79,8 +82,9 @@ class ManageSegmentsCest {
       ->withUserRoleFilter('Administrator')
       ->withDeleted()
       ->create();
-    
+
     $i->wantTo('Create a new segment');
+
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
@@ -122,8 +126,9 @@ class ManageSegmentsCest {
     $i->click('[data-automation-id="filters_all"]');
     $i->waitForText($segmentEditedTitle);
     $i->seeNoJSErrors();
-    
+
     $i->wantTo('Trash and delete existing segment');
+
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Move to trash');
     $i->waitForText('1 segment was moved to the trash.');
     $i->click('[data-automation-id="filters_trash"]');
