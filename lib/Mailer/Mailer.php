@@ -15,6 +15,7 @@ use MailPoet\Mailer\Methods\SendGrid;
 use MailPoet\Mailer\Methods\SMTP;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Mailer {
   public $mailerConfig;
@@ -24,6 +25,10 @@ class Mailer {
   public $mailerInstance;
   /** @var SettingsController */
   private $settings;
+
+  /** @var WPFunctions */
+  private $wp;
+
   const MAILER_CONFIG_SETTING_NAME = 'mta';
   const SENDING_LIMIT_INTERVAL_MULTIPLIER = 60;
   const METHOD_MAILPOET = 'MailPoet';
@@ -32,11 +37,15 @@ class Mailer {
   const METHOD_PHPMAIL = 'PHPMail';
   const METHOD_SMTP = 'SMTP';
 
-  public function __construct(SettingsController $settings = null) {
+  public function __construct(SettingsController $settings = null, WPFunctions $wp = null) {
     if (!$settings) {
       $settings = SettingsController::getInstance();
     }
+    if (!$wp) {
+      $wp = WPFunctions::get();
+    }
     $this->settings = $settings;
+    $this->wp = $wp;
   }
 
   public function init($mailer = false, $sender = false, $replyTo = false, $returnPath = false) {
@@ -156,9 +165,11 @@ class Mailer {
   }
 
   public function getReturnPathAddress($returnPath) {
-    return ($returnPath) ?
-      $returnPath :
-      $this->settings->get('bounce.address');
+    if ($returnPath) {
+      return $returnPath;
+    }
+    $bounceAddress = $this->settings->get('bounce.address');
+    return $this->wp->isEmail($bounceAddress) ? $bounceAddress : null;
   }
 
   /**
