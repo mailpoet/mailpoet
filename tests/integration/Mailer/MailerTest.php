@@ -201,6 +201,16 @@ class MailerTest extends \MailPoetTest {
     expect($result['response'])->true();
   }
 
+  public function testItIgnoresInvalidBounceAddress() {
+    $this->settings->set('bounce.address', 'ok@address.com');
+    $mailer = new Mailer();
+    $mailer->init($this->mailer, $this->sender, $this->replyTo);
+    expect($mailer->returnPath)->equals('ok@address.com');
+    $this->settings->set('bounce.address', 'invalid');
+    $mailer->init($this->mailer, $this->sender, $this->replyTo);
+    expect($mailer->returnPath)->null();
+  }
+
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
   }
