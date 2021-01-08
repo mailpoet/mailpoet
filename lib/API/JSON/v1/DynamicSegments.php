@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\Response;
+use MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\DynamicSegments\Exceptions\ErrorSavingException;
 use MailPoet\DynamicSegments\Exceptions\InvalidSegmentTypeException;
@@ -12,11 +13,10 @@ use MailPoet\DynamicSegments\Mappers\DBMapper;
 use MailPoet\DynamicSegments\Mappers\FormDataMapper;
 use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
 use MailPoet\DynamicSegments\Persistence\Saver;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\Model;
-use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DynamicSegments extends APIEndpoint {
@@ -40,13 +40,17 @@ class DynamicSegments extends APIEndpoint {
   /** @var Handler */
   private $listingHandler;
 
-  /** @var SegmentSubscribersRepository */
-  private $segmentSubscriberRepository;
+  /** @var DynamicSegmentsListingRepository */
+  private $dynamicSegmentsListingRepository;
+
+  /** @var DynamicSegmentsResponseBuilder */
+  private $segmentsResponseBuilder;
 
   public function __construct(
     BulkActionController $bulkAction,
     Handler $handler,
-    SegmentSubscribersRepository $segmentSubscriberRepository,
+    DynamicSegmentsListingRepository $dynamicSegmentsListingRepository,
+    DynamicSegmentsResponseBuilder $segmentsResponseBuilder,
     $mapper = null,
     $saver = null,
     $dynamicSegmentsLoader = null
@@ -56,7 +60,8 @@ class DynamicSegments extends APIEndpoint {
     $this->mapper = $mapper ?: new FormDataMapper();
     $this->saver = $saver ?: new Saver();
     $this->dynamicSegmentsLoader = $dynamicSegmentsLoader ?: new SingleSegmentLoader(new DBMapper());
-    $this->segmentSubscriberRepository = $segmentSubscriberRepository;
+    $this->dynamicSegmentsListingRepository = $dynamicSegmentsListingRepository;
+    $this->segmentsResponseBuilder = $segmentsResponseBuilder;
   }
 
   public function get($data = []) {
@@ -192,26 +197,18 @@ class DynamicSegments extends APIEndpoint {
   }
 
   public function listing($data = []) {
-    $listingData = $this->listingHandler->get('\MailPoet\Models\DynamicSegment', $data);
+    $definition = $this->listingHandler->getListingDefinition($data);
+    $items = $this->dynamicSegmentsListingRepository->getData($definition);
+    $count = $this->dynamicSegmentsListingRepository->getCount($definition);
+    $filters = $this->dynamicSegmentsListingRepository->getFilters($definition);
+    $groups = $this->dynamicSegmentsListingRepository->getGroups($definition);
+    $segments = $this->segmentsResponseBuilder->buildForListing($items);
 
-    $data = [];
-    foreach ($listingData['items'] as $segment) {
-      $segment->subscribersUrl = WPFunctions::get()->adminUrl(
-        'admin.php?page=mailpoet-subscribers#/filter[segment=' . $segment->id . ']'
-      );
-
-      $row = $segment->asArray();
-      $row['count_all'] = $this->segmentSubscriberRepository->getSubscribersCount($segment->id);
-      $row['count_subscribed'] = $this->segmentSubscriberRepository->getSubscribersCount($segment->id, SubscriberEntity::STATUS_SUBSCRIBED);
-      $data[] = $row;
-    }
-
-    return $this->successResponse($data, [
-      'count' => $listingData['count'],
-      'filters' => $listingData['filters'],
-      'groups' => $listingData['groups'],
+    return $this->successResponse($segments, [
+      'count' => $count,
+      'filters' => $filters,
+      'groups' => $groups,
     ]);
-
   }
 
   public function bulkAction($data = []) {

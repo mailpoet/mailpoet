@@ -87,6 +87,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder::class)->setPublic(true);
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\FormsResponseBuilder::class);
     $container->autowire(\MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder::class)->setPublic(true);
+    $container->autowire(\MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder::class)->setPublic(true);
     // Automatic emails
     $container->autowire(\MailPoet\AutomaticEmails\AutomaticEmails::class);
     // Config
@@ -257,6 +258,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Segments\SegmentSubscribersRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\SegmentListingRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\SegmentSaveController::class)->setPublic(true);
+    $container->autowire(\MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\FilterHandler::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\EmailAction::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\UserRole::class)->setPublic(true);
