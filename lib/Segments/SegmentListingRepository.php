@@ -15,8 +15,6 @@ class SegmentListingRepository extends ListingRepository {
   /** @var WooCommerce */
   private $wooCommerce;
 
-  protected $types = [SegmentEntity::TYPE_DEFAULT, SegmentEntity::TYPE_WP_USERS];
-
   public function __construct(
     EntityManager $entityManager,
     WooCommerce $wooCommerce
@@ -52,7 +50,7 @@ class SegmentListingRepository extends ListingRepository {
   }
 
   protected function applyParameters(QueryBuilder $queryBuilder, array $parameters) {
-    $types = $this->types;
+    $types = [SegmentEntity::TYPE_DEFAULT, SegmentEntity::TYPE_WP_USERS];
     if ($this->wooCommerce->shouldShowWooCommerceSegment()) {
       $types[] = SegmentEntity::TYPE_WC_USERS;
     }
