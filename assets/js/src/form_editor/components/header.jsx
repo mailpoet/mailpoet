@@ -73,6 +73,10 @@ const Header = ({ isInserterOpened, setIsInserterOpened }) => {
         <DropdownMenu
           icon={moreVertical}
           label={__('More tools & options')}
+          className="edit-post-more-menu"
+          popoverProps={{
+            className: 'edit-post-more-menu__content',
+          }}
         >
           {() => (
             <MenuGroup
