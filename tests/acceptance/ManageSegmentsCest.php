@@ -17,10 +17,10 @@ class ManageSegmentsCest {
     $i->wantTo('View WP user role segment subscribers');
 
 
-    $wpAdminEmail = rand(1, 100000) . 'test-admin@example.com';
-    $wpEditorEmail = rand(1, 100000) . 'test-editor@example.com';
-    $wpEditorEmail2 = rand(1, 100000) . 'test-editor2@example.com';
-    $wpAuthorEmail = rand(1, 100000) . 'test-author@example.com';
+    $wpAdminEmail = 'test-admin-' . rand(1, 100000) . '@example.com';
+    $wpEditorEmail = 'test-editor-' . rand(1, 100000) . '@example.com';
+    $wpEditorEmail2 = 'test-editor2-' . rand(1, 100000) . '@example.com';
+    $wpAuthorEmail = 'test-author-' . rand(1, 100000) . '@example.com';
 
     $segmentTitle = 'User Role Segment Test';
 
