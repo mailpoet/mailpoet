@@ -1,8 +1,5 @@
 import React from 'react';
-import classnames from 'classnames';
-import {
-  Button,
-} from '@wordpress/components';
+import { MenuItem } from '@wordpress/components';
 
 import { check } from '@wordpress/icons';
 
@@ -18,34 +15,16 @@ const FeatureToggle = ({
   label,
   info,
   onToggle,
-}: Props) => {
-  let content: JSX.Element | string;
-  if (info) {
-    content = (
-      <span className="components-menu-item__info-wrapper">
-        {label}
-        <span className="components-menu-item__info">{info}</span>
-      </span>
-    );
-  } else {
-    content = label;
-  }
-
-  return (
-    <Button
-      className={classnames(
-        'components-button',
-        'components-menu-item__button',
-        { 'mailpoet-dropdown-button': !isActive }
-      )}
-      role="menuitemcheckbox"
-      icon={isActive && check}
-      onClick={onToggle}
-      text={info}
-    >
-      {content}
-    </Button>
-  );
-};
+}: Props) => (
+  <MenuItem
+    icon={isActive && check}
+    isSelected={isActive}
+    onClick={onToggle}
+    role="menuitemcheckbox"
+    info={info}
+  >
+    {label}
+  </MenuItem>
+);
 
 export default FeatureToggle;
