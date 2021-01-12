@@ -15,12 +15,12 @@ class WooCommerceCategory implements Filter {
   /** @var int */
   private $categoryId;
 
-  /** @var string */
+  /** @var string|null */
   private $connect;
 
   /**
    * @param int $categoryId
-   * @param string $connect
+   * @param string|null $connect
    */
   public function __construct($categoryId, $connect = null) {
     $this->categoryId = (int)$categoryId;
