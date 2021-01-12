@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelect } from '@wordpress/data';
 import ParagraphEdit from './paragraph_edit.jsx';
@@ -20,6 +20,7 @@ const TextInputEdit = ({
   );
   const input = useRef(null);
   const id = `${name}_${Math.random().toString(36).substring(2, 15)}`;
+  const [value, setValue] = useState('');
 
   const labelStyles = !styles.inheritFromTheme ? {
     fontWeight: styles.bold ? 'bold' : 'inherit',
@@ -82,10 +83,12 @@ const TextInputEdit = ({
           className="mailpoet_text"
           type="text"
           name={name}
+          value={value}
+          onChange={() => setValue('')}
           placeholder={placeholder}
           data-automation-id={`editor_${name}_input`}
           style={inputStyles}
-          onFocus={() => input.current.blur()}
+          autoComplete="off"
         />
       </>
     );
