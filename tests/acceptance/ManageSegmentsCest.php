@@ -16,7 +16,6 @@ class ManageSegmentsCest {
   public function viewUserRoleSegmentSubscribers(\AcceptanceTester $i) {
     $i->wantTo('View WP user role segment subscribers');
 
-
     $wpAdminEmail = 'test-admin-' . rand(1, 100000) . '@example.com';
     $wpEditorEmail = 'test-editor-' . rand(1, 100000) . '@example.com';
     $wpEditorEmail2 = 'test-editor2-' . rand(1, 100000) . '@example.com';
@@ -56,7 +55,9 @@ class ManageSegmentsCest {
     $i->fillField('#mailpoet_subscribers_per_page', '1');
     $i->click('#screen-options-apply');
     $i->wait(2); // to avoid flakyness, required to wait a bit
+    $i->wantTo('Reorder subscribers by email and check if correct subscribes are present');
     $i->waitForElement('.mailpoet-listing-pages-next');
+    $i->click('Subscriber', '[data-automation-id="listing-column-header-email"]');
     $i->waitForText($wpEditorEmail, 20);
     $i->click('.mailpoet-listing-pages-next');
     $i->waitForText($wpEditorEmail2, 20);
