@@ -109,7 +109,7 @@ class SendingQueue extends Model {
   }
 
   public function getMeta() {
-    return (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
+    return (Helpers::isJson($this->meta) && is_string($this->meta)) ? json_decode($this->meta, true) : $this->meta;
   }
 
   public function isSubscriberProcessed($subscriberId) {

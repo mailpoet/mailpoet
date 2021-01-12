@@ -171,7 +171,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
       $model = static::findOne((int)$data['id']);
     }
 
-    if ($model === false && !empty($keys)) {
+    if ($model === false && !empty($keys) && is_array($keys)) {
       foreach ($keys as $field => $value) {
         if ($model === false) {
           $model = static::where($field, $value);
