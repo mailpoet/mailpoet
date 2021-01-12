@@ -968,6 +968,7 @@ class MP2Migrator {
       $segmentsIds = implode(',', $segments);
       return '[mailpoet_subscribers_count segments=' . $segmentsIds . ']';
     }
+    return '';
   }
 
   /**

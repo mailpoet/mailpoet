@@ -8,6 +8,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
@@ -167,7 +168,9 @@ class SendingQueue {
             ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
           );
           $this->newsletterTask->markNewsletterAsSent($newsletter, $queue);
-          $this->statsNotificationsScheduler->schedule($this->newslettersRepository->findOneById($newsletter->id));
+          $newsletter = $this->newslettersRepository->findOneById($newsletter->id);
+          assert($newsletter instanceof NewsletterEntity);
+          $this->statsNotificationsScheduler->schedule($newsletter);
         }
         $this->enforceSendingAndExecutionLimits($timer);
       }

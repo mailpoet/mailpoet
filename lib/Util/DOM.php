@@ -12,6 +12,7 @@ class DOM {
    */
   public static function splitOn(DomNode $bound, DomNode $cutElement) {
     $ignoreTextAndCommentNodes = false;
+    $grandparent = $cutElement->parent;
     for ($parent = $cutElement->parent; $bound != $parent; $parent = $grandparent) {
       // Clone parent node without children, but with attributes
       $parent->after($parent->toString());
@@ -23,6 +24,7 @@ class DOM {
       }
 
       // Reattach cut_element and right siblings to grandparent
+      /* @phpstan-ignore-next-line Because there is a wrong annotation in the library tburry/pquery */
       $grandparent = $parent->parent;
       $indexAfterParent = $parent->index() + 1;
       $right->move($grandparent, $indexAfterParent);
