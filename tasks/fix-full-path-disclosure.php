@@ -89,6 +89,11 @@ foreach ($files as $file) {
     }
   }
 
+  // Add new line after <?php in case <?php return... is detected on the first line and we want to append after the first line
+  if ($line === 1 && is_array($tokens[1]) && $tokens[1][0] === T_RETURN && $tokens[1][2] === 1) {
+    $data = preg_replace('/<\?php/', "<?php\n", $data, 1);
+  }
+
   // inject $code after line give by detected $line
   // NOTE: UTF-8 'u' modifier is not added on purpose since we only need to count '\n' occurrences
   //       and 'u' modifier breaks on some symbols (i.e. those used in Symfony's mb_string polyfill)
