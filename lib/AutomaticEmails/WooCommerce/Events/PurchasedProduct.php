@@ -91,6 +91,7 @@ class PurchasedProduct {
     }
 
     $woocommerceProducts = array_map(function($product) {
+      assert($product instanceof \WP_Post);
       return [
         'id' => $product->ID,
         'name' => $product->post_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps

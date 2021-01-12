@@ -7,6 +7,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
@@ -117,8 +118,12 @@ class Worker {
       throw new \RuntimeException('Missing newsletter entity for statistic notification.');
     }
     $link = $this->newsletterLinkRepository->findTopLinkForNewsletter((int)$newsletter->getId());
-    $context = $this->prepareContext($newsletter, $link);
-    $subject = $newsletter->getLatestQueue()->getNewsletterRenderedSubject();
+    $sendingQueue = $newsletter->getLatestQueue();
+    if (!$sendingQueue instanceof SendingQueueEntity) {
+      throw new \RuntimeException('Missing sending queue entity for statistic notification.');
+    }
+    $context = $this->prepareContext($newsletter, $sendingQueue, $link);
+    $subject = $sendingQueue->getNewsletterRenderedSubject();
     return [
       'subject' => sprintf(_x('Stats for email %s', 'title of an automatic email containing statistics (newsletter open rate, click rate, etc)', 'mailpoet'), $subject),
       'body' => [
@@ -128,12 +133,12 @@ class Worker {
     ];
   }
 
-  private function prepareContext(NewsletterEntity $newsletter, NewsletterLinkEntity $link = null) {
+  private function prepareContext(NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue, NewsletterLinkEntity $link = null) {
     $statistics = $this->newsletterStatisticsRepository->getStatistics($newsletter);
     $clicked = ($statistics->getClickCount() * 100) / $statistics->getTotalSentCount();
     $opened = ($statistics->getOpenCount() * 100) / $statistics->getTotalSentCount();
     $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $statistics->getTotalSentCount();
-    $subject = $newsletter->getLatestQueue()->getNewsletterRenderedSubject();
+    $subject = $sendingQueue->getNewsletterRenderedSubject();
     $subscribersCount = $this->subscribersRepository->getTotalSubscribers();
     $hasValidApiKey = $this->subscribersFeature->hasValidApiKey();
     $context = [

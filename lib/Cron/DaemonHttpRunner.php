@@ -12,7 +12,7 @@ class DaemonHttpRunner {
   public $timer;
   public $token;
 
-  /** @var Daemon */
+  /** @var Daemon|null */
   private $daemon;
 
   /** @var CronHelper */
@@ -68,6 +68,9 @@ class DaemonHttpRunner {
     }
     if (!empty($error)) {
       return $this->abortWithError($error);
+    }
+    if ($this->daemon === null) {
+      return $this->abortWithError(WPFunctions::get()->__('Daemon does not set correctly.', 'mailpoet'));
     }
     $this->settingsDaemonData['token'] = $this->token;
     $this->daemon->run($this->settingsDaemonData);

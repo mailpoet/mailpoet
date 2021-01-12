@@ -73,12 +73,12 @@ class Links {
       $linkToReplace = $processedLink['link'];
       $replacementLink = $processedLink['processed_link'];
       if ($processedLink['type'] == self::LINK_TYPE_SHORTCODE) {
-        $content = str_replace($linkToReplace, $replacementLink, $content);
+        $content = str_replace($linkToReplace, $replacementLink, (string)$content);
       }
       $content = preg_replace(
         '/\[(.*?)\](\(' . preg_quote($linkToReplace, '/') . '\))/',
         '[$1](' . $replacementLink . ')',
-        $content
+        (string)$content
       );
     }
     return [

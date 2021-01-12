@@ -373,6 +373,9 @@ class ContainerConfigurator implements IContainerConfigurator {
   }
 
   public static function getPremiumService($id, ContainerInterface $container = null) {
+    if ($container === null) {
+      return null;
+    }
     if (!$container->has(IContainerConfigurator::PREMIUM_CONTAINER_SERVICE_SLUG)) {
       return null;
     }
