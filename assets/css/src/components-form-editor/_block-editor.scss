@@ -55,6 +55,10 @@ h2 {
 // Remove min-height so that lower values of input padding have visible effect in form editor
 .block-editor-block-list__layout .mailpoet_text {
   min-height: 0;
+
+  &:focus {
+    box-shadow: none;
+  }
 }
 
 // Ensure same default font size for input and submit button
