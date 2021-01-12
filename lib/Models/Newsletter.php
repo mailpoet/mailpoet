@@ -548,7 +548,7 @@ class Newsletter extends Model {
   public function getMeta() {
     if (!$this->meta) return;
 
-    return (Helpers::isJson($this->meta)) ? json_decode($this->meta, true) : $this->meta;
+    return (Helpers::isJson($this->meta) && is_string($this->meta)) ? json_decode($this->meta, true) : $this->meta;
   }
 
   public static function findOneWithOptions($id) {

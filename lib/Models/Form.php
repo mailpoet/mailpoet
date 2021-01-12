@@ -39,11 +39,11 @@ class Form extends Model {
   }
 
   public function save() {
-    $this->set('body', (is_serialized($this->body))
+    $this->set('body', (is_string($this->body) && is_serialized($this->body))
       ? $this->body
       : serialize($this->body)
     );
-    $this->set('settings', (is_serialized($this->settings))
+    $this->set('settings', (is_string($this->settings) && is_serialized($this->settings))
       ? $this->settings
       : serialize($this->settings)
     );
