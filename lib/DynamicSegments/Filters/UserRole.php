@@ -11,12 +11,12 @@ class UserRole implements Filter {
   /** @var string */
   private $role;
 
-  /** @var string */
+  /** @var string|null */
   private $connect;
 
   /**
    * @param string $role
-   * @param string $connect
+   * @param string|null $connect
    */
   public function __construct($role, $connect = null) {
     $this->role = $role;

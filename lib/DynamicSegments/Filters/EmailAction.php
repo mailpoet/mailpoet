@@ -33,14 +33,14 @@ class EmailAction implements Filter {
   /** @var string */
   private $action;
 
-  /** @var string */
+  /** @var string|null */
   private $connect;
 
   /**
    * @param int $newsletterId
    * @param int $linkId
    * @param string $action
-   * @param string $connect
+   * @param string|null $connect
    */
   public function __construct($action, $newsletterId, $linkId = null, $connect = null) {
     $this->newsletterId = (int)$newsletterId;

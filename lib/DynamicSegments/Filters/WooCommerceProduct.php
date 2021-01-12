@@ -14,12 +14,12 @@ class WooCommerceProduct implements Filter {
   /** @var int */
   private $productId;
 
-  /** @var string */
+  /** @var string|null */
   private $connect;
 
   /**
    * @param int $productId
-   * @param string $connect
+   * @param string|null $connect
    */
   public function __construct($productId, $connect = null) {
     $this->productId = (int)$productId;
