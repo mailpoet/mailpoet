@@ -95,7 +95,7 @@ const Header = ({ isInserterOpened, setIsInserterOpened }) => {
         </DropdownMenu>
       </div>
       <div className="edit-post-header__toolbar">
-        <div className="toolbar edit-post-header-toolbar">
+        <div className="toolbar edit-post-header-toolbar edit-post-header-toolbar__left">
           <Button
             isSecondary
             href="?page=mailpoet-forms#/"
