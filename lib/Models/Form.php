@@ -10,6 +10,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property string|array $body
  * @property string $name
  * @property string $status
+ * @property string|null $deletedAt
  */
 
 class Form extends Model {
