@@ -42,6 +42,4 @@ includes:
   - vendor/phpstan/phpstan-phpunit/extension.neon
   - vendor/szepeviktor/phpstan-wordpress/extension.neon
   - extensions/CodeceptionExtension/extension.neon
-  - phpstan-baseline-unit-tests.neon # https://medium.com/@ondrejmirtes/phpstans-baseline-feature-lets-you-hold-new-code-to-a-higher-standard-e77d815a5dff
-  - phpstan-baseline-integration-tests.neon # https://medium.com/@ondrejmirtes/phpstans-baseline-feature-lets-you-hold-new-code-to-a-higher-standard-e77d815a5dff
   - php-version-dependent-config-tests.php # PHP version detection + configuraton dependent on PHP version
