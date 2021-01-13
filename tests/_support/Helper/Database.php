@@ -20,6 +20,7 @@ class Database extends \Codeception\Module {
     $db = ORM::getDb();
     $fullFilename = Env::$path . '/tests/_data/' . $filename . '.sql';
     $sql = file_get_contents($fullFilename);
+    assert(is_string($sql));
     $sql = preg_replace('/`wp_/', '`' . $wpdb->prefix, $sql); // Use the current database prefix
     if (!is_string($sql)) {
       throw new \RuntimeException('Empty or missing ' . $fullFilename);

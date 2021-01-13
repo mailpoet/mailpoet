@@ -49,6 +49,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->currentTime = Carbon::createFromTimestamp((new WPFunctions())->currentTime('timestamp'));
     Carbon::setTestNow($this->currentTime);
 
+    // @phpstan-ignore-next-line
     $this->wp = $this->makeEmpty(WPFunctions::class, [
       'currentTime' => function ($arg) {
         if ($arg === 'timestamp') {
@@ -63,11 +64,12 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->wooCommerceMock = $this->mockWooCommerceClass(WooCommerce::class, []);
     $this->wooCommerceCartMock = $this->mockWooCommerceClass(WC_Cart::class, ['is_empty', 'get_cart']);
     $this->wooCommerceMock->cart = $this->wooCommerceCartMock;
+    // @phpstan-ignore-next-line
     $this->wooCommerceHelperMock = $this->make(WooCommerceHelper::class, [
       'isWooCommerceActive' => true,
       'WC' => $this->wooCommerceMock,
     ]);
-
+    // @phpstan-ignore-next-line
     $this->pageVisitTrackerMock = $this->makeEmpty(AbandonedCartPageVisitTracker::class);
   }
 
@@ -222,9 +224,11 @@ class AbandonedCartTest extends \MailPoetTest {
     expect(ScheduledTask::findMany())->count(2);
 
     $completed = ScheduledTask::where('status', ScheduledTask::STATUS_COMPLETED)->findOne();
+    assert($completed instanceof ScheduledTask);
     expect($completed->scheduledAt)->same($scheduledInPast->format('Y-m-d H:i:s'));
 
     $scheduled = ScheduledTask::where('status', ScheduledTask::STATUS_SCHEDULED)->findOne();
+    assert($scheduled instanceof ScheduledTask);
     expect($scheduled->scheduledAt)->same($expectedTime->format('Y-m-d H:i:s'));
   }
 

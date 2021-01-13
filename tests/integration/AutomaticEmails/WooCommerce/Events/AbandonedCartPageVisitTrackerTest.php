@@ -28,6 +28,7 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
     $this->currentTime = Carbon::now();
     Carbon::setTestNow($this->currentTime);
 
+    // @phpstan-ignore-next-line
     $this->wp = $this->makeEmpty(WPFunctions::class, [
       'currentTime' => $this->currentTime->getTimestamp(),
     ]);

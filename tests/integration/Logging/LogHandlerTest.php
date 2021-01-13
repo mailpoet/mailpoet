@@ -19,6 +19,7 @@ class LogHandlerTest extends \MailPoetTest {
     ]);
 
     $log = Log::where('name', 'name')->orderByDesc('id')->findOne();
+    assert($log instanceof Log);
     expect($log->createdAt)->equals($time->format('Y-m-d H:i:s'));
 
   }

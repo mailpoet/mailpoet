@@ -91,11 +91,13 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     expect(count($purchaseStats))->equals(2);
 
     $stats1 = StatisticsWooCommercePurchases::where('newsletter_id', $this->newsletter->id)->findOne();
+    assert($stats1 instanceof StatisticsWooCommercePurchases);
     expect($stats1->clickId)->equals($click1->id);
     expect($stats1->subscriberId)->equals($this->subscriber->id);
     expect($stats1->queueId)->equals($this->queue->id);
 
     $stats2 = StatisticsWooCommercePurchases::where('newsletter_id', $newsletter->id)->findOne();
+    assert($stats2 instanceof StatisticsWooCommercePurchases);
     expect($stats2->clickId)->equals($click2->id);
     expect($stats2->subscriberId)->equals($this->subscriber->id);
     expect($stats2->queueId)->equals($queue->id);
