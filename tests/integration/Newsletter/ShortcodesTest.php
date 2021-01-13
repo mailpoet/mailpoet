@@ -18,6 +18,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
+use WP_Post;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
@@ -136,6 +137,7 @@ class ShortcodesTest extends \MailPoetTest {
     $result =
       $shortcodesObject->process(['[newsletter:post_title]'], $content);
     $wpPost = get_post($this->wPPost);
+    assert($wpPost instanceof WP_Post);
     expect($result['0'])->equals($wpPost->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
