@@ -22,6 +22,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
     // WP's default post type 'revision' is excluded from search
     // https://codex.wordpress.org/Post_Types
     $revisionPostType = get_post_type_object('revision');
+    assert($revisionPostType instanceof \WP_Post_Type);
     expect($revisionPostType->exclude_from_search)->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     expect(isset($response->data['revision']))->false();
   }

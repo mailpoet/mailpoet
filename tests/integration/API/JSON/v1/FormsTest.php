@@ -167,6 +167,7 @@ class FormsTest extends \MailPoetTest {
     $this->form1->trash();
 
     $trashedForm = Form::findOne($this->form1->id);
+    assert($trashedForm instanceof Form);
     expect($trashedForm->deletedAt)->notNull();
 
     $response = $this->endpoint->restore(['id' => $this->form1->id]);

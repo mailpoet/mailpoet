@@ -147,6 +147,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
 
     $dynamicSegment = DynamicSegment::findOne($dynamicSegment->id);
+    assert($dynamicSegment instanceof DynamicSegment);
     expect($dynamicSegment->deletedAt)->notNull();
 
     $dynamicSegment->delete();
@@ -172,6 +173,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
 
     $dynamicSegment = DynamicSegment::findOne($dynamicSegment->id);
+    assert($dynamicSegment instanceof DynamicSegment);
     expect($dynamicSegment->deletedAt)->equals(null);
 
     $dynamicSegment->delete();

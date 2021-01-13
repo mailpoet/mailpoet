@@ -139,6 +139,7 @@ class SettingsTest extends \MailPoetTest {
     $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
       ->whereRaw('status = ?', [ScheduledTask::STATUS_SCHEDULED])
       ->findOne();
+    assert($task instanceof ScheduledTask);
     expect($task->scheduledAt)->lessThan(Carbon::now());
   }
 

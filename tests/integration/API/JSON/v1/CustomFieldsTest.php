@@ -7,6 +7,7 @@ use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\API\JSON\v1\CustomFields;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Models\CustomField;
 
 class CustomFieldsTest extends \MailPoetTest {
@@ -83,6 +84,7 @@ class CustomFieldsTest extends \MailPoetTest {
 
   public function testItCanDeleteACustomField() {
     $customField = CustomField::where('type', 'date')->findOne();
+    assert($customField instanceof CustomField);
     $customFieldId = $customField->id();
 
     $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
@@ -122,6 +124,7 @@ class CustomFieldsTest extends \MailPoetTest {
 
   public function testItCanGetACustomField() {
     $customField = $this->repository->findOneBy(['name' => 'CF: text']);
+    assert($customField instanceof CustomFieldEntity);
 
     $router = new CustomFields($this->repository, new CustomFieldsResponseBuilder());
     $response = $router->get(['id' => $customField->getId()]);
