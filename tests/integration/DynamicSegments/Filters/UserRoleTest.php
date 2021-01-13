@@ -14,13 +14,13 @@ class UserRoleTest extends \MailPoetTest {
 
   public function testItConstructsQuery() {
     $userRole = new UserRole('editor', 'and');
-    $sql = $userRole->toSql(Subscriber::selectExpr('*'));
+    $sql = $userRole->toSql(Subscriber::selectExpr('*')); // @phpstan-ignore-line
     expect($sql->count())->equals(2);
   }
 
   public function testItDoesntGetSubString() {
     $userRole = new UserRole('edit', 'and');
-    $sql = $userRole->toSql(Subscriber::selectExpr('*'));
+    $sql = $userRole->toSql(Subscriber::selectExpr('*')); // @phpstan-ignore-line
     expect($sql->count())->equals(0);
   }
 
