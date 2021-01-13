@@ -37,6 +37,7 @@ class AutomaticEmailTest extends \MailPoetTest {
       ]
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
@@ -68,6 +69,7 @@ class AutomaticEmailTest extends \MailPoetTest {
       ]
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
@@ -76,6 +78,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, $subscriber->id, $meta);
     // new queue record should be created with meta data
     $queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
+    assert($queue instanceof SendingQueue);
     expect($queue->getMeta())->equals($meta);
   }
 
@@ -90,6 +93,7 @@ class AutomaticEmailTest extends \MailPoetTest {
       ]
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
 
     $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, $subscriber = null, $meta = null);
     // new scheduled task should be created

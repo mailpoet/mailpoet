@@ -186,6 +186,7 @@ class LinksTest extends \MailPoetTest {
     $newsltterLink = NewsletterLink::where('newsletter_id', 1)
       ->where('queue_id', 1)
       ->findOne();
+    assert($newsltterLink instanceof NewsletterLink);
     expect($newsltterLink->hash)->equals('123');
     expect($newsltterLink->url)->equals('http://example.com');
   }
