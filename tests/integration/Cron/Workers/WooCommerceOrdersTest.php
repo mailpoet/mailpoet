@@ -64,24 +64,28 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     expect($this->worker->checkProcessingRequirements())->true();
     $this->cronWorkerRunner->run($this->worker);
     $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
+    assert($task instanceof ScheduledTask);
     expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
 
     // 2. prepare
     expect($this->worker->checkProcessingRequirements())->true();
     $this->cronWorkerRunner->run($this->worker);
     $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
+    assert($task instanceof ScheduledTask);
     expect($task->status)->null(); // null means 'running'
 
     // 3. run
     expect($this->worker->checkProcessingRequirements())->true();
     $this->cronWorkerRunner->run($this->worker);
     $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
+    assert($task instanceof ScheduledTask);
     expect($task->status)->equals(ScheduledTask::STATUS_COMPLETED);
 
     // 4. complete (do not schedule again)
     expect($this->worker->checkProcessingRequirements())->false();
     $this->cronWorkerRunner->run($this->worker);
     $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
+    assert($task instanceof ScheduledTask);
     expect($task->status)->equals(ScheduledTask::STATUS_COMPLETED);
 
     $tasks = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findMany();
@@ -116,11 +120,13 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->cronWorkerRunner->run($this->worker); // run for 1, 2, 3
 
     $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
+    assert($task instanceof ScheduledTask);
     expect($task->getMeta())->equals(['last_processed_id' => 3]);
 
     $this->cronWorkerRunner->run($this->worker); // run for 4, 5
 
     $task = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findOne();
+    assert($task instanceof ScheduledTask);
     expect($task->getMeta())->equals(['last_processed_id' => 5]);
 
     $this->cronWorkerRunner->run($this->worker); // complete

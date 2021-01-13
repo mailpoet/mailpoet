@@ -41,6 +41,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
       ->where('status', ScheduledTask::STATUS_SCHEDULED)
       ->findOne();
 
+    assert($task instanceof ScheduledTask);
     expect($task)->isInstanceOf(ScheduledTask::class);
     expect($task->scheduledAt)->greaterThan(new Carbon());
   }
@@ -73,6 +74,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
       ->where('status', ScheduledTask::STATUS_SCHEDULED)
       ->findOne();
 
+    assert($task instanceof ScheduledTask);
     expect($task)->isInstanceOf(ScheduledTask::class);
     expect($task->scheduledAt)->greaterThan(new Carbon());
   }

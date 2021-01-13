@@ -158,7 +158,8 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterTask->trackingEnabled = true;
     $newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);
     $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
-      ->findOne();
+    ->findOne();
+    assert($link instanceof NewsletterLink);
     /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
@@ -226,6 +227,7 @@ class NewsletterTest extends \MailPoetTest {
     $result = $newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);
     $newsletterPost = NewsletterPost::where('newsletter_id', $this->newsletter->id)
       ->findOne();
+    assert($newsletterPost instanceof NewsletterPost);
     expect($result)->notEquals(false);
     expect($newsletterPost->postId)->equals('10');
   }
@@ -241,6 +243,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->save();
     $this->newsletterTask->markNewsletterAsSent($newsletter, $queue);
     $updatedNewsletter = Newsletter::findOne($newsletter->id);
+    assert($updatedNewsletter instanceof Newsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
     expect($updatedNewsletter->sentAt)->equals($queue->processedAt);
 
@@ -250,6 +253,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->save();
     $this->newsletterTask->markNewsletterAsSent($newsletter, $queue);
     $updatedNewsletter = Newsletter::findOne($newsletter->id);
+    assert($updatedNewsletter instanceof Newsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
     expect($updatedNewsletter->sentAt)->equals($queue->processedAt);
 
@@ -259,6 +263,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->save();
     $this->newsletterTask->markNewsletterAsSent($newsletter, $queue);
     $updatedNewsletter = Newsletter::findOne($newsletter->id);
+    assert($updatedNewsletter instanceof Newsletter);
     expect($updatedNewsletter->status)->notEquals(Newsletter::STATUS_SENT);
   }
 
@@ -401,6 +406,7 @@ class NewsletterTest extends \MailPoetTest {
     $queueMock->taskId = $queue->taskId;
 
     $sendingQueue = ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
+    assert($sendingQueue instanceof ORM);
     $sendingQueue->set('newsletter_rendered_body', 'a:2:{s:4:"html"');
     $sendingQueue->save();
     try {
@@ -433,6 +439,7 @@ class NewsletterTest extends \MailPoetTest {
 
     // properly serialized object
     $sendingQueue = ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
+    assert($sendingQueue instanceof ORM);
     $sendingQueue->set('newsletter_rendered_body', 'a:2:{s:4:"html";s:4:"test";s:4:"text";s:4:"test";}');
     $sendingQueue->save();
 

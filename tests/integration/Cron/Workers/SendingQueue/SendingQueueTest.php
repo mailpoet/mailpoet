@@ -397,6 +397,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter status is set to sent
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
+    assert($updatedNewsletter instanceof Newsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
 
     // queue status is set to completed
@@ -450,6 +451,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter status is set to sent
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
+    assert($updatedNewsletter instanceof Newsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
 
     // queue status is set to completed
@@ -506,6 +508,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter status is set to sent and sent_at date is populated
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
+    assert($updatedNewsletter instanceof Newsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
     expect($updatedNewsletter->sentAt)->equals($updatedQueue->processedAt);
 
@@ -548,6 +551,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     $newQueue = ScheduledTask::findOne($this->queue->task_id);
+    assert($newQueue instanceof ScheduledTask);
     expect($newQueue->updatedAt)->notEquals($originalUpdated);
   }
 
@@ -579,6 +583,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter status is set to sent
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
+    assert($updatedNewsletter instanceof Newsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
 
     // queue status is set to completed
@@ -859,6 +864,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter is sent and hash remains intact
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
+    assert($updatedNewsletter instanceof Newsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENT);
     expect($updatedNewsletter->hash)->equals($this->newsletter->hash);
   }

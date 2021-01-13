@@ -41,6 +41,7 @@ class PostsTest extends \MailPoetTest {
     expect($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(true);
     $newsletterPost = NewsletterPost::where('newsletter_id', $newsletter->parentId)
       ->findOne();
+    assert($newsletterPost instanceof NewsletterPost);
     expect($newsletterPost->postId)->equals($postId);
   }
 

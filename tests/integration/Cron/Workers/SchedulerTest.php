@@ -24,6 +24,7 @@ use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
+use WP_User;
 
 class SchedulerTest extends \MailPoetTest {
   public $cronHelper;
@@ -87,6 +88,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletterOption = $this->_createNewsletterOption($newsletterOptionField->id, $newsletter->id, 'immediately');
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
 
@@ -98,11 +100,13 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItCanRescheduleQueueDeliveryTime() {
     $newsletter = $this->_createNewsletter();
+    assert($newsletter instanceof Newsletter);
     $newsletterOptionField =
       $this->_createNewsletterOptionField('intervalType', Newsletter::TYPE_WELCOME);
     $newsletterOption = $this->_createNewsletterOption($newsletterOptionField->id, $newsletter->id, 'daily');
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
 
@@ -112,6 +116,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletterOption->value = 'daily';
     $newsletterOption->save();
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     expect($queue->scheduledAt)->null();
     $newsletter->schedule = '0 5 * * *'; // set it to daily at 5
     $scheduler->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
@@ -135,6 +140,7 @@ class SchedulerTest extends \MailPoetTest {
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
 
@@ -158,6 +164,7 @@ class SchedulerTest extends \MailPoetTest {
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
 
@@ -180,6 +187,7 @@ class SchedulerTest extends \MailPoetTest {
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
 
@@ -201,6 +209,7 @@ class SchedulerTest extends \MailPoetTest {
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
 
@@ -309,6 +318,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletterOption = $this->_createNewsletterOption($newsletterOptionField->id, $newsletter->id, $segment->id);
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
 
@@ -340,6 +350,7 @@ class SchedulerTest extends \MailPoetTest {
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
 
@@ -371,6 +382,7 @@ class SchedulerTest extends \MailPoetTest {
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
 
@@ -394,6 +406,7 @@ class SchedulerTest extends \MailPoetTest {
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
 
@@ -416,6 +429,7 @@ class SchedulerTest extends \MailPoetTest {
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
     $scheduler = new Scheduler($this->subscribersFinder, $this->loggerFactory, $this->cronHelper);
 
@@ -431,6 +445,7 @@ class SchedulerTest extends \MailPoetTest {
     expect($updatedQueue->status)->null();
     // set newsletter's status to sending
     $updatedNewsletter = Newsletter::findOne($newsletter->id);
+    assert($updatedNewsletter instanceof Newsletter);
     expect($updatedNewsletter->status)->equals(Newsletter::STATUS_SENDING);
   }
 
@@ -479,6 +494,7 @@ class SchedulerTest extends \MailPoetTest {
     );
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     $scheduler = new Scheduler($this->subscribersFinder, $this->loggerFactory, $this->cronHelper);
 
     // return true
@@ -486,6 +502,7 @@ class SchedulerTest extends \MailPoetTest {
     // create notification history
     $notificationHistory = Newsletter::where('parent_id', $newsletter->id)
       ->findOne();
+    assert($notificationHistory instanceof Newsletter);
     expect($notificationHistory)->notEmpty();
     // update queue with a list of subscribers to process and change newsletter id
     // to that of the notification history
@@ -498,6 +515,7 @@ class SchedulerTest extends \MailPoetTest {
     // set notification history's status to sending
     $updatedNotificationHistory = Newsletter::where('parent_id', $newsletter->id)
       ->findOne();
+    assert($updatedNotificationHistory instanceof Newsletter);
     expect($updatedNotificationHistory->status)->equals(Newsletter::STATUS_SENDING);
   }
 
@@ -618,6 +636,7 @@ class SchedulerTest extends \MailPoetTest {
 
     $scheduler->processScheduledStandardNewsletter($newsletter, $queue);
     $refetchedTask = ScheduledTask::where('id', $task->id)->findOne();
+    assert($refetchedTask instanceof ScheduledTask);
     expect($refetchedTask->scheduledAt)->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(1));
   }
 
@@ -724,6 +743,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
     $scheduler->process();
     $newQueue = ScheduledTask::findOne($queue->taskId);
+    assert($newQueue instanceof ScheduledTask);
     expect($newQueue->updatedAt)->notEquals($originalUpdated);
   }
 
@@ -817,6 +837,7 @@ class SchedulerTest extends \MailPoetTest {
       );
     }
     $user = get_user_by('login', $username);
+    assert($user instanceof WP_User);
     wp_update_user(
       [
         'ID' => $user->ID,

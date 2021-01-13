@@ -82,7 +82,9 @@ class MigrationTest extends \MailPoetTest {
     SendingQueue::deleteMany();
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
-    expect(ScheduledTask::findOne($task->id)->status)->equals(ScheduledTask::STATUS_COMPLETED);
+    $task = ScheduledTask::findOne($task->id);
+    assert($task instanceof ScheduledTask);
+    expect($task->status)->equals(ScheduledTask::STATUS_COMPLETED);
   }
 
   public function testItMigratesSendingQueuesAndSubscribers() {
@@ -98,7 +100,9 @@ class MigrationTest extends \MailPoetTest {
     expect(ScheduledTaskSubscriber::whereGt('task_id', 0)->count())->equals(4); // 2 for running, 2 for paused
 
     $queue = SendingQueue::findOne($this->queueRunning->id);
+    assert($queue instanceof SendingQueue);
     $task = ScheduledTask::findOne($queue->taskId);
+    assert($task instanceof ScheduledTask);
     expect($task->type)->equals(SendingTask::TASK_TYPE);
 
     $migratedSubscribers = ScheduledTaskSubscriber::where('task_id', $queue->taskId)
