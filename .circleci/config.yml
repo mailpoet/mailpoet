@@ -1,5 +1,62 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@4.2.0
+
+slack-fail-post-step: &slack-fail-post-step
+  post-steps:
+    - slack/notify:
+        channel: mailpoet-dev-feeds
+        branch_pattern: 'master,release'
+        event: fail
+        custom: |
+          {
+            "blocks": [
+              {
+                "type": "header",
+                "text": {
+                  "type": "plain_text",
+                  "text": "Job Failed :red_circle:",
+                  "emoji": true
+                }
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Job*: ${CIRCLE_JOB}"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Project*: $CIRCLE_PROJECT_REPONAME"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Branch*: $CIRCLE_BRANCH"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Author*: $CIRCLE_USERNAME"
+                  }
+                ]
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {
+                    "type": "button",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "View Job"
+                    },
+                    "url": "${CIRCLE_BUILD_URL}"
+                  }
+                ]
+              }
+            ]
+          }
+
 anchors:
   default_job_config: &default_job_config
     resource_class: small
@@ -368,28 +425,35 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - build
+      - build:
+          <<: *slack-fail-post-step
       - unit_tests:
+          <<: *slack-fail-post-step
           name: unit_tests
           requires:
             - build
       - static_analysis:
+          <<: *slack-fail-post-step
           name: static_analysis_php7
           php_version: 70100
           requires:
             - build
       - static_analysis:
+          <<: *slack-fail-post-step
           name: static_analysis_php8
           php_version: 80000
           requires:
             - build
       - qa_js:
+          <<: *slack-fail-post-step
           requires:
             - build
       - qa_php:
+          <<: *slack-fail-post-step
           requires:
             - build
       - acceptance_tests:
+          <<: *slack-fail-post-step
           name: acceptance_tests_1
           group_arg: -g acceptance_group_1
           requires:
@@ -399,6 +463,7 @@ workflows:
             - qa_js
             - qa_php
       - acceptance_tests:
+          <<: *slack-fail-post-step
           name: acceptance_tests_2
           group_arg: -g acceptance_group_2
           requires:
@@ -408,6 +473,7 @@ workflows:
             - qa_js
             - qa_php
       - acceptance_tests:
+          <<: *slack-fail-post-step
           name: acceptance_tests_3
           group_arg: -g acceptance_group_3
           requires:
@@ -417,6 +483,7 @@ workflows:
             - qa_js
             - qa_php
       - acceptance_tests:
+          <<: *slack-fail-post-step
           name: acceptance_tests_4
           group_arg: -g acceptance_group_4
           requires:
@@ -426,6 +493,7 @@ workflows:
             - qa_js
             - qa_php
       - acceptance_tests:
+          <<: *slack-fail-post-step
           name: acceptance_tests_5
           group_arg: -g acceptance_group_5
           requires:
@@ -435,9 +503,11 @@ workflows:
             - qa_js
             - qa_php
       - js_tests:
+          <<: *slack-fail-post-step
           requires:
             - build
       - integration_tests:
+          <<: *slack-fail-post-step
           requires:
             - unit_tests
             - static_analysis_php7
@@ -445,26 +515,32 @@ workflows:
             - qa_js
             - qa_php
       - acceptance_tests:
+          <<: *slack-fail-post-step
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_1
           group_arg: -g acceptance_group_1
       - acceptance_tests:
+          <<: *slack-fail-post-step
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_2
           group_arg: -g acceptance_group_2
       - acceptance_tests:
+          <<: *slack-fail-post-step
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_3
           group_arg: -g acceptance_group_3
       - acceptance_tests:
+          <<: *slack-fail-post-step
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_4
           group_arg: -g acceptance_group_4
       - acceptance_tests:
+          <<: *slack-fail-post-step
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_5
           group_arg: -g acceptance_group_5
       - integration_tests:
+          <<: *slack-fail-post-step
           <<: *only_master_and_release
           name: integration_tests_multisite
           setup_command: source ./.circleci/setup.bash && setup php7_multisite
@@ -476,6 +552,7 @@ workflows:
             - qa_js
             - qa_php
       - build_release_zip:
+          <<: *slack-fail-post-step
           requires:
             - build
             - acceptance_tests_1
@@ -486,6 +563,7 @@ workflows:
             - js_tests
             - integration_tests
       - test_deployment:
+          <<: *slack-fail-post-step
           <<: *only_master_and_release
           requires:
             - build_release_zip
@@ -499,12 +577,15 @@ workflows:
               only:
                 - master
     jobs:
-      - build
+      - build:
+          <<: *slack-fail-post-step
       - acceptance_tests:
+          <<: *slack-fail-post-step
           name: acceptance_latest
           requires:
             - build
       - acceptance_tests:
+          <<: *slack-fail-post-step
           name: acceptance_oldest
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
@@ -512,35 +593,43 @@ workflows:
           requires:
             - build
       - unit_tests:
+          <<: *slack-fail-post-step
           name: unit_latest
           requires:
             - build
       - unit_tests:
+          <<: *slack-fail-post-step
           name: unit_oldest
           executor: wpcli_php_mysql_oldest
           requires:
             - build
       - integration_tests:
+          <<: *slack-fail-post-step
           name: integration_latest
           requires:
             - build
       - integration_tests:
+          <<: *slack-fail-post-step
           name: integration_oldest
           executor: wpcli_php_mysql_oldest
           requires:
             - build
       - build_premium:
+          <<: *slack-fail-post-step
           requires:
             - build
       - acceptance_tests:
+          <<: *slack-fail-post-step
           name: acceptance_with_premium_latest
           requires:
             - build_premium
       - unit_tests:
+          <<: *slack-fail-post-step
           name: unit_with_premium_latest
           requires:
             - build_premium
       - integration_tests:
+          <<: *slack-fail-post-step
           name: integration_with_premium_latest
           requires:
             - build_premium
