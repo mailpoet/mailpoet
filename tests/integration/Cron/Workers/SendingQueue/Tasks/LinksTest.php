@@ -20,6 +20,7 @@ class LinksTest extends \MailPoetTest {
     $result = Links::saveLinks($links, $newsletter, $queue);
     $newsletterLink = NewsletterLink::where('hash', $links[0]['hash'])
       ->findOne();
+    assert($newsletterLink instanceof NewsletterLink);
     expect($newsletterLink->newsletterId)->equals($newsletter->id);
     expect($newsletterLink->queueId)->equals($queue->id);
     expect($newsletterLink->url)->equals($links[0]['link']);
@@ -52,6 +53,7 @@ class LinksTest extends \MailPoetTest {
     $result = Links::process($renderedNewsletter, $newsletter, $queue);
     $newsletterLink = NewsletterLink::where('newsletter_id', $newsletter->id)
       ->findOne();
+    assert($newsletterLink instanceof NewsletterLink);
     expect($result['html'])->stringContainsString($newsletterLink->hash);
   }
 

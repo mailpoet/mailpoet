@@ -7,6 +7,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoetVendor\Idiorm\ORM;
+use WP_Post;
 
 class ShortcodesTest extends \MailPoetTest {
   public $wPPost;
@@ -42,6 +43,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItCanReplaceShortcodesInOneStringUsingContentsFromAnother() {
     $wpPost = get_post($this->wPPost);
+    assert($wpPost instanceof WP_Post);
     $content = 'Subject line with one shortcode: [newsletter:post_title]';
     $contentSource = '<a data-post-id="' . $this->wPPost . '" href="#">latest post</a>';
 
