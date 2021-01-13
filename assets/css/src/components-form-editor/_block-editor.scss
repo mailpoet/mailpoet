@@ -53,9 +53,10 @@ h2 {
 }
 
 // Remove min-height so that lower values of input padding have visible effect in form editor
-.block-editor-block-list__layout .mailpoet_text {
+.block-editor-block-list__layout .mailpoet_text,
+.block-editor-block-list__layout .mailpoet_textarea {
   min-height: 0;
-
+  // Remove box shadow on focus since we don't allow interactions with text fields in editor
   &:focus {
     box-shadow: none;
   }

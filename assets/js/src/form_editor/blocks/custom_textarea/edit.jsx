@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Panel,
   PanelBody, SelectControl,
@@ -36,6 +36,9 @@ const CustomTextAreaEdit = ({
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
     []
   );
+
+  const [inputValue, setInputValue] = useState('');
+
   const {
     saveCustomField,
     deleteCustomField,
@@ -181,9 +184,9 @@ const CustomTextAreaEdit = ({
           data-automation-id="editor_custom_textarea_input"
           rows={attributes.lines}
           style={inputStyles}
-          onChange={() => null}
-          onFocus={() => textarea.current.blur()}
+          onChange={() => setInputValue('')}
           placeholder={placeholder}
+          value={inputValue}
         />
       </>
     );
