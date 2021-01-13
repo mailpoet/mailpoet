@@ -69,12 +69,13 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
 
   public function testItHasAnUpdatedAtOnCreation() {
     $optionField = NewsletterOptionField::findOne($this->optionField->id);
-    expect($optionField->updatedAt)
-      ->equals($optionField->createdAt);
+    assert($optionField instanceof NewsletterOptionField);
+    expect($optionField->updatedAt)->equals($optionField->createdAt);
   }
 
   public function testItUpdatesTheUpdatedAtOnUpdate() {
     $optionField = NewsletterOptionField::findOne($this->optionField->id);
+    assert($optionField instanceof NewsletterOptionField);
     $createdAt = $optionField->createdAt;
 
     sleep(1);
@@ -83,6 +84,7 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
     $optionField->save();
 
     $updatedOptionField = NewsletterOptionField::findOne($optionField->id);
+    assert($updatedOptionField instanceof NewsletterOptionField);
     $isTimeUpdated = (
       $updatedOptionField->updatedAt > $updatedOptionField->createdAt
     );
@@ -100,6 +102,7 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
       $association->save();
     }
     $optionField = NewsletterOptionField::findOne($this->optionField->id);
+    assert($optionField instanceof NewsletterOptionField);
     $newsletters = $optionField->newsletters()
       ->findArray();
     expect(count($newsletters))->equals(2);
@@ -115,6 +118,7 @@ class NewsletterOptionFieldTest extends \MailPoetTest {
     $association->value = 'list';
     $association->save();
     $optionField = NewsletterOptionField::findOne($this->optionField->id);
+    assert($optionField instanceof NewsletterOptionField);
     $newsletter = $optionField->newsletters()
       ->findOne();
     expect($newsletter->value)->equals($association->value);

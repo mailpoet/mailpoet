@@ -24,6 +24,7 @@ class NewsletterOptionTest extends \MailPoetTest {
     $newsletterOption = NewsletterOption::where('newsletter_id', $data['newsletter_id'])
       ->where('option_field_id', $data['option_field_id'])
       ->findOne();
+    assert($newsletterOption instanceof NewsletterOption);
     expect($newsletterOption->value)->equals($data['value']);
 
     // it can update
@@ -32,6 +33,7 @@ class NewsletterOptionTest extends \MailPoetTest {
     $newsletterOption = NewsletterOption::where('newsletter_id', $data['newsletter_id'])
       ->where('option_field_id', $data['option_field_id'])
       ->findOne();
+    assert($newsletterOption instanceof NewsletterOption);
     expect($newsletterOption->value)->equals($data['value']);
   }
 

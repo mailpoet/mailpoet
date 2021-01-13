@@ -98,17 +98,20 @@ class SegmentTest extends \MailPoetTest {
 
   public function testItHasACreatedAtOnCreation() {
     $segment = Segment::findOne($this->segment->id);
+    assert($segment instanceof Segment);
     expect($segment->createdAt)->notNull();
   }
 
   public function testItHasAnUpdatedAtOnCreation() {
     $segment = Segment::findOne($this->segment->id);
+    assert($segment instanceof Segment);
     expect($segment->updatedAt)
       ->equals($segment->createdAt);
   }
 
   public function testItUpdatesTheUpdatedAtOnUpdate() {
     $segment = Segment::findOne($this->segment->id);
+    assert($segment instanceof Segment);
     $createdAt = $segment->createdAt;
 
     sleep(1);
@@ -117,6 +120,7 @@ class SegmentTest extends \MailPoetTest {
     $segment->save();
 
     $updatedSegment = Segment::findOne($segment->id);
+    assert($updatedSegment instanceof Segment);
     expect($updatedSegment->createdAt)->equals($createdAt);
     $isTimeUpdated = (
       $updatedSegment->updatedAt > $updatedSegment->createdAt
@@ -133,6 +137,7 @@ class SegmentTest extends \MailPoetTest {
 
     $segment = Segment::where('name', 'new list')
       ->findOne();
+    assert($segment instanceof Segment);
     expect($segment->name)->equals('new list');
 
     $isUpdated = Segment::createOrUpdate(
@@ -142,6 +147,7 @@ class SegmentTest extends \MailPoetTest {
       ]);
     $segment = Segment::where('name', 'updated list')
       ->findOne();
+    assert($segment instanceof Segment);
     expect($segment->name)->equals('updated list');
   }
 
@@ -156,6 +162,7 @@ class SegmentTest extends \MailPoetTest {
       $association->save();
     }
     $segment = Segment::findOne($this->segment->id);
+    assert($segment instanceof Segment);
     $subscribers = $segment->subscribers()
       ->findArray();
 
@@ -173,6 +180,7 @@ class SegmentTest extends \MailPoetTest {
       $association->save();
     }
     $segment = Segment::findOne($this->segment->id);
+    assert($segment instanceof Segment);
     $newsletters = $segment->newsletters()
       ->findArray();
 

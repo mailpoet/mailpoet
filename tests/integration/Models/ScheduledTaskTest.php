@@ -70,12 +70,16 @@ class ScheduledTaskTest extends \MailPoetTest {
     ]);
     ScheduledTask::setScheduledAllByNewsletter($newsletter);
     $task1Found = ScheduledTask::findOne($task1->id());
+    assert($task1Found instanceof ScheduledTask);
     expect($task1Found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     $task2Found = ScheduledTask::findOne($task2->id());
+    assert($task2Found instanceof ScheduledTask);
     expect($task2Found->status)->equals(ScheduledTask::STATUS_COMPLETED);
     $task3Found = ScheduledTask::findOne($task3->id());
+    assert($task3Found instanceof ScheduledTask);
     expect($task3Found->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     $outdatedTaskFound = ScheduledTask::findOne($outdatedTask->id());
+    assert($outdatedTaskFound instanceof ScheduledTask);
     expect($outdatedTaskFound->status)->equals(ScheduledTask::STATUS_PAUSED);
   }
 
@@ -99,8 +103,10 @@ class ScheduledTaskTest extends \MailPoetTest {
     ]);
     ScheduledTask::pauseAllByNewsletter($newsletter);
     $task1Found = ScheduledTask::findOne($task1->id());
+    assert($task1Found instanceof ScheduledTask);
     expect($task1Found->status)->equals(ScheduledTask::STATUS_COMPLETED);
     $task2Found = ScheduledTask::findOne($task2->id());
+    assert($task2Found instanceof ScheduledTask);
     expect($task2Found->status)->equals(ScheduledTask::STATUS_PAUSED);
   }
 
@@ -128,6 +134,7 @@ class ScheduledTaskTest extends \MailPoetTest {
 
   public function testItJsonEncodesMetaWhenSaving() {
     $task = ScheduledTask::create();
+    assert($task instanceof ScheduledTask);
     $meta = [
       'some' => 'value',
     ];
@@ -135,6 +142,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     $task->save();
 
     $task = ScheduledTask::findOne($task->id);
+    assert($task instanceof ScheduledTask);
 
     /** @var string $taskMeta */
     $taskMeta = $task->meta;
@@ -149,6 +157,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     $task->save();
 
     $task = ScheduledTask::findOne($task->id);
+    assert($task instanceof ScheduledTask);
 
     expect(Helpers::isJson($task->meta))->false();
     expect($task->meta)->equals($meta);
