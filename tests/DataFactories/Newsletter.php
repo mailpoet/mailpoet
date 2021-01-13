@@ -44,7 +44,9 @@ class Newsletter {
    * @return Newsletter
    */
   public function loadBodyFrom($filename) {
-    $this->data['body'] = json_decode(file_get_contents(__DIR__ . '/../_data/' . $filename), true);
+    $body = file_get_contents(__DIR__ . '/../_data/' . $filename);
+    assert(is_string($body));
+    $this->data['body'] = json_decode($body, true);
     return $this;
   }
 

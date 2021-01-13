@@ -10,7 +10,7 @@ class ReadmeTest extends \MailPoetUnitTest {
 
   public function _before() {
     // Sample taken from https://wordpress.org/plugins/about/readme.txt
-    $this->data = file_get_contents(dirname(__FILE__) . '/ReadmeTestData.txt');
+    $this->data = (string)file_get_contents(dirname(__FILE__) . '/ReadmeTestData.txt');
   }
 
   public function testItParsesChangelog() {

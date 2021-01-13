@@ -149,6 +149,7 @@ class ExportTest extends \MailPoetTest {
   public function testItCanGetSubscriberCustomFields() {
     $source = CustomField::where('name', $this->customFieldsData[0]['name'])
       ->findOne();
+    assert($source instanceof CustomField);
     $target = $this->export->getSubscriberCustomFields();
     expect($target)->equals([$source->id => $source->name]);
   }

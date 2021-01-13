@@ -483,6 +483,8 @@ class WooCommerceTest extends \MailPoetTest {
 
     $association1AfterUpdate = SubscriberSegment::findOne($association1->id);
     $association2AfterUpdate = SubscriberSegment::findOne($association2->id);
+    assert($association1AfterUpdate instanceof SubscriberSegment);
+    assert($association2AfterUpdate instanceof SubscriberSegment);
     expect($association1AfterUpdate->status)->equals(Subscriber::STATUS_SUBSCRIBED);
     expect($association2AfterUpdate->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
@@ -525,6 +527,8 @@ class WooCommerceTest extends \MailPoetTest {
 
     $association1AfterUpdate = SubscriberSegment::findOne($association1->id);
     $association2AfterUpdate = SubscriberSegment::findOne($association2->id);
+    assert($association1AfterUpdate instanceof SubscriberSegment);
+    assert($association2AfterUpdate instanceof SubscriberSegment);
     expect($association1AfterUpdate->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
     expect($association2AfterUpdate->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
