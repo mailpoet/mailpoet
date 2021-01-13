@@ -32,6 +32,7 @@ class SaverTest extends \MailPoetTest {
     ]);
     $id = $this->saver->save($dynamicSegment);
     $loaded = DynamicSegment::findOne($id);
+    assert($loaded instanceof DynamicSegment);
     expect($loaded->name)->equals('segment 1');
     expect($loaded->description)->equals('desc');
   }

@@ -45,49 +45,49 @@ class EmailActionTest extends \MailPoetTest {
 
   public function testGetOpened() {
     $emailAction = new EmailAction(EmailAction::ACTION_OPENED, $this->newsletter->id);
-    $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
+    $sql = $emailAction->toSql(Subscriber::selectExpr('*')); // @phpstan-ignore-line
     expect($sql->count())->equals(2);
   }
 
   public function testNotOpened() {
     $emailAction = new EmailAction(EmailAction::ACTION_NOT_OPENED, $this->newsletter->id);
-    $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
+    $sql = $emailAction->toSql(Subscriber::selectExpr('*')); // @phpstan-ignore-line
     expect($sql->count())->equals(1);
   }
 
   public function testGetClickedWithoutLink() {
     $emailAction = new EmailAction(EmailAction::ACTION_CLICKED, $this->newsletter->id);
-    $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
+    $sql = $emailAction->toSql(Subscriber::selectExpr('*')); // @phpstan-ignore-line
     expect($sql->count())->equals(1);
   }
 
   public function testGetClickedWithLink() {
     $emailAction = new EmailAction(EmailAction::ACTION_CLICKED, $this->newsletter->id, 1);
-    $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
+    $sql = $emailAction->toSql(Subscriber::selectExpr('*')); // @phpstan-ignore-line
     expect($sql->count())->equals(1);
   }
 
   public function testGetClickedWithWrongLink() {
     $emailAction = new EmailAction(EmailAction::ACTION_CLICKED, $this->newsletter->id, 2);
-    $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
+    $sql = $emailAction->toSql(Subscriber::selectExpr('*')); // @phpstan-ignore-line
     expect($sql->count())->equals(0);
   }
 
   public function testGetNotClickedWithLink() {
     $emailAction = new EmailAction(EmailAction::ACTION_NOT_CLICKED, $this->newsletter->id, 1);
-    $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
+    $sql = $emailAction->toSql(Subscriber::selectExpr('*')); // @phpstan-ignore-line
     expect($sql->count())->equals(2);
   }
 
   public function testGetNotClickedWithWrongLink() {
     $emailAction = new EmailAction(EmailAction::ACTION_NOT_CLICKED, $this->newsletter->id, 2);
-    $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
+    $sql = $emailAction->toSql(Subscriber::selectExpr('*')); // @phpstan-ignore-line
     expect($sql->count())->equals(3);
   }
 
   public function testGetNotClickedWithoutLink() {
     $emailAction = new EmailAction(EmailAction::ACTION_NOT_CLICKED, $this->newsletter->id);
-    $sql = $emailAction->toSql(Subscriber::selectExpr('*'));
+    $sql = $emailAction->toSql(Subscriber::selectExpr('*')); // @phpstan-ignore-line
     expect($sql->count())->equals(2);
   }
 
@@ -96,8 +96,11 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   private function cleanData() {
+    // @phpstan-ignore-next-line
     StatisticsClicks::where('newsletter_id', $this->newsletter->id)->findResultSet()->delete();
+    // @phpstan-ignore-next-line
     StatisticsNewsletters::where('newsletter_id', $this->newsletter->id)->findResultSet()->delete();
+    // @phpstan-ignore-next-line
     StatisticsOpens::where('newsletter_id', $this->newsletter->id)->findResultSet()->delete();
     $this->newsletter->delete();
     $this->subscriberOpenedClicked->delete();
