@@ -66,7 +66,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect((new WPFunctions)->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $wpUser->data->user_email;
+    $subscriber->email = $wpUser->data->user_email; // @phpstan-ignore-line
     $subscriber->wpUserId = $wpUser->ID;
     $subscriber->save();
 
@@ -83,7 +83,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($wp->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $wpUser->data->user_email;
+    $subscriber->email = $wpUser->data->user_email; // @phpstan-ignore-line
     $subscriber->wpUserId = $wpUser->ID;
     $subscriber->save();
 
@@ -102,7 +102,7 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItDoesNotDisplayManageSubscriptionFormForLoggedinNonexistentSubscribers() {
     $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
-    expect(Subscriber::findOne($wpUser->data->user_email))->false();
+    expect(Subscriber::findOne($wpUser->data->user_email))->false(); // @phpstan-ignore-line
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
@@ -125,7 +125,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect((new WPFunctions)->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $wpUser->data->user_email;
+    $subscriber->email = $wpUser->data->user_email; // @phpstan-ignore-line
     $subscriber->wpUserId = $wpUser->ID;
     $subscriber->save();
 
@@ -138,7 +138,7 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItDoesNotDisplayLinkToManageSubscriptionPageForLoggedinNonexistentSubscribers() {
     $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
-    expect(Subscriber::findOne($wpUser->data->user_email))->false();
+    expect(Subscriber::findOne($wpUser->data->user_email))->false(); // @phpstan-ignore-line
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
