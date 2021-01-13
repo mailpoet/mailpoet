@@ -121,3 +121,8 @@ h2 {
   padding-left: 50px;
   padding-right: 50px;
 }
+
+// Unify padding o wp-block-columns with background with front end rendering
+.wp-block-columns.has-background {
+  padding: 10px;
+}
