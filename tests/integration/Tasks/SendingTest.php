@@ -92,6 +92,8 @@ class SendingTest extends \MailPoetTest {
     $this->sending->save();
     $task = ScheduledTask::findOne($this->task->id);
     $queue = SendingQueue::findOne($this->queue->id);
+    assert($task instanceof ScheduledTask);
+    assert($queue instanceof SendingQueue);
     expect($task->status)->equals($status);
     expect($queue->newsletterRenderedSubject)->equals($newsletterRenderedSubject);
   }

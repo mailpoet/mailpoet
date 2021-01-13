@@ -47,7 +47,8 @@ class BatchIteratorTest extends \MailPoetTest {
       $i++;
 
       // process subscribers
-      ScheduledTaskSubscriber::where('task_id', $this->taskId)
+      // @phpstan-ignore-next-line
+      ScheduledTaskSubscriber::where('task_id', $this->taskId) 
         ->whereIn('subscriber_id', $batch)
         ->findResultSet()
         ->set('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
