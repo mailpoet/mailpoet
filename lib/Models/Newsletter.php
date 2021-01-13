@@ -37,6 +37,8 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property bool|null $isScheduled
  * @property string|null $scheduledAt
  * @property string $gaCampaign
+ * @property string $event
+ * @property string $unsubscribeToken
  */
 
 class Newsletter extends Model {

@@ -20,6 +20,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property string|null $deletedAt
  * @property string $scheduledAt
  * @property string $status
+ * @property array|string|null $meta
  */
 
 class SendingQueue extends Model {

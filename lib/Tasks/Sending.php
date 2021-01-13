@@ -18,6 +18,8 @@ use MailPoetVendor\Carbon\Carbon;
  * @property string $newsletterRenderedSubject
  * @property string|array $newsletterRenderedBody
  * @property bool $nonExistentColumn
+ * @property string $scheduledAt
+ * @property int $priority
  */
 class Sending {
   const TASK_TYPE = 'sending';

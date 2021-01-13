@@ -13,6 +13,7 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property string $description
  * @property string $createdAt
  * @property string $updatedAt
+ * @property string|null $deletedAt
  */
 class DynamicSegment extends MailPoetSegment {
 
