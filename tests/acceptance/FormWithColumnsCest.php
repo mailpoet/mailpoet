@@ -25,27 +25,28 @@ class FormWithColumnsCest {
     $i->clickItemRowActionByItemName($formName, 'Edit');
     $i->waitForElement('[data-automation-id="form_title_input"]');
 
+    $i->wantTo('Add columns block with 2 columns');
     $i->addFromBlockInEditor('Columns');
-    // Select first variant (2 columns)
     $i->waitForElement('.block-editor-block-variation-picker__variations');
-    $i->click('.block-editor-block-variation-picker__variations li:first-child button');
+    $i->click('.block-editor-block-variation-picker__variations li:nth-child(2) button');
     $i->waitForElement('.block-editor-block-list__block');
-    // Add inputs into column
+
+    $i->wantTo('Add inputs into column');
     $this->addFieldInColumn($i, 'First name');
     $this->addFieldInColumn($i, 'Last name');
     $i->seeNoJSErrors();
     $i->saveFormInEditor();
-    // Reload page and check data were saved
+
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');
     $i->seeElement('[data-automation-id="editor_first_name_input"]');
     $i->seeElement('[data-automation-id="editor_last_name_input"]');
 
-    // Go to post page
+    $i->wantTo('Go to post page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
 
-    // Subscribe using the form
+    $i->wantTo('Subscribe using the form');
     $subscriberEmail = "subscriber_columns@example.com";
     $subscriberFirstName = "subscriber_columns_first_name";
     $subscriberLastName = "subscriber_columns_last_name";
@@ -55,7 +56,7 @@ class FormWithColumnsCest {
     $i->click('[data-automation-id="subscribe-submit-button"]');
     $i->waitForText($formMessage);
 
-    // Check subscriber data were saved
+    $i->wantTo('Check subscriber data were saved');
     $i->amOnMailpoetPage('Subscribers');
     $i->waitForText($subscriberEmail);
     $i->waitForText($subscriberFirstName);
@@ -63,7 +64,7 @@ class FormWithColumnsCest {
   }
 
   private function addFieldInColumn(\AcceptanceTester $i, $name) {
-    $i->click('//div[@class="block-list-appender"][1]');
+    $i->click('(//button[@class="components-button block-editor-button-block-appender"])[1]');
     $i->fillField('.block-editor-inserter__search-input', $name);
     $i->waitForText($name, 5, '.block-editor-block-types-list__item-title');
     $i->click($name, '.block-editor-block-types-list__list-item');
