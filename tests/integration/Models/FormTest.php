@@ -44,22 +44,25 @@ class FormTest extends \MailPoetTest {
 
   public function testItCanBeSearched() {
     $form = Form::filter('search', 'my F')->findOne();
+    assert($form instanceof Form);
     expect($form->name)->equals('My Form');
   }
 
   public function testItHasACreatedAtOnCreation() {
     $form = Form::findOne($this->form->id);
+    assert($form instanceof Form);
     expect($form->createdAt)->notNull();
   }
 
   public function testItHasAnUpdatedAtOnCreation() {
     $form = Form::findOne($this->form->id);
-    expect($form->updatedAt)
-      ->equals($form->createdAt);
+    assert($form instanceof Form);
+    expect($form->updatedAt)->equals($form->createdAt);
   }
 
   public function testItUpdatesTheUpdatedAtOnUpdate() {
     $form = Form::findOne($this->form->id);
+    assert($form instanceof Form);
     $createdAt = $form->createdAt;
 
     sleep(1);
@@ -68,6 +71,7 @@ class FormTest extends \MailPoetTest {
     $form->save();
 
     $updatedForm = Form::findOne($form->id);
+    assert($updatedForm instanceof Form);
     expect($updatedForm->createdAt)->equals($createdAt);
     $isTimeUpdated = (
       $updatedForm->updatedAt > $updatedForm->createdAt
@@ -83,6 +87,7 @@ class FormTest extends \MailPoetTest {
     expect($createdForm->getErrors())->false();
 
     $form = Form::findOne($createdForm->id);
+    assert($form instanceof Form);
     expect($form->name)->equals('Created Form');
 
     $isUpdated = Form::createOrUpdate([
@@ -90,6 +95,7 @@ class FormTest extends \MailPoetTest {
       'name' => 'Updated Form',
     ]);
     $form = Form::findOne($createdForm->id);
+    assert($form instanceof Form);
     expect($form->name)->equals('Updated Form');
   }
 
@@ -148,8 +154,12 @@ class FormTest extends \MailPoetTest {
     ]);
     $this->settings->set('signup_confirmation.enabled', '0');
     Form::updateSuccessMessages();
-    $default = Form::findOne($default->id)->asArray();
-    $custom = Form::findOne($custom->id)->asArray();
+    $default = Form::findOne($default->id);
+    $custom = Form::findOne($custom->id);
+    assert($default instanceof Form);
+    assert($custom instanceof Form);
+    $default = $default->asArray();
+    $custom = $custom->asArray();
     expect($default['settings']['success_message'])->equals('You’ve been successfully subscribed to our newsletter!');
     expect($custom['settings']['success_message'])->equals('Thanks for joining us!');
   }
@@ -165,8 +175,12 @@ class FormTest extends \MailPoetTest {
     ]);
     $this->settings->set('signup_confirmation.enabled', '1');
     Form::updateSuccessMessages();
-    $default = Form::findOne($default->id)->asArray();
-    $custom = Form::findOne($custom->id)->asArray();
+    $default = Form::findOne($default->id);
+    $custom = Form::findOne($custom->id);
+    assert($default instanceof Form);
+    assert($custom instanceof Form);
+    $default = $default->asArray();
+    $custom = $custom->asArray();
     expect($default['settings']['success_message'])->equals('Check your inbox or spam folder to confirm your subscription.');
     expect($custom['settings']['success_message'])->equals('Thanks for joining us!');
   }

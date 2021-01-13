@@ -249,6 +249,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
 
     // check that we have the proper status
     $created = SubscriberSegment::findOne($result->id);
+    assert($created instanceof SubscriberSegment);
     expect($created->status)->equals(Subscriber::STATUS_SUBSCRIBED);
 
     // update same combination of subscriber/segment with a different status
@@ -262,6 +263,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
 
     // check updated status
     $updated = SubscriberSegment::findOne($created->id);
+    assert($updated instanceof SubscriberSegment);
     expect($updated->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
 
     // we should have only one relationship for that user

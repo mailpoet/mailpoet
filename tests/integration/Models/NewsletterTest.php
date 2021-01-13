@@ -62,33 +62,38 @@ class NewsletterTest extends \MailPoetTest {
 
   public function testItHasASubject() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
+    assert($newsletter instanceof Newsletter);
     expect($newsletter->subject)->equals($this->newsletter->subject);
   }
 
   public function testItHasAType() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
+    assert($newsletter instanceof Newsletter);
     expect($newsletter->type)->equals($this->newsletter->type);
   }
 
   public function testItHasABody() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
+    assert($newsletter instanceof Newsletter);
     expect($newsletter->body)->equals($this->newsletter->body);
   }
 
   public function testItHasPreheader() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
+    assert($newsletter instanceof Newsletter);
     expect($newsletter->preheader)->equals($this->newsletter->preheader);
   }
 
   public function testItHasACreatedAtOnCreation() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
+    assert($newsletter instanceof Newsletter);
     expect($newsletter->createdAt)->notNull();
   }
 
   public function testItHasAnUpdatedAtOnCreation() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
-    expect($newsletter->updatedAt)
-      ->equals($newsletter->createdAt);
+    assert($newsletter instanceof Newsletter);
+    expect($newsletter->updatedAt)->equals($newsletter->createdAt);
   }
 
   public function testItUpdatesTheUpdatedAtOnUpdate() {
@@ -102,6 +107,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->save();
 
     $updatedNewsletter = Newsletter::findOne($newsletter->id);
+    assert($updatedNewsletter instanceof Newsletter);
     expect($updatedNewsletter->createdAt)->equals($createdAt);
     $isTimeUpdated = (
       $updatedNewsletter->updatedAt > $updatedNewsletter->createdAt
@@ -160,6 +166,7 @@ class NewsletterTest extends \MailPoetTest {
 
     $newsletter = Newsletter::where('subject', 'new newsletter')
       ->findOne();
+    assert($newsletter instanceof Newsletter);
     expect($newsletter->subject)->equals('new newsletter');
 
     $isUpdated = Newsletter::createOrUpdate(
@@ -168,6 +175,7 @@ class NewsletterTest extends \MailPoetTest {
         'subject' => 'updated newsletter',
       ]);
     $newsletter = Newsletter::findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     expect($newsletter->subject)->equals('updated newsletter');
   }
 
@@ -192,6 +200,7 @@ class NewsletterTest extends \MailPoetTest {
     $association->save();
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
       ->findOne($this->newsletter->id);
+    assert($newsletter instanceof Newsletter);
     expect($newsletter->event)->equals($association->value);
   }
 
@@ -548,6 +557,7 @@ class NewsletterTest extends \MailPoetTest {
 
     // if meta option exists, it should be returned as an array
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
+    assert($newsletter instanceof Newsletter);
     expect($newsletter->getMeta())->equals($meta);
   }
 
@@ -564,6 +574,7 @@ class NewsletterTest extends \MailPoetTest {
       ]);
       $newsletter->setStatus(Newsletter::STATUS_DRAFT);
       $taskFound = ScheduledTask::findOne($task->id());
+      assert($taskFound instanceof ScheduledTask);
       expect($taskFound->status)->equals(ScheduledTask::STATUS_PAUSED);
     }
   }
@@ -585,6 +596,7 @@ class NewsletterTest extends \MailPoetTest {
       ]);
       $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
       $taskFound = ScheduledTask::findOne($task->id());
+      assert($taskFound instanceof ScheduledTask);
       expect($taskFound->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     }
   }
