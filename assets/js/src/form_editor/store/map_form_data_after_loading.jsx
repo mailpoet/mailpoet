@@ -155,5 +155,16 @@ export default function mapFormDataAfterLoading(data) {
     mapped.settings.formPlacement.others.styles.width.value
   );
 
+  // Cleanup unused properties
+  delete mapped.settings.border_radius;
+  delete mapped.settings.border_size;
+  delete mapped.settings.border_color;
+  delete mapped.settings.input_padding;
+  delete mapped.settings.form_padding;
+  delete mapped.settings.close_button;
+  delete mapped.settings.font_family;
+  delete mapped.settings.background_image_display;
+  delete mapped.settings.background_image_url;
+
   return mapped;
 }
