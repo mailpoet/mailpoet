@@ -130,6 +130,7 @@ export default function mapFormDataAfterLoading(data) {
         : defaults.formStyles.inputPadding,
       borderColor: data.settings.border_color,
       fontFamily: data.settings.font_family,
+      fontSize: data.settings.fontSize && asNum(data.settings.fontSize),
       successValidationColor: data.settings.success_validation_color,
       errorValidationColor: data.settings.error_validation_color,
       backgroundImageUrl: data.settings.background_image_url,

@@ -157,5 +157,28 @@ describe('Form Data Load Mapper', () => {
       expect(map(data).settings.formPlacement.popup).to.have.property('animation').that.eq('slideup');// default
       expect(map(data).settings.formPlacement.belowPosts).to.not.have.property('animation');
     });
+
+    it('It ensures fontSize is an integer', () => {
+      const mapData = {
+        ...data,
+        settings: {
+          ...data.settings,
+          fontSize: '23',
+        },
+      };
+      expect(map(mapData).settings.fontSize).to.equal(23);
+
+      mapData.settings.fontSize = undefined;
+      expect(map(mapData).settings.fontSize).to.be.undefined;
+
+      mapData.settings.fontSize = 13;
+      expect(map(mapData).settings.fontSize).to.equal(13);
+
+      mapData.settings.fontSize = 13.5;
+      expect(map(mapData).settings.fontSize).to.equal(13);
+
+      mapData.settings.fontSize = 'hello';
+      expect(map(mapData).settings.fontSize).to.be.undefined;
+    });
   });
 });
