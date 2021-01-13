@@ -81,6 +81,7 @@ const CustomFieldSettings = ({
       >
         {MailPoet.I18n.t('customFieldAddItem')}
       </Button>
+      <br />
       {onSave ? (
         <Button
           isPrimary
