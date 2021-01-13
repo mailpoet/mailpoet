@@ -24,6 +24,7 @@ class ImportExportTest extends \MailPoetTest {
     $response = $this->endpoint->setupWooCommerceInitialImport();
     expect($response->status)->equals(200);
     $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->findOne();
+    assert($task instanceof ScheduledTask);
     expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     $now = time();
     $scheduledAt = new Carbon($task->scheduledAt);
@@ -36,6 +37,7 @@ class ImportExportTest extends \MailPoetTest {
     $this->createTask(WooCommerceSync::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED, $originalSchedule);
     $this->endpoint->setupWooCommerceInitialImport();
     $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->findOne();
+    assert($task instanceof ScheduledTask);
     expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     $now = time();
     $scheduledAt = new Carbon($task->scheduledAt);
@@ -49,6 +51,7 @@ class ImportExportTest extends \MailPoetTest {
     $this->createTask(WooCommerceSync::TASK_TYPE, null);
     $this->endpoint->setupWooCommerceInitialImport();
     $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->findOne();
+    assert($task instanceof ScheduledTask);
     expect($task->status)->equals(null);
     $taskCount = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->count();
     expect($taskCount)->equals(1);

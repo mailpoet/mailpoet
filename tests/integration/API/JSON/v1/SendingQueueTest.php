@@ -54,6 +54,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueue = $this->diContainer->get(SendingQueueAPI::class);
     $result = $sendingQueue->add(['newsletter_id' => $newsletter->id]);
     $scheduledTask = ScheduledTask::findOne($result->data['task_id']);
+    assert($scheduledTask instanceof ScheduledTask);
     expect($scheduledTask->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     expect($scheduledTask->scheduledAt)->equals($newletterOptions['scheduledAt']);
     expect($scheduledTask->type)->equals(Sending::TASK_TYPE);
@@ -90,6 +91,7 @@ class SendingQueueTest extends \MailPoetTest {
     // add scheduled task
     $result = $sendingQueue->add(['newsletter_id' => $newsletter->id]);
     $scheduledTask = ScheduledTask::findOne($result->data['task_id']);
+    assert($scheduledTask instanceof ScheduledTask);
     expect($scheduledTask->scheduledAt)->equals('2018-10-10 10:00:00');
 
     // update scheduled time
@@ -103,6 +105,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $result = $sendingQueue->add(['newsletter_id' => $newsletter->id]);
     $rescheduledTask = ScheduledTask::findOne($result->data['task_id']);
+    assert($rescheduledTask instanceof ScheduledTask);
     // new task was not created
     expect($rescheduledTask->id)->equals($scheduledTask->id);
     // scheduled time was updated

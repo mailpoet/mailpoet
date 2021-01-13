@@ -199,14 +199,17 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
     $taskSubscriber = ScheduledTaskSubscriber::where('task_id', $this->taskId)
       ->where('subscriber_id', $this->failedSubscriber->id)
       ->findOne();
+    assert($taskSubscriber instanceof ScheduledTaskSubscriber);
     expect($taskSubscriber->error)->equals('');
     expect($taskSubscriber->failed)->equals(0);
     expect($taskSubscriber->processed)->equals(0);
 
     $task = ScheduledTask::findOne($this->taskId);
+    assert($task instanceof ScheduledTask);
     expect($task->status)->equals(null);
 
     $newsletter = Newsletter::findOne($this->newsletterId);
+    assert($newsletter instanceof Newsletter);
     expect($newsletter->status)->equals(Newsletter::STATUS_SENDING);
   }
 
