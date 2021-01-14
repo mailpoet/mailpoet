@@ -49,8 +49,8 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->currentTime = Carbon::createFromTimestamp((new WPFunctions())->currentTime('timestamp'));
     Carbon::setTestNow($this->currentTime);
 
-    // @phpstan-ignore-next-line
-    $this->wp = $this->makeEmpty(WPFunctions::class, [
+    /** @var WPFunctions|MockObject $wp - for phpstan */
+    $wp = $this->makeEmpty(WPFunctions::class, [
       'currentTime' => function ($arg) {
         if ($arg === 'timestamp') {
           return $this->currentTime->getTimestamp();
@@ -59,18 +59,21 @@ class AbandonedCartTest extends \MailPoetTest {
         }
       },
     ]);
+    $this->wp = $wp;
     WPFunctions::set($this->wp);
 
     $this->wooCommerceMock = $this->mockWooCommerceClass(WooCommerce::class, []);
     $this->wooCommerceCartMock = $this->mockWooCommerceClass(WC_Cart::class, ['is_empty', 'get_cart']);
     $this->wooCommerceMock->cart = $this->wooCommerceCartMock;
-    // @phpstan-ignore-next-line
-    $this->wooCommerceHelperMock = $this->make(WooCommerceHelper::class, [
+    /** @var WooCommerceHelper|MockObject $wooCommerceHelperMock - for phpstan */
+    $wooCommerceHelperMock = $this->make(WooCommerceHelper::class, [
       'isWooCommerceActive' => true,
       'WC' => $this->wooCommerceMock,
     ]);
-    // @phpstan-ignore-next-line
-    $this->pageVisitTrackerMock = $this->makeEmpty(AbandonedCartPageVisitTracker::class);
+    $this->wooCommerceHelperMock = $wooCommerceHelperMock;
+    /** @var AbandonedCartPageVisitTracker|MockObject $pageVisitTrackerMock - for phpstan */
+    $pageVisitTrackerMock = $this->makeEmpty(AbandonedCartPageVisitTracker::class);
+    $this->pageVisitTrackerMock = $pageVisitTrackerMock;
   }
 
   public function testItGetsEventDetails() {
