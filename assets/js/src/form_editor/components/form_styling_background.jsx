@@ -100,7 +100,10 @@ const FormStylingBackground = ({ children }) => {
       width: style.width,
       margin: '0 auto',
     };
-    style.width = '100%';
+    style.width = 'max-content';
+    style.minWidth = '100%';
+    style.maxWidth = 'auto';
+
     return (
       <div className="mailpoet-form-background" style={style}>
         <div style={innerStyle}>
