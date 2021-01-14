@@ -33,7 +33,11 @@ abstract class KeyCheckWorker extends SimpleWorker {
 
   public function getNextRunDate() {
     $date = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-    return $date->startOfDay()->addDay();
+    return $date->startOfDay()
+      ->addDay()
+      ->addHours(rand(0, 5))
+      ->addMinutes(rand(0, 59))
+      ->addSeconds(rand(0, 59));
   }
 
   public abstract function checkKey();
