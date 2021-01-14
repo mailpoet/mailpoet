@@ -15,7 +15,6 @@ MailPoet done the right way.
 - PHP 7.0
 - NodeJS
 - WordPress
-- Docker & Docker Compose
 
 ## Installation
 ```bash
