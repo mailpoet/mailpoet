@@ -69,6 +69,31 @@ class KeyCheckWorkerTest extends \MailPoetTest {
     expect($result)->false();
   }
 
+  public function testItNextRunIsNextDay(): void {
+    $dateTime = Carbon::now();
+    $wp = Stub::make(new WPFunctions, [
+      'currentTime' => function($format) use ($dateTime) {
+        return $dateTime->getTimestamp();
+      },
+    ]);
+
+    $worker = Stub::make(
+      $this->worker,
+      [
+        'checkKey' => ['code' => Bridge::CHECK_ERROR_UNAVAILABLE],
+        'wp' => $wp,
+      ],
+      $this
+    );
+
+    /** @var Carbon $nextRunDate */
+    $nextRunDate = $worker->getNextRunDate();
+    $secondsToMidnight = $dateTime->diffInSeconds($dateTime->copy()->startOfDay()->addDay());
+
+    // next run should be planned in 6 hours after midnight
+    expect($nextRunDate->diffInSeconds($dateTime))->lessOrEquals(21600 + $secondsToMidnight);
+  }
+
   private function createRunningTask() {
     $task = ScheduledTask::create();
     $task->type = MockKeyCheckWorker::TASK_TYPE;
