@@ -17,7 +17,7 @@ class DatabaseTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    ORM::set_db(null); // @phpstan-ignore-line
+    ORM::reset_db();
   }
 
   public function testItDefinesTables() {

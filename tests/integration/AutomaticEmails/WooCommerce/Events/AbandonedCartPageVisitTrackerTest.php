@@ -28,10 +28,11 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
     $this->currentTime = Carbon::now();
     Carbon::setTestNow($this->currentTime);
 
-    // @phpstan-ignore-next-line
-    $this->wp = $this->makeEmpty(WPFunctions::class, [
+    /** @var WPFunctions|MockObject $wp - for phpstan*/
+    $wp = $this->makeEmpty(WPFunctions::class, [
       'currentTime' => $this->currentTime->getTimestamp(),
     ]);
+    $this->wp = $wp;
 
     $wooCommerceMock = $this->mockWooCommerceClass(WooCommerce::class, []);
     $wooCommerceMock->session = $this->createWooCommerceSessionMock();
