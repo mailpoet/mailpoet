@@ -19,6 +19,12 @@
   overflow: hidden;
 }
 
+// Fix for fixed bar forms
+// This will prevent editor width to grow and push sidebar out of the screen
+.interface-interface-skeleton__editor {
+  max-width: 100%;
+}
+
 // Fix for settings toolbar placement in header
 .edit-post-header {
   flex-direction: row-reverse;
