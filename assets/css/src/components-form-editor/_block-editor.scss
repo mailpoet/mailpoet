@@ -17,6 +17,11 @@
 .interface-interface-skeleton__body,
 .is-sidebar-opened .interface-interface-skeleton__sidebar {
   overflow: hidden;
+  padding-bottom: 0;
+}
+
+.edit-post-layout .interface-interface-skeleton__content {
+  background-color: $color-white;
 }
 
 // Fix for fixed bar forms
