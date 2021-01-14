@@ -17,6 +17,9 @@ MailPoet done the right way.
 - WordPress
 
 ## Installation
+
+The instructions below assume you already have a working WordPress development environment.
+
 ```bash
 # go to WP plugins directory
 $ cd path_to_wp_directory/wp-content/plugins
