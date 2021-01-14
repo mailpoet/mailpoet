@@ -83,6 +83,7 @@ class PurchasedProduct {
     ];
     $woocommerceProducts = new \WP_Query($args);
     $woocommerceProducts = $woocommerceProducts->get_posts();
+    /** @var \WP_Post[] $woocommerceProducts */
     if (empty($woocommerceProducts)) {
       $this->loggerFactory->getLogger(self::SLUG)->addInfo(
         'no products found', ['search_query' => $productSearchQuery]
@@ -91,7 +92,6 @@ class PurchasedProduct {
     }
 
     $woocommerceProducts = array_map(function($product) {
-      assert($product instanceof \WP_Post);
       return [
         'id' => $product->ID,
         'name' => $product->post_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
