@@ -4,11 +4,10 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\ServicesChecker;
-use MailPoet\DynamicSegments\FreePluginConnectors\AddToNewslettersSegments;
 use MailPoet\Form\Block;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\CustomField;
-use MailPoet\Models\Segment;
+use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -34,8 +33,8 @@ class Subscribers {
   /** @var ServicesChecker */
   private $servicesChecker;
 
-  /** @var AddToNewslettersSegments */
-  private $dynamicSegmentsLoader;
+  /** @var SegmentSubscribersRepository */
+  private $segmentSubscribersRepository;
 
   public function __construct(
     PageRenderer $pageRenderer,
@@ -44,7 +43,7 @@ class Subscribers {
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
     Block\Date $dateBlock,
-    AddToNewslettersSegments $dynamicSegmentsLoader
+    SegmentSubscribersRepository $segmentSubscribersRepository
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -52,19 +51,14 @@ class Subscribers {
     $this->wp = $wp;
     $this->dateBlock = $dateBlock;
     $this->servicesChecker = $servicesChecker;
-    $this->dynamicSegmentsLoader = $dynamicSegmentsLoader;
+    $this->segmentSubscribersRepository = $segmentSubscribersRepository;
   }
 
   public function render() {
     $data = [];
 
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('subscribers');
-    $segments = Segment::getSegmentsWithSubscriberCount($type = false);
-    $segments = $this->dynamicSegmentsLoader->add($segments);
-    usort($segments, function ($a, $b) {
-      return strcasecmp($a["name"], $b["name"]);
-    });
-    $data['segments'] = $segments;
+    $data['segments'] = $this->segmentSubscribersRepository->getSimpleSegmentListWithSubscribersCounts();
 
     $data['custom_fields'] = array_map(function($field) {
       $field['params'] = unserialize($field['params']);
