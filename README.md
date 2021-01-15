@@ -12,7 +12,7 @@ MailPoet done the right way.
 # Setup
 
 ## Requirements
-- PHP 7.0
+- PHP >= 7.3 (only for the development environment, to run the plugin PHP >= 7.1 is required)
 - NodeJS
 - WordPress
 
