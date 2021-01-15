@@ -9,7 +9,7 @@ Developers integrating MailPoet functionality in their own plugins or projects a
 
 ### Basics
 MailPoet API is distributed within MailPoet3 plugin and it is implemented as a PHP class.
-Currently supported version is `v1` and it works with PHP version 5.6 and higher.
+Currently supported version is `v1`.
 
 ### Instantiation
 ```php
