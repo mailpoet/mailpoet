@@ -8,12 +8,11 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
-use MailPoet\DynamicSegments\FreePluginConnectors\AddToNewslettersSegments;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\Segment;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
+use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
@@ -60,14 +59,14 @@ class Newsletters {
   /** @var NewsletterTemplatesRepository */
   private $newsletterTemplatesRepository;
 
-  /** @var AddToNewslettersSegments */
-  private $addToNewslettersSegments;
-
   /** @var AutomaticEmails */
   private $automaticEmails;
 
   /** @var WPPostListLoader */
   private $wpPostListLoader;
+
+  /** @var SegmentSubscribersRepository */
+  private $segmentSubscribersRepository;
 
   public function __construct(
     PageRenderer $pageRenderer,
@@ -81,9 +80,9 @@ class Newsletters {
     SubscribersFeature $subscribersFeature,
     ServicesChecker $servicesChecker,
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
-    AddToNewslettersSegments $addToNewslettersSegments,
     WPPostListLoader $wpPostListLoader,
-    AutomaticEmails $automaticEmails
+    AutomaticEmails $automaticEmails,
+    SegmentSubscribersRepository $segmentSubscribersRepository
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -96,9 +95,9 @@ class Newsletters {
     $this->subscribersFeature = $subscribersFeature;
     $this->servicesChecker = $servicesChecker;
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
-    $this->addToNewslettersSegments = $addToNewslettersSegments;
     $this->automaticEmails = $automaticEmails;
     $this->wpPostListLoader = $wpPostListLoader;
+    $this->segmentSubscribersRepository = $segmentSubscribersRepository;
   }
 
   public function render() {
@@ -116,11 +115,7 @@ class Newsletters {
     $data = [];
 
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('newsletters');
-    $segments = Segment::getSegmentsWithSubscriberCount($type = false);
-    $segments = $this->addToNewslettersSegments->add($segments);
-    usort($segments, function ($a, $b) {
-      return strcasecmp($a["name"], $b["name"]);
-    });
+    $segments = $this->segmentSubscribersRepository->getSimpleSegmentListWithSubscribersCounts();
     $data['segments'] = $segments;
     $data['settings'] = $this->settings->getAll();
     $data['mss_active'] = Bridge::isMPSendingServiceEnabled();
