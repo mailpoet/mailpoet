@@ -59,7 +59,7 @@ class SegmentSubscribersRepository {
    * This method is fetches list of all segments basic data and count of subscribed subscribers.
    * @return array<array{id: string, name: string, type: string, subscribers: int}>
    */
-  public function getSimpleSegmentListWithSubscribersCounts(): array {
+  public function getSimpleSegmentListWithSubscribersCounts(string $type = null): array {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscribersSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
@@ -82,6 +82,13 @@ class SegmentSubscribersRepository {
       ->addGroupBy('segments.type')
       ->orderBy('segments.name')
       ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
+
+    if ($type) {
+      $segmentsDataQuery
+        ->andWhere('segments.type = :typeParam')
+        ->setParameter('typeParam', $type);
+    }
+
     $statement = $this->executeQuery($segmentsDataQuery);
     $segments = $statement->fetchAll();
 
