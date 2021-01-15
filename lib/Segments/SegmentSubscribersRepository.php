@@ -55,6 +55,47 @@ class SegmentSubscribersRepository {
     return (int)$result;
   }
 
+  /**
+   * This method is fetches list of all segments basic data and count of subscribed subscribers.
+   * @return array<array{id: string, name: string, type: string, subscribers: int}>
+   */
+  public function getSimpleSegmentListWithSubscribersCounts(): array {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $subscribersSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+
+    $segmentsDataQuery = $this->entityManager
+      ->getConnection()
+      ->createQueryBuilder()
+      ->select(
+        "segments.id, segments.name, segments.type, COUNT(IF(
+        subsegments.status = :statusSubscribed
+        AND subscribers.deleted_at IS NULL
+        AND subscribers.status= :statusSubscribed
+        , 1, NULL)) as subscribers"
+      )->from($segmentsTable, 'segments')
+      ->leftJoin('segments', $subscribersSegmentsTable, 'subsegments', "subsegments.segment_id = segments.id")
+      ->leftJoin('subsegments', $subscribersTable, 'subscribers', "subscribers.id = subsegments.subscriber_id")
+      ->where('segments.deleted_at IS NULL')
+      ->groupBy('segments.id')
+      ->addGroupBy('segments.name')
+      ->addGroupBy('segments.type')
+      ->orderBy('segments.name')
+      ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
+    $statement = $this->executeQuery($segmentsDataQuery);
+    $segments = $statement->fetchAll();
+
+    // Fetch subscribers counts for dynamic segments and correct data types
+    foreach ($segments as $key => $segment) {
+      if ($segment['type'] === SegmentEntity::TYPE_DYNAMIC) {
+        $segments[$key]['subscribers'] = $this->getSubscribersCount((int)$segment['id'], SubscriberEntity::STATUS_SUBSCRIBED);
+      } else {
+        $segments[$key]['subscribers'] = (int)$segment['subscribers'];
+      }
+    }
+    return $segments;
+  }
+
   private function loadSubscriberIdsInSegment(int $segmentId, array $candidateIds = null): array {
     $segment = $this->getSegment($segmentId);
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
