@@ -5,6 +5,10 @@
   line-height: $line-height;
 }
 
+.admin_page_mailpoet-form-editor #wpbody {
+  color: inherit;
+}
+
 a {
   text-decoration: underline;
 
