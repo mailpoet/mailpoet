@@ -9,7 +9,9 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 
 class ImportExportFactoryTest extends \MailPoetTest {
+  /** @var ImportExportFactory */
   public $exportFactory;
+  /** @var ImportExportFactory */
   public $importFactory;
 
   public function _before() {
