@@ -11,7 +11,6 @@ import NewsletterTypes from 'newsletters/types.jsx';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
-import Hooks from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 
@@ -101,7 +100,7 @@ const bulkActions = [
   },
 ];
 
-const newsletterActions = [
+let newsletterActions = [
   {
     name: 'view',
     link: function link(newsletter) {
@@ -152,7 +151,7 @@ const newsletterActions = [
   },
 ];
 
-Hooks.addFilter('mailpoet_newsletters_listings_automatic_email_actions', 'mailpoet', addStatsCTAAction);
+newsletterActions = addStatsCTAAction(newsletterActions);
 
 class Listings extends React.Component {
   constructor(props) {
