@@ -74,23 +74,27 @@ class SegmentSubscribersRepository {
   }
 
   /**
-   * This method is fetches list of all segments basic data and count of subscribed subscribers.
+   * This method is fetches list of all segments basic data and count of subscribers.
    * @return array<array{id: string, name: string, type: string, subscribers: int}>
    */
-  public function getSimpleSegmentListWithSubscribersCounts(string $type = null): array {
+  public function getSimpleSegmentListWithSubscribersCounts(
+    string $segmentType = null,
+    string $subscriberStatus = SubscriberEntity::STATUS_SUBSCRIBED
+  ): array {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscribersSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+
+    $countCondition = "subscribers.deleted_at IS NULL";
+    if ($subscriberStatus) {
+      $countCondition .= " AND subscribers.status= :subscriberStatus AND subsegments.status = :subscriberStatus";
+    }
 
     $segmentsDataQuery = $this->entityManager
       ->getConnection()
       ->createQueryBuilder()
       ->select(
-        "segments.id, segments.name, segments.type, COUNT(IF(
-        subsegments.status = :statusSubscribed
-        AND subscribers.deleted_at IS NULL
-        AND subscribers.status= :statusSubscribed
-        , 1, NULL)) as subscribers"
+        "segments.id, segments.name, segments.type, COUNT(IF($countCondition, 1, NULL)) as subscribers"
       )->from($segmentsTable, 'segments')
       ->leftJoin('segments', $subscribersSegmentsTable, 'subsegments', "subsegments.segment_id = segments.id")
       ->leftJoin('subsegments', $subscribersTable, 'subscribers', "subscribers.id = subsegments.subscriber_id")
@@ -98,13 +102,16 @@ class SegmentSubscribersRepository {
       ->groupBy('segments.id')
       ->addGroupBy('segments.name')
       ->addGroupBy('segments.type')
-      ->orderBy('segments.name')
-      ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
+      ->orderBy('segments.name');
 
-    if ($type) {
+    if ($subscriberStatus) {
+      $segmentsDataQuery->setParameter('subscriberStatus', $subscriberStatus);
+    }
+
+    if ($segmentType) {
       $segmentsDataQuery
         ->andWhere('segments.type = :typeParam')
-        ->setParameter('typeParam', $type);
+        ->setParameter('typeParam', $segmentType);
     }
 
     $statement = $this->executeQuery($segmentsDataQuery);

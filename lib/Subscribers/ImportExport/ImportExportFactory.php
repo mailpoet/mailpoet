@@ -3,10 +3,8 @@
 namespace MailPoet\Subscribers\ImportExport;
 
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\DynamicSegments\FreePluginConnectors\AddToNewslettersSegments;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Models\CustomField;
-use MailPoet\Models\Segment;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Util\Helpers;
 
@@ -17,35 +15,37 @@ class ImportExportFactory {
   /** @var string|null  */
   public $action;
 
-  /** @var AddToNewslettersSegments */
-  private $addToNewslettersSegments;
-
   /** @var SegmentSubscribersRepository */
   private $segmentSubscribersRepository;
 
   public function __construct($action = null) {
     $this->action = $action;
-    $this->addToNewslettersSegments = ContainerWrapper::getInstance()->get(AddToNewslettersSegments::class);
     $this->segmentSubscribersRepository = ContainerWrapper::getInstance()->get(SegmentSubscribersRepository::class);
   }
 
   public function getSegments() {
-    $segments = $this->segmentSubscribersRepository->getSimpleSegmentListWithSubscribersCounts();
+
     if ($this->action === self::IMPORT_ACTION) {
+      $segments = $this->segmentSubscribersRepository->getSimpleSegmentListWithSubscribersCounts();
       $segments = array_values(array_filter($segments, function($segment) {
         return in_array($segment['type'], [SegmentEntity::TYPE_DEFAULT, SegmentEntity::TYPE_WP_USERS]);
       }));
     } else {
-      $segments = Segment::getSegmentsForExport();
-      $segments = $this->addToNewslettersSegments->add($segments);
+      $segments = $this->segmentSubscribersRepository->getSimpleSegmentListWithSubscribersCounts(null, '');
       $segments = array_values(array_filter($segments, function($segment) {
         return $segment['subscribers'] > 0;
       }));
+      $withoutSegmentCount = $this->segmentSubscribersRepository->getSubscribersWithoutSegmentCount();
+      if ($withoutSegmentCount) {
+        $segments[] = [
+          'id' => 0,
+          'name' => __('Not in a List', 'mailpoet'),
+          'subscribers' => $withoutSegmentCount,
+        ];
+      }
     }
 
     return array_map(function($segment) {
-      if (!$segment['name']) $segment['name'] = __('Not In List', 'mailpoet');
-      if (!$segment['id']) $segment['id'] = 0;
       return [
         'id' => $segment['id'],
         'name' => $segment['name'],
