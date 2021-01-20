@@ -233,12 +233,14 @@ class SubscriberListingRepository extends ListingRepository {
 
     $queryBuilder = clone $this->queryBuilder;
     $this->applyFromClause($queryBuilder);
+    $subscribersWithoutSegmentQuery = $this->segmentSubscribersRepository->getSubscribersWithoutSegmentCountQuery();
 
     if ($group) {
       $this->applyGroup($queryBuilder, $group);
+      $this->applyGroup($subscribersWithoutSegmentQuery, $group);
     }
 
-    $subscribersWithoutSegment = $this->segmentSubscribersRepository->getSubscribersWithoutSegmentCount();
+    $subscribersWithoutSegment = $subscribersWithoutSegmentQuery->getQuery()->getSingleScalarResult();
     $subscribersWithoutSegmentLabel = sprintf(
       WPFunctions::get()->__('Subscribers without a list (%s)', 'mailpoet'),
       number_format((float)$subscribersWithoutSegment)
