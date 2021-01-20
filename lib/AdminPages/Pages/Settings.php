@@ -6,7 +6,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
@@ -38,8 +38,8 @@ class Settings {
   /** @var Installation */
   private $installation;
 
-  /** @var SegmentSubscribersRepository */
-  private $segmentSubscribersRepository;
+  /** @var SegmentsSimpleListRepository */
+  private $segmentsListRepository;
 
   public function __construct(
     PageRenderer $pageRenderer,
@@ -49,7 +49,7 @@ class Settings {
     ServicesChecker $servicesChecker,
     Installation $installation,
     Captcha $captcha,
-    SegmentSubscribersRepository $segmentSubscribersRepository
+    SegmentsSimpleListRepository $segmentsListRepository
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->settings = $settings;
@@ -58,7 +58,7 @@ class Settings {
     $this->servicesChecker = $servicesChecker;
     $this->installation = $installation;
     $this->captcha = $captcha;
-    $this->segmentSubscribersRepository = $segmentSubscribersRepository;
+    $this->segmentsListRepository = $segmentsListRepository;
   }
 
   public function render() {
@@ -72,7 +72,7 @@ class Settings {
 
     $data = [
       'settings' => $settings,
-      'segments' => $this->segmentSubscribersRepository->getSimpleSegmentListWithSubscribersCounts(SegmentEntity::TYPE_DEFAULT),
+      'segments' => $this->segmentsListRepository->getListWithSubscribedSubscribersCounts([SegmentEntity::TYPE_DEFAULT]),
       'premium_key_valid' => !empty($premiumKeyValid),
       'mss_key_valid' => !empty($mpApiKeyValid),
       'pages' => Pages::getAll(),

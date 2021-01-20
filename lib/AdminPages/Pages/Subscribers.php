@@ -7,7 +7,7 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Form\Block;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\CustomField;
-use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -33,8 +33,8 @@ class Subscribers {
   /** @var ServicesChecker */
   private $servicesChecker;
 
-  /** @var SegmentSubscribersRepository */
-  private $segmentSubscribersRepository;
+  /** @var SegmentsSimpleListRepository */
+  private $segmentsListRepository;
 
   public function __construct(
     PageRenderer $pageRenderer,
@@ -43,7 +43,7 @@ class Subscribers {
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
     Block\Date $dateBlock,
-    SegmentSubscribersRepository $segmentSubscribersRepository
+    SegmentsSimpleListRepository $segmentsListRepository
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -51,14 +51,14 @@ class Subscribers {
     $this->wp = $wp;
     $this->dateBlock = $dateBlock;
     $this->servicesChecker = $servicesChecker;
-    $this->segmentSubscribersRepository = $segmentSubscribersRepository;
+    $this->segmentsListRepository = $segmentsListRepository;
   }
 
   public function render() {
     $data = [];
 
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('subscribers');
-    $data['segments'] = $this->segmentSubscribersRepository->getSimpleSegmentListWithSubscribersCounts();
+    $data['segments'] = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts();
 
     $data['custom_fields'] = array_map(function($field) {
       $field['params'] = unserialize($field['params']);
