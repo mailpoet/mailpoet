@@ -5,7 +5,7 @@ namespace MailPoet\Subscribers\ImportExport;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Models\CustomField;
-use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Util\Helpers;
 
 class ImportExportFactory {
@@ -15,34 +15,23 @@ class ImportExportFactory {
   /** @var string|null  */
   public $action;
 
-  /** @var SegmentSubscribersRepository */
-  private $segmentSubscribersRepository;
+  /** @var SegmentsSimpleListRepository */
+  private $segmentsListRepository;
 
   public function __construct($action = null) {
     $this->action = $action;
-    $this->segmentSubscribersRepository = ContainerWrapper::getInstance()->get(SegmentSubscribersRepository::class);
+    $this->segmentsListRepository = ContainerWrapper::getInstance()->get(SegmentsSimpleListRepository::class);
   }
 
   public function getSegments() {
-
     if ($this->action === self::IMPORT_ACTION) {
-      $segments = $this->segmentSubscribersRepository->getSimpleSegmentListWithSubscribersCounts();
-      $segments = array_values(array_filter($segments, function($segment) {
-        return in_array($segment['type'], [SegmentEntity::TYPE_DEFAULT, SegmentEntity::TYPE_WP_USERS]);
-      }));
+      $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts([SegmentEntity::TYPE_DEFAULT, SegmentEntity::TYPE_WP_USERS]);
     } else {
-      $segments = $this->segmentSubscribersRepository->getSimpleSegmentListWithSubscribersCounts(null, '');
+      $segments = $this->segmentsListRepository->getListWithAssociatedSubscribersCounts();
+      $segments = $this->segmentsListRepository->addVirtualSubscribersWithoutListSegment($segments);
       $segments = array_values(array_filter($segments, function($segment) {
         return $segment['subscribers'] > 0;
       }));
-      $withoutSegmentCount = $this->segmentSubscribersRepository->getSubscribersWithoutSegmentCount();
-      if ($withoutSegmentCount) {
-        $segments[] = [
-          'id' => 0,
-          'name' => __('Not in a List', 'mailpoet'),
-          'subscribers' => $withoutSegmentCount,
-        ];
-      }
     }
 
     return array_map(function($segment) {

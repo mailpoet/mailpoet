@@ -12,7 +12,7 @@ use MailPoet\Features\FeaturesController;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Newsletter;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
-use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
@@ -65,8 +65,8 @@ class Newsletters {
   /** @var WPPostListLoader */
   private $wpPostListLoader;
 
-  /** @var SegmentSubscribersRepository */
-  private $segmentSubscribersRepository;
+  /** @var SegmentsSimpleListRepository */
+  private $segmentsListRepository;
 
   public function __construct(
     PageRenderer $pageRenderer,
@@ -82,7 +82,7 @@ class Newsletters {
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
     WPPostListLoader $wpPostListLoader,
     AutomaticEmails $automaticEmails,
-    SegmentSubscribersRepository $segmentSubscribersRepository
+    SegmentsSimpleListRepository $segmentsListRepository
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -97,7 +97,7 @@ class Newsletters {
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
     $this->automaticEmails = $automaticEmails;
     $this->wpPostListLoader = $wpPostListLoader;
-    $this->segmentSubscribersRepository = $segmentSubscribersRepository;
+    $this->segmentsListRepository = $segmentsListRepository;
   }
 
   public function render() {
@@ -115,7 +115,7 @@ class Newsletters {
     $data = [];
 
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('newsletters');
-    $segments = $this->segmentSubscribersRepository->getSimpleSegmentListWithSubscribersCounts();
+    $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts();
     $data['segments'] = $segments;
     $data['settings'] = $this->settings->getAll();
     $data['mss_active'] = Bridge::isMPSendingServiceEnabled();

@@ -24,6 +24,7 @@ class SegmentEntity {
   const TYPE_WC_USERS = 'woocommerce_users';
   const TYPE_DEFAULT = 'default';
   const TYPE_DYNAMIC = 'dynamic';
+  const TYPE_WITHOUT_LIST = 'without-list';
 
   const SEGMENT_ENABLED = 'active';
   const SEGMENT_DISABLED = 'disabled';
