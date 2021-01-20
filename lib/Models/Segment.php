@@ -87,6 +87,7 @@ class Segment extends Model {
    * @return $this
    */
   public function withSubscribersCount() {
+    trigger_error('Calling Segment::withSubscribersCount() is deprecated and will be removed. Use MailPoet\Segments\SegmentSubscribersRepository::getSubscribersStatisticsCount. ', E_USER_DEPRECATED);
     $query = SubscriberSegment::tableAlias('relation')
       ->where('relation.segment_id', $this->id)
       ->join(
@@ -204,7 +205,11 @@ class Segment extends Model {
     return $orm;
   }
 
+  /**
+   * @deprecated Will be removed after 2021/07/30. Use MailPoet\Segments\SegmentsSimpleListRepository
+   */
   public static function getSegmentsWithSubscriberCount($type = self::TYPE_DEFAULT) {
+    trigger_error('Calling Segment::getSegmentsWithSubscriberCount() is deprecated and will be removed. Use MailPoet\Segments\SegmentsSimpleListRepository. ', E_USER_DEPRECATED);
     $query = self::selectMany([self::$_table . '.id', self::$_table . '.name'])
       ->whereIn('type', Segment::getSegmentTypes())
       ->selectExpr(
@@ -236,14 +241,22 @@ class Segment extends Model {
     return $query->findArray();
   }
 
+  /**
+   * @deprecated Will be removed after 2021/07/30. Use MailPoet\Segments\SegmentsSimpleListRepository
+   */
   public static function getSegmentsForImport() {
+    trigger_error('Calling Segment::getSegmentsForImport() is deprecated and will be removed. Use MailPoet\Segments\SegmentsSimpleListRepository. ', E_USER_DEPRECATED);
     $segments = self::getSegmentsWithSubscriberCount($type = false);
     return array_values(array_filter($segments, function($segment) {
       return $segment['type'] !== Segment::TYPE_WC_USERS;
     }));
   }
 
+  /**
+   * @deprecated Will be removed after 2021/07/30. Use MailPoet\Segments\SegmentsSimpleListRepository
+   */
   public static function getSegmentsForExport() {
+    trigger_error('Calling Segment::getSegmentsForExport() is deprecated and will be removed. Use MailPoet\Segments\SegmentsSimpleListRepository. ', E_USER_DEPRECATED);
     return self::rawQuery(
       '(SELECT segments.id, segments.name, COUNT(relation.subscriber_id) as subscribers ' .
       'FROM ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation ' .
