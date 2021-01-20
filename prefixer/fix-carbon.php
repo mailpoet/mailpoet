@@ -6,20 +6,6 @@ set_error_handler(function ($severity, $message, $file, $line) {
 });
 
 $replacements = [
-  // Fix for PHP 7.4 deprecation warnings for nested ternary operators without brackets
-  // This is caused by a bug in PHP Parser used within PHP Scoper. We can remove it after we update to PHP Scoper
-  // that contains updated PHP Parser.
-  [
-    'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/CarbonInterval.php',
-    'find' => [
-      '$relativeToNow ? $isFuture ? \'from_now\' : \'ago\' : ($isFuture ? \'after\' : \'before\')',
-      'func_num_args() === 0 ? !$this->invert : $inverted ? 1 : 0',
-    ],
-    'replace' => [
-      '$relativeToNow ? ($isFuture ? \'from_now\' : \'ago\') : ($isFuture ? \'after\' : \'before\')',
-      'func_num_args() === 0 ? !$this->invert : ($inverted ? 1 : 0)',
-    ],
-  ],
   // Remove unnecessary class alias (fix for Symfony) that breaks PHPStan
   [
     'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/Traits/Localization.php',
