@@ -32,7 +32,7 @@ App.on('before:start', (BeforeStartApp, options) => {
 
   config.blockDefaults = _.extend(
     config.blockDefaults,
-    options.newsletter.body.blockDefaults || {}
+    options.newsletter.body?.blockDefaults || {}
   );
 
   Application.setConfig(config);
