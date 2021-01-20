@@ -57,8 +57,13 @@ class SegmentSubscribersRepository {
   }
 
   public function getSubscribersWithoutSegmentCount(): int {
+    $queryBuilder = $this->getSubscribersWithoutSegmentCountQuery();
+    return (int)$queryBuilder->getQuery()->getSingleScalarResult();
+  }
+
+  public function getSubscribersWithoutSegmentCountQuery(): \MailPoetVendor\Doctrine\ORM\QueryBuilder {
     $queryBuilder = $this->entityManager->createQueryBuilder();
-    return (int)$queryBuilder
+    return $queryBuilder
       ->select('COUNT(DISTINCT s) AS subscribersCount')
       ->from(SubscriberEntity::class, 's')
       ->leftJoin('s.subscriberSegments', 'ssg')
@@ -69,8 +74,7 @@ class SegmentSubscribersRepository {
       ->andWhere('s.deletedAt IS NULL')
       ->andWhere('(ssg.status != :statusSubscribed OR ssg.id IS NULL OR sg.deletedAt IS NOT NULL)')
       ->andWhere('sg2.id IS NULL')
-      ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED)
-      ->getQuery()->getSingleScalarResult();
+      ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   private function loadSubscriberIdsInSegment(int $segmentId, array $candidateIds = null): array {
