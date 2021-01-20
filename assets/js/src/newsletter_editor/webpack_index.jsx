@@ -13,7 +13,7 @@ import 'newsletter_editor/initializer.jsx'; // side effect - calls Hooks.addActi
 import 'newsletter_editor/App'; // side effect - assigns to window
 
 // components
-import 'newsletter_editor/components/config.js'; // side effect - calls App.on()
+import 'newsletter_editor/components/config.jsx'; // side effect - calls App.on()
 import 'newsletter_editor/components/styles.js'; // side effect - calls App.on()
 import 'newsletter_editor/components/sidebar.js'; // side effect - calls App.on()
 import 'newsletter_editor/components/content.js'; // side effect - calls App.on()
