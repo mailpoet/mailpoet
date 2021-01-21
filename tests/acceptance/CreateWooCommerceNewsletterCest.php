@@ -6,7 +6,6 @@ class CreateWooCommerceNewsletterCest {
   public function createFirstPurchaseEmail(\AcceptanceTester $i) {
     $i->wantTo('Create and configure a first purchase automatic email');
 
-    $newsletterTitle = 'First Purchase Email Creation';
     $i->activateWooCommerce();
 
     $i->login();
@@ -19,25 +18,13 @@ class CreateWooCommerceNewsletterCest {
     $template = $i->checkTemplateIsPresent(0, 'woocommerce');
     $i->click($template);
 
-    $titleElement = '[data-automation-id="newsletter_title"]';
-    $i->waitForElement($titleElement);
-    $i->fillField($titleElement, $newsletterTitle);
-    $i->click('Next');
-
-    $i->waitForElement('[data-automation-id="newsletter_send_form"]');
-    $newsletterListingElement = '[data-automation-id="listing_item_' . basename($i->getCurrentUrl()) . '"]';
-    $i->waitForElementClickable('[data-automation-id="email-submit"]');
-    $i->click('Activate');
-
-    $i->waitForElement($newsletterListingElement);
-    $i->see($newsletterTitle, $newsletterListingElement);
-    $i->see('Email sent when a customer makes their first purchase.', $newsletterListingElement);
+    $this->fillNewsletterTitle('First Purchase Email Creation');
+    $this->activateNewsletterAndVerify('Email sent when a customer makes their first purchase.');
   }
 
   public function createAbandonedCartEmail(\AcceptanceTester $i) {
     $i->wantTo('Create and configure an abandoned cart automatic email');
 
-    $newsletterTitle = 'Abandoned Cart Email Creation';
     $i->activateWooCommerce();
 
     $i->login();
@@ -50,18 +37,26 @@ class CreateWooCommerceNewsletterCest {
     $template = $i->checkTemplateIsPresent(0, 'woocommerce');
     $i->click($template);
 
+    $this->fillNewsletterTitle('Abandoned Cart Email Creation');
+    $this->activateNewsletterAndVerify('Email sent when a customer abandons his cart');
+  }
+
+  private function fillNewsletterTitle($newsletterTitle) {
     $titleElement = '[data-automation-id="newsletter_title"]';
     $i->waitForElement($titleElement);
     $i->fillField($titleElement, $newsletterTitle);
     $i->click('Next');
+  }
 
+  private function activateNewsletterAndVerify($settingsDescription) {
     $i->waitForElement('[data-automation-id="newsletter_send_form"]');
+    $i->waitForText('Send this WooCommerce Automatic Email when...');
     $newsletterListingElement = '[data-automation-id="listing_item_' . basename($i->getCurrentUrl()) . '"]';
     $i->waitForElementClickable('[data-automation-id="email-submit"]');
     $i->click('Activate');
 
     $i->waitForElement($newsletterListingElement);
     $i->see($newsletterTitle, $newsletterListingElement);
-    $i->see('Email sent when a customer abandons his cart', $newsletterListingElement);
+    $i->see($settingsDescription, $newsletterListingElement);
   }
 }
