@@ -271,11 +271,15 @@ class WPTest extends \MailPoetTest {
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(2);
     $subscriber1 = Subscriber::where("wp_user_id", $id)->findOne();
+    $deletedAt1 = Carbon::createFromFormat('Y-m-d H:i:s', $subscriber1->deletedAt);
+    assert($deletedAt1 instanceof Carbon);
     expect($subscriber1->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
-    expect($subscriber1->deletedAt)->equals(Carbon::now(), 1);
+    expect($deletedAt1->timestamp)->equals(Carbon::now()->timestamp, 1);
     $subscriber2 = Subscriber::where("wp_user_id", $id2)->findOne();
+    $deletedAt2 = Carbon::createFromFormat('Y-m-d H:i:s', $subscriber2->deletedAt);
+    assert($deletedAt2 instanceof Carbon);
     expect($subscriber2->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
-    expect($subscriber2->deletedAt)->equals(Carbon::now(), 1);
+    expect($deletedAt2->timestamp)->equals(Carbon::now()->timestamp, 1);
   }
 
   public function testItRemovesOrphanedSubscribers() {
@@ -414,7 +418,7 @@ class WPTest extends \MailPoetTest {
   public function testItAddsNewUserToDisabledWpSegmentAsUnconfirmedAndTrashed() {
     $this->disableWpSegment();
     $id = $this->insertUser();
-    $wp = $worker = Stub::make(
+    $wp = Stub::make(
       $this->diContainer->get(Functions::class),
       [
         'currentFilter' => 'user_register',
@@ -424,8 +428,10 @@ class WPTest extends \MailPoetTest {
     $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class));
     $wpSegment->synchronizeUser($id);
     $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
+    $deletedAt = Carbon::createFromFormat('Y-m-d H:i:s', $subscriber->deletedAt);
+    assert($deletedAt instanceof Carbon);
     expect($subscriber->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
-    expect($subscriber->deletedAt)->equals(Carbon::now(), 1);
+    expect($deletedAt->timestamp)->equals(Carbon::now()->timestamp, 1);
   }
 
   public function testItDoesNotSendConfirmationEmailForNewUserWhenWPSegmentIsDisabledOnRegisterEnabled() {
