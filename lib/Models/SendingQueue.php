@@ -15,12 +15,11 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property string $newsletterRenderedSubject
  * @property int $taskId
  * @property int $newsletterId
- * @property string|object|null $meta
+ * @property string|object|array|null $meta
  * @property string|array $subscribers
  * @property string|null $deletedAt
  * @property string $scheduledAt
  * @property string $status
- * @property array|string|null $meta
  */
 
 class SendingQueue extends Model {
