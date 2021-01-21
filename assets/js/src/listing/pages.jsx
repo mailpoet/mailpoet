@@ -176,7 +176,7 @@ class ListingPages extends React.Component {
           <span className="mailpoet-listing-paging-input">
             <label
               className="screen-reader-text"
-              htmlFor="current-page-selector"
+              htmlFor={`current-page-selector-${this.props.position}`}
             >
               {MailPoet.I18n.t('currentPage')}
             </label>
@@ -189,7 +189,7 @@ class ListingPages extends React.Component {
               size="2"
               value={pageValue}
               name="paged"
-              id="current-page-selector"
+              id={`current-page-selector-${this.props.position}`}
               className="mailpoet-listing-current-page"
             />
             {MailPoet.I18n.t('pageOutOf')}
@@ -229,6 +229,7 @@ class ListingPages extends React.Component {
 }
 
 ListingPages.propTypes = {
+  position: PropTypes.string,
   onSetPage: PropTypes.func.isRequired,
   page: PropTypes.oneOfType([
     PropTypes.number,
@@ -236,6 +237,10 @@ ListingPages.propTypes = {
   ]).isRequired,
   count: PropTypes.number.isRequired,
   limit: PropTypes.number.isRequired,
+};
+
+ListingPages.defaultProps = {
+  position: '',
 };
 
 /* type ArrowProps = {
