@@ -29,6 +29,8 @@ class WPTest extends \MailPoetTest {
     parent::_before();
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->wpSegment = $this->diContainer->get(WP::class);
+    $currentTime = Carbon::now();
+    Carbon::setTestNow($currentTime);
     $this->cleanData();
   }
 
@@ -483,6 +485,7 @@ class WPTest extends \MailPoetTest {
 
   public function _after() {
     $this->cleanData();
+    Carbon::setTestNow();
   }
 
   private function cleanData() {
