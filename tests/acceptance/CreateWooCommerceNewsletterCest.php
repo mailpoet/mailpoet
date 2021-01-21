@@ -41,14 +41,14 @@ class CreateWooCommerceNewsletterCest {
     $this->activateNewsletterAndVerify('Email sent when a customer abandons his cart');
   }
 
-  private function fillNewsletterTitle($newsletterTitle) {
+  private function fillNewsletterTitle(\AcceptanceTester $i, $newsletterTitle) {
     $titleElement = '[data-automation-id="newsletter_title"]';
     $i->waitForElement($titleElement);
     $i->fillField($titleElement, $newsletterTitle);
     $i->click('Next');
   }
 
-  private function activateNewsletterAndVerify($settingsDescription) {
+  private function activateNewsletterAndVerify(\AcceptanceTester $i, $settingsDescription) {
     $i->waitForElement('[data-automation-id="newsletter_send_form"]');
     $i->waitForText('Send this WooCommerce Automatic Email when...');
     $newsletterListingElement = '[data-automation-id="listing_item_' . basename($i->getCurrentUrl()) . '"]';
