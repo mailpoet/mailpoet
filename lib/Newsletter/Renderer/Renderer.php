@@ -74,11 +74,11 @@ class Renderer {
     return $this->_render($newsletter, $sendingTask, $type);
   }
 
-  public function renderAsPreview($newsletter, $type = false) {
-    return $this->_render($newsletter, null, $type, true);
+  public function renderAsPreview($newsletter, $type = false, ?string $subject = null) {
+    return $this->_render($newsletter, null, $type, true, $subject);
   }
 
-  private function _render($newsletter, SendingTask $sendingTask = null, $type = false, $preview = false) {
+  private function _render($newsletter, SendingTask $sendingTask = null, $type = false, $preview = false, $subject = null) {
     $newsletter = $this->getNewsletter($newsletter);
     if (!$newsletter instanceof NewsletterEntity) {
       throw new RuntimeException('Newsletter was not found');
@@ -109,7 +109,7 @@ class Renderer {
     $template = $this->injectContentIntoTemplate(
       (string)file_get_contents(dirname(__FILE__) . '/' . self::NEWSLETTER_TEMPLATE),
       [
-        htmlspecialchars($newsletter->getSubject()),
+        htmlspecialchars($subject ?: $newsletter->getSubject()),
         $renderedStyles,
         $customFontsLinks,
         EHelper::escapeHtmlText($newsletter->getPreheader()),
