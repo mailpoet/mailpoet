@@ -18,8 +18,8 @@ class CreateWooCommerceNewsletterCest {
     $template = $i->checkTemplateIsPresent(0, 'woocommerce');
     $i->click($template);
 
-    $this->fillNewsletterTitle('First Purchase Email Creation');
-    $this->activateNewsletterAndVerify('Email sent when a customer makes their first purchase.');
+    $this->fillNewsletterTitle($i,'First Purchase Email Creation');
+    $this->activateNewsletterAndVerify($i,'Email sent when a customer makes their first purchase.');
   }
 
   public function createAbandonedCartEmail(\AcceptanceTester $i) {
@@ -37,8 +37,8 @@ class CreateWooCommerceNewsletterCest {
     $template = $i->checkTemplateIsPresent(0, 'woocommerce');
     $i->click($template);
 
-    $this->fillNewsletterTitle('Abandoned Cart Email Creation');
-    $this->activateNewsletterAndVerify('Email sent when a customer abandons his cart');
+    $this->fillNewsletterTitle($i,'Abandoned Cart Email Creation');
+    $this->activateNewsletterAndVerify($i,'Email sent when a customer abandons his cart');
   }
 
   private function fillNewsletterTitle(\AcceptanceTester $i, $newsletterTitle) {
