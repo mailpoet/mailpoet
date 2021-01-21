@@ -37,7 +37,7 @@ class TransactionalEmailHooks {
       $this->wp->removeAction('woocommerce_email_header', $emailHeaderCallback);
       $this->wp->removeAction('woocommerce_email_footer', $emailFooterCallback);
       $this->wp->addAction('woocommerce_email_header', function($emailHeading) {
-        $this->renderer->render($this->getNewsletter());
+        $this->renderer->render($this->getNewsletter(), $emailHeading);
         echo $this->renderer->getHTMLBeforeContent($emailHeading);
       });
       $this->wp->addAction('woocommerce_email_footer', function() {

@@ -33,8 +33,8 @@ class Renderer {
     $this->renderer = $renderer;
   }
 
-  public function render(Newsletter $newsletter) {
-    $html = explode(Preprocessor::WC_CONTENT_PLACEHOLDER, $this->renderer->renderAsPreview($newsletter, 'html'));
+  public function render(Newsletter $newsletter, ?string $subject = null) {
+    $html = explode(Preprocessor::WC_CONTENT_PLACEHOLDER, $this->renderer->renderAsPreview($newsletter, 'html', $subject));
     $this->htmlBeforeContent = $html[0];
     $this->htmlAfterContent = $html[1];
   }
