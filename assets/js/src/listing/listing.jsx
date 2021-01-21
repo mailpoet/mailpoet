@@ -612,6 +612,7 @@ class Listing extends React.Component {
               />
               {extraActions}
               <ListingPages
+                position="top"
                 count={this.state.count}
                 page={this.state.page}
                 limit={this.state.limit}
@@ -664,6 +665,7 @@ class Listing extends React.Component {
           </table>
           <div className="mailpoet-listing-footer clearfix">
             <ListingPages
+              position="bottom"
               count={this.state.count}
               page={this.state.page}
               limit={this.state.limit}
