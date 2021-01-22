@@ -12,9 +12,9 @@ export type Props = ReactSelectProps & {
 };
 
 type LabelRenderer = {
-  tag: React.ReactNode;
   label: React.ReactNode;
   count: React.ReactNode;
+  tag?: React.ReactNode;
 };
 
 const LabelRenderer = (data: LabelRenderer) => (
@@ -28,9 +28,9 @@ const LabelRenderer = (data: LabelRenderer) => (
 type Option = {
   data: {
     style: CSSProperties;
-    tag: React.ReactNode;
     label: React.ReactNode;
     count: React.ReactNode;
+    tag?: React.ReactNode;
   };
   isDisabled: boolean;
   isFocused: boolean;
@@ -81,9 +81,9 @@ const SingleValue = (props: any) => (
 type MultiValueLabel = {
   data: {
     style: CSSProperties;
-    tag: React.ReactNode;
     label: React.ReactNode;
     count: React.ReactNode;
+    tag?: React.ReactNode;
   };
   innerProps: object;
 };
