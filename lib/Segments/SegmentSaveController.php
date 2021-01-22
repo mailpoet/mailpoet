@@ -4,7 +4,6 @@ namespace MailPoet\Segments;
 
 use InvalidArgumentException;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 
@@ -51,7 +50,7 @@ class SegmentSaveController {
       $subscriberDuplicate = new SubscriberSegmentEntity(
         $duplicate,
         $subscriber,
-        SubscriberEntity::STATUS_SUBSCRIBED
+        $subscriberSegment->getStatus()
       );
       $this->subscriberSegmentRepository->persist($subscriberDuplicate);
     }
