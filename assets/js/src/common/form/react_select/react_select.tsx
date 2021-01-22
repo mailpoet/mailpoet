@@ -13,7 +13,7 @@ export type Props = ReactSelectProps & {
 
 type LabelRenderer = {
   label: React.ReactNode;
-  count: React.ReactNode;
+  count?: React.ReactNode;
   tag?: React.ReactNode;
 };
 
@@ -21,7 +21,7 @@ const LabelRenderer = (data: LabelRenderer) => (
   <div className="mailpoet-form-react-select-option">
     {data.tag && <span className="mailpoet-form-react-select-tag">{data.tag}</span>}
     <span className="mailpoet-form-react-select-text"><span>{data.label}</span></span>
-    {data.count && <span className="mailpoet-form-react-select-count">{data.count}</span>}
+    {data.count !== undefined && <span className="mailpoet-form-react-select-count">{data.count}</span>}
   </div>
 );
 
@@ -29,7 +29,7 @@ type Option = {
   data: {
     style: CSSProperties;
     label: React.ReactNode;
-    count: React.ReactNode;
+    count?: React.ReactNode;
     tag?: React.ReactNode;
   };
   isDisabled: boolean;
@@ -82,7 +82,7 @@ type MultiValueLabel = {
   data: {
     style: CSSProperties;
     label: React.ReactNode;
-    count: React.ReactNode;
+    count?: React.ReactNode;
     tag?: React.ReactNode;
   };
   innerProps: object;
