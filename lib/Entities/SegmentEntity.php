@@ -61,6 +61,11 @@ class SegmentEntity {
     $this->dynamicFilters = new ArrayCollection();
   }
 
+  public function __clone() {
+    // reset ID
+    $this->id = null;
+  }
+
   /**
    * @return string
    */

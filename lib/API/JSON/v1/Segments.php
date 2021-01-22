@@ -185,26 +185,14 @@ class Segments extends APIEndpoint {
   }
 
   public function duplicate($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $segment = Segment::findOne($id);
+    $segment = $this->getSegment($data);
 
-    if ($segment instanceof Segment) {
-      $data = [
-        'name' => sprintf(__('Copy of %s', 'mailpoet'), $segment->name),
-      ];
-      $duplicate = $segment->duplicate($data);
-      $errors = $duplicate->getErrors();
-
-      if (!empty($errors)) {
-        return $this->errorResponse($errors);
-      } else {
-        $duplicate = Segment::findOne($duplicate->id);
-        if(!$duplicate instanceof Segment) return $this->errorResponse();
-        return $this->successResponse(
-          $duplicate->asArray(),
-          ['count' => 1]
-        );
-      }
+    if ($segment instanceof SegmentEntity) {
+      $duplicate = $this->segmentSavecontroller->duplicate($segment);
+      return $this->successResponse(
+        $this->segmentsResponseBuilder->build($duplicate),
+        ['count' => 1]
+      );
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet'),
@@ -237,5 +225,11 @@ class Segments extends APIEndpoint {
         $e->getCode() => $e->getMessage(),
       ]);
     }
+  }
+
+  private function getSegment(array $data): ?SegmentEntity {
+    return isset($data['id'])
+      ? $this->segmentsRepository->findOneById((int)$data['id'])
+      : null;
   }
 }
