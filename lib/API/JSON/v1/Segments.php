@@ -2,9 +2,11 @@
 
 namespace MailPoet\API\JSON\v1;
 
+use Exception;
 use InvalidArgumentException;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Doctrine\Validator\ValidationException;
@@ -188,7 +190,13 @@ class Segments extends APIEndpoint {
     $segment = $this->getSegment($data);
 
     if ($segment instanceof SegmentEntity) {
-      $duplicate = $this->segmentSavecontroller->duplicate($segment);
+      try {
+        $duplicate = $this->segmentSavecontroller->duplicate($segment);
+      } catch (Exception $e) {
+        return $this->errorResponse([
+          APIError::UNKNOWN => __('Duplicating of segment failed.', 'mailpoet'),
+        ], [], Response::STATUS_UNKNOWN);
+      }
       return $this->successResponse(
         $this->segmentsResponseBuilder->build($duplicate),
         ['count' => 1]
