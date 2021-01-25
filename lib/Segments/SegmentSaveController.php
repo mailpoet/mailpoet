@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class SegmentSaveController {
   /** @var SegmentsRepository */
@@ -14,12 +15,17 @@ class SegmentSaveController {
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
+  /** @var EntityManager */
+  private $entityManager;
+
   public function __construct(
     SegmentsRepository $segmentsRepository,
-    SubscriberSegmentRepository $subscriberSegmentRepository
+    SubscriberSegmentRepository $subscriberSegmentRepository,
+    EntityManager $entityManager
   ) {
     $this->segmentsRepository = $segmentsRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
+    $this->entityManager = $entityManager;
   }
 
   public function save(array $data = []): SegmentEntity {
@@ -38,23 +44,26 @@ class SegmentSaveController {
 
     $this->checkSegmenUniqueName($duplicate->getName(), $duplicate->getId());
 
-    $this->segmentsRepository->persist($duplicate);
-    $this->segmentsRepository->flush();
-    
     $subscriberSegments = $this->subscriberSegmentRepository->findBy(['segment' => $segmentEntity]);
-    foreach ($subscriberSegments as $subscriberSegment) {
-      $subscriber = $subscriberSegment->getSubscriber();
-      if (!$subscriber) {
-        continue;
+
+    $this->entityManager->transactional(function (EntityManager $entityManager) use ($duplicate, $subscriberSegments) {
+      $entityManager->persist($duplicate);
+      $entityManager->flush();
+
+      foreach ($subscriberSegments as $subscriberSegment) {
+        $subscriber = $subscriberSegment->getSubscriber();
+        if (!$subscriber) {
+          continue;
+        }
+        $subscriberDuplicate = new SubscriberSegmentEntity(
+          $duplicate,
+          $subscriber,
+          $subscriberSegment->getStatus()
+        );
+        $entityManager->persist($subscriberDuplicate);
       }
-      $subscriberDuplicate = new SubscriberSegmentEntity(
-        $duplicate,
-        $subscriber,
-        $subscriberSegment->getStatus()
-      );
-      $this->subscriberSegmentRepository->persist($subscriberDuplicate);
-    }
-    $this->subscriberSegmentRepository->flush();
+      $entityManager->flush();
+    });
 
     return $duplicate;
   }
