@@ -5,26 +5,20 @@ namespace MailPoet\Segments;
 use InvalidArgumentException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class SegmentSaveController {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
-  /** @var SubscriberSegmentRepository */
-  private $subscriberSegmentRepository;
-
   /** @var EntityManager */
   private $entityManager;
 
   public function __construct(
     SegmentsRepository $segmentsRepository,
-    SubscriberSegmentRepository $subscriberSegmentRepository,
     EntityManager $entityManager
   ) {
     $this->segmentsRepository = $segmentsRepository;
-    $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->entityManager = $entityManager;
   }
 
@@ -44,25 +38,22 @@ class SegmentSaveController {
 
     $this->checkSegmenUniqueName($duplicate->getName(), $duplicate->getId());
 
-    $subscriberSegments = $this->subscriberSegmentRepository->findBy(['segment' => $segmentEntity]);
-
-    $this->entityManager->transactional(function (EntityManager $entityManager) use ($duplicate, $subscriberSegments) {
+    $this->entityManager->transactional(function (EntityManager $entityManager) use ($duplicate, $segmentEntity) {
       $entityManager->persist($duplicate);
       $entityManager->flush();
 
-      foreach ($subscriberSegments as $subscriberSegment) {
-        $subscriber = $subscriberSegment->getSubscriber();
-        if (!$subscriber) {
-          continue;
-        }
-        $subscriberDuplicate = new SubscriberSegmentEntity(
-          $duplicate,
-          $subscriber,
-          $subscriberSegment->getStatus()
-        );
-        $entityManager->persist($subscriberDuplicate);
-      }
-      $entityManager->flush();
+      $subscriberSegmentTable = $entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+      $conn = $this->entityManager->getConnection();
+      $stmt = $conn->prepare("
+        INSERT INTO $subscriberSegmentTable (segment_id, subscriber_id, status, created_at)
+        SELECT :duplicateId, subscriber_id, status, NOW()
+        FROM $subscriberSegmentTable
+        WHERE segment_id = :segmentId
+      ");
+      $stmt->execute([
+        'duplicateId' => $duplicate->getId(),
+        'segmentId' => $segmentEntity->getId(),
+      ]);
     });
 
     return $duplicate;
