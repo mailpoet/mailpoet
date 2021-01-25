@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.5
-Stable tag: 3.58.0
+Stable tag: 3.58.1
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.58.1 - 2021-01-25 =
+* Fixed: missing statistics link in WooCommerce emails listing;
+* Fixed: opening draft email without a template.
 
 = 3.58.0 - 2021-01-18 =
 * Improved: Gutenberg updated for form editor.
