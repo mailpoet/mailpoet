@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   codeception:
-    image: mailpoet/wordpress:7.2-cli_20201130.1
+    image: mailpoet/wordpress:7.4-cli_20210126.1
     depends_on:
       - mailhog
       - wordpress
@@ -29,7 +29,7 @@ services:
       - mailhog-data:/mailhog-data
 
   wordpress:
-    image: mailpoet/wordpress:${WORDPRESS_IMAGE_VERSION:-wp-5.5_php7.4_20200813.1}
+    image: mailpoet/wordpress:${WORDPRESS_IMAGE_VERSION:-wp-5.6_php8.0_20210125.1}
     depends_on:
       - chrome
       - mailhog
