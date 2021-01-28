@@ -82,8 +82,7 @@ const FontFamilySettings = ({
       });
     });
   }
-
-  let selectedValue = options.find((item) => item.value === value);
+  let selectedValue = value !== undefined && options.find((item) => item.value === value);
   if (!selectedValue) {
     selectedValue = options[0];
   }
