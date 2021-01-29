@@ -65,7 +65,6 @@ const StylesSettingsPanel = ({ onToggle, isOpened }) => {
             onChange={partial(updateStyles, 'fontColor')}
           />
           <FontSizeSettings
-            name={MailPoet.I18n.t('formSettingsStylesFontSize')}
             value={settings.fontSize}
             onChange={partial(updateStyles, 'fontSize')}
           />
