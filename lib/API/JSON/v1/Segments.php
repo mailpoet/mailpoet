@@ -20,15 +20,13 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WooCommerce;
 use MailPoet\Segments\WP;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Segments extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS,
   ];
-
-  /** @var Listing\BulkActionController */
-  private $bulkAction;
 
   /** @var Listing\Handler */
   private $listingHandler;
@@ -55,7 +53,6 @@ class Segments extends APIEndpoint {
   private $segmentListingRepository;
 
   public function __construct(
-    Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
     SegmentsRepository $segmentsRepository,
     SegmentListingRepository $segmentListingRepository,
@@ -65,7 +62,6 @@ class Segments extends APIEndpoint {
     WooCommerce $wooCommerce,
     WP $wpSegment
   ) {
-    $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
     $this->wooCommerceSync = $wooCommerce;
     $this->segmentsRepository = $segmentsRepository;
@@ -225,14 +221,20 @@ class Segments extends APIEndpoint {
   }
 
   public function bulkAction($data = []) {
-    try {
-      $meta = $this->bulkAction->apply('\MailPoet\Models\Segment', $data);
-      return $this->successResponse(null, $meta);
-    } catch (\Exception $e) {
-      return $this->errorResponse([
-        $e->getCode() => $e->getMessage(),
-      ]);
+    $definition = $this->listingHandler->getListingDefinition($data['listing']);
+    $ids = $this->segmentListingRepository->getActionableIds($definition);
+    $count = 0;
+    if ($data['action'] === 'trash') {
+      $count = $this->segmentsRepository->bulkTrash($ids);
+    } elseif ($data['action'] === 'restore') {
+      $count = $this->segmentsRepository->bulkRestore($ids);
+    } elseif ($data['action'] === 'delete') {
+      $count = $this->segmentsRepository->bulkDelete($ids);
+    } else {
+      throw UnexpectedValueException::create()
+        ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
     }
+    return $this->successResponse(null, ['count' => $count]);
   }
 
   private function getSegment(array $data): ?SegmentEntity {
