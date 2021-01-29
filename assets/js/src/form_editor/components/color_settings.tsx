@@ -34,6 +34,7 @@ const ColorSettings = ({
         value={value}
         onChange={onChange}
         colors={settingsColors}
+        className="block-editor-panel-color-gradient-settings"
       />
     </div>
   );

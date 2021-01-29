@@ -29,7 +29,7 @@ const ColorGradientSettings = ({
         colors={settingsColors}
         gradients={settingsGradients}
         label={name}
-        className="mailpoet-color-gradient-picker"
+        className="mailpoet-color-gradient-picker block-editor-panel-color-gradient-settings"
       />
     </div>
   );
