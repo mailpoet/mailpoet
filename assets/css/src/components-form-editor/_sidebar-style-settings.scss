@@ -27,14 +27,6 @@
   }
 }
 
-.mailpoet-styles-settings-heading {
-  font-size: 15px;
-
-  .component-color-indicator {
-    vertical-align: text-bottom;
-  }
-}
-
 .mailpoet-font-family-select {
   button {
     width: 100%;
@@ -103,4 +95,25 @@
   .component-color-indicator {
     vertical-align: text-bottom;
   }
+}
+
+// Styles for labels and headings for style setting components
+// We override some styles from @wordpress/components to have unified labels appearance
+.mailpoet-styles-settings .mailpoet-styles-settings-heading,
+.mailpoet-styles-settings .components-base-control__label,
+.mailpoet-styles-settings .components-input-control__label,
+.mailpoet-styles-settings .components-custom-select-control__label,
+.mailpoet-styles-settings .components-font-size-picker label {
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: .5em;
+
+  .component-color-indicator {
+    vertical-align: text-bottom;
+  }
+}
+
+// Fix for alignment of font size picker inputs
+.mailpoet-styles-settings .components-font-size-picker__number-container label {
+  margin-bottom: 0;
 }
