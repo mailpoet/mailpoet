@@ -1,0 +1,4 @@
+// We don't want to use MailPoet font-family for form editor
+.admin_page_mailpoet-form-editor #wpbody {
+  font-family: inherit;
+}
