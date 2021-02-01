@@ -166,10 +166,6 @@ jobs:
           paths:
             - ~/.npm
       - run:
-          name: "Composer security check"
-          command: |
-            ./do s:composer
-      - run:
           name: Group acceptance tests to run in parallel
           command: |
             ./do test:acceptance-group-tests
