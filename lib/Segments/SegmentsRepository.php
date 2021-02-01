@@ -121,10 +121,10 @@ class SegmentsRepository extends Repository {
     $rows = $this->entityManager->createQueryBuilder()->update(SegmentEntity::class, 's')
     ->set('s.deletedAt', ':deletedAt')
     ->where('s.id IN (:ids)')
-    ->andWhere('s.type = :typeDefault')
+    ->andWhere('s.type IN (:types)')
     ->setParameter('deletedAt', $deletedAt)
     ->setParameter('ids', $ids)
-    ->setParameter('typeDefault', SegmentEntity::TYPE_DEFAULT)
+    ->setParameter('types', [SegmentEntity::TYPE_DEFAULT, SegmentEntity::TYPE_WP_USERS])
     ->getQuery()->execute();
 
     return $rows;
