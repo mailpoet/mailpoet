@@ -178,7 +178,9 @@ class Listings extends React.Component {
       },
     }).done((response) => {
       if (response.data.status === 'active') {
-        MailPoet.Notice.success(MailPoet.I18n.t('automaticEmailActivated'));
+        const newsletterGroup = e.target.getAttribute('data-group');
+        const email = automaticEmails[newsletterGroup];
+        MailPoet.Notice.success(MailPoet.I18n.t('automaticEmailActivated').replace('%1s', email.title));
       }
       // force refresh of listing so that groups are updated
       this.forceUpdate();
@@ -202,6 +204,7 @@ class Listings extends React.Component {
           className="mailpoet-listing-status-toggle"
           onCheck={this.updateStatus}
           data-id={newsletter.id}
+          data-group={newsletter.options.group}
           dimension="small"
           defaultChecked={newsletter.status === 'active'}
         />
