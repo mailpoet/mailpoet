@@ -105,15 +105,15 @@ class SegmentsRepository extends Repository {
     });
   }
 
-  public function bulkTrash(array $ids): int {
-    return $this->updateDeletedAt($ids, new Carbon());
+  public function bulkTrash(array $ids, string $type = SegmentEntity::TYPE_DEFAULT): int {
+    return $this->updateDeletedAt($ids, new Carbon(), $type);
   }
 
-  public function bulkRestore(array $ids): int {
-    return $this->updateDeletedAt($ids, null);
+  public function bulkRestore(array $ids, string $type = SegmentEntity::TYPE_DEFAULT): int {
+    return $this->updateDeletedAt($ids, null, $type);
   }
 
-  private function updateDeletedAt(array $ids, ?DateTime $deletedAt): int {
+  private function updateDeletedAt(array $ids, ?DateTime $deletedAt, string $type): int {
     if (empty($ids)) {
       return 0;
     }
@@ -121,10 +121,10 @@ class SegmentsRepository extends Repository {
     $rows = $this->entityManager->createQueryBuilder()->update(SegmentEntity::class, 's')
     ->set('s.deletedAt', ':deletedAt')
     ->where('s.id IN (:ids)')
-    ->andWhere('s.type IN (:types)')
+    ->andWhere('s.type IN (:type)')
     ->setParameter('deletedAt', $deletedAt)
     ->setParameter('ids', $ids)
-    ->setParameter('types', [SegmentEntity::TYPE_DEFAULT, SegmentEntity::TYPE_WP_USERS])
+    ->setParameter('type', $type)
     ->getQuery()->execute();
 
     return $rows;
