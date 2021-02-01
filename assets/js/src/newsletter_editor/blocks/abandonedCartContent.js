@@ -116,7 +116,6 @@ Module.AbandonedCartContentBlockView = base.BlockView.extend({
     if (!this.getRegion('toolsRegion').hasView()) {
       this.showChildView('toolsRegion', this.toolsView);
     }
-    this.trigger('showSettings');
 
     ContainerView = App.getBlockTypeView('container');
     renderOptions = {
