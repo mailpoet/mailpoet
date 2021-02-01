@@ -117,6 +117,11 @@ class Segments extends APIEndpoint {
   public function restore($data = []) {
     $segment = $this->getSegment($data);
     if ($segment instanceof SegmentEntity) {
+      if (!$this->isTrashOrRestoreAllowed($segment)) {
+        return $this->errorResponse([
+          APIError::FORBIDDEN => WPFunctions::get()->__('This list cannot be moved to trash.', 'mailpoet'),
+        ]);
+      }
       // When the segment is of type WP_USERS we want to restore all its subscribers
       if ($segment->getType() === SegmentEntity::TYPE_WP_USERS) {
         $subscribers = $this->subscribersRepository->findBySegment((int)$segment->getId());
@@ -126,7 +131,7 @@ class Segments extends APIEndpoint {
         $this->subscribersRepository->bulkRestore($subscriberIds);
       }
 
-      $this->segmentsRepository->bulkRestore([$segment->getId()]);
+      $this->segmentsRepository->bulkRestore([$segment->getId()], $segment->getType());
       $this->segmentsRepository->refresh($segment);
       return $this->successResponse(
         $this->segmentsResponseBuilder->build($segment),
@@ -142,6 +147,11 @@ class Segments extends APIEndpoint {
   public function trash($data = []) {
     $segment = $this->getSegment($data);
     if ($segment instanceof SegmentEntity) {
+      if (!$this->isTrashOrRestoreAllowed($segment)) {
+        return $this->errorResponse([
+          APIError::FORBIDDEN => WPFunctions::get()->__('This list cannot be moved to trash.', 'mailpoet'),
+        ]);
+      }
       // When the segment is of type WP_USERS we want to trash all subscribers who aren't subscribed in another list
       if ($segment->getType() === SegmentEntity::TYPE_WP_USERS) {
         $subscribers = $this->subscribersRepository->findExclusiveSubscribersBySegment((int)$segment->getId());
@@ -151,7 +161,7 @@ class Segments extends APIEndpoint {
         $this->subscribersRepository->bulkTrash($subscriberIds);
       }
 
-      $this->segmentsRepository->bulkTrash([$segment->getId()]);
+      $this->segmentsRepository->bulkTrash([$segment->getId()], $segment->getType());
       $this->segmentsRepository->refresh($segment);
       return $this->successResponse(
         $this->segmentsResponseBuilder->build($segment),
@@ -229,6 +239,18 @@ class Segments extends APIEndpoint {
         ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
     }
     return $this->successResponse(null, ['count' => $count]);
+  }
+
+  private function isTrashOrRestoreAllowed(SegmentEntity $segment): bool {
+    $allowedSegmentTypes = [
+      SegmentEntity::TYPE_DEFAULT,
+      SegmentEntity::TYPE_WP_USERS,
+    ];
+    if (in_array($segment->getType(), $allowedSegmentTypes, true)) {
+      return true;
+    }
+
+    return false;
   }
 
   private function getSegment(array $data): ?SegmentEntity {
