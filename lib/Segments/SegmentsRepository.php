@@ -2,12 +2,12 @@
 
 namespace MailPoet\Segments;
 
-use Carbon\Carbon;
 use DateTime;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\NotFoundException;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
