@@ -18,7 +18,7 @@ class AssetsController {
   /** @var SettingsController */
   private $settings;
 
-  const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js?onload=reCaptchaCallback&render=explicit';
+  const RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api.js?render=explicit';
 
   public function __construct(WPFunctions $wp, BasicRenderer $renderer, SettingsController $settings) {
     $this->wp = $wp;
@@ -32,15 +32,15 @@ class AssetsController {
    */
   public function printScripts() {
     ob_start();
+    $captcha = $this->settings->get('captcha');
+    if (!empty($captcha['type']) && $captcha['type'] === Captcha::TYPE_RECAPTCHA) {
+      echo '<script src="' . self::RECAPTCHA_API_URL . '" async defer></script>';
+    }
+
     $this->wp->wpPrintScripts('jquery');
     $this->wp->wpPrintScripts('mailpoet_vendor');
     $this->wp->wpPrintScripts('mailpoet_public');
     
-    $captcha = $this->settings->get('captcha');
-    if (!empty($captcha['type']) && $captcha['type'] === Captcha::TYPE_RECAPTCHA) {
-      echo '<script src="' . self::RECAPTCHA_API_URL . '" async defer></script>';
-    } 
-
     $scripts = ob_get_contents();
     ob_end_clean();
     if ($scripts === false) {
@@ -61,6 +61,14 @@ class AssetsController {
   }
 
   public function setupFrontEndDependencies() {
+    $captcha = $this->settings->get('captcha');
+    if (!empty($captcha['type']) && $captcha['type'] === Captcha::TYPE_RECAPTCHA) {
+      $this->wp->wpEnqueueScript(
+        'mailpoet_recaptcha',
+        self::RECAPTCHA_API_URL
+      );
+    }
+
     $this->wp->wpEnqueueStyle(
       'mailpoet_public',
       Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-public.css')
@@ -73,15 +81,6 @@ class AssetsController {
       Env::$version,
       true
     );
-
-    $captcha = $this->settings->get('captcha');
-    if (!empty($captcha['type']) && $captcha['type'] === Captcha::TYPE_RECAPTCHA) {
-      $this->wp->wpEnqueueScript(
-        'mailpoet_recaptcha',
-        self::RECAPTCHA_API_URL,
-        ['mailpoet_public']
-      );
-    }
 
     $this->wp->wpLocalizeScript('mailpoet_public', 'MailPoetForm', [
       'ajax_url' => $this->wp->adminUrl('admin-ajax.php'),
