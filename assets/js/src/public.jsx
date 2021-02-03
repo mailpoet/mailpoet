@@ -6,19 +6,27 @@ import 'parsleyjs';
 const exitIntentEvent = 'mouseleave.mailpoet.form-exit-intent';
 
 jQuery(($) => {
-  window.reCaptchaCallback = function reCaptchaCallback() {
-    $('.mailpoet_recaptcha').each((index, element) => {
-      const recaptcha = $(element);
-      const sitekey = recaptcha.attr('data-sitekey');
-      const container = recaptcha.find('> .mailpoet_recaptcha_container').get(0);
-      const field = recaptcha.find('> .mailpoet_recaptcha_field');
-      let widgetId;
-      if (sitekey) {
-        widgetId = window.grecaptcha.render(container, { sitekey, size: 'compact' });
-        field.val(widgetId);
+  function renderCaptcha(element, iteration) {
+    if (!window.recaptcha || !window.grecaptcha.ready) {
+      if (iteration < 20) {
+        setTimeout(renderCaptcha, 400, element, iteration + 1);
       }
-    });
-  };
+      return;
+    }
+    const recaptcha = $(element);
+    const sitekey = recaptcha.attr('data-sitekey');
+    const container = recaptcha.find('> .mailpoet_recaptcha_container').get(0);
+    const field = recaptcha.find('> .mailpoet_recaptcha_field');
+    if (sitekey) {
+      const widgetId = window.grecaptcha.render(container, { sitekey, size: 'compact' });
+      field.val(widgetId);
+    }
+  }
+
+  $('.mailpoet_recaptcha').each((index, element) => {
+    setTimeout(renderCaptcha, 400, element, 1);
+  });
+
 
   /**
    * @param form jQuery object of form form.mailpoet_form
