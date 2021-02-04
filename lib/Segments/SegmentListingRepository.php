@@ -83,10 +83,10 @@ class SegmentListingRepository extends ListingRepository {
     $trashedQueryBuilder = clone $queryBuilder;
 
     $allQueryBuilder->andWhere('s.deletedAt IS NULL');
-    $allCount = $allQueryBuilder->getQuery()->getSingleScalarResult();
+    $allCount = (int)$allQueryBuilder->getQuery()->getSingleScalarResult();
 
     $trashedQueryBuilder->andWhere('s.deletedAt IS NOT NULL');
-    $trashedCount = $trashedQueryBuilder->getQuery()->getSingleScalarResult();
+    $trashedCount = (int)$trashedQueryBuilder->getQuery()->getSingleScalarResult();
 
     return [
       [
