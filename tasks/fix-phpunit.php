@@ -10,8 +10,10 @@ if (!file_exists(__DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/
   exit;
 }
 
-// Rename Match interface source file to Matcher
-exec('mv ' . __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/Builder/Match.php ' . __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/Builder/MockMatch.php');
+if (!file_exists(__DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/Builder/MockMatch.php')) {
+  // Rename Match interface source file to Matcher
+  exec('mv ' . __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/Builder/Match.php ' . __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/MockObject/Builder/MockMatch.php');
+}
 
 // Fixes for PHP8 Compatibility
 $replacements = [
