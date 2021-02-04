@@ -49,7 +49,7 @@ exec('find ' . __DIR__ . "/../vendor-prefixed/nesbot/carbon -type f -name '*.xml
 exec('find ' . __DIR__ . "/../vendor-prefixed/nesbot/carbon -type f -name '*.neon' -delete");
 
 // cleanup
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/nesbot/Carbon/bin');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/nesbot/carbon/bin');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/nesbot/carbon/src/Carbon/Cli');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/nesbot/carbon/src/Carbon/PHPStan');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/nesbot/carbon/src/Carbon/Laravel');
