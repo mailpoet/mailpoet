@@ -129,7 +129,7 @@ exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Plat
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLAnywhere16Platform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLAnywherePlatform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLAzurePlatform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLitePlatform.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SqlitePlatform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLServer2005Platform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLServer2008Platform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLServer2012Platform.php');
