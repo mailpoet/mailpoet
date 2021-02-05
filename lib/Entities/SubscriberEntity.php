@@ -24,6 +24,9 @@ class SubscriberEntity {
   const STATUS_UNCONFIRMED = 'unconfirmed';
   const STATUS_UNSUBSCRIBED = 'unsubscribed';
 
+  public const OBSOLETE_LINK_TOKEN_LENGTH = 6;
+  public const LINK_TOKEN_LENGTH = 32;
+
   use AutoincrementedIdTrait;
   use CreatedAtTrait;
   use UpdatedAtTrait;
