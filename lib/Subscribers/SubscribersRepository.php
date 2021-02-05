@@ -113,9 +113,13 @@ class SubscribersRepository extends Repository {
 
       // Delete subscriber custom fields
       $subscriberCustomFieldTable = $entityManager->getClassMetadata(SubscriberCustomFieldEntity::class)->getTableName();
+      $subscriberTable = $entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
       $entityManager->getConnection()->executeUpdate("
          DELETE scs FROM $subscriberCustomFieldTable scs
+         JOIN $subscriberTable s ON s.`id` = scs.`subscriber_id`
          WHERE scs.`subscriber_id` IN (:ids)
+         AND s.`is_woocommerce_user` = false
+         AND s.`wp_user_id` IS NULL
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       $queryBuilder = $entityManager->createQueryBuilder();
