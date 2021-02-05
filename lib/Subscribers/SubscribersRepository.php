@@ -15,6 +15,14 @@ use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
  * @extends Repository<SubscriberEntity>
  */
 class SubscribersRepository extends Repository {
+  protected $ignoreColumnsForUpdate = [
+    'wp_user_id',
+    'is_woocommerce_user',
+    'email',
+    'created_at',
+    'last_subscribed_at',
+  ];
+
   protected function getEntityClassName() {
     return SubscriberEntity::class;
   }
@@ -243,5 +251,36 @@ class SubscribersRepository extends Repository {
       ->getQuery()->execute();
 
     return count($ids);
+  }
+  
+  public function findWpUserIdAndEmailByEmails(array $emails): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('s.wpUserId AS wp_user_id, LOWER(s.email) AS email')
+      ->from(SubscriberEntity::class, 's')
+      ->where('s.email IN (:emails)')
+      ->setParameter('emails', $emails)
+      ->getQuery()->getResult();
+  }
+
+  public function findIdAndEmailByEmails(array $emails): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('s.id, s.email')
+      ->from(SubscriberEntity::class, 's')
+      ->where('s.email IN (:emails)')
+      ->setParameter('emails', $emails)
+      ->getQuery()->getResult();
+  }
+
+  /**
+   * @return int[]
+   */
+  public function findIdsOfDeletedByEmails(array $emails): array {
+    return $this->entityManager->createQueryBuilder()
+    ->select('s.id')
+    ->from(SubscriberEntity::class, 's')
+    ->where('s.email IN (:emails)')
+    ->andWhere('s.deletedAt IS NOT NULL')
+    ->setParameter('emails', $emails)
+    ->getQuery()->getResult();
   }
 }
