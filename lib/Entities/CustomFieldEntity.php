@@ -13,6 +13,13 @@ use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="custom_fields")
  */
 class CustomFieldEntity {
+  public const TYPE_DATE = 'date';
+  public const TYPE_TEXT = 'text';
+  public const TYPE_TEXTAREA = 'textarea';
+  public const TYPE_RADIO = 'radio';
+  public const TYPE_CHECKBOX = 'checkbox';
+  public const TYPE_SELECT = 'select';
+
   use AutoincrementedIdTrait;
   use CreatedAtTrait;
   use UpdatedAtTrait;
