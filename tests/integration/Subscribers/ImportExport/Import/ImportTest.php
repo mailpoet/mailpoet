@@ -1,19 +1,26 @@
 <?php
 
-namespace MailPoet\Test\Subscribers\ImportExport\Import;
+namespace MailPoet\Subscribers\ImportExport\Import;
 
+use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Segments\WP;
-use MailPoet\Subscribers\ImportExport\Import\Import;
+use MailPoet\Subscribers\SubscriberCustomFieldRepository;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
+use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class ImportTest extends \MailPoetTest {
   public $subscribersCustomFields;
   public $subscribersData;
+  /** @var Import */
   public $import;
   public $subscribersFields;
   public $testData;
@@ -23,8 +30,28 @@ class ImportTest extends \MailPoetTest {
   /** @var WP */
   private $wpSegment;
 
+  /** @var CustomFieldsRepository */
+  private $customFieldsRepository;
+
+  /** @var NewsletterOptionsRepository */
+  private $newsletterOptionsRepository;
+
+  /** @var SubscriberCustomFieldRepository */
+  private $subscriberCustomFieldRepository;
+
+  /** @var SubscribersRepository */
+  private $subscriberRepository;
+
+  /** @var SubscriberSegmentRepository */
+  private $subscriberSegmentRepository;
+
   public function _before() {
     $this->wpSegment = $this->diContainer->get(WP::class);
+    $this->customFieldsRepository = $this->diContainer->get(CustomFieldsRepository::class);
+    $this->newsletterOptionsRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
+    $this->subscriberCustomFieldRepository = $this->diContainer->get(SubscriberCustomFieldRepository::class);
+    $this->subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
     $customField = CustomField::create();
     $customField->name = 'country';
     $customField->type = 'text';
@@ -66,7 +93,15 @@ class ImportTest extends \MailPoetTest {
       'last_name',
       'email',
     ];
-    $this->import = new Import($this->wpSegment, $this->testData);
+    $this->import = new Import(
+      $this->wpSegment,
+      $this->customFieldsRepository,
+      $this->newsletterOptionsRepository,
+      $this->subscriberCustomFieldRepository,
+      $this->subscriberRepository,
+      $this->subscriberSegmentRepository,
+      $this->testData
+    );
     $this->subscribersData = $this->import->transformSubscribersData(
       $this->testData['subscribers'],
       $this->testData['columns']
@@ -109,14 +144,12 @@ class ImportTest extends \MailPoetTest {
   }
 
   public function testItValidatesSubscribersEmail() {
-    $validationRules = ['email' => 'email'];
-
     // invalid email is removed from data object
     $data['email'] = [
       'àdam@smîth.com',
       'jane@doe.com',
     ];
-    $result = $this->import->validateSubscribersData($data, $validationRules);
+    $result = $this->import->validateSubscribersData($data);
     expect($result['email'])->count(1);
     expect($result['email'][0])->equals('jane@doe.com');
 
@@ -125,7 +158,7 @@ class ImportTest extends \MailPoetTest {
       'adam@smith.com',
       'jane@doe.com',
     ];
-    $result = $this->import->validateSubscribersData($data, $validationRules);
+    $result = $this->import->validateSubscribersData($data);
     expect($result)->equals($data);
   }
 
@@ -150,7 +183,15 @@ class ImportTest extends \MailPoetTest {
       'existingSubscribersStatus' => Import::STATUS_DONT_UPDATE,
       'updateSubscribers' => true,
     ];
-    $import = new Import($this->wpSegment, $data);
+    $import = new Import(
+      $this->wpSegment,
+      $this->customFieldsRepository,
+      $this->newsletterOptionsRepository,
+      $this->subscriberCustomFieldRepository,
+      $this->subscriberRepository,
+      $this->subscriberSegmentRepository,
+      $data
+    );
     try {
       $import->process();
       self::fail('No valid subscribers found exception not thrown.');
@@ -224,7 +265,15 @@ class ImportTest extends \MailPoetTest {
       'existingSubscribersStatus' => Import::STATUS_DONT_UPDATE,
       'updateSubscribers' => true,
     ];
-    $import = new Import($this->wpSegment, $data);
+    $import = new Import(
+      $this->wpSegment,
+      $this->customFieldsRepository,
+      $this->newsletterOptionsRepository,
+      $this->subscriberCustomFieldRepository,
+      $this->subscriberRepository,
+      $this->subscriberSegmentRepository,
+      $data
+    );
     $subscribersData = [
       'data' => $import->subscribersData,
       'fields' => $import->subscribersFields,
@@ -277,7 +326,6 @@ class ImportTest extends \MailPoetTest {
       'fields' => $this->subscribersFields,
     ];
     $this->import->createOrUpdateSubscribers(
-      'create',
       $subscribersData
     );
     $subscribers = Subscriber::findArray();
@@ -286,9 +334,7 @@ class ImportTest extends \MailPoetTest {
       ->equals($subscribersData['data']['email'][0]);
     $subscribersData['data']['first_name'][1] = 'MaryJane';
     $this->import->createOrUpdateSubscribers(
-      'update',
-      $subscribersData,
-      $customFields = false
+      $subscribersData
     );
     $subscribers = Subscriber::findArray();
     expect($subscribers[1]['first_name'])
@@ -306,7 +352,6 @@ class ImportTest extends \MailPoetTest {
     ];
     $subscribersData['fields'][] = 'deleted_at';
     $this->import->createOrUpdateSubscribers(
-      'create',
       $subscribersData
     );
     $dbSubscribers = array_column(
@@ -337,13 +382,11 @@ class ImportTest extends \MailPoetTest {
     ];
     $customField = $this->subscribersCustomFields[0];
     $this->import->createOrUpdateSubscribers(
-      'create',
       $subscribersData,
       $this->subscribersFields
     );
     $dbSubscribers = Subscriber::selectMany(['id','email'])->findArray();
     $this->import->createOrUpdateCustomFields(
-      'create',
       $dbSubscribers,
       $subscribersData,
       $this->subscribersCustomFields
@@ -354,7 +397,6 @@ class ImportTest extends \MailPoetTest {
       ->equals($subscribersData['data'][$customField][0]);
     $subscribersData[$customField][1] = 'Rio';
     $this->import->createOrUpdateCustomFields(
-      'update',
       $dbSubscribers,
       $subscribersData,
       $this->subscribersCustomFields
@@ -370,7 +412,6 @@ class ImportTest extends \MailPoetTest {
       'fields' => $this->subscribersFields,
     ];
     $this->import->createOrUpdateSubscribers(
-      'create',
       $subscribersData,
       $this->subscribersFields
     );
@@ -407,7 +448,6 @@ class ImportTest extends \MailPoetTest {
       date('Y-m-d H:i:s'),
     ];
     $this->import->createOrUpdateSubscribers(
-      'create',
       $subscribersData
     );
   }
@@ -442,7 +482,15 @@ class ImportTest extends \MailPoetTest {
     $data['columns']['status'] = ['index' => 4];
     $data['subscribers'][0][] = 'unsubscribed';
     $data['subscribers'][1][] = 'unsubscribed';
-    $import = new Import($this->wpSegment, $data);
+    $import = new Import(
+      $this->wpSegment,
+      $this->customFieldsRepository,
+      $this->newsletterOptionsRepository,
+      $this->subscriberCustomFieldRepository,
+      $this->subscriberRepository,
+      $this->subscriberSegmentRepository,
+      $data
+    );
     $result = $import->process();
     $newSubscribers = Subscriber::whereAnyIs([
       ['email' => $data['subscribers'][0][2]],
@@ -466,7 +514,15 @@ class ImportTest extends \MailPoetTest {
     $data['columns']['last_subscribed_at'] = ['index' => 4];
     $data['subscribers'][0][] = '2018-12-12 12:12:00';
     $data['subscribers'][1][] = '2018-12-12 12:12:00';
-    $import = new Import($this->wpSegment, $data);
+    $import = new Import(
+      $this->wpSegment,
+      $this->customFieldsRepository,
+      $this->newsletterOptionsRepository,
+      $this->subscriberCustomFieldRepository,
+      $this->subscriberRepository,
+      $this->subscriberSegmentRepository,
+      $data
+    );
     $existingSubscriber = Subscriber::create();
     $existingSubscriber->hydrate(
       [
@@ -485,7 +541,15 @@ class ImportTest extends \MailPoetTest {
     $this->tester->createWordPressUser('mary@jane.com', 'editor');
     $beforeImport = Subscriber::where('email', 'mary@jane.com')->findOne();
     $data = $this->testData;
-    $import = new Import($this->wpSegment, $data);
+    $import = new Import(
+      $this->wpSegment,
+      $this->customFieldsRepository,
+      $this->newsletterOptionsRepository,
+      $this->subscriberCustomFieldRepository,
+      $this->subscriberRepository,
+      $this->subscriberSegmentRepository,
+      $data
+    );
     $import->process();
     $imported = Subscriber::where('email', 'mary@jane.com')->findOne();
     expect($imported->firstName)->equals($beforeImport->firstName); // Subscriber name was synchronized from WP
@@ -505,7 +569,15 @@ class ImportTest extends \MailPoetTest {
         'status' => Subscriber::STATUS_UNSUBSCRIBED,
         'last_subscribed_at' => '2020-08-08 08:08:00',
       ]);
-    $import = new Import($this->wpSegment, $data);
+      $import = new Import(
+        $this->wpSegment,
+        $this->customFieldsRepository,
+        $this->newsletterOptionsRepository,
+        $this->subscriberCustomFieldRepository,
+        $this->subscriberRepository,
+        $this->subscriberSegmentRepository,
+        $data
+      );
     $import->process();
     $updatedSubscriber = Subscriber::where('email', $existingSubscriber->email)->findOne();
     expect($updatedSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
@@ -514,7 +586,15 @@ class ImportTest extends \MailPoetTest {
   public function testItDoesStatusNewSubscriberWhenNewSubscribersStatusIsSet() {
     $data = $this->testData;
     $data['newSubscribersStatus'] = Subscriber::STATUS_UNSUBSCRIBED;
-    $import = new Import($this->wpSegment, $data);
+    $import = new Import(
+      $this->wpSegment,
+      $this->customFieldsRepository,
+      $this->newsletterOptionsRepository,
+      $this->subscriberCustomFieldRepository,
+      $this->subscriberRepository,
+      $this->subscriberSegmentRepository,
+      $data
+    );
     $import->process();
     $newSubscriber = Subscriber::where('email', 'Adam@Smith.com')->findOne();
     expect($newSubscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
@@ -528,9 +608,9 @@ class ImportTest extends \MailPoetTest {
     Subscriber::where('email', 'mary@jane.com')
       ->findOne()
       ->delete();
-    $timestamp = time() + 1;
-    $this->import->createdAt = $this->import->requiredSubscribersFields['created_at'] = date('Y-m-d H:i:s', $timestamp);
-    $this->import->updatedAt = date('Y-m-d H:i:s', $timestamp + 1);
+    $this->import->createdAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $this->import->updatedAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 1);
+    $this->import->requiredSubscribersFields['created_at'] = $this->import->createdAt;
     $result = $this->import->process();
     expect($result['created'])->equals(1);
     $dbSubscribers = array_column(
