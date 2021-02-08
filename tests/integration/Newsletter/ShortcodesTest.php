@@ -188,6 +188,16 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->equals('test');
   }
 
+  public function testSanitizeName() {
+    $subscriber = $this->subscriber;
+    $subscriber->setFirstName(' "><img src=x onError=prompt(1)>');
+    $subscriber->setLastName(' "><img src=x onError=prompt(2)>');
+    $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
+    expect($result[0])->equals(' &quot;&gt;&lt;img src=x onError=prompt(1)&gt;');
+    $result = $this->shortcodesObject->process(['[subscriber:lastname | default:test]']);
+    expect($result[0])->equals(' &quot;&gt;&lt;img src=x onError=prompt(2)&gt;');
+  }
+
   public function testItCanProcessSubscriberShortcodes() {
     $shortcodesObject = $this->shortcodesObject;
     $result =
