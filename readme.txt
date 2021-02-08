@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.6
-Stable tag: 3.59.1
+Stable tag: 3.60.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.60.0 - 2021-02-08 =
+* Added: allow re-resubscribing through third-party API;
+* Fixed: reCaptcha sometimes not loading;
+* Fixed: Abandoned cart block always displaying options.
 
 = 3.59.1 - 2021-02-02 =
 * Added: new Amazon SES regions;
