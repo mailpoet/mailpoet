@@ -42,9 +42,9 @@ class Subscriber implements CategoryInterface {
       '';
     switch ($shortcodeDetails['action']) {
       case 'firstname':
-        return (!empty($subscriber->getFirstName())) ? $subscriber->getFirstName() : $defaultValue;
+        return (!empty($subscriber->getFirstName())) ? htmlspecialchars($subscriber->getFirstName()) : $defaultValue;
       case 'lastname':
-        return !empty($subscriber->getLastName()) ? $subscriber->getLastName() : $defaultValue;
+        return !empty($subscriber->getLastName()) ? htmlspecialchars($subscriber->getLastName()) : $defaultValue;
       case 'email':
         return $subscriber->getEmail();
       case 'displayname':

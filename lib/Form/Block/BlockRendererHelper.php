@@ -33,6 +33,11 @@ class BlockRendererHelper {
       $rules['error-message'] = __('Please specify a valid email address.', 'mailpoet');
     }
 
+    if (($block['id'] === 'first_name') || ($block['id'] === 'last_name')) {
+      $rules['pattern'] = "^[^<>]*$";
+      $rules['error-message'] = __('Please specify a valid name', 'mailpoet');
+    }
+
     if ($block['id'] === 'segments') {
       $rules['required'] = true;
       $rules['mincheck'] = 1;
