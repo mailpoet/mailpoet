@@ -317,8 +317,17 @@ class CronHelperTest extends \MailPoetTest {
 
   public function testItPingsDaemon() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
+
+    $pingResponse = null;
+    // because sometimes wp_remote_post ends with timeout we want to try three times
+    for ($i = 1; $i <= 3; $i++) {
+      $pingResponse = $this->cronHelper->pingDaemon();
+      if (strpos('cURL error 28', $pingResponse) !== false) {
+        break;
+      }
+    }
     // raw response is returned
-    expect($this->cronHelper->pingDaemon())->equals(DaemonHttpRunner::PING_SUCCESS_RESPONSE);
+    expect($pingResponse)->equals(DaemonHttpRunner::PING_SUCCESS_RESPONSE);
   }
 
   public function testItValidatesPingResponse() {
