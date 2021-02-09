@@ -711,4 +711,14 @@ class Functions {
   public function getEditPostLink($post, string $context = 'display') {
     return get_edit_post_link($post, $context);
   }
+
+  /**
+   * @param string $string
+   * @param array[]|string $allowedHtml
+   * @param array $allowedProtocols
+   * @return string
+   */
+  public function wpKses(string $string, $allowedHtml, $allowedProtocols = []) {
+    return wp_kses($string, $allowedHtml, $allowedProtocols);
+  }
 }
