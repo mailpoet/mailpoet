@@ -1,14 +1,13 @@
 // trim spaces, commas, periods,
 // single/double quotes and convert to lowercase
-import jQuery from 'jquery';
 import _ from 'underscore';
 
 const isRoleEmail = (email) => window.roleBasedEmails.findIndex((element) => email.startsWith(`${element}@`)) >= 0;
 
 const detectAndCleanupEmail = (emailString) => {
   let test;
-  // decode HTML entities
-  let email = jQuery('<div />').html(emailString).text();
+
+  let email = _.unescape(emailString);
   email = email
     .toLowerCase()
     // left/right trim spaces, punctuation (e.g., " 'email@email.com'; ")
