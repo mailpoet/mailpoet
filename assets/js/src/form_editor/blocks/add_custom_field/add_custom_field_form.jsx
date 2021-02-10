@@ -11,7 +11,6 @@ import { isEmpty } from 'lodash';
 
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 import TextFieldSettings from '../custom_text/custom_field_settings.jsx';
-import CheckboxFieldSettings from '../custom_checkbox/custom_field_settings.jsx';
 import DateFieldSettings from '../custom_date/custom_field_settings.jsx';
 import RadioAndSelectFieldSettings from '../custom_radio/custom_field_settings.jsx';
 
@@ -53,15 +52,6 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
 
   const renderSettingsForType = () => {
     switch (fieldType) {
-      case 'checkbox':
-        return (
-          <CheckboxFieldSettings
-            mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
-            isChecked={fieldSettings.isChecked ? fieldSettings.isChecked : false}
-            checkboxLabel={fieldSettings.checkboxLabel ? fieldSettings.checkboxLabel : ''}
-            onChange={setFieldSettings}
-          />
-        );
       case 'date':
         return (
           <DateFieldSettings
@@ -73,6 +63,7 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
             onChange={setFieldSettings}
           />
         );
+      case 'checkbox':
       case 'radio':
       case 'select':
         return (

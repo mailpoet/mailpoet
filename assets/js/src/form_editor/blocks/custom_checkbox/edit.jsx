@@ -1,4 +1,3 @@
-/* eslint-disable react/no-danger */
 import React from 'react';
 import {
   Panel,
@@ -12,7 +11,8 @@ import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
-import CustomFieldSettings from './custom_field_settings.jsx';
+import CustomFieldSettings from '../custom_radio/custom_field_settings.jsx';
+import formatLabel from '../label_formatter.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 
 const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
@@ -30,36 +30,14 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
     customFieldEdited,
   } = useDispatch('mailpoet-form-editor');
 
-  const getCheckboxLabel = () => {
-    if (Array.isArray(attributes.values)) {
-      const value = attributes.values[0];
-      if (value) {
-        return value.name;
-      }
-    }
-    return '';
-  };
-
-  const isChecked = () => {
-    let checked = false;
-    if (Array.isArray(attributes.values)) {
-      const value = attributes.values[0];
-      if (value && value.isChecked) {
-        checked = true;
-      }
-    }
-    return checked;
-  };
-
   const inspectorControls = (
     <InspectorControls>
       <Panel>
         <PanelBody title={MailPoet.I18n.t('customFieldSettings')} initialOpen>
           <CustomFieldSettings
             mandatory={attributes.mandatory}
+            values={attributes.values}
             isSaving={isSaving}
-            isChecked={isChecked()}
-            checkboxLabel={getCheckboxLabel()}
             onSave={(params) => saveCustomField({
               customFieldId: attributes.customFieldId,
               data: {
@@ -67,10 +45,7 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
               },
               onFinish: () => setAttributes({
                 mandatory: params.mandatory,
-                values: [{
-                  isChecked: params.isChecked,
-                  name: params.checkboxLabel,
-                }],
+                values: params.values,
               }),
             })}
             onCustomFieldDelete={() => deleteCustomField(
@@ -101,31 +76,27 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
   );
 
   const getLabel = () => {
-    if (attributes.hideLabel || !attributes.label) return null;
-    return attributes.label;
+    if (attributes.hideLabel) return null;
+    return formatLabel(attributes);
   };
-
-
-  let checkboxLabel = getCheckboxLabel();
-  if (attributes.mandatory) {
-    checkboxLabel += ' *';
-  }
 
   return (
     <ParagraphEdit className={attributes.className}>
       {inspectorControls}
-      <span className="mailpoet_checkbox_label" data-automation-id="editor_custom_field_checkbox_block">{getLabel()}</span>
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            disabled
-            checked={isChecked()}
-            className="mailpoet_checkbox"
-          />
-          <span dangerouslySetInnerHTML={{ __html: checkboxLabel }} />
-        </label>
-      </div>
+      <span className="mailpoet_checkbox_label" data-automation-id="editor_custom_field_checkbox_buttons_block">{getLabel()}</span>
+      {Array.isArray(attributes.values) && attributes.values.map((value) => (
+        <div key={value.id}>
+          <label>
+            <input
+              type="checkbox"
+              disabled
+              checked={value.isChecked || false}
+              className="mailpoet_checkbox"
+            />
+            {value.name}
+          </label>
+        </div>
+      ))}
     </ParagraphEdit>
   );
 };
@@ -134,13 +105,14 @@ CustomCheckboxEdit.propTypes = {
   attributes: PropTypes.shape({
     label: PropTypes.string.isRequired,
     customFieldId: PropTypes.number.isRequired,
+    values: PropTypes.arrayOf(PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+      isChecked: PropTypes.bool,
+    })),
     mandatory: PropTypes.bool.isRequired,
     hideLabel: PropTypes.bool,
     className: PropTypes.string,
-    values: PropTypes.arrayOf(PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      isChecked: PropTypes.bool,
-    })),
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,
   clientId: PropTypes.string.isRequired,

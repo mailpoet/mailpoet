@@ -19,14 +19,14 @@ export function getSettings(customField) {
         type: 'boolean',
         default: false,
       },
+      mandatory: {
+        type: 'boolean',
+        default: customField.params.required ? !!customField.params.required : false,
+      },
       values: {
         type: 'array',
         default: customField.params.values
           ? customFieldValuesToBlockValues(customField.params.values) : [],
-      },
-      mandatory: {
-        type: 'boolean',
-        default: customField.params.required ? !!customField.params.required : false,
       },
       customFieldId: {
         type: 'string',
