@@ -115,6 +115,29 @@ class FormsTest extends \MailPoetTest {
     expect($response->data['settings']['segments_selected_by'])->equals('admin');
   }
 
+  public function testItOnlyAdminCanSaveCustomHtml() {
+    // Administrator
+    wp_set_current_user(1);
+    $response = $this->endpoint->create();
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+
+    $form = $this->reloadForm((int)$response->data['id'])->asArray();
+    $form['body'][] = [
+      'type' => FormEntity::HTML_BLOCK_TYPE,
+      'params' => [
+        'content' => 'Hello',
+      ],
+    ] ;
+    $response = $this->endpoint->saveEditor($form);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    // Non Admin
+    wp_set_current_user(0);
+    $response = $this->endpoint->saveEditor($form);
+    expect($response->status)->equals(APIResponse::STATUS_FORBIDDEN);
+    codecept_debug($response);
+    expect($response->errors[0]['message'])->startsWith('Only administrator can');
+  }
+
   public function testItCanExtractListsFromListSelectionBlock() {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
