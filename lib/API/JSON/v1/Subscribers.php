@@ -181,6 +181,8 @@ class Subscribers extends APIEndpoint {
   }
 
   public function subscribe($data = []) {
+
+\error_log('subscribe: '.print_r($data,true));
     $formId = (isset($data['form_id']) ? (int)$data['form_id'] : false);
     $form = Form::findOne($formId);
     $formEntity = $this->formsRepository->findOneById($formId);
