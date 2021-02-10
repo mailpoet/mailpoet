@@ -3,7 +3,9 @@
 namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
+use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\FormsResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\FormEntity;
@@ -226,6 +228,14 @@ class Forms extends APIEndpoint {
       $settings['segments'] = $listSelection;
     } else {
       $settings['segments_selected_by'] = 'admin';
+    }
+
+    // Check Custom HTML block permissions
+    $customHtmlBlocks = $formEntity->getBlocksByType(FormEntity::HTML_BLOCK_TYPE);
+    if (count($customHtmlBlocks) && !$this->wp->currentUserCan('administrator')) {
+      return $this->errorResponse([
+        Error::FORBIDDEN => __('Only administrator can edit forms containing Custom HTML block.', 'mailpoet'),
+      ], [], Response::STATUS_FORBIDDEN);
     }
 
     if ($body !== null) {
