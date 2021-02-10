@@ -86,6 +86,9 @@ export default () => {
     allWooCommerceTags: window.mailpoet_woocommerce_tags,
     tutorialSeen: window.mailpoet_tutorial_seen === '1',
     tutorialUrl: window.mailpoet_tutorial_url,
+    user: {
+      isAdministrator: window.mailpoet_is_administrator,
+    },
   };
 
   const config = {
