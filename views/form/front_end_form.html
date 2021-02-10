@@ -36,7 +36,11 @@
         src='<%= image_url("form_close_icon/" ~ close_button_icon ~ ".svg") %>'
       >
     <% endif %>
-    <%= styles | raw %>
+
+    <style type="text/css">
+     <%= styles %>
+    </style>
+
     <form
       target="_self"
       method="post"
