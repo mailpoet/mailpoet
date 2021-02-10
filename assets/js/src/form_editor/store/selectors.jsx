@@ -206,4 +206,7 @@ export default {
   hasEditorRedo(state) {
     return state.editorHistoryOffset > 0;
   },
+  isUserAdministrator(state) {
+    return state.user.isAdministrator;
+  },
 };

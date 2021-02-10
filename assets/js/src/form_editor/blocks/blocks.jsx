@@ -31,6 +31,9 @@ export const registerCustomFieldBlock = (customField) => {
 export const initBlocks = () => {
   const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
 
+  // Configure Custom HTML block to be available in inserter only for admins
+  html.settings.supports.inserter = select('mailpoet-form-editor').isUserAdministrator();
+
   const categories = [
     { slug: 'obligatory', title: '' }, // Blocks from this category are not in block insert popup
   ];

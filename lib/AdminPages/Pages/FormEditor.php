@@ -263,6 +263,7 @@ class FormEditor {
       'products' => $this->wpPostListLoader->getProducts(),
       'product_categories' => $this->wpPostListLoader->getWooCommerceCategories(),
       'product_tags' => $this->wpPostListLoader->getWooCommerceTags(),
+      'is_administrator' => $this->wp->currentUserCan('administrator'),
     ];
     $this->wp->wpEnqueueMedia();
     $this->pageRenderer->displayPage('form/editor.html', $data);
