@@ -43,7 +43,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AdminPages\Pages\Subscribers::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\SubscribersExport::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\SubscribersImport::class)->setPublic(true);
-    $container->autowire(\MailPoet\AdminPages\Pages\Update::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\WelcomeWizard::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\WooCommerceSetup::class)->setPublic(true);
     // Analytics
