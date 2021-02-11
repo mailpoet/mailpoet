@@ -43,7 +43,7 @@ class Select {
       class="mailpoet_select"
       name="' . $fieldName . '" '
       . $automationId
-      . 'style="' . $this->blockStylesRenderer->renderForSelect([], $formSettings) . '"'
+      . 'style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"'
       . '>';
 
     if (isset($block['params']['label_within']) && $block['params']['label_within']) {

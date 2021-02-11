@@ -6,6 +6,7 @@ use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Checkbox;
 use MailPoet\Form\BlockWrapperRenderer;
 use MailPoet\Test\Form\HtmlParser;
+use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
 
 require_once __DIR__ . '/../HtmlParser.php';
@@ -46,7 +47,10 @@ class CheckboxTest extends \MailPoetUnitTest {
     $this->rendererHelperMock = $this->createMock(BlockRendererHelper::class);
     $this->wrapperMock = $this->createMock(BlockWrapperRenderer::class);
     $this->wrapperMock->method('render')->will($this->returnArgument(1));
-    $this->checkbox = new Checkbox($this->rendererHelperMock, $this->wrapperMock);
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('escAttr')->will($this->returnArgument(0));
+    $wpMock->method('escHtml')->will($this->returnArgument(0));
+    $this->checkbox = new Checkbox($this->rendererHelperMock, $this->wrapperMock, $wpMock);
     $this->htmlParser = new HtmlParser();
   }
 

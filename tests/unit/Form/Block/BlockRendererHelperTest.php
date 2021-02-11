@@ -35,6 +35,7 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     parent::_before();
     $this->wpMock = $this->createMock(WPFunctions::class);
     $this->wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->wpMock->method('escHtml')->will($this->returnArgument(0));
     $this->obfuscatorMock = $this->createMock(FieldNameObfuscator::class);
     $this->obfuscatorMock->method('obfuscate')->will($this->returnArgument(0));
     $this->rendererHelper = new BlockRendererHelper($this->obfuscatorMock, $this->wpMock);

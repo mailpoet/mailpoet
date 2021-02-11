@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\Heading;
+use MailPoet\WP\Functions as WPFunctions;
 
 class HeadingTest extends \MailPoetUnitTest {
   /** @var Heading */
@@ -10,7 +11,9 @@ class HeadingTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->heading = new Heading();
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->heading = new Heading($wpMock);
   }
 
   public function testItShouldRenderHeading() {

@@ -2,14 +2,23 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Column {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(WPFunctions $wp) {
+    $this->wp = $wp;
+  }
+
   public function render(array $block, string $content): string {
     return "<div {$this->getClass($block['params'])}{$this->getStyles($block['params'])}>$content</div>";
   }
 
   private function getStyles(array $params): string {
     if (isset($params['width'])) {
-      return " style=\"flex-basis:{$params['width']}%;\"";
+      return " style=\"flex-basis:{$this->wp->escAttr($params['width'])}%;\"";
     }
     return '';
   }
@@ -23,6 +32,6 @@ class Column {
       $classes[] = $params['class_name'];
     }
     $classes = implode(' ', $classes);
-    return "class=\"$classes\"";
+    return "class=\"{$this->wp->escAttr($classes)}\"";
   }
 }

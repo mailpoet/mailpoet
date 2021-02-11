@@ -2,7 +2,16 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Columns {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(WPFunctions $wp) {
+    $this->wp = $wp;
+  }
+
   public function render(array $block, string $content): string {
     return "<div {$this->getClass($block['params'] ?? [])}{$this->getStyles($block['params'] ?? [])}>$content</div>";
   }
@@ -19,7 +28,7 @@ class Columns {
       $styles[] = "background:{$params['gradient']};";
     }
     if (count($styles)) {
-      return ' style="' . implode('', $styles) . '"';
+      return ' style="' . $this->wp->escAttr(implode('', $styles)) . '"';
     }
     return '';
   }
@@ -39,6 +48,6 @@ class Columns {
       $classes[] = $params['class_name'];
     }
     $classes = implode(' ', $classes);
-    return "class=\"$classes\"";
+    return "class=\"{$this->wp->escAttr($classes)}\"";
   }
 }

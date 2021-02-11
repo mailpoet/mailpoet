@@ -4,6 +4,7 @@ namespace MailPoet\Form\Block;
 
 use MailPoet\Form\BlockStylesRenderer;
 use MailPoet\Form\BlockWrapperRenderer;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Submit {
 
@@ -16,10 +17,19 @@ class Submit {
   /** @var BlockStylesRenderer */
   private $stylesRenderer;
 
-  public function __construct(BlockRendererHelper $rendererHelper, BlockWrapperRenderer $wrapper, BlockStylesRenderer $stylesRenderer) {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(
+    BlockRendererHelper $rendererHelper,
+    BlockWrapperRenderer $wrapper,
+    BlockStylesRenderer $stylesRenderer,
+    WPFunctions $wp
+  ) {
     $this->rendererHelper = $rendererHelper;
     $this->wrapper = $wrapper;
     $this->stylesRenderer = $stylesRenderer;
+    $this->wp = $wp;
   }
 
   public function render(array $block, array $formSettings): string {
@@ -32,13 +42,13 @@ class Submit {
     $html .= 'data-automation-id="subscribe-submit-button" ';
 
     if (isset($block['styles']['font_family'])) {
-      $html .= "data-font-family='{$block['styles']['font_family']}' " ;
+      $html .= "data-font-family='{$this->wp->escAttr($block['styles']['font_family'])}' " ;
     }
 
     $styles = $this->stylesRenderer->renderForButton($block['styles'] ?? [], $formSettings);
 
     if ($styles) {
-      $html .= 'style="' . $styles . '" ';
+      $html .= 'style="' . $this->wp->escAttr($styles) . '" ';
     }
 
     $html .= '/>';

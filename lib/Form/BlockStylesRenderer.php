@@ -2,7 +2,16 @@
 
 namespace MailPoet\Form;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class BlockStylesRenderer {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(WPFunctions $wp) {
+    $this->wp = $wp;
+  }
+
   public function renderForTextInput(array $styles, array $formSettings = []): string {
     $rules = [];
     if (isset($styles['full_width']) && intval($styles['full_width'])) {
@@ -95,7 +104,7 @@ class BlockStylesRenderer {
     ) {
       return '<style>'
         . $selector . '::placeholder{'
-        . 'color:' . $block['styles']['font_color'] . ';'
+        . 'color:' . $this->wp->escAttr($block['styles']['font_color']) . ';'
         . 'opacity: 1;'
         . '}'
         . '</style>';

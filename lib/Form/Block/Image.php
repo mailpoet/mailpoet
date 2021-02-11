@@ -22,13 +22,13 @@ class Image {
   private function renderImage(array $params): string {
     $attributes = [];
     $styles = [];
-    $attributes[] = 'src="' . $params['url'] . '"';
-    $attributes[] = $params['alt'] ? 'alt="' . $params['alt'] . '"' : 'alt';
+    $attributes[] = 'src="' . $this->wp->escAttr($params['url']) . '"';
+    $attributes[] = $params['alt'] ? 'alt="' . $this->wp->escAttr($params['alt']) . '"' : 'alt';
     if ($params['title']) {
-      $attributes[] = 'title="' . $params['title'] . '"';
+      $attributes[] = 'title="' . $this->wp->escAttr($params['title']) . '"';
     }
     if ($params['id']) {
-      $attributes[] = 'class="wp-image-' . $params['id'] . '"';
+      $attributes[] = 'class="wp-image-' . $this->wp->escAttr($params['id']) . '"';
       $attributes[] = 'srcset="' . $this->wp->wpGetAttachmentImageSrcset(intval($params['id']), $params['size_slug']) . '"';
     }
     if ($params['width']) {
@@ -40,7 +40,7 @@ class Image {
       $styles[] = 'height: ' . intval($params['height']) . 'px';
     }
     if ($styles) {
-      $attributes[] = 'style="' . implode(';', $styles) . '"';
+      $attributes[] = 'style="' . $this->wp->escAttr(implode(';', $styles)) . '"';
     }
     return '<img ' . implode(' ', $attributes) . '>';
   }
@@ -55,26 +55,26 @@ class Image {
     if ($params['href']) {
       $img = $this->wrapToLink($params, $img);
     }
-    $caption = $params['caption'] ? "<figcaption>{$params['caption']}</figcaption>" : '';
-    $figure = '<figure class="' . implode(' ', $figureClasses) . '">' . $img . $caption . '</figure>';
+    $caption = $params['caption'] ? "<figcaption>{$this->wp->escHtml($params['caption'])}</figcaption>" : '';
+    $figure = '<figure class="' . $this->wp->escAttr(implode(' ', $figureClasses)) . '">' . $img . $caption . '</figure>';
     // Main wrapper
     $divClasses = ['mailpoet_form_image'];
     if (trim($params['class_name'])) {
       $divClasses[] = trim($params['class_name']);
     }
-    return '<div class="' . implode(' ', $divClasses) . '">' . $figure . '</div>';
+    return '<div class="' . $this->wp->escAttr(implode(' ', $divClasses)) . '">' . $figure . '</div>';
   }
 
   private function wrapToLink(array $params, string $img): string {
-    $attributes = ['href="' . $params['href'] . '"'];
+    $attributes = ['href="' . $this->wp->escAttr($params['href']) . '"'];
     if ($params['link_class']) {
-      $attributes[] = 'class="' . $params['link_class'] . '"';
+      $attributes[] = 'class="' . $this->wp->escAttr($params['link_class']) . '"';
     }
     if ($params['link_target']) {
-      $attributes[] = 'target="' . $params['link_target'] . '"';
+      $attributes[] = 'target="' . $this->wp->escAttr($params['link_target']) . '"';
     }
     if ($params['rel']) {
-      $attributes[] = 'rel="' . $params['rel'] . '"';
+      $attributes[] = 'rel="' . $this->wp->escAttr($params['rel']) . '"';
     }
     return '<a ' . implode(' ', $attributes) . ' >' . $img . '</a>';
   }

@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Form;
 
 use MailPoet\Form\BlockStylesRenderer;
+use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/HtmlParser.php';
 
@@ -12,7 +13,9 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->renderer = new BlockStylesRenderer();
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->renderer = new BlockStylesRenderer($wpMock);
   }
 
   public function testItShouldReturnEmptyStringForNoStylesOrUnsupportedStyles() {

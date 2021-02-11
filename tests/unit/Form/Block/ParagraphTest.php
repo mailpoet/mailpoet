@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\Paragraph;
+use MailPoet\WP\Functions as WPFunctions;
 
 class ParagraphTest extends \MailPoetUnitTest {
   /** @var Paragraph */
@@ -10,7 +11,9 @@ class ParagraphTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->paragraph = new Paragraph();
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->paragraph = new Paragraph($wpMock);
   }
 
   public function testItShouldRenderParagraph() {

@@ -46,6 +46,8 @@ class ImageTest extends \MailPoetUnitTest {
   public function _before() {
     parent::_before();
     $this->wpMock = $this->createMock(WPFunctions::class);
+    $this->wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->wpMock->method('escHtml')->will($this->returnArgument(0));
     $this->image = new Image($this->wpMock);
     $this->htmlParser = new HtmlParser();
 
