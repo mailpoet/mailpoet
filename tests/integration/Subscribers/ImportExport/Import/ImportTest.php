@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers\ImportExport\Import;
 
+use DateTime;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -100,15 +101,7 @@ class ImportTest extends \MailPoetTest {
       'last_name',
       'email',
     ];
-    $this->import = new Import(
-      $this->wpSegment,
-      $this->customFieldsRepository,
-      $this->newsletterOptionsRepository,
-      $this->subscriberCustomFieldRepository,
-      $this->subscriberRepository,
-      $this->subscriberSegmentRepository,
-      $this->testData
-    );
+    $this->import = $this->createImportInstance($this->testData);
     $this->subscribersData = $this->import->transformSubscribersData(
       $this->testData['subscribers'],
       $this->testData['columns']
@@ -190,15 +183,7 @@ class ImportTest extends \MailPoetTest {
       'existingSubscribersStatus' => Import::STATUS_DONT_UPDATE,
       'updateSubscribers' => true,
     ];
-    $import = new Import(
-      $this->wpSegment,
-      $this->customFieldsRepository,
-      $this->newsletterOptionsRepository,
-      $this->subscriberCustomFieldRepository,
-      $this->subscriberRepository,
-      $this->subscriberSegmentRepository,
-      $data
-    );
+    $import = $this->createImportInstance($data);
     try {
       $import->process();
       self::fail('No valid subscribers found exception not thrown.');
@@ -234,13 +219,14 @@ class ImportTest extends \MailPoetTest {
       ],
     ];
     foreach ($subscribersDataExisting as $i => $existingSubscriber) {
-      $subscriber = new SubscriberEntity();
-      $subscriber->setFirstName($existingSubscriber['first_name']);
-      $subscriber->setLastName($existingSubscriber['last_name']);
-      $subscriber->setEmail($existingSubscriber['email']);
-      $subscriber->setWpUserId($existingSubscriber['wp_user_id'] ?? null);
-      $this->subscriberRepository->persist($subscriber);
-      $this->subscriberRepository->flush();
+      $this->createSubscriber(
+        $existingSubscriber['first_name'],
+        $existingSubscriber['last_name'],
+        $existingSubscriber['email'],
+        null,
+        null,
+        $existingSubscriber['wp_user_id'] ?? null
+      );
       $subscribersData['first_name'][] = $existingSubscriber['first_name'];
       $subscribersData['last_name'][] = $existingSubscriber['last_name'];
       $subscribersData['email'][] = strtolower($existingSubscriber['email']); // import emails are always lowercase
@@ -276,15 +262,7 @@ class ImportTest extends \MailPoetTest {
       'existingSubscribersStatus' => Import::STATUS_DONT_UPDATE,
       'updateSubscribers' => true,
     ];
-    $import = new Import(
-      $this->wpSegment,
-      $this->customFieldsRepository,
-      $this->newsletterOptionsRepository,
-      $this->subscriberCustomFieldRepository,
-      $this->subscriberRepository,
-      $this->subscriberSegmentRepository,
-      $data
-    );
+    $import = $this->createImportInstance($data);
     $subscribersData = [
       'data' => $import->subscribersData,
       'fields' => $import->subscribersFields,
@@ -478,14 +456,13 @@ class ImportTest extends \MailPoetTest {
   }
 
   public function testItDoesNotUpdateExistingSubscribersStatusWhenStatusColumnIsNotPresent() {
-    $subscriber = new SubscriberEntity();
-    $subscriber->setFirstName('Adam');
-    $subscriber->setLastName('Smith');
-    $subscriber->setEmail('Adam@Smith.com');
-    $subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
-    $this->subscriberRepository->persist($subscriber);
-    $this->subscriberRepository->flush();
-    $result = $this->import->process();
+    $subscriber = $this->createSubscriber(
+      'Adam',
+      'Smith',
+      'Adam@Smith.com',
+      SubscriberEntity::STATUS_UNSUBSCRIBED
+    );
+    $this->import->process();
 
     $updatedSubscriber = $this->subscriberRepository->findOneBy(['email' => $subscriber->getEmail()]);
     assert($updatedSubscriber instanceof SubscriberEntity);
@@ -497,15 +474,7 @@ class ImportTest extends \MailPoetTest {
     $data['columns']['status'] = ['index' => 4];
     $data['subscribers'][0][] = 'unsubscribed';
     $data['subscribers'][1][] = 'unsubscribed';
-    $import = new Import(
-      $this->wpSegment,
-      $this->customFieldsRepository,
-      $this->newsletterOptionsRepository,
-      $this->subscriberCustomFieldRepository,
-      $this->subscriberRepository,
-      $this->subscriberSegmentRepository,
-      $data
-    );
+    $import = $this->createImportInstance($data);
     $result = $import->process();
     /** @var SubscriberEntity[] $newSubscribers */
     $newSubscribers = $this->subscriberRepository->findBy(['email' => [
@@ -529,24 +498,16 @@ class ImportTest extends \MailPoetTest {
     $data['columns']['last_subscribed_at'] = ['index' => 4];
     $data['subscribers'][0][] = '2018-12-12 12:12:00';
     $data['subscribers'][1][] = '2018-12-12 12:12:00';
-    $import = new Import(
-      $this->wpSegment,
-      $this->customFieldsRepository,
-      $this->newsletterOptionsRepository,
-      $this->subscriberCustomFieldRepository,
-      $this->subscriberRepository,
-      $this->subscriberSegmentRepository,
-      $data
+    $lastSubscribedAt = Carbon::createFromFormat('Y-m-d H:i:s', '2017-12-12 12:12:00');
+    assert($lastSubscribedAt instanceof Carbon);
+    $import = $this->createImportInstance($data);
+    $existingSubscriber = $this->createSubscriber(
+      'Adam',
+      'Smith',
+      'Adam@Smith.com',
+      null,
+      $lastSubscribedAt
     );
-    $subscribedAt = Carbon::createFromFormat('Y-m-d H:i:s', '2017-12-12 12:12:00');
-    assert($subscribedAt instanceof Carbon);
-    $existingSubscriber = new SubscriberEntity();
-    $existingSubscriber->setFirstName('Adam');
-    $existingSubscriber->setLastName('Smith');
-    $existingSubscriber->setEmail('Adam@Smith.com');
-    $existingSubscriber->setLastSubscribedAt($subscribedAt);
-    $this->subscriberRepository->persist($existingSubscriber);
-    $this->subscriberRepository->flush();
     $import->process();
 
     $updatedSubscriber = $this->subscriberRepository->findOneBy(['email' => $existingSubscriber->getEmail()]);
@@ -559,15 +520,7 @@ class ImportTest extends \MailPoetTest {
     $beforeImport = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
     assert($beforeImport instanceof SubscriberEntity);
     $data = $this->testData;
-    $import = new Import(
-      $this->wpSegment,
-      $this->customFieldsRepository,
-      $this->newsletterOptionsRepository,
-      $this->subscriberCustomFieldRepository,
-      $this->subscriberRepository,
-      $this->subscriberSegmentRepository,
-      $data
-    );
+    $import = $this->createImportInstance($data);
     $import->process();
 
     $this->entityManager->clear();
@@ -581,25 +534,16 @@ class ImportTest extends \MailPoetTest {
   public function testItDoesUpdateStatusExistingSubscriberWhenExistingSubscribersStatusIsSet() {
     $data = $this->testData;
     $data['existingSubscribersStatus'] = SubscriberEntity::STATUS_SUBSCRIBED;
-    $subscribedAt = Carbon::createFromFormat('Y-m-d H:i:s', '2020-08-08 08:08:00');
-    assert($subscribedAt instanceof Carbon);
-    $existingSubscriber = new SubscriberEntity();
-    $existingSubscriber->setFirstName('Adam');
-    $existingSubscriber->setLastName('Smith');
-    $existingSubscriber->setEmail('Adam@Smith.com');
-    $existingSubscriber->setLastSubscribedAt($subscribedAt);
-    $existingSubscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
-    $this->subscriberRepository->persist($existingSubscriber);
-    $this->subscriberRepository->flush();
-      $import = new Import(
-        $this->wpSegment,
-        $this->customFieldsRepository,
-        $this->newsletterOptionsRepository,
-        $this->subscriberCustomFieldRepository,
-        $this->subscriberRepository,
-        $this->subscriberSegmentRepository,
-        $data
-      );
+    $lastSubscribedAt = Carbon::createFromFormat('Y-m-d H:i:s', '2020-08-08 08:08:00');
+    assert($lastSubscribedAt instanceof Carbon);
+    $existingSubscriber = $this->createSubscriber(
+      'Adam',
+      'Smith',
+      'Adam@Smith.com',
+      SubscriberEntity::STATUS_UNSUBSCRIBED,
+      $lastSubscribedAt
+    );
+    $import = $this->createImportInstance($data);
     $import->process();
 
     $this->entityManager->clear();
@@ -611,15 +555,7 @@ class ImportTest extends \MailPoetTest {
   public function testItDoesStatusNewSubscriberWhenNewSubscribersStatusIsSet() {
     $data = $this->testData;
     $data['newSubscribersStatus'] = SubscriberEntity::STATUS_UNSUBSCRIBED;
-    $import = new Import(
-      $this->wpSegment,
-      $this->customFieldsRepository,
-      $this->newsletterOptionsRepository,
-      $this->subscriberCustomFieldRepository,
-      $this->subscriberRepository,
-      $this->subscriberSegmentRepository,
-      $data
-    );
+    $import = $this->createImportInstance($data);
     $import->process();
     $newSubscriber = $this->subscriberRepository->findOneBy(['email' => 'Adam@Smith.com']);
     assert($newSubscriber instanceof SubscriberEntity);
@@ -652,6 +588,42 @@ class ImportTest extends \MailPoetTest {
       ]);
       expect($subscriberSegment)->isInstanceOf(SubscriberSegmentEntity::class);
     }
+  }
+
+  private function createImportInstance(array $data): Import {
+    return new Import(
+      $this->wpSegment,
+      $this->customFieldsRepository,
+      $this->newsletterOptionsRepository,
+      $this->subscriberCustomFieldRepository,
+      $this->subscriberRepository,
+      $this->subscriberSegmentRepository,
+      $data
+    );
+  }
+
+  private function createSubscriber(
+    string $firstName,
+    string $lastName,
+    string $email,
+    ?string $status = null,
+    ?DateTime $lastSubscribedAt = null,
+    ?int $wpUserid = null
+  ): SubscriberEntity {
+    $subscriber = new SubscriberEntity();
+    $subscriber->setFirstName($firstName);
+    $subscriber->setLastName($lastName);
+    $subscriber->setEmail($email);
+    if ($status) {
+      $subscriber->setStatus($status);
+    }
+    if ($lastSubscribedAt) {
+      $subscriber->setLastSubscribedAt($lastSubscribedAt);
+    }
+    $subscriber->setWpUserId($wpUserid);
+    $this->subscriberRepository->persist($subscriber);
+    $this->subscriberRepository->flush();
+    return $subscriber;
   }
 
   public function _after() {
