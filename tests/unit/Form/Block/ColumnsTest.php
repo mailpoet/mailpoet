@@ -4,6 +4,7 @@ namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\Columns;
 use MailPoet\Test\Form\HtmlParser;
+use MailPoet\WP\Functions as WPFunctions;
 
 require_once __DIR__ . '/../HtmlParser.php';
 
@@ -21,7 +22,9 @@ class ColumnsTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->columns = new Columns();
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->columns = new Columns($wpMock);
     $this->htmlParser = new HtmlParser();
   }
 

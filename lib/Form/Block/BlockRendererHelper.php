@@ -76,7 +76,7 @@ class BlockRendererHelper {
         if (is_bool($value)) {
           $value = ($value) ? 'true' : 'false';
         }
-        $validation[] = 'data-parsley-' . $rule . '="' . $value . '"';
+        $validation[] = 'data-parsley-' . $rule . '="' . $this->wp->escAttr($value) . '"';
       }
     }
     return join(' ', $validation);
@@ -127,7 +127,7 @@ class BlockRendererHelper {
     if (isset($styles['bold'])) {
       $rules[] = 'font-weight: bold;';
     }
-    return $rules ? 'style="' . implode("", $rules) . '"' : '';
+    return $rules ? 'style="' . $this->wp->escAttr(implode("", $rules)) . '"' : '';
   }
 
   public function renderInputPlaceholder(array $block): string {
@@ -163,7 +163,7 @@ class BlockRendererHelper {
   public function getFieldLabel(array $block = []): string {
     return (isset($block['params']['label'])
             && strlen(trim($block['params']['label'])) > 0)
-            ? trim($block['params']['label']) : '';
+            ? $this->wp->escHtml(trim($block['params']['label'])) : '';
   }
 
   public function getFieldValue($block = []) {

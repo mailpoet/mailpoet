@@ -7,6 +7,7 @@ use MailPoet\Form\Block\Submit;
 use MailPoet\Form\BlockStylesRenderer;
 use MailPoet\Form\BlockWrapperRenderer;
 use MailPoet\Test\Form\HtmlParser;
+use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
 
 require_once __DIR__ . '/../HtmlParser.php';
@@ -45,7 +46,9 @@ class SubmitTest extends \MailPoetUnitTest {
     $this->wrapperMock = $this->createMock(BlockWrapperRenderer::class);
     $this->wrapperMock->method('render')->will($this->returnArgument(1));
     $this->stylesRendererMock = $this->createMock(BlockStylesRenderer::class);
-    $this->submit = new Submit($this->rendererHelperMock, $this->wrapperMock, $this->stylesRendererMock);
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->submit = new Submit($this->rendererHelperMock, $this->wrapperMock, $this->stylesRendererMock, $wpMock);
     $this->htmlParser = new HtmlParser();
   }
 

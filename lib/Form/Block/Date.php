@@ -4,6 +4,7 @@ namespace MailPoet\Form\Block;
 
 use MailPoet\Form\BlockStylesRenderer;
 use MailPoet\Form\BlockWrapperRenderer;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Date {
 
@@ -16,14 +17,19 @@ class Date {
   /** @var BlockStylesRenderer */
   private $blockStylesRenderer;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     BlockRendererHelper $rendererHelper,
     BlockStylesRenderer $blockStylesRenderer,
-    BlockWrapperRenderer $wrapper
+    BlockWrapperRenderer $wrapper,
+    WPFunctions $wp
   ) {
     $this->rendererHelper = $rendererHelper;
     $this->wrapper = $wrapper;
     $this->blockStylesRenderer = $blockStylesRenderer;
+    $this->wp = $wp;
   }
 
   public function render(array $block, array $formSettings): string {
@@ -55,7 +61,7 @@ class Date {
     foreach ($dateSelectors as $dateSelector) {
       if ($dateSelector === 'DD') {
         $html .= '<select class="mailpoet_date_day" ';
-        $html .= ' style="' . $this->blockStylesRenderer->renderForSelect([], $formSettings) . '"';
+        $html .= ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a day', 'mailpoet'),
         ]);
@@ -64,7 +70,7 @@ class Date {
         $html .= '</select>';
       } else if ($dateSelector === 'MM') {
         $html .= '<select class="mailpoet_select mailpoet_date_month" data-automation-id="form_date_month" ';
-        $html .= ' style="' . $this->blockStylesRenderer->renderForSelect([], $formSettings) . '"';
+        $html .= ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a month', 'mailpoet'),
         ]);
@@ -73,7 +79,7 @@ class Date {
         $html .= '</select>';
       } else if ($dateSelector === 'YYYY') {
         $html .= '<select class="mailpoet_date_year" data-automation-id="form_date_year" ';
-        $html .= ' style="' . $this->blockStylesRenderer->renderForSelect([], $formSettings) . '"';
+        $html .= ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a year', 'mailpoet'),
         ]);
@@ -83,7 +89,7 @@ class Date {
       }
     }
 
-    $html .= '<span class="mailpoet_error_' . $block['id'] . '"></span>';
+    $html .= '<span class="mailpoet_error_' . $this->wp->escAttr($block['id']) . '"></span>';
 
     return $html;
   }

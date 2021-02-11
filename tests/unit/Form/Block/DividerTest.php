@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\Divider;
+use MailPoet\WP\Functions as WPFunctions;
 
 class DividerTest extends \MailPoetUnitTest {
   /** @var Divider */
@@ -20,7 +21,9 @@ class DividerTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->divider = new Divider();
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->divider = new Divider($wpMock);
   }
 
   public function testItRendersOldDividerWithNoParams() {

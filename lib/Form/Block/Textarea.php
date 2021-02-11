@@ -4,6 +4,7 @@ namespace MailPoet\Form\Block;
 
 use MailPoet\Form\BlockStylesRenderer;
 use MailPoet\Form\BlockWrapperRenderer;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Textarea {
   /** @var BlockRendererHelper */
@@ -15,14 +16,19 @@ class Textarea {
    /** @var BlockWrapperRenderer */
   private $wrapper;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     BlockRendererHelper $rendererHelper,
     BlockStylesRenderer $inputStylesRenderer,
-    BlockWrapperRenderer $wrapper
+    BlockWrapperRenderer $wrapper,
+    WPFunctions $wp
   ) {
     $this->rendererHelper = $rendererHelper;
     $this->inputStylesRenderer = $inputStylesRenderer;
     $this->wrapper = $wrapper;
+    $this->wp = $wp;
   }
 
   public function render(array $block, array $formSettings): string {
@@ -46,7 +52,7 @@ class Textarea {
     $html .= $this->rendererHelper->getInputModifiers($block);
 
     if ($styles) {
-      $html .= 'style="' . $styles . '" ';
+      $html .= 'style="' . $this->wp->escAttr($styles) . '" ';
     }
 
     $html .= '>' . $this->rendererHelper->getFieldValue($block) . '</textarea>';

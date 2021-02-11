@@ -7,6 +7,7 @@ use MailPoet\Form\Block\Date;
 use MailPoet\Form\BlockStylesRenderer;
 use MailPoet\Form\BlockWrapperRenderer;
 use MailPoet\Test\Form\HtmlParser;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -51,7 +52,9 @@ class DateTest extends \MailPoetUnitTest {
     $this->baseMock = $this->createMock(BlockRendererHelper::class);
     $this->wrapperMock = $this->createMock(BlockWrapperRenderer::class);
     $this->wrapperMock->method('render')->will($this->returnArgument(1));
-    $this->date = new Date($this->baseMock, $this->blockStylesRenderer, $this->wrapperMock);
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('escAttr')->will($this->returnArgument(0));
+    $this->date = new Date($this->baseMock, $this->blockStylesRenderer, $this->wrapperMock, $wpMock);
     $this->htmlParser = new HtmlParser();
   }
 
