@@ -15,6 +15,9 @@ class NewsletterOptionsRepository extends Repository {
     return NewsletterOptionEntity::class;
   }
 
+  /**
+   * @return NewsletterOptionEntity[]
+   */
   public function findWelcomeNotificationsForSegments(array $segmentIds): array {
     return $this->entityManager->createQueryBuilder()
       ->select('no')
