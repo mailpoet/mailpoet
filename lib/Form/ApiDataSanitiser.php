@@ -17,6 +17,9 @@ class ApiDataSanitiser {
     'heading' => [
       'content',
     ],
+    'image' => [
+      'caption',
+    ],
   ];
 
   public function __construct(FormHtmlSanitiser $htmlSanitiser) {
