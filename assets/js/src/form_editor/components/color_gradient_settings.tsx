@@ -10,7 +10,7 @@ type Props = {
   onGradientChange: (value: string|undefined) => void;
 }
 
-const ColorGradientSettings = ({
+const ColorGradientSettings: React.FunctionComponent<Props> = ({
   name,
   colorValue,
   gradientValue,

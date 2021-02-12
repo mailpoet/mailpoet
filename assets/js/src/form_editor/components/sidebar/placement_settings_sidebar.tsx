@@ -9,7 +9,7 @@ type Props = {
   onClose: () => void;
 }
 
-export default ({ onClose }: Props) => {
+export default ({ onClose }: Props): JSX.Element => {
   const previewSettings = useSelect(
     (select) => select('mailpoet-form-editor').getPreviewSettings(),
     []

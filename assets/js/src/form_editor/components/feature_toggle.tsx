@@ -10,7 +10,7 @@ type Props = {
   onToggle: () => void;
 }
 
-const FeatureToggle = ({
+const FeatureToggle: React.FunctionComponent<Props> = ({
   isActive,
   label,
   info,

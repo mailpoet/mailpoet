@@ -11,7 +11,7 @@ type Props = {
   onImageDisplayChange: (value: string) => void;
 }
 
-const ImageSettings = ({
+const ImageSettings: React.FunctionComponent<Props> = ({
   name,
   imageUrl,
   onImageUrlChange,
@@ -23,12 +23,12 @@ const ImageSettings = ({
       {name}
     </h3>
     <div className="mailpoet-styles-settings-image-url-body">
-      <input type="text" value={imageUrl ?? ''} onChange={(event) => onImageUrlChange(event.target.value)} />
+      <input type="text" value={imageUrl ?? ''} onChange={(event): void => onImageUrlChange(event.target.value)} />
       <MediaUpload
         value={imageUrl}
-        onSelect={(image) => onImageUrlChange(image.url)}
+        onSelect={(image): void => onImageUrlChange(image.url)}
         allowedTypes={['image']}
-        render={({ open }) => (
+        render={({ open }): JSX.Element => (
           <Button
             isSecondary
             isSmall

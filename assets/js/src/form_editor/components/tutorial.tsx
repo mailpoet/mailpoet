@@ -5,7 +5,7 @@ import Modal from 'common/modal/modal';
 import Heading from 'common/typography/heading/heading';
 import MailPoet from 'mailpoet';
 
-export const Tutorial = () => {
+export const Tutorial: React.FunctionComponent = () => {
   const url = useSelect(
     (select) => select('mailpoet-form-editor').getTutorialUrl(),
     []
@@ -20,7 +20,7 @@ export const Tutorial = () => {
     return null;
   }
 
-  function onClose() {
+  function onClose(): void {
     tutorialDismissed();
   }
 

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSelect } from '@wordpress/data';
 
-const Fullscreen = () => {
+const Fullscreen = (): null => {
   const isFullscreen = useSelect(
     (select) => select('mailpoet-form-editor').isFullscreenEnabled(),
     []
@@ -15,7 +15,7 @@ const Fullscreen = () => {
     }
   }, [isFullscreen]);
 
-  return (null);
+  return null;
 };
 
 export default Fullscreen;

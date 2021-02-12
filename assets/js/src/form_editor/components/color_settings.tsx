@@ -11,7 +11,7 @@ type Props = {
   onChange: (value: string|undefined) => void;
 }
 
-const ColorSettings = ({
+const ColorSettings: React.FunctionComponent<Props> = ({
   name,
   value,
   onChange,

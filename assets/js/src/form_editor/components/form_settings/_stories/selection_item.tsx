@@ -6,7 +6,7 @@ export default {
   title: 'FormEditor/Selection Item',
 };
 
-export const CloseIconSettings = () => (
+export const CloseIconSettings: React.FunctionComponent = () => (
   <div className="close-button-selection-item-list">
     <SelectionItem
       label="kjk1"
