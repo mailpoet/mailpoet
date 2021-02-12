@@ -24,7 +24,7 @@ type Props = {
   hideLabelFromVision?: boolean;
 }
 
-const FontFamilySettings = ({
+const FontFamilySettings: React.FunctionComponent<Props> = ({
   onChange,
   value,
   name,
@@ -39,7 +39,7 @@ const FontFamilySettings = ({
     backgroundColor: 'white',
     cursor: 'default',
   };
-  const getFontStyle = (fontName) => ({
+  const getFontStyle = (fontName): React.CSSProperties => ({
     fontFamily: fontName,
     cursor: 'default',
     marginLeft: 16,
@@ -89,7 +89,7 @@ const FontFamilySettings = ({
   return (
     <CustomSelectControl
       options={options}
-      onChange={(selected) => {
+      onChange={(selected): void => {
         if (selected.selectedItem.selectable) {
           onChange(selected.selectedItem.value);
         }
@@ -104,7 +104,7 @@ const FontFamilySettings = ({
 
 export default FontFamilySettings;
 
-export const CustomFontsStyleSheetLink = () => {
+export const CustomFontsStyleSheetLink: React.FunctionComponent = () => {
   const customFonts = useSelect(
     (select) => select('mailpoet-form-editor').getAllCustomFonts(),
     []

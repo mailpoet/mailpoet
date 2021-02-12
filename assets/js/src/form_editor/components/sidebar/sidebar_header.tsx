@@ -7,7 +7,7 @@ type Props = {
   children: React.ReactNode;
 }
 
-const SidebarHeader = ({ children, closeSidebar }: Props) => (
+const SidebarHeader: React.FunctionComponent<Props> = ({ children, closeSidebar }: Props) => (
   <>
     <div className="components-panel__header interface-complementary-area-header__small">
       <span className="interface-complementary-area-header__small-title">{MailPoet.I18n.t('formSettings')}</span>

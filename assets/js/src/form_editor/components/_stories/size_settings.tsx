@@ -6,7 +6,7 @@ export default {
   title: 'FormEditor/Size Settings',
 };
 
-export const Settings = () => (
+export const Settings: React.FunctionComponent = () => (
   <>
     <SizeSettings
       label="Basic Size Settings"
@@ -34,7 +34,7 @@ export const Settings = () => (
 );
 
 
-export const SettingsInSidebar = () => (
+export const SettingsInSidebar: React.FunctionComponent = () => (
   <div className="edit-post-sidebar mailpoet_form_editor_sidebar">
     <SizeSettings
       label="Basic Size Settings"

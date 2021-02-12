@@ -9,7 +9,7 @@ type Props = {
   onChange: (value: string|undefined) => void;
 }
 
-const FontSizeSettings = ({
+const FontSizeSettings: React.FunctionComponent<Props> = ({
   value,
   onChange,
 }: Props) => {

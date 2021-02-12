@@ -8,17 +8,17 @@ import {
 } from '@wordpress/block-editor';
 
 type Props = {
-  setIsInserterOpened: (boolean) => {};
+  setIsInserterOpened: (boolean) => void;
 }
 
-const Inserter = ({
+const Inserter: React.FunctionComponent<Props> = ({
   setIsInserterOpened,
 }: Props) => (
   <div className="edit-post-layout__inserter-panel">
     <div className="edit-post-layout__inserter-panel-header">
       <Button
         icon={close}
-        onClick={() => setIsInserterOpened(false)}
+        onClick={(): void => setIsInserterOpened(false)}
       />
     </div>
     <div className="edit-post-layout__inserter-panel-content">

@@ -6,7 +6,7 @@ import { undo as undoIcon } from '@wordpress/icons';
 import { displayShortcut } from '@wordpress/keycodes';
 import { useShortcut } from '@wordpress/keyboard-shortcuts';
 
-function HistoryUndo(props) {
+function HistoryUndo(props: object): JSX.Element {
   const hasUndo = useSelect(
     (select) => select('mailpoet-form-editor').hasEditorUndo(),
     []
@@ -14,7 +14,7 @@ function HistoryUndo(props) {
   const { historyUndo } = useDispatch('mailpoet-form-editor');
   const { registerShortcut } = useDispatch('core/keyboard-shortcuts');
 
-  const undoAction = () => {
+  const undoAction = (): void => {
     historyUndo();
   };
 
@@ -22,13 +22,13 @@ function HistoryUndo(props) {
     // Shortcut name
     'mailpoet-form-editor/undo',
     // Shortcut callback
-    (event) => {
+    (event): void => {
       historyUndo();
       event.preventDefault();
     },
   );
 
-  useEffect(() => {
+  useEffect((): void => {
     registerShortcut({
       name: 'mailpoet-form-editor/undo',
       category: 'block',

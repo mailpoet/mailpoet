@@ -3,7 +3,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import DefaultSidebar from './default_sidebar';
 import PlacementSettingsSidebar from './placement_settings_sidebar';
 
-export default () => {
+export default (): JSX.Element => {
   const { toggleSidebar, changeActiveSidebar } = useDispatch('mailpoet-form-editor');
 
   const activeSidebar = useSelect(
@@ -11,7 +11,7 @@ export default () => {
     []
   );
 
-  const closePlacementSettings = () => {
+  const closePlacementSettings = (): void => {
     changeActiveSidebar('default');
   };
 
@@ -29,7 +29,7 @@ export default () => {
 
   return (
     <div className="edit-post-sidebar interface-complementary-area mailpoet_form_editor_sidebar">
-      {activeSidebar === 'default' && <DefaultSidebar onClose={() => toggleSidebar(false)} />}
+      {activeSidebar === 'default' && <DefaultSidebar onClose={(): void => toggleSidebar(false)} />}
       {activeSidebar === 'placement_settings' && <PlacementSettingsSidebar onClose={closePlacementSettings} />}
     </div>
   );

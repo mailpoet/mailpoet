@@ -10,7 +10,7 @@ type CloseButtonProps = {
   iconUrl: string;
 }
 
-const CloseButton = ({
+const CloseButton: React.FunctionComponent<CloseButtonProps> = ({
   label,
   active,
   onClick,
@@ -38,7 +38,7 @@ type Props = {
   onChange: (value: string|undefined) => void;
 }
 
-const CloseButtonsSettings = ({
+const CloseButtonsSettings: React.FunctionComponent<Props> = ({
   name,
   value,
   onChange,
@@ -58,37 +58,37 @@ const CloseButtonsSettings = ({
           label="round_white"
           active={value === 'round_white'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/round_white.svg')}
-          onClick={() => onChange('round_white')}
+          onClick={(): void => onChange('round_white')}
         />
         <CloseButton
           label="round_black"
           active={value === 'round_black'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/round_black.svg')}
-          onClick={() => onChange('round_black')}
+          onClick={(): void => onChange('round_black')}
         />
         <CloseButton
           label="square_white"
           active={value === 'square_white'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/square_white.svg')}
-          onClick={() => onChange('square_white')}
+          onClick={(): void => onChange('square_white')}
         />
         <CloseButton
           label="square_black"
           active={value === 'square_black'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/square_black.svg')}
-          onClick={() => onChange('square_black')}
+          onClick={(): void => onChange('square_black')}
         />
         <CloseButton
           label="classic"
           active={value === 'classic'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/classic.svg')}
-          onClick={() => onChange('classic')}
+          onClick={(): void => onChange('classic')}
         />
         <CloseButton
           label="classic_white"
           active={value === 'classic_white'}
           iconUrl={closeIconsUrl.replace('img/form_close_icon', 'img/form_close_icon/classic_white.svg')}
-          onClick={() => onChange('classic_white')}
+          onClick={(): void => onChange('classic_white')}
         />
       </div>
     </div>

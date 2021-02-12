@@ -12,7 +12,7 @@ import Modal from 'common/modal/modal';
 import PlacementSettingsPanel from 'form_editor/components/form_settings/form_placement_options/settings_panel';
 
 
-const FormPreview = () => {
+const FormPreview: React.FunctionComponent = () => {
   const iframeElement = useRef(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const { hidePreview, changePreviewSettings } = useDispatch('mailpoet-form-editor');
@@ -64,12 +64,12 @@ const FormPreview = () => {
 
   if (!isPreview) return null;
 
-  function setFormType(type) {
+  function setFormType(type): void {
     setIframeLoaded(false);
     changePreviewSettings({ ...previewSettings, formType: type });
   }
 
-  function onPreviewTypeChange(type) {
+  function onPreviewTypeChange(type): void {
     changePreviewSettings({ ...previewSettings, displayType: type });
   }
 
@@ -128,7 +128,7 @@ const FormPreview = () => {
               className="mailpoet_form_preview_iframe"
               src={iframeSrc}
               title={MailPoet.I18n.t('formPreview')}
-              onLoad={() => setIframeLoaded(true)}
+              onLoad={(): void => setIframeLoaded(true)}
               data-automation-id="form_preview_iframe"
               scrolling={previewSettings.formType === 'others' ? 'no' : 'yes'}
             />

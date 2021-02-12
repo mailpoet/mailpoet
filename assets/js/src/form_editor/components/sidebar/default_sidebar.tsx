@@ -11,7 +11,7 @@ type Props = {
   onClose: () => void;
 };
 
-export default ({ onClose }: Props) => {
+export default ({ onClose }: Props): JSX.Element => {
   const activeTab = useSelect(
     (select) => select('mailpoet-form-editor').getDefaultSidebarActiveTab(),
     []
@@ -38,7 +38,7 @@ export default ({ onClose }: Props) => {
         <ul>
           <li>
             <button
-              onClick={() => switchDefaultSidebarTab('form')}
+              onClick={(): void => switchDefaultSidebarTab('form')}
               className={classnames('components-button edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'form' })}
               data-automation-id="mailpoet_form_settings_tab"
               type="button"
@@ -48,7 +48,7 @@ export default ({ onClose }: Props) => {
           </li>
           <li>
             <button
-              onClick={() => switchDefaultSidebarTab('block')}
+              onClick={(): void => switchDefaultSidebarTab('block')}
               className={classnames('components-button edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'block' })}
               data-automation-id="mailpoet_block_settings_tab"
               type="button"

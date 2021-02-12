@@ -10,13 +10,13 @@ jQuery(($) => {
 
     previewForm.submit((e) => { e.preventDefault(); return false; });
 
-    const toggleClass = (form, from, to) => {
+    const toggleClass = (form, from, to): void => {
       form.removeClass(from);
       setTimeout(() => form.addClass(to));
     };
 
     let originalFormSettings;
-    const updateForm = (event) => {
+    const updateForm = (event): void => {
       if (!event.data) {
         return;
       }
