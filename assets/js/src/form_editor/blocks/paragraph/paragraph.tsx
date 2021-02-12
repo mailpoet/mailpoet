@@ -6,7 +6,7 @@ const settingsReset = {
   name,
   examples: null,
   deprecated: null,
-  save: () => null,
+  save: (): null => null,
 };
 
 const settings = {
