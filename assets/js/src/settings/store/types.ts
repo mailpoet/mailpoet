@@ -139,6 +139,7 @@ type Segment = {
   id: string;
   name: string;
   subscribers: string;
+  type: 'default' | 'wp_users' | 'woocommerce_users' | 'dynamic';
 }
 type Page = {
   id: number;

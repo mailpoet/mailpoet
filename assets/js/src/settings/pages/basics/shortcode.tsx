@@ -38,6 +38,7 @@ export default function Shortcode({ name, title, description }: Props) {
           setValue={setSegments}
           id={`${name}-shortcode-segments`}
           placeholder={t('leaveEmptyToDisplayAll')}
+          segmentsSelector="getSegments"
         />
       </Inputs>
     </>
