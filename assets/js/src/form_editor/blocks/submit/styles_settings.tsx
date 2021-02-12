@@ -21,23 +21,23 @@ type Props = {
   formFontFamily?: string;
 }
 
-const StylesSettings = ({
+const StylesSettings: React.FunctionComponent<Props> = ({
   styles,
   onChange,
   formInputPadding,
   formFontFamily,
-}: Props) => {
+}: Props): JSX.Element => {
   const localStylesRef = useRef(styles);
   const localStyles = localStylesRef.current;
 
-  const updateStyles = (property, value) => {
+  const updateStyles = (property, value): void => {
     const updated = { ...localStylesRef.current };
     updated[property] = value;
     onChange(updated);
     localStylesRef.current = updated;
   };
 
-  const updateInheritFromTheme = (newValue: boolean) => {
+  const updateInheritFromTheme = (newValue: boolean): void => {
     if (newValue) {
       updateStyles('inheritFromTheme', newValue);
       return;

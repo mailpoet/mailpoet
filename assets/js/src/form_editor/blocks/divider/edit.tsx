@@ -22,7 +22,9 @@ type Props = {
   setAttributes: (attribute) => void;
 };
 
-const DividerEdit = ({ attributes, setAttributes }: Props) => {
+const DividerEdit: React.FunctionComponent<Props> = (
+  { attributes, setAttributes }: Props
+): JSX.Element => {
   const attributeDividerHeight = attributes.dividerHeight ?? defaultAttributes.dividerHeight;
   const attributeDividerWidth = attributes.dividerWidth ?? defaultAttributes.dividerWidth;
   const attributeHeight = attributes.height ?? defaultAttributes.height;
@@ -33,7 +35,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
         label={MailPoet.I18n.t('blockDividerStyle')}
         data-automation-id="settings_divider_style"
         value={attributes.style}
-        onChange={(style) => (setAttributes({ style }))}
+        onChange={(style): void => (setAttributes({ style }))}
         options={[
           { value: Style.Solid, label: MailPoet.I18n.t('blockDividerStyleSolid') },
           { value: Style.Dashed, label: MailPoet.I18n.t('blockDividerStyleDashed') },
@@ -47,7 +49,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
         min={1}
         max={40}
         allowReset
-        onChange={(dividerHeight) => {
+        onChange={(dividerHeight): void => {
           let newHeight = attributeHeight;
           if (dividerHeight !== undefined) {
             newHeight = Math.max(dividerHeight, attributeHeight);
@@ -65,12 +67,12 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
         min={1}
         max={100}
         allowReset
-        onChange={(dividerWidth) => (setAttributes({ dividerWidth }))}
+        onChange={(dividerWidth): void => (setAttributes({ dividerWidth }))}
       />
       <ColorSettings
         name={MailPoet.I18n.t('blockDividerColor')}
         value={attributes.color}
-        onChange={(color) => (setAttributes({ color }))}
+        onChange={(color): void => (setAttributes({ color }))}
       />
     </>
   );
@@ -96,7 +98,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
               min={1}
               max={400}
               allowReset
-              onChange={(height) => {
+              onChange={(height): void => {
                 let newDividerHeightHeight = attributeDividerHeight;
                 if (height !== undefined) {
                   newDividerHeightHeight = Math.min(height, attributeDividerHeight);
@@ -113,7 +115,7 @@ const DividerEdit = ({ attributes, setAttributes }: Props) => {
               label={MailPoet.I18n.t('blockSpacerEnableDivider')}
               className="mailpoet-automation-divider-togle-enable"
               checked={attributes.type === Types.Divider}
-              onChange={(checked) => setAttributes({
+              onChange={(checked): void => setAttributes({
                 type: checked ? Types.Divider : Types.Spacer,
               })}
             />

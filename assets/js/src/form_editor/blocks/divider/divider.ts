@@ -41,7 +41,7 @@ export const settings = {
     multiple: true,
   },
   edit,
-  save() {
+  save(): null {
     return null;
   },
 };
