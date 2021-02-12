@@ -2,10 +2,10 @@
 
 namespace MailPoet\Form;
 
-class ApiDataSanitiserTest extends \MailPoetTest {
+class ApiDataSanitizerTest extends \MailPoetTest {
 
-  /** @var ApiDataSanitiser */
-  private $sanitiser;
+  /** @var ApiDataSanitizer */
+  private $sanitizer;
 
   private $body = [
     [
@@ -33,11 +33,11 @@ class ApiDataSanitiserTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->sanitiser = $this->diContainer->get(ApiDataSanitiser::class);
+    $this->sanitizer = $this->diContainer->get(ApiDataSanitizer::class);
   }
 
   public function testItSanitizesBody() {
-    $result = $this->sanitiser->sanitiseBody($this->body);
+    $result = $this->sanitizer->sanitizeBody($this->body);
     $paragraph = $result[0];
     $nestedHeading = $result[1]['body'][0];
     expect($paragraph['params']['content'])->equals('alert(1);Paragraph');

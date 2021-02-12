@@ -2,8 +2,8 @@
 
 namespace MailPoet\Form;
 
-class ApiDataSanitiser {
-  /** @var FormHtmlSanitiser */
+class ApiDataSanitizer {
+  /** @var FormHtmlSanitizer */
   private $htmlSanitizer;
 
   /**
@@ -22,29 +22,29 @@ class ApiDataSanitiser {
     ],
   ];
 
-  public function __construct(FormHtmlSanitiser $htmlSanitiser) {
-    $this->htmlSanitizer = $htmlSanitiser;
+  public function __construct(FormHtmlSanitizer $htmlSanitizer) {
+    $this->htmlSanitizer = $htmlSanitizer;
   }
 
-  public function sanitiseBody(array $body): array {
+  public function sanitizeBody(array $body): array {
     foreach ($body as $key => $block) {
-      $sanitizedBlock = $this->sanitiseBlock($block);
+      $sanitizedBlock = $this->sanitizeBlock($block);
       if (isset($sanitizedBlock['body']) && is_array($sanitizedBlock['body']) && !empty($sanitizedBlock['body'])) {
-        $sanitizedBlock['body'] = $this->sanitiseBody($sanitizedBlock['body']);
+        $sanitizedBlock['body'] = $this->sanitizeBody($sanitizedBlock['body']);
       }
       $body[$key] = $sanitizedBlock;
     }
     return $body;
   }
 
-  private function sanitiseBlock(array $block): array {
+  private function sanitizeBlock(array $block): array {
     if (!isset($this->htmlSanitizeConfig[$block['type']])) {
       return $block;
     }
     $params = $block['params'] ?? [];
     foreach ($this->htmlSanitizeConfig[$block['type']] as $parameter) {
       if (!isset($params[$parameter])) continue;
-      $params[$parameter] = $this->htmlSanitizer->sanitise($params[$parameter]);
+      $params[$parameter] = $this->htmlSanitizer->sanitize($params[$parameter]);
     }
     $block['params'] = $params;
     return $block;
