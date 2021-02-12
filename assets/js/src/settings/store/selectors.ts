@@ -51,6 +51,10 @@ export function getSegments(state: State) {
   return state.segments;
 }
 
+export function getDefaultSegments(state: State) {
+  return state.segments.filter((seg) => seg.type === 'default');
+}
+
 export function getPages(state: State) {
   return state.pages;
 }

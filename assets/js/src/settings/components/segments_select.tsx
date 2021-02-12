@@ -8,10 +8,12 @@ type Props = {
   value: string[];
   placeholder?: string;
   setValue: (x: string[]) => void;
+  segmentsSelector?: 'getDefaultSegments' | 'getSegments';
 }
 
 export default (props: Props) => {
-  const segments = useSelector('getSegments')().map((segment) => ({
+  const selector = props.segmentsSelector ? props.segmentsSelector : 'getDefaultSegments';
+  const segments = useSelector(selector)().map((segment) => ({
     value: segment.id,
     label: segment.name,
     count: segment.subscribers,
