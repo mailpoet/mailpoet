@@ -9,7 +9,7 @@ use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\FormsResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\FormEntity;
-use MailPoet\Form\ApiDataSanitiser;
+use MailPoet\Form\ApiDataSanitizer;
 use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Form\FormFactory;
 use MailPoet\Form\FormsRepository;
@@ -53,8 +53,8 @@ class Forms extends APIEndpoint {
   /** @var Emoji */
   private $emoji;
 
-  /** @var ApiDataSanitiser */
-  private $dataSanitiser;
+  /** @var ApiDataSanitizer */
+  private $dataSanitizer;
 
   public function __construct(
     Listing\BulkActionController $bulkAction,
@@ -65,7 +65,7 @@ class Forms extends APIEndpoint {
     FormsResponseBuilder $formsResponseBuilder,
     WPFunctions $wp,
     Emoji $emoji,
-    ApiDataSanitiser $dataSanitiser
+    ApiDataSanitizer $dataSanitizer
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
@@ -75,7 +75,7 @@ class Forms extends APIEndpoint {
     $this->formsRepository = $formsRepository;
     $this->formsResponseBuilder = $formsResponseBuilder;
     $this->emoji = $emoji;
-    $this->dataSanitiser = $dataSanitiser;
+    $this->dataSanitizer = $dataSanitizer;
   }
 
   public function get($data = []) {
@@ -196,7 +196,7 @@ class Forms extends APIEndpoint {
     $formId = (isset($data['id']) ? (int)$data['id'] : 0);
     $name = (isset($data['name']) ? $data['name'] : WPFunctions::get()->__('New form', 'mailpoet'));
     $body = (isset($data['body']) ? $data['body'] : []);
-    $body = $this->dataSanitiser->sanitiseBody($body);
+    $body = $this->dataSanitizer->sanitizeBody($body);
     $settings = (isset($data['settings']) ? $data['settings'] : []);
     $styles = (isset($data['styles']) ? $data['styles'] : '');
     $status = (isset($data['status']) ? $data['status'] : FormEntity::STATUS_ENABLED);

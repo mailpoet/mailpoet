@@ -4,7 +4,7 @@ namespace MailPoet\Form;
 
 use MailPoet\WP\Functions as WPFunctions;
 
-class FormHtmlSanitiser {
+class FormHtmlSanitizer {
   /** @var WPFunctions */
   private $wp;
 
@@ -48,7 +48,7 @@ class FormHtmlSanitiser {
     $this->wp = $wp;
   }
 
-  public function sanitise(string $html): string {
+  public function sanitize(string $html): string {
     return $this->wp->wpKses($html, $this->allowedHtml);
   }
 }
