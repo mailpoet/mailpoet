@@ -164,8 +164,8 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     );
     $transactionalEmails->useTemplateForWoocommerceEmails();
     expect($addedActions)->count(1);
-    expect($addedActions['woocommerce_init'])->callable();
-    $addedActions['woocommerce_init']();
+    expect($addedActions['woocommerce_email'])->callable();
+    $addedActions['woocommerce_email'](new \stdClass());
     expect($removedActions)->count(2);
     expect($addedActions)->count(4);
     expect($addedActions['woocommerce_email_header'])->callable();

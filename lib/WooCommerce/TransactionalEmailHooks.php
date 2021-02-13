@@ -29,11 +29,11 @@ class TransactionalEmailHooks {
   }
 
   public function useTemplateForWoocommerceEmails() {
-    $this->wp->addAction('woocommerce_init', function() {
+    $this->wp->addAction('woocommerce_email', function($wcEmails) {
       /** @var callable */
-      $emailHeaderCallback = [\WC()->mailer(), 'email_header'];
+      $emailHeaderCallback = [$wcEmails, 'email_header'];
       /** @var callable */
-      $emailFooterCallback = [\WC()->mailer(), 'email_footer'];
+      $emailFooterCallback = [$wcEmails, 'email_footer'];
       $this->wp->removeAction('woocommerce_email_header', $emailHeaderCallback);
       $this->wp->removeAction('woocommerce_email_footer', $emailFooterCallback);
       $this->wp->addAction('woocommerce_email_header', function($emailHeading) {
