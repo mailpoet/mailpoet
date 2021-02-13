@@ -168,6 +168,12 @@ class Initializer {
       new DeferredAdminNotices,
       'printAndClean',
     ]);
+
+    WPFunctions::get()->addFilter('wpmu_drop_tables', [
+      $this,
+      'multisiteDropTables',
+    ]);
+
     $this->hooks->initEarlyHooks();
   }
 
@@ -343,6 +349,13 @@ class Initializer {
     $automaticEmails = new AutomaticEmails();
     $automaticEmails->init();
     $automaticEmails->getAutomaticEmails();
+  }
+
+  public function multisiteDropTables($tables) {
+    global $wpdb;
+    $tablePrefix = $wpdb->prefix . Env::$pluginPrefix;
+    $mailpoetTables = $wpdb->get_col("SHOW TABLES LIKE '$tablePrefix%'");
+    return array_merge($tables, $mailpoetTables);
   }
 
   private function setupWoocommerceTransactionalEmails() {
