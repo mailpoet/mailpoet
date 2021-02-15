@@ -2,7 +2,6 @@
 
 namespace MailPoet\Doctrine;
 
-use DateTime;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\EntityRepository as DoctrineEntityRepository;
 use MailPoetVendor\Doctrine\ORM\Mapping\ClassMetadata;
@@ -78,7 +77,7 @@ abstract class Repository {
   }
 
   public function truncate() {
-    $tableName = $this->getTableName();
+    $tableName = $this->classMetadata->getTableName();
     $connection = $this->entityManager->getConnection();
     $connection->query('SET FOREIGN_KEY_CHECKS=0');
     $q = "TRUNCATE $tableName";
@@ -108,52 +107,4 @@ abstract class Repository {
    * @return class-string<T>
    */
   abstract protected function getEntityClassName();
-
-  protected function getTableName(): string {
-    return $this->entityManager->getClassMetadata($this->getEntityClassName())->getTableName();
-  }
-
-  public function insertOrUpdateMultiple(array $columns, array $data, ?DateTime $updatedAt = null): int {
-    $tableName = $this->getTableName();
-    $entityColumns = $this->entityManager->getClassMetadata($this->getEntityClassName())->getColumnNames();
-
-    if (!$columns || !$data) {
-      return 0;
-    }
-
-    $rows = [];
-    $parameters = [];
-    foreach ($data as $key => $item) {
-      $paramNames = array_map(function (string $parameter) use ($key): string {
-        return ":{$parameter}_{$key}";
-      }, $columns);
-
-      foreach ($item as $columnKey => $column) {
-        $parameters[$paramNames[$columnKey]] = $column;
-      }
-      $rows[] = "(" . implode(', ', $paramNames) . ")";
-    }
-
-    $updateColumns = array_map(function (string $column): string {
-      return "{$column} = VALUES($column)";
-    }, array_diff($columns, $this->ignoreColumnsForUpdate));
-
-    if ($updatedAt && in_array('updated_at', $entityColumns, true)) {
-      $parameters['updated_at'] = $updatedAt;
-      $updateColumns[] = "updated_at = :updated_at";
-    }
-
-    // we want to reset deleted_at for updated rows
-    if (in_array('deleted_at', $entityColumns, true)) {
-      $updateColumns[] = 'deleted_at = NULL';
-    }
-    
-
-    return $this->entityManager->getConnection()->executeUpdate("
-      INSERT INTO {$tableName} (`" . implode("`, `", $columns) . "`) VALUES 
-      " . implode(", \n", $rows) . "
-      ON DUPLICATE KEY UPDATE
-      " . implode(", \n", $updateColumns) . "
-    ", $parameters);
-  }
 }
