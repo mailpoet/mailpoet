@@ -6,7 +6,7 @@ export type PropTypes = {
   averageRevenueValue: string;
 }
 
-export default ({ revenueValue, count, averageRevenueValue }: PropTypes) => (
+export default ({ revenueValue, count, averageRevenueValue }: PropTypes): JSX.Element => (
   <div className="mailpoet-tab-content mailpoet-subscriber-stats-summary">
     <div className="mailpoet-listing">
       <table className="mailpoet-listing-table">
