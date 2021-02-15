@@ -28,9 +28,10 @@
   },
   "lint-staged": {
     "*.{scss,css}": "npm run stylelint",
-    "*.js": "eslint -c .eslintrc.es5.json --ignore-pattern helpscout.js --max-warnings 0",
+    "!(*spec).js": "eslint -c .eslintrc.es5.json --ignore-pattern helpscout.js --max-warnings 0",
     "*.jsx": "eslint -c .eslintrc.es6.json --max-warnings 0",
     "*.{tsx,ts}": "eslint -c .eslintrc.ts.json --max-warnings 0",
+    "*spec.js": "eslint -c .eslintrc.tests_newsletter_editor.json --max-warnings 0",
     "*.php": ["phplint", "./do qa:code-sniffer"]
   },
   "husky": {
