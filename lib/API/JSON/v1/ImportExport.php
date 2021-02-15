@@ -12,8 +12,7 @@ use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Subscribers\ImportExport\Import\Import;
 use MailPoet\Subscribers\ImportExport\Import\MailChimp;
-use MailPoet\Subscribers\SubscriberCustomFieldRepository;
-use MailPoet\Subscribers\SubscriberSegmentRepository;
+use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -25,17 +24,14 @@ class ImportExport extends APIEndpoint {
   /** @var CustomFieldsRepository */
   private $customFieldsRepository;
 
+  /** @var ImportExportRepository */
+  private $importExportRepository;
+
   /** @var NewsletterOptionsRepository */
   private $newsletterOptionsRepository;
 
-  /** @var SubscriberCustomFieldRepository */
-  private $subscriberCustomFieldRepository;
-
   /** @var SubscribersRepository */
   private $subscriberRepository;
-
-  /** @var SubscriberSegmentRepository */
-  private $subscriberSegmentRepository;
 
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
@@ -44,17 +40,15 @@ class ImportExport extends APIEndpoint {
   public function __construct(
     WP $wpSegment,
     CustomFieldsRepository $customFieldsRepository,
+    ImportExportRepository $importExportRepository,
     NewsletterOptionsRepository $newsletterOptionsRepository,
-    SubscriberCustomFieldRepository $subscriberCustomFieldRepository,
-    SubscribersRepository $subscribersRepository,
-    SubscriberSegmentRepository $subscriberSegmentRepository
+    SubscribersRepository $subscribersRepository
   ) {
     $this->wpSegment = $wpSegment;
     $this->customFieldsRepository = $customFieldsRepository;
+    $this->importExportRepository = $importExportRepository;
     $this->newsletterOptionsRepository = $newsletterOptionsRepository;
-    $this->subscriberCustomFieldRepository = $subscriberCustomFieldRepository;
     $this->subscriberRepository = $subscribersRepository;
-    $this->subscriberSegmentRepository = $subscriberSegmentRepository;
   }
 
   public function getMailChimpLists($data) {
@@ -99,10 +93,9 @@ class ImportExport extends APIEndpoint {
       $import = new Import(
         $this->wpSegment,
         $this->customFieldsRepository,
+        $this->importExportRepository,
         $this->newsletterOptionsRepository,
-        $this->subscriberCustomFieldRepository,
         $this->subscriberRepository,
-        $this->subscriberSegmentRepository,
         json_decode($data, true)
       );
       $process = $import->process();

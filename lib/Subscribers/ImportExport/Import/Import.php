@@ -4,14 +4,15 @@ namespace MailPoet\Subscribers\ImportExport\Import;
 
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\ModelValidator;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
+use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Subscribers\Source;
-use MailPoet\Subscribers\SubscriberCustomFieldRepository;
-use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\DateConverter;
 use MailPoet\Util\Helpers;
@@ -34,39 +35,37 @@ class Import {
   const DB_QUERY_CHUNK_SIZE = 100;
   const STATUS_DONT_UPDATE = 'dont_update';
 
+  public const ACTION_CREATE = 'create';
+  public const ACTION_UPDATE = 'update';
+
   /** @var WP */
   private $wpSegment;
 
   /** @var CustomFieldsRepository */
   private $customFieldsRepository;
 
+  /** @var ImportExportRepository */
+  private $importExportRepository;
+
   /** @var NewsletterOptionsRepository */
   private $newsletterOptionsRepository;
-
-  /** @var SubscriberCustomFieldRepository */
-  private $subscriberCustomFieldRepository;
 
   /** @var SubscribersRepository */
   private $subscriberRepository;
 
-  /** @var SubscriberSegmentRepository */
-  private $subscriberSegmentRepository;
-
   public function __construct(
     WP $wpSegment,
     CustomFieldsRepository $customFieldsRepository,
+    ImportExportRepository $importExportRepository,
     NewsletterOptionsRepository $newsletterOptionsRepository,
-    SubscriberCustomFieldRepository $subscriberCustomFieldRepository,
     SubscribersRepository $subscriberRepository,
-    SubscriberSegmentRepository $subscriberSegmentRepository,
     array $data
   ) {
     $this->wpSegment = $wpSegment;
     $this->customFieldsRepository = $customFieldsRepository;
+    $this->importExportRepository = $importExportRepository;
     $this->newsletterOptionsRepository = $newsletterOptionsRepository;
-    $this->subscriberCustomFieldRepository = $subscriberCustomFieldRepository;
     $this->subscriberRepository = $subscriberRepository;
-    $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->validateImportData($data);
     $this->subscribersData = $this->transformSubscribersData(
       $data['subscribers'],
@@ -141,6 +140,7 @@ class Import {
         $newSubscribers = $this->setLinkToken($newSubscribers);
         $createdSubscribers =
           $this->createOrUpdateSubscribers(
+            self::ACTION_CREATE,
             $newSubscribers,
             $this->subscribersCustomFields
           );
@@ -157,6 +157,7 @@ class Import {
         }
         $updatedSubscribers =
           $this->createOrUpdateSubscribers(
+            self::ACTION_UPDATE,
             $existingSubscribers,
             $this->subscribersCustomFields
           );
@@ -380,6 +381,7 @@ class Import {
   }
 
   public function createOrUpdateSubscribers(
+    string $action,
     array $subscribersData,
     array $subscribersCustomFields = []
   ) {
@@ -390,11 +392,20 @@ class Import {
       }, $subscribersData['fields']);
     }, range(0, $subscribersCount - 1));
     foreach (array_chunk($subscribers, self::DB_QUERY_CHUNK_SIZE) as $data) {
-      $this->subscriberRepository->insertOrUpdateMultiple(
-        $subscribersData['fields'],
-        $data,
-        $this->updatedAt
-      );
+      if ($action === self::ACTION_CREATE) {
+        $this->importExportRepository->insertMultiple(
+          SubscriberEntity::class,
+          $subscribersData['fields'],
+          $data
+        );
+      } elseif ($action === self::ACTION_UPDATE) {
+        $this->importExportRepository->updateMultiple(
+          SubscriberEntity::class,
+          $subscribersData['fields'],
+          $data,
+          $this->updatedAt
+        );
+      }
     }
     $createdOrUpdatedSubscribers = [];
     foreach (array_chunk($subscribersData['data']['email'], self::DB_QUERY_CHUNK_SIZE) as $emails) {
@@ -408,6 +419,7 @@ class Import {
     $createdOrUpdatedSubscribersIds = array_column($createdOrUpdatedSubscribers, 'id');
     if ($subscribersCustomFields) {
       $this->createOrUpdateCustomFields(
+        $action,
         $createdOrUpdatedSubscribers,
         $subscribersData,
         $subscribersCustomFields
@@ -421,6 +433,7 @@ class Import {
   }
 
   public function createOrUpdateCustomFields(
+    string $acion,
     array $createdOrUpdatedSubscribers,
     array $subscribersData,
     array $subscribersCustomFieldsIds
@@ -455,11 +468,19 @@ class Import {
       'created_at',
     ];
     foreach (array_chunk($subscribersCustomFieldsData, self::DB_QUERY_CHUNK_SIZE) as $subscribersCustomFieldsDataChunk) {
-      $this->subscriberCustomFieldRepository->insertOrUpdateMultiple(
+      $this->importExportRepository->insertMultiple(
+        SubscriberCustomFieldEntity::class,
         $columns,
-        $subscribersCustomFieldsDataChunk,
-        $this->updatedAt
+        $subscribersCustomFieldsDataChunk
       );
+      if ($acion === self::ACTION_UPDATE) {
+        $this->importExportRepository->updateMultiple(
+          SubscriberCustomFieldEntity::class,
+          $columns,
+          $subscribersCustomFieldsDataChunk,
+          $this->updatedAt
+        );
+      }
     }
   }
 
@@ -484,7 +505,11 @@ class Import {
           ];
         }, $subscriberIdsChunk));
       }
-      $this->subscriberSegmentRepository->insertOrUpdateMultiple($columns, $data, $this->updatedAt);
+      $this->importExportRepository->insertMultiple(
+        SubscriberSegmentEntity::class,
+        $columns,
+        $data
+      );
     }
   }
 }
