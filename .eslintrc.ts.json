@@ -168,8 +168,6 @@
         "assets/js/src/common/typography/heading/heading.tsx",
         "assets/js/src/common/typography/list/_stories/list.tsx",
         "assets/js/src/common/typography/list/list.tsx",
-        "assets/js/src/form_editor/rich_text/font_selection_format.tsx",
-        "assets/js/src/form_editor/rich_text/init.ts",
         "assets/js/src/form_editor/store/actions.ts",
         "assets/js/src/form_editor/store/mapping/from_blocks/styles_mapper.ts",
         "assets/js/src/form_editor/store/mapping/to_blocks/styles_mapper.ts",
