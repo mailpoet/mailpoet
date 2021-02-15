@@ -5,7 +5,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import Icon from './icons/below_pages_icon';
 import FormPlacementOption from './form_placement_option';
 
-const BelowPages = () => {
+const BelowPages: React.FunctionComponent = () => {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -18,7 +18,7 @@ const BelowPages = () => {
       active={formSettings.formPlacement.belowPosts.enabled}
       label={MailPoet.I18n.t('placeFormBellowPages')}
       icon={Icon}
-      onClick={() => (showPlacementSettings('below_post'))}
+      onClick={(): void => (showPlacementSettings('below_post'))}
       canBeActive
     />
   );

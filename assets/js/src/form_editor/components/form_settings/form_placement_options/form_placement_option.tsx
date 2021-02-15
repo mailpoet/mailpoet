@@ -9,7 +9,7 @@ type Props = {
   onClick: () => void;
 }
 
-const FormPlacementOption = ({
+const FormPlacementOption: React.FunctionComponent<Props> = ({
   label,
   icon,
   active,

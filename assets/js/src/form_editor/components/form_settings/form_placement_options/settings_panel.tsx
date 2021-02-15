@@ -10,7 +10,7 @@ type Props = {
   activePanel: string;
 }
 
-const SettingsPanel = ({ activePanel }: Props) => (
+const SettingsPanel: React.FunctionComponent<Props> = ({ activePanel }: Props) => (
   <div className="mailpoet-styles-settings">
     {activePanel === 'others' && <OtherSettings />}
     {activePanel === 'below_post' && <BelowPostsSettings />}
