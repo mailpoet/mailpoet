@@ -346,13 +346,13 @@ describe('Posts', function () {
     describe('once rendered', function () {
       it('changes the model if post type changes', function () {
         var newValue = 'mailpoet_page';
-        view.$('.mailpoet_settings_posts_content_type').val(newValue).change();
+        view.$('.mailpoet_settings_posts_content_type').val(newValue).trigger('change');
         expect(model.get('contentType')).to.equal(newValue);
       });
 
       it('changes the model if post status changes', function () {
         var newValue = 'pending';
-        view.$('.mailpoet_posts_post_status').val(newValue).change();
+        view.$('.mailpoet_posts_post_status').val(newValue).trigger('change');
         expect(model.get('postStatus')).to.equal(newValue);
       });
 
@@ -364,38 +364,38 @@ describe('Posts', function () {
 
       it('changes the model if display type changes', function () {
         var newValue = 'full';
-        view.$('.mailpoet_posts_display_type').val(newValue).change();
+        view.$('.mailpoet_posts_display_type').val(newValue).trigger('change');
         expect(model.get('displayType')).to.equal(newValue);
       });
 
       it('changes the model if title format changes', function () {
         var newValue = 'h3';
-        view.$('.mailpoet_posts_title_format').val(newValue).change();
+        view.$('.mailpoet_posts_title_format').val(newValue).trigger('change');
         expect(model.get('titleFormat')).to.equal(newValue);
       });
 
       it('changes the model if title alignment changes', function () {
         var newValue = 'right';
-        view.$('.mailpoet_posts_title_alignment').val(newValue).change();
+        view.$('.mailpoet_posts_title_alignment').val(newValue).trigger('change');
         expect(model.get('titleAlignment')).to.equal(newValue);
       });
 
       it('changes the model if title link changes', function () {
         var newValue = true;
-        view.$('.mailpoet_posts_title_as_links').val(newValue).change();
+        view.$('.mailpoet_posts_title_as_links').val(newValue).trigger('change');
         expect(model.get('titleIsLink')).to.equal(newValue);
       });
 
       it('changes the model if image alignment changes', function () {
         var newValue = false;
-        view.$('.mailpoet_posts_image_full_width').val(newValue).change();
+        view.$('.mailpoet_posts_image_full_width').val(newValue).trigger('change');
         expect(model.get('imageFullWidth')).to.equal(newValue);
       });
 
       it('changes the model if featured image position changes for excerpt display type', function () {
         var newValue = 'right';
         model.set('displayType', 'excerpt');
-        view.$('.mailpoet_posts_featured_image_position').val(newValue).change();
+        view.$('.mailpoet_posts_featured_image_position').val(newValue).trigger('change');
         expect(model.get('featuredImagePosition')).to.equal(newValue);
         expect(model.get('_featuredImagePosition')).to.equal(newValue);
       });
@@ -403,14 +403,14 @@ describe('Posts', function () {
       it('changes the model if featured image position changes for full post display type', function () {
         var newValue = 'alternate';
         model.set('displayType', 'full');
-        view.$('.mailpoet_posts_featured_image_position').val(newValue).change();
+        view.$('.mailpoet_posts_featured_image_position').val(newValue).trigger('change');
         expect(model.get('fullPostFeaturedImagePosition')).to.equal(newValue);
         expect(model.get('_featuredImagePosition')).to.equal(newValue);
       });
 
       it('changes the model if show author changes', function () {
         var newValue = 'belowText';
-        view.$('.mailpoet_posts_show_author').val(newValue).change();
+        view.$('.mailpoet_posts_show_author').val(newValue).trigger('change');
         expect(model.get('showAuthor')).to.equal(newValue);
       });
 
@@ -422,7 +422,7 @@ describe('Posts', function () {
 
       it('changes the model if show categories changes', function () {
         var newValue = 'belowText';
-        view.$('.mailpoet_posts_show_categories').val(newValue).change();
+        view.$('.mailpoet_posts_show_categories').val(newValue).trigger('change');
         expect(model.get('showCategories')).to.equal(newValue);
       });
 
@@ -434,7 +434,7 @@ describe('Posts', function () {
 
       it('changes the model if read more button type changes', function () {
         var newValue = 'link';
-        view.$('.mailpoet_posts_read_more_type').val(newValue).change();
+        view.$('.mailpoet_posts_read_more_type').val(newValue).trigger('change');
         expect(model.get('readMoreType')).to.equal(newValue);
       });
 
@@ -452,7 +452,7 @@ describe('Posts', function () {
           innerModel.request = sinon.stub().returns({ $el: {} });
           innerView = new (PostsBlock.PostsBlockSettingsView)({ model: innerModel });
           innerView.render();
-          innerView.$('.mailpoet_posts_display_type').val('titleOnly').change();
+          innerView.$('.mailpoet_posts_display_type').val('titleOnly').trigger('change');
         });
 
         it('shows "title as list" option', function () {
@@ -461,8 +461,8 @@ describe('Posts', function () {
 
         describe('when "title as list" is selected', function () {
           beforeEach(function () {
-            innerView.$('.mailpoet_posts_display_type').val('titleOnly').change();
-            innerView.$('.mailpoet_posts_title_format').val('ul').change();
+            innerView.$('.mailpoet_posts_display_type').val('titleOnly').trigger('change');
+            innerView.$('.mailpoet_posts_title_format').val('ul').trigger('change');
           });
 
           describe('"title is link" option', function () {
@@ -478,8 +478,8 @@ describe('Posts', function () {
 
         describe('when "title as list" is deselected', function () {
           before(function () {
-            innerView.$('.mailpoet_posts_title_format').val('ul').change();
-            innerView.$('.mailpoet_posts_title_format').val('h3').change();
+            innerView.$('.mailpoet_posts_title_format').val('ul').trigger('change');
+            innerView.$('.mailpoet_posts_title_format').val('h3').trigger('change');
           });
 
           describe('"title is link" option', function () {
@@ -492,7 +492,7 @@ describe('Posts', function () {
 
       it('changes the model if show divider changes', function () {
         var newValue = true;
-        view.$('.mailpoet_posts_show_divider').val(newValue).change();
+        view.$('.mailpoet_posts_show_divider').val(newValue).trigger('change');
         expect(model.get('showDivider')).to.equal(newValue);
       });
     });

@@ -115,7 +115,7 @@ describe('Spacer', function () {
       var mock = sinon.mock().once();
       model.on('startEditing', mock);
       view.render();
-      view.$('.mailpoet_spacer').click();
+      view.$('.mailpoet_spacer').trigger('click');
       mock.verify();
     });
 
@@ -123,7 +123,7 @@ describe('Spacer', function () {
       var mock = sinon.mock().never();
       model.on('startEditing', mock);
       view.render();
-      view.$('.mailpoet_resize_handle').click();
+      view.$('.mailpoet_resize_handle').trigger('click');
       mock.verify();
     });
   });
@@ -155,14 +155,14 @@ describe('Spacer', function () {
       });
 
       it('updates the model when background color changes', function () {
-        view.$('.mailpoet_field_spacer_background_color').val('#123456').change();
+        view.$('.mailpoet_field_spacer_background_color').val('#123456').trigger('change');
         expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
       });
 
       it.skip('closes the sidepanel after "Done" is clicked', function () {
         var mock = sinon.mock().once();
         global.MailPoet.Modal.cancel = mock;
-        view.$('.mailpoet_done_editing').click();
+        view.$('.mailpoet_done_editing').trigger('click');
         mock.verify();
         delete (global.MailPoet.Modal.cancel);
       });

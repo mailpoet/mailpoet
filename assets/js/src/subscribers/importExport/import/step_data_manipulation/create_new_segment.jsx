@@ -7,12 +7,12 @@ export default (onCreateSegment) => {
     title: MailPoet.I18n.t('addNewList'),
     template: jQuery('#new_segment_template').html(),
   });
-  jQuery('#new_segment_name').keypress((e) => {
+  jQuery('#new_segment_name').on('keypress', (e) => {
     if (e.which === 13) {
-      jQuery('#new_segment_process').click();
+      jQuery('#new_segment_process').trigger('click');
     }
   });
-  jQuery('#new_segment_process').click(() => {
+  jQuery('#new_segment_process').on('click', () => {
     const segmentName = jQuery('#new_segment_name').val().trim();
     const segmentDescription = jQuery('#new_segment_description').val().trim();
 
@@ -43,7 +43,7 @@ export default (onCreateSegment) => {
       }
     });
   });
-  jQuery('#new_segment_cancel').click(() => {
+  jQuery('#new_segment_cancel').on('click', () => {
     MailPoet.Modal.close();
   });
 };

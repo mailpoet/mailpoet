@@ -290,34 +290,34 @@ describe('Social', function () {
       });
 
       it('updates icons in settings if iconset changes', function () {
-        view.$('.mailpoet_social_icon_set').last().click();
+        view.$('.mailpoet_social_icon_set').last().trigger('click');
         expect(view.$('.mailpoet_social_icon_field_image').val()).to.equal(EditorApplication.getAvailableStyles().get('socialIconSets.light.custom'));
       });
 
       it('removes the icon when "remove" is clicked', function () {
-        view.$('.mailpoet_delete_block').click();
+        view.$('.mailpoet_delete_block').trigger('click');
         expect(model.get('icons').length).to.equal(0);
         expect(view.$('.mailpoet_social_icon_settings').length).to.equal(0);
       });
 
       it('adds another icon when "Add another social network" is pressed', function () {
-        view.$('.mailpoet_add_social_icon').click();
+        view.$('.mailpoet_add_social_icon').trigger('click');
         expect(model.get('icons').length).to.equal(2);
       });
 
       it('updates alignment when it changes', function () {
-        view.$('.mailpoet_social_block_alignment').eq(0).click();
+        view.$('.mailpoet_social_block_alignment').eq(0).trigger('click');
         expect(model.get('styles.block.textAlign')).to.equal('left');
-        view.$('.mailpoet_social_block_alignment').eq(1).click();
+        view.$('.mailpoet_social_block_alignment').eq(1).trigger('click');
         expect(model.get('styles.block.textAlign')).to.equal('center');
-        view.$('.mailpoet_social_block_alignment').eq(2).click();
+        view.$('.mailpoet_social_block_alignment').eq(2).trigger('click');
         expect(model.get('styles.block.textAlign')).to.equal('right');
       });
 
       it.skip('closes the sidepanel after "Done" is clicked', function () {
         var mock = sinon.mock().once();
         global.MailPoet.Modal.cancel = mock;
-        view.$('.mailpoet_done_editing').click();
+        view.$('.mailpoet_done_editing').trigger('click');
         mock.verify();
         delete (global.MailPoet.Modal.cancel);
       });

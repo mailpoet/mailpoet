@@ -189,13 +189,13 @@ describe('Save', function () {
         global.stubChannel(EditorApplication, {
           request: mock,
         });
-        view.$('.mailpoet_save_button').click();
+        view.$('.mailpoet_save_button').trigger('click');
 
         mock.verify();
       });
 
       it('displays saving options when clicked on save options button', function () {
-        view.$('.mailpoet_save_show_options').click();
+        view.$('.mailpoet_save_show_options').trigger('click');
         expect(view.$('.mailpoet_save_options')).to.not.have.$class('mailpoet_hidden');
       });
 
@@ -248,7 +248,7 @@ describe('Save', function () {
 
         view.$('.mailpoet_save_as_template_name').val('A sample template');
         view.$('.mailpoet_save_as_template_description').val('Sample template description');
-        view.$('.mailpoet_save_as_template').click();
+        view.$('.mailpoet_save_as_template').trigger('click');
 
         mock.verify();
       });
@@ -272,7 +272,7 @@ describe('Save', function () {
         view = new (module.SaveView)({ model: model });
         view.render();
 
-        view.$('.mailpoet_save_next').click();
+        view.$('.mailpoet_save_next').trigger('click');
         expect(spy).to.have.callCount(1);
         expect(spy).to.have.been.calledWith('beforeEditorSave');
       });

@@ -308,7 +308,7 @@ describe('Products', function () {
     describe('once rendered', function () {
       it('changes the model if post status changes', function () {
         var newValue = 'pending';
-        view.$('.mailpoet_products_post_status').val(newValue).change();
+        view.$('.mailpoet_products_post_status').val(newValue).trigger('change');
         expect(model.get('postStatus')).to.equal(newValue);
       });
 
@@ -320,49 +320,49 @@ describe('Products', function () {
 
       it('changes the model if display type changes', function () {
         var newValue = 'full';
-        view.$('.mailpoet_products_display_type').val(newValue).change();
+        view.$('.mailpoet_products_display_type').val(newValue).trigger('change');
         expect(model.get('displayType')).to.equal(newValue);
       });
 
       it('changes the model if title format changes', function () {
         var newValue = 'h3';
-        view.$('.mailpoet_products_title_format').val(newValue).change();
+        view.$('.mailpoet_products_title_format').val(newValue).trigger('change');
         expect(model.get('titleFormat')).to.equal(newValue);
       });
 
       it('changes the model if title alignment changes', function () {
         var newValue = 'right';
-        view.$('.mailpoet_products_title_alignment').val(newValue).change();
+        view.$('.mailpoet_products_title_alignment').val(newValue).trigger('change');
         expect(model.get('titleAlignment')).to.equal(newValue);
       });
 
       it('changes the model if title link changes', function () {
         var newValue = true;
-        view.$('.mailpoet_products_title_as_links').val(newValue).change();
+        view.$('.mailpoet_products_title_as_links').val(newValue).trigger('change');
         expect(model.get('titleIsLink')).to.equal(newValue);
       });
 
       it('changes the model if image alignment changes', function () {
         var newValue = false;
-        view.$('.mailpoet_products_image_full_width').val(newValue).change();
+        view.$('.mailpoet_products_image_full_width').val(newValue).trigger('change');
         expect(model.get('imageFullWidth')).to.equal(newValue);
       });
 
       it('changes the model if image position changes', function () {
         var newValue = 'aboveTitle';
-        view.$('.mailpoet_products_featured_image_position').val(newValue).change();
+        view.$('.mailpoet_products_featured_image_position').val(newValue).trigger('change');
         expect(model.get('featuredImagePosition')).to.equal(newValue);
       });
 
       it('changes the model if price position changes', function () {
         var newValue = 'below';
-        view.$('.mailpoet_products_price_position').val(newValue).change();
+        view.$('.mailpoet_products_price_position').val(newValue).trigger('change');
         expect(model.get('pricePosition')).to.equal(newValue);
       });
 
       it('changes the model if buy now button type changes', function () {
         var newValue = 'link';
-        view.$('.mailpoet_products_read_more_type').val(newValue).change();
+        view.$('.mailpoet_products_read_more_type').val(newValue).trigger('change');
         expect(model.get('readMoreType')).to.equal(newValue);
       });
 
@@ -380,7 +380,7 @@ describe('Products', function () {
           innerModel.request = sinon.stub().returns({ $el: {} });
           innerView = new (ProductsBlock.ProductsBlockSettingsView)({ model: innerModel });
           innerView.render();
-          innerView.$('.mailpoet_products_display_type').val('titleOnly').change();
+          innerView.$('.mailpoet_products_display_type').val('titleOnly').trigger('change');
         });
 
         it('hides "title position" option', function () {
@@ -391,7 +391,7 @@ describe('Products', function () {
 
       it('changes the model if show divider changes', function () {
         var newValue = true;
-        view.$('.mailpoet_products_show_divider').val(newValue).change();
+        view.$('.mailpoet_products_show_divider').val(newValue).trigger('change');
         expect(model.get('showDivider')).to.equal(newValue);
       });
     });

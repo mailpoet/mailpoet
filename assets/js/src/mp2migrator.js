@@ -190,22 +190,22 @@ jQuery(function () {
   jQuery('#progressbar').progressbar({ value: 0 });
 
   // Import button
-  jQuery('#import').click(function () {
+  jQuery('#import').on('click', function () {
     MailPoet.MP2Migrator.startImport();
   });
 
   // Stop import button
-  jQuery('#stop-import').click(function () {
+  jQuery('#stop-import').on('click', function () {
     MailPoet.MP2Migrator.stopImport();
   });
 
   // Skip import link
-  jQuery('#skip-import').click(function () {
+  jQuery('#skip-import').on('click', function () {
     MailPoet.MP2Migrator.skipImport();
   });
 
   // Go to welcome page
-  jQuery('#goto-welcome').click(function () {
+  jQuery('#goto-welcome').on('click', function () {
     MailPoet.MP2Migrator.gotoWelcomePage();
   });
 

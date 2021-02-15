@@ -23,7 +23,7 @@ export function createSelection(segments, onSelectionChange) {
       templateResult: templateRendered,
       templateSelection: templateRendered,
     })
-    .change((event) => {
+    .on('change', (event) => {
       const segmentSelectionNotice = jQuery('[data-id="notice_segmentSelection"]');
       if (!event.currentTarget.value) {
         if (!segmentSelectionNotice.length) {

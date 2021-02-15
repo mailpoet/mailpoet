@@ -142,7 +142,7 @@ describe('Divider', function () {
       var mock = sinon.mock().once();
       model.on('startEditing', mock);
       view.render();
-      view.$('.mailpoet_divider').click();
+      view.$('.mailpoet_divider').trigger('click');
       mock.verify();
     });
 
@@ -150,7 +150,7 @@ describe('Divider', function () {
       var mock = sinon.mock().never();
       model.on('startEditing', mock);
       view.render();
-      view.$('.mailpoet_resize_handle').click();
+      view.$('.mailpoet_resize_handle').trigger('click');
       mock.verify();
     });
   });
@@ -189,12 +189,12 @@ describe('Divider', function () {
       });
 
       it('updates the model when divider style changes', function () {
-        view.$('.mailpoet_field_divider_style').last().click();
+        view.$('.mailpoet_field_divider_style').last().trigger('click');
         expect(model.get('styles.block.borderStyle')).to.equal('inset');
       });
 
       it('updates the model when divider width slider changes', function () {
-        view.$('.mailpoet_field_divider_border_width').val('17').change();
+        view.$('.mailpoet_field_divider_border_width').val('17').trigger('change');
         expect(model.get('styles.block.borderWidth')).to.equal('17px');
       });
 
@@ -204,23 +204,23 @@ describe('Divider', function () {
       });
 
       it('updates the input when divider width range slider changes', function () {
-        view.$('.mailpoet_field_divider_border_width').val('19').change();
+        view.$('.mailpoet_field_divider_border_width').val('19').trigger('change');
         expect(view.$('.mailpoet_field_divider_border_width_input').val()).to.equal('19');
       });
 
       it('updates the model when divider color changes', function () {
-        view.$('.mailpoet_field_divider_border_color').val('#123457').change();
+        view.$('.mailpoet_field_divider_border_color').val('#123457').trigger('change');
         expect(model.get('styles.block.borderColor')).to.equal('#123457');
       });
 
       it('updates the model when divider background color changes', function () {
-        view.$('.mailpoet_field_divider_background_color').val('#cccccc').change();
+        view.$('.mailpoet_field_divider_background_color').val('#cccccc').trigger('change');
         expect(model.get('styles.block.backgroundColor')).to.equal('#cccccc');
       });
 
       it('changes color of available divider styles when actual divider color changes', function () {
         var newColor = '#889912';
-        view.$('.mailpoet_field_divider_border_color').val(newColor).change();
+        view.$('.mailpoet_field_divider_border_color').val(newColor).trigger('change');
         expect(view.$('.mailpoet_field_divider_style div')).to.have.$css('border-top-color', newColor);
       });
 
@@ -238,7 +238,7 @@ describe('Divider', function () {
       it.skip('closes the sidepanel after "Done" is clicked', function () {
         var mock = sinon.mock().once();
         global.MailPoet.Modal.cancel = mock;
-        view.$('.mailpoet_done_editing').click();
+        view.$('.mailpoet_done_editing').trigger('click');
         mock.verify();
         delete (global.MailPoet.Modal.cancel);
       });

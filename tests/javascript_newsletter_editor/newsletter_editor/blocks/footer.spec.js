@@ -187,41 +187,41 @@ describe('Footer', function () {
       });
 
       it('updates the model when text font color changes', function () {
-        view.$('.mailpoet_field_footer_text_color').val('#123456').change();
+        view.$('.mailpoet_field_footer_text_color').val('#123456').trigger('change');
         expect(model.get('styles.text.fontColor')).to.equal('#123456');
       });
 
       it('updates the model when text font family changes', function () {
         var value = 'Tahoma';
-        view.$('.mailpoet_field_footer_text_font_family').val(value).change();
+        view.$('.mailpoet_field_footer_text_font_family').val(value).trigger('change');
         expect(model.get('styles.text.fontFamily')).to.equal(value);
       });
 
       it('updates the model when text font size changes', function () {
         var value = '20px';
-        view.$('.mailpoet_field_footer_text_size').val(value).change();
+        view.$('.mailpoet_field_footer_text_size').val(value).trigger('change');
         expect(model.get('styles.text.fontSize')).to.equal(value);
       });
 
       it('updates the model when link font color changes', function () {
-        view.$('#mailpoet_field_footer_link_color').val('#123456').change();
+        view.$('#mailpoet_field_footer_link_color').val('#123456').trigger('change');
         expect(model.get('styles.link.fontColor')).to.equal('#123456');
       });
 
       it('updates the model when link text decoration changes', function () {
-        view.$('#mailpoet_field_footer_link_underline').prop('checked', true).change();
+        view.$('#mailpoet_field_footer_link_underline').prop('checked', true).trigger('change');
         expect(model.get('styles.link.textDecoration')).to.equal('underline');
       });
 
       it('updates the model when text alignment changes', function () {
-        view.$('.mailpoet_field_footer_alignment').last().prop('checked', true).change();
+        view.$('.mailpoet_field_footer_alignment').last().prop('checked', true).trigger('change');
         expect(model.get('styles.text.textAlign')).to.equal('right');
       });
 
       it.skip('closes the sidepanel after "Done" is clicked', function () {
         var mock = sinon.mock().once();
         global.MailPoet.Modal.cancel = mock;
-        view.$('.mailpoet_done_editing').click();
+        view.$('.mailpoet_done_editing').trigger('click');
         mock.verify();
         delete (global.MailPoet.Modal.cancel);
       });
