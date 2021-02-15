@@ -134,7 +134,6 @@ class FormsTest extends \MailPoetTest {
     wp_set_current_user(0);
     $response = $this->endpoint->saveEditor($form);
     expect($response->status)->equals(APIResponse::STATUS_FORBIDDEN);
-    codecept_debug($response);
     expect($response->errors[0]['message'])->startsWith('Only administrator can');
   }
 
