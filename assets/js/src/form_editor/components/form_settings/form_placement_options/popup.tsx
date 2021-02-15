@@ -5,7 +5,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import FormPlacementOption from './form_placement_option';
 import Icon from './icons/popup_icon';
 
-const Popup = () => {
+const Popup: React.FunctionComponent = () => {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -17,7 +17,7 @@ const Popup = () => {
       active={formSettings.formPlacement.popup.enabled}
       label={MailPoet.I18n.t('placePopupFormOnPages')}
       icon={Icon}
-      onClick={() => (showPlacementSettings('popup'))}
+      onClick={(): void => (showPlacementSettings('popup'))}
       canBeActive
     />
   );

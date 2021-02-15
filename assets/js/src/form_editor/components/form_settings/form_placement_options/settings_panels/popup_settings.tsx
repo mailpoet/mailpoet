@@ -9,7 +9,7 @@ import PlacementSettings from './placement_settings';
 
 const delayValues = [0, 15, 30, 60, 120, 180, 240];
 
-const PopUpSettings = () => {
+const PopUpSettings: React.FunctionComponent = () => {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -39,7 +39,7 @@ const PopUpSettings = () => {
             maxPercents={100}
             defaultPixelValue={560}
             defaultPercentValue={100}
-            onChange={(width) => (
+            onChange={(width): void => (
               changeFormSettings(assocPath('formPlacement.popup.styles.width', width, formSettings))
             )}
           />

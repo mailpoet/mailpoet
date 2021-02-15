@@ -7,7 +7,7 @@ export default {
   title: 'FormEditor/Form Placement Options',
 };
 
-export const Options = () => (
+export const Options: React.FunctionComponent = () => (
   <>
     <Option
       label="Active option"
@@ -31,7 +31,7 @@ export const Options = () => (
   </>
 );
 
-export const OptionsListInSidebar = () => (
+export const OptionsListInSidebar: React.FunctionComponent = () => (
   <div className="edit-post-sidebar mailpoet_form_editor_sidebar">
     <div className="form-placement-option-list">
       <Option

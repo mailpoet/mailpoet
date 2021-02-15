@@ -16,7 +16,7 @@ type Props = {
   settingsPlacementKey: string;
 }
 
-const PlacementSettings = ({ settingsPlacementKey }: Props) => {
+const PlacementSettings: React.FunctionComponent<Props> = ({ settingsPlacementKey }: Props) => {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -62,20 +62,21 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
       <ToggleControl
         label={MailPoet.I18n.t('placeFormOnAllPages')}
         checked={formSettings.formPlacement[settingsPlacementKey].pages.all}
-        onChange={(newValue) => {
+        onChange={(newValue): void => {
           compose([
             changeFormSettings,
             assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, newValue),
             cond([
               [
-                () => newValue,
+                // condition, if the predicate function is true the next compose is run
+                (): boolean => newValue,
                 compose([
                   assocPath(`formPlacement.${settingsPlacementKey}.pages.selected`, []), // if enabled clear selected pages
                   assocPath(`formPlacement.${settingsPlacementKey}.categories`, []), // if enabled clear selected categories
                   assocPath(`formPlacement.${settingsPlacementKey}.tags`, []), // if enabled clear selected tags
                 ]),
               ],
-              [() => !newValue, identity], // if disabled do nothing
+              [(): boolean => !newValue, identity], // if disabled do nothing
             ]),
           ])(formSettings);
         }}
@@ -87,7 +88,7 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
             item={{
               id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].pages.selected.join()}`,
             }}
-            onValueChange={(e) => {
+            onValueChange={(e): void => {
               const selected = formSettings.formPlacement[settingsPlacementKey].pages.selected;
               if (isEqual(selected, e.target.value)) {
                 return;
@@ -97,10 +98,11 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
                 assocPath(`formPlacement.${settingsPlacementKey}.pages.selected`, e.target.value),
                 cond([
                   [
-                    () => !!e.target.value.length, // only disable "All pages" toggle if not empty
+                    // only disable "All pages" toggle if not empty
+                    (): boolean => !!e.target.value.length,
                     assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false), // disable all if some pages are selected
                   ],
-                  [() => !e.target.value.length, identity],
+                  [(): boolean => !e.target.value.length, identity],
                 ]),
               ])(formSettings);
             }}
@@ -110,8 +112,8 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
               values: pages,
               multiple: true,
               placeholder: MailPoet.I18n.t('selectPage'),
-              getLabel: (page) => page.name,
-              selected: () => formSettings.formPlacement[settingsPlacementKey].pages.selected,
+              getLabel: (page): void => page.name,
+              selected: (): void => formSettings.formPlacement[settingsPlacementKey].pages.selected,
             }}
           />
         </div>
@@ -119,20 +121,20 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
       <ToggleControl
         label={MailPoet.I18n.t('placeFormOnAllPosts')}
         checked={formSettings.formPlacement[settingsPlacementKey].posts.all}
-        onChange={(newValue) => {
+        onChange={(newValue): void => {
           compose([
             changeFormSettings,
             assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, newValue),
             cond([
               [
-                () => newValue,
+                (): boolean => newValue,
                 compose([
                   assocPath(`formPlacement.${settingsPlacementKey}.posts.selected`, []), // if enabled clear selected pages
                   assocPath(`formPlacement.${settingsPlacementKey}.categories`, []), // if enabled clear selected categories
                   assocPath(`formPlacement.${settingsPlacementKey}.tags`, []), // if enabled clear selected tags
                 ]),
               ],
-              [() => !newValue, identity], // if disabled do nothing
+              [(): boolean => !newValue, identity], // if disabled do nothing
             ]),
           ])(formSettings);
         }}
@@ -143,7 +145,7 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
           item={{
             id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].posts.selected.join()}`,
           }}
-          onValueChange={(e) => {
+          onValueChange={(e): void => {
             const selected = formSettings.formPlacement[settingsPlacementKey].posts.selected;
             if (isEqual(selected, e.target.value)) {
               return;
@@ -153,10 +155,11 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
               assocPath(`formPlacement.${settingsPlacementKey}.posts.selected`, e.target.value),
               cond([
                 [
-                  () => !!e.target.value.length, // only disable "All pages" toggle if not empty
+                  // only disable "All pages" toggle if not empty
+                  (): boolean => !!e.target.value.length,
                   assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some pages are selected
                 ],
-                [() => !e.target.value.length, identity],
+                [(): boolean => !e.target.value.length, identity],
               ]),
             ])(formSettings);
           }}
@@ -166,8 +169,10 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
             values: posts,
             multiple: true,
             placeholder: MailPoet.I18n.t('selectPage'),
-            getLabel: (page) => page.name,
-            selected: () => formSettings.formPlacement[settingsPlacementKey].posts.selected,
+            getLabel: (page): string => page.name,
+            selected: (): Array<string> => (
+              formSettings.formPlacement[settingsPlacementKey].posts.selected
+            ),
           }}
         />
       </div>
@@ -179,7 +184,7 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
             item={{
               id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].categories.join()}`,
             }}
-            onValueChange={(e) => {
+            onValueChange={(e): void => {
               const selected = formSettings.formPlacement[settingsPlacementKey].categories;
               if (isEqual(selected, e.target.value)) {
                 return;
@@ -189,13 +194,14 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
                 assocPath(`formPlacement.${settingsPlacementKey}.categories`, e.target.value),
                 cond([
                   [
-                    () => !!e.target.value.length, // only disable "All pages" toggle if not empty
+                    // only disable "All pages" toggle if not empty
+                    (): boolean => !!e.target.value.length,
                     compose([
                       assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
                       assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
                     ]),
                   ],
-                  [() => !e.target.value.length, identity],
+                  [(): boolean => !e.target.value.length, identity],
                 ]),
               ])(formSettings);
             }}
@@ -205,8 +211,10 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
               values: categories,
               multiple: true,
               placeholder: MailPoet.I18n.t('selectPage'),
-              getLabel: (category) => category.name,
-              selected: () => formSettings.formPlacement[settingsPlacementKey].categories,
+              getLabel: (category): string => category.name,
+              selected: (): Array<string> => (
+                formSettings.formPlacement[settingsPlacementKey].categories
+              ),
             }}
           />
         </div>
@@ -219,7 +227,7 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
             item={{
               id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].tags.join()}`,
             }}
-            onValueChange={(e) => {
+            onValueChange={(e): void => {
               const selected = formSettings.formPlacement[settingsPlacementKey].tags;
               if (isEqual(selected, e.target.value)) {
                 return;
@@ -229,13 +237,14 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
                 assocPath(`formPlacement.${settingsPlacementKey}.tags`, e.target.value),
                 cond([
                   [
-                    () => !!e.target.value.length, // only disable "All pages" toggle if not empty
+                    // only disable "All pages" toggle if not empty
+                    (): boolean => !!e.target.value.length,
                     compose([
                       assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
                       assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
                     ]),
                   ],
-                  [() => !e.target.value.length, identity],
+                  [(): boolean => !e.target.value.length, identity],
                 ]),
               ])(formSettings);
             }}
@@ -245,8 +254,8 @@ const PlacementSettings = ({ settingsPlacementKey }: Props) => {
               values: tags,
               multiple: true,
               placeholder: MailPoet.I18n.t('selectPage'),
-              getLabel: (tag) => tag.name,
-              selected: () => formSettings.formPlacement[settingsPlacementKey].tags,
+              getLabel: (tag): string => tag.name,
+              selected: (): Array<string> => formSettings.formPlacement[settingsPlacementKey].tags,
             }}
           />
         </div>

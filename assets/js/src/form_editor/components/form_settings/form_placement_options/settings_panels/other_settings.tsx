@@ -7,7 +7,7 @@ import { assocPath } from 'lodash/fp';
 import { TextareaControl } from '@wordpress/components';
 import { SizeSettings } from 'form_editor/components/size_settings';
 
-const OtherSettings = () => {
+const OtherSettings: React.FunctionComponent = () => {
   const [copyAreaContent, setCopyAreaContent] = useState(null);
 
   const formExports = useSelect(
@@ -58,13 +58,13 @@ const OtherSettings = () => {
     }
   );
 
-  const getCopyTextArea = () => {
+  const getCopyTextArea: React.FunctionComponent = () => {
     if (!copyAreaContent) return null;
     return (
       <TextareaControl
         key="copyTextArea"
         readOnly
-        onClick={(event) => (event.target.select())}
+        onClick={(event): void => (event.target.select())}
         rows={8}
         value={copyAreaContent}
       />
@@ -76,7 +76,7 @@ const OtherSettings = () => {
       <p>{addFormWidgetHint}</p>
       <p>{addFormShortcodeHint}</p>
       <p>{addFormPhpIframeHint}</p>
-      {getCopyTextArea()}
+      {getCopyTextArea({})}
       <hr />
       <SizeSettings
         label={MailPoet.I18n.t('formSettingsWidth')}
@@ -87,7 +87,7 @@ const OtherSettings = () => {
         maxPercents={100}
         defaultPixelValue={200}
         defaultPercentValue={100}
-        onChange={(width) => (
+        onChange={(width): void => (
           changeFormSettings(assocPath('formPlacement.others.styles.width', width, formSettings))
         )}
       />

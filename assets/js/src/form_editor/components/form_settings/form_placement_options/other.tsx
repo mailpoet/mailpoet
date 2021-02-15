@@ -4,7 +4,7 @@ import { useDispatch } from '@wordpress/data';
 import Icon from './icons/sidebar_icon';
 import FormPlacementOption from './form_placement_option';
 
-const Other = () => {
+const Other: React.FunctionComponent = () => {
   const { showPlacementSettings } = useDispatch('mailpoet-form-editor');
 
   return (
@@ -12,7 +12,7 @@ const Other = () => {
       active={false}
       label={MailPoet.I18n.t('formPlacementOtherLabel')}
       icon={Icon}
-      onClick={() => (showPlacementSettings('others'))}
+      onClick={(): void => (showPlacementSettings('others'))}
       canBeActive={false}
     />
   );

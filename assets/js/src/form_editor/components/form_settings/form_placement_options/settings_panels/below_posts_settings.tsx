@@ -6,7 +6,7 @@ import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 import PlacementSettings from './placement_settings';
 
-const BelowPostsSettings = () => {
+const BelowPostsSettings: React.FunctionComponent = () => {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -34,7 +34,7 @@ const BelowPostsSettings = () => {
             maxPercents={100}
             defaultPixelValue={560}
             defaultPercentValue={100}
-            onChange={(width) => (
+            onChange={(width): void => (
               changeFormSettings(assocPath('formPlacement.belowPosts.styles.width', width, formSettings))
             )}
           />

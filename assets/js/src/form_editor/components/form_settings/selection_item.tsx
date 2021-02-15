@@ -15,7 +15,7 @@ type Props = {
   automationId?: string;
 }
 
-const SelectionItem = ({
+const SelectionItem: React.FunctionComponent<Props> = ({
   label,
   active,
   canBeActive,
@@ -37,10 +37,10 @@ const SelectionItem = ({
           { 'selection-item-active': active && canBeActive }
         )
       }
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      onMouseEnter={(): void => setHover(true)}
+      onMouseLeave={(): void => setHover(false)}
       onClick={onClick}
-      onKeyDown={(event) => {
+      onKeyDown={(event): void => {
         if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
         ) {
           event.preventDefault();

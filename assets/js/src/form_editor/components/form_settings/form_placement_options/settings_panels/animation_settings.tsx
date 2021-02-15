@@ -8,7 +8,7 @@ type Props = {
   settingsPlacementKey: string;
 }
 
-const AnimationSettings = ({ settingsPlacementKey }: Props) => {
+const AnimationSettings: React.FunctionComponent<Props> = ({ settingsPlacementKey }: Props) => {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
