@@ -252,13 +252,7 @@
         "assets/js/src/settings/store/create_reducer.ts",
         "assets/js/src/settings/store/index.ts",
         "assets/js/src/settings/store/make_default_state.ts",
-        "assets/js/src/settings/store/selectors.ts",
-        "assets/js/src/subscribers/stats.tsx",
-        "assets/js/src/subscribers/stats/heading.tsx",
-        "assets/js/src/subscribers/stats/no_access_info.tsx",
-        "assets/js/src/subscribers/stats/opened_email_stats.tsx",
-        "assets/js/src/subscribers/stats/summary.tsx",
-        "assets/js/src/subscribers/stats/woocommerce_revenues.tsx"
+        "assets/js/src/settings/store/selectors.ts"
       ],
       "rules": {
         "@typescript-eslint/explicit-function-return-type": 0,

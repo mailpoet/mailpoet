@@ -26,7 +26,7 @@ export type StatsType = {
   };
 }
 
-export const SubscriberStats = () => {
+export const SubscriberStats: React.FunctionComponent = () => {
   const match = useRouteMatch<{id: string}>();
   const location = useLocation();
   const [stats, setStats] = useState<StatsType|null>(null);

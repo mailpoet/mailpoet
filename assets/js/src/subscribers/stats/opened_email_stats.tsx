@@ -12,7 +12,7 @@ type Props = {
   location: Location;
 };
 
-const OpenedEmailsStats = ({ params, location }: Props) => (
+const OpenedEmailsStats: React.FunctionComponent<Props> = ({ params, location }: Props) => (
   <>
     <Heading level={4}>
       {MailPoet.I18n.t('openedEmailsHeading')}

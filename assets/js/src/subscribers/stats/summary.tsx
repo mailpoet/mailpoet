@@ -8,7 +8,7 @@ export type PropTypes = {
   click: number;
 }
 
-export default ({ totalSent, open, click }: PropTypes) => {
+export default ({ totalSent, open, click }: PropTypes): JSX.Element => {
   let openPercent = 0;
   let clickPercent = 0;
   let notOpenPercent = 0;

@@ -13,7 +13,7 @@ type Props = {
   hasPremiumSupport: boolean;
 }
 
-const NoAccessInfo = ({
+const NoAccessInfo: React.FunctionComponent<Props> = ({
   limitReached,
   limitValue,
   subscribersCountTowardsLimit,
@@ -21,7 +21,7 @@ const NoAccessInfo = ({
   hasValidApiKey,
   hasPremiumSupport,
 }: Props) => {
-  const getBannerMessage = () => {
+  const getBannerMessage: React.FunctionComponent = () => {
     let message = MailPoet.I18n.t('premiumRequired');
     if (!premiumActive) {
       return (
@@ -53,7 +53,7 @@ const NoAccessInfo = ({
     );
   };
 
-  const getCtaButton = () => (
+  const getCtaButton: React.FunctionComponent = () => (
     premiumActive && limitReached ? (
       <Button
         href={
@@ -92,8 +92,8 @@ const NoAccessInfo = ({
             <div className="mailpoet-subscriber-stats-no-access-content">
               <PremiumRequired
                 title={premiumActive && limitReached ? MailPoet.I18n.t('upgradeRequired') : MailPoet.I18n.t('premiumFeature')}
-                message={getBannerMessage()}
-                actionButton={getCtaButton()}
+                message={getBannerMessage({})}
+                actionButton={getCtaButton({})}
               />
             </div>
           </td>

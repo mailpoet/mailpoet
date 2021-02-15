@@ -8,7 +8,7 @@ export type PropTypes = {
   email: string;
 }
 
-export default ({ email }: PropTypes) => {
+export default ({ email }: PropTypes): JSX.Element => {
   const location = useLocation<LocationState>();
   const backUrl = location.state?.backUrl || '/';
   return (
