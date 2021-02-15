@@ -6,7 +6,7 @@ type Props = {
   onProceed?: () => void;
 }
 
-export default ({ onProceed }: Props) => (
+export default ({ onProceed }: Props): JSX.Element => (
   <div className="mailpoet-offer-clearout-step-container">
     <p>{MailPoet.I18n.t('offerClearoutText1')}</p>
     <p>{MailPoet.I18n.t('offerClearoutText2')}</p>
