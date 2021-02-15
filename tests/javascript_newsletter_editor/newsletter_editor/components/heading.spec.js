@@ -39,12 +39,12 @@ describe('Heading', function () {
       });
 
       it('changes the model when subject field is changed', function () {
-        view.$('.mailpoet_input_title').val('a new testing subject').keyup();
+        view.$('.mailpoet_input_title').val('a new testing subject').trigger('keyup');
         expect(model.get('subject')).to.equal('a new testing subject');
       });
 
       it('changes the model when preheader field is changed', function () {
-        view.$('.mailpoet_input_preheader').val('a new testing preheader').keyup();
+        view.$('.mailpoet_input_preheader').val('a new testing preheader').trigger('keyup');
         expect(model.get('preheader')).to.equal('a new testing preheader');
       });
     });

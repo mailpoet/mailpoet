@@ -276,7 +276,7 @@ describe('Button', function () {
       it('opens settings if clicked', function () {
         var mock = sinon.mock().once();
         innerModel.on('startEditing', mock);
-        view.$('.mailpoet_editor_button').click();
+        view.$('.mailpoet_editor_button').trigger('click');
         mock.verify();
       });
     });
@@ -382,7 +382,7 @@ describe('Button', function () {
       it('updates the model when font color changes', function () {
         var newValue = '#cccccc';
 
-        view.$('.mailpoet_field_button_font_color').val(newValue).change();
+        view.$('.mailpoet_field_button_font_color').val(newValue).trigger('change');
 
         expect(model.get('styles.block.fontColor')).to.equal(newValue);
       });
@@ -390,27 +390,27 @@ describe('Button', function () {
       it('updates the model when font family changes', function () {
         var newValue = 'Tahoma';
 
-        view.$('.mailpoet_field_button_font_family').val(newValue).change();
+        view.$('.mailpoet_field_button_font_family').val(newValue).trigger('change');
 
         expect(model.get('styles.block.fontFamily')).to.equal(newValue);
       });
 
       it('updates the model when font size changes', function () {
         var newValue = '20px';
-        view.$('.mailpoet_field_button_font_size').val(newValue).change();
+        view.$('.mailpoet_field_button_font_size').val(newValue).trigger('change');
         expect(model.get('styles.block.fontSize')).to.equal(newValue);
       });
 
       it('updates the model when font weight changes', function () {
         var newValue = 'bold';
-        view.$('.mailpoet_field_button_font_weight').prop('checked', true).change();
+        view.$('.mailpoet_field_button_font_weight').prop('checked', true).trigger('change');
         expect(model.get('styles.block.fontWeight')).to.equal(newValue);
       });
 
       it('updates the model when background color changes', function () {
         var newValue = '#cccccc';
 
-        view.$('.mailpoet_field_button_background_color').val(newValue).change();
+        view.$('.mailpoet_field_button_background_color').val(newValue).trigger('change');
 
         expect(model.get('styles.block.backgroundColor')).to.equal(newValue);
       });
@@ -418,13 +418,13 @@ describe('Button', function () {
       it('updates the model when border color changes', function () {
         var newValue = '#cccccc';
 
-        view.$('.mailpoet_field_button_border_color').val(newValue).change();
+        view.$('.mailpoet_field_button_border_color').val(newValue).trigger('change');
 
         expect(model.get('styles.block.borderColor')).to.equal(newValue);
       });
 
       it('updates the model when border width changes', function () {
-        view.$('.mailpoet_field_button_border_width').val('3').change();
+        view.$('.mailpoet_field_button_border_width').val('3').trigger('change');
         expect(model.get('styles.block.borderWidth')).to.equal('3px');
       });
       it('updates the range slider when border width input changes', function () {
@@ -432,12 +432,12 @@ describe('Button', function () {
         expect(view.$('.mailpoet_field_button_border_width').val()).to.equal('5');
       });
       it('updates the input when border width range slider changes', function () {
-        view.$('.mailpoet_field_button_border_width').val('4').change();
+        view.$('.mailpoet_field_button_border_width').val('4').trigger('change');
         expect(view.$('.mailpoet_field_button_border_width_input').val()).to.equal('4');
       });
 
       it('updates the model when border radius changes', function () {
-        view.$('.mailpoet_field_button_border_radius').val('7').change();
+        view.$('.mailpoet_field_button_border_radius').val('7').trigger('change');
         expect(model.get('styles.block.borderRadius')).to.equal('7px');
       });
       it('updates the range slider when border radius input changes', function () {
@@ -445,12 +445,12 @@ describe('Button', function () {
         expect(view.$('.mailpoet_field_button_border_radius').val()).to.equal('7');
       });
       it('updates the input when border radius range slider changes', function () {
-        view.$('.mailpoet_field_button_border_radius').val('7').change();
+        view.$('.mailpoet_field_button_border_radius').val('7').trigger('change');
         expect(view.$('.mailpoet_field_button_border_radius_input').val()).to.equal('7');
       });
 
       it('updates the model when width changes', function () {
-        view.$('.mailpoet_field_button_width').val('127').change();
+        view.$('.mailpoet_field_button_width').val('127').trigger('change');
         expect(model.get('styles.block.width')).to.equal('127px');
       });
       it('updates the range slider when width input changes', function () {
@@ -458,12 +458,12 @@ describe('Button', function () {
         expect(view.$('.mailpoet_field_button_width').val()).to.equal('127');
       });
       it('updates the input when width range slider changes', function () {
-        view.$('.mailpoet_field_button_width').val('127').change();
+        view.$('.mailpoet_field_button_width').val('127').trigger('change');
         expect(view.$('.mailpoet_field_button_width_input').val()).to.equal('127');
       });
 
       it('updates the model when line height changes', function () {
-        view.$('.mailpoet_field_button_line_height').val('37').change();
+        view.$('.mailpoet_field_button_line_height').val('37').trigger('change');
         expect(model.get('styles.block.lineHeight')).to.equal('37px');
       });
       it('updates the range slider when line height input changes', function () {
@@ -471,7 +471,7 @@ describe('Button', function () {
         expect(view.$('.mailpoet_field_button_line_height').val()).to.equal('37');
       });
       it('updates the input when line height range slider changes', function () {
-        view.$('.mailpoet_field_button_line_height').val('37').change();
+        view.$('.mailpoet_field_button_line_height').val('37').trigger('change');
         expect(view.$('.mailpoet_field_button_line_height_input').val()).to.equal('37');
       });
 
@@ -512,7 +512,7 @@ describe('Button', function () {
       it.skip('closes the sidepanel after "Done" is clicked', function () {
         var mock = sinon.mock().once();
         global.MailPoet.Modal.cancel = mock;
-        view.$('.mailpoet_done_editing').click();
+        view.$('.mailpoet_done_editing').trigger('click');
         mock.verify();
         delete (global.MailPoet.Modal.cancel);
       });

@@ -423,11 +423,11 @@ MailPoet.Modal = {
   },
   focus: function () {
     if (this.options.type === 'popup') {
-      jQuery('#mailpoet_' + this.options.type).focus();
+      jQuery('#mailpoet_' + this.options.type).trigger('focus');
     } else {
       // panel and subpanel
       jQuery('#mailpoet_' + this.options.type + ' .mailpoet_panel_wrapper')
-        .filter(':visible').focus();
+        .filter(':visible').trigger('focus');
     }
     return this;
   },

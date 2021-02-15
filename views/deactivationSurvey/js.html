@@ -18,7 +18,7 @@
       location.href = deactivateLink.attr('href');
     });
 
-    $(document).keyup(function(event) {
+    $(document).on('keyup', function(event) {
       if ((event.keyCode === 27) && formOpen) {
         location.href = deactivateLink.attr('href');
       }

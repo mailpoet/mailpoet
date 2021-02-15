@@ -128,7 +128,7 @@ jQuery(document).ready(() => {
     'confirmed_ip',
   ]).trigger('change');
 
-  nextStepButton.click((event) => {
+  nextStepButton.on('click', (event) => {
     if (jQuery(event.target).hasClass('mailpoet-disabled')) {
       return;
     }

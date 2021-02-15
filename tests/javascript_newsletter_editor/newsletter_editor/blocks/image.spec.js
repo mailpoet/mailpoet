@@ -195,7 +195,7 @@ describe('Image', function () {
       it('opens settings if clicked on the image', function () {
         var mock = sinon.mock().once();
         model.on('startEditing', mock);
-        view.$('img').click();
+        view.$('img').trigger('click');
         mock.verify();
       });
     });
@@ -251,19 +251,19 @@ describe('Image', function () {
       });
 
       it('updates the model when padding changes', function () {
-        view.$('.mailpoet_field_image_full_width').prop('checked', false).change();
+        view.$('.mailpoet_field_image_full_width').prop('checked', false).trigger('change');
         expect(model.get('fullWidth')).to.equal(false);
       });
 
       it('updates the model when alignment changes', function () {
-        view.$('.mailpoet_field_image_alignment').first().prop('checked', true).change();
+        view.$('.mailpoet_field_image_alignment').first().prop('checked', true).trigger('change');
         expect(model.get('styles.block.textAlign')).to.equal('left');
       });
 
       it.skip('closes the sidepanel after "Done" is clicked', function () {
         var mock = sinon.mock().once();
         global.MailPoet.Modal.cancel = mock;
-        view.$('.mailpoet_done_editing').click();
+        view.$('.mailpoet_done_editing').trigger('click');
         mock.verify();
         delete (global.MailPoet.Modal.cancel);
       });

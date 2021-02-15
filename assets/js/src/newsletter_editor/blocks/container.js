@@ -242,7 +242,7 @@ Module.ContainerBlockView = base.BlockView.extend({
       that.$el.addClass('mailpoet_container_layer_active');
       $toggleButton.addClass('mailpoet_container_layer_active');
       $container.addClass('mailpoet_layer_highlight');
-      $overlay.click(disableContainerLayer);
+      $overlay.on('click', disableContainerLayer);
       $overlay.show();
     };
     if ($toggleButton.hasClass('mailpoet_container_layer_active')) {

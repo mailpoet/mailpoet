@@ -143,7 +143,7 @@ jQuery(($) => {
     Cookies.set('popup_form_dismissed', '1', { expires: 365, path: '/' });
   };
 
-  $(document).keyup((e) => {
+  $(document).on('keyup', (e) => {
     if (e.key === 'Escape') {
       $('div.mailpoet_form').each((index, element) => {
         if ($(element).children('.mailpoet_form_close_icon').length !== 0) {
@@ -163,7 +163,7 @@ jQuery(($) => {
         renderFontFamily(form.data('font-family'), form.parent());
       }
     });
-    $('.mailpoet_form_close_icon').click((event) => {
+    $('.mailpoet_form_close_icon').on('click', (event) => {
       const closeIcon = $(event.target);
       const formDiv = closeIcon.parent();
       if (formDiv.data('is-preview')) return; // Do not close popup in preview
@@ -185,7 +185,7 @@ jQuery(($) => {
       showForm(formDiv, showOverlay);
     });
 
-    $(window).resize(() => {
+    $(window).on('resize', () => {
       $('.mailpoet_form').each((index, element) => {
         // Detect form is placed in tight container
         const formDiv = $(element);

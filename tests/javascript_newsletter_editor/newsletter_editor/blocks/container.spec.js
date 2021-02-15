@@ -253,12 +253,12 @@ describe('Container', function () {
       });
 
       it('updates the model when background color changes', function () {
-        view.$('.mailpoet_field_container_background_color').val('#123456').change();
+        view.$('.mailpoet_field_container_background_color').val('#123456').trigger('change');
         expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
       });
 
       it('updates the model background image display type changes', function () {
-        view.$('.mailpoet_field_display_type:nth(2)').attr('checked', true).change();
+        view.$('.mailpoet_field_display_type:nth(2)').attr('checked', true).trigger('change');
         expect(model.get('image.display')).to.equal('tile');
       });
 
@@ -293,7 +293,7 @@ describe('Container', function () {
       it.skip('closes the sidepanel after "Done" is clicked', function () {
         var mock = sinon.mock().once();
         global.MailPoet.Modal.cancel = mock;
-        view.$('.mailpoet_done_editing').click();
+        view.$('.mailpoet_done_editing').trigger('click');
         mock.verify();
         delete (global.MailPoet.Modal.cancel);
       });
