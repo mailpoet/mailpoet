@@ -10,7 +10,7 @@ import { Button } from 'common';
 import Notice from 'notices/notice';
 import { TemplateData } from './store/types';
 
-export default () => {
+export default (): JSX.Element => {
   const categories = [
     {
       name: 'popup',
@@ -66,7 +66,7 @@ export default () => {
         <Heading level={4}>{MailPoet.I18n.t('selectTemplate')}</Heading>
         <Button
           automationId="create_blank_form"
-          onClick={() => selectTemplate('initial_form', 'Blank template')}
+          onClick={(): void => selectTemplate('initial_form', 'Blank template')}
         >
           {MailPoet.I18n.t('createBlankTemplate')}
         </Button>
@@ -83,7 +83,7 @@ export default () => {
           {templates[selectedCategory].map((template) => (
             <TemplateBox
               key={template.id}
-              onSelect={() => selectTemplate(template.id, template.name)}
+              onSelect={(): void => selectTemplate(template.id, template.name)}
               label={template.name}
               automationId={`select_template_${template.id}`}
               className="mailpoet-form-template"

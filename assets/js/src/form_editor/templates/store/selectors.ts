@@ -1,19 +1,19 @@
-import { TemplateType } from './types';
+import { TemplateData, StateType } from './types';
 
 export default {
-  getTemplates(state): Array<TemplateType> {
+  getTemplates(state: StateType): TemplateData {
     return state.templates;
   },
-  getFormEditorUrl(state): string {
+  getFormEditorUrl(state: StateType): string {
     return state.formEditorUrl;
   },
-  getSelectTemplateFailed(state): boolean {
+  getSelectTemplateFailed(state: StateType): boolean {
     return state.selectTemplateFailed;
   },
-  getLoading(state): boolean {
+  getLoading(state: StateType): boolean {
     return state.loading;
   },
-  getSelectedCategory(state): boolean {
+  getSelectedCategory(state: StateType): string {
     return state.activeCategory;
   },
 };
