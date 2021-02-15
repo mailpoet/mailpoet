@@ -8,20 +8,22 @@ import createReducer from './reducer';
 import * as actions from './actions';
 import controls from './controls';
 
+import { TemplateData, StateType, CategoryType } from './types';
+
 interface StoreWindow extends Window {
-  mailpoet_templates: string;
+  mailpoet_templates: TemplateData;
   mailpoet_form_edit_url: string;
 }
 
 declare let window: StoreWindow;
 
-export default () => {
-  const defaultState = {
+export default (): void => {
+  const defaultState: StateType = {
     templates: window.mailpoet_templates,
     formEditorUrl: window.mailpoet_form_edit_url,
     selectTemplateFailed: false,
     loading: false,
-    activeCategory: 'popup',
+    activeCategory: CategoryType.Popup,
   };
 
   const config = {

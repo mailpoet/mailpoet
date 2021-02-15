@@ -1,7 +1,12 @@
 import { select } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 
-export function* selectTemplate(templateId, templateName) {
+import {
+  CategoryActionType,
+  CategoryType,
+} from './types';
+
+export function* selectTemplate(templateId: string, templateName: string): object {
   yield { type: 'SELECT_TEMPLATE_START' };
   const { res, success, error } = yield {
     type: 'CALL_API',
@@ -30,7 +35,7 @@ export function* selectTemplate(templateId, templateName) {
   return {};
 }
 
-export function selectCategory(category) {
+export function selectCategory(category: CategoryType): CategoryActionType {
   return {
     type: 'SELECT_CATEGORY',
     category,
