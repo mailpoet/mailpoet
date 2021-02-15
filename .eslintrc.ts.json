@@ -253,8 +253,6 @@
         "assets/js/src/settings/store/index.ts",
         "assets/js/src/settings/store/make_default_state.ts",
         "assets/js/src/settings/store/selectors.ts",
-        "assets/js/src/subscribers/importExport/import/offer_clearout.tsx",
-        "assets/js/src/subscribers/importExport/import/step_offer_clearout.tsx",
         "assets/js/src/subscribers/stats.tsx",
         "assets/js/src/subscribers/stats/heading.tsx",
         "assets/js/src/subscribers/stats/no_access_info.tsx",
