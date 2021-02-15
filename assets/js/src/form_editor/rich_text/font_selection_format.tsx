@@ -14,11 +14,19 @@ const supportedBlocks = [
   'core/heading',
 ];
 
-const Edit = ({
+type Props = {
+  value: string;
+  onChange: (object) => void;
+  activeAttributes: {
+    font: string;
+  };
+}
+
+const Edit: React.FunctionComponent<Props> = ({
   value,
   onChange,
   activeAttributes,
-}) => {
+}: Props) => {
   const selectedBlock = useSelect(
     (sel) => sel('core/block-editor').getSelectedBlock(),
     []
@@ -33,7 +41,7 @@ const Edit = ({
       <div className="mailpoet_toolbar_item">
         <FontFamilySettings
           value={activeAttributes.font}
-          onChange={(font) => {
+          onChange={(font): void => {
             onChange(
               applyFormat(value, {
                 type: 'mailpoet-form/font-selection',
