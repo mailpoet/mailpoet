@@ -54,17 +54,22 @@ if [[ -z "${SKIP_DEPS}" ]]; then
   cd - >/dev/null
 fi
 
+WOOCOMMERCE_VERSION="5.0.0"
+if [[ $CIRCLE_JOB == *"_oldest" ]]; then
+  WOOCOMMERCE_VERSION="4.0.1"
+fi
+
 # install WooCommerce (activate & deactivate it to populate DB for backup)
 if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
   cd /wp-core/wp-content/plugins
   WOOCOMMERCE_SOURCE_ZIP="/wp-core/wp-content/plugins/mailpoet/tools/vendor/woocommerce.zip"
   WOOCOMMERCE_TARGET_ZIP="/wp-core/wp-content/plugins/woocommerce.zip"
   # download woocommerce plugin if file doesn't exist
-  if [ -f "$WOOCOMMERCE_SOURCE_ZIP" ]; then
+  if [ -f "$WOOCOMMERCE_SOURCE_ZIP" ] && [[ $CIRCLE_JOB != *"_oldest" ]]; then
     echo "Copy Woocommerce plugin from $WOOCOMMERCE_SOURCE_ZIP"
     cp "$WOOCOMMERCE_SOURCE_ZIP" "$WOOCOMMERCE_TARGET_ZIP"
   else
-    DOWNLOAD_URL=$(curl -s https://api.github.com/repos/woocommerce/woocommerce/releases/tags/5.0.0 \
+    DOWNLOAD_URL=$(curl -s https://api.github.com/repos/woocommerce/woocommerce/releases/tags/$WOOCOMMERCE_VERSION \
             | grep browser_download_url \
             | grep woocommerce \
             | cut -d '"' -f 4)
