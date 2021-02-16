@@ -95,7 +95,7 @@
     "react-string-replace": "^0.3.2",
     "react-tooltip": "^4.2.6",
     "satismeter-loader": "^1.1.0",
-    "select2": "^4.0.13",
+    "select2": "^4.1.0-rc.0",
     "setimmediate": "^1.0.5",
     "slugify": "^1.4.0",
     "spectrum-colorpicker": "^1.8.1",

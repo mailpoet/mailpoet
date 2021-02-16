@@ -116,11 +116,13 @@ class AcceptanceTester extends \Codeception\Actor {
 
   /**
    * Select a value from select2 input field.
+   * For multiple selection the element is textarea.select2-search__field (default),
+   * for single selection specify the input.select2-search__field element.
    *
    * @param string $value
    * @param string $element
    */
-  public function selectOptionInSelect2($value, $element = 'input.select2-search__field') {
+  public function selectOptionInSelect2($value, $element = 'textarea.select2-search__field') {
     $i = $this;
     $i->waitForElement($element);
     $i->fillField($element, $value);

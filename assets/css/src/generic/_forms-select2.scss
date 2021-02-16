@@ -50,6 +50,7 @@
     border: 0 !important;
     height: auto !important;
     outline: none;
+    padding: 10px 5px 5px 16px !important;
   }
 
   .select2-selection__arrow {
@@ -59,7 +60,7 @@
   .select2-selection__rendered {
     color: $color-text !important;
     line-height: 22px !important;
-    padding: 7px 24px 9px 16px !important;
+    padding: 7px 0 9px !important;
     vertical-align: top;
   }
 
@@ -73,7 +74,7 @@
     font-size: 14px;
     height: 24px !important;
     margin: 0 7px 7px 0 !important;
-    padding: 1px 24px 1px 6px !important;
+    padding: 1px 6px 1px 28px !important;
   }
 
   .select2-selection__choice__remove {
@@ -90,13 +91,22 @@
     width: 24px;
   }
 
+  .select2-selection__choice__display {
+    align-items: center;
+    display: flex;
+  }
+
   .select2-search--inline {
-    margin-bottom: 7px;
+    display: inline-block;
+    margin-bottom: 9px;
   }
 
   .select2-search__field {
+    font-family: $font-family !important;
     font-size: $font-size !important;
     line-height: 24px;
+    margin-bottom: 2px !important;
+    margin-left: 0 !important;
     margin-top: 0 !important;
 
     &::placeholder {
@@ -164,7 +174,6 @@
 }
 
 .mailpoet-form-select .select2-selection__choice,
-.mailpoet-form-select.mailpoet-form-input .select2-selection__rendered,
 .mailpoet-form-select2-dropdown .select2-results__option {
   align-items: center;
   box-sizing: border-box;
@@ -172,6 +181,10 @@
   flex-wrap: wrap;
   max-width: 100%;
   position: relative;
+}
+
+.mailpoet-form-select.mailpoet-form-input .select2-selection__rendered {
+  display: inline;
 }
 
 .mailpoet-form-select2-text {

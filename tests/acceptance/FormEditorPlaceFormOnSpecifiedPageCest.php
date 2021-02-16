@@ -36,7 +36,7 @@ class FormEditorPlaceFormOnSpecifiedPageCest {
     $i->click('[data-automation-id="form-placement-option-Pop-up"]');
     $i->checkOption('Enable');
     $i->waitForText('Display on all posts');
-    $i->selectOptionInSelect2($pageTitle, '[data-automation-id="form-placement-select-page"] input.select2-search__field');
+    $i->selectOptionInSelect2($pageTitle, '[data-automation-id="form-placement-select-page"] textarea.select2-search__field');
     $i->wantTo('Save the form and check the output');
     $i->saveFormInEditor();
     $i->amOnUrl($pageUrl);

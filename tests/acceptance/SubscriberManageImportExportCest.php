@@ -140,7 +140,7 @@ class SubscriberManageImportExportCest {
   private function chooseListAndConfirm(\AcceptanceTester $i) {
     $i->waitForText('Pick one or more list');
     // trigger dropdown to display selections
-    $i->click('input.select2-search__field');
+    $i->click('textarea.select2-search__field');
     // choose first list
     $i->click(['xpath' => '//*[@id="select2-mailpoet_segments_select-results"]/li[1]']);
     $i->click('[data-automation-id="import-next-step"]');
@@ -157,7 +157,7 @@ class SubscriberManageImportExportCest {
     $i->seeInField('textarea#new_segment_description', 'This is just a simple list.');
     $i->click('input#new_segment_process');
     // trigger dropdown to display selections and search for recently created list
-    $i->waitForElementVisible('input.select2-search__field');
+    $i->waitForElementVisible('textarea.select2-search__field');
     $i->selectOptionInSelect2($newListName);
     $i->click('[data-automation-id="import-next-step"]');
     $i->waitForText('Import again');
