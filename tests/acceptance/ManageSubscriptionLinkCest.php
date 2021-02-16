@@ -137,7 +137,7 @@ class ManageSubscriptionLinkCest {
     $i->click('Next');
 
     // step 4 - send
-    $searchFieldElement = 'input.select2-search__field';
+    $searchFieldElement = 'textarea.select2-search__field';
     $i->waitForElement($searchFieldElement);
     $i->selectOptionInSelect2($segmentName);
     $i->click('Send');

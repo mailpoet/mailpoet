@@ -35,7 +35,7 @@ class EditExistingPostNotificationEmailCest {
 
     // step 5 - Change schedule, list and activate
     $i->click('Next');
-    $i->waitForElement('input.select2-search__field');
+    $i->waitForElement('textarea.select2-search__field');
     $i->selectOption('[data-automation-id="newsletter_interval_type"]', 'Weekly on...');
     $i->selectOptionInSelect2($segmentName);
     $newsletterListingElement = '[data-automation-id="listing_item_' . basename($i->getCurrentUrl()) . '"]';

@@ -163,8 +163,8 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOption('form select[name=segmentType]', 'Email');
     $i->selectOption('form select[name=action]', 'opened');
-    $i->click('#select2-newsletter_id-container');
-    $i->selectOptionInSelect2($emailSubject);
+    $i->click('.select2-selection--single');
+    $i->selectOptionInSelect2($emailSubject, 'input.select2-search__field');
     $i->click('Save');
     $i->amOnMailpoetPage('Lists');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
