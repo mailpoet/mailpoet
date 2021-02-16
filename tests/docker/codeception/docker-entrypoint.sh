@@ -64,7 +64,7 @@ if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
     echo "Copy Woocommerce plugin from $WOOCOMMERCE_SOURCE_ZIP"
     cp "$WOOCOMMERCE_SOURCE_ZIP" "$WOOCOMMERCE_TARGET_ZIP"
   else
-    DOWNLOAD_URL=$(curl -s https://api.github.com/repos/woocommerce/woocommerce/releases/latest \
+    DOWNLOAD_URL=$(curl -s https://api.github.com/repos/woocommerce/woocommerce/releases/tags/5.0.0 \
             | grep browser_download_url \
             | grep woocommerce \
             | cut -d '"' -f 4)
