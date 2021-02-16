@@ -3,25 +3,44 @@ import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import Handlebars from 'handlebars';
 
-jQuery(document).ready(function documentReady() {
-  var segmentsContainerElement;
-  var subscriberFieldsContainerElement;
-  var nextStepButton;
-  var renderSegmentsAndFields;
-  var subscribersExportTemplate;
+interface ExportWindow extends Window {
+  exportData: {
+    segments: number | null;
+  };
+  segments: Array<{
+    id: string;
+    name: string;
+    count: number;
+  }>;
+  subscriberFieldsSelect2: Array<{
+    name: string;
+    children: Array<{
+      id: string;
+      name: string;
+      type: string | null;
+      custom: boolean;
+      params: object;
+    }>;
+  }>;
+}
+
+declare let window: ExportWindow;
+
+jQuery(document).ready(() => {
+  let nextStepButton;
   if (!jQuery('#mailpoet_subscribers_export').length) {
     return;
   }
   if (!window.exportData.segments) {
     return;
   }
-  subscribersExportTemplate = Handlebars.compile(jQuery('#mailpoet_subscribers_export_template').html());
+  const subscribersExportTemplate = Handlebars.compile(jQuery('#mailpoet_subscribers_export_template').html());
 
   // render template
   jQuery('#mailpoet-export').html(subscribersExportTemplate(window.exportData));
 
-  function toggleNextStepButton(condition) {
-    var disabled = 'mailpoet-disabled';
+  function toggleNextStepButton(condition): void {
+    const disabled = 'mailpoet-disabled';
     if (condition === 'on') {
       nextStepButton.removeClass(disabled);
     } else {
@@ -30,19 +49,19 @@ jQuery(document).ready(function documentReady() {
   }
 
   // define reusable variables
-  segmentsContainerElement = jQuery('#export_lists');
-  subscriberFieldsContainerElement = jQuery('#export_columns');
+  const segmentsContainerElement = jQuery('#export_lists');
+  const subscriberFieldsContainerElement = jQuery('#export_columns');
   nextStepButton = jQuery('#mailpoet-export-button');
 
-  const templateRendered = (option) => {
+  function templateRendered(option): string {
     let tpl = `<span class="mailpoet-form-select2-text"><span>${option.name}</span></span>`;
     if (option.count !== undefined) {
       tpl += `<span class="mailpoet-form-select2-count">${option.count}</span>`;
     }
     return tpl;
-  };
+  }
 
-  renderSegmentsAndFields = function renderSegmentsFields(container, data) {
+  function renderSegmentsAndFields(container, data): void {
     if (container.data('select2')) {
       container
         .html('')
@@ -50,38 +69,37 @@ jQuery(document).ready(function documentReady() {
     }
     container
       .select2({
-        data: data,
+        data,
         width: '20em',
         dropdownCssClass: 'mailpoet-form-select2-dropdown',
         escapeMarkup: (markup) => markup,
         templateResult: templateRendered,
         templateSelection: templateRendered,
       })
-      .on('select2:selecting', function onSelect2Selecting(selectEvent) {
-        var selectElement = this;
-        var selectedOptionId = selectEvent.params.args.data.id;
-        var fieldsToExclude = [
+      .on('select2:selecting', (selectEvent) => {
+        const selectedOptionId = selectEvent.params.args.data.id;
+        const fieldsToExclude = [
           'select',
           'deselect',
         ];
-        var allOptions;
+        let allOptions;
         if (_.contains(fieldsToExclude, selectedOptionId)) {
           selectEvent.preventDefault();
           if (selectedOptionId === 'deselect') {
-            jQuery(selectElement).val('').trigger('change');
+            jQuery(this).val('').trigger('change');
           } else {
             allOptions = [];
-            _.each(container.find('option'), function eachOption(field) {
+            _.each(container.find('option'), (field) => {
               if (!_.contains(fieldsToExclude, field.value)) {
                 allOptions.push(field.value);
               }
             });
-            jQuery(selectElement).val(allOptions).trigger('change');
+            jQuery(this).val(allOptions).trigger('change');
           }
-          jQuery(selectElement).select2('close');
+          jQuery(this).select2('close');
         }
       })
-      .on('change', function onChange() {
+      .on('change', () => {
         if ((window.exportData.segments && segmentsContainerElement.select2('data').length && subscriberFieldsContainerElement.select2('data').length)
           || (!window.exportData.segments && subscriberFieldsContainerElement.select2('data').length)
         ) {
@@ -90,9 +108,9 @@ jQuery(document).ready(function documentReady() {
           toggleNextStepButton('off');
         }
       });
-  };
+  }
 
-  window.segments.forEach(function createSegmentOption(item) {
+  window.segments.forEach((item) => {
     segmentsContainerElement.append(jQuery('<option></option>').attr('value', item.id).text(item.name));
   });
   renderSegmentsAndFields(segmentsContainerElement, window.segments);
@@ -106,15 +124,14 @@ jQuery(document).ready(function documentReady() {
     'global_status',
   ]).trigger('change');
 
-  nextStepButton.click(function nextClick() {
-    var exportFormat;
+  nextStepButton.click(() => {
     if (jQuery(this).hasClass('mailpoet-disabled')) {
       return;
     }
     MailPoet.Modal.loading(true);
-    exportFormat = jQuery(':radio[name="option_format"]:checked').val();
+    const exportFormat = jQuery(':radio[name="option_format"]:checked').val();
     MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
+      api_version: MailPoet.apiVersion,
       endpoint: 'ImportExport',
       action: 'processExport',
       data: JSON.stringify({
@@ -122,26 +139,23 @@ jQuery(document).ready(function documentReady() {
         segments: (window.exportData.segments) ? segmentsContainerElement.val() : false,
         subscriber_fields: subscriberFieldsContainerElement.val(),
       }),
-    }).always(function always() {
+    }).always(() => {
       MailPoet.Modal.loading(false);
-    }).done(function done(response) {
-      var resultMessage = MailPoet.I18n.t('exportMessage')
-        .replace('%1$s', '<strong>' + parseInt(response.data.totalExported, 10).toLocaleString() + '</strong>')
-        .replace('[link]', '<a href="' + response.data.exportFileURL + '" target="_blank" >')
+    }).done((response) => {
+      const resultMessage = MailPoet.I18n.t('exportMessage')
+        .replace('%1$s', `<strong>${parseInt(response.data.totalExported, 10).toLocaleString()}</strong>`)
+        .replace('[link]', `<a href="${response.data.exportFileURL}" target="_blank" >`)
         .replace('[/link]', '</a>');
-      jQuery('#export_result_notice').html('<p>' + resultMessage + '</p>').show();
+      jQuery('#export_result_notice').html(`<p>${resultMessage}</p>`).show();
       window.location.href = response.data.exportFileURL;
       MailPoet.trackEvent('Subscribers export completed', {
         'Total exported': response.data.totalExported,
         'File Format': exportFormat,
-        'MailPoet Free version': window.mailpoet_version,
+        'MailPoet Free version': MailPoet.version,
       });
-    }).fail(function fail(response) {
+    }).fail((response) => {
       if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map(function mapError(error) { return error.message; }),
-          { scroll: true }
-        );
+        MailPoet.Notice.error(response.errors.map((error) => error.message), { scroll: true });
       }
     });
   });
