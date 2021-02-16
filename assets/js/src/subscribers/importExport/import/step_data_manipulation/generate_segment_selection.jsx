@@ -17,7 +17,7 @@ export function createSelection(segments, onSelectionChange) {
   segmentSelectElement.html('');
   segmentSelectElement
     .select2({
-      data: segments,
+      data: segments.map((segment) => ({ ...segment, text: segment.name })),
       dropdownCssClass: 'mailpoet-form-select2-dropdown',
       escapeMarkup: (markup) => markup,
       templateResult: templateRendered,
