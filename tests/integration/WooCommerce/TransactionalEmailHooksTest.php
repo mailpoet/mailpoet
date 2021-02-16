@@ -156,6 +156,7 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
         return 'prefixed ' . $css;
       },
     ]);
+    $wcEmails = $this->makeEmpty("\WC_Emails");
 
     $transactionalEmails = new TransactionalEmailHooks(
       $wp,
@@ -165,7 +166,7 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     $transactionalEmails->useTemplateForWoocommerceEmails();
     expect($addedActions)->count(1);
     expect($addedActions['woocommerce_email'])->callable();
-    $addedActions['woocommerce_email'](new \stdClass());
+    $addedActions['woocommerce_email']($wcEmails);
     expect($removedActions)->count(2);
     expect($addedActions)->count(4);
     expect($addedActions['woocommerce_email_header'])->callable();

@@ -267,6 +267,8 @@ if (!function_exists('WC')) {
     public function get_product_id() { // phpcs:ignore
     }
   }
+
+  class WC_Emails {} // phpcs:ignore
 }
 
 require_once '_fixtures.php';
