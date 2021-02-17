@@ -31,8 +31,6 @@ class Shortcodes {
     $sendingQueueRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
     /** @var NewslettersRepository $newsletterRepository */
     $newsletterRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
-    /** @var NewslettersRepository $newsletterRepository */
-    $subscribersRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
     /** @var SubscribersRepository $subscribersRepository */
     $subscribersRepository = ContainerWrapper::getInstance()->get(SubscribersRepository::class);
 
