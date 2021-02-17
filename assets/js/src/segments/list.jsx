@@ -218,7 +218,8 @@ const itemActions = [
     display: function display(segmt) {
       return !isWooCommerceCustomersSegment(segmt)
         && segmt.automated_emails_subjects.length === 0
-        && segmt.scheduled_emails_subjects.length === 0;
+        && segmt.scheduled_emails_subjects.length === 0
+        && segmt.sending_emails_subjects.length === 0;
     },
   },
   {
@@ -229,6 +230,7 @@ const itemActions = [
       const subjects = [
         ...segment.automated_emails_subjects,
         ...segment.scheduled_emails_subjects,
+        ...segment.sending_emails_subjects,
       ];
       MailPoet.Notice.error(
         MailPoet.I18n.t('trashDisallowed').replace(
@@ -243,6 +245,7 @@ const itemActions = [
         && (
           segment.automated_emails_subjects.length > 0
           || segment.scheduled_emails_subjects.length > 0
+          || segment.sending_emails_subjects.length > 0
         );
     },
   },
@@ -254,6 +257,7 @@ const itemActions = [
       const subjects = [
         ...segment.automated_emails_subjects,
         ...segment.scheduled_emails_subjects,
+        ...segment.sending_emails_subjects,
       ];
       MailPoet.Notice.error(
         MailPoet.I18n.t('trashDisallowed').replace(
@@ -268,6 +272,7 @@ const itemActions = [
         && (
           segment.automated_emails_subjects.length > 0
           || segment.scheduled_emails_subjects.length > 0
+          || segment.sending_emails_subjects.length > 0
         );
     },
   },
