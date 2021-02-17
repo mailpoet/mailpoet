@@ -134,7 +134,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
       ->disableOriginalConstructor()
       ->disableOriginalClone()
       ->disableArgumentCloning()
-      ->setMethods(['get_category_ids'])
+      ->setMethods(['get_category_ids', 'get_type'])
       ->getMock();
 
     $productMock->method('get_category_ids')->willReturn($categories);

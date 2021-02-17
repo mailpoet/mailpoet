@@ -115,6 +115,11 @@ class PurchasedInCategory {
       if (!$product instanceof \WC_Product) {
         continue;
       }
+      if ($product->get_type() === 'variation') {
+        // WooCommerce returns a empty list when get_category_ids() is called for a product variation,
+        // so we need to get the parent product
+        $product = $this->woocommerceHelper->wcGetProduct($product->get_parent_id());
+      }
       $orderedProductCategories = array_merge($orderedProductCategories, $product->get_category_ids());
     }
 
