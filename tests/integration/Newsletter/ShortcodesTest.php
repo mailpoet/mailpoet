@@ -17,6 +17,7 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use WP_Post;
 
@@ -51,6 +52,7 @@ class ShortcodesTest extends \MailPoetTest {
     $this->shortcodesObject = $this->diContainer->get(Shortcodes::class);
     $this->shortcodesObject->setNewsletter($this->newsletter);
     $this->shortcodesObject->setSubscriber($this->subscriber);
+    $this->shortcodesObject->setWpUserPreview(false);
     $this->settings->set('tracking.enabled', false);
     $this->subscriptionUrlFactory = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, new LinkTokens);
     $this->entityManager->flush();
@@ -247,16 +249,39 @@ class ShortcodesTest extends \MailPoetTest {
     $result =
       $shortcodesObject->process(['[link:subscription_unsubscribe_url]']);
     expect($result['0'])->regExp('/^http.*?action=confirm_unsubscribe/');
+    $linkData = $this->getLinkData($result['0']);
+    expect($linkData['email'])->equals($this->subscriber->getEmail());
+    expect($linkData['token'])->equals($this->subscriber->getLinkToken());
+
     $result =
       $shortcodesObject->process(['[link:subscription_instant_unsubscribe_url]']);
     expect($result['0'])->regExp('/^http.*?action=unsubscribe/');
+    $linkData = $this->getLinkData($result['0']);
+    expect($linkData['email'])->equals($this->subscriber->getEmail());
+    expect($linkData['token'])->equals($this->subscriber->getLinkToken());
+
     $result =
       $shortcodesObject->process(['[link:subscription_manage_url]']);
     expect($result['0'])->regExp('/^http.*?action=manage/');
-    $result =
+    $linkData = $this->getLinkData($result['0']);
+    expect($linkData['email'])->equals($this->subscriber->getEmail());
+    expect($linkData['token'])->equals($this->subscriber->getLinkToken());
+
     $result =
       $shortcodesObject->process(['[link:newsletter_view_in_browser_url]']);
     expect($result['0'])->regExp('/^http.*?endpoint=view_in_browser/');
+    $linkData = $this->getLinkData($result['0']);
+    expect($linkData['newsletter_id'])->equals($this->newsletter->getId());
+    expect($linkData['newsletter_hash'])->equals($this->newsletter->getHash());
+    expect($linkData['subscriber_token'])->equals($this->subscriber->getLinkToken());
+    expect($linkData['subscriber_id'])->equals($this->subscriber->getId());
+  }
+
+  private function getLinkData(string $link): array {
+    $parsedUrlQuery = parse_url($link, PHP_URL_QUERY);
+    $queryData = [];
+    parse_str((string)$parsedUrlQuery, $queryData);
+    return NewsletterUrl::transformUrlDataObject(json_decode(base64_decode($queryData['data']), true));
   }
 
   public function testItReturnsShortcodeWhenTrackingEnabled() {
@@ -361,6 +386,7 @@ class ShortcodesTest extends \MailPoetTest {
     $subscriber->setEmail('mister@trump.com');
     $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriber->setWpUserId($this->wPUser->ID);
+    $subscriber->setLinkToken(Security::generateHash());
     return $subscriber;
   }
 
@@ -368,6 +394,7 @@ class ShortcodesTest extends \MailPoetTest {
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject('some subject');
     $newsletter->setType($type);
+    $newsletter->setHash(Security::generateHash());
     $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
     if ($parent) {
       $newsletter->setParent($parent);
