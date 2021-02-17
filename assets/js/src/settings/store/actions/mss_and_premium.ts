@@ -31,7 +31,7 @@ export function* verifyMssKey(key: string) {
 
   const data = select(STORE_NAME).getSettings();
   data.mta_group = 'mailpoet';
-  data.mta = { method: 'MailPoet', mailpoet_api_key: key };
+  data.mta = { ...data.mta, method: 'MailPoet', mailpoet_api_key: key };
   data.signup_confirmation.enabled = '1';
 
   const call = yield {
