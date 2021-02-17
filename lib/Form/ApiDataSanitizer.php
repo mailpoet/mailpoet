@@ -20,6 +20,9 @@ class ApiDataSanitizer {
     'image' => [
       'caption',
     ],
+    'checkbox' => [
+      'values',
+    ],
   ];
 
   public function __construct(FormHtmlSanitizer $htmlSanitizer) {
@@ -44,9 +47,23 @@ class ApiDataSanitizer {
     $params = $block['params'] ?? [];
     foreach ($this->htmlSanitizeConfig[$block['type']] as $parameter) {
       if (!isset($params[$parameter])) continue;
-      $params[$parameter] = $this->htmlSanitizer->sanitize($params[$parameter]);
+
+      if ($parameter === 'values' && is_array($params[$parameter])) {
+        $params[$parameter] = $this->sanitizeValues($params[$parameter]);
+      } else {
+        $params[$parameter] = $this->htmlSanitizer->sanitize($params[$parameter]);
+      }
+
     }
     $block['params'] = $params;
     return $block;
+  }
+
+  private function sanitizeValues(array $values) {
+    foreach ($values as $key => $value) {
+      if (!isset($value['value'])) continue;
+      $values[$key]['value'] = $this->htmlSanitizer->sanitize($value['value']);
+    }
+    return $values;
   }
 }

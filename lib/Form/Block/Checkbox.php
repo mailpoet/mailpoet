@@ -56,7 +56,7 @@ class Checkbox {
 
       $html .= $fieldValidation;
 
-      $html .= ' /> ' . $this->wp->escHtml($option['value']);
+      $html .= ' /> ' . $option['value'];
 
       $html .= '</label>';
     }

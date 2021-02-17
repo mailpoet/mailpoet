@@ -27,6 +27,15 @@ class ApiDataSanitizerTest extends \MailPoetTest {
             'font_size' => '',
           ],
         ],
+        [
+          'type' => 'checkbox',
+          'params' => [
+            'label' => 'Label',
+            'values' => [
+              ['value' => '<script>alert(3);</script>Checkbox'],
+            ],
+          ],
+        ],
       ],
     ],
   ];
@@ -40,9 +49,12 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     $result = $this->sanitizer->sanitizeBody($this->body);
     $paragraph = $result[0];
     $nestedHeading = $result[1]['body'][0];
+    $nestedCheckbox = $result[1]['body'][1];
     expect($paragraph['params']['content'])->equals('alert(1);Paragraph');
     expect($paragraph['params']['align'])->equals('left');
     expect($nestedHeading['params']['content'])->equals('alert(2);Heading');
     expect($nestedHeading['params']['align'])->equals('right');
+    expect($nestedCheckbox['params']['values'][0]['value'])->equals('alert(3);Checkbox');
+    expect($nestedCheckbox['params']['label'])->equals('Label');
   }
 }
