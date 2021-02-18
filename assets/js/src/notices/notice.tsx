@@ -52,7 +52,7 @@ const Notice = ({
   if (hidden) return null;
 
   const content = (
-    <div ref={elementRef} className={`notice ${type}`}>
+    <div ref={elementRef} className={`notice ${type} ${closable ? 'is-dismissible' : ''}`}>
       {children}
       {closable && (
         <button type="button" className="notice-dismiss" onClick={close}>
