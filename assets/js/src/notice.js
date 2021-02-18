@@ -183,7 +183,7 @@ MailPoet.Notice = {
     if (all !== undefined && all === true) {
       // all notices
       jQuery('.mailpoet_notice:not([id])').trigger('close');
-    } else if (all !== undefined && jQuery.isArray(all)) {
+    } else if (all !== undefined && Array.isArray(all)) {
       // array of ids
       Object.keys(all).forEach(function close(id) {
         jQuery('[data-id="' + all[id] + '"]').trigger('close');

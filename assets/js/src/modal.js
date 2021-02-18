@@ -231,8 +231,8 @@ MailPoet.Modal = {
     return this;
   },
   removeEvents: function () {
-    jQuery(document).unbind('keyup.mailpoet_modal');
-    jQuery(window).unbind('resize.mailpoet_modal');
+    jQuery(document).off('keyup.mailpoet_modal');
+    jQuery(window).off('resize.mailpoet_modal');
     jQuery('#mailpoet_modal_close').off('click');
     if (this.options.overlay === true) {
       jQuery('#mailpoet_modal_overlay').off('click');

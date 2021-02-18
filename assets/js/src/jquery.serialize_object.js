@@ -79,7 +79,7 @@ $.fn.mailpoetSerializeObject = function (coerce) { // eslint-disable-line func-n
           : val;
         cur = cur[key];
       }
-    } else if ($.isArray(obj[key])) {
+    } else if (Array.isArray(obj[key])) {
       // val is already an array, so push on the next value.
       obj[key].push(val);
     } else if (obj[key] !== undefined) {
