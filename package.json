@@ -83,7 +83,7 @@
     "moment": "^2.26.0",
     "mousetrap": "^1.6.5",
     "papaparse": "^5.2.0",
-    "parsleyjs": "^2.8.1",
+    "parsleyjs": "^2.9.2",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-beautiful-dnd": "^13.0.0",
