@@ -56,7 +56,7 @@ class ImportExportFactory {
           'list_status' => _x('List status', 'Subscription status', 'mailpoet'),
           'global_status' => _x('Global status', 'Subscription status', 'mailpoet'),
           'subscribed_ip' => __('Subscription IP', 'mailpoet'),
-          'last_subscribed_at' => __('Subscription time', 'mailpoet'),
+          'created_at' => __('Subscription time', 'mailpoet'),
           'confirmed_at' => __('Confirmation time', 'mailpoet'),
           'confirmed_ip' => __('Confirmation IP', 'mailpoet'),
         ]
