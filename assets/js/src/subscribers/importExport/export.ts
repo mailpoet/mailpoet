@@ -86,7 +86,7 @@ jQuery(document).ready(() => {
         if (_.contains(fieldsToExclude, selectedOptionId)) {
           selectEvent.preventDefault();
           if (selectedOptionId === 'deselect') {
-            jQuery(this).val('').trigger('change');
+            jQuery(selectEvent.target).val('').trigger('change');
           } else {
             allOptions = [];
             _.each(container.find('option'), (field) => {
@@ -94,9 +94,9 @@ jQuery(document).ready(() => {
                 allOptions.push(field.value);
               }
             });
-            jQuery(this).val(allOptions).trigger('change');
+            jQuery(selectEvent.target).val(allOptions).trigger('change');
           }
-          jQuery(this).select2('close');
+          jQuery(selectEvent.target).select2('close');
         }
       })
       .on('change', () => {
@@ -128,8 +128,8 @@ jQuery(document).ready(() => {
     'confirmed_ip',
   ]).trigger('change');
 
-  nextStepButton.click(() => {
-    if (jQuery(this).hasClass('mailpoet-disabled')) {
+  nextStepButton.click((event) => {
+    if (jQuery(event.target).hasClass('mailpoet-disabled')) {
       return;
     }
     MailPoet.Modal.loading(true);
