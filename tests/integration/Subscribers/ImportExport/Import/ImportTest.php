@@ -65,8 +65,8 @@ class ImportTest extends \MailPoetTest {
     $this->subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
     $customField = $this->customFieldsRepository->createOrUpdate([
-      'name' => 'country', 
-      'type' => CustomFieldEntity::TYPE_TEXT, 
+      'name' => 'country',
+      'type' => CustomFieldEntity::TYPE_TEXT,
     ]);
     assert($customField instanceof CustomFieldEntity);
     $this->subscribersCustomFields = [$customField->getId()];
@@ -501,9 +501,12 @@ class ImportTest extends \MailPoetTest {
     expect($newSubscribers[1]->getSource())->equals('imported');
     expect(strlen((string)$newSubscribers[0]->getLinkToken()))->equals(SubscriberEntity::LINK_TOKEN_LENGTH);
     expect(strlen((string)$newSubscribers[1]->getLinkToken()))->equals(SubscriberEntity::LINK_TOKEN_LENGTH);
-    $testTime = Carbon::createFromTimestamp($this->testData['timestamp']);
-    expect($newSubscribers[0]->getLastSubscribedAt())->equals($testTime);
-    expect($newSubscribers[1]->getLastSubscribedAt())->equals($testTime);
+    $lastSubscribed1 = $newSubscribers[0]->getLastSubscribedAt();
+    $lastSubscribed2 = $newSubscribers[1]->getLastSubscribedAt();
+    assert($lastSubscribed1 instanceof \DateTimeInterface);
+    assert($lastSubscribed2 instanceof \DateTimeInterface);
+    expect($lastSubscribed1->getTimestamp())->equals($this->testData['timestamp'], 1);
+    expect($lastSubscribed2->getTimestamp())->equals($this->testData['timestamp'], 1);
   }
 
   public function testItDoesNotUpdateExistingSubscribersLastSubscribedAtWhenItIsPresent() {
