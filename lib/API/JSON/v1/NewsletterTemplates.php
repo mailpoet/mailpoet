@@ -6,6 +6,7 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\ResponseBuilders\NewsletterTemplatesResponseBuilder;
 use MailPoet\Config\AccessControl;
+use MailPoet\Newsletter\ApiDataSanitizer;
 use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -24,12 +25,17 @@ class NewsletterTemplates extends APIEndpoint {
   /** @var NewsletterTemplatesResponseBuilder */
   private $newsletterTemplatesResponseBuilder;
 
+  /** @var ApiDataSanitizer */
+  private $apiDataSanitizer;
+
   public function __construct(
     NewsletterTemplatesRepository $newsletterTemplatesRepository,
-    NewsletterTemplatesResponseBuilder $newsletterTemplatesResponseBuilder
+    NewsletterTemplatesResponseBuilder $newsletterTemplatesResponseBuilder,
+    ApiDataSanitizer $apiDataSanitizer
   ) {
     $this->newsletterTemplatesRepository = $newsletterTemplatesRepository;
     $this->newsletterTemplatesResponseBuilder = $newsletterTemplatesResponseBuilder;
+    $this->apiDataSanitizer = $apiDataSanitizer;
   }
 
   public function get($data = []) {
@@ -55,6 +61,8 @@ class NewsletterTemplates extends APIEndpoint {
 
   public function save($data = []) {
     ignore_user_abort(true);
+    $body = $this->apiDataSanitizer->sanitizeBody(json_decode($data['body'], true));
+    $data['body'] = json_encode($body);
     try {
       $template = $this->newsletterTemplatesRepository->createOrUpdate($data);
       if (!empty($data['categories']) && $data['categories'] === NewsletterTemplatesRepository::RECENTLY_SENT_CATEGORIES) {
