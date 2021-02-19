@@ -31,7 +31,7 @@
     "*.js": "eslint -c .eslintrc.es5.json --ignore-pattern helpscout.js --max-warnings 0",
     "*.jsx": "eslint -c .eslintrc.es6.json --max-warnings 0",
     "*.{tsx,ts}": "eslint -c .eslintrc.ts.json --max-warnings 0",
-    "*.php": "phplint"
+    "*.php": ["phplint", "./do qa:code-sniffer"]
   },
   "husky": {
     "hooks": {

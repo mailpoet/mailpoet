@@ -350,7 +350,7 @@ class RoboFile extends \Robo\Tasks {
     $collection = $this->collectionBuilder();
     $collection->addCode([$this, 'qaLint']);
     $collection->addCode(function() {
-      return $this->qaCodeSniffer('all');
+      return $this->qaCodeSniffer([], ['severity' => 'all']);
     });
     return $collection->run();
   }
@@ -374,55 +374,42 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('npm run stylelint-check -- "assets/css/src/**/*.scss"');
   }
 
-  public function qaCodeSniffer($severity='errors') {
-    $severityFlag = $severity === 'all' ? '-w' : '-n';
+  public function qaCodeSniffer(array $filesToCheck, $opts = ['severity' => 'errors']) {
+    $severityFlag = $opts['severity'] === 'all' ? '-w' : '-n';
     $task = implode(' ', [
       './tasks/code_sniffer/vendor/bin/phpcs',
       '--extensions=php',
       $severityFlag,
       '--standard=tasks/code_sniffer/MailPoet',
     ]);
+    $foldersToIgnore = [
+      'assets',
+      'doc',
+      'generated',
+      'lib/Config/PopulatorData/Templates',
+      'lib-3rd-party',
+      'node_modules',
+      'plugin_repository',
+      'prefixer/build',
+      'prefixer/vendor',
+      'tasks/code_sniffer/vendor',
+      'tasks/phpstan/vendor',
+      'tasks/makepot',
+      'tools/vendor',
+      'tests/_data',
+      'tests/_output',
+      'tests/_support/_generated',
+      'vendor',
+      'vendor-prefixed',
+      'views',
+    ];
+    $stringFilesToCheck = !empty($filesToCheck) ? implode(' ', $filesToCheck) : '.';
 
-    return $this->collectionBuilder()
-
-      // PHP >= 7.1 for lib & tests
+    return $this
       ->taskExec($task)
       ->rawArg('--runtime-set testVersion 7.1-8.0')
-      ->arg('--ignore=' . implode(',', [
-          'lib/Config/PopulatorData/Templates',
-          'tests/_data',
-          'tests/_output',
-          'tests/_support/_generated',
-        ])
-      )
-      ->args([
-        'lib',
-        'tests',
-      ])
-
-      // PHP >= 7.1 in plugin root directory
-      ->taskExec($task)
-      ->rawArg('--runtime-set testVersion 7.1-8.0')
-      ->rawArg('-l .')
-
-      // PHP >= 7.2 for dev tools, etc.
-      ->taskExec($task)
-      ->rawArg('--runtime-set testVersion 7.2-8.0')
-      ->arg('--ignore=' . implode(',', [
-          'prefixer/build',
-          'prefixer/vendor',
-          'tasks/code_sniffer/vendor',
-          'tasks/phpstan/vendor',
-          'tasks/makepot',
-          'tools/vendor',
-        ])
-      )
-      ->args([
-        '.circleci',
-        'prefixer',
-        'tasks',
-        'tools',
-      ])
+      ->arg('--ignore=' . implode(',', $foldersToIgnore))
+      ->rawArg($stringFilesToCheck)
       ->run();
   }
 
