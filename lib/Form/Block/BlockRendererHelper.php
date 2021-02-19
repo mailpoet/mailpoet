@@ -35,7 +35,7 @@ class BlockRendererHelper {
     }
 
     if (($blockId === 'first_name') || ($blockId === 'last_name')) {
-      $rules['pattern'] = "^[^<>]*$";
+      $rules['pattern'] = "^[^><]*$";
       $rules['error-message'] = __('Please specify a valid name', 'mailpoet');
     }
 
