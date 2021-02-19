@@ -407,7 +407,6 @@ class RoboFile extends \Robo\Tasks {
 
     return $this
       ->taskExec($task)
-      ->rawArg('--runtime-set testVersion 7.1-8.0')
       ->arg('--ignore=' . implode(',', $foldersToIgnore))
       ->rawArg($stringFilesToCheck)
       ->run();

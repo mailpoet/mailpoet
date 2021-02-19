@@ -3,6 +3,7 @@
   <config name="installed_paths" value="tasks/code_sniffer/vendor/squizlabs/php_codesniffer,tasks/code_sniffer/vendor/phpcompatibility/php-compatibility,tasks/code_sniffer/vendor/slevomat/coding-standard"/>
   <description>MailPoet specific rule set</description>
   <exclude-pattern>*/phpstan/woocommerce.php</exclude-pattern>
+  <config name="testVersion" value="7.1-"/>
 
   <!-- Files -->
   <rule ref="Generic.Files.ByteOrderMark"/> <!-- Disallow usage of BOMs -->
