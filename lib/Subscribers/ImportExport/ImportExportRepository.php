@@ -3,10 +3,16 @@
 namespace MailPoet\Subscribers\ImportExport;
 
 use DateTime;
+use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Segments\DynamicSegments\FilterHandler;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Mapping\ClassMetadata;
 
@@ -40,13 +46,12 @@ class ImportExportRepository {
   /** @var EntityManager */
   protected $entityManager;
 
-  /** @var string[] */
-  protected $ignoreColumnsForBulkUpdate = [
-    'created_at',
-  ];
+  /** @var FilterHandler */
+  private $filterHandler;
 
-  public function __construct(EntityManager $entityManager) {
+  public function __construct(EntityManager $entityManager, FilterHandler $filterHandler) {
     $this->entityManager = $entityManager;
+    $this->filterHandler = $filterHandler;
   }
 
   protected function getClassMetadata(string $className): ClassMetadata {
@@ -86,7 +91,7 @@ class ImportExportRepository {
     }
 
     return $this->entityManager->getConnection()->executeUpdate("
-      INSERT IGNORE INTO {$tableName} (`" . implode("`, `", $columns) . "`) VALUES 
+      INSERT IGNORE INTO {$tableName} (`" . implode("`, `", $columns) . "`) VALUES
       " . implode(", \n", $rows) . "
     ", $parameters);
   }
@@ -122,7 +127,7 @@ class ImportExportRepository {
     }
 
     $ignoredColumns = self::IGNORED_COLUMNS_FOR_BULK_UPDATE[$className] ?? ['created_at'];
-    $updateColumns = array_map(function($columnName) use ($keyColumns, $columns, $data, &$parameters): string {   
+    $updateColumns = array_map(function($columnName) use ($keyColumns, $columns, $data, &$parameters): string {
       $values = [];
       foreach ($data as $index => $row) {
         $keyCondition = array_map(function($keyColumn) use ($index, $row, $columns, &$parameters): string {
@@ -148,8 +153,86 @@ class ImportExportRepository {
     return $this->entityManager->getConnection()->executeUpdate("
       UPDATE {$tableName} SET
       " . implode(", \n", $updateColumns) . "
-      WHERE 
+      WHERE
       " . implode(' AND ', $keyColumnsConditions) . "
-    ", $parameters, $parameterTypes); 
+    ", $parameters, $parameterTypes);
+  }
+
+  public function getSubscribersBatchBySegment(?SegmentEntity $segment, int $limit, int $offset = 0): array {
+    $subscriberSegmentTable = $this->getTableName(SubscriberSegmentEntity::class);
+    $segmentTable = $this->getTableName(SegmentEntity::class);
+
+    $qb = $this->createSubscribersQueryBuilder($limit, $offset);
+    $qb = $this->addSubscriberCustomFieldsToQueryBuilder($qb);
+
+    if (!$segment) {
+      // if there are subscribers who do not belong to any segment, use
+      // a CASE function to group them under "Not In Segment"
+      $qb->addSelect("'" . WPFunctions::get()->__('Not In Segment', 'mailpoet') . "' AS segment_name")
+        ->andWhere("{$subscriberSegmentTable}.segment_id IS NULL");
+    } elseif ($segment->isStatic()) {
+      $qb->addSelect("{$segmentTable}.name AS segment_name")
+        ->andWhere("{$subscriberSegmentTable}.segment_id = :segmentId")
+        ->setParameter('segmentId', $segment->getId());
+    } else {
+      // Dynamic segments don't have a relation to the segment table,
+      // So we need to use a placeholder
+      $qb->addSelect("'{$segment->getName()}' AS segment_name");
+      $filters = $segment->getDynamicFilters();
+      foreach ($filters as $filter) {
+        $qb = $this->filterHandler->apply($qb, $filter);
+      }
+    }
+
+    $statement = $qb->execute();
+    return $statement instanceof Statement ? $statement->fetchAll() : [];
+  }
+
+  private function createSubscribersQueryBuilder(int $limit, int $offset): QueryBuilder {
+    $subscriberSegmentTable = $this->getTableName(SubscriberSegmentEntity::class);
+    $subscriberTable = $this->getTableName(SubscriberEntity::class);
+    $segmentTable = $this->getTableName(SegmentEntity::class);
+
+    return $this->entityManager->getConnection()->createQueryBuilder()
+      ->select("
+        DISTINCT
+        {$subscriberTable}.first_name,
+        {$subscriberTable}.last_name,
+        {$subscriberTable}.email,
+        {$subscriberTable}.subscribed_ip,
+        {$subscriberTable}.status AS global_status,
+        {$subscriberSegmentTable}.status AS list_status
+      ")
+      ->from($subscriberTable)
+      ->leftJoin($subscriberTable, $subscriberSegmentTable, $subscriberSegmentTable, "{$subscriberTable}.id = {$subscriberSegmentTable}.subscriber_id")
+      ->leftJoin($subscriberSegmentTable, $segmentTable, $segmentTable, "{$segmentTable}.id = {$subscriberSegmentTable}.segment_id")
+      ->andWhere("{$subscriberTable}.deleted_at IS NULL")
+      ->groupBy("{$subscriberTable}.id, {$segmentTable}.id")
+      ->setFirstResult($offset)
+      ->setMaxResults($limit);
+  }
+
+  private function addSubscriberCustomFieldsToQueryBuilder(QueryBuilder $qb): QueryBuilder {
+    $segmentsTable = $this->getTableName(SubscriberEntity::class);
+    $customFieldsTable = $this->getTableName(CustomFieldEntity::class);
+    $subscriberCustomFieldTable = $this->getTableName(SubscriberCustomFieldEntity::class);
+
+    $customFields = $this->entityManager->getConnection()->createQueryBuilder()
+      ->select("{$customFieldsTable}.*")
+      ->from($customFieldsTable)
+      ->execute();
+
+    $customFields = $customFields instanceof Statement ? $customFields->fetchAll() : [];
+
+    foreach ($customFields as $customField) {
+      $customFieldId = "customFieldId{$customField['id']}";
+      $qb->addSelect("MAX(CASE WHEN {$customFieldsTable}.id = :{$customFieldId} THEN {$subscriberCustomFieldTable}.value END) AS :{$customFieldId}")
+        ->setParameter($customFieldId, $customField['id']);
+    }
+
+    $qb->leftJoin($segmentsTable, $subscriberCustomFieldTable, $subscriberCustomFieldTable, "{$segmentsTable}.id = {$subscriberCustomFieldTable}.subscriber_id")
+      ->leftJoin($subscriberCustomFieldTable, $customFieldsTable, $customFieldsTable, "{$customFieldsTable}.id = {$subscriberCustomFieldTable}.custom_field_id");
+
+    return $qb;
   }
 }
