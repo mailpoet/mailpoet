@@ -80,7 +80,7 @@ class CustomFonts {
   public function enqueueStyle() {
     $displayCustomFonts = $this->wp->applyFilters('mailpoet_display_custom_fonts', true);
     if ($displayCustomFonts) {
-      $this->wp->wpEnqueueStyle('mailpoet_custom_fonts_css', $this->generateLink());
+      $this->wp->wpEnqueueStyle('mailpoet_custom_fonts', $this->generateLink());
     }
   }
 
