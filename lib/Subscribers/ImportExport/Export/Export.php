@@ -3,8 +3,11 @@
 namespace MailPoet\Subscribers\ImportExport\Export;
 
 use MailPoet\Config\Env;
-use MailPoet\Models\CustomField;
+use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
+use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\XLSXWriter;
@@ -19,24 +22,41 @@ class Export {
   public $exportPath;
   public $exportFile;
   public $exportFileURL;
-  public $defaultSubscribersGetter;
-  public $dynamicSubscribersGetter;
 
-  public function __construct($data) {
+  /** @var int */
+  private $subscribersOffset;
+
+  /** @var array<SegmentEntity|null> */
+  private $segments;
+
+  /** @var int */
+  private $segmentIndex;
+
+  /** @var CustomFieldsRepository */
+  private $customFieldsRepository;
+
+  /** @var ImportExportRepository */
+  private $importExportRepository;
+
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
+  public function __construct(
+    CustomFieldsRepository $customFieldsRepository,
+    ImportExportRepository $importExportRepository,
+    SegmentsRepository $segmentsRepository,
+    array $data
+  ) {
+    $this->customFieldsRepository = $customFieldsRepository;
+    $this->importExportRepository = $importExportRepository;
+    $this->segmentsRepository = $segmentsRepository;
     if (strpos((string)@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
     }
 
-    $this->defaultSubscribersGetter = new DefaultSubscribersGetter(
-      $data['segments'],
-      self::SUBSCRIBER_BATCH_SIZE
-    );
-
-    $this->dynamicSubscribersGetter = new DynamicSubscribersGetter(
-      $data['segments'],
-      self::SUBSCRIBER_BATCH_SIZE
-    );
-
+    $this->subscribersOffset = 0;
+    $this->segmentIndex = 0;
+    $this->segments = $this->getSegments($data['segments']);
     $this->exportFormatOption = $data['export_format_option'];
     $this->subscriberFields = $data['subscriber_fields'];
     $this->subscriberCustomFields = $this->getSubscriberCustomFields();
@@ -57,9 +77,9 @@ class Export {
     return Env::$tempPath;
   }
 
-  public function process() {
+  public function process(): array {
     $processedSubscribers = 0;
-    $this->defaultSubscribersGetter->reset();
+    $this->resetCounters();
     try {
       if (is_writable($this->exportPath) === false) {
         throw new \Exception(__('The export file could not be saved on the server.', 'mailpoet'));
@@ -83,7 +103,7 @@ class Export {
     ];
   }
 
-  public function generateCSV() {
+  public function generateCSV(): int {
     $processedSubscribers = 0;
     $formattedSubscriberFields = $this->formattedSubscriberFields;
     $cSVFile = fopen($this->exportFile, 'w');
@@ -108,29 +128,26 @@ class Export {
       ) . PHP_EOL
     );
 
-    $subscribers = $this->getSubscribers();
-    while ($subscribers !== false) {
+    while (($subscribers = $this->getSubscribers()) !== null) {
       $processedSubscribers += count($subscribers);
       foreach ($subscribers as $subscriber) {
         $row = $this->formatSubscriberData($subscriber);
         $row[] = ucwords($subscriber['segment_name']);
         fwrite($cSVFile, implode(',', array_map($formatCSV, $row)) . "\n");
       }
-      $subscribers = $this->getSubscribers();
     }
-    fclose($cSVFile);
+
     return $processedSubscribers;
   }
 
-  public function generateXLSX() {
+  public function generateXLSX(): int {
     $processedSubscribers = 0;
     $xLSXWriter = new XLSXWriter();
     $xLSXWriter->setAuthor('MailPoet (www.mailpoet.com)');
     $lastSegment = false;
     $processedSegments = [];
 
-    $subscribers = $this->getSubscribers();
-    while ($subscribers !== false) {
+    while (($subscribers = $this->getSubscribers()) !== null) {
       $processedSubscribers += count($subscribers);
       foreach ($subscribers as $i => $subscriber) {
         $currentSegment = ucwords($subscriber['segment_name']);
@@ -167,7 +184,6 @@ class Export {
           $this->formatSubscriberData($subscriber)
         );
       }
-      $subscribers = $this->getSubscribers();
     }
     $xLSXWriter->writeToFile($this->exportFile);
     return $processedSubscribers;
@@ -177,15 +193,28 @@ class Export {
     return $xLSXWriter->writeSheetRow(ucwords($segment), $data);
   }
 
-  public function getSubscribers() {
-    $subscribers = $this->defaultSubscribersGetter->get();
-    if ($subscribers === false) {
-      $subscribers = $this->dynamicSubscribersGetter->get();
+  public function getSubscribers(): ?array {
+    $segment = array_key_exists($this->segmentIndex, $this->segments) ? $this->segments[$this->segmentIndex] : false;
+    if ($segment === false) {
+      return null;
     }
+
+    $subscribers = $this->importExportRepository->getSubscribersBatchBySegment(
+      $segment,
+      self::SUBSCRIBER_BATCH_SIZE,
+      $this->subscribersOffset
+    );
+    $this->subscribersOffset += count($subscribers);
+
+    if (count($subscribers) < self::SUBSCRIBER_BATCH_SIZE) {
+      $this->segmentIndex++;
+      $this->subscribersOffset = 0;
+    }
+
     return $subscribers;
   }
 
-  public function getExportFileURL($file) {
+  public function getExportFileURL($file): string {
     return sprintf(
       '%s/%s',
       Env::$tempUrl,
@@ -193,7 +222,7 @@ class Export {
     );
   }
 
-  public function getExportFile($format) {
+  public function getExportFile($format): string {
     return sprintf(
       $this->exportPath . '/' . self::getFilePrefix() . '%s.%s',
       Security::generateRandomString(15),
@@ -201,15 +230,46 @@ class Export {
     );
   }
 
-  public function getSubscriberCustomFields() {
-    return array_column(
-      CustomField::findArray(),
-      'name',
-      'id'
-    );
+  /**
+   * @return array<int, string>
+   */
+  public function getSubscriberCustomFields(): array {
+    $result = [];
+    foreach ($this->customFieldsRepository->findAll() as $customField) {
+      $result[(int)$customField->getId()] = $customField->getName();
+    }
+    return $result;
   }
 
-  public function formatSubscriberFields($subscriberFields, $subscriberCustomFields) {
+  /**
+   * @param array $segmentIds
+   * @return array<SegmentEntity|null>
+   */
+  private function getSegments(array $segmentIds): array {
+    $segments = $this->segmentsRepository->findBy(['id' => $segmentIds]);
+    $result = [];
+    foreach ($segmentIds as $segmentId) {
+      $segmentId = (int)$segmentId;
+      $segment = current(array_filter($segments, function (SegmentEntity $segment) use ($segmentId): bool {
+        return $segment->getId() === $segmentId;
+      })) ?: null;
+
+      if (!$segment && $segmentId !== 0) {
+        continue;
+      }
+
+      $result[] = $segment;
+    }
+
+    return $result;
+  }
+
+  private function resetCounters(): void {
+    $this->segmentIndex = 0;
+    $this->subscribersOffset = 0;
+  }
+
+  public function formatSubscriberFields($subscriberFields, $subscriberCustomFields): array {
     $exportFactory = new ImportExportFactory('export');
     $translatedFields = $exportFactory->getSubscriberFields();
     return array_map(function($field) use (
@@ -223,7 +283,7 @@ class Export {
     }, $subscriberFields);
   }
 
-  public function formatSubscriberData($subscriber) {
+  public function formatSubscriberData($subscriber): array {
     return array_map(function($field) use ($subscriber) {
       return $subscriber[$field];
     }, $this->subscriberFields);
