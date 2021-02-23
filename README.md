@@ -75,28 +75,28 @@ $ ./do test:integration [--file=...] [--multisite] [--debug]
   # if --file specified then only tests on that file are executed.
   # if --multisite then tests are executed in a multisite wordpress setup.
   # if --debug then tests are executed in debugging mode.
-$ ./do test:multisite:integration # alias for ./do test:integration --multisite
-$ ./do test:debug:unit            # alias for ./do test:unit --debug
-$ ./do test:debug:integration     # alias for ./do test:integration --debug
-$ ./do test:failed:unit           # run the last failing unit test.
-$ ./do test:failed:integration    # run the last failing integration test.
+$ ./do test:multisite-integration # alias for ./do test:integration --multisite
+$ ./do test:debug-unit            # alias for ./do test:unit --debug
+$ ./do test:debug-integration     # alias for ./do test:integration --debug
+$ ./do test:failed-unit           # run the last failing unit test.
+$ ./do test:failed-integration    # run the last failing integration test.
 $ ./do test:coverage              # run tests and output coverage information.
 $ ./do test:javascript            # run the JS tests.
 $ ./do test:acceptance [--file=...] [--skip-deps]
   # run acceptances tests into a docker environment.
   # if --file given then only tests on that file are executed.
   # if --skip-deps then it skips installation of composer dependencies.
-$ ./do test:acceptance:multisite [--file=...] [--skip-deps]
+$ ./do test:acceptance-multisite [--file=...] [--skip-deps]
   # same as test:acceptance but runs into a multisite wordpress setup.
 $ ./do delete:docker      # stop and remove all running docker containers.
 
 $ ./do qa:lint             # PHP code linter.
-$ ./do qa:lint:javascript  # JS code linter.
+$ ./do qa:lint-javascript  # JS code linter.
 $ ./do qa:phpstan          # PHP code static analysis using PHPStan.
 $ ./do qa                  # PHP and JS linters.
 
-$ ./do changelog:get  [--version-name=...]     # Prints out changelog and release notes for given version or for newest version.
-$ ./do changelog:update  [--version-name=...] [--quiet] # Updates changelog in readme.txt for given version or for newest version.
+$ ./do release:changelog-get  [--version-name=...]     # Prints out changelog and release notes for given version or for newest version.
+$ ./do release:changelog-update  [--version-name=...] [--quiet] # Updates changelog in readme.txt for given version or for newest version.
 
 $ ./do container:dump      # Generates DI container cache.
 ```
