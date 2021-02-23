@@ -208,6 +208,7 @@ class ImportExportRepository {
       ->leftJoin($subscriberSegmentTable, $segmentTable, $segmentTable, "{$segmentTable}.id = {$subscriberSegmentTable}.segment_id")
       ->andWhere("{$subscriberTable}.deleted_at IS NULL")
       ->groupBy("{$subscriberTable}.id, {$segmentTable}.id")
+      ->orderBy("{$subscriberTable}.id")
       ->setFirstResult($offset)
       ->setMaxResults($limit);
   }
