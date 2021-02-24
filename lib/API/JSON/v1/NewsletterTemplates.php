@@ -61,8 +61,10 @@ class NewsletterTemplates extends APIEndpoint {
 
   public function save($data = []) {
     ignore_user_abort(true);
-    $body = $this->apiDataSanitizer->sanitizeBody(json_decode($data['body'], true));
-    $data['body'] = json_encode($body);
+    if (!empty($data['body'])) {
+      $body = $this->apiDataSanitizer->sanitizeBody(json_decode($data['body'], true));
+      $data['body'] = json_encode($body);
+    }
     try {
       $template = $this->newsletterTemplatesRepository->createOrUpdate($data);
       if (!empty($data['categories']) && $data['categories'] === NewsletterTemplatesRepository::RECENTLY_SENT_CATEGORIES) {

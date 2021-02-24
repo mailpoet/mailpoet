@@ -107,8 +107,7 @@ class NewsletterSaveController {
     if (!empty($data['template_id'])) {
       $template = $this->newsletterTemplatesRepository->findOneById($data['template_id']);
       if ($template) {
-        $body = $this->dataSanitizer->sanitizeBody($template->getBody() ?: []);
-        $data['body'] = json_encode($body);
+        $data['body'] = json_encode($template->getBody());
       }
     }
 
