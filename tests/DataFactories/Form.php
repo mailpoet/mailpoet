@@ -37,6 +37,55 @@ class Form {
   /**
    * @return $this
    */
+  public function withFirstName() {
+    return $this->addFormBlock([
+      'type' => 'text',
+      'params' => [
+        'label' => 'First name',
+        'class_name' => '',
+        'label_within' => '1',
+      ],
+      'id' => 'first_name',
+      'name' => 'First name',
+      'styles' => [
+        'full_width' => '0',
+      ],
+    ]);
+  }
+
+  /**
+   * @return $this
+   */
+  public function withLastName() {
+    return $this->addFormBlock([
+      'type' => 'text',
+      'params' => [
+        'label' => 'Last name',
+        'class_name' => '',
+        'label_within' => '1',
+      ],
+      'id' => 'last_name',
+      'name' => 'Last name',
+      'styles' => [
+        'full_width' => '0',
+      ],
+    ]);
+  }
+
+  /**
+   * @param array $block
+   * @return $this
+   */
+  private function addFormBlock(array $block) {
+    $body = unserialize($this->data['body']);
+    $body = array_merge([$block], $body);
+    $this->data['body'] = serialize($body);
+    return $this;
+  }
+
+  /**
+   * @return $this
+   */
   public function withDeleted() {
     $this->data['deleted_at'] = Carbon::now();
     return $this;
