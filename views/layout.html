@@ -130,7 +130,7 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   <%= javascript('lib/analytics.js') %>
 
   <% set helpscout_form_id = '1c666cab-c0f6-4614-bc06-e5d0ad78db2b' %>
-  <%if mailpoet_api_key_state.data.support_tier == 'premium' %>
+  <%if mailpoet_api_key_state.data.support_tier == 'premium' or premium_key_state.data.support_tier == 'premium' %>
     <% set helpscout_form_id = 'e93d0423-1fa6-4bbc-9df9-c174f823c35f' %>
   <% endif %>
 

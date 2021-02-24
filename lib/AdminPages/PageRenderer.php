@@ -58,6 +58,7 @@ class PageRenderer {
       'feature_flags' => $this->featuresController->getAllFlags(),
       'referral_id' => $this->settings->get(ReferralDetector::REFERRAL_SETTING_NAME),
       'mailpoet_api_key_state' => $this->settings->get('mta.mailpoet_api_key_state'),
+      'premium_key_state' => $this->settings->get('premium.premium_key_state'),
       'last_announcement_seen' => $lastAnnouncementSeen,
       'feature_announcement_has_news' => (empty($lastAnnouncementSeen) || $lastAnnouncementSeen < $lastAnnouncementDate),
       'wp_segment_state' => $wpSegmentState,
