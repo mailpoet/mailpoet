@@ -24,9 +24,9 @@ class ApiDataSanitizerTest extends \MailPoetTest {
       ],
     ],
     [
-      'type' => 'image',
+      'type' => 'header',
       'link' => '',
-      'src' => 'http://some.url/wp-c\'"><img src=x onerror=alert(2)>ontent/fake-logo.png',
+      'text' => 'http://some.url/wp-c\'"><img src=x onerror=alert(2)>ontent/fake-logo.png',
     ],
   ];
 
@@ -46,8 +46,8 @@ class ApiDataSanitizerTest extends \MailPoetTest {
     expect($block2['type'])->equals('footer');
     expect($block2['text'])->equals('<p><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a><br />Add your postal address here!</p>');
     $image = $result[1];
-    expect($image['type'])->equals('image');
+    expect($image['type'])->equals('header');
     expect($image['link'])->equals('');
-    expect($image['src'])->equals('http://some.url/wp-c\'"&gt;ontent/fake-logo.png');
+    expect($image['text'])->equals('http://some.url/wp-c\'"&gt;ontent/fake-logo.png');
   }
 }
