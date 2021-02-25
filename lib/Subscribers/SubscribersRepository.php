@@ -217,8 +217,8 @@ class SubscribersRepository extends Repository {
       ->createQueryBuilder()
       ->select('s')
       ->from(SubscriberEntity::class, 's')
-      ->join(SubscriberSegmentEntity::class, 'ss')
-      ->join(SegmentEntity::class, 'segment')
+      ->join('s.subscriberSegments', 'ss')
+      ->join('ss.segment', 'segment')
       ->where('segment.type = :segmentType')
       ->setParameter('segmentType', SegmentEntity::TYPE_WC_USERS)
       ->andWhere('s.isWoocommerceUser = true')
@@ -252,7 +252,7 @@ class SubscribersRepository extends Repository {
 
     return count($ids);
   }
-  
+
   public function findWpUserIdAndEmailByEmails(array $emails): array {
     return $this->entityManager->createQueryBuilder()
       ->select('s.wpUserId AS wp_user_id, LOWER(s.email) AS email')
