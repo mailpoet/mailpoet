@@ -6,113 +6,93 @@ use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MailChimp {
+  private const API_BASE_URI = 'https://user:%s@%s.api.mailchimp.com/3.0/';
+  private const API_KEY_REGEX = '/[a-zA-Z0-9]{32}-[a-zA-Z0-9]{2,4}$/';
+  private const API_BATCH_SIZE = 100;
+
+  /** @var false|string  */
   public $apiKey;
+  /** @var int */
   public $maxPostSize;
+  /** @var false|string  */
   public $dataCenter;
-  private $exportUrl;
-  private $listsUrl;
-  const API_KEY_REGEX = '/[a-zA-Z0-9]{32}-[a-zA-Z0-9]{2,4}$/';
+  /** @var MailChimpDataMapper */
+  private $mapper;
 
   public function __construct($apiKey) {
     $this->apiKey = $this->getAPIKey($apiKey);
-    $this->maxPostSize = Helpers::getMaxPostSize('bytes');
+    $this->maxPostSize = (int)Helpers::getMaxPostSize('bytes');
     $this->dataCenter = $this->getDataCenter($this->apiKey);
-    $this->listsUrl = 'https://%s.api.mailchimp.com/2.0/lists/list?apikey=%s';
-    $this->exportUrl = 'https://%s.api.mailchimp.com/export/1.0/list/?apikey=%s&id=%s';
+    $this->mapper = new MailChimpDataMapper();
   }
 
-  public function getLists() {
+  public function getLists(): array {
     if (!$this->apiKey || !$this->dataCenter) {
-      return $this->throwException('API');
-    }
-
-    $url = sprintf($this->listsUrl, $this->dataCenter, $this->apiKey);
-    $connection = @fopen($url, 'r');
-
-    if (!$connection) {
-      return $this->throwException('connection');
-    } else {
-      $response = '';
-      while (!feof($connection)) {
-        $buffer = fgets($connection, 4096);
-        if (!is_string($buffer)) {
-          return $this->throwException('connection');
-        }
-        if (trim($buffer) !== '') {
-          $response .= $buffer;
-        }
-      }
-      fclose($connection);
-    }
-
-    $response = json_decode($response);
-
-    if (!$response) {
-      return $this->throwException('API');
+      $this->throwException('API');
     }
 
     $lists = [];
-    foreach ($response->data as $list) {
-      $lists[] = [
-        'id' => $list->id,
-        'name' => $list->name,
-      ];
+    $count = 0;
+    while (true) {
+      $data = $this->getApiData('lists', $count);
+      if ($data === null) {
+        $this->throwException('lists');
+        break;
+      }
+
+      $count += count($data['lists']);
+      foreach ($data['lists'] as $list) {
+        $lists[] = [
+          'id' => $list['id'],
+          'name' => $list['name'],
+        ];
+      }
+
+      if ($data['total_items'] <= $count) {
+        break;
+      }
     }
 
     return $lists;
   }
 
-  public function getSubscribers($lists = []) {
+  public function getSubscribers($lists = []): array {
     if (!$this->apiKey || !$this->dataCenter) {
-      return $this->throwException('API');
+      $this->throwException('API');
     }
 
     if (!$lists) {
-      return $this->throwException('lists');
+      $this->throwException('lists');
     }
 
-    $bytesFetched = 0;
     $subscribers = [];
     $duplicate = [];
-    $header = [];
     foreach ($lists as $list) {
-      $url = sprintf($this->exportUrl, $this->dataCenter, $this->apiKey, $list);
-      $connection = @fopen($url, 'r');
-      if (!$connection) {
-        return $this->throwException('connection');
-      }
-      $i = 0;
-      while (!feof($connection)) {
-        $buffer = fgets($connection, 4096);
-        if (trim((string)$buffer) !== '') {
-          $obj = json_decode((string)$buffer);
-          if ($i === 0) {
-            $header = $obj;
-            if (is_object($header) && isset($header->error)) {
-              return $this->throwException('lists');
-            }
-            if (!isset($headerHash)) {
-              $headerHash = md5(implode(',', $header));
-            } elseif (md5(implode(',', $header)) !== $headerHash) {
-              return $this->throwException('headers');
-            }
-          } elseif (isset($subscribers[$obj[0]])) {
-            $duplicate[] = $obj[0];
+      $count = 0;
+      while (true) {
+        $data = $this->getApiData("lists/{$list}/members", $count);
+        if ($data === null) {
+          $this->throwException('lists');
+          break;
+        }
+        $count += count($data['members']);
+        foreach ($data['members'] as $member) {
+          $emailAddress = $member['email_address'];
+          if (isset($subscribers[$emailAddress])) {
+            $duplicate[$emailAddress] = $this->mapper->mapMember($member);
           } else {
-            $subscribers[$obj[0]] = $obj;
+            $subscribers[$emailAddress] = $this->mapper->mapMember($member);
           }
-          $i++;
         }
-        $bytesFetched += strlen((string)$buffer);
-        if ($bytesFetched > $this->maxPostSize) {
-          return $this->throwException('size');
+
+        if ($data['total_items'] <= $count) {
+          break;
         }
       }
-      fclose($connection);
     }
 
     if (!count($subscribers)) {
-      return $this->throwException('subscribers');
+      $this->throwException('subscribers');
     }
 
     return [
@@ -120,7 +100,7 @@ class MailChimp {
       'invalid' => [],
       'duplicate' => $duplicate,
       'role' => [],
-      'header' => $header,
+      'header' => $this->mapper->getMembersHeader(),
       'subscribersCount' => count($subscribers),
     ];
   }
@@ -135,17 +115,15 @@ class MailChimp {
     return (preg_match(self::API_KEY_REGEX, $apiKey)) ? $apiKey : false;
   }
 
-  public function throwException($error) {
+  /**
+   * @param string $error
+   * @throws \Exception
+   */
+  public function throwException(string $error): void {
     $errorMessage = WPFunctions::get()->__('Unknown MailChimp error.', 'mailpoet');
     switch ($error) {
       case 'API':
         $errorMessage = WPFunctions::get()->__('Invalid API Key.', 'mailpoet');
-        break;
-      case 'connection':
-        $errorMessage = WPFunctions::get()->__('Could not connect to your MailChimp account.', 'mailpoet');
-        break;
-      case 'headers':
-        $errorMessage = WPFunctions::get()->__('The selected lists do not have matching columns (headers).', 'mailpoet');
         break;
       case 'size':
         $errorMessage = WPFunctions::get()->__('The information received from MailChimp is too large for processing. Please limit the number of lists!', 'mailpoet');
@@ -158,5 +136,37 @@ class MailChimp {
         break;
     }
     throw new \Exception($errorMessage);
+  }
+
+  private function getApiData(string $endpoint, int $offset): ?array {
+    $url = sprintf(self::API_BASE_URI, $this->apiKey, $this->dataCenter);
+    $url .= $endpoint . '?' . http_build_query([
+      'count' => self::API_BATCH_SIZE,
+      'offset' => $offset,
+    ]);
+
+    $connection = @fopen($url, 'r');
+    if (!$connection) {
+      return null;
+    }
+
+    $bytesFetched = 0;
+    $response = '';
+    while (!feof($connection)) {
+      $buffer = fgets($connection, 4096);
+      if (!is_string($buffer)) {
+        return null;
+      }
+      if (trim($buffer) !== '') {
+        $response .= $buffer;
+      }
+      $bytesFetched += strlen((string)$buffer);
+      if ($bytesFetched > $this->maxPostSize) {
+        $this->throwException('size');
+      }
+    }
+    fclose($connection);
+
+    return json_decode($response, true);
   }
 }
