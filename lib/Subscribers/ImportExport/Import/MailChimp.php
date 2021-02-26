@@ -67,6 +67,7 @@ class MailChimp {
 
     $subscribers = [];
     $duplicate = [];
+    $disallowed = [];
     foreach ($lists as $list) {
       $count = 0;
       while (true) {
@@ -78,7 +79,9 @@ class MailChimp {
         $count += count($data['members']);
         foreach ($data['members'] as $member) {
           $emailAddress = $member['email_address'];
-          if (isset($subscribers[$emailAddress])) {
+          if (!$this->isSubscriberAllowed($member)) {
+            $disallowed[$emailAddress] = $this->mapper->mapMember($member);
+          } elseif (isset($subscribers[$emailAddress])) {
             $duplicate[$emailAddress] = $this->mapper->mapMember($member);
           } else {
             $subscribers[$emailAddress] = $this->mapper->mapMember($member);
@@ -99,6 +102,7 @@ class MailChimp {
       'subscribers' => array_values($subscribers),
       'invalid' => [],
       'duplicate' => $duplicate,
+      'disallowed' => $disallowed,
       'role' => [],
       'header' => $this->mapper->getMembersHeader(),
       'subscribersCount' => count($subscribers),
@@ -136,6 +140,25 @@ class MailChimp {
         break;
     }
     throw new \Exception($errorMessage);
+  }
+
+  public function isSubscriberAllowed(array $subscriber): bool {
+    if (in_array($subscriber['status'], ['unsubscribed', 'cleaned', 'pending'], true)) {
+      return false;
+    }
+    if ($subscriber['member_rating'] < 2) {
+      return false;
+    }
+    // Rate 1 is on MailChimp API equal to 100% and we don't want to import avg_open_rate lower than 5%
+    if ($subscriber['stats']['avg_open_rate'] < 0.05) {
+      return false;
+    }
+    // We don't want to import avg_click_rate lower than 0.5%
+    if ($subscriber['stats']['avg_click_rate'] < 0.005) {
+      return false;
+    }
+
+    return true;
   }
 
   private function getApiData(string $endpoint, int $offset): ?array {

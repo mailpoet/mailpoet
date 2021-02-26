@@ -129,6 +129,54 @@ class MailChimpTest extends \MailPoetTest {
     }
   }
 
+  public function testItDoesntAllowInconvenientSubscribers(): void {
+    $unsubscribed = [
+      'email_address' => 'test@user.com',
+      'member_rating' => 2,
+      'status' => 'unsubscribed',
+      'stats' => [
+        'avg_open_rate' => 0.1,
+        'avg_click_rate' => 0.05,
+      ],
+    ];
+    expect($this->mailchimp->isSubscriberAllowed($unsubscribed))->false();
+
+    $badRate = [
+      'email_address' => 'test@user.com',
+      'member_rating' => 2,
+      'status' => 'unsubscribed',
+      'stats' => [
+        'avg_open_rate' => 0.1,
+        'avg_click_rate' => 0.002,
+      ],
+    ];
+    expect($this->mailchimp->isSubscriberAllowed($badRate))->false();
+
+    $badRating = [
+      'email_address' => 'test@user.com',
+      'member_rating' => 1,
+      'status' => 'unsubscribed',
+      'stats' => [
+        'avg_open_rate' => 0.1,
+        'avg_click_rate' => 0.1,
+      ],
+    ];
+    expect($this->mailchimp->isSubscriberAllowed($badRating))->false();
+  }
+
+  public function testItAllowsConvenientSubscribers(): void {
+    $subscribed = [
+      'email_address' => 'test@user.com',
+      'member_rating' => 2,
+      'status' => 'subscribed',
+      'stats' => [
+        'avg_open_rate' => 0.1,
+        'avg_click_rate' => 0.1,
+      ],
+    ];
+    expect($this->mailchimp->isSubscriberAllowed($subscribed))->true();
+  }
+
   public function _after() {
     WPFunctions::set(new WPFunctions);
   }
