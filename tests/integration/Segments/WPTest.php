@@ -198,21 +198,27 @@ class WPTest extends \MailPoetTest {
   }
 
   public function testItSynchronizeFirstNames() {
+    $firstName = 'Very long name over 255 characters lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum';
+    $trucantedFirstName = substr($firstName, 0, 255);
+
     $id = $this->insertUser();
     $this->wpSegment->synchronizeUsers();
-    update_user_meta((int)$id, 'first_name', 'First name');
+    update_user_meta((int)$id, 'first_name', $firstName);
     $this->wpSegment->synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
-    expect($subscriber->firstName)->equals('First name');
+    expect($subscriber->firstName)->equals($trucantedFirstName);
   }
 
   public function testItSynchronizeLastNames() {
+    $lastName = 'Very long name over 255 characters lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum';
+    $trucantedLastName = substr($lastName, 0, 255);
+
     $id = $this->insertUser();
     $this->wpSegment->synchronizeUsers();
-    update_user_meta((int)$id, 'last_name', 'Last name');
+    update_user_meta((int)$id, 'last_name', $lastName);
     $this->wpSegment->synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
-    expect($subscriber->lastName)->equals('Last name');
+    expect($subscriber->lastName)->equals($trucantedLastName);
   }
 
   public function testItSynchronizeFirstNamesUsingDisplayName() {
