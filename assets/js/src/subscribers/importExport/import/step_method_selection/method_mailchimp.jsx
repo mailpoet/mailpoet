@@ -4,6 +4,7 @@ import MailPoet from 'mailpoet';
 import Button from 'common/button/button';
 import Input from 'common/form/input/input';
 import Selection from 'form/fields/selection.jsx';
+import ReactStringReplace from 'react-string-replace';
 import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
 const MethodMailChimp = ({ onFinish, onPrevious }) => {
@@ -94,6 +95,24 @@ const MethodMailChimp = ({ onFinish, onPrevious }) => {
       <div className="mailpoet-settings-label">
         <label htmlFor="mailpoet_mailchimp_key_input">
           <span className="mailpoet_import_heading">{MailPoet.I18n.t('methodMailChimpLabel')}</span>
+          <p className="description">
+            {ReactStringReplace(
+              MailPoet.I18n.t('methodMailChimpDescription'),
+              /\[link\](.*?)\[\/link\]/,
+              (match) => (
+                <a
+                  className="mailpoet-link"
+                  href="https://kb.mailpoet.com/article/255-migrating-from-mailchimp-to-mailpoet#api"
+                  data-beacon-article="5b16db842c7d3a0fa9a2aa15"
+                  key="kb-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  { match }
+                </a>
+              )
+            )}
+          </p>
         </label>
       </div>
       <div className="mailpoet-settings-inputs">
