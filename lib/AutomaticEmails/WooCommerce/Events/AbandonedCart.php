@@ -130,7 +130,7 @@ class AbandonedCart {
 
   public function handleCartChange() {
     $cart = $this->wooCommerceHelper->WC()->cart;
-    if ($cart && !$cart->is_empty()) {
+    if (current_action() !== 'woocommerce_cart_emptied' && $cart && !$cart->is_empty()) {
       $this->scheduleAbandonedCartEmail($this->getCartProductIds($cart));
     } else {
       $this->cancelAbandonedCartEmail();
