@@ -229,7 +229,7 @@ class WP {
     Subscriber::rawExecute(sprintf('
       UPDATE %1$s
         JOIN %2$s as wpum ON %1$s.wp_user_id = wpum.user_id AND wpum.meta_key = "first_name"
-      SET %1$s.first_name = wpum.meta_value
+      SET %1$s.first_name = SUBSTRING(wpum.meta_value, 1, 255)
         WHERE %1$s.first_name = ""
         AND %1$s.wp_user_id IS NOT NULL
         AND wpum.meta_value IS NOT NULL
@@ -242,7 +242,7 @@ class WP {
     Subscriber::rawExecute(sprintf('
       UPDATE %1$s
         JOIN %2$s as wpum ON %1$s.wp_user_id = wpum.user_id AND wpum.meta_key = "last_name"
-      SET %1$s.last_name = wpum.meta_value
+      SET %1$s.last_name = SUBSTRING(wpum.meta_value, 1, 255)
         WHERE %1$s.last_name = ""
         AND %1$s.wp_user_id IS NOT NULL
         AND wpum.meta_value IS NOT NULL
