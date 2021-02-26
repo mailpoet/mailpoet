@@ -177,7 +177,8 @@ class ImportExportRepository {
     } else {
       // Dynamic segments don't have a relation to the segment table,
       // So we need to use a placeholder
-      $qb->addSelect("'{$segment->getName()}' AS segment_name");
+      $qb->addSelect(":segmentName AS segment_name")
+        ->setParameter('segmentName', $segment->getName());
       $filters = $segment->getDynamicFilters();
       foreach ($filters as $filter) {
         $qb = $this->filterHandler->apply($qb, $filter);
