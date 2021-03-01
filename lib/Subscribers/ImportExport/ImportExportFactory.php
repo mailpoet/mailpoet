@@ -70,7 +70,7 @@ class ImportExportFactory {
       return [
         'id' => $fieldId,
         'name' => $fieldName,
-        'type' => ($fieldId === 'confirmed_at') ? 'date' : null,
+        'type' => ($fieldId === 'confirmed_at' || $fieldId === 'created_at') ? 'date' : null,
         'custom' => false,
       ];
     }, array_keys($subscriberFields), $subscriberFields);
