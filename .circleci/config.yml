@@ -422,33 +422,40 @@ workflows:
   build_and_test:
     jobs:
       - build:
+          context: slack-secrets
           <<: *slack-fail-post-step
       - unit_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: unit_tests
           requires:
             - build
       - static_analysis:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: static_analysis_php7
           php_version: 70100
           requires:
             - build
       - static_analysis:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: static_analysis_php8
           php_version: 80000
           requires:
             - build
       - qa_js:
+          context: slack-secrets
           <<: *slack-fail-post-step
           requires:
             - build
       - qa_php:
+          context: slack-secrets
           <<: *slack-fail-post-step
           requires:
             - build
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: acceptance_tests_1
           group_arg: -g acceptance_group_1
@@ -459,6 +466,7 @@ workflows:
             - qa_js
             - qa_php
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: acceptance_tests_2
           group_arg: -g acceptance_group_2
@@ -469,6 +477,7 @@ workflows:
             - qa_js
             - qa_php
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: acceptance_tests_3
           group_arg: -g acceptance_group_3
@@ -479,6 +488,7 @@ workflows:
             - qa_js
             - qa_php
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: acceptance_tests_4
           group_arg: -g acceptance_group_4
@@ -489,6 +499,7 @@ workflows:
             - qa_js
             - qa_php
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: acceptance_tests_5
           group_arg: -g acceptance_group_5
@@ -499,10 +510,12 @@ workflows:
             - qa_js
             - qa_php
       - js_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           requires:
             - build
       - integration_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           requires:
             - unit_tests
@@ -511,31 +524,37 @@ workflows:
             - qa_js
             - qa_php
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_1
           group_arg: -g acceptance_group_1
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_2
           group_arg: -g acceptance_group_2
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_3
           group_arg: -g acceptance_group_3
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_4
           group_arg: -g acceptance_group_4
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_5
           group_arg: -g acceptance_group_5
       - integration_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           <<: *only_master_and_release
           name: integration_tests_multisite
@@ -548,6 +567,7 @@ workflows:
             - qa_js
             - qa_php
       - build_release_zip:
+          context: slack-secrets
           <<: *slack-fail-post-step
           requires:
             - build
@@ -559,6 +579,7 @@ workflows:
             - js_tests
             - integration_tests
       - test_deployment:
+          context: slack-secrets
           <<: *slack-fail-post-step
           <<: *only_master_and_release
           requires:
@@ -574,13 +595,16 @@ workflows:
                 - master
     jobs:
       - build:
+          context: slack-secrets
           <<: *slack-fail-post-step
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: acceptance_latest
           requires:
             - build
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: acceptance_oldest
           mysql_command: --max_allowed_packet=100M
@@ -589,42 +613,50 @@ workflows:
           requires:
             - build
       - unit_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: unit_latest
           requires:
             - build
       - unit_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: unit_oldest
           executor: wpcli_php_mysql_oldest
           requires:
             - build
       - integration_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: integration_latest
           requires:
             - build
       - integration_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: integration_oldest
           executor: wpcli_php_mysql_oldest
           requires:
             - build
       - build_premium:
+          context: slack-secrets
           <<: *slack-fail-post-step
           requires:
             - build
       - acceptance_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: acceptance_with_premium_latest
           requires:
             - build_premium
       - unit_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: unit_with_premium_latest
           requires:
             - build_premium
       - integration_tests:
+          context: slack-secrets
           <<: *slack-fail-post-step
           name: integration_with_premium_latest
           requires:
