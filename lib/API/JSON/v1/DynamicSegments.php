@@ -13,10 +13,12 @@ use MailPoet\DynamicSegments\Mappers\DBMapper;
 use MailPoet\DynamicSegments\Mappers\FormDataMapper;
 use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
 use MailPoet\DynamicSegments\Persistence\Saver;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\Model;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DynamicSegments extends APIEndpoint {
@@ -43,6 +45,9 @@ class DynamicSegments extends APIEndpoint {
   /** @var DynamicSegmentsListingRepository */
   private $dynamicSegmentsListingRepository;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   /** @var DynamicSegmentsResponseBuilder */
   private $segmentsResponseBuilder;
 
@@ -51,6 +56,7 @@ class DynamicSegments extends APIEndpoint {
     Handler $handler,
     DynamicSegmentsListingRepository $dynamicSegmentsListingRepository,
     DynamicSegmentsResponseBuilder $segmentsResponseBuilder,
+    SegmentsRepository $segmentsRepository,
     $mapper = null,
     $saver = null,
     $dynamicSegmentsLoader = null
@@ -62,6 +68,7 @@ class DynamicSegments extends APIEndpoint {
     $this->dynamicSegmentsLoader = $dynamicSegmentsLoader ?: new SingleSegmentLoader(new DBMapper());
     $this->dynamicSegmentsListingRepository = $dynamicSegmentsListingRepository;
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
+    $this->segmentsRepository = $segmentsRepository;
   }
 
   public function get($data = []) {
@@ -73,21 +80,14 @@ class DynamicSegments extends APIEndpoint {
       ]);
     }
 
-    try {
-      $segment = $this->dynamicSegmentsLoader->load($id);
-
-      $filters = $segment->getFilters();
-
-      return $this->successResponse(array_merge([
-        'name' => $segment->name,
-        'description' => $segment->description,
-        'id' => $segment->id,
-      ], $filters[0]->toArray()));
-    } catch (\InvalidArgumentException $e) {
+    $segment = $this->segmentsRepository->findOneById($id);
+    if (!$segment instanceof SegmentEntity) {
       return $this->errorResponse([
         Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
       ]);
     }
+
+    return $this->successResponse($this->segmentsResponseBuilder->build($segment));
   }
 
   public function save($data) {
