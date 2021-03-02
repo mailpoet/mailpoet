@@ -259,6 +259,9 @@ class Subscriber extends Model {
     return $orm;
   }
 
+  /**
+   * @deprecated
+   */
   public static function filterWithCustomFieldsForExport($orm) {
     $orm = $orm->select(MP_SUBSCRIBERS_TABLE . '.*');
     $customFields = CustomField::findArray();
