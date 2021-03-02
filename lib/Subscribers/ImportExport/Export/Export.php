@@ -136,7 +136,7 @@ class Export {
         fwrite($cSVFile, implode(',', array_map($formatCSV, $row)) . "\n");
       }
     }
-
+    fclose($cSVFile);
     return $processedSubscribers;
   }
 
