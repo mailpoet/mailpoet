@@ -13,6 +13,7 @@ class Logs {
   }
 
   public function render() {
+
     $this->pageRenderer->displayPage('logs.html', []);
   }
 }
