@@ -213,6 +213,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Listing\PageLimit::class)->setPublic(true);
     // Logging
     $container->autowire(\MailPoet\Logging\LoggerFactory::class);
+    $container->autowire(\MailPoet\Logging\LogRepository::class);
     // Notices
     $container->autowire(\MailPoet\Util\Notices\PermanentNotices::class);
     //Referrals
