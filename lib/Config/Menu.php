@@ -6,6 +6,7 @@ use MailPoet\AdminPages\Pages\ExperimentalFeatures;
 use MailPoet\AdminPages\Pages\FormEditor;
 use MailPoet\AdminPages\Pages\Forms;
 use MailPoet\AdminPages\Pages\Help;
+use MailPoet\AdminPages\Pages\Logs;
 use MailPoet\AdminPages\Pages\MP2Migration;
 use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
@@ -371,6 +372,16 @@ class Menu {
       'mailpoet-experimental',
       [$this, 'experimentalFeatures']
     );
+
+    // display loggs page
+    $this->wp->addSubmenuPage(
+      true,
+      $this->setPageTitle('Logs'),
+      '',
+      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      'logs',
+      [$this, 'logs']
+    );
   }
 
   public function disableWPEmojis() {
@@ -404,6 +415,10 @@ class Menu {
 
   public function experimentalFeatures() {
     $this->container->get(ExperimentalFeatures::class)->render();
+  }
+
+  public function logs() {
+    $this->container->get(Logs::class)->render();
   }
 
   public function subscribers() {
