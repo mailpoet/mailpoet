@@ -30,7 +30,7 @@ class Logs {
       $data['logs'][] = [
         'name' => $log->getName(),
         'message' => $log->getMessage(),
-        'created_at' => $log->getCreatedAt(),
+        'created_at' => $log->getCreatedAt()->format('Y-m-d H:i:s'),
       ];
     }
     $this->pageRenderer->displayPage('logs.html', $data);
