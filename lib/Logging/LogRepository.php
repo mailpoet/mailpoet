@@ -33,6 +33,8 @@ class LogRepository extends Repository {
         ->setParameter('dateTo', $dateTo->format('Y-m-d H:i:s'));
     }
 
+    $query->orderBy('l.createdAt', 'desc');
+
     return $query->getQuery()->getResult();
   }
 }

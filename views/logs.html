@@ -5,12 +5,21 @@
 <div class="wrap">
   <h1 class="mailpoet-h1">Logs</h1>
 
-  <table class="mailpoet-listing-table widefat fixed">
-    <tr>
-      <th>Name</th>
-      <th>Message</th>
-      <th>Created On</th>
-    </tr>
+  <table class="mailpoet-listing-table widefat striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Message</th>
+        <th>Created On</th>
+      </tr>
+    </thead>
+    <% for log in logs %>
+      <tr>
+        <td><%= log.name %></td>
+        <td><%= log.message %></td>
+        <td><%= log.created_at %></td>
+      </tr>
+    <% endfor %>
   </table>
 </div>
 
