@@ -25,7 +25,14 @@ class Logs {
     $dateFrom = (new Carbon())->subDays(7);
     $dateTo = new Carbon();
     $logs = $this->logRepository->getLogs($dateFrom, $dateTo);
-    
-    $this->pageRenderer->displayPage('logs.html', []);
+    $data = ['logs' => []];
+    foreach($logs as $log) {
+      $data['logs'][] = [
+        'name' => $log->getName(),
+        'message' => $log->getMessage(),
+        'created_at' => $log->getCreatedAt(),
+      ];
+    }
+    $this->pageRenderer->displayPage('logs.html', $data);
   }
 }
