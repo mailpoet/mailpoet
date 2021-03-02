@@ -30,6 +30,7 @@ class Logs {
       $data['logs'][] = [
         'name' => $log->getName(),
         'message' => $log->getMessage(),
+        'short_message' => substr($log->getMessage(), 0, 150),
         'created_at' => $log->getCreatedAt()->format('Y-m-d H:i:s'),
       ];
     }

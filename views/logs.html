@@ -16,7 +16,7 @@
     <% for log in logs %>
       <tr>
         <td><%= log.name %></td>
-        <td><%= log.message %></td>
+        <td data-message="<%= log.message %>"><%= log.short_message %>…</td>
         <td><%= log.created_at %></td>
       </tr>
     <% endfor %>
