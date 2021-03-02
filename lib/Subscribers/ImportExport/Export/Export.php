@@ -26,7 +26,7 @@ class Export {
   /** @var int */
   private $subscribersOffset;
 
-  /** @var array<SegmentEntity|null> */
+  /** @var array<SegmentEntity|null> null value is for subscribers without a list */
   private $segments;
 
   /** @var int */
@@ -243,7 +243,7 @@ class Export {
 
   /**
    * @param array $segmentIds
-   * @return array<SegmentEntity|null>
+   * @return array<SegmentEntity|null> null value is for subscribers without a list
    */
   private function getSegments(array $segmentIds): array {
     $segments = $this->segmentsRepository->findBy(['id' => $segmentIds]);
