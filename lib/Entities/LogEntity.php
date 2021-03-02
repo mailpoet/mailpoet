@@ -8,7 +8,7 @@ use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="logs")
+ * @ORM\Table(name="log")
  */
 class LogEntity {
   use AutoincrementedIdTrait;
@@ -21,7 +21,7 @@ class LogEntity {
   private $name;
 
   /**
-   * @ORM\Column(type="int", nullable=true)
+   * @ORM\Column(type="integer", nullable=true)
    * @var int|null
    */
   private $level;
