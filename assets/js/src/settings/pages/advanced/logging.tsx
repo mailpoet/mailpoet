@@ -11,7 +11,18 @@ export default function Logging() {
     <>
       <Label
         title={t('loggingTitle')}
-        description={t('loggingDescription')}
+        description={(
+          <>
+            {t('loggingDescription')}
+            {' '}
+            <a
+              href="?page=logs"
+              className="mailpoet-link"
+            >
+              {t('loggingDescriptionLink')}
+            </a>
+          </>
+        )}
         htmlFor="logging-level"
       />
       <Inputs>
