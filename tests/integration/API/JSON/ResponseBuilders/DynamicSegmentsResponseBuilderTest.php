@@ -13,6 +13,27 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     $this->cleanup();
   }
 
+  public function testItBuildsGetResponse() {
+    $name = 'Response Listings Builder Test';
+    $description = 'Testing description';
+    $segment = $this->createDynamicSegmentEntity($name, $description);
+    $this->entityManager->flush();
+
+    /** @var DynamicSegmentsResponseBuilder $responseBuilder */
+    $responseBuilder = $this->diContainer->get(DynamicSegmentsResponseBuilder::class);
+    $response = $responseBuilder->build($segment);
+    expect($response)->array();
+    expect($response['id'])->equals($segment->getId());
+    expect($response['name'])->equals($name);
+    expect($response['description'])->equals($description);
+    expect($response['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
+    expect($response['segmentType'])->equals(DynamicSegmentFilterEntity::TYPE_USER_ROLE);
+    expect($response['wordpressRole'])->equals('editor');
+    expect($response)->hasKey('created_at');
+    expect($response)->hasKey('updated_at');
+    expect($response)->hasKey('deleted_at');
+  }
+
   public function testItBuildsListingsResponse() {
     $name = 'Response Listings Builder Test';
     $description = 'Testing description';
