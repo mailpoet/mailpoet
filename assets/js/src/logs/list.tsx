@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
-import { identity } from 'lodash';
+import { curry } from 'lodash';
+import { parseISO } from 'date-fns';
 
 import Datepicker from '../common/datepicker/datepicker';
 import ListingSearch from '../listing/search';
@@ -57,41 +58,85 @@ const Log: React.FunctionComponent<LogProps> = ({ log }: LogProps) => {
   );
 };
 
-type ListProps = {
-  logs: Logs;
+
+export type FilterType = {
+  from?: string;
+  to?: string;
+  search?: string;
 }
 
-export const List: React.FunctionComponent<ListProps> = ({ logs }: ListProps) => (
-  <div className="mailpoet-listing mailpoet-logs">
-    <div className="mailpoet-listing-header">
-      <ListingSearch search="" onSearch={identity} />
-      <div className="mailpoet-listing-filters">
-        {`${MailPoet.I18n.t('from')}:`}
-        <Datepicker
-          onChange={identity}
-          dimension="small"
-        />
-        {`${MailPoet.I18n.t('to')}:`}
-        <Datepicker
-          onChange={identity}
-          dimension="small"
-        />
+type ListProps = {
+  logs: Logs;
+  onFilter: (FilterType) => void;
+}
+
+export const List: React.FunctionComponent<ListProps> = ({ logs, onFilter }: ListProps) => {
+  const [from, setFrom] = useState(undefined);
+  const [to, setTo] = useState(undefined);
+  const [search, setSearch] = useState('');
+
+  const dateChanged = curry((setter, value): void => {
+    // Swap display format to storage format
+    const formatting = {
+      format: 'Y-m-d',
+    };
+    setter(MailPoet.Date.format(value, formatting));
+  });
+
+  function filterClick(): void {
+    const data: FilterType = {};
+    if (from !== undefined) {
+      data.from = from;
+    }
+    if (to !== undefined) {
+      data.to = to;
+    }
+    if (search.trim() !== '') {
+      data.search = search.trim();
+    }
+    onFilter(data);
+  }
+
+  return (
+    <div className="mailpoet-listing mailpoet-logs">
+
+      <div className="mailpoet-listing-header">
+        <ListingSearch search={search} onSearch={setSearch} />
+        <div className="mailpoet-listing-filters">
+          {`${MailPoet.I18n.t('from')}:`}
+          <Datepicker
+            dateFormat="MMMM d, yyyy"
+            onChange={dateChanged(setFrom)}
+            maxDate={new Date()}
+            selected={from !== undefined ? parseISO(from) : undefined}
+            dimension="small"
+          />
+          {`${MailPoet.I18n.t('to')}:`}
+          <Datepicker
+            dateFormat="MMMM d, yyyy"
+            onChange={dateChanged(setTo)}
+            maxDate={new Date()}
+            selected={to !== undefined ? parseISO(to) : undefined}
+            dimension="small"
+          />
+        </div>
+        <Button dimension="small" onClick={filterClick}>
+          {MailPoet.I18n.t('filter')}
+        </Button>
       </div>
-      <Button dimension="small">
-        {MailPoet.I18n.t('filter')}
-      </Button>
+
+      <table className="mailpoet-listing-table widefat striped" role="grid">
+        <thead>
+          <tr>
+            <th>{MailPoet.I18n.t('tableHeaderName')}</th>
+            <th>{MailPoet.I18n.t('tableHeaderMessage')}</th>
+            <th>{MailPoet.I18n.t('tableHeaderCreatedOn')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {logs.map((log) => <Log log={log} key={`log-${log.id}`} />)}
+        </tbody>
+      </table>
     </div>
-    <table className="mailpoet-listing-table widefat striped" role="grid">
-      <thead>
-        <tr>
-          <th>{MailPoet.I18n.t('tableHeaderName')}</th>
-          <th>{MailPoet.I18n.t('tableHeaderMessage')}</th>
-          <th>{MailPoet.I18n.t('tableHeaderCreatedOn')}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {logs.map((log) => <Log log={log} key={`log-${log.id}`} />)}
-      </tbody>
-    </table>
-  </div>
-);
+  );
+};
