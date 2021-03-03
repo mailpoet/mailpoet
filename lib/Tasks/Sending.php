@@ -164,6 +164,14 @@ class Sending {
   public function save() {
     $this->task->save();
     $this->queue->save();
+    $errors = $this->getErrors();
+    if ($errors) {
+      $loggerFactory = LoggerFactory::getInstance();
+      $loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addError(
+        'error saving sending task',
+        ['task_id' => $this->task->id, 'queue_id' => $this->queue->id, 'errors' => $errors]
+      );
+    }
     return $this;
   }
 
