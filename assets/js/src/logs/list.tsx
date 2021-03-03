@@ -86,6 +86,10 @@ export const List: React.FunctionComponent<ListProps> = ({
   const [search, setSearch] = useState(originalSearch || '');
 
   const dateChanged = curry((setter, value): void => {
+    if (value === null) {
+      setter(undefined);
+      return;
+    }
     // Swap display format to storage format
     const formatting = {
       format: 'Y-m-d',
