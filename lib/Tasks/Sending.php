@@ -2,6 +2,7 @@
 
 namespace MailPoet\Tasks;
 
+use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
@@ -97,9 +98,20 @@ class Sending {
     foreach ($tasks as $task) {
       if (!empty($queuesIndex[$task->id])) {
         $result[] = self::create($task, $queuesIndex[$task->id]);
+      } else {
+        static::handleInvalidTask($task);
       }
     }
     return $result;
+  }
+
+  public static function handleInvalidTask(ScheduledTask $task) {
+    $loggerFactory = LoggerFactory::getInstance();
+    $loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addError(
+      'invalid sending task found, deleting',
+      ['task_id' => $task->id]
+    );
+    $task->delete();
   }
 
   public static function createFromScheduledTask(ScheduledTask $task) {
