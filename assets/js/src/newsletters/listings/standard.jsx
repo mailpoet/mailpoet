@@ -217,9 +217,9 @@ class NewsletterListStandard extends React.Component {
         <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('sentOn')}>
           { (newsletter.sent_at) ? (
             <>
-              { MailPoet.Date.short(newsletter.updated_at) }
+              { MailPoet.Date.short(newsletter.sent_at) }
               <br />
-              { MailPoet.Date.time(newsletter.updated_at) }
+              { MailPoet.Date.time(newsletter.sent_at) }
             </>
           ) : null}
         </td>
