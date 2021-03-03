@@ -8,6 +8,7 @@ use MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\DynamicSegments\Exceptions\ErrorSavingException;
 use MailPoet\DynamicSegments\Exceptions\InvalidSegmentTypeException;
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\BulkActionController;
@@ -249,10 +250,10 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
   private function createDynamicSegmentEntity(string $name, string $description): SegmentEntity {
     $segment = new SegmentEntity($name, SegmentEntity::TYPE_DYNAMIC, $description);
-    $dynamicFilter = new DynamicSegmentFilterEntity($segment, [
+    $dynamicFilter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData([
       'wordpressRole' => 'editor',
-      'segmentType' => DynamicSegmentFilterEntity::TYPE_USER_ROLE,
-    ]);
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+    ]));
     $segment->getDynamicFilters()->add($dynamicFilter);
     $this->entityManager->persist($segment);
     $this->entityManager->persist($dynamicFilter);

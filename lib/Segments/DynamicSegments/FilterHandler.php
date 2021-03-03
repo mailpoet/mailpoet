@@ -3,7 +3,7 @@
 namespace MailPoet\Segments\DynamicSegments;
 
 use MailPoet\DynamicSegments\Exceptions\InvalidSegmentTypeException;
-use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
@@ -35,18 +35,18 @@ class FilterHandler {
     $this->wooCommerceCategory = $wooCommerceCategory;
   }
 
-  public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filterEntity): QueryBuilder {
-    switch ($filterEntity->getSegmentType()) {
-      case DynamicSegmentFilterEntity::TYPE_USER_ROLE:
-        return $this->userRole->apply($queryBuilder, $filterEntity);
-      case DynamicSegmentFilterEntity::TYPE_EMAIL:
-        return $this->emailAction->apply($queryBuilder, $filterEntity);
-      case DynamicSegmentFilterEntity::TYPE_WOOCOMMERCE:
-        $action = $filterEntity->getFilterDataParam('action');
+  public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filter): QueryBuilder {
+    switch ($filter->getFilterType()) {
+      case DynamicSegmentFilterData::TYPE_USER_ROLE:
+        return $this->userRole->apply($queryBuilder, $filter);
+      case DynamicSegmentFilterData::TYPE_EMAIL:
+        return $this->emailAction->apply($queryBuilder, $filter);
+      case DynamicSegmentFilterData::TYPE_WOOCOMMERCE:
+        $action = $filter->getParam('action');
         if ($action === WooCommerceProduct::ACTION_PRODUCT) {
-          return $this->wooCommerceProduct->apply($queryBuilder, $filterEntity);
+          return $this->wooCommerceProduct->apply($queryBuilder, $filter);
         }
-        return $this->wooCommerceCategory->apply($queryBuilder, $filterEntity);
+        return $this->wooCommerceCategory->apply($queryBuilder, $filter);
       default:
         throw new InvalidSegmentTypeException('Invalid type', InvalidSegmentTypeException::INVALID_TYPE);
     }

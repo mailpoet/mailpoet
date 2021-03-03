@@ -18,10 +18,6 @@ class DynamicSegmentFilterEntity {
   use UpdatedAtTrait;
   use SafeToOneAssociationLoadTrait;
 
-  const TYPE_USER_ROLE = 'userRole';
-  const TYPE_EMAIL = 'email';
-  const TYPE_WOOCOMMERCE = 'woocommerce';
-
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SegmentEntity", inversedBy="filters")
    * @var SegmentEntity|null
@@ -29,12 +25,12 @@ class DynamicSegmentFilterEntity {
   private $segment;
 
   /**
-   * @ORM\Column(type="serialized_array")
-   * @var array|null
+   * @ORM\Embedded(class="MailPoet\Entities\DynamicSegmentFilterData", columnPrefix=false)
+   * @var DynamicSegmentFilterData
    */
   private $filterData;
 
-  public function __construct(SegmentEntity $segment, array $filterData) {
+  public function __construct(SegmentEntity $segment, DynamicSegmentFilterData $filterData) {
     $this->segment = $segment;
     $this->filterData = $filterData;
   }
@@ -48,32 +44,13 @@ class DynamicSegmentFilterEntity {
   }
 
   /**
-   * @return array|null
+   * @return DynamicSegmentFilterData
    */
   public function getFilterData() {
     return $this->filterData;
   }
 
-  /**
-   * @return mixed|null
-   */
-  public function getFilterDataParam(string $name) {
-    return $this->filterData[$name] ?? null;
-  }
-
-  /**
-   * @return string|null
-   */
-  public function getSegmentType() {
-    $filterData = $this->getFilterData();
-    return $filterData['segmentType'] ?? null;
-  }
-
   public function setSegment(SegmentEntity $segment) {
     $this->segment = $segment;
-  }
-
-  public function setFilterData(array $filterData) {
-    $this->filterData = $filterData;
   }
 }

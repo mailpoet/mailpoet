@@ -343,7 +343,7 @@ class SubscriberListingRepository extends ListingRepository {
   ) {
     // Apply dynamic segments filters
     foreach ($segment->getDynamicFilters() as $filter) {
-      $subscribersQuery = $this->dynamicSegmentsFilter->apply($subscribersQuery, $filter);
+      $subscribersQuery = $this->dynamicSegmentsFilter->apply($subscribersQuery, $filter->getFilterData());
     }
     // Apply group, search to fetch only necessary ids
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();

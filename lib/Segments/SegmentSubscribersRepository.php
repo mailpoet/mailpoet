@@ -164,7 +164,7 @@ class SegmentSubscribersRepository {
       return $queryBuilder->andWhere('0 = 1');
     }
     foreach ($filters as $filter) {
-      $queryBuilder = $this->filterHandler->apply($queryBuilder, $filter);
+      $queryBuilder = $this->filterHandler->apply($queryBuilder, $filter->getFilterData());
     }
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $queryBuilder = $queryBuilder->andWhere("$subscribersTable.deleted_at IS NULL");

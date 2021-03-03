@@ -2,7 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
-use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -16,9 +16,9 @@ class UserRole implements Filter {
     $this->entityManager = $entityManager;
   }
 
-  public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filterEntity): QueryBuilder {
+  public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filter): QueryBuilder {
     global $wpdb;
-    $role = $filterEntity->getFilterDataParam('wordpressRole');
+    $role = $filter->getParam('wordpressRole');
     if (!$role) {
       throw new InvalidFilterException('Missing role', InvalidFilterException::MISSING_ROLE);
     }

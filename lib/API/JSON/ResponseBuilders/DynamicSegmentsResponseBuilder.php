@@ -37,7 +37,7 @@ class DynamicSegmentsResponseBuilder {
     if (!$filter instanceof DynamicSegmentFilterEntity) {
       return $data;
     }
-    return array_merge($data, $filter->getFilterData() ?? []);
+    return array_merge($data, $filter->getFilterData()->getData() ?? []);
   }
 
   public function buildForListing(array $segments): array {
