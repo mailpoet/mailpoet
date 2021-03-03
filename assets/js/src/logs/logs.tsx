@@ -21,6 +21,9 @@ if (logsContainer) {
       originalTo={url.searchParams.get('to')}
       originalSearch={url.searchParams.get('search')}
       onFilter={(data: FilterType): void => {
+        url.searchParams.delete('from');
+        url.searchParams.delete('to');
+        url.searchParams.delete('search');
         Object.entries(data).forEach(([key, value]) => {
           url.searchParams.append(key, value);
         });
