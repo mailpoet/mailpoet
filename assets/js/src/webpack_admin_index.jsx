@@ -13,4 +13,5 @@ import 'subscribers/importExport/import.jsx'; // side effect - executes on doc r
 import 'subscribers/importExport/export.ts'; // side effect - executes on doc ready
 import 'wizard/wizard.jsx'; // side effect - renders ReactDOM to document
 import 'experimental_features/experimental_features.jsx'; // side effect - renders ReactDOM to document
+import 'logs/logs'; // side effect - renders ReactDOM to document
 import 'sending-paused-notices-fix-button.tsx'; // side effect - renders ReactDOM to document

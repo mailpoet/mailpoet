@@ -5,22 +5,23 @@
 <div class="wrap">
   <h1 class="mailpoet-h1">Logs</h1>
 
-  <table class="mailpoet-listing-table widefat striped">
-    <thead>
-      <tr>
-        <th><%= __('Name') %></th>
-        <th><%= __('Message') %></th>
-        <th><%= __('Created On') %></th>
-      </tr>
-    </thead>
-    <% for log in logs %>
-      <tr>
-        <td><%= log.name %></td>
-        <td data-message="<%= log.message %>"><%= log.short_message %>…</td>
-        <td><%= log.created_at %></td>
-      </tr>
-    <% endfor %>
-  </table>
+  <div id="mailpoet_logs_container"></div>
+
+  <script type="text/javascript">
+    <% autoescape 'js' %>
+      var mailpoet_logs = <%= json_encode(logs) %>;
+    <% endautoescape %>
+  </script>
 </div>
 
 <% endblock %>
+
+<% block translations %>
+  <%= localize({
+    'pageTitle': __('Logs'),
+    'tableHeaderName': __('Name'),
+    'tableHeaderMessage': __('Message'),
+    'tableHeaderCreatedOn': __('Created On'),
+  }) %>
+<% endblock %>
+
