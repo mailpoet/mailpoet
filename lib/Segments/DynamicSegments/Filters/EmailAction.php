@@ -2,7 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
-use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
@@ -23,10 +23,10 @@ class EmailAction implements Filter {
     $this->entityManager = $entityManager;
   }
 
-  public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filterEntity): QueryBuilder {
-    $action = $filterEntity->getFilterDataParam('action');
-    $newsletterId = (int)$filterEntity->getFilterDataParam('newsletter_id');
-    $linkId = $filterEntity->getFilterDataParam('link_id') ? (int)$filterEntity->getFilterDataParam('link_id') : null;
+  public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filter): QueryBuilder {
+    $action = $filter->getParam('action');
+    $newsletterId = (int)$filter->getParam('newsletter_id');
+    $linkId = $filter->getParam('link_id') ? (int)$filter->getParam('link_id') : null;
 
     $statsSentTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
