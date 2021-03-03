@@ -2,22 +2,20 @@
 
 namespace MailPoet\API\JSON\v1;
 
+use InvalidArgumentException;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
-use MailPoet\DynamicSegments\Exceptions\ErrorSavingException;
-use MailPoet\DynamicSegments\Exceptions\InvalidSegmentTypeException;
 use MailPoet\DynamicSegments\Mappers\DBMapper;
-use MailPoet\DynamicSegments\Mappers\FormDataMapper;
 use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
-use MailPoet\DynamicSegments\Persistence\Saver;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
-use MailPoet\Models\Model;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository;
+use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
+use MailPoet\Segments\DynamicSegments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -26,12 +24,6 @@ class DynamicSegments extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS,
   ];
-
-  /** @var FormDataMapper */
-  private $mapper;
-
-  /** @var Saver */
-  private $saver;
 
   /** @var SingleSegmentLoader */
   private $dynamicSegmentsLoader;
@@ -51,24 +43,25 @@ class DynamicSegments extends APIEndpoint {
   /** @var DynamicSegmentsResponseBuilder */
   private $segmentsResponseBuilder;
 
+  /** @var SegmentSaveController */
+  private $saveController;
+
   public function __construct(
     BulkActionController $bulkAction,
     Handler $handler,
     DynamicSegmentsListingRepository $dynamicSegmentsListingRepository,
     DynamicSegmentsResponseBuilder $segmentsResponseBuilder,
     SegmentsRepository $segmentsRepository,
-    $mapper = null,
-    $saver = null,
+    SegmentSaveController $saveController,
     $dynamicSegmentsLoader = null
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $handler;
-    $this->mapper = $mapper ?: new FormDataMapper();
-    $this->saver = $saver ?: new Saver();
     $this->dynamicSegmentsLoader = $dynamicSegmentsLoader ?: new SingleSegmentLoader(new DBMapper());
     $this->dynamicSegmentsListingRepository = $dynamicSegmentsListingRepository;
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
     $this->segmentsRepository = $segmentsRepository;
+    $this->saveController = $saveController;
   }
 
   public function get($data = []) {
@@ -92,38 +85,34 @@ class DynamicSegments extends APIEndpoint {
 
   public function save($data) {
     try {
-      $dynamicSegment = $this->mapper->mapDataToDB($data);
-      $this->saver->save($dynamicSegment);
-
-      return $this->successResponse($data);
-    } catch (InvalidSegmentTypeException $e) {
+      $segment = $this->saveController->save($data);
+      return $this->successResponse($this->segmentsResponseBuilder->build($segment));
+    } catch (InvalidFilterException $e) {
       return $this->errorResponse([
         Error::BAD_REQUEST => $this->getErrorString($e),
       ], [], Response::STATUS_BAD_REQUEST);
-    } catch (ErrorSavingException $e) {
-      $statusCode = Response::STATUS_UNKNOWN;
-      if ($e->getCode() === Model::DUPLICATE_RECORD) {
-        $statusCode = Response::STATUS_CONFLICT;
-      }
-      return $this->errorResponse([$statusCode => $e->getMessage()], [], $statusCode);
+    } catch (InvalidArgumentException $e) {
+      return $this->badRequest([
+        Error::BAD_REQUEST  => __('Another record already exists. Please specify a different "name".', 'mailpoet'),
+      ]);
     }
   }
 
-  private function getErrorString(InvalidSegmentTypeException $e) {
+  private function getErrorString(InvalidFilterException $e) {
     switch ($e->getCode()) {
-      case InvalidSegmentTypeException::MISSING_TYPE:
+      case InvalidFilterException::MISSING_TYPE:
         return WPFunctions::get()->__('Segment type is missing.', 'mailpoet');
-      case InvalidSegmentTypeException::INVALID_TYPE:
+      case InvalidFilterException::INVALID_TYPE:
         return WPFunctions::get()->__('Segment type is unknown.', 'mailpoet');
-      case InvalidSegmentTypeException::MISSING_ROLE:
+      case InvalidFilterException::MISSING_ROLE:
         return WPFunctions::get()->__('Please select user role.', 'mailpoet');
-      case InvalidSegmentTypeException::MISSING_ACTION:
+      case InvalidFilterException::MISSING_ACTION:
         return WPFunctions::get()->__('Please select email action.', 'mailpoet');
-      case InvalidSegmentTypeException::MISSING_NEWSLETTER_ID:
+      case InvalidFilterException::MISSING_NEWSLETTER_ID:
         return WPFunctions::get()->__('Please select an email.', 'mailpoet');
-      case InvalidSegmentTypeException::MISSING_PRODUCT_ID:
+      case InvalidFilterException::MISSING_PRODUCT_ID:
         return WPFunctions::get()->__('Please select category.', 'mailpoet');
-      case InvalidSegmentTypeException::MISSING_CATEGORY_ID:
+      case InvalidFilterException::MISSING_CATEGORY_ID:
         return WPFunctions::get()->__('Please select product.', 'mailpoet');
       default:
         return WPFunctions::get()->__('An error occurred while saving data.', 'mailpoet');

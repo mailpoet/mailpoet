@@ -4,6 +4,8 @@ namespace MailPoet\Segments;
 
 use DateTime;
 use MailPoet\Doctrine\Repository;
+use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\NotFoundException;
@@ -58,6 +60,8 @@ class SegmentsRepository extends Repository {
   public function createOrUpdate(
     string $name,
     string $description = '',
+    string $type = SegmentEntity::TYPE_DEFAULT,
+    ?DynamicSegmentFilterData $filterData = null,
     ?int $id = null
   ): SegmentEntity {
     if ($id) {
@@ -68,8 +72,20 @@ class SegmentsRepository extends Repository {
       $segment->setName($name);
       $segment->setDescription($description);
     } else {
-      $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, $description);
+      $segment = new SegmentEntity($name, $type, $description);
       $this->persist($segment);
+    }
+
+    if ($filterData instanceof DynamicSegmentFilterData) {
+      // So far we allow only one filter
+      $filterEntity = $segment->getDynamicFilters()->first();
+      if (!$filterEntity instanceof DynamicSegmentFilterEntity) {
+        $filterEntity = new DynamicSegmentFilterEntity($segment, $filterData);
+        $segment->getDynamicFilters()->add($filterEntity);
+        $this->entityManager->persist($filterEntity);
+      } else {
+        $filterEntity->setFilterData($filterData);
+      }
     }
     $this->flush();
     return $segment;

@@ -53,4 +53,8 @@ class DynamicSegmentFilterEntity {
   public function setSegment(SegmentEntity $segment) {
     $this->segment = $segment;
   }
+
+  public function setFilterData(DynamicSegmentFilterData $filterData) {
+    $this->filterData = $filterData;
+  }
 }
