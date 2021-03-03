@@ -53,6 +53,11 @@ MailPoet.Ajax = {
     if (this.options.token === null) {
       this.options.token = window.mailpoet_token;
     }
+
+    // set default timeout
+    if (this.options.token === null) {
+      this.options.timeout = 0;
+    }
   },
   getParams: function getParams() {
     return {
@@ -85,12 +90,13 @@ MailPoet.Ajax = {
 
     // ajax request
     const deferred = jQuery.Deferred();
-    jQuery[method](
-      this.options.url,
-      params,
-      null,
-      'json'
-    ).then(deferred.resolve, (failedXhr) => {
+    jQuery[method]({
+      url: this.options.url,
+      data: params,
+      success: null,
+      dataType: 'json',
+      timeout: this.options.timeout,
+    }).then(deferred.resolve, (failedXhr) => {
       const errorData = requestFailed(MailPoet.I18n.t('ajaxFailedErrorMessage'), failedXhr);
       deferred.reject(errorData);
     });
