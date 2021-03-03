@@ -22,9 +22,18 @@ class Logs {
   }
 
   public function render() {
+    $search = isset($_GET['search']) ? $_GET['search'] : null;
+    $from = isset($_GET['from']) ? $_GET['from'] : null;
+    $to = isset($_GET['to']) ? $_GET['to'] : null;
     $dateFrom = (new Carbon())->subDays(7);
-    $dateTo = new Carbon();
-    $logs = $this->logRepository->getLogs($dateFrom, $dateTo);
+    if (isset($from)) {
+      $dateFrom = new Carbon($from);
+    }
+    $dateTo = null;
+    if (isset($to)) {
+      $dateTo = new Carbon($to);
+    }
+    $logs = $this->logRepository->getLogs($dateFrom, $dateTo, $search);
     $data = ['logs' => []];
     foreach ($logs as $log) {
       $data['logs'][] = [
