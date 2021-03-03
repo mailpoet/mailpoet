@@ -81,9 +81,9 @@ export const List: React.FunctionComponent<ListProps> = ({
   originalTo,
   originalSearch,
 }: ListProps) => {
-  const [from, setFrom] = useState(originalFrom);
-  const [to, setTo] = useState(originalTo);
-  const [search, setSearch] = useState(originalSearch);
+  const [from, setFrom] = useState(originalFrom ?? undefined);
+  const [to, setTo] = useState(originalTo ?? undefined);
+  const [search, setSearch] = useState(originalSearch || '');
 
   const dateChanged = curry((setter, value): void => {
     // Swap display format to storage format
@@ -101,8 +101,8 @@ export const List: React.FunctionComponent<ListProps> = ({
     if (to) {
       data.to = to;
     }
-    if (search && search !== '') {
-      data.search = search;
+    if (search && search.trim() !== '') {
+      data.search = search.trim();
     }
     onFilter(data);
   }
