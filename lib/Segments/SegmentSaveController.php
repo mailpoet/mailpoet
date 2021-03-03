@@ -29,7 +29,7 @@ class SegmentSaveController {
 
     $this->checkSegmentUniqueName($name, $id);
 
-    return $this->segmentsRepository->createOrUpdate($name, $description, $id);
+    return $this->segmentsRepository->createOrUpdate($name, $description, SegmentEntity::TYPE_DEFAULT, null, $id);
   }
 
   public function duplicate(SegmentEntity $segmentEntity): SegmentEntity {
