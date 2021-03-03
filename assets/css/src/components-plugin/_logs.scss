@@ -4,3 +4,20 @@
   height: 120px;
   width: 100%;
 }
+
+.mailpoet-logs {
+  .mailpoet-listing-header {
+    align-items: flex-start;
+    display: inline-flex;
+  }
+
+  .mailpoet-datepicker {
+    margin-left: $grid-gap;
+    margin-right: $grid-gap;
+  }
+
+  .mailpoet-listing-filters {
+    align-items: center;
+    display: inline-flex;
+  }
+}

@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
+import { identity } from 'lodash';
+
+import Datepicker from '../common/datepicker/datepicker';
+import ListingSearch from '../listing/search';
+import { Button } from '../common';
 
 type Log = {
   id: number;
@@ -57,16 +62,36 @@ type ListProps = {
 }
 
 export const List: React.FunctionComponent<ListProps> = ({ logs }: ListProps) => (
-  <table className="mailpoet-listing-table widefat striped" role="grid">
-    <thead>
-      <tr>
-        <th>{MailPoet.I18n.t('tableHeaderName')}</th>
-        <th>{MailPoet.I18n.t('tableHeaderMessage')}</th>
-        <th>{MailPoet.I18n.t('tableHeaderCreatedOn')}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {logs.map((log) => <Log log={log} key={`log-${log.id}`} />)}
-    </tbody>
-  </table>
+  <div className="mailpoet-listing mailpoet-logs">
+    <div className="mailpoet-listing-header">
+      <ListingSearch search="" onSearch={identity} />
+      <div className="mailpoet-listing-filters">
+        {`${MailPoet.I18n.t('from')}:`}
+        <Datepicker
+          onChange={identity}
+          dimension="small"
+        />
+        {`${MailPoet.I18n.t('to')}:`}
+        <Datepicker
+          onChange={identity}
+          dimension="small"
+        />
+      </div>
+      <Button dimension="small">
+        {MailPoet.I18n.t('filter')}
+      </Button>
+    </div>
+    <table className="mailpoet-listing-table widefat striped" role="grid">
+      <thead>
+        <tr>
+          <th>{MailPoet.I18n.t('tableHeaderName')}</th>
+          <th>{MailPoet.I18n.t('tableHeaderMessage')}</th>
+          <th>{MailPoet.I18n.t('tableHeaderCreatedOn')}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {logs.map((log) => <Log log={log} key={`log-${log.id}`} />)}
+      </tbody>
+    </table>
+  </div>
 );
