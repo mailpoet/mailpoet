@@ -13,9 +13,13 @@ const logsContainer = document.getElementById('mailpoet_logs_container');
 
 if (logsContainer) {
   const url = new URL(window.location.href);
+
   ReactDOM.render(
     <List
       logs={window.mailpoet_logs}
+      originalFrom={url.searchParams.get('from')}
+      originalTo={url.searchParams.get('to')}
+      originalSearch={url.searchParams.get('search')}
       onFilter={(data: FilterType): void => {
         Object.entries(data).forEach(([key, value]) => {
           url.searchParams.append(key, value);
