@@ -26,8 +26,8 @@ class SegmentSaveController {
     $id = isset($data['id']) ? (int)$data['id'] : null;
     $name = $data['name'] ?? '';
     $description = $data['description'] ?? '';
-    
-    $this->checkSegmenUniqueName($name, $id);
+
+    $this->checkSegmentUniqueName($name, $id);
 
     return $this->segmentsRepository->createOrUpdate($name, $description, $id);
   }
@@ -36,7 +36,7 @@ class SegmentSaveController {
     $duplicate = clone $segmentEntity;
     $duplicate->setName(sprintf(__('Copy of %s', 'mailpoet'), $segmentEntity->getName()));
 
-    $this->checkSegmenUniqueName($duplicate->getName(), $duplicate->getId());
+    $this->checkSegmentUniqueName($duplicate->getName(), $duplicate->getId());
 
     $this->entityManager->transactional(function (EntityManager $entityManager) use ($duplicate, $segmentEntity) {
       $entityManager->persist($duplicate);
@@ -59,7 +59,7 @@ class SegmentSaveController {
     return $duplicate;
   }
 
-  private function checkSegmenUniqueName(string $name, ?int $id): void {
+  private function checkSegmentUniqueName(string $name, ?int $id): void {
     if (!$this->segmentsRepository->isNameUnique($name, $id)) {
       throw new InvalidArgumentException("Segment with name: '{$name}' already exists.");
     }
