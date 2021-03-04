@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\DataFactories;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Models\SubscriberSegment;
 
 class Subscriber {
@@ -9,7 +10,7 @@ class Subscriber {
   /** @var array */
   private $data;
 
-  /** @var \MailPoet\Models\Segment[] */
+  /** @var SegmentEntity[] */
   private $segments;
 
   public function __construct() {
@@ -66,7 +67,7 @@ class Subscriber {
   }
 
   /**
-   * @param \MailPoet\Models\Segment[] $segments
+   * @param SegmentEntity[] $segments
    * @return $this
    */
   public function withSegments(array $segments) {
@@ -83,7 +84,7 @@ class Subscriber {
     foreach ($this->segments as $segment) {
       SubscriberSegment::createOrUpdate([
         'subscriber_id' => $subscriber->id(),
-        'segment_id' => $segment->id(),
+        'segment_id' => $segment->getId(),
       ]);
     }
     return $subscriber;

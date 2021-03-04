@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\DataFactories;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
@@ -241,12 +242,12 @@ class Newsletter {
   }
 
   /**
-   * @param \MailPoet\Models\Segment[] $segments
+   * @param SegmentEntity[] $segments
    * @return Newsletter
    */
   public function withSegments(array $segments) {
     foreach ($segments as $segment) {
-      $this->segments[] = $segment->id();
+      $this->segments[] = $segment->getId();
     }
     return $this;
   }

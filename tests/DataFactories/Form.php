@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\DataFactories;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Models\Form as FormModel;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -92,13 +93,13 @@ class Form {
   }
 
   /**
-   * @param \MailPoet\Models\Segment[] $segments
+   * @param SegmentEntity[] $segments
    * @return $this
    */
   public function withSegments(array $segments) {
     $ids = [];
     foreach ($segments as $segment) {
-      $ids[] = $segment->id();
+      $ids[] = $segment->getId();
     }
     $this->data['settings']['segments'] = $ids;
     return $this;

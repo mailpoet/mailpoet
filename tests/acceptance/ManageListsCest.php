@@ -2,7 +2,9 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Models\Segment as SegmentModel;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\User;
@@ -160,7 +162,7 @@ class ManageListsCest {
     $i->wantTo('Check trashed WP User');
     $i->amOnMailPoetPage('Subscribers');
     $i->waitForElement('[data-automation-id="filters_trash"]');
-    $i->click('[data-automation-id="filters_trash"]');    
+    $i->click('[data-automation-id="filters_trash"]');
     $i->waitForText('test-editor@example.com', 5);
 
     $i->reloadPage();
@@ -179,7 +181,7 @@ class ManageListsCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Check WP User is restored');
-    $i->amOnMailPoetPage('Subscribers');  
+    $i->amOnMailPoetPage('Subscribers');
     $i->waitForText('test-editor@example.com', 5);
   }
 
@@ -187,8 +189,8 @@ class ManageListsCest {
     $listName = 'WordPress Users';
     $subject = 'Blocking Post Notification';
 
-    $segment = SegmentModel::findOne(1);
-    assert($segment instanceof SegmentModel);
+    $segment = ContainerWrapper::getInstance()->get(SegmentsRepository::class)->findOneById(1);
+    assert($segment instanceof SegmentEntity);
 
     $newsletterFactory = new Newsletter();
     $newsletterFactory

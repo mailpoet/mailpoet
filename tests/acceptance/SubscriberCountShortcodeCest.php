@@ -22,7 +22,7 @@ class SubscriberCountShortcodeCest {
     $subscriberFactory->withSegments([$segment])->create();
     $pageTitle = 'Subscribers Shortcode Page';
     $pageText = 'Your subscriber count is';
-    $pageContent = "$pageText [mailpoet_subscribers_count segments=\"$segment->id\"]";
+    $pageContent = "$pageText [mailpoet_subscribers_count segments=\"{$segment->getId()}\"]";
     $i->cli(['post', 'create', '--post_type=page', '--post_status=publish', "--post_title=$pageTitle", "--post_content=$pageContent"]);
     $i->login();
     $i->amOnPage('/wp-admin/edit.php?post_type=page');
