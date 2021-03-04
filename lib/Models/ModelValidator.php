@@ -87,4 +87,8 @@ class ModelValidator extends \MailPoetVendor\Sudzy\Engine {
     }
     return (is_null($newsletterBody) || (is_array($newsletterBody) && !empty($newsletterBody['html']) && !empty($newsletterBody['text'])));
   }
+
+  public function validateIPAddress(string $ip): bool {
+    return (bool)filter_var($ip, FILTER_VALIDATE_IP);
+  }
 }
