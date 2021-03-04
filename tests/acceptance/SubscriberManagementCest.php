@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 
@@ -11,7 +12,7 @@ class SubscriberManagementCest {
   const INACTIVE_SUBSCRIBERS_COUNT = 4;
   const INACTIVE_LIST_NAME = 'Inactivity';
 
-  /** @var \MailPoet\Models\Segment */
+  /** @var SegmentEntity */
   private $segment;
 
   public function _before() {
@@ -69,7 +70,7 @@ class SubscriberManagementCest {
     $i->fillField(['name' => 'email'], 'newglobaluser99@fakemail.fake');
     $i->fillField(['name' => 'first_name'], 'New');
     $i->fillField(['name' => 'last_name'], 'GlobalUser');
-    $i->selectOptionInSelect2($this->segment->get('name'));
+    $i->selectOptionInSelect2($this->segment->getName());
     $i->click('[data-automation-id="subscriber_edit_form"] [type="submit"]');
     $i->amOnMailPoetPage ('Subscribers');
     $i->searchFor('newglobaluser99@fakemail.fake');

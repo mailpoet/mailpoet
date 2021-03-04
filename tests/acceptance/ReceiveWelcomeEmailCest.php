@@ -33,8 +33,8 @@ class ReceiveWelcomeEmailCest {
     $welcomeNewsletterName = 'Welcome Email Test';
     $confirmationEmailName = 'Confirm your subscription';
     $newsletterFactory = new Newsletter();
-    $newsletter = $newsletterFactory->withSubject($welcomeNewsletterName)
-      ->withWelcomeTypeForSegment($subscribersList->id())
+    $newsletterFactory->withSubject($welcomeNewsletterName)
+      ->withWelcomeTypeForSegment($subscribersList->getId())
       ->withActiveStatus()
       ->withSegments([$subscribersList])
       ->create();

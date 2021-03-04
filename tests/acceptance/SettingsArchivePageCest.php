@@ -11,7 +11,7 @@ class SettingsArchivePageCest {
     $segmentFactory = new Segment();
     $segment = $segmentFactory->withName('Empty Send')->create();
     $pageTitle = 'EmptyNewsletterArchive';
-    $pageContent = "[mailpoet_archive segments=\"$segment->id\"]";
+    $pageContent = "[mailpoet_archive segments=\"{$segment->getId()}\"]";
     $postUrl = $i->createPost($pageTitle, $pageContent);
     $i->login();
     $i->amOnUrl($postUrl);
@@ -26,7 +26,7 @@ class SettingsArchivePageCest {
     $newsletterFactory = new Newsletter();
     $newsletterFactory->withSubject('SentNewsletter')->withSentStatus()->withSendingQueue()->withSegments([$segment2])->create();
     $pageTitle2 = 'SentNewsletterArchive';
-    $pageContent2 = "[mailpoet_archive segments=\"$segment2->id\"]";
+    $pageContent2 = "[mailpoet_archive segments=\"{$segment2->getId()}\"]";
     $postUrl = $i->createPost($pageTitle2, $pageContent2);
     $i->login();
     $i->amOnUrl($postUrl);
@@ -43,7 +43,7 @@ class SettingsArchivePageCest {
     $newsletterFactory->withSubject('DraftNewsletter')->withDraftStatus()->withScheduledQueue()->withSegments([$segment3])->create();
     $newsletterFactory->withSubject('ScheduledNewsletter')->withScheduledStatus()->withScheduledQueue()->withSegments([$segment3])->create();
     $pageTitle3 = 'SentNewsletterArchive';
-    $pageContent3 = "[mailpoet_archive segments=\"$segment3->id\"]";
+    $pageContent3 = "[mailpoet_archive segments=\"{$segment3->getId()}\"]";
     $postUrl = $i->createPost($pageTitle3, $pageContent3);
     $i->login();
     $i->amOnUrl($postUrl);

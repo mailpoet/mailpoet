@@ -39,11 +39,11 @@ class ManageSegmentsCest {
     $i->amOnMailpoetPage('Lists');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
-    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->id . '"]';
+    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->getId() . '"]';
     $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
     $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
-    $i->seeInCurrentUrl('segment=' . $segment->id);
+    $i->seeInCurrentUrl('segment=' . $segment->getId());
     $i->waitForText($wpEditorEmail, 20);
     $i->see($segmentTitle, ['css' => 'select[name=segment]']);
     $i->dontSee($wpAdminEmail);
@@ -143,7 +143,7 @@ class ManageSegmentsCest {
     $i->wantTo('Empty trash from other (2) segments');
     $i->click('[data-automation-id="empty_trash"]');
     $i->waitForText('2 segments were permanently deleted.');
-    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->id . '"]';
+    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->getId() . '"]';
     $i->dontSeeElement($listingAutomationSelector);
     $i->seeInCurrentURL(urlencode('group[all]'));
     $i->seeNoJSErrors();

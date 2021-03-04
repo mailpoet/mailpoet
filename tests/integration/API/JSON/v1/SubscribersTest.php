@@ -9,6 +9,7 @@ use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
@@ -331,21 +332,21 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->data[0]['email'])->equals($this->subscriber2->getEmail());
   }
 
-  public function testItCanLoadDymanicSegments() {
+  public function testItCanLoadDynamicSegments() {
     $dynamicSegmentFactory = new DynamicSegment();
     $dynamicSegment = $dynamicSegmentFactory
       ->withName('Dynamic')
       ->withUserRoleFilter('editor')
       ->create();
-    $dynamicSegment->save();
     $wpUserEmail = 'wpuserEditor@example.com';
+    $this->tester->deleteWordPressUser($wpUserEmail);
     $this->tester->createWordPressUser($wpUserEmail, 'editor');
     $response = $this->endpoint->listing([
       'filter' => [
-        'segment' => $dynamicSegment->id,
+        'segment' => $dynamicSegment->getId(),
       ],
     ]);
-    expect($response->meta['filters']['segment'])->contains(['value' => $dynamicSegment->id, 'label' => 'Dynamic (1)']);
+    expect($response->meta['filters']['segment'])->contains(['value' => $dynamicSegment->getId(), 'label' => 'Dynamic (1)']);
     $this->tester->deleteWordPressUser($wpUserEmail);
   }
 
@@ -911,6 +912,7 @@ class SubscribersTest extends \MailPoetTest {
     $this->truncateEntity(NewsletterOptionEntity::class);
     $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(DynamicSegmentFilterEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);

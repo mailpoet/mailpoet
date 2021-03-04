@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Models\DynamicSegment as SegmentModel;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
@@ -23,10 +23,10 @@ class WooCommerceDynamicSegmentsCest {
   /** @var int */
   private $productCategoryId;
 
-  /** @var SegmentModel */
+  /** @var SegmentEntity */
   private $categorySegment;
 
-  /** @var SegmentModel */
+  /** @var SegmentEntity */
   private $productSegment;
 
   public function _before(\AcceptanceTester $i) {
@@ -62,7 +62,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText(self::CATEGORY_SEGMENT);
-    $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->id}']";
+    $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->getId()}']";
     $i->see('1', $categorySegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::CATEGORY_SEGMENT, 'View Subscribers');
     $i->waitForText($customerEmail);
@@ -71,7 +71,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText(self::PRODUCT_SEGMENT);
-    $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->id}']";
+    $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
     $i->see('1', $productSegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::PRODUCT_SEGMENT, 'View Subscribers');
     $i->waitForText($customerEmail);
@@ -88,7 +88,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText(self::CATEGORY_SEGMENT);
-    $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->id}']";
+    $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->getId()}']";
     $i->see('1', $categorySegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::CATEGORY_SEGMENT, 'View Subscribers');
     $i->waitForText($customerEmail);
@@ -97,7 +97,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->amOnMailpoetPage('Lists');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText(self::PRODUCT_SEGMENT);
-    $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->id}']";
+    $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
     $i->see('0', $productSegmentRow . " [data-colname='Number of subscribers']");
   }
 }

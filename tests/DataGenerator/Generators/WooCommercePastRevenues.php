@@ -40,7 +40,8 @@ class WooCommercePastRevenues {
 
     // Create list
     $segmentFactory = new Segment();
-    $subscribersList = $segmentFactory->withName('WC revenues load test')->create();
+    $subscribersListEntity = $segmentFactory->withName('WC revenues load test')->create();
+    $subscribersList = \MailPoet\Models\Segment::findOne($subscribersListEntity->getId());
 
     // Create subscribers
     $subscribersIds = [];
