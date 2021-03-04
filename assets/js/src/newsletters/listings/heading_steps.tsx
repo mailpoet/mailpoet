@@ -36,17 +36,40 @@ const getEmailTypeTitle = (emailType: string): string => {
   return typeMap[emailType] || MailPoet.I18n.t('stepNameTypeStandard');
 };
 
+const getEmailSendTitle = (emailType: string): string => {
+  const typeMap = {
+    standard: MailPoet.I18n.t('stepNameSend'),
+    welcome: MailPoet.I18n.t('stepNameActivate'),
+    notification: MailPoet.I18n.t('stepNameActivate'),
+    woocommerce: MailPoet.I18n.t('stepNameActivate'),
+  };
+
+  return typeMap[emailType] || MailPoet.I18n.t('stepNameSend');
+};
+
 const stepsListingHeading = (
   step: number,
-  emailTypeTitle: string,
+  emailType: string,
   automationId: string
-): JSX.Element => (
-  <div className="mailpoet-newsletter-listing-heading-wrapper" data-automation-id={automationId}>
-    <HideScreenOptions />
-    <Steps count={4} current={step} titles={[emailTypeTitle, MailPoet.I18n.t('stepNameTemplate'), MailPoet.I18n.t('stepNameDesign'), MailPoet.I18n.t('stepNameSend')]} />
-    <h1 className="mailpoet-newsletter-listing-heading title mailpoet_hidden">{' '}</h1>
-  </div>
-);
+): JSX.Element => {
+  const emailTypeTitle = getEmailTypeTitle(emailType);
+  return (
+    <div className="mailpoet-newsletter-listing-heading-wrapper" data-automation-id={automationId}>
+      <HideScreenOptions />
+      <Steps
+        count={4}
+        current={step}
+        titles={[
+          emailTypeTitle,
+          MailPoet.I18n.t('stepNameTemplate'),
+          MailPoet.I18n.t('stepNameDesign'),
+          getEmailSendTitle(emailType),
+        ]}
+      />
+      <h1 className="mailpoet-newsletter-listing-heading title mailpoet_hidden">{' '}</h1>
+    </div>
+  );
+};
 
 const ListingHeadingSteps = ({
   step,
@@ -55,9 +78,8 @@ const ListingHeadingSteps = ({
   automationId,
 }): JSX.Element => {
   const stepNumber = step || mapPathToSteps(location);
-  const emailTypeTitle = getEmailTypeTitle(emailType);
   if (stepNumber !== null) {
-    return stepsListingHeading(stepNumber, emailTypeTitle, automationId);
+    return stepsListingHeading(stepNumber, emailType, automationId);
   }
   return null;
 };
