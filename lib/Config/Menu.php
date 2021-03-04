@@ -379,7 +379,7 @@ class Menu {
       $this->setPageTitle('Logs'),
       '',
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-      'logs',
+      'mailpoet-logs',
       [$this, 'logs']
     );
   }

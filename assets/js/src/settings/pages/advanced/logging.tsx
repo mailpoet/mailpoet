@@ -16,7 +16,7 @@ export default function Logging() {
             {t('loggingDescription')}
             {' '}
             <a
-              href="?page=logs"
+              href="?page=mailpoet-logs"
               className="mailpoet-link"
             >
               {t('loggingDescriptionLink')}
