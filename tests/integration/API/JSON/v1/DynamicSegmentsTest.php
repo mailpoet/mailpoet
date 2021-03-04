@@ -107,55 +107,33 @@ class DynamicSegmentsTest extends \MailPoetTest {
   }
 
   public function testItCanTrashASegment() {
-    DynamicSegment::deleteMany();
-    $dynamicSegment = DynamicSegment::createOrUpdate([
-      'name' => 'Trash test',
-      'description' => 'description',
-    ]);
-    $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
-      'load' => function () use($dynamicSegment) {
-        return $dynamicSegment;
-      },
-    ]);
+    $dynamicSegment = $this->createDynamicSegmentEntity('Trash test', 'description');
 
-    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController, $loader);
-    $response = $endpoint->trash(['id' => $dynamicSegment->id]);
+    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController);
+    $response = $endpoint->trash(['id' => $dynamicSegment->getId()]);
 
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->data)->equals($dynamicSegment->asArray());
+    expect($response->data['name'])->equals($dynamicSegment->getName());
     expect($response->meta['count'])->equals(1);
 
-    $dynamicSegment = DynamicSegment::findOne($dynamicSegment->id);
-    assert($dynamicSegment instanceof DynamicSegment);
-    expect($dynamicSegment->deletedAt)->notNull();
-
-    $dynamicSegment->delete();
+    $this->entityManager->refresh($dynamicSegment);
+    assert($dynamicSegment instanceof SegmentEntity);
+    expect($dynamicSegment->getDeletedAt())->notNull();
   }
 
   public function testItCanRestoreASegment() {
-    DynamicSegment::deleteMany();
-    $dynamicSegment = DynamicSegment::createOrUpdate([
-      'name' => 'Restore test',
-      'description' => 'description',
-    ]);
-    $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
-      'load' => function () use($dynamicSegment) {
-        return $dynamicSegment;
-      },
-    ]);
+    $dynamicSegment = $this->createDynamicSegmentEntity('Trash test', 'description');
 
-    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController, $loader);
-    $response = $endpoint->restore(['id' => $dynamicSegment->id]);
+    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController);
+    $response = $endpoint->restore(['id' => $dynamicSegment->getId()]);
 
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->data)->equals($dynamicSegment->asArray());
+    expect($response->data['name'])->equals($dynamicSegment->getName());
     expect($response->meta['count'])->equals(1);
 
-    $dynamicSegment = DynamicSegment::findOne($dynamicSegment->id);
-    assert($dynamicSegment instanceof DynamicSegment);
-    expect($dynamicSegment->deletedAt)->equals(null);
-
-    $dynamicSegment->delete();
+    $this->entityManager->refresh($dynamicSegment);
+    assert($dynamicSegment instanceof SegmentEntity);
+    expect($dynamicSegment->getDeletedAt())->null();
   }
 
   public function testItCanDeleteASegment() {
