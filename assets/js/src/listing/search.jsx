@@ -5,6 +5,24 @@ import PropTypes from 'prop-types';
 import Input from 'common/form/input/input.tsx';
 import icon from './assets/search_icon.tsx';
 
+/**
+ * this components has to be setup with router
+ * how it works right now:
+ *   1) On first render it ignores all props and renders '' using state.search <-- that is a bug
+ *      Why is it a bug?
+ *        Because if this is used without a router and props are sent in, they are ignored
+ *   2) On second and all other renders it gets props in `componentDidUpdate` and
+ *        updates state and renders properly.
+ * what to do with this file?
+ *   we need to fix it so that it renders properly even on the first render.
+ * we need to refactor it to a functional component and typescript first and
+ *   then use `useState` with `useEffect` to make it working. Something like this:
+ *
+ *  const [search, setSearch] = useState(props.search);
+ *  useEffect(() => {
+ *   setSearch(props.search)
+ *  }, [props.search]);
+ */
 class ListingSearch extends React.Component {
   constructor(props) {
     super(props);
