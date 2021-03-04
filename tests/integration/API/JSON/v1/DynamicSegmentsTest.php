@@ -2,7 +2,6 @@
 
 namespace MailPoet\API\JSON\v1;
 
-use Codeception\Stub;
 use MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\DynamicSegmentFilterData;
@@ -137,29 +136,22 @@ class DynamicSegmentsTest extends \MailPoetTest {
   }
 
   public function testItCanDeleteASegment() {
-    DynamicSegment::deleteMany();
-    $dynamicSegment = DynamicSegment::createOrUpdate([
-      'name' => 'Delete test',
-      'description' => 'description',
-    ]);
-    $filter = DynamicSegmentFilter::createOrUpdate([
-      'segment_id' => $dynamicSegment->id,
-    ]);
-    $loader = Stub::makeEmpty('\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader', [
-      'load' => function () use($dynamicSegment) {
-        return $dynamicSegment;
-      },
-    ]);
+    $dynamicSegment = $this->createDynamicSegmentEntity('Delete test', 'description');
+    $dynamicSegmentFilter = $dynamicSegment->getDynamicFilters()->first();
+    assert($dynamicSegmentFilter instanceof DynamicSegmentFilterEntity);
 
-    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController, $loader);
-    $response = $endpoint->delete(['id' => $dynamicSegment->id]);
+    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController);
+    $response = $endpoint->delete(['id' => $dynamicSegment->getId()]);
 
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
     expect($response->data)->equals(null);
     expect($response->meta['count'])->equals(1);
 
-    expect(DynamicSegment::findOne($dynamicSegment->id))->equals(false);
-    expect(DynamicSegmentFilter::findOne($filter->id))->equals(false);
+    // Clear entity manager to forget all entities
+    $this->entityManager->clear();
+
+    expect($this->entityManager->find(SegmentEntity::class, $dynamicSegment->getId()))->null();
+    expect($this->entityManager->find(DynamicSegmentFilterEntity::class, $dynamicSegmentFilter->getId()))->null();
   }
 
   public function testItCanBulkDeleteSegments() {

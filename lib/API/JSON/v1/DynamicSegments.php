@@ -8,8 +8,6 @@ use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
-use MailPoet\DynamicSegments\Mappers\DBMapper;
-use MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
@@ -24,9 +22,6 @@ class DynamicSegments extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS,
   ];
-
-  /** @var SingleSegmentLoader */
-  private $dynamicSegmentsLoader;
 
   /** @var BulkActionController */
   private $bulkAction;
@@ -52,12 +47,10 @@ class DynamicSegments extends APIEndpoint {
     DynamicSegmentsListingRepository $dynamicSegmentsListingRepository,
     DynamicSegmentsResponseBuilder $segmentsResponseBuilder,
     SegmentsRepository $segmentsRepository,
-    SegmentSaveController $saveController,
-    $dynamicSegmentsLoader = null
+    SegmentSaveController $saveController
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $handler;
-    $this->dynamicSegmentsLoader = $dynamicSegmentsLoader ?: new SingleSegmentLoader(new DBMapper());
     $this->dynamicSegmentsListingRepository = $dynamicSegmentsListingRepository;
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
     $this->segmentsRepository = $segmentsRepository;
@@ -162,23 +155,21 @@ class DynamicSegments extends APIEndpoint {
   }
 
   public function delete($data = []) {
-    if (isset($data['id'])) {
-      $id = (int)$data['id'];
-    } else {
+    if (!isset($data['id'])) {
       return $this->errorResponse([
         Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet'),
       ]);
     }
 
-    try {
-      $segment = $this->dynamicSegmentsLoader->load($id);
-      $segment->delete();
-      return $this->successResponse(null, ['count' => 1]);
-    } catch (\InvalidArgumentException $e) {
+    $segment = $this->getSegment($data);
+    if ($segment === null) {
       return $this->errorResponse([
         Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
       ]);
     }
+
+    $this->segmentsRepository->bulkDelete([$segment->getId()], SegmentEntity::TYPE_DYNAMIC);
+    return $this->successResponse(null, ['count' => 1]);
   }
 
   public function listing($data = []) {
