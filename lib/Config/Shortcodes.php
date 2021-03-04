@@ -2,11 +2,12 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Widget;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Subscription\Pages;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -17,9 +18,17 @@ class Shortcodes {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(Pages $subscriptionPages, WPFunctions $wp) {
+  /** @var SegmentSubscribersRepository */
+  private $segmentSubscribersRepository;
+
+  public function __construct(
+    Pages $subscriptionPages,
+    WPFunctions $wp,
+    SegmentSubscribersRepository $segmentSubscribersRepository
+  ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
+    $this->segmentSubscribersRepository = $segmentSubscribersRepository;
   }
 
   public function init() {
@@ -75,10 +84,7 @@ class Shortcodes {
       return $this->wp->numberFormatI18n(Subscriber::filter('subscribed')->count());
     } else {
       return $this->wp->numberFormatI18n(
-        SubscriberSegment::whereIn('segment_id', $segmentIds)
-          ->select('subscriber_id')->distinct()
-          ->filter('subscribed')
-          ->findResultSet()->count()
+        $this->segmentSubscribersRepository->getSubscribersCountBySegmentIds($segmentIds, SubscriberEntity::STATUS_SUBSCRIBED)
       );
     }
   }

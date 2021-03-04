@@ -56,6 +56,34 @@ class SegmentSubscribersRepository {
     return (int)$result;
   }
 
+  public function getSubscribersCountBySegmentIds(array $segmentIds, string $status = null): int {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $subscribersSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+
+    $queryBuilder = $this->entityManager
+      ->getConnection()
+      ->createQueryBuilder()
+      ->select("count(DISTINCT $subscribersTable.id)")
+      ->from($subscribersTable)
+      ->join(
+        $subscribersTable,
+        $subscribersSegmentsTable,
+        'subsegment',
+        "subsegment.subscriber_id = $subscribersTable.id"
+      )->andWhere("$subscribersTable.deleted_at IS NULL")
+      ->andWhere("subsegment.segment_id IN (:segmentIds)")
+      ->setParameter('segmentIds', $segmentIds, Connection::PARAM_INT_ARRAY);
+
+    if ($status) {
+      $queryBuilder->andWhere("$subscribersTable.status = :status")
+        ->andWhere("subsegment.status = :status")
+        ->setParameter('status', $status);
+    }
+    $statement = $this->executeQuery($queryBuilder);
+    $result = $statement->fetchColumn();
+    return (int)$result;
+  }
+
   public function getSubscribersWithoutSegmentCount(): int {
     $queryBuilder = $this->getSubscribersWithoutSegmentCountQuery();
     return (int)$queryBuilder->getQuery()->getSingleScalarResult();
