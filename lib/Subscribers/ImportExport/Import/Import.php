@@ -200,6 +200,19 @@ class Import {
           }, array_keys($data), $data
         );
       }
+      if (in_array($column, ['created_at', 'confirmed_at'], true)) {
+        $data = $this->validateDateTime($data, $invalidRecords);
+      }
+      if (in_array($column, ['confirmed_ip', 'subscribed_ip'], true)) {
+        $data = array_map(
+          function($index, $ip) use(&$invalidRecords, $validator) {
+            if (!$validator->validateIPAddress($ip)) {
+              $invalidRecords[] = $index;
+            }
+            return $ip;
+          }, array_keys($data), $data
+        );
+      }
       // if this is a custom column
       if (in_array($column, $this->subscribersCustomFields)) {
         $customField = $this->customFieldsRepository->findOneById($column);
@@ -208,17 +221,7 @@ class Import {
         }
         // validate date type
         if ($customField->getType() === CustomFieldEntity::TYPE_DATE) {
-          $validationRule = 'datetime';
-          $data = array_map(
-            function($index, $date) use($validationRule, &$invalidRecords) {
-              if (empty($date)) return $date;
-              $date = (new DateConverter())->convertDateToDatetime($date, $validationRule);
-              if (!$date) {
-                $invalidRecords[] = $index;
-              }
-              return $date;
-            }, array_keys($data), $data
-          );
+          $data = $this->validateDateTime($data, $invalidRecords);
         }
       }
     }
@@ -230,6 +233,20 @@ class Import {
     }
     if (empty($subscribersData['email'])) return false;
     return $subscribersData;
+  }
+
+  private function validateDateTime(array $data, array &$invalidRecords): array {
+    $validationRule = 'datetime';
+    return array_map(
+      function($index, $date) use($validationRule, &$invalidRecords) {
+        if (empty($date)) return $date;
+        $date = (new DateConverter())->convertDateToDatetime($date, $validationRule);
+        if (!$date) {
+          $invalidRecords[] = $index;
+        }
+        return $date;
+      }, array_keys($data), $data
+    );
   }
 
   public function transformSubscribersData($subscribers, $columns) {
