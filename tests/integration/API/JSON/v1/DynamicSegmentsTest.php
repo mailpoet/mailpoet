@@ -2,18 +2,10 @@
 
 namespace MailPoet\API\JSON\v1;
 
-use MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Listing\BulkActionController;
-use MailPoet\Listing\Handler;
-use MailPoet\Models\DynamicSegment;
-use MailPoet\Models\DynamicSegmentFilter;
-use MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository;
-use MailPoet\Segments\DynamicSegments\SegmentSaveController;
-use MailPoet\Segments\SegmentsRepository;
 
 class DynamicSegmentsTest extends \MailPoetTest {
 
@@ -22,55 +14,29 @@ class DynamicSegmentsTest extends \MailPoetTest {
   const INVALID_DATA_RESPONSE_CODE = 400;
   const SERVER_ERROR_RESPONSE_CODE = 409;
 
-  /** @var BulkActionController */
-  private $bulkAction;
-
-  /** @var Handler */
-  private $listingHandler;
-  /** @var DynamicSegmentsListingRepository */
-  private $listingRepository;
-  /** @var DynamicSegmentsResponseBuilder */
-  private $responseBuilder;
-  /** @var SegmentsRepository */
-  private $segmentsRepository;
-  /** @var SegmentSaveController */
-  private $saveController;
+  /** @var DynamicSegments */
+  private $endpoint;
 
   public function _before() {
-    $this->bulkAction = ContainerWrapper::getInstance()->get(BulkActionController::class);
-    $this->listingHandler = ContainerWrapper::getInstance()->get(Handler::class);
-    $this->listingRepository = ContainerWrapper::getInstance()->get(DynamicSegmentsListingRepository::class);
-    $this->responseBuilder = ContainerWrapper::getInstance()->get(DynamicSegmentsResponseBuilder::class);
-    $this->segmentsRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
-    $this->saveController = ContainerWrapper::getInstance()->get(SegmentSaveController::class);
+    $this->endpoint = ContainerWrapper::getInstance()->get(DynamicSegments::class);
   }
 
   public function testGetReturnsResponse() {
     $segment = $this->createDynamicSegmentEntity('s1', '');
-    $endpoint = new DynamicSegments(
-      $this->bulkAction,
-      $this->listingHandler,
-      $this->listingRepository,
-      $this->responseBuilder,
-      $this->segmentsRepository,
-      $this->saveController
-    );
-    $response = $endpoint->get(['id' => $segment->getId()]);
+    $response = $this->endpoint->get(['id' => $segment->getId()]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\SuccessResponse');
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
     expect($response->data['id'])->equals($segment->getId());
   }
 
   public function testGetReturnsError() {
-    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController);
-    $response = $endpoint->get(['id' => 5]);
+    $response = $this->endpoint->get(['id' => 5]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
     expect($response->status)->equals(self::SEGMENT_NOT_FOUND_RESPONSE_CODE);
   }
 
   public function testSaverSavesData() {
-    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController);
-    $response = $endpoint->save([
+    $response = $this->endpoint->save([
       'name' => 'Test dynamic',
       'description' => 'description dynamic',
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
@@ -82,8 +48,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
   }
 
   public function testSaverReturnsErrorOnInvalidFilterData() {
-    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController);
-    $response = $endpoint->save([
+    $response = $this->endpoint->save([
       'name' => 'Test dynamic',
     ]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
@@ -92,15 +57,14 @@ class DynamicSegmentsTest extends \MailPoetTest {
   }
 
   public function testSaverReturnsErrorOnDuplicateRecord() {
-    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController);
     $data = [
       'name' => 'Test dynamic',
       'description' => 'description dynamic',
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'wordpressRole' => 'editor',
     ];
-    $endpoint->save($data);
-    $response = $endpoint->save($data);
+    $this->endpoint->save($data);
+    $response = $this->endpoint->save($data);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
     expect($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
   }
@@ -108,8 +72,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
   public function testItCanTrashASegment() {
     $dynamicSegment = $this->createDynamicSegmentEntity('Trash test', 'description');
 
-    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController);
-    $response = $endpoint->trash(['id' => $dynamicSegment->getId()]);
+    $response = $this->endpoint->trash(['id' => $dynamicSegment->getId()]);
 
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
     expect($response->data['name'])->equals($dynamicSegment->getName());
@@ -123,8 +86,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
   public function testItCanRestoreASegment() {
     $dynamicSegment = $this->createDynamicSegmentEntity('Trash test', 'description');
 
-    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController);
-    $response = $endpoint->restore(['id' => $dynamicSegment->getId()]);
+    $response = $this->endpoint->restore(['id' => $dynamicSegment->getId()]);
 
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
     expect($response->data['name'])->equals($dynamicSegment->getName());
@@ -140,8 +102,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $dynamicSegmentFilter = $dynamicSegment->getDynamicFilters()->first();
     assert($dynamicSegmentFilter instanceof DynamicSegmentFilterEntity);
 
-    $endpoint = new DynamicSegments($this->bulkAction, $this->listingHandler, $this->listingRepository, $this->responseBuilder, $this->segmentsRepository, $this->saveController);
-    $response = $endpoint->delete(['id' => $dynamicSegment->getId()]);
+    $response = $this->endpoint->delete(['id' => $dynamicSegment->getId()]);
 
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
     expect($response->data)->equals(null);
@@ -155,51 +116,58 @@ class DynamicSegmentsTest extends \MailPoetTest {
   }
 
   public function testItCanBulkDeleteSegments() {
-    DynamicSegment::deleteMany();
-    $dynamicSegment1 = DynamicSegment::createOrUpdate([
-      'name' => 'Test 1',
-      'description' => 'description',
-    ]);
-    $dynamicSegment2 = DynamicSegment::createOrUpdate([
-      'name' => 'Test 2',
-      'description' => 'description',
-    ]);
-    $filter = DynamicSegmentFilter::createOrUpdate([
-      'segment_id' => $dynamicSegment1->id,
-    ]);
+    $dynamicSegment1 = $this->createDynamicSegmentEntity('Test 1', 'description');
+    $dynamicSegment2 = $this->createDynamicSegmentEntity('Test 2', 'description');
 
-    $endpoint = new DynamicSegments(
-      $this->bulkAction,
-      $this->listingHandler,
-      $this->listingRepository,
-      $this->responseBuilder,
-      $this->segmentsRepository,
-      $this->saveController
-    );
-    $response = $endpoint->bulkAction([
+    $response = $this->endpoint->bulkAction([
       'action' => 'trash',
       'listing' => ['group' => 'all'],
     ]);
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
     expect($response->meta['count'])->equals(2);
 
-    $response = $endpoint->bulkAction([
-      'action' => 'delete',
+    $this->entityManager->refresh($dynamicSegment1);
+    $this->entityManager->refresh($dynamicSegment2);
+    expect($dynamicSegment1->getDeletedAt())->notNull();
+    expect($dynamicSegment2->getDeletedAt())->notNull();
+
+    $response = $this->endpoint->bulkAction([
+      'action' => 'restore',
       'listing' => ['group' => 'trash'],
     ]);
 
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
     expect($response->meta['count'])->equals(2);
 
-    $response = $endpoint->bulkAction([
+    $this->entityManager->refresh($dynamicSegment1);
+    $this->entityManager->refresh($dynamicSegment2);
+    expect($dynamicSegment1->getDeletedAt())->null();
+    expect($dynamicSegment2->getDeletedAt())->null();
+
+    $this->endpoint->bulkAction([
+      'action' => 'trash',
+      'listing' => ['group' => 'all'],
+    ]);
+
+    $response = $this->endpoint->bulkAction([
+      'action' => 'delete',
+      'listing' => ['group' => 'trash'],
+    ]);
+    expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
+    expect($response->meta['count'])->equals(2);
+
+    // Second delete doesn't delete anything
+    $response = $this->endpoint->bulkAction([
       'action' => 'delete',
       'listing' => ['group' => 'trash'],
     ]);
     expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
     expect($response->meta['count'])->equals(0);
 
-    expect(DynamicSegment::count())->equals(0);
-    expect(DynamicSegmentFilter::findOne($filter->id))->equals(false);
+    $this->entityManager->clear();
+
+    expect($this->entityManager->find(SegmentEntity::class, $dynamicSegment1->getId()))->null();
+    expect($this->entityManager->find(SegmentEntity::class, $dynamicSegment2->getId()))->null();
   }
 
   private function createDynamicSegmentEntity(string $name, string $description): SegmentEntity {

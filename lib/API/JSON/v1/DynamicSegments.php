@@ -9,12 +9,12 @@ use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Listing\BulkActionController;
 use MailPoet\Listing\Handler;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DynamicSegments extends APIEndpoint {
@@ -22,9 +22,6 @@ class DynamicSegments extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS,
   ];
-
-  /** @var BulkActionController */
-  private $bulkAction;
 
   /** @var Handler */
   private $listingHandler;
@@ -42,14 +39,12 @@ class DynamicSegments extends APIEndpoint {
   private $saveController;
 
   public function __construct(
-    BulkActionController $bulkAction,
     Handler $handler,
     DynamicSegmentsListingRepository $dynamicSegmentsListingRepository,
     DynamicSegmentsResponseBuilder $segmentsResponseBuilder,
     SegmentsRepository $segmentsRepository,
     SegmentSaveController $saveController
   ) {
-    $this->bulkAction = $bulkAction;
     $this->listingHandler = $handler;
     $this->dynamicSegmentsListingRepository = $dynamicSegmentsListingRepository;
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
@@ -188,14 +183,19 @@ class DynamicSegments extends APIEndpoint {
   }
 
   public function bulkAction($data = []) {
-    try {
-      $meta = $this->bulkAction->apply('\MailPoet\Models\DynamicSegment', $data);
-      return $this->successResponse(null, $meta);
-    } catch (\Exception $e) {
-      return $this->errorResponse([
-        $e->getCode() => $e->getMessage(),
-      ]);
+    $definition = $this->listingHandler->getListingDefinition($data['listing']);
+    $ids = $this->dynamicSegmentsListingRepository->getActionableIds($definition);
+    if ($data['action'] === 'trash') {
+      $count = $this->segmentsRepository->bulkTrash($ids, SegmentEntity::TYPE_DYNAMIC);
+    } elseif ($data['action'] === 'restore') {
+      $count = $this->segmentsRepository->bulkRestore($ids, SegmentEntity::TYPE_DYNAMIC);
+    } elseif ($data['action'] === 'delete') {
+      $count = $this->segmentsRepository->bulkDelete($ids, SegmentEntity::TYPE_DYNAMIC);
+    } else {
+      throw UnexpectedValueException::create()
+        ->withErrors([Error::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
     }
+    return $this->successResponse(null, ['count' => $count]);
   }
 
   private function getSegment(array $data): ?SegmentEntity {
