@@ -120,49 +120,45 @@ class DynamicSegments extends APIEndpoint {
   }
 
   public function trash($data = []) {
-    if (isset($data['id'])) {
-      $id = (int)$data['id'];
-    } else {
+    if (!isset($data['id'])) {
       return $this->errorResponse([
         Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet'),
       ]);
     }
 
-    try {
-      $segment = $this->dynamicSegmentsLoader->load($id);
-      $segment->trash();
-      return $this->successResponse(
-        $segment->asArray(),
-        ['count' => 1]
-      );
-    } catch (\InvalidArgumentException $e) {
+    $segment = $this->getSegment($data);
+    if ($segment === null) {
       return $this->errorResponse([
         Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
       ]);
     }
+
+    $this->segmentsRepository->bulkTrash([$segment->getId()], SegmentEntity::TYPE_DYNAMIC);
+    return $this->successResponse(
+      $this->segmentsResponseBuilder->build($segment),
+      ['count' => 1]
+    );
   }
 
   public function restore($data = []) {
-    if (isset($data['id'])) {
-      $id = (int)$data['id'];
-    } else {
+    if (!isset($data['id'])) {
       return $this->errorResponse([
         Error::BAD_REQUEST => WPFunctions::get()->__('Missing mandatory argument `id`.', 'mailpoet'),
       ]);
     }
 
-    try {
-      $segment = $this->dynamicSegmentsLoader->load($id);
-      $segment->restore();
-      return $this->successResponse(
-        $segment->asArray(),
-        ['count' => 1]
-      );
-    } catch (\InvalidArgumentException $e) {
+    $segment = $this->getSegment($data);
+    if ($segment === null) {
       return $this->errorResponse([
         Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
       ]);
     }
+
+    $this->segmentsRepository->bulkRestore([$segment->getId()], SegmentEntity::TYPE_DYNAMIC);
+    return $this->successResponse(
+      $this->segmentsResponseBuilder->build($segment),
+      ['count' => 1]
+    );
   }
 
   public function delete($data = []) {
@@ -209,5 +205,11 @@ class DynamicSegments extends APIEndpoint {
         $e->getCode() => $e->getMessage(),
       ]);
     }
+  }
+
+  private function getSegment(array $data): ?SegmentEntity {
+    return isset($data['id'])
+      ? $this->segmentsRepository->findOneById((int)$data['id'])
+      : null;
   }
 }
