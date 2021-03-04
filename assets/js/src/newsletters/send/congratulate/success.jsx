@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import MSSUserSuccess from './success_for_mss_users.jsx';
-import PitchMss from './success_pitch_mss.jsx';
+import PitchMss from './success_pitch_mss.tsx';
 
 function Success(props) {
   if (!window.has_mss_key_specified) {
