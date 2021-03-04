@@ -2,8 +2,8 @@
 
 namespace MailPoet\Segments\DynamicSegments;
 
-use MailPoet\DynamicSegments\Exceptions\InvalidSegmentTypeException;
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
@@ -48,7 +48,7 @@ class FilterHandler {
         }
         return $this->wooCommerceCategory->apply($queryBuilder, $filter);
       default:
-        throw new InvalidSegmentTypeException('Invalid type', InvalidSegmentTypeException::INVALID_TYPE);
+        throw new InvalidFilterException('Invalid type', InvalidFilterException::INVALID_TYPE);
     }
   }
 }
