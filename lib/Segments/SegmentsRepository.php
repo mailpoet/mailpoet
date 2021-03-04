@@ -91,32 +91,40 @@ class SegmentsRepository extends Repository {
     return $segment;
   }
 
-  public function bulkDelete(array $ids) {
+  public function bulkDelete(array $ids, $type = SegmentEntity::TYPE_DEFAULT) {
     if (empty($ids)) {
       return 0;
     }
 
-    return $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids) {
+    return $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids, $type) {
       $subscriberSegmentTable = $entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
       $segmentTable = $entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+      $segmentFiltersTable = $entityManager->getClassMetadata(DynamicSegmentFilterEntity::class)->getTableName();
 
       $entityManager->getConnection()->executeUpdate("
          DELETE ss FROM $subscriberSegmentTable ss
          JOIN $segmentTable s ON ss.`segment_id` = s.`id`
          WHERE ss.`segment_id` IN (:ids)
-         AND s.`type` = :typeDefault
+         AND s.`type` = :type
       ", [
         'ids' => $ids,
-        'typeDefault' => SegmentEntity::TYPE_DEFAULT,
+        'type' => $type,
+      ], ['ids' => Connection::PARAM_INT_ARRAY]);
+
+      $entityManager->getConnection()->executeUpdate("
+         DELETE df FROM $segmentFiltersTable df
+         WHERE df.`segment_id` IN (:ids)
+      ", [
+        'ids' => $ids,
       ], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       return $entityManager->getConnection()->executeUpdate("
          DELETE s FROM $segmentTable s
          WHERE s.`id` IN (:ids)
-         AND s.`type` = :typeDefault
+         AND s.`type` = :type
       ", [
         'ids' => $ids,
-        'typeDefault' => SegmentEntity::TYPE_DEFAULT,
+        'type' => $type,
       ], ['ids' => Connection::PARAM_INT_ARRAY]);
     });
   }
