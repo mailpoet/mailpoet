@@ -1,23 +1,23 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import HideScreenOptions from '../../common/hide_screen_options/hide_screen_options.tsx';
-import Steps from '../../common/steps/steps.tsx';
+import HideScreenOptions from '../../common/hide_screen_options/hide_screen_options';
+import Steps from '../../common/steps/steps';
 
-export const mapPathToSteps = (location) => {
+export const mapPathToSteps = (location: Location): number|null => {
   const stepsMap = [
     ['/new/.+', 1],
     ['/template/.+', 2],
     ['/send/.+', 4],
   ];
 
-  if (location.search.match(/page=mailpoet-newsletter-editor/)) {
+  if (location.search.match(/page=mailpoet-newsletter-editor/g)) {
     return 3;
   }
 
   let stepNumber = null;
 
   stepsMap.forEach(([regex, step]) => {
-    if (location.hash.match(new RegExp(`^#${regex}`)) || location.pathname.match(new RegExp(`^${regex}`))) {
+    if ((new RegExp(`^#${regex}`)).exec(location.hash) || (new RegExp(`^${regex}`)).exec(location.pathname)) {
       stepNumber = step;
     }
   });
@@ -25,7 +25,7 @@ export const mapPathToSteps = (location) => {
   return stepNumber;
 };
 
-const getEmailTypeTitle = (emailType) => {
+const getEmailTypeTitle = (emailType: string): string => {
   const typeMap = {
     standard: MailPoet.I18n.t('stepNameTypeStandard'),
     welcome: MailPoet.I18n.t('stepNameTypeWelcome'),
@@ -36,7 +36,11 @@ const getEmailTypeTitle = (emailType) => {
   return typeMap[emailType] || MailPoet.I18n.t('stepNameTypeStandard');
 };
 
-const stepsListingHeading = (step, emailTypeTitle, automationId) => (
+const stepsListingHeading = (
+  step: number,
+  emailTypeTitle: string,
+  automationId: string
+): JSX.Element => (
   <div className="mailpoet-newsletter-listing-heading-wrapper" data-automation-id={automationId}>
     <HideScreenOptions />
     <Steps count={4} current={step} titles={[emailTypeTitle, MailPoet.I18n.t('stepNameTemplate'), MailPoet.I18n.t('stepNameDesign'), MailPoet.I18n.t('stepNameSend')]} />
@@ -49,7 +53,7 @@ const ListingHeadingSteps = ({
   emailType,
   location,
   automationId,
-}) => {
+}): JSX.Element => {
   const stepNumber = step || mapPathToSteps(location);
   const emailTypeTitle = getEmailTypeTitle(emailType);
   if (stepNumber !== null) {
