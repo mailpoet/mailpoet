@@ -10,13 +10,28 @@ type Props = {
   onFinish: () => void;
   subscribersCount: number;
   mailpoetAccountUrl: string;
+  newsletter: {
+    status: string;
+    type: string;
+  };
 };
+
+function getHeader(newsletterType: string): string {
+  const typeMap = {
+    standard: MailPoet.I18n.t('congratulationsMSSPitchHeader'),
+    welcome: MailPoet.I18n.t('congratulationsMSSPitchHeaderAutomated'),
+    notification: MailPoet.I18n.t('congratulationsMSSPitchHeaderAutomated'),
+    woocommerce: MailPoet.I18n.t('congratulationsMSSPitchHeaderAutomated'),
+  };
+
+  return typeMap[newsletterType] || MailPoet.I18n.t('congratulationsMSSPitchHeaderAutomated');
+}
 
 function PitchMss(props: Props): JSX.Element {
   const [isClosing, setIsClosing] = useState(false);
   return (
     <>
-      <Heading level={1}>{MailPoet.I18n.t('congratulationsMSSPitchHeader')}</Heading>
+      <Heading level={1}>{getHeader(props.newsletter.type)}</Heading>
       <WelcomeWizardStepLayoutBody
         illustrationUrl={props.MSSPitchIllustrationUrl}
       >

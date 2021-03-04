@@ -12,6 +12,7 @@ function Success(props) {
         onFinish={props.successClicked}
         subscribersCount={props.subscribersCount}
         mailpoetAccountUrl={props.mailpoetAccountUrl}
+        newsletter={props.newsletter}
       />
     );
   }
