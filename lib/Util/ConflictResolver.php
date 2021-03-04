@@ -18,6 +18,8 @@ class ConflictResolver {
       'jetpack',
       'query-monitor',
       'wpt-tx-updater-network',
+      // WP.com styles
+      '^/_static',
     ],
     'scripts' => [
       'mailpoet',
