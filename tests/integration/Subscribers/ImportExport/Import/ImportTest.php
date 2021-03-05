@@ -2,7 +2,6 @@
 
 namespace MailPoet\Subscribers\ImportExport\Import;
 
-use DateTime;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -79,12 +78,20 @@ class ImportTest extends \MailPoetTest {
           'Smith',
           'Adam@smith.com', // capitalized to test normalization
           'France',
+          '2014-05-31 18:42:35',
+          '192.168.1.2',
+          '2014-01-06 11:42:35',
+          '192.168.2.2',
         ],
         [
           'Mary',
           'Jane',
           'mary@jane.com',
           'Brazil',
+          '2014-05-31 18:42:35',
+          '2001:0db8:0000:0000:0000:ff00:0042:8329',
+          '2014-01-06 11:42:35',
+          '2001:0db8:0000:0000:ff00:ff00:0042:8329',
         ],
       ],
       'columns' => [
@@ -92,6 +99,10 @@ class ImportTest extends \MailPoetTest {
         'last_name' => ['index' => 1],
         'email' => ['index' => 2],
         $customField->getId() => ['index' => 3],
+        'created_at' => ['index' => 4],
+        'subscribed_ip' => ['index' => 5],
+        'confirmed_at' => ['index' => 6],
+        'confirmed_ip' => ['index' => 7],
       ],
       'segments' => [
         $this->segment1->getId(),
@@ -105,6 +116,10 @@ class ImportTest extends \MailPoetTest {
       'first_name',
       'last_name',
       'email',
+      'created_at',
+      'subscribed_ip',
+      'confirmed_at',
+      'confirmed_ip',
     ];
     $this->import = $this->createImportInstance($this->testData);
     $this->subscribersData = $this->import->transformSubscribersData(
@@ -167,6 +182,66 @@ class ImportTest extends \MailPoetTest {
     expect($result)->equals($data);
   }
 
+  public function testItValidatesSubscribersConfirmedAt() {
+    // required email column
+    $data['email'] = [
+      'adam@smith.com',
+      'jane@doe.com',
+    ];
+    // invalid confirmed_at is removed from data object
+    $data['confirmed_at'] = [
+      '2014-35-31 18:42:35',
+      '2019-05-31 18:42:35',
+    ];
+    $result = $this->import->validateSubscribersData($data);
+    expect($result['confirmed_at'])->count(1);
+    expect($result['confirmed_at'][0])->equals('2019-05-31 18:42:35');
+
+    // normalize confirmed_at
+    $data['confirmed_at'] = [
+      '2020-09-17T11:11:11Z',
+      '2015-10-13T16:19:20-04:00',
+    ];
+    $result = $this->import->validateSubscribersData($data);
+    expect($result['confirmed_at'])->equals([
+      '2020-09-17 11:11:11',
+      '2015-10-13 16:19:20',
+    ]);
+  }
+
+  public function testItValidatesSubscribersConfirmedIP() {
+    // required email column
+    $data['email'] = [
+      'adam@smith.com',
+      'jane@doe.com',
+    ];
+    // invalid confirmed_ip is removed from data object
+    $data['confirmed_ip'] = [
+      '2019-05-31 18:42:35',
+      '192.68.69.32',
+    ];
+    $result = $this->import->validateSubscribersData($data);
+    expect($result['confirmed_ip'])->count(1);
+    expect($result['confirmed_ip'][0])->equals('192.68.69.32');
+
+    // invalid IPv4 confirmed_ip is removed from data object
+    $data['confirmed_ip'] = [
+      '392.68.69.32',
+      '192.68.69.32',
+    ];
+    $result = $this->import->validateSubscribersData($data);
+    expect($result['confirmed_ip'])->count(1);
+    expect($result['confirmed_ip'][0])->equals('192.68.69.32');
+
+    // normalize confirmed_at
+    $data['confirmed_ip'] = [
+      '192.68.69.32', // IPv4
+      '2001:0db8:85a3:08d3:1319:8a2e:0370:7334', //IPv6
+    ];
+    $result = $this->import->validateSubscribersData($data);
+    expect($result['confirmed_ip'])->equals($data['confirmed_ip']);
+  }
+
   public function testItThrowsErrorWhenNoValidSubscribersAreFoundDuringImport() {
     $data = [
       'subscribers' => [
@@ -217,10 +292,18 @@ class ImportTest extends \MailPoetTest {
         'last_name' => 'Walker',
         'email' => 'johnny@WaLker.com',
         'wp_user_id' => 13579,
+        'created_at' => '2020-01-01 16:32:48',
+        'subscribed_ip' => '127.0.0.1',
+        'confirmed_at' => '2020-12-31 16:32:48',
+        'confirmed_ip' => '127.1.1.1',
       ],  [
         'first_name' => 'Steve',
         'last_name' => 'Sorrow',
         'email' => 'sTeve.sorrow@exaMple.com',
+        'created_at' => '2020-01-01 16:32:48',
+        'subscribed_ip' => '127.0.0.1',
+        'confirmed_at' => '2020-12-31 16:32:48',
+        'confirmed_ip' => '127.1.1.1',
       ],
     ];
     foreach ($subscribersDataExisting as $i => $existingSubscriber) {
@@ -230,12 +313,20 @@ class ImportTest extends \MailPoetTest {
         $existingSubscriber['email'],
         null,
         null,
-        $existingSubscriber['wp_user_id'] ?? null
+        $existingSubscriber['wp_user_id'] ?? null,
+        Carbon::createFromFormat('Y-m-d H:i:s', $existingSubscriber['created_at']) ?: null,
+        $existingSubscriber['subscribed_ip'],
+        Carbon::createFromFormat('Y-m-d H:i:s', $existingSubscriber['confirmed_at']) ?: null,
+        $existingSubscriber['confirmed_ip']
       );
       $subscribersData['first_name'][] = $existingSubscriber['first_name'];
       $subscribersData['last_name'][] = $existingSubscriber['last_name'];
       $subscribersData['email'][] = strtolower($existingSubscriber['email']); // import emails are always lowercase
       $subscribersData[1][] = 'custom_field_' . $i;
+      $subscribersData['created_at'][] = $existingSubscriber['created_at'];
+      $subscribersData['subscribed_ip'][] = $existingSubscriber['subscribed_ip'];
+      $subscribersData['confirmed_at'][] = $existingSubscriber['confirmed_at'];
+      $subscribersData['confirmed_ip'][] = $existingSubscriber['confirmed_ip'];
     }
     list($existingSubscribers, $newSubscribers, $wpUsers, ) = $this->import->splitSubscribersData(
       $subscribersData
@@ -622,8 +713,12 @@ class ImportTest extends \MailPoetTest {
     string $lastName,
     string $email,
     ?string $status = null,
-    ?DateTime $lastSubscribedAt = null,
-    ?int $wpUserid = null
+    ?Carbon $lastSubscribedAt = null,
+    ?int $wpUserid = null,
+    ?Carbon $createdAt = null,
+    ?string $subscribedIp = null,
+    ?Carbon $confirmedAt = null,
+    ?string $confirmedIp = null
   ): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setFirstName($firstName);
@@ -634,6 +729,18 @@ class ImportTest extends \MailPoetTest {
     }
     if ($lastSubscribedAt) {
       $subscriber->setLastSubscribedAt($lastSubscribedAt);
+    }
+    if ($createdAt) {
+      $subscriber->setCreatedAt($createdAt);
+    }
+    if ($subscribedIp) {
+      $subscriber->setSubscribedIp($subscribedIp);
+    }
+    if ($confirmedAt) {
+      $subscriber->setConfirmedAt($confirmedAt);
+    }
+    if ($confirmedIp) {
+      $subscriber->setConfirmedIp($confirmedIp);
     }
     $subscriber->setWpUserId($wpUserid);
     $this->subscriberRepository->persist($subscriber);

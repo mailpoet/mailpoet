@@ -268,9 +268,9 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $importMenu = $import->bootstrap();
     expect(count(json_decode($importMenu['segments'], true)))
       ->equals(2);
-    // email, first_name, last_name + 1 custom field
+    // email, first_name, last_name, subscribed_ip, created_at, confirmed_ip, confirmed_at + 1 custom field
     expect(count(json_decode($importMenu['subscriberFields'], true)))
-      ->equals(4);
+      ->equals(8);
     // action, system fields, user fields
     expect(count(json_decode($importMenu['subscriberFieldsSelect2'], true)))
       ->equals(3);
