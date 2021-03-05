@@ -95,6 +95,7 @@ class DynamicSegments extends APIEndpoint {
       case InvalidFilterException::MISSING_ROLE:
         return WPFunctions::get()->__('Please select user role.', 'mailpoet');
       case InvalidFilterException::MISSING_ACTION:
+      case InvalidFilterException::INVALID_EMAIL_ACTION:
         return WPFunctions::get()->__('Please select email action.', 'mailpoet');
       case InvalidFilterException::MISSING_NEWSLETTER_ID:
         return WPFunctions::get()->__('Please select an email.', 'mailpoet');

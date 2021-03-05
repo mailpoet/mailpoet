@@ -68,6 +68,17 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
+  public function testItChecksFilterEmailActionIsSupported() {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Invalid email action');
+    $this->expectExceptionCode(InvalidFilterException::INVALID_EMAIL_ACTION);
+    $this->mapper->map([
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'newsletter_id' => 1,
+      'action' => 'unknown',
+    ]);
+  }
+
   public function testItMapsUserRoleFilter() {
     $data = [
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
