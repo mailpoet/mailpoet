@@ -16,6 +16,13 @@ class EmailAction implements Filter {
   const ACTION_CLICKED = 'clicked';
   const ACTION_NOT_CLICKED = 'notClicked';
 
+  const ALLOWED_ACTIONS = [
+    self::ACTION_OPENED,
+    self::ACTION_NOT_OPENED,
+    self::ACTION_CLICKED,
+    self::ACTION_NOT_CLICKED,
+  ];
+
   /** @var EntityManager */
   private $entityManager;
 

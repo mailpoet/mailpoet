@@ -4,6 +4,7 @@ namespace MailPoet\Segments\DynamicSegments;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
+use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 
@@ -40,8 +41,8 @@ class FilterDataMapper {
    */
   private function createEmail(array $data): DynamicSegmentFilterData {
     if (empty($data['action'])) throw new InvalidFilterException('Missing action', InvalidFilterException::MISSING_ACTION);
-    if (empty($data['action'])) throw new InvalidFilterException('Missing action', InvalidFilterException::MISSING_ACTION);
     if (empty($data['newsletter_id'])) throw new InvalidFilterException('Missing newsletter id', InvalidFilterException::MISSING_NEWSLETTER_ID);
+    if (!in_array($data['action'], EmailAction::ALLOWED_ACTIONS)) throw new InvalidFilterException('Invalid email action', InvalidFilterException::INVALID_EMAIL_ACTION);
     $filterData = [
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => $data['action'],
