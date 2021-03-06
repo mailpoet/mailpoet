@@ -6,7 +6,7 @@ import { STORE_NAME } from 'settings/store';
 import {
   Action, KeyActivationState, MssStatus, PremiumStatus,
 } from 'settings/store/types';
-import { setSettings } from './settings';
+import { setSettings, setSetting } from './settings';
 
 export function updateKeyActivationState(fields: Partial<KeyActivationState>): Action {
   return { type: 'UPDATE_KEY_ACTIVATION_STATE', fields };
@@ -70,6 +70,9 @@ export function* verifyPremiumKey(key: string) {
       code: res?.meta?.code,
     });
   }
+
+  yield setSetting(['premium', 'premium_key'], key);
+
   const pluginActive = res.meta.premium_plugin_active;
 
   let status = PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE;
