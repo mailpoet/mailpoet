@@ -3,8 +3,13 @@
 namespace MailPoet\Settings;
 
 use MailPoet\Cron\CronTrigger;
+use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class SettingsController {
 
@@ -23,10 +28,17 @@ class SettingsController {
   /** @var SettingsRepository */
   private $settingsRepository;
 
+  /** @var ScheduledTasksRepository */
+  private $tasksRepository;
+
   private static $instance;
 
-  public function __construct(SettingsRepository $settingsRepository) {
+  public function __construct(
+    SettingsRepository $settingsRepository,
+    ScheduledTasksRepository $scheduledTasksRepository
+  ) {
     $this->settingsRepository = $settingsRepository;
+    $this->tasksRepository = $scheduledTasksRepository;
   }
 
   public function get($key, $default = null) {
@@ -120,6 +132,41 @@ class SettingsController {
       $this->settingsRepository->flush();
     }
     unset($this->settings[$key]);
+  }
+
+  public function onSubscribeOldWoocommerceCustomersChange(): void {
+    $task = $this->tasksRepository->findOneBy([
+      'type' => WooCommerceSync::TASK_TYPE,
+      'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
+    ]);
+    if (!($task instanceof ScheduledTaskEntity)) {
+      $task = $this->createScheduledTask(WooCommerceSync::TASK_TYPE);
+    }
+    $datetime = Carbon::createFromTimestamp((int)WPFunctions::get()->currentTime('timestamp'));
+    $task->setScheduledAt($datetime->subMinute());
+    $this->tasksRepository->persist($task);
+    $this->tasksRepository->flush();
+  }
+
+  public function onInactiveSubscribersIntervalChange(): void {
+    $task = $this->tasksRepository->findOneBy([
+      'type' => InactiveSubscribers::TASK_TYPE,
+      'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
+    ]);
+    if (!($task instanceof ScheduledTaskEntity)) {
+      $task = $this->createScheduledTask(InactiveSubscribers::TASK_TYPE);
+    }
+    $datetime = Carbon::createFromTimestamp((int)WPFunctions::get()->currentTime('timestamp'));
+    $task->setScheduledAt($datetime->subMinute());
+    $this->tasksRepository->persist($task);
+    $this->tasksRepository->flush();
+  }
+
+  private function createScheduledTask(string $type): ScheduledTaskEntity {
+    $task = new ScheduledTaskEntity();
+    $task->setType($type);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    return $task;
   }
 
   private function ensureLoaded() {

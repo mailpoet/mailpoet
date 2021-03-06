@@ -6,17 +6,13 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\ServicesChecker;
-use MailPoet\Cron\Workers\InactiveSubscribers;
-use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Form;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
 
 class Settings extends APIEndpoint {
 
@@ -114,7 +110,7 @@ class Settings extends APIEndpoint {
     $oldInactivationInterval = $oldSettings['deactivate_subscriber_after_inactive_days'];
     $newInactivationInterval = $newSettings['deactivate_subscriber_after_inactive_days'];
     if ($oldInactivationInterval !== $newInactivationInterval) {
-      $this->onInactiveSubscribersIntervalChange();
+      $this->settings->onInactiveSubscribersIntervalChange();
     }
 
     $oldSendingMethod = $oldSettings['mta_group'];
@@ -131,40 +127,12 @@ class Settings extends APIEndpoint {
       ? $newSettings['mailpoet_subscribe_old_woocommerce_customers']['enabled']
       : '0';
     if ($oldSubscribeOldWoocommerceCustomers !== $newSubscribeOldWoocommerceCustomers) {
-      $this->onSubscribeOldWoocommerceCustomersChange();
+      $this->settings->onSubscribeOldWoocommerceCustomersChange();
     }
 
     if (!empty($newSettings['woocommerce']['use_mailpoet_editor'])) {
       $this->wcTransactionalEmails->init();
     }
-  }
-
-  private function onSubscribeOldWoocommerceCustomersChange() {
-    $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)
-      ->whereRaw('status = ?', [ScheduledTask::STATUS_SCHEDULED])
-      ->findOne();
-    if (!($task instanceof ScheduledTask)) {
-      $task = ScheduledTask::create();
-      $task->type = WooCommerceSync::TASK_TYPE;
-      $task->status = ScheduledTask::STATUS_SCHEDULED;
-    }
-    $datetime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    $task->scheduledAt = $datetime->subMinute();
-    $task->save();
-  }
-
-  private function onInactiveSubscribersIntervalChange() {
-    $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
-      ->whereRaw('status = ?', [ScheduledTask::STATUS_SCHEDULED])
-      ->findOne();
-    if (!($task instanceof ScheduledTask)) {
-      $task = ScheduledTask::create();
-      $task->type = InactiveSubscribers::TASK_TYPE;
-      $task->status = ScheduledTask::STATUS_SCHEDULED;
-    }
-    $datetime = Carbon::createFromTimestamp((int)WPFunctions::get()->currentTime('timestamp'));
-    $task->scheduledAt = $datetime->subMinute();
-    $task->save();
   }
 
   private function onMSSActivate($newSettings) {
