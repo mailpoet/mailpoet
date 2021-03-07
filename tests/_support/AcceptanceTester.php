@@ -2,7 +2,8 @@
 
 use Facebook\WebDriver\Exception\UnrecognizedExceptionException;
 use Facebook\WebDriver\WebDriverKeys;
-use MailPoet\Models\Form as FormModel;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -164,10 +165,13 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->id", '--title=Subscribe to Our Newsletter']);
 
     // subscribe
+    /** @var SettingsController $settingsController */
+    $settingsController = ContainerWrapper::getInstance()->get(SettingsController::class);
+
     $i->amOnUrl(self::WP_URL);
     $i->fillField('[data-automation-id="form_email"]', 'subscriber@example.com');
     $i->click('[data-automation-id="subscribe-submit-button"]');
-    $i->waitForText(FormModel::getDefaultSuccessMessage(), 30, '.mailpoet_validate_success');
+    $i->waitForText($settingsController->getDefaultSuccessMessage(), 30, '.mailpoet_validate_success');
     $i->seeNoJSErrors();
   }
 

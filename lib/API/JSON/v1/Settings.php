@@ -7,7 +7,6 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\Form;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -76,7 +75,7 @@ class Settings extends APIEndpoint {
 
       $this->authorizedEmailsController->onSettingsSave($settings);
       if ($signupConfirmation !== $this->settings->get('signup_confirmation.enabled')) {
-        Form::updateSuccessMessages();
+        $this->settings->updateSuccessMessages();
       }
       return $this->successResponse($this->settings->getAll());
     }
