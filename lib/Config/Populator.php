@@ -13,7 +13,6 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\Form;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
@@ -664,7 +663,7 @@ class Populator {
     if (version_compare($this->settings->get('db_version', '3.23.2'), '3.23.1', '>')) {
       return;
     }
-    Form::updateSuccessMessages();
+    $this->settings->updateSuccessMessages();
   }
 
   private function enableStatsNotificationsForAutomatedEmails() {

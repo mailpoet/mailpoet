@@ -153,7 +153,7 @@ class FormTest extends \MailPoetTest {
       'settings' => ['success_message' => 'Thanks for joining us!'],
     ]);
     $this->settings->set('signup_confirmation.enabled', '0');
-    Form::updateSuccessMessages();
+    $this->settings->updateSuccessMessages();
     $default = Form::findOne($default->id);
     $custom = Form::findOne($custom->id);
     assert($default instanceof Form);
@@ -174,7 +174,7 @@ class FormTest extends \MailPoetTest {
       'settings' => ['success_message' => 'Thanks for joining us!'],
     ]);
     $this->settings->set('signup_confirmation.enabled', '1');
-    Form::updateSuccessMessages();
+    $this->settings->updateSuccessMessages();
     $default = Form::findOne($default->id);
     $custom = Form::findOne($custom->id);
     assert($default instanceof Form);

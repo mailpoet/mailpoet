@@ -2,21 +2,27 @@
 
 namespace MailPoet\Test\DataFactories;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Models\Form as FormModel;
+use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Carbon\Carbon;
 
 class Form {
 
+  /** @var SettingsController */
+  private $settingsController;
+
   private $data;
 
   public function __construct() {
+    $this->settingsController = ContainerWrapper::getInstance()->get(SettingsController::class);
     $this->data = [
       'name' => 'New form',
       'body' => 'a:2:{i:0;a:5:{s:2:"id";s:5:"email";s:4:"name";s:5:"Email";s:4:"type";s:4:"text";s:6:"static";b:1;s:6:"params";a:2:{s:5:"label";s:5:"Email";s:8:"required";b:1;}}i:1;a:5:{s:2:"id";s:6:"submit";s:4:"name";s:6:"Submit";s:4:"type";s:6:"submit";s:6:"static";b:1;s:6:"params";a:1:{s:5:"label";s:10:"Subscribe!";}}}',
       'settings' => [
         'on_success' => 'message',
-        'success_message' => FormModel::getDefaultSuccessMessage(),
+        'success_message' => $this->settingsController->getDefaultSuccessMessage(),
         'segments' => [2],
         'segments_selected_by' => 'admin',
       ],
@@ -125,7 +131,7 @@ class Form {
   }
 
   public function withDefaultSuccessMessage() {
-    FormModel::updateSuccessMessages();
+    $this->settingsController->updateSuccessMessages();
   }
 
   /**
