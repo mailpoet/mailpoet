@@ -1,41 +1,48 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
+import parseDate from 'date-fns/parse';
 
-const TasksListDataRow = (props) => (
-  <tr>
-    <td className="column column-primary">
-      { props.task.id }
-    </td>
-    <td className="column">
-      { props.task.type }
-    </td>
-    <td className="column">
-      { props.task.newsletter ? (
-        <a
-          href={props.task.newsletter.preview_url}
-          data-newsletter-id={props.task.newsletter.newsletter_id}
-          data-queue-id={props.task.newsletter.queue_id}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {props.task.newsletter.subject || MailPoet.I18n.t('preview')}
-        </a>
-      ) : MailPoet.I18n.t('none')}
-    </td>
-    <td className="column">
-      { props.task.priority }
-    </td>
-    { props.show_scheduled_at ? (
-      <td className="column-date">
-        <abbr>{ MailPoet.Date.format(props.task.scheduled_at * 1000) }</abbr>
+const TasksListDataRow = (props) => {
+  let scheduled = props.task.scheduled_at;
+  if (scheduled) {
+    scheduled = parseDate(scheduled, 'yyyy-MM-dd HH:mm:ss', new Date());
+  }
+  return (
+    <tr>
+      <td className="column column-primary">
+        {props.task.id}
       </td>
-    ) : null }
-    <td className="column-date">
-      <abbr>{ MailPoet.Date.format(props.task.updated_at * 1000) }</abbr>
-    </td>
-  </tr>
-);
+      <td className="column">
+        {props.task.type}
+      </td>
+      <td className="column">
+        {props.task.newsletter ? (
+          <a
+            href={props.task.newsletter.preview_url}
+            data-newsletter-id={props.task.newsletter.newsletter_id}
+            data-queue-id={props.task.newsletter.queue_id}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {props.task.newsletter.subject || MailPoet.I18n.t('preview')}
+          </a>
+        ) : MailPoet.I18n.t('none')}
+      </td>
+      <td className="column">
+        {props.task.priority}
+      </td>
+      {props.show_scheduled_at ? (
+        <td className="column-date">
+          <abbr>{`${MailPoet.Date.short(scheduled)} ${MailPoet.Date.time(scheduled)}`}</abbr>
+        </td>
+      ) : null}
+      <td className="column-date">
+        <abbr>{MailPoet.Date.format(props.task.updated_at * 1000)}</abbr>
+      </td>
+    </tr>
+  );
+};
 
 TasksListDataRow.propTypes = {
   show_scheduled_at: PropTypes.bool,
