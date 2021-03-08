@@ -62,7 +62,9 @@ class SendingTest extends \MailPoetTest {
     $this->queue->delete();
     $sendings = SendingTask::createManyFromTasks([$this->task]);
     expect($sendings)->isEmpty();
-    expect(ScheduledTask::findOne($this->task->id))->equals(false);
+    $task = ScheduledTask::findOne($this->task->id);
+    assert($task instanceof ScheduledTask);
+    expect($task->status)->equals(ScheduledTask::STATUS_INVALID);
   }
 
   public function testItCanBeCreatedFromScheduledTask() {
