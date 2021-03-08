@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.6
-Stable tag: 3.60.2
+Stable tag: 3.60.3
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.60.3 - 2021-03-08 =
+* Added: subscription consent when exporting subscribers;
+* Added: subscription consent when importing subscribers;
+* Improved: better wording on automated email activation;
+* Improved: subscriber import to skip disengaged MailChimp subscribers;
+* Fixed: shortcode which displays total subscribed subscribers.
 
 = 3.60.2 - 2021-03-01 =
 * Fixed: view in browser shortcodes when tracking is disabled;
