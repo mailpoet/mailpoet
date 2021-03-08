@@ -83,7 +83,7 @@ class State {
       'type' => $task->type,
       'priority' => (int)$task->priority,
       'updated_at' => Carbon::createFromTimeString((string)$task->updatedAt)->timestamp,
-      'scheduled_at' => $task->scheduledAt ? Carbon::createFromTimeString($task->scheduledAt)->timestamp : null,
+      'scheduled_at' => $task->scheduledAt ? $task->scheduledAt : null,
       'status' => $task->status,
       'newsletter' => (($queue instanceof SendingQueue) && ($newsletter instanceof Newsletter)) ? [
         'newsletter_id' => (int)$queue->newsletterId,
