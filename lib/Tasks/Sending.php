@@ -108,10 +108,11 @@ class Sending {
   public static function handleInvalidTask(ScheduledTask $task) {
     $loggerFactory = LoggerFactory::getInstance();
     $loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addError(
-      'invalid sending task found, deleting',
+      'invalid sending task found',
       ['task_id' => $task->id]
     );
-    $task->delete();
+    $task->status = ScheduledTask::STATUS_INVALID;
+    $task->save();
   }
 
   public static function createFromScheduledTask(ScheduledTask $task) {

@@ -24,6 +24,7 @@ class ScheduledTask extends Model {
   const STATUS_COMPLETED = ScheduledTaskEntity::STATUS_COMPLETED;
   const STATUS_SCHEDULED = ScheduledTaskEntity::STATUS_SCHEDULED;
   const STATUS_PAUSED = ScheduledTaskEntity::STATUS_PAUSED;
+  const STATUS_INVALID = ScheduledTaskEntity::STATUS_INVALID;
   const VIRTUAL_STATUS_RUNNING = ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING; // For historical reasons this is stored as null in DB
   const PRIORITY_HIGH = ScheduledTaskEntity::PRIORITY_HIGH;
   const PRIORITY_MEDIUM = ScheduledTaskEntity::PRIORITY_MEDIUM;
