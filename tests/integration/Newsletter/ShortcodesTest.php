@@ -124,6 +124,14 @@ class ShortcodesTest extends \MailPoetTest {
     expect($date->process($shortcodeDetails))->equals(date_i18n('U F', WPFunctions::get()->currentTime('timestamp')));
   }
 
+  public function testItCanProcessDateWhenNewsletterIsSent() {
+    $date = $this->diContainer->get(Date::class);
+    $newsletter = $this->_createNewsletter();
+    $newsletter->setSentAt(new \DateTimeImmutable('2017-12-31'));
+    $shortcodeDetails = ['action' => 'd'];
+    expect($date->process($shortcodeDetails, $newsletter))->equals('31');
+  }
+
   public function testItCanProcessNewsletterShortcodes() {
     $shortcodesObject = $this->shortcodesObject;
     $content =
