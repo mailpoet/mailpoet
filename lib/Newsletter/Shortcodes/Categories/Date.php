@@ -25,11 +25,19 @@ class Date implements CategoryInterface {
       'y' => 'Y',
     ];
     $wp = new WPFunctions();
+    $date = $wp->currentTime('timestamp');
+    if (
+      ($newsletter instanceof NewsletterEntity)
+      && ($newsletter->getSentAt() instanceof \DateTimeInterface)
+      && ($newsletter->getStatus() === NewsletterEntity::STATUS_SENT)
+    ) {
+      $date = $newsletter->getSentAt()->getTimestamp();
+    }
     if (!empty($actionMapping[$shortcodeDetails['action']])) {
-      return WPFunctions::get()->dateI18n($actionMapping[$shortcodeDetails['action']], $wp->currentTime('timestamp'));
+      return WPFunctions::get()->dateI18n($actionMapping[$shortcodeDetails['action']], $date);
     }
     return ($shortcodeDetails['action'] === 'custom' && $shortcodeDetails['action_argument'] === 'format') ?
-      WPFunctions::get()->dateI18n($shortcodeDetails['action_argument_value'], $wp->currentTime('timestamp')) :
+      WPFunctions::get()->dateI18n($shortcodeDetails['action_argument_value'], $date) :
       null;
   }
 }
