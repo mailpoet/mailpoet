@@ -20,10 +20,14 @@ if (logsContainer) {
       originalFrom={url.searchParams.get('from')}
       originalTo={url.searchParams.get('to')}
       originalSearch={url.searchParams.get('search')}
+      originalOffset={url.searchParams.get('offset')}
+      originalLimit={url.searchParams.get('limit')}
       onFilter={(data: FilterType): void => {
         url.searchParams.delete('from');
         url.searchParams.delete('to');
         url.searchParams.delete('search');
+        url.searchParams.delete('offset');
+        url.searchParams.delete('limit');
         Object.entries(data).forEach(([key, value]) => {
           url.searchParams.append(key, value);
         });

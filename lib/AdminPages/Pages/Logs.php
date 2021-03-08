@@ -25,6 +25,8 @@ class Logs {
     $search = isset($_GET['search']) ? $_GET['search'] : null;
     $from = isset($_GET['from']) ? $_GET['from'] : null;
     $to = isset($_GET['to']) ? $_GET['to'] : null;
+    $offset = isset($_GET['offset']) ? $_GET['offset'] : null;
+    $limit = isset($_GET['limit']) ? $_GET['limit'] : null;
     $dateFrom = (new Carbon())->subDays(7);
     if (isset($from)) {
       $dateFrom = new Carbon($from);
@@ -33,7 +35,7 @@ class Logs {
     if (isset($to)) {
       $dateTo = new Carbon($to);
     }
-    $logs = $this->logRepository->getLogs($dateFrom, $dateTo, $search);
+    $logs = $this->logRepository->getLogs($dateFrom, $dateTo, $search, $offset, $limit);
     $data = ['logs' => []];
     foreach ($logs as $log) {
       $data['logs'][] = [
