@@ -64,6 +64,8 @@ export type FilterType = {
   from?: string;
   to?: string;
   search?: string;
+  offset?: string;
+  limit?: string;
 }
 
 type ListProps = {
@@ -71,6 +73,8 @@ type ListProps = {
   originalFrom?: string;
   originalTo?: string;
   originalSearch?: string;
+  originalOffset?: string;
+  originalLimit?: string;
   onFilter: (FilterType) => void;
 }
 
@@ -80,9 +84,13 @@ export const List: React.FunctionComponent<ListProps> = ({
   originalFrom,
   originalTo,
   originalSearch,
+  originalOffset,
+  originalLimit,
 }: ListProps) => {
   const [from, setFrom] = useState(originalFrom ?? undefined);
   const [to, setTo] = useState(originalTo ?? undefined);
+  const [offset, setOffset] = useState(originalOffset ?? '');
+  const [limit, setLimit] = useState(originalLimit ?? '');
   const [search, setSearch] = useState(originalSearch || '');
 
   const dateChanged = curry((setter, value): void => {
@@ -105,6 +113,12 @@ export const List: React.FunctionComponent<ListProps> = ({
     if (to) {
       data.to = to;
     }
+    if (offset && offset.trim() !== '') {
+      data.offset = offset;
+    }
+    if (limit && limit.trim() !== '') {
+      data.limit = limit;
+    }
     if (search && search.trim() !== '') {
       data.search = search.trim();
     }
@@ -113,7 +127,6 @@ export const List: React.FunctionComponent<ListProps> = ({
 
   return (
     <div className="mailpoet-listing mailpoet-logs">
-
       <div className="mailpoet-listing-header">
         <div className="mailpoet-listing-search">
           <label htmlFor="search_input" className="screen-reader-text">
@@ -146,6 +159,34 @@ export const List: React.FunctionComponent<ListProps> = ({
             maxDate={new Date()}
             selected={to ? parseISO(to) : undefined}
             dimension="small"
+          />
+        </div>
+        <div className="mailpoet-logs-limit">
+          <label htmlFor="offset_input" className="screen-reader-text">
+            {MailPoet.I18n.t('offsetLabel')}
+          </label>
+          <Input
+            dimension="small"
+            id="offset_input"
+            name="o"
+            type="number"
+            onChange={(event): void => setOffset(event.target.value)}
+            value={offset}
+            placeholder={MailPoet.I18n.t('offsetLabel')}
+          />
+        </div>
+        <div className="mailpoet-logs-limit">
+          <label htmlFor="limit_input" className="screen-reader-text">
+            {MailPoet.I18n.t('limitLabel')}
+          </label>
+          <Input
+            dimension="small"
+            id="limit_input"
+            name="l"
+            type="number"
+            onChange={(event): void => setLimit(event.target.value)}
+            value={limit}
+            placeholder={MailPoet.I18n.t('limitLabel')}
           />
         </div>
         <Button dimension="small" onClick={filterClick}>
