@@ -58,11 +58,14 @@ class Renderer {
     }
   }
 
-  public function renderBlocks(array $blocks = [], array $formSettings = [], bool $honeypotEnabled = true): string {
+  public function renderBlocks(array $blocks = [], array $formSettings = [], bool $honeypotEnabled = true, bool $captchaEnabled = true): string {
     // add honeypot for spambots
     $html = ($honeypotEnabled) ? $this->renderHoneypot() : '';
     foreach ($blocks as $key => $block) {
-      if ($block['type'] === FormEntity::SUBMIT_BLOCK_TYPE && $this->settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA) {
+      if ($captchaEnabled
+        && $block['type'] === FormEntity::SUBMIT_BLOCK_TYPE
+        && $this->settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA
+      ) {
         $html .= $this->renderReCaptcha();
       }
       if (in_array($block['type'], [FormEntity::COLUMN_BLOCK_TYPE, FormEntity::COLUMNS_BLOCK_TYPE])) {
