@@ -13,6 +13,7 @@ use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
+use MailPoetVendor\Doctrine\ORM\QueryBuilder as ORMQueryBuilder;
 
 class SegmentSubscribersRepository {
   /** @var EntityManager */
@@ -89,11 +90,17 @@ class SegmentSubscribersRepository {
     return (int)$queryBuilder->getQuery()->getSingleScalarResult();
   }
 
-  public function getSubscribersWithoutSegmentCountQuery(): \MailPoetVendor\Doctrine\ORM\QueryBuilder {
+  public function getSubscribersWithoutSegmentCountQuery(): ORMQueryBuilder {
     $queryBuilder = $this->entityManager->createQueryBuilder();
-    return $queryBuilder
+    $queryBuilder
       ->select('COUNT(DISTINCT s) AS subscribersCount')
-      ->from(SubscriberEntity::class, 's')
+      ->from(SubscriberEntity::class, 's');
+    $this->addConstraintsForSubscribersWithoutSegment($queryBuilder);
+    return $queryBuilder;
+  }
+
+  public function addConstraintsForSubscribersWithoutSegment(ORMQueryBuilder $queryBuilder): void {
+    $queryBuilder
       ->leftJoin('s.subscriberSegments', 'ssg')
       ->leftJoin('ssg.segment', 'sg')
       ->leftJoin(SubscriberEntity::class, 's2', Join::WITH, (string)$queryBuilder->expr()->eq('s.id', 's2.id'))
