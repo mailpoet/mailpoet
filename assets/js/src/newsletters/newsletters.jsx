@@ -6,7 +6,7 @@ import {
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
 
-import NewsletterTypes from 'newsletters/types.jsx';
+import NewsletterTypes from 'newsletters/types';
 import NewsletterTemplates from 'newsletters/templates.jsx';
 import NewsletterSend from 'newsletters/send.jsx';
 import NewsletterCongratulate from 'newsletters/send/congratulate/congratulate.jsx';
