@@ -1,7 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 
-type Props = {
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode;
   dimension?: 'extra-small' | 'small' | 'large';
   variant?: 'light' | 'dark' | 'link' | 'link-dark';
@@ -18,7 +18,7 @@ type Props = {
   automationId?: string;
   className?: string;
   data?: string;
-};
+}
 
 const Button = ({
   children,

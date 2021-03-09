@@ -14,7 +14,7 @@ import {
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
-import NewsletterTypes from 'newsletters/types.jsx';
+import NewsletterTypes from 'newsletters/types';
 import { GlobalContext } from 'context/index.jsx';
 
 const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));

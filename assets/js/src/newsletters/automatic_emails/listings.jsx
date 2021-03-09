@@ -7,7 +7,7 @@ import Toggle from 'common/form/toggle/toggle';
 import { ScheduledIcon } from 'common/listings/newsletter_status';
 import { checkMailerStatus, addStatsCTAAction } from 'newsletters/listings/utils.jsx';
 import Statistics from 'newsletters/listings/statistics.jsx';
-import NewsletterTypes from 'newsletters/types.jsx';
+import NewsletterTypes from 'newsletters/types';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
