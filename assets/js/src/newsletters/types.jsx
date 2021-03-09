@@ -196,7 +196,7 @@ class NewsletterTypes extends React.Component {
             automationId="create_standard"
             onClick={createStandardNewsletter}
             tabIndex={0}
-            disabled={this.state.isCreating}
+            withSpinner={this.state.isCreating}
             onKeyDown={(event) => {
               if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
               ) {
@@ -219,7 +219,7 @@ class NewsletterTypes extends React.Component {
           <Button
             onClick={createWelcomeNewsletter}
             automationId="create_welcome"
-            disabled={this.state.isCreating}
+            withSpinner={this.state.isCreating}
             onKeyDown={(event) => {
               if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
               ) {
@@ -243,7 +243,7 @@ class NewsletterTypes extends React.Component {
           <Button
             automationId="create_notification"
             onClick={createNotificationNewsletter}
-            disabled={this.state.isCreating}
+            withSpinner={this.state.isCreating}
             tabIndex={0}
             onKeyDown={(event) => {
               if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
