@@ -130,15 +130,7 @@ class SubscriberListingRepository extends ListingRepository {
       return;
     }
     if ($filters['segment'] === self::FILTER_WITHOUT_LIST) {
-        $queryBuilder->leftJoin('s.subscriberSegments', 'ssg')
-        ->leftJoin('ssg.segment', 'sg')
-        ->leftJoin(SubscriberEntity::class, 's2', Join::WITH, (string)$queryBuilder->expr()->eq('s.id', 's2.id'))
-        ->leftJoin('s2.subscriberSegments', 'ssg2', Join::WITH, 'ssg2.status = :statusSubscribed AND sg.id <> ssg2.segment')
-        ->leftJoin('ssg2.segment', 'sg2', Join::WITH, (string)$queryBuilder->expr()->isNull('sg2.deletedAt'))
-        ->andWhere('s.deletedAt IS NULL')
-        ->andWhere('(ssg.status != :statusSubscribed OR ssg.id IS NULL OR sg.deletedAt IS NOT NULL)')
-        ->andWhere('sg2.id IS NULL')
-        ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
+      $this->segmentSubscribersRepository->addConstraintsForSubscribersWithoutSegment($queryBuilder);
       return;
     }
     $segment = $this->entityManager->find(SegmentEntity::class, (int)$filters['segment']);
