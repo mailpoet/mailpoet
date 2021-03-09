@@ -263,10 +263,10 @@ class SegmentTest extends \MailPoetTest {
       }
     }
     $segments = Segment::getSegmentsForExport();
-    expect($segments[0]['name'])->equals('Not in a List');
-    expect($segments[0]['subscribers'])->equals(3);
-    expect($segments[1]['name'])->equals($this->segmentData['name']);
-    expect($segments[1]['subscribers'])->equals(1);
+    expect($segments[1]['name'])->equals('Subscribers without a list');
+    expect($segments[1]['subscribers'])->equals(3);
+    expect($segments[0]['name'])->equals($this->segmentData['name']);
+    expect($segments[0]['subscribers'])->equals(1);
   }
 
   public function _after() {

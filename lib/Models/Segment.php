@@ -266,7 +266,7 @@ class Segment extends Model {
       'AND subscribers.deleted_at IS NULL ' .
       'GROUP BY segments.id) ' .
       'UNION ALL ' .
-      '(SELECT 0 as id, "' . WPFunctions::get()->__('Not in a List', 'mailpoet') . '" as name, COUNT(*) as subscribers ' .
+      '(SELECT 0 as id, "' . WPFunctions::get()->__('Subscribers without a list', 'mailpoet') . '" as name, COUNT(*) as subscribers ' .
       'FROM ' . MP_SUBSCRIBERS_TABLE . ' subscribers ' .
       'LEFT JOIN ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation on relation.subscriber_id = subscribers.id ' .
       'WHERE relation.subscriber_id is NULL ' .
