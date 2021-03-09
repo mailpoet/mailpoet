@@ -7,6 +7,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
@@ -282,5 +283,13 @@ class SubscribersRepository extends Repository {
     ->andWhere('s.deletedAt IS NOT NULL')
     ->setParameter('emails', $emails)
     ->getQuery()->getResult();
+  }
+
+  public function getCurrentWPUser(): ?SubscriberEntity {
+    $wpUser = WPFunctions::get()->wpGetCurrentUser();
+    if (empty($wpUser->ID)) {
+      return null; // Don't look up a subscriber for guests
+    }
+    return $this->findOneBy(['wpUserId' => $wpUser->ID]);
   }
 }
