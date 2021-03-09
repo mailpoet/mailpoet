@@ -14,9 +14,11 @@ interface ExportWindow extends Window {
   }>;
   subscriberFieldsSelect2: Array<{
     name: string;
+    text: string; // Required select2 property
     children: Array<{
       id: string;
       name: string;
+      text: string; // Required select2 property
       type: string | null;
       custom: boolean;
       params: object;
@@ -112,6 +114,13 @@ jQuery(document).ready(() => {
 
   window.segments.forEach((item) => {
     segmentsContainerElement.append(jQuery('<option></option>').attr('value', item.id).text(item.name));
+  });
+  // Select2 requires the property text, then we fill it with name
+  window.subscriberFieldsSelect2.forEach((group) => {
+    group.text = group.name; // eslint-disable-line no-param-reassign
+    group.children.forEach((item) => {
+      item.text = item.name; // eslint-disable-line no-param-reassign
+    });
   });
   renderSegmentsAndFields(segmentsContainerElement, window.segments);
   renderSegmentsAndFields(subscriberFieldsContainerElement, window.subscriberFieldsSelect2);
