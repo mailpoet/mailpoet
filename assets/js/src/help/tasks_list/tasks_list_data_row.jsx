@@ -51,7 +51,7 @@ TasksListDataRow.propTypes = {
     type: PropTypes.string.isRequired,
     priority: PropTypes.number.isRequired,
     updated_at: PropTypes.number.isRequired,
-    scheduled_at: PropTypes.number,
+    scheduled_at: PropTypes.string,
     status: PropTypes.string,
     newsletter: PropTypes.shape({
       newsletter_id: PropTypes.number.isRequired,
