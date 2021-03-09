@@ -181,7 +181,7 @@ class ImportExportRepository {
         ->setParameter('segmentName', $segment->getName());
       $filters = $segment->getDynamicFilters();
       foreach ($filters as $filter) {
-        $qb = $this->filterHandler->apply($qb, $filter);
+        $qb = $this->filterHandler->apply($qb, $filter->getFilterData());
       }
     }
 
