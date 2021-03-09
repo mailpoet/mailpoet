@@ -54,7 +54,7 @@ class SegmentsSimpleListRepository {
     $segments[] = [
       'id' => '0',
       'type' => SegmentEntity::TYPE_WITHOUT_LIST,
-      'name' => __('Not in a List', 'mailpoet'),
+      'name' => __('Subscribers without a list', 'mailpoet'),
       'subscribers' => $this->segmentsSubscriberRepository->getSubscribersWithoutSegmentCount(),
     ];
     return $segments;
