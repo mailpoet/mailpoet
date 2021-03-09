@@ -13,6 +13,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WP\DateTime;
 use MailPoetVendor\Carbon\Carbon;
 
 class ImportExportRepositoryTest extends \MailPoetTest {
@@ -189,7 +190,14 @@ class ImportExportRepositoryTest extends \MailPoetTest {
   }
 
   public function testItGetSubscribersByDefaultSegment(): void {
+    $confirmedAt = Carbon::createFromFormat(DateTime::DEFAULT_DATE_TIME_FORMAT, '2021-02-12 12:11:00');
+    assert($confirmedAt instanceof Carbon);
+    $confirmedIp = '122.122.122.122';
+    $subscribedIp = '123.123.123.123';
     $user1 = $this->createSubscriber('user1@export-test.com', 'One', 'User');
+    $user1->setConfirmedAt($confirmedAt->toDateTime());
+    $user1->setConfirmedIp($confirmedIp);
+    $user1->setSubscribedIp($subscribedIp);
     $user2 = $this->createSubscriber('user2@export-test.com', 'Two', 'User');
     $user3 = $this->createSubscriber('user3@export-test.com', 'Three', 'User');
     $segment1 = $this->createSegment('First', SegmentEntity::TYPE_DEFAULT);
@@ -204,6 +212,10 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     expect($exported[0]['last_name'])->equals('User');
     expect($exported[0]['email'])->equals('user1@export-test.com');
     expect($exported[0]['segment_name'])->equals('First');
+    expect($exported[0]['confirmed_at'])->equals($confirmedAt);
+    expect($exported[0]['created_at'])->equals($user1->getCreatedAt());
+    expect($exported[0]['confirmed_ip'])->equals($confirmedIp);
+    expect($exported[0]['subscribed_ip'])->equals($subscribedIp);
     expect($exported[1]['first_name'])->equals('Two');
     expect($exported[1]['last_name'])->equals('User');
     expect($exported[1]['email'])->equals('user2@export-test.com');

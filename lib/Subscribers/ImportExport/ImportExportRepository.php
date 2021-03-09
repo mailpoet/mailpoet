@@ -201,6 +201,9 @@ class ImportExportRepository {
         {$subscriberTable}.last_name,
         {$subscriberTable}.email,
         {$subscriberTable}.subscribed_ip,
+        {$subscriberTable}.confirmed_at,
+        {$subscriberTable}.confirmed_ip,
+        {$subscriberTable}.created_at,
         {$subscriberTable}.status AS global_status,
         {$subscriberSegmentTable}.status AS list_status
       ")
