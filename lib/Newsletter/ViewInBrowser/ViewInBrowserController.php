@@ -76,7 +76,7 @@ class ViewInBrowserController {
       return null;
     }
 
-    $subscriber = Subscriber::findOne($data['subscriber_id']) ?: null;
+    $subscriber = $this->subscribersRepository->findOneById($data['subscriber_id']);
     if (!$subscriber) {
       return null;
     }
@@ -85,7 +85,11 @@ class ViewInBrowserController {
       throw new \InvalidArgumentException("Missing 'subscriber_token'");
     }
 
-    if (!$this->linkTokens->verifyToken($subscriber, $data['subscriber_token'])) {
+    $subscriberModel = Subscriber::findOne($subscriber->getId());
+    if (!$subscriberModel) {
+      return null;
+    }
+    if (!$this->linkTokens->verifyToken($subscriberModel, $data['subscriber_token'])) {
       throw new \InvalidArgumentException("Invalid 'subscriber_token'");
     }
     return $subscriber;

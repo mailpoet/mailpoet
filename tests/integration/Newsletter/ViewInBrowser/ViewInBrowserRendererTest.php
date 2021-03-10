@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub\Expected;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
@@ -13,6 +14,7 @@ use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Emoji;
 use MailPoetVendor\Idiorm\ORM;
@@ -30,7 +32,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
   /** @var SendingTask */
   private $sendingTask;
 
-  /** @var Subscriber */
+  /** @var SubscriberEntity */
   private $subscriber;
 
   /** @var mixed[] */
@@ -39,7 +41,11 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
   /** @var mixed[] */
   private $queueRenderedNewsletterWithoutTracking;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function _before() {
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $newsletterData = [
       'body' => json_decode(
         '{
@@ -102,17 +108,19 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     $this->newsletter = $newsletter->save();
 
     // create subscriber
-    $subscriber = Subscriber::create();
-    $subscriber->email = 'test@example.com';
-    $subscriber->firstName = 'First';
-    $subscriber->lastName = 'Last';
-    $this->subscriber = $subscriber->save();
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('test@example.com');
+    $subscriber->setFirstName('First');
+    $subscriber->setLastName('Last');
+    $this->subscribersRepository->persist($subscriber);
+    $this->subscribersRepository->flush();
+    $this->subscriber = $subscriber;
 
     // create queue
     $queue = SendingTask::create();
     $queue->newsletterId = $newsletter->id;
     $queue->newsletterRenderedBody = $this->queueRenderedNewsletterWithoutTracking;
-    $queue->setSubscribers([$subscriber->id]);
+    $queue->setSubscribers([$subscriber->getId()]);
     $this->sendingTask = $queue->save();
 
     // create newsletter link associations

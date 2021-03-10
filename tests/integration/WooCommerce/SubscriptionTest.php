@@ -10,6 +10,7 @@ use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -49,8 +50,9 @@ class SubscriptionTest extends \MailPoetTest {
         },
       ]
     );
+    $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
-    $this->subscription = new Subscription($this->settings, $this->confirmationEmailMailer, $wp, $wcHelper);
+    $this->subscription = new Subscription($this->settings, $this->confirmationEmailMailer, $wp, $wcHelper, $subscribersRepository);
     $this->wcSegment = Segment::getWooCommerceSegment();
     $this->wpSegment = $this->diContainer->get(WP::class);
 

@@ -3,11 +3,13 @@
 namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub\Expected;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -15,10 +17,16 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   /** @var ViewInBrowserController */
   private $viewInBrowserController;
 
+  /** @var LinkTokens */
+  private $linkTokens;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   /** @var Newsletter */
   private $newsletter;
 
-  /** @var Subscriber */
+  /** @var SubscriberEntity */
   private $subscriber;
 
   /** @var SendingTask */
@@ -28,38 +36,43 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   private $browserPreviewData;
 
   public function _before() {
+    // instantiate class
+    $this->viewInBrowserController = $this->diContainer->get(ViewInBrowserController::class);
+    $this->linkTokens = $this->diContainer->get(LinkTokens::class);
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+
     // create newsletter
     $newsletter = Newsletter::create();
     $newsletter->type = 'type';
     $this->newsletter = $newsletter->save();
 
     // create subscriber
-    $subscriber = Subscriber::create();
-    $subscriber->email = 'test@example.com';
-    $subscriber->firstName = 'First';
-    $subscriber->lastName = 'Last';
-    $this->subscriber = $subscriber->save();
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('test@example.com');
+    $subscriber->setFirstName('First');
+    $subscriber->setLastName('Last');
+    $this->subscribersRepository->persist($subscriber);
+    $this->subscribersRepository->flush();
+    $this->subscriber = $subscriber;
 
     // create task & queue
     $sendingTask = SendingTask::create();
     $sendingTask->newsletterId = $newsletter->id;
-    $sendingTask->setSubscribers([$subscriber->id]);
-    $sendingTask->updateProcessedSubscribers([$subscriber->id]);
+    $sendingTask->setSubscribers([$subscriber->getId()]);
+    $sendingTask->updateProcessedSubscribers([$subscriber->getId()]);
     $this->sendingTask = $sendingTask->save();
     $linkTokens = new LinkTokens;
 
     // build browser preview data
+    $subscriberModel = Subscriber::findOne($subscriber->getId());
     $this->browserPreviewData = [
       'queue_id' => $sendingTask->queue()->id,
-      'subscriber_id' => $subscriber->id,
+      'subscriber_id' => $subscriber->getId(),
       'newsletter_id' => $newsletter->id,
       'newsletter_hash' => $newsletter->hash,
-      'subscriber_token' => $linkTokens->getToken($subscriber),
+      'subscriber_token' => $linkTokens->getToken($subscriberModel),
       'preview' => false,
     ];
-
-    // instantiate class
-    $this->viewInBrowserController = $this->diContainer->get(ViewInBrowserController::class);
   }
 
   public function testItThrowsWhenDataIsMissing() {
@@ -107,41 +120,35 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
 
   public function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, Subscriber $subscriber = null, SendingQueue $queue = null) {
+      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, SubscriberEntity $subscriber = null, SendingQueue $queue = null) {
         assert($subscriber !== null); // PHPStan
         expect($subscriber)->notNull();
-        expect($subscriber->id)->equals(1);
+        expect($subscriber->getId())->equals(1);
       }),
     ]);
 
-    $viewInBrowserController = new ViewInBrowserController(
-      $this->diContainer->get(LinkTokens::class),
-      $viewInBrowserRenderer
-    );
+    $viewInBrowserController = $this->createController($viewInBrowserRenderer);
 
     $data = $this->browserPreviewData;
     unset($data['subscriber_id']);
     $data['preview'] = true;
 
-    $this->subscriber->wpUserId = 1;
-    $this->subscriber->save();
+    $this->subscriber->setWpUserId(1);
+    $this->subscribersRepository->flush();
     wp_set_current_user(1);
     $viewInBrowserController->view($data);
   }
 
   public function testItGetsQueueByQueueId() {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, Subscriber $subscriber = null, SendingQueue $queue = null) {
+      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, SubscriberEntity $subscriber = null, SendingQueue $queue = null) {
         assert($queue !== null); // PHPStan
         expect($queue)->notNull();
         expect($queue->id)->same($this->sendingTask->id);
       }),
     ]);
 
-    $viewInBrowserController = new ViewInBrowserController(
-      $this->diContainer->get(LinkTokens::class),
-      $viewInBrowserRenderer
-    );
+    $viewInBrowserController = $this->createController($viewInBrowserRenderer);
 
     $data = $this->browserPreviewData;
     $data['queueId'] = $this->sendingTask->queue()->id;
@@ -150,17 +157,14 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
 
   public function testItGetsQueueByNewsletter() {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, Subscriber $subscriber = null, SendingQueue $queue = null) {
+      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, SubscriberEntity $subscriber = null, SendingQueue $queue = null) {
         assert($queue !== null); // PHPStan
         expect($queue)->notNull();
         expect($queue->id)->same($this->sendingTask->queue()->id);
       }),
     ]);
 
-    $viewInBrowserController = new ViewInBrowserController(
-      $this->diContainer->get(LinkTokens::class),
-      $viewInBrowserRenderer
-    );
+    $viewInBrowserController = $this->createController($viewInBrowserRenderer);
 
     $data = $this->browserPreviewData;
     $data['queueId'] = null;
@@ -169,15 +173,12 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
 
   public function testItResetsQueueForWelcomeEmails() {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, Subscriber $subscriber = null, SendingQueue $queue = null) {
+      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, SubscriberEntity $subscriber = null, SendingQueue $queue = null) {
         expect($queue)->null();
       }),
     ]);
 
-    $viewInBrowserController = new ViewInBrowserController(
-      $this->diContainer->get(LinkTokens::class),
-      $viewInBrowserRenderer
-    );
+    $viewInBrowserController = $this->createController($viewInBrowserRenderer);
 
     // queue will be set to null for welcome email
     $newsletter = $this->newsletter;
@@ -188,15 +189,12 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
 
   public function testItResetsQueueForAutomaticEmailsInPreview() {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
-      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, Subscriber $subscriber = null, SendingQueue $queue = null) {
+      'render' => Expected::once(function (bool $isPreview, Newsletter $newsletter, SubscriberEntity $subscriber = null, SendingQueue $queue = null) {
         expect($queue)->null();
       }),
     ]);
 
-    $viewInBrowserController = new ViewInBrowserController(
-      $this->diContainer->get(LinkTokens::class),
-      $viewInBrowserRenderer
-    );
+    $viewInBrowserController = $this->createController($viewInBrowserRenderer);
 
     // queue will be set to null for automatic email
     $data = $this->browserPreviewData;
@@ -224,5 +222,13 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     } catch (\InvalidArgumentException $e) {
       expect($e->getMessage())->same($message);
     }
+  }
+
+  private function createController($viewInBrowserRenderer): ViewInBrowserController {
+    return new ViewInBrowserController(
+      $this->linkTokens,
+      $viewInBrowserRenderer,
+      $this->subscribersRepository
+    );
   }
 }
