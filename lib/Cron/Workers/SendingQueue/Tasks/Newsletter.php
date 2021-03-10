@@ -151,7 +151,9 @@ class Newsletter {
       return false;
     }
     // extract and save newsletter posts
-    $this->postsTask->extractAndSave($renderedNewsletter, $newsletter);
+    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+    if (!$newsletterEntity) return false;
+    $this->postsTask->extractAndSave($renderedNewsletter, $newsletterEntity);
     // update queue with the rendered and pre-processed newsletter
     $sendingTask->newsletterRenderedSubject = ShortcodesTask::process(
       $newsletter->subject,

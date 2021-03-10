@@ -2,25 +2,31 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Logging\LoggerFactory;
-use MailPoet\Models\Newsletter as NewsletterModel;
-use MailPoet\Models\NewsletterPost;
+use MailPoet\Newsletter\NewsletterPostsRepository;
 
 class Posts {
   /** @var LoggerFactory */
   private $loggerFactory;
 
+  /** @var NewsletterPostsRepository */
+  private $newsletterPostRepository;
+
   public function __construct() {
     $this->loggerFactory = LoggerFactory::getInstance();
+    $this->newsletterPostRepository = ContainerWrapper::getInstance()->get(NewsletterPostsRepository::class);
   }
 
-  public function extractAndSave($renderedNewsletter, $newsletter) {
-    if ($newsletter->type !== NewsletterModel::TYPE_NOTIFICATION_HISTORY) {
+  public function extractAndSave($renderedNewsletter, NewsletterEntity $newsletter): bool {
+    if ($newsletter->getType() !== NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
       return false;
     }
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'extract and save posts - before',
-      ['newsletter_id' => $newsletter->id]
+      ['newsletter_id' => $newsletter->getId()]
     );
     preg_match_all(
       '/data-post-id="(\d+)"/ism',
@@ -30,16 +36,21 @@ class Posts {
     if (!count($matchedPostsIds)) {
       return false;
     }
-    $newsletterId = $newsletter->parentId; // parent post notification
+    $parent = $newsletter->getParent(); // parent post notification
+    if (!$parent instanceof NewsletterEntity) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+        'parent post has not been found',
+        ['newsletter_id' => $newsletter->getId()]
+      );
+      return false;
+    }
     foreach ($matchedPostsIds as $postId) {
-      $newsletterPost = NewsletterPost::create();
-      $newsletterPost->newsletterId = $newsletterId;
-      $newsletterPost->postId = $postId;
-      $newsletterPost->save();
+      $newsletterPost = new NewsletterPostEntity($parent, $postId);
+      $this->newsletterPostRepository->persist($newsletterPost);
     }
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'extract and save posts - after',
-      ['newsletter_id' => $newsletter->id, 'matched_posts_ids' => $matchedPostsIds]
+      ['newsletter_id' => $newsletter->getId(), 'matched_posts_ids' => $matchedPostsIds]
     );
     return true;
   }
