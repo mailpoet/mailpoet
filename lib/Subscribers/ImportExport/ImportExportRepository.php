@@ -160,6 +160,7 @@ class ImportExportRepository {
 
   public function getSubscribersBatchBySegment(?SegmentEntity $segment, int $limit, int $offset = 0): array {
     $subscriberSegmentTable = $this->getTableName(SubscriberSegmentEntity::class);
+    $subscriberTable = $this->getTableName(SubscriberEntity::class);
     $segmentTable = $this->getTableName(SegmentEntity::class);
 
     $qb = $this->createSubscribersQueryBuilder($limit, $offset);
@@ -169,7 +170,12 @@ class ImportExportRepository {
       // if there are subscribers who do not belong to any segment, use
       // a CASE function to group them under "Not In Segment"
       $qb->addSelect("'" . WPFunctions::get()->__('Not In Segment', 'mailpoet') . "' AS segment_name")
-        ->andWhere("{$subscriberSegmentTable}.segment_id IS NULL");
+        ->leftJoin($subscriberTable, $subscriberTable, 's2', "{$subscriberTable}.id = s2.id")
+        ->leftJoin('s2', $subscriberSegmentTable, 'ssg2', "s2.id = ssg2.subscriber_id AND ssg2.status = :statusSubscribed AND {$segmentTable}.id <> ssg2.segment_id")
+        ->leftJoin('ssg2', $segmentTable, 'sg2', 'ssg2.segment_id = sg2.id AND sg2.deleted_at IS NULL')
+        ->andWhere("({$subscriberSegmentTable}.status != :statusSubscribed OR {$subscriberSegmentTable}.id IS NULL OR {$segmentTable}.deleted_at IS NOT NULL)")
+        ->andWhere('sg2.id IS NULL')
+        ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
     } elseif ($segment->isStatic()) {
       $qb->addSelect("{$segmentTable}.name AS segment_name")
         ->andWhere("{$subscriberSegmentTable}.segment_id = :segmentId")

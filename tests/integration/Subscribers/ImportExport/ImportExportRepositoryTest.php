@@ -247,13 +247,25 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     $user2 = $this->createSubscriber('user2@export-test.com', 'Two', 'User');
     $user3 = $this->createSubscriber('user3@export-test.com', 'Three', 'User');
     $user4 = $this->createSubscriber('user4@export-test.com', 'Four', 'User');
+    $user5 = $this->createSubscriber('user5@export-test.com', 'Five', 'User');
     $segment1 = $this->createSegment('First', SegmentEntity::TYPE_DEFAULT);
     $segment2 = $this->createSegment('Two', SegmentEntity::TYPE_DEFAULT);
+    $segment3 = $this->createSegment('Three', SegmentEntity::TYPE_DEFAULT);
+    $segment3->setDeletedAt(new \DateTime());
+    $this->entityManager->persist($segment3);
+    // Subscribed to segment, shouldn't be exported
     $this->createSubscriberSegment($user1, $segment1, SubscriberEntity::STATUS_SUBSCRIBED);
+    // A mix of subscribed and unsubscribed, shouldn't be exported
     $this->createSubscriberSegment($user3, $segment2, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->createSubscriberSegment($user3, $segment1, SubscriberEntity::STATUS_UNSUBSCRIBED);
+    // Unsubscribed from segment, should be exported
+    $this->createSubscriberSegment($user2, $segment2, SubscriberEntity::STATUS_UNSUBSCRIBED);
+    // Subscribed to trashed segment, should be exported
+    $this->createSubscriberSegment($user4, $segment3, SubscriberEntity::STATUS_SUBSCRIBED);
+    // User5 is not subscribed to any segment, should be exported
 
     $exported = $this->repository->getSubscribersBatchBySegment(null, 100);
-    expect($exported)->count(2);
+    expect($exported)->count(3);
     expect($exported[0]['first_name'])->equals('Two');
     expect($exported[0]['last_name'])->equals('User');
     expect($exported[0]['email'])->equals('user2@export-test.com');
@@ -262,6 +274,10 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     expect($exported[1]['last_name'])->equals('User');
     expect($exported[1]['email'])->equals('user4@export-test.com');
     expect($exported[1]['segment_name'])->equals('Not In Segment');
+    expect($exported[2]['first_name'])->equals('Five');
+    expect($exported[2]['last_name'])->equals('User');
+    expect($exported[2]['email'])->equals('user5@export-test.com');
+    expect($exported[2]['segment_name'])->equals('Not In Segment');
   }
 
   public function testItGetSubscribersByDynamicSegment(): void {
