@@ -25,6 +25,8 @@ chown www-data:www-data wp-content/uploads
 chmod 755 wp-content/plugins
 chmod -R 777 wp-content/uploads
 
+# disable automatic updates
+wp config set WP_AUTO_UPDATE_CORE false --raw
 
 # cleanup database
 mysqladmin --host=mysql --user=root --password=wordpress drop wordpress --force
