@@ -8,11 +8,11 @@ use Codeception\Util\Fixtures;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
+use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
-use MailPoet\Models\NewsletterPost;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
@@ -460,6 +460,6 @@ class NewsletterTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterPost::$_table);
+    $this->truncateEntity(NewsletterPostEntity::class);
   }
 }
