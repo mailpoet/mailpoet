@@ -25,13 +25,8 @@ chown www-data:www-data wp-content/uploads
 chmod 755 wp-content/plugins
 chmod -R 777 wp-content/uploads
 
-# backup original 'wp-config.php' created by WordPress image
-if [ ! -f wp-config-original.php ]; then
-  cp wp-config.php wp-config-original.php
-fi
 
-# cleanup 'wp-config.php' and database
-rm -f wp-config.php && cp wp-config-original.php wp-config.php
+# cleanup database
 mysqladmin --host=mysql --user=root --password=wordpress drop wordpress --force
 mysqladmin --host=mysql --user=root --password=wordpress create wordpress --force
 
