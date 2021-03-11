@@ -147,10 +147,10 @@ class Text {
         $list->class = 'mailpoet_paragraph';
       } else {
         $list->class = 'mailpoet_paragraph';
-        $list->style .= 'padding-top:0;padding-bottom:0;margin-top:10px;';
+        $list->style = StylesHelper::joinStyles($list->style, 'padding-top:0;padding-bottom:0;margin-top:10px;');
       }
       $list->style = StylesHelper::applyTextAlignment($list->style);
-      $list->style .= 'margin-bottom:10px;';
+      $list->style = StylesHelper::joinStyles($list->style, 'margin-bottom:10px;');
       $list->style = EHelper::escapeHtmlStyleAttr($list->style);
     }
     return $DOM->__toString();
@@ -163,7 +163,7 @@ class Text {
     if (!$headings->count()) return $html;
     foreach ($headings as $heading) {
       $heading->style = StylesHelper::applyTextAlignment($heading->style);
-      $heading->style .= 'padding:0;font-style:normal;font-weight:normal;';
+      $heading->style = StylesHelper::joinStyles($heading->style, 'padding:0;font-style:normal;font-weight:normal;');
       $heading->style = EHelper::escapeHtmlStyleAttr($heading->style);
     }
     return $DOM->__toString();

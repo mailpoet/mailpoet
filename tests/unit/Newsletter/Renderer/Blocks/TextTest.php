@@ -109,6 +109,12 @@ class TextTest extends \MailPoetUnitTest {
     expect($output)->stringContainsString('<h2 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading 2</h2>');
   }
 
+  public function testItStylesHeadingsCenter() {
+    $this->block['text'] = '<h1 style="text-align: center"><strong>Let\'s Get Started! </strong></h1>';
+    $output = (new Text)->render($this->block);
+    expect($output)->stringContainsString('<h1 style="text-align: center;padding:0;');
+  }
+
   public function testItRemovesLastLineBreak() {
     $this->block['text'] = 'hello<br />';
     $output = (new Text)->render($this->block);
