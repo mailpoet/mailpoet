@@ -113,6 +113,22 @@ class StylesHelper {
       $block . 'text-align:left;';
   }
 
+  /**
+   * Join styles and makes sure they are separated by ;
+   */
+  public static function joinStyles(?string $styles1, ?string $styles2): string {
+    if ($styles1 === null) $styles1 = '';
+    if ($styles2 === null) $styles2 = '';
+
+    $style = trim($styles1);
+    if (
+      (strlen($style) > 0)
+      && (substr($style, -1) !== ';')
+    ) $style .= ';';
+    $style .= $styles2;
+    return $style;
+  }
+
   public static function applyFontFamily($attribute, $style) {
     if ($attribute !== 'fontFamily') return $style;
     return (isset(self::$font[$style])) ?
