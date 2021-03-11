@@ -11,6 +11,8 @@ import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 import wordpressRoleFields from './dynamic_segments_filters/wordpress_role.jsx';
 import emailFields from './dynamic_segments_filters/email.jsx';
 import woocommerceFields from './dynamic_segments_filters/woocommerce.jsx';
+import SubscribersCalculator from './subscribers_calculator.ts';
+import subscribersCounter from './subscribers_counter.tsx';
 
 const messages = {
   onUpdate: () => MailPoet.Notice.success(MailPoet.I18n.t('dynamicSegmentUpdated')),
@@ -41,6 +43,11 @@ class DynamicSegmentForm extends React.Component {
     this.state = {
       item: {
         segmentType: 'email',
+        subscribersCount: {
+          loading: false,
+          count: undefined,
+          errors: undefined,
+        },
       },
       childFields: [],
       errors: undefined,
@@ -49,6 +56,7 @@ class DynamicSegmentForm extends React.Component {
     this.handleValueChange = this.handleValueChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.onItemLoad = this.onItemLoad.bind(this);
+    this.subscribersCalculator = new SubscribersCalculator();
   }
 
   onItemLoad(loadedData) {
@@ -81,6 +89,11 @@ class DynamicSegmentForm extends React.Component {
             values: getAvailableFilters(),
           },
           ...childFields,
+          {
+            name: 'counter',
+            type: 'reactComponent',
+            component: subscribersCounter,
+          },
         ],
       },
     ];
@@ -102,10 +115,46 @@ class DynamicSegmentForm extends React.Component {
     }
   }
 
+  getCount() {
+    const { item } = this.state;
+    switch (item.segmentType) {
+      case 'userRole':
+      case 'email':
+      case 'woocommerce':
+        return this.subscribersCalculator.loadCount(item);
+
+      default: return Promise.resolve();
+    }
+  }
+
   loadFields() {
     this.getChildFields().then((fields) => this.setState({
       childFields: fields,
     }));
+  }
+
+  loadCount() {
+    const { item } = this.state;
+    item.subscribersCount = {
+      loading: true,
+      count: undefined,
+      errors: undefined,
+    };
+
+    this.setState({
+      item,
+    }, () => {
+      this.getCount().then((response) => {
+        item.subscribersCount.loading = false;
+        if (response) {
+          item.subscribersCount.count = response.count;
+          item.subscribersCount.errors = response.errors;
+        }
+        this.setState({
+          item,
+        });
+      });
+    });
   }
 
   handleValueChange(e) {
@@ -118,6 +167,7 @@ class DynamicSegmentForm extends React.Component {
       item,
     });
     this.loadFields();
+    this.loadCount();
     return true;
   }
 

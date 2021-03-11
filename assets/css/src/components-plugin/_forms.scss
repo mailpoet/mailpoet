@@ -208,3 +208,14 @@ progress::-moz-progress-bar {
   margin-left: $grid-gap;
   vertical-align: middle;
 }
+
+.mailpoet-form-field {
+  .mailpoet-form-error-message {
+    color: $color-input-error;
+    font-style: italic;
+  }
+
+  .mailpoet-form-notice-message {
+    font-style: italic;
+  }
+}
