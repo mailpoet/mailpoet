@@ -12,8 +12,10 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\Handler;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
+use MailPoet\Segments\DynamicSegments\FilterDataMapper;
 use MailPoet\Segments\DynamicSegments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -38,11 +40,19 @@ class DynamicSegments extends APIEndpoint {
   /** @var SegmentSaveController */
   private $saveController;
 
+  /** @var SegmentSubscribersRepository */
+  private $segmentSubscribersRepository;
+
+  /** @var FilterDataMapper */
+  private $filterDataMapper;
+
   public function __construct(
     Handler $handler,
     DynamicSegmentsListingRepository $dynamicSegmentsListingRepository,
     DynamicSegmentsResponseBuilder $segmentsResponseBuilder,
     SegmentsRepository $segmentsRepository,
+    SegmentSubscribersRepository $segmentSubscribersRepository,
+    FilterDataMapper $filterDataMapper,
     SegmentSaveController $saveController
   ) {
     $this->listingHandler = $handler;
@@ -50,6 +60,8 @@ class DynamicSegments extends APIEndpoint {
     $this->segmentsResponseBuilder = $segmentsResponseBuilder;
     $this->segmentsRepository = $segmentsRepository;
     $this->saveController = $saveController;
+    $this->segmentSubscribersRepository = $segmentSubscribersRepository;
+    $this->filterDataMapper = $filterDataMapper;
   }
 
   public function get($data = []) {
@@ -69,6 +81,20 @@ class DynamicSegments extends APIEndpoint {
     }
 
     return $this->successResponse($this->segmentsResponseBuilder->build($segment));
+  }
+
+  public function getCount($data = []) {
+    try {
+      $filterData = $this->filterDataMapper->map($data);
+      $count = $this->segmentSubscribersRepository->getDynamicSubscribersCount($filterData);
+      return $this->successResponse([
+        'count' => $count,
+      ]);
+    } catch (InvalidFilterException $e) {
+      return $this->errorResponse([
+        Error::BAD_REQUEST => $this->getErrorString($e),
+      ], [], Response::STATUS_BAD_REQUEST);
+    }
   }
 
   public function save($data) {
