@@ -3,8 +3,10 @@
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterPostEntity;
-use MailPoet\Models\Newsletter;
+use MailPoet\Newsletter\NewsletterPostsRepository;
 
 class PostsTest extends \MailPoetTest {
 
@@ -17,10 +19,9 @@ class PostsTest extends \MailPoetTest {
   }
 
   public function testItFailsWhenNoPostsArePresent() {
-    $newsletter = (object)[
-      'id' => 1,
-      'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
-    ];
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $newsletter->setId(1);
     $renderedNewsletter = [
       'html' => 'Sample newsletter',
     ];
@@ -28,34 +29,42 @@ class PostsTest extends \MailPoetTest {
   }
 
   public function testItCanExtractAndSavePosts() {
+    $parent = new NewsletterEntity();
+    $parent->setType(NewsletterEntity::TYPE_NOTIFICATION);
+    $parent->setSubject('xx');
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    $newsletter->setSubject('xx');
+    $newsletter->setId(2);
+    $newsletter->setParent($parent);
+    $this->entityManager->persist($parent);
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
     $postId = 10;
-    $newsletter = (object)[
-      'id' => 2,
-      'parentId' => 1,
-      'type' => Newsletter::TYPE_NOTIFICATION_HISTORY,
-    ];
     $renderedNewsletter = [
       'html' => '<a data-post-id="' . $postId . '" href="#">sample post</a>',
     ];
     expect($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(true);
-    $newsletterPost = NewsletterPost::where('newsletter_id', $newsletter->parentId)
-      ->findOne();
-    assert($newsletterPost instanceof NewsletterPost);
-    expect($newsletterPost->postId)->equals($postId);
+    $newsletterPostRepository = ContainerWrapper::getInstance()->get(NewsletterPostsRepository::class);
+    $newsletterPost = $newsletterPostRepository->findOneBy(['newsletter' => $parent]);
+    expect($newsletterPost)->isInstanceOf(NewsletterPostEntity::class);
+    expect($newsletterPost->getPostId())->equals($postId);
   }
 
   public function testItDoesNotSavePostsWhenNewsletterIsNotANotificationHistory() {
     $postId = 10;
-    $newsletter = (object)[
-      'id' => 2,
-      'parentId' => 1,
-      'type' => Newsletter::TYPE_WELCOME,
-    ];
+
+    $parent = new NewsletterEntity();
+    $parent->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter->setId(2);
+    $newsletter->setParent($parent);
     $renderedNewsletter = [
       'html' => '<a data-post-id="' . $postId . '" href="#">sample post</a>',
     ];
     expect($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(false);
-    $newsletter->type = Newsletter::TYPE_STANDARD;
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
     expect($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(false);
   }
 

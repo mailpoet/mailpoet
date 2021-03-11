@@ -48,6 +48,7 @@ class Posts {
       $newsletterPost = new NewsletterPostEntity($parent, $postId);
       $this->newsletterPostRepository->persist($newsletterPost);
     }
+    $this->newsletterPostRepository->flush();
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'extract and save posts - after',
       ['newsletter_id' => $newsletter->getId(), 'matched_posts_ids' => $matchedPostsIds]
