@@ -353,7 +353,7 @@ jobs:
         default: wpcli_php_mysql_latest
       setup_command:
         type: string
-        default: source ./.circleci/setup.bash && setup php7
+        default: source ./.circleci/setup.bash && setup php7 5.6
       run_command:
         type: string
         default: ./do test:integration --xml
@@ -540,7 +540,7 @@ workflows:
           <<: *slack-fail-post-step
           <<: *only_master_and_release
           name: integration_tests_multisite
-          setup_command: source ./.circleci/setup.bash && setup php7_multisite
+          setup_command: source ./.circleci/setup.bash && setup php7_multisite 5.6
           run_command: ./do test:multisite-integration --xml
           requires:
             - unit_tests
