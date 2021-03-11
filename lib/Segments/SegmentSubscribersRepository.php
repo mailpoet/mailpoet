@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -80,6 +81,18 @@ class SegmentSubscribersRepository {
         ->andWhere("subsegment.status = :status")
         ->setParameter('status', $status);
     }
+    $statement = $this->executeQuery($queryBuilder);
+    $result = $statement->fetchColumn();
+    return (int)$result;
+  }
+
+  public function getDynamicSubscribersCount(DynamicSegmentFilterData $data): int {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $queryBuilder = $this->entityManager->getConnection()->createQueryBuilder();
+    $queryBuilder
+      ->select("COUNT(DISTINCT {$subscribersTable}.id) AS count")
+      ->from($subscribersTable, $subscribersTable);
+    $queryBuilder = $this->filterHandler->apply($queryBuilder, $data);
     $statement = $this->executeQuery($queryBuilder);
     $result = $statement->fetchColumn();
     return (int)$result;
