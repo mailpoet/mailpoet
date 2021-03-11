@@ -8,6 +8,7 @@ use Codeception\Util\Fixtures;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
@@ -17,6 +18,7 @@ use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -217,19 +219,21 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItSavesNewsletterPosts() {
+    $newsletterPostRepository = ContainerWrapper::getInstance()->get(NewsletterPostsRepository::class);
     $this->newsletter->type = Newsletter::TYPE_NOTIFICATION_HISTORY;
     $this->newsletter->parentId = $this->newsletter->id;
     $postsTask = $this->make(PostsTask::class, [
       'getAlcPostsCount' => 1,
       'loggerFactory' => $this->loggerFactory,
+      'newsletterPostRepository' => $newsletterPostRepository,
     ]);
+    $this->newsletter->save();
     $newsletterTask = new NewsletterTask(new WPFunctions, $postsTask);
     $result = $newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);
-    $newsletterPost = NewsletterPost::where('newsletter_id', $this->newsletter->id)
-      ->findOne();
-    assert($newsletterPost instanceof NewsletterPost);
+    $newsletterPost = $newsletterPostRepository->findOneBy(['newsletter' => $this->newsletter->id]);
+    expect($newsletterPost)->isInstanceOf(NewsletterPostEntity::class);
     expect($result)->notEquals(false);
-    expect($newsletterPost->postId)->equals('10');
+    expect($newsletterPost->getPostId())->equals('10');
   }
 
   public function testItUpdatesStatusAndSetsSentAtDateOnlyForStandardAndPostNotificationNewsletters() {
