@@ -34,13 +34,13 @@ class LogRepository extends Repository {
 
     if ($dateFrom instanceof \DateTimeInterface) {
       $query
-        ->andWhere('l.createdAt > :dateFrom')
-        ->setParameter('dateFrom', $dateFrom->format('Y-m-d H:i:s'));
+        ->andWhere('l.createdAt >= :dateFrom')
+        ->setParameter('dateFrom', $dateFrom->format('Y-m-d 00:00:00'));
     }
     if ($dateTo instanceof \DateTimeInterface) {
       $query
-        ->andWhere('l.createdAt < :dateTo')
-        ->setParameter('dateTo', $dateTo->format('Y-m-d H:i:s'));
+        ->andWhere('l.createdAt <= :dateTo')
+        ->setParameter('dateTo', $dateTo->format('Y-m-d 23:59:59'));
     }
     if ($search) {
       $search = Helpers::escapeSearch($search);
