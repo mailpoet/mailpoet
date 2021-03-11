@@ -25,7 +25,6 @@ $models = [
   'Newsletter',
   'NewsletterLink',
   'NewsletterLink',
-  'NewsletterPost',
   'NewsletterSegment',
   'NewsletterOption',
   'NewsletterOptionField',
