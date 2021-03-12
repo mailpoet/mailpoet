@@ -2,17 +2,16 @@
 
 namespace MailPoet\WooCommerce;
 
-use Codeception\Util\Fixtures;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class SubscriptionTest extends \MailPoetTest {
@@ -26,17 +25,23 @@ class SubscriptionTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
-  /** @var Segment */
+  /** @var SegmentEntity */
   private $wcSegment;
 
-  /** @var Subscriber */
+  /** @var SubscriberEntity */
   private $subscriber;
 
   /** @var ConfirmationEmailMailer & MockObject */
   private $confirmationEmailMailer;
 
   /** @var WP */
-  private $wpSegment;
+  private $wp;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
 
   public function _before() {
     $this->orderId = 123; // dummy
@@ -50,43 +55,43 @@ class SubscriptionTest extends \MailPoetTest {
         },
       ]
     );
-    $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
-    $this->subscription = new Subscription($this->settings, $this->confirmationEmailMailer, $wp, $wcHelper, $subscribersRepository);
-    $this->wcSegment = Segment::getWooCommerceSegment();
-    $this->wpSegment = $this->diContainer->get(WP::class);
+    $this->subscription = new Subscription($this->settings, $this->confirmationEmailMailer, $wp, $wcHelper, $this->subscribersRepository);
+    $this->wcSegment = $this->segmentsRepository->getWooCommerceSegment();
+    $this->wp = $this->diContainer->get(WP::class);
 
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->isWoocommerceUser = 1;
-    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $this->subscriber = $subscriber->save();
-
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('john.doe@example.com');
+    $subscriber->setFirstName('John');
+    $subscriber->setLastName('Doe');
+    $subscriber->setIsWoocommerceUser(true);
+    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->subscribersRepository->persist($subscriber);
+    $this->subscribersRepository->flush();
+    $this->subscriber = $subscriber;
     // back up settings
     $this->originalSettings = $this->settings->get('woocommerce');
   }
 
   public function testItDisplaysACheckedCheckboxIfCurrentUserIsSubscribed() {
-    $this->wpSegment->synchronizeUsers();
+    $this->wp->synchronizeUsers();
     $wpUsers = get_users();
     wp_set_current_user($wpUsers[0]->ID);
-    $subscriber = Subscriber::getCurrentWPUser();
-    SubscriberSegment::subscribeToSegments(
-      $subscriber,
-      [$this->wcSegment->id]
-    );
+    $subscriber = $this->subscribersRepository->getCurrentWPUser();
+    assert($subscriber instanceof SubscriberEntity);
+    $this->subscribeToSegment($subscriber, $this->wcSegment);
     expect($this->getRenderedOptinField())->stringContainsString('checked');
   }
 
   public function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsNotSubscribed() {
-    $this->wpSegment->synchronizeUsers();
+    $this->wp->synchronizeUsers();
     $wpUsers = get_users();
     wp_set_current_user($wpUsers[0]->ID);
-    $subscriber = Subscriber::getCurrentWPUser();
-    SubscriberSegment::unsubscribeFromSegments(
-      $subscriber,
-      [$this->wcSegment->id]
-    );
+    $subscriber = $this->subscribersRepository->getCurrentWPUser();
+    assert($subscriber instanceof SubscriberEntity);
+    $this->unsubscribeToSegment($subscriber, $this->wcSegment);
     expect($this->getRenderedOptinField())->stringNotContainsString('checked');
   }
 
@@ -128,48 +133,50 @@ class SubscriptionTest extends \MailPoetTest {
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
     expect($subscribed)->equals(null);
     // not a WooCommerce user
-    $this->subscriber->isWoocommerceUser = 0;
-    $this->subscriber->save();
-    $data['billing_email'] = $this->subscriber->email;
+    $this->subscriber->setIsWoocommerceUser(false);
+    $this->subscribersRepository->flush();
+    $data['billing_email'] = $this->subscriber->getEmail();
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
     expect($subscribed)->equals(null);
   }
 
   public function testItUnsubscribesIfCheckoutOptinIsDisabled() {
-    SubscriberSegment::subscribeToSegments(
-      $this->subscriber,
-      [$this->wcSegment->id]
-    );
-    $subscribedSegments = $this->subscriber->segments()->findArray();
+    $this->subscribeToSegment($this->subscriber, $this->wcSegment);
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    assert($subscriber instanceof SubscriberEntity);
+    $subscribedSegments = $subscriber->getSegments();
     expect($subscribedSegments)->count(1);
 
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, false);
-    $data['billing_email'] = $this->subscriber->email;
+    $data['billing_email'] = $this->subscriber->getEmail();
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
     expect($subscribed)->equals(false);
 
-    $subscribedSegments = $this->subscriber->segments()->findArray();
+    $subscribedSegments = $this->subscriber->getSegments();
     expect($subscribedSegments)->count(0);
   }
 
   public function testItUnsubscribesIfCheckboxIsNotChecked() {
-    SubscriberSegment::subscribeToSegments(
-      $this->subscriber,
-      [$this->wcSegment->id]
-    );
-    $subscribedSegments = $this->subscriber->segments()->findArray();
+    $this->subscribeToSegment($this->subscriber, $this->wcSegment);
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    assert($subscriber instanceof SubscriberEntity);
+    $subscribedSegments = $subscriber->getSegments();
     expect($subscribedSegments)->count(1);
 
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
-    $data['billing_email'] = $this->subscriber->email;
+    $data['billing_email'] = $this->subscriber->getEmail();
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
     expect($subscribed)->equals(false);
 
-    $subscribedSegments = $this->subscriber->segments()->findArray();
+    $subscribedSegments = $this->subscriber->getSegments();
     expect($subscribedSegments)->count(0);
 
-    $subscriber = Subscriber::where('id', $this->subscriber->id)->findOne();
-    expect($subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function testItSubscribesIfCheckboxIsChecked() {
@@ -179,42 +186,45 @@ class SubscriptionTest extends \MailPoetTest {
       ->expects($this->never())
       ->method('sendConfirmationEmail');
 
-    $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
-    $this->subscriber->save();
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->subscribersRepository->flush();
 
-    $subscribedSegments = $this->subscriber->segments()->findArray();
+    $subscribedSegments = $this->subscriber->getSegments();
     expect($subscribedSegments)->count(0);
 
     // extra segment to subscribe to
-    $segmentData = [
-      'name' => 'some name',
-      'description' => 'some description',
-    ];
-    $segment = Segment::createOrUpdate($segmentData);
-    $this->settings->set(Subscription::OPTIN_SEGMENTS_SETTING_NAME, [$segment->id]);
+    $segment = $this->segmentsRepository->createOrUpdate('some name', 'some description');
+    $this->settings->set(Subscription::OPTIN_SEGMENTS_SETTING_NAME, [$segment->getId()]);
 
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
     $_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-    $data['billing_email'] = $this->subscriber->email;
+    $data['billing_email'] = $this->subscriber->getEmail();
 
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
 
     expect($subscribed)->equals(true);
     unset($_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME]);
 
-    $subscribedSegments = $this->subscriber->segments()->findArray();
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    assert($subscriber instanceof SubscriberEntity);
+    $subscribedSegments = $subscriber->getSegments()->toArray();
     expect($subscribedSegments)->count(2);
 
-    $subscribedSegmentIds = array_column($subscribedSegments, 'id');
-    expect(in_array($this->wcSegment->id, $subscribedSegmentIds))->true();
-    expect(in_array($segment->id, $subscribedSegmentIds))->true();
+    $subscribedSegmentIds = array_map(function (SegmentEntity $segment): int {
+      return (int)$segment->getId();
+    }, $subscribedSegments);
+    expect(in_array($this->wcSegment->getId(), $subscribedSegmentIds))->true();
+    expect(in_array($segment->getId(), $subscribedSegmentIds))->true();
 
-    $subscriber = Subscriber::findOne($this->subscriber->id);
-    expect($subscriber->source)->equals(Source::WOOCOMMERCE_CHECKOUT);
-    expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($subscriber->confirmedIp)->notEmpty();
-    expect($subscriber->confirmedAt)->notEmpty();
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_CHECKOUT);
+    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    expect($subscriber->getConfirmedIp())->notEmpty();
+    expect($subscriber->getConfirmedAt())->notEmpty();
   }
 
   public function testItSendsConfirmationEmail() {
@@ -224,28 +234,47 @@ class SubscriptionTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('sendConfirmationEmailOnce');
 
-    $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
-    $this->subscriber->save();
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->subscribersRepository->flush();
 
-    $subscribedSegments = $this->subscriber->segments()->findArray();
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    assert($subscriber instanceof SubscriberEntity);
+    $subscribedSegments = $subscriber->getSegments();
     expect($subscribedSegments)->count(0);
 
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
     $_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-    $data['billing_email'] = $this->subscriber->email;
+    $data['billing_email'] = $this->subscriber->getEmail();
 
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
 
     expect($subscribed)->equals(true);
     unset($_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME]);
 
-    $subscribedSegments = $this->subscriber->segments()->findArray();
+    $this->entityManager->clear();
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    assert($subscriber instanceof SubscriberEntity);
+    $subscribedSegments = $subscriber->getSegments();
     expect($subscribedSegments)->count(1);
 
-    $subscriber = Subscriber::findOne($this->subscriber->id);
-    expect($subscriber->source)->equals(Source::WOOCOMMERCE_CHECKOUT);
-    expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_CHECKOUT);
+    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+  }
+
+  private function subscribeToSegment(SubscriberEntity $subscriber, SegmentEntity $segment): void {
+    $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->entityManager->persist($subscriberSegment);
+    $this->entityManager->flush();
+  }
+
+  private function unsubscribeToSegment(SubscriberEntity $subscriber, SegmentEntity $segment): void {
+    $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->entityManager->persist($subscriberSegment);
+    $this->entityManager->flush();
   }
 
   private function getRenderedOptinField() {
@@ -256,8 +285,9 @@ class SubscriptionTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
     // restore settings
     $this->settings->set('woocommerce', $this->originalSettings);
   }
