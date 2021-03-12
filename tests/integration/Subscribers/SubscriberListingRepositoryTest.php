@@ -212,6 +212,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->listingData['filter'] = ['segment' => $list->getId()];
     $this->listingData['limit'] = 2;
     $this->listingData['offset'] = 2;
+    $this->listingData['sort_by'] = 'id';
     $data = $this->repository->getData($this->getListingDefinition());
     expect(count($data))->equals(1);
     expect($data[0]->getEmail())->equals($wpUserEmail3);
