@@ -119,7 +119,7 @@ class NewsletterEditor {
     return [
       'id' => $subscriber->getId(),
       'wp_user_id' => $subscriber->getWpUserId(),
-      'is_woocommerce_user' => (string)$subscriber->isWPUser(), // BC compatibility
+      'is_woocommerce_user' => (string)$subscriber->getIsWoocommerceUser(), // BC compatibility
       'first_name' => $subscriber->getFirstName(),
       'last_name' => $subscriber->getLastName(),
       'email' => $subscriber->getEmail(),
