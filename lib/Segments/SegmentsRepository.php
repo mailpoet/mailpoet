@@ -9,6 +9,7 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\NotFoundException;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -23,6 +24,21 @@ class SegmentsRepository extends Repository {
 
   public function getWPUsersSegment() {
     return $this->findOneBy(['type' => SegmentEntity::TYPE_WP_USERS]);
+  }
+
+  public function getWooCommerceSegment(): SegmentEntity {
+    $segment = $this->findOneBy(['type' => SegmentEntity::TYPE_WC_USERS]);
+    if (!$segment) {
+      // create the WooCommerce customers segment
+      $segment = new SegmentEntity(
+        WPFunctions::get()->__('WooCommerce Customers', 'mailpoet'),
+        SegmentEntity::TYPE_WC_USERS,
+        WPFunctions::get()->__('This list contains all of your WooCommerce customers.', 'mailpoet')
+      );
+      $this->entityManager->persist($segment);
+      $this->entityManager->flush();
+    }
+    return $segment;
   }
 
   public function getCountsPerType(): array {
