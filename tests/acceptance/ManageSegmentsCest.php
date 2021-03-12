@@ -223,4 +223,63 @@ class ManageSegmentsCest {
     $i->click('Delete permanently');
     $i->waitForText('No segments found');
   }
+
+  public function createUserSegmentAndCheckCount(\AcceptanceTester $i) {
+    $userFactory = new User();
+    $userFactory->createUser('Test User 1', 'editor', 'test-editor' . rand(1, 100000) . '@example.com');
+    $userFactory->createUser('Test User 2', 'editor', 'test-editor' . rand(1, 100000) . '@example.com');
+    $i->wantTo('Create a new user segment');
+    $segmentTitle = 'Create Editors Dynamic Segment Test';
+    $segmentDesc = 'Lorem ipsum dolor sit amet';
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->click('[data-automation-id="new-segment"]');
+    $i->fillField(['name' => 'name'], $segmentTitle);
+    $i->fillField(['name' => 'description'], $segmentDesc);
+    $i->selectOption('form select[name=segmentType]', 'WordPress user roles');
+    $i->selectOption('form select[name=wordpressRole]', 'Editor');
+    $i->waitForText('Calculating segment size…');
+    $i->waitForText('This segment has 2 subscribers.');
+    $i->seeNoJSErrors();
+    $i->click('Save');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle, 20);
+  }
+
+  public function updateUserSegmentAndCheckCount(\AcceptanceTester $i) {
+    $segmentTitle = 'Update Authors Dynamic Segment Test';
+
+    $userFactory = new User();
+    $userFactory->createUser('Test Author 1', 'author', 'test-author' . rand(1, 100000) . '@example.com');
+    $userFactory->createUser('Test Author 2', 'author', 'test-author' . rand(1, 100000) . '@example.com');
+    $userFactory->createUser('Test Subscriber 1', 'subscriber', 'test-subscriber' . rand(1, 100000) . '@example.com');
+
+    $segmentFactory = new DynamicSegment();
+    $segment = $segmentFactory
+      ->withName($segmentTitle)
+      ->withUserRoleFilter('Author')
+      ->create();
+
+    $i->wantTo('Update a user segment');
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->getId() . '"]';
+    $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
+    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
+    $i->waitForText('This segment has 2 subscribers.');
+    $i->seeNoJSErrors();
+    $i->selectOption('form select[name=wordpressRole]', 'Subscriber');
+    $i->waitForText('This segment has 1 subscribers.');
+    $i->seeNoJSErrors();
+    $i->click('Save');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle, 20);
+  }
 }
