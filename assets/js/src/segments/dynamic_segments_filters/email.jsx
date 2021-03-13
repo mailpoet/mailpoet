@@ -2,6 +2,8 @@ import MailPoet from 'mailpoet';
 
 const loadedLinks = {};
 
+const emailActions = ['opened', 'notOpened', 'clicked', 'notClicked'];
+
 function loadLinks(formItems) {
   if (formItems.action !== 'clicked' && formItems.action !== 'notClicked') return Promise.resolve();
   if (!formItems.newsletter_id) return Promise.resolve();
@@ -32,6 +34,12 @@ function loadLinks(formItems) {
       );
     });
 }
+function validate(formItems) {
+  if (!emailActions.includes(formItems.action) || !formItems.newsletter_id) {
+    return false;
+  }
+  return true;
+}
 
 export default (formItems) => loadLinks(formItems).then((links) => {
   const basicFields = [
@@ -60,15 +68,21 @@ export default (formItems) => loadLinks(formItems).then((links) => {
     },
   ];
   if (links) {
-    return [...basicFields, {
-      name: 'link_id',
-      type: 'selection',
-      placeholder: MailPoet.I18n.t('selectLinkPlaceholder'),
-      forceSelect2: true,
-      getLabel: (link) => link.url,
-      getValue: (item) => item.id.split('-').pop(), // turn 'newsletter-123-link-456' back into 456
-      values: links,
-    }];
+    return {
+      fields: [...basicFields, {
+        name: 'link_id',
+        type: 'selection',
+        placeholder: MailPoet.I18n.t('selectLinkPlaceholder'),
+        forceSelect2: true,
+        getLabel: (link) => link.url,
+        getValue: (item) => item.id.split('-').pop(), // turn 'newsletter-123-link-456' back into 456
+        values: links,
+      }],
+      isValid: validate(formItems),
+    };
   }
-  return basicFields;
+  return {
+    fields: basicFields,
+    isValid: validate(formItems),
+  };
 });

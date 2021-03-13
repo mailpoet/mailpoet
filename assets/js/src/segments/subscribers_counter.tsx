@@ -1,22 +1,22 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 
-type SubscriberCount = {
+interface SubscriberCount {
   count?: number;
   loading?: boolean;
   errors?: string[];
 }
 
-type Item = {
+interface Item {
   subscribersCount?: SubscriberCount;
 }
 
-type Props = {
+interface Props {
   item: Item;
 }
 
 const SubscribersCounter: React.FunctionComponent<Props> = ({ item }: Props) => {
-  const subscribersCount = item.subscribersCount || {};
+  const subscribersCount = item.subscribersCount;
   if (subscribersCount === undefined) {
     return (
       <span />
@@ -52,4 +52,4 @@ const SubscribersCounter: React.FunctionComponent<Props> = ({ item }: Props) => 
   );
 };
 
-export default SubscribersCounter;
+export { SubscribersCounter };
