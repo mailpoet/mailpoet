@@ -107,6 +107,9 @@ class Subscriber extends Model {
     return (bool)$this->isWoocommerceUser;
   }
 
+  /**
+   * @deprecated Use the version in \MailPoet\Subscribers\SubscribersRepository::getCurrentWPUser
+   */
   public static function getCurrentWPUser() {
     $wpUser = WPFunctions::get()->wpGetCurrentUser();
     if (empty($wpUser->ID)) {
