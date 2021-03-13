@@ -33,6 +33,21 @@ const productsField = {
   getValue: _.property('id'),
 };
 
+const wooCommerceActions = ['purchasedCategory', 'purchasedProduct'];
+
+function validate(formItems) {
+  if (!wooCommerceActions.includes(formItems.action)) {
+    return false;
+  }
+  if (formItems.action === 'purchasedCategory' && !formItems.category_id) {
+    return false;
+  }
+  if (formItems.action === 'purchasedProduct' && !formItems.product_id) {
+    return false;
+  }
+  return true;
+}
+
 export default (formItems) => {
   const formFields = [actionsField];
   if (formItems.action === 'purchasedCategory') {
@@ -41,5 +56,8 @@ export default (formItems) => {
   if (formItems.action === 'purchasedProduct') {
     formFields.push(productsField);
   }
-  return Promise.resolve(formFields);
+  return Promise.resolve({
+    fields: formFields,
+    isValid: validate(formItems),
+  });
 };
