@@ -2,17 +2,21 @@ import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 import _ from 'underscore';
 
+function buildErrorResponse(message) {
+  return {
+    errors: [
+      {
+        message,
+      },
+    ],
+  };
+}
+
 function requestFailed(errorMessage, xhr) {
   if (xhr.responseJSON) {
     return xhr.responseJSON;
   }
-  return {
-    errors: [
-      {
-        message: errorMessage.replace('%d', xhr.status),
-      },
-    ],
-  };
+  return buildErrorResponse(errorMessage.replace('%d', xhr.status));
 }
 
 // Renew MailPoet nonce via heartbeats to keep auth
@@ -55,8 +59,8 @@ MailPoet.Ajax = {
     }
 
     // set default timeout
-    if (this.options.token === null) {
-      this.options.timeout = 0;
+    if (this.options.timeout === null) {
+      this.options.timeout = 2000;
     }
   },
   getParams: function getParams() {
@@ -90,14 +94,20 @@ MailPoet.Ajax = {
 
     // ajax request
     const deferred = jQuery.Deferred();
+    const timeout = Math.ceil(this.options.timeout / 1000); // convert milliseconds to seconds
     jQuery[method]({
       url: this.options.url,
       data: params,
       success: null,
       dataType: 'json',
       timeout: this.options.timeout,
-    }).then(deferred.resolve, (failedXhr) => {
-      const errorData = requestFailed(MailPoet.I18n.t('ajaxFailedErrorMessage'), failedXhr);
+    }).then(deferred.resolve, (failedXhr, textStatus) => {
+      let errorData;
+      if (textStatus === 'timeout') {
+        errorData = buildErrorResponse(MailPoet.I18n.t('ajaxTimeoutErrorMessage').replace('%d', timeout.toString()));
+      } else {
+        errorData = requestFailed(MailPoet.I18n.t('ajaxFailedErrorMessage'), failedXhr);
+      }
       deferred.reject(errorData);
     });
 
