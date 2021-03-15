@@ -23,7 +23,7 @@ class IntegrationTester extends \Codeception\Actor {
   use _generated\IntegrationTesterActions;
 
   public function createWordPressUser(string $email, string $role) {
-    wp_insert_user([
+    return wp_insert_user([
       'user_login' => explode('@', $email)[0],
       'user_email' => $email,
       'role' => $role,

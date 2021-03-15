@@ -115,6 +115,10 @@ class SegmentEntity {
     return $this->dynamicFilters;
   }
 
+  public function addDynamicFilter(DynamicSegmentFilterEntity $dynamicSegmentFilterEntity) {
+    $this->dynamicFilters->add($dynamicSegmentFilterEntity);
+  }
+
   public function isStatic(): bool {
     return in_array($this->getType(), [self::TYPE_DEFAULT, self::TYPE_WP_USERS, self::TYPE_WC_USERS], true);
   }
