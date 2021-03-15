@@ -171,4 +171,56 @@ class ManageSegmentsCest {
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle, 20);
   }
+
+  public function bulkTrashRestoreAndDeleteSegments(\AcceptanceTester $i) {
+    $i->wantTo('Create bulk trash restore and delete segments');
+    $segmentFactory = new DynamicSegment();
+    $segment1Name = 'Segment 1';
+    $segment2Name = 'Segment 2';
+    $segment1 = $segmentFactory
+      ->withName($segment1Name)
+      ->withUserRoleFilter('Editor')
+      ->withDeleted()
+      ->create();
+    $segment2 = $segmentFactory
+      ->withName($segment2Name)
+      ->withUserRoleFilter('Editor')
+      ->withDeleted()
+      ->create();
+
+    $i->login();
+
+    $i->wantTo('Select trashed segments one by one and bulk restore them');
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForText($segment1Name);
+    $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment1->getId() . '"]');
+    $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment2->getId() . '"]');
+    $i->waitForText('Restore');
+    $i->click('Restore');
+    $i->wantTo('Check that segments were resrored and trash filter is not present');
+    $i->waitForElementNotVisible('[data-automation-id="filters_trash"]');
+    $i->waitForText($segment1Name);
+    $i->waitForText($segment2Name);
+
+    $i->wantTo('Select all segments and move them back to trash');
+    $i->waitForElement('[data-automation-id="filters_all"]');
+    $i->waitForText($segment1Name);
+    $i->click('[data-automation-id="select_all"]');
+    $i->waitForText('Move to trash');
+    $i->click('Move to trash');
+    $i->waitForText('No segments found');
+
+    $i->wantTo('Select all segments in trash and bulk delete them permanently');
+    $i->waitForElement('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForElement('[data-automation-id="select_all"]');
+    $i->click('[data-automation-id="select_all"]');
+    $i->waitForText('Delete permanently');
+    $i->click('Delete permanently');
+    $i->waitForText('No segments found');
+  }
 }
