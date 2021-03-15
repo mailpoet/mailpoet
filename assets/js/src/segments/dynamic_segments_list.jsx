@@ -106,6 +106,14 @@ const itemActions = [
   },
 ];
 
+const bulkActions = [
+  {
+    name: 'trash',
+    label: MailPoet.I18n.t('moveToTrash'),
+    onSuccess: messages.onTrash,
+  },
+];
+
 function renderItem(item, actions) {
   return (
     <>
@@ -149,6 +157,7 @@ function DynamicSegmentList(props) {
         sort_by="created_at"
         sort_order="desc"
         item_actions={itemActions}
+        bulk_actions={bulkActions}
       />
       <p className="mailpoet_sending_methods_help help">
         <b>
