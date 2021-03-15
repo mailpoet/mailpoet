@@ -3,6 +3,7 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -16,9 +17,10 @@ class UserRole implements Filter {
     $this->entityManager = $entityManager;
   }
 
-  public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filter): QueryBuilder {
+  public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     global $wpdb;
-    $role = $filter->getParam('wordpressRole');
+    $filterData = $filter->getFilterData();
+    $role = $filterData->getParam('wordpressRole');
     if (!$role) {
       throw new InvalidFilterException('Missing role', InvalidFilterException::MISSING_ROLE);
     }
@@ -26,7 +28,7 @@ class UserRole implements Filter {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $queryBuilder->join($subscribersTable, $wpdb->users, 'wpusers', "$subscribersTable.wp_user_id = wpusers.id")
       ->join('wpusers', $wpdb->usermeta, 'wpusermeta', 'wpusers.id = wpusermeta.user_id')
-      ->andWhere("wpusermeta.meta_key = '{$wpdb->prefix}capabilities' AND wpusermeta.meta_value LIKE :role")
-      ->setParameter(':role', '%"' . $role . '"%');
+      ->andWhere("wpusermeta.meta_key = '{$wpdb->prefix}capabilities' AND wpusermeta.meta_value LIKE :role" . $filter->getId())
+      ->setParameter(':role' . $filter->getId(), '%"' . $role . '"%');
   }
 }

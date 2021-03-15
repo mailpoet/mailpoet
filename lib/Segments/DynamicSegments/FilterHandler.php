@@ -3,6 +3,7 @@
 namespace MailPoet\Segments\DynamicSegments;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
@@ -53,7 +54,7 @@ class FilterHandler {
         ->createQueryBuilder()
         ->select("DISTINCT $subscribersTable.id as inner_subscriber_id")
         ->from($subscribersTable);
-      $this->applyFilter($subscribersIdsQuery, $filter->getFilterData());
+      $this->applyFilter($subscribersIdsQuery, $filter);
       $filterSelects[] = $subscribersIdsQuery->getSQL();
       $queryBuilder->setParameters(array_merge(
         $subscribersIdsQuery->getParameters(),
@@ -64,14 +65,15 @@ class FilterHandler {
     return $queryBuilder;
   }
 
-  private function applyFilter(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filter): QueryBuilder {
-    switch ($filter->getFilterType()) {
+  private function applyFilter(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
+    $filterData = $filter->getFilterData();
+    switch ($filterData->getFilterType()) {
       case DynamicSegmentFilterData::TYPE_USER_ROLE:
         return $this->userRole->apply($queryBuilder, $filter);
       case DynamicSegmentFilterData::TYPE_EMAIL:
         return $this->emailAction->apply($queryBuilder, $filter);
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE:
-        $action = $filter->getParam('action');
+        $action = $filterData->getParam('action');
         if ($action === WooCommerceProduct::ACTION_PRODUCT) {
           return $this->wooCommerceProduct->apply($queryBuilder, $filter);
         }

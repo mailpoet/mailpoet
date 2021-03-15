@@ -3,6 +3,7 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -17,9 +18,10 @@ class WooCommerceProduct implements Filter {
     $this->entityManager = $entityManager;
   }
 
-  public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filter): QueryBuilder {
+  public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     global $wpdb;
-    $productId = (int)$filter->getParam('product_id');
+    $filterData = $filter->getFilterData();
+    $productId = (int)$filterData->getParam('product_id');
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $queryBuilder->innerJoin(
       $subscribersTable,
@@ -34,8 +36,8 @@ class WooCommerceProduct implements Filter {
       'items',
       $wpdb->prefix . 'woocommerce_order_itemmeta',
       'itemmeta',
-      "itemmeta.order_item_id=items.order_item_id AND itemmeta.meta_key='_product_id' AND itemmeta.meta_value=:product"
+      "itemmeta.order_item_id=items.order_item_id AND itemmeta.meta_key='_product_id' AND itemmeta.meta_value=:product" . $filter->getId()
     )->andWhere('postmeta.post_id NOT IN ( SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed"))'
-    )->setParameter('product', $productId);
+    )->setParameter('product' . $filter->getId(), $productId);
   }
 }

@@ -3,6 +3,7 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -27,9 +28,10 @@ class WooCommerceCategory implements Filter {
     $this->wp = $wp;
   }
 
-  public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filter): QueryBuilder {
+  public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     global $wpdb;
-    $categoryId = (int)$filter->getParam('category_id');
+    $filterData = $filter->getFilterData();
+    $categoryId = (int)$filterData->getParam('category_id');
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $queryBuilder->innerJoin(
       $subscribersTable,
