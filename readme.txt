@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.6
-Stable tag: 3.60.3
+Stable tag: 3.60.4
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.60.4 - 2021-03-15 =
+* Improved: removed captcha from manage subscription page;
+* Fixed: aligning headings to center or right in emails;
+* Fixed: searching in fields when exporting subscribers;
+* Fixed: saving settings after changing license key restores the old key sometimes;
+* Fixed: schedule emails using UTC instead site's time zone;
+* Fixed: date shortcodes were displaying the current server date in the browser instead of the newsletter sent date.
 
 = 3.60.3 - 2021-03-09 =
 * Added: subscription consent when exporting subscribers;
