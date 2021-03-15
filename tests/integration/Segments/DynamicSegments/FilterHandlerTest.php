@@ -36,10 +36,25 @@ class FilterHandlerTest extends \MailPoetTest {
     $segment = $this->getSegment('editor');
     $queryBuilder = $this->filterHandler->apply($this->getQueryBuilder(), $segment);
     $result = $queryBuilder->execute()->fetchAll();
+    expect($result)->count(2);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
     expect($subscriber1->getEmail())->equals('user-role-test1@example.com');
     expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
+  }
+
+  public function testItAppliesTwoFilters() {
+    $segment = $this->getSegment('editor');
+    $filter = new DynamicSegmentFilterData([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'wordpressRole' => 'administrator',
+    ]);
+    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filter);
+    $this->entityManager->persist($dynamicSegmentFilter);
+    $segment->addDynamicFilter($dynamicSegmentFilter);
+    $queryBuilder = $this->filterHandler->apply($this->getQueryBuilder(), $segment);
+    $result = $queryBuilder->execute()->fetchAll();
+    expect($result)->count(3);
   }
 
   private function getSegment(string $role): SegmentEntity {
