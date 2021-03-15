@@ -111,6 +111,7 @@ class Subscriber extends Model {
    * @deprecated Use the version in \MailPoet\Subscribers\SubscribersRepository::getCurrentWPUser
    */
   public static function getCurrentWPUser() {
+    trigger_error('Calling Subscriber::getCurrentWPUser() is deprecated and will be removed. Use MailPoet\Subscribers\SubscribersRepository::getCurrentWPUser(). ', E_USER_DEPRECATED);
     $wpUser = WPFunctions::get()->wpGetCurrentUser();
     if (empty($wpUser->ID)) {
       return false; // Don't look up a subscriber for guests
