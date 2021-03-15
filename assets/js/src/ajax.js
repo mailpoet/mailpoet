@@ -60,7 +60,7 @@ MailPoet.Ajax = {
 
     // set default timeout
     if (this.options.timeout === null) {
-      this.options.timeout = 2000;
+      this.options.timeout = 0;
     }
   },
   getParams: function getParams() {
