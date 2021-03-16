@@ -3,6 +3,8 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 
 class UserRoleTest extends \MailPoetTest {
@@ -47,11 +49,17 @@ class UserRoleTest extends \MailPoetTest {
       ->from($subscribersTable);
   }
 
-  private function getSegmentFilter(string $role): DynamicSegmentFilterData {
-    return new DynamicSegmentFilterData([
+  private function getSegmentFilter(string $role): DynamicSegmentFilterEntity {
+    $data = new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'wordpressRole' => $role,
     ]);
+    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
+    $this->entityManager->persist($segment);
+    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $data);
+    $this->entityManager->persist($dynamicSegmentFilter);
+    $segment->addDynamicFilter($dynamicSegmentFilter);
+    return $dynamicSegmentFilter;
   }
 
   public function _after() {

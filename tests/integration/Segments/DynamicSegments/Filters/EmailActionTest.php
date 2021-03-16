@@ -3,9 +3,11 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
@@ -177,13 +179,19 @@ class EmailActionTest extends \MailPoetTest {
       ->from($subscribersTable);
   }
 
-  private function getSegmentFilter(string $action, int $newsletterId, int $linkId = null): DynamicSegmentFilterData {
-    return new DynamicSegmentFilterData([
+  private function getSegmentFilter(string $action, int $newsletterId, int $linkId = null): DynamicSegmentFilterEntity {
+    $segmentFilterData = new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => $action,
       'newsletter_id' => $newsletterId,
       'link_id' => $linkId,
     ]);
+    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
+    $this->entityManager->persist($segment);
+    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $segmentFilterData);
+    $this->entityManager->persist($dynamicSegmentFilter);
+    $segment->addDynamicFilter($dynamicSegmentFilter);
+    return $dynamicSegmentFilter;
   }
 
   private function createSubscriber(string $email) {

@@ -12,6 +12,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 
 class FilterHandlerTest extends \MailPoetTest {
 
@@ -46,17 +47,24 @@ class FilterHandlerTest extends \MailPoetTest {
     // fetch entities
     /** @var SubscribersRepository $subscribersRepository */
     $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
-    $this->subscriber1 = $subscribersRepository->findOneBy(['email' => 'user-role-test1@example.com']);
-    $this->subscriber2 = $subscribersRepository->findOneBy(['email' => 'user-role-test2@example.com']);
+    $subscriber1 = $subscribersRepository->findOneBy(['email' => 'user-role-test1@example.com']);
+    assert($subscriber1 instanceof SubscriberEntity);
+    $this->subscriber1 = $subscriber1;
+    $subscriber2 = $subscribersRepository->findOneBy(['email' => 'user-role-test2@example.com']);
+    assert($subscriber2 instanceof SubscriberEntity);
+    $this->subscriber2 = $subscriber2;
   }
 
   public function testItAppliesFilter() {
     $segment = $this->getSegment('editor');
-    $queryBuilder = $this->filterHandler->apply($this->getQueryBuilder(), $segment);
-    $result = $queryBuilder->execute()->fetchAll();
+    $statement = $this->filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
+    assert($statement instanceof Statement);
+    $result = $statement->fetchAll();
     expect($result)->count(2);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    assert($subscriber1 instanceof SubscriberEntity);
     $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
+    assert($subscriber2 instanceof SubscriberEntity);
     expect($subscriber1->getEmail())->equals('user-role-test1@example.com');
     expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
   }
@@ -71,8 +79,9 @@ class FilterHandlerTest extends \MailPoetTest {
     $this->entityManager->persist($dynamicSegmentFilter);
     $segment->addDynamicFilter($dynamicSegmentFilter);
     $this->entityManager->flush();
-    $queryBuilder = $this->filterHandler->apply($this->getQueryBuilder(), $segment);
-    $result = $queryBuilder->execute()->fetchAll();
+    $statement = $this->filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
+    assert($statement instanceof Statement);
+    $result = $statement->fetchAll();
     expect($result)->count(3);
   }
 
@@ -96,8 +105,9 @@ class FilterHandlerTest extends \MailPoetTest {
     $this->entityManager->persist($dynamicSegmentFilter);
     $segment->addDynamicFilter($dynamicSegmentFilter);
     $this->entityManager->flush();
-    $queryBuilder = $this->filterHandler->apply($this->getQueryBuilder(), $segment);
-    $result = $queryBuilder->execute()->fetchAll();
+    $statement = $this->filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
+    assert($statement instanceof Statement);
+    $result = $statement->fetchAll();
     expect($result)->count(3);
   }
 
@@ -143,8 +153,9 @@ class FilterHandlerTest extends \MailPoetTest {
     $segment->addDynamicFilter($filterOpened);
     $this->entityManager->flush();
 
-    $queryBuilder = $this->filterHandler->apply($this->getQueryBuilder(), $segment);
-    $result = $queryBuilder->execute()->fetchAll();
+    $statement = $this->filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
+    assert($statement instanceof Statement);
+    $result = $statement->fetchAll();
     expect($result)->count(1);
   }
 

@@ -75,14 +75,23 @@ class FilterHandler {
 
     if (!isset($data['connect']) || $data['connect'] === 'or') {
       // the final query: SELECT * FROM subscribers INNER JOIN (filter_select1 UNION filter_select2) filtered_subscribers ON filtered_subscribers.inner_subscriber_id = id
-      $queryBuilder->innerJoin($subscribersTable, sprintf('(%s)', join(' UNION ', $subQueries)), 'filtered_subscribers', 'filtered_subscribers.inner_subscriber_id = id');
+      $queryBuilder->innerJoin(
+        $subscribersTable,
+        sprintf('(%s)', join(' UNION ', $subQueries)),
+        'filtered_subscribers',
+        "filtered_subscribers.inner_subscriber_id = $subscribersTable.id"
+      );
       return $queryBuilder;
     }
 
     foreach ($subQueries as $subQuery) {
       // we need a unique name for each subquery so that we can join them together in the sql query - just make sure the identifier starts with a letter, not a number
       $subqueryName = 'a' . Security::generateRandomString(5);
-      $queryBuilder->innerJoin($subscribersTable, "($subQuery)", $subqueryName, "$subqueryName.inner_subscriber_id = id");
+      $queryBuilder->innerJoin(
+        $subscribersTable,
+        "($subQuery)",
+        $subqueryName,
+        "$subqueryName.inner_subscriber_id = $subscribersTable.id");
     }
     return $queryBuilder;
   }
