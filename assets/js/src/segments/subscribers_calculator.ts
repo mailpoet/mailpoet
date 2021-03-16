@@ -18,8 +18,7 @@ interface WooCommerceFormItem extends FormItem {
 interface EmailFormItem extends FormItem {
   action?: string;
   newsletter_id?: string;
-  category_id?: string;
-  product_id?: string;
+  link_id?: string;
 }
 
 type AnyFormItem = WordpressRoleFormItem | WooCommerceFormItem | EmailFormItem;
@@ -34,7 +33,7 @@ let previousFormItem: AnyFormItem | undefined;
 let previousResult: Result | undefined;
 
 // Names of keys from interface FormItem
-const allowedItemKeys: string[] = ['wordpressRole', 'segmentType', 'action', 'newsletter_id', 'category_id', 'product_id'];
+const allowedItemKeys: string[] = ['wordpressRole', 'segmentType', 'action', 'newsletter_id', 'category_id', 'product_id', 'link_id'];
 
 function loadCount(formItem: AnyFormItem): Promise<Result | void> {
   // We don't want to use properties like name and description
