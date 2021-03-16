@@ -11,6 +11,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -61,7 +62,28 @@ class FilterHandler {
         $queryBuilder->getParameters()
       ));
     }
-    $queryBuilder->innerJoin($subscribersTable, sprintf('(%s)', join(' UNION ', $filterSelects)), 'filtered_subscribers', 'filtered_subscribers.inner_subscriber_id = id');
+    $this->joinSubqueries($queryBuilder, $segment, $filterSelects);
+    return $queryBuilder;
+  }
+
+  private function joinSubqueries(QueryBuilder $queryBuilder, SegmentEntity $segment, array $subQueries): QueryBuilder {
+    $filter = $segment->getDynamicFilters()->first();
+    if (!$filter) return $queryBuilder;
+    $filterData = $filter->getFilterData();
+    $data = $filterData->getData();
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+
+    if (!isset($data['connect']) || $data['connect'] === 'or') {
+      // the final query: SELECT * FROM subscribers INNER JOIN (filter_select1 UNION filter_select2) filtered_subscribers ON filtered_subscribers.inner_subscriber_id = id
+      $queryBuilder->innerJoin($subscribersTable, sprintf('(%s)', join(' UNION ', $subQueries)), 'filtered_subscribers', 'filtered_subscribers.inner_subscriber_id = id');
+      return $queryBuilder;
+    }
+
+    foreach ($subQueries as $subQuery) {
+      // we need a unique name for each subquery so that we can join them together in the sql query - just make sure the identifier starts with a letter, not a number
+      $subqueryName = 'a' . Security::generateRandomString(5);
+      $queryBuilder->innerJoin($subscribersTable, "($subQuery)", $subqueryName, "$subqueryName.inner_subscriber_id = id");
+    }
     return $queryBuilder;
   }
 

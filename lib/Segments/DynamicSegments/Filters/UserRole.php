@@ -2,7 +2,6 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
-use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;

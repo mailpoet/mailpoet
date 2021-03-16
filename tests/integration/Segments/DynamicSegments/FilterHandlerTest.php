@@ -4,13 +4,25 @@ namespace MailPoet\Segments\DynamicSegments;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
+use MailPoet\Subscribers\SubscribersRepository;
 
 class FilterHandlerTest extends \MailPoetTest {
 
   /** @var FilterHandler */
   private $filterHandler;
+
+  /** @var SubscriberEntity */
+  private $subscriber1;
+
+  /** @var SubscriberEntity */
+  private $subscriber2;
 
   public function _before() {
     $this->cleanWpUsers();
@@ -30,6 +42,12 @@ class FilterHandlerTest extends \MailPoetTest {
       'email' => 'user-role-test3@example.com',
       'wp_user_id' => $id,
     ]);
+
+    // fetch entities
+    /** @var SubscribersRepository $subscribersRepository */
+    $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->subscriber1 = $subscribersRepository->findOneBy(['email' => 'user-role-test1@example.com']);
+    $this->subscriber2 = $subscribersRepository->findOneBy(['email' => 'user-role-test2@example.com']);
   }
 
   public function testItAppliesFilter() {
@@ -43,7 +61,7 @@ class FilterHandlerTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
   }
 
-  public function testItAppliesTwoFilters() {
+  public function testItAppliesTwoFiltersWithoutSpecifyingConnection() {
     $segment = $this->getSegment('editor');
     $filter = new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
@@ -52,9 +70,82 @@ class FilterHandlerTest extends \MailPoetTest {
     $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filter);
     $this->entityManager->persist($dynamicSegmentFilter);
     $segment->addDynamicFilter($dynamicSegmentFilter);
+    $this->entityManager->flush();
     $queryBuilder = $this->filterHandler->apply($this->getQueryBuilder(), $segment);
     $result = $queryBuilder->execute()->fetchAll();
     expect($result)->count(3);
+  }
+
+  public function testItAppliesTwoFiltersWithOr() {
+    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
+    $this->entityManager->persist($segment);
+    $filterData = new DynamicSegmentFilterData([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'wordpressRole' => 'administrator',
+      'connect' => 'or',
+    ]);
+    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filterData);
+    $this->entityManager->persist($dynamicSegmentFilter);
+    $segment->addDynamicFilter($dynamicSegmentFilter);
+    $filterData = new DynamicSegmentFilterData([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'wordpressRole' => 'editor',
+      'connect' => 'or',
+    ]);
+    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filterData);
+    $this->entityManager->persist($dynamicSegmentFilter);
+    $segment->addDynamicFilter($dynamicSegmentFilter);
+    $this->entityManager->flush();
+    $queryBuilder = $this->filterHandler->apply($this->getQueryBuilder(), $segment);
+    $result = $queryBuilder->execute()->fetchAll();
+    expect($result)->count(3);
+  }
+
+  public function testItAppliesTwoFiltersWithAnd() {
+    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
+    $this->entityManager->persist($segment);
+    // filter user is an editor
+    $editorData = new DynamicSegmentFilterData([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'wordpressRole' => 'editor',
+      'connect' => 'and',
+    ]);
+    $filterEditor = new DynamicSegmentFilterEntity($segment, $editorData);
+    $this->entityManager->persist($filterEditor);
+    $segment->addDynamicFilter($filterEditor);
+    // filter user opened an email
+    $newsletter = new NewsletterEntity();
+    $task = new ScheduledTaskEntity();
+    $this->entityManager->persist($task);
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setTask($task);
+    $this->entityManager->persist($queue);
+    $newsletter->getQueues()->add($queue);
+    $newsletter->setSubject('newsletter 1');
+    $newsletter->setStatus('sent');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $this->entityManager->persist($newsletter);
+    $open = new StatisticsOpenEntity($newsletter, $queue, $this->subscriber1);
+    $this->entityManager->persist($open);
+    $open = new StatisticsOpenEntity($newsletter, $queue, $this->subscriber2);
+    $this->entityManager->persist($open);
+    $this->entityManager->flush();
+
+    $openedData = new DynamicSegmentFilterData([
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailAction::ACTION_OPENED,
+      'newsletter_id' => $newsletter->getId(),
+      'connect' => 'and',
+    ]);
+    $filterOpened = new DynamicSegmentFilterEntity($segment, $openedData);
+    $this->entityManager->persist($filterOpened);
+    $segment->addDynamicFilter($filterOpened);
+    $this->entityManager->flush();
+
+    $queryBuilder = $this->filterHandler->apply($this->getQueryBuilder(), $segment);
+    $result = $queryBuilder->execute()->fetchAll();
+    expect($result)->count(1);
   }
 
   private function getSegment(string $role): SegmentEntity {
@@ -84,6 +175,11 @@ class FilterHandlerTest extends \MailPoetTest {
     $this->cleanWpUsers();
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(DynamicSegmentFilterEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(StatisticsOpenEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
   }
 
   private function cleanWpUsers() {
