@@ -2,7 +2,6 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
-use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
