@@ -185,10 +185,7 @@ class ImportExportRepository {
       // So we need to use a placeholder
       $qb->addSelect(":segmentName AS segment_name")
         ->setParameter('segmentName', $segment->getName());
-      $filters = $segment->getDynamicFilters();
-      foreach ($filters as $filter) {
-        $qb = $this->filterHandler->apply($qb, $filter->getFilterData());
-      }
+      $qb = $this->filterHandler->apply($qb, $segment);
     }
 
     $statement = $qb->execute();

@@ -189,9 +189,8 @@ class SegmentSubscribersRepository {
     // For BC compatibility fetching an empty result
     if (count($filters) === 0) {
       return $queryBuilder->andWhere('0 = 1');
-    }
-    foreach ($filters as $filter) {
-      $queryBuilder = $this->filterHandler->apply($queryBuilder, $filter);
+    } elseif ($segment instanceof SegmentEntity) {
+      $queryBuilder = $this->filterHandler->apply($queryBuilder, $segment);
     }
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $queryBuilder = $queryBuilder->andWhere("$subscribersTable.deleted_at IS NULL");
