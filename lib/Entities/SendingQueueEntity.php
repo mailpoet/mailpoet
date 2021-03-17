@@ -79,7 +79,7 @@ class SendingQueueEntity {
   private $meta;
 
   /**
-   * @ORM\OneToOne(targetEntity="MailPoet\Entities\ScheduledTaskEntity")
+   * @ORM\OneToOne(targetEntity="MailPoet\Entities\ScheduledTaskEntity", fetch="EAGER")
    * @var ScheduledTaskEntity|null
    */
   private $task;

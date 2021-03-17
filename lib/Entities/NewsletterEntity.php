@@ -10,6 +10,7 @@ use MailPoet\Doctrine\EntityTraits\SafeToOneAssociationLoadTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
+use MailPoetVendor\Doctrine\Common\Collections\Collection;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
@@ -257,6 +258,25 @@ class NewsletterEntity {
    */
   public function setStatus($status) {
     $this->status = $status;
+
+    $queues = $this->getUnfinishedQueues();
+    $newTaskStatus = null;
+    $typesWithActivation = [self::TYPE_NOTIFICATION, self::TYPE_WELCOME, self::TYPE_AUTOMATIC];
+
+    if (($status === self::STATUS_DRAFT) && in_array($this->type, $typesWithActivation)) {
+      $newTaskStatus = ScheduledTaskEntity::STATUS_PAUSED;
+    }
+    if (($status === self::STATUS_ACTIVE) && in_array($this->type, $typesWithActivation)) {
+      $newTaskStatus = ScheduledTaskEntity::STATUS_SCHEDULED;
+    }
+
+    if (!$newTaskStatus) return;
+    foreach ($queues as $queue) {
+      /** @var SendingQueueEntity $queue */
+      $task = $queue->getTask();
+      if ($task === null) continue;
+      $task->setStatus($newTaskStatus);
+    }
   }
 
   /**
@@ -420,5 +440,12 @@ class NewsletterEntity {
     $criteria->orderBy(['id' => Criteria::DESC]);
     $criteria->setMaxResults(1);
     return $this->queues->matching($criteria)->first() ?: null;
+  }
+
+  private function getUnfinishedQueues(): Collection {
+    $criteria = new Criteria();
+    $expr = Criteria::expr();
+    $criteria->where($expr->neq('countToProcess', 0));
+    return $this->queues->matching($criteria);
   }
 }

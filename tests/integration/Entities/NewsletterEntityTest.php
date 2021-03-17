@@ -6,9 +6,9 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Tasks\Sending as SendingTask;
 
 class NewsletterEntityTest extends \MailPoetTest {
-  
   /** @var NewslettersRepository */
   private $newsletterRepository;
 
@@ -63,7 +63,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $optionField = $this->createOptionField(NewsletterOptionFieldEntity::NAME_EVENT);
     $newsletterOption = new NewsletterOptionEntity($newsletter, $optionField);
     $newsletterOption->setValue($optionValue);
-    
+
     $this->entityManager->persist($newsletterOption);
     $this->entityManager->flush();
     $this->entityManager->clear();
@@ -77,6 +77,58 @@ class NewsletterEntityTest extends \MailPoetTest {
     expect($newsletterOptionField)->notNull();
     expect($newsletterOption->getValue())->equals($optionValue);
     expect($newsletter->getOption(NewsletterOptionFieldEntity::NAME_SEGMENT))->null();
+  }
+
+  public function testItPausesTaskWhenPausingNewsletter() {
+    // prepare
+    $newsletter = $this->createNewsletter();
+    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter->setStatus(NewsletterEntity::STATUS_SCHEDULED);
+    $task = new ScheduledTaskEntity();
+    $task->setType(SendingTask::TASK_TYPE);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->persist($task);
+
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setCountToProcess(10);
+    $queue->setTask($task);
+    $this->entityManager->persist($queue);
+
+    $newsletter->getQueues()->add($queue);
+    $this->entityManager->flush();
+
+    // act
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+
+    // verify
+    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+  }
+
+  public function testItActivatesTaskWhenActivatingNewsletter() {
+    // prepare
+    $newsletter = $this->createNewsletter();
+    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $task = new ScheduledTaskEntity();
+    $task->setType(SendingTask::TASK_TYPE);
+    $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $this->entityManager->persist($task);
+
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setCountToProcess(10);
+    $queue->setTask($task);
+    $this->entityManager->persist($queue);
+
+    $newsletter->getQueues()->add($queue);
+    $this->entityManager->flush();
+
+    // act
+    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
+
+    // verify
+    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
   }
 
   public function _after() {
@@ -105,5 +157,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(NewsletterSegmentEntity::class);
     $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
   }
 }
