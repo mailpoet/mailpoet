@@ -166,6 +166,7 @@ class Populator {
     $this->updateLastSubscribedAt();
     $this->enableStatsNotificationsForAutomatedEmails();
     $this->updateSentUnsubscribeLinksToInstantUnsubscribeLinks();
+    $this->pauseTasksForPausedNewsletters();
 
     $this->scheduleUnsubscribeTokens();
     $this->scheduleSubscriberLinkTokens();
@@ -687,6 +688,22 @@ class Populator {
       NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
       NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE
     ));
+  }
+
+  private function pauseTasksForPausedNewsletters() {
+    if (version_compare($this->settings->get('db_version', '3.60.5'), '3.60.4', '>')) {
+      return;
+    }
+    global $wpdb;
+    $wpdb->query(
+      'UPDATE `' . ScheduledTask::$_table . '` t ' .
+      'JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` ' .
+      'JOIN `' . Newsletter::$_table . '` n ON n.`id` = q.`newsletter_id` ' .
+      'SET t.`status` = "' . ScheduledTask::STATUS_PAUSED . '" ' .
+      'WHERE ' .
+      ' t.`status` = "' . ScheduledTask::STATUS_SCHEDULED . '" ' .
+      ' AND n.`status` = "' . Newsletter::STATUS_DRAFT . '" '
+    );
   }
 
   private function addPlacementStatusToForms() {
