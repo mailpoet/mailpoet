@@ -9,6 +9,7 @@ use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\SafeToOneAssociationLoadTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoet\Util\Helpers;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\Common\Collections\Collection;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
@@ -275,6 +276,10 @@ class NewsletterEntity {
       /** @var SendingQueueEntity $queue */
       $task = $queue->getTask();
       if ($task === null) continue;
+
+      $scheduled = new Carbon($task->getScheduledAt());
+      if ($scheduled < (new Carbon())->subDays(30)) return;
+
       $task->setStatus($newTaskStatus);
     }
   }
