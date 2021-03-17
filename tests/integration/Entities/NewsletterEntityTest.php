@@ -131,6 +131,33 @@ class NewsletterEntityTest extends \MailPoetTest {
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
   }
 
+  public function testItDoesNotActivateTaskIfInTooMuchInPast() {
+    // prepare
+    $newsletter = $this->createNewsletter();
+    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $task = new ScheduledTaskEntity();
+    $task->setType(SendingTask::TASK_TYPE);
+    $task->setScheduledAt(new \DateTimeImmutable('2012-01-02 12:23:34'));
+    $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $this->entityManager->persist($task);
+
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setCountToProcess(10);
+    $queue->setTask($task);
+    $this->entityManager->persist($queue);
+
+    $newsletter->getQueues()->add($queue);
+    $this->entityManager->flush();
+
+    // act
+    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
+
+    // verify
+    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+  }
+
   public function _after() {
     $this->cleanup();
   }
