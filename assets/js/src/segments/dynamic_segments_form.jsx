@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'underscore';
 import { Link, withRouter } from 'react-router-dom';
 import MailPoet from 'mailpoet';
@@ -19,7 +19,7 @@ const messages = {
   onCreate: (data) => {
     MailPoet.Notice.success(MailPoet.I18n.t('dynamicSegmentAdded'));
     MailPoet.trackEvent('Segments > Add new', {
-      'MailPoet Free version': window.mailpoet_version,
+      'MailPoet Free version': MailPoet.version,
       type: data.segmentType || 'unknown type',
       subtype: data.action || data.wordpressRole || 'unknown subtype',
     });
@@ -37,74 +37,80 @@ function getAvailableFilters() {
   return filters;
 }
 
-class DynamicSegmentForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      item: {
-        segmentType: 'email',
-        subscribersCount: {
-          loading: false,
-          count: undefined,
-          errors: undefined,
-        },
-      },
-      childFields: [],
+const DynamicSegmentForm = ({ match, history }) => {
+  const [item, setItem] = useState({
+    segmentType: 'email',
+    subscribersCount: {
+      loading: false,
+      count: undefined,
       errors: undefined,
-      isFormValid: false,
+    },
+  });
+  const [childFields, setChildFields] = useState([]);
+  const [errors, setErrors] = useState(undefined);
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  function getCount() {
+    if (isFormValid) {
+      return loadCount(item);
+    }
+
+    return Promise.resolve();
+  }
+
+  function countLoad() {
+    item.subscribersCount = {
+      loading: true,
+      count: undefined,
+      errors: undefined,
     };
-    this.loadFields();
-    this.handleValueChange = this.handleValueChange.bind(this);
-    this.handleSave = this.handleSave.bind(this);
-    this.onItemLoad = this.onItemLoad.bind(this);
-  }
+    setItem(item);
 
-  handleValueChange(e) {
-    const { item } = this.state;
-    const field = e.target.name;
-
-    item[field] = e.target.value;
-
-    this.setState({
-      item,
-    });
-    this.loadFields();
-    return true;
-  }
-
-  handleSave(e) {
-    const { item } = this.state;
-    const { history, match } = this.props;
-
-    e.preventDefault();
-    this.setState({ errors: undefined });
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'dynamic_segments',
-      action: 'save',
-      data: item,
-    }).done(() => {
-      history.push('/segments');
-
-      if (match.params.id !== undefined) {
-        messages.onUpdate();
-      } else {
-        messages.onCreate(item);
+    getCount().then((response) => {
+      item.subscribersCount.loading = false;
+      if (response) {
+        item.subscribersCount.count = response.count;
+        item.subscribersCount.errors = response.errors;
       }
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.setState({ errors: response.errors });
-      }
+      setItem(item);
     });
   }
 
-  onItemLoad(loadedData) {
-    const item = _.mapObject(loadedData, (val) => (_.isNull(val) ? '' : val));
-    this.setState({ item }, this.loadFields);
+  function getChildFields() {
+    switch (item.segmentType) {
+      case 'userRole':
+        return wordpressRoleFields(item);
+
+      case 'email':
+        return emailFields(item);
+
+      case 'woocommerce':
+        return woocommerceFields(item);
+
+      default: return [];
+    }
   }
 
-  getFields() {
-    const { childFields } = this.state;
+  function loadFields() {
+    getChildFields()
+      .then((response) => {
+        setChildFields(response.fields);
+        setIsFormValid(response.isValid);
+      })
+      .then(() => countLoad());
+  }
+
+  useEffect(() => {
+    loadFields();
+  });
+
+
+  function onItemLoad(loadedData) {
+    setItem(_.mapObject(loadedData, (val) => (_.isNull(val) ? '' : val)));
+    loadFields();
+  }
+
+  function getFields() {
     return [
       {
         name: 'name',
@@ -138,101 +144,63 @@ class DynamicSegmentForm extends React.Component {
     ];
   }
 
-  getChildFields() {
-    const { item } = this.state;
-    switch (item.segmentType) {
-      case 'userRole':
-        return wordpressRoleFields(item);
+  function handleValueChange(e) {
+    const field = e.target.name;
 
-      case 'email':
-        return emailFields(item);
+    item[field] = e.target.value;
 
-      case 'woocommerce':
-        return woocommerceFields(item);
-
-      default: return [];
-    }
+    setItem(item);
+    loadFields();
+    return true;
   }
 
-  getCount() {
-    if (this.state.isFormValid) {
-      const { item } = this.state;
-      return loadCount(item);
-    }
+  function handleSave(e) {
+    e.preventDefault();
+    setErrors(undefined);
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'dynamic_segments',
+      action: 'save',
+      data: item,
+    }).done(() => {
+      history.push('/segments');
 
-    return Promise.resolve();
-  }
-
-  loadFields() {
-    this.getChildFields().then((response) => {
-      this.setState({
-        childFields: response.fields,
-        isFormValid: response.isValid,
-      });
-    }).then(() => this.loadCount());
-  }
-
-  loadCount() {
-    const { item } = this.state;
-    item.subscribersCount = {
-      loading: true,
-      count: undefined,
-      errors: undefined,
-    };
-
-    this.setState({
-      item,
-    }, () => {
-      this.getCount().then((response) => {
-        item.subscribersCount.loading = false;
-        if (response) {
-          item.subscribersCount.count = response.count;
-          item.subscribersCount.errors = response.errors;
-        }
-        this.setState({
-          item,
-        });
-      }, (errorResponse) => {
-        const errors = errorResponse.errors.map((error) => error.message);
-        item.subscribersCount.loading = false;
-        item.subscribersCount.count = undefined;
-        item.subscribersCount.errors = errors;
-        this.setState({
-          item,
-        });
-      });
+      if (match.params.id !== undefined) {
+        messages.onUpdate();
+      } else {
+        messages.onCreate(item);
+      }
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        setErrors(response.errors);
+      }
     });
   }
 
-  render() {
-    const fields = this.getFields();
-    const { match } = this.props;
-    const { item, errors } = this.state;
-    return (
-      <>
-        <Background color="#fff" />
-        <HideScreenOptions />
+  return (
+    <>
+      <Background color="#fff" />
+      <HideScreenOptions />
 
-        <Heading level={1} className="mailpoet-title">
-          <span>{MailPoet.I18n.t('formPageTitle')}</span>
-          <Link className="mailpoet-button mailpoet-button-small" to="/segments">{MailPoet.I18n.t('backToList')}</Link>
-        </Heading>
+      <Heading level={1} className="mailpoet-title">
+        <span>{MailPoet.I18n.t('formPageTitle')}</span>
+        <Link className="mailpoet-button mailpoet-button-small" to="/segments">{MailPoet.I18n.t('backToList')}</Link>
+      </Heading>
 
-        <Form
-          endpoint="dynamic_segments"
-          fields={fields}
-          params={match.params}
-          messages={messages}
-          onChange={this.handleValueChange}
-          onSubmit={this.handleSave}
-          onItemLoad={this.onItemLoad}
-          item={item}
-          errors={errors}
-        />
-      </>
-    );
-  }
-}
+      <Form
+        endpoint="dynamic_segments"
+        fields={getFields()}
+        params={getFields()}
+        messages={messages}
+        onChange={handleValueChange}
+        onSubmit={handleSave}
+        onItemLoad={onItemLoad}
+        item={item}
+        errors={errors}
+      />
+    </>
+  );
+};
 
 DynamicSegmentForm.propTypes = {
   match: PropTypes.shape({
