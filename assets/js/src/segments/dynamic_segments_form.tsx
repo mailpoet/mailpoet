@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'underscore';
-import { Link, withRouter } from 'react-router-dom';
+import {
+  Link,
+  match as matchType,
+  RouteComponentProps,
+  withRouter,
+} from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import Form from 'form/form.jsx';
-import PropTypes from 'prop-types';
 
 import Background from 'common/background/background';
 import Heading from 'common/typography/heading/heading';
@@ -11,12 +15,14 @@ import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 import wordpressRoleFields from './dynamic_segments_filters/wordpress_role.jsx';
 import emailFields from './dynamic_segments_filters/email.jsx';
 import woocommerceFields from './dynamic_segments_filters/woocommerce.jsx';
-import { loadCount } from './subscribers_calculator.ts';
-import { SubscribersCounter } from './subscribers_counter.tsx';
+import { loadCount, Result } from './subscribers_calculator';
+import { SubscribersCounter } from './subscribers_counter';
+
+type Filters = Record<string, string>;
 
 const messages = {
-  onUpdate: () => MailPoet.Notice.success(MailPoet.I18n.t('dynamicSegmentUpdated')),
-  onCreate: (data) => {
+  onUpdate: (): void => MailPoet.Notice.success(MailPoet.I18n.t('dynamicSegmentUpdated')),
+  onCreate: (data): void => {
     MailPoet.Notice.success(MailPoet.I18n.t('dynamicSegmentAdded'));
     MailPoet.trackEvent('Segments > Add new', {
       'MailPoet Free version': MailPoet.version,
@@ -26,18 +32,33 @@ const messages = {
   },
 };
 
-function getAvailableFilters() {
-  const filters = {
+function getAvailableFilters(): Filters {
+  const filters: Filters = {
     email: MailPoet.I18n.t('email'),
     userRole: MailPoet.I18n.t('wpUserRole'),
   };
-  if (window.is_woocommerce_active) {
+  if (MailPoet.isWoocommerceActive) {
     filters.woocommerce = MailPoet.I18n.t('woocommerce');
   }
   return filters;
 }
 
-const DynamicSegmentForm = ({ match, history }) => {
+interface UrlProps {
+  id?: string;
+}
+
+interface Props {
+  history: RouteComponentProps['history'];
+  match: matchType<UrlProps>;
+}
+
+// object/any for now until we have properly typed form fields
+interface FilterFieldType {
+  isValid: boolean;
+  fields: object[];
+}
+
+const DynamicSegmentForm: React.FunctionComponent<Props> = ({ match, history }) => {
   const [item, setItem] = useState({
     segmentType: 'email',
     subscribersCount: {
@@ -50,7 +71,7 @@ const DynamicSegmentForm = ({ match, history }) => {
   const [errors, setErrors] = useState(undefined);
   const [isFormValid, setIsFormValid] = useState(false);
 
-  function getCount() {
+  function getCount(): Promise<Result | void> {
     if (isFormValid) {
       return loadCount(item);
     }
@@ -58,7 +79,7 @@ const DynamicSegmentForm = ({ match, history }) => {
     return Promise.resolve();
   }
 
-  function countLoad() {
+  function countLoad(): void {
     item.subscribersCount = {
       loading: true,
       count: undefined,
@@ -73,10 +94,15 @@ const DynamicSegmentForm = ({ match, history }) => {
         item.subscribersCount.errors = response.errors;
       }
       setItem(item);
+    }, (errorResponse) => {
+      item.subscribersCount.loading = false;
+      item.subscribersCount.count = undefined;
+      item.subscribersCount.errors = errorResponse.errors.map((error) => error.message);
+      setItem(item);
     });
   }
 
-  function getChildFields() {
+  function getChildFields(): Promise<FilterFieldType> {
     switch (item.segmentType) {
       case 'userRole':
         return wordpressRoleFields(item);
@@ -87,11 +113,11 @@ const DynamicSegmentForm = ({ match, history }) => {
       case 'woocommerce':
         return woocommerceFields(item);
 
-      default: return [];
+      default: return Promise.resolve({ fields: [], isValid: false });
     }
   }
 
-  function loadFields() {
+  function loadFields(): void {
     getChildFields()
       .then((response) => {
         setChildFields(response.fields);
@@ -105,12 +131,12 @@ const DynamicSegmentForm = ({ match, history }) => {
   });
 
 
-  function onItemLoad(loadedData) {
+  function onItemLoad(loadedData): void {
     setItem(_.mapObject(loadedData, (val) => (_.isNull(val) ? '' : val)));
     loadFields();
   }
 
-  function getFields() {
+  function getFields(): object[] {
     return [
       {
         name: 'name',
@@ -144,7 +170,7 @@ const DynamicSegmentForm = ({ match, history }) => {
     ];
   }
 
-  function handleValueChange(e) {
+  function handleValueChange(e): boolean {
     const field = e.target.name;
 
     item[field] = e.target.value;
@@ -154,11 +180,11 @@ const DynamicSegmentForm = ({ match, history }) => {
     return true;
   }
 
-  function handleSave(e) {
+  function handleSave(e): void {
     e.preventDefault();
     setErrors(undefined);
     MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
+      api_version: MailPoet.apiVersion,
       endpoint: 'dynamic_segments',
       action: 'save',
       data: item,
@@ -190,7 +216,7 @@ const DynamicSegmentForm = ({ match, history }) => {
       <Form
         endpoint="dynamic_segments"
         fields={getFields()}
-        params={getFields()}
+        params={match.params}
         messages={messages}
         onChange={handleValueChange}
         onSubmit={handleSave}
@@ -200,17 +226,6 @@ const DynamicSegmentForm = ({ match, history }) => {
       />
     </>
   );
-};
-
-DynamicSegmentForm.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string,
-    }).isRequired,
-  }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
 };
 
 export default withRouter(DynamicSegmentForm);

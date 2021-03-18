@@ -23,7 +23,7 @@ interface EmailFormItem extends FormItem {
 
 type AnyFormItem = WordpressRoleFormItem | WooCommerceFormItem | EmailFormItem;
 
-interface Result {
+export interface Result {
   count: number;
   errors: string[];
 }
