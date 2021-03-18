@@ -1,6 +1,7 @@
 import React from 'react';
 import Heading from '../../typography/heading/heading';
 import Grid from '..';
+import Input from '../../form/input/input';
 
 export default {
   title: 'Grid',
@@ -96,6 +97,19 @@ export const Layouts = () => {
             Right Part
           </div>
         </Grid.SpaceBetween>
+      </Grid.Column>
+
+      <Heading level={3}>Centered row</Heading>
+      <Grid.Column>
+        <Grid.CenteredRow className="custom-class">
+          <div>
+            Left
+          </div>
+          <Input type="text" />
+          <div>
+            Right
+          </div>
+        </Grid.CenteredRow>
       </Grid.Column>
     </>
   );
