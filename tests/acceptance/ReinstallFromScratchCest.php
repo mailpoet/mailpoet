@@ -54,6 +54,11 @@ class ReinstallFromScratchCest {
     // Check subscribers
     $i->amOnMailPoetPage('Subscribers');
     $i->waitForText('admin', 30, '.mailpoet-listing-table');
+
+    for ($index = 0; $index <= 5; $index++) {
+      $i->waitForText('imported' . $index . '@from.wordpress');
+    }
+
     $wpUsersCount = count_users();
     $subscribersCount = (int)$i->grabTextFrom('.mailpoet-listing-pages-num');
     Assert::assertEquals($wpUsersCount['total_users'], $subscribersCount);
