@@ -153,6 +153,14 @@ class DynamicSegmentForm extends React.Component {
         this.setState({
           item,
         });
+      }, (errorResponse) => {
+        const errors = errorResponse.errors.map((error) => error.message);
+        item.subscribersCount.loading = false;
+        item.subscribersCount.count = undefined;
+        item.subscribersCount.errors = errors;
+        this.setState({
+          item,
+        });
       });
     });
   }
