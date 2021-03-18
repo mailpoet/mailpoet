@@ -58,13 +58,6 @@ function loadCount(formItem: AnyFormItem): Promise<Result | void> {
         errors: undefined,
       };
       return previousResult;
-    })
-    .catch((response) => {
-      const errors = response.errors.map((error) => error.message);
-      return {
-        count: undefined,
-        errors,
-      };
     });
 }
 
