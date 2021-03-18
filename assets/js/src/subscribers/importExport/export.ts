@@ -2,6 +2,7 @@ import _ from 'underscore';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import Handlebars from 'handlebars';
+import { escapeHTML } from '@wordpress/escape-html';
 
 interface ExportWindow extends Window {
   exportData: {
@@ -119,7 +120,8 @@ jQuery(document).ready(() => {
   window.subscriberFieldsSelect2.forEach((group) => {
     group.text = group.name; // eslint-disable-line no-param-reassign
     group.children.forEach((item) => {
-      item.text = item.name; // eslint-disable-line no-param-reassign
+      item.name = escapeHTML(item.name); // eslint-disable-line no-param-reassign
+      item.text = escapeHTML(item.name); // eslint-disable-line no-param-reassign
     });
   });
   renderSegmentsAndFields(segmentsContainerElement, window.segments);
