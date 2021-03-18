@@ -113,6 +113,7 @@
         "assets/js/src/common/form/yesno/yesno.tsx",
         "assets/js/src/common/functions/change_handlers.ts",
         "assets/js/src/common/grid/_stories/grid.tsx",
+        "assets/js/src/common/grid/centered_row.tsx",
         "assets/js/src/common/grid/column.tsx",
         "assets/js/src/common/grid/space_between.tsx",
         "assets/js/src/common/grid/three_columns.tsx",

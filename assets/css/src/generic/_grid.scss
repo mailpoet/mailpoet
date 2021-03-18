@@ -66,3 +66,13 @@
 .mailpoet-grid-span-two-columns {
   grid-column: span 2;
 }
+
+.mailpoet-centered-row {
+  align-items: center;
+  display: flex;
+  white-space: nowrap;
+
+  > *:not(:first-child) {
+    margin-left: $grid-gap;
+  }
+}
