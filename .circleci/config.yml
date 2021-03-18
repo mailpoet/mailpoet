@@ -100,7 +100,7 @@ executors:
     <<: *default_job_config
     docker:
       - image: mailpoet/wordpress:8.0_20210218.1
-      - image: circleci/mysql:8.0-ram
+      - image: circleci/mysql:8.0.21-ram
         command: [--default-authentication-plugin=mysql_native_password]
 
 jobs:
