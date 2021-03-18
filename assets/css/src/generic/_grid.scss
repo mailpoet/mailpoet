@@ -24,6 +24,10 @@
   grid-gap: $grid-gap;
   grid-template-columns: 1fr 1fr;
 
+  > * {
+    min-width: 0;
+  }
+
   @include respond-to(small-screen) {
     grid-template-columns: 1fr;
   }
@@ -33,6 +37,10 @@
   display: grid;
   grid-gap: $grid-gap;
   grid-template-columns: 1fr 1fr 1fr;
+
+  > * {
+    min-width: 0;
+  }
 
   @include respond-to(small-screen) {
     grid-template-columns: 1fr;
