@@ -13,7 +13,7 @@ export const Column = ({
   align,
   className,
   dimension,
-}: Props) => (
+}: Props): React.ReactElement => (
   <div
     className={
       classnames(

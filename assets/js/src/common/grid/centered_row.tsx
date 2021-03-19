@@ -6,7 +6,7 @@ type Props = {
   className?: string;
 };
 
-export const CenteredRow = ({ children, className }: Props) => (
+export const CenteredRow = ({ children, className }: Props): React.ReactElement => (
   <div className={classnames(className, 'mailpoet-centered-row')}>
     {children}
   </div>

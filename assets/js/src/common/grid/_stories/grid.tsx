@@ -7,7 +7,7 @@ export default {
   title: 'Grid',
 };
 
-export const Layouts = () => {
+export const Layouts = (): React.ReactElement => {
   const content = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi libero sapien, tristique sollicitudin lobortis id, viverra id libero.';
 
   return (
