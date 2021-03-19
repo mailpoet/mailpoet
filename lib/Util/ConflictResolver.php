@@ -30,7 +30,6 @@ class ConflictResolver {
       'googleapis.com/ajax/libs',
       'wp.com',
       // third-party
-      'jetpack',
       'query-monitor',
       'wpt-tx-updater-network',
     ],
