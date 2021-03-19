@@ -281,7 +281,10 @@ class NewsletterEntity {
       if ($task === null) continue;
 
       $scheduled = new Carbon($task->getScheduledAt());
-      if ($scheduled < (new Carbon())->subDays(30)) return;
+      if ($scheduled < (new Carbon())->subDays(30)) continue;
+
+      if (($status === self::STATUS_DRAFT) && ($task->getStatus() !== ScheduledTaskEntity::STATUS_SCHEDULED)) continue;
+      if (($status === self::STATUS_ACTIVE) && ($task->getStatus() !== ScheduledTaskEntity::STATUS_PAUSED)) continue;
 
       $task->setStatus($newTaskStatus);
     }
