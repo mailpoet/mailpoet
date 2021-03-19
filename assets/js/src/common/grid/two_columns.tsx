@@ -6,7 +6,7 @@ type Props = {
   className?: string;
 };
 
-export const TwoColumns = ({ children, className }: Props) => (
+export const TwoColumns = ({ children, className }: Props): React.ReactElement => (
   <div className={classnames(className, 'mailpoet-grid-two-columns')}>
     {children}
   </div>

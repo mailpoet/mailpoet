@@ -11,7 +11,7 @@ export const SpaceBetween = ({
   children,
   className,
   verticalAlign,
-}: Props) => (
+}: Props): React.ReactElement => (
   <div
     className={
       classnames(
