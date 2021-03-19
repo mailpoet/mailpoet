@@ -2,9 +2,12 @@
 
 namespace MailPoet\API\JSON\v1;
 
+use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
 
 class DynamicSegmentsTest extends \MailPoetTest {
@@ -81,6 +84,22 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $this->entityManager->refresh($dynamicSegment);
     assert($dynamicSegment instanceof SegmentEntity);
     expect($dynamicSegment->getDeletedAt())->notNull();
+  }
+
+  public function testItReturnsErrorWhenTrashingSegmentWithActiveNewsletter() {
+    $dynamicSegment = $this->createDynamicSegmentEntity('Trash test 2', 'description');
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletterSegment = new NewsletterSegmentEntity($newsletter, $dynamicSegment);
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->persist($newsletterSegment);
+    $this->entityManager->flush();
+
+    $response = $this->endpoint->trash(['id' => $dynamicSegment->getId()]);
+    $this->entityManager->refresh($dynamicSegment);
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals("List cannot be deleted because it’s used for 'Subject' email");
   }
 
   public function testItCanRestoreASegment() {
@@ -187,5 +206,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     parent::_after();
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
+    $this->truncateEntity(NewsletterSegmentEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
   }
 }

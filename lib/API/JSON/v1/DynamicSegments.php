@@ -10,6 +10,7 @@ use MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\Handler;
+use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\FilterDataMapper;
@@ -46,6 +47,9 @@ class DynamicSegments extends APIEndpoint {
   /** @var FilterDataMapper */
   private $filterDataMapper;
 
+  /** @var NewsletterSegmentRepository */
+  private $newsletterSegmentRepository;
+
   public function __construct(
     Handler $handler,
     DynamicSegmentsListingRepository $dynamicSegmentsListingRepository,
@@ -53,7 +57,8 @@ class DynamicSegments extends APIEndpoint {
     SegmentsRepository $segmentsRepository,
     SegmentSubscribersRepository $segmentSubscribersRepository,
     FilterDataMapper $filterDataMapper,
-    SegmentSaveController $saveController
+    SegmentSaveController $saveController,
+    NewsletterSegmentRepository $newsletterSegmentRepository
   ) {
     $this->listingHandler = $handler;
     $this->dynamicSegmentsListingRepository = $dynamicSegmentsListingRepository;
@@ -62,6 +67,7 @@ class DynamicSegments extends APIEndpoint {
     $this->saveController = $saveController;
     $this->segmentSubscribersRepository = $segmentSubscribersRepository;
     $this->filterDataMapper = $filterDataMapper;
+    $this->newsletterSegmentRepository = $newsletterSegmentRepository;
   }
 
   public function get($data = []) {
@@ -145,6 +151,17 @@ class DynamicSegments extends APIEndpoint {
     if ($segment === null) {
       return $this->errorResponse([
         Error::NOT_FOUND => WPFunctions::get()->__('This segment does not exist.', 'mailpoet'),
+      ]);
+    }
+
+    $activelyUsedNewslettersSubjects = $this->newsletterSegmentRepository->getSubjectsOfActivelyUsedEmailsForSegments([$segment->getId()]);
+    if (isset($activelyUsedNewslettersSubjects[$segment->getId()])) {
+      return $this->badRequest([
+        Error::BAD_REQUEST => str_replace(
+          '%$1s',
+          $activelyUsedNewslettersSubjects[$segment->getId()][0],
+          _x('List cannot be deleted because it’s used for %$1s email', 'Alert shown when trying to delete segment, which is assigned to any automatic emails.')
+        ),
       ]);
     }
 
