@@ -202,7 +202,6 @@ class ImportExportRepository {
 
     return $this->entityManager->getConnection()->createQueryBuilder()
       ->select("
-        DISTINCT
         {$subscriberTable}.first_name,
         {$subscriberTable}.last_name,
         {$subscriberTable}.email,
