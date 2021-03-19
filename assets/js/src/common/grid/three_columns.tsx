@@ -6,10 +6,8 @@ type Props = {
   className?: string;
 };
 
-const ThreeColumns = ({ children, className }: Props) => (
+export const ThreeColumns = ({ children, className }: Props) => (
   <div className={classnames(className, 'mailpoet-grid-three-columns')}>
     {children}
   </div>
 );
-
-export default ThreeColumns;

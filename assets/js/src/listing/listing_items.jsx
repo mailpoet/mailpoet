@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import ListingBulkActions from 'listing/bulk_actions.jsx';
 import ListingItem from 'listing/listing_item.jsx';
-import Grid from 'common/grid';
+import { Grid } from 'common/grid';
 
 class ListingItems extends React.Component { // eslint-disable-line react/prefer-stateless-function, max-len
   render() {

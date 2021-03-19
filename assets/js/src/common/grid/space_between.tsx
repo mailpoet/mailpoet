@@ -7,7 +7,7 @@ type Props = {
   verticalAlign?: 'center';
 };
 
-const SpaceBetween = ({
+export const SpaceBetween = ({
   children,
   className,
   verticalAlign,
@@ -26,5 +26,3 @@ const SpaceBetween = ({
     {children}
   </div>
 );
-
-export default SpaceBetween;

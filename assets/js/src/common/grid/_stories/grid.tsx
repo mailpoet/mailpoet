@@ -1,6 +1,6 @@
 import React from 'react';
 import Heading from '../../typography/heading/heading';
-import Grid from '..';
+import { Grid } from '..';
 import Input from '../../form/input/input';
 
 export default {
