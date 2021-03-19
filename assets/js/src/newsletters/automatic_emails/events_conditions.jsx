@@ -2,7 +2,7 @@ import React from 'react';
 import Background from 'common/background/background';
 import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
-import Grid from 'common/grid';
+import { Grid } from 'common/grid';
 import Selection from 'form/fields/selection.jsx';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import EventScheduling from 'newsletters/automatic_emails/events/event_scheduling.jsx';

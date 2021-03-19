@@ -8,7 +8,7 @@ type Props = {
   dimension?: 'small';
 };
 
-const Column = ({
+export const Column = ({
   children,
   align,
   className,
@@ -29,5 +29,3 @@ const Column = ({
     {children}
   </div>
 );
-
-export default Column;

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import Background from 'common/background/background';
 import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
-import Grid from 'common/grid';
+import { Grid } from 'common/grid';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
 import WelcomeScheduling from './scheduling.jsx';
 

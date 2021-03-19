@@ -1,7 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
-import Grid from 'common/grid';
+import { Grid } from 'common/grid';
 import { StatsBadge, getBadgeType } from 'common/listings/newsletter_stats/stats';
 
 import { NewsletterType } from './newsletter_type';

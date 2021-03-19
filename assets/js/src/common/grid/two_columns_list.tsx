@@ -6,10 +6,8 @@ type Props = {
   className?: string;
 };
 
-const TwoColumnsList = ({ children, className }: Props) => (
+export const TwoColumnsList = ({ children, className }: Props) => (
   <div className={classnames(className, 'mailpoet-grid-two-columns-list')}>
     {children}
   </div>
 );
-
-export default TwoColumnsList;
