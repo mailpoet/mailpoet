@@ -260,7 +260,7 @@ class NewsletterEntity {
   public function setStatus($status) {
     $this->status = $status;
 
-    $queues = $this->getUnfinishedQueues();
+    // activate/deactivate unfinished tasks
     $newTaskStatus = null;
     $typesWithActivation = [self::TYPE_NOTIFICATION, self::TYPE_WELCOME, self::TYPE_AUTOMATIC];
 
@@ -272,6 +272,9 @@ class NewsletterEntity {
     }
 
     if (!$newTaskStatus) return;
+
+    $queues = $this->getUnfinishedQueues();
+
     foreach ($queues as $queue) {
       /** @var SendingQueueEntity $queue */
       $task = $queue->getTask();
