@@ -36,6 +36,7 @@ class SetupTest extends \MailPoetTest {
       new Captcha(),
       $referralDetector,
       $this->diContainer->get(FormsRepository::class),
+      $this->entityManager,
       $this->diContainer->get(WP::class)
     );
     $router = new Setup($wpStub, new Activator($settings, $populator));
