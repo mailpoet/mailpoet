@@ -4,12 +4,62 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
+use MailPoet\Models\StatisticsForms;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class FormsResponseBuilderTest extends \MailPoetTest {
+  /** @var ContainerWrapper */
+  protected $container;
+
+  /** @var string */
+  protected $formName;
+
+  /** @var array */
+  protected $formBody;
+
+  /** @var array */
+  protected $formSettings;
+
+  public function _before() {
+    parent::_before();
+
+    $this->container = ContainerWrapper::getInstance();
+    $this->entityManager = $this->container->get(EntityManager::class);
+  }
+
   public function testItBuildsForm() {
-    $name = 'Form Builder Test';
-    $body = [
+    $form = $this->createForm('Form 1');
+
+    $responseBuilder = new FormsResponseBuilder();
+    $response = $responseBuilder->build($form);
+
+    expect($response['name'])->equals($this->formName);
+    expect($response['status'])->equals(FormEntity::STATUS_ENABLED);
+    expect($response['body']['name'])->equals($this->formBody['name']);
+    expect($response['body']['params']['label'])->equals($this->formBody['params']['label']);
+    expect($response['settings']['success_message'])->equals($this->formSettings['success_message']);
+  }
+
+  public function testItBuildsFormsForListing() {
+    $form1 = $this->createForm('Form 1');
+    $form2 = $this->createForm('Form 2');
+
+    $responseBuilder = new FormsResponseBuilder();
+    $response = $responseBuilder->buildForListing([$form1, $form2]);
+
+    expect($response)->count(2);
+    expect($response[0]['signups'])->equals(0);
+    expect($response[0]['segments'])->equals($this->formSettings['segments']);
+  }
+
+  public function _after() {
+    $this->truncateEntity(FormEntity::class);
+    StatisticsForms::deleteMany();
+  }
+
+  private function createForm($name) {
+    $this->formName = $name;
+    $this->formBody = [
       'type' => 'text',
       'name' => 'First name',
       'id' => 'first_name',
@@ -20,29 +70,19 @@ class FormsResponseBuilderTest extends \MailPoetTest {
       ],
       'position' => '1',
     ];
-    $settings = [
+    $this->formSettings = [
       'on_success' => 'message',
       'success_message' => 'Check your inbox or spam folder to confirm your subscription.',
       'segments' => [0 => '1'],
     ];
 
-    $di = ContainerWrapper::getInstance();
-    $em = $di->get(EntityManager::class);
-    $em->persist($form = new FormEntity($name));
+    $this->entityManager->persist($form = new FormEntity($this->formName));
     $form->setStatus(FormEntity::STATUS_ENABLED);
     $form->setStyles('/* form */.mailpoet_form {}');
-    $form->setBody($body);
-    $form->setSettings($settings);
-    $em->flush();
+    $form->setBody($this->formBody);
+    $form->setSettings($this->formSettings);
+    $this->entityManager->flush();
 
-    $responseBuilder = new FormsResponseBuilder();
-    $response = $responseBuilder->build($form);
-    expect($response['name'])->equals($name);
-    expect($response['status'])->equals(FormEntity::STATUS_ENABLED);
-    expect($response['body']['name'])->equals($body['name']);
-    expect($response['body']['params']['label'])->equals($body['params']['label']);
-    expect($response['settings']['success_message'])->equals($settings['success_message']);
-    $em->remove($form);
-    $em->flush();
+    return $form;
   }
 }
