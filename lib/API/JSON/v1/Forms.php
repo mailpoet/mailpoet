@@ -13,11 +13,11 @@ use MailPoet\Form\ApiDataSanitizer;
 use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Form\FormFactory;
 use MailPoet\Form\FormsRepository;
+use MailPoet\Form\Listing\FormListingRepository;
 use MailPoet\Form\PreviewPage;
 use MailPoet\Form\Util;
 use MailPoet\Listing;
 use MailPoet\Models\Form;
-use MailPoet\Models\StatisticsForms;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -50,6 +50,9 @@ class Forms extends APIEndpoint {
   /** @var FormsRepository */
   private $formsRepository;
 
+  /** @var FormListingRepository */
+  private $formListingRepository;
+
   /** @var Emoji */
   private $emoji;
 
@@ -62,6 +65,7 @@ class Forms extends APIEndpoint {
     UserFlagsController $userFlags,
     FormFactory $formFactory,
     FormsRepository $formsRepository,
+    FormListingRepository $formListingRepository,
     FormsResponseBuilder $formsResponseBuilder,
     WPFunctions $wp,
     Emoji $emoji,
@@ -73,6 +77,7 @@ class Forms extends APIEndpoint {
     $this->formFactory = $formFactory;
     $this->wp = $wp;
     $this->formsRepository = $formsRepository;
+    $this->formListingRepository = $formListingRepository;
     $this->formsResponseBuilder = $formsResponseBuilder;
     $this->emoji = $emoji;
     $this->dataSanitizer = $dataSanitizer;
@@ -134,28 +139,18 @@ class Forms extends APIEndpoint {
 
   public function listing($data = []) {
     $data['sort_order'] = $data['sort_order'] ?? 'desc';
-    $data['sort_by'] = $data['sort_by'] ?? 'updated_at';
-    $listingData = $this->listingHandler->get('\MailPoet\Models\Form', $data);
+    $data['sort_by'] = $data['sort_by'] ?? 'updatedAt';
 
-    $data = [];
-    foreach ($listingData['items'] as $form) {
-      $form = $form->asArray();
+    $definition = $this->listingHandler->getListingDefinition($data);
+    $items = $this->formListingRepository->getData($definition);
+    $count = $this->formListingRepository->getCount($definition);
+    $filters = $this->formListingRepository->getFilters($definition);
+    $groups = $this->formListingRepository->getGroups($definition);
 
-      $form['signups'] = StatisticsForms::getTotalSignups($form['id']);
-
-      $form['segments'] = (
-        !empty($form['settings']['segments'])
-        ? $form['settings']['segments']
-        : []
-      );
-
-      $data[] = $form;
-    }
-
-    return $this->successResponse($data, [
-      'count' => $listingData['count'],
-      'filters' => $listingData['filters'],
-      'groups' => $listingData['groups'],
+    return $this->successResponse($this->formsResponseBuilder->buildForListing($items), [
+      'count' => $count,
+      'filters' => $filters,
+      'groups' => $groups,
     ]);
   }
 

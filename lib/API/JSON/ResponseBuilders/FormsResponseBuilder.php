@@ -3,6 +3,7 @@
 namespace MailPoet\API\JSON\ResponseBuilders;
 
 use MailPoet\Entities\FormEntity;
+use MailPoet\Models\StatisticsForms;
 
 class FormsResponseBuilder {
   const DATE_FORMAT = 'Y-m-d H:i:s';
@@ -19,5 +20,23 @@ class FormsResponseBuilder {
       'updated_at' => $form->getUpdatedAt()->format(self::DATE_FORMAT),
       'deleted_at' => ($deletedAt = $form->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
     ];
+  }
+
+  public function buildForListing(array $forms) {
+    $data = [];
+
+    foreach ($forms as $form) {
+      $form = $this->build($form);
+      $form['signups'] = StatisticsForms::getTotalSignups($form['id']);
+      $form['segments'] = (
+        !empty($form['settings']['segments'])
+        ? $form['settings']['segments']
+        : []
+      );
+
+      $data[] = $form;
+    }
+
+    return $data;
   }
 }
