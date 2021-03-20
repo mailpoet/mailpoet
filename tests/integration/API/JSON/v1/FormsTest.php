@@ -6,6 +6,8 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Forms;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Form\PreviewPage;
 use MailPoet\Models\Form;
 use MailPoet\Models\Segment;
@@ -19,16 +21,20 @@ class FormsTest extends \MailPoetTest {
   /** @var Forms */
   private $endpoint;
 
+  /** @var FormsRepository */
+  private $formsRepository;
+
   /** @var WPFunctions */
   private $wp;
 
   public function _before() {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(Forms::class);
+    $this->formsRepository = ContainerWrapper::getInstance()->get(FormsRepository::class);
     $this->wp = WPFunctions::get();
-    $this->form1 = Form::createOrUpdate(['name' => 'Form 1']);
-    $this->form2 = Form::createOrUpdate(['name' => 'Form 2']);
-    $this->form3 = Form::createOrUpdate(['name' => 'Form 3']);
+    $this->form1 = $this->createForm('Form 1');
+    $this->form2 = $this->createForm('Form 2');
+    $this->form3 = $this->createForm('Form 3');
     Segment::createOrUpdate(['name' => 'Segment 1']);
     Segment::createOrUpdate(['name' => 'Segment 2']);
   }
@@ -42,10 +48,10 @@ class FormsTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->equals('This form does not exist.');
 
-    $response = $this->endpoint->get(['id' => $this->form1->id]);
+    $response = $this->endpoint->get(['id' => $this->form1->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      $this->reloadForm((int)$this->form1->id)->asArray()
+      $this->reloadForm((int)$this->form1->getId())->asArray()
     );
   }
 
@@ -186,40 +192,41 @@ class FormsTest extends \MailPoetTest {
   }
 
   public function testItCanRestoreAForm() {
-    $this->form1->trash();
+    $this->form1->setDeletedAt(new \DateTime());
+    $this->formsRepository->flush();
 
-    $trashedForm = Form::findOne($this->form1->id);
+    $trashedForm = Form::findOne($this->form1->getId());
     assert($trashedForm instanceof Form);
     expect($trashedForm->deletedAt)->notNull();
 
-    $response = $this->endpoint->restore(['id' => $this->form1->id]);
+    $response = $this->endpoint->restore(['id' => $this->form1->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      $this->reloadForm((int)$this->form1->id)->asArray()
+      $this->reloadForm((int)$this->form1->getId())->asArray()
     );
     expect($response->data['deleted_at'])->null();
     expect($response->meta['count'])->equals(1);
   }
 
   public function testItCanTrashAForm() {
-    $response = $this->endpoint->trash(['id' => $this->form2->id]);
+    $response = $this->endpoint->trash(['id' => $this->form2->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      $this->reloadForm((int)$this->form2->id)->asArray()
+      $this->reloadForm((int)$this->form2->getId())->asArray()
     );
     expect($response->data['deleted_at'])->notNull();
     expect($response->meta['count'])->equals(1);
   }
 
   public function testItCanDeleteAForm() {
-    $response = $this->endpoint->delete(['id' => $this->form3->id]);
+    $response = $this->endpoint->delete(['id' => $this->form3->getId()]);
     expect($response->data)->isEmpty();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['count'])->equals(1);
   }
 
   public function testItCanDuplicateAForm() {
-    $response = $this->endpoint->duplicate(['id' => $this->form1->id]);
+    $response = $this->endpoint->duplicate(['id' => $this->form1->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $form = Form::where('name', 'Copy of Form 1')->findOne();
     assert($form instanceof Form);
@@ -255,18 +262,18 @@ class FormsTest extends \MailPoetTest {
   public function testItCanUpdateFormStatus() {
     $response = $this->endpoint->setStatus([
       'status' => FormEntity::STATUS_ENABLED,
-      'id' => $this->form1->id,
+      'id' => $this->form1->getId(),
     ]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    $form = $this->reloadForm((int)$this->form1->id);
+    $form = $this->reloadForm((int)$this->form1->getId());
     expect($form->status)->equals(FormEntity::STATUS_ENABLED);
 
     $response = $this->endpoint->setStatus([
       'status' => FormEntity::STATUS_DISABLED,
-      'id' => $this->form1->id,
+      'id' => $this->form1->getId(),
     ]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    $form = $this->reloadForm((int)$this->form1->id);
+    $form = $this->reloadForm((int)$this->form1->getId());
     expect($form->status)->equals(FormEntity::STATUS_DISABLED);
 
     $response = $this->endpoint->setStatus([
@@ -276,15 +283,22 @@ class FormsTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
 
     $response = $this->endpoint->setStatus([
-      'id' => $this->form1->id,
+      'id' => $this->form1->getId(),
     ]);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
     $response = $this->endpoint->setStatus([
       'status' => 'invalid status',
-      'id' => $this->form1->id,
+      'id' => $this->form1->getId(),
     ]);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+  }
+
+  private function createForm(string $name): FormEntity {
+    $form = new FormEntity($name);
+    $this->formsRepository->persist($form);
+    $this->formsRepository->flush();
+    return $form;
   }
 
   private function reloadForm(int $id): Form {
@@ -294,7 +308,7 @@ class FormsTest extends \MailPoetTest {
   }
 
   public function _after() {
-    Form::deleteMany();
-    Segment::deleteMany();
+    $this->truncateEntity(FormEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
   }
 }
