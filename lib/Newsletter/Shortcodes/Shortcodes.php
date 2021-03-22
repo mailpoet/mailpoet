@@ -37,16 +37,21 @@ class Shortcodes {
   /** @var Subscriber */
   private $subscriberCategory;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     Date $dateCategory,
     Link $linkCategory,
     Newsletter $newsletterCategory,
-    Subscriber $subscriberCategory
+    Subscriber $subscriberCategory,
+    WPFunctions $wp
   ) {
     $this->dateCategory = $dateCategory;
     $this->linkCategory = $linkCategory;
     $this->newsletterCategory = $newsletterCategory;
     $this->subscriberCategory = $subscriberCategory;
+    $this->wp = $wp;
   }
 
   public function setNewsletter(NewsletterEntity $newsletter = null): void {
@@ -102,7 +107,7 @@ class Shortcodes {
    * The syntax is [category:action arg1="value1" arg2="value2"], it can have multiple arguments.
    */
   public function matchWPShortcode($shortcode) {
-    $atts = WPFunctions::get()->shortcodeParseAtts(trim($shortcode, '[]/'));
+    $atts = $this->wp->shortcodeParseAtts(trim($shortcode, '[]/'));
     if (empty($atts[0])) {
       return [];
     }
@@ -162,7 +167,7 @@ class Shortcodes {
           $this->wpUserPreview
         );
       } else {
-        $customShortcode = WPFunctions::get()->applyFilters(
+        $customShortcode = $this->wp->applyFilters(
           'mailpoet_newsletter_shortcode',
           $shortcode,
           $this->newsletter,
