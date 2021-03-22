@@ -85,6 +85,7 @@ class Link implements CategoryInterface {
           $newsletterModel,
           $subscriberModel,
           $queueModel,
+          $shortcodeDetails['arguments'],
           $wpUserPreview
         );
 
