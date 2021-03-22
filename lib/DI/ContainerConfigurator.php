@@ -123,6 +123,7 @@ class ContainerConfigurator implements IContainerConfigurator {
       ->setFactory([new Reference(\MailPoet\Doctrine\EntityManagerFactory::class), 'createEntityManager'])
       ->setPublic(true);
     $container->autowire(\MailPoet\Doctrine\EventListeners\EmojiEncodingListener::class)->setPublic(true);
+    $container->autowire(\MailPoet\Doctrine\EventListeners\LastSubscribedAtListener::class);
     $container->autowire(\MailPoet\Doctrine\EventListeners\TimestampListener::class);
     $container->autowire(\MailPoet\Doctrine\EventListeners\ValidationListener::class);
     $container->autowire(\MailPoet\Doctrine\Validator\ValidatorFactory::class);

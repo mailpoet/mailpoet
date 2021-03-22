@@ -7,6 +7,7 @@ use MailPoet\Doctrine\Annotations\AnnotationReaderProvider;
 use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Doctrine\EventListeners\EmojiEncodingListener;
+use MailPoet\Doctrine\EventListeners\LastSubscribedAtListener;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
 use MailPoet\Doctrine\EventListeners\ValidationListener;
 use MailPoet\Doctrine\Validator\ValidatorFactory;
@@ -186,7 +187,15 @@ class JsonTypesTest extends \MailPoetTest {
     $timestampListener = new TimestampListener($this->wp);
     $validationListener = new ValidationListener($validatorFactory->createValidator());
     $emojiEncodingListener = new EmojiEncodingListener(new Emoji($this->wp));
-    $entityManagerFactory = new EntityManagerFactory($this->connection, $configuration, $timestampListener, $validationListener, $emojiEncodingListener);
+    $lastSubscribedAtListener = new LastSubscribedAtListener($this->wp);
+    $entityManagerFactory = new EntityManagerFactory(
+      $this->connection,
+      $configuration,
+      $timestampListener,
+      $validationListener,
+      $emojiEncodingListener,
+      $lastSubscribedAtListener
+    );
     return $entityManagerFactory->createEntityManager();
   }
 }
