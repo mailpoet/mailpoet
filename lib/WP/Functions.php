@@ -435,6 +435,10 @@ class Functions {
     return delete_transient($transient);
   }
 
+  public function shortcodeParseAtts($text) {
+    return shortcode_parse_atts($text);
+  }
+
   public function singlePostTitle($prefix = '', $display = true) {
     return single_post_title($prefix, $display);
   }
