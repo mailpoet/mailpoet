@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter, Switch, Route } from 'react-router-dom';
+import {
+  HashRouter, Switch, Route, Redirect,
+} from 'react-router-dom';
 
 import MailPoet from 'mailpoet';
 import RoutedTabs from 'common/tabs/routed_tabs';
@@ -18,8 +20,12 @@ const container = document.getElementById('segments_container');
 const Tabs = () => (
   <>
     <ListHeading />
-    <RoutedTabs activeKey="" routerType="switch-only">
-      <Tab key="" route="*" title={MailPoet.I18n.t('pageTitle')}>
+    <RoutedTabs activeKey="lists" routerType="switch-only">
+      <Tab
+        key="lists"
+        route="lists/(.*)?"
+        title={MailPoet.I18n.t('pageTitle')}
+      >
         <SegmentList />
       </Tab>
       <Tab
@@ -39,12 +45,13 @@ const App = () => (
     <HashRouter>
       <Notices />
       <Switch>
+        <Route exact path="/" render={() => <Redirect to="/lists" />} />
         <Route path="/new" component={SegmentForm} />
         <Route path="/edit/:id" component={SegmentForm} />
         <Route path="/new-segment" component={DynamicSegmentForm} />
         <Route path="/edit-segment/:id" component={DynamicSegmentForm} />
         <Route path="/segments/(.*)?" component={Tabs} />
-        <Route path="*" component={Tabs} />
+        <Route path="/lists/(.*)?" component={Tabs} />
       </Switch>
     </HashRouter>
   </GlobalContext.Provider>

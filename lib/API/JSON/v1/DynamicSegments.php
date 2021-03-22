@@ -195,6 +195,7 @@ class DynamicSegments extends APIEndpoint {
   }
 
   public function listing($data = []) {
+    $data['params'] = $data['params'] ?? ['segments']; // Dummy param to apply constraints properly
     $definition = $this->listingHandler->getListingDefinition($data);
     $items = $this->dynamicSegmentsListingRepository->getData($definition);
     $count = $this->dynamicSegmentsListingRepository->getCount($definition);
