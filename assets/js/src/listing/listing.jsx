@@ -299,6 +299,7 @@ class Listing extends React.Component {
         response.errors.map((error) => <p key={error.message}>{error.message}</p>),
         { scroll: true }
       );
+      this.setState({ loading: false });
     });
   };
 
