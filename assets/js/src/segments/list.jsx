@@ -354,6 +354,7 @@ class SegmentList extends React.Component {
           messages={messages}
           search={false}
           endpoint="segments"
+          base_url="lists"
           onRenderItem={this.renderItem}
           columns={columns}
           bulk_actions={bulkActions}

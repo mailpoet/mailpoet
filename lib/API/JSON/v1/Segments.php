@@ -84,6 +84,7 @@ class Segments extends APIEndpoint {
   }
 
   public function listing($data = []) {
+    $data['params'] = $data['params'] ?? ['lists']; // Dummy param to apply constraints properly
     $definition = $this->listingHandler->getListingDefinition($data);
     $items = $this->segmentListingRepository->getData($definition);
     $count = $this->segmentListingRepository->getCount($definition);
