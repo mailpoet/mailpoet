@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.6
-Stable tag: 3.60.4
+Stable tag: 3.60.5
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.60.5 - 2021-03-22 =
+* Added: show number of subscribers when creating or editing a segment;
+* Added: new page with MailPoet logs;
+* Improved: bulk select and delete in segments page;
+* Fixed: loading Media Library in Email Editor on WordPress.com sites;
+* Fixed: pass arguments to shortcodes.
 
 = 3.60.4 - 2021-03-15 =
 * Improved: removed captcha from manage subscription page;
