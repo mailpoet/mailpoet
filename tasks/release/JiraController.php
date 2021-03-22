@@ -47,7 +47,11 @@ class JiraController {
    * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-project-projectIdOrKey-versions-get
    */
   public function getVersion($versionName = null) {
-    $response = $this->httpClient->get("project/$this->project/versions");
+    $response = $this->httpClient->get("project/$this->project/versions", [
+      'query' => [
+        'orderBy' => '-releaseDate',
+      ],
+    ]);
     $versions = json_decode($response->getBody()->getContents(), true);
     if ($versionName === null) {
       return end($versions);
@@ -64,7 +68,7 @@ class JiraController {
     $response = $this->httpClient->get("project/$this->project/version", [
       'query' => [
         'maxResults' => 1,
-        'orderBy' => '-sequence',
+        'orderBy' => '-releaseDate',
       ],
     ]);
     $version = json_decode($response->getBody()->getContents(), true);
@@ -79,7 +83,7 @@ class JiraController {
     $response = $this->httpClient->get("project/$project/version", [
       'query' => [
         'maxResults' => 1,
-        'orderBy' => '-sequence',
+        'orderBy' => '-releaseDate',
         'status' => 'released',
       ],
     ]);
@@ -95,7 +99,7 @@ class JiraController {
     $response = $this->httpClient->get("project/$project/version", [
       'query' => [
         'maxResults' => 1,
-        'orderBy' => '-sequence',
+        'orderBy' => '-releaseDate',
         'status' => 'unreleased',
       ],
     ]);
