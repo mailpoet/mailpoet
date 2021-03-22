@@ -94,13 +94,16 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItCanProcessCustomShortcodes() {
     $shortcodesObject = $this->shortcodesObject;
-    $shortcode = ['[some:shortcode]'];
+    $shortcode = ['[some:shortcode arg1="val1" arg2="val2"]']; // WP style arguments
     $result = $shortcodesObject->process($shortcode);
     expect($result[0])->false();
     add_filter('mailpoet_newsletter_shortcode', function(
-      $shortcode, $newsletter, $subscriber, $queue, $content) {
-      if ($shortcode === '[some:shortcode]') return 'success';
-    }, 10, 5);
+      $shortcode, $newsletter, $subscriber, $queue, $content, $arguments) {
+      expect($arguments)->count(2);
+      expect($arguments['arg1'])->equals('val1');
+      expect($arguments['arg2'])->equals('val2');
+      if (strpos($shortcode, '[some:shortcode') === 0) return 'success';
+    }, 10, 6);
     $result = $shortcodesObject->process($shortcode);
     expect($result[0])->equals('success');
   }
@@ -355,13 +358,16 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItCanProcessCustomLinkShortcodes() {
     $shortcodesObject = $this->shortcodesObject;
     $shortcodesObject->setWpUserPreview(false);
-    $shortcode = '[link:shortcode]';
+    $shortcode = '[link:shortcode arg1="val1" arg2="val2"]'; // WP style arguments
     $result = $shortcodesObject->process([$shortcode]);
     expect($result[0])->null();
     remove_all_filters('mailpoet_newsletter_shortcode_link');
-    add_filter('mailpoet_newsletter_shortcode_link', function($shortcode, $newsletter, $subscriber, $queue) {
+    add_filter('mailpoet_newsletter_shortcode_link', function($shortcode, $newsletter, $subscriber, $queue, $arguments) {
+      expect($arguments)->count(2);
+      expect($arguments['arg1'])->equals('val1');
+      expect($arguments['arg2'])->equals('val2');
       if ($shortcode === '[link:shortcode]') return 'success';
-    }, 10, 4);
+    }, 10, 5);
 
     $result = $shortcodesObject->process([$shortcode]);
     expect($result[0])->equals('success');
@@ -369,7 +375,8 @@ class ShortcodesTest extends \MailPoetTest {
     // tracking function only works during sending, so queue object must not be false
     $shortcodesObject->setQueue($this->_createQueue());
     $result = $shortcodesObject->process([$shortcode], 'x');
-    expect($result[0])->equals($shortcode);
+    // when tracking is enabled, the shortcode is returned without arguments
+    expect($result[0])->equals('[link:shortcode]');
   }
 
   public function _createWPPost() {
