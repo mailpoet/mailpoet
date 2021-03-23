@@ -165,8 +165,8 @@ class SegmentsTest extends \MailPoetTest {
   }
 
   public function testItCanBulkDeleteSegments() {
-    $subscriber = $this->createSubsriber('test@mailpoet.com');
-    $subscriberSegment = $this->craeteSubscriberSegment($subscriber, $this->segment1);
+    $subscriber = $this->createSubscriber('test@mailpoet.com');
+    $subscriberSegment = $this->createSubscriberSegment($subscriber, $this->segment1);
 
     $response = $this->endpoint->bulkAction([
       'action' => 'trash',
@@ -194,14 +194,14 @@ class SegmentsTest extends \MailPoetTest {
     expect($subsribers)->count(0);
   }
 
-  private function craeteSubscriberSegment(SubscriberEntity $subscriber, SegmentEntity $segment): SubscriberSegmentEntity {
+  private function createSubscriberSegment(SubscriberEntity $subscriber, SegmentEntity $segment): SubscriberSegmentEntity {
     $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
     $this->entityManager->persist($subscriberSegment);
     $this->entityManager->flush();
     return $subscriberSegment;
   }
 
-  private function createSubsriber(string $email): SubscriberEntity {
+  private function createSubscriber(string $email): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
     $this->subscriberRepository->persist($subscriber);
