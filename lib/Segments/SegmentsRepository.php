@@ -8,6 +8,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\NotFoundException;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -18,6 +19,18 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
  * @extends Repository<SegmentEntity>
  */
 class SegmentsRepository extends Repository {
+
+  /** @var NewsletterSegmentRepository */
+  private $newsletterSegmentRepository;
+
+  public function __construct(
+    EntityManager $entityManager,
+    NewsletterSegmentRepository $newsletterSegmentRepository
+  ) {
+    parent::__construct($entityManager);
+    $this->newsletterSegmentRepository = $newsletterSegmentRepository;
+  }
+
   protected function getEntityClassName() {
     return SegmentEntity::class;
   }
@@ -146,6 +159,8 @@ class SegmentsRepository extends Repository {
   }
 
   public function bulkTrash(array $ids, string $type = SegmentEntity::TYPE_DEFAULT): int {
+    $activelyUsed = $this->newsletterSegmentRepository->getSubjectsOfActivelyUsedEmailsForSegments($ids);
+    $ids = array_diff($ids, array_keys($activelyUsed));
     return $this->updateDeletedAt($ids, new Carbon(), $type);
   }
 
