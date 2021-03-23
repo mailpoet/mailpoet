@@ -7,6 +7,8 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder;
 use MailPoet\API\JSON\v1\Segments;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -145,6 +147,21 @@ class SegmentsTest extends \MailPoetTest {
     expect($response->meta['count'])->equals(1);
   }
 
+  public function testItReturnsErrorWhenTrashingSegmentWithActiveNewsletter() {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletterSegment = new NewsletterSegmentEntity($newsletter, $this->segment2);
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->persist($newsletterSegment);
+    $this->entityManager->flush();
+
+    $response = $this->endpoint->trash(['id' => $this->segment2->getId()]);
+    $this->entityManager->refresh($this->segment2);
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals("List cannot be deleted because it’s used for 'Subject' email");
+  }
+
   public function testItCanDeleteASegment() {
     $response = $this->endpoint->delete(['id' => $this->segment3->getId()]);
     expect($response->data)->isEmpty();
@@ -213,5 +230,7 @@ class SegmentsTest extends \MailPoetTest {
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterSegmentEntity::class);
   }
 }
