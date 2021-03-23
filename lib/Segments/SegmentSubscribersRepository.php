@@ -3,6 +3,7 @@
 namespace MailPoet\Segments;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -78,8 +79,10 @@ class SegmentSubscribersRepository {
   }
 
   public function getDynamicSubscribersCount(DynamicSegmentFilterData $filter): int {
+    $segment = new SegmentEntity('temporary segment', SegmentEntity::TYPE_DYNAMIC, '');
+    $segment->addDynamicFilter(new DynamicSegmentFilterEntity($segment, $filter));
     $queryBuilder = $this->createCountQueryBuilder();
-    $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, null, null, [$filter]);
+    $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment, null);
     $statement = $this->executeQuery($queryBuilder);
     $result = $statement->fetchColumn();
     return (int)$result;
@@ -168,23 +171,17 @@ class SegmentSubscribersRepository {
     return $queryBuilder;
   }
 
-  /**
-   * @param DynamicSegmentFilterData[] $filters
-   */
   private function filterSubscribersInDynamicSegment(
     QueryBuilder $queryBuilder,
-    ?SegmentEntity $segment,
-    string $status = null,
-    array $filters = []
+    SegmentEntity $segment,
+    string $status = null
   ): QueryBuilder {
-    if ($segment) {
-      $filters = [];
-      $dynamicFilters = $segment->getDynamicFilters();
-      foreach ($dynamicFilters as $dynamicFilter) {
-        $filters[] = $dynamicFilter->getFilterData();
-      }
-
+    $filters = [];
+    $dynamicFilters = $segment->getDynamicFilters();
+    foreach ($dynamicFilters as $dynamicFilter) {
+      $filters[] = $dynamicFilter->getFilterData();
     }
+
     // We don't allow dynamic segment without filers since it would return all subscribers
     // For BC compatibility fetching an empty result
     if (count($filters) === 0) {
