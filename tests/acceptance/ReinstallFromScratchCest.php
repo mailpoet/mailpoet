@@ -59,8 +59,7 @@ class ReinstallFromScratchCest {
       $i->waitForText('imported' . $index . '@from.wordpress');
     }
 
-    $wpUsersCount = count_users();
     $subscribersCount = (int)$i->grabTextFrom('.mailpoet-listing-pages-num');
-    Assert::assertEquals($wpUsersCount['total_users'], $subscribersCount);
+    Assert::assertEquals('7', $subscribersCount);
   }
 }
