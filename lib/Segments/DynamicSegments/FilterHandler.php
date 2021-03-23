@@ -11,7 +11,6 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
-use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -84,9 +83,9 @@ class FilterHandler {
       return $queryBuilder;
     }
 
-    foreach ($subQueries as $subQuery) {
+    foreach ($subQueries as $key => $subQuery) {
       // we need a unique name for each subquery so that we can join them together in the sql query - just make sure the identifier starts with a letter, not a number
-      $subqueryName = 'a' . Security::generateRandomString(5);
+      $subqueryName = 'a' . $key;
       $queryBuilder->innerJoin(
         $subscribersTable,
         "($subQuery)",
