@@ -36,7 +36,9 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function testItSynchronizesNewRegisteredCustomer() {
-    $user = $this->insertRegisteredCustomer();
+    $firstName = 'Test First';
+    $lastName = 'Test Last';
+    $user = $this->insertRegisteredCustomerWithOrder(null, ['first_name' => $firstName, 'last_name' => $lastName]);
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'first_name' => 'Mike',
@@ -55,13 +57,17 @@ class WooCommerceTest extends \MailPoetTest {
       ->findOne();
     expect($subscriber)->notEmpty();
     expect($subscriber->email)->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect($subscriber->firstName)->equals($firstName);
+    expect($subscriber->lastName)->equals($lastName);
     expect($subscriber->isWoocommerceUser)->equals(1);
     expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
     expect($subscriber->deletedAt)->equals(null);
   }
 
   public function testItSynchronizesUpdatedRegisteredCustomer() {
-    $user = $this->insertRegisteredCustomer();
+    $firstName = 'Test First';
+    $lastName = 'Test Last';
+    $user = $this->insertRegisteredCustomerWithOrder(null, ['first_name' => $firstName, 'last_name' => $lastName]);
     $subscriber = Subscriber::create();
     $subscriber->hydrate([
       'first_name' => 'Mike',
@@ -79,6 +85,8 @@ class WooCommerceTest extends \MailPoetTest {
       ->findOne();
     expect($subscriber)->notEmpty();
     expect($subscriber->email)->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect($subscriber->firstName)->equals($firstName);
+    expect($subscriber->lastName)->equals($lastName);
     expect($subscriber->isWoocommerceUser)->equals(1);
     expect($subscriber->source)->equals(Source::WORDPRESS_USER); // no overriding
     expect($subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED); // no overriding
@@ -116,6 +124,8 @@ class WooCommerceTest extends \MailPoetTest {
       ->where('email', $guest['email'])
       ->findOne();
     expect($subscriber)->notEmpty();
+    expect($subscriber->firstName)->equals($guest['first_name']);
+    expect($subscriber->lastName)->equals($guest['last_name']);
     expect($subscriber->isWoocommerceUser)->equals(1);
     expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
     expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
