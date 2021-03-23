@@ -118,8 +118,7 @@ class WooCommerceTest extends \MailPoetTest {
   public function testItSynchronizesNewGuestCustomer() {
     $this->settings->set('signup_confirmation', ['enabled' => true]);
     $guest = $this->insertGuestCustomer();
-    $hook = 'woocommerce_checkout_update_order_meta';
-    $this->woocommerceSegment->synchronizeGuestCustomer($guest['order_id'], $hook);
+    $this->woocommerceSegment->synchronizeGuestCustomer($guest['order_id']);
     $subscriber = Segment::getWooCommerceSegment()->subscribers()
       ->where('email', $guest['email'])
       ->findOne();
@@ -135,8 +134,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation', ['enabled' => false]);
     $this->settings->resetCache();
     $guest = $this->insertGuestCustomer();
-    $hook = 'woocommerce_checkout_update_order_meta';
-    $this->woocommerceSegment->synchronizeGuestCustomer($guest['order_id'], $hook);
+    $this->woocommerceSegment->synchronizeGuestCustomer($guest['order_id']);
     $subscriber = Segment::getWooCommerceSegment()->subscribers()
       ->where('email', $guest['email'])
       ->findOne();

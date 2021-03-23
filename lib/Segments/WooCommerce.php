@@ -106,7 +106,7 @@ class WooCommerce {
     return true;
   }
 
-  public function synchronizeGuestCustomer($orderId, $currentFilter = null) {
+  public function synchronizeGuestCustomer($orderId) {
     $wcOrder = $this->wp->getPost($orderId);
     $wcSegment = Segment::getWooCommerceSegment();
 
