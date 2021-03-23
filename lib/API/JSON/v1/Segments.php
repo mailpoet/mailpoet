@@ -13,6 +13,7 @@ use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Listing;
+use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Segments\SegmentListingRepository;
 use MailPoet\Segments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
@@ -51,6 +52,9 @@ class Segments extends APIEndpoint {
   /** @var SegmentListingRepository */
   private $segmentListingRepository;
 
+  /** @var NewsletterSegmentRepository */
+  private $newsletterSegmentRepository;
+
   public function __construct(
     Listing\Handler $listingHandler,
     SegmentsRepository $segmentsRepository,
@@ -59,7 +63,8 @@ class Segments extends APIEndpoint {
     SegmentSaveController $segmentSavecontroller,
     SubscribersRepository $subscribersRepository,
     WooCommerce $wooCommerce,
-    WP $wpSegment
+    WP $wpSegment,
+    NewsletterSegmentRepository $newsletterSegmentRepository
   ) {
     $this->listingHandler = $listingHandler;
     $this->wooCommerceSync = $wooCommerce;
@@ -69,6 +74,7 @@ class Segments extends APIEndpoint {
     $this->subscribersRepository = $subscribersRepository;
     $this->wpSegment = $wpSegment;
     $this->segmentListingRepository = $segmentListingRepository;
+    $this->newsletterSegmentRepository = $newsletterSegmentRepository;
   }
 
   public function get($data = []) {
@@ -147,32 +153,45 @@ class Segments extends APIEndpoint {
 
   public function trash($data = []) {
     $segment = $this->getSegment($data);
-    if ($segment instanceof SegmentEntity) {
-      if (!$this->isTrashOrRestoreAllowed($segment)) {
-        return $this->errorResponse([
-          APIError::FORBIDDEN => WPFunctions::get()->__('This list cannot be moved to trash.', 'mailpoet'),
-        ]);
-      }
-      // When the segment is of type WP_USERS we want to trash all subscribers who aren't subscribed in another list
-      if ($segment->getType() === SegmentEntity::TYPE_WP_USERS) {
-        $subscribers = $this->subscribersRepository->findExclusiveSubscribersBySegment((int)$segment->getId());
-        $subscriberIds = array_map(function (SubscriberEntity $subscriberEntity): int {
-          return (int)$subscriberEntity->getId();
-        }, $subscribers);
-        $this->subscribersRepository->bulkTrash($subscriberIds);
-      }
+    if (!$segment instanceof SegmentEntity) {
 
-      $this->segmentsRepository->bulkTrash([$segment->getId()], $segment->getType());
-      $this->segmentsRepository->refresh($segment);
-      return $this->successResponse(
-        $this->segmentsResponseBuilder->build($segment),
-        ['count' => 1]
-      );
-    } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => WPFunctions::get()->__('This list does not exist.', 'mailpoet'),
       ]);
     }
+
+    if (!$this->isTrashOrRestoreAllowed($segment)) {
+      return $this->errorResponse([
+        APIError::FORBIDDEN => WPFunctions::get()->__('This list cannot be moved to trash.', 'mailpoet'),
+      ]);
+    }
+
+    $activelyUsedNewslettersSubjects = $this->newsletterSegmentRepository->getSubjectsOfActivelyUsedEmailsForSegments([$segment->getId()]);
+    if (isset($activelyUsedNewslettersSubjects[$segment->getId()])) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => str_replace(
+          '%$1s',
+          "'" . join("', '", $activelyUsedNewslettersSubjects[$segment->getId()] ) . "'",
+          _x('List cannot be deleted because it’s used for %$1s email', 'Alert shown when trying to delete segment, which is assigned to any automatic emails.', 'mailpoet')
+        ),
+      ]);
+    }
+
+    // When the segment is of type WP_USERS we want to trash all subscribers who aren't subscribed in another list
+    if ($segment->getType() === SegmentEntity::TYPE_WP_USERS) {
+      $subscribers = $this->subscribersRepository->findExclusiveSubscribersBySegment((int)$segment->getId());
+      $subscriberIds = array_map(function (SubscriberEntity $subscriberEntity): int {
+        return (int)$subscriberEntity->getId();
+      }, $subscribers);
+      $this->subscribersRepository->bulkTrash($subscriberIds);
+    }
+
+    $this->segmentsRepository->bulkTrash([$segment->getId()], $segment->getType());
+    $this->segmentsRepository->refresh($segment);
+    return $this->successResponse(
+      $this->segmentsResponseBuilder->build($segment),
+      ['count' => 1]
+    );
   }
 
   public function delete($data = []) {
