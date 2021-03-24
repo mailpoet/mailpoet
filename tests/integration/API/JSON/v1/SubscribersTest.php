@@ -16,6 +16,7 @@ use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\FormsRepository;
@@ -231,6 +232,31 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->errors[0]['message'])
       ->equals('Your email address is invalid!');
     expect($subscriber->getSource())->equals('administrator');
+  }
+
+  public function testItCanSaveANewSubscriberWithCustomField() {
+    $customField = new CustomFieldEntity();
+    $customField->setType(CustomFieldEntity::TYPE_TEXT);
+    $customField->setName('test field');
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+
+    $validData = [
+      "cf_{$customField->getId()}" => 'testing',
+      'email' => 'raul.doe@mailpoet.com',
+      'first_name' => 'Raul',
+      'last_name' => 'Doe',
+    ];
+
+    $response = $this->endpoint->save($validData);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    $this->entityManager->clear();
+    $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
+    $subscriber = $subscriberRepository->findOneBy(['email' => 'raul.doe@mailpoet.com']);
+    expect($response->data['email'])->equals('raul.doe@mailpoet.com');
+    expect($response->data['id'])->equals($subscriber->getId());
+    expect($response->data['status'])->equals($subscriber->getStatus());
+    expect($response->data["cf_{$customField->getId()}"])->equals('testing');
   }
 
   public function testItCanSaveAnExistingSubscriber() {
@@ -921,6 +947,7 @@ class SubscribersTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(CustomFieldEntity::class);
+    $this->truncateEntity(SubscriberCustomFieldEntity::class);
     $this->diContainer->get(SettingsRepository::class)->truncate();
     ORM::raw_execute('TRUNCATE ' . SubscriberIP::$_table);
   }
