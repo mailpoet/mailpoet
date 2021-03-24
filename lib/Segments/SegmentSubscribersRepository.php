@@ -55,24 +55,37 @@ class SegmentSubscribersRepository {
   }
 
   public function getSubscribersCountBySegmentIds(array $segmentIds, string $status = null): int {
+    $segmentRepository = $this->entityManager->getRepository(SegmentEntity::class);
+    $segments = $segmentRepository->findBy(['id' => $segmentIds]);
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $subscribersSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $queryBuilder = $this->createCountQueryBuilder();
 
-    $queryBuilder = $this->createCountQueryBuilder()
-      ->join(
-        $subscribersTable,
-        $subscribersSegmentsTable,
-        'subsegment',
-        "subsegment.subscriber_id = $subscribersTable.id"
-      )->andWhere("$subscribersTable.deleted_at IS NULL")
-      ->andWhere("subsegment.segment_id IN (:segmentIds)")
-      ->setParameter('segmentIds', $segmentIds, Connection::PARAM_INT_ARRAY);
+    $subQueries = [];
+    foreach ($segments as $segment) {
+      $segmentQb = $this->createCountQueryBuilder();
+      $segmentQb->select("{$subscribersTable}.id AS inner_id");
 
-    if ($status) {
-      $queryBuilder->andWhere("$subscribersTable.status = :status")
-        ->andWhere("subsegment.status = :status")
-        ->setParameter('status', $status);
+      if ($segment->isStatic()) {
+        $segmentQb = $this->filterSubscribersInStaticSegment($segmentQb, $segment, $status);
+      } else {
+        $segmentQb = $this->filterSubscribersInDynamicSegment($segmentQb, $segment, $status);
+      }
+
+      // inner parameters have to be merged to outer queryBuilder
+      $queryBuilder->setParameters(array_merge(
+        $segmentQb->getParameters(),
+        $queryBuilder->getParameters()
+      ));
+      $subQueries[] = $segmentQb->getSQL();
     }
+
+    $queryBuilder->innerJoin(
+      $subscribersTable,
+      sprintf('(%s)', join(' UNION ', $subQueries)),
+      'inner_subscribers',
+      "inner_subscribers.inner_id = {$subscribersTable}.id"
+    );
+
     $statement = $this->executeQuery($queryBuilder);
     $result = $statement->fetchColumn();
     return (int)$result;
@@ -156,13 +169,14 @@ class SegmentSubscribersRepository {
   ): QueryBuilder {
     $subscribersSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $parameterName = "segment_{$segment->getId()}"; // When we use this method more times the parameter name has to be unique
     $queryBuilder = $queryBuilder->join(
       $subscribersTable,
       $subscribersSegmentsTable,
       'subsegment',
-      "subsegment.subscriber_id = $subscribersTable.id AND subsegment.segment_id = :segment"
+      "subsegment.subscriber_id = $subscribersTable.id AND subsegment.segment_id = :$parameterName"
     )->andWhere("$subscribersTable.deleted_at IS NULL")
-      ->setParameter('segment', $segment->getId());
+      ->setParameter($parameterName, $segment->getId());
     if ($status) {
       $queryBuilder = $queryBuilder->andWhere("$subscribersTable.status = :status")
         ->andWhere("subsegment.status = :status")
