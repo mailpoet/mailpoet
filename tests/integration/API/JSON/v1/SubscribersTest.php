@@ -215,6 +215,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($subscriberSegments->get(0)->getName())->equals($this->segment1->getName());
     expect($subscriberSegments->get(1)->getName())->equals($this->segment2->getName());
 
+    $this->entityManager->clear();
     $response = $this->endpoint->save(/* missing data */);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])
@@ -224,6 +225,7 @@ class SubscribersTest extends \MailPoetTest {
       'email' => 'john.doe@invalid',
     ];
 
+    $this->entityManager->clear();
     $response = $this->endpoint->save($invalidData);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])
