@@ -7,27 +7,23 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\Config\AccessControl;
+use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing;
 use MailPoet\Models\Form;
-use MailPoet\Models\Segment;
 use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
-use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
-use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscribers\SubscriberListingRepository;
+use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
@@ -56,9 +52,6 @@ class Subscribers extends APIEndpoint {
   /** @var Captcha */
   private $subscriptionCaptcha;
 
-  /** @var WPFunctions */
-  private $wp;
-
   /** @var SettingsController */
   private $settings;
 
@@ -74,9 +67,6 @@ class Subscribers extends APIEndpoint {
   /** @var FieldNameObfuscator */
   private $fieldNameObfuscator;
 
-  /** @var Unsubscribes */
-  private $unsubscribesTracker;
-
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
@@ -89,48 +79,44 @@ class Subscribers extends APIEndpoint {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
-  /** @var WelcomeScheduler */
-  private $welcomeScheduler;
-
   /** @var FormsRepository */
   private $formsRepository;
+
+  /** @var SubscriberSaveController */
+  private $saveController;
 
   public function __construct(
     SubscriberActions $subscriberActions,
     RequiredCustomFieldValidator $requiredCustomFieldValidator,
     Listing\Handler $listingHandler,
     Captcha $subscriptionCaptcha,
-    WPFunctions $wp,
     SettingsController $settings,
     CaptchaSession $captchaSession,
     ConfirmationEmailMailer $confirmationEmailMailer,
     SubscriptionUrlFactory $subscriptionUrlFactory,
-    Unsubscribes $unsubscribesTracker,
     SubscribersRepository $subscribersRepository,
     SubscribersResponseBuilder $subscribersResponseBuilder,
     SubscriberListingRepository $subscriberListingRepository,
     SegmentsRepository $segmentsRepository,
     FieldNameObfuscator $fieldNameObfuscator,
-    WelcomeScheduler $welcomeScheduler,
-    FormsRepository $formsRepository
+    FormsRepository $formsRepository,
+    SubscriberSaveController $saveController
   ) {
     $this->subscriberActions = $subscriberActions;
     $this->requiredCustomFieldValidator = $requiredCustomFieldValidator;
     $this->listingHandler = $listingHandler;
     $this->subscriptionCaptcha = $subscriptionCaptcha;
-    $this->wp = $wp;
     $this->settings = $settings;
     $this->captchaSession = $captchaSession;
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->fieldNameObfuscator = $fieldNameObfuscator;
-    $this->unsubscribesTracker = $unsubscribesTracker;
     $this->subscribersRepository = $subscribersRepository;
     $this->subscribersResponseBuilder = $subscribersResponseBuilder;
     $this->subscriberListingRepository = $subscriberListingRepository;
     $this->segmentsRepository = $segmentsRepository;
-    $this->welcomeScheduler = $welcomeScheduler;
     $this->formsRepository = $formsRepository;
+    $this->saveController = $saveController;
   }
 
   public function get($data = []) {
@@ -358,83 +344,15 @@ class Subscribers extends APIEndpoint {
   }
 
   public function save($data = []) {
-    if (empty($data['segments'])) {
-      $data['segments'] = [];
-    }
-    $data['segments'] = array_merge($data['segments'], $this->getNonDefaultSubscribedSegments($data));
-    $newSegments = $this->findNewSegments($data);
-    if (isset($data['id']) && (int)$data['id'] > 0) {
-      $oldSubscriber = Subscriber::findOne((int)$data['id']);
-      if (
-        isset($data['status'])
-        && ($data['status'] === SubscriberEntity::STATUS_UNSUBSCRIBED)
-        && ($oldSubscriber instanceof Subscriber)
-        && ($oldSubscriber->status !== SubscriberEntity::STATUS_UNSUBSCRIBED)
-      ) {
-        $currentUser = $this->wp->wpGetCurrentUser();
-        $this->unsubscribesTracker->track(
-          (int)$oldSubscriber->id,
-          StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR,
-          null,
-          $currentUser->display_name // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        );
-      }
-    }
-    $subscriber = Subscriber::createOrUpdate($data);
-    $errors = $subscriber->getErrors();
-
-    if (!empty($errors)) {
-      return $this->badRequest($errors);
-    }
-
-    if ($subscriber->isNew()) {
-      $subscriber = Source::setSource($subscriber, Source::ADMINISTRATOR);
-      $subscriber->save();
-    }
-
-    if (!empty($newSegments)) {
-      $this->welcomeScheduler->scheduleSubscriberWelcomeNotification($subscriber->id, $newSegments);
+    try {
+      $subscriber = $this->saveController->save($data);
+    } catch (ValidationException $validationException) {
+      return $this->badRequest([$this->getErrorMessage($validationException)]);
     }
 
     return $this->successResponse(
-      Subscriber::findOne($subscriber->id)->asArray()
+      $this->subscribersResponseBuilder->build($subscriber)
     );
-  }
-
-  private function getNonDefaultSubscribedSegments(array $data) {
-    if (!isset($data['id']) || (int)$data['id'] <= 0) {
-      return [];
-    }
-
-    $subscribedSegmentIds = [];
-    $nonDefaultSegment = Segment::select('id')
-      ->whereNotEqual('type', Segment::TYPE_DEFAULT)
-      ->findArray();
-    $nonDefaultSegmentIds = array_map(function($segment) {
-      return $segment['id'];
-    }, $nonDefaultSegment);
-
-    $subscribedSegments = SubscriberSegment::select('segment_id')
-      ->where('subscriber_id', $data['id'])
-      ->where('status', Subscriber::STATUS_SUBSCRIBED)
-      ->whereIn('segment_id', $nonDefaultSegmentIds)
-      ->findArray();
-    $subscribedSegmentIds = array_map(function($segment) {
-      return $segment['segment_id'];
-    }, $subscribedSegments);
-
-    return $subscribedSegmentIds;
-  }
-
-  private function findNewSegments(array $data) {
-    $oldSegmentIds = [];
-    if (isset($data['id']) && (int)$data['id'] > 0) {
-      $oldSegments = SubscriberSegment::where('subscriber_id', $data['id'])->findMany();
-      foreach ($oldSegments as $oldSegment) {
-        $oldSegmentIds[] = $oldSegment->segmentId;
-      }
-    }
-    return array_diff($data['segments'], $oldSegmentIds);
   }
 
   public function restore($data = []) {
@@ -564,5 +482,16 @@ class Subscribers extends APIEndpoint {
       return array_intersect($submittedSegmentIds, $segmentBlocksSegmentIds);
     }
     return $formEntity->getSettingsSegmentIds();
+  }
+
+  private function getErrorMessage(ValidationException $exception): string {
+    $exceptionMessage = $exception->getMessage();
+    if (strpos($exceptionMessage, 'This value should not be blank.') !== false) {
+      return WPFunctions::get()->__('Please enter your email address', 'mailpoet');
+    } elseif (strpos($exceptionMessage, 'This value is not a valid email address.') !== false) {
+      return WPFunctions::get()->__('Your email address is invalid!', 'mailpoet');
+    }
+
+    return WPFunctions::get()->__('Unexpected error.', 'mailpoet');
   }
 }

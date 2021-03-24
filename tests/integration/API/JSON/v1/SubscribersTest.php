@@ -31,17 +31,16 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberIP;
 use MailPoet\Models\SubscriberSegment;
-use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
-use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscribers\SubscriberListingRepository;
+use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
@@ -81,6 +80,9 @@ class SubscribersTest extends \MailPoetTest {
   /** @var CaptchaSession */
   private $captchaSession;
 
+  /** @var SubscribersResponseBuilder */
+  private $responseBuilder;
+
   public function _before() {
     parent::_before();
     $this->cleanup();
@@ -88,25 +90,24 @@ class SubscribersTest extends \MailPoetTest {
     $settings = $container->get(SettingsController::class);
     $wp = $container->get(Functions::class);
     $this->captchaSession = new CaptchaSession($container->get(Functions::class));
+    $this->responseBuilder = $container->get(SubscribersResponseBuilder::class);
     $obfuscator = new FieldNameObfuscator($wp);
     $this->endpoint = new Subscribers(
       $container->get(SubscriberActions::class),
       $container->get(RequiredCustomFieldValidator::class),
       $container->get(Handler::class),
       $container->get(Captcha::class),
-      $wp,
       $settings,
       $this->captchaSession,
       $container->get(ConfirmationEmailMailer::class),
       new SubscriptionUrlFactory($wp, $settings, new LinkTokens),
-      $container->get(Unsubscribes::class),
       $container->get(SubscribersRepository::class),
-      $container->get(SubscribersResponseBuilder::class),
+      $this->responseBuilder,
       $container->get(SubscriberListingRepository::class),
       $container->get(SegmentsRepository::class),
       $obfuscator,
-      $container->get(WelcomeScheduler::class),
-      $container->get(FormsRepository::class)
+      $container->get(FormsRepository::class),
+      $container->get(SubscriberSaveController::class)
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
@@ -202,6 +203,7 @@ class SubscribersTest extends \MailPoetTest {
 
     $response = $this->endpoint->save($validData);
     expect($response->status)->equals(APIResponse::STATUS_OK);
+    $this->entityManager->clear();
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneBy(['email' => 'raul.doe@mailpoet.com']);
     expect($response->data['email'])->equals('raul.doe@mailpoet.com');
@@ -242,7 +244,7 @@ class SubscribersTest extends \MailPoetTest {
     $response = $this->endpoint->save($subscriberData);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Subscriber::findOne($this->subscriber2->getId())->asArray()
+      $this->responseBuilder->build($this->subscriber2)
     );
     expect($response->data['first_name'])->equals('Super Jane');
     expect($response->data['source'])->equals('api');
@@ -260,7 +262,7 @@ class SubscribersTest extends \MailPoetTest {
     $response = $this->endpoint->save($subscriberData);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      Subscriber::findOne($this->subscriber2->getId())->asArray()
+      $this->responseBuilder->build($this->subscriber2)
     );
     expect($this->subscriber2->getSegments()->count())->equals(0);
   }
