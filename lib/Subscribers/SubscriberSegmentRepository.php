@@ -83,6 +83,7 @@ class SubscriberSegmentRepository extends Repository {
       $subscriberSegment->setStatus($status);
     } else {
       $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, $status);
+      $subscriber->getSubscriberSegments()->add($subscriberSegment);
       $this->entityManager->persist($subscriberSegment);
     }
     $this->entityManager->flush();
