@@ -79,7 +79,18 @@ class SubscribersResponseBuilder {
       'last_name' => $subscriberEntity->getLastName(),
       'first_name' => $subscriberEntity->getFirstName(),
       'email' => $subscriberEntity->getEmail(),
-      'deleted_at' => ($deletedAt = $subscriberEntity->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null, 
+      'created_at' => $subscriberEntity->getCreatedAt()->format(self::DATE_FORMAT),
+      'updated_at' => $subscriberEntity->getUpdatedAt()->format(self::DATE_FORMAT),
+      'deleted_at' => ($deletedAt = $subscriberEntity->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
+      'subscribed_ip' => $subscriberEntity->getSubscribedIp(),
+      'confirmed_ip' => $subscriberEntity->getConfirmedIp(),
+      'confirmed_at' => ($confirmedAt = $subscriberEntity->getConfirmedAt()) ? $confirmedAt->format(self::DATE_FORMAT) : null,
+      'last_subscribed_at' => ($lastSubscribedAt = $subscriberEntity->getLastSubscribedAt()) ? $lastSubscribedAt->format(self::DATE_FORMAT) : null,
+      'unconfirmed_data' => $subscriberEntity->getUnconfirmedData(),
+      'source' => $subscriberEntity->getSource(),
+      'count_confirmations' => $subscriberEntity->getConfirmationsCount(),
+      'unsubscribe_token' => $subscriberEntity->getUnsubscribeToken(),
+      'link_token' => $subscriberEntity->getLinkToken(),
     ];
     $data = $this->buildCustomFields($subscriberEntity, $data);
     return $data;
