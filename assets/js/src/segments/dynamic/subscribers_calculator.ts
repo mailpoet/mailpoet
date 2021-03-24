@@ -1,27 +1,9 @@
 import MailPoet from 'mailpoet';
 import _ from 'lodash';
 
-interface FormItem {
-  segmentType: string;
-}
-
-interface WordpressRoleFormItem extends FormItem {
-  wordpressRole?: string;
-}
-
-interface WooCommerceFormItem extends FormItem {
-  action?: string;
-  category_id?: string;
-  product_id?: string;
-}
-
-interface EmailFormItem extends FormItem {
-  action?: string;
-  newsletter_id?: string;
-  link_id?: string;
-}
-
-type AnyFormItem = WordpressRoleFormItem | WooCommerceFormItem | EmailFormItem;
+import {
+  AnyFormItem,
+} from './types';
 
 export interface Result {
   count: number;

@@ -8,11 +8,11 @@ import MailPoet from 'mailpoet';
 import RoutedTabs from 'common/tabs/routed_tabs';
 import Tab from 'common/tabs/tab';
 import SegmentList from 'segments/list.jsx';
-import DynamicSegmentList from 'segments/dynamic_segments_list.jsx';
 import SegmentForm from 'segments/form.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
-import DynamicSegmentForm from './dynamic_segments_form';
+import DynamicSegmentForm from './dynamic/dynamic_segments_form';
+import DynamicSegmentList from './dynamic/dynamic_segments_list.jsx';
 import ListHeading from './heading';
 
 const container = document.getElementById('segments_container');
