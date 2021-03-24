@@ -4,6 +4,7 @@ namespace MailPoet\Util;
 
 use Exception;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -70,7 +71,7 @@ class Security {
 
   public function generateUnsubscribeTokenByEntity($entity): string {
     $repository = null;
-    if ($entity instanceof NewsletterEntity) {
+    if ($entity instanceof NewsletterEntity || $entity instanceof SubscriberEntity) {
       $repository = $this->newslettersRepository;
     } else {
       throw new Exception('Unsupported Entity type');
