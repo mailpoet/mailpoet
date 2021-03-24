@@ -3,7 +3,6 @@
 namespace MailPoet\API\JSON\ResponseBuilders;
 
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\WP\Functions;
 
@@ -13,19 +12,14 @@ class SegmentsResponseBuilder {
   /** @var Functions */
   private $wp;
 
-  /** @var NewsletterSegmentRepository */
-  private $newsletterSegmentRepository;
-
   /** @var SegmentSubscribersRepository */
   private $segmentSubscriberRepository;
 
   public function __construct(
     Functions $wp,
-    SegmentSubscribersRepository $segmentSubscriberRepository,
-    NewsletterSegmentRepository $newsletterSegmentRepository
+    SegmentSubscribersRepository $segmentSubscriberRepository
   ) {
     $this->wp = $wp;
-    $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->segmentSubscriberRepository = $segmentSubscriberRepository;
   }
 
@@ -43,24 +37,15 @@ class SegmentsResponseBuilder {
 
   public function buildForListing(array $segments): array {
     $data = [];
-    $segmendIds = array_map(function(SegmentEntity $segment): int {
-      return (int)$segment->getId();
-    }, $segments);
-    $scheduledNewsletterSubjectsMap = $this->newsletterSegmentRepository->getScheduledNewsletterSubjectsBySegmentIds($segmendIds);
-    $automatedNewsletterSubjectsMap = $this->newsletterSegmentRepository->getAutomatedEmailSubjectsBySegmentIds($segmendIds);
-    $sendingNewsletterSubjectsMap = $this->newsletterSegmentRepository->getSendingEmailSubjectsBySegmentIds($segmendIds);
     foreach ($segments as $segment) {
-      $data[] = $this->buildListingItem($segment, $scheduledNewsletterSubjectsMap, $automatedNewsletterSubjectsMap, $sendingNewsletterSubjectsMap);
+      $data[] = $this->buildListingItem($segment);
     }
     return $data;
   }
 
-  private function buildListingItem(SegmentEntity $segment, array $scheduledNewsletterSubjectsMap, array $automatedNewsletterSubjectsMap, array $sendingNewsletterSubjectsMap): array {
+  private function buildListingItem(SegmentEntity $segment): array {
     $data = $this->build($segment);
 
-    $data['automated_emails_subjects'] = $automatedNewsletterSubjectsMap[$segment->getId()] ?? [];
-    $data['scheduled_emails_subjects'] = $scheduledNewsletterSubjectsMap[$segment->getId()] ?? [];
-    $data['sending_emails_subjects'] = $sendingNewsletterSubjectsMap[$segment->getId()] ?? [];
     $data['subscribers_count'] = $this->segmentSubscriberRepository->getSubscribersStatisticsCount($segment);
     $data['subscribers_url'] = $this->wp->adminUrl(
       'admin.php?page=mailpoet-subscribers#/filter[segment=' . $segment->getId() . ']'
