@@ -1,10 +1,20 @@
 import Marionette from 'backbone.marionette';
 import BackboneRadio from 'backbone.radio';
 import jQuery from 'jquery';
+import _ from 'underscore'; // eslint-disable-line func-names
 
-var Radio = BackboneRadio;
+var Radio;
+var AppView;
+var EditorApplication;
+var app;
 
-var AppView = Marionette.View.extend({
+// newsletter editor requires underscore on window.
+// For other code to be able to use lodash we need to make sure underscore is present on window.
+window._ = _;
+
+Radio = BackboneRadio;
+
+AppView = Marionette.View.extend({
   el: '#mailpoet_editor',
   regions: {
     stylesRegion: '#mailpoet_editor_styles',
@@ -28,7 +38,7 @@ var AppView = Marionette.View.extend({
   },
 });
 
-var EditorApplication = Marionette.Application.extend({
+EditorApplication = Marionette.Application.extend({
   region: '#mailpoet_editor',
 
   onStart: function onStart() {
@@ -53,7 +63,7 @@ var EditorApplication = Marionette.Application.extend({
   },
 });
 
-var app = new EditorApplication();
+app = new EditorApplication();
 window.EditorApplication = app;
 
 export default app;
