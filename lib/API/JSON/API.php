@@ -2,7 +2,6 @@
 
 namespace MailPoet\API\JSON;
 
-use MailPoet\API\JSON\Endpoint;
 use MailPoet\Config\AccessControl;
 use MailPoet\Exception;
 use MailPoet\Settings\SettingsController;
