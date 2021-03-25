@@ -185,6 +185,32 @@ class ManageListsCest {
     $i->waitForText('test-editor@example.com', 5);
   }
 
+  public function cantTrashOrBulkTrashActivelyUsedList(\AcceptanceTester $i) {
+    $listTitle = 'Active List';
+    $subject = 'Post notification';
+    $segmentFactory = new Segment();
+    $segment = $segmentFactory
+      ->withName($listTitle)
+      ->create();
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory->withPostNotificationsType()
+      ->withSegments([$segment])
+      ->withSubject($subject)
+      ->create();
+
+    $i->wantTo('Check that user can’t delete actively used list');
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForText($listTitle, 5, '[data-automation-id="listing_item_' . $segment->getId() . '"]');
+    $i->clickItemRowActionByItemName($listTitle, 'Move to trash');
+    $i->waitForText("List cannot be deleted because it’s used for '{$subject}' email");
+    $i->seeNoJSErrors();
+    $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment->getId() . '"]');
+    $i->waitForText('Move to trash');
+    $i->click('Move to trash');
+    $i->waitForText('0 lists were moved to the trash.');
+  }
+
   public function cannotDisableWPUserList(\AcceptanceTester $i) {
     $listName = 'WordPress Users';
     $subject = 'Blocking Post Notification';
