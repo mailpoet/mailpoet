@@ -130,9 +130,6 @@ class ContainerConfigurator implements IContainerConfigurator {
       ->setFactory([new Reference(\MailPoet\Doctrine\Validator\ValidatorFactory::class), 'createValidator']);
     $container->autowire(\MailPoet\PostEditorBlocks\PostEditorBlock::class);
     $container->autowire(\MailPoet\PostEditorBlocks\SubscriptionFormBlock::class);
-    // Dynamic segments
-    $container->autowire(\MailPoet\DynamicSegments\Mappers\DBMapper::class);
-    $container->autowire(\MailPoet\DynamicSegments\Persistence\Loading\SingleSegmentLoader::class)->setPublic(true);
     // Cron
     $container->autowire(\MailPoet\Cron\CronHelper::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\CronTrigger::class)->setPublic(true);

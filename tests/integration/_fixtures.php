@@ -1,9 +1,6 @@
 <?php
 
 use Codeception\Util\Fixtures;
-use MailPoet\DynamicSegments\Filters\Filter;
-use MailPoet\Models\Subscriber;
-use MailPoetVendor\Idiorm\ORM;
 
 $newsletterBodyText =
 
@@ -168,23 +165,3 @@ Fixtures::add(
     ],
   ]
 );
-
-/**
- * Simple class mocking dynamic segment filter.
- */
-// phpcs:ignore PSR1.Classes.ClassDeclaration, Squiz.Classes.ClassFileName
-class DynamicSegmentFilter implements Filter {
-  protected $ids;
-
-  public function __construct($ids) {
-    $this->ids = $ids;
-  }
-
-  public function toSql(ORM $orm) {
-    return $orm->whereIn(Subscriber::$_table . '.id', $this->ids);
-  }
-
-  public function toArray() {
-    return [];
-  }
-}

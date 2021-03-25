@@ -2,7 +2,6 @@
 
 namespace MailPoet\Models;
 
-use MailPoet\DynamicSegments\Filters\Filter;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Models\Segment as MailPoetSegment;
 use MailPoet\WP\Functions as WPFunctions;
@@ -18,23 +17,6 @@ use MailPoet\WP\Functions as WPFunctions;
 class DynamicSegment extends MailPoetSegment {
 
   const TYPE_DYNAMIC = SegmentEntity::TYPE_DYNAMIC;
-
-  /** @var Filter[] */
-  private $filters = [];
-
-  /**
-   * @return Filter[]
-   */
-  public function getFilters() {
-    return $this->filters;
-  }
-
-  /**
-   * @param Filter[] $filters
-   */
-  public function setFilters(array $filters) {
-    $this->filters = $filters;
-  }
 
   public function save() {
     $this->set('type', DynamicSegment::TYPE_DYNAMIC);
