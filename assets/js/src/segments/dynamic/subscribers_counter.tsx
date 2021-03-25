@@ -67,6 +67,11 @@ const SubscribersCounter: React.FunctionComponent<Props> = ({ item }: Props) => 
 
     if (isFormValid(item)) {
       load(item);
+    } else {
+      setSubscribersCount({
+        count: undefined,
+        loading: false,
+      });
     }
   }, [item]);
 

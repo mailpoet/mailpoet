@@ -142,6 +142,13 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->see($value, $element);
   }
 
+  public function selectOptionInReactSelect($value, $selector) {
+    $i = $this;
+    $i->waitForElement($selector);
+    $i->fillField($selector . ' input', $value);
+    $i->pressKey($selector . ' input', WebDriverKeys::RETURN_KEY);
+  }
+
   /**
    * Navigate to the editor for a newsletter.
    *

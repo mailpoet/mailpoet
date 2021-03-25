@@ -154,7 +154,7 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
                   id="field_name"
                   defaultValue={item.name}
                   onChange={
-                    (e): void => setItem(assign({ name: e.target.value }, item))
+                    (e): void => setItem(assign(item, { name: e.target.value }))
                   }
                 />
               </div>
@@ -176,7 +176,7 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
                   id="field_description"
                   defaultValue={item.description}
                   onChange={
-                    (e): void => setItem(assign({ description: e.target.value }, item))
+                    (e): void => setItem(assign(item, { description: e.target.value }))
                   }
                 />
               </div>
@@ -187,16 +187,16 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
               <label htmlFor="field_filters">{MailPoet.I18n.t('formPageTitle')}</label>
             </h4>
             <div className="mailpoet-form-field">
-              <div className="mailpoet-form-input mailpoet-form-select">
+              <div className="mailpoet-form-input mailpoet-form-select" data-automation-id="select-segment-action">
                 <Select
                   placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
                   options={segmentFilters}
                   value={segmentType}
                   onChange={(newValue: FilterValue): void => {
-                    setItem(assign({
+                    setItem(assign(item, {
                       segmentType: newValue.group,
                       action: newValue.value,
-                    }, item));
+                    }));
                     setSegmentType(newValue);
                   }}
                 />

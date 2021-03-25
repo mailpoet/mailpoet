@@ -93,8 +93,9 @@ class ManageSegmentsCest {
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
-    $i->selectOption('form select[name=segmentType]', 'WordPress user roles');
-    $i->selectOption('form select[name=wordpressRole]', 'Subscriber');
+    $i->fillField(['name' => 'description'], $segmentDesc);
+    $i->selectOptionInReactSelect('has WordPress user role', '[data-automation-id="select-segment-action"]');
+    $i->selectOptionInReactSelect('Subscriber', '[data-automation-id="segment-wordpress-role"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
@@ -105,8 +106,8 @@ class ManageSegmentsCest {
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->fillField(['name' => 'name'], $segmentEditedTitle);
     $i->fillField(['name' => 'description'], $segmentEditedDesc);
-    $i->selectOption('form select[name=segmentType]', 'WordPress user roles');
-    $i->selectOption('form select[name=wordpressRole]', 'Editor');
+    $i->selectOptionInReactSelect('has WordPress user role', '[data-automation-id="select-segment-action"]');
+    $i->selectOptionInReactSelect('Editor', '[data-automation-id="segment-wordpress-role"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
@@ -161,10 +162,8 @@ class ManageSegmentsCest {
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
-    $i->selectOption('form select[name=segmentType]', 'Email');
-    $i->selectOption('form select[name=action]', 'opened');
-    $i->click('.select2-selection--single');
-    $i->selectOptionInSelect2($emailSubject, 'input.select2-search__field');
+    $i->selectOptionInReactSelect('opened', '[data-automation-id="select-segment-action"]');
+    $i->selectOptionInReactSelect($emailSubject, '[data-automation-id="segment-email"]');
     $i->click('Save');
     $i->amOnMailpoetPage('Lists');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
@@ -265,8 +264,8 @@ class ManageSegmentsCest {
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
-    $i->selectOption('form select[name=segmentType]', 'WordPress user roles');
-    $i->selectOption('form select[name=wordpressRole]', 'Editor');
+    $i->selectOptionInReactSelect('has WordPress user role', '[data-automation-id="select-segment-action"]');
+    $i->selectOptionInReactSelect('Editor', '[data-automation-id="segment-wordpress-role"]');
     $i->waitForText('Calculating segment size…');
     $i->waitForText('This segment has 2 subscribers.');
     $i->seeNoJSErrors();
@@ -302,7 +301,7 @@ class ManageSegmentsCest {
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->waitForText('This segment has 2 subscribers.');
     $i->seeNoJSErrors();
-    $i->selectOption('form select[name=wordpressRole]', 'Subscriber');
+    $i->selectOptionInReactSelect('Subscriber', '[data-automation-id="segment-wordpress-role"]');
     $i->waitForText('This segment has 1 subscribers.');
     $i->seeNoJSErrors();
     $i->click('Save');
