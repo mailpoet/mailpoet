@@ -62,14 +62,14 @@ class FormListingRepository extends ListingRepository {
   }
 
   protected function applySearch(QueryBuilder $queryBuilder, string $search) {
-    // TODO: Implement applySearch() method.
+    // the parent class requires this method, but forms listing doesn't currently support this feature.
   }
 
   protected function applyFilters(QueryBuilder $queryBuilder, array $filters) {
-    // TODO: Implement applyFilters() method.
+    // the parent class requires this method, but forms listing doesn't currently support this feature.
   }
 
   protected function applyParameters(QueryBuilder $queryBuilder, array $parameters) {
-    // TODO: Implement applyParameters() method.
+    // the parent class requires this method, but forms listing doesn't currently support this feature.
   }
 }
