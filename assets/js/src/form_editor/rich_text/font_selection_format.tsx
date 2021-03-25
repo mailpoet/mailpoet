@@ -18,7 +18,7 @@ type Props = {
   value: string;
   onChange: (object) => void;
   activeAttributes: {
-    font: string;
+    font?: string;
   };
 }
 
