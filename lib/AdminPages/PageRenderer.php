@@ -64,7 +64,10 @@ class PageRenderer {
       'wp_segment_state' => $wpSegmentState,
     ];
     try {
-      if (class_exists(Debugger::class)) {
+      if (
+        class_exists(Debugger::class)
+        && class_exists(DIPanel::class)
+      ) {
         DIPanel::init();
       }
       echo $this->renderer->render($template, $data + $defaults);

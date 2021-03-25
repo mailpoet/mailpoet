@@ -190,7 +190,11 @@ class API {
         throw new \Exception(__('HTTP request method not allowed.', 'mailpoet'));
       }
 
-      if (class_exists(Debugger::class)) {
+      if (
+        class_exists(Debugger::class)
+        && class_exists(DIPanel::class)
+        && class_exists(ApiPanel::class)
+      ) {
         ApiPanel::init($endpoint, $this->requestMethod, $this->requestData);
         DIPanel::init();
       }
