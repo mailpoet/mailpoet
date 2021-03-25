@@ -1,5 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import MailPoet from 'mailpoet';
+import { validateEmail } from './dynamic_segments_filters/email';
+import { validateWooCommerce } from './dynamic_segments_filters/woocommerce';
+import { validateWordpressRole } from './dynamic_segments_filters/wordpress_role';
+
+import { loadCount } from './subscribers_calculator';
+
+import {
+  AnyFormItem,
+  SegmentTypes,
+} from './types';
 
 interface SubscriberCount {
   count?: number;
@@ -7,21 +17,58 @@ interface SubscriberCount {
   errors?: string[];
 }
 
-interface Item {
-  subscribersCount?: SubscriberCount;
+interface Props {
+  item: AnyFormItem;
 }
 
-interface Props {
-  item: Item;
+const validationMap = {
+  [SegmentTypes.Email]: validateEmail,
+  [SegmentTypes.WooCommerce]: validateWooCommerce,
+  [SegmentTypes.WordPressRole]: validateWordpressRole,
+};
+
+function isFormValid(item: AnyFormItem): boolean {
+  if (validationMap[item.segmentType] === undefined) return false;
+  return validationMap[item.segmentType](item);
 }
 
 const SubscribersCounter: React.FunctionComponent<Props> = ({ item }: Props) => {
-  const subscribersCount = item.subscribersCount;
-  if (subscribersCount === undefined) {
-    return (
-      <span />
-    );
-  }
+  const [subscribersCount, setSubscribersCount] = useState<SubscriberCount>({
+    loading: false,
+    count: undefined,
+    errors: undefined,
+  });
+
+  useEffect(() => {
+    function load(loadItem: AnyFormItem): void {
+      setSubscribersCount({
+        loading: true,
+        count: undefined,
+        errors: undefined,
+      });
+
+      loadCount(loadItem).then((response) => {
+        const finished = {} as SubscriberCount;
+        finished.loading = false;
+        if (response) {
+          finished.count = response.count;
+          finished.errors = response.errors;
+        }
+        setSubscribersCount(finished);
+      }, (errorResponse) => {
+        const finished = {} as SubscriberCount;
+        const errors = errorResponse.errors.map((error) => error.message);
+        finished.loading = false;
+        finished.count = undefined;
+        finished.errors = errors;
+        setSubscribersCount(finished);
+      });
+    }
+
+    if (isFormValid(item)) {
+      load(item);
+    }
+  }, [item]);
 
   if (subscribersCount.errors) {
     return (

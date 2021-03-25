@@ -20,7 +20,7 @@ enum WooCommerceActionTypes {
   PURCHASED_PRODUCT = 'purchasedProduct',
 }
 
-export function validate(formItems: WooCommerceFormItem): boolean {
+export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (!(formItems.action in WooCommerceActionTypes)) {
     return false;
   }
