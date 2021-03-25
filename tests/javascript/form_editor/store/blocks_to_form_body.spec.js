@@ -403,7 +403,7 @@ describe('Blocks to Form Body', () => {
       attributes: {
         content: 'Heading content',
         level: 3,
-        align: 'center',
+        textAlign: 'center',
         anchor: 'anchor',
         className: 'class',
         style: {

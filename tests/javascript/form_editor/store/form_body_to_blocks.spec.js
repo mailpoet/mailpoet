@@ -651,7 +651,7 @@ describe('Form Body To Blocks', () => {
     const [block] = formBodyToBlocks([heading]);
     expect(block.attributes.content).to.be.equal('Content');
     expect(block.attributes.level).to.be.equal(1);
-    expect(block.attributes.align).to.be.equal('right');
+    expect(block.attributes.textAlign).to.be.equal('right');
     expect(block.attributes.className).to.be.equal('class');
     expect(block.attributes.anchor).to.be.equal('anchor');
     expect(block.attributes.style.color.text).to.be.equal('#f78da7');

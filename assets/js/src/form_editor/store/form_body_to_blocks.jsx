@@ -257,7 +257,7 @@ export const formBodyToBlocksFactory = (
               ...mapped.attributes,
               content: item.params?.content || '',
               level,
-              align: item.params?.align,
+              textAlign: item.params?.align,
               anchor: item.params?.anchor,
               className: item.params?.class_name,
             },

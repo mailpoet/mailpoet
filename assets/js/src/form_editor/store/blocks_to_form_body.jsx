@@ -116,7 +116,7 @@ const blocksToFormBodyFactory = (
             params: {
               content: block.attributes.content,
               level: block.attributes.level,
-              align: block.attributes.align || 'left',
+              align: block.attributes.textAlign || 'left',
               font_size: mapFontSizeSlugToValue(
                 fontSizeDefinitions,
                 block.attributes.fontSize,
