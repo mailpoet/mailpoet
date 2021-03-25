@@ -90,7 +90,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $dynamicSegment = $this->createDynamicSegmentEntity('Trash test 2', 'description');
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject('Subject');
-    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION);
     $newsletterSegment = new NewsletterSegmentEntity($newsletter, $dynamicSegment);
     $this->entityManager->persist($newsletter);
     $this->entityManager->persist($newsletterSegment);

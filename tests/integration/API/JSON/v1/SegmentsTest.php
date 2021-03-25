@@ -150,7 +150,7 @@ class SegmentsTest extends \MailPoetTest {
   public function testItReturnsErrorWhenTrashingSegmentWithActiveNewsletter() {
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject('Subject');
-    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION);
     $newsletterSegment = new NewsletterSegmentEntity($newsletter, $this->segment2);
     $this->entityManager->persist($newsletter);
     $this->entityManager->persist($newsletterSegment);
