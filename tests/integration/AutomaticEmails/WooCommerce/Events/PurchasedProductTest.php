@@ -162,9 +162,41 @@ class PurchasedProductTest extends \MailPoetTest {
     $event->scheduleEmailWhenProductIsPurchased($orderId);
     $queue1 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
 
+    // Create a second order with the same product and some additional product.
+    // This was a cause for a duplicate email: https://mailpoet.atlassian.net/browse/MAILPOET-3254
+    $orderDetails = Stub::make(
+      new OrderDetails(),
+      [
+        'get_billing_email' => 'test@example.com',
+        'get_items' => function() use ($productId) {
+          return [
+            Stub::make(
+              \WC_Order_Item_Product::class,
+              [
+                'get_product_id' => $productId,
+              ]
+            ),
+            Stub::make(
+              \WC_Order_Item_Product::class,
+              [
+                'get_product_id' => '12345', // Dummy extra product ID
+              ]
+            ),
+          ];
+        },
+      ]
+    );
+    $orderDetails->total = 'order_total';
+    $orderId = 13;
+    $helper = Stub::make(WCHelper::class, [
+      'wcGetOrder' => $orderDetails,
+    ]);
+
+    $event = new PurchasedProduct($helper);
+
     $event->scheduleEmailWhenProductIsPurchased($orderId);
     $queue2 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
-    expect($queue1)->count(count($queue2));
+    expect($queue2)->count(count($queue1));
   }
 
   public function testItDoesNotScheduleEmailWhenPurchasedProductDoesNotMatchConfiguredProductIds() {

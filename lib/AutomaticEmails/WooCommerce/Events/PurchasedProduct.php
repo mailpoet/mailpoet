@@ -128,17 +128,18 @@ class PurchasedProduct {
 
     $schedulingCondition = function(Newsletter $automaticEmail) use ($orderedProducts, $subscriber) {
       $meta = $automaticEmail->getMeta();
-
       if (empty($meta['option'])) return false;
-      if ($this->repository->wasScheduledForSubscriber($automaticEmail->id, $subscriber->id)) {
-        $sentAllProducts = $this->repository->alreadySentAllProducts($automaticEmail->id, $subscriber->id, 'orderedProducts', $orderedProducts);
-        if ($sentAllProducts) return false;
-      }
 
       $metaProducts = array_column($meta['option'], 'id');
       $matchedProducts = array_intersect($metaProducts, $orderedProducts);
+      if (empty($matchedProducts)) return false;
 
-      return !empty($matchedProducts);
+      if ($this->repository->wasScheduledForSubscriber($automaticEmail->id, $subscriber->id)) {
+        $sentAllProducts = $this->repository->alreadySentAllProducts($automaticEmail->id, $subscriber->id, 'orderedProducts', $matchedProducts);
+        if ($sentAllProducts) return false;
+      }
+
+      return true;
     };
 
     $this->loggerFactory->getLogger(self::SLUG)->addInfo(
