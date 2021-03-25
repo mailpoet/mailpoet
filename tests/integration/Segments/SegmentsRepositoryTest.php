@@ -89,7 +89,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
   private function addActiveNewsletterToSegment(SegmentEntity $segmentEntity) {
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject('Subject');
-    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION);
     $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
     $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segmentEntity);
     $this->entityManager->persist($newsletter);

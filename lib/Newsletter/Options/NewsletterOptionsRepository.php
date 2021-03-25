@@ -33,4 +33,23 @@ class NewsletterOptionsRepository extends Repository {
       ->setParameter('segmentIds', $segmentIds)
       ->getQuery()->getResult();
   }
+
+  /**
+   * @return NewsletterOptionEntity[]
+   */
+  public function findAutomaticEmailsForSegments(array $segmentIds): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('no')
+      ->from(NewsletterOptionEntity::class, 'no')
+      ->join('no.newsletter', 'n')
+      ->join('no.optionField', 'nof')
+      ->where('n.deletedAt IS NULL')
+      ->andWhere('n.type = :typeAutomatic')
+      ->andWhere('nof.name = :nameSegment')
+      ->andWhere('no.value IN (:segmentIds)')
+      ->setParameter('typeAutomatic', NewsletterEntity::TYPE_AUTOMATIC)
+      ->setParameter('nameSegment', NewsletterOptionFieldEntity::NAME_SEGMENT)
+      ->setParameter('segmentIds', $segmentIds)
+      ->getQuery()->getResult();
+  }
 }
