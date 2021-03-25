@@ -11,16 +11,15 @@ import Background from 'common/background/background';
 import Heading from 'common/typography/heading/heading';
 import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 import Select from 'common/form/react_select/react_select';
-import { EmailSegmentOptions, EmailFields } from './dynamic_segments_filters/email';
-import { WooCommerceOptions, WooCommerceFields } from './dynamic_segments_filters/woocommerce';
-import { WordpressRoleFields, WordpressRoleSegmentOptions } from './dynamic_segments_filters/wordpress_role';
+import { EmailSegmentOptions } from './dynamic_segments_filters/email';
+import { WooCommerceOptions } from './dynamic_segments_filters/woocommerce';
+import { WordpressRoleSegmentOptions } from './dynamic_segments_filters/wordpress_role';
 import { SubscribersCounter } from './subscribers_counter';
+import { FormFilterFields } from './form_filter_fields';
 
 import {
   AnyFormItem,
   FilterValue,
-  SegmentTypes,
-  OnFilterChange,
 } from './types';
 import APIErrorsNotice from '../../notices/api_errors_notice';
 
@@ -60,44 +59,6 @@ function getAvailableFilters(): GroupFilterValue[] {
   }
   return filters;
 }
-
-export interface FilterFieldsProps {
-  segmentType: FilterValue;
-  updateItem: OnFilterChange;
-  item: AnyFormItem;
-}
-
-const FilterFields: React.FunctionComponent<FilterFieldsProps> = ({
-  segmentType,
-  updateItem,
-  item,
-}) => {
-  if (segmentType.group === SegmentTypes.WordPressRole) {
-    return (
-      <WordpressRoleFields
-        item={item}
-        onChange={updateItem}
-      />
-    );
-  }
-  if (segmentType.group === SegmentTypes.Email) {
-    return (
-      <EmailFields
-        onChange={updateItem}
-        item={item}
-      />
-    );
-  }
-  if (segmentType.group === SegmentTypes.WooCommerce) {
-    return (
-      <WooCommerceFields
-        onChange={updateItem}
-        item={item}
-      />
-    );
-  }
-  return null;
-};
 
 const DynamicSegmentForm: React.FunctionComponent = () => {
   const [segmentFilters] = useState(getAvailableFilters());
@@ -242,7 +203,7 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
               </div>
             </div>
             {segmentType !== undefined && (
-              <FilterFields
+              <FormFilterFields
                 segmentType={segmentType}
                 updateItem={setItem}
                 item={item}
