@@ -224,6 +224,35 @@ class ManageSegmentsCest {
     $i->waitForText('No segments found');
   }
 
+  public function cantTrashOrBulkTrashActivelyUsedSegment(\AcceptanceTester $i) {
+    $segmentTitle = 'Active Segment';
+    $subject = 'Post notification';
+    $segmentFactory = new DynamicSegment();
+    $segment = $segmentFactory
+      ->withName($segmentTitle)
+      ->create();
+    $newsletterFactory = new Newsletter();
+    $newsletterFactory->withPostNotificationsType()
+      ->withSegments([$segment])
+      ->withSubject($subject)
+      ->create();
+
+    $i->wantTo('Check that user can’t delete actively used list');
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForElement('[data-automation-id="filters_all"]');
+    $i->waitForText($segmentTitle, 5, '[data-automation-id="listing_item_' . $segment->getId() . '"]');
+    $i->clickItemRowActionByItemName($segmentTitle, 'Move to trash');
+    $i->waitForText("Segment cannot be deleted because it’s used for '{$subject}' email");
+    $i->seeNoJSErrors();
+    $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment->getId() . '"]');
+    $i->waitForText('Move to trash');
+    $i->click('Move to trash');
+    $i->waitForText('0 segments were moved to the trash.');
+  }
+
   public function createUserSegmentAndCheckCount(\AcceptanceTester $i) {
     $userFactory = new User();
     $userFactory->createUser('Test User 1', 'editor', 'test-editor' . rand(1, 100000) . '@example.com');

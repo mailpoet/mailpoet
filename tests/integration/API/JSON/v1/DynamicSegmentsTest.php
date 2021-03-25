@@ -99,7 +99,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $response = $this->endpoint->trash(['id' => $dynamicSegment->getId()]);
     $this->entityManager->refresh($dynamicSegment);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals("List cannot be deleted because it’s used for 'Subject' email");
+    expect($response->errors[0]['message'])->equals("Segment cannot be deleted because it’s used for 'Subject' email");
   }
 
   public function testItCanRestoreASegment() {
