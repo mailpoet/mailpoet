@@ -12,6 +12,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberSaveController {
   /** @var CustomFieldsRepository */
@@ -165,6 +166,13 @@ class SubscriberSaveController {
     if (isset($data['last_name'])) $subscriber->setLastName($data['last_name']);
     if (isset($data['status'])) $subscriber->setStatus($data['status']);
     if (isset($data['source'])) $subscriber->setSource($data['source']);
+    if (isset($data['wp_user_id'])) $subscriber->setWpUserId($data['wp_user_id']);
+    if (isset($data['subscribed_ip'])) $subscriber->setSubscribedIp($data['subscribed_ip']);
+    if (isset($data['confirmed_ip'])) $subscriber->setConfirmedIp($data['confirmed_ip']);
+    $createdAt = isset($data['created_at']) ? Carbon::createFromFormat('Y-m-d H:i:s', $data['created_at']) : null;
+    if ($createdAt) $subscriber->setCreatedAt($createdAt);
+    $confirmedAt = isset($data['confirmed_at']) ? Carbon::createFromFormat('Y-m-d H:i:s', $data['confirmed_at']) : null;
+    if ($confirmedAt) $subscriber->setConfirmedAt($confirmedAt);
 
     $this->subscribersRepository->persist($subscriber);
     $this->subscribersRepository->flush();

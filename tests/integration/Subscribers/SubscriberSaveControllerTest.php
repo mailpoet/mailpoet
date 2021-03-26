@@ -6,6 +6,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberSaveControllerTest extends \MailPoetTest {
   /** @var SubscriberSaveController */
@@ -33,6 +34,11 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
         $segmentOne->getId(),
         $segmentTwo->getId(),
       ],
+      'created_at' => '2020-04-30 13:14:15',
+      'confirmed_at' => '2020-04-31 13:14:15',
+      'confirmed_ip' => '192.168.1.32',
+      'subscribed_ip' => '192.168.1.16',
+      'wp_user_id' => 7,
     ];
 
     $subscriber = $this->saveController->save($data);
@@ -40,6 +46,11 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     expect($subscriber->getStatus())->equals($data['status']);
     expect($subscriber->getFirstName())->equals($data['first_name']);
     expect($subscriber->getLastName())->equals($data['last_name']);
+    expect($subscriber->getCreatedAt())->equals(Carbon::createFromFormat('Y-m-d H:i:s', $data['created_at']));
+    expect($subscriber->getConfirmedAt())->equals(Carbon::createFromFormat('Y-m-d H:i:s', $data['confirmed_at']));
+    expect($subscriber->getConfirmedIp())->equals($data['confirmed_ip']);
+    expect($subscriber->getSubscribedIp())->equals($data['subscribed_ip']);
+    expect($subscriber->getWpUserId())->equals($data['wp_user_id']);
     expect($subscriber->getUnsubscribeToken())->notNull();
     expect($subscriber->getLinkToken())->notNull();
     expect($subscriber->getId())->notNull();
