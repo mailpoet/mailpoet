@@ -125,7 +125,8 @@ class SendingQueue {
             ->whereNull('deleted_at')
             ->findMany();
         } else {
-          // No segments = Welcome emails
+          // No segments = Welcome emails or some Automatic emails.
+          // Welcome emails or some Automatic emails use segments only for scheduling and store them as a newsletter option
           $foundSubscribers = SubscriberModel::whereIn('id', $subscribersToProcessIds)
             ->where('status', SubscriberModel::STATUS_SUBSCRIBED)
             ->whereNull('deleted_at')
