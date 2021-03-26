@@ -60,7 +60,7 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     expect($filteredIds)->equals([]);
   }
 
-  public function testItReturnsSubscibersInDynamicSegments() {
+  public function testItReturnsSubscribersInDynamicSegments() {
     $segment = $this->createDynamicSegmentEntity();
 
     $wpUserEmail = 'user-role-test1@example.com';
@@ -146,6 +146,66 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     expect($subscribersCount[SubscriberEntity::STATUS_BOUNCED])->equals(0);
   }
 
+  public function testGetSubscribersCountBySegmentIds(): void {
+    $segmentOne = $this->segmentRepository->createOrUpdate('Segment' . rand(0, 10000));
+    $segmentTwo = $this->segmentRepository->createOrUpdate('Segment' . rand(0, 10000));
+
+    $subscriberOne = $this->createSubscriberEntity();
+    $subscriberTwo = $this->createSubscriberEntity();
+    $subscriberThree = $this->createSubscriberEntity();
+
+    $this->createSubscriberSegmentEntity($segmentOne, $subscriberOne);
+    $this->createSubscriberSegmentEntity($segmentOne, $subscriberTwo);
+    $this->createSubscriberSegmentEntity($segmentTwo, $subscriberThree);
+    $this->entityManager->flush();
+
+    // two static segments
+    $count = $this->repository->getSubscribersCountBySegmentIds([$segmentOne->getId(), $segmentTwo->getId()]);
+    expect($count)->equals(3);
+
+    $dynamicSegmentOne = $this->createDynamicSegmentEntity();
+    $this->entityManager->flush();
+
+    $wpAuthorOne = 'user-role-editor1@example.com';
+    $this->tester->deleteWordPressUser($wpAuthorOne);
+    $this->tester->createWordPressUser($wpAuthorOne, 'editor');
+
+    $wpEditorTwo = 'user-role-editor2@example.com';
+    $this->tester->deleteWordPressUser($wpEditorTwo);
+    $this->tester->createWordPressUser($wpEditorTwo, 'editor');
+
+    // two static segments and one dynamic segment
+    $count = $this->repository->getSubscribersCountBySegmentIds([
+      $segmentOne->getId(),
+      $segmentTwo->getId(),
+      $dynamicSegmentOne->getId(),
+    ]);
+    expect($count)->equals(5);
+
+    $dynamicSegmentTwo = $this->createDynamicSegmentEntity('author');
+    $this->entityManager->flush();
+
+    $wpAuthorOne = 'user-role-author1@example.com';
+    $this->tester->deleteWordPressUser($wpAuthorOne);
+    $this->tester->createWordPressUser($wpAuthorOne, 'author');
+
+    // two dynamic segments
+    $count = $this->repository->getSubscribersCountBySegmentIds([
+      $dynamicSegmentOne->getId(),
+      $dynamicSegmentTwo->getId(),
+    ]);
+    expect($count)->equals(3);
+
+    // all four segments
+    $count = $this->repository->getSubscribersCountBySegmentIds([
+      $segmentOne->getId(),
+      $segmentTwo->getId(),
+      $dynamicSegmentOne->getId(),
+      $dynamicSegmentTwo->getId(),
+    ]);
+    expect($count)->equals(6);
+  }
+
   public function _after() {
     parent::_after();
     $this->cleanup();
@@ -169,10 +229,10 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     return $subscriberSegment;
   }
 
-  private function createDynamicSegmentEntity(): SegmentEntity {
+  private function createDynamicSegmentEntity(string $role = 'editor'): SegmentEntity {
     $segment = new SegmentEntity('Segment' . rand(0, 10000), SegmentEntity::TYPE_DYNAMIC, 'Segment description');
     $dynamicFilter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData([
-      'wordpressRole' => 'editor',
+      'wordpressRole' => $role,
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
     ]));
     $segment->getDynamicFilters()->add($dynamicFilter);
