@@ -247,6 +247,14 @@ jobs:
       - run:
           name: "QA PHP"
           command: ./do qa:php
+  qa_php_oldest:
+    executor: wpcli_php_oldest
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "QA PHP"
+          command: ./do qa:php
   js_tests:
     executor: wpcli_php_oldest
     steps:
@@ -445,6 +453,10 @@ workflows:
           requires:
             - build
       - qa_php:
+          <<: *slack-fail-post-step
+          requires:
+            - build
+      - qa_php_oldest:
           <<: *slack-fail-post-step
           requires:
             - build
