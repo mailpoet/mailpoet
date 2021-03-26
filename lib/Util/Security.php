@@ -6,6 +6,7 @@ use Exception;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Security {
@@ -15,8 +16,12 @@ class Security {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
-  public function __construct(NewslettersRepository $newslettersRepository) {
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  public function __construct(NewslettersRepository $newslettersRepository, SubscribersRepository $subscribersRepository) {
     $this->newslettersRepository = $newslettersRepository;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public static function generateToken($action = 'mailpoet_token') {
@@ -71,8 +76,10 @@ class Security {
 
   public function generateUnsubscribeTokenByEntity($entity): string {
     $repository = null;
-    if ($entity instanceof NewsletterEntity || $entity instanceof SubscriberEntity) {
+    if ($entity instanceof NewsletterEntity) {
       $repository = $this->newslettersRepository;
+    } elseif ($entity instanceof SubscriberEntity) {
+      $repository = $this->subscribersRepository;
     } else {
       throw new Exception('Unsupported Entity type');
     }
