@@ -14,7 +14,16 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterPostEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
@@ -39,7 +48,6 @@ use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class SendingQueueTest extends \MailPoetTest {
   public $sendingQueueWorker;
@@ -839,18 +847,18 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterLinkEntity::class);
     $this->truncateEntity(NewsletterPostEntity::class);
-    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsNewsletters::$_table);
+    $this->truncateEntity(NewsletterSegmentEntity::class);
+    $this->truncateEntity(StatisticsNewsletterEntity::class);
+    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 
   private function getSendingQueueWorker($newsletterRepositoryMock = null, $mailerMock = null) {
