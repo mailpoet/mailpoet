@@ -20,7 +20,7 @@ class SubscriberSegmentRepository extends Repository {
     $qb = $this->entityManager->createQueryBuilder();
     return $qb->select('ss')
       ->from(SubscriberSegmentEntity::class, 'ss')
-      ->join('ss.segment', 'seg', Join::WITH, $qb->expr()->eq('seg.type', ':typeDefault'))
+      ->join('ss.segment', 'seg', Join::WITH, 'seg.type != :typeDefault')
       ->where('ss.subscriber = :subscriberId')
       ->andWhere('ss.status = :subscribed')
       ->setParameter('subscriberId', $subscriberId)
