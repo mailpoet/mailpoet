@@ -9,6 +9,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
@@ -18,6 +19,7 @@ use MailPoet\Models\ScheduledTask as ScheduledTaskModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers\BatchIterator;
@@ -52,6 +54,9 @@ class SendingQueue {
   /** @var SubscribersFinder */
   private $subscribersFinder;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     StatsNotificationsScheduler $statsNotificationsScheduler,
@@ -59,6 +64,7 @@ class SendingQueue {
     NewslettersRepository $newslettersRepository,
     CronHelper $cronHelper,
     SubscribersFinder $subscriberFinder,
+    SegmentsRepository $segmentsRepository,
     $mailerTask = false,
     $newsletterTask = false
   ) {
@@ -67,6 +73,7 @@ class SendingQueue {
     $this->subscribersFinder = $subscriberFinder;
     $this->mailerTask = ($mailerTask) ? $mailerTask : new MailerTask();
     $this->newsletterTask = ($newsletterTask) ? $newsletterTask : new NewsletterTask();
+    $this->segmentsRepository = $segmentsRepository;
     $this->mailerMetaInfo = new MetaInfo;
     $wp = new WPFunctions;
     $this->batchSize = $wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
@@ -111,6 +118,17 @@ class SendingQueue {
       $this->mailerTask->configureMailer($newsletter);
       // get newsletter segments
       $newsletterSegmentsIds = $this->newsletterTask->getNewsletterSegments($newsletter);
+      // Pause task in case some of related segments was deleted or trashed
+      if ($newsletterSegmentsIds && !$this->checkDeletedSegments($newsletterSegmentsIds)) {
+        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addInfo(
+          'pause task in sending queue due deleted or trashed segment',
+          ['task_id' => $queue->taskId]
+        );
+        $queue->status = ScheduledTaskEntity::STATUS_PAUSED;
+        $queue->save();
+        continue;
+      }
+
       // get subscribers
       $subscriberBatches = new BatchIterator($queue->taskId, $this->batchSize);
       foreach ($subscriberBatches as $subscribersToProcessIds) {
@@ -278,6 +296,29 @@ class SendingQueue {
       $statistics,
       $timer
     );
+  }
+
+  /**
+   * Checks whether some of segments was deleted or trashed
+   * @param int[] $segmentIds
+   * @return bool
+   */
+  private function checkDeletedSegments(array $segmentIds) {
+    if (count($segmentIds) === 0) {
+      return true;
+    }
+    $segmentIds = array_unique($segmentIds);
+    $segments = $this->segmentsRepository->findBy(['id' => $segmentIds]);
+    // Some segment was deleted from DB
+    if (count($segmentIds) > count($segments)) {
+      return false;
+    };
+    foreach ($segments as $segment) {
+      if ($segment->getDeletedAt() !== null) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private function processSendResult(
