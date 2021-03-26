@@ -12,7 +12,6 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterPostEntity;
@@ -40,6 +39,7 @@ use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
@@ -72,6 +72,8 @@ class SendingQueueTest extends \MailPoetTest {
   private $newslettersRepository;
   /** @var SubscribersFinder */
   private $subscribersFinder;
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
 
   public function _before() {
     parent::_before();
@@ -120,8 +122,9 @@ class SendingQueueTest extends \MailPoetTest {
     $this->statsNotificationsWorker = Stub::makeEmpty(StatsNotificationsScheduler::class);
     $this->loggerFactory = LoggerFactory::getInstance();
     $this->cronHelper = $this->diContainer->get(CronHelper::class);
+    $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker(Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]));
-    $this->newslettersRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
   }
 
   private function getDirectUnsubscribeURL() {
@@ -165,7 +168,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
       $this->cronHelper,
-      $this->subscribersFinder
+      $this->subscribersFinder,
+      $this->segmentsRepository
     );
     try {
       $sendingQueueWorker->process();
@@ -188,6 +192,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::makeEmpty(NewslettersRepository::class),
       $this->cronHelper,
       $this->subscribersFinder,
+      $this->segmentsRepository,
       Stub::make(
         new MailerTask(),
         [
@@ -227,6 +232,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::makeEmpty(NewslettersRepository::class),
       $this->cronHelper,
       $this->subscribersFinder,
+      $this->segmentsRepository,
       Stub::make(
         new MailerTask(),
         [
@@ -264,7 +270,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
       $this->cronHelper,
-      $this->subscribersFinder
+      $this->subscribersFinder,
+      $this->segmentsRepository
     );
     $sendingQueueWorker->process();
   }
@@ -743,6 +750,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::makeEmpty(NewslettersRepository::class),
       $this->cronHelper,
       $this->subscribersFinder,
+      $this->segmentsRepository,
       Stub::make(
         new MailerTask(),
         [
@@ -846,6 +854,46 @@ class SendingQueueTest extends \MailPoetTest {
     expect($refetchedTask->scheduledAt)->equals($inOneHour);
   }
 
+  public function testItPauseSendingTaskThatHasTrashedSegment() {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, 'Subject', NewsletterEntity::STATUS_SENDING);
+    $queue = $this->createQueueWithTaskAndSegment($newsletter, null, ['html' => 'Hello', 'text' => 'Hello']);
+    $segment = $this->createSegment('Segment test', SegmentEntity::TYPE_DEFAULT);
+    $segment->setDeletedAt(new \DateTime());
+    $this->entityManager->flush();
+    $this->addSegmentToNewsletter($newsletter, $segment);
+
+    $sendingQueueWorker = $this->getSendingQueueWorker();
+    $sendingQueueWorker->process();
+
+    $task = $queue->getTask();
+    assert($task instanceof ScheduledTaskEntity);
+    $this->entityManager->refresh($task);
+    $this->entityManager->refresh($newsletter);
+    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+  }
+
+  public function testItPauseSendingTaskThatHasDeletedSegment() {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, 'Subject', NewsletterEntity::STATUS_SENDING);
+    $queue = $this->createQueueWithTaskAndSegment($newsletter, null, ['html' => 'Hello', 'text' => 'Hello']);
+    $segment = $this->createSegment('Segment test', SegmentEntity::TYPE_DEFAULT);
+    $this->addSegmentToNewsletter($newsletter, $segment);
+    $this->entityManager->createQueryBuilder()->delete(SegmentEntity::class, 's')
+      ->where('s.id = :id')
+      ->setParameter('id', $segment->getId())
+      ->getQuery()
+      ->execute();
+    $sendingQueueWorker = $this->getSendingQueueWorker();
+    $sendingQueueWorker->process();
+
+    $task = $queue->getTask();
+    assert($task instanceof ScheduledTaskEntity);
+    $this->entityManager->refresh($task);
+    $this->entityManager->refresh($newsletter);
+    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+  }
+
   public function _after() {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
@@ -861,6 +909,50 @@ class SendingQueueTest extends \MailPoetTest {
     $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 
+  private function createNewsletter(string $type, $subject, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType($type);
+    $newsletter->setSubject($subject);
+    $newsletter->setBody(Fixtures::get('newsletter_body_template'));
+    $newsletter->setStatus($status);
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    return $newsletter;
+  }
+
+  private function createSegment(string $name, string $type): SegmentEntity {
+    $segment = new SegmentEntity($name, $type, 'Description');
+    $this->entityManager->persist($segment);
+    $this->entityManager->flush();
+    return $segment;
+  }
+
+  private function addSegmentToNewsletter(NewsletterEntity $newsletter, SegmentEntity $segment) {
+    $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
+    $newsletter->getNewsletterSegments()->add($newsletterSegment);
+    $this->entityManager->persist($newsletterSegment);
+    $this->entityManager->flush();
+  }
+
+  private function createQueueWithTaskAndSegment(NewsletterEntity $newsletter, $status = null, $body = null): SendingQueueEntity {
+    $task = new ScheduledTaskEntity();
+    $task->setType(SendingTask::TASK_TYPE);
+    $task->setStatus($status);
+    $this->entityManager->persist($task);
+
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setTask($task);
+    if ($body) {
+      $queue->setNewsletterRenderedBody($body);
+    }
+    $this->entityManager->persist($queue);
+    $newsletter->getQueues()->add($queue);
+
+    $this->entityManager->flush();
+    return $queue;
+  }
+
   private function getSendingQueueWorker($newsletterRepositoryMock = null, $mailerMock = null) {
     return new SendingQueueWorker(
       $this->sendingErrorHandler,
@@ -869,6 +961,7 @@ class SendingQueueTest extends \MailPoetTest {
       $newsletterRepositoryMock ?: $this->newslettersRepository,
       $this->cronHelper,
       $this->subscribersFinder,
+      $this->segmentsRepository,
       $mailerMock
     );
   }
