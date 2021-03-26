@@ -14,6 +14,7 @@ use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
+use MailPoetVendor\Doctrine\ORM\Events;
 
 require_once __DIR__ . '/TimestampEntity.php';
 
@@ -34,7 +35,10 @@ class TimestampListenerTest extends \MailPoetTest {
       'currentTime' => $timestamp,
     ]);
 
-    $this->entityManager = $this->createEntityManager();
+    $newTimestampListener = new TimestampListener($this->wp);
+    $originalListener = $this->diContainer->get(TimestampListener::class);
+    $this->replaceListeners($originalListener, $newTimestampListener);
+
     $this->tableName = $this->entityManager->getClassMetadata(TimestampEntity::class)->getTableName();
     $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->tableName");
     $this->connection->executeUpdate("
@@ -82,28 +86,19 @@ class TimestampListenerTest extends \MailPoetTest {
     $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->tableName");
   }
 
-  private function createEntityManager() {
-    $annotationReaderProvider = new AnnotationReaderProvider();
-    $configurationFactory = new ConfigurationFactory($annotationReaderProvider, false);
-    $configuration = $configurationFactory->createConfiguration();
-
-    $metadataDriver = $configuration->newDefaultAnnotationDriver([__DIR__], false);
-    $configuration->setMetadataDriverImpl($metadataDriver);
-    $configuration->setMetadataCacheImpl(new ArrayCache());
-
-    $validatorFactory = new ValidatorFactory($annotationReaderProvider);
-    $timestampListener = new TimestampListener($this->wp);
-    $validationListener = new ValidationListener($validatorFactory->createValidator());
-    $emojiEncodingListener = new EmojiEncodingListener(new Emoji($this->wp));
-    $lastSubscribedAtListener = new LastSubscribedAtListener($this->wp);
-    $entityManagerFactory = new EntityManagerFactory(
-      $this->connection,
-      $configuration,
-      $timestampListener,
-      $validationListener,
-      $emojiEncodingListener,
-      $lastSubscribedAtListener
+  /**
+   * We have to replace event listeners since EventManager
+   * is shared for all entity managers using same DB connection
+   */
+  private function replaceListeners($original, $replacement) {
+    $this->entityManager->getEventManager()->removeEventListener(
+      [Events::prePersist, Events::preUpdate],
+      $original
     );
-    return $entityManagerFactory->createEntityManager();
+
+    $this->entityManager->getEventManager()->addEventListener(
+      [Events::prePersist, Events::preUpdate],
+      $replacement
+    );
   }
 }
