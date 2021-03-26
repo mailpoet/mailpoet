@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   assign,
   compose,
+  has,
   prop,
 } from 'lodash/fp';
 import { useRouteMatch, Link, useHistory } from 'react-router-dom';
@@ -85,6 +86,18 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
       return found;
     }
 
+    function convertSavedData(data: {
+      [key: string]: string | number;
+    }): AnyFormItem {
+      const converted = JSON.parse(JSON.stringify(data));
+      // for compatibility with older data
+      if (has('link_id', data)) converted.link_id = data.link_id.toString();
+      if (has('newsletter_id', data)) converted.newsletter_id = data.newsletter_id.toString();
+      if (has('product_id', data)) converted.product_id = data.product_id.toString();
+      if (has('category_id', data)) converted.category_id = data.category_id.toString();
+      return converted;
+    }
+
     function loadSegment(segmentId): void {
       MailPoet.Ajax.post({
         api_version: MailPoet.apiVersion,
@@ -95,7 +108,7 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
         },
       })
         .done((response) => {
-          setItem(response.data);
+          setItem(convertSavedData(response.data));
           setSegmentType(findSegmentType(response.data));
         })
         .fail(compose([setErrors, prop('errors')]));
