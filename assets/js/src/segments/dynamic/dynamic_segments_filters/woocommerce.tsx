@@ -9,6 +9,7 @@ import {
   SelectOption,
   WooCommerceFormItem,
 } from '../types';
+import { SegmentFormData } from '../segment_form_data';
 
 export const WooCommerceOptions = [
   { value: 'purchasedCategory', label: MailPoet.I18n.t('wooPurchasedCategory'), group: SegmentTypes.WooCommerce },
@@ -33,31 +34,18 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   return true;
 }
 
-interface EmailWindow extends Window {
-  mailpoet_products: {
-    id: string;
-    name: string;
-  }[];
-  mailpoet_product_categories: {
-    id: string;
-    name: string;
-  }[];
-}
-
-declare let window: EmailWindow;
-
 interface Props {
   onChange: OnFilterChange;
   item: WooCommerceFormItem;
 }
 
 export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
-  const productOptions = window.mailpoet_products.map((product) => ({
+  const productOptions = SegmentFormData.products?.map((product) => ({
     value: product.id,
     label: product.name,
   }));
 
-  const categoryOptions = window.mailpoet_product_categories.map((product) => ({
+  const categoryOptions = SegmentFormData.productCategories?.map((product) => ({
     value: product.id,
     label: product.name,
   }));

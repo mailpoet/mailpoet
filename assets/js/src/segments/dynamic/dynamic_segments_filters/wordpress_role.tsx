@@ -3,6 +3,7 @@ import { assign, compose, find } from 'lodash/fp';
 import MailPoet from 'mailpoet';
 
 import Select from 'common/form/react_select/react_select';
+import { SegmentFormData } from '../segment_form_data';
 
 import {
   WordpressRoleFormItem,
@@ -24,17 +25,8 @@ interface Props {
   item: WordpressRoleFormItem;
 }
 
-interface WPRoleWindow extends Window {
-  wordpress_editable_roles_list: {
-    role_id: string;
-    role_name: string;
-  }[];
-}
-
-declare let window: WPRoleWindow;
-
 export const WordpressRoleFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
-  const options = window.wordpress_editable_roles_list.map((currentValue) => ({
+  const options = SegmentFormData.wordpressRoles?.map((currentValue) => ({
     value: currentValue.role_id,
     label: currentValue.role_name,
   }));
