@@ -33,7 +33,6 @@ export const Settings: React.FunctionComponent = () => (
   </>
 );
 
-
 export const SettingsInSidebar: React.FunctionComponent = () => (
   <div className="edit-post-sidebar mailpoet_form_editor_sidebar">
     <SizeSettings

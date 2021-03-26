@@ -12,6 +12,31 @@ class ImportTemplate extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  handleSubmit(e) {
+    e.preventDefault();
+
+    if (_.size(this.fileRef.current.files) <= 0) {
+      return false;
+    }
+
+    const file = _.first(this.fileRef.current.files);
+    const reader = new FileReader();
+
+    reader.onload = (evt) => {
+      try {
+        this.saveTemplate(JSON.parse(evt.target.result));
+        MailPoet.trackEvent('Emails > Template imported', {
+          'MailPoet Free version': window.mailpoet_version,
+        });
+      } catch (err) {
+        this.context.notices.error(<p>{MailPoet.I18n.t('templateFileMalformedError')}</p>);
+      }
+    };
+
+    reader.readAsText(file);
+    return true;
+  }
+
   saveTemplate(saveTemplate) {
     const template = saveTemplate;
     const { beforeImport, afterImport } = this.props;
@@ -41,7 +66,6 @@ class ImportTemplate extends React.Component {
 
     template.categories = JSON.stringify(template.categories);
 
-
     beforeImport();
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -59,31 +83,6 @@ class ImportTemplate extends React.Component {
       }
       afterImport(false);
     });
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-
-    if (_.size(this.fileRef.current.files) <= 0) {
-      return false;
-    }
-
-    const file = _.first(this.fileRef.current.files);
-    const reader = new FileReader();
-
-    reader.onload = (evt) => {
-      try {
-        this.saveTemplate(JSON.parse(evt.target.result));
-        MailPoet.trackEvent('Emails > Template imported', {
-          'MailPoet Free version': window.mailpoet_version,
-        });
-      } catch (err) {
-        this.context.notices.error(<p>{MailPoet.I18n.t('templateFileMalformedError')}</p>);
-      }
-    };
-
-    reader.readAsText(file);
-    return true;
   }
 
   render() {

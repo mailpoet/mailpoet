@@ -1,4 +1,3 @@
-
 const notFreeAddress = ({ name, address }) => ({
   sender: { name, address },
   reply_to: { name, address },

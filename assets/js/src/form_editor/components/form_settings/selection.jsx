@@ -321,13 +321,19 @@ Selection.propTypes = {
     getSearchLabel: PropTypes.func,
     getValue: PropTypes.func,
     placeholder: PropTypes.string,
-    remoteQuery: PropTypes.object,
-    extendSelect2Options: PropTypes.object,
+    remoteQuery: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+    extendSelect2Options: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     multiple: PropTypes.bool,
     forceSelect2: PropTypes.bool,
     transformChangedValue: PropTypes.func,
     disabled: PropTypes.bool,
-    validation: PropTypes.object,
+    validation: PropTypes.shape({
+      'data-parsley-required': PropTypes.bool,
+      'data-parsley-required-message': PropTypes.string,
+      'data-parsley-type': PropTypes.string,
+      'data-parsley-errors-container': PropTypes.string,
+      maxLength: PropTypes.number,
+    }),
   }).isRequired,
   item: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   disabled: PropTypes.bool,
@@ -344,6 +350,5 @@ Selection.defaultProps = {
   item: undefined,
   dropDownParent: undefined,
 };
-
 
 export default Selection;

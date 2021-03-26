@@ -24,7 +24,13 @@ FormFieldTextarea.propTypes = {
     name: PropTypes.string,
     placeholder: PropTypes.string,
     defaultValue: PropTypes.string,
-    validation: PropTypes.object, //  eslint-disable-line react/forbid-prop-types
+    validation: PropTypes.shape({
+      'data-parsley-required': PropTypes.bool,
+      'data-parsley-required-message': PropTypes.string,
+      'data-parsley-type': PropTypes.string,
+      'data-parsley-errors-container': PropTypes.string,
+      maxLength: PropTypes.number,
+    }),
     className: PropTypes.string,
     customLabel: PropTypes.string,
     tooltip: PropTypes.string,

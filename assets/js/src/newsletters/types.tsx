@@ -77,7 +77,6 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
     return null;
   };
 
-
   const renderType = (type): JSX.Element => {
     const badgeClassName = (window.mailpoet_is_new_user === true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey';
 

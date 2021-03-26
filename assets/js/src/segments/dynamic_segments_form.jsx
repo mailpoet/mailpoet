@@ -59,6 +59,45 @@ class DynamicSegmentForm extends React.Component {
     this.onItemLoad = this.onItemLoad.bind(this);
   }
 
+  handleValueChange(e) {
+    const { item } = this.state;
+    const field = e.target.name;
+
+    item[field] = e.target.value;
+
+    this.setState({
+      item,
+    });
+    this.loadFields();
+    return true;
+  }
+
+  handleSave(e) {
+    const { item } = this.state;
+    const { history, match } = this.props;
+
+    e.preventDefault();
+    this.setState({ errors: undefined });
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'dynamic_segments',
+      action: 'save',
+      data: item,
+    }).done(() => {
+      history.push('/segments');
+
+      if (match.params.id !== undefined) {
+        messages.onUpdate();
+      } else {
+        messages.onCreate(item);
+      }
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        this.setState({ errors: response.errors });
+      }
+    });
+  }
+
   onItemLoad(loadedData) {
     const item = _.mapObject(loadedData, (val) => (_.isNull(val) ? '' : val));
     this.setState({ item }, this.loadFields);
@@ -162,45 +201,6 @@ class DynamicSegmentForm extends React.Component {
           item,
         });
       });
-    });
-  }
-
-  handleValueChange(e) {
-    const { item } = this.state;
-    const field = e.target.name;
-
-    item[field] = e.target.value;
-
-    this.setState({
-      item,
-    });
-    this.loadFields();
-    return true;
-  }
-
-  handleSave(e) {
-    const { item } = this.state;
-    const { history, match } = this.props;
-
-    e.preventDefault();
-    this.setState({ errors: undefined });
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'dynamic_segments',
-      action: 'save',
-      data: item,
-    }).done(() => {
-      history.push('/segments');
-
-      if (match.params.id !== undefined) {
-        messages.onUpdate();
-      } else {
-        messages.onCreate(item);
-      }
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.setState({ errors: response.errors });
-      }
     });
   }
 

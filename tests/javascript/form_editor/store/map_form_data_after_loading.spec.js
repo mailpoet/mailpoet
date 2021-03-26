@@ -33,7 +33,6 @@ const data = {
   deleted_at: null,
 };
 
-
 describe('Form Data Load Mapper', () => {
   it('Returns ID', () => {
     expect(map(data)).to.have.property('id', '1');

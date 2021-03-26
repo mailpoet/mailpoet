@@ -33,7 +33,6 @@ global.$ = jQuery;
 global.jQuery = jQuery;
 global.window.jQuery = jQuery;
 
-
 testHelpers.loadScript('tests/javascript_newsletter_editor/testBundles/vendor.js', global.window);
 const Handlebars = global.window.Handlebars;
 global.Handlebars = global.window.Handlebars;
@@ -185,7 +184,6 @@ testHelpers.loadTemplate('components/sidebar/content.hbs', window, { id: 'newsle
 testHelpers.loadTemplate('components/sidebar/layout.hbs', window, { id: 'newsletter_editor_template_sidebar_layout' });
 testHelpers.loadTemplate('components/sidebar/preview.hbs', window, { id: 'newsletter_editor_template_sidebar_preview' });
 testHelpers.loadTemplate('components/sidebar/styles.hbs', window, { id: 'newsletter_editor_template_sidebar_styles' });
-
 
 global.templates = {
   styles: Handlebars.compile(jQuery('#newsletter_editor_template_styles').html()),

@@ -78,11 +78,17 @@ FormFieldSelect.propTypes = {
   onValueChange: PropTypes.func,
   field: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    values: PropTypes.object,
+    values: PropTypes.objectOf(PropTypes.string),
     placeholder: PropTypes.string,
     filter: PropTypes.func,
     sortBy: PropTypes.func,
-    validation: PropTypes.object,
+    validation: PropTypes.shape({
+      'data-parsley-required': PropTypes.bool,
+      'data-parsley-required-message': PropTypes.string,
+      'data-parsley-type': PropTypes.string,
+      'data-parsley-errors-container': PropTypes.string,
+      maxLength: PropTypes.number,
+    }),
   }).isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   automationId: PropTypes.string,
@@ -94,6 +100,5 @@ FormFieldSelect.defaultProps = {
     // no-op
   },
 };
-
 
 export default FormFieldSelect;

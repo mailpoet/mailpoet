@@ -113,5 +113,4 @@ App.on('start', function appOnStart(Application, options) {
   }, this);
 });
 
-
 export default Module;

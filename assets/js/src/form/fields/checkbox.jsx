@@ -48,7 +48,7 @@ FormFieldCheckbox.propTypes = {
   onValueChange: PropTypes.func.isRequired,
   field: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    values: PropTypes.object.isRequired,
+    values: PropTypes.objectOf(PropTypes.string),
   }).isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };

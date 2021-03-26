@@ -274,7 +274,6 @@ class NewsletterListNotification extends React.Component {
         break;
     }
 
-
     return (
       <span>
         { sendingToSegments }

@@ -43,7 +43,7 @@ FormFieldRadio.propTypes = {
   onValueChange: PropTypes.func,
   field: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    values: PropTypes.object,
+    values: PropTypes.objectOf(PropTypes.string),
   }).isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
@@ -53,6 +53,5 @@ FormFieldRadio.defaultProps = {
     // no-op
   },
 };
-
 
 export default FormFieldRadio;

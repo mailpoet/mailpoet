@@ -30,7 +30,6 @@ const MssNotActiveMessage = ({ activationCallback }: MssNotActiveMessageProps) =
   </div>
 );
 
-
 type Props = {
   keyMessage?: string;
   activationCallback: () => void;

@@ -59,7 +59,6 @@ const Log: React.FunctionComponent<LogProps> = ({ log }: LogProps) => {
   );
 };
 
-
 export type FilterType = {
   from?: string;
   to?: string;

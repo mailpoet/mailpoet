@@ -109,7 +109,6 @@ const historyMove = (state, increment: number) => {
   };
 };
 
-
 export const historyUndo = (state) => (historyMove(state, 1));
 
 export const historyRedo = (state) => (historyMove(state, -1));

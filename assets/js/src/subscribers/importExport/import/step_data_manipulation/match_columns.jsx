@@ -1,4 +1,3 @@
-
 export default (subscribers, header) => {
   const displayedColumns = [];
   const displayedColumnsIds = [];

@@ -50,6 +50,78 @@ class EventsConditions extends React.Component {
     };
   }
 
+  handleChange(data) {
+    const { segment, afterTimeNumber } = this.state;
+    const newState = data;
+
+    if (newState.eventSlug) {
+      newState.event = this.getEvent(newState.eventSlug);
+
+      // keep the existing segment (if set) or set it to the first segment in the list
+      newState.segment = (newState.event.sendToLists)
+        ? segment || this.constructor.getFirstSegment() : null;
+
+      // if the new event doesn't have options, reset the currently selected option value
+      const eventOptions = this.constructor.getEventOptions(newState.event);
+      newState.eventOptionValue = (eventOptions)
+        ? this.constructor.getEventOptionsFirstValue(eventOptions) : null;
+    }
+
+    if (newState.afterTimeType && newState.afterTimeType === 'immediate') {
+      newState.afterTimeNumber = null;
+    } else if (newState.afterTimeType && !newState.afterTimeNumber && !afterTimeNumber) {
+      newState.afterTimeNumber = defaultAfterTimeNumber;
+    }
+
+    this.setState(newState);
+  }
+
+  handleNextStep() {
+    const { history } = this.props;
+    const {
+      eventSlug, afterTimeType, afterTimeNumber, event, segment, eventOptionValue,
+    } = this.state;
+    const options = {
+      group: this.email.slug,
+      event: eventSlug,
+      afterTimeType,
+    };
+
+    if (afterTimeNumber) options.afterTimeNumber = afterTimeNumber;
+    options.sendTo = (event.sendToLists) ? 'segment' : 'user';
+    if (segment) options.segment = segment;
+    if (eventOptionValue) {
+      options.meta = JSON.stringify({ option: eventOptionValue });
+    }
+
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'newsletters',
+      action: 'create',
+      data: {
+        type: 'automatic',
+        subject: MailPoet.I18n.t('draftNewsletterTitle'),
+        options,
+      },
+    }).done((response) => {
+      MailPoet.trackEvent('Emails > New Automatic Email Created', {
+        'MailPoet Premium version': window.mailpoet_premium_version,
+        'MailPoet Free version': window.mailpoet_version,
+        'Event type': options.event,
+        'Schedule type': options.afterTimeType,
+        'Schedule value': options.afterTimeNumber,
+      });
+      history.push(`/template/${response.data.id}`);
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        this.context.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
+          { scroll: true }
+        );
+      }
+    });
+  }
+
   getEvent(eventSlug) {
     return this.emailEvents[eventSlug];
   }
@@ -138,78 +210,6 @@ class EventsConditions extends React.Component {
         {event.tip}
       </p>
     ) : null;
-  }
-
-  handleChange(data) {
-    const { segment, afterTimeNumber } = this.state;
-    const newState = data;
-
-    if (newState.eventSlug) {
-      newState.event = this.getEvent(newState.eventSlug);
-
-      // keep the existing segment (if set) or set it to the first segment in the list
-      newState.segment = (newState.event.sendToLists)
-        ? segment || this.constructor.getFirstSegment() : null;
-
-      // if the new event doesn't have options, reset the currently selected option value
-      const eventOptions = this.constructor.getEventOptions(newState.event);
-      newState.eventOptionValue = (eventOptions)
-        ? this.constructor.getEventOptionsFirstValue(eventOptions) : null;
-    }
-
-    if (newState.afterTimeType && newState.afterTimeType === 'immediate') {
-      newState.afterTimeNumber = null;
-    } else if (newState.afterTimeType && !newState.afterTimeNumber && !afterTimeNumber) {
-      newState.afterTimeNumber = defaultAfterTimeNumber;
-    }
-
-    this.setState(newState);
-  }
-
-  handleNextStep() {
-    const { history } = this.props;
-    const {
-      eventSlug, afterTimeType, afterTimeNumber, event, segment, eventOptionValue,
-    } = this.state;
-    const options = {
-      group: this.email.slug,
-      event: eventSlug,
-      afterTimeType,
-    };
-
-    if (afterTimeNumber) options.afterTimeNumber = afterTimeNumber;
-    options.sendTo = (event.sendToLists) ? 'segment' : 'user';
-    if (segment) options.segment = segment;
-    if (eventOptionValue) {
-      options.meta = JSON.stringify({ option: eventOptionValue });
-    }
-
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'newsletters',
-      action: 'create',
-      data: {
-        type: 'automatic',
-        subject: MailPoet.I18n.t('draftNewsletterTitle'),
-        options,
-      },
-    }).done((response) => {
-      MailPoet.trackEvent('Emails > New Automatic Email Created', {
-        'MailPoet Premium version': window.mailpoet_premium_version,
-        'MailPoet Free version': window.mailpoet_version,
-        'Event type': options.event,
-        'Schedule type': options.afterTimeType,
-        'Schedule value': options.afterTimeNumber,
-      });
-      history.push(`/template/${response.data.id}`);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.context.notices.error(
-          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-          { scroll: true }
-        );
-      }
-    });
   }
 
   render() {

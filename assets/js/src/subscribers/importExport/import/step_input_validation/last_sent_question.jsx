@@ -53,5 +53,4 @@ LastSentQuestion.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
 
-
 export default LastSentQuestion;

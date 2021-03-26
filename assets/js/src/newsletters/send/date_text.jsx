@@ -138,7 +138,13 @@ DateText.propTypes = {
   storageFormat: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   disabled: PropTypes.bool.isRequired,
-  validation: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  validation: PropTypes.shape({
+    'data-parsley-required': PropTypes.bool,
+    'data-parsley-required-message': PropTypes.string,
+    'data-parsley-type': PropTypes.string,
+    'data-parsley-errors-container': PropTypes.string,
+    maxLength: PropTypes.number,
+  }).isRequired,
 };
 
 DateText.defaultProps = {

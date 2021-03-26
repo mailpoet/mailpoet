@@ -16,6 +16,8 @@ const QueuePropType = PropTypes.shape({
 
 const NewsletterPropType = PropTypes.shape({
   id: PropTypes.number.isRequired,
+  sent_at: PropTypes.string,
+  status: PropTypes.string.isRequired,
   queue: PropTypes.oneOfType([
     QueuePropType,
     PropTypes.bool,

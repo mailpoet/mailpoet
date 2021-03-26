@@ -191,13 +191,13 @@ FormField.propTypes = {
   onValueChange: PropTypes.func,
   field: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    values: PropTypes.object,
+    values: PropTypes.objectOf(PropTypes.string),
     tip: PropTypes.oneOfType([
       PropTypes.array,
       PropTypes.string,
     ]),
     label: PropTypes.string,
-    fields: PropTypes.array,
+    fields: PropTypes.arrayOf(PropTypes.object),
     description: PropTypes.string,
   }).isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types

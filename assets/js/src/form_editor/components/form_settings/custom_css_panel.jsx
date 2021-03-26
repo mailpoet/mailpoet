@@ -25,7 +25,6 @@ const CustomCssPanel = ({ onToggle, isOpened }) => {
   );
 };
 
-
 CustomCssPanel.propTypes = {
   onToggle: PropTypes.func.isRequired,
   isOpened: PropTypes.bool.isRequired,
