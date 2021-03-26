@@ -33,34 +33,25 @@ class EventScheduling extends React.Component {
     }
   }
 
-  displayAfterTimeNumberField() {
-    const { afterTimeNumberSize, event } = this.props;
-    const { afterTimeType, afterTimeNumber } = this.state;
-    if (afterTimeType === 'immediate') return null;
-    if (
-      event.timeDelayValues
-      && event.timeDelayValues[afterTimeType]
-      && !event.timeDelayValues[afterTimeType].displayAfterTimeNumberField
-    ) return null;
+  handleChange(e, property) {
+    let { value } = e.target;
+    if (property === 'afterTimeNumber') {
+      value = parseInt(e.target.value, 10);
+      value = Number.isNaN(value) ? null : value;
+    }
+    const data = { [property]: value };
 
-    const props = {
-      field: {
-        id: 'scheduling_time_duration',
-        name: 'scheduling_time_duration',
-        defaultValue: afterTimeNumber ? afterTimeNumber.toString() : '',
-        size: afterTimeNumberSize,
-      },
-      item: {},
-      onValueChange: _.partial(this.handleChange, _, 'afterTimeNumber'),
-    };
-
-    return (
-      <Text
-        field={props.field}
-        item={props.item}
-        onValueChange={props.onValueChange}
-      />
-    );
+    // Reset afterTimeNumber to default when switching between minutes and other types
+    const { afterTimeType } = this.state;
+    if (property === 'afterTimeType' && afterTimeType !== value) {
+      if (afterTimeType === 'minutes') {
+        data.afterTimeNumber = defaultAfterTimeNumber;
+      }
+      if (value === 'minutes') {
+        data.afterTimeNumber = defaultAfterTimeNumberForMinutes;
+      }
+    }
+    this.setState(data, this.propagateChange(data));
   }
 
   displayAfterTimeTypeOptions() {
@@ -97,25 +88,34 @@ class EventScheduling extends React.Component {
     );
   }
 
-  handleChange(e, property) {
-    let { value } = e.target;
-    if (property === 'afterTimeNumber') {
-      value = parseInt(e.target.value, 10);
-      value = Number.isNaN(value) ? null : value;
-    }
-    const data = { [property]: value };
+  displayAfterTimeNumberField() {
+    const { afterTimeNumberSize, event } = this.props;
+    const { afterTimeType, afterTimeNumber } = this.state;
+    if (afterTimeType === 'immediate') return null;
+    if (
+      event.timeDelayValues
+      && event.timeDelayValues[afterTimeType]
+      && !event.timeDelayValues[afterTimeType].displayAfterTimeNumberField
+    ) return null;
 
-    // Reset afterTimeNumber to default when switching between minutes and other types
-    const { afterTimeType } = this.state;
-    if (property === 'afterTimeType' && afterTimeType !== value) {
-      if (afterTimeType === 'minutes') {
-        data.afterTimeNumber = defaultAfterTimeNumber;
-      }
-      if (value === 'minutes') {
-        data.afterTimeNumber = defaultAfterTimeNumberForMinutes;
-      }
-    }
-    this.setState(data, this.propagateChange(data));
+    const props = {
+      field: {
+        id: 'scheduling_time_duration',
+        name: 'scheduling_time_duration',
+        defaultValue: afterTimeNumber ? afterTimeNumber.toString() : '',
+        size: afterTimeNumberSize,
+      },
+      item: {},
+      onValueChange: _.partial(this.handleChange, _, 'afterTimeNumber'),
+    };
+
+    return (
+      <Text
+        field={props.field}
+        item={props.item}
+        onValueChange={props.onValueChange}
+      />
+    );
   }
 
   propagateChange(data) {

@@ -1,7 +1,6 @@
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 
-
 export default (onCreateSegment) => {
   MailPoet.Modal.popup({
     title: MailPoet.I18n.t('addNewList'),

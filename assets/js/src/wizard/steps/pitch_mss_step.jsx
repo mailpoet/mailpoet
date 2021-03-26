@@ -24,7 +24,6 @@ export const Controls = (props) => (
       href={props.mailpoetAccountUrl}
       target="_blank"
       rel="noopener noreferrer"
-
       onClick={(event) => {
         event.preventDefault();
         window.open(props.mailpoetAccountUrl);

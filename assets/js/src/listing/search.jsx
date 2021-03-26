@@ -42,15 +42,15 @@ class ListingSearch extends React.Component {
     }
   }
 
-  onChange(e) {
-    this.setState({ search: e.target.value });
-    this.debouncedHandleSearch();
-  }
-
   handleSearch() {
     this.props.onSearch(
       this.state.search.trim()
     );
+  }
+
+  onChange(e) {
+    this.setState({ search: e.target.value });
+    this.debouncedHandleSearch();
   }
 
   render() {

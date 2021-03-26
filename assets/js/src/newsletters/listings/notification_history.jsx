@@ -201,7 +201,9 @@ NewsletterListNotificationHistory.propTypes = {
     pathname: PropTypes.string,
   }).isRequired,
   match: PropTypes.shape({
-    params: PropTypes.object,
+    params: PropTypes.shape({
+      id: PropTypes.node,
+    }).isRequired,
   }).isRequired,
 };
 

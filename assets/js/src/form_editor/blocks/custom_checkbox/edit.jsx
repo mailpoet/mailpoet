@@ -105,7 +105,6 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
     return attributes.label;
   };
 
-
   let checkboxLabel = getCheckboxLabel();
   if (attributes.mandatory) {
     checkboxLabel += ' *';

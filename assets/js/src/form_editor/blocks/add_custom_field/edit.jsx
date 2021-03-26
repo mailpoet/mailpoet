@@ -11,7 +11,6 @@ import MailPoet from 'mailpoet';
 import icon from './icon.jsx';
 import AddCustomFieldForm from './add_custom_field_form.jsx';
 
-
 const AddCustomField = ({ clientId }) => {
   const { createCustomField } = useDispatch('mailpoet-form-editor');
 

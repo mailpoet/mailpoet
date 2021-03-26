@@ -105,5 +105,4 @@ App.on('before:start', function beforeAppStart(BeforeStartApp) {
   });
 });
 
-
 export default Module;

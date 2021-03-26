@@ -93,7 +93,6 @@ Handlebars.registerHelper('lookup', function lookupHelper(obj, field) {
   return obj && obj[field];
 });
 
-
 Handlebars.registerHelper('rsa_key', function rsaKeyHelper(value) {
   var lines;
   // extract all lines into an array

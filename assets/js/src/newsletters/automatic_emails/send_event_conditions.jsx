@@ -34,9 +34,64 @@ class SendEventConditions extends React.Component {
     };
   }
 
-  displayHeader() {
-    const { event } = this.state;
-    return event.title;
+  handleChange(data) {
+    const { afterTimeNumber } = this.state;
+    const newState = data;
+
+    if (newState.afterTimeType && newState.afterTimeType === 'immediate') {
+      newState.afterTimeNumber = null;
+    } else if (newState.afterTimeType && !newState.afterTimeNumber && !afterTimeNumber) {
+      newState.afterTimeNumber = defaultAfterTimeNumber;
+    }
+
+    this.setState(data, this.propagateChange);
+  }
+
+  displayScheduling() {
+    const { afterTimeNumber, afterTimeType, event } = this.state;
+    const props = {
+      item: {
+        afterTimeNumber,
+        afterTimeType,
+      },
+      event,
+      onValueChange: this.handleChange,
+    };
+
+    return (
+      <EventScheduling
+        item={props.item}
+        event={props.event}
+        onValueChange={props.onValueChange}
+      />
+    );
+  }
+
+  displaySegments() {
+    const { segment } = this.state;
+    if (this.emailOptions.sendTo === 'user') return null;
+
+    const props = {
+      field: {
+        id: 'segments',
+        forceSelect2: true,
+        values: this.segments,
+        extendSelect2Options: {
+          minimumResultsForSearch: Infinity,
+        },
+        selected: () => segment,
+      },
+      onValueChange: (e) => this.handleChange({ segment: e.target.value }),
+    };
+
+    return (
+      <div className="event-segment-selection">
+        <Selection
+          field={props.field}
+          onValueChange={props.onValueChange}
+        />
+      </div>
+    );
   }
 
   displayEventOptions() {
@@ -75,64 +130,9 @@ class SendEventConditions extends React.Component {
     );
   }
 
-  displaySegments() {
-    const { segment } = this.state;
-    if (this.emailOptions.sendTo === 'user') return null;
-
-    const props = {
-      field: {
-        id: 'segments',
-        forceSelect2: true,
-        values: this.segments,
-        extendSelect2Options: {
-          minimumResultsForSearch: Infinity,
-        },
-        selected: () => segment,
-      },
-      onValueChange: (e) => this.handleChange({ segment: e.target.value }),
-    };
-
-    return (
-      <div className="event-segment-selection">
-        <Selection
-          field={props.field}
-          onValueChange={props.onValueChange}
-        />
-      </div>
-    );
-  }
-
-  displayScheduling() {
-    const { afterTimeNumber, afterTimeType, event } = this.state;
-    const props = {
-      item: {
-        afterTimeNumber,
-        afterTimeType,
-      },
-      event,
-      onValueChange: this.handleChange,
-    };
-
-    return (
-      <EventScheduling
-        item={props.item}
-        event={props.event}
-        onValueChange={props.onValueChange}
-      />
-    );
-  }
-
-  handleChange(data) {
-    const { afterTimeNumber } = this.state;
-    const newState = data;
-
-    if (newState.afterTimeType && newState.afterTimeType === 'immediate') {
-      newState.afterTimeNumber = null;
-    } else if (newState.afterTimeType && !newState.afterTimeNumber && !afterTimeNumber) {
-      newState.afterTimeNumber = defaultAfterTimeNumber;
-    }
-
-    this.setState(data, this.propagateChange);
+  displayHeader() {
+    const { event } = this.state;
+    return event.title;
   }
 
   propagateChange() {

@@ -63,7 +63,6 @@ const Preview = ({
     updateSegment(segment);
   };
 
-
   const onDragEnd = (result) => {
     const from = result.source.index;
     const to = result.destination.index;

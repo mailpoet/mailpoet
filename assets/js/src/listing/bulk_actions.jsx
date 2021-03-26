@@ -11,18 +11,6 @@ class ListingBulkActions extends React.Component {
     this.handleApplyAction = this.handleApplyAction.bind(this);
   }
 
-  getSelectedAction(actionName) {
-    const selectedAction = actionName;
-    if (selectedAction.length > 0) {
-      const action = this.props.bulk_actions.filter((act) => (act.name === selectedAction));
-
-      if (action.length > 0) {
-        return action[0];
-      }
-    }
-    return null;
-  }
-
   handleApplyAction(actionName) {
     const action = this.getSelectedAction(actionName);
 
@@ -65,6 +53,18 @@ class ListingBulkActions extends React.Component {
     this.setState({
       extra: false,
     });
+  }
+
+  getSelectedAction(actionName) {
+    const selectedAction = actionName;
+    if (selectedAction.length > 0) {
+      const action = this.props.bulk_actions.filter((act) => (act.name === selectedAction));
+
+      if (action.length > 0) {
+        return action[0];
+      }
+    }
+    return null;
   }
 
   render() {

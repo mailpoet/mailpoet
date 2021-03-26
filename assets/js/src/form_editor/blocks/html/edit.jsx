@@ -46,6 +46,7 @@ const CustomHtmlEdit = ({ attributes, setAttributes, clientId }) => {
     []
   );
   const [renderedContent, setRenderedContent] = useState(attributes.content);
+  /* eslint-disable-next-line react-hooks/exhaustive-deps -- because we use external function */
   const setRenderedContentDebounced = useCallback(debounce((content) => {
     setRenderedContent(content);
   }, 300), []);

@@ -27,7 +27,6 @@ jQuery(($) => {
     setTimeout(renderCaptcha, 400, element, 1);
   });
 
-
   /**
    * @param form jQuery object of form form.mailpoet_form
    */

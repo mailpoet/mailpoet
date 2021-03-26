@@ -33,7 +33,7 @@ const NotValidMessage = ({ message }: NotValidMessageProps) => (
   </div>
 );
 NotValidMessage.defaultProps = {
-  keyMessage: '',
+  message: '',
 };
 
 type Props = {

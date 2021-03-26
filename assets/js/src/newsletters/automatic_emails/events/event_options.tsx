@@ -95,10 +95,4 @@ export const EventOptions = ({
   );
 };
 
-EventOptions.defaultProps = {
-  eventOptions: null,
-  selected: [],
-  onValueChange: null,
-};
-
 export default EventOptions;

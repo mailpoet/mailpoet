@@ -81,7 +81,6 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
 
           event.interaction.element = clone;
 
-
           if (that.options.hideOriginal === true) {
             that.view.$el.addClass('mailpoet_hidden');
           }

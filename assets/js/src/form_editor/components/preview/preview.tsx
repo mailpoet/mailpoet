@@ -11,7 +11,6 @@ import Preview from 'common/preview/preview.jsx';
 import Modal from 'common/modal/modal';
 import PlacementSettingsPanel from 'form_editor/components/form_settings/form_placement_options/settings_panel';
 
-
 const FormPreview: React.FunctionComponent = () => {
   const iframeElement = useRef(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);

@@ -1,6 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 
+/* eslint-disable react/no-unused-prop-types */
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode;
   dimension?: 'extra-small' | 'small' | 'large';
