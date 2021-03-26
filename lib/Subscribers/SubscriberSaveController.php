@@ -70,7 +70,7 @@ class SubscriberSaveController {
 
   public function save(array $data): SubscriberEntity {
     if (is_array($data) && !empty($data)) {
-      $data = WPFunctions::get()->stripslashesDeep($data);
+      $data = $this->wp->stripslashesDeep($data);
     }
 
     if (empty($data['segments'])) {
