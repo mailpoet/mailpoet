@@ -21,7 +21,12 @@ class TimestampListener {
     $entity = $eventArgs->getEntity();
     $entityTraits = $this->getEntityTraits($entity);
 
-    if (in_array(CreatedAtTrait::class, $entityTraits, true) && method_exists($entity, 'setCreatedAt')) {
+    if (
+      in_array(CreatedAtTrait::class, $entityTraits, true)
+      && method_exists($entity, 'setCreatedAt')
+      && method_exists($entity, 'getCreatedAt')
+      && !$entity->getCreatedAt()
+    ) {
       $entity->setCreatedAt($this->now);
     }
 
