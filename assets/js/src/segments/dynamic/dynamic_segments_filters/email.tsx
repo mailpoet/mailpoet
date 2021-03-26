@@ -11,6 +11,7 @@ import {
   SegmentTypes,
   SelectOption,
 } from '../types';
+import { SegmentFormData } from '../segment_form_data';
 
 enum EmailActionTypes {
   OPENED = 'opened',
@@ -30,16 +31,6 @@ export function validateEmail(formItems: EmailFormItem): boolean {
   return ((formItems.action in EmailActionTypes) && !!formItems.newsletter_id);
 }
 
-interface EmailWindow extends Window {
-  mailpoet_newsletters_list: {
-    sent_at: string;
-    subject: string;
-    id: string;
-  }[];
-}
-
-declare let window: EmailWindow;
-
 const shouldDisplayLinks = (item: EmailFormItem): boolean => (
   (
     (item.action === EmailActionTypes.CLICKED)
@@ -48,7 +39,7 @@ const shouldDisplayLinks = (item: EmailFormItem): boolean => (
   && (item.newsletter_id != null)
 );
 
-const newsletterOptions = window.mailpoet_newsletters_list?.map((newsletter) => {
+const newsletterOptions = SegmentFormData.newslettersList?.map((newsletter) => {
   const sentAt = (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet');
   return {
     label: `${newsletter.subject} (${sentAt})`,
