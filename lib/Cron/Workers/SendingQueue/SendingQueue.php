@@ -32,6 +32,7 @@ class SendingQueue {
   public $batchSize;
   const BATCH_SIZE = 20;
   const TASK_BATCH_SIZE = 5;
+  const EMAIL_WITH_INVALID_LIST_OPTION = 'mailpoet_email_with_invalid_list';
 
   /** @var StatsNotificationsScheduler */
   public $statsNotificationsScheduler;
@@ -57,6 +58,9 @@ class SendingQueue {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     StatsNotificationsScheduler $statsNotificationsScheduler,
@@ -65,6 +69,7 @@ class SendingQueue {
     CronHelper $cronHelper,
     SubscribersFinder $subscriberFinder,
     SegmentsRepository $segmentsRepository,
+    WPFunctions $wp,
     $mailerTask = false,
     $newsletterTask = false
   ) {
@@ -75,7 +80,7 @@ class SendingQueue {
     $this->newsletterTask = ($newsletterTask) ? $newsletterTask : new NewsletterTask();
     $this->segmentsRepository = $segmentsRepository;
     $this->mailerMetaInfo = new MetaInfo;
-    $wp = new WPFunctions;
+    $this->wp = $wp;
     $this->batchSize = $wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
     $this->loggerFactory = $loggerFactory;
     $this->newslettersRepository = $newslettersRepository;
@@ -126,6 +131,7 @@ class SendingQueue {
         );
         $queue->status = ScheduledTaskEntity::STATUS_PAUSED;
         $queue->save();
+        $this->wp->setTransient(self::EMAIL_WITH_INVALID_LIST_OPTION, $newsletter->subject);
         continue;
       }
 
