@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.6
-Stable tag: 3.60.5
+Stable tag: 3.60.6
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.60.6 - 2021-03-29 =
+* Improved: don't allow deleting segment with scheduled or active automatic email;
+* Fixed: aligning headings to the center or right in forms;
+* Fixed: first and last name sync in WooCommerce Customers list;
+* Fixed: after saving the segment, redirect to Segments instead of Lists;
+* Fixed: shortcode for total subscribers not working for segments;
+* Fixed: hanging background job for deactivated welcome emails.
 
 = 3.60.5 - 2021-03-22 =
 * Added: show number of subscribers when creating or editing a segment;
