@@ -1,7 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
 
-/* eslint-disable react/no-unused-prop-types -- properties rel and data are used */
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode;
   dimension?: 'extra-small' | 'small' | 'large';
@@ -18,7 +17,6 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   target?: '_blank' | '_self' | '_parent' | '_top' | string;
   automationId?: string;
   className?: string;
-  data?: string;
 }
 
 const Button = ({
@@ -32,6 +30,7 @@ const Button = ({
   iconEnd,
   onClick,
   href,
+  rel,
   type,
   target,
   automationId,
@@ -44,6 +43,7 @@ const Button = ({
       onClick={onClick}
       type={type}
       target={target}
+      rel={rel}
       className={
         classnames(
           className,
