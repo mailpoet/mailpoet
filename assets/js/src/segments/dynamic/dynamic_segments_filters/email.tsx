@@ -31,12 +31,12 @@ export function validateEmail(formItems: EmailFormItem): boolean {
   return ((formItems.action in EmailActionTypes) && !!formItems.newsletter_id);
 }
 
-const shouldDisplayLinks = (item: EmailFormItem): boolean => (
+const shouldDisplayLinks = (itemAction: string, itemNewsletterId?: string): boolean => (
   (
-    (item.action === EmailActionTypes.CLICKED)
-    || (item.action === EmailActionTypes.NOT_CLICKED)
+    (itemAction === EmailActionTypes.CLICKED)
+    || (itemAction === EmailActionTypes.NOT_CLICKED)
   )
-  && (item.newsletter_id != null)
+  && (itemNewsletterId != null)
 );
 
 const newsletterOptions = SegmentFormData.newslettersList?.map((newsletter) => {
@@ -78,14 +78,14 @@ export const EmailFields: React.FunctionComponent<Props> = ({ onChange, item }) 
   }
 
   const loadLinksCB = useCallback(() => {
-    if (!shouldDisplayLinks(item)) return;
+    if (!shouldDisplayLinks(item.action, item.newsletter_id)) return;
     setLinks([]);
     loadLinks(item.newsletter_id);
-  }, [item]);
+  }, [item.action, item.newsletter_id]);
 
   useEffect(() => {
     loadLinksCB();
-  }, [loadLinksCB, item]);
+  }, [loadLinksCB, item.action, item.newsletter_id]);
 
   return (
     <>
@@ -107,7 +107,7 @@ export const EmailFields: React.FunctionComponent<Props> = ({ onChange, item }) 
         </div>
       </div>
       {
-        (!!links.length && shouldDisplayLinks(item))
+        (!!links.length && shouldDisplayLinks(item.action, item.newsletter_id))
         && (
           <div className="mailpoet-form-field">
             <div className="mailpoet-form-input mailpoet-form-select">
