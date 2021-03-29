@@ -22,7 +22,11 @@ enum WooCommerceActionTypes {
 }
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
-  if (!(formItems.action in WooCommerceActionTypes)) {
+  if (!(
+    Object
+      .values(WooCommerceActionTypes)
+      .some((v) => v === formItems.action))
+  ) {
     return false;
   }
   if (formItems.action === 'purchasedCategory' && !formItems.category_id) {

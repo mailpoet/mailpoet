@@ -28,7 +28,14 @@ export const EmailSegmentOptions = [
 ];
 
 export function validateEmail(formItems: EmailFormItem): boolean {
-  return ((formItems.action in EmailActionTypes) && !!formItems.newsletter_id);
+  return (
+    (
+      Object
+        .values(EmailActionTypes)
+        .some((v) => v === formItems.action)
+    )
+    && !!formItems.newsletter_id
+  );
 }
 
 const shouldDisplayLinks = (itemAction: string, itemNewsletterId?: string): boolean => (
