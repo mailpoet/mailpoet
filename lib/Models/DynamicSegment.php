@@ -116,6 +116,14 @@ class DynamicSegment extends MailPoetSegment {
     return parent::__get($key);
   }
 
+  /**
+   * @deprecated This is here for displaying the deprecation warning for static calls.
+   */
+  public static function __callStatic($name, $arguments) {
+    self::deprecationError($name);
+    return parent::__callStatic($name, $arguments);
+  }
+
   private static function deprecationError($methodName) {
     trigger_error('Calling ' . $methodName . ' is deprecated and will be removed. Use MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository and respective Doctrine entities instead.', E_USER_DEPRECATED);
   }
