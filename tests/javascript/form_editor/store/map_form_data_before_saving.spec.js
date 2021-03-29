@@ -49,7 +49,8 @@ describe('Form Data Save Mapper', () => {
   it('Returns dates', () => {
     expect(map(data)).to.have.property('created_at', '2020-01-15 07:39:15');
     expect(map(data)).to.have.property('updated_at', '2020-01-28 10:28:02');
-    expect(map(data)).to.have.property('deleted_at').that.is.null;// eslint-disable-line no-unused-expressions
+    /* eslint-disable-next-line no-unused-expressions -- using expression for testing null */
+    expect(map(data)).to.have.property('deleted_at').that.is.null;
   });
 
   describe('Settings', () => {
