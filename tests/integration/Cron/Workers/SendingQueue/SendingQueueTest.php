@@ -629,6 +629,41 @@ class SendingQueueTest extends \MailPoetTest {
     expect(count($statistics))->equals(1);
   }
 
+  public function testItDoesNotCallMailerWithEmptyBatch() {
+    $queue = $this->queue;
+    $subscribers = [];
+    while (count($subscribers) < 2 * SendingQueueWorker::BATCH_SIZE) {
+      $subscribers[] = 1234564545 + count($subscribers);
+    }
+    $subscribers[] = $this->subscriber->id();
+    $queue->setSubscribers($subscribers);
+    $queue->countTotal = count($subscribers);
+    $queue->save();
+    $sendingQueueWorker = $this->sendingQueueWorker;
+    $sendingQueueWorker->mailerTask = Stub::make(
+      new MailerTask(),
+      [
+        'send' => Expected::exactly(1, function() {
+          return $this->mailerTaskDummyResponse;
+        }),
+      ],
+      $this
+    );
+    $sendingQueueWorker->process();
+
+    /** @var SendingQueue $updatedQueue */
+    $updatedQueue = SendingQueue::findOne($queue->id);
+    $updatedQueue = SendingTask::createFromQueue($updatedQueue);
+    // queue subscriber processed/to process count is updated
+    expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+      ->equals([]);
+    expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
+      ->equals([$this->subscriber->id]);
+    expect($updatedQueue->countTotal)->equals(1);
+    expect($updatedQueue->countProcessed)->equals(1);
+    expect($updatedQueue->countToProcess)->equals(0);
+  }
+
   public function testItUpdatesQueueSubscriberCountWhenNoneOfSubscribersExist() {
     $queue = $this->queue;
     $queue->setSubscribers([
