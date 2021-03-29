@@ -321,8 +321,10 @@ Selection.propTypes = {
     getSearchLabel: PropTypes.func,
     getValue: PropTypes.func,
     placeholder: PropTypes.string,
-    remoteQuery: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-    extendSelect2Options: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+    /* eslint-disable-next-line react/forbid-prop-types -- unknown type of the object */
+    remoteQuery: PropTypes.object,
+    /* eslint-disable-next-line react/forbid-prop-types -- unknown type of the object */
+    extendSelect2Options: PropTypes.object,
     multiple: PropTypes.bool,
     forceSelect2: PropTypes.bool,
     transformChangedValue: PropTypes.func,
