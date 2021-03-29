@@ -74,6 +74,8 @@ class SendingQueueTest extends \MailPoetTest {
   private $subscribersFinder;
   /** @var SegmentsRepository */
   private $segmentsRepository;
+  /** @var WPFunctions */
+  private $wp;
 
   public function _before() {
     parent::_before();
@@ -82,6 +84,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->settings = $this->diContainer->get(SettingsController::class);
     $populator = $this->diContainer->get(Populator::class);
     $populator->up();
+    $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->subscriber = Subscriber::create();
     $this->subscriber->email = 'john@doe.com';
     $this->subscriber->firstName = 'John';
@@ -169,7 +172,8 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::makeEmpty(NewslettersRepository::class),
       $this->cronHelper,
       $this->subscribersFinder,
-      $this->segmentsRepository
+      $this->segmentsRepository,
+      $this->wp
     );
     try {
       $sendingQueueWorker->process();
@@ -193,6 +197,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->cronHelper,
       $this->subscribersFinder,
       $this->segmentsRepository,
+      $this->wp,
       Stub::make(
         new MailerTask(),
         [
@@ -233,6 +238,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->cronHelper,
       $this->subscribersFinder,
       $this->segmentsRepository,
+      $this->wp,
       Stub::make(
         new MailerTask(),
         [
@@ -271,7 +277,8 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::makeEmpty(NewslettersRepository::class),
       $this->cronHelper,
       $this->subscribersFinder,
-      $this->segmentsRepository
+      $this->segmentsRepository,
+      $this->wp
     );
     $sendingQueueWorker->process();
   }
@@ -751,6 +758,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->cronHelper,
       $this->subscribersFinder,
       $this->segmentsRepository,
+      $this->wp,
       Stub::make(
         new MailerTask(),
         [
@@ -855,7 +863,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItPauseSendingTaskThatHasTrashedSegment() {
-    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, 'Subject', NewsletterEntity::STATUS_SENDING);
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, 'Subject With Trashed', NewsletterEntity::STATUS_SENDING);
     $queue = $this->createQueueWithTaskAndSegment($newsletter, null, ['html' => 'Hello', 'text' => 'Hello']);
     $segment = $this->createSegment('Segment test', SegmentEntity::TYPE_DEFAULT);
     $segment->setDeletedAt(new \DateTime());
@@ -871,10 +879,11 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->refresh($newsletter);
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
     expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+    expect($this->wp->getTransient(SendingQueueWorker::EMAIL_WITH_INVALID_LIST_OPTION))->equals('Subject With Trashed');
   }
 
   public function testItPauseSendingTaskThatHasDeletedSegment() {
-    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, 'Subject', NewsletterEntity::STATUS_SENDING);
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, 'Subject With Deleted', NewsletterEntity::STATUS_SENDING);
     $queue = $this->createQueueWithTaskAndSegment($newsletter, null, ['html' => 'Hello', 'text' => 'Hello']);
     $segment = $this->createSegment('Segment test', SegmentEntity::TYPE_DEFAULT);
     $this->addSegmentToNewsletter($newsletter, $segment);
@@ -892,6 +901,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->refresh($newsletter);
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
     expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+    expect($this->wp->getTransient(SendingQueueWorker::EMAIL_WITH_INVALID_LIST_OPTION))->equals('Subject With Deleted');
   }
 
   public function _after() {
@@ -962,6 +972,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->cronHelper,
       $this->subscribersFinder,
       $this->segmentsRepository,
+      $this->wp,
       $mailerMock
     );
   }
