@@ -6,8 +6,6 @@ use MailPoet\Doctrine\EventListeners\EmojiEncodingListener;
 use MailPoet\Doctrine\EventListeners\LastSubscribedAtListener;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
 use MailPoet\Doctrine\EventListeners\ValidationListener;
-use MailPoet\Tracy\ApiPanel\ApiPanel;
-use MailPoet\Tracy\DIPanel\DIPanel;
 use MailPoet\Tracy\DoctrinePanel\DoctrinePanel;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\Configuration;
