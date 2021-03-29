@@ -168,6 +168,10 @@ class SendingQueue {
             $this->newsletterTask->markNewsletterAsSent($newsletter, $queue);
             continue;
           }
+          // if there aren't any subscribers to process in batch (e.g. all unsubscribed or were deleted) continue with next batch
+          if (count($foundSubscribersIds) === 0) {
+            continue;
+          }
         }
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addInfo(
           'before queue chunk processing',
