@@ -114,7 +114,7 @@ export const EmailFields: React.FunctionComponent<Props> = ({ onChange, item }) 
               <Select
                 placeholder={MailPoet.I18n.t('selectLinkPlaceholder')}
                 options={links}
-                value={find(['link_id', item.newsletter_id], links)}
+                value={find(['link_id', item.link_id], links)}
                 onChange={(option: SelectOption): void => compose([
                   onChange,
                   assign({ link_id: option.value }),
