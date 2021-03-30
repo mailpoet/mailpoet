@@ -14,8 +14,28 @@ const supportedBlocks = [
   'core/heading',
 ];
 
+type Attributes = {
+  font?: string;
+  style?: string;
+}
+
+type Format = {
+  attributes?: Attributes;
+  type?: string;
+  unregisteredAttributes?: Attributes;
+}
+
+type Value = {
+  formats: Format[][];
+  replacements: string[];
+  text: string;
+  activeFormats?: Format[];
+  start?: number;
+  end?: number;
+}
+
 type Props = {
-  value: string;
+  value: Value;
   onChange: (object) => void;
   activeAttributes: {
     font?: string;
