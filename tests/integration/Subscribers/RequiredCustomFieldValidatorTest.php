@@ -2,18 +2,26 @@
 
 namespace MailPoet\Subscribers;
 
-use MailPoet\Models\CustomField;
-use MailPoet\Models\Form;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\FormEntity;
 
 class RequiredCustomFieldValidatorTest extends \MailPoetTest {
-
+  /** @var CustomFieldEntity */
   private $customField;
+
+  /** @var CustomFieldsRepository */
+  private $customFieldRepository;
+
+  /** @var RequiredCustomFieldValidator */
+  private $validator;
 
   public function _before() {
     parent::_before();
-    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
-    $this->customField = CustomField::createOrUpdate([
+    $this->cleanup();
+    $this->customFieldRepository = $this->diContainer->get(CustomFieldsRepository::class);
+    $this->validator = new RequiredCustomFieldValidator($this->customFieldRepository);
+    $this->customField = $this->customFieldRepository->createOrUpdate([
       'name' => 'custom field',
       'type' => 'text',
       'params' => ['required' => '1'],
@@ -21,52 +29,51 @@ class RequiredCustomFieldValidatorTest extends \MailPoetTest {
   }
 
   public function testItValidatesDataWithoutCustomField() {
-    $validator = new RequiredCustomFieldValidator();
     $this->expectException('Exception');
-    $validator->validate([]);
+    $this->validator->validate([]);
   }
 
   public function testItValidatesDataWithCustomFieldPassedAsId() {
-    $validator = new RequiredCustomFieldValidator();
-    $validator->validate([$this->customField->id() => 'value']);
+    $this->validator->validate([$this->customField->getId() => 'value']);
   }
 
   public function testItValidatesDataWithCustomFieldPassedAsCFId() {
-    $validator = new RequiredCustomFieldValidator();
-    $validator->validate(['cf_' . $this->customField->id() => 'custom field']);
+    $this->validator->validate(['cf_' . $this->customField->getId() => 'custom field']);
   }
 
   public function testItValidatesDataWithEmptyCustomField() {
-    $validator = new RequiredCustomFieldValidator();
     $this->expectException('Exception');
-    $validator->validate([$this->customField->id() => '']);
+    $this->validator->validate([$this->customField->getId() => '']);
   }
 
   public function testItValidatesDataWithEmptyCustomFieldAsCFId() {
-    $validator = new RequiredCustomFieldValidator();
     $this->expectException('Exception');
-    $validator->validate(['cf_' . $this->customField->id() => '']);
+    $this->validator->validate(['cf_' . $this->customField->getId() => '']);
   }
 
   public function testItValidatesOnlyFieldPresentInForm() {
-    CustomField::createOrUpdate([
+    $this->customFieldRepository->createOrUpdate([
       'name' => 'custom field 2',
       'type' => 'text',
       'params' => ['required' => '1'],
     ]);
-    $form = Form::createOrUpdate([
-      'name' => 'form',
-      'body' => [[
-        'type' => 'text',
-        'name' => 'mandatory',
-        'id' => $this->customField->id(),
-        'unique' => '1',
-        'static' => '0',
-        'params' => ['required' => '1'],
-        'position' => '0',
-      ]],
+    $form = new FormEntity('form');
+    $form->setBody([
+      'type' => 'text',
+      'name' => 'mandatory',
+      'id' => $this->customField->getId(),
+      'unique' => '1',
+      'static' => '0',
+      'params' => ['required' => '1'],
+      'position' => '0',
     ]);
-    $validator = new RequiredCustomFieldValidator();
-    $validator->validate(['cf_' . $this->customField->id() => 'value'], $form);
+    $this->entityManager->persist($form);
+    $this->entityManager->flush();
+    $this->validator->validate(['cf_' . $this->customField->getId() => 'value'], $form);
+  }
+
+  private function cleanup() {
+    $this->truncateEntity(CustomFieldEntity::class);
+    $this->truncateEntity(FormEntity::class);
   }
 }
