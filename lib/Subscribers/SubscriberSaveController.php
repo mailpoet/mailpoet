@@ -194,6 +194,9 @@ class SubscriberSaveController {
     $confirmedAt = isset($data['confirmed_at']) ? Carbon::createFromFormat('Y-m-d H:i:s', $data['confirmed_at']) : null;
     if ($confirmedAt) $subscriber->setConfirmedAt($confirmedAt);
 
+    // wipe any unconfirmed data at this point
+    $subscriber->setUnconfirmedData(null);
+
     $this->subscribersRepository->persist($subscriber);
     $this->subscribersRepository->flush();
 
