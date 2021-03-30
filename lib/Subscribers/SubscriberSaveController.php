@@ -120,6 +120,26 @@ class SubscriberSaveController {
     return $subscriber;
   }
 
+  public function filterOutReservedColumns(array $subscriberData): array {
+    $reservedColumns = [
+      'id',
+      'wp_user_id',
+      'is_woocommerce_user',
+      'status',
+      'subscribed_ip',
+      'confirmed_ip',
+      'confirmed_at',
+      'created_at',
+      'updated_at',
+      'deleted_at',
+      'unconfirmed_data',
+    ];
+    return array_diff_key(
+      $subscriberData,
+      array_flip($reservedColumns)
+    );
+  }
+
   private function getNonDefaultSubscribedSegments(array $data): array {
     if (!isset($data['id']) || (int)$data['id'] <= 0) {
       return [];
@@ -155,7 +175,7 @@ class SubscriberSaveController {
     return array_diff($data['segments'], $oldSegmentIds);
   }
 
-  private function createOrUpdate(array $data, ?SubscriberEntity $subscriber): SubscriberEntity {
+  public function createOrUpdate(array $data, ?SubscriberEntity $subscriber): SubscriberEntity {
     if (!$subscriber) {
       $subscriber = $this->createSubscriber();
       if (!isset($data['source'])) $data['source'] = Source::ADMINISTRATOR;
@@ -184,7 +204,7 @@ class SubscriberSaveController {
     $subscriber = new SubscriberEntity();
     $subscriber->setUnsubscribeToken($this->security->generateUnsubscribeTokenByEntity($subscriber));
     $subscriber->setLinkToken(Security::generateHash(SubscriberEntity::LINK_TOKEN_LENGTH));
-    $subscriber->setStatus($this->settings->get('signup_confirmation.enabled') ? SubscriberEntity::STATUS_SUBSCRIBED : SubscriberEntity::STATUS_UNCONFIRMED);
+    $subscriber->setStatus(!$this->settings->get('signup_confirmation.enabled') ? SubscriberEntity::STATUS_SUBSCRIBED : SubscriberEntity::STATUS_UNCONFIRMED);
 
     return $subscriber;
   }
