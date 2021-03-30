@@ -194,4 +194,37 @@ class FormEntity {
   public function getSettingsSegmentIds(): array {
     return $this->settings['segments'] ?? [];
   }
+
+  public function getFields(array $body = null): array {
+    $body = $body ?? $this->getBody();
+    if (empty($body)) {
+      return [];
+    }
+
+    $skippedTypes = ['html', 'divider', 'submit'];
+    $nestedTypes = ['column', 'columns'];
+    $fields = [];
+
+    foreach ($body as $field) {
+      if (!empty($field['type']) && in_array($field['type'], $nestedTypes) && !empty($field['body'])) {
+        $nestedFields = $this->getFields($field['body']);
+        if ($nestedFields) {
+          $fields = array_merge($fields, $nestedFields);
+        }
+        continue;
+      }
+
+      if (empty($field['id']) || empty($field['type']) || in_array($field['type'], $skippedTypes)) {
+        continue;
+      }
+
+      if ((int)$field['id'] > 0) {
+        $fields[] = 'cf_' . $field['id'];
+      } else {
+        $fields[] = $field['id'];
+      }
+    }
+
+    return $fields;
+  }
 }

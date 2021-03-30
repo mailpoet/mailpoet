@@ -3,29 +3,35 @@
 namespace MailPoet\Subscribers;
 
 use Exception;
-use MailPoet\Models\CustomField;
-use MailPoet\Models\Form;
-use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\Entities\FormEntity;
 
 class RequiredCustomFieldValidator {
+  /** @var CustomFieldsRepository */
+  private $customFieldRepository;
+
+  public function __construct(CustomFieldsRepository $customFieldRepository) {
+    $this->customFieldRepository = $customFieldRepository;
+  }
+
   /**
    * @param array $data
-   * @param Form|null $form
+   * @param FormEntity|null $form
    *
    * @throws Exception
    */
-  public function validate(array $data, Form $form = null) {
+  public function validate(array $data, FormEntity $form = null) {
     $allCustomFields = $this->getCustomFields($form);
     foreach ($allCustomFields as $customFieldId => $customFieldName) {
       if ($this->isCustomFieldMissing($customFieldId, $data)) {
         throw new Exception(
-          WPFunctions::get()->__(sprintf('Missing value for custom field "%s"', $customFieldName), 'mailpoet')
+          __(sprintf('Missing value for custom field "%s"', $customFieldName), 'mailpoet')
         );
       }
     }
   }
 
-  private function isCustomFieldMissing($customFieldId, $data) {
+  private function isCustomFieldMissing(int $customFieldId, array $data): bool {
     if (!array_key_exists($customFieldId, $data) && !array_key_exists('cf_' . $customFieldId, $data)) {
       return true;
     }
@@ -38,7 +44,7 @@ class RequiredCustomFieldValidator {
     return false;
   }
 
-  private function getCustomFields(Form $form = null) {
+  private function getCustomFields(FormEntity $form = null): array {
     $result = [];
 
     if ($form) {
@@ -46,25 +52,23 @@ class RequiredCustomFieldValidator {
       if (!$ids) {
         return [];
       }
-      $requiredCustomFields = CustomField::whereIn('id', $ids)->findMany();
+      $requiredCustomFields = $this->customFieldRepository->findBy(['id' => $ids]);
     } else {
-      $requiredCustomFields = CustomField::findMany();
+      $requiredCustomFields = $this->customFieldRepository->findAll();
     }
 
     foreach ($requiredCustomFields as $customField) {
-      if (is_serialized($customField->params)) {
-        $params = unserialize($customField->params);
-        if (is_array($params) && isset($params['required']) && $params['required']) {
-          $result[$customField->id] = $customField->name;
-        }
+      $params = $customField->getParams();
+      if (is_array($params) && isset($params['required']) && $params['required']) {
+        $result[$customField->getId()] = $customField->getName();
       }
     }
 
     return $result;
   }
 
-  private function getFormCustomFieldIds(Form $form) {
-    $formFields = $form->getFieldList();
+  private function getFormCustomFieldIds(FormEntity $form): array {
+    $formFields = $form->getFields();
     $customFieldIds = [];
     foreach ($formFields as $fieldName) {
       if (strpos($fieldName, 'cf_') === 0) {
