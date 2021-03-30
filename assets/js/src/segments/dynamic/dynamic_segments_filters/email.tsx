@@ -62,9 +62,11 @@ interface Props {
 export const EmailFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
   const [errors, setErrors] = useState([]);
   const [links, setLinks] = useState<SelectOption[]>([]);
+  const [loadingLinks, setLoadingLinks] = useState<boolean>(false);
 
   function loadLinks(newsletterId: string): void {
     setErrors([]);
+    setLoadingLinks(true);
     MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
       endpoint: 'newsletter_links',
@@ -77,6 +79,7 @@ export const EmailFields: React.FunctionComponent<Props> = ({ onChange, item }) 
           value: link.id,
           label: link.url,
         }));
+        setLoadingLinks(false);
         setLinks(loadedLinks);
       })
       .fail((response) => {
@@ -113,6 +116,7 @@ export const EmailFields: React.FunctionComponent<Props> = ({ onChange, item }) 
           />
         </div>
       </div>
+      {(loadingLinks && (MailPoet.I18n.t('loadingDynamicSegmentItems')))}
       {
         (!!links.length && shouldDisplayLinks(item.action, item.newsletter_id))
         && (
@@ -121,11 +125,11 @@ export const EmailFields: React.FunctionComponent<Props> = ({ onChange, item }) 
               <Select
                 placeholder={MailPoet.I18n.t('selectLinkPlaceholder')}
                 options={links}
-                value={find(['link_id', item.link_id], links)}
+                value={find(['value', item.link_id], links)}
                 onChange={(option: SelectOption): void => compose([
                   onChange,
-                  assign({ link_id: option.value }),
-                ])(item)}
+                  assign(item),
+                ])({ link_id: option.value })}
               />
             </div>
           </div>
