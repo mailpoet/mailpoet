@@ -5,7 +5,6 @@ namespace MailPoet\Form\Listing;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Listing\ListingRepository;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class FormListingRepository extends ListingRepository {
@@ -29,12 +28,12 @@ class FormListingRepository extends ListingRepository {
     return [
       [
         'name' => 'all',
-        'label' => WPFunctions::get()->__('All', 'mailpoet'),
+        'label' => __('All', 'mailpoet'),
         'count' => $totalCount,
       ],
       [
         'name' => 'trash',
-        'label' => WPFunctions::get()->__('Trash', 'mailpoet'),
+        'label' => __('Trash', 'mailpoet'),
         'count' => $trashedCount,
       ],
     ];
