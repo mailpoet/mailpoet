@@ -10,7 +10,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\PreviewPage;
 use MailPoet\Models\Form;
-use MailPoet\Models\Segment;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class FormsTest extends \MailPoetTest {
@@ -35,8 +35,8 @@ class FormsTest extends \MailPoetTest {
     $this->form1 = $this->createForm('Form 1');
     $this->form2 = $this->createForm('Form 2');
     $this->form3 = $this->createForm('Form 3');
-    Segment::createOrUpdate(['name' => 'Segment 1']);
-    Segment::createOrUpdate(['name' => 'Segment 2']);
+    $this->createSegment('Segment 1');
+    $this->createSegment('Segment 2');
   }
 
   public function testItCanGetAForm() {
@@ -194,10 +194,10 @@ class FormsTest extends \MailPoetTest {
   public function testItCanRestoreAForm() {
     $this->form1->setDeletedAt(new \DateTime());
     $this->formsRepository->flush();
+    $this->entityManager->refresh($this->form1);
 
-    $trashedForm = Form::findOne($this->form1->getId());
-    assert($trashedForm instanceof Form);
-    expect($trashedForm->deletedAt)->notNull();
+    assert($this->form1 instanceof FormEntity);
+    expect($this->form1)->notNull();
 
     $response = $this->endpoint->restore(['id' => $this->form1->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
@@ -299,6 +299,13 @@ class FormsTest extends \MailPoetTest {
     $this->formsRepository->persist($form);
     $this->formsRepository->flush();
     return $form;
+  }
+
+  private function createSegment(string $name) {
+    $segmentsRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
+    $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, 'Some description');
+    $segmentsRepository->persist($segment);
+    $segmentsRepository->flush();
   }
 
   private function reloadForm(int $id): Form {
