@@ -1,4 +1,3 @@
-
 interface SegmentFormDataWindow extends Window {
   wordpress_editable_roles_list: {
     role_id: string;
@@ -22,7 +21,6 @@ interface SegmentFormDataWindow extends Window {
 }
 
 declare let window: SegmentFormDataWindow;
-
 
 export const SegmentFormData = {
   products: window.mailpoet_products,
