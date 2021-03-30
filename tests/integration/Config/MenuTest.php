@@ -5,6 +5,7 @@ namespace MailPoet\Test\Config;
 use Codeception\Util\Stub;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
+use MailPoet\Config\Router;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -66,7 +67,8 @@ class MenuTest extends \MailPoetTest {
       new AccessControl(),
       $wp,
       new ServicesChecker,
-      ContainerWrapper::getInstance()
+      ContainerWrapper::getInstance(),
+      $this->diContainer->get(Router::class)
     );
   }
 }

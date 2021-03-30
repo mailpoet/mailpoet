@@ -103,15 +103,6 @@ class Newsletters {
   public function render() {
     global $wp_roles; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 
-    if (isset($_GET['stats'])) {
-      $this->wp->wpSafeRedirect(
-        $this->wp->getSiteUrl(null,
-          '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $_GET['stats']
-        )
-      );
-      exit;
-    }
-
     $data = [];
 
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('newsletters');
