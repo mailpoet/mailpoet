@@ -103,6 +103,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Config\MP2Migrator::class);
     $container->autowire(\MailPoet\Config\RendererFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\ServicesChecker::class)->setPublic(true);
+    $container->autowire(\MailPoet\Config\Router::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Shortcodes::class)
       ->setShared(false) // Get a new instance each time $container->get() is called, needed for tests
       ->setPublic(true);
