@@ -25,13 +25,13 @@ class StateTest extends \MailPoetTest {
     $this->createNewScheduledTask(Migration::TASK_TYPE);
     $data = $this->tasksState->getLatestTasks();
     expect(count($data))->equals(2);
-    expect($data[0]['id'])->equals(1);
-    expect($data[0]['type'])->equals(SendingTask::TASK_TYPE);
-    expect(is_int($data[0]['priority']))->true();
-    expect(is_int($data[0]['updated_at']))->true();
-    expect($data[0])->hasKey('scheduled_at');
-    expect($data[0]['status'])->notEmpty();
-    expect($data[0])->hasKey('newsletter');
+    expect($data[1]['id'])->equals(1);
+    expect($data[1]['type'])->equals(SendingTask::TASK_TYPE);
+    expect(is_int($data[1]['priority']))->true();
+    expect(is_int($data[1]['updated_at']))->true();
+    expect($data[1])->hasKey('scheduled_at');
+    expect($data[1]['status'])->notEmpty();
+    expect($data[1])->hasKey('newsletter');
   }
 
   public function testItCanFilterTasksByType() {

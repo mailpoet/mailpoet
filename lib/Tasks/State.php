@@ -49,8 +49,7 @@ class State {
     $limit = Scheduler::TASK_BATCH_SIZE) {
     $tasks = [];
     foreach ($statuses as $status) {
-      $query = ScheduledTask::orderByDesc('created_at')
-        ->orderByAsc('id') // consistent order for tasks with equal timestamps
+      $query = ScheduledTask::orderByDesc('id')
         ->whereNull('deleted_at')
         ->limit($limit);
       if ($type) {
