@@ -104,6 +104,7 @@ class ManageSegmentsCest {
     $i->wantTo('Edit existing segment');
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementNotVisible('.mailpoet_form_loading');
+    $i->clearField('#field_name');
     $i->fillField(['name' => 'name'], $segmentEditedTitle);
     $i->fillField(['name' => 'description'], $segmentEditedDesc);
     $i->selectOptionInReactSelect('has WordPress user role', '[data-automation-id="select-segment-action"]');
