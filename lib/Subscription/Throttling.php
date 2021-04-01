@@ -7,16 +7,22 @@ use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Throttling {
-  public static function throttle() {
-    $wp = new WPFunctions;
-    $subscriptionLimitEnabled = $wp->applyFilters('mailpoet_subscription_limit_enabled', true);
+  /** @var WPFunctions */
+  private $wp;
 
-    $subscriptionLimitWindow = $wp->applyFilters('mailpoet_subscription_limit_window', DAY_IN_SECONDS);
-    $subscriptionLimitBase = $wp->applyFilters('mailpoet_subscription_limit_base', MINUTE_IN_SECONDS);
+  public function __construct(WPFunctions $wp) {
+    $this->wp = $wp;
+  }
+
+  public function throttle() {
+    $subscriptionLimitEnabled = $this->wp->applyFilters('mailpoet_subscription_limit_enabled', true);
+
+    $subscriptionLimitWindow = $this->wp->applyFilters('mailpoet_subscription_limit_window', DAY_IN_SECONDS);
+    $subscriptionLimitBase = $this->wp->applyFilters('mailpoet_subscription_limit_base', MINUTE_IN_SECONDS);
 
     $subscriberIp = Helpers::getIP();
 
-    if ($subscriptionLimitEnabled && !$wp->isUserLoggedIn()) {
+    if ($subscriptionLimitEnabled && !$this->wp->isUserLoggedIn()) {
       if (!empty($subscriberIp)) {
         $subscriptionCount = SubscriberIP::where('ip', $subscriberIp)
           ->whereRaw(
@@ -43,29 +49,27 @@ class Throttling {
     $ip->ip = $subscriberIp;
     $ip->save();
 
-    self::purge();
+    $this->purge();
 
     return false;
   }
 
-  public static function purge() {
-    $wp = new WPFunctions;
-    $interval = $wp->applyFilters('mailpoet_subscription_purge_window', MONTH_IN_SECONDS);
+  public function purge() {
+    $interval = $this->wp->applyFilters('mailpoet_subscription_purge_window', MONTH_IN_SECONDS);
     return SubscriberIP::whereRaw(
       '(`created_at` < NOW() - INTERVAL ? SECOND)',
       [$interval]
     )->deleteMany();
   }
 
-  public static function secondsToTimeString($seconds) {
-    $wp = new WPFunctions;
+  public function secondsToTimeString($seconds): string {
     $hrs = floor($seconds / 3600);
     $min = floor($seconds % 3600 / 60);
     $sec = $seconds % 3600 % 60;
     $result = [
-      'hours' => $hrs ? sprintf($wp->__('%d hours', 'mailpoet'), $hrs) : '',
-      'minutes' => $min ? sprintf($wp->__('%d minutes', 'mailpoet'), $min) : '',
-      'seconds' => $sec ? sprintf($wp->__('%d seconds', 'mailpoet'), $sec) : '',
+      'hours' => $hrs ? sprintf(__('%d hours', 'mailpoet'), $hrs) : '',
+      'minutes' => $min ? sprintf(__('%d minutes', 'mailpoet'), $min) : '',
+      'seconds' => $sec ? sprintf(__('%d seconds', 'mailpoet'), $sec) : '',
     ];
     return join(' ', array_filter($result));
   }

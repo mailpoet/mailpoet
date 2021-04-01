@@ -293,6 +293,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscription\Pages::class)->setPublic(true)
       ->setShared(false); // Get a new instance each time $container->get() is called, needed for tests
     $container->autowire(\MailPoet\Subscription\Registration::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscription\Throttling::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\SubscriptionUrlFactory::class)->setPublic(true);
     // Newsletter
     $container->autowire(\MailPoet\Newsletter\ApiDataSanitizer::class)->setPublic(true);
