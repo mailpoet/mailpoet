@@ -914,7 +914,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->refresh($newsletter);
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
     expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
-    expect($this->wp->getTransient(SendingQueueWorker::EMAIL_WITH_INVALID_LIST_OPTION))->equals('Subject With Trashed');
+    expect($this->wp->getTransient(SendingQueueWorker::EMAIL_WITH_INVALID_SEGMENT_OPTION))->equals('Subject With Trashed');
   }
 
   public function testItPauseSendingTaskThatHasDeletedSegment() {
@@ -936,7 +936,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->refresh($newsletter);
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
     expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
-    expect($this->wp->getTransient(SendingQueueWorker::EMAIL_WITH_INVALID_LIST_OPTION))->equals('Subject With Deleted');
+    expect($this->wp->getTransient(SendingQueueWorker::EMAIL_WITH_INVALID_SEGMENT_OPTION))->equals('Subject With Deleted');
   }
 
   public function _after() {
