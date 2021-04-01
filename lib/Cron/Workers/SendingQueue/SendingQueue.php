@@ -311,9 +311,8 @@ class SendingQueue {
   /**
    * Checks whether some of segments was deleted or trashed
    * @param int[] $segmentIds
-   * @return bool
    */
-  private function checkDeletedSegments(array $segmentIds) {
+  private function checkDeletedSegments(array $segmentIds): bool {
     if (count($segmentIds) === 0) {
       return true;
     }
@@ -322,7 +321,7 @@ class SendingQueue {
     // Some segment was deleted from DB
     if (count($segmentIds) > count($segments)) {
       return false;
-    };
+    }
     foreach ($segments as $segment) {
       if ($segment->getDeletedAt() !== null) {
         return false;
