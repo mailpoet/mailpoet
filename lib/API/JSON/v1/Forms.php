@@ -2,6 +2,7 @@
 
 namespace MailPoet\API\JSON\v1;
 
+use Exception;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\Error as APIError;
@@ -12,6 +13,7 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Form\ApiDataSanitizer;
 use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Form\FormFactory;
+use MailPoet\Form\FormSaveController;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Listing\FormListingRepository;
 use MailPoet\Form\PreviewPage;
@@ -59,6 +61,9 @@ class Forms extends APIEndpoint {
   /** @var ApiDataSanitizer */
   private $dataSanitizer;
 
+  /** @var FormSaveController */
+  private $formSaveController;
+
   public function __construct(
     Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
@@ -69,7 +74,8 @@ class Forms extends APIEndpoint {
     FormsResponseBuilder $formsResponseBuilder,
     WPFunctions $wp,
     Emoji $emoji,
-    ApiDataSanitizer $dataSanitizer
+    ApiDataSanitizer $dataSanitizer,
+    FormSaveController $formSaveController
   ) {
     $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
@@ -81,6 +87,7 @@ class Forms extends APIEndpoint {
     $this->formsResponseBuilder = $formsResponseBuilder;
     $this->emoji = $emoji;
     $this->dataSanitizer = $dataSanitizer;
+    $this->formSaveController = $formSaveController;
   }
 
   public function get($data = []) {
@@ -314,27 +321,20 @@ class Forms extends APIEndpoint {
   }
 
   public function duplicate($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $form = Form::findOne($id);
+    $form = $this->getForm($data);
 
-    if ($form instanceof Form) {
-      $formName = $form->name ? sprintf(__('Copy of %s', 'mailpoet'), $form->name) : '';
-      $data = [
-        'name' => $formName,
-      ];
-      $duplicate = $form->duplicate($data);
-      $errors = $duplicate->getErrors();
-
-      if (!empty($errors)) {
-        return $this->errorResponse($errors);
-      } else {
-        $duplicate = Form::findOne($duplicate->id);
-        if(!$duplicate instanceof Form) return $this->errorResponse();
-        return $this->successResponse(
-          $duplicate->asArray(),
-          ['count' => 1]
-        );
+    if ($form instanceof FormEntity) {
+      try {
+        $duplicate = $this->formSaveController->duplicate($form);
+      } catch (Exception $e) {
+        return $this->errorResponse([
+          APIError::UNKNOWN => __('Duplicating form failed.', 'mailpoet'),
+        ], [], Response::STATUS_UNKNOWN);
       }
+      return $this->successResponse(
+        $this->formsResponseBuilder->build($duplicate),
+        ['count' => 1]
+      );
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet'),
@@ -351,5 +351,11 @@ class Forms extends APIEndpoint {
         $e->getCode() => $e->getMessage(),
       ]);
     }
+  }
+
+  private function getForm(array $data): ?FormEntity {
+    return isset($data['id'])
+      ? $this->formsRepository->findOneById((int)$data['id'])
+      : null;
   }
 }

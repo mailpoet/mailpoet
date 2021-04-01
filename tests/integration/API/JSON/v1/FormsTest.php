@@ -228,10 +228,10 @@ class FormsTest extends \MailPoetTest {
   public function testItCanDuplicateAForm() {
     $response = $this->endpoint->duplicate(['id' => $this->form1->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
-    $form = Form::where('name', 'Copy of Form 1')->findOne();
-    assert($form instanceof Form);
+    $form = $this->formsRepository->findOneBy(['name' => 'Copy of Form 1']);
+    $this->assertInstanceOf(FormEntity::class, $form);
     expect($response->data)->equals(
-      $form->asArray()
+      $form->toArray()
     );
     expect($response->meta['count'])->equals(1);
   }
