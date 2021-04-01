@@ -32,7 +32,7 @@ class SendingQueue {
   public $batchSize;
   const BATCH_SIZE = 20;
   const TASK_BATCH_SIZE = 5;
-  const EMAIL_WITH_INVALID_LIST_OPTION = 'mailpoet_email_with_invalid_list';
+  const EMAIL_WITH_INVALID_SEGMENT_OPTION = 'mailpoet_email_with_invalid_segment';
 
   /** @var StatsNotificationsScheduler */
   public $statsNotificationsScheduler;
@@ -131,7 +131,7 @@ class SendingQueue {
         );
         $queue->status = ScheduledTaskEntity::STATUS_PAUSED;
         $queue->save();
-        $this->wp->setTransient(self::EMAIL_WITH_INVALID_LIST_OPTION, $newsletter->subject);
+        $this->wp->setTransient(self::EMAIL_WITH_INVALID_SEGMENT_OPTION, $newsletter->subject);
         continue;
       }
 

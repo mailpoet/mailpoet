@@ -6,8 +6,8 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
 
-class EmailWithInvalidListNotice {
-  const OPTION_NAME = SendingQueue::EMAIL_WITH_INVALID_LIST_OPTION;
+class EmailWithInvalidSegmentNotice {
+  const OPTION_NAME = SendingQueue::EMAIL_WITH_INVALID_SEGMENT_OPTION;
 
   /** @var WPFunctions */
   private $wp;

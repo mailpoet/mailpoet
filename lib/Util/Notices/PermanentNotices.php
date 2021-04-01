@@ -35,7 +35,7 @@ class PermanentNotices {
   /** @var DeprecatedShortcodeNotice */
   private $deprecatedShortcodeNotice;
 
-  /** @var EmailWithInvalidListNotice */
+  /** @var EmailWithInvalidSegmentNotice */
   private $emailWithInvalidListNotice;
 
   public function __construct(WPFunctions $wp) {
@@ -48,7 +48,7 @@ class PermanentNotices {
     $this->blackFridayNotice = new BlackFridayNotice();
     $this->headersAlreadySentNotice = new HeadersAlreadySentNotice(SettingsController::getInstance(), $wp);
     $this->deprecatedShortcodeNotice = new DeprecatedShortcodeNotice();
-    $this->emailWithInvalidListNotice = new EmailWithInvalidListNotice($wp);
+    $this->emailWithInvalidListNotice = new EmailWithInvalidSegmentNotice($wp);
   }
 
   public function init() {
@@ -112,7 +112,7 @@ class PermanentNotices {
       case (DeprecatedShortcodeNotice::OPTION_NAME):
         $this->deprecatedShortcodeNotice->disable();
         break;
-      case (EmailWithInvalidListNotice::OPTION_NAME):
+      case (EmailWithInvalidSegmentNotice::OPTION_NAME):
         $this->emailWithInvalidListNotice->disable();
         break;
     }
