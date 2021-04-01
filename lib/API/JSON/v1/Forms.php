@@ -289,14 +289,12 @@ class Forms extends APIEndpoint {
   }
 
   public function trash($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $form = Form::findOne($id);
-    if ($form instanceof Form) {
-      $form->trash();
-      $form = Form::findOne($form->id);
-      if(!$form instanceof Form) return $this->errorResponse();
+    $form = $this->getForm($data);
+
+    if ($form instanceof FormEntity) {
+      $this->formsRepository->trash($form);
       return $this->successResponse(
-        $form->asArray(),
+        $form->toArray(),
         ['count' => 1]
       );
     } else {

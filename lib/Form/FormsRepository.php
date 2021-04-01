@@ -4,6 +4,7 @@ namespace MailPoet\Form;
 
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\FormEntity;
+use MailPoetVendor\Carbon\Carbon;
 
 /**
  * @extends Repository<FormEntity>
@@ -33,5 +34,11 @@ class FormsRepository extends Repository {
       ->select('count(f.id)')
       ->getQuery()
       ->getSingleScalarResult();
+  }
+
+  public function trash(FormEntity $form) {
+    $form->setDeletedAt(Carbon::now());
+    $this->persist($form);
+    $this->flush();
   }
 }
