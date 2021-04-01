@@ -19,7 +19,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\CustomField;
@@ -36,16 +35,13 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
-use MailPoet\Subscribers\LinkTokens;
-use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
-use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\SubscriberSubscribeController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
-use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions;
@@ -94,21 +90,14 @@ class SubscribersTest extends \MailPoetTest {
     $this->responseBuilder = $container->get(SubscribersResponseBuilder::class);
     $obfuscator = new FieldNameObfuscator($wp);
     $this->endpoint = new Subscribers(
-      $container->get(SubscriberActions::class),
-      $container->get(RequiredCustomFieldValidator::class),
       $container->get(Handler::class),
-      $container->get(Captcha::class),
-      $settings,
-      $this->captchaSession,
       $container->get(ConfirmationEmailMailer::class),
-      new SubscriptionUrlFactory($wp, $settings, new LinkTokens),
       $container->get(SubscribersRepository::class),
       $this->responseBuilder,
       $container->get(SubscriberListingRepository::class),
       $container->get(SegmentsRepository::class),
-      $obfuscator,
-      $container->get(FormsRepository::class),
-      $container->get(SubscriberSaveController::class)
+      $container->get(SubscriberSaveController::class),
+      $container->get(SubscriberSubscribeController::class)
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
