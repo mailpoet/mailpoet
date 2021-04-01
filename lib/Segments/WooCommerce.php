@@ -24,7 +24,10 @@ class WooCommerce {
   /** @var WP */
   private $wpSegment;
 
+  /** @var string|null */
   private $mailpoetEmailCollation;
+
+  /** @var string|null */
   private $wpPostmetaValueCollation;
 
   /** @var SubscribersRepository */
@@ -137,8 +140,6 @@ class WooCommerce {
   }
 
   public function synchronizeCustomers() {
-    $this->getColumnCollation();
-
     $this->wpSegment->synchronizeUsers(); // synchronize registered users
 
     $this->markRegisteredCustomers();
@@ -155,7 +156,10 @@ class WooCommerce {
     return true;
   }
 
-  private function getColumnCollation() {
+  private function ensureColumnCollation(): void {
+    if ($this->mailpoetEmailCollation && $this->wpPostmetaValueCollation) {
+      return;
+    }
     global $wpdb;
     $mailpoetEmailColumn = $wpdb->get_row(
       'SHOW FULL COLUMNS FROM ' . MP_SUBSCRIBERS_TABLE . ' WHERE Field = "email"'
@@ -167,7 +171,11 @@ class WooCommerce {
     $this->wpPostmetaValueCollation = $wpPostmetaValueColumn->Collation; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
   }
 
-  private function needsCollationChange($collation1, $collation2) {
+  private function needsCollationChange(): bool {
+    $this->ensureColumnCollation();
+    $collation1 = (string)$this->mailpoetEmailCollation;
+    $collation2 = (string)$this->wpPostmetaValueCollation;
+
     if ($collation1 === $collation2) {
       return false;
     }
@@ -237,7 +245,7 @@ class WooCommerce {
   private function updateFirstNames($subscriberId = null) {
     global $wpdb;
     $collate = '';
-    if ($this->needsCollationChange($this->mailpoetEmailCollation, $this->wpPostmetaValueCollation)) {
+    if ($this->needsCollationChange()) {
       $collate = ' COLLATE ' . $this->mailpoetEmailCollation;
     }
     $subscribersTable = Subscriber::$_table;
@@ -256,7 +264,7 @@ class WooCommerce {
   private function updateLastNames($subscriberId = null) {
     global $wpdb;
     $collate = '';
-    if ($this->needsCollationChange($this->mailpoetEmailCollation, $this->wpPostmetaValueCollation)) {
+    if ($this->needsCollationChange()) {
       $collate = ' COLLATE ' . $this->mailpoetEmailCollation;
     }
     $subscribersTable = Subscriber::$_table;
