@@ -13,6 +13,13 @@ class FormsRepositoryTest extends \MailPoetTest {
     $this->repository = $this->diContainer->get(FormsRepository::class);
   }
 
+  public function testItCanDeleteForm() {
+    $form = $this->createForm('Form 1');
+    expect($this->repository->findOneById($form->getId()))->isInstanceOf(FormEntity::class);
+    $this->repository->delete($form);
+    expect($form->getId())->null();
+  }
+
   public function testItCanTrashForm() {
     $form = $this->createForm('Form 1');
     expect($form->getDeletedAt())->null();
