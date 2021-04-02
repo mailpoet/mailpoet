@@ -303,10 +303,10 @@ class Forms extends APIEndpoint {
   }
 
   public function delete($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $form = Form::findOne($id);
-    if ($form instanceof Form) {
-      $form->delete();
+    $form = $this->getForm($data);
+
+    if ($form instanceof FormEntity) {
+      $this->formsRepository->delete($form);
 
       return $this->successResponse(null, ['count' => 1]);
     } else {

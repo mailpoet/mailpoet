@@ -36,6 +36,11 @@ class FormsRepository extends Repository {
       ->getSingleScalarResult();
   }
 
+  public function delete(FormEntity $form) {
+    $this->remove($form);
+    $this->flush();
+  }
+
   public function trash(FormEntity $form) {
     $this->updateDeletedAt($form, Carbon::now());
   }
