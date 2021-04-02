@@ -2,7 +2,8 @@
 
 namespace MailPoet\Subscription;
 
-use MailPoet\Models\SubscriberIP;
+use MailPoet\Entities\SubscriberIPEntity;
+use MailPoet\Subscribers\SubscriberIPsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -10,9 +11,13 @@ class ThrottlingTest extends \MailPoetTest {
   /** @var Throttling */
   private $throttling;
 
+  /** @var SubscriberIPsRepository */
+  private $subscriberIPsRepository;
+
   protected function _before() {
     parent::_before();
     $this->throttling = $this->diContainer->get(Throttling::class);
+    $this->subscriberIPsRepository = $this->diContainer->get(SubscriberIPsRepository::class);
   }
 
   public function testItProgressivelyThrottlesSubscriptions() {
@@ -20,10 +25,7 @@ class ThrottlingTest extends \MailPoetTest {
     expect($this->throttling->throttle())->equals(false);
     expect($this->throttling->throttle())->equals(60);
     for ($i = 1; $i <= 10; $i++) {
-      $ip = SubscriberIP::create();
-      $ip->ip = '127.0.0.1';
-      $ip->createdAt = Carbon::now()->subMinutes($i);
-      $ip->save();
+      $this->createSubscriberIP('127.0.0.1', Carbon::now()->subMinutes($i));
     }
     expect($this->throttling->throttle())->equals(MINUTE_IN_SECONDS * pow(2, 10));
   }
@@ -49,18 +51,12 @@ class ThrottlingTest extends \MailPoetTest {
   }
 
   public function testItPurgesOldSubscriberIps() {
-    $ip = SubscriberIP::create();
-    $ip->ip = '127.0.0.1';
-    $ip->save();
+    $this->createSubscriberIP('127.0.0.1', Carbon::now());
+    $this->createSubscriberIP('127.0.0.1', Carbon::now()->subDays(30)->subSeconds(1));
 
-    $ip2 = SubscriberIP::create();
-    $ip2->ip = '127.0.0.1';
-    $ip2->createdAt = Carbon::now()->subDays(30)->subSeconds(1);
-    $ip2->save();
-
-    expect(SubscriberIP::count())->equals(2);
+    expect($this->subscriberIPsRepository->countBy([]))->equals(2);
     $this->throttling->throttle();
-    expect(SubscriberIP::count())->equals(1);
+    expect($this->subscriberIPsRepository->countBy([]))->equals(1);
   }
 
   public function testItConvertsSecondsToTimeString() {
@@ -73,7 +69,15 @@ class ThrottlingTest extends \MailPoetTest {
     expect($this->throttling->secondsToTimeString(59))->equals('59 seconds');
   }
 
+  private function createSubscriberIP(string $ip, Carbon $createdAt): SubscriberIPEntity {
+    $subscriberIP = new SubscriberIPEntity($ip);
+    $subscriberIP->setCreatedAt($createdAt);
+    $this->entityManager->persist($subscriberIP);
+    $this->entityManager->flush();
+    return $subscriberIP;
+  }
+
   public function _after() {
-    SubscriberIP::deleteMany();
+    $this->truncateEntity(SubscriberIPEntity::class);
   }
 }
