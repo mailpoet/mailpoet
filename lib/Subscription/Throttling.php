@@ -2,42 +2,37 @@
 
 namespace MailPoet\Subscription;
 
-use MailPoet\Models\SubscriberIP;
+use MailPoet\Entities\SubscriberIPEntity;
+use MailPoet\Subscribers\SubscriberIPsRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Throttling {
+  /** @var SubscriberIPsRepository */
+  private $subscriberIPsRepository;
+
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(WPFunctions $wp) {
+  public function __construct(SubscriberIPsRepository $subscriberIPsRepository, WPFunctions $wp) {
     $this->wp = $wp;
+    $this->subscriberIPsRepository = $subscriberIPsRepository;
   }
 
   public function throttle() {
     $subscriptionLimitEnabled = $this->wp->applyFilters('mailpoet_subscription_limit_enabled', true);
 
-    $subscriptionLimitWindow = $this->wp->applyFilters('mailpoet_subscription_limit_window', DAY_IN_SECONDS);
-    $subscriptionLimitBase = $this->wp->applyFilters('mailpoet_subscription_limit_base', MINUTE_IN_SECONDS);
+    $subscriptionLimitWindow = (int)$this->wp->applyFilters('mailpoet_subscription_limit_window', DAY_IN_SECONDS);
+    $subscriptionLimitBase = (int)$this->wp->applyFilters('mailpoet_subscription_limit_base', MINUTE_IN_SECONDS);
 
     $subscriberIp = Helpers::getIP();
 
     if ($subscriptionLimitEnabled && !$this->wp->isUserLoggedIn()) {
       if (!empty($subscriberIp)) {
-        $subscriptionCount = SubscriberIP::where('ip', $subscriberIp)
-          ->whereRaw(
-            '(`created_at` >= NOW() - INTERVAL ? SECOND)',
-            [(int)$subscriptionLimitWindow]
-          )->count();
-
+        $subscriptionCount = $this->subscriberIPsRepository->getCountByIPAndCreatedAtAfterTimeInSeconds($subscriberIp, $subscriptionLimitWindow);
         if ($subscriptionCount > 0) {
           $timeout = $subscriptionLimitBase * pow(2, $subscriptionCount - 1);
-          $existingUser = SubscriberIP::where('ip', $subscriberIp)
-            ->whereRaw(
-              '(`created_at` >= NOW() - INTERVAL ? SECOND)',
-              [(int)$timeout]
-            )->findOne();
-
+          $existingUser = $this->subscriberIPsRepository->findOneByIPAndCreatedAtAfterTimeInSeconds($subscriberIp, $timeout);
           if (!empty($existingUser)) {
             return $timeout;
           }
@@ -45,21 +40,23 @@ class Throttling {
       }
     }
 
-    $ip = SubscriberIP::create();
-    $ip->ip = $subscriberIp;
-    $ip->save();
+    if ($subscriberIp !== null) {
+      $ip = new SubscriberIPEntity($subscriberIp);
+      $existingIp = $this->subscriberIPsRepository->findOneBy(['ip' => $ip->getIP(), 'createdAt' => $ip->getCreatedAt()]);
+      if (!$existingIp) {
+        $this->subscriberIPsRepository->persist($ip);
+        $this->subscriberIPsRepository->flush();
+      }
+    }
 
     $this->purge();
 
     return false;
   }
 
-  public function purge() {
+  public function purge(): void {
     $interval = $this->wp->applyFilters('mailpoet_subscription_purge_window', MONTH_IN_SECONDS);
-    return SubscriberIP::whereRaw(
-      '(`created_at` < NOW() - INTERVAL ? SECOND)',
-      [$interval]
-    )->deleteMany();
+    $this->subscriberIPsRepository->deleteCreatedAtBeforeTimeInSeconds($interval);
   }
 
   public function secondsToTimeString($seconds): string {
