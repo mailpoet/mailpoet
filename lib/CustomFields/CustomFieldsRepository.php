@@ -18,6 +18,11 @@ class CustomFieldsRepository extends Repository {
    * @return CustomFieldEntity
    */
   public function createOrUpdate($data) {
+    // set name as label by default
+    if (empty($data['params']['label']) && isset($data['name'])) {
+      $data['params']['label'] = $data['name'];
+    }
+
     if (isset($data['id'])) {
       $field = $this->findOneById((int)$data['id']);
     } elseif (isset($data['name'])) {
