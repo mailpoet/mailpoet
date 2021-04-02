@@ -6,7 +6,8 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use MailPoet\CustomFields\ApiDataSanitizer;
-use MailPoet\Models\CustomField;
+use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
@@ -22,11 +23,21 @@ use MailPoetVendor\Idiorm\ORM;
 class APITest extends \MailPoetTest {
   const VERSION = 'v1';
 
+  /** @var CustomFieldsRepository */
+  private $customFieldRepository;
+
+  public function _before(): void {
+    parent::_before();
+    $settings = SettingsController::getInstance();
+    $settings->set('signup_confirmation.enabled', true);
+    $this->customFieldRepository = $this->diContainer->get(CustomFieldsRepository::class);
+  }
+
   private function getApi() {
     return new \MailPoet\API\MP\v1\API(
       Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
       Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmail']),
-      Stub::makeEmptyExcept(RequiredCustomFieldValidator::class, 'validate'),
+      $this->diContainer->get(RequiredCustomFieldValidator::class),
       Stub::makeEmpty(ApiDataSanitizer::class),
       Stub::makeEmpty(WelcomeScheduler::class),
       SettingsController::getInstance()
@@ -63,19 +74,19 @@ class APITest extends \MailPoetTest {
   }
 
   public function testItReturnsCustomFields() {
-    $customField1 = CustomField::createOrUpdate([
+    $customField1 = $this->customFieldRepository->createOrUpdate([
       'name' => 'text custom field',
-      'type' => CustomField::TYPE_TEXT,
+      'type' => CustomFieldEntity::TYPE_TEXT,
       'params' => ['required' => '1', 'date_type' => 'year_month_day'],
     ]);
-    $customField2 = CustomField::createOrUpdate([
+    $customField2 = $this->customFieldRepository->createOrUpdate([
       'name' => 'checkbox custom field',
-      'type' => CustomField::TYPE_CHECKBOX,
+      'type' => CustomFieldEntity::TYPE_CHECKBOX,
       'params' => ['required' => ''],
     ]);
     $response = $this->getApi()->getSubscriberFields();
     expect($response)->contains([
-      'id' => 'cf_' . $customField1->id,
+      'id' => 'cf_' . $customField1->getId(),
       'name' => 'text custom field',
       'type' => 'text',
       'params' => [
@@ -85,7 +96,7 @@ class APITest extends \MailPoetTest {
       ],
     ]);
     expect($response)->contains([
-      'id' => 'cf_' . $customField2->id,
+      'id' => 'cf_' . $customField2->getId(),
       'name' => 'checkbox custom field',
       'type' => 'checkbox',
       'params' => [
@@ -440,21 +451,21 @@ class APITest extends \MailPoetTest {
   }
 
   public function testItAddsSubscriber() {
-    $customField = CustomField::create();
-    $customField->name = 'test custom field';
-    $customField->type = CustomField::TYPE_TEXT;
-    $customField->save();
+    $customField = $this->customFieldRepository->createOrUpdate([
+      'name' => 'test custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+    ]);
 
     $subscriber = [
     'email' => 'test@example.com',
-    'cf_' . $customField->id => 'test',
+    'cf_' . $customField->getId() => 'test',
     ];
 
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     $result = $this->getApi()->addSubscriber($subscriber);
     expect($result['id'])->greaterThan(0);
     expect($result['email'])->equals($subscriber['email']);
-    expect($result['cf_' . $customField->id])->equals('test');
+    expect($result['cf_' . $customField->getId()])->equals('test');
     expect($result['source'])->equals('api');
     expect($result['subscribed_ip'])->equals($_SERVER['REMOTE_ADDR']);
     expect(strlen($result['unsubscribe_token']))->equals(15);
@@ -471,9 +482,9 @@ class APITest extends \MailPoetTest {
   }
 
   public function testItChecksForMandatoryCustomFields() {
-    CustomField::createOrUpdate([
+    $this->customFieldRepository->createOrUpdate([
       'name' => 'custom field',
-      'type' => 'text',
+      'type' => CustomFieldEntity::TYPE_TEXT,
       'params' => ['required' => '1'],
     ]);
 
@@ -548,7 +559,7 @@ class APITest extends \MailPoetTest {
     $API = new \MailPoet\API\MP\v1\API(
       Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
       Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmailOnce']),
-      Stub::makeEmptyExcept(RequiredCustomFieldValidator::class, 'validate'),
+      $this->diContainer->get(RequiredCustomFieldValidator::class),
       Stub::makeEmpty(ApiDataSanitizer::class),
       $welcomeScheduler,
       Stub::makeEmpty(SettingsController::class)
@@ -863,14 +874,9 @@ class APITest extends \MailPoetTest {
     }
   }
 
-  public function _before() {
-    $settings = SettingsController::getInstance();
-    $settings->set('signup_confirmation.enabled', true);
-  }
-
   public function _after() {
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    $this->truncateEntity(CustomFieldEntity::class);
     ORM::raw_execute('TRUNCATE ' . Segment::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
   }
