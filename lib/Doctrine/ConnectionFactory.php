@@ -8,6 +8,7 @@ use MailPoet\Doctrine\Types\BigIntType;
 use MailPoet\Doctrine\Types\JsonOrSerializedType;
 use MailPoet\Doctrine\Types\JsonType;
 use MailPoet\Doctrine\Types\SerializedArrayType;
+use MailPoet\Doctrine\Types\DateTimeTzToStringType;
 use MailPoetVendor\Doctrine\DBAL\DriverManager;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MySqlPlatform;
 use MailPoetVendor\Doctrine\DBAL\Types\Type;
@@ -21,6 +22,7 @@ class ConnectionFactory {
 
   private $types = [
     BigIntType::NAME => BigIntType::class,
+    DateTimeTzToStringType::NAME => DateTimeTzToStringType::class,
     JsonType::NAME => JsonType::class,
     JsonOrSerializedType::NAME => JsonOrSerializedType::class,
     SerializedArrayType::NAME => SerializedArrayType::class,
