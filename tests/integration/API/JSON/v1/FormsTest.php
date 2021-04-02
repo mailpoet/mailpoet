@@ -202,10 +202,17 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->restore(['id' => $this->form1->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      $this->reloadForm((int)$this->form1->getId())->asArray()
+      $this->form1->toArray()
     );
     expect($response->data['deleted_at'])->null();
     expect($response->meta['count'])->equals(1);
+  }
+
+  public function testErrorWhenRestoringNonExistentForm() {
+    $response = $this->endpoint->restore(['id' => 'Invalid ID']);
+    expect($response->errors[0]['error'])->equals('not_found');
+    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    expect($response->meta)->isEmpty();
   }
 
   public function testItCanTrashAForm() {

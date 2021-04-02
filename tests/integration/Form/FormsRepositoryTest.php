@@ -20,6 +20,14 @@ class FormsRepositoryTest extends \MailPoetTest {
     expect($form->getDeletedAt())->notNull();
   }
 
+  public function testItCanRestoreForm() {
+    $form = $this->createForm('Form 1');
+    $this->repository->trash($form);
+    expect($form->getDeletedAt())->notNull();
+    $this->repository->restore($form);
+    expect($form->getDeletedAt())->null();
+  }
+
   public function _after() {
     $this->truncateEntity(FormEntity::class);
   }

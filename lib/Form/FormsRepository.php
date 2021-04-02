@@ -37,7 +37,15 @@ class FormsRepository extends Repository {
   }
 
   public function trash(FormEntity $form) {
-    $form->setDeletedAt(Carbon::now());
+    $this->updateDeletedAt($form, Carbon::now());
+  }
+
+  public function restore(FormEntity $form) {
+    $this->updateDeletedAt($form, null);
+  }
+
+  private function updateDeletedAt(FormEntity $form, ?Carbon $value) {
+    $form->setDeletedAt($value);
     $this->persist($form);
     $this->flush();
   }
