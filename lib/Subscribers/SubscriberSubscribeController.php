@@ -5,9 +5,9 @@ namespace MailPoet\Subscribers;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Util\FieldNameObfuscator;
-use MailPoet\Models\StatisticsForms;
 use MailPoet\NotFoundException;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\StatisticsFormsRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -46,6 +46,9 @@ class SubscriberSubscribeController {
   /** @var SubscriptionThrottling */
   private $throttling;
 
+  /** @var StatisticsFormsRepository */
+  private $statisticsFormsRepository;
+
   public function __construct(
     Captcha $subscriptionCaptcha,
     CaptchaSession $captchaSession,
@@ -56,6 +59,7 @@ class SubscriberSubscribeController {
     RequiredCustomFieldValidator $requiredCustomFieldValidator,
     SettingsController $settings,
     FormsRepository $formsRepository,
+    StatisticsFormsRepository $statisticsFormsRepository,
     WPFunctions $wp
   ) {
     $this->formsRepository = $formsRepository;
@@ -68,6 +72,7 @@ class SubscriberSubscribeController {
     $this->subscriberActions = $subscriberActions;
     $this->wp = $wp;
     $this->throttling = $throttling;
+    $this->statisticsFormsRepository = $statisticsFormsRepository;
   }
 
   public function subscribe(array $data): array {
@@ -116,7 +121,7 @@ class SubscriberSubscribeController {
     }
 
     // record form statistics
-    StatisticsForms::record($form->getId(), $subscriber->getId());
+    $this->statisticsFormsRepository->record($form, $subscriber);
 
     $formSettings = $form->getSettings();
     if (!empty($formSettings['on_success'])) {

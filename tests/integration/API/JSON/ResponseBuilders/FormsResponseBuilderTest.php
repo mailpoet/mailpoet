@@ -20,18 +20,21 @@ class FormsResponseBuilderTest extends \MailPoetTest {
   /** @var array */
   protected $formSettings;
 
+  /** @var FormsResponseBuilder */
+  private $responseBuilder;
+
   public function _before() {
     parent::_before();
 
     $this->container = ContainerWrapper::getInstance();
     $this->entityManager = $this->container->get(EntityManager::class);
+    $this->responseBuilder = $this->container->get(FormsResponseBuilder::class);
   }
 
   public function testItBuildsForm() {
     $form = $this->createForm('Form 1');
 
-    $responseBuilder = new FormsResponseBuilder();
-    $response = $responseBuilder->build($form);
+    $response = $this->responseBuilder->build($form);
 
     expect($response['name'])->equals($this->formName);
     expect($response['status'])->equals(FormEntity::STATUS_ENABLED);
@@ -44,8 +47,7 @@ class FormsResponseBuilderTest extends \MailPoetTest {
     $form1 = $this->createForm('Form 1');
     $form2 = $this->createForm('Form 2');
 
-    $responseBuilder = new FormsResponseBuilder();
-    $response = $responseBuilder->buildForListing([$form1, $form2]);
+    $response = $this->responseBuilder->buildForListing([$form1, $form2]);
 
     expect($response)->count(2);
     expect($response[0]['signups'])->equals(0);
