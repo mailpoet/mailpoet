@@ -247,6 +247,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\InactiveSubscribersController::class);
     $container->autowire(\MailPoet\Subscribers\LinkTokens::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscribersRepository::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\SubscriberIPsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberListingRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberSegmentRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\SubscriberCustomFieldRepository::class)->setPublic(true);
