@@ -12,10 +12,11 @@ class Handler {
     $data = $this->processData($data);
     $tableName = $modelClass::$_table;
     $model = Model::factory($modelClass);
+    $callback = [$modelClass, 'listingQuery'];
 
-    if (method_exists($modelClass, 'listingQuery')) {
+    if (method_exists($modelClass, 'listingQuery') && is_callable($callback)) {
       $customQuery = call_user_func_array(
-        [$modelClass, 'listingQuery'],
+        $callback,
         [$data]
       );
       if (!empty($data['selection'])) {
@@ -40,26 +41,29 @@ class Handler {
     $model = Model::factory($modelClass);
     // get groups
     $groups = [];
-    if (method_exists($modelClass, 'groups')) {
+    $groupsCallback = [$modelClass, 'groups'];
+    if (method_exists($modelClass, 'groups') && is_callable($groupsCallback)) {
       $groups = call_user_func_array(
-        [$modelClass, 'groups'],
+        $groupsCallback,
         [$data]
       );
     }
 
     // get filters
     $filters = [];
-    if (method_exists($modelClass, 'filters')) {
+    $filtersCallback = [$modelClass, 'filters'];
+    if (method_exists($modelClass, 'filters') && is_callable($filtersCallback)) {
       $filters = call_user_func_array(
-        [$modelClass, 'filters'],
+        $filtersCallback,
         [$data]
       );
     }
 
     // get items and total count
-    if (method_exists($modelClass, 'listingQuery')) {
+    $listingCallback = [$modelClass, 'listingQuery'];
+    if (method_exists($modelClass, 'listingQuery') && is_callable($listingCallback)) {
       $customQuery = call_user_func_array(
-        [$modelClass, 'listingQuery'],
+        $listingCallback,
         [$data]
       );
 
