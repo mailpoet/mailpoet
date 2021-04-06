@@ -9,7 +9,7 @@ $config['parameters']['phpVersion'] = $phpVersion;
 # see https://github.com/phpstan/phpstan/issues/4060
 if ($phpVersion < 80000) {
   $config['parameters']['ignoreErrors'][] = [
-    'message' => '#^Cannot access offset \\(int\\|string\\) on array\\|false#',
+    'message' => '#^Cannot access offset \\(int\\|string\\) on array\\<string#',
     'path' => __DIR__ . '/../../lib/Features/FeatureFlagsController.php',
     'count' => 1,
   ];
