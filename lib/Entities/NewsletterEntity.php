@@ -280,7 +280,7 @@ class NewsletterEntity {
       $task = $queue->getTask();
       if ($task === null) continue;
 
-      $scheduled = new Carbon($task->getScheduledAt());
+      $scheduled = new Carbon($task->getScheduledAt()); // @phpstan-ignore-line - Carbon accepts a instance of DateTimeInterface but that is not mentioned in its phpdoc block causing a PHPStan error in this line.
       if ($scheduled < (new Carbon())->subDays(30)) continue;
 
       if (($status === self::STATUS_DRAFT) && ($task->getStatus() !== ScheduledTaskEntity::STATUS_SCHEDULED)) continue;
