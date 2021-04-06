@@ -14,7 +14,7 @@ class Router {
 
   public function checkRedirects(): void {
     $url = null;
-    if ($_GET['page'] === 'mailpoet-newsletters') {
+    if (isset($_GET['page']) && $_GET['page'] === 'mailpoet-newsletters') {
       $url = $this->checkNewslettersRedirect();
     }
     if (!$url) return;
