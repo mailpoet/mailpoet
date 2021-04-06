@@ -160,7 +160,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
     expect($subscriber->getCreatedAt()->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:01');
     expect($subscriber->getUpdatedAt()->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:02');
-    expect($subscriber->getCreatedAt())->equals($subscriber->getUpdatedAt());
+    expect($subscriber->getCreatedAt()->getTimestamp())->equals($subscriber->getUpdatedAt()->getTimestamp(), 2);
     expect($subscriber->getDeletedAt())->null();
   }
 
