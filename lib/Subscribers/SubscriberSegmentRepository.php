@@ -60,6 +60,10 @@ class SubscriberSegmentRepository extends Repository {
         'status' => SubscriberEntity::STATUS_UNSUBSCRIBED,
         'typeWordPress' => SegmentEntity::TYPE_WP_USERS,
       ]);
+      // Refresh SubscriberSegments status
+      foreach ($subscriber->getSubscriberSegments() as $subscriberSegment) {
+        $this->entityManager->refresh($subscriberSegment);
+      }
     }
   }
 
