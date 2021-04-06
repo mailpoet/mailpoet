@@ -737,7 +737,7 @@ class SubscriberTest extends \MailPoetTest {
 
     // it should not find deleted and nonexistent subscribers
     list($subscriber, $segment,) = $prepareData();
-    $subscriber[1]->deleted_at = date("Y-m-d H:i:s");
+    $subscriber[1]->deletedAt = date("Y-m-d H:i:s");
     $subscriber[1]->save();
     $subscriber[2]->delete();
     $subscribers = Subscriber::findSubscribersInSegments(
