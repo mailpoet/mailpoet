@@ -14,6 +14,9 @@ class Header {
     $lineHeight = sprintf(
       '%spx', StylesHelper::$defaultLineHeight * (int)$element['styles']['text']['fontSize']
     );
+    if (!is_string($element['text'])) {
+      throw new \RuntimeException('$element[\'text\'] should be a string.');
+    }
     $dOMParser = new pQuery();
     $DOM = $dOMParser->parseStr($element['text']);
     if (isset($element['styles']['link'])) {

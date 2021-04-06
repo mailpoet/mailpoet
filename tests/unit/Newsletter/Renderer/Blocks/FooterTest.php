@@ -52,4 +52,10 @@ class FooterTest extends \MailPoetUnitTest {
     $output = (new Footer)->render($this->block);
     expect($output)->stringContainsString('<a href="http://example.com" style="color:#aaaaaa;text-decoration:none">link</a>');
   }
+
+  public function testItRaisesExceptionIfTextIsNotString() {
+    $this->block['text'] = ['some', 'array'];
+    $this->expectException('RuntimeException');
+    (new Footer)->render($this->block);
+  }
 }
