@@ -30,10 +30,11 @@ class SetupTest extends \MailPoetTest {
 
     $settings = SettingsController::getInstance();
     $referralDetector = new ReferralDetector($wpStub, $settings);
+    $subscriptionCaptcha = $this->diContainer->get(Captcha::class);
     $populator = new Populator(
       $settings,
       $wpStub,
-      new Captcha(),
+      $subscriptionCaptcha,
       $referralDetector,
       $this->diContainer->get(FormsRepository::class),
       $this->entityManager,
@@ -48,7 +49,6 @@ class SetupTest extends \MailPoetTest {
     expect($signupConfirmation)->true();
 
     $captcha = $settings->fetch('captcha');
-    $subscriptionCaptcha = new Captcha;
     $captchaType = $subscriptionCaptcha->isSupported() ? Captcha::TYPE_BUILTIN : Captcha::TYPE_DISABLED;
     expect($captcha['type'])->equals($captchaType);
     expect($captcha['recaptcha_site_token'])->equals('');

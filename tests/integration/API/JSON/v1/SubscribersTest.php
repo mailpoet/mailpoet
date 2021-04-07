@@ -18,6 +18,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberIPEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
@@ -29,7 +30,6 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberIP;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
@@ -46,7 +46,6 @@ use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class SubscribersTest extends \MailPoetTest {
 
@@ -938,6 +937,6 @@ class SubscribersTest extends \MailPoetTest {
     $this->truncateEntity(CustomFieldEntity::class);
     $this->truncateEntity(SubscriberCustomFieldEntity::class);
     $this->diContainer->get(SettingsRepository::class)->truncate();
-    ORM::raw_execute('TRUNCATE ' . SubscriberIP::$_table);
+    $this->truncateEntity(SubscriberIPEntity::class);
   }
 }
