@@ -9,6 +9,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 
 class FilterDataMapperTest extends \MailPoetUnitTest {
   /** @var FilterDataMapper */
@@ -257,5 +258,44 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS,
     ]);
+  }
+
+  public function testItMapsWooCommerceSubscription() {
+    $data = [
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION,
+      'action' => WooCommerceSubscription::ACTION_HAS_ACTIVE,
+      'product_id' => '10',
+      'some_mess' => 'mess',
+    ];
+    $filter = $this->mapper->map($data);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION);
+    expect($filter->getData())->equals([
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION,
+      'action' => WooCommerceSubscription::ACTION_HAS_ACTIVE,
+      'product_id' => '10',
+    ]);
+  }
+
+  public function testItChecksWooCommerceSubscriptionAction() {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing action');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_ACTION);
+    $data = [
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION,
+      'product_id' => '10',
+    ];
+    $this->mapper->map($data);
+  }
+
+  public function testItChecksWooCommerceSubscriptionProductId() {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing product');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_PRODUCT_ID);
+    $data = [
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION,
+      'action' => WooCommerceSubscription::ACTION_HAS_ACTIVE,
+    ];
+    $this->mapper->map($data);
   }
 }
