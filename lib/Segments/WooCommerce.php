@@ -145,6 +145,7 @@ class WooCommerce {
     $this->markRegisteredCustomers();
     $insertedUsersEmails = $this->insertSubscribersFromOrders();
     $this->removeUpdatedSubscribersWithInvalidEmail($insertedUsersEmails);
+    unset($insertedUsersEmails);
     $this->updateFirstNames();
     $this->updateLastNames();
     $this->insertUsersToSegment();
@@ -192,7 +193,7 @@ class WooCommerce {
     global $wpdb;
     $subscribersTable = Subscriber::$_table;
     Subscriber::rawExecute(sprintf('
-      UPDATE %1$s mps
+      UPDATE LOW_PRIORITY %1$s mps
         JOIN %2$s wu ON mps.wp_user_id = wu.id
         JOIN %3$s wpum ON wu.id = wpum.user_id AND wpum.meta_key = "' . $wpdb->prefix . 'capabilities"
       SET is_woocommerce_user = 1, source = "%4$s"
@@ -250,7 +251,7 @@ class WooCommerce {
     }
     $subscribersTable = Subscriber::$_table;
     Subscriber::rawExecute(sprintf('
-      UPDATE %1$s mps
+      UPDATE LOW_PRIORITY %1$s mps
         JOIN %2$s wppm ON mps.email = wppm.meta_value %3$s AND wppm.meta_key = "_billing_email"
         JOIN %2$s wppm2 ON wppm2.post_id = wppm.post_id AND wppm2.meta_key = "_billing_first_name"
         JOIN (SELECT MAX(post_id) AS max_id FROM %2$s WHERE meta_key = "_billing_email" GROUP BY meta_value) AS tmaxid ON tmaxid.max_id = wppm.post_id
@@ -269,7 +270,7 @@ class WooCommerce {
     }
     $subscribersTable = Subscriber::$_table;
     Subscriber::rawExecute(sprintf('
-      UPDATE %1$s mps
+      UPDATE LOW_PRIORITY %1$s mps
         JOIN %2$s wppm ON mps.email = wppm.meta_value %3$s AND wppm.meta_key = "_billing_email"
         JOIN %2$s wppm2 ON wppm2.post_id = wppm.post_id AND wppm2.meta_key = "_billing_last_name"
         JOIN (SELECT MAX(post_id) AS max_id FROM %2$s WHERE meta_key = "_billing_email" GROUP BY meta_value) AS tmaxid ON tmaxid.max_id = wppm.post_id
@@ -434,7 +435,7 @@ class WooCommerce {
     $wcSegment = Segment::getWooCommerceSegment();
 
     $sql = sprintf('
-      UPDATE %1$s mpss
+      UPDATE LOW_PRIORITY %1$s mpss
         JOIN %2$s mps ON mpss.subscriber_id = mps.id
       SET mpss.status = "%3$s"
         WHERE
