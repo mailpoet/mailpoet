@@ -13,6 +13,7 @@ use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -33,6 +34,9 @@ class FilterHandler {
   /** @var WooCommerceNumberOfOrders */
   private $wooCommerceNumberOfOrders;
 
+  /** @var WooCommerceSubscription */
+  private $wooCommerceSubscription;
+
   /** @var EntityManager */
   private $entityManager;
 
@@ -49,14 +53,16 @@ class FilterHandler {
     WooCommerceProduct $wooCommerceProduct,
     WooCommerceCategory $wooCommerceCategory,
     EmailOpensAbsoluteCountAction $emailOpensAbsoluteCount,
-    SegmentDependencyValidator $segmentDependencyValidator,
-    WooCommerceNumberOfOrders $wooCommerceNumberOfOrders
+    WooCommerceNumberOfOrders $wooCommerceNumberOfOrders,
+    WooCommerceSubscription $wooCommerceSubscription,
+    SegmentDependencyValidator $segmentDependencyValidator
   ) {
     $this->emailAction = $emailAction;
     $this->userRole = $userRole;
     $this->wooCommerceProduct = $wooCommerceProduct;
     $this->wooCommerceCategory = $wooCommerceCategory;
     $this->wooCommerceNumberOfOrders = $wooCommerceNumberOfOrders;
+    $this->wooCommerceSubscription = $wooCommerceSubscription;
     $this->entityManager = $entityManager;
     $this->segmentDependencyValidator = $segmentDependencyValidator;
     $this->emailOpensAbsoluteCount = $emailOpensAbsoluteCount;
@@ -129,6 +135,8 @@ class FilterHandler {
           return $this->emailOpensAbsoluteCount->apply($queryBuilder, $filter);
         }
         return $this->emailAction->apply($queryBuilder, $filter);
+      case DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION:
+        return $this->wooCommerceSubscription->apply($queryBuilder, $filter);
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE:
         $action = $filterData->getParam('action');
         if ($action === WooCommerceProduct::ACTION_PRODUCT) {
