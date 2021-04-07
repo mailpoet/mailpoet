@@ -11,6 +11,7 @@ class DynamicSegmentFilterData {
   const TYPE_USER_ROLE = 'userRole';
   const TYPE_EMAIL = 'email';
   const TYPE_WOOCOMMERCE = 'woocommerce';
+  const TYPE_WOOCOMMERCE_SUBSCRIPTION = 'woocommerceSubscription';
 
   /**
    * @ORM\Column(type="serialized_array")
