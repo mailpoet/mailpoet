@@ -100,4 +100,26 @@ class WooCommerceDynamicSegmentsCest {
     $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
     $i->see('0', $productSegmentRow . " [data-colname='Number of subscribers']");
   }
+
+  public function displayMessageWhenPluginIsDeactivated(\AcceptanceTester $i) {
+    $i->wantTo('Check if count of subscribers is hidden and message with plugin name is visible');
+    $i->deactivateWooCommerce();
+    $i->login();
+    $i->wantTo('Check messages in list when WooCommerce is deactivated');
+    $i->amOnMailpoetPage('Lists');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+
+    $i->wantTo('Check that message is visible instead of count of subscribers');
+    $i->waitForText(self::CATEGORY_SEGMENT);
+    $message = 'Activate the WooCommerce plugin to see the number of subscribers and enable the editing of this segment.';
+    $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->getId()}']";
+    $i->see($message, $categorySegmentRow . " [data-colname='Missing plugin message']");
+    $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
+    $i->see($message, $productSegmentRow . " [data-colname='Missing plugin message']");
+
+    $i->wantTo('Check that Edit links are not clickable');
+    $i->assertAttributeContains($categorySegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
+    $i->assertAttributeContains($productSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
+    $i->seeNoJSErrors();
+  }
 }
