@@ -11,6 +11,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -30,18 +31,23 @@ class FilterHandler {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var SegmentDependencyValidator */
+  private $segmentDependencyValidator;
+
   public function __construct(
     EntityManager $entityManager,
     EmailAction $emailAction,
     UserRole $userRole,
     WooCommerceProduct $wooCommerceProduct,
-    WooCommerceCategory $wooCommerceCategory
+    WooCommerceCategory $wooCommerceCategory,
+    SegmentDependencyValidator $segmentDependencyValidator
   ) {
     $this->emailAction = $emailAction;
     $this->userRole = $userRole;
     $this->wooCommerceProduct = $wooCommerceProduct;
     $this->wooCommerceCategory = $wooCommerceCategory;
     $this->entityManager = $entityManager;
+    $this->segmentDependencyValidator = $segmentDependencyValidator;
   }
 
   public function apply(QueryBuilder $queryBuilder, SegmentEntity $segment): QueryBuilder {
@@ -54,7 +60,12 @@ class FilterHandler {
         ->createQueryBuilder()
         ->select("DISTINCT $subscribersTable.id as inner_subscriber_id")
         ->from($subscribersTable);
-      $this->applyFilter($subscribersIdsQuery, $filter);
+      // When a required plugin is missing we want to return empty result
+      if ($this->segmentDependencyValidator->getMissingPluginByFilter($filter)) {
+        $subscribersIdsQuery->andWhere('1 = 0');
+      } else {
+        $this->applyFilter($subscribersIdsQuery, $filter);
+      }
       $filterSelects[] = $subscribersIdsQuery->getSQL();
       $queryBuilder->setParameters(array_merge(
         $subscribersIdsQuery->getParameters(),

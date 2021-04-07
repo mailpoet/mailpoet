@@ -260,6 +260,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Segments\SegmentListingRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\SegmentsSimpleListRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\SegmentSaveController::class)->setPublic(true);
+    $container->autowire(\MailPoet\Segments\SegmentDependencyValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\DynamicSegmentsListingRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\FilterHandler::class)->setPublic(true);
     $container->autowire(\MailPoet\Segments\DynamicSegments\Filters\EmailAction::class)->setPublic(true);

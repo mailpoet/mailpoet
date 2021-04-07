@@ -91,6 +91,21 @@ const itemActions = [
         {MailPoet.I18n.t('edit')}
       </Link>
     ),
+    display: (item) => (
+      !item.is_plugin_missing
+    ),
+  },
+  {
+    name: 'edit_disabled',
+    className: 'mailpoet-hide-on-mobile mailpoet-disabled',
+    link: (item) => (
+      <Link to={`/edit-segment/${item.id}`}>
+        {MailPoet.I18n.t('edit')}
+      </Link>
+    ),
+    display: (item) => (
+      item.is_plugin_missing
+    ),
   },
   {
     name: 'view_subscribers',
@@ -126,12 +141,22 @@ function renderItem(item, actions) {
       <td data-colname={MailPoet.I18n.t('description')}>
         <abbr>{ item.description }</abbr>
       </td>
-      <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribersCountColumn')}>
-        { parseInt(item.count_all, 10).toLocaleString() }
-      </td>
-      <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribed')}>
-        { parseInt(item.count_subscribed, 10).toLocaleString() }
-      </td>
+      { item.is_plugin_missing
+        ? (
+          <td colSpan="2" className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('missingPluginMessageColumn')}>
+            { item.missing_plugin_message }
+          </td>
+        )
+        : (
+          <>
+            <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribersCountColumn')}>
+              { parseInt(item.count_all, 10).toLocaleString() }
+            </td>
+            <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribed')}>
+              { parseInt(item.count_subscribed, 10).toLocaleString() }
+            </td>
+          </>
+        )}
       <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('updatedAtColumn')}>
         { MailPoet.Date.short(item.created_at) }
         <br />
