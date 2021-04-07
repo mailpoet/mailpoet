@@ -144,6 +144,8 @@ class WP {
     $updatedUsersEmails = $this->updateSubscribersEmails();
     $insertedUsersEmails = $this->insertSubscribers();
     $this->removeUpdatedSubscribersWithInvalidEmail(array_merge($updatedUsersEmails, $insertedUsersEmails));
+    unset($updatedUsersEmails);
+    unset($insertedUsersEmails);
     $this->updateFirstNames();
     $this->updateLastNames();
     $this->updateFirstNameIfMissing();
