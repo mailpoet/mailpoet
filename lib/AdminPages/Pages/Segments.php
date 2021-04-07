@@ -81,6 +81,7 @@ class Segments {
     $data['product_categories'] = $this->wpPostListLoader->getWooCommerceCategories();
 
     $data['products'] = $this->wpPostListLoader->getProducts();
+    $data['subscription_products'] = $this->wpPostListLoader->getSubscriptionProducts();
     $data['is_woocommerce_active'] = $this->woocommerceHelper->isWooCommerceActive();
 
     $this->pageRenderer->displayPage('segments.html', $data);

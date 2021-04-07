@@ -21,6 +21,18 @@ class AutocompletePostListLoader {
     return $this->formatPosts($products);
   }
 
+  public function getSubscriptionProducts() {
+    $products = $this->wp->getResultsFromWpDb(
+      "SELECT `ID`, `post_title` FROM {$this->wp->getWPTableName('posts')} AS p
+        INNER JOIN {$this->wp->getWPTableName('term_relationships')} AS trel ON trel.object_id = p.id
+        INNER JOIN {$this->wp->getWPTableName('term_taxonomy')} AS ttax ON ttax.term_taxonomy_id = trel.term_taxonomy_id
+        INNER JOIN {$this->wp->getWPTableName('terms')} AS t ON ttax.term_id = t.term_id AND t.slug IN ('subscription', 'variable-subscription')
+        WHERE `p`.`post_type` = %s ORDER BY `post_title` ASC;",
+      'product'
+    );
+    return $this->formatPosts($products);
+  }
+
   public function getWooCommerceCategories() {
     return $this->formatTerms($this->wp->getCategories(['taxonomy' => 'product_cat', 'orderby' => 'name']));
   }
