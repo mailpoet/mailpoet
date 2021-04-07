@@ -4,7 +4,7 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
-use MailPoet\Models\StatisticsForms;
+use MailPoet\Entities\StatisticsFormEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class FormsResponseBuilderTest extends \MailPoetTest {
@@ -56,7 +56,7 @@ class FormsResponseBuilderTest extends \MailPoetTest {
 
   public function _after() {
     $this->truncateEntity(FormEntity::class);
-    StatisticsForms::deleteMany();
+    $this->truncateEntity(StatisticsFormEntity::class);
   }
 
   private function createForm($name) {
