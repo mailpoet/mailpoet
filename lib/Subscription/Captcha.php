@@ -3,7 +3,7 @@
 namespace MailPoet\Subscription;
 
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberIP;
+use MailPoet\Subscribers\SubscriberIPsRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Gregwar\Captcha\CaptchaBuilder;
@@ -19,7 +19,14 @@ class Captcha {
   /** @var CaptchaSession  */
   private $captchaSession;
 
-  public function __construct(WPFunctions $wp = null, CaptchaSession $captchaSession = null) {
+  /** @var SubscriberIPsRepository */
+  private $subscriberIPsRepository;
+
+  public function __construct(
+    SubscriberIPsRepository $subscriberIPsRepository,
+    WPFunctions $wp = null,
+    CaptchaSession $captchaSession = null
+  ) {
     if ($wp === null) {
       $wp = new WPFunctions;
     }
@@ -28,6 +35,7 @@ class Captcha {
     }
     $this->wp = $wp;
     $this->captchaSession = $captchaSession;
+    $this->subscriberIPsRepository = $subscriberIPsRepository;
   }
 
   public function isSupported() {
@@ -59,11 +67,10 @@ class Captcha {
       return false;
     }
 
-    $subscriptionCount = SubscriberIP::where('ip', $subscriberIp)
-      ->whereRaw(
-        '(`created_at` >= NOW() - INTERVAL ? SECOND)',
-        [(int)$subscriptionCaptchaWindow]
-      )->count();
+    $subscriptionCount = $this->subscriberIPsRepository->getCountByIPAndCreatedAtAfterTimeInSeconds(
+      $subscriberIp,
+      (int)$subscriptionCaptchaWindow
+    );
 
     if ($subscriptionCount > 0) {
       return true;

@@ -32,9 +32,13 @@ class Subscription {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(UserSubscription\Pages $subscriptionPages, WPFunctions $wp) {
+  /** @var UserSubscription\Captcha */
+  private $captcha;
+
+  public function __construct(UserSubscription\Pages $subscriptionPages, WPFunctions $wp, UserSubscription\Captcha $captcha) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
+    $this->captcha = $captcha;
   }
 
   public function captcha($data) {
@@ -42,11 +46,10 @@ class Subscription {
   }
 
   public function captchaImage($data) {
-    $captcha = new UserSubscription\Captcha;
     $width = !empty($data['width']) ? (int)$data['width'] : null;
     $height = !empty($data['height']) ? (int)$data['height'] : null;
     $sessionId = !empty($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
-    return $captcha->renderImage($width, $height, $sessionId);
+    return $this->captcha->renderImage($width, $height, $sessionId);
   }
 
   public function confirm($data) {
