@@ -9,6 +9,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 
 class FilterDataMapper {
   public function map(array $data = []): DynamicSegmentFilterData {
@@ -23,6 +24,8 @@ class FilterDataMapper {
         return $this->createEmail($data);
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE:
         return $this->createWooCommerce($data);
+      case DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION:
+        return $this->createWooCommerceSubscription($data);
       default:
         throw new InvalidFilterException('Invalid type', InvalidFilterException::INVALID_TYPE);
     }
@@ -95,6 +98,24 @@ class FilterDataMapper {
       $filterData['number_of_orders_type'] = $data['number_of_orders_type'];
       $filterData['number_of_orders_count'] = $data['number_of_orders_count'];
       $filterData['number_of_orders_days'] = $data['number_of_orders_days'];
+    } else {
+      throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
+    }
+    return new DynamicSegmentFilterData($filterData);
+  }
+
+  /**
+   * @throws InvalidFilterException
+   */
+  private function createWooCommerceSubscription(array $data): DynamicSegmentFilterData {
+    if (empty($data['action'])) throw new InvalidFilterException('Missing action', InvalidFilterException::MISSING_ACTION);
+    $filterData = [
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION,
+      'action' => $data['action'],
+    ];
+    if ($data['action'] === WooCommerceSubscription::ACTION_HAS_ACTIVE) {
+      if (!isset($data['product_id'])) throw new InvalidFilterException('Missing product', InvalidFilterException::MISSING_PRODUCT_ID);
+      $filterData['product_id'] = $data['product_id'];
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }
