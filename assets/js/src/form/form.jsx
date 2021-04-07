@@ -52,7 +52,6 @@ class Form extends React.Component {
 
   loadItem = (id) => {
     this.setState({ loading: true });
-
     if (!this.props.endpoint) return;
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -74,7 +73,7 @@ class Form extends React.Component {
         loading: false,
         item: {},
       }, function failSetStateCallback() {
-        this.props.history.push('/new');
+        this.props.history.push('/lists');
       });
     });
   };

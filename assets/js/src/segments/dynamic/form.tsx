@@ -108,16 +108,22 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
         },
       })
         .done((response) => {
-          setItem(convertSavedData(response.data));
-          setSegmentType(findSegmentType(response.data));
+          if (response.data.is_plugin_missing) {
+            history.push('/segments');
+          } else {
+            setItem(convertSavedData(response.data));
+            setSegmentType(findSegmentType(response.data));
+          }
         })
-        .fail(compose([setErrors, prop('errors')]));
+        .fail(() => {
+          history.push('/segments');
+        });
     }
 
     if (match.params.id !== undefined) {
       loadSegment(match.params.id);
     }
-  }, [segmentFilters, match.params.id]);
+  }, [segmentFilters, match.params.id, history]);
 
   function handleSave(e): void {
     e.preventDefault();
