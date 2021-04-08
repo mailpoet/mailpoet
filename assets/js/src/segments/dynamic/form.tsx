@@ -18,6 +18,7 @@ import Textarea from 'common/form/textarea/textarea';
 import { EmailSegmentOptions } from './dynamic_segments_filters/email';
 import { WooCommerceOptions } from './dynamic_segments_filters/woocommerce';
 import { WordpressRoleSegmentOptions } from './dynamic_segments_filters/wordpress_role';
+import { WooCommerceSubscriptionOptions } from './dynamic_segments_filters/woocommerce_subscription';
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';
 
@@ -59,6 +60,12 @@ function getAvailableFilters(): GroupFilterValue[] {
     filters.push({
       label: MailPoet.I18n.t('woocommerce'),
       options: WooCommerceOptions,
+    });
+  }
+  if (MailPoet.isWoocommerceActive) {
+    filters.push({
+      label: MailPoet.I18n.t('woocommerceSubscriptions'),
+      options: WooCommerceSubscriptionOptions,
     });
   }
   return filters;
