@@ -54,7 +54,7 @@ class AutocompletePostListLoader {
     $result = [];
     foreach ($posts as $post) {
       $result[] = [
-        'id' => $post->ID,
+        'id' => (string)$post->ID,
         'name' => $post->post_title,// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       ];
     }
@@ -67,7 +67,7 @@ class AutocompletePostListLoader {
     $result = [];
     foreach ($terms as $term) {
       $result[] = [
-        'id' => $term->term_id,// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        'id' => (string)$term->term_id,// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         'name' => $term->name,
       ];
     }
