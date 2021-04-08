@@ -57,7 +57,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
   if (item.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
     return (
       <div className="mailpoet-form-field">
-        <div className="mailpoet-form-input mailpoet-form-select">
+        <div className="mailpoet-form-input mailpoet-form-select" data-automation-id="select-segment-product">
           <Select
             placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
             options={productOptions}
@@ -74,7 +74,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
 
   return (
     <div className="mailpoet-form-field">
-      <div className="mailpoet-form-input mailpoet-form-select">
+      <div className="mailpoet-form-input mailpoet-form-select" data-automation-id="select-segment-category">
         <Select
           placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
           options={categoryOptions}

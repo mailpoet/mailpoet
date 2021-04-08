@@ -6,6 +6,7 @@ use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\User;
+use MailPoet\Test\DataFactories\WooCommerceProduct;
 
 class ManageSegmentsCest {
   public function _before() {
@@ -310,5 +311,106 @@ class ManageSegmentsCest {
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle, 20);
+  }
+
+  public function createAndEditWooCommercePurchasedInCategorySegment(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
+    $productFactory = new WooCommerceProduct($i);
+    $category1Id = $productFactory->createCategory('Category 1');
+    $category2Id = $productFactory->createCategory('Category 2');
+    $productFactory->withCategoryIds([$category1Id, $category2Id])->create();
+    $categorySelectElement = '[data-automation-id="select-segment-category"]';
+    $actionSelectElement = '[data-automation-id="select-segment-action"]';
+
+    $i->wantTo('Create a new WooCommerce purchased in category segment');
+    $segmentTitle = 'Segment Woo Category Test';
+    $segmentDesc = 'Segment description';
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->click('[data-automation-id="new-segment"]');
+    $i->fillField(['name' => 'name'], $segmentTitle);
+    $i->fillField(['name' => 'description'], $segmentDesc);
+    $i->selectOptionInReactSelect('purchased in this category', $actionSelectElement);
+    $i->waitForElement($categorySelectElement);
+    $i->selectOptionInReactSelect('Category 2', $categorySelectElement);
+    $i->click('Save');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle);
+
+    $i->wantTo('Open edit form and check that all values were saved correctly');
+    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->waitForElement($categorySelectElement);
+    $i->seeInField(['name' => 'name'], $segmentTitle);
+    $i->seeInField(['name' => 'description'], $segmentDesc);
+    $i->see('purchased in this category', $actionSelectElement);
+    $i->see('Category 2', $categorySelectElement);
+
+    $i->wantTo('Edit segment and save');
+    $editedTitle = 'Segment Woo Category Test Edited';
+    $editedDesc = 'Segment description Edited';
+    $i->fillField(['name' => 'name'], $editedTitle);
+    $i->fillField(['name' => 'description'], $editedDesc);
+    $i->selectOptionInReactSelect('Category 1', $categorySelectElement);
+    $i->click('Save');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle);
+
+    $i->wantTo('Open edit form and check that all values were saved correctly');
+    $i->clickItemRowActionByItemName($editedTitle, 'Edit');
+    $i->waitForElement($categorySelectElement);
+    $i->seeInField(['name' => 'name'], $editedTitle);
+    $i->seeInField(['name' => 'description'], $editedDesc);
+    $i->see('purchased in this category', $actionSelectElement);
+    $i->see('Category 1', $categorySelectElement);
+  }
+
+  public function createAndEditWooCommercePurchasedProductSegment(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
+    $productFactory = new WooCommerceProduct($i);
+    $productFactory->withName('Product 1')->create();
+    $productFactory->withName('Product 2')->create();
+    $productSelectElement = '[data-automation-id="select-segment-product"]';
+    $actionSelectElement = '[data-automation-id="select-segment-action"]';
+
+    $i->wantTo('Create a new WooCommerce purchased product segment');
+    $segmentTitle = 'Segment Woo Product Test';
+    $segmentDesc = 'Segment description';
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->click('[data-automation-id="new-segment"]');
+    $i->fillField(['name' => 'name'], $segmentTitle);
+    $i->fillField(['name' => 'description'], $segmentDesc);
+    $i->selectOptionInReactSelect('purchased this product', $actionSelectElement);
+    $i->waitForElement($productSelectElement);
+    $i->selectOptionInReactSelect('Product 2', $productSelectElement);
+    $i->click('Save');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle);
+
+    $i->wantTo('Open edit form and check that all values were saved correctly');
+    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->waitForElement($productSelectElement);
+    $i->seeInField(['name' => 'name'], $segmentTitle);
+    $i->seeInField(['name' => 'description'], $segmentDesc);
+    $i->see('purchased this product', $actionSelectElement);
+    $i->see('Product 2', $productSelectElement);
+
+    $i->wantTo('Edit segment and save');
+    $editedTitle = 'Segment Woo Product Test Edited';
+    $editedDesc = 'Segment description Edited';
+    $i->fillField(['name' => 'name'], $editedTitle);
+    $i->fillField(['name' => 'description'], $editedDesc);
+    $i->selectOptionInReactSelect('Product 1', $productSelectElement);
+    $i->click('Save');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle);
+
+    $i->wantTo('Open edit form and check that all values were saved correctly');
+    $i->clickItemRowActionByItemName($editedTitle, 'Edit');
+    $i->waitForElement($productSelectElement);
+    $i->seeInField(['name' => 'name'], $editedTitle);
+    $i->seeInField(['name' => 'description'], $editedDesc);
+    $i->see('purchased this product', $actionSelectElement);
+    $i->see('Product 1', $productSelectElement);
   }
 }
