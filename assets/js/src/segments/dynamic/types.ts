@@ -2,6 +2,7 @@ export enum SegmentTypes {
   Email = 'email',
   WordPressRole = 'userRole',
   WooCommerce = 'woocommerce',
+  WooCommerceSubscription = 'woocommerceSubscription'
 }
 
 export enum EmailActionTypes {
@@ -38,6 +39,11 @@ export interface WooCommerceFormItem extends FormItem {
   number_of_orders_type?: string;
   number_of_orders_count?: number;
   number_of_orders_days?: number;
+}
+
+export interface WooCommerceSubscriptionFormItem extends FormItem {
+  action?: string;
+  product_id?: string;
 }
 
 export interface EmailFormItem extends FormItem {

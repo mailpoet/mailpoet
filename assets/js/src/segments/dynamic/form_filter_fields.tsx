@@ -10,6 +10,7 @@ import {
 import { EmailFields } from './dynamic_segments_filters/email';
 import { WordpressRoleFields } from './dynamic_segments_filters/wordpress_role';
 import { WooCommerceFields } from './dynamic_segments_filters/woocommerce';
+import { WooCommerceSubscriptionFields } from './dynamic_segments_filters/woocommerce_subscription';
 
 export interface FilterFieldsProps {
   segmentType: FilterValue;
@@ -21,6 +22,7 @@ const filterFieldsMap = {
   [SegmentTypes.Email]: EmailFields,
   [SegmentTypes.WooCommerce]: WooCommerceFields,
   [SegmentTypes.WordPressRole]: WordpressRoleFields,
+  [SegmentTypes.WooCommerceSubscription]: WooCommerceSubscriptionFields,
 };
 
 export const FormFilterFields: React.FunctionComponent<FilterFieldsProps> = ({
