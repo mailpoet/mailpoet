@@ -16,9 +16,7 @@ class DateTimeTzToStringType extends DateTimeTzType {
       return $dateTime;
     }
 
-    $value = new Carbon('@' . $dateTime->format('U'));
-    $value->setTimezone($dateTime->getTimezone());
-    return $value;
+    return Carbon::instance($dateTime);
   }
 
   public function requiresSQLCommentHint(AbstractPlatform $platform): bool {
