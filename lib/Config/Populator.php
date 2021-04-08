@@ -13,6 +13,7 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsFormEntity;
 use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\MailerLog;
@@ -21,7 +22,6 @@ use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsForms;
 use MailPoet\Models\Subscriber;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Segments\WP;
@@ -561,9 +561,10 @@ class Populator {
   }
 
   private function createSourceForSubscribers() {
+    $statisticsFormTable = $this->entityManager->getClassMetadata(StatisticsFormEntity::class)->getTableName();
     Subscriber::rawExecute(
       ' UPDATE LOW_PRIORITY `' . Subscriber::$_table . '` subscriber ' .
-      ' JOIN `' . StatisticsForms::$_table . '` stats ON stats.subscriber_id=subscriber.id ' .
+      ' JOIN `' . $statisticsFormTable . '` stats ON stats.subscriber_id=subscriber.id ' .
       ' SET `source` = "' . Source::FORM . '"' .
       ' WHERE `source` = "' . Source::UNKNOWN . '"'
     );
