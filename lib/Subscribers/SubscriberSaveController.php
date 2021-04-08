@@ -229,7 +229,7 @@ class SubscriberSaveController {
     return $subscriber;
   }
 
-  private function updateCustomFields(array $data, SubscriberEntity $subscriber): void {
+  public function updateCustomFields(array $data, SubscriberEntity $subscriber): void {
     $customFieldsMap = [];
     foreach ($data as $key => $value) {
       if (strpos($key, 'cf_') === 0) {
