@@ -100,8 +100,13 @@ class SubscriberSubscribeController {
     }
 
     // only accept fields defined in the form
-    $formFields = $form->getFields();
-    $data = array_intersect_key($data, array_flip($formFields));
+    $formFieldIds = array_filter(array_map(function (array $formField): ?string {
+      if (!isset($formField['id'])) {
+        return null;
+      }
+      return is_numeric($formField['id']) ? "cf_{$formField['id']}" : $formField['id'];
+    }, $form->getBlocksByTypes(FormEntity::FORM_FIELD_TYPES)));
+    $data = array_intersect_key($data, array_flip($formFieldIds));
 
     // make sure we don't allow too many subscriptions with the same ip address
     $timeout = $this->throttling->throttle();

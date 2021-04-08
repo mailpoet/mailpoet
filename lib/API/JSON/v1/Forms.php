@@ -233,7 +233,7 @@ class Forms extends APIEndpoint {
     }
 
     // Check Custom HTML block permissions
-    $customHtmlBlocks = $formEntity->getBlocksByType(FormEntity::HTML_BLOCK_TYPE);
+    $customHtmlBlocks = $formEntity->getBlocksByTypes([FormEntity::HTML_BLOCK_TYPE]);
     if (count($customHtmlBlocks) && !$this->wp->currentUserCan('administrator')) {
       return $this->errorResponse([
         Error::FORBIDDEN => __('Only administrator can edit forms containing Custom HTML block.', 'mailpoet'),

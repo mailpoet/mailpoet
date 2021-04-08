@@ -51,20 +51,20 @@ class FormEntityTest extends \MailPoetUnitTest {
     ],
   ];
 
-  public function testGetBlocksByType() {
+  public function testGetBlocksByTypes(): void {
     $formEntity = new FormEntity('Test' );
     $formEntity->setBody($this->body);
-    $paragraphs = $formEntity->getBlocksByType(FormEntity::PARAGRAPH_BLOCK_TYPE);
+    $paragraphs = $formEntity->getBlocksByTypes([FormEntity::PARAGRAPH_BLOCK_TYPE]);
     expect($paragraphs)->count(3);
     expect($paragraphs[0]['params']['content'])->equals('Paragraph 1');
     expect($paragraphs[1]['params']['content'])->equals('Paragraph 2');
     expect($paragraphs[2]['params']['content'])->equals('Paragraph 3');
 
-    $headings = $formEntity->getBlocksByType(FormEntity::HEADING_BLOCK_TYPE);
+    $headings = $formEntity->getBlocksByTypes([FormEntity::HEADING_BLOCK_TYPE]);
     expect($headings)->count(1);
     expect($headings[0]['params']['content'])->equals('Heading 1');
 
-    $columns = $formEntity->getBlocksByType(FormEntity::COLUMNS_BLOCK_TYPE);
+    $columns = $formEntity->getBlocksByTypes([FormEntity::COLUMNS_BLOCK_TYPE]);
     expect($columns)->count(1);
     expect($columns[0]['body'])->count(2);
   }

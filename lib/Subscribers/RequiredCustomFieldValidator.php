@@ -67,12 +67,15 @@ class RequiredCustomFieldValidator {
     return $result;
   }
 
+  /**
+   * @return int[]
+   */
   private function getFormCustomFieldIds(FormEntity $form): array {
-    $formFields = $form->getFields();
+    $formFields = $form->getBlocksByTypes(FormEntity::FORM_FIELD_TYPES);
     $customFieldIds = [];
-    foreach ($formFields as $fieldName) {
-      if (strpos($fieldName, 'cf_') === 0) {
-        $customFieldIds[] = (int)substr($fieldName, 3);
+    foreach ($formFields as $formField) {
+      if (isset($formField['id']) && is_numeric($formField['id'])) {
+        $customFieldIds[] = (int)$formField['id'];
       }
     }
     return $customFieldIds;
