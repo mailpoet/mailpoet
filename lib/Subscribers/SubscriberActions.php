@@ -82,6 +82,9 @@ class SubscriberActions {
       $subscriber->setUnconfirmedData($unconfirmedData ?: null);
     }
 
+    // Update custom fields
+    $this->subscriberSaveController->updateCustomFields($subscriberData, $subscriber);
+
     // restore trashed subscriber
     if ($subscriber->getDeletedAt()) {
       $subscriber->setDeletedAt(null);
