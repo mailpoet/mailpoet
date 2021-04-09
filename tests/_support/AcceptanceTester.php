@@ -320,6 +320,16 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->cli(['plugin', 'deactivate', 'woocommerce']);
   }
 
+  public function activateWooCommerceSubscriptions() {
+    $i = $this;
+    $i->cli(['plugin', 'activate', 'woocommerce-subscriptions']);
+  }
+
+  public function deactivateWooCommerceSubscriptions() {
+    $i = $this;
+    $i->cli(['plugin', 'deactivate', 'woocommerce-subscriptions']);
+  }
+
   /**
    * Order a product and create an account within the order process
    */
