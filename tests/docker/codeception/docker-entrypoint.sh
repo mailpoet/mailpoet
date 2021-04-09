@@ -83,6 +83,19 @@ fi
 wp plugin activate woocommerce
 wp plugin deactivate woocommerce
 
+# Install WooCommerce Subscriptions
+if [[ ! -d "/wp-core/wp-content/plugins/woocommerce-subscriptions" ]]; then
+  WOOCOMMERCE_SUBS_ZIP="/wp-core/wp-content/plugins/mailpoet/tools/vendor/woocommerce-subscriptions.zip"
+  if [ ! -f "$WOOCOMMERCE_SUBS_ZIP" ]; then
+    echo "Downloading WooCommerce Subscription plugin zip"
+    cd /project
+    ./do download:woo-commerce-subscriptions-zip
+    cd /wp-core/wp-content/plugins
+  fi
+  echo "Unzip Woocommerce Subscription plugin from $WOOCOMMERCE_SUBS_ZIP"
+  unzip -q -o "$WOOCOMMERCE_SUBS_ZIP" -d /wp-core/wp-content/plugins/
+fi
+
 # add configuration
 CONFIG=''
 CONFIG+="define('WP_DEBUG', true);\n"
