@@ -4,8 +4,10 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Newsletter;
+use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -34,6 +36,9 @@ class Segments {
   /** @var WPPostListLoader */
   private $wpPostListLoader;
 
+  /** @var SegmentDependencyValidator */
+  private $segmentDependencyValidator;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -41,7 +46,8 @@ class Segments {
     WPFunctions $wp,
     WooCommerceHelper $woocommerceHelper,
     WPPostListLoader $wpPostListLoader,
-    SubscribersFeature $subscribersFeature
+    SubscribersFeature $subscribersFeature,
+    SegmentDependencyValidator $segmentDependencyValidator
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
@@ -50,6 +56,7 @@ class Segments {
     $this->wp = $wp;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wpPostListLoader = $wpPostListLoader;
+    $this->segmentDependencyValidator = $segmentDependencyValidator;
   }
 
   public function render() {
@@ -83,6 +90,9 @@ class Segments {
     $data['products'] = $this->wpPostListLoader->getProducts();
     $data['subscription_products'] = $this->wpPostListLoader->getSubscriptionProducts();
     $data['is_woocommerce_active'] = $this->woocommerceHelper->isWooCommerceActive();
+    $data['can_use_woocommerce_subscriptions'] = $this->segmentDependencyValidator->canUseDynamicFilterType(
+      DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION
+    );
 
     $this->pageRenderer->displayPage('segments.html', $data);
   }
