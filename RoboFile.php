@@ -897,6 +897,17 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Release '$version[name]' info was published on Slack.");
   }
 
+  public function downloadWooCommerceSubscriptionsZip($tag = null) {
+    require_once __DIR__ . '/tasks/GithubClient.php';
+    $help = "Use your GitHub username and a token from https://github.com/settings/tokens with 'repo' scopes.";
+    $githubClient = new \MailPoetTasks\GithubClient(
+      $this->getEnv('WP_GITHUB_USERNAME', $help),
+      $this->getEnv('WP_GITHUB_TOKEN', $help),
+      'woocommerce/woocommerce-subscriptions'
+    );
+    $githubClient->downloadReleaseZip('woocommerce-subscriptions.zip', __DIR__ . '/tools/vendor/', $tag);
+  }
+
   public function generateData($generatorName = null) {
     require_once __DIR__ . '/tests/DataGenerator/_bootstrap.php';
     $generator = new \MailPoet\Test\DataGenerator\DataGenerator(new \Codeception\Lib\Console\Output([]));
