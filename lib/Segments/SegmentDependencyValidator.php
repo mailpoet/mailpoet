@@ -42,16 +42,21 @@ class SegmentDependencyValidator {
   }
 
   public function getMissingPluginByFilter(DynamicSegmentFilterEntity $dynamicSegmentFilter): ?array {
-    $requiredPlugin = $this->getRequiredPluginName($dynamicSegmentFilter);
+    $requiredPlugin = $this->getRequiredPluginConfig($dynamicSegmentFilter->getFilterData()->getFilterType() ?? '');
     if (isset($requiredPlugin['id']) && !$this->wp->isPluginActive($requiredPlugin['id'])) {
       return $requiredPlugin;
     }
     return null;
   }
 
-  private function getRequiredPluginName(DynamicSegmentFilterEntity $dynamicSegmentFilter): ?array {
-    if (isset(self::REQUIRED_PLUGINS_BY_TYPE[$dynamicSegmentFilter->getFilterData()->getFilterType()])) {
-      return self::REQUIRED_PLUGINS_BY_TYPE[$dynamicSegmentFilter->getFilterData()->getFilterType()];
+  public function canUseDynamicFilterType(string $type) {
+    $requiredPlugin = $this->getRequiredPluginConfig($type);
+    return isset($requiredPlugin['id']) && $this->wp->isPluginActive($requiredPlugin['id']);
+  }
+
+  private function getRequiredPluginConfig(string $type): ?array {
+    if (isset(self::REQUIRED_PLUGINS_BY_TYPE[$type])) {
+      return self::REQUIRED_PLUGINS_BY_TYPE[$type];
     }
 
     return null;

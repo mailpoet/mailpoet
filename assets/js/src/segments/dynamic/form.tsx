@@ -21,6 +21,7 @@ import { WordpressRoleSegmentOptions } from './dynamic_segments_filters/wordpres
 import { WooCommerceSubscriptionOptions } from './dynamic_segments_filters/woocommerce_subscription';
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';
+import { SegmentFormData } from './segment_form_data';
 
 import {
   AnyFormItem,
@@ -62,7 +63,7 @@ function getAvailableFilters(): GroupFilterValue[] {
       options: WooCommerceOptions,
     });
   }
-  if (MailPoet.isWoocommerceActive) {
+  if (MailPoet.isWoocommerceActive && SegmentFormData.canUseWooSubscriptions) {
     filters.push({
       label: MailPoet.I18n.t('woocommerceSubscriptions'),
       options: WooCommerceSubscriptionOptions,
