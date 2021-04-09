@@ -13,6 +13,10 @@ class SegmentDependencyValidator {
       'id' => 'woocommerce/woocommerce.php',
       'name' => 'WooCommerce',
     ],
+    DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION => [
+      'id' => 'woocommerce-subscriptions/woocommerce-subscriptions.php',
+      'name' => 'WooCommerce Subscriptions',
+    ],
   ];
 
   /** @var WPFunctions */
