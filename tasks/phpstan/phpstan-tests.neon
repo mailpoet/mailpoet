@@ -18,7 +18,7 @@ parameters:
   scanFiles:
       - PremiumContainerConfigurator.php
       - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
-      - function-stubs.php
+      - custom-stubs.php
   ignoreErrors:
     - '/Parameter #1 \$cssOrXPath of method AcceptanceTester::moveMouseOver\(\) expects string\|null, array<string, string> given./'
     - '/Function expect invoked with 1 parameter, 0 required\./'
