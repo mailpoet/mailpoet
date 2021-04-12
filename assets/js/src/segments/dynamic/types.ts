@@ -41,7 +41,8 @@ export interface EmailFormItem extends FormItem {
   action?: string;
   newsletter_id?: string;
   link_id?: string;
-  operator?: string,
+  operator?: string;
+  opens?: string;
 }
 
 export type AnyFormItem = WordpressRoleFormItem | WooCommerceFormItem | EmailFormItem;
