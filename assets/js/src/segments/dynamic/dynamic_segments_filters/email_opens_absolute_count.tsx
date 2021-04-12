@@ -55,6 +55,11 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
                 <Input
                   key="input"
                   type="number"
+                  value={item.opens}
+                  onChange={(e): void => compose([
+                    onChange,
+                    assign(item),
+                  ])({ opens: e.target.value })}
                   min="0"
                   placeholder={MailPoet.I18n.t('emailActionOpens')}
                 />
