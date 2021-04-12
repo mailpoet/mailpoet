@@ -15,6 +15,8 @@ class WooCommerceProduct {
   const TYPE_DOWNLOADABLE = 'downloadable';
   const TYPE_EXTERNAL = 'external';
   const TYPE_VARIABLE = 'variable';
+  const TYPE_SUBSCRIPTION = 'subscription';
+  const TYPE_VARIABLE_SUBSCRIPTION = 'variable-subscription';
 
   public function __construct(\AcceptanceTester $tester) {
     $this->tester = $tester;
