@@ -4,6 +4,14 @@ export enum SegmentTypes {
   WooCommerce = 'woocommerce',
 }
 
+export enum EmailActionTypes {
+  OPENS_ABSOLUTE_COUNT = 'opensAbsoluteCount',
+  OPENED = 'opened',
+  NOT_OPENED = 'notOpened',
+  CLICKED = 'clicked',
+  NOT_CLICKED = 'notClicked',
+}
+
 export interface SelectOption {
   value: string;
   label: string;
