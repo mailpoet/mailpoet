@@ -38,7 +38,7 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = (
 
   return (
     <div className="mailpoet-form-field">
-      <div className="mailpoet-form-input mailpoet-form-select">
+      <div className="mailpoet-form-input mailpoet-form-select" data-automation-id="segment-woo-subscription-action">
         <Select
           placeholder={MailPoet.I18n.t('selectWooSubscription')}
           options={productOptions}
