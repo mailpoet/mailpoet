@@ -1,30 +1,20 @@
 import React, { useEffect } from 'react';
-import { assign, compose, find } from 'lodash/fp';
+import { assign, compose } from 'lodash/fp';
 
 import { Grid } from 'common/grid';
+import Select from 'common/form/select/select';
+import Input from 'common/form/input/input';
 import MailPoet from 'mailpoet';
 
 import {
   EmailFormItem,
-  OnFilterChange, SelectOption,
+  OnFilterChange,
 } from '../types';
-import Select from '../../../common/form/react_select/react_select';
 
 interface Props {
   onChange: OnFilterChange;
   item: EmailFormItem;
 }
-
-const moreLessOptions = [
-  {
-    label: MailPoet.I18n.t('moreThan'),
-    value: 'more',
-  },
-  {
-    label: MailPoet.I18n.t('lessThan'),
-    value: 'less',
-  },
-];
 
 export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
   onChange,
@@ -39,17 +29,23 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
   return (
     <>
       <Grid.CenteredRow>
-        <div className="mailpoet-form-field">
-          <div className="mailpoet-form-input mailpoet-form-select" data-automation-id="segment-email">
-            <Select
-              options={moreLessOptions}
-              value={find(['value', item.operator], moreLessOptions)}
-              onChange={(option: SelectOption): void => compose([
-                onChange,
-                assign(item),
-              ])({ operator: option.value })}
-            />
-          </div>
+        <Select
+          value={item.operator}
+          onChange={(e): void => compose([
+            onChange,
+            assign(item),
+          ])({ operator: e.target.value })}
+        >
+          <option value="more">{MailPoet.I18n.t('moreThan')}</option>
+          <option value="less">{MailPoet.I18n.t('lessThan')}</option>
+        </Select>
+        <Input
+          type="number"
+          min="0"
+          placeholder={MailPoet.I18n.t('emailActionOpens')}
+        />
+        <div>
+          {MailPoet.I18n.t('emailActionOpens')}
         </div>
       </Grid.CenteredRow>
     </>
