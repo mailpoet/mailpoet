@@ -59,7 +59,7 @@ if [[ $CIRCLE_JOB == *"_latest" ]]; then
   WOOCOMMERCE_VERSION="latest"
 fi
 
-# install WooCommerce (activate & deactivate it to populate DB for backup)
+# install WooCommerce
 if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
   cd /wp-core/wp-content/plugins
   WOOCOMMERCE_SOURCE_ZIP="/wp-core/wp-content/plugins/mailpoet/tools/vendor/woocommerce.zip"
@@ -80,8 +80,6 @@ if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
   echo "Unzip Woocommerce plugin from $WOOCOMMERCE_TARGET_ZIP"
   unzip -q -o "$WOOCOMMERCE_TARGET_ZIP"
 fi
-wp plugin activate woocommerce
-wp plugin deactivate woocommerce
 
 # Install WooCommerce Subscriptions
 if [[ ! -d "/wp-core/wp-content/plugins/woocommerce-subscriptions" ]]; then
@@ -95,6 +93,10 @@ if [[ ! -d "/wp-core/wp-content/plugins/woocommerce-subscriptions" ]]; then
   echo "Unzip Woocommerce Subscription plugin from $WOOCOMMERCE_SUBS_ZIP"
   unzip -q -o "$WOOCOMMERCE_SUBS_ZIP" -d /wp-core/wp-content/plugins/
 fi
+
+# activate all plugins which source code want to access in tests runtime
+wp plugin activate woocommerce
+wp plugin activate woocommerce-subscriptions
 
 # add configuration
 CONFIG=''
