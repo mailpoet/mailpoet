@@ -9,8 +9,10 @@ import {
 } from '../types';
 
 import { EmailStatisticsFields } from './email_statistics';
+import { EmailOpensAbsoluteCountFields } from './email_opens_absolute_count';
 
 export const EmailSegmentOptions = [
+  { value: 'opensAbsoluteCount', label: MailPoet.I18n.t('emailActionOpensAbsoluteCount'), group: SegmentTypes.Email },
   { value: 'opened', label: MailPoet.I18n.t('emailActionOpened'), group: SegmentTypes.Email },
   { value: 'notOpened', label: MailPoet.I18n.t('emailActionNotOpened'), group: SegmentTypes.Email },
   { value: 'clicked', label: MailPoet.I18n.t('emailActionClicked'), group: SegmentTypes.Email },
@@ -33,9 +35,23 @@ interface Props {
   item: EmailFormItem;
 }
 
-export const EmailFields: React.FunctionComponent<Props> = ({ onChange, item }) => (
-  <EmailStatisticsFields
-    item={item}
-    onChange={onChange}
-  />
-);
+const componentsMap = {
+  [EmailActionTypes.OPENS_ABSOLUTE_COUNT]: EmailOpensAbsoluteCountFields,
+  [EmailActionTypes.CLICKED]: EmailStatisticsFields,
+  [EmailActionTypes.NOT_CLICKED]: EmailStatisticsFields,
+  [EmailActionTypes.OPENED]: EmailStatisticsFields,
+  [EmailActionTypes.NOT_OPENED]: EmailStatisticsFields,
+};
+
+export const EmailFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
+  const Component = componentsMap[item.action];
+
+  if (!Component) return null;
+
+  return (
+    <Component
+      item={item}
+      onChange={onChange}
+    />
+  );
+};
