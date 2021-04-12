@@ -42,6 +42,7 @@ modules:
         allow-root: true
 extensions:
   enabled:
+    - MailPoet\TestsSupport\PluginsExtension
     - ErrorsExtension
     - DefaultsExtension
     - CheckSkippedTestsExtension
