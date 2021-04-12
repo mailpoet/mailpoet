@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import ReactStringReplace from 'react-string-replace';
 import { assign, compose } from 'lodash/fp';
 
 import { Grid } from 'common/grid';
@@ -29,24 +30,46 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
   return (
     <>
       <Grid.CenteredRow>
-        <Select
-          value={item.operator}
-          onChange={(e): void => compose([
-            onChange,
-            assign(item),
-          ])({ operator: e.target.value })}
-        >
-          <option value="more">{MailPoet.I18n.t('moreThan')}</option>
-          <option value="less">{MailPoet.I18n.t('lessThan')}</option>
-        </Select>
-        <Input
-          type="number"
-          min="0"
-          placeholder={MailPoet.I18n.t('emailActionOpens')}
-        />
-        <div>
-          {MailPoet.I18n.t('emailActionOpens')}
-        </div>
+        {ReactStringReplace(
+          MailPoet.I18n.t('emailActionOpensSentence'),
+          // ReactStringReplace is buggy, a simpler version of this regex doesn't work
+          /({condition})|( )|({opens})|( )|(\b[a-zA-Z]+\b)/gim,
+          (match) => {
+            if (match === '{condition}') {
+              return (
+                <Select
+                  key="select"
+                  value={item.operator}
+                  onChange={(e): void => compose([
+                    onChange,
+                    assign(item),
+                  ])({ operator: e.target.value })}
+                >
+                  <option value="more">{MailPoet.I18n.t('moreThan')}</option>
+                  <option value="less">{MailPoet.I18n.t('lessThan')}</option>
+                </Select>
+              );
+            }
+            if (match === '{opens}') {
+              return (
+                <Input
+                  key="input"
+                  type="number"
+                  min="0"
+                  placeholder={MailPoet.I18n.t('emailActionOpens')}
+                />
+              );
+            }
+            if ((typeof match === 'string') && match.trim().length > 1) {
+              return (
+                <div key="opens">
+                  {match}
+                </div>
+              );
+            }
+            return null;
+          }
+        )}
       </Grid.CenteredRow>
     </>
   );
