@@ -17,6 +17,12 @@ interface Props {
   item: EmailFormItem;
 }
 
+function replaceElementsInDaysSentence(fn): JSX.Element[] {
+  return MailPoet.I18n.t('emailActionOpensDaysSentence')
+    .split(/({days})/gim)
+    .map(fn);
+}
+
 export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
   onChange,
   item,
@@ -68,6 +74,35 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
             if ((typeof match === 'string') && match.trim().length > 1) {
               return (
                 <div key="opens">
+                  {match}
+                </div>
+              );
+            }
+            return null;
+          }
+        )}
+      </Grid.CenteredRow>
+      <Grid.CenteredRow>
+        {replaceElementsInDaysSentence(
+          (match) => {
+            if (match === '{days}') {
+              return (
+                <Input
+                  key="input"
+                  type="number"
+                  value={item.days}
+                  onChange={(e): void => compose([
+                    onChange,
+                    assign(item),
+                  ])({ days: e.target.value })}
+                  min="0"
+                  placeholder={MailPoet.I18n.t('emailActionDays')}
+                />
+              );
+            }
+            if ((typeof match === 'string') && match.trim().length > 1) {
+              return (
+                <div key={match}>
                   {match}
                 </div>
               );

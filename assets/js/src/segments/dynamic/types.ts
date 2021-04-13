@@ -43,6 +43,7 @@ export interface EmailFormItem extends FormItem {
   link_id?: string;
   operator?: string;
   opens?: string;
+  days?: string;
 }
 
 export type AnyFormItem = WordpressRoleFormItem | WooCommerceFormItem | EmailFormItem;
