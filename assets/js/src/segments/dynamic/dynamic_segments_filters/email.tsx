@@ -20,13 +20,21 @@ export const EmailSegmentOptions = [
 ];
 
 export function validateEmail(formItems: EmailFormItem): boolean {
+  // check if the action has the right type
+  if (
+    !Object
+      .values(EmailActionTypes)
+      .some((v) => v === formItems.action)
+  ) return false;
+
+  if ((formItems.action !== EmailActionTypes.OPENS_ABSOLUTE_COUNT)) {
+    return !!formItems.newsletter_id;
+  }
+
   return (
-    (
-      Object
-        .values(EmailActionTypes)
-        .some((v) => v === formItems.action)
-    )
-    && !!formItems.newsletter_id
+    !!formItems.days
+    && !!formItems.opens
+    && !!formItems.operator
   );
 }
 
