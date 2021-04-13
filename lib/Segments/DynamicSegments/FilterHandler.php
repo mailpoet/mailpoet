@@ -11,6 +11,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -29,6 +30,9 @@ class FilterHandler {
   /** @var WooCommerceCategory */
   private $wooCommerceCategory;
 
+  /** @var WooCommerceNumberOfOrders */
+  private $wooCommerceNumberOfOrders;
+
   /** @var EntityManager */
   private $entityManager;
 
@@ -45,12 +49,14 @@ class FilterHandler {
     WooCommerceProduct $wooCommerceProduct,
     WooCommerceCategory $wooCommerceCategory,
     EmailOpensAbsoluteCountAction $emailOpensAbsoluteCount,
-    SegmentDependencyValidator $segmentDependencyValidator
+    SegmentDependencyValidator $segmentDependencyValidator,
+    WooCommerceNumberOfOrders $wooCommerceNumberOfOrders
   ) {
     $this->emailAction = $emailAction;
     $this->userRole = $userRole;
     $this->wooCommerceProduct = $wooCommerceProduct;
     $this->wooCommerceCategory = $wooCommerceCategory;
+    $this->wooCommerceNumberOfOrders = $wooCommerceNumberOfOrders;
     $this->entityManager = $entityManager;
     $this->segmentDependencyValidator = $segmentDependencyValidator;
     $this->emailOpensAbsoluteCount = $emailOpensAbsoluteCount;
@@ -127,6 +133,8 @@ class FilterHandler {
         $action = $filterData->getParam('action');
         if ($action === WooCommerceProduct::ACTION_PRODUCT) {
           return $this->wooCommerceProduct->apply($queryBuilder, $filter);
+        } elseif ($action === WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS) {
+          return $this->wooCommerceNumberOfOrders->apply($queryBuilder, $filter);
         }
         return $this->wooCommerceCategory->apply($queryBuilder, $filter);
       default:

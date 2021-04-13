@@ -15,5 +15,6 @@ class InvalidFilterException extends InvalidStateException {
   const MISSING_PRODUCT_ID = 7;
   const INVALID_EMAIL_ACTION = 8;
   const MISSING_VALUE = 9;
+  const MISSING_NUMBER_OF_ORDERS_FIELDS = 10;
 
 };

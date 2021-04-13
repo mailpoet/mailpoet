@@ -7,6 +7,7 @@ use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 
 class FilterDataMapper {
@@ -87,6 +88,13 @@ class FilterDataMapper {
     } elseif ($data['action'] === WooCommerceProduct::ACTION_PRODUCT) {
       if (!isset($data['product_id'])) throw new InvalidFilterException('Missing product', InvalidFilterException::MISSING_PRODUCT_ID);
       $filterData['product_id'] = $data['product_id'];
+    } elseif ($data['action'] === WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS) {
+      if (!isset($data['number_of_orders_type']) || !isset($data['number_of_orders_count']) || !isset($data['number_of_orders_days'])) {
+        throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_NUMBER_OF_ORDERS_FIELDS);
+      }
+      $filterData['number_of_orders_type'] = $data['number_of_orders_type'];
+      $filterData['number_of_orders_count'] = $data['number_of_orders_count'];
+      $filterData['number_of_orders_days'] = $data['number_of_orders_days'];
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }

@@ -137,6 +137,8 @@ class DynamicSegments extends APIEndpoint {
         return WPFunctions::get()->__('Please select category.', 'mailpoet');
       case InvalidFilterException::MISSING_VALUE:
         return WPFunctions::get()->__('Please fill all required values.', 'mailpoet');
+      case InvalidFilterException::MISSING_NUMBER_OF_ORDERS_FIELDS:
+        return WPFunctions::get()->__('Please select a type for the comparison, a number of orders and a number of days.', 'mailpoet');
       default:
         return WPFunctions::get()->__('An error occurred while saving data.', 'mailpoet');
     }
