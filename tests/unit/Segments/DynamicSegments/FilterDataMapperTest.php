@@ -7,6 +7,7 @@ use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 
 class FilterDataMapperTest extends \MailPoetUnitTest {
@@ -225,5 +226,36 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ];
     $this->expectException(InvalidFilterException::class);
     $this->mapper->map($data);
+  }
+
+  public function testItMapsWooCommerceNumberOfOrders() {
+    $data = [
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS,
+      'number_of_orders_type' => '=',
+      'number_of_orders_count' => 2,
+      'number_of_orders_days' => 1,
+      'some_mess' => 'mess',
+    ];
+
+    $filter = $this->mapper->map($data);
+
+    unset($data['some_mess']);
+    $expectedResult = $data;
+
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    expect($filter->getData())->equals($expectedResult);
+  }
+
+  public function testItRaisesExceptionWhenMappingWooCommerceNumberOfOrders() {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing required fields');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_NUMBER_OF_ORDERS_FIELDS);
+
+    $this->mapper->map([
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS,
+    ]);
   }
 }

@@ -35,6 +35,9 @@ export interface WooCommerceFormItem extends FormItem {
   action?: string;
   category_id?: string;
   product_id?: string;
+  number_of_orders_type?: string;
+  number_of_orders_count?: number;
+  number_of_orders_days?: number;
 }
 
 export interface EmailFormItem extends FormItem {
