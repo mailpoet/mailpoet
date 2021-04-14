@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MailPoet from 'mailpoet';
 import { assign, compose, find } from 'lodash/fp';
 import Select from 'common/form/react_select/react_select';
@@ -69,6 +69,15 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
 
   let optionFields;
 
+  useEffect(() => {
+    if (
+      item.number_of_orders_type === undefined
+      && item.action === WooCommerceActionTypes.NUMBER_OF_ORDERS
+    ) {
+      onChange(assign(item, { number_of_orders_type: '=' }));
+    }
+  }, [onChange, item]);
+
   if (item.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
     optionFields = (
       <Select
@@ -98,10 +107,6 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
       />
     );
   } else if (item.action === WooCommerceActionTypes.NUMBER_OF_ORDERS) {
-    if (!item.number_of_orders_type) {
-      item.number_of_orders_type = '=';
-    }
-
     optionFields = (
       <div>
         <Grid.CenteredRow className="mailpoet-form-field">
