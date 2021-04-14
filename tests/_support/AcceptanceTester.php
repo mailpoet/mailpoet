@@ -45,6 +45,8 @@ class AcceptanceTester extends \Codeception\Actor {
   const MAIL_URL = 'http://mailhog:8025';
   const AUTHORIZED_SENDING_EMAIL = 'staff@mailpoet.com';
   const LISTING_LOADING_SELECTOR = '.mailpoet-listing-loading';
+  const WOO_COMMERCE_PLUGIN = 'woocommerce';
+  const WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN = 'woocommerce-subscriptions';
 
   /**
    * Define custom actions here
@@ -312,22 +314,22 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function activateWooCommerce() {
     $i = $this;
-    $i->cli(['plugin', 'activate', 'woocommerce']);
+    $i->cli(['plugin', 'activate', self::WOO_COMMERCE_PLUGIN]);
   }
 
   public function deactivateWooCommerce() {
     $i = $this;
-    $i->cli(['plugin', 'deactivate', 'woocommerce']);
+    $i->cli(['plugin', 'deactivate', self::WOO_COMMERCE_PLUGIN]);
   }
 
   public function activateWooCommerceSubscriptions() {
     $i = $this;
-    $i->cli(['plugin', 'activate', 'woocommerce-subscriptions']);
+    $i->cli(['plugin', 'activate', self::WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN]);
   }
 
   public function deactivateWooCommerceSubscriptions() {
     $i = $this;
-    $i->cli(['plugin', 'deactivate', 'woocommerce-subscriptions']);
+    $i->cli(['plugin', 'deactivate', self::WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN]);
   }
 
   /**
@@ -532,5 +534,15 @@ class AcceptanceTester extends \Codeception\Actor {
     for ($j = 0; $j < mb_strlen($value); $j++) {
       $i->pressKey($selector, WebDriverKeys::BACKSPACE);// delete the field
     }
+  }
+
+  public function canTestWithPlugin(string $pluginSlug): bool {
+    $i = $this;
+    try {
+      $result = $i->cli(['plugin', 'is-installed', $pluginSlug]);
+    } catch (\Exception $e) {
+      return false;
+    }
+    return (int)$result === 0;
   }
 }
