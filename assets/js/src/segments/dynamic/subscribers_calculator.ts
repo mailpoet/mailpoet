@@ -15,7 +15,18 @@ let previousFormItem: AnyFormItem | undefined;
 let previousResult: Result | undefined;
 
 // Names of keys from interface FormItem
-const allowedItemKeys: string[] = ['wordpressRole', 'segmentType', 'action', 'newsletter_id', 'category_id', 'product_id', 'link_id'];
+const allowedItemKeys: string[] = [
+  'wordpressRole',
+  'segmentType',
+  'action',
+  'newsletter_id',
+  'category_id',
+  'product_id',
+  'link_id',
+  'days',
+  'opens',
+  'operator',
+];
 
 function loadCount(formItem: AnyFormItem): Promise<Result | void> {
   // We don't want to use properties like name and description
