@@ -38,7 +38,7 @@ class GithubClient {
   }
 
   private function getRelease($tag = null) {
-    $path = 'releases/' . ($tag ? "tags/$tag" : 'latest');
+    $path = 'releases/' . ($tag && $tag !== 'latest' ? "tags/$tag" : 'latest');
     $response = $this->httpClient->get($path);
     return json_decode($response->getBody()->getContents(), true);
   }

@@ -170,6 +170,10 @@ jobs:
           command: |
             ./do test:acceptance-group-tests
       - run:
+          name: Download additional WP Plugins for tests
+          command: |
+            ./do download:woo-commerce-subscriptions-zip 3.0.14
+      - run:
           name: Dump tests ENV variables for acceptance tests
           command: |
             (printenv | grep WP_TEST_ > .env) || true
@@ -296,6 +300,9 @@ jobs:
       wordpress_image_version:
         type: string
         default: ''
+      woo_subscriptions_version:
+        type: string
+        default: ''
     environment:
       MYSQL_COMMAND: << parameters.mysql_command >>
       MYSQL_IMAGE_VERSION: << parameters.mysql_image_version >>
@@ -306,6 +313,12 @@ jobs:
       - run:
           name: "Set up virtual host"
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+      - when:
+          condition: << parameters.woo_subscriptions_version >>
+          steps:
+            - run:
+                name: Download additional WP Plugins
+                command: ./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>
       - run:
           name: Run acceptance tests
           command: |
@@ -590,11 +603,13 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_latest
+          woo_subscriptions_version: latest
           requires:
             - build
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_oldest
+          woo_subscriptions_version: 3.0.14
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
           wordpress_image_version: wp-5.3_php7.1_20210129.1
