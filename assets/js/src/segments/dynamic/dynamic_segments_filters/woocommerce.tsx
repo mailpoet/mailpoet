@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import { assign, compose, find } from 'lodash/fp';
 import Select from 'common/form/react_select/react_select';
 
+import { Grid } from 'common/grid';
 import {
   OnFilterChange,
   SegmentTypes,
@@ -10,7 +11,6 @@ import {
   WooCommerceFormItem,
 } from '../types';
 import { SegmentFormData } from '../segment_form_data';
-import { Grid } from '../../../common/grid';
 import Input from '../../../common/form/input/input';
 
 export const WooCommerceOptions = [
