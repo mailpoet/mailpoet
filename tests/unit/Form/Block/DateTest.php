@@ -108,4 +108,25 @@ class DateTest extends \MailPoetUnitTest {
     $selectedYear = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 2);
     expect($selectedYear->textContent)->equals($currentYear);
   }
+
+  public function testItShouldAddValue() {
+    $this->baseMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
+    $this->baseMock->expects($this->any())->method('getInputValidation')->willReturn(' validation="1" ');
+
+    $block = $this->block;
+    $block['params']['date_type'] = 'year_month_day';
+    $block['params']['date_format'] = 'MM/DD/YYYY';
+    $block['params']['is_default_today'] = '';
+    $block['params']['value'] = '2009-02-09 00:00:00';
+
+    $html = $this->date->render($block, []);
+
+    $selectedMonth = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 0);
+    expect($selectedMonth->textContent)->equals('February');
+    $selectedDay = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 1);
+    expect($selectedDay->textContent)->equals('9');
+    $selectedYear = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 2);
+    expect($selectedYear->textContent)->equals('2009');
+  }
 }
