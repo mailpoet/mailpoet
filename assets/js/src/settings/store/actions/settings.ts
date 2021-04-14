@@ -21,11 +21,16 @@ export function setErrorFlag(value: boolean): Action {
 export function* saveSettings() {
   yield { type: 'SAVE_STARTED' };
   const data = select(STORE_NAME).getSettings();
+
+  // trim all strings before saving
+  const stringified = JSON.stringify(data);
+  const parsed = JSON.parse(stringified, (key, value) => (typeof value === 'string' ? value.trim() : value));
+
   const { success, error, res } = yield {
     type: 'CALL_API',
     endpoint: 'settings',
     action: 'set',
-    data,
+    data: parsed,
   };
   if (!success) {
     return { type: 'SAVE_FAILED', error };
