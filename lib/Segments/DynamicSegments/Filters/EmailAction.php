@@ -21,6 +21,7 @@ class EmailAction implements Filter {
     self::ACTION_NOT_OPENED,
     self::ACTION_CLICKED,
     self::ACTION_NOT_CLICKED,
+    EmailOpensAbsoluteCountAction::TYPE,
   ];
 
   /** @var EntityManager */

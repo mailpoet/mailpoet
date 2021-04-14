@@ -5,6 +5,7 @@ namespace MailPoet\Segments\DynamicSegments;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
+use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 
@@ -41,8 +42,9 @@ class FilterDataMapper {
    */
   private function createEmail(array $data): DynamicSegmentFilterData {
     if (empty($data['action'])) throw new InvalidFilterException('Missing action', InvalidFilterException::MISSING_ACTION);
-    if (empty($data['newsletter_id'])) throw new InvalidFilterException('Missing newsletter id', InvalidFilterException::MISSING_NEWSLETTER_ID);
     if (!in_array($data['action'], EmailAction::ALLOWED_ACTIONS)) throw new InvalidFilterException('Invalid email action', InvalidFilterException::INVALID_EMAIL_ACTION);
+    if ($data['action'] === EmailOpensAbsoluteCountAction::TYPE) return $this->createEmailOpensAbsoluteCount($data);
+    if (empty($data['newsletter_id'])) throw new InvalidFilterException('Missing newsletter id', InvalidFilterException::MISSING_NEWSLETTER_ID);
     $filterData = [
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => $data['action'],
@@ -51,6 +53,22 @@ class FilterDataMapper {
     if (isset($data['link_id'])) {
       $filterData['link_id'] = $data['link_id'];
     }
+    return new DynamicSegmentFilterData($filterData);
+  }
+
+  /**
+   * @throws InvalidFilterException
+   */
+  private function createEmailOpensAbsoluteCount(array $data): DynamicSegmentFilterData {
+    if (empty($data['opens'])) throw new InvalidFilterException('Missing number of opens', InvalidFilterException::MISSING_VALUE);
+    if (empty($data['days'])) throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
+    $filterData = [
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => $data['action'],
+      'opens' => $data['opens'],
+      'days' => $data['days'],
+      'operator' => $data['operator'] ?? 'more',
+    ];
     return new DynamicSegmentFilterData($filterData);
   }
 
