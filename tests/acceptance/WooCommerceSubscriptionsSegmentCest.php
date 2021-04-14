@@ -8,7 +8,10 @@ use MailPoet\Test\DataFactories\WooCommerceProduct;
 use MailPoet\Test\DataFactories\WooCommerceSubscription;
 
 class WooCommerceSubscriptionsSegmentCest {
-  public function _before(\AcceptanceTester $i) {
+  public function _before(\AcceptanceTester $i, $scenario) {
+    if (!$i->canTestWithPlugin(\AcceptanceTester::WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN)) {
+      $scenario->skip('Can‘t test without woocommerce-subscriptions');
+    }
     (new Settings())->withWooCommerceListImportPageDisplayed(true);
     (new Settings())->withCookieRevenueTrackingDisabled();
     $i->activateWooCommerce();
