@@ -8,6 +8,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
+use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
@@ -34,12 +35,16 @@ class FilterHandler {
   /** @var SegmentDependencyValidator */
   private $segmentDependencyValidator;
 
+  /** @var EmailOpensAbsoluteCountAction */
+  private $emailOpensAbsoluteCount;
+
   public function __construct(
     EntityManager $entityManager,
     EmailAction $emailAction,
     UserRole $userRole,
     WooCommerceProduct $wooCommerceProduct,
     WooCommerceCategory $wooCommerceCategory,
+    EmailOpensAbsoluteCountAction $emailOpensAbsoluteCount,
     SegmentDependencyValidator $segmentDependencyValidator
   ) {
     $this->emailAction = $emailAction;
@@ -48,6 +53,7 @@ class FilterHandler {
     $this->wooCommerceCategory = $wooCommerceCategory;
     $this->entityManager = $entityManager;
     $this->segmentDependencyValidator = $segmentDependencyValidator;
+    $this->emailOpensAbsoluteCount = $emailOpensAbsoluteCount;
   }
 
   public function apply(QueryBuilder $queryBuilder, SegmentEntity $segment): QueryBuilder {
@@ -112,6 +118,10 @@ class FilterHandler {
       case DynamicSegmentFilterData::TYPE_USER_ROLE:
         return $this->userRole->apply($queryBuilder, $filter);
       case DynamicSegmentFilterData::TYPE_EMAIL:
+        $action = $filterData->getParam('action');
+        if ($action === EmailOpensAbsoluteCountAction::TYPE) {
+          return $this->emailOpensAbsoluteCount->apply($queryBuilder, $filter);
+        }
         return $this->emailAction->apply($queryBuilder, $filter);
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE:
         $action = $filterData->getParam('action');
