@@ -898,14 +898,17 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function downloadWooCommerceSubscriptionsZip($tag = null) {
-    require_once __DIR__ . '/tasks/GithubClient.php';
-    $help = "Use your GitHub username and a token from https://github.com/settings/tokens with 'repo' scopes.";
-    $githubClient = new \MailPoetTasks\GithubClient(
-      $this->getEnv('WP_GITHUB_USERNAME', $help),
-      $this->getEnv('WP_GITHUB_TOKEN', $help),
-      'woocommerce/woocommerce-subscriptions'
-    );
-    $githubClient->downloadReleaseZip('woocommerce-subscriptions.zip', __DIR__ . '/tools/vendor/', $tag);
+    if (!getenv('WP_GITHUB_USERNAME') && !getenv('WP_GITHUB_TOKEN')) {
+      $this->yell("Skipping download of WooCommerce Subscriptions", 40, 'red');
+      exit(0); // Exit with 0 since it is a valid state for some environments
+    }
+    $this->createGithubClient('woocommerce/woocommerce-subscriptions')
+      ->downloadReleaseZip('woocommerce-subscriptions.zip', __DIR__ . '/tools/vendor/', $tag);
+  }
+
+  public function downloadWooCommerceZip($tag = null) {
+    $this->createGithubClient('woocommerce/woocommerce')
+      ->downloadReleaseZip('woocommerce.zip', __DIR__ . '/tools/vendor/', $tag);
   }
 
   public function generateData($generatorName = null) {
@@ -1020,6 +1023,15 @@ class RoboFile extends \Robo\Tasks {
 
     $phpConfig->usePersistent();
     return $exitCode;
+  }
+
+  private function createGithubClient($repositoryName) {
+    require_once __DIR__ . '/tasks/GithubClient.php';
+    return new \MailPoetTasks\GithubClient(
+      $repositoryName,
+      getenv('WP_GITHUB_USERNAME') ?: null,
+      getenv('WP_GITHUB_TOKEN') ?: null
+    );
   }
 
   private function createDoctrineEntityManager() {

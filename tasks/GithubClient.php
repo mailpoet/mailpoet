@@ -10,14 +10,17 @@ class GithubClient {
 
   private const API_BASE_URI = 'https://api.github.com/repos';
 
-  public function __construct($username, $token, $repo) {
-    $this->httpClient = new Client([
-      'auth' => [$username, $token],
+  public function __construct($repo, $username = null, $token = null) {
+    $config = [
       'headers' => [
         'Accept' => 'application/vnd.github.v3+json',
       ],
       'base_uri' => self::API_BASE_URI . "/$repo/",
-    ]);
+    ];
+    if ($username && $token) {
+      $config['auth'] = [$username, $token];
+    }
+    $this->httpClient = new Client($config);
   }
 
   public function downloadReleaseZip($zip, $downloadDir, $tag = null) {
