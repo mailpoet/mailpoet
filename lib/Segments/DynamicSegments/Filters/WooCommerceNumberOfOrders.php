@@ -37,22 +37,22 @@ class WooCommerceNumberOfOrders implements Filter {
       'postmeta',
       $wpdb->posts,
       'posts',
-      'posts.ID = postmeta.post_id AND posts.post_date >= :date AND postmeta.post_id NOT IN ( SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed"))'
+      'posts.ID = postmeta.post_id AND posts.post_date >= :date' . $filter->getId() . ' AND postmeta.post_id NOT IN ( SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed"))'
     )->setParameter(
-      'date', $date->toDateTimeString()
+      'date' . $filter->getId(), $date->toDateTimeString()
     )->groupBy(
       'inner_subscriber_id'
     );
 
     if ($type === '=') {
-      $queryBuilder->having("COUNT(posts.ID) = :count");
+      $queryBuilder->having('COUNT(posts.ID) = :count' . $filter->getId());
     } elseif ($type === '>') {
-      $queryBuilder->having("COUNT(posts.ID) > :count");
+      $queryBuilder->having('COUNT(posts.ID) > :count' . $filter->getId());
     } elseif ($type === '<') {
-      $queryBuilder->having("COUNT(posts.ID) < :count");
+      $queryBuilder->having('COUNT(posts.ID) < :count' . $filter->getId());
     }
 
-    $queryBuilder->setParameter('count', $count);
+    $queryBuilder->setParameter('count' . $filter->getId(), $count);
 
     return $queryBuilder;
   }
