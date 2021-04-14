@@ -62,6 +62,7 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
                   key="input"
                   type="number"
                   value={item.opens}
+                  data-automation-id="segment-number-of-opens"
                   onChange={(e): void => compose([
                     onChange,
                     assign(item),
@@ -91,6 +92,7 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
                   key="input"
                   type="number"
                   value={item.days}
+                  data-automation-id="segment-number-of-days"
                   onChange={(e): void => compose([
                     onChange,
                     assign(item),
