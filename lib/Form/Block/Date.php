@@ -5,6 +5,7 @@ namespace MailPoet\Form\Block;
 use MailPoet\Form\BlockStylesRenderer;
 use MailPoet\Form\BlockWrapperRenderer;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\CarbonImmutable;
 
 class Date {
 
@@ -124,8 +125,13 @@ class Date {
       'selected' => null,
     ];
 
-    // is default today
-    if (!empty($block['params']['is_default_today'])) {
+    if (!empty($block['params']['value'])) {
+      $date = CarbonImmutable::createFromFormat('Y-m-d H:i:s', $block['params']['value']);
+      if ($date instanceof CarbonImmutable) {
+        $defaults['selected'] = (int)strftime('%m', $date->getTimestamp());
+      }
+    } elseif (!empty($block['params']['is_default_today'])) {
+      // is default today
       $defaults['selected'] = (int)strftime('%m');
     }
     // merge block with defaults
@@ -155,8 +161,13 @@ class Date {
       'to' => (int)strftime('%Y'),
     ];
 
-    // is default today
-    if (!empty($block['params']['is_default_today'])) {
+    if (!empty($block['params']['value'])) {
+      $date = CarbonImmutable::createFromFormat('Y-m-d H:i:s', $block['params']['value']);
+      if ($date instanceof CarbonImmutable) {
+        $defaults['selected'] = (int)strftime('%Y', $date->getTimestamp());
+      }
+    } elseif (!empty($block['params']['is_default_today'])) {
+      // is default today
       $defaults['selected'] = (int)strftime('%Y');
     }
 
@@ -181,8 +192,13 @@ class Date {
     $defaults = [
       'selected' => null,
     ];
-    // is default today
-    if (!empty($block['params']['is_default_today'])) {
+    if (!empty($block['params']['value'])) {
+      $date = CarbonImmutable::createFromFormat('Y-m-d H:i:s', $block['params']['value']);
+      if ($date instanceof CarbonImmutable) {
+        $defaults['selected'] = (int)strftime('%d', $date->getTimestamp());
+      }
+    } elseif (!empty($block['params']['is_default_today'])) {
+      // is default today
       $defaults['selected'] = (int)strftime('%d');
     }
 
