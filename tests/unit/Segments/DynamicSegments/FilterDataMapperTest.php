@@ -5,6 +5,7 @@ namespace MailPoet\Segments\DynamicSegments;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
+use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 
@@ -164,6 +165,25 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->mapper->map([
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceProduct::ACTION_PRODUCT,
+    ]);
+  }
+
+  public function testItCreatesEmailOpens() {
+    $data = [
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailOpensAbsoluteCountAction::TYPE,
+      'opens' => 5,
+      'days' => 3,
+    ];
+    $filter = $this->mapper->map($data);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
+    expect($filter->getData())->equals([
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailOpensAbsoluteCountAction::TYPE,
+      'opens' => 5,
+      'days' => 3,
+      'operator' => 'more',
     ]);
   }
 }

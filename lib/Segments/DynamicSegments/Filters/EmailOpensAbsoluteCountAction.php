@@ -42,5 +42,4 @@ class EmailOpensAbsoluteCountAction implements Filter {
     $queryBuilder->setParameter('opens' . $filter->getId(), $filterData->getParam('opens'));
     return $queryBuilder;
   }
-
 }
