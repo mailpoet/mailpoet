@@ -255,7 +255,7 @@ class WooCommerce {
       ->delete_many();
   }
 
-  private function updateFirstNames($subscriberId = null) {
+  private function updateFirstNames() {
     global $wpdb;
     $collate = '';
     if ($this->needsCollationChange()) {
@@ -268,13 +268,13 @@ class WooCommerce {
         JOIN %2$s wppm2 ON wppm2.post_id = wppm.post_id AND wppm2.meta_key = "_billing_first_name"
         JOIN (SELECT MAX(post_id) AS max_id FROM %2$s WHERE meta_key = "_billing_email" GROUP BY meta_value) AS tmaxid ON tmaxid.max_id = wppm.post_id
       SET mps.first_name = wppm2.meta_value
-        WHERE ' . ($subscriberId ? ' mps.id = "' . (int)$subscriberId . '" ' : ' mps.first_name = "" ' ) . '
+        WHERE  mps.first_name = ""
         AND mps.is_woocommerce_user = 1
         AND wppm2.meta_value IS NOT NULL
     ', $subscribersTable, $wpdb->postmeta, $collate));
   }
 
-  private function updateLastNames($subscriberId = null) {
+  private function updateLastNames() {
     global $wpdb;
     $collate = '';
     if ($this->needsCollationChange()) {
@@ -287,7 +287,7 @@ class WooCommerce {
         JOIN %2$s wppm2 ON wppm2.post_id = wppm.post_id AND wppm2.meta_key = "_billing_last_name"
         JOIN (SELECT MAX(post_id) AS max_id FROM %2$s WHERE meta_key = "_billing_email" GROUP BY meta_value) AS tmaxid ON tmaxid.max_id = wppm.post_id
       SET mps.last_name = wppm2.meta_value
-        WHERE ' . ($subscriberId ? ' mps.id = "' . (int)$subscriberId . '" ' : ' mps.last_name = "" ' ) . '
+        WHERE mps.last_name = ""
         AND mps.is_woocommerce_user = 1
         AND wppm2.meta_value IS NOT NULL
     ', $subscribersTable, $wpdb->postmeta, $collate));
