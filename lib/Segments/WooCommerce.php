@@ -92,11 +92,14 @@ class WooCommerce {
           $data['source'] = Source::WOOCOMMERCE_USER;
         }
         $data['id'] = $subscriber->id();
-
+        if ($wpUser->first_name) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+          $data['first_name'] = $wpUser->first_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        }
+        if ($wpUser->last_name) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+          $data['last_name'] = $wpUser->last_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        }
         $subscriber = Subscriber::createOrUpdate($data);
         if ($subscriber->getErrors() === false && $subscriber->id > 0) {
-          $this->updateFirstNames($subscriber->id);
-          $this->updateLastNames($subscriber->id);
           // add subscriber to the WooCommerce Customers segment
           SubscriberSegment::subscribeToSegments(
             $subscriber,
@@ -110,10 +113,10 @@ class WooCommerce {
   }
 
   public function synchronizeGuestCustomer($orderId) {
-    $wcOrder = $this->wp->getPost($orderId);
+    $wcOrder = $this->woocommerceHelper->wcGetOrder($orderId);
     $wcSegment = Segment::getWooCommerceSegment();
 
-    if ($wcOrder === false or $wcSegment === false) return;
+    if ((!$wcOrder instanceof \WC_Order) || $wcSegment === false) return;
     $signupConfirmation = $this->settings->get('signup_confirmation');
     $status = Subscriber::STATUS_UNCONFIRMED;
     if ((bool)$signupConfirmation['enabled'] === false) {
@@ -129,8 +132,17 @@ class WooCommerce {
       ->findOne();
 
     if ($subscriber !== false) {
-      $this->updateFirstNames($subscriber->id);
-      $this->updateLastNames($subscriber->id);
+      $firstName = $wcOrder->get_billing_first_name(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $lastName = $wcOrder->get_billing_last_name(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      if ($firstName) {
+        $subscriber->firstName = $firstName;
+      }
+      if ($lastName) {
+        $subscriber->lastName = $lastName;
+      }
+      if ($firstName || $lastName) {
+        $subscriber->save();
+      }
       // add subscriber to the WooCommerce Customers segment
       SubscriberSegment::subscribeToSegments(
         $subscriber,

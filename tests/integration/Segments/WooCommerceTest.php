@@ -4,14 +4,17 @@ namespace MailPoet\Test\Segments;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Segments\WooCommerce;
+use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WooCommerce\Helper;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -29,8 +32,8 @@ class WooCommerceTest extends \MailPoetTest {
   private $settings;
 
   public function _before() {
-    $this->woocommerceSegment = ContainerWrapper::getInstance()->get(WooCommerceSegment::class);
-    $this->settings = ContainerWrapper::getInstance()->get(SettingsController::class);
+    $this->woocommerceSegment = $this->getWooCommerceSegment();
+    $this->settings = $this->diContainer->get(SettingsController::class);
     $this->cleanData();
     $this->addCustomerRole();
   }
@@ -118,7 +121,8 @@ class WooCommerceTest extends \MailPoetTest {
   public function testItSynchronizesNewGuestCustomer() {
     $this->settings->set('signup_confirmation', ['enabled' => true]);
     $guest = $this->insertGuestCustomer();
-    $this->woocommerceSegment->synchronizeGuestCustomer($guest['order_id']);
+    $woocommerceSegment = $this->getWooCommerceSegmentForGuestUser($guest);
+    $woocommerceSegment->synchronizeGuestCustomer($guest['order_id']);
     $subscriber = Segment::getWooCommerceSegment()->subscribers()
       ->where('email', $guest['email'])
       ->findOne();
@@ -134,7 +138,8 @@ class WooCommerceTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation', ['enabled' => false]);
     $this->settings->resetCache();
     $guest = $this->insertGuestCustomer();
-    $this->woocommerceSegment->synchronizeGuestCustomer($guest['order_id']);
+    $woocommerceSegment = $this->getWooCommerceSegmentForGuestUser($guest);
+    $woocommerceSegment->synchronizeGuestCustomer($guest['order_id']);
     $subscriber = Segment::getWooCommerceSegment()->subscribers()
       ->where('email', $guest['email'])
       ->findOne();
@@ -620,7 +625,7 @@ class WooCommerceTest extends \MailPoetTest {
    *
    * @return WPUserWithExtraProps
    */
-  private function insertRegisteredCustomer($number = null) {
+  private function insertRegisteredCustomer($number = null, $firstName = null, $lastName = null) {
     global $wpdb;
     $db = ORM::getDb();
     $numberSql = !is_null($number) ? (int)$number : 'rand()';
@@ -637,6 +642,33 @@ class WooCommerceTest extends \MailPoetTest {
     $id = $db->lastInsertId();
     if (!is_string($id)) {
       throw new \RuntimeException('Unexpected error when creating WP user.');
+    }
+    if ($firstName) {
+      // add user first name
+
+      $db->exec(sprintf('
+         INSERT INTO
+           %s (user_id, meta_key, meta_value)
+           VALUES
+           (
+             "%s",
+             "first_name",
+             "%s"
+           )', $wpdb->usermeta, $id, $firstName)
+      );
+    }
+    if ($lastName) {
+      // add user first name
+      $db->exec(sprintf('
+         INSERT INTO
+           %s (user_id, meta_key, meta_value)
+           VALUES
+           (
+             "%s",
+             "last_name",
+             "%s"
+           )', $wpdb->usermeta, $id, $lastName)
+      );
     }
     // add customer role
     $user = new WPUserWithExtraProps($id);
@@ -663,8 +695,8 @@ class WooCommerceTest extends \MailPoetTest {
 
   private function insertRegisteredCustomerWithOrder($number = null, array $data = null) {
     $number = !is_null($number) ? (int)$number : mt_rand();
-    $user = $this->insertRegisteredCustomer($number);
     $data = is_array($data) ? $data : [];
+    $user = $this->insertRegisteredCustomer($number, $data['first_name'] ?? null, $data['last_name'] ?? null);
     $data['email'] = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $data['user_id'] = $user->ID;
     $user->orderId = $this->createOrder($data);
@@ -709,5 +741,27 @@ class WooCommerceTest extends \MailPoetTest {
       UPDATE ' . MP_SUBSCRIBERS_TABLE . '
       SET `email` = "" WHERE `id` = ' . $subscriber->id
     );
+  }
+
+  private function getWooCommerceSegment($wooHelperMock = null): WooCommerceSegment {
+    return new WooCommerceSegment(
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(WPFunctions::class),
+      $wooHelperMock ?? $this->diContainer->get(Helper::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(WP::class)
+    );
+  }
+
+  private function getWooCommerceSegmentForGuestUser(array $guest): WooCommerceSegment {
+    $wcOrderMock = $this->createMock(\WC_Order::class);
+    $wcOrderMock->method('get_billing_first_name')
+      ->willReturn($guest['first_name']);
+    $wcOrderMock->method('get_billing_last_name')
+      ->willReturn($guest['last_name']);
+    $wcHelperMock = $this->createMock(Helper::class);
+    $wcHelperMock->method('wcGetOrder')
+      ->willReturn($wcOrderMock);
+    return $this->getWooCommerceSegment($wcHelperMock);
   }
 }

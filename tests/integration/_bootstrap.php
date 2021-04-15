@@ -267,6 +267,14 @@ if (!function_exists('WC')) {
     }
   }
 
+  class WC_Order { // phpcs:ignore
+    public function get_billing_first_name() { // phpcs:ignore
+    }
+
+    public function get_billing_last_name() { // phpcs:ignore
+    }
+  }
+
   class WC_Emails {} // phpcs:ignore
 }
 
