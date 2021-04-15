@@ -450,7 +450,7 @@ class Import {
   }
 
   public function createOrUpdateCustomFields(
-    string $acion,
+    string $action,
     array $createdOrUpdatedSubscribers,
     array $subscribersData,
     array $subscribersCustomFieldsIds
@@ -484,13 +484,15 @@ class Import {
       'value',
       'created_at',
     ];
-    foreach (array_chunk($subscribersCustomFieldsData, self::DB_QUERY_CHUNK_SIZE) as $subscribersCustomFieldsDataChunk) {
+    $customFieldCount = count($subscribersCustomFieldsIds);
+    $customFieldBatchSize = (int)(round(self::DB_QUERY_CHUNK_SIZE / $customFieldCount) * $customFieldCount);
+    foreach (array_chunk($subscribersCustomFieldsData, $customFieldBatchSize) as $subscribersCustomFieldsDataChunk) {
       $this->importExportRepository->insertMultiple(
         SubscriberCustomFieldEntity::class,
         $columns,
         $subscribersCustomFieldsDataChunk
       );
-      if ($acion === self::ACTION_UPDATE) {
+      if ($action === self::ACTION_UPDATE) {
         $this->importExportRepository->updateMultiple(
           SubscriberCustomFieldEntity::class,
           $columns,
