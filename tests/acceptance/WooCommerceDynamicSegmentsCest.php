@@ -10,6 +10,7 @@ use MailPoet\Test\DataFactories\WooCommerceProduct;
 class WooCommerceDynamicSegmentsCest {
   const CATEGORY_SEGMENT = 'Purchase in category segment';
   const PRODUCT_SEGMENT = 'Purchased product segment';
+  const NUMBER_OF_ORDERS_SEGMENT = 'Number of orders segment';
 
   /** @var Settings */
   private $settingsFactory;
@@ -28,6 +29,9 @@ class WooCommerceDynamicSegmentsCest {
 
   /** @var SegmentEntity */
   private $productSegment;
+
+  /** @var SegmentEntity */
+  private $numberOfOrdersSegment;
 
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();
@@ -49,6 +53,10 @@ class WooCommerceDynamicSegmentsCest {
     $this->categorySegment = $segmentFactory
       ->withName(self::CATEGORY_SEGMENT)
       ->withWooCommerceCategoryFilter($this->productCategoryId)
+      ->create();
+    $this->numberOfOrdersSegment = $segmentFactory
+      ->withName(self::NUMBER_OF_ORDERS_SEGMENT)
+      ->withWooCommerceNumberOfOrdersFilter()
       ->create();
   }
 
@@ -99,6 +107,23 @@ class WooCommerceDynamicSegmentsCest {
     $i->waitForText(self::PRODUCT_SEGMENT);
     $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
     $i->see('0', $productSegmentRow . " [data-colname='Number of subscribers']");
+  }
+
+  public function checkThatCustomersAreAddedToNumberOfOrdersSegment(\AcceptanceTester $i) {
+    $i->wantTo('Check that customers are added to the number of orders segment when the number of orders they placed matches what is expected');
+    $customer1Email = 'customer_2@example.com';
+    $product1 = $this->productFactory->create();
+    $i->orderProduct($product1, $customer1Email);
+
+    $i->login();
+    $i->wantTo('Check there is one subscriber in the number of orders segments (the segment was configured to match customers that placed one order in the last day)');
+    $i->amOnMailpoetPage('Lists');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText(self::NUMBER_OF_ORDERS_SEGMENT);
+    $numberOfOrdersSegmentRow = "[data-automation-id='listing_item_{$this->numberOfOrdersSegment->getId()}']";
+    $i->see('1', $numberOfOrdersSegmentRow . " [data-colname='Number of subscribers']");
+    $i->clickItemRowActionByItemName(self::NUMBER_OF_ORDERS_SEGMENT, 'View Subscribers');
+    $i->waitForText($customer1Email);
   }
 
   public function displayMessageWhenPluginIsDeactivated(\AcceptanceTester $i) {

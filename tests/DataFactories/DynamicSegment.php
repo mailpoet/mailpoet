@@ -38,6 +38,15 @@ class DynamicSegment extends Segment {
     return $this;
   }
 
+  public function withWooCommerceNumberOfOrdersFilter() {
+    $this->filterData['segmentType'] = 'woocommerce';
+    $this->filterData['action'] = 'numberOfOrders';
+    $this->filterData['number_of_orders_type'] = '=';
+    $this->filterData['number_of_orders_count'] = '1';
+    $this->filterData['number_of_orders_days'] = '1';
+    return $this;
+  }
+
   public function create(): SegmentEntity {
     if (empty($this->filterData['segmentType'])) {
       $this->withUserRoleFilter('editor');
