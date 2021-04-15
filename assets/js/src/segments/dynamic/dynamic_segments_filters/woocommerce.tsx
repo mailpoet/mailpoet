@@ -62,9 +62,9 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
   }));
 
   const numberOfOrdersTypeOptions = [
-    { value: '=', label: 'equals' },
-    { value: '>', label: 'more than' },
-    { value: '<', label: 'less than' },
+    { value: '=', label: MailPoet.I18n.t('wooNumberOfOrdersEqual') },
+    { value: '>', label: MailPoet.I18n.t('wooNumberOfOrdersMoreThan') },
+    { value: '<', label: MailPoet.I18n.t('wooNumberOfOrdersLessThan') },
   ];
 
   let optionFields;
@@ -122,27 +122,27 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
             type="number"
             min={0}
             value={item.number_of_orders_count || ''}
-            placeholder="count"
+            placeholder={MailPoet.I18n.t('wooNumberOfOrdersCount')}
             onChange={(event): void => compose([
               onChange,
               assign(item),
             ])({ number_of_orders_count: event.target.value })}
           />
-          <div>orders</div>
+          <div>{MailPoet.I18n.t('wooNumberOfOrdersOrders')}</div>
         </Grid.CenteredRow>
         <Grid.CenteredRow className="mailpoet-form-field">
-          <div>in the last</div>
+          <div>{MailPoet.I18n.t('wooNumberOfOrdersInTheLast')}</div>
           <Input
             type="number"
             min={1}
             value={item.number_of_orders_days || ''}
-            placeholder="days"
+            placeholder={MailPoet.I18n.t('wooNumberOfOrdersDaysPlaceholder')}
             onChange={(event): void => compose([
               onChange,
               assign(item),
             ])({ number_of_orders_days: event.target.value })}
           />
-          <div>days</div>
+          <div>{MailPoet.I18n.t('wooNumberOfOrdersDays')}</div>
         </Grid.CenteredRow>
       </div>
     );
