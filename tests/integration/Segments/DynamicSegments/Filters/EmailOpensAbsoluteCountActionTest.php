@@ -63,11 +63,11 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
   public function testGetOpened() {
     $segmentFilter = $this->getSegmentFilter(2, 'more', 3);
     $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)->execute();
-    assert($statement instanceof Statement);
+    $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(1);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmail())->equals('opened-3-newsletters@example.com');
   }
 
@@ -76,14 +76,14 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
       ->execute();
-    assert($statement instanceof Statement);
+    $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(2);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmail())->equals('opened-3-newsletters@example.com');
     $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber2->getEmail())->equals('opened-old-opens@example.com');
   }
 
@@ -92,14 +92,14 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
       ->execute();
-    assert($statement instanceof Statement);
+    $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
     expect(count($result))->equals(2);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmail())->equals('opened-less-opens@example.com');
     $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber2->getEmail())->equals('opened-old-opens@example.com');
   }
 
@@ -157,7 +157,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
 
   private function createStatsNewsletter(SubscriberEntity $subscriber, NewsletterEntity $newsletter) {
     $queue = $newsletter->getLatestQueue();
-    assert($queue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $stats = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber);
     $this->entityManager->persist($stats);
     $this->entityManager->flush();
@@ -166,7 +166,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
 
   private function createStatisticsOpens(SubscriberEntity $subscriber, NewsletterEntity $newsletter) {
     $queue = $newsletter->getLatestQueue();
-    assert($queue instanceof SendingQueueEntity);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $open = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
     $this->entityManager->persist($open);
     $this->entityManager->flush();
