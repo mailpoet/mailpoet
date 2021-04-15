@@ -186,4 +186,44 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'operator' => 'more',
     ]);
   }
+
+  public function testItCreatesEmailOpensWithOperator() {
+    $data = [
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailOpensAbsoluteCountAction::TYPE,
+      'opens' => 5,
+      'days' => 3,
+      'operator' => 'less',
+    ];
+    $filter = $this->mapper->map($data);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
+    expect($filter->getData())->equals([
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailOpensAbsoluteCountAction::TYPE,
+      'opens' => 5,
+      'days' => 3,
+      'operator' => 'less',
+    ]);
+  }
+
+  public function testItCreatesEmailOpensWithMissingOpens() {
+    $data = [
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailOpensAbsoluteCountAction::TYPE,
+      'days' => 3,
+    ];
+    $this->expectException(InvalidFilterException::class);
+    $this->mapper->map($data);
+  }
+
+  public function testItCreatesEmailOpensWithMissingDays() {
+    $data = [
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailOpensAbsoluteCountAction::TYPE,
+      'opens' => 5,
+    ];
+    $this->expectException(InvalidFilterException::class);
+    $this->mapper->map($data);
+  }
 }
