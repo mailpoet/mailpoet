@@ -31,7 +31,7 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
     if (item.operator === undefined) {
       onChange(assign(item, { operator: 'more' }));
     }
-  }, [onChange, item, item.operator]);
+  }, [onChange, item]);
 
   return (
     <>
