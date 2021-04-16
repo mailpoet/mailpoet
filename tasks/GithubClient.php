@@ -37,6 +37,9 @@ class GithubClient {
     if (!$assetDownloadUrl) {
       throw new \Exception("Release zip for $tag not found");
     }
+    if (!is_dir($downloadDir)) {
+      mkdir($downloadDir, 0777, true);
+    }
     $this->httpClient->get($assetDownloadUrl, ['sink' => $downloadDir . $zip, 'headers' => ['Accept' => 'application/octet-stream']]);
   }
 
