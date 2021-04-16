@@ -5,20 +5,15 @@ namespace MailPoet\Config;
 use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
-use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
-use MailPoet\WooCommerce\Settings as WooCommerceSettings;
-use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Hooks {
-
   /** @var Form */
   private $subscriptionForm;
 
@@ -37,18 +32,6 @@ class Hooks {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var WooCommerceSubscription */
-  private $woocommerceSubscription;
-
-  /** @var WooCommerceSegment */
-  private $woocommerceSegment;
-
-  /** @var WooCommerceSettings */
-  private $woocommerceSettings;
-
-  /** @var WooCommercePurchases */
-  private $woocommercePurchases;
-
   /** @var PostNotificationScheduler */
   private $postNotificationScheduler;
 
@@ -61,6 +44,9 @@ class Hooks {
   /** @var WP */
   private $wpSegment;
 
+  /** @var HooksWooCommerce */
+  private $hooksWooCommerce;
+
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -68,13 +54,10 @@ class Hooks {
     Registration $subscriptionRegistration,
     SettingsController $settings,
     WPFunctions $wp,
-    WooCommerceSubscription $woocommerceSubscription,
-    WooCommerceSegment $woocommerceSegment,
-    WooCommerceSettings $woocommerceSettings,
-    WooCommercePurchases $woocommercePurchases,
     PostNotificationScheduler $postNotificationScheduler,
     WordpressMailerReplacer $wordpressMailerReplacer,
     DisplayFormInWPContent $displayFormInWPContent,
+    HooksWooCommerce $hooksWooCommerce,
     WP $wpSegment
   ) {
     $this->subscriptionForm = $subscriptionForm;
@@ -83,14 +66,11 @@ class Hooks {
     $this->subscriptionRegistration = $subscriptionRegistration;
     $this->settings = $settings;
     $this->wp = $wp;
-    $this->woocommerceSubscription = $woocommerceSubscription;
-    $this->woocommerceSegment = $woocommerceSegment;
-    $this->woocommerceSettings = $woocommerceSettings;
-    $this->woocommercePurchases = $woocommercePurchases;
     $this->postNotificationScheduler = $postNotificationScheduler;
     $this->wordpressMailerReplacer = $wordpressMailerReplacer;
     $this->displayFormInWPContent = $displayFormInWPContent;
     $this->wpSegment = $wpSegment;
+    $this->hooksWooCommerce = $hooksWooCommerce;
   }
 
   public function init() {
@@ -227,13 +207,13 @@ class Hooks {
     if (!empty($woocommerce['optin_on_checkout']['enabled'])) {
       $this->wp->addAction(
         'woocommerce_checkout_before_terms_and_conditions',
-        [$this->woocommerceSubscription, 'extendWooCommerceCheckoutForm']
+        [$this->hooksWooCommerce, 'extendWooCommerceCheckoutForm']
       );
     }
 
     $this->wp->addAction(
       'woocommerce_checkout_update_order_meta',
-      [$this->woocommerceSubscription, 'subscribeOnCheckout'],
+      [$this->hooksWooCommerce, 'subscribeOnCheckout'],
       10, // this should execute after the WC sync call on the same hook
       2
     );
@@ -276,7 +256,7 @@ class Hooks {
 
   public function setupWooCommerceSettings() {
     $this->wp->addAction('woocommerce_settings_start', [
-      $this->woocommerceSettings,
+      $this->hooksWooCommerce,
       'disableWooCommerceSettings',
     ]);
   }
@@ -285,27 +265,27 @@ class Hooks {
     // WooCommerce Customers synchronization
     $this->wp->addAction(
       'woocommerce_new_customer',
-      [$this->woocommerceSegment, 'synchronizeRegisteredCustomer'],
+      [$this->hooksWooCommerce, 'synchronizeRegisteredCustomer'],
       7
     );
     $this->wp->addAction(
       'woocommerce_update_customer',
-      [$this->woocommerceSegment, 'synchronizeRegisteredCustomer'],
+      [$this->hooksWooCommerce, 'synchronizeRegisteredCustomer'],
       7
     );
     $this->wp->addAction(
       'woocommerce_delete_customer',
-      [$this->woocommerceSegment, 'synchronizeRegisteredCustomer'],
+      [$this->hooksWooCommerce, 'synchronizeRegisteredCustomer'],
       7
     );
     $this->wp->addAction(
       'woocommerce_checkout_update_order_meta',
-      [$this->woocommerceSegment, 'synchronizeGuestCustomer'],
+      [$this->hooksWooCommerce, 'synchronizeGuestCustomer'],
       7
     );
     $this->wp->addAction(
       'woocommerce_process_shop_order_meta',
-      [$this->woocommerceSegment, 'synchronizeGuestCustomer'],
+      [$this->hooksWooCommerce, 'synchronizeGuestCustomer'],
       7
     );
   }
@@ -321,7 +301,7 @@ class Hooks {
     foreach ($acceptedOrderStates as $status) {
       WPFunctions::get()->addAction(
         'woocommerce_order_status_' . $status,
-        [$this->woocommercePurchases, 'trackPurchase'],
+        [$this->hooksWooCommerce, 'trackPurchase'],
         10,
         1
       );
