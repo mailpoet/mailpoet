@@ -51,43 +51,28 @@ if [[ -z "${SKIP_DEPS}" ]]; then
   cd - >/dev/null
 fi
 
-WOOCOMMERCE_VERSION="tags/5.0.0"
-if [[ $CIRCLE_JOB == *"_oldest" ]]; then
-  WOOCOMMERCE_VERSION="tags/4.0.1"
-fi
-if [[ $CIRCLE_JOB == *"_latest" ]]; then
-  WOOCOMMERCE_VERSION="latest"
-fi
-
-# install WooCommerce
+# Install WooCommerce
 if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
   cd /wp-core/wp-content/plugins
-  WOOCOMMERCE_SOURCE_ZIP="/wp-core/wp-content/plugins/mailpoet/tools/vendor/woocommerce.zip"
-  WOOCOMMERCE_TARGET_ZIP="/wp-core/wp-content/plugins/woocommerce.zip"
-  # download woocommerce plugin if file doesn't exist
-  if [ -f "$WOOCOMMERCE_SOURCE_ZIP" ] && [[ $CIRCLE_JOB != *"_oldest" ]] && [[ $CIRCLE_JOB != *"_latest" ]]; then
-    echo "Copy Woocommerce plugin from $WOOCOMMERCE_SOURCE_ZIP"
-    cp "$WOOCOMMERCE_SOURCE_ZIP" "$WOOCOMMERCE_TARGET_ZIP"
-  else
-    DOWNLOAD_URL=$(curl -s https://api.github.com/repos/woocommerce/woocommerce/releases/$WOOCOMMERCE_VERSION \
-            | grep browser_download_url \
-            | grep woocommerce \
-            | cut -d '"' -f 4)
-    echo "Downloading Woocommerce plugin from $DOWNLOAD_URL"
-    curl -s -L --create-dirs -o "$WOOCOMMERCE_TARGET_ZIP" "$DOWNLOAD_URL"
+  WOOCOMMERCE_CORE_ZIP="/wp-core/wp-content/plugins/mailpoet/tools/vendor/woocommerce.zip"
+  if [ ! -f "$WOOCOMMERCE_CORE_ZIP" ]; then
+    echo "WooCommerce plugin zip not found. Downloading WooCommerce plugin latest zip"
+    cd /project
+    ./do download:woo-commerce-zip latest
+    cd /wp-core/wp-content/plugins
   fi
 
-  echo "Unzip Woocommerce plugin from $WOOCOMMERCE_TARGET_ZIP"
-  unzip -q -o "$WOOCOMMERCE_TARGET_ZIP"
+  echo "Unzip Woocommerce plugin from $WOOCOMMERCE_CORE_ZIP"
+  unzip -q -o "$WOOCOMMERCE_CORE_ZIP" -d /wp-core/wp-content/plugins/
 fi
 
 # Install WooCommerce Subscriptions
 if [[ ! -d "/wp-core/wp-content/plugins/woocommerce-subscriptions" ]]; then
   WOOCOMMERCE_SUBS_ZIP="/wp-core/wp-content/plugins/mailpoet/tools/vendor/woocommerce-subscriptions.zip"
   if [ ! -f "$WOOCOMMERCE_SUBS_ZIP" ]; then
-    echo "Downloading WooCommerce Subscription plugin zip"
+    echo "WooCommerce Subscriptions plugin zip not found. Downloading WooCommerce Subscription plugin latest zip"
     cd /project
-    ./do download:woo-commerce-subscriptions-zip
+    ./do download:woo-commerce-subscriptions-zip latest
     cd /wp-core/wp-content/plugins
   fi
   echo "Unzip Woocommerce Subscription plugin from $WOOCOMMERCE_SUBS_ZIP"
