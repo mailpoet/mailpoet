@@ -283,7 +283,8 @@ jobs:
         destination: mocha
   acceptance_tests:
     working_directory: /home/circleci/mailpoet
-    machine: true
+    machine:
+      image: ubuntu-2004:202101-01
     parameters:
       group_arg:
         type: string
