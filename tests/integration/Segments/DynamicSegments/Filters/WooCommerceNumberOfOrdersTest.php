@@ -32,27 +32,27 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter('=', 2, 1);
     $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
     $result = $queryBuilder->execute()->fetchAll();
-    expect(count($result))->equals(1);
+    $this->assertSame(1, count($result));
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
-    assert($subscriber1 instanceof SubscriberEntity);
-    expect($subscriber1->getEmail())->equals('customer2@example.com');
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertSame('customer2@example.com', $subscriber1->getEmail());
   }
 
   public function testItGetsCustomersThatPlacedZeroOrdersInTheLastDay() {
     $segmentFilter = $this->getSegmentFilter('=', 0, 1);
     $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
     $result = $queryBuilder->execute()->fetchAll();
-    expect(count($result))->equals(1);
+    $this->assertSame(1, count($result));
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
-    assert($subscriber1 instanceof SubscriberEntity);
-    expect($subscriber1->getEmail())->equals('customer1@example.com');
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertSame('customer1@example.com', $subscriber1->getEmail());
   }
 
   public function testItGestCustomersThatPlacedAtLeastOneOrderInTheLastWeek() {
     $segmentFilter = $this->getSegmentFilter('>', 0, 7);
     $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
     $result = $queryBuilder->execute()->fetchAll();
-    expect(count($result))->equals(3);
+    $this->assertSame(3, count($result));
   }
 
   private function getQueryBuilder() {
