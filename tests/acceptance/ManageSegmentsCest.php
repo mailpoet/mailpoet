@@ -413,4 +413,62 @@ class ManageSegmentsCest {
     $i->see('purchased this product', $actionSelectElement);
     $i->see('Product 1', $productSelectElement);
   }
+
+  public function createAndEditWooCommerceNumberOfOrdersSegment(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
+    $actionSelectElement = '[data-automation-id="select-segment-action"]';
+    $numberOfOrdersTypeElement = '[id="select-number-of-orders-type"]';
+    $numberOfOrdersCountElement = '[id="input-number-of-orders-count"]';
+    $numberOfOrdersDaysElement = '[id="input-number-of-orders-days"]';
+
+    $i->wantTo('Create a new WooCommerce Number of Orders segment');
+    $segmentTitle = 'Segment Woo Number of Orders Test';
+    $segmentDesc = 'Segment description';
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->click('[data-automation-id="new-segment"]');
+    $i->fillField(['name' => 'name'], $segmentTitle);
+    $i->fillField(['name' => 'description'], $segmentDesc);
+    $i->selectOptionInReactSelect('# of orders', $actionSelectElement);
+    $i->waitForElement($numberOfOrdersTypeElement);
+    $i->selectOptionInReactSelect('>', $numberOfOrdersTypeElement);
+    $i->fillField($numberOfOrdersCountElement, 2);
+    $i->fillField($numberOfOrdersDaysElement, 10);
+
+    $i->click('Save');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle);
+
+    $i->wantTo('Open edit form and check that all values were saved correctly');
+    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->waitForElement($numberOfOrdersTypeElement);
+    $i->seeInField(['name' => 'name'], $segmentTitle);
+    $i->seeInField(['name' => 'description'], $segmentDesc);
+    $i->see('# of orders', $actionSelectElement);
+    $i->see('more than', $numberOfOrdersTypeElement);
+    $i->seeInField($numberOfOrdersCountElement, '2');
+    $i->seeInField($numberOfOrdersDaysElement, '10');
+
+    $i->wantTo('Edit segment and save');
+    $editedTitle = 'Segment Woo Number of Orders Test Edited';
+    $editedDesc = 'Segment description Edited';
+    $i->fillField(['name' => 'name'], $editedTitle);
+    $i->fillField(['name' => 'description'], $editedDesc);
+    $i->selectOptionInReactSelect('=', $numberOfOrdersTypeElement);
+    $i->fillField($numberOfOrdersCountElement, 4);
+    $i->fillField($numberOfOrdersDaysElement, 20);
+    $i->click('Save');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle);
+
+    $i->wantTo('Open edit form and check that all values were saved correctly');
+    $i->clickItemRowActionByItemName($editedTitle, 'Edit');
+    $i->waitForElement($numberOfOrdersTypeElement);
+    $i->seeInField(['name' => 'name'], $editedTitle);
+    $i->seeInField(['name' => 'description'], $editedDesc);
+    $i->see('# of orders', $actionSelectElement);
+    $i->see('equal', $numberOfOrdersTypeElement);
+    $i->seeInField($numberOfOrdersCountElement, '4');
+    $i->seeInField($numberOfOrdersDaysElement, '20');
+  }
 }
