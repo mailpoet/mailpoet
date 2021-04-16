@@ -29,9 +29,11 @@ class GithubClient {
       throw new \Exception("Release $tag not found");
     }
     $assetDownloadUrl = null;
+    $assetDownloadInfo = null;
     foreach ($release['assets'] as $asset) {
       if ($asset['name'] === $zip) {
         $assetDownloadUrl = $asset['url'];
+        $assetDownloadInfo = $asset['browser_download_url'];
       }
     }
     if (!$assetDownloadUrl) {
@@ -41,6 +43,7 @@ class GithubClient {
       mkdir($downloadDir, 0777, true);
     }
     $this->httpClient->get($assetDownloadUrl, ['sink' => $downloadDir . $zip, 'headers' => ['Accept' => 'application/octet-stream']]);
+    file_put_contents($downloadDir . '/' . $zip . '-info', $assetDownloadInfo);
   }
 
   private function getRelease($tag = null) {
