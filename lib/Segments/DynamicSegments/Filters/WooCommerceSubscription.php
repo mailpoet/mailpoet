@@ -27,11 +27,13 @@ class WooCommerceSubscription implements Filter {
       $wpdb->postmeta,
       'postmeta',
       "postmeta.meta_key = '_customer_user' AND $subscribersTable.wp_user_id=postmeta.meta_value"
-    )->innerJoin('postmeta',
+    )->innerJoin(
+      'postmeta',
       $wpdb->posts,
         'posts',
         'postmeta.post_id = posts.id AND posts.post_type = "shop_subscription" AND posts.post_status = "wc-active"'
-    )->innerJoin('postmeta',
+    )->innerJoin(
+      'postmeta',
       $wpdb->prefix . 'woocommerce_order_items',
       'items',
       'postmeta.post_id = items.order_id'
