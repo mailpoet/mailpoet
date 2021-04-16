@@ -5,11 +5,6 @@ $tools = [
   'https://github.com/humbug/php-scoper/releases/download/0.14.0/php-scoper.phar' => 'php-scoper.phar',
   'https://github.com/nette/tracy/releases/download/v2.7.2/tracy.phar' => 'tracy.phar',
 ];
-
-$repositories = [
-  'woocommerce.zip' => 'woocommerce/woocommerce',
-];
-
 // ensure installation in dev-mode only
 $isDevMode = (bool)getenv('COMPOSER_DEV_MODE');
 if (!$isDevMode) {
@@ -46,30 +41,4 @@ foreach ($tools as $url => $path) {
   $pharInfoPath = "$pharPath.info";
 
   downloadFile($url, $pharPath, $pharInfoPath);
-}
-
-$curl = curl_init();
-foreach ($repositories as $filename => $repository) {
-  curl_setopt_array($curl, [
-    CURLOPT_URL => "https://api.github.com/repos/{$repository}/releases/latest",
-    CURLOPT_HTTPGET => true,
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_HTTPHEADER => [
-      'User-Agent: Awesome-Octocat-App',
-      'Content-Type: application/json',
-      'Accept: application/json',
-    ],
-  ]);
-
-  $result = curl_exec($curl);
-  curl_close($curl);
-
-  $result = json_decode($result, true);
-  $assets = reset($result['assets']);
-  $fileUrl = $assets['browser_download_url'];
-
-  $zipPath = "$vendorDir/$filename";
-  $zipInfoPath = "$zipPath.info";
-
-  downloadFile($fileUrl, $zipPath, $zipInfoPath);
 }
