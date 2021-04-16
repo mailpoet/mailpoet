@@ -55,6 +55,10 @@ export interface EmailFormItem extends FormItem {
   days?: string;
 }
 
-export type AnyFormItem = WordpressRoleFormItem | WooCommerceFormItem | EmailFormItem;
+export type AnyFormItem =
+  WordpressRoleFormItem |
+  WooCommerceFormItem |
+  WooCommerceSubscriptionFormItem |
+  EmailFormItem;
 
 export type OnFilterChange = (value: AnyFormItem) => void;
