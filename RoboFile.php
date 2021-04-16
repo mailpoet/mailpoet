@@ -903,12 +903,12 @@ class RoboFile extends \Robo\Tasks {
       exit(0); // Exit with 0 since it is a valid state for some environments
     }
     $this->createGithubClient('woocommerce/woocommerce-subscriptions')
-      ->downloadReleaseZip('woocommerce-subscriptions.zip', __DIR__ . '/tools/vendor/', $tag);
+      ->downloadReleaseZip('woocommerce-subscriptions.zip', __DIR__ . '/tests/plugins/', $tag);
   }
 
   public function downloadWooCommerceZip($tag = null) {
     $this->createGithubClient('woocommerce/woocommerce')
-      ->downloadReleaseZip('woocommerce.zip', __DIR__ . '/tools/vendor/', $tag);
+      ->downloadReleaseZip('woocommerce.zip', __DIR__ . '/tests/plugins/', $tag);
   }
 
   public function generateData($generatorName = null) {

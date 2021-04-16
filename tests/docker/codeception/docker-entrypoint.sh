@@ -54,7 +54,7 @@ fi
 # Install WooCommerce
 if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
   cd /wp-core/wp-content/plugins
-  WOOCOMMERCE_CORE_ZIP="/wp-core/wp-content/plugins/mailpoet/tools/vendor/woocommerce.zip"
+  WOOCOMMERCE_CORE_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woocommerce.zip"
   if [ ! -f "$WOOCOMMERCE_CORE_ZIP" ]; then
     echo "WooCommerce plugin zip not found. Downloading WooCommerce plugin latest zip"
     cd /project
@@ -68,7 +68,7 @@ fi
 
 # Install WooCommerce Subscriptions
 if [[ ! -d "/wp-core/wp-content/plugins/woocommerce-subscriptions" ]]; then
-  WOOCOMMERCE_SUBS_ZIP="/wp-core/wp-content/plugins/mailpoet/tools/vendor/woocommerce-subscriptions.zip"
+  WOOCOMMERCE_SUBS_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woocommerce-subscriptions.zip"
   if [ ! -f "$WOOCOMMERCE_SUBS_ZIP" ]; then
     echo "WooCommerce Subscriptions plugin zip not found. Downloading WooCommerce Subscription plugin latest zip"
     cd /project

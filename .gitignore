@@ -7,6 +7,7 @@ TODO
 /vendor-prefixed-backup
 tests/_output/*
 tests/_support/_generated/*
+tests/plugins
 node_modules
 .env
 npm-debug.log
