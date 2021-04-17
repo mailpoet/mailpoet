@@ -9,6 +9,7 @@ export type Props = ReactSelectProps & {
   dimension?: 'small';
   isFullWidth?: boolean;
   iconStart?: JSX.Element;
+  automationId?: string;
 };
 
 type LabelRenderer = {
@@ -101,6 +102,7 @@ const ReactSelect = ({
   dimension,
   isFullWidth,
   iconStart,
+  automationId,
   ...props
 }: Props) => (
   <div
@@ -115,6 +117,7 @@ const ReactSelect = ({
         }
       )
     }
+    data-automation-id={automationId}
   >
     {iconStart}
     <Select
