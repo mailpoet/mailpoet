@@ -201,26 +201,24 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
               </div>
             </div>
           </div>
-          <div className="mailpoet-form-field-filters form-field-row-filters">
+          <div>
             <h4 className="mailpoet-h4">
               <label htmlFor="field_filters">{MailPoet.I18n.t('formPageTitle')}</label>
             </h4>
-            <div className="mailpoet-form-field">
-              <div className="mailpoet-form-input mailpoet-form-select" data-automation-id="select-segment-action">
-                <Select
-                  placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
-                  options={segmentFilters}
-                  value={segmentType}
-                  onChange={(newValue: FilterValue): void => {
-                    setItem(assign(item, {
-                      segmentType: newValue.group,
-                      action: newValue.value,
-                    }));
-                    setSegmentType(newValue);
-                  }}
-                />
-              </div>
-            </div>
+            <Select
+              placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
+              options={segmentFilters}
+              value={segmentType}
+              onChange={(newValue: FilterValue): void => {
+                setItem(assign(item, {
+                  segmentType: newValue.group,
+                  action: newValue.value,
+                }));
+                setSegmentType(newValue);
+              }}
+              automationId="select-segment-action"
+              isFullWidth
+            />
             {segmentType !== undefined && (
               <FormFilterFields
                 segmentType={segmentType}

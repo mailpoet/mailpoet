@@ -56,35 +56,31 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
 
   if (item.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
     return (
-      <div className="mailpoet-form-field">
-        <div className="mailpoet-form-input mailpoet-form-select" data-automation-id="select-segment-product">
-          <Select
-            placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
-            options={productOptions}
-            value={find(['value', item.product_id], productOptions)}
-            onChange={(option: SelectOption): void => compose([
-              onChange,
-              assign(item),
-            ])({ product_id: option.value })}
-          />
-        </div>
-      </div>
+      <Select
+        isFullWidth
+        placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
+        options={productOptions}
+        value={find(['value', item.product_id], productOptions)}
+        onChange={(option: SelectOption): void => compose([
+          onChange,
+          assign(item),
+        ])({ product_id: option.value })}
+        automationId="select-segment-product"
+      />
     );
   }
 
   return (
-    <div className="mailpoet-form-field">
-      <div className="mailpoet-form-input mailpoet-form-select" data-automation-id="select-segment-category">
-        <Select
-          placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
-          options={categoryOptions}
-          value={find(['value', item.category_id], categoryOptions)}
-          onChange={(option: SelectOption): void => compose([
-            onChange,
-            assign(item),
-          ])({ category_id: option.value })}
-        />
-      </div>
-    </div>
+    <Select
+      isFullWidth
+      placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
+      options={categoryOptions}
+      value={find(['value', item.category_id], categoryOptions)}
+      onChange={(option: SelectOption): void => compose([
+        onChange,
+        assign(item),
+      ])({ category_id: option.value })}
+      automationId="select-segment-category"
+    />
   );
 };

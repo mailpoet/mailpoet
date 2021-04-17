@@ -103,36 +103,31 @@ export const EmailFields: React.FunctionComponent<Props> = ({ onChange, item }) 
         <APIErrorsNotice errors={errors} />
       ))}
 
-      <div className="mailpoet-form-field">
-        <div className="mailpoet-form-input mailpoet-form-select" data-automation-id="segment-email">
-          <Select
-            placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
-            options={newsletterOptions}
-            value={find(['value', item.newsletter_id], newsletterOptions)}
-            onChange={(option: SelectOption): void => compose([
-              onChange,
-              assign(item),
-            ])({ newsletter_id: option.value })}
-          />
-        </div>
-      </div>
+      <Select
+        isFullWidth
+        placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
+        options={newsletterOptions}
+        value={find(['value', item.newsletter_id], newsletterOptions)}
+        onChange={(option: SelectOption): void => compose([
+          onChange,
+          assign(item),
+        ])({ newsletter_id: option.value })}
+        automationId="segment-email"
+      />
       {(loadingLinks && (MailPoet.I18n.t('loadingDynamicSegmentItems')))}
       {
         (!!links.length && shouldDisplayLinks(item.action, item.newsletter_id))
         && (
-          <div className="mailpoet-form-field">
-            <div className="mailpoet-form-input mailpoet-form-select">
-              <Select
-                placeholder={MailPoet.I18n.t('selectLinkPlaceholder')}
-                options={links}
-                value={find(['value', item.link_id], links)}
-                onChange={(option: SelectOption): void => compose([
-                  onChange,
-                  assign(item),
-                ])({ link_id: option.value })}
-              />
-            </div>
-          </div>
+          <Select
+            isFullWidth
+            placeholder={MailPoet.I18n.t('selectLinkPlaceholder')}
+            options={links}
+            value={find(['value', item.link_id], links)}
+            onChange={(option: SelectOption): void => compose([
+              onChange,
+              assign(item),
+            ])({ link_id: option.value })}
+          />
         )
       }
     </>

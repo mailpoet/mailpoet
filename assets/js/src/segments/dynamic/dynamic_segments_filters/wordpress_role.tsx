@@ -32,18 +32,16 @@ export const WordpressRoleFields: React.FunctionComponent<Props> = ({ onChange, 
   }));
 
   return (
-    <div className="mailpoet-form-field">
-      <div className="mailpoet-form-input mailpoet-form-select" data-automation-id="segment-wordpress-role">
-        <Select
-          placeholder={MailPoet.I18n.t('selectUserRolePlaceholder')}
-          options={options}
-          value={find(['value', item.wordpressRole], options)}
-          onChange={(option: SelectOption): void => compose([
-            onChange,
-            assign(item),
-          ])({ wordpressRole: option.value })}
-        />
-      </div>
-    </div>
+    <Select
+      isFullWidth
+      placeholder={MailPoet.I18n.t('selectUserRolePlaceholder')}
+      options={options}
+      value={find(['value', item.wordpressRole], options)}
+      onChange={(option: SelectOption): void => compose([
+        onChange,
+        assign(item),
+      ])({ wordpressRole: option.value })}
+      automationId="segment-wordpress-role"
+    />
   );
 };
