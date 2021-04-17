@@ -10,7 +10,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isFullWidth?: boolean;
   iconStart?: JSX.Element;
   iconEnd?: JSX.Element;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
   href?: string;
   rel?: string;
   type?: 'button' | 'submit' | 'reset';
