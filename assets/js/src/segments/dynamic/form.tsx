@@ -9,9 +9,12 @@ import { useRouteMatch, Link, useHistory } from 'react-router-dom';
 
 import MailPoet from 'mailpoet';
 import Background from 'common/background/background';
+import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
+import Input from 'common/form/input/input';
 import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 import Select from 'common/form/react_select/react_select';
+import Textarea from 'common/form/textarea/textarea';
 import { EmailSegmentOptions } from './dynamic_segments_filters/email';
 import { WooCommerceOptions } from './dynamic_segments_filters/woocommerce';
 import { WordpressRoleSegmentOptions } from './dynamic_segments_filters/wordpress_role';
@@ -166,17 +169,15 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
               </label>
             </Heading>
             <div className="mailpoet-form-field">
-              <div className="regular-text mailpoet-form-input">
-                <input
-                  type="text"
-                  name="name"
-                  id="field_name"
-                  defaultValue={item.name}
-                  onChange={
-                    (e): void => setItem(assign(item, { name: e.target.value }))
-                  }
-                />
-              </div>
+              <Input
+                type="text"
+                name="name"
+                id="field_name"
+                defaultValue={item.name}
+                onChange={
+                  (e): void => setItem(assign(item, { name: e.target.value }))
+                }
+              />
             </div>
           </div>
           <div className="mailpoet-form-field-description form-field-row-description">
@@ -189,22 +190,22 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
               {MailPoet.I18n.t('segmentDescriptionTip')}
             </p>
             <div className="mailpoet-form-field">
-              <div className="mailpoet-form-textarea">
-                <textarea
-                  name="description"
-                  id="field_description"
-                  defaultValue={item.description}
-                  onChange={
-                    (e): void => setItem(assign(item, { description: e.target.value }))
-                  }
-                />
-              </div>
+              <Textarea
+                name="description"
+                id="field_description"
+                defaultValue={item.description}
+                onChange={
+                  (e): void => setItem(assign(item, { description: e.target.value }))
+                }
+              />
             </div>
           </div>
           <div>
-            <h4 className="mailpoet-h4">
-              <label htmlFor="field_filters">{MailPoet.I18n.t('formPageTitle')}</label>
-            </h4>
+            <Heading level={4}>
+              <label htmlFor="field_filters">
+                {MailPoet.I18n.t('formPageTitle')}
+              </label>
+            </Heading>
             <Select
               placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
               options={segmentFilters}
@@ -229,11 +230,9 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
           </div>
           <SubscribersCounter item={item} />
           <div className="mailpoet-form-actions">
-            <button type="submit" className="mailpoet-button" onClick={handleSave}>
-              <span>
-                {MailPoet.I18n.t('save')}
-              </span>
-            </button>
+            <Button type="submit" onClick={handleSave}>
+              {MailPoet.I18n.t('save')}
+            </Button>
           </div>
         </div>
       </form>
