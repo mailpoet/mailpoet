@@ -216,6 +216,8 @@ class Migrator {
       'count_confirmations int(11) unsigned NOT NULL DEFAULT 0,',
       'unsubscribe_token char(15) NULL,',
       'link_token char(32) NULL,',
+      'engagement_score tinyint unsigned NULL,',
+      'engagement_score_updated_at timestamp NULL,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email),',
       'UNIQUE KEY unsubscribe_token (unsubscribe_token),',

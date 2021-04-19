@@ -125,6 +125,17 @@ class SubscriberEntity {
    */
   private $linkToken;
 
+  /**
+   * @ORM\Column(type="integer")
+   * @var int|null
+   */
+  private $engagementScore;
+
+  /**
+   * @ORM\Column(type="datetimetz", nullable=true)
+   * @var DateTimeInterface|null
+   */
+  private $engagementScoreUpdatedAt;
 
   /**
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\SubscriberSegmentEntity", mappedBy="subscriber")
@@ -396,5 +407,33 @@ class SubscriberEntity {
     })->filter(function ($segment) {
       return $segment !== null;
     });
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getEngagementScore(): ?int {
+    return $this->engagementScore;
+  }
+
+  /**
+   * @param int|null $engagementScore
+   */
+  public function setEngagementScore(?int $engagementScore): void {
+    $this->engagementScore = $engagementScore;
+  }
+
+  /**
+   * @return DateTimeInterface|null
+   */
+  public function getEngagementScoreUpdatedAt(): ?DateTimeInterface {
+    return $this->engagementScoreUpdatedAt;
+  }
+
+  /**
+   * @param DateTimeInterface|null $engagementScoreUpdatedAt
+   */
+  public function setEngagementScoreUpdatedAt(?DateTimeInterface $engagementScoreUpdatedAt): void {
+    $this->engagementScoreUpdatedAt = $engagementScoreUpdatedAt;
   }
 }
