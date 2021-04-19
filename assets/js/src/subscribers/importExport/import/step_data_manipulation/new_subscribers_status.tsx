@@ -1,6 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import Select from 'common/form/select/select';
+import ReactStringReplace from 'react-string-replace';
 
 interface Props {
   newSubscribersStatus: string;
@@ -19,6 +20,23 @@ export const NewSubscribersStatus: React.FunctionComponent<Props> = ({
     <>
       <div className="mailpoet-settings-label">
         <label htmlFor="new_subscribers_status">{MailPoet.I18n.t('newSubscribersStatus')}</label>
+        <p className="description">
+          {ReactStringReplace(
+            MailPoet.I18n.t('consentSubscribed'),
+            /\[link](.*?)\[\/link]/,
+            (match) => (
+              <a
+                className="mailpoet-link"
+                href="https://kb.mailpoet.com/article/357-why-express-consent-is-important"
+                key="kb-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                { match }
+              </a>
+            )
+          )}
+        </p>
       </div>
       <div className="mailpoet-settings-inputs">
         <Select
