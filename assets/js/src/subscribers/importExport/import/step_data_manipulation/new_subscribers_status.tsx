@@ -1,10 +1,17 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import PropTypes from 'prop-types';
 import Select from 'common/form/select/select';
 
-function NewSubscribersStatus({ newSubscribersStatus, setNewSubscribersStatus }) {
-  function handleChange(event) {
+interface Props {
+  newSubscribersStatus: string;
+  setNewSubscribersStatus: (string) => void;
+}
+
+export const NewSubscribersStatus: React.FunctionComponent<Props> = ({
+  newSubscribersStatus,
+  setNewSubscribersStatus,
+}) => {
+  function handleChange(event): void {
     setNewSubscribersStatus(event.target.value);
   }
 
@@ -28,11 +35,4 @@ function NewSubscribersStatus({ newSubscribersStatus, setNewSubscribersStatus })
       </div>
     </>
   );
-}
-
-NewSubscribersStatus.propTypes = {
-  newSubscribersStatus: PropTypes.string.isRequired,
-  setNewSubscribersStatus: PropTypes.func.isRequired,
 };
-
-export default NewSubscribersStatus;
