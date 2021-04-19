@@ -6,7 +6,7 @@ import Warnings from './step_data_manipulation/warnings.jsx';
 import MatchTable from './step_data_manipulation/match_table.jsx';
 import SelectSegment from './step_data_manipulation/select_segment.jsx';
 import { NewSubscribersStatus } from './step_data_manipulation/new_subscribers_status';
-import ExistingSubscribersStatus from './step_data_manipulation/existing_subscribers_status.jsx';
+import { ExistingSubscribersStatus } from './step_data_manipulation/existing_subscribers_status';
 import UpdateExistingSubscribers from './step_data_manipulation/update_existing_subscribers.jsx';
 import doImport from './step_data_manipulation/do_import.jsx';
 
