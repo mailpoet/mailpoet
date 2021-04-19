@@ -2,6 +2,8 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import Select from 'common/form/select/select';
 
+import { ConsentDescription } from './consent_description';
+
 interface Props {
   existingSubscribersStatus: string;
   setExistingSubscribersStatus: (string) => void;
@@ -21,6 +23,7 @@ export const ExistingSubscribersStatus: React.FunctionComponent<Props> = ({
         <label htmlFor="existing_subscribers_status">
           {MailPoet.I18n.t('existingSubscribersStatus')}
         </label>
+        <ConsentDescription />
       </div>
       <div className="mailpoet-settings-inputs">
         <Select
