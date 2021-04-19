@@ -50,6 +50,46 @@ NoAction.defaultProps = {
   updatedSubscribers: 0,
 };
 
+function SuppressionListReminder({ createdSubscribers, updatedSubscribers }) {
+  if (createdSubscribers || updatedSubscribers) {
+    return (
+      <>
+        <p>
+          <b>{MailPoet.I18n.t('congratulationResult')}</b>
+        </p>
+        <p>
+          {ReactStringReplace(
+            MailPoet.I18n.t('suppressionListReminder'),
+            /\[link](.*?)\[\/link]/,
+            (match) => (
+              <a
+                className="mailpoet-link"
+                href="https://kb.mailpoet.com/article/359-how-to-import-a-suppression-list"
+                key="kb-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                { match }
+              </a>
+            )
+          )}
+        </p>
+      </>
+    );
+  }
+  return null;
+}
+
+SuppressionListReminder.propTypes = {
+  createdSubscribers: PropTypes.number,
+  updatedSubscribers: PropTypes.number,
+};
+
+SuppressionListReminder.defaultProps = {
+  createdSubscribers: 0,
+  updatedSubscribers: 0,
+};
+
 function NoWelcomeEmail({ addedToSegmentWithWelcomeNotification }) {
   if (addedToSegmentWithWelcomeNotification) {
     return (<p>{MailPoet.I18n.t('importNoWelcomeEmail')}</p>);
@@ -117,6 +157,10 @@ function StepResults({
           addedToSegmentWithWelcomeNotification={addedToSegmentWithWelcomeNotification}
         />
       </div>
+      <SuppressionListReminder
+        createdSubscribers={createdSubscribers}
+        updatedSubscribers={updatedSubscribers}
+      />
       <div className="mailpoet-settings-grid">
         <div className="mailpoet-settings-save">
           <Button
