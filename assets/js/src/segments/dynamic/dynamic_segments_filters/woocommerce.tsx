@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import MailPoet from 'mailpoet';
 import { assign, compose, find } from 'lodash/fp';
-import Select from 'common/form/react_select/react_select';
+import ReactSelect from 'common/form/react_select/react_select';
+import Select from 'common/form/select/select';
 
 import { Grid } from 'common/grid';
 import Input from 'common/form/input/input';
@@ -61,12 +62,6 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
     label: product.name,
   }));
 
-  const numberOfOrdersTypeOptions = [
-    { value: '=', label: MailPoet.I18n.t('wooNumberOfOrdersEqual') },
-    { value: '>', label: MailPoet.I18n.t('wooNumberOfOrdersMoreThan') },
-    { value: '<', label: MailPoet.I18n.t('wooNumberOfOrdersLessThan') },
-  ];
-
   let optionFields;
 
   useEffect(() => {
@@ -80,7 +75,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
 
   if (item.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
     optionFields = (
-      <Select
+      <ReactSelect
         isFullWidth
         placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
         options={productOptions}
@@ -94,7 +89,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
     );
   } else if (item.action === WooCommerceActionTypes.PURCHASED_CATEGORY) {
     optionFields = (
-      <Select
+      <ReactSelect
         isFullWidth
         placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
         options={categoryOptions}
@@ -110,16 +105,19 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
     optionFields = (
       <div>
         <Grid.CenteredRow className="mailpoet-form-field">
-          <div data-automation-id="select-number-of-orders-type">
-            <Select
-              options={numberOfOrdersTypeOptions}
-              value={find(['value', item.number_of_orders_type], numberOfOrdersTypeOptions)}
-              onChange={(option: SelectOption): void => compose([
-                onChange,
-                assign(item),
-              ])({ number_of_orders_type: option.value })}
-            />
-          </div>
+          <Select
+            key="select"
+            value={item.number_of_orders_type}
+            onChange={(e): void => compose([
+              onChange,
+              assign(item),
+            ])({ number_of_orders_type: e.target.value })}
+            automationId="select-number-of-orders-type"
+          >
+            <option value="=">{MailPoet.I18n.t('wooNumberOfOrdersEqual')}</option>
+            <option value=">">{MailPoet.I18n.t('wooNumberOfOrdersMoreThan')}</option>
+            <option value="<">{MailPoet.I18n.t('wooNumberOfOrdersLessThan')}</option>
+          </Select>
           <Input
             data-automation-id="input-number-of-orders-count"
             type="number"

@@ -431,7 +431,7 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('# of orders', $actionSelectElement);
     $i->waitForElement($numberOfOrdersTypeElement);
-    $i->selectOptionInReactSelect('>', $numberOfOrdersTypeElement);
+    $i->selectOption($numberOfOrdersTypeElement, '>');
     $i->fillField($numberOfOrdersCountElement, 2);
     $i->fillField($numberOfOrdersDaysElement, 10);
 
@@ -454,7 +454,7 @@ class ManageSegmentsCest {
     $editedDesc = 'Segment description Edited';
     $i->fillField(['name' => 'name'], $editedTitle);
     $i->fillField(['name' => 'description'], $editedDesc);
-    $i->selectOptionInReactSelect('=', $numberOfOrdersTypeElement);
+    $i->selectOption($numberOfOrdersTypeElement, '=');
     $i->fillField($numberOfOrdersCountElement, 4);
     $i->fillField($numberOfOrdersDaysElement, 20);
     $i->click('Save');
