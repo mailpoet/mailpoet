@@ -29,6 +29,9 @@ const allowedItemKeys: string[] = [
   'number_of_orders_type',
   'number_of_orders_count',
   'number_of_orders_days',
+  'total_spent_type',
+  'total_spent_amount',
+  'total_spent_days',
 ];
 
 function loadCount(formItem: AnyFormItem): Promise<Result | void> {

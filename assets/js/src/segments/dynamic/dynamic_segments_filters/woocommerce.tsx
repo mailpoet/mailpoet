@@ -18,12 +18,14 @@ export const WooCommerceOptions = [
   { value: 'numberOfOrders', label: MailPoet.I18n.t('wooNumberOfOrders'), group: SegmentTypes.WooCommerce },
   { value: 'purchasedCategory', label: MailPoet.I18n.t('wooPurchasedCategory'), group: SegmentTypes.WooCommerce },
   { value: 'purchasedProduct', label: MailPoet.I18n.t('wooPurchasedProduct'), group: SegmentTypes.WooCommerce },
+  { value: 'totalSpent', label: MailPoet.I18n.t('wooTotalSpent'), group: SegmentTypes.WooCommerce },
 ];
 
 enum WooCommerceActionTypes {
   NUMBER_OF_ORDERS = 'numberOfOrders',
   PURCHASED_CATEGORY = 'purchasedCategory',
   PURCHASED_PRODUCT = 'purchasedProduct',
+  TOTAL_SPENT = 'totalSpent',
 }
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
@@ -41,6 +43,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
     return false;
   }
   if (formItems.action === 'numberOfOrders' && (!formItems.number_of_orders_count || !formItems.number_of_orders_days || !formItems.number_of_orders_type)) {
+    return false;
+  }
+  if (formItems.action === 'totalSpent' && (!formItems.total_spent_amount || !formItems.total_spent_days || !formItems.total_spent_type)) {
     return false;
   }
   return true;
@@ -70,6 +75,12 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
       && item.action === WooCommerceActionTypes.NUMBER_OF_ORDERS
     ) {
       onChange(assign(item, { number_of_orders_type: '=' }));
+    }
+    if (
+      item.total_spent_type === undefined
+      && item.action === WooCommerceActionTypes.TOTAL_SPENT
+    ) {
+      onChange(assign(item, { total_spent_type: '>' }));
     }
   }, [onChange, item]);
 
@@ -147,6 +158,54 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
             ])({ number_of_orders_days: event.target.value })}
           />
           <div>{MailPoet.I18n.t('wooNumberOfOrdersDays')}</div>
+        </Grid.CenteredRow>
+      </div>
+    );
+  } else if (item.action === WooCommerceActionTypes.TOTAL_SPENT) {
+    optionFields = (
+      <div>
+        <div className="mailpoet-gap" />
+        <Grid.CenteredRow className="mailpoet-form-field">
+          <Select
+            key="select"
+            value={item.total_spent_type}
+            onChange={(e): void => compose([
+              onChange,
+              assign(item),
+            ])({ total_spent_type: e.target.value })}
+            automationId="select-total-spent-type"
+          >
+            <option value=">">{MailPoet.I18n.t('wooTotalSpentMoreThan')}</option>
+            <option value="<">{MailPoet.I18n.t('wooTotalSpentLessThan')}</option>
+          </Select>
+          <Input
+            data-automation-id="input-total-spent-amount"
+            type="number"
+            min={0}
+            value={item.total_spent_amount || ''}
+            placeholder={MailPoet.I18n.t('wooTotalSpentAmount')}
+            onChange={(event): void => compose([
+              onChange,
+              assign(item),
+            ])({ total_spent_amount: event.target.value })}
+          />
+          <div>{MailPoet.I18n.t('wooTotalSpentCurrency')}</div>
+        </Grid.CenteredRow>
+        <div className="mailpoet-gap" />
+        <Grid.CenteredRow className="mailpoet-form-field">
+          <div>{MailPoet.I18n.t('wooTotalSpentInTheLast')}</div>
+          <Input
+            data-automation-id="input-total-spent-days"
+            type="number"
+            min={1}
+            value={item.total_spent_days || ''}
+            placeholder={MailPoet.I18n.t('wooTotalSpentDaysPlaceholder')}
+            onChange={(event): void => compose([
+              onChange,
+              assign(item),
+            ])({ total_spent_days: event.target.value })}
+          />
+          <div>{MailPoet.I18n.t('wooTotalSpentDays')}</div>
         </Grid.CenteredRow>
       </div>
     );
