@@ -1,29 +1,38 @@
 .mailpoet-button {
   align-items: center;
-  background: $color-secondary;
-  border: 0;
-  border-radius: 4px;
+  background: $color-primary;
+  border: 1px solid $color-primary;
+  border-radius: 2px;
   box-sizing: border-box;
   color: #fff;
   cursor: pointer;
   display: inline-flex;
   font-family: inherit;
-  font-size: $font-size;
-  font-weight: bold;
+  font-size: $font-size-button;
+  font-weight: normal;
   justify-content: center;
-  line-height: 24px;
+  line-height: 20px;
   max-width: 100%;
-  min-height: 40px;
-  padding: 9px 20px 7px;
+  min-height: 36px;
+  padding: 8px 12px 6px;
   position: relative;
   text-align: center;
   text-decoration: none;
   vertical-align: top;
 
-  &:hover,
-  &:focus {
-    background: $color-secondary-hover;
+  &:hover {
+    background: $color-primary-hover;
+    border-color: $color-primary-hover;
     color: #fff;
+    text-decoration: none;
+  }
+
+  &:focus {
+    background: $color-primary-hover;
+    border-color: #fff;
+    box-shadow: 0 0 0 1.5px $color-primary-hover;
+    color: #fff;
+    outline: none;
     text-decoration: none;
   }
 
@@ -51,47 +60,41 @@
 }
 
 .mailpoet-button-small {
-  font-size: $font-size-small;
-  line-height: 20px;
-  min-height: 32px;
-  padding: 7px 12px 5px;
+  font-size: $font-size-button-small;
+  line-height: 14px;
+  min-height: 24px;
+  padding: 5px 10px 3px;
 
   svg {
-    height: 12px;
-    width: 12px;
+    height: 10px;
+    width: 10px;
   }
 }
 
 .mailpoet-button-secondary {
-  background: $color-secondary-light;
-  color: $color-secondary;
-
-  &:hover,
-  &:focus {
-    background: $color-secondary-light-hover;
-    color: $color-secondary;
-  }
-
-  &.mailpoet-button-with-spinner:after {
-    background-color: rgba($color-secondary-light, .8);
-  }
+  background: #fff;
+  color: $color-primary;
 }
 
 .mailpoet-button-tertiary {
   background: transparent;
-  color: $color-secondary;
-  font-weight: normal;
-  text-decoration: underline;
+  border-color: transparent;
+  color: $color-primary;
+}
 
-  &:hover,
-  &:focus {
-    background: transparent;
-    color: $color-secondary-hover;
-    text-decoration: none;
+.mailpoet-button-secondary,
+.mailpoet-button-tertiary {
+  &:hover {
+    background: #fff;
+    border-color: $color-primary-hover;
+    color: $color-primary-hover;
   }
 
-  &.mailpoet-button-with-spinner:after {
-    background-color: rgba(#fff, .8);
+  &:focus {
+    background: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 0 1.5px $color-primary-hover;
+    color: $color-primary-hover;
   }
 }
 
@@ -100,7 +103,7 @@
   touch-action: none;
 
   &:after {
-    background: rgba($color-secondary, .8) no-repeat center;
+    background: rgba($color-primary, .8) no-repeat center;
     background-size: 24px 24px;
     border-radius: 4px;
     content: '';
@@ -109,5 +112,10 @@
     position: absolute;
     top: 0;
     width: 100%;
+  }
+
+  &.mailpoet-button-secondary:after,
+  &.mailpoet-button-tertiary:after {
+    background-color: rgba(#fff, .8);
   }
 }
