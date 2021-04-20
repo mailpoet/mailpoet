@@ -182,6 +182,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
             data-automation-id="input-total-spent-amount"
             type="number"
             min={0}
+            step={0.01}
             value={item.total_spent_amount || ''}
             placeholder={MailPoet.I18n.t('wooTotalSpentAmount')}
             onChange={(event): void => compose([
@@ -189,7 +190,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
               assign(item),
             ])({ total_spent_amount: event.target.value })}
           />
-          <div>{MailPoet.I18n.t('wooTotalSpentCurrency')}</div>
+          <div>{SegmentFormData.wooCurrencySymbol}</div>
         </Grid.CenteredRow>
         <div className="mailpoet-gap" />
         <Grid.CenteredRow className="mailpoet-form-field">

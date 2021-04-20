@@ -26,6 +26,7 @@ interface SegmentFormDataWindow extends Window {
   }[];
 
   mailpoet_can_use_woocommerce_subscriptions: boolean;
+  mailpoet_woocommerce_currency_symbol: string;
 }
 
 declare let window: SegmentFormDataWindow;
@@ -37,4 +38,5 @@ export const SegmentFormData = {
   newslettersList: window.mailpoet_newsletters_list,
   wordpressRoles: window.wordpress_editable_roles_list,
   canUseWooSubscriptions: window.mailpoet_can_use_woocommerce_subscriptions,
+  wooCurrencySymbol: window.mailpoet_woocommerce_currency_symbol,
 };
