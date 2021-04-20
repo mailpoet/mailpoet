@@ -57,31 +57,6 @@ export const WithoutIcons = () => (
     </p>
     <br />
 
-    <Heading level={3}>Large buttons</Heading>
-    <p>
-      <Button
-        onClick={action('light large')}
-        dimension="large"
-        variant="light"
-      >
-        Light button
-      </Button>
-      <Button
-        onClick={action('regular large')}
-        dimension="large"
-      >
-        Regular button
-      </Button>
-      <Button
-        onClick={action('link large')}
-        dimension="large"
-        variant="link"
-      >
-        Link button
-      </Button>
-    </p>
-    <br />
-
     <Heading level={3}>Disabled buttons</Heading>
     <p>
       <Button
