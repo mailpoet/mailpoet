@@ -157,7 +157,7 @@ function StepResults({
       <div className="mailpoet-settings-grid">
         <div className="mailpoet-settings-save">
           <Button
-            variant="light"
+            variant="secondary"
             type="button"
             onClick={() => history.push('step_method_selection')}
           >

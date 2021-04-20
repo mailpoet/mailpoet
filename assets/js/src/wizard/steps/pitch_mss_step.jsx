@@ -34,7 +34,7 @@ export const Controls = (props) => (
     </Button>
     <Button
       isFullWidth
-      variant="link"
+      variant="tertiary"
       onClick={props.next}
       onKeyDown={(event) => {
         if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))

@@ -67,7 +67,7 @@ const WelcomeWizardSenderStep = (props) => (
         isDisabled={props.loading}
         isFullWidth
         onClick={props.finish}
-        variant="link"
+        variant="tertiary"
       >
         {MailPoet.I18n.t('finishLater')}
       </Button>

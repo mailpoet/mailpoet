@@ -121,7 +121,7 @@ const createModal = (submitModal, closeModal, field, title) => (
     <Button
       onClick={submitModal}
       dimension="small"
-      variant="light"
+      variant="secondary"
     >
       {MailPoet.I18n.t('apply')}
     </Button>
@@ -252,7 +252,7 @@ const bulkActions = [
           <Button
             onClick={submitModal}
             dimension="small"
-            variant="light"
+            variant="secondary"
             automationId="bulk-unsubscribe-confirm"
           >
             {MailPoet.I18n.t('apply')}

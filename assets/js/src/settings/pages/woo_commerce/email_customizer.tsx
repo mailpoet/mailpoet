@@ -28,7 +28,7 @@ export default function EmailCustomizer() {
           <Button
             type="button"
             onClick={openEditor}
-            variant="light"
+            variant="secondary"
             dimension="small"
           >
             {t('openTemplateEditor')}

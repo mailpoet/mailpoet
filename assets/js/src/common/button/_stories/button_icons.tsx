@@ -16,7 +16,7 @@ export const WithIcons = () => (
       <Button
         onClick={action('only icon small')}
         dimension="small"
-        variant="light"
+        variant="secondary"
         iconStart={icon}
       />
       <Button
@@ -29,7 +29,7 @@ export const WithIcons = () => (
       <Button
         onClick={action('both icons small')}
         dimension="small"
-        variant="light"
+        variant="secondary"
         iconStart={icon}
         iconEnd={icon}
       >
@@ -38,7 +38,7 @@ export const WithIcons = () => (
       <Button
         onClick={action('only icon link small')}
         dimension="small"
-        variant="link"
+        variant="tertiary"
         iconStart={icon}
       />
     </p>
@@ -49,7 +49,7 @@ export const WithIcons = () => (
 
       <Button
         onClick={action('only icon regular')}
-        variant="light"
+        variant="secondary"
         iconStart={icon}
       />
       <Button
@@ -60,7 +60,7 @@ export const WithIcons = () => (
       </Button>
       <Button
         onClick={action('both icons regular')}
-        variant="light"
+        variant="secondary"
         iconStart={icon}
         iconEnd={icon}
       >
@@ -68,7 +68,7 @@ export const WithIcons = () => (
       </Button>
       <Button
         onClick={action('only icon link regular')}
-        variant="link"
+        variant="tertiary"
         iconStart={icon}
       />
     </p>
@@ -79,7 +79,7 @@ export const WithIcons = () => (
       <Button
         onClick={action('only icon disabled')}
         isDisabled
-        variant="light"
+        variant="secondary"
         iconStart={icon}
       />
       <Button
@@ -92,7 +92,7 @@ export const WithIcons = () => (
       <Button
         onClick={action('both icons disabled')}
         isDisabled
-        variant="light"
+        variant="secondary"
         iconStart={icon}
         iconEnd={icon}
       >
@@ -101,7 +101,7 @@ export const WithIcons = () => (
       <Button
         onClick={action('only icon link disabled')}
         isDisabled
-        variant="link"
+        variant="tertiary"
         iconStart={icon}
       />
     </p>
@@ -112,7 +112,7 @@ export const WithIcons = () => (
       <Button
         onClick={action('only icon spinner')}
         withSpinner
-        variant="light"
+        variant="secondary"
         iconStart={icon}
       />
       <Button
@@ -125,7 +125,7 @@ export const WithIcons = () => (
       <Button
         onClick={action('both icons spinner')}
         withSpinner
-        variant="light"
+        variant="secondary"
         iconStart={icon}
         iconEnd={icon}
       >
@@ -134,7 +134,7 @@ export const WithIcons = () => (
       <Button
         onClick={action('only icon link spinner')}
         withSpinner
-        variant="link"
+        variant="tertiary"
         iconStart={icon}
       />
     </p>
@@ -145,7 +145,7 @@ export const WithIcons = () => (
       <Button
         onClick={action('only icon full-width')}
         isFullWidth
-        variant="light"
+        variant="secondary"
         iconStart={icon}
       />
       <Button
@@ -158,7 +158,7 @@ export const WithIcons = () => (
       <Button
         onClick={action('both icons full-width')}
         isFullWidth
-        variant="light"
+        variant="secondary"
         iconStart={icon}
         iconEnd={icon}
       >
@@ -167,7 +167,7 @@ export const WithIcons = () => (
       <Button
         onClick={action('only icon link full-width')}
         isFullWidth
-        variant="link"
+        variant="tertiary"
         iconStart={icon}
       />
     </p>
