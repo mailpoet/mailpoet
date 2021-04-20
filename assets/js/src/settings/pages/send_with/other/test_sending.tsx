@@ -40,7 +40,7 @@ export default function TestSending() {
         <Button
           type="button"
           dimension="small"
-          variant="light"
+          variant="secondary"
           onClick={() => sendTestEmail(email, mailer)}
         >
           {t('sendTestEmail')}

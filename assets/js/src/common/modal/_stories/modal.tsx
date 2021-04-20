@@ -42,7 +42,7 @@ const ModalWrapper = ({
       <Button
         onClick={() => setShowModal(true)}
         dimension="small"
-        variant="light"
+        variant="secondary"
       >
         {buttonCaption}
       </Button>

@@ -15,22 +15,22 @@ export const WithoutIcons = () => (
       <Button
         onClick={action('light small')}
         dimension="small"
-        variant="light"
+        variant="secondary"
       >
-        Light button
+        Secondary button
       </Button>
       <Button
         onClick={action('regular small')}
         dimension="small"
       >
-        Regular button
+        Primary button
       </Button>
       <Button
         onClick={action('link small')}
         dimension="small"
-        variant="link"
+        variant="tertiary"
       >
-        Link button
+        Tertiary button
       </Button>
     </p>
     <br />
@@ -39,20 +39,20 @@ export const WithoutIcons = () => (
     <p>
       <Button
         onClick={action('light regular')}
-        variant="light"
+        variant="secondary"
       >
-        Light button
+        Secondary button
       </Button>
       <Button
         onClick={action('regular regular')}
       >
-        Regular button
+        Primary button
       </Button>
       <Button
         onClick={action('link regular')}
-        variant="link"
+        variant="tertiary"
       >
-        Link button
+        Tertiary button
       </Button>
     </p>
     <br />
@@ -62,22 +62,22 @@ export const WithoutIcons = () => (
       <Button
         onClick={action('light disabled')}
         isDisabled
-        variant="light"
+        variant="secondary"
       >
-        Light button
+        Secondary button
       </Button>
       <Button
         onClick={action('regular disabled')}
         isDisabled
       >
-        Regular button
+        Primary button
       </Button>
       <Button
         onClick={action('link disabled')}
         isDisabled
-        variant="link"
+        variant="tertiary"
       >
-        Link button
+        Tertiary button
       </Button>
     </p>
     <br />
@@ -87,22 +87,22 @@ export const WithoutIcons = () => (
       <Button
         onClick={action('light spinner')}
         withSpinner
-        variant="light"
+        variant="secondary"
       >
-        Light button
+        Secondary button
       </Button>
       <Button
         onClick={action('regular spinner')}
         withSpinner
       >
-        Regular button
+        Primary button
       </Button>
       <Button
         onClick={action('link spinner')}
         withSpinner
-        variant="link"
+        variant="tertiary"
       >
-        Link button
+        Tertiary button
       </Button>
     </p>
     <br />
@@ -112,22 +112,22 @@ export const WithoutIcons = () => (
       <Button
         onClick={action('light full-width ')}
         isFullWidth
-        variant="light"
+        variant="secondary"
       >
-        Light button
+        Secondary button
       </Button>
       <Button
         onClick={action('regular full-width ')}
         isFullWidth
       >
-        Regular button
+        Primary button
       </Button>
       <Button
         onClick={action('link full-width ')}
         isFullWidth
-        variant="link"
+        variant="tertiary"
       >
-        Link button
+        Tertiary button
       </Button>
     </p>
     <br />

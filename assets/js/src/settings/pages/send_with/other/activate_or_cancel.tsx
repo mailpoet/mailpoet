@@ -30,7 +30,7 @@ export default function ActivateOrCancel() {
       </Button>
       <Button
         onClick={cancel}
-        variant="link"
+        variant="tertiary"
       >
         {t('orCancel')}
       </Button>

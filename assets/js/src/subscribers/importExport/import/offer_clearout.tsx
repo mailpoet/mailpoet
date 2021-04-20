@@ -16,7 +16,7 @@ export default ({ onProceed }: Props): JSX.Element => (
         {MailPoet.I18n.t('tryClearout')}
       </Button>
       {onProceed && (
-        <Button onClick={onProceed} variant="link">
+        <Button onClick={onProceed} variant="tertiary">
           {MailPoet.I18n.t('clearoutGotIt')}
         </Button>
       )}

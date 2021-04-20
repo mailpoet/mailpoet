@@ -303,7 +303,7 @@ class NewsletterListNotification extends React.Component {
         to={`/notification/history/${newsletter.id}`}
       >
         <Button className="mailpoet-hide-on-mobile" dimension="extra-small">{ MailPoet.I18n.t('viewHistory') }</Button>
-        <Button className="mailpoet-show-on-mobile mailpoet-listing-notification-status" dimension="small" variant="light">{ MailPoet.I18n.t('viewHistory') }</Button>
+        <Button className="mailpoet-show-on-mobile mailpoet-listing-notification-status" dimension="small" variant="secondary">{ MailPoet.I18n.t('viewHistory') }</Button>
       </Link>
     );
   };

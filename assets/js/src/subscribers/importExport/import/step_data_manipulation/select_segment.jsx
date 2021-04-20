@@ -48,7 +48,7 @@ function SelectSegment({ setSelectedSegments }) {
               <option />
             </select>
           </div>
-          <Button variant="link" onClick={() => createNewSegment(onCreateNewSegment)}>
+          <Button variant="tertiary" onClick={() => createNewSegment(onCreateNewSegment)}>
             {MailPoet.I18n.t('createANewList')}
           </Button>
         </div>

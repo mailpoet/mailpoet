@@ -72,7 +72,7 @@ class ListingFilters extends React.Component {
         <span className="mailpoet-listing-filters-empty-trash">
           <Button
             dimension="small"
-            variant="light"
+            variant="secondary"
             onClick={this.handleEmptyTrash}
             automationId="empty_trash"
           >

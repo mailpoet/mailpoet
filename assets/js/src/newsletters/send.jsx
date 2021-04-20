@@ -483,7 +483,7 @@ class NewsletterSend extends React.Component {
             subscribersCount={window.mailpoet_subscribers_count}
           />
           <p>
-            <Button variant="light" type="submit" automationId="email-save-draft">
+            <Button variant="secondary" type="submit" automationId="email-save-draft">
               {MailPoet.I18n.t('saveDraftAndClose')}
             </Button>
             {

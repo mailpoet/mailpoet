@@ -151,7 +151,7 @@ export default function KeyActivation() {
         <Button
           type="button"
           onClick={verifyKey}
-          variant="light"
+          variant="secondary"
           dimension="small"
         >
           {t('premiumTabVerifyButton')}
