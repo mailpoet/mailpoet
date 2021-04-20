@@ -11,6 +11,7 @@
     var mailpoet_date_formats = <%= json_encode(date_formats) %>;
     var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
     var mailpoet_max_confirmation_emails = <%= max_confirmation_emails %>;
+    var mailpoet_tracking_enabled = <%= json_encode(tracking_enabled) %>;
     var mailpoet_beacon_articles = [
       '57ce07ffc6979108399a044b',
       '57ce079f903360649f6e56fc',
@@ -91,6 +92,7 @@
     'subscriber': __('Subscriber'),
     'status': __('Status'),
     'lists': __('Lists'),
+    'statisticsColumn': __('Subscriber score'),
     'subscribedOn': __('Subscribed on'),
     'lastModifiedOn': __('Last modified on'),
     'oneSubscriberTrashed': __('1 subscriber was moved to the trash.'),

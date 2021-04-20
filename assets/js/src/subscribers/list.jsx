@@ -15,6 +15,9 @@ import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import SubscribersInPlan from '../common/subscribers_in_plan';
 import SubscribersHeading from './heading';
+import { ListingsEngagementScore } from './listings_engagement_score';
+
+const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
 
 const columns = [
   {
@@ -31,7 +34,11 @@ const columns = [
     name: 'segments',
     label: MailPoet.I18n.t('lists'),
   },
-
+  {
+    name: 'statistics',
+    label: MailPoet.I18n.t('statisticsColumn'),
+    display: mailpoetTrackingEnabled,
+  },
   {
     name: 'created_at',
     label: MailPoet.I18n.t('subscribedOn'),
@@ -412,6 +419,11 @@ const SubscriberList = ({ match }) => {
         <td className="column" data-colname={MailPoet.I18n.t('lists')}>
           <Tags segments={subscribedSegments} dimension="large" />
         </td>
+        { (mailpoetTrackingEnabled === true) ? (
+          <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('statisticsColumn')}>
+            <ListingsEngagementScore subscriber={subscriber} />
+          </td>
+        ) : null }
         <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribedOn')}>
           { MailPoet.Date.short(subscriber.created_at) }
           <br />

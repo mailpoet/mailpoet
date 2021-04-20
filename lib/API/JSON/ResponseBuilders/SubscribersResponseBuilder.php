@@ -65,6 +65,7 @@ class SubscribersResponseBuilder {
       'wp_user_id' => $subscriber->getWpUserId(),
       'is_woocommerce_user' => $subscriber->getIsWoocommerceUser(),
       'created_at' => $subscriber->getCreatedAt()->format(self::DATE_FORMAT),
+      'engagement_score' => $subscriber->getEngagementScore(),
     ];
   }
 
