@@ -26,11 +26,11 @@ const TemplateBox = ({
       <Heading level={5} title={label}>{label}</Heading>
       <div>
         {onDelete && (
-          <Button dimension="small" variant="secondary" onClick={onDelete}>
+          <Button variant="destructive" onClick={onDelete}>
             {MailPoet.I18n.t('delete')}
           </Button>
         )}
-        <Button dimension="small" automationId={automationId} onClick={onSelect}>
+        <Button automationId={automationId} onClick={onSelect}>
           {MailPoet.I18n.t('select')}
         </Button>
       </div>

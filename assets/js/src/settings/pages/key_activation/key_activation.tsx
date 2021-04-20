@@ -136,7 +136,6 @@ export default function KeyActivation() {
       />
       <Inputs>
         <Input
-          dimension="small"
           type="text"
           id="mailpoet_premium_key"
           name="premium[premium_key]"
@@ -148,12 +147,7 @@ export default function KeyActivation() {
             key: event.target.value.trim() || null,
           })}
         />
-        <Button
-          type="button"
-          onClick={verifyKey}
-          variant="secondary"
-          dimension="small"
-        >
+        <Button type="button" onClick={verifyKey}>
           {t('premiumTabVerifyButton')}
         </Button>
         {state.isKeyValid !== null && Messages()}

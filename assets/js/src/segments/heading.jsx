@@ -10,11 +10,11 @@ import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 const ListHeading = () => (
   <>
     <TopBarWithBeamer>
-      <Link className="mailpoet-button mailpoet-button-small" to="/new">
+      <Link className="mailpoet-button" to="/new">
         {plusIcon}
         <span>{MailPoet.I18n.t('new')}</span>
       </Link>
-      <Link className="mailpoet-button mailpoet-button-small" to="/new-segment" data-automation-id="new-segment">
+      <Link className="mailpoet-button" to="/new-segment" data-automation-id="new-segment">
         {plusIcon}
         <span>{MailPoet.I18n.t('newSegment')}</span>
       </Link>

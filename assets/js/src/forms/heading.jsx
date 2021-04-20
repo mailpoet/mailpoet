@@ -18,7 +18,6 @@ export const FormsHeading = () => {
   return (
     <TopBarWithBeamer>
       <Button
-        dimension="small"
         onClick={() => {
           setLoading(true);
           onAddNewForm();

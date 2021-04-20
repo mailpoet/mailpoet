@@ -16,7 +16,7 @@ function KnowledgeBase() {
         <li><a target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/category/123-newsletter-designer">Newsletter Designer</a></li>
         <li><a target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/category/121-subscribers-and-lists">Subscribers and Lists</a></li>
       </ul>
-      <Button dimension="small" target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/">{MailPoet.I18n.t('knowledgeBaseButton')}</Button>
+      <Button target="_blank" rel="noreferrer noopener" href="https://kb.mailpoet.com/">{MailPoet.I18n.t('knowledgeBaseButton')}</Button>
     </>
   );
 }
