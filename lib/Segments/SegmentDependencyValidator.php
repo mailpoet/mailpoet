@@ -8,14 +8,23 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SegmentDependencyValidator {
+  private const WOOCOMMERCE_PLUGIN = [
+    'id' => 'woocommerce/woocommerce.php',
+    'name' => 'WooCommerce',
+  ];
+
+  private const WOOCOMMERCE_SUBSCRIPTIONS_PLUGIN = [
+    'id' => 'woocommerce-subscriptions/woocommerce-subscriptions.php',
+    'name' => 'WooCommerce Subscriptions',
+  ];
+
   private const REQUIRED_PLUGINS_BY_TYPE = [
     DynamicSegmentFilterData::TYPE_WOOCOMMERCE => [
-      'id' => 'woocommerce/woocommerce.php',
-      'name' => 'WooCommerce',
+      self::WOOCOMMERCE_PLUGIN,
     ],
     DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION => [
-      'id' => 'woocommerce-subscriptions/woocommerce-subscriptions.php',
-      'name' => 'WooCommerce Subscriptions',
+      self::WOOCOMMERCE_SUBSCRIPTIONS_PLUGIN,
+      self::WOOCOMMERCE_PLUGIN,
     ],
   ];
 
@@ -30,35 +39,43 @@ class SegmentDependencyValidator {
    * @return string[]
    */
   public function getMissingPluginsBySegment(SegmentEntity $segment): array {
-    $missingPlugins = [];
+    $missingPluginNames = [];
     foreach ($segment->getDynamicFilters() as $dynamicFilter) {
-      $missingPlugin = $this->getMissingPluginByFilter($dynamicFilter);
-      if (!$missingPlugin) {
+      $missingPlugins = $this->getMissingPluginsByFilter($dynamicFilter);
+      if (!$missingPlugins) {
         continue;
       }
-      $missingPlugins[] = $missingPlugin['name'];
+      foreach ($missingPlugins as $plugin) {
+        $missingPluginNames[] = $plugin['name'];
+      }
     }
-    return $missingPlugins;
+    return array_unique($missingPluginNames);
   }
 
-  public function getMissingPluginByFilter(DynamicSegmentFilterEntity $dynamicSegmentFilter): ?array {
-    $requiredPlugin = $this->getRequiredPluginConfig($dynamicSegmentFilter->getFilterData()->getFilterType() ?? '');
-    if (isset($requiredPlugin['id']) && !$this->wp->isPluginActive($requiredPlugin['id'])) {
-      return $requiredPlugin;
-    }
-    return null;
+  public function getMissingPluginsByFilter(DynamicSegmentFilterEntity $dynamicSegmentFilter): array {
+    $config = $this->getRequiredPluginsConfig($dynamicSegmentFilter->getFilterData()->getFilterType() ?? '');
+    return $this->getMissingPlugins($config);
   }
 
-  public function canUseDynamicFilterType(string $type) {
-    $requiredPlugin = $this->getRequiredPluginConfig($type);
-    return isset($requiredPlugin['id']) && $this->wp->isPluginActive($requiredPlugin['id']);
+  public function canUseDynamicFilterType(string $type): bool {
+    $config = $this->getRequiredPluginsConfig($type);
+    return empty($this->getMissingPlugins($config));
   }
 
-  private function getRequiredPluginConfig(string $type): ?array {
+  private function getRequiredPluginsConfig(string $type): array {
     if (isset(self::REQUIRED_PLUGINS_BY_TYPE[$type])) {
       return self::REQUIRED_PLUGINS_BY_TYPE[$type];
     }
+    return [];
+  }
 
-    return null;
+  private function getMissingPlugins(array $config): array {
+    $missingPlugins = [];
+    foreach ($config as $requiredPlugin) {
+      if (isset($requiredPlugin['id']) && !$this->wp->isPluginActive($requiredPlugin['id'])) {
+        $missingPlugins[] = $requiredPlugin;
+      }
+    }
+    return $missingPlugins;
   }
 }
