@@ -14,20 +14,14 @@ export const WithIcons = () => (
     <Heading level={3}>Small buttons</Heading>
     <p>
       <Button
-        onClick={action('only icon small')}
-        dimension="small"
-        variant="secondary"
-        iconStart={icon}
-      />
-      <Button
-        onClick={action('icon start small')}
+        onClick={action('icon start primary small')}
         dimension="small"
         iconStart={icon}
       >
         Icon start
       </Button>
       <Button
-        onClick={action('both icons small')}
+        onClick={action('both icons secondary small')}
         dimension="small"
         variant="secondary"
         iconStart={icon}
@@ -36,7 +30,13 @@ export const WithIcons = () => (
         Both icons
       </Button>
       <Button
-        onClick={action('only icon link small')}
+        onClick={action('only icon secondary small')}
+        dimension="small"
+        variant="secondary"
+        iconStart={icon}
+      />
+      <Button
+        onClick={action('only icon tertiary small')}
         dimension="small"
         variant="tertiary"
         iconStart={icon}
@@ -46,20 +46,14 @@ export const WithIcons = () => (
 
     <Heading level={3}>Regular buttons</Heading>
     <p>
-
       <Button
-        onClick={action('only icon regular')}
-        variant="secondary"
-        iconStart={icon}
-      />
-      <Button
-        onClick={action('icon start regular')}
+        onClick={action('icon start primary regular')}
         iconStart={icon}
       >
         Icon start
       </Button>
       <Button
-        onClick={action('both icons regular')}
+        onClick={action('both icons secondary regular')}
         variant="secondary"
         iconStart={icon}
         iconEnd={icon}
@@ -67,7 +61,12 @@ export const WithIcons = () => (
         Both icons
       </Button>
       <Button
-        onClick={action('only icon link regular')}
+        onClick={action('only icon secondary regular')}
+        variant="secondary"
+        iconStart={icon}
+      />
+      <Button
+        onClick={action('only icon tertiary regular')}
         variant="tertiary"
         iconStart={icon}
       />
@@ -77,20 +76,12 @@ export const WithIcons = () => (
     <Heading level={3}>Disabled buttons</Heading>
     <p>
       <Button
-        onClick={action('only icon disabled')}
-        isDisabled
-        variant="secondary"
-        iconStart={icon}
-      />
-      <Button
-        onClick={action('icon start disabled')}
         isDisabled
         iconStart={icon}
       >
         Icon start
       </Button>
       <Button
-        onClick={action('both icons disabled')}
         isDisabled
         variant="secondary"
         iconStart={icon}
@@ -99,7 +90,11 @@ export const WithIcons = () => (
         Both icons
       </Button>
       <Button
-        onClick={action('only icon link disabled')}
+        isDisabled
+        variant="secondary"
+        iconStart={icon}
+      />
+      <Button
         isDisabled
         variant="tertiary"
         iconStart={icon}
@@ -110,20 +105,12 @@ export const WithIcons = () => (
     <Heading level={3}>Buttons with spinner</Heading>
     <p>
       <Button
-        onClick={action('only icon spinner')}
-        withSpinner
-        variant="secondary"
-        iconStart={icon}
-      />
-      <Button
-        onClick={action('icon start spinner')}
         withSpinner
         iconStart={icon}
       >
         Icon start
       </Button>
       <Button
-        onClick={action('both icons spinner')}
         withSpinner
         variant="secondary"
         iconStart={icon}
@@ -132,7 +119,11 @@ export const WithIcons = () => (
         Both icons
       </Button>
       <Button
-        onClick={action('only icon link spinner')}
+        withSpinner
+        variant="secondary"
+        iconStart={icon}
+      />
+      <Button
         withSpinner
         variant="tertiary"
         iconStart={icon}
@@ -143,20 +134,14 @@ export const WithIcons = () => (
     <Heading level={3}>Full width buttons</Heading>
     <p>
       <Button
-        onClick={action('only icon full-width')}
-        isFullWidth
-        variant="secondary"
-        iconStart={icon}
-      />
-      <Button
-        onClick={action('icon start full-width')}
+        onClick={action('icon start primary full-width')}
         isFullWidth
         iconStart={icon}
       >
         Icon start
       </Button>
       <Button
-        onClick={action('both icons full-width')}
+        onClick={action('both icons secondary full-width')}
         isFullWidth
         variant="secondary"
         iconStart={icon}
@@ -165,7 +150,13 @@ export const WithIcons = () => (
         Both icons
       </Button>
       <Button
-        onClick={action('only icon link full-width')}
+        onClick={action('only icon secondary full-width')}
+        isFullWidth
+        variant="secondary"
+        iconStart={icon}
+      />
+      <Button
+        onClick={action('only icon tertiary full-width')}
         isFullWidth
         variant="tertiary"
         iconStart={icon}
