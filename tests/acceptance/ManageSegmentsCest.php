@@ -417,9 +417,9 @@ class ManageSegmentsCest {
   public function createAndEditWooCommerceNumberOfOrdersSegment(\AcceptanceTester $i) {
     $i->activateWooCommerce();
     $actionSelectElement = '[data-automation-id="select-segment-action"]';
-    $numberOfOrdersTypeElement = '[id="select-number-of-orders-type"]';
-    $numberOfOrdersCountElement = '[id="input-number-of-orders-count"]';
-    $numberOfOrdersDaysElement = '[id="input-number-of-orders-days"]';
+    $numberOfOrdersTypeElement = '[data-automation-id="select-number-of-orders-type"]';
+    $numberOfOrdersCountElement = '[data-automation-id="input-number-of-orders-count"]';
+    $numberOfOrdersDaysElement = '[data-automation-id="input-number-of-orders-days"]';
 
     $i->wantTo('Create a new WooCommerce Number of Orders segment');
     $segmentTitle = 'Segment Woo Number of Orders Test';

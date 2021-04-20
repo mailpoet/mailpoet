@@ -110,17 +110,18 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
     optionFields = (
       <div>
         <Grid.CenteredRow className="mailpoet-form-field">
-          <Select
-            id="select-number-of-orders-type"
-            options={numberOfOrdersTypeOptions}
-            value={find(['value', item.number_of_orders_type], numberOfOrdersTypeOptions)}
-            onChange={(option: SelectOption): void => compose([
-              onChange,
-              assign(item),
-            ])({ number_of_orders_type: option.value })}
-          />
+          <div data-automation-id="select-number-of-orders-type">
+            <Select
+              options={numberOfOrdersTypeOptions}
+              value={find(['value', item.number_of_orders_type], numberOfOrdersTypeOptions)}
+              onChange={(option: SelectOption): void => compose([
+                onChange,
+                assign(item),
+              ])({ number_of_orders_type: option.value })}
+            />
+          </div>
           <Input
-            id="input-number-of-orders-count"
+            data-automation-id="input-number-of-orders-count"
             type="number"
             min={0}
             value={item.number_of_orders_count || ''}
@@ -135,7 +136,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
         <Grid.CenteredRow className="mailpoet-form-field">
           <div>{MailPoet.I18n.t('wooNumberOfOrdersInTheLast')}</div>
           <Input
-            id="input-number-of-orders-days"
+            data-automation-id="input-number-of-orders-days"
             type="number"
             min={1}
             value={item.number_of_orders_days || ''}
