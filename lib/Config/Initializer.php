@@ -73,6 +73,9 @@ class Initializer {
   /** @var Localizer */
   private $localizer;
 
+  /** @var AssetsLoader */
+  private $assetsLoader;
+
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
   public function __construct(
@@ -92,25 +95,27 @@ class Initializer {
     WCTransactionalEmails $wcTransactionalEmails,
     PostEditorBlock $postEditorBlock,
     WooCommerceHelper $wcHelper,
-    Localizer $localizer
+    Localizer $localizer,
+    AssetsLoader $assetsLoader
   ) {
-      $this->rendererFactory = $rendererFactory;
-      $this->accessControl = $accessControl;
-      $this->api = $api;
-      $this->activator = $activator;
-      $this->settings = $settings;
-      $this->router = $router;
-      $this->hooks = $hooks;
-      $this->changelog = $changelog;
-      $this->menu = $menu;
-      $this->cronTrigger = $cronTrigger;
-      $this->permanentNotices = $permanentNotices;
-      $this->shortcodes = $shortcodes;
-      $this->databaseInitializer = $databaseInitializer;
-      $this->wcTransactionalEmails = $wcTransactionalEmails;
-      $this->wcHelper = $wcHelper;
-      $this->postEditorBlock = $postEditorBlock;
-      $this->localizer = $localizer;
+    $this->rendererFactory = $rendererFactory;
+    $this->accessControl = $accessControl;
+    $this->api = $api;
+    $this->activator = $activator;
+    $this->settings = $settings;
+    $this->router = $router;
+    $this->hooks = $hooks;
+    $this->changelog = $changelog;
+    $this->menu = $menu;
+    $this->cronTrigger = $cronTrigger;
+    $this->permanentNotices = $permanentNotices;
+    $this->shortcodes = $shortcodes;
+    $this->databaseInitializer = $databaseInitializer;
+    $this->wcTransactionalEmails = $wcTransactionalEmails;
+    $this->wcHelper = $wcHelper;
+    $this->postEditorBlock = $postEditorBlock;
+    $this->localizer = $localizer;
+    $this->assetsLoader = $assetsLoader;
   }
 
   public function init() {
@@ -187,6 +192,7 @@ class Initializer {
       $this->setupWidget();
       $this->hooks->init();
       $this->setupWoocommerceTransactionalEmails();
+      $this->assetsLoader->loadStyles();
     } catch (\Exception $e) {
       $this->handleFailedInitialization($e);
     }
