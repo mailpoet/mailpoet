@@ -34,8 +34,7 @@ export default function Reinstall() {
           type="button"
           onClick={onClick}
           automationId="reinstall-button"
-          variant="secondary"
-          dimension="small"
+          variant="destructive"
         >
           {t('reinstallNow')}
         </Button>

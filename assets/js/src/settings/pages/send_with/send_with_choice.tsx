@@ -62,7 +62,7 @@ export default function SendWithChoice() {
           </ul>
           {!isMssKeyValid && !isPremiumKeyValid && (
             <div className="mailpoet-sending-method-actions">
-              <a className="mailpoet-button mailpoet-button-small" href={freePlanUrl} rel="noopener noreferrer" target="_blank">{t('freeUpto')}</a>
+              <a className="mailpoet-button" href={freePlanUrl} rel="noopener noreferrer" target="_blank">{t('freeUpto')}</a>
               <span>
                 &nbsp;
                 {t('or')}

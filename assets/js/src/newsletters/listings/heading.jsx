@@ -9,7 +9,7 @@ const ListingHeading = () => (
     <TopBarWithBeamer>
       <Link
         id="mailpoet-new-email"
-        className="mailpoet-button mailpoet-button-small"
+        className="mailpoet-button"
         to="/new"
         onClick={() => MailPoet.trackEvent(
           'Emails > Add New',
