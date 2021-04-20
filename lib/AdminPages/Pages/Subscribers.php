@@ -9,6 +9,7 @@ use MailPoet\Listing\PageLimit;
 use MailPoet\Models\CustomField;
 use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
@@ -36,6 +37,9 @@ class Subscribers {
   /** @var SegmentsSimpleListRepository */
   private $segmentsListRepository;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -43,6 +47,7 @@ class Subscribers {
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
     Block\Date $dateBlock,
+    SettingsController $settings,
     SegmentsSimpleListRepository $segmentsListRepository
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -52,6 +57,7 @@ class Subscribers {
     $this->dateBlock = $dateBlock;
     $this->servicesChecker = $servicesChecker;
     $this->segmentsListRepository = $segmentsListRepository;
+    $this->settings = $settings;
   }
 
   public function render() {
@@ -90,6 +96,7 @@ class Subscribers {
     $data['subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
     $data['has_premium_support'] = $this->subscribersFeature->hasPremiumSupport();
     $data['link_premium'] = $this->wp->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-premium');
+    $data['tracking_enabled'] = $this->settings->get('tracking.enabled');
 
     $this->pageRenderer->displayPage('subscribers/subscribers.html', $data);
   }
