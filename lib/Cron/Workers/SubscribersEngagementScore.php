@@ -5,7 +5,6 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscribersEngagementScore extends SimpleWorker {
@@ -29,7 +28,17 @@ class SubscribersEngagementScore extends SimpleWorker {
   }
 
   public function processTaskStrategy(ScheduledTask $task, $timer) {
-
+    $subscribers = $this->subscribersRepository->findBy(
+      ['engagementScoreUpdatedAt' => null],
+      [],
+      SubscribersEngagementScore::BATCH_SIZE
+    );
+    foreach ($subscribers as $subscriber) {
+      $this->statisticsOpensRepository->recalculateSubscriberScore($subscriber);
+    }
+    if ($subscribers) {
+      $this->schedule();
+    }
   }
 
   public function getNextRunDate() {
