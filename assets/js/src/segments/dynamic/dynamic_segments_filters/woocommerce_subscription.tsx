@@ -45,18 +45,18 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = (
   }));
 
   return (
-    <div className="mailpoet-form-field">
-      <div className="mailpoet-form-input mailpoet-form-select" data-automation-id="segment-woo-subscription-action">
-        <Select
-          placeholder={MailPoet.I18n.t('selectWooSubscription')}
-          options={productOptions}
-          value={find(['value', item.product_id], productOptions)}
-          onChange={(option: SelectOption): void => compose([
-            onChange,
-            assign(item),
-          ])({ product_id: option.value })}
-        />
-      </div>
-    </div>
+    <>
+      <div className="mailpoet-gap" />
+      <Select
+        placeholder={MailPoet.I18n.t('selectWooSubscription')}
+        automationId="segment-woo-subscription-action"
+        options={productOptions}
+        value={find(['value', item.product_id], productOptions)}
+        onChange={(option: SelectOption): void => compose([
+          onChange,
+          assign(item),
+        ])({ product_id: option.value })}
+      />
+    </>
   );
 };
