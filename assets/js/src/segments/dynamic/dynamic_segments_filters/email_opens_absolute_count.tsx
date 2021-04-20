@@ -35,6 +35,7 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
 
   return (
     <>
+      <div className="mailpoet-gap" />
       <Grid.CenteredRow>
         {ReactStringReplace(
           MailPoet.I18n.t('emailActionOpensSentence'),
@@ -83,6 +84,7 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
           }
         )}
       </Grid.CenteredRow>
+      <div className="mailpoet-gap" />
       <Grid.CenteredRow>
         {replaceElementsInDaysSentence(
           (match) => {

@@ -104,6 +104,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
   } else if (item.action === WooCommerceActionTypes.NUMBER_OF_ORDERS) {
     optionFields = (
       <div>
+        <div className="mailpoet-gap" />
         <Grid.CenteredRow className="mailpoet-form-field">
           <Select
             key="select"
@@ -131,6 +132,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
           />
           <div>{MailPoet.I18n.t('wooNumberOfOrdersOrders')}</div>
         </Grid.CenteredRow>
+        <div className="mailpoet-gap" />
         <Grid.CenteredRow className="mailpoet-form-field">
           <div>{MailPoet.I18n.t('wooNumberOfOrdersInTheLast')}</div>
           <Input
