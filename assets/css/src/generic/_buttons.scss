@@ -119,3 +119,16 @@
     background-color: rgba(#fff, .8);
   }
 }
+
+.mailpoet-button-disabled {
+  color: rgba(#fff, .4);
+  pointer-events: none;
+  touch-action: none;
+
+  &.mailpoet-button-secondary,
+  &.mailpoet-button-tertiary {
+    background: #eaeaea;
+    border-color: #eaeaea;
+    color: #828282;
+  }
+}
