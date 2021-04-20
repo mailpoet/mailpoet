@@ -79,7 +79,7 @@ class FilterHandler {
         ->select("DISTINCT $subscribersTable.id as inner_subscriber_id")
         ->from($subscribersTable);
       // When a required plugin is missing we want to return empty result
-      if ($this->segmentDependencyValidator->getMissingPluginByFilter($filter)) {
+      if ($this->segmentDependencyValidator->getMissingPluginsByFilter($filter)) {
         $subscribersIdsQuery->andWhere('1 = 0');
       } else {
         $this->applyFilter($subscribersIdsQuery, $filter);
