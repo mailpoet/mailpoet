@@ -74,39 +74,6 @@ export const WithIcons = () => (
     </p>
     <br />
 
-    <Heading level={3}>Large buttons</Heading>
-    <p>
-      <Button
-        onClick={action('only icon large')}
-        dimension="large"
-        variant="light"
-        iconStart={icon}
-      />
-      <Button
-        onClick={action('icon start large')}
-        dimension="large"
-        iconStart={icon}
-      >
-        Icon start
-      </Button>
-      <Button
-        onClick={action('both icons large')}
-        dimension="large"
-        variant="light"
-        iconStart={icon}
-        iconEnd={icon}
-      >
-        Both icons
-      </Button>
-      <Button
-        onClick={action('only icon link large')}
-        dimension="large"
-        variant="link"
-        iconStart={icon}
-      />
-    </p>
-    <br />
-
     <Heading level={3}>Disabled buttons</Heading>
     <p>
       <Button
