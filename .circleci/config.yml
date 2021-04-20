@@ -318,8 +318,10 @@ jobs:
           condition: << parameters.woo_subscriptions_version >>
           steps:
             - run:
-                name: Download additional WP Plugins
-                command: ./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>
+                name: Download WooCommerce Subscriptions
+                command: |
+                    cd tests/docker
+                    docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception
       - run:
           name: Run acceptance tests
           command: |
@@ -610,7 +612,7 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_oldest
-          woo_subscriptions_version: 3.0.14
+          woo_subscriptions_version: 3.0.10
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
           wordpress_image_version: wp-5.3_php7.1_20210129.1
