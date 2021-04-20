@@ -50,18 +50,6 @@
   &:not(.mailpoet-full-width) + .mailpoet-button:not(.mailpoet-full-width) { margin-left: $grid-gap; }
 }
 
-.mailpoet-button-extra-small {
-  font-size: $font-size-extra-small;
-  line-height: 16px;
-  min-height: 24px;
-  padding: 5px 9px 3px;
-
-  svg {
-    height: 10px;
-    width: 10px;
-  }
-}
-
 .mailpoet-button-small {
   font-size: $font-size-small;
   line-height: 20px;
