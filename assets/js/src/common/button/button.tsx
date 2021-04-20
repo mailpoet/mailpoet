@@ -4,7 +4,7 @@ import classnames from 'classnames';
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode;
   dimension?: 'small';
-  variant?: 'secondary' | 'tertiary';
+  variant?: 'secondary' | 'tertiary' | 'destructive';
   withSpinner?: boolean; // also disables href and onClick (via pointer-events in CSS)
   isDisabled?: boolean; // also disables href and onClick (via pointer-events in CSS)
   isFullWidth?: boolean;

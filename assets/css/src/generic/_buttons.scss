@@ -98,6 +98,25 @@
   }
 }
 
+.mailpoet-button-destructive {
+  background: #fff;
+  border-color: #fff;
+  color: $color-destructive;
+
+  &:hover {
+    background: #fff;
+    border-color: $color-destructive-hover;
+    color: $color-destructive-hover;
+  }
+
+  &:focus {
+    background: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 0 1.5px $color-destructive-hover;
+    color: $color-destructive-hover;
+  }
+}
+
 .mailpoet-button-with-spinner {
   pointer-events: none;
   touch-action: none;
@@ -115,7 +134,8 @@
   }
 
   &.mailpoet-button-secondary:after,
-  &.mailpoet-button-tertiary:after {
+  &.mailpoet-button-tertiary:after,
+  &.mailpoet-button-destructive:after {
     background-color: rgba(#fff, .8);
   }
 }
@@ -130,5 +150,9 @@
     background: #eaeaea;
     border-color: #eaeaea;
     color: #828282;
+  }
+
+  &.mailpoet-button-destructive {
+    color: rgba($color-destructive, .4);
   }
 }

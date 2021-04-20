@@ -41,6 +41,14 @@ export const WithIcons = () => (
         variant="tertiary"
         iconStart={icon}
       />
+      <Button
+        onClick={action('icon end destructive small')}
+        dimension="small"
+        variant="destructive"
+        iconEnd={icon}
+      >
+        Icon end
+      </Button>
     </p>
     <br />
 
@@ -70,6 +78,13 @@ export const WithIcons = () => (
         variant="tertiary"
         iconStart={icon}
       />
+      <Button
+        onClick={action('icon end destructive regular')}
+        variant="destructive"
+        iconEnd={icon}
+      >
+        Icon end
+      </Button>
     </p>
     <br />
 
@@ -99,6 +114,13 @@ export const WithIcons = () => (
         variant="tertiary"
         iconStart={icon}
       />
+      <Button
+        isDisabled
+        variant="destructive"
+        iconEnd={icon}
+      >
+        Icon end
+      </Button>
     </p>
     <br />
 
@@ -128,6 +150,13 @@ export const WithIcons = () => (
         variant="tertiary"
         iconStart={icon}
       />
+      <Button
+        withSpinner
+        variant="destructive"
+        iconEnd={icon}
+      >
+        Icon end
+      </Button>
     </p>
     <br />
 
@@ -161,6 +190,14 @@ export const WithIcons = () => (
         variant="tertiary"
         iconStart={icon}
       />
+      <Button
+        onClick={action('icon end destructive full-width')}
+        isFullWidth
+        variant="destructive"
+        iconEnd={icon}
+      >
+        Icon end
+      </Button>
     </p>
     <br />
   </>

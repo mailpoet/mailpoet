@@ -32,6 +32,13 @@ export const WithoutIcons = () => (
       >
         Tertiary button
       </Button>
+      <Button
+        onClick={action('destructive small')}
+        dimension="small"
+        variant="destructive"
+      >
+        Destructive button
+      </Button>
     </p>
     <br />
 
@@ -54,6 +61,12 @@ export const WithoutIcons = () => (
       >
         Tertiary button
       </Button>
+      <Button
+        onClick={action('destructive regular')}
+        variant="destructive"
+      >
+        Destructive button
+      </Button>
     </p>
     <br />
 
@@ -74,6 +87,12 @@ export const WithoutIcons = () => (
       >
         Tertiary button
       </Button>
+      <Button
+        isDisabled
+        variant="destructive"
+      >
+        Destructive button
+      </Button>
     </p>
     <br />
 
@@ -93,6 +112,12 @@ export const WithoutIcons = () => (
         variant="tertiary"
       >
         Tertiary button
+      </Button>
+      <Button
+        withSpinner
+        variant="destructive"
+      >
+        Destructive button
       </Button>
     </p>
     <br />
@@ -118,6 +143,13 @@ export const WithoutIcons = () => (
         variant="tertiary"
       >
         Tertiary button
+      </Button>
+      <Button
+        onClick={action('destructive full-width')}
+        isFullWidth
+        variant="destructive"
+      >
+        Destructive button
       </Button>
     </p>
     <br />
