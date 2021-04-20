@@ -13,20 +13,20 @@ export const WithoutIcons = () => (
     <Heading level={3}>Small buttons</Heading>
     <p>
       <Button
-        onClick={action('light small')}
+        onClick={action('primary small')}
+        dimension="small"
+      >
+        Primary button
+      </Button>
+      <Button
+        onClick={action('secondary small')}
         dimension="small"
         variant="secondary"
       >
         Secondary button
       </Button>
       <Button
-        onClick={action('regular small')}
-        dimension="small"
-      >
-        Primary button
-      </Button>
-      <Button
-        onClick={action('link small')}
+        onClick={action('tertiary small')}
         dimension="small"
         variant="tertiary"
       >
@@ -38,18 +38,18 @@ export const WithoutIcons = () => (
     <Heading level={3}>Regular buttons</Heading>
     <p>
       <Button
-        onClick={action('light regular')}
+        onClick={action('primary regular')}
+      >
+        Primary button
+      </Button>
+      <Button
+        onClick={action('secondary regular')}
         variant="secondary"
       >
         Secondary button
       </Button>
       <Button
-        onClick={action('regular regular')}
-      >
-        Primary button
-      </Button>
-      <Button
-        onClick={action('link regular')}
+        onClick={action('tertiary regular')}
         variant="tertiary"
       >
         Tertiary button
@@ -59,21 +59,16 @@ export const WithoutIcons = () => (
 
     <Heading level={3}>Disabled buttons</Heading>
     <p>
+      <Button isDisabled>
+        Primary button
+      </Button>
       <Button
-        onClick={action('light disabled')}
         isDisabled
         variant="secondary"
       >
         Secondary button
       </Button>
       <Button
-        onClick={action('regular disabled')}
-        isDisabled
-      >
-        Primary button
-      </Button>
-      <Button
-        onClick={action('link disabled')}
         isDisabled
         variant="tertiary"
       >
@@ -84,21 +79,16 @@ export const WithoutIcons = () => (
 
     <Heading level={3}>Buttons with spinner</Heading>
     <p>
+      <Button withSpinner>
+        Primary button
+      </Button>
       <Button
-        onClick={action('light spinner')}
         withSpinner
         variant="secondary"
       >
         Secondary button
       </Button>
       <Button
-        onClick={action('regular spinner')}
-        withSpinner
-      >
-        Primary button
-      </Button>
-      <Button
-        onClick={action('link spinner')}
         withSpinner
         variant="tertiary"
       >
@@ -110,20 +100,20 @@ export const WithoutIcons = () => (
     <Heading level={3}>Full width buttons</Heading>
     <p>
       <Button
-        onClick={action('light full-width ')}
+        onClick={action('primary full-width')}
+        isFullWidth
+      >
+        Primary button
+      </Button>
+      <Button
+        onClick={action('secondary full-width')}
         isFullWidth
         variant="secondary"
       >
         Secondary button
       </Button>
       <Button
-        onClick={action('regular full-width ')}
-        isFullWidth
-      >
-        Primary button
-      </Button>
-      <Button
-        onClick={action('link full-width ')}
+        onClick={action('tertiary full-width')}
         isFullWidth
         variant="tertiary"
       >
