@@ -93,6 +93,8 @@ class Segments {
     $data['can_use_woocommerce_subscriptions'] = $this->segmentDependencyValidator->canUseDynamicFilterType(
       DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION
     );
+    $wooCurrencySymbol = $this->woocommerceHelper->isWooCommerceActive() ? $this->woocommerceHelper->getWoocommerceCurrencySymbol() : '';
+    $data['woocommerce_currency_symbol'] = html_entity_decode($wooCurrencySymbol);
 
     $this->pageRenderer->displayPage('segments.html', $data);
   }
