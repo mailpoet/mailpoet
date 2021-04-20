@@ -39,6 +39,9 @@ export interface WooCommerceFormItem extends FormItem {
   number_of_orders_type?: string;
   number_of_orders_count?: number;
   number_of_orders_days?: number;
+  total_spent_type?: string;
+  total_spent_amount?: number;
+  total_spent_days?: number;
 }
 
 export interface WooCommerceSubscriptionFormItem extends FormItem {
