@@ -27,14 +27,6 @@ export const WithIcons = () => (
         Icon start
       </Button>
       <Button
-        onClick={action('icon end small')}
-        dimension="small"
-        variant="dark"
-        iconEnd={icon}
-      >
-        Icon end
-      </Button>
-      <Button
         onClick={action('both icons small')}
         dimension="small"
         variant="light"
@@ -49,14 +41,6 @@ export const WithIcons = () => (
         variant="link"
         iconStart={icon}
       />
-      <Button
-        onClick={action('icon start link small')}
-        dimension="small"
-        variant="link-dark"
-        iconStart={icon}
-      >
-        Link icon
-      </Button>
     </p>
     <br />
 
@@ -75,13 +59,6 @@ export const WithIcons = () => (
         Icon start
       </Button>
       <Button
-        onClick={action('icon end regular')}
-        variant="dark"
-        iconEnd={icon}
-      >
-        Icon end
-      </Button>
-      <Button
         onClick={action('both icons regular')}
         variant="light"
         iconStart={icon}
@@ -94,13 +71,6 @@ export const WithIcons = () => (
         variant="link"
         iconStart={icon}
       />
-      <Button
-        onClick={action('icon start link regular')}
-        variant="link-dark"
-        iconStart={icon}
-      >
-        Link icon
-      </Button>
     </p>
     <br />
 
@@ -120,14 +90,6 @@ export const WithIcons = () => (
         Icon start
       </Button>
       <Button
-        onClick={action('icon end large')}
-        dimension="large"
-        variant="dark"
-        iconEnd={icon}
-      >
-        Icon end
-      </Button>
-      <Button
         onClick={action('both icons large')}
         dimension="large"
         variant="light"
@@ -142,14 +104,6 @@ export const WithIcons = () => (
         variant="link"
         iconStart={icon}
       />
-      <Button
-        onClick={action('icon start link large')}
-        dimension="large"
-        variant="link-dark"
-        iconStart={icon}
-      >
-        Link icon
-      </Button>
     </p>
     <br />
 
@@ -169,14 +123,6 @@ export const WithIcons = () => (
         Icon start
       </Button>
       <Button
-        onClick={action('icon end disabled')}
-        isDisabled
-        variant="dark"
-        iconEnd={icon}
-      >
-        Icon end
-      </Button>
-      <Button
         onClick={action('both icons disabled')}
         isDisabled
         variant="light"
@@ -191,14 +137,6 @@ export const WithIcons = () => (
         variant="link"
         iconStart={icon}
       />
-      <Button
-        onClick={action('icon start link disabled')}
-        isDisabled
-        variant="link-dark"
-        iconStart={icon}
-      >
-        Link icon
-      </Button>
     </p>
     <br />
 
@@ -218,14 +156,6 @@ export const WithIcons = () => (
         Icon start
       </Button>
       <Button
-        onClick={action('icon end spinner')}
-        withSpinner
-        variant="dark"
-        iconEnd={icon}
-      >
-        Icon end
-      </Button>
-      <Button
         onClick={action('both icons spinner')}
         withSpinner
         variant="light"
@@ -240,14 +170,6 @@ export const WithIcons = () => (
         variant="link"
         iconStart={icon}
       />
-      <Button
-        onClick={action('icon start link spinner')}
-        withSpinner
-        variant="link-dark"
-        iconStart={icon}
-      >
-        Link icon
-      </Button>
     </p>
     <br />
 
@@ -267,14 +189,6 @@ export const WithIcons = () => (
         Icon start
       </Button>
       <Button
-        onClick={action('icon end full-width')}
-        isFullWidth
-        variant="dark"
-        iconEnd={icon}
-      >
-        Icon end
-      </Button>
-      <Button
         onClick={action('both icons full-width')}
         isFullWidth
         variant="light"
@@ -289,14 +203,6 @@ export const WithIcons = () => (
         variant="link"
         iconStart={icon}
       />
-      <Button
-        onClick={action('icon start link full-width')}
-        isFullWidth
-        variant="link-dark"
-        iconStart={icon}
-      >
-        Link icon
-      </Button>
     </p>
     <br />
   </>
