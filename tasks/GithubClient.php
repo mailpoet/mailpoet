@@ -28,10 +28,15 @@ class GithubClient {
     if (!$release) {
       throw new \Exception("Release $tag not found");
     }
+    $namesToCheck = [
+      $zip,
+      str_replace('.zip', ".$tag.zip", $zip),
+      str_replace('.zip', "-$tag.zip", $zip),
+    ];
     $assetDownloadUrl = null;
     $assetDownloadInfo = null;
     foreach ($release['assets'] as $asset) {
-      if ($asset['name'] === $zip) {
+      if (in_array($asset['name'], $namesToCheck, true)) {
         $assetDownloadUrl = $asset['url'];
         $assetDownloadInfo = $asset['browser_download_url'];
       }
