@@ -47,5 +47,4 @@ class StatisticsOpensRepository extends Repository {
     $subscriber->setEngagementScore($score);
     $this->entityManager->flush();
   }
-
 }
