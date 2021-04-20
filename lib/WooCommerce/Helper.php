@@ -35,6 +35,10 @@ class Helper {
     return get_woocommerce_currency();
   }
 
+  public function getWoocommerceCurrencySymbol() {
+    return get_woocommerce_currency_symbol();
+  }
+
   public function woocommerceFormField($key, $args, $value) {
     return woocommerce_form_field($key, $args, $value);
   }
