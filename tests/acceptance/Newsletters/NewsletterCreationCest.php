@@ -136,6 +136,6 @@ class NewsletterCreationCest {
     $href = $i->grabAttributeFrom('//a[text()="your authorized emails"]', 'href');
     $sendButton = $i->grabAttributeFrom('[data-automation-id="email-submit"]', 'class');
     expect($href)->same('https://account.mailpoet.com/authorization');
-    expect($sendButton)->stringContainsString('mailpoet-disabled');
+    expect($sendButton)->stringContainsString('mailpoet-button-disabled');
   }
 }
