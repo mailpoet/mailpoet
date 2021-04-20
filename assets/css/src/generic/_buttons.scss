@@ -94,19 +94,6 @@
   }
 }
 
-.mailpoet-button-dark {
-  background: $color-tertiary;
-
-  &:hover,
-  &:focus {
-    background: $color-tertiary-hover;
-  }
-
-  &.mailpoet-button-with-spinner:after {
-    background-color: rgba($color-tertiary, .8);
-  }
-}
-
 .mailpoet-button-link {
   background: transparent;
   color: $color-secondary;
@@ -117,23 +104,6 @@
   &:focus {
     background: transparent;
     color: $color-secondary-hover;
-    text-decoration: none;
-  }
-
-  &.mailpoet-button-with-spinner:after {
-    background-color: rgba(#fff, .8);
-  }
-}
-
-.mailpoet-button-link-dark {
-  background: transparent;
-  color: $color-tertiary;
-  text-decoration: underline;
-
-  &:hover,
-  &:focus {
-    background: transparent;
-    color: $color-tertiary-hover;
     text-decoration: none;
   }
 
