@@ -84,34 +84,32 @@ export const ListingsEngagementScore: React.FunctionComponent<Props> = ({ subscr
     </div>
   );
   return (
-    <div className="mailpoet-listing-stats">
-      <div className="mailpoet-listing-stats-opened-clicked">
-        {subscriber.engagement_score != null && (
-          <div className="mailpoet-listing-stats-percentages">
-            {
-              subscriber
-                .engagement_score
-                .toLocaleString(
-                  undefined,
-                  {
-                    minimumFractionDigits: 1,
-                    maximumFractionDigits: 1,
-                  }
-                )
-            }
-            %
-          </div>
-        )}
-        <div>
-          <Badge
-            isInverted
-            type={badge.type}
-            name={badge.name}
-            tooltip={tooltipText}
-            tooltipId={tooltipId}
-            tooltipPlace="top"
-          />
+    <div className="mailpoet-listing-stats-opened-clicked">
+      {subscriber.engagement_score != null && (
+        <div className="mailpoet-listing-stats-percentages">
+          {
+            subscriber
+              .engagement_score
+              .toLocaleString(
+                undefined,
+                {
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                }
+              )
+          }
+          %
         </div>
+      )}
+      <div>
+        <Badge
+          isInverted
+          type={badge.type}
+          name={badge.name}
+          tooltip={tooltipText}
+          tooltipId={tooltipId}
+          tooltipPlace="top"
+        />
       </div>
     </div>
   );
