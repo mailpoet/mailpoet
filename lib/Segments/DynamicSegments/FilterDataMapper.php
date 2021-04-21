@@ -93,14 +93,20 @@ class FilterDataMapper {
       if (!isset($data['product_id'])) throw new InvalidFilterException('Missing product', InvalidFilterException::MISSING_PRODUCT_ID);
       $filterData['product_id'] = $data['product_id'];
     } elseif ($data['action'] === WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS) {
-      if (!isset($data['number_of_orders_type']) || !isset($data['number_of_orders_count']) || !isset($data['number_of_orders_days'])) {
+      if (!isset($data['number_of_orders_type'])
+        || !isset($data['number_of_orders_count']) || $data['number_of_orders_count'] < 0
+        || !isset($data['number_of_orders_days']) || $data['number_of_orders_days'] < 1
+      ) {
         throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_NUMBER_OF_ORDERS_FIELDS);
       }
       $filterData['number_of_orders_type'] = $data['number_of_orders_type'];
       $filterData['number_of_orders_count'] = $data['number_of_orders_count'];
       $filterData['number_of_orders_days'] = $data['number_of_orders_days'];
     } elseif ($data['action'] === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
-      if (!isset($data['total_spent_type']) || !isset($data['total_spent_amount']) || !isset($data['total_spent_days'])) {
+      if (!isset($data['total_spent_type'])
+        || !isset($data['total_spent_amount']) || $data['total_spent_amount'] < 0
+        || !isset($data['total_spent_days']) || $data['total_spent_days'] < 1
+      ) {
         throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_TOTAL_SPENT_FIELDS);
       }
       $filterData['total_spent_type'] = $data['total_spent_type'];
