@@ -91,7 +91,8 @@ class WorkersFactory {
     return $this->container->get(SubscriberLinkTokens::class);
   }
 
-  public function createSubscribersEngagementScoreWorker(): SubscribersEngagementScore {
+  /** @return SubscribersEngagementScore */
+  public function createSubscribersEngagementScoreWorker() {
     return $this->container->get(SubscribersEngagementScore::class);
   }
 

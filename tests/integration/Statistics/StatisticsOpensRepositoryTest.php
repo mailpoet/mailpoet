@@ -31,6 +31,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
     $this->repository->recalculateSubscriberScore($subscriber);
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     expect($newSubscriber->getEngagementScore())->null();
     expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
   }
@@ -42,9 +43,12 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
     $this->repository->recalculateSubscriberScore($subscriber);
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     expect($newSubscriber->getEngagementScore())->null();
     expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
-    $scoreUpdatedAt = new CarbonImmutable($newSubscriber->getEngagementScoreUpdatedAt());
+    $updated = $newSubscriber->getEngagementScoreUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $updated);
+    $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
     expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
   }
 
@@ -71,9 +75,12 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->repository->recalculateSubscriberScore($subscriber);
 
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
-    expect($newSubscriber->getEngagementScore())->equals(33);
+    $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
+    expect($newSubscriber->getEngagementScore())->equals(33, 1);
     expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
-    $scoreUpdatedAt = new CarbonImmutable($newSubscriber->getEngagementScoreUpdatedAt());
+    $updated = $newSubscriber->getEngagementScoreUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $updated);
+    $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
     expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
   }
 

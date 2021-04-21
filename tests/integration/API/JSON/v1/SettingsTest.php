@@ -15,8 +15,11 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\WooCommerce\TransactionalEmails;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Idiorm\ORM;
 
 class SettingsTest extends \MailPoetTest {
@@ -37,6 +40,9 @@ class SettingsTest extends \MailPoetTest {
       new Bridge,
       $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => true ]),
       $this->make(TransactionalEmails::class),
+      WPFunctions::get(),
+      $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(StatisticsOpensRepository::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false])
     );
   }
@@ -70,6 +76,9 @@ class SettingsTest extends \MailPoetTest {
       $this->make(Bridge::class, ['onSettingsSave' => Expected::once()]),
       $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once()]),
       $this->make(TransactionalEmails::class),
+      WPFunctions::get(),
+      $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(StatisticsOpensRepository::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false])
     );
 
@@ -94,6 +103,9 @@ class SettingsTest extends \MailPoetTest {
       $bridgeMock,
       new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class)),
       $this->make(TransactionalEmails::class),
+      WPFunctions::get(),
+      $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(StatisticsOpensRepository::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false])
     );
 
@@ -112,6 +124,9 @@ class SettingsTest extends \MailPoetTest {
       $bridgeMock,
       new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class)),
       $this->make(TransactionalEmails::class),
+      WPFunctions::get(),
+      $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(StatisticsOpensRepository::class),
       $this->make(ServicesChecker::class)
     );
 
