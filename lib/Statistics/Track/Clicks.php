@@ -33,16 +33,21 @@ class Clicks {
   /** @var LinkShortcodeCategory */
   private $linkShortcodeCategory;
 
+  /** @var Opens */
+  private $opens;
+
   public function __construct(
     SettingsController $settingsController,
     Cookies $cookies,
     Shortcodes $shortcodes,
+    Opens $opens,
     LinkShortcodeCategory $linkShortcodeCategory
   ) {
     $this->settingsController = $settingsController;
     $this->cookies = $cookies;
     $this->shortcodes = $shortcodes;
     $this->linkShortcodeCategory = $linkShortcodeCategory;
+    $this->opens = $opens;
   }
 
   /**
@@ -73,8 +78,7 @@ class Clicks {
       $this->sendRevenueCookie($statisticsClicks);
       $this->sendAbandonedCartCookie($subscriber);
       // track open event
-      $openEvent = new Opens();
-      $openEvent->track($data, $displayImage = false);
+      $this->opens->track($data, $displayImage = false);
     }
     $url = $this->processUrl($link->getUrl(), $newsletter, $subscriber, $queue, $wpUserPreview);
     $this->redirectToUrl($url);

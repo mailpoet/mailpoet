@@ -39,6 +39,7 @@ class SubscribersEngagementScore extends SimpleWorker {
     if ($subscribers) {
       $this->schedule();
     }
+    return true;
   }
 
   public function getNextRunDate() {

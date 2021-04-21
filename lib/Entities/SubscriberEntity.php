@@ -126,8 +126,8 @@ class SubscriberEntity {
   private $linkToken;
 
   /**
-   * @ORM\Column(type="integer")
-   * @var int|null
+   * @ORM\Column(type="float", nullable=true)
+   * @var float|null
    */
   private $engagementScore;
 
@@ -410,16 +410,16 @@ class SubscriberEntity {
   }
 
   /**
-   * @return int|null
+   * @return float|null
    */
-  public function getEngagementScore(): ?int {
+  public function getEngagementScore(): ?float {
     return $this->engagementScore;
   }
 
   /**
-   * @param int|null $engagementScore
+   * @param float|null $engagementScore
    */
-  public function setEngagementScore(?int $engagementScore): void {
+  public function setEngagementScore(?float $engagementScore): void {
     $this->engagementScore = $engagementScore;
   }
 
