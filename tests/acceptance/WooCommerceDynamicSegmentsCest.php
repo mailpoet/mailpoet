@@ -11,6 +11,7 @@ class WooCommerceDynamicSegmentsCest {
   const CATEGORY_SEGMENT = 'Purchase in category segment';
   const PRODUCT_SEGMENT = 'Purchased product segment';
   const NUMBER_OF_ORDERS_SEGMENT = 'Number of orders segment';
+  const TOTAL_SPENT_SEGMENT = 'Total spent segment';
 
   /** @var Settings */
   private $settingsFactory;
@@ -32,6 +33,9 @@ class WooCommerceDynamicSegmentsCest {
 
   /** @var SegmentEntity */
   private $numberOfOrdersSegment;
+
+  /** @var SegmentEntity */
+  private $totalSpentSegment;
 
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();
@@ -57,6 +61,10 @@ class WooCommerceDynamicSegmentsCest {
     $this->numberOfOrdersSegment = $segmentFactory
       ->withName(self::NUMBER_OF_ORDERS_SEGMENT)
       ->withWooCommerceNumberOfOrdersFilter()
+      ->create();
+    $this->totalSpentSegment = $segmentFactory
+      ->withName(self::TOTAL_SPENT_SEGMENT)
+      ->withWooCommerceTotalSpentFilter()
       ->create();
   }
 
@@ -126,6 +134,23 @@ class WooCommerceDynamicSegmentsCest {
     $i->waitForText($customer1Email);
   }
 
+  public function checkThatCustomersAreAddedToTotalSpentSegment(\AcceptanceTester $i) {
+    $i->wantTo('Check that customers are added to the total spent segment when the value of orders they placed matches what is expected');
+    $customerEmail = 'customer_2@example.com';
+    $product = $this->productFactory->create();
+    $i->orderProduct($product, $customerEmail);
+
+    $i->login();
+    $i->wantTo('Check that there is one subscriber in the total spent segment');
+    $i->amOnMailpoetPage('Lists');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText(self::TOTAL_SPENT_SEGMENT);
+    $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->totalSpentSegment->getId()}']";
+    $i->see('1', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
+    $i->clickItemRowActionByItemName(self::TOTAL_SPENT_SEGMENT, 'View Subscribers');
+    $i->waitForText($customerEmail);
+  }
+
   public function displayMessageWhenPluginIsDeactivated(\AcceptanceTester $i) {
     $i->wantTo('Check if count of subscribers is hidden and message with plugin name is visible');
     $i->deactivateWooCommerce();
@@ -141,10 +166,16 @@ class WooCommerceDynamicSegmentsCest {
     $i->see($message, $categorySegmentRow . " [data-colname='Missing plugin message']");
     $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
     $i->see($message, $productSegmentRow . " [data-colname='Missing plugin message']");
+    $numberOfOrdersSegmentRow = "[data-automation-id='listing_item_{$this->numberOfOrdersSegment->getId()}']";
+    $i->see($message, $numberOfOrdersSegmentRow . " [data-colname='Missing plugin message']");
+    $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->totalSpentSegment->getId()}']";
+    $i->see($message, $totalSpentSegmentRow . " [data-colname='Missing plugin message']");
 
     $i->wantTo('Check that Edit links are not clickable');
     $i->assertAttributeContains($categorySegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
     $i->assertAttributeContains($productSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
+    $i->assertAttributeContains($numberOfOrdersSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
+    $i->assertAttributeContains($totalSpentSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
     $i->seeNoJSErrors();
   }
 }
