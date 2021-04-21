@@ -11,7 +11,6 @@ class WooCommerceSubscription {
       'billing_interval' => 1,
     ];
     $sub = wcs_create_subscription($args);
-    codecept_debug($sub);
     $sub->add_product(wc_get_product($subscriptionProductId));
     return $sub;
   }
