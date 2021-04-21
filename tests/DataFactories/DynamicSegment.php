@@ -47,6 +47,15 @@ class DynamicSegment extends Segment {
     return $this;
   }
 
+  public function withWooCommerceTotalSpentFilter(float $amount = 9, int $days = 1) {
+    $this->filterData['segmentType'] = 'woocommerce';
+    $this->filterData['action'] = 'totalSpent';
+    $this->filterData['total_spent_type'] = '>';
+    $this->filterData['total_spent_amount'] = $amount;
+    $this->filterData['total_spent_days'] = $days;
+    return $this;
+  }
+
   public function create(): SegmentEntity {
     if (empty($this->filterData['segmentType'])) {
       $this->withUserRoleFilter('editor');
