@@ -59,6 +59,15 @@
   }
 }
 
+.mailpoet-tag-unknown {
+  border-color: $color-stats-unknown;
+  color: $color-stats-unknown;
+
+  &.mailpoet-tag-inverted {
+    background: $color-stats-unknown;
+  }
+}
+
 .mailpoet-tag-list {
   background: rgba($color-tertiary-light, .7);
   border-color: transparent;
