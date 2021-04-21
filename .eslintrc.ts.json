@@ -67,6 +67,7 @@
       // this violation has been added by a formed employee and we don't know how that works any more, so ignore
       "files": [
         "assets/js/src/settings/pages/advanced/reinstall.tsx",
+        "assets/js/src/settings/pages/advanced/recalculate_subscriber_score.tsx",
         "assets/js/src/settings/pages/key_activation/key_activation.tsx",
         "assets/js/src/settings/pages/send_with/other/activate_or_cancel.tsx",
         "assets/js/src/settings/pages/send_with/send_with_choice.tsx"

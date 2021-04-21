@@ -47,4 +47,11 @@ class StatisticsOpensRepository extends Repository {
     $subscriber->setEngagementScore($score);
     $this->entityManager->flush();
   }
+
+  public function resetSubscribersScoreCalculation() {
+    $this->entityManager->createQueryBuilder()->update(SubscriberEntity::class, 's')
+      ->set('s.engagementScoreUpdatedAt', ':verified')
+      ->setParameter('verified', null)
+      ->getQuery()->execute();
+  }
 }

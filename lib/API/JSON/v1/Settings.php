@@ -6,12 +6,17 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Cron\Workers\SubscribersEngagementScore;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Settings extends APIEndpoint {
 
@@ -30,15 +35,31 @@ class Settings extends APIEndpoint {
   /** @var ServicesChecker */
   private $servicesChecker;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
+
+  /**
+   * @var EntityManager
+   */
+  private $entityManager;
+
+  /**
+   * @var StatisticsOpensRepository
+   */
+  private $statisticsOpensRepository;
 
   public function __construct(
     SettingsController $settings,
     Bridge $bridge,
     AuthorizedEmailsController $authorizedEmailsController,
     TransactionalEmails $wcTransactionalEmails,
+    WPFunctions $wp,
+    EntityManager $entityManager,
+    StatisticsOpensRepository $statisticsOpensRepository,
     ServicesChecker $servicesChecker
   ) {
     $this->settings = $settings;
@@ -46,6 +67,9 @@ class Settings extends APIEndpoint {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->wcTransactionalEmails = $wcTransactionalEmails;
     $this->servicesChecker = $servicesChecker;
+    $this->wp = $wp;
+    $this->entityManager = $entityManager;
+    $this->statisticsOpensRepository = $statisticsOpensRepository;
   }
 
   public function get() {
@@ -79,6 +103,17 @@ class Settings extends APIEndpoint {
       }
       return $this->successResponse($this->settings->getAll());
     }
+  }
+
+  public function recalculateSubscribersScore() {
+    $this->statisticsOpensRepository->resetSubscribersScoreCalculation();
+    $task = new ScheduledTaskEntity();
+    $task->setType(SubscribersEngagementScore::TASK_TYPE);
+    $task->setScheduledAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->persist($task);
+    $this->entityManager->flush();
+    return $this->successResponse();
   }
 
   public function setAuthorizedFromAddress($data = []) {
