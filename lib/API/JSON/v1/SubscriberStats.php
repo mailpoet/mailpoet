@@ -45,6 +45,7 @@ class SubscriberStats extends APIEndpoint {
       'total_sent' => $statistics->getTotalSentCount(),
       'open' => $statistics->getOpenCount(),
       'click' => $statistics->getClickCount(),
+      'engagement_score' => $subscriber->getEngagementScore(),
     ];
     $woocommerce = $statistics->getWooCommerceRevenue();
     if ($woocommerce instanceof WooCommerceRevenue) {

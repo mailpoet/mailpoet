@@ -1,14 +1,24 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import Tag from 'common/tag/tag';
+import { ListingsEngagementScore } from '../listings_engagement_score';
 
 export type PropTypes = {
   totalSent: number;
   open: number;
   click: number;
+  subscriber: {
+    id: string;
+    engagement_score?: number;
+  };
 }
 
-export default ({ totalSent, open, click }: PropTypes): JSX.Element => {
+export default ({
+  totalSent,
+  open,
+  click,
+  subscriber,
+}: PropTypes): JSX.Element => {
   let openPercent = 0;
   let clickPercent = 0;
   let notOpenPercent = 0;
@@ -70,6 +80,15 @@ export default ({ totalSent, open, click }: PropTypes): JSX.Element => {
                   </>
                 )}
               </td>
+            </tr>
+            <tr>
+              <td>{MailPoet.I18n.t('statisticsColumn')}</td>
+              <td>
+                <div className="mailpoet-listing-stats">
+                  <ListingsEngagementScore subscriber={subscriber} />
+                </div>
+              </td>
+              <td />
             </tr>
           </tbody>
         </table>
