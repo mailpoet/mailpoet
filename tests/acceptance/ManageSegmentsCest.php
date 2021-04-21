@@ -135,6 +135,7 @@ class ManageSegmentsCest {
 
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Move to trash');
     $i->waitForText('1 segment was moved to the trash.');
+    $i->waitForElementClickable('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
     $i->waitForText($segmentEditedTitle);
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Delete permanently');
