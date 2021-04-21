@@ -17,6 +17,7 @@ export type StatsType = {
   total_sent: number;
   open: number;
   click: number;
+  engagement_score: number;
   woocommerce: {
     currency: string;
     value: number;
@@ -68,6 +69,10 @@ export const SubscriberStats: React.FunctionComponent = () => {
           click={stats.click}
           open={stats.open}
           totalSent={stats.total_sent}
+          subscriber={{
+            id: match.params.id,
+            engagement_score: stats.engagement_score,
+          }}
         />
         {stats.woocommerce && (
           <WoocommerceRevenues
