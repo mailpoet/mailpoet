@@ -12,7 +12,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
 use MailPoetVendor\Carbon\CarbonImmutable;
 
-class StatisticsFormsRepositoryTest extends \MailPoetTest {
+class StatisticsOpensRepositoryTest extends \MailPoetTest {
   /** @var StatisticsOpensRepository */
   private $repository;
 

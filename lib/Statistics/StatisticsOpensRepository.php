@@ -9,7 +9,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Tasks\Sending;
 
 /**
- * @extends Repository<StatisticsOpensEntity>
+ * @extends Repository<StatisticsOpenEntity>
  */
 class StatisticsOpensRepository extends Repository {
   protected function getEntityClassName(): string {
@@ -43,7 +43,7 @@ class StatisticsOpensRepository extends Repository {
       ->setParameter('subscriberId', $subscriber)
       ->getQuery()
       ->getSingleScalarResult();
-    $score = (int)round(($opens / $newslettersSentCount) * 100);
+    $score = ($opens / $newslettersSentCount) * 100;
     $subscriber->setEngagementScore($score);
     $this->entityManager->flush();
   }
