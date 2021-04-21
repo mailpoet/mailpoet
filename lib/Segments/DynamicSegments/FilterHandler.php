@@ -14,6 +14,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
 use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -33,6 +34,9 @@ class FilterHandler {
 
   /** @var WooCommerceNumberOfOrders */
   private $wooCommerceNumberOfOrders;
+
+  /** @var WooCommerceTotalSpent */
+  private $wooCommerceTotalSpent;
 
   /** @var WooCommerceSubscription */
   private $wooCommerceSubscription;
@@ -54,6 +58,7 @@ class FilterHandler {
     WooCommerceCategory $wooCommerceCategory,
     EmailOpensAbsoluteCountAction $emailOpensAbsoluteCount,
     WooCommerceNumberOfOrders $wooCommerceNumberOfOrders,
+    WooCommerceTotalSpent $wooCommerceTotalSpent,
     WooCommerceSubscription $wooCommerceSubscription,
     SegmentDependencyValidator $segmentDependencyValidator
   ) {
@@ -66,6 +71,7 @@ class FilterHandler {
     $this->entityManager = $entityManager;
     $this->segmentDependencyValidator = $segmentDependencyValidator;
     $this->emailOpensAbsoluteCount = $emailOpensAbsoluteCount;
+    $this->wooCommerceTotalSpent = $wooCommerceTotalSpent;
   }
 
   public function apply(QueryBuilder $queryBuilder, SegmentEntity $segment): QueryBuilder {
@@ -143,6 +149,8 @@ class FilterHandler {
           return $this->wooCommerceProduct->apply($queryBuilder, $filter);
         } elseif ($action === WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS) {
           return $this->wooCommerceNumberOfOrders->apply($queryBuilder, $filter);
+        } elseif ($action === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
+          return $this->wooCommerceTotalSpent->apply($queryBuilder, $filter);
         }
         return $this->wooCommerceCategory->apply($queryBuilder, $filter);
       default:

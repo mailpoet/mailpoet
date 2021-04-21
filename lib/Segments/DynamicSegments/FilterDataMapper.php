@@ -10,6 +10,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
 
 class FilterDataMapper {
   public function map(array $data = []): DynamicSegmentFilterData {
@@ -98,6 +99,13 @@ class FilterDataMapper {
       $filterData['number_of_orders_type'] = $data['number_of_orders_type'];
       $filterData['number_of_orders_count'] = $data['number_of_orders_count'];
       $filterData['number_of_orders_days'] = $data['number_of_orders_days'];
+    } elseif ($data['action'] === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
+      if (!isset($data['total_spent_type']) || !isset($data['total_spent_amount']) || !isset($data['total_spent_days'])) {
+        throw new InvalidFilterException('Missing required fields', InvalidFilterException::MISSING_TOTAL_SPENT_FIELDS);
+      }
+      $filterData['total_spent_type'] = $data['total_spent_type'];
+      $filterData['total_spent_amount'] = $data['total_spent_amount'];
+      $filterData['total_spent_days'] = $data['total_spent_days'];
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }
