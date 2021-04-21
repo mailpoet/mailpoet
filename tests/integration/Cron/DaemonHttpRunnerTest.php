@@ -302,6 +302,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       'createBeamerkWorker' => $worker,
       'createUnsubscribeTokensWorker' => $worker,
       'createSubscriberLinkTokensWorker' => $worker,
+      'createSubscribersEngagementScoreWorker' => $worker,
     ]);
   }
 }

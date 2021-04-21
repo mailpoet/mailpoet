@@ -14,6 +14,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\Subscriber as SubscriberModel;
+use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -68,11 +69,11 @@ class OpensTest extends \MailPoetTest {
       'preview' => false,
     ];
     // instantiate class
-    $this->opens = new Opens();
+    $this->opens = new Opens($this->diContainer->get(StatisticsOpensRepository::class));
   }
 
   public function testItReturnsImageWhenTrackDataIsEmpty() {
-    $opens = Stub::make($this->opens, [
+    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
       'returnResponse' => Expected::exactly(1),
     ], $this);
     $opens->track(false);
@@ -83,7 +84,7 @@ class OpensTest extends \MailPoetTest {
     $data = $this->trackData;
     $data->subscriber->setWpUserId(99);
     $data->preview = true;
-    $opens = Stub::make($this->opens, [
+    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
       'returnResponse' => null,
     ], $this);
     $opens->track($data);
@@ -95,7 +96,7 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItTracksOpenEvent() {
-    $opens = Stub::make($this->opens, [
+    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
       'returnResponse' => null,
     ], $this);
     $opens->track($this->trackData);
@@ -103,7 +104,7 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItDoesNotTrackRepeatedOpenEvents() {
-    $opens = Stub::make($this->opens, [
+    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
       'returnResponse' => null,
     ], $this);
     for ($count = 0; $count <= 2; $count++) {
@@ -113,7 +114,7 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItReturnsImageAfterTracking() {
-    $opens = Stub::make($this->opens, [
+    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
       'returnResponse' => Expected::exactly(1),
     ], $this);
     $opens->track($this->trackData);
