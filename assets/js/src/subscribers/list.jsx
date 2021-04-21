@@ -421,7 +421,14 @@ const SubscriberList = ({ match }) => {
         </td>
         { (mailpoetTrackingEnabled === true) ? (
           <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('statisticsColumn')}>
-            <ListingsEngagementScore subscriber={subscriber} />
+            <div className="mailpoet-listing-stats">
+              <a
+                key={`stats-link-${subscriber.id}`}
+                href={`#/stats/${subscriber.id}`}
+              >
+                <ListingsEngagementScore subscriber={subscriber} />
+              </a>
+            </div>
           </td>
         ) : null }
         <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribedOn')}>
