@@ -8,7 +8,7 @@ import {
 } from './types';
 
 import { EmailFields } from './dynamic_segments_filters/email';
-import { WordpressRoleFields } from './dynamic_segments_filters/wordpress_role';
+import { WordpressRoleFields } from './dynamic_segments_filters/subscriber_wordpress_role';
 import { WooCommerceFields } from './dynamic_segments_filters/woocommerce';
 import { WooCommerceSubscriptionFields } from './dynamic_segments_filters/woocommerce_subscription';
 
