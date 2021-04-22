@@ -8,7 +8,7 @@ import {
 } from './types';
 
 import { EmailFields } from './dynamic_segments_filters/email';
-import { WordpressRoleFields } from './dynamic_segments_filters/subscriber_wordpress_role';
+import { SubscriberFields } from './dynamic_segments_filters/subscriber';
 import { WooCommerceFields } from './dynamic_segments_filters/woocommerce';
 import { WooCommerceSubscriptionFields } from './dynamic_segments_filters/woocommerce_subscription';
 
@@ -21,7 +21,7 @@ export interface FilterFieldsProps {
 const filterFieldsMap = {
   [SegmentTypes.Email]: EmailFields,
   [SegmentTypes.WooCommerce]: WooCommerceFields,
-  [SegmentTypes.WordPressRole]: WordpressRoleFields,
+  [SegmentTypes.WordPressRole]: SubscriberFields,
   [SegmentTypes.WooCommerceSubscription]: WooCommerceSubscriptionFields,
 };
 
