@@ -87,6 +87,11 @@ $ ./do test:acceptance [--file=...] [--skip-deps]
   # if --file given then only tests on that file are executed.
   # if --skip-deps then it skips installation of composer dependencies.
 $ ./do test:acceptance-multisite [--file=...] [--skip-deps]
+  # download 3rd party plugins for tests
+  # if you pass tag it will attempt to download zip for the tag otherwise it downloads the latest release
+  # e.g. ./do download:woo-commerce-zip 5.20.0
+$ ./do download:woo-commerce-zip [<tag>]
+$ ./do download:woo-commerce-subscriptions-zip [<tag>]
   # same as test:acceptance but runs into a multisite wordpress setup.
 $ ./do delete:docker      # stop and remove all running docker containers.
 
