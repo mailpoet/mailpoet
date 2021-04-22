@@ -181,6 +181,18 @@ Then use `MailPoet.I18n.t('key')` to get the translated string on your Javascrip
 
 ## Acceptance testing
 
+To run the whole acceptance testing suite you need the docker daemon to be running and after that use a command: `./do test:acceptance`.
+If you want to run only a single test use the parameter `--file`:
+```bash
+./do test:acceptance --skip-deps --file tests/acceptance/ReceiveStandardEmailCest.php
+```
+The argument `--skip-deps` is useful locally to speed up the run.
+
+If there are some unexpected errors you can delete all the runtime and start again.
+To delete all the docker runtime for acceptance tests use the command `./do d:d`.
+
+When debugging you can add `$i->pause();` in to your test which pauses the execution.
+
 We are using Gravity Flow plugin's setup as an example for our acceptance test suite: https://www.stevenhenty.com/learn-acceptance-testing-deeply/
 
 From the article above:
