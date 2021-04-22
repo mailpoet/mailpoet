@@ -159,6 +159,16 @@ class Hooks {
           3
         );
       }
+      $this->wp->addAction(
+        'woocommerce_register_form',
+        [$this->subscriptionRegistration, 'extendForm']
+      );
+      $this->wp->addFilter(
+        'woocommerce_registration_errors',
+        [$this->subscriptionRegistration, 'onRegister'],
+        60,
+        3
+      );
     }
 
     // Manage subscription
