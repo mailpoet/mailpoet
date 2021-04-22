@@ -38,19 +38,15 @@ class Settings extends APIEndpoint {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var EntityManager */
+  private $entityManager;
+
+  /** @var StatisticsOpensRepository */
+  private $statisticsOpensRepository;
+  
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
-
-  /**
-   * @var EntityManager
-   */
-  private $entityManager;
-
-  /**
-   * @var StatisticsOpensRepository
-   */
-  private $statisticsOpensRepository;
 
   public function __construct(
     SettingsController $settings,
