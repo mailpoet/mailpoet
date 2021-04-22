@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import MailPoet from 'mailpoet';
 import { validateEmail } from './dynamic_segments_filters/email';
 import { validateWooCommerce } from './dynamic_segments_filters/woocommerce';
-import { validateWordpressRole } from './dynamic_segments_filters/wordpress_role';
+import { validateWordpressRole } from './dynamic_segments_filters/subscriber';
 import { validateWooCommerceSubscription } from './dynamic_segments_filters/woocommerce_subscription';
 
 import { loadCount } from './subscribers_calculator';

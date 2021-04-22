@@ -17,7 +17,7 @@ import Select from 'common/form/react_select/react_select';
 import Textarea from 'common/form/textarea/textarea';
 import { EmailSegmentOptions } from './dynamic_segments_filters/email';
 import { WooCommerceOptions } from './dynamic_segments_filters/woocommerce';
-import { WordpressRoleSegmentOptions } from './dynamic_segments_filters/wordpress_role';
+import { WordpressRoleSegmentOptions } from './dynamic_segments_filters/subscriber';
 import { WooCommerceSubscriptionOptions } from './dynamic_segments_filters/woocommerce_subscription';
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';

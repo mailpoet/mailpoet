@@ -8,17 +8,8 @@ import { SegmentFormData } from '../segment_form_data';
 import {
   WordpressRoleFormItem,
   OnFilterChange,
-  SegmentTypes,
   SelectOption,
 } from '../types';
-
-export function validateWordpressRole(formItems: WordpressRoleFormItem): boolean {
-  return !!formItems.wordpressRole;
-}
-
-export const WordpressRoleSegmentOptions = [
-  { value: 'wordpressRole', label: MailPoet.I18n.t('segmentsSubscriber'), group: SegmentTypes.WordPressRole },
-];
 
 interface Props {
   onChange: OnFilterChange;
