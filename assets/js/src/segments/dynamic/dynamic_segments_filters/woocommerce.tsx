@@ -131,9 +131,9 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
             ])({ number_of_orders_type: e.target.value })}
             automationId="select-number-of-orders-type"
           >
-            <option value="=">{MailPoet.I18n.t('wooNumberOfOrdersEqual')}</option>
-            <option value=">">{MailPoet.I18n.t('wooNumberOfOrdersMoreThan')}</option>
-            <option value="<">{MailPoet.I18n.t('wooNumberOfOrdersLessThan')}</option>
+            <option value="=">{MailPoet.I18n.t('equal')}</option>
+            <option value=">">{MailPoet.I18n.t('moreThan')}</option>
+            <option value="<">{MailPoet.I18n.t('lessThan')}</option>
           </Select>
           <Input
             data-automation-id="input-number-of-orders-count"
@@ -150,19 +150,19 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
         </Grid.CenteredRow>
         <div className="mailpoet-gap" />
         <Grid.CenteredRow className="mailpoet-form-field">
-          <div>{MailPoet.I18n.t('wooNumberOfOrdersInTheLast')}</div>
+          <div>{MailPoet.I18n.t('inTheLast')}</div>
           <Input
             data-automation-id="input-number-of-orders-days"
             type="number"
             min={1}
             value={item.number_of_orders_days || ''}
-            placeholder={MailPoet.I18n.t('wooNumberOfOrdersDaysPlaceholder')}
+            placeholder={MailPoet.I18n.t('daysPlaceholder')}
             onChange={(event): void => compose([
               onChange,
               assign(item),
             ])({ number_of_orders_days: event.target.value })}
           />
-          <div>{MailPoet.I18n.t('wooNumberOfOrdersDays')}</div>
+          <div>{MailPoet.I18n.t('days')}</div>
         </Grid.CenteredRow>
       </div>
     );
@@ -180,8 +180,8 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
             ])({ total_spent_type: e.target.value })}
             automationId="select-total-spent-type"
           >
-            <option value=">">{MailPoet.I18n.t('wooTotalSpentMoreThan')}</option>
-            <option value="<">{MailPoet.I18n.t('wooTotalSpentLessThan')}</option>
+            <option value=">">{MailPoet.I18n.t('moreThan')}</option>
+            <option value="<">{MailPoet.I18n.t('lessThan')}</option>
           </Select>
           <Input
             data-automation-id="input-total-spent-amount"
@@ -199,19 +199,19 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
         </Grid.CenteredRow>
         <div className="mailpoet-gap" />
         <Grid.CenteredRow className="mailpoet-form-field">
-          <div>{MailPoet.I18n.t('wooTotalSpentInTheLast')}</div>
+          <div>{MailPoet.I18n.t('inTheLast')}</div>
           <Input
             data-automation-id="input-total-spent-days"
             type="number"
             min={1}
             value={item.total_spent_days || ''}
-            placeholder={MailPoet.I18n.t('wooTotalSpentDaysPlaceholder')}
+            placeholder={MailPoet.I18n.t('daysPlaceholder')}
             onChange={(event): void => compose([
               onChange,
               assign(item),
             ])({ total_spent_days: event.target.value })}
           />
-          <div>{MailPoet.I18n.t('wooTotalSpentDays')}</div>
+          <div>{MailPoet.I18n.t('days')}</div>
         </Grid.CenteredRow>
       </div>
     );
