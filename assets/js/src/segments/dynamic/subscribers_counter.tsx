@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import MailPoet from 'mailpoet';
 import { validateEmail } from './dynamic_segments_filters/email';
 import { validateWooCommerce } from './dynamic_segments_filters/woocommerce';
-import { validateWordpressRole } from './dynamic_segments_filters/subscriber';
+import { validateSubscriber } from './dynamic_segments_filters/subscriber';
 import { validateWooCommerceSubscription } from './dynamic_segments_filters/woocommerce_subscription';
 
 import { loadCount } from './subscribers_calculator';
@@ -25,7 +25,7 @@ interface Props {
 const validationMap = {
   [SegmentTypes.Email]: validateEmail,
   [SegmentTypes.WooCommerce]: validateWooCommerce,
-  [SegmentTypes.WordPressRole]: validateWordpressRole,
+  [SegmentTypes.WordPressRole]: validateSubscriber,
   [SegmentTypes.WooCommerceSubscription]: validateWooCommerceSubscription,
 };
 
