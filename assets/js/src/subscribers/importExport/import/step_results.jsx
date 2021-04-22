@@ -66,6 +66,7 @@ function SuppressionListReminder({ createdSubscribers, updatedSubscribers }) {
                 className="mailpoet-link"
                 href="https://kb.mailpoet.com/article/359-how-to-import-a-suppression-list"
                 key="kb-link"
+                data-beacon-article="6064973ce0324b5fdfd0650c"
                 target="_blank"
                 rel="noopener noreferrer"
               >
