@@ -1,6 +1,7 @@
 export enum SegmentTypes {
   Email = 'email',
   WordPressRole = 'userRole',
+  SubscribedDate = 'subscribedDate',
   WooCommerce = 'woocommerce',
   WooCommerceSubscription = 'woocommerceSubscription'
 }
@@ -12,6 +13,11 @@ export enum EmailActionTypes {
   CLICKED = 'clicked',
   CLICKED_ANY = 'clickedAny',
   NOT_CLICKED = 'notClicked',
+}
+
+export enum SubscriberActionTypes {
+  WORDPRESS_ROLE = 'wordpressRole',
+  SUBSCRIBED_DATE = 'subscribedDate',
 }
 
 export interface SelectOption {
@@ -27,6 +33,7 @@ export interface FormItem {
   segmentType?: string;
   name?: string;
   description?: string;
+  action?: string;
 }
 
 export interface WordpressRoleFormItem extends FormItem {
@@ -34,7 +41,6 @@ export interface WordpressRoleFormItem extends FormItem {
 }
 
 export interface WooCommerceFormItem extends FormItem {
-  action?: string;
   category_id?: string;
   product_id?: string;
   number_of_orders_type?: string;
@@ -46,12 +52,10 @@ export interface WooCommerceFormItem extends FormItem {
 }
 
 export interface WooCommerceSubscriptionFormItem extends FormItem {
-  action?: string;
   product_id?: string;
 }
 
 export interface EmailFormItem extends FormItem {
-  action?: string;
   newsletter_id?: string;
   link_id?: string;
   operator?: string;
