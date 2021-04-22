@@ -36,16 +36,21 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   ) {
     return false;
   }
-  if (formItems.action === 'purchasedCategory' && !formItems.category_id) {
+  if (formItems.action === WooCommerceActionTypes.PURCHASED_CATEGORY && !formItems.category_id) {
     return false;
   }
-  if (formItems.action === 'purchasedProduct' && !formItems.product_id) {
+  if (formItems.action === WooCommerceActionTypes.PURCHASED_PRODUCT && !formItems.product_id) {
     return false;
   }
-  if (formItems.action === 'numberOfOrders' && (!formItems.number_of_orders_count || !formItems.number_of_orders_days || !formItems.number_of_orders_type)) {
+  const numberOfOrdersIsInvalid = !formItems.number_of_orders_count
+    || !formItems.number_of_orders_days
+    || !formItems.number_of_orders_type;
+  if (formItems.action === WooCommerceActionTypes.NUMBER_OF_ORDERS && numberOfOrdersIsInvalid) {
     return false;
   }
-  if (formItems.action === 'totalSpent' && (!formItems.total_spent_amount || !formItems.total_spent_days || !formItems.total_spent_type)) {
+  if (formItems.action === WooCommerceActionTypes.TOTAL_SPENT
+    && (!formItems.total_spent_amount || !formItems.total_spent_days || !formItems.total_spent_type)
+  ) {
     return false;
   }
   return true;
