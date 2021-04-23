@@ -471,4 +471,64 @@ class ManageSegmentsCest {
     $i->seeInField($numberOfOrdersCountElement, '4');
     $i->seeInField($numberOfOrdersDaysElement, '20');
   }
+
+  public function createAndEditWooCommerceTotalSpentSegment(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
+    $actionSelectElement = '[data-automation-id="select-segment-action"]';
+    $totalSpentTypeElement = '[data-automation-id="select-total-spent-type"]';
+    $totalSpentAmountElement = '[data-automation-id="input-total-spent-amount"]';
+    $totalSpentDaysElement = '[data-automation-id="input-total-spent-days"]';
+
+    $i->wantTo('Create a new WooCommerce Total Spent segment');
+    $segmentTitle = 'Segment Woo Total Spent Test';
+    $segmentDesc = 'Segment description';
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->click('[data-automation-id="new-segment"]');
+    $i->fillField(['name' => 'name'], $segmentTitle);
+    $i->fillField(['name' => 'description'], $segmentDesc);
+    $i->selectOptionInReactSelect('total spent', $actionSelectElement);
+    $i->waitForElement($totalSpentTypeElement);
+    $i->selectOption($totalSpentTypeElement, '>');
+    $i->fillField($totalSpentAmountElement, 2);
+    $i->fillField($totalSpentDaysElement, 10);
+
+    $i->click('Save');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle);
+    $i->seeNoJSErrors();
+
+    $i->wantTo('Open edit form and check that all values were saved correctly');
+    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->waitForElement($totalSpentTypeElement);
+    $i->seeInField(['name' => 'name'], $segmentTitle);
+    $i->seeInField(['name' => 'description'], $segmentDesc);
+    $i->see('total spent', $actionSelectElement);
+    $i->see('more than', $totalSpentTypeElement);
+    $i->seeInField($totalSpentAmountElement, '2');
+    $i->seeInField($totalSpentDaysElement, '10');
+
+    $i->wantTo('Edit segment and save');
+    $editedTitle = 'Segment Woo Total Spent Test Edited';
+    $editedDesc = 'Segment description Edited';
+    $i->fillField(['name' => 'name'], $editedTitle);
+    $i->fillField(['name' => 'description'], $editedDesc);
+    $i->selectOption($totalSpentTypeElement, '<');
+    $i->fillField($totalSpentAmountElement, 4);
+    $i->fillField($totalSpentDaysElement, 20);
+    $i->click('Save');
+    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText($segmentTitle);
+    $i->seeNoJSErrors();
+
+    $i->wantTo('Open edit form and check that all values were saved correctly');
+    $i->clickItemRowActionByItemName($editedTitle, 'Edit');
+    $i->waitForElement($totalSpentTypeElement);
+    $i->seeInField(['name' => 'name'], $editedTitle);
+    $i->seeInField(['name' => 'description'], $editedDesc);
+    $i->see('total spent', $actionSelectElement);
+    $i->see('less than', $totalSpentTypeElement);
+    $i->seeInField($totalSpentAmountElement, '4');
+    $i->seeInField($totalSpentDaysElement, '20');
+  }
 }
