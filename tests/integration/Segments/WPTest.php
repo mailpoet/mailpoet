@@ -12,6 +12,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscription\Registration;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -101,20 +102,39 @@ class WPTest extends \MailPoetTest {
   }
 
   public function testItSendsConfirmationEmailWhenSignupConfirmationAndSubscribeOnRegisterEnabled() {
+    $registration = $this->diContainer->get(Registration::class);
     $this->settings->set('sender', [
       'address' => 'sender@mailpoet.com',
       'name' => 'Sender',
     ]);
 
-    // signup confirmation enabled, subscribe on-register enabled
+    // signup confirmation enabled, subscribe on-register enabled, checkbox in form is checked
+    $_POST = ['mailpoet' => ['subscribe_on_register_active' => '1', 'subscribe_on_register' => '1']];
     $this->settings->set('signup_confirmation.enabled', '1');
     $this->settings->set('subscribe.on_register.enabled', '1');
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
+    $user = $this->getUser((int)$id);
+    $registration->onRegister([], $user['user_login'], $user['user_email']);
     $this->wpSegment->synchronizeUser($id);
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wpSubscriber->countConfirmations)->equals(1);
-    expect($wpSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+    expect($wpSubscriber->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    unset($_POST['mailpoet']);
+
+    // signup confirmation enabled, subscribe on-register enabled, checkbox in form is unchecked
+    $_POST = ['mailpoet' => ['subscribe_on_register_active' => '1']];
+    $this->settings->set('signup_confirmation.enabled', '1');
+    $this->settings->set('subscribe.on_register.enabled', '1');
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    $user = $this->getUser((int)$id);
+    $registration->onRegister([], $user['user_login'], $user['user_email']);
+    $this->wpSegment->synchronizeUser($id);
+    $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
+    expect($wpSubscriber->countConfirmations)->equals(0);
+    expect($wpSubscriber->status)->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    unset($_POST['mailpoet']);
 
     // signup confirmation disabled, subscribe on-register enabled
     $this->settings->set('signup_confirmation.enabled', '0');
@@ -122,11 +142,13 @@ class WPTest extends \MailPoetTest {
     $randomNumber = rand();
     $id = $this->insertUser($randomNumber);
     $this->wpSegment->synchronizeUser($id);
+    $user = $this->getUser((int)$id);
+    $registration->onRegister([], $user['user_login'], $user['user_email']);
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wpSubscriber->countConfirmations)->equals(0);
     expect($wpSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
 
-    // signup confirmation enaled, subscribe on-register disabled
+    // signup confirmation enabled, subscribe on-register disabled
     $this->settings->set('signup_confirmation.enabled', '1');
     $this->settings->set('subscribe.on_register.enabled', '0');
     $randomNumber = rand();
@@ -562,6 +584,15 @@ class WPTest extends \MailPoetTest {
     }
     $this->userIds[] = $id;
     return $id;
+  }
+
+  private function getUser(int $id): array {
+    global $wpdb;
+    return $this->entityManager->getConnection()->executeQuery('
+      SELECT user_login, user_email, user_registered
+      FROM ' . $wpdb->users . '
+      WHERE id = :id
+    ', ['id' => $id])->fetch();
   }
 
   private function updateWPUserEmail($id, $email) {
