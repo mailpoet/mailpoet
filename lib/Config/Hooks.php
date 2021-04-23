@@ -161,11 +161,11 @@ class Hooks {
       }
       $this->wp->addAction(
         'woocommerce_register_form',
-        [$this->subscriptionRegistration, 'extendForm']
+        [$this->hooksWooCommerce, 'extendForm']
       );
       $this->wp->addFilter(
         'woocommerce_registration_errors',
-        [$this->subscriptionRegistration, 'onRegister'],
+        [$this->hooksWooCommerce, 'onRegister'],
         60,
         3
       );
