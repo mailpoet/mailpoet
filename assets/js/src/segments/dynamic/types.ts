@@ -38,6 +38,8 @@ export interface FormItem {
 
 export interface WordpressRoleFormItem extends FormItem {
   wordpressRole?: string;
+  operator?: string;
+  value?: string;
 }
 
 export interface WooCommerceFormItem extends FormItem {
