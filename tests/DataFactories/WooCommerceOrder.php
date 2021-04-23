@@ -93,11 +93,15 @@ class WooCommerceOrder {
     $orderOut = $this->tester->cliToArray(['wc', 'shop_order', 'get', $createOutput[0], '--format=json', '--user=admin']);
     $order = json_decode($orderOut[0], true);
     if (isset($this->data['date_created'])) {
-      wp_update_post([
-        'ID' => $order['id'],
-        'post_date' => $this->data['date_created'],
-        'post_date_gmt' => get_gmt_from_date( $this->data['date_created'] ),
-      ]);
+      global $wpdb;
+      $dateCreated = $this->data['date_created'];
+      $dateCreatedGmt = get_gmt_from_date( $this->data['date_created']);
+      $wpdb->query(
+        "UPDATE $wpdb->posts SET
+        `post_date` = '{$dateCreated}',
+        `post_modified_gmt` = '{$dateCreatedGmt}'
+        WHERE ID = {$order['id']};"
+      );
     }
     return $order;
   }
