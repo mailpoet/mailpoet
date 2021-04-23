@@ -5,6 +5,7 @@ namespace MailPoet\Config;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Statistics\Track\WooCommercePurchases;
+use MailPoet\Subscription\Registration;
 use MailPoet\WooCommerce\Settings as WooCommerceSettings;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 
@@ -21,6 +22,9 @@ class HooksWooCommerce {
   /** @var WooCommercePurchases */
   private $woocommercePurchases;
 
+  /** @var Registration */
+  private $subscriberRegistration;
+
   /** @var LoggerFactory */
   private $loggerFactory;
 
@@ -29,6 +33,7 @@ class HooksWooCommerce {
     WooCommerceSegment $woocommerceSegment,
     WooCommerceSettings $woocommerceSettings,
     WooCommercePurchases $woocommercePurchases,
+    Registration $subscriberRegistration,
     LoggerFactory $loggerFactory
   ) {
     $this->woocommerceSubscription = $woocommerceSubscription;
@@ -36,6 +41,7 @@ class HooksWooCommerce {
     $this->woocommerceSettings = $woocommerceSettings;
     $this->woocommercePurchases = $woocommercePurchases;
     $this->loggerFactory = $loggerFactory;
+    $this->subscriberRegistration = $subscriberRegistration;
   }
 
   public function extendWooCommerceCheckoutForm() {
@@ -83,6 +89,22 @@ class HooksWooCommerce {
       $this->woocommercePurchases->trackPurchase($id, $useCookies);
     } catch (\Throwable $e) {
       $this->logError($e, 'WooCommerce Purchases');
+    }
+  }
+
+  public function extendForm() {
+    try {
+      $this->subscriberRegistration->extendForm();
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce Extend Form');
+    }
+  }
+
+  public function onRegister($errors, string $userLogin, string $userEmail = null) {
+    try {
+      return $this->subscriberRegistration->onRegister($errors, $userLogin, $userEmail);
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce on Register');
     }
   }
 
