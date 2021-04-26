@@ -9,6 +9,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
@@ -50,6 +51,9 @@ class FilterHandler {
   /** @var EmailOpensAbsoluteCountAction */
   private $emailOpensAbsoluteCount;
 
+  /** @var SubscriberSubscribedDate */
+  private $subscriberSubscribedDate;
+
   public function __construct(
     EntityManager $entityManager,
     EmailAction $emailAction,
@@ -60,6 +64,7 @@ class FilterHandler {
     WooCommerceNumberOfOrders $wooCommerceNumberOfOrders,
     WooCommerceTotalSpent $wooCommerceTotalSpent,
     WooCommerceSubscription $wooCommerceSubscription,
+    SubscriberSubscribedDate $subscriberSubscribedDate,
     SegmentDependencyValidator $segmentDependencyValidator
   ) {
     $this->emailAction = $emailAction;
@@ -72,6 +77,7 @@ class FilterHandler {
     $this->segmentDependencyValidator = $segmentDependencyValidator;
     $this->emailOpensAbsoluteCount = $emailOpensAbsoluteCount;
     $this->wooCommerceTotalSpent = $wooCommerceTotalSpent;
+    $this->subscriberSubscribedDate = $subscriberSubscribedDate;
   }
 
   public function apply(QueryBuilder $queryBuilder, SegmentEntity $segment): QueryBuilder {
@@ -134,6 +140,10 @@ class FilterHandler {
     $filterData = $filter->getFilterData();
     switch ($filterData->getFilterType()) {
       case DynamicSegmentFilterData::TYPE_USER_ROLE:
+        $action = $filterData->getParam('action');
+        if ($action === SubscriberSubscribedDate::TYPE) {
+          return $this->subscriberSubscribedDate->apply($queryBuilder, $filter);
+        }
         return $this->userRole->apply($queryBuilder, $filter);
       case DynamicSegmentFilterData::TYPE_EMAIL:
         $action = $filterData->getParam('action');
