@@ -11,7 +11,10 @@ import { WordpressRoleFields } from './subscriber_wordpress_role';
 import { SubscribedDateFields } from './subscriber_subscribed_date';
 
 export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
-  return !!formItems.wordpressRole;
+  if ((!formItems.action) || (formItems.action === SubscriberActionTypes.WORDPRESS_ROLE)) {
+    return !!formItems.wordpressRole;
+  }
+  return (!!formItems.operator && !!formItems.value);
 }
 
 export const SubscriberSegmentOptions = [

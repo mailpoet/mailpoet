@@ -27,7 +27,15 @@ export const WordpressRoleFields: React.FunctionComponent<Props> = ({ onChange, 
       isFullWidth
       placeholder={MailPoet.I18n.t('selectUserRolePlaceholder')}
       options={options}
-      value={find(['value', item.wordpressRole], options)}
+      value={
+        find(
+          (option) => {
+            if (!item.wordpressRole) return undefined;
+            return item.wordpressRole.toLowerCase() === option.value.toLowerCase();
+          },
+          options
+        )
+      }
       onChange={(option: SelectOption): void => compose([
         onChange,
         assign(item),
