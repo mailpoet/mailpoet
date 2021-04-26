@@ -21,13 +21,13 @@ class SubscriberSubscribedDate implements Filter {
     $operator = $filterData->getParam('operator');
 
     if ($operator === self::BEFORE) {
-      $queryBuilder->andWhere('last_subscribed_at < :date'. $filter->getId());
+      $queryBuilder->andWhere('last_subscribed_at < :date' . $filter->getId());
     } elseif ($operator === self::AFTER) {
-      $queryBuilder->andWhere('last_subscribed_at >= :date'. $filter->getId());
+      $queryBuilder->andWhere('last_subscribed_at >= :date' . $filter->getId());
     } elseif ($operator === self::IN_THE_LAST) {
-      $queryBuilder->andWhere('last_subscribed_at >= :date'. $filter->getId());
+      $queryBuilder->andWhere('last_subscribed_at >= :date' . $filter->getId());
     } elseif ($operator === self::NOT_IN_THE_LAST) {
-      $queryBuilder->andWhere('last_subscribed_at < :date'. $filter->getId());
+      $queryBuilder->andWhere('last_subscribed_at < :date' . $filter->getId());
     } else {
       throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }

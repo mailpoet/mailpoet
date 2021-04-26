@@ -6,6 +6,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
@@ -16,11 +17,7 @@ class FilterDataMapper {
   public function map(array $data = []): DynamicSegmentFilterData {
     switch ($this->getSegmentType($data)) {
       case DynamicSegmentFilterData::TYPE_USER_ROLE:
-        if (empty($data['wordpressRole'])) throw new InvalidFilterException('Missing role', InvalidFilterException::MISSING_ROLE);
-        return new DynamicSegmentFilterData([
-          'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-          'wordpressRole' => $data['wordpressRole'],
-        ]);
+        return $this->createSubscriber($data);
       case DynamicSegmentFilterData::TYPE_EMAIL:
         return $this->createEmail($data);
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE:
@@ -40,6 +37,26 @@ class FilterDataMapper {
       throw new InvalidFilterException('Segment type is not set', InvalidFilterException::MISSING_TYPE);
     }
     return $data['segmentType'];
+  }
+
+  private function createSubscriber(array $data): DynamicSegmentFilterData {
+    if (empty($data['action'])) {
+      $data['action'] = DynamicSegmentFilterData::TYPE_USER_ROLE;
+    }
+    if ($data['action'] === SubscriberSubscribedDate::TYPE) {
+      if (empty($data['value'])) throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
+      return new DynamicSegmentFilterData([
+        'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+        'action' => $data['action'],
+        'value' => $data['value'],
+        'operator' => $data['operator'] ?? 'before',
+      ]);
+    }
+    if (empty($data['wordpressRole'])) throw new InvalidFilterException('Missing role', InvalidFilterException::MISSING_ROLE);
+    return new DynamicSegmentFilterData([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'wordpressRole' => $data['wordpressRole'],
+    ]);
   }
 
   /**
