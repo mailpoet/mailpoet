@@ -22,6 +22,7 @@ import { WooCommerceSubscriptionOptions } from './dynamic_segments_filters/wooco
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';
 import { SegmentFormData } from './segment_form_data';
+import { isFormValid } from './validator';
 
 import {
   AnyFormItem,
@@ -244,7 +245,7 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
           </div>
           <SubscribersCounter item={item} />
           <div className="mailpoet-form-actions">
-            <Button type="submit" onClick={handleSave}>
+            <Button type="submit" onClick={handleSave} isDisabled={!isFormValid(item)}>
               {MailPoet.I18n.t('save')}
             </Button>
           </div>

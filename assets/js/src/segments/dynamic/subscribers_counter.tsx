@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import MailPoet from 'mailpoet';
-import { validateEmail } from './dynamic_segments_filters/email';
-import { validateWooCommerce } from './dynamic_segments_filters/woocommerce';
-import { validateSubscriber } from './dynamic_segments_filters/subscriber';
-import { validateWooCommerceSubscription } from './dynamic_segments_filters/woocommerce_subscription';
 
+import { isFormValid } from './validator';
 import { loadCount } from './subscribers_calculator';
 
 import {
   AnyFormItem,
-  SegmentTypes,
 } from './types';
 
 interface SubscriberCount {
@@ -20,18 +16,6 @@ interface SubscriberCount {
 
 interface Props {
   item: AnyFormItem;
-}
-
-const validationMap = {
-  [SegmentTypes.Email]: validateEmail,
-  [SegmentTypes.WooCommerce]: validateWooCommerce,
-  [SegmentTypes.WordPressRole]: validateSubscriber,
-  [SegmentTypes.WooCommerceSubscription]: validateWooCommerceSubscription,
-};
-
-function isFormValid(item: AnyFormItem): boolean {
-  if (validationMap[item.segmentType] === undefined) return false;
-  return validationMap[item.segmentType](item);
 }
 
 const SubscribersCounter: React.FunctionComponent<Props> = ({ item }: Props) => {
