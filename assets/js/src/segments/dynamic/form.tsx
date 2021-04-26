@@ -26,6 +26,7 @@ import { SegmentFormData } from './segment_form_data';
 import {
   AnyFormItem,
   FilterValue,
+  SubscriberActionTypes,
 } from './types';
 import APIErrorsNotice from '../../notices/api_errors_notice';
 
@@ -83,12 +84,17 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
   useEffect(() => {
     function findSegmentType(itemSearch): FilterValue | undefined {
       let found;
+      if (itemSearch.action === undefined) {
+        // bc compatibility, the wordpress user role segment doesn't have action
+        return SubscriberSegmentOptions.find(
+          (value) => value.value === SubscriberActionTypes.WORDPRESS_ROLE
+        );
+      }
+
       segmentFilters.forEach((filter) => {
         filter.options.forEach((option) => {
           if (option.group === itemSearch.segmentType) {
-            if (itemSearch.action === undefined) {
-              found = option;
-            } else if (itemSearch.action === option.value) {
+            if (itemSearch.action === option.value) {
               found = option;
             }
           }
