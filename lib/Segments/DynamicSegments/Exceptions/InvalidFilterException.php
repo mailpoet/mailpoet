@@ -5,7 +5,6 @@ namespace MailPoet\Segments\DynamicSegments\Exceptions;
 use MailPoet\InvalidStateException;
 
 class InvalidFilterException extends InvalidStateException {
-
   const MISSING_TYPE = 1;
   const INVALID_TYPE = 2;
   const MISSING_ROLE = 3;
@@ -17,5 +16,5 @@ class InvalidFilterException extends InvalidStateException {
   const MISSING_VALUE = 9;
   const MISSING_NUMBER_OF_ORDERS_FIELDS = 10;
   const MISSING_TOTAL_SPENT_FIELDS = 11;
-
+  const INVALID_DATE_VALUE = 12;
 };
