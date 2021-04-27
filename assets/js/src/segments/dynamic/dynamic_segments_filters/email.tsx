@@ -16,6 +16,7 @@ export const EmailSegmentOptions = [
   { value: EmailActionTypes.OPENED, label: MailPoet.I18n.t('emailActionOpened'), group: SegmentTypes.Email },
   { value: EmailActionTypes.NOT_OPENED, label: MailPoet.I18n.t('emailActionNotOpened'), group: SegmentTypes.Email },
   { value: EmailActionTypes.CLICKED, label: MailPoet.I18n.t('emailActionClicked'), group: SegmentTypes.Email },
+  { value: EmailActionTypes.CLICKED_ANY, label: MailPoet.I18n.t('emailActionClickedAnyEmail'), group: SegmentTypes.Email },
   { value: EmailActionTypes.NOT_CLICKED, label: MailPoet.I18n.t('emailActionNotClicked'), group: SegmentTypes.Email },
 ];
 
@@ -26,6 +27,10 @@ export function validateEmail(formItems: EmailFormItem): boolean {
       .values(EmailActionTypes)
       .some((v) => v === formItems.action)
   ) return false;
+
+  if ((formItems.action === EmailActionTypes.CLICKED_ANY)) {
+    return true;
+  }
 
   if ((formItems.action !== EmailActionTypes.OPENS_ABSOLUTE_COUNT)) {
     return !!formItems.newsletter_id;
@@ -49,6 +54,7 @@ const componentsMap = {
   [EmailActionTypes.NOT_CLICKED]: EmailStatisticsFields,
   [EmailActionTypes.OPENED]: EmailStatisticsFields,
   [EmailActionTypes.NOT_OPENED]: EmailStatisticsFields,
+  [EmailActionTypes.CLICKED_ANY]: null,
 };
 
 export const EmailFields: React.FunctionComponent<Props> = ({ onChange, item }) => {

@@ -10,6 +10,7 @@ export enum EmailActionTypes {
   OPENED = 'opened',
   NOT_OPENED = 'notOpened',
   CLICKED = 'clicked',
+  CLICKED_ANY = 'clickedAny',
   NOT_CLICKED = 'notClicked',
 }
 
