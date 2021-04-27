@@ -2,21 +2,21 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 
 import {
+  EmailActionTypes,
   EmailFormItem,
   OnFilterChange,
   SegmentTypes,
-  EmailActionTypes,
 } from '../types';
 
 import { EmailStatisticsFields } from './email_statistics';
 import { EmailOpensAbsoluteCountFields } from './email_opens_absolute_count';
 
 export const EmailSegmentOptions = [
-  { value: 'opensAbsoluteCount', label: MailPoet.I18n.t('emailActionOpensAbsoluteCount'), group: SegmentTypes.Email },
-  { value: 'opened', label: MailPoet.I18n.t('emailActionOpened'), group: SegmentTypes.Email },
-  { value: 'notOpened', label: MailPoet.I18n.t('emailActionNotOpened'), group: SegmentTypes.Email },
-  { value: 'clicked', label: MailPoet.I18n.t('emailActionClicked'), group: SegmentTypes.Email },
-  { value: 'notClicked', label: MailPoet.I18n.t('emailActionNotClicked'), group: SegmentTypes.Email },
+  { value: EmailActionTypes.OPENS_ABSOLUTE_COUNT, label: MailPoet.I18n.t('emailActionOpensAbsoluteCount'), group: SegmentTypes.Email },
+  { value: EmailActionTypes.OPENED, label: MailPoet.I18n.t('emailActionOpened'), group: SegmentTypes.Email },
+  { value: EmailActionTypes.NOT_OPENED, label: MailPoet.I18n.t('emailActionNotOpened'), group: SegmentTypes.Email },
+  { value: EmailActionTypes.CLICKED, label: MailPoet.I18n.t('emailActionClicked'), group: SegmentTypes.Email },
+  { value: EmailActionTypes.NOT_CLICKED, label: MailPoet.I18n.t('emailActionNotClicked'), group: SegmentTypes.Email },
 ];
 
 export function validateEmail(formItems: EmailFormItem): boolean {
