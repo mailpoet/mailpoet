@@ -188,7 +188,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 * Added: a reminder to import the suppression list via "Subscriber Import" when migrating email marketing services;
 * Added: visualize subscriber engagement in the subscriber listing;
 * Added: new segment for subscribers with an active subscription;
-* Added: new segment for total amount spent.
+* Added: new segment for total amount spent;
+* Fixed: WP-Admin sidebar overlapping MailPoet's contents on WordPress.com websites.
 
 = 3.60.9 - 2021-04-20 =
 * Added: new segment for a number of orders;
