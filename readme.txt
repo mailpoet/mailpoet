@@ -3,7 +3,7 @@ Contributors: mailpoet, wysija
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.7
-Stable tag: 3.60.9
+Stable tag: 3.60.10
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.60.10 - 2021-04-27 =
+* Added: a reminder to import the suppression list via "Subscriber Import" when migrating email marketing services;
+* Added: visualize subscriber engagement in the subscriber listing;
+* Added: new segment for subscribers with an active subscription;
+* Added: new segment for total amount spent.
 
 = 3.60.9 - 2021-04-20 =
 * Added: new segment for a number of orders;
