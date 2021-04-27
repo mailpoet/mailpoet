@@ -189,6 +189,21 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
+  public function testItMapsLinkClicksAny() {
+    $data = [
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailAction::ACTION_CLICKED_ANY,
+      'uselessParam' => 1,
+    ];
+    $filter = $this->mapper->map($data);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
+    expect($filter->getData())->equals([
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailAction::ACTION_CLICKED_ANY,
+    ]);
+  }
+
   public function testItCreatesEmailOpensWithOperator() {
     $data = [
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
