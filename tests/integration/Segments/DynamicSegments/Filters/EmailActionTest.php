@@ -139,6 +139,17 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('not_opened@example.com');
   }
 
+  public function testGetClickedAnyLink() {
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED_ANY);
+    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAll();
+    expect(count($result))->equals(1);
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
+  }
+
   public function testGetNotClickedWithWrongLink() {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, (int)$this->newsletter->getId(), 2);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
@@ -179,7 +190,7 @@ class EmailActionTest extends \MailPoetTest {
       ->from($subscribersTable);
   }
 
-  private function getSegmentFilter(string $action, int $newsletterId, int $linkId = null): DynamicSegmentFilterEntity {
+  private function getSegmentFilter(string $action, int $newsletterId = null, int $linkId = null): DynamicSegmentFilterEntity {
     $segmentFilterData = new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => $action,
