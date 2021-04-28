@@ -49,7 +49,7 @@ class FilterDataMapper {
         'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
         'action' => $data['action'],
         'value' => $data['value'],
-        'operator' => $data['operator'] ?? 'before',
+        'operator' => $data['operator'] ?? SubscriberSubscribedDate::BEFORE,
       ]);
     }
     if (empty($data['wordpressRole'])) throw new InvalidFilterException('Missing role', InvalidFilterException::MISSING_ROLE);
