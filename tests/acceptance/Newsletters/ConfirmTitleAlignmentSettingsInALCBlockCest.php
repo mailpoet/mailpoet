@@ -13,7 +13,7 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
     $postTitle = 'Post for ALC newsletter testing';
     $postBody = 'Magna primis leo neque litora quisque phasellus nunc himenaeos per, cursus porttitor rhoncus primis cubilia condimentum magna semper curabitur nibh, nunc nulla porttitor aptent aliquet dui nec accumsan quisque pharetra non pellentesque senectus hendrerit bibendum.';
     $post = $i->cliToArray(['post', 'create', '--format=json', '--porcelain', "--post_title=$postTitle", "--post_content=$postBody", '--post_status=publish']);
-    $i->cli(['media', 'import', dirname(__DIR__) . '/_data/600x400.jpg', "--post_id=$post[0]", '--title=A downloaded picture', '--featured_image']);
+    $i->cli(['media', 'import', dirname(__DIR__) . '/../_data/600x400.jpg', "--post_id=$post[0]", '--title=A downloaded picture', '--featured_image']);
     $newsletterFactory = new Newsletter();
     $newsletter = $newsletterFactory->withSubject($subject)->create();
 
