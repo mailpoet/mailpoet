@@ -64,12 +64,17 @@ class WP {
     if (!$subscriber) {
       $subscriber = Subscriber::where('email', $wpUser->user_email)->findOne(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     }
-
     // get first name & last name
     $firstName = $wpUser->first_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     $lastName = $wpUser->last_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     if (empty($wpUser->first_name) && empty($wpUser->last_name)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       $firstName = $wpUser->display_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    }
+    $signupConfirmationEnabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
+    $status = $signupConfirmationEnabled ? Subscriber::STATUS_UNCONFIRMED : Subscriber::STATUS_SUBSCRIBED;
+    // we want to mark a new subscriber as unsubscribe when the checkbox from registration is unchecked
+    if (isset($_POST['mailpoet']['subscribe_on_register_active']) && (bool)$_POST['mailpoet']['subscribe_on_register_active'] === true) {
+      $status = SubscriberEntity::STATUS_UNSUBSCRIBED;
     }
     // subscriber data
     $data = [
@@ -77,7 +82,7 @@ class WP {
       'email' => $wpUser->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       'first_name' => $firstName,
       'last_name' => $lastName,
-      'status' => SubscriberEntity::STATUS_UNSUBSCRIBED,
+      'status' => $status,
       'source' => Source::WORDPRESS_USER,
     ];
 
@@ -111,7 +116,6 @@ class WP {
       );
 
       $subscribeOnRegisterEnabled = SettingsController::getInstance()->get('subscribe.on_register.enabled');
-      $signupConfirmationEnabled = SettingsController::getInstance()->get('signup_confirmation.enabled');
       $sendConfirmationEmail =
         $signupConfirmationEnabled
         && $subscribeOnRegisterEnabled
