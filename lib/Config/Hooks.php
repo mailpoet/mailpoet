@@ -274,6 +274,11 @@ class Hooks {
   public function setupWooCommerceUsers() {
     // WooCommerce Customers synchronization
     $this->wp->addAction(
+      'woocommerce_created_customer',
+      [$this->hooksWooCommerce, 'synchronizeRegisteredCustomer'],
+      7
+    );
+    $this->wp->addAction(
       'woocommerce_new_customer',
       [$this->hooksWooCommerce, 'synchronizeRegisteredCustomer'],
       7

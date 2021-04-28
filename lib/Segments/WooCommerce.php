@@ -72,6 +72,7 @@ class WooCommerce {
         $this->unsubscribeUsersFromSegment(); // remove leftover association
         break;
       case 'woocommerce_new_customer':
+      case 'woocommerce_created_customer':
         $newCustomer = true;
       case 'woocommerce_update_customer':
       default:
