@@ -2,6 +2,7 @@
 <script type="text/javascript">
 jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   .addClass('wp-has-current-submenu')
+  .removeClass('wp-not-current-submenu')
   .find('a[href$="<%= sub_menu %>"]')
   .addClass('current')
   .parent()
