@@ -79,7 +79,7 @@ export default () => {
     __experimentalBlockPatternCategories: [],
     __experimentalSetIsInserterOpened: setIsInserterOpen,
     __experimentalFeatures: {
-      global: {
+      defaults: {
         color: {
           palette: SETTINGS_DEFAULTS.presets.color,
           gradients: SETTINGS_DEFAULTS.presets.gradient,
@@ -89,6 +89,7 @@ export default () => {
         typography: {
           fontSizes: SETTINGS_DEFAULTS.presets['font-size'],
           customFontSize: true,
+          customLineHeight: true,
         },
       },
     },
