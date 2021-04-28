@@ -8,13 +8,30 @@ import {
   SubscriberActionTypes,
 } from '../types';
 import { WordpressRoleFields } from './subscriber_wordpress_role';
-import { SubscribedDateFields } from './subscriber_subscribed_date';
+import { SubscribedDateFields, SubscribedDateOperator } from './subscriber_subscribed_date';
 
 export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if ((!formItems.action) || (formItems.action === SubscriberActionTypes.WORDPRESS_ROLE)) {
     return !!formItems.wordpressRole;
   }
-  return (!!formItems.operator && !!formItems.value);
+  if (!formItems.operator || !formItems.value) {
+    return false;
+  }
+  if (
+    formItems.operator === SubscribedDateOperator.BEFORE
+    || formItems.operator === SubscribedDateOperator.AFTER
+  ) {
+    const re = new RegExp(/^\d+-\d+-\d+$/);
+    return re.test(formItems.value);
+  }
+  if (
+    formItems.operator === SubscribedDateOperator.IN_THE_LAST
+    || formItems.operator === SubscribedDateOperator.NOT_IN_THE_LAST
+  ) {
+    const re = new RegExp(/^\d+$/);
+    return re.test(formItems.value);
+  }
+  return false;
 }
 
 export const SubscriberSegmentOptions = [

@@ -18,7 +18,7 @@ interface Props {
   item: WordpressRoleFormItem;
 }
 
-enum Operator {
+export enum SubscribedDateOperator {
   BEFORE = 'before',
   AFTER = 'after',
   IN_THE_LAST = 'inTheLast',
@@ -41,16 +41,22 @@ const parseDate = (value: string): Date | undefined => {
 export const SubscribedDateFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
   useEffect(() => {
     if (item.operator === undefined) {
-      onChange(assign(item, { operator: Operator.BEFORE }));
+      onChange(assign(item, { operator: SubscribedDateOperator.BEFORE }));
     }
     if (
-      (item.operator === Operator.BEFORE || item.operator === Operator.AFTER)
+      (
+        item.operator === SubscribedDateOperator.BEFORE
+        || item.operator === SubscribedDateOperator.AFTER
+      )
       && (parseDate(item.value) === undefined)
     ) {
       onChange(assign(item, { value: convertDateToString(new Date()) }));
     }
     if (
-      (item.operator === Operator.IN_THE_LAST || item.operator === Operator.NOT_IN_THE_LAST)
+      (
+        item.operator === SubscribedDateOperator.IN_THE_LAST
+        || item.operator === SubscribedDateOperator.NOT_IN_THE_LAST
+      )
       && ((typeof item.value !== 'string') || !new RegExp(/^\d+$/).exec(item.value))
     ) {
       onChange(assign(item, { value: '1' }));
@@ -69,12 +75,15 @@ export const SubscribedDateFields: React.FunctionComponent<Props> = ({ onChange,
             assign(item),
           ])({ operator: e.target.value })}
         >
-          <option value={Operator.BEFORE}>{MailPoet.I18n.t('before')}</option>
-          <option value={Operator.AFTER}>{MailPoet.I18n.t('after')}</option>
-          <option value={Operator.IN_THE_LAST}>{MailPoet.I18n.t('inTheLast')}</option>
-          <option value={Operator.NOT_IN_THE_LAST}>{MailPoet.I18n.t('notInTheLast')}</option>
+          <option value={SubscribedDateOperator.BEFORE}>{MailPoet.I18n.t('before')}</option>
+          <option value={SubscribedDateOperator.AFTER}>{MailPoet.I18n.t('after')}</option>
+          <option value={SubscribedDateOperator.IN_THE_LAST}>{MailPoet.I18n.t('inTheLast')}</option>
+          <option value={SubscribedDateOperator.NOT_IN_THE_LAST}>{MailPoet.I18n.t('notInTheLast')}</option>
         </Select>
-        {(item.operator === Operator.BEFORE || item.operator === Operator.AFTER) && (
+        {(
+          item.operator === SubscribedDateOperator.BEFORE
+          || item.operator === SubscribedDateOperator.AFTER
+        ) && (
           <Datepicker
             dateFormat="MMMM d, yyyy"
             onChange={(value): void => onChange(
@@ -84,7 +93,10 @@ export const SubscribedDateFields: React.FunctionComponent<Props> = ({ onChange,
             selected={item.value ? parseDate(item.value) : undefined}
           />
         )}
-        {(item.operator === Operator.IN_THE_LAST || item.operator === Operator.NOT_IN_THE_LAST) && (
+        {(
+          item.operator === SubscribedDateOperator.IN_THE_LAST
+          || item.operator === SubscribedDateOperator.NOT_IN_THE_LAST
+        ) && (
           <Input
             key="input"
             type="number"
