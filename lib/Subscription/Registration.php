@@ -31,6 +31,12 @@ class Registration {
     print '<p class="registration-form-mailpoet">
       <label for="mailpoet_subscribe_on_register">
         <input
+          type="hidden"
+          id="mailpoet_subscribe_on_register_active"
+          value="1"
+          name="mailpoet[subscribe_on_register_active]"
+        />
+        <input
           type="checkbox"
           id="mailpoet_subscribe_on_register"
           value="1"
