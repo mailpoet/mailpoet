@@ -19,19 +19,20 @@ class SubscriberSubscribedDate implements Filter {
     $filterData = $filter->getFilterData();
     $value = $filterData->getParam('value');
     $operator = $filterData->getParam('operator');
+    $parameter = 'date' . $filter->getId();
 
     if ($operator === self::BEFORE) {
-      $queryBuilder->andWhere('last_subscribed_at < :date' . $filter->getId());
+      $queryBuilder->andWhere("last_subscribed_at < :$parameter");
     } elseif ($operator === self::AFTER) {
-      $queryBuilder->andWhere('last_subscribed_at >= :date' . $filter->getId());
+      $queryBuilder->andWhere("last_subscribed_at >= :$parameter");
     } elseif ($operator === self::IN_THE_LAST) {
-      $queryBuilder->andWhere('last_subscribed_at >= :date' . $filter->getId());
+      $queryBuilder->andWhere("last_subscribed_at >= :$parameter");
     } elseif ($operator === self::NOT_IN_THE_LAST) {
-      $queryBuilder->andWhere('last_subscribed_at < :date' . $filter->getId());
+      $queryBuilder->andWhere("last_subscribed_at < :$parameter");
     } else {
       throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }
-    $queryBuilder->setParameter(':date' . $filter->getId(), $this->getDate($operator, $value));
+    $queryBuilder->setParameter($parameter, $this->getDate($operator, $value));
 
     return $queryBuilder;
   }
