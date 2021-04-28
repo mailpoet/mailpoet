@@ -73,7 +73,7 @@ class ListingBulkActions extends React.Component {
     }
 
     return (
-      <div className="mailpoet-listing-bulk-actions">
+      <div className="mailpoet-listing-bulk-actions" data-automation-id="listing-bulk-actions">
         <span className="screen-reader-text">
           {MailPoet.I18n.t('selectBulkAction')}
         </span>

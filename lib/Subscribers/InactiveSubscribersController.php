@@ -94,15 +94,14 @@ class InactiveSubscribersController {
       (INDEX task_id_ids (id))
       SELECT DISTINCT task_id as id FROM $sendingQueuesTable as sq
         JOIN $scheduledTasksTable as st ON sq.task_id = st.id
-        WHERE st.processed_at > '%s'
-        AND st.processed_at < '%s'
-        AND EXISTS (
-          SELECT 1
+        JOIN (
+          SELECT so.newsletter_id
           FROM $statisticsOpensTable as so
-          WHERE so.created_at > '%s'
-          AND so.newsletter_id = sq.newsletter_id
-        )",
-        $thresholdDateIso, $dayAgoIso, $thresholdDateIso
+          GROUP BY so.newsletter_id
+        ) sno ON sno.newsletter_id = sq.newsletter_id
+        WHERE st.processed_at > '%s'
+        AND st.processed_at < '%s'",
+        $thresholdDateIso, $dayAgoIso
       );
       ORM::rawExecute($inactivesTaskIdsTable);
       $this->inactivesTaskIdsTableCreated = true;
