@@ -107,13 +107,6 @@ h2 {
   }
 }
 
-@include breakpoint-min-width($mailpoet-breakpoint-small) {
-  // Make the sidebar a bit wider than in post editor (280px)
-  .interface-complementary-area {
-    width: 300px;
-  }
-}
-
 // Adjustments for correct form width rendering
 .wp-block {
   max-width: initial;

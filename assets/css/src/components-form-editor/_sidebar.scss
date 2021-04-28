@@ -83,16 +83,6 @@
   }
 }
 
-// In CSS coming from Gutenberg the color picker width is dependent on the width on his siblings.
-// This rules unify width across all style setting sidebars
-.components-circular-option-picker {
-  width: 245px;
-
-  @include respond-to(small-screen) {
-    width: 100%;
-  }
-}
-
 .CodeMirror {
   border: 1px solid #eee;
 
