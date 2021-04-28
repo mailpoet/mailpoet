@@ -17,7 +17,7 @@ type Props = {
   attributes: {
     label: string;
     styles: InputBlockStyles;
-    className: string;
+    className: string | null;
   };
   setAttributes: (attribute) => void;
 };
