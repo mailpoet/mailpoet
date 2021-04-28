@@ -6,6 +6,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
@@ -103,6 +104,31 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->expectExceptionCode(InvalidFilterException::MISSING_ROLE);
     $this->mapper->map([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+    ]);
+  }
+
+  public function testItChecksSubscribedDateValue() {
+    $this->expectException(InvalidFilterException::class);
+    $this->mapper->map([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberSubscribedDate::TYPE,
+    ]);
+  }
+
+  public function testItCreatesSubscribedDate() {
+    $filter = $this->mapper->map([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberSubscribedDate::TYPE,
+      'value' => 2,
+      'operator' => SubscriberSubscribedDate::AFTER,
+    ]);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    expect($filter->getData())->equals([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => SubscriberSubscribedDate::TYPE,
+      'value' => 2,
+      'operator' => SubscriberSubscribedDate::AFTER,
     ]);
   }
 
