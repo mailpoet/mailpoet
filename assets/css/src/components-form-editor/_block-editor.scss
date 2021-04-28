@@ -28,6 +28,12 @@
   justify-content: space-between;
 }
 
+// Hide tabs (Blocks, Patterns, ...) in block inserter, because we don't have patterns
+// They are always visible in case user adds a block in the top level
+.block-editor-inserter__tabs .components-tab-panel__tabs {
+  display: none;
+}
+
 // Html blocks contains iframe which captures clicks and in some cases prevents selecting block.
 // This adds an transparent overlay over the iframe.
 .mailpoet-html-block-editor-content-wrapper {
