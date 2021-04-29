@@ -225,6 +225,7 @@ class Migrator {
       'KEY updated_at (updated_at),',
       'KEY status_deleted_at (status,deleted_at),',
       'KEY last_subscribed_at (last_subscribed_at),',
+      'KEY engagement_score_updated_at (engagement_score_updated_at),',
       'KEY link_token (link_token)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
