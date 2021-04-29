@@ -50,6 +50,10 @@ abstract class SimpleWorker implements CronWorkerInterface {
     $this->cronWorkerScheduler->schedule(static::TASK_TYPE, $this->getNextRunDate());
   }
 
+  protected function scheduleImmediately(): void {
+    $this->cronWorkerScheduler->schedule(static::TASK_TYPE, $this->getNextRunDateImmediately());
+  }
+
   public function checkProcessingRequirements() {
     return true;
   }
@@ -71,6 +75,10 @@ abstract class SimpleWorker implements CronWorkerInterface {
     $date->setISODate((int)$date->format('o'), ((int)$date->format('W')) + 1, mt_rand(1, 7));
     $date->startOfDay();
     return $date;
+  }
+
+  protected function getNextRunDateImmediately(): Carbon {
+    return Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
   }
 
   public function scheduleAutomatically() {
