@@ -16,6 +16,10 @@ const fetchLinkSuggestions = async (search: string, { perPage = 20 } = {}) => {
     }),
   });
 
+  if (!Array.isArray(posts)) {
+    return [];
+  }
+
   return posts.map((post) => ({
     id: post.id,
     url: post.url,
