@@ -129,6 +129,9 @@ class AcceptanceTester extends \Codeception\Actor {
     $i = $this;
     $i->waitForElement($element);
     $i->fillField($element, $value);
+    $optionsContainer = $i->grabAttributeFrom($element, 'aria-controls');
+    // Wait until the searched value is in select options. There might be some delay on API
+    $i->waitForText($value, 5, "#$optionsContainer");
     $i->pressKey($element, WebDriverKeys::ENTER);
   }
 
