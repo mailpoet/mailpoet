@@ -68,18 +68,23 @@ class EditorProductsCest {
         ->create();
     }
 
+    // Add product image
+    $image = $i->cliToArray(['media', 'import', dirname(__DIR__) . '/../_data/600x400.jpg',  '--title=A product picture', '--porcelain']);
+    $imageUrlData = $i->cliToArray(['post', 'get', $image[0], '--field=guid']);
+    $imageUrl = $imageUrlData[0];
+
     // Create products for testing display settings
     $this->productFactory
       ->withName(self::PRODUCT_NAME . ' 2')
       ->withDescription(self::PRODUCT_DESCRIPTION . ' 2')
       ->withShortDescription(self::PRODUCT_SHORT_DESCRIPTION . ' 2')
-      ->withImages(['https://dummyimage.com/600x400.png'])
+      ->withImages([$imageUrl])
       ->create();
     $this->productFactory
       ->withName(self::PRODUCT_NAME)
       ->withDescription(self::PRODUCT_DESCRIPTION)
       ->withShortDescription(self::PRODUCT_SHORT_DESCRIPTION)
-      ->withImages(['https://dummyimage.com/600x400.png'])
+      ->withImages([$imageUrl])
       ->create();
 
   }
