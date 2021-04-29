@@ -25,7 +25,7 @@ class CreateNewWordPressUserCest {
     $i->login();
     $i->amOnMailpoetPage('Settings');
     $i->waitForText('Settings');
-    $i->selectOptionInSelect2($secondListName, '[data-automation-id="subscribe-on_register-segments-selection"] .mailpoet-form-react-select__input input');
+    $i->selectOptionInReactSelect($secondListName, '[data-automation-id="subscribe-on_register-segments-selection"]');
     $i->click('[data-automation-id="settings-submit-button"]'); //save settings
 
     // create a wp user via registration

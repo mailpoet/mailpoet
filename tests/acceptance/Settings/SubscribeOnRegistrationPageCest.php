@@ -17,7 +17,7 @@ class SubscribeOnRegistrationPageCest {
     //Go to settings
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="subscribe-on_register-checkbox"]');
-    $i->selectOptionInSelect2($regseg, '[data-automation-id="subscribe-on_register-segments-selection"] .mailpoet-form-react-select__input input');
+    $i->selectOptionInReactSelect($regseg, '[data-automation-id="subscribe-on_register-segments-selection"]');
     //save settings
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->logOut();
