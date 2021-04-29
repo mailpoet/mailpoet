@@ -97,14 +97,19 @@ export const SubscribedDateFields: React.FunctionComponent<Props> = ({ onChange,
           item.operator === SubscribedDateOperator.IN_THE_LAST
           || item.operator === SubscribedDateOperator.NOT_IN_THE_LAST
         ) && (
-          <Input
-            key="input"
-            type="number"
-            value={item.value}
-            onChange={(e): void => onChange(assign(item, { value: e.target.value }))}
-            min="1"
-            placeholder={MailPoet.I18n.t('daysPlaceholder')}
-          />
+          <>
+            <Input
+              key="input"
+              type="number"
+              value={item.value}
+              onChange={(e): void => onChange(assign(item, { value: e.target.value }))}
+              min="1"
+              placeholder={MailPoet.I18n.t('daysPlaceholder')}
+            />
+            <span>
+              {MailPoet.I18n.t('daysPlaceholder')}
+            </span>
+          </>
         )}
       </Grid.CenteredRow>
     </>
