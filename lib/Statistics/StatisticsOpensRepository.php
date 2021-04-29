@@ -3,10 +3,10 @@
 namespace MailPoet\Statistics;
 
 use MailPoet\Doctrine\Repository;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Tasks\Sending;
+use MailPoetVendor\Carbon\Carbon;
 
 /**
  * @extends Repository<StatisticsOpenEntity>
@@ -18,16 +18,16 @@ class StatisticsOpensRepository extends Repository {
 
   public function recalculateSubscriberScore(SubscriberEntity $subscriber): void {
     $subscriber->setEngagementScoreUpdatedAt(new \DateTimeImmutable());
+    $dateTime = (new Carbon())->subYear();
     $newslettersSentCount = $this
       ->entityManager
       ->createQueryBuilder()
-      ->select('count(DISTINCT task.id)')
-      ->from(ScheduledTaskSubscriberEntity::class, 'scheduledTaskSubscriber')
-      ->where('scheduledTaskSubscriber.subscriber = :subscriber')
+      ->select('count(DISTINCT statisticsNewsletter.newsletter)')
+      ->from(StatisticsNewsletterEntity::class, 'statisticsNewsletter')
+      ->where('statisticsNewsletter.subscriber = :subscriber')
+      ->andWhere('statisticsNewsletter.sentAt > :dateTime')
       ->setParameter('subscriber', $subscriber)
-      ->join('scheduledTaskSubscriber.task', 'task')
-      ->andWhere('task.type = :sending')
-      ->setParameter('sending', Sending::TASK_TYPE)
+      ->setParameter('dateTime', $dateTime)
       ->getQuery()
       ->getSingleScalarResult();
     if ($newslettersSentCount < 3) {
@@ -39,8 +39,11 @@ class StatisticsOpensRepository extends Repository {
       ->createQueryBuilder()
       ->select('count(DISTINCT opens.newsletter)')
       ->from(StatisticsOpenEntity::class, 'opens')
+      ->join('opens.newsletter', 'newsletter')
       ->where('opens.subscriber = :subscriberId')
+      ->andWhere('newsletter.sentAt > :dateTime')
       ->setParameter('subscriberId', $subscriber)
+      ->setParameter('dateTime', $dateTime)
       ->getQuery()
       ->getSingleScalarResult();
     $score = ($opens / $newslettersSentCount) * 100;
