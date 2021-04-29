@@ -8,7 +8,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscribersEngagementScore extends SimpleWorker {
-  const AUTOMATIC_SCHEDULING = false;
+  const AUTOMATIC_SCHEDULING = true;
   const BATCH_SIZE = 60;
   const TASK_TYPE = 'subscribers_engagement_score';
 
