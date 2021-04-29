@@ -32,8 +32,9 @@ class EditorFormPreviewCest {
     $i->switchToIFrame();
 
     // Change preview type and form type and check again
+    $formTypeSelect = '[data-automation-id="form_type_selection"] select';
     $i->click('[data-automation-id="preview_type_mobile"]');
-    $i->selectOption('[data-automation-id="form_type_selection"]', 'Fixed bar');
+    $i->selectOption($formTypeSelect, 'Fixed bar');
     $i->switchToIFrame('[data-automation-id="form_preview_iframe"]');
     $i->waitForElement('[data-automation-id="form_first_name"]');
     $i->switchToIFrame();
@@ -44,7 +45,6 @@ class EditorFormPreviewCest {
     $i->waitForElement('[data-automation-id="form_preview_button"]');
     $i->click('[data-automation-id="form_preview_button"]');
     $i->waitForElement('[data-automation-id="form_preview_iframe"]');
-    $i->seeOptionIsSelected('[data-automation-id="form_type_selection"]', 'Fixed bar');
-    $i->seeOptionIsSelected('[data-automation-id="form_type_selection"]', 'Fixed bar');
+    $i->seeOptionIsSelected($formTypeSelect, 'Fixed bar');
   }
 }

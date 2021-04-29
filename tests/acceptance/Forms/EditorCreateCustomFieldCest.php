@@ -38,7 +38,7 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Create custom field: select');
     $i->wantTo('Configure, check and save the custom field block');
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
-    $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Select');
+    $i->selectOption('[data-automation-id="create_custom_field_type_select"] select', 'Select');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom select');
     $i->waitForElement('[data-automation-id="custom_field_value_settings"]');
     $i->fillField('[data-automation-id="custom_field_value_settings_value"]', 'First option'); // Configure first option
@@ -63,9 +63,9 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Create custom field: text input');
     $i->wantTo('Configure, check and save the custom field block');
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
-    $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Text Input');
+    $i->selectOption('[data-automation-id="create_custom_field_type_select"] select', 'Text Input');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom text input');
-    $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
+    $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"] select', 'Numbers only');
     $this->saveCustomFieldBlock($i);
 
     $i->wantTo('Save, reload and check data were saved');
@@ -74,14 +74,14 @@ class EditorCreateCustomFieldCest {
     $this->checkCustomTextInputInForm($i);
 
     $i->wantTo('Change text input validation');
-    $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Alphanumerical');
+    $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"] select', 'Alphanumerical');
     $i->click('Update custom field');
     $i->waitForText('Custom field saved.');
 
     $i->wantTo('Update label and save the form');
     $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom text input');
     $i->saveFormInEditor();
-    
+
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="editor_custom_text_input"]');
@@ -98,9 +98,9 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Create custom field: text area');
     $i->wantTo('Configure, check and save the custom field block');
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
-    $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Text Area');
+    $i->selectOption('[data-automation-id="create_custom_field_type_select"] select', 'Text Area');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom text area');
-    $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
+    $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"] select', 'Numbers only');
     $this->saveCustomFieldBlock($i);
 
     $i->wantTo('Save, reload and check data were saved');
@@ -109,23 +109,23 @@ class EditorCreateCustomFieldCest {
     $this->checkCustomTextAreaInForm($i);
 
     $i->wantTo('Change text input validation');
-    $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Alphanumerical');
+    $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"] select', 'Alphanumerical');
     $i->click('Update custom field');
     $i->waitForText('Custom field saved.');
 
     $i->wantTo('Change text area to 3 lines');
-    $i->selectOption('[data-automation-id="settings_custom_text_area_number_of_lines"]', '3 lines');
+    $i->selectOption('[data-automation-id="settings_custom_text_area_number_of_lines"] select', '3 lines');
 
     $i->wantTo('Update label and save the form');
     $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom text area');
     $i->saveFormInEditor();
-    
+
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="editor_custom_textarea_input"]');
     $i->assertAttributeContains('[data-automation-id="editor_custom_textarea_input"]', 'placeholder', 'My updated custom text area');
     $i->click('[data-automation-id="editor_custom_textarea_input"]');
-    $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_area_number_of_lines"]', '3 lines');
+    $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_area_number_of_lines"] select', '3 lines');
 
     $i->wantTo('Check custom text area on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
@@ -138,7 +138,7 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Create custom field: radio buttons');
     $i->wantTo('Configure, check and save the custom field block');
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
-    $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Radio buttons');
+    $i->selectOption('[data-automation-id="create_custom_field_type_select"] select', 'Radio buttons');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom radio buttons');
     $i->fillField('[data-automation-id="custom_field_value_settings_value"]', 'Option 1');
     $i->click('[data-automation-id="custom_field_values_add_item"]');
@@ -157,7 +157,7 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Update label and save the form');
     $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom radio buttons');
     $i->saveFormInEditor();
-    
+
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
     $this->checkCustomRadioButtonsInForm($i, 'New option');
@@ -174,7 +174,7 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Create custom field: checkbox');
     $i->wantTo('Configure, check and save the custom field block');
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
-    $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Checkbox');
+    $i->selectOption('[data-automation-id="create_custom_field_type_select"] select', 'Checkbox');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom checkbox');
     $i->fillField('[data-automation-id="settings_custom_checkbox_value"]', 'Option 1');
     $this->saveCustomFieldBlock($i);
@@ -192,7 +192,7 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Update label and save the form');
     $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom checkbox');
     $i->saveFormInEditor();
-    
+
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
     $this->checkCustomCheckboxInForm($i, 'New option');
@@ -208,10 +208,10 @@ class EditorCreateCustomFieldCest {
     $i->wantTo('Create custom field: date');
     $i->wantTo('Configure, check and save the custom field block');
     $i->waitForElement('[data-automation-id="create_custom_field_form"]');
-    $i->selectOption('[data-automation-id="create_custom_field_type_select"]', 'Date');
+    $i->selectOption('[data-automation-id="create_custom_field_type_select"] select', 'Date');
     $i->fillField('[data-automation-id="create_custom_field_name_input"]', 'My custom date');
-    $i->selectOption('[data-automation-id="settings_custom_date_type"]', 'Year, month');
-    $i->selectOption('[data-automation-id="settings_custom_date_format"]', 'YYYY/MM');
+    $i->selectOption('[data-automation-id="settings_custom_date_type"] select', 'Year, month');
+    $i->selectOption('[data-automation-id="settings_custom_date_format"] select', 'YYYY/MM');
     $this->saveCustomFieldBlock($i);
 
     $i->wantTo('Save, reload and check data were saved');
@@ -220,13 +220,13 @@ class EditorCreateCustomFieldCest {
     $this->checkCustomDateInForm($i);
 
     $i->wantTo('Change date type and verify you do not see format anymore');
-    $i->selectOption('[data-automation-id="settings_custom_date_type"]', 'Year');
+    $i->selectOption('[data-automation-id="settings_custom_date_type"] select', 'Year');
     $i->dontSee('[data-automation-id="settings_custom_date_format"]');
 
     $i->wantTo('Update label and save the form');
     $i->fillField('[data-automation-id="settings_custom_date_label_input"]', 'My updated custom date');
     $i->saveFormInEditor();
-    
+
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="editor_custom_date_label"]');
@@ -244,8 +244,8 @@ class EditorCreateCustomFieldCest {
   private function checkCustomDateInForm($i) {
     $i->waitForElement('[data-automation-id="editor_custom_date_label"]');
     $i->click('[data-automation-id="editor_custom_date_label"]');
-    $i->seeOptionIsSelected('[data-automation-id="settings_custom_date_type"]', 'Year, month');
-    $i->seeOptionIsSelected('[data-automation-id="settings_custom_date_format"]', 'YYYY/MM');
+    $i->seeOptionIsSelected('[data-automation-id="settings_custom_date_type"] select', 'Year, month');
+    $i->seeOptionIsSelected('[data-automation-id="settings_custom_date_format"] select', 'YYYY/MM');
   }
 
   private function checkCustomCheckboxInForm($i, $name) {
@@ -266,14 +266,14 @@ class EditorCreateCustomFieldCest {
     $i->waitForElement('[data-automation-id="editor_custom_textarea_input"]');
     $i->assertAttributeContains('[data-automation-id="editor_custom_textarea_input"]', 'placeholder', 'My custom text area');
     $i->click('[data-automation-id="editor_custom_textarea_input"]');
-    $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
+    $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_input_validation_type"] select', 'Numbers only');
   }
 
   private function checkCustomTextInputInForm($i) {
     $i->waitForElement('[data-automation-id="editor_custom_text_input"]');
     $i->assertAttributeContains('[data-automation-id="editor_custom_text_input"]', 'placeholder', 'My custom text input');
     $i->click('[data-automation-id="editor_custom_text_input"]');
-    $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_input_validation_type"]', 'Numbers only');
+    $i->seeOptionIsSelected('[data-automation-id="settings_custom_text_input_validation_type"] select', 'Numbers only');
   }
 
   private function checkCustomSelectInForm($i) {
