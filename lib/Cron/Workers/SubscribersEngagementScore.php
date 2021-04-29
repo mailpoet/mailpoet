@@ -40,14 +40,6 @@ class SubscribersEngagementScore extends SimpleWorker {
     return true;
   }
 
-  public function scheduleImmediately(): void {
-    $this->cronWorkerScheduler->schedule(static::TASK_TYPE, $this->getNextRunDateImmediately());
-  }
-
-  public function getNextRunDateImmediately(): Carbon {
-    return Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-  }
-
   public function getNextRunDate() {
     // random day of the next week
     $date = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
