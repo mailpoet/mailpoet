@@ -53,7 +53,7 @@ class BasicsPageCest {
     //go to settings and opt-in for comments
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="subscribe-on_comment-checkbox"]');
-    $i->selectOptionInSelect2('Newsletter mailing list', '[data-automation-id="subscribe-on_comment-segments-selection"] .mailpoet-form-react-select__input input');
+    $i->selectOptionInReactSelect('Newsletter mailing list', '[data-automation-id="subscribe-on_comment-segments-selection"]');
     $i->click('[data-automation-id="settings-submit-button"]');
     //go to the post and perform commenting + opting
     $i->amOnPage('/');
