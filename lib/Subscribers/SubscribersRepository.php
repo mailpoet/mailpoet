@@ -8,6 +8,7 @@ use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
@@ -291,5 +292,18 @@ class SubscribersRepository extends Repository {
       return null; // Don't look up a subscriber for guests
     }
     return $this->findOneBy(['wpUserId' => $wpUser->ID]);
+  }
+
+  public function findByUpdatedScoreNotInLastMonth(int $limit): array {
+    $dateTime = (new Carbon())->subMonths(1);
+    return $this->entityManager->createQueryBuilder()
+      ->select('s')
+      ->from(SubscriberEntity::class, 's')
+      ->where('s.engagementScoreUpdatedAt IS NULL')
+      ->orWhere('s.engagementScoreUpdatedAt < :dateTime')
+      ->setParameter('dateTime', $dateTime)
+      ->getQuery()
+      ->setMaxResults($limit)
+      ->getResult();
   }
 }
