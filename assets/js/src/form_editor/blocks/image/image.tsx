@@ -17,6 +17,7 @@ const settings = {
   supports: {
     ...image.metadata.supports,
     html: false,
+    anchor: false,
   },
 };
 export { settings };

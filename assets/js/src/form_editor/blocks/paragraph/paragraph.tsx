@@ -17,6 +17,7 @@ const settings = {
   supports: {
     ...paragraph.metadata.supports,
     html: false,
+    anchor: false,
   },
 };
 
