@@ -104,23 +104,16 @@ class EditorProductsCest {
     $i->click('.select2-search__field');
     $i->waitForElementNotVisible('.select2-results__option.loading-results');
 
-    // Zero results for category
+    $i->wantTo('Select category without products');
     $i->selectOptionInSelect2(self::CATEGORY_ZERO_RESULTS);
     $i->waitForText('No products available');
     $this->clearCategories($i);
 
-    // Multiple result for category (try/catch added to prevent flakyness)
+    $i->wantTo('Select category with multiple products');
     $i->selectOptionInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
-    try {
-      $i->seeSelectedInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
-      $this->checkElements($i);
-      $this->clearCategories($i);
-    }
-    catch (\Exception $e) {
-      $i->selectOptionInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
-      $this->checkElements($i);
-      $this->clearCategories($i);
-    }
+    $i->seeSelectedInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
+    $this->checkElements($i);
+    $this->clearCategories($i);
 
     // Click select2 to hide results
     $i->click('.select2-search__field');
