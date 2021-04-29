@@ -48,7 +48,7 @@ export const SubscribedDateFields: React.FunctionComponent<Props> = ({ onChange,
         item.operator === SubscribedDateOperator.BEFORE
         || item.operator === SubscribedDateOperator.AFTER
       )
-      && (parseDate(item.value) === undefined)
+      && ((parseDate(item.value) === undefined) || !new RegExp(/^\d+-\d+-\d+$/).test(item.value))
     ) {
       onChange(assign(item, { value: convertDateToString(new Date()) }));
     }
