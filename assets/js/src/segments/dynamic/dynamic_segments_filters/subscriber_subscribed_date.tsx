@@ -57,9 +57,9 @@ export const SubscribedDateFields: React.FunctionComponent<Props> = ({ onChange,
         item.operator === SubscribedDateOperator.IN_THE_LAST
         || item.operator === SubscribedDateOperator.NOT_IN_THE_LAST
       )
-      && ((typeof item.value !== 'string') || !new RegExp(/^\d+$/).exec(item.value))
+      && ((typeof item.value === 'string') && !new RegExp(/^\d*$/).exec(item.value))
     ) {
-      onChange(assign(item, { value: '1' }));
+      onChange(assign(item, { value: '' }));
     }
   }, [onChange, item]);
 
@@ -103,7 +103,7 @@ export const SubscribedDateFields: React.FunctionComponent<Props> = ({ onChange,
             value={item.value}
             onChange={(e): void => onChange(assign(item, { value: e.target.value }))}
             min="1"
-            placeholder={MailPoet.I18n.t('wooNumberOfOrdersDaysPlaceholder')}
+            placeholder={MailPoet.I18n.t('daysPlaceholder')}
           />
         )}
       </Grid.CenteredRow>

@@ -29,7 +29,7 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
     || formItems.operator === SubscribedDateOperator.NOT_IN_THE_LAST
   ) {
     const re = new RegExp(/^\d+$/);
-    return re.test(formItems.value);
+    return re.test(formItems.value) && (Number(formItems.value) > 0);
   }
   return false;
 }
