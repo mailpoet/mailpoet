@@ -3,6 +3,7 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
@@ -47,6 +48,7 @@ class EmailAction implements Filter {
 
     $statsSentTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $newsletterLinksTable = $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
     if (in_array($action, self::CLICK_ACTIONS, true)) {
       $statsTable = $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
     } else {
@@ -69,11 +71,22 @@ class EmailAction implements Filter {
       )->setParameter('newsletter' . $filter->getId(), $newsletterId);
       $where .= ' AND stats.id IS NULL';
     } else if ($action === self::ACTION_CLICKED_ANY) {
+      $excludedLinks = [
+        '[link:subscription_unsubscribe_url]',
+        '[link:subscription_instant_unsubscribe_url]',
+        '[link:newsletter_view_in_browser_url]',
+        '[link:subscription_manage_url]',
+      ];
       $queryBuilder = $queryBuilder->innerJoin(
         $subscribersTable,
         $statsTable,
         'stats',
         "stats.subscriber_id = $subscribersTable.id"
+      )->innerJoin(
+        'stats',
+        $newsletterLinksTable,
+        'newsletterLinks',
+        "stats.link_id = newsletterLinks.id AND newsletterLinks.URL NOT IN ('" . join("', '", $excludedLinks) . "')"
       );
     } else {
       $queryBuilder = $queryBuilder->innerJoin(

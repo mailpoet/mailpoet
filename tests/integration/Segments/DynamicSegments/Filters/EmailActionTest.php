@@ -55,19 +55,7 @@ class EmailActionTest extends \MailPoetTest {
     $this->createStatisticsOpens($this->subscriberOpenedClicked);
     $this->createStatisticsOpens($this->subscriberOpenedNotClicked);
 
-
-    $link = new NewsletterLinkEntity($this->newsletter, $queue, 'http://example.com', 'asdfgh');
-    $this->entityManager->persist($link);
-    $this->entityManager->flush();
-    $click = new StatisticsClickEntity(
-      $this->newsletter,
-      $queue,
-      $this->subscriberOpenedClicked,
-      $link,
-      1
-    );
-    $this->entityManager->persist($click);
-    $this->entityManager->flush();
+    $this->addClickedToLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked);
   }
 
   public function testGetOpened() {
@@ -140,6 +128,14 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   public function testGetClickedAnyLink() {
+    $subscriberClickedExcludedLinks = $this->createSubscriber('opened_clicked_excluded@example.com');
+    $this->createStatsNewsletter($subscriberClickedExcludedLinks);
+    $this->createStatisticsOpens($subscriberClickedExcludedLinks);
+    $this->addClickedToLink('[link:subscription_unsubscribe_url]', $this->newsletter, $subscriberClickedExcludedLinks);
+    $this->addClickedToLink('[link:subscription_instant_unsubscribe_url]', $this->newsletter, $subscriberClickedExcludedLinks);
+    $this->addClickedToLink('[link:newsletter_view_in_browser_url]', $this->newsletter, $subscriberClickedExcludedLinks);
+    $this->addClickedToLink('[link:subscription_manage_url]', $this->newsletter, $subscriberClickedExcludedLinks);
+
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED_ANY);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
@@ -232,6 +228,23 @@ class EmailActionTest extends \MailPoetTest {
     $this->entityManager->persist($open);
     $this->entityManager->flush();
     return $open;
+  }
+
+  private function addClickedToLink(string $link, NewsletterEntity $newsletter, SubscriberEntity $subscriber) {
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $link = new NewsletterLinkEntity($this->newsletter, $queue, $link, uniqid());
+    $this->entityManager->persist($link);
+    $this->entityManager->flush();
+    $click = new StatisticsClickEntity(
+      $newsletter,
+      $queue,
+      $subscriber,
+      $link,
+      1
+    );
+    $this->entityManager->persist($click);
+    $this->entityManager->flush();
   }
 
   public function _after() {
