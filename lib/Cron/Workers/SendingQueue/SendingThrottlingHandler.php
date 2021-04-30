@@ -26,7 +26,7 @@ class SendingThrottlingHandler {
     SettingsController $settings,
     WPFunctions $wp
   ) {
-    $this->logger = $loggerFactory->getLogger(LoggerFactory::TOPIC_MSS);
+    $this->logger = $loggerFactory->getLogger(LoggerFactory::TOPIC_SENDING);
     $this->settings = $settings;
     $this->wp = $wp;
   }
