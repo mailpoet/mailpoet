@@ -71,7 +71,7 @@ class FilterDataMapper {
    * @throws InvalidFilterException
    */
   private function createEmailOpensAbsoluteCount(array $data): DynamicSegmentFilterData {
-    if (empty($data['opens'])) throw new InvalidFilterException('Missing number of opens', InvalidFilterException::MISSING_VALUE);
+    if (!isset($data['opens'])) throw new InvalidFilterException('Missing number of opens', InvalidFilterException::MISSING_VALUE);
     if (empty($data['days'])) throw new InvalidFilterException('Missing number of days', InvalidFilterException::MISSING_VALUE);
     $filterData = [
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
