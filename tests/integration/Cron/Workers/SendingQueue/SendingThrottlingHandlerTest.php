@@ -34,6 +34,23 @@ class SendingThrottlingHandlerTest extends \MailPoetTest {
     $this->throttlingHandler->throttleBatchSize();
     $this->throttlingHandler->processSuccess();
     $throttlingSettings = $this->settings->get(SendingThrottlingHandler::SETTINGS_KEY);
-    expect($throttlingSettings['success_in_row'])->equals(1);
+    expect($throttlingSettings['success_count'])->equals(1);
+  }
+
+  public function testItSetsBatchSizeMinimumToOne(): void {
+    for ($i = 1; $i <= 10; $i++) {
+      $this->throttlingHandler->throttleBatchSize();
+    }
+    expect($this->throttlingHandler->getBatchSize())->equals(1);
+  }
+
+  public function testInIncreasesBatchSizeBack(): void {
+    $this->settings->set(SendingThrottlingHandler::SETTINGS_KEY, []);
+    $this->throttlingHandler->throttleBatchSize();
+    expect($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE / 2);
+    for ($i = 1; $i <= SendingThrottlingHandler::SUCCESS_THRESHOLD_TO_INCREASE; $i++) {
+      $this->throttlingHandler->processSuccess();
+    }
+    expect($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
   }
 }
