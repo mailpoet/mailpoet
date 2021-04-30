@@ -47,7 +47,9 @@ class SendingThrottlingHandler {
     $batchSize = $this->getBatchSize();
     if ($batchSize > 1) {
       $batchSize = (int)ceil($this->getBatchSize() / 2);
+      $throttlingSettings = $this->loadSettings();
       $throttlingSettings['batch_size'] = $batchSize;
+      unset($throttlingSettings['success_count']);
       $this->logger->error("MailPoet throttling: decrease batch_size to: {$batchSize}");
       $this->saveSettings($throttlingSettings);
     }
@@ -60,10 +62,10 @@ class SendingThrottlingHandler {
     if (!isset($throttlingSettings['batch_size'])) {
       return;
     }
-    $throttlingSettings['success_in_row'] = isset($throttlingSettings['success_in_row']) ? ++$throttlingSettings['success_in_row'] : 1;
-    $this->logger->info("MailPoet throttling: increase success_in_row to: {$throttlingSettings['success_in_row']}");
-    if ($throttlingSettings['success_in_row'] === self::SUCCESS_THRESHOLD_TO_INCREASE) {
-      unset($throttlingSettings['success_in_row']);
+    $throttlingSettings['success_count'] = isset($throttlingSettings['success_count']) ? ++$throttlingSettings['success_count'] : 1;
+    $this->logger->info("MailPoet throttling: increase success_count to: {$throttlingSettings['success_count']}");
+    if ($throttlingSettings['success_count'] >= self::SUCCESS_THRESHOLD_TO_INCREASE) {
+      unset($throttlingSettings['success_count']);
       $throttlingSettings['batch_size'] = min($this->getMaxBatchSize(), $throttlingSettings['batch_size'] * 2);
       $this->logger->info("MailPoet throttling: increase batch_size to: {$throttlingSettings['batch_size']}");
       if ($this->getMaxBatchSize() === $throttlingSettings['batch_size']) {
