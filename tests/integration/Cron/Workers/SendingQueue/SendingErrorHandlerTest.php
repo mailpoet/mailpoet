@@ -16,7 +16,7 @@ class SendingErrorHandlerTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->errorHandler = new SendingErrorHandler();
+    $this->errorHandler = $this->diContainer->get(SendingErrorHandler::class);
   }
 
   public function testItShouldProcessSoftErrorCorrectly() {

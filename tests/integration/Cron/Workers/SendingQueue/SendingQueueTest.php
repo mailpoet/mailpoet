@@ -61,6 +61,8 @@ class SendingQueueTest extends \MailPoetTest {
   public $segment;
   public $subscriber;
   private $mailerTaskDummyResponse = ['response' => true];
+  /** @var SendingThrottlingHandler */
+  private $sendingThrottlingHandler;
   /** @var SendingErrorHandler */
   private $sendingErrorHandler;
   /** @var SettingsController */
@@ -122,7 +124,8 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletterLink->hash = 'abcde';
     $this->newsletterLink->save();
     $this->subscribersFinder = $this->diContainer->get(SubscribersFinder::class);
-    $this->sendingErrorHandler = new SendingErrorHandler();
+    $this->sendingErrorHandler = $this->diContainer->get(SendingErrorHandler::class);
+    $this->sendingThrottlingHandler = $this->diContainer->get(SendingThrottlingHandler::class);
     $this->statsNotificationsWorker = Stub::makeEmpty(StatsNotificationsScheduler::class);
     $this->loggerFactory = LoggerFactory::getInstance();
     $this->cronHelper = $this->diContainer->get(CronHelper::class);
@@ -168,6 +171,7 @@ class SendingQueueTest extends \MailPoetTest {
       ], $this);
     $sendingQueueWorker->__construct(
       $this->sendingErrorHandler,
+      $this->sendingThrottlingHandler,
       $this->statsNotificationsWorker,
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
@@ -192,6 +196,7 @@ class SendingQueueTest extends \MailPoetTest {
       ], $this);
     $sendingQueueWorker->__construct(
       $this->sendingErrorHandler,
+      $this->sendingThrottlingHandler,
       $this->statsNotificationsWorker,
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
@@ -233,6 +238,7 @@ class SendingQueueTest extends \MailPoetTest {
       ], $this);
     $sendingQueueWorker->__construct(
       $this->sendingErrorHandler,
+      $this->sendingThrottlingHandler,
       $this->statsNotificationsWorker,
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
@@ -273,6 +279,7 @@ class SendingQueueTest extends \MailPoetTest {
       ], $this);
     $sendingQueueWorker->__construct(
       $this->sendingErrorHandler,
+      $this->sendingThrottlingHandler,
       $this->statsNotificationsWorker,
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
@@ -788,6 +795,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sendingQueueWorker->__construct(
       $this->sendingErrorHandler,
+      $this->sendingThrottlingHandler,
       $this->statsNotificationsWorker,
       $this->loggerFactory,
       Stub::makeEmpty(NewslettersRepository::class),
@@ -1002,6 +1010,7 @@ class SendingQueueTest extends \MailPoetTest {
   private function getSendingQueueWorker($newsletterRepositoryMock = null, $mailerMock = null) {
     return new SendingQueueWorker(
       $this->sendingErrorHandler,
+      $this->sendingThrottlingHandler,
       $this->statsNotificationsWorker,
       $this->loggerFactory,
       $newsletterRepositoryMock ?: $this->newslettersRepository,
