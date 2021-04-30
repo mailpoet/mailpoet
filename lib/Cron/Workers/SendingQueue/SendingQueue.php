@@ -30,7 +30,6 @@ class SendingQueue {
   public $mailerTask;
   public $newsletterTask;
   public $batchSize;
-  const BATCH_SIZE = 20;
   const TASK_BATCH_SIZE = 5;
   const EMAIL_WITH_INVALID_SEGMENT_OPTION = 'mailpoet_email_with_invalid_segment';
 
@@ -39,6 +38,9 @@ class SendingQueue {
 
   /** @var SendingErrorHandler */
   private $errorHandler;
+
+  /** @var SendingThrottlingHandler */
+  private $throttlingHandler;
 
   /** @var MetaInfo */
   private $mailerMetaInfo;
@@ -63,6 +65,7 @@ class SendingQueue {
 
   public function __construct(
     SendingErrorHandler $errorHandler,
+    SendingThrottlingHandler $throttlingHandler,
     StatsNotificationsScheduler $statsNotificationsScheduler,
     LoggerFactory $loggerFactory,
     NewslettersRepository $newslettersRepository,
@@ -74,6 +77,7 @@ class SendingQueue {
     $newsletterTask = false
   ) {
     $this->errorHandler = $errorHandler;
+    $this->throttlingHandler = $throttlingHandler;
     $this->statsNotificationsScheduler = $statsNotificationsScheduler;
     $this->subscribersFinder = $subscriberFinder;
     $this->mailerTask = ($mailerTask) ? $mailerTask : new MailerTask();
@@ -81,7 +85,7 @@ class SendingQueue {
     $this->segmentsRepository = $segmentsRepository;
     $this->mailerMetaInfo = new MetaInfo;
     $this->wp = $wp;
-    $this->batchSize = $wp->applyFilters('mailpoet_cron_worker_sending_queue_batch_size', self::BATCH_SIZE);
+    $this->batchSize = $this->throttlingHandler->getBatchSize();
     $this->loggerFactory = $loggerFactory;
     $this->newslettersRepository = $newslettersRepository;
     $this->cronHelper = $cronHelper;
@@ -361,6 +365,7 @@ class SendingQueue {
     if ($sendingTask->status !== ScheduledTaskModel::STATUS_COMPLETED) {
       $this->enforceSendingAndExecutionLimits($timer);
     }
+    $this->throttlingHandler->processSuccess();
     return $sendingTask;
   }
 

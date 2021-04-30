@@ -7,6 +7,13 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Tasks\Sending as SendingTask;
 
 class SendingErrorHandler {
+  /** @var SendingThrottlingHandler */
+  private $throttlingHandler;
+
+  public function __construct(SendingThrottlingHandler $throttlingHandler) {
+    $this->throttlingHandler = $throttlingHandler;
+  }
+
   public function processError(
     MailerError $error,
     SendingTask $sendingTask,
@@ -23,7 +30,11 @@ class SendingErrorHandler {
     if ($error->getRetryInterval() !== null) {
       MailerLog::processNonBlockingError($error->getOperation(), $error->getMessageWithFailedSubscribers(), $error->getRetryInterval());
     } else {
-      MailerLog::processError($error->getOperation(), $error->getMessageWithFailedSubscribers());
+      $throttledBatchSize = null;
+      if ($error->getOperation() === MailerError::OPERATION_CONNECT) {
+        $throttledBatchSize = $this->throttlingHandler->throttleBatchSize();
+      }
+      MailerLog::processError($error->getOperation(), $error->getMessageWithFailedSubscribers(), null, false, $throttledBatchSize);
     }
   }
 

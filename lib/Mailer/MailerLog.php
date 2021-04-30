@@ -104,9 +104,11 @@ class MailerLog {
    *
    * @throws \Exception
    */
-  public static function processError($operation, $errorMessage, $errorCode = null, $pauseSending = false) {
+  public static function processError($operation, $errorMessage, $errorCode = null, $pauseSending = false, $throttledBatchSize = null) {
     $mailerLog = self::getMailerLog();
-    $mailerLog['retry_attempt']++;
+    if (!isset($throttledBatchSize) || $throttledBatchSize === 1) {
+      $mailerLog['retry_attempt']++;
+    }
     $mailerLog['retry_at'] = time() + self::RETRY_INTERVAL;
     $mailerLog = self::setError($mailerLog, $operation, $errorMessage, $errorCode);
     self::updateMailerLog($mailerLog);
