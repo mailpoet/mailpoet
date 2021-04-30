@@ -110,9 +110,16 @@ class EditorProductsCest {
     $this->clearCategories($i);
 
     $i->wantTo('Select category with multiple products');
+    // Try twice since it may probably take longer to load from
     $i->selectOptionInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
-    $i->seeSelectedInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
-    $this->checkElements($i);
+    try {
+      $i->seeSelectedInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
+      $this->checkElements($i);
+    } catch (\Exception $e) {
+      $i->selectOptionInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
+      $i->seeSelectedInSelect2(self::CATEGORY_MULTIPLE_RESULTS);
+      $this->checkElements($i);
+    }
     $this->clearCategories($i);
 
     // Click select2 to hide results
