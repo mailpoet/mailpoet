@@ -9,6 +9,7 @@ use MailPoet\Config\Populator;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
+use MailPoet\Cron\Workers\SendingQueue\SendingThrottlingHandler;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
@@ -151,7 +152,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItConstructs() {
-    expect($this->sendingQueueWorker->batchSize)->equals(SendingQueueWorker::BATCH_SIZE);
+    expect($this->sendingQueueWorker->batchSize)->equals(SendingThrottlingHandler::BATCH_SIZE);
     expect($this->sendingQueueWorker->mailerTask instanceof MailerTask);
     expect($this->sendingQueueWorker->newsletterTask instanceof NewsletterTask);
   }
@@ -632,7 +633,7 @@ class SendingQueueTest extends \MailPoetTest {
   public function testItDoesNotCallMailerWithEmptyBatch() {
     $queue = $this->queue;
     $subscribers = [];
-    while (count($subscribers) < 2 * SendingQueueWorker::BATCH_SIZE) {
+    while (count($subscribers) < 2 * SendingThrottlingHandler::BATCH_SIZE) {
       $subscribers[] = 1234564545 + count($subscribers);
     }
     $subscribers[] = $this->subscriber->id();
