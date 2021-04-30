@@ -29,7 +29,6 @@ use MailPoetVendor\Carbon\Carbon;
 class SendingQueue {
   public $mailerTask;
   public $newsletterTask;
-  public $batchSize;
   const TASK_BATCH_SIZE = 5;
   const EMAIL_WITH_INVALID_SEGMENT_OPTION = 'mailpoet_email_with_invalid_segment';
 
@@ -85,7 +84,6 @@ class SendingQueue {
     $this->segmentsRepository = $segmentsRepository;
     $this->mailerMetaInfo = new MetaInfo;
     $this->wp = $wp;
-    $this->batchSize = $this->throttlingHandler->getBatchSize();
     $this->loggerFactory = $loggerFactory;
     $this->newslettersRepository = $newslettersRepository;
     $this->cronHelper = $cronHelper;
@@ -140,7 +138,7 @@ class SendingQueue {
       }
 
       // get subscribers
-      $subscriberBatches = new BatchIterator($queue->taskId, $this->batchSize);
+      $subscriberBatches = new BatchIterator($queue->taskId, $this->getBatchSize());
       foreach ($subscriberBatches as $subscribersToProcessIds) {
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addInfo(
           'subscriber batch processing',
@@ -208,6 +206,10 @@ class SendingQueue {
         $this->enforceSendingAndExecutionLimits($timer);
       }
     }
+  }
+
+  public function getBatchSize(): int {
+    return $this->throttlingHandler->getBatchSize();
   }
 
   public function processQueue($queue, $newsletter, $subscribers, $timer) {
