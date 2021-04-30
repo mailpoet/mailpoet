@@ -155,9 +155,12 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItConstructs() {
-    expect($this->sendingQueueWorker->batchSize)->equals(SendingThrottlingHandler::BATCH_SIZE);
     expect($this->sendingQueueWorker->mailerTask instanceof MailerTask);
     expect($this->sendingQueueWorker->newsletterTask instanceof NewsletterTask);
+  }
+
+  public function testItReturnsCorrectBatchSize(): void {
+    expect($this->sendingQueueWorker->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
   }
 
   public function testItEnforcesExecutionLimitsBeforeQueueProcessing() {
@@ -861,7 +864,7 @@ class SendingQueueTest extends \MailPoetTest {
     $wp = new WPFunctions;
     $wp->addFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
     $sendingQueueWorker = $this->getSendingQueueWorker(Stub::makeEmpty(NewslettersRepository::class));
-    expect($sendingQueueWorker->batchSize)->equals($customBatchSizeValue);
+    expect($sendingQueueWorker->getBatchSize())->equals($customBatchSizeValue);
     $wp->removeFilter('mailpoet_cron_worker_sending_queue_batch_size', $filter);
   }
 
