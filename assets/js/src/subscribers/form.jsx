@@ -226,7 +226,7 @@ const SubscriberForm = ({ match }) => {
 
       <Heading level={1} className="mailpoet-title">
         <span>{MailPoet.I18n.t('subscriber')}</span>
-        <Link className="mailpoet-button mailpoet-button-small" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
+        <Link className="mailpoet-button mailpoet-button-small mailpoet-button-secondary" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
       </Heading>
 
       <SubscribersLimitNotice />

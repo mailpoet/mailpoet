@@ -163,7 +163,7 @@ const renderItem = (newsletter, actions, meta) => {
 const NewsletterListNotificationHistory = (props) => (
   <>
     <Link
-      className="mailpoet-button mailpoet-button-small"
+      className="mailpoet-button mailpoet-button-small mailpoet-button-secondary"
       to="/notification"
     >
       {MailPoet.I18n.t('backToPostNotifications')}

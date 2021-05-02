@@ -14,7 +14,7 @@ export default ({ email }: PropTypes): JSX.Element => {
   return (
     <Heading level={1} className="mailpoet-title">
       <span>{MailPoet.I18n.t('statsHeading').replace('%s', email)}</span>
-      <Link className="mailpoet-button mailpoet-button-small" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
+      <Link className="mailpoet-button mailpoet-button-small mailpoet-button-secondary" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
     </Heading>
   );
 };

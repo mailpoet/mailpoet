@@ -29,6 +29,7 @@ export const StepsWithoutTitles = () => {
           <Button
             onClick={previousStep}
             dimension="small"
+            variant="secondary"
             isDisabled={step === 1}
           >
             Previous step
@@ -66,6 +67,7 @@ export const StepsWithTitles = () => {
           <Button
             onClick={previousStep}
             dimension="small"
+            variant="secondary"
             isDisabled={step === 1}
           >
             Previous step
