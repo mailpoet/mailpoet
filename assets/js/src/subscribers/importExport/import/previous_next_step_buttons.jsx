@@ -12,7 +12,7 @@ const PreviousNextStepButtons = ({
 }) => (
   <div className="mailpoet-settings-save">
     {!hidePrevious && (
-      <Button type="button" onClick={onPreviousAction}>
+      <Button type="button" variant="secondary" onClick={onPreviousAction}>
         {MailPoet.I18n.t('previousStep')}
       </Button>
     )}

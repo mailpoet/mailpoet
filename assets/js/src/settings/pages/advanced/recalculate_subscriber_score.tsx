@@ -25,7 +25,7 @@ export function RecalculateSubscriberScore(): JSX.Element {
         <Button
           type="button"
           onClick={onClick}
-          variant="light"
+          variant="secondary"
           dimension="small"
         >
           {t('recalculateSubscribersScoreNow')}

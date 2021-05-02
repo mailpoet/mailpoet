@@ -12,14 +12,14 @@ export default ({ onProceed }: Props): JSX.Element => (
     <p>{MailPoet.I18n.t('offerClearoutText2')}</p>
     <p>{MailPoet.I18n.t('offerClearoutText3')}</p>
     <p>
-      <Button target="_blank" href="https://clearout.io/?ref=mailpoet">
-        {MailPoet.I18n.t('tryClearout')}
-      </Button>
       {onProceed && (
         <Button onClick={onProceed} variant="tertiary">
           {MailPoet.I18n.t('clearoutGotIt')}
         </Button>
       )}
+      <Button target="_blank" href="https://clearout.io/?ref=mailpoet">
+        {MailPoet.I18n.t('tryClearout')}
+      </Button>
     </p>
   </div>
 );

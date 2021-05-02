@@ -41,7 +41,7 @@ const SegmentForm = (props) => (
 
     <Heading level={1} className="mailpoet-title">
       <span>{MailPoet.I18n.t('segment')}</span>
-      <Link className="mailpoet-button mailpoet-button-small" to="/">{MailPoet.I18n.t('backToList')}</Link>
+      <Link className="mailpoet-button mailpoet-button-small mailpoet-button-secondary" to="/">{MailPoet.I18n.t('backToList')}</Link>
     </Heading>
 
     <SubscribersLimitNotice />
