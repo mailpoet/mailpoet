@@ -14,19 +14,19 @@ import {
 } from '../types';
 import { SegmentFormData } from '../segment_form_data';
 
-export const WooCommerceOptions = [
-  { value: 'numberOfOrders', label: MailPoet.I18n.t('wooNumberOfOrders'), group: SegmentTypes.WooCommerce },
-  { value: 'purchasedCategory', label: MailPoet.I18n.t('wooPurchasedCategory'), group: SegmentTypes.WooCommerce },
-  { value: 'purchasedProduct', label: MailPoet.I18n.t('wooPurchasedProduct'), group: SegmentTypes.WooCommerce },
-  { value: 'totalSpent', label: MailPoet.I18n.t('wooTotalSpent'), group: SegmentTypes.WooCommerce },
-];
-
 enum WooCommerceActionTypes {
   NUMBER_OF_ORDERS = 'numberOfOrders',
   PURCHASED_CATEGORY = 'purchasedCategory',
   PURCHASED_PRODUCT = 'purchasedProduct',
   TOTAL_SPENT = 'totalSpent',
 }
+
+export const WooCommerceOptions = [
+  { value: WooCommerceActionTypes.NUMBER_OF_ORDERS, label: MailPoet.I18n.t('wooNumberOfOrders'), group: SegmentTypes.WooCommerce },
+  { value: WooCommerceActionTypes.PURCHASED_CATEGORY, label: MailPoet.I18n.t('wooPurchasedCategory'), group: SegmentTypes.WooCommerce },
+  { value: WooCommerceActionTypes.PURCHASED_PRODUCT, label: MailPoet.I18n.t('wooPurchasedProduct'), group: SegmentTypes.WooCommerce },
+  { value: WooCommerceActionTypes.TOTAL_SPENT, label: MailPoet.I18n.t('wooTotalSpent'), group: SegmentTypes.WooCommerce },
+];
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (!(

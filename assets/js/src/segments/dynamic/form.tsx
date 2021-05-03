@@ -49,7 +49,7 @@ type GroupFilterValue = {
 }
 
 function getAvailableFilters(): GroupFilterValue[] {
-  const filters = [
+  const filters: GroupFilterValue[] = [
     {
       label: MailPoet.I18n.t('email'),
       options: EmailSegmentOptions,
