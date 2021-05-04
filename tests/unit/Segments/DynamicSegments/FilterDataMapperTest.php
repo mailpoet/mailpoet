@@ -8,6 +8,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
@@ -338,5 +339,32 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'action' => WooCommerceSubscription::ACTION_HAS_ACTIVE,
     ];
     $this->mapper->map($data);
+  }
+
+  public function testItCreatesWooCommerceCustomerCountry() {
+    $data = [
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceCountry::ACTION_CUSTOMER_COUNTRY,
+      'country_code' => 'UK',
+      'nonsense' => 1,
+    ];
+    $filter = $this->mapper->map($data);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    expect($filter->getData())->equals([
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceCountry::ACTION_CUSTOMER_COUNTRY,
+      'country_code' => 'UK',
+    ]);
+  }
+
+  public function testItRaisesExceptionCountryIsMissingForWooCommerceCustomerCountry() {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing country');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_COUNTRY);
+    $this->mapper->map([
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceCountry::ACTION_CUSTOMER_COUNTRY,
+    ]);
   }
 }
