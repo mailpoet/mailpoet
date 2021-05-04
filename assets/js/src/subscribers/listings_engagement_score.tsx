@@ -3,13 +3,14 @@ import Badge from '../common/listings/newsletter_stats/badge';
 import MailPoet from '../mailpoet';
 
 interface Props {
-  subscriber: {
-    id: string;
-    engagement_score?: number;
-  };
+  id: number;
+  engagementScore?: number;
 }
 
-export const ListingsEngagementScore: React.FunctionComponent<Props> = ({ subscriber }) => {
+export const ListingsEngagementScore: React.FunctionComponent<Props> = ({
+  id,
+  engagementScore,
+}) => {
   const badges = {
     unknown: {
       name: MailPoet.I18n.t('unknownBadgeName'),
@@ -36,13 +37,13 @@ export const ListingsEngagementScore: React.FunctionComponent<Props> = ({ subscr
       tooltipText: MailPoet.I18n.t('tooltipAverage'),
     },
   };
-  const tooltipId = `badge-${subscriber.id}`;
+  const tooltipId = `badge-${id}`;
   let badge;
-  if (subscriber.engagement_score == null) {
+  if (engagementScore == null) {
     badge = badges.unknown;
-  } else if (subscriber.engagement_score < 20) {
+  } else if (engagementScore < 20) {
     badge = badges.average;
-  } else if (subscriber.engagement_score < 50) {
+  } else if (engagementScore < 50) {
     badge = badges.good;
   } else {
     badge = badges.excellent;
@@ -85,11 +86,10 @@ export const ListingsEngagementScore: React.FunctionComponent<Props> = ({ subscr
   );
   return (
     <div className="mailpoet-listing-stats-opened-clicked">
-      {subscriber.engagement_score != null && (
+      {engagementScore != null && (
         <div className="mailpoet-listing-stats-percentages">
           {
-            subscriber
-              .engagement_score
+            engagementScore
               .toLocaleString(
                 undefined,
                 {
