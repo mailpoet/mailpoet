@@ -19,6 +19,7 @@ enum WooCommerceActionTypes {
   PURCHASED_CATEGORY = 'purchasedCategory',
   PURCHASED_PRODUCT = 'purchasedProduct',
   TOTAL_SPENT = 'totalSpent',
+  CUSTOMER_IN_COUNTRY = 'customerInCountry',
 }
 
 export const WooCommerceOptions = [
@@ -26,6 +27,7 @@ export const WooCommerceOptions = [
   { value: WooCommerceActionTypes.PURCHASED_CATEGORY, label: MailPoet.I18n.t('wooPurchasedCategory'), group: SegmentTypes.WooCommerce },
   { value: WooCommerceActionTypes.PURCHASED_PRODUCT, label: MailPoet.I18n.t('wooPurchasedProduct'), group: SegmentTypes.WooCommerce },
   { value: WooCommerceActionTypes.TOTAL_SPENT, label: MailPoet.I18n.t('wooTotalSpent'), group: SegmentTypes.WooCommerce },
+  { value: WooCommerceActionTypes.CUSTOMER_IN_COUNTRY, label: MailPoet.I18n.t('wooCustomerInCountry'), group: SegmentTypes.WooCommerce },
 ];
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
@@ -70,6 +72,11 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
   const categoryOptions = SegmentFormData.productCategories?.map((product) => ({
     value: product.id,
     label: product.name,
+  }));
+
+  const countryOptions = SegmentFormData.wooCountries?.map((country) => ({
+    value: country.code,
+    label: country.name,
   }));
 
   let optionFields;
@@ -214,6 +221,20 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
           <div>{MailPoet.I18n.t('days')}</div>
         </Grid.CenteredRow>
       </div>
+    );
+  } else if (item.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY) {
+    optionFields = (
+      <ReactSelect
+        isFullWidth
+        placeholder={MailPoet.I18n.t('selectWooCountry')}
+        options={countryOptions}
+        value={find(['value', item.country_code], countryOptions)}
+        onChange={(option: SelectOption): void => compose([
+          onChange,
+          assign(item),
+        ])({ country_code: option.value })}
+        automationId="select-segment-country"
+      />
     );
   }
 
