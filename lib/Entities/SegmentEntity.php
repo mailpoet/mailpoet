@@ -54,6 +54,18 @@ class SegmentEntity {
    */
   private $dynamicFilters;
 
+  /**
+   * @ORM\Column(type="float", nullable=true)
+   * @var float|null
+   */
+  private $averageEngagementScore;
+
+  /**
+   * @ORM\Column(type="datetimetz", nullable=true)
+   * @var \DateTimeInterface|null
+   */
+  private $averageEngagementScoreUpdatedAt;
+
   public function __construct(string $name, string $type, string $description) {
     $this->name = $name;
     $this->type = $type;
@@ -121,5 +133,21 @@ class SegmentEntity {
 
   public function isStatic(): bool {
     return in_array($this->getType(), [self::TYPE_DEFAULT, self::TYPE_WP_USERS, self::TYPE_WC_USERS], true);
+  }
+
+  public function getAverageEngagementScore(): ?float {
+    return $this->averageEngagementScore;
+  }
+
+  public function setAverageEngagementScore(?float $averageEngagementScore): void {
+    $this->averageEngagementScore = $averageEngagementScore;
+  }
+
+  public function getAverageEngagementScoreUpdatedAt(): ?\DateTimeInterface {
+    return $this->averageEngagementScoreUpdatedAt;
+  }
+
+  public function setAverageEngagementScoreUpdatedAt(?\DateTimeInterface $averageEngagementScoreUpdatedAt): void {
+    $this->averageEngagementScoreUpdatedAt = $averageEngagementScoreUpdatedAt;
   }
 }

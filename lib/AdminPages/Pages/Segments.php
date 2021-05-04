@@ -9,6 +9,7 @@ use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Newsletter;
 use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Services\Bridge;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
@@ -36,6 +37,9 @@ class Segments {
   /** @var WPPostListLoader */
   private $wpPostListLoader;
 
+  /** @var SettingsController */
+  private $settings;
+
   /** @var SegmentDependencyValidator */
   private $segmentDependencyValidator;
 
@@ -47,6 +51,7 @@ class Segments {
     WooCommerceHelper $woocommerceHelper,
     WPPostListLoader $wpPostListLoader,
     SubscribersFeature $subscribersFeature,
+    SettingsController $settings,
     SegmentDependencyValidator $segmentDependencyValidator
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -56,6 +61,7 @@ class Segments {
     $this->wp = $wp;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wpPostListLoader = $wpPostListLoader;
+    $this->settings = $settings;
     $this->segmentDependencyValidator = $segmentDependencyValidator;
   }
 
@@ -102,6 +108,7 @@ class Segments {
     );
     $wooCurrencySymbol = $this->woocommerceHelper->isWooCommerceActive() ? $this->woocommerceHelper->getWoocommerceCurrencySymbol() : '';
     $data['woocommerce_currency_symbol'] = html_entity_decode($wooCurrencySymbol);
+    $data['tracking_enabled'] = $this->settings->get('tracking.enabled');
 
     $this->pageRenderer->displayPage('segments.html', $data);
   }
