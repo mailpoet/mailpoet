@@ -113,12 +113,48 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
   }
 
+  public function testForWooCommerce() {
+    $subscriber = $this->createSubscriber();
+    $subscriber->setEngagementScoreUpdatedAt((new CarbonImmutable())->subDays(4));
+    $this->createStatisticsNewsletter($this->createWooNewsletter(), $subscriber);
+    $this->createStatisticsNewsletter($this->createWooNewsletter(), $subscriber);
+    $statisticsNewsletter = $this->createStatisticsNewsletter($this->createWooNewsletter(), $subscriber);
+    $newsletter = $statisticsNewsletter->getNewsletter();
+    assert($newsletter instanceof NewsletterEntity);
+    $queue = $newsletter->getQueues()->first();
+    assert($queue instanceof SendingQueueEntity);
+    $open = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
+    $this->entityManager->persist($open);
+    $this->entityManager->flush();
+
+    $this->repository->recalculateSubscriberScore($subscriber);
+
+    $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
+    expect($newSubscriber->getEngagementScore())->equals(33, 1);
+    expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
+    $updated = $newSubscriber->getEngagementScoreUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $updated);
+    $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
+    expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+  }
+
   private function createSubscriber(): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriber->setEmail('subscriber' . rand(0, 10000) . '@example.com');
     $this->entityManager->persist($subscriber);
     return $subscriber;
+  }
+
+  private function createWooNewsletter(): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Newsletter');
+    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATIC);
+    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    return $newsletter;
   }
 
   private function createNewsletter(?Carbon $sentAt = null): NewsletterEntity {
