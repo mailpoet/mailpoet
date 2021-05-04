@@ -11,6 +11,7 @@ use MailPoet\Segments\DynamicSegments\Filters\Filter;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
@@ -28,6 +29,9 @@ class FilterFactory {
 
   /** @var WooCommerceCategory */
   private $wooCommerceCategory;
+
+  /** @var WooCommerceCountry */
+  private $wooCommerceCountry;
 
   /** @var WooCommerceNumberOfOrders */
   private $wooCommerceNumberOfOrders;
@@ -49,6 +53,7 @@ class FilterFactory {
     UserRole $userRole,
     WooCommerceProduct $wooCommerceProduct,
     WooCommerceCategory $wooCommerceCategory,
+    WooCommerceCountry $wooCommerceCountry,
     EmailOpensAbsoluteCountAction $emailOpensAbsoluteCount,
     WooCommerceNumberOfOrders $wooCommerceNumberOfOrders,
     WooCommerceTotalSpent $wooCommerceTotalSpent,
@@ -59,6 +64,7 @@ class FilterFactory {
     $this->userRole = $userRole;
     $this->wooCommerceProduct = $wooCommerceProduct;
     $this->wooCommerceCategory = $wooCommerceCategory;
+    $this->wooCommerceCountry = $wooCommerceCountry;
     $this->wooCommerceNumberOfOrders = $wooCommerceNumberOfOrders;
     $this->wooCommerceSubscription = $wooCommerceSubscription;
     $this->emailOpensAbsoluteCount = $emailOpensAbsoluteCount;
@@ -90,6 +96,8 @@ class FilterFactory {
           return $this->wooCommerceNumberOfOrders;
         } elseif ($action === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
           return $this->wooCommerceTotalSpent;
+        } elseif ($action === WooCommerceCountry::ACTION_CUSTOMER_COUNTRY) {
+          return $this->wooCommerceCountry;
         }
         return $this->wooCommerceCategory;
       default:
