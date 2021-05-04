@@ -70,7 +70,7 @@ export const SubscriberStats: React.FunctionComponent = () => {
           open={stats.open}
           totalSent={stats.total_sent}
           subscriber={{
-            id: match.params.id,
+            id: Number(match.params.id),
             engagement_score: stats.engagement_score,
           }}
         />

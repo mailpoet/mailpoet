@@ -8,7 +8,7 @@ export type PropTypes = {
   open: number;
   click: number;
   subscriber: {
-    id: string;
+    id: number;
     engagement_score?: number;
   };
 }
@@ -85,7 +85,10 @@ export default ({
               <td>{MailPoet.I18n.t('statisticsColumn')}</td>
               <td>
                 <div className="mailpoet-listing-stats">
-                  <ListingsEngagementScore subscriber={subscriber} />
+                  <ListingsEngagementScore
+                    id={subscriber.id}
+                    engagementScore={subscriber.engagement_score}
+                  />
                 </div>
               </td>
               <td />

@@ -426,7 +426,10 @@ const SubscriberList = ({ match }) => {
                 key={`stats-link-${subscriber.id}`}
                 href={`#/stats/${subscriber.id}`}
               >
-                <ListingsEngagementScore subscriber={subscriber} />
+                <ListingsEngagementScore
+                  id={subscriber.id}
+                  engagementScore={subscriber.engagement_score}
+                />
               </a>
             </div>
           </td>
