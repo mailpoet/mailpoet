@@ -19,6 +19,11 @@ interface SegmentFormDataWindow extends Window {
     name: string;
   }[];
 
+  mailpoet_woocommerce_countries: {
+    code: string;
+    name: string;
+  }[];
+
   mailpoet_newsletters_list: {
     sent_at: string;
     subject: string;
@@ -39,4 +44,5 @@ export const SegmentFormData = {
   wordpressRoles: window.wordpress_editable_roles_list,
   canUseWooSubscriptions: window.mailpoet_can_use_woocommerce_subscriptions,
   wooCurrencySymbol: window.mailpoet_woocommerce_currency_symbol,
+  wooCountries: window.mailpoet_woocommerce_countries,
 };
