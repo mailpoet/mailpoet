@@ -44,6 +44,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (formItems.action === WooCommerceActionTypes.PURCHASED_PRODUCT && !formItems.product_id) {
     return false;
   }
+  if (formItems.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY && !formItems.country_code) {
+    return false;
+  }
   const numberOfOrdersIsInvalid = !formItems.number_of_orders_count
     || !formItems.number_of_orders_days
     || !formItems.number_of_orders_type;

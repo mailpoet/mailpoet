@@ -22,6 +22,7 @@ const allowedItemKeys: string[] = [
   'newsletter_id',
   'category_id',
   'product_id',
+  'country_code',
   'link_id',
   'days',
   'opens',
