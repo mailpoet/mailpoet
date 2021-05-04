@@ -12,6 +12,7 @@ class WooCommerceDynamicSegmentsCest {
   const PRODUCT_SEGMENT = 'Purchased product segment';
   const NUMBER_OF_ORDERS_SEGMENT = 'Number of orders segment';
   const TOTAL_SPENT_SEGMENT = 'Total spent segment';
+  const CUSTOMER_IN_COUNTRY = 'Customer in country segment';
 
   /** @var Settings */
   private $settingsFactory;
@@ -36,6 +37,9 @@ class WooCommerceDynamicSegmentsCest {
 
   /** @var SegmentEntity */
   private $totalSpentSegment;
+
+  /** @var SegmentEntity */
+  private $customerCountrySegment;
 
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();
@@ -65,6 +69,10 @@ class WooCommerceDynamicSegmentsCest {
     $this->totalSpentSegment = $segmentFactory
       ->withName(self::TOTAL_SPENT_SEGMENT)
       ->withWooCommerceTotalSpentFilter()
+      ->create();
+    $this->customerCountrySegment = $segmentFactory
+      ->withName(self::CUSTOMER_IN_COUNTRY)
+      ->withWooCommerceCutomerCountryFilter('FR')
       ->create();
   }
 
@@ -148,6 +156,23 @@ class WooCommerceDynamicSegmentsCest {
     $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->totalSpentSegment->getId()}']";
     $i->see('1', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::TOTAL_SPENT_SEGMENT, 'View Subscribers');
+    $i->waitForText($customerEmail);
+  }
+
+  public function checkThatCustomersAreAddedToCustomerInCountrySegment(\AcceptanceTester $i) {
+    $i->wantTo('Check that customers are added to the customer in country segment');
+    $customerEmail = 'customer_france@example.com';
+    $product = $this->productFactory->create();
+    $i->orderProduct($product, $customerEmail);
+
+    $i->login();
+    $i->wantTo('Check that there is one subscriber in customer country segment');
+    $i->amOnMailpoetPage('Lists');
+    $i->click('[data-automation-id="dynamic-segments-tab"]');
+    $i->waitForText(self::CUSTOMER_IN_COUNTRY);
+    $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->customerCountrySegment->getId()}']";
+    $i->see('1', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
+    $i->clickItemRowActionByItemName(self::CUSTOMER_IN_COUNTRY, 'View Subscribers');
     $i->waitForText($customerEmail);
   }
 
