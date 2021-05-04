@@ -90,6 +90,13 @@ class Segments {
     $data['products'] = $this->wpPostListLoader->getProducts();
     $data['subscription_products'] = $this->wpPostListLoader->getSubscriptionProducts();
     $data['is_woocommerce_active'] = $this->woocommerceHelper->isWooCommerceActive();
+    $wcCountries = $this->woocommerceHelper->isWooCommerceActive() ? $this->woocommerceHelper->getCountries() : [];
+    $data['woocommerce_countries'] = array_map(function ($code, $name) {
+      return [
+        'name' => $name,
+        'code' => $code,
+      ];
+    }, array_keys($wcCountries), $wcCountries);
     $data['can_use_woocommerce_subscriptions'] = $this->segmentDependencyValidator->canUseDynamicFilterType(
       DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION
     );

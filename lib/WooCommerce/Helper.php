@@ -64,4 +64,8 @@ class Helper {
     $htmlPrice = $this->wcPrice($price, $args);
     return html_entity_decode(strip_tags($htmlPrice));
   }
+
+  public function getCountries(): array {
+    return (new \WC_Countries)->get_countries() ?? [];
+  }
 }
