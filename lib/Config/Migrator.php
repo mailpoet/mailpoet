@@ -90,8 +90,11 @@ class Migrator {
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'deleted_at timestamp NULL,',
+      'average_engagement_score FLOAT unsigned NULL,',
+      'average_engagement_score_updated_at timestamp NULL,',
       'PRIMARY KEY  (id),',
-      'UNIQUE KEY name (name)',
+      'UNIQUE KEY name (name),',
+      'KEY average_engagement_score_updated_at (average_engagement_score_updated_at)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
