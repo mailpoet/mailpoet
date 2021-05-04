@@ -5,10 +5,12 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 import Listing from 'listing/listing.jsx';
+import { ListingsEngagementScore } from '../subscribers/listings_engagement_score';
 
 const isWPUsersSegment = (segment) => segment.type === 'wp_users';
 const isWooCommerceCustomersSegment = (segment) => segment.type === 'woocommerce_users';
 const isSpecialSegment = (segmt) => isWPUsersSegment(segmt) || isWooCommerceCustomersSegment(segmt);
+const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
 
 const columns = [
   {
@@ -19,6 +21,11 @@ const columns = [
   {
     name: 'description',
     label: MailPoet.I18n.t('description'),
+  },
+  {
+    name: 'average_subscriber_score',
+    label: MailPoet.I18n.t('averageScore'),
+    display: mailpoetTrackingEnabled,
   },
   {
     name: 'subscribed',
@@ -263,6 +270,16 @@ class SegmentList extends React.Component {
         <td data-colname={MailPoet.I18n.t('description')}>
           <abbr>{ segment.description }</abbr>
         </td>
+        { (mailpoetTrackingEnabled === true) ? (
+          <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('averageScore')}>
+            <div className="mailpoet-listing-stats">
+              <ListingsEngagementScore
+                id={segment.id}
+                engagementScore={segment.average_engagement_score}
+              />
+            </div>
+          </td>
+        ) : null }
         <td className="mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribed')}>
           <abbr>{ subscribed.toLocaleString() }</abbr>
         </td>

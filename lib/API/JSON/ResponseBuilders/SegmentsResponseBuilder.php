@@ -32,6 +32,7 @@ class SegmentsResponseBuilder {
       'created_at' => $segment->getCreatedAt()->format(self::DATE_FORMAT),
       'updated_at' => $segment->getUpdatedAt()->format(self::DATE_FORMAT),
       'deleted_at' => ($deletedAt = $segment->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
+      'average_engagement_score' => $segment->getAverageEngagementScore(),
     ];
   }
 

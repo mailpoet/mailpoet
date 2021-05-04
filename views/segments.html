@@ -31,6 +31,7 @@
     var mailpoet_can_use_woocommerce_subscriptions = <%= json_encode(can_use_woocommerce_subscriptions)  %>;
     var mailpoet_woocommerce_currency_symbol = <%= json_encode(woocommerce_currency_symbol)  %>;
     var mailpoet_woocommerce_countries = <%= json_encode(woocommerce_countries)  %>;
+    var mailpoet_tracking_enabled = <%= json_encode(tracking_enabled) %>;
 
   </script>
 <% endblock %>
@@ -85,6 +86,7 @@
     'save': __('Save'),
     'trashAndDisable': __('Trash and disable'),
     'restoreAndEnable': __('Restore and enable'),
+    'averageScore': __('Average Score'),
 
     'previousPage': __('Previous page'),
     'firstPage': __('First page'),
@@ -195,5 +197,18 @@
     'dynamicSegmentSizeIsCalculated': __('Calculating segment size…'),
     'dynamicSegmentSizeCalculatingTimeout': __('Segment size calculation has timed out. You can still save the segment.'),
     'dynamicSegmentSize': __('This segment has %$1d subscribers.'),
+
+    'unknownBadgeName': __('Unknown'),
+    'unknownBadgeTooltip': __('Not enough data.'),
+    'tooltipUnknown': __('Fewer than 3 emails sent'),
+    'excellentBadgeName': __('Excellent'),
+    'excellentBadgeTooltip': __('Congrats!'),
+    'tooltipExcellent': __('Above 50%'),
+    'goodBadgeName': __('Good'),
+    'goodBadgeTooltip': __('Good stuff.'),
+    'tooltipGood': __('between 20 and 50%'),
+    'averageBadgeName': __('Low'),
+    'averageBadgeTooltip': __('Something to improve.'),
+    'tooltipAverage': __('between 0 and 20%'),
   }) %>
 <% endblock %>
