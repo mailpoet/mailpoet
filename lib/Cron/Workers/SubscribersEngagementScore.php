@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers;
 
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
@@ -12,6 +13,9 @@ class SubscribersEngagementScore extends SimpleWorker {
   const BATCH_SIZE = 60;
   const TASK_TYPE = 'subscribers_engagement_score';
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   /** @var StatisticsOpensRepository */
   private $statisticsOpensRepository;
 
@@ -19,25 +23,47 @@ class SubscribersEngagementScore extends SimpleWorker {
   private $subscribersRepository;
 
   public function __construct(
+    SegmentsRepository $segmentsRepository,
     StatisticsOpensRepository $statisticsOpensRepository,
     SubscribersRepository $subscribersRepository
   ) {
     parent::__construct();
+    $this->segmentsRepository = $segmentsRepository;
     $this->statisticsOpensRepository = $statisticsOpensRepository;
     $this->subscribersRepository = $subscribersRepository;
   }
 
   public function processTaskStrategy(ScheduledTask $task, $timer) {
-    $subscribers = $this->subscribersRepository->findByUpdatedScoreNotInLastMonth(SubscribersEngagementScore::BATCH_SIZE);
+    $recalculatedSubscribersCount = $this->recalculateSubscribers();
+    if ($recalculatedSubscribersCount > 0) {
+      $this->scheduleImmediately();
+      return true;
+    }
+
+    $recalculatedSegmentsCount = $this->recalculateSegments();
+    if ($recalculatedSegmentsCount > 0) {
+      $this->scheduleImmediately();
+      return true;
+    }
+
+    $this->schedule();
+    return true;
+  }
+
+  private function recalculateSubscribers(): int {
+    $subscribers = $this->subscribersRepository->findByUpdatedScoreNotInLastMonth(self::BATCH_SIZE);
     foreach ($subscribers as $subscriber) {
       $this->statisticsOpensRepository->recalculateSubscriberScore($subscriber);
     }
-    if ($subscribers) {
-      $this->scheduleImmediately();
-    } else {
-      $this->schedule();
+    return count($subscribers);
+  }
+
+  private function recalculateSegments(): int {
+    $segments = $this->segmentsRepository->findByUpdatedScoreNotInLastMonth(self::BATCH_SIZE);
+    foreach ($segments as $segment) {
+      $this->statisticsOpensRepository->recalculateSegmentScore($segment);
     }
-    return true;
+    return count($segments);
   }
 
   public function getNextRunDate() {

@@ -36,6 +36,13 @@ class Opens {
         $queue->getId()
       );
       $this->statisticsOpensRepository->recalculateSubscriberScore($subscriber);
+      foreach ($newsletter->getNewsletterSegments() as $newsletterSegment) {
+        $segment = $newsletterSegment->getSegment();
+        if (!$segment) {
+          continue;
+        }
+        $this->statisticsOpensRepository->recalculateSegmentScore($segment);
+      }
     }
     return $this->returnResponse($displayImage);
   }
