@@ -12,6 +12,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Bounce as BounceTask;
 use MailPoet\Tasks\Subscribers as TaskSubscribers;
 use MailPoet\Tasks\Subscribers\BatchIterator;
+use MailPoetVendor\Carbon\Carbon;
 
 class Bounce extends SimpleWorker {
   const TASK_TYPE = 'bounce';
@@ -95,5 +96,14 @@ class Bounce extends SimpleWorker {
         $subscriber->save();
       }
     }
+  }
+
+  public function getNextRunDate() {
+    $date = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    return $date->startOfDay()
+      ->addDay()
+      ->addHours(rand(0, 5))
+      ->addMinutes(rand(0, 59))
+      ->addSeconds(rand(0, 59));
   }
 }
