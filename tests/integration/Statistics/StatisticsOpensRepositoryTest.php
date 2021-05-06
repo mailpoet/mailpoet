@@ -6,10 +6,13 @@ use Carbon\Carbon;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
 use MailPoetVendor\Carbon\CarbonImmutable;
@@ -21,11 +24,15 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   public function _before() {
     parent::_before();
     $this->cleanup();
     $this->repository = $this->diContainer->get(StatisticsOpensRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
   }
 
   protected function _after() {
@@ -35,20 +42,30 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
 
   public function testItLeavesScoreWhenNoData() {
     $subscriber = $this->createSubscriber();
+    $segment = $this->createSegment();
+    $this->createSubscriberSegment($subscriber, $segment);
     $this->entityManager->flush();
     $this->repository->recalculateSubscriberScore($subscriber);
+    $this->repository->recalculateSegmentScore($segment);
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     expect($newSubscriber->getEngagementScore())->null();
     expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
+    $newSegment = $this->segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $newSegment);
+    expect($newSegment->getAverageEngagementScore())->null();
+    expect($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
   }
 
   public function testItUpdatesScoreTimeWhenNotEnoughNewsletters() {
     $subscriber = $this->createSubscriber();
+    $segment = $this->createSegment();
+    $this->createSubscriberSegment($subscriber, $segment);
     $subscriber->setEngagementScoreUpdatedAt((new CarbonImmutable())->subDays(4));
     $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber);
     $this->entityManager->flush();
     $this->repository->recalculateSubscriberScore($subscriber);
+    $this->repository->recalculateSegmentScore($segment);
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     expect($newSubscriber->getEngagementScore())->null();
@@ -57,10 +74,20 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
     expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+    $newSegment = $this->segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $newSegment);
+    expect($newSegment->getAverageEngagementScore())->null();
+    expect($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
+    $updated = $newSegment->getAverageEngagementScoreUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $updated);
+    $averageScoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
+    expect($averageScoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
   }
 
   public function testItUpdatesScore() {
     $subscriber = $this->createSubscriber();
+    $segment = $this->createSegment();
+    $this->createSubscriberSegment($subscriber, $segment);
     $subscriber->setEngagementScoreUpdatedAt((new CarbonImmutable())->subDays(4));
     $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber);
     $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber);
@@ -74,6 +101,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->repository->recalculateSubscriberScore($subscriber);
+    $this->repository->recalculateSegmentScore($segment);
 
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
@@ -83,10 +111,23 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
     expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+
+    $newSegment = $this->segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $newSegment);
+    expect($newSegment->getAverageEngagementScore())->equals(33, 1);
+    expect($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
+    $updated = $newSegment->getAverageEngagementScoreUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $updated);
+    $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
+    expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
   }
 
   public function testItUpdatesScoreOnlyForTwelveMonths(): void {
     $subscriber = $this->createSubscriber();
+    $subscriber2 = $this->createSubscriber();
+    $segment = $this->createSegment();
+    $this->createSubscriberSegment($subscriber, $segment);
+    $this->createSubscriberSegment($subscriber2, $segment);
     $subscriber->setEngagementScoreUpdatedAt((new CarbonImmutable())->subDays(4));
     $sentAt = (new Carbon())->subMonths(13);
     $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber, $sentAt);
@@ -100,14 +141,45 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $open = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
     $this->entityManager->persist($open);
     $this->entityManager->flush();
+    $subscriber2->setEngagementScoreUpdatedAt((new CarbonImmutable())->subDays(4));
+    $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber2);
+    $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber2);
+    $statisticsNewsletter = $this->createStatisticsNewsletter($this->createNewsletter(), $subscriber2);
+    $newsletter = $statisticsNewsletter->getNewsletter();
+    assert($newsletter instanceof NewsletterEntity);
+    $queue = $newsletter->getQueues()->first();
+    assert($queue instanceof SendingQueueEntity);
+    $open = new StatisticsOpenEntity($newsletter, $queue, $subscriber2);
+    $this->entityManager->persist($open);
+    $this->entityManager->flush();
 
     $this->repository->recalculateSubscriberScore($subscriber);
+    $this->repository->recalculateSubscriberScore($subscriber2);
+    $this->repository->recalculateSegmentScore($segment);
 
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     expect($newSubscriber->getEngagementScore())->equals(0.0);
     expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
     $updated = $newSubscriber->getEngagementScoreUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $updated);
+    $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
+    expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+
+    $newSubscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber2);
+    expect($newSubscriber2->getEngagementScore())->equals(33, 1);
+    expect($newSubscriber2->getEngagementScoreUpdatedAt())->notNull();
+    $updated = $newSubscriber2->getEngagementScoreUpdatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $updated);
+    $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
+    expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+
+    $newSegment = $this->segmentsRepository->findOneById($segment->getId());
+    $this->assertInstanceOf(SegmentEntity::class, $newSegment);
+    expect($newSegment->getAverageEngagementScore())->equals(16.6, 0.1);
+    expect($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
+    $updated = $newSegment->getAverageEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
     expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
@@ -157,6 +229,20 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     return $newsletter;
   }
 
+  private function createSegment(): SegmentEntity {
+    $segment = new SegmentEntity('Segment', NewsletterEntity::TYPE_STANDARD, 'description');
+    $this->entityManager->persist($segment);
+    $this->entityManager->flush();
+    return $segment;
+  }
+
+  private function createSubscriberSegment(SubscriberEntity $subscriber, SegmentEntity $segment): SubscriberSegmentEntity {
+    $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->entityManager->persist($subscriberSegment);
+    $this->entityManager->flush();
+    return $subscriberSegment;
+  }
+
   private function createNewsletter(?Carbon $sentAt = null): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject('Newsletter');
@@ -199,6 +285,8 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
     $this->truncateEntity(StatisticsOpenEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(StatisticsNewsletterEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
