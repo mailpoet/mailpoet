@@ -305,38 +305,33 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
-  public function doctrineGenerateMetadata() {
+  public function doctrineGenerateCache() {
     $doctrineMetadataDir = \MailPoet\Doctrine\ConfigurationFactory::METADATA_DIR;
     $validatorMetadataDir = \MailPoet\Doctrine\Validator\ValidatorFactory::METADATA_DIR;
+    $proxyDir = \MailPoet\Doctrine\ConfigurationFactory::PROXY_DIR;
+
+    // Cleanup
     $this->_exec("rm -rf $doctrineMetadataDir");
     $this->_exec("rm -rf $validatorMetadataDir");
+    $this->_exec("rm -rf $proxyDir");
 
+    // Metadata
     $entityManager = $this->createDoctrineEntityManager();
     $doctrineMetadata = $entityManager->getMetadataFactory()->getAllMetadata();
+    $this->say("Doctrine metadata generated to: $doctrineMetadataDir");
 
+    // Proxies
+    $entityManager->getProxyFactory()->generateProxyClasses($doctrineMetadata);
+    $this->say("Doctrine proxies generated to: $proxyDir");
+
+    // Validator
     $annotationReaderProvider = new \MailPoet\Doctrine\Annotations\AnnotationReaderProvider();
     $validatorFactory = new \MailPoet\Doctrine\Validator\ValidatorFactory($annotationReaderProvider);
     $validator = $validatorFactory->createValidator();
-
     foreach ($doctrineMetadata as $metadata) {
       $validator->getMetadataFor($metadata->getName());
     }
-
-    $this->say("Doctrine metadata generated to: $doctrineMetadataDir");
     $this->say("Validator metadata generated to: $validatorMetadataDir");
-  }
-
-  public function doctrineGenerateProxies() {
-    $proxyDir = \MailPoet\Doctrine\ConfigurationFactory::PROXY_DIR;
-    $this->_exec("rm -rf $proxyDir");
-
-    // set ArrayCache for metadata to avoid reading & writing them on filesystem as a side effect
-    $entityManager = $this->createDoctrineEntityManager();
-    $entityManager->getMetadataFactory()->setCacheDriver(new \MailPoetVendor\Doctrine\Common\Cache\ArrayCache());
-    $entityManager->getProxyFactory()->generateProxyClasses(
-      $entityManager->getMetadataFactory()->getAllMetadata()
-    );
-    $this->say("Doctrine proxies generated to: $proxyDir");
   }
 
   public function qa() {
