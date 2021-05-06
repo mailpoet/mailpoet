@@ -17,8 +17,7 @@ use MailPoet\Test\DataFactories\Segment;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
-class WooCommercePastRevenues {
-
+class WooCommercePastRevenues implements Generator {
   // Date range
   const MAX_DAYS_AGO = 800;
   const MIN_DAYS_AGO = 30;
