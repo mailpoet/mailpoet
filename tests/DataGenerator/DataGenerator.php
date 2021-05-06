@@ -31,6 +31,16 @@ class DataGenerator {
     $this->log($timer, 'DONE!');
   }
 
+  public function runBefore($generatorName = null) {
+    if (!$generatorName) $generatorName = self::PAST_REVENUES_GENERATOR;
+    $this->createGenerator($generatorName)->runBefore();
+  }
+
+  public function runAfter($generatorName = null) {
+    if (!$generatorName) $generatorName = self::PAST_REVENUES_GENERATOR;
+    $this->createGenerator($generatorName)->runAfter();
+  }
+
   private function createGenerator($generatorName) {
     switch ($generatorName) {
       case self::PAST_REVENUES_GENERATOR:

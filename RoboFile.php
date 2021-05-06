@@ -908,7 +908,27 @@ class RoboFile extends \Robo\Tasks {
       ->downloadReleaseZip('woocommerce.zip', __DIR__ . '/tests/plugins/', $tag);
   }
 
-  public function generateData($generatorName = null) {
+  public function generateData($generatorName = null, $threads = 1) {
+    require_once __DIR__ . '/tests/DataGenerator/_bootstrap.php';
+    $generator = new \MailPoet\Test\DataGenerator\DataGenerator(new \Codeception\Lib\Console\Output([]));
+    $generator->runBefore($generatorName);
+    if ((int)$threads === 1) {
+      $this->generateUnitOfData($generatorName);
+    } else {
+      $parallelTask = $this->taskParallelExec();
+      for ($i = 1; $i <= $threads; $i++) {
+        $parallelTask = $parallelTask->process("./do generate:unit-of-data $generatorName");
+      }
+      $parallelTask->run();
+    }
+    $generator->runAfter($generatorName);
+  }
+
+  /**
+   * This is intended only for usage as a child process in parallel execution
+   * @param string|null $generatorName
+   */
+  public function generateUnitOfData($generatorName = null) {
     require_once __DIR__ . '/tests/DataGenerator/_bootstrap.php';
     $generator = new \MailPoet\Test\DataGenerator\DataGenerator(new \Codeception\Lib\Console\Output([]));
     $generator->run($generatorName);

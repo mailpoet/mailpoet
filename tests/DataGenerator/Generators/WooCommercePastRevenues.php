@@ -31,7 +31,6 @@ class WooCommercePastRevenues {
   const STANDARD_NEWSLETTER = 30;
 
   public function generate() {
-    $this->prepareDatabaseTables();
     // Reset hooks to prevent revenues calculation during generating
     remove_all_actions('woocommerce_order_status_completed');
     remove_all_actions('woocommerce_order_status_processing');
@@ -40,15 +39,15 @@ class WooCommercePastRevenues {
 
     // Create list
     $segmentFactory = new Segment();
-    $subscribersListEntity = $segmentFactory->withName('WC revenues load test')->create();
+    $subscribersListEntity = $segmentFactory->withName('WC revenues load test ' . $this->getRandomString())->create();
     $subscribersList = \MailPoet\Models\Segment::findOne($subscribersListEntity->getId());
 
     // Create subscribers
     $subscribersIds = [];
     $subscriberEmails = [];
     for ($i = 1; $i <= self::SUBSCRIBERS_COUNT; $i++) {
-      $email = "address$i@email.com";
-      $subscriber = $this->createSubscriber("address$i@email.com", "last_name_$i", $minimalCreatedAtDate, $subscribersList);
+      $email = $this->getRandomString() . "address$i@email.com";
+      $subscriber = $this->createSubscriber($email, "last_name_$i", $minimalCreatedAtDate, $subscribersList);
       $subscribersIds[] = $subscriber->id;
       $subscriberEmails[$subscriber->id] = $email;
       $batchLog = $this->getBatchLog('Subscribers', count($subscribersIds));
@@ -59,10 +58,10 @@ class WooCommercePastRevenues {
     yield "Subscribers done";
 
     // Products
-    $productCategory = $this->createProductCategory('WC Revenues Test Category', 'revenues-test-cat');
+    $productCategory = $this->createProductCategory('WC Revenues Test Category ' . $this->getRandomString(), 'revenues-test-cat-' . $this->getRandomString());
     $products = [];
     for ($i = 1; $i <= self::PRODUCTS_COUNT; $i++) {
-      $products[] = $this->createProduct("Product $i", 100, [$productCategory->term_id]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $products[] = $this->createProduct("Product $i " . $this->getRandomString(), 100, [$productCategory->term_id]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     }
     yield "Products done";
 
@@ -73,7 +72,7 @@ class WooCommercePastRevenues {
     for ($i = 1; $i <= self::STANDARD_NEWSLETTER; $i++) {
       $sentAt = $this->getRandomDateInPast();
       $newsletter = $emailFactory
-        ->withSubject("Standard $i")
+        ->withSubject("Standard $i " . $this->getRandomString())
         ->withSegments([$subscribersListEntity])
         ->withCreatedAt($sentAt)
         ->create();
@@ -108,7 +107,7 @@ class WooCommercePastRevenues {
     // Welcome emails
     $emailFactory = new Newsletter();
     $welcomeEmail = $emailFactory
-      ->withSubject("Welcome email")
+      ->withSubject("Welcome email" . $this->getRandomString())
       ->withActiveStatus()
       ->withWelcomeTypeForSegment($subscribersList->id)
       ->withSegments([$subscribersListEntity])
@@ -130,7 +129,7 @@ class WooCommercePastRevenues {
     $emailFactory = new Newsletter();
     // First purchase
     $automaticEmails[] = $emailFactory
-      ->withSubject("First Purchase")
+      ->withSubject("First Purchase" . $this->getRandomString())
       ->withActiveStatus()
       ->withAutomaticTypeWooCommerceFirstPurchase()
       ->withSegments([])
@@ -143,7 +142,7 @@ class WooCommercePastRevenues {
         'name' => $products[$i]->get_id(),
       ];
       $automaticEmails[] = $emailFactory
-        ->withSubject("Purchased Product $i")
+        ->withSubject("Purchased Product $i " . $this->getRandomString())
         ->withActiveStatus()
         ->withAutomaticTypeWooCommerceProductPurchased([$product])
         ->withSegments([])
@@ -161,7 +160,7 @@ class WooCommercePastRevenues {
         ]],
       ];
       $automaticEmails[] = $emailFactory
-        ->withSubject("Purchased Product in Category $i")
+        ->withSubject("Purchased Product in Category $i " . $this->getRandomString())
         ->withActiveStatus()
         ->withAutomaticTypeWooCommerceProductInCategoryPurchased([$product])
         ->withSegments([])
@@ -219,15 +218,18 @@ class WooCommercePastRevenues {
       }
       // Create order
       if (isset($subscribersWithOrders[$subscriberId])) {
-        // Pick a random logged click time and generate an order day after the click
-        $clickTime = $subscriberClickTimes[array_rand($subscriberClickTimes)];
-        $orderCompletedAt = (new Carbon($clickTime))->addDay();
-        $this->createCompletedWooCommerceOrder(
-          $subscriberId,
-          $subscriberEmails[$subscriberId],
-          [$products[array_rand($products)]],
-          $orderCompletedAt
-        );
+        $orderCount = rand(1, 5);
+        for ($i = 1; $i <= $orderCount; $i++) {
+          // Pick a random logged click time and generate an order day after the click
+          $clickTime = $subscriberClickTimes[array_rand($subscriberClickTimes)];
+          $orderCompletedAt = (new Carbon($clickTime))->addDay();
+          $this->createCompletedWooCommerceOrder(
+            $subscriberId,
+            $subscriberEmails[$subscriberId],
+            [$products[array_rand($products)]],
+            $orderCompletedAt
+          );
+        }
       }
       $batchLog = $this->getBatchLog('Subscriber clicks and orders', $i);
       if ($batchLog) {
@@ -235,7 +237,6 @@ class WooCommercePastRevenues {
       }
     }
     yield "Clicks and Orders done";
-    $this->restoreDatabaseTables();
   }
 
   private function getRandomDateInPast() {
@@ -250,7 +251,7 @@ class WooCommercePastRevenues {
     return "$dataType: $generatedCount";
   }
 
-  private function prepareDatabaseTables() {
+  public function runBefore() {
     // Turn off CURRENT_TIMESTAMP to be able to save generated value
     ORM::rawExecute(
       "ALTER TABLE `" . StatisticsClicks::$_table . "`
@@ -273,7 +274,7 @@ class WooCommercePastRevenues {
     ORM::rawExecute("SET UNIQUE_CHECKS = 0;");
   }
 
-  private function restoreDatabaseTables() {
+  public function runAfter() {
     ORM::rawExecute(
       "ALTER TABLE `" . StatisticsClicks::$_table . "`
       CHANGE `updated_at` `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;"
@@ -429,15 +430,17 @@ class WooCommercePastRevenues {
    * @return \WC_Order|\WP_Error
    */
   private function createCompletedWooCommerceOrder($subscriberId, $email, $products = [], Carbon $completedAt = null) {
+    $random = $this->getRandomString();
+    $countries = ['FR', 'GB', 'US', 'IE', 'IT'];
     $address = [
-      'first_name' => "name_$subscriberId",
-      'last_name' => "lastname_$subscriberId",
+      'first_name' => "{$random}_name_{$subscriberId}",
+      'last_name' => "{$random}_lastname_{$subscriberId}",
       'email' => $email,
       'phone' => '123-456-789',
-      'address_1' => "$subscriberId Main st.",
-      'city' => "City of $subscriberId",
+      'address_1' => "{$random} {$subscriberId} Main st.",
+      'city' => "City of {$random} {$subscriberId}",
       'postcode' => '92121',
-      'country' => 'France',
+      'country' => $countries[array_rand($countries)],
     ];
 
     $order = wc_create_order();
@@ -461,5 +464,15 @@ class WooCommercePastRevenues {
       ]);
     }
     return $order;
+  }
+
+  private function getRandomString($length = 5) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+      $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
   }
 }

@@ -104,6 +104,8 @@ $ ./do release:changelog-get  [--version-name=...]     # Prints out changelog an
 $ ./do release:changelog-update  [--version-name=...] [--quiet] # Updates changelog in readme.txt for given version or for newest version.
 
 $ ./do container:dump      # Generates DI container cache.
+
+$ ./do generate:data [<generatorName>] [<threads>] # Generates random usage data (Note: requires WooCommerce active) e.g. ./do generate:data past_revenues 4
 ```
 
 # Storybook
