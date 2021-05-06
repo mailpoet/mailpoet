@@ -136,8 +136,7 @@ jobs:
             touch .env
             ./do install
             ./do compile:all --env production
-            ./do doctrine:generate-metadata
-            ./do doctrine:generate-proxies
+            ./do doctrine:generate-cache
             vendor/bin/codecept build
       - save_cache:
           key: tools-{{ checksum "tools/install.php" }}

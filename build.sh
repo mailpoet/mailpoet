@@ -32,13 +32,9 @@ echo '[BUILD] Building DI Container cache'
 ./tools/vendor/composer.phar install
 ./do container:dump
 
-# Generate Doctrine metadata
-echo '[BUILD] Generating Doctrine Metadata'
-./do doctrine:generate-metadata
-
-# Generate Doctrine proxies
-echo '[BUILD] Generating Doctrine Proxies'
-./do doctrine:generate-proxies
+# Generate Doctrine cache
+echo '[BUILD] Generating Doctrine Cache'
+./do doctrine:generate-cache
 
 # Backup dev libraries
 echo '[BUILD] Backup dev dependencies'
