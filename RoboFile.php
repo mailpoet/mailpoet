@@ -330,6 +330,8 @@ class RoboFile extends \Robo\Tasks {
     $validator = $validatorFactory->createValidator();
     foreach ($doctrineMetadata as $metadata) {
       $validator->getMetadataFor($metadata->getName());
+      require_once $proxyDir . '/__CG__' . str_replace('\\', '', $metadata->getName()) . '.php';
+      $validator->getMetadataFor("MailPoetDoctrineProxies\__CG__\\" . $metadata->getName());
     }
     $this->say("Validator metadata generated to: $validatorMetadataDir");
   }
