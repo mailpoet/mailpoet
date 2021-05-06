@@ -101,7 +101,7 @@
     "slugify": "^1.4.0",
     "spectrum-colorpicker": "^1.8.1",
     "tinymce": "^5.6.0",
-    "underscore": "1.8.3",
+    "underscore": "1.12.1",
     "velocity-animate": "^1.5.2"
   },
   "devDependencies": {
