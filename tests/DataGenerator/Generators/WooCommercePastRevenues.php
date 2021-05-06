@@ -74,7 +74,7 @@ class WooCommercePastRevenues {
       $sentAt = $this->getRandomDateInPast();
       $newsletter = $emailFactory
         ->withSubject("Standard $i")
-        ->withSegments([$subscribersList])
+        ->withSegments([$subscribersListEntity])
         ->withCreatedAt($sentAt)
         ->create();
       $sentStandardNewsletters[] = $this->createSentEmailData($newsletter, $sentAt, $subscribersIds, $subscribersList->id);
@@ -87,7 +87,7 @@ class WooCommercePastRevenues {
       ->withSubject("Post Notification Parent")
       ->withPostNotificationsType()
       ->withActiveStatus()
-      ->withSegments([$subscribersList])
+      ->withSegments([$subscribersListEntity])
       ->withCreatedAt($minimalCreatedAtDate)
       ->create();
     $sentPostNotifications = [];
@@ -96,7 +96,7 @@ class WooCommercePastRevenues {
       $newsletter = $emailFactory
         ->withSubject("Post notification history $i")
         ->withPostNotificationHistoryType()
-        ->withSegments([$subscribersList])
+        ->withSegments([$subscribersListEntity])
         ->withCreatedAt($sentAt)
         ->withParentId($postNotification->id)
         ->create();
@@ -110,8 +110,8 @@ class WooCommercePastRevenues {
     $welcomeEmail = $emailFactory
       ->withSubject("Welcome email")
       ->withActiveStatus()
-      ->withWelcomeTypeForSegment($subscribersList->id())
-      ->withSegments([$subscribersList])
+      ->withWelcomeTypeForSegment($subscribersList->id)
+      ->withSegments([$subscribersListEntity])
       ->withCreatedAt($minimalCreatedAtDate)
       ->create();
     $sentWelcomeEmails = [];
