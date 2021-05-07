@@ -24,7 +24,7 @@ const columns = [
   },
   {
     name: 'average_subscriber_score',
-    label: MailPoet.I18n.t('averageScore'),
+    label: MailPoet.I18n.t('listScore'),
     display: mailpoetTrackingEnabled,
   },
   {
