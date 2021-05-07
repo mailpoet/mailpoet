@@ -218,6 +218,9 @@ class WooCommercePastRevenues implements Generator {
       }
       // Create order
       if (isset($subscribersWithOrders[$subscriberId])) {
+        // Create user account
+        $email = $subscriberEmails[$subscriberId];
+        $customerId = wc_create_new_customer($email, $email, $this->getRandomString(10));
         $orderCount = rand(1, 5);
         for ($i = 1; $i <= $orderCount; $i++) {
           // Pick a random logged click time and generate an order day after the click
@@ -226,6 +229,7 @@ class WooCommercePastRevenues implements Generator {
           $this->createCompletedWooCommerceOrder(
             $subscriberId,
             $subscriberEmails[$subscriberId],
+            $customerId,
             [$products[array_rand($products)]],
             $orderCompletedAt
           );
@@ -437,7 +441,7 @@ class WooCommercePastRevenues implements Generator {
   /**
    * @return \WC_Order|\WP_Error
    */
-  private function createCompletedWooCommerceOrder($subscriberId, $email, $products = [], Carbon $completedAt = null) {
+  private function createCompletedWooCommerceOrder($subscriberId, $email, $customerId = null, $products = [], Carbon $completedAt = null) {
     $random = $this->getRandomString();
     $countries = ['FR', 'GB', 'US', 'IE', 'IT'];
     $address = [
@@ -451,7 +455,12 @@ class WooCommercePastRevenues implements Generator {
       'country' => $countries[array_rand($countries)],
     ];
 
-    $order = wc_create_order();
+    $args = [];
+    if ($customerId) {
+      $args['customer_id'] = $customerId;
+    }
+
+    $order = wc_create_order($args);
     $order->set_address($address, 'billing');
     $order->set_address($address, 'shipping');
     foreach ($products as $product) {
