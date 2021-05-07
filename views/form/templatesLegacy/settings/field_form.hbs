@@ -67,52 +67,6 @@
 
     $(function() {
       loadFieldForm();
-
-      $('#form_field_new').parsley().on('form:submit', function(parsley) {
-        // get data
-        var data = $(this.$element).mailpoetSerializeObject();
-
-        // save custom field
-        MailPoet.Ajax.post({
-          api_version: window.mailpoet_api_version,
-          endpoint: 'customFields',
-          action: 'save',
-          data: data
-        }).done(function(response) {
-          // close popup
-          MailPoet.Modal.close();
-
-          MailPoet.trackEvent('Forms > Add new custom field', {
-            'Field type': data.type,
-            'MailPoet Free version': window.mailpoet_version
-          });
-
-          if(WysijaForm.updateBlock(response.data) === true) {
-            // trigger save, if a block has been updated
-            mailpoet_form_save(false);
-          }
-
-          mailpoet_form_fields();
-
-          if(data.id) {
-            MailPoet.Notice.success(
-              "<%= __('Updated custom field %$1s') | escape('js') %>".replace('%$1s', '"' + encodeHtmlValue(data.name) + '"')
-            );
-          } else {
-            MailPoet.Notice.success(
-              "<%= __('Added custom field %$1s') | escape('js') %>".replace('%$1s', '"' + encodeHtmlValue(data.name) + '"')
-            );
-          }
-        }).fail(function(response) {
-          if(response.errors.length > 0) {
-            MailPoet.Notice.error(
-              response.errors.map(function(error) { return error.message; }),
-              { positionAfter: '#field_name' }
-            );
-          }
-        });
-        return false;
-      });
     });
 
     $('#form_field_new #field_type').on('change', function() {
