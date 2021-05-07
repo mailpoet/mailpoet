@@ -53,6 +53,9 @@ export const ListingsEngagementScore: React.FunctionComponent<Props> = ({
       <div className="mailpoet-listing-stats-tooltip-title">
         {badge.tooltipTitle.toUpperCase()}
       </div>
+      <div className="mailpoet-listing-stats-tooltip-description">
+        {MailPoet.I18n.t('engagementScoreDescription')}
+      </div>
       <div className="mailpoet-listing-stats-tooltip-content">
         <Badge
           type="unknown"
