@@ -8,6 +8,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
+use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -336,23 +337,6 @@ class WooCommercePastRevenues implements Generator {
     ]);
     $task->save();
 
-    // Add subscribers to task
-    $batchData = [];
-    foreach ($subscribersIds as $subscriberId) {
-      $batchData[] = "({$task->id}, $subscriberId, 1, '$sentAt')";
-      if (count($batchData) % 1000 === 0) {
-        ORM::rawExecute(
-          "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
-        );
-        $batchData = [];
-      }
-    }
-    if ($batchData) {
-      ORM::rawExecute(
-        "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
-      );
-    }
-
     // Sending queue
     $queue = SendingQueue::createOrUpdate([
       'task_id' => $task->id,
@@ -361,6 +345,37 @@ class WooCommercePastRevenues implements Generator {
       'count_processed' => count($subscribersIds),
     ]);
     $queue->save();
+
+    // Add subscribers to task and stats sent
+    $batchData = [];
+    $statsBatchData = [];
+    foreach ($subscribersIds as $subscriberId) {
+      $batchData[] = "({$task->id}, $subscriberId, 1, '$sentAt')";
+      if (count($batchData) % 1000 === 0) {
+        ORM::rawExecute(
+          "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
+        );
+        $batchData = [];
+      }
+      $statsBatchData[] = "({$newsletter->id}, $subscriberId, $queue->id, '$sentAt')";
+      if (count($statsBatchData) % 1000 === 0) {
+        ORM::rawExecute(
+          "INSERT INTO " . StatisticsNewsletters::$_table . " (`newsletter_id`, `subscriber_id`, `queue_id`, `sent_at`) VALUES " . implode(', ', $statsBatchData)
+        );
+        $statsBatchData = [];
+      }
+    }
+
+    if ($batchData) {
+      ORM::rawExecute(
+        "INSERT INTO " . ScheduledTaskSubscriber::$_table . " (`task_id`, `subscriber_id`, `processed`, `created_at`) VALUES " . implode(', ', $batchData)
+      );
+    }
+    if ($statsBatchData) {
+      ORM::rawExecute(
+        "INSERT INTO " . StatisticsNewsletters::$_table . " (`newsletter_id`, `subscriber_id`, `queue_id`, `sent_at`) VALUES " . implode(', ', $statsBatchData)
+      );
+    }
 
     // Link
     $link = (new \MailPoet\Test\DataFactories\NewsletterLink($newsletter))
@@ -386,9 +401,6 @@ class WooCommercePastRevenues implements Generator {
     ];
   }
 
-  /**
-   * @return StatisticsOpens
-   */
   private function openSentNewsletter(array $sentNewsletterData, $subscriberId, $createdAt) {
     StatisticsOpens::createOrUpdate([
       'subscriber_id' => $subscriberId,
@@ -398,9 +410,6 @@ class WooCommercePastRevenues implements Generator {
     ])->save();
   }
 
-  /**
-   * @return array
-   */
   private function clickSentNewsletter(array $sentNewsletterData, $subscriberId, $createdAt) {
     StatisticsClicks::createOrUpdate([
       'subscriber_id' => $subscriberId,
