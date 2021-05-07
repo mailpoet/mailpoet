@@ -42,7 +42,7 @@ class MetadataCache extends CacheProvider {
     if ($fileExists && $this->isDevMode) {
       $classMetadata = unserialize((string)file_get_contents($filename));
       assert($classMetadata instanceof DoctrineClassMetadata || $classMetadata instanceof ValidatorClassMetadata);
-      if (!class_exists($classMetadata->name)) {
+      if (!class_exists($classMetadata->name) && !interface_exists($classMetadata->name)) {
         return false;
       }
       try {
