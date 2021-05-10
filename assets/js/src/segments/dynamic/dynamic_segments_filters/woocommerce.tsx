@@ -77,7 +77,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
     label: product.name,
   }));
 
-  const countryOptions = SegmentFormData.wooCountries?.map((country) => ({
+  const countryOptions = SegmentFormData.wooCountries.map((country) => ({
     value: country.code,
     label: country.name,
   }));
