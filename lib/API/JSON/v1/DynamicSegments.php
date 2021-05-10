@@ -134,7 +134,7 @@ class DynamicSegments extends APIEndpoint {
       case InvalidFilterException::MISSING_PRODUCT_ID:
         return WPFunctions::get()->__('Please select product.', 'mailpoet');
       case InvalidFilterException::MISSING_COUNTRY:
-        return WPFunctions::get()->__('Please country.', 'mailpoet');
+        return WPFunctions::get()->__('Please select country.', 'mailpoet');
       case InvalidFilterException::MISSING_CATEGORY_ID:
         return WPFunctions::get()->__('Please select category.', 'mailpoet');
       case InvalidFilterException::MISSING_VALUE:
