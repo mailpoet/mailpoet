@@ -103,7 +103,7 @@ class Settings extends APIEndpoint {
 
   public function recalculateSubscribersScore() {
     $this->statisticsOpensRepository->resetSubscribersScoreCalculation();
-    $this->statisticsOpensRepository->resetNewslettersScoreCalculation();
+    $this->statisticsOpensRepository->resetSegmentsScoreCalculation();
     $task = new ScheduledTaskEntity();
     $task->setType(SubscribersEngagementScore::TASK_TYPE);
     $task->setScheduledAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
