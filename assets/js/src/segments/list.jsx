@@ -270,7 +270,7 @@ class SegmentList extends React.Component {
         <td data-colname={MailPoet.I18n.t('description')}>
           <abbr>{ segment.description }</abbr>
         </td>
-        { (mailpoetTrackingEnabled === true) ? (
+        { (mailpoetTrackingEnabled) ? (
           <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('averageScore')}>
             <div className="mailpoet-listing-stats">
               <ListingsEngagementScore
