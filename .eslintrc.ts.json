@@ -37,12 +37,24 @@
     "react-hooks/exhaustive-deps": "warn",
     // Exceptions
     "@typescript-eslint/no-explicit-any":  "error", // make it an error instead of warning - we treat them the same, this is more visible
-    "@typescript-eslint/camelcase": ["error", { "properties": "never" }], // we need this to interact with the server
+    "no-use-before-define": 0, //use the typescript version
+    "camelcase": 0, //use the typescript version
+    "no-shadow": 0, //use the typescript version
+    "@typescript-eslint/naming-convention": [
+      "error",
+      { "selector": "classProperty", "format": [] },
+      { "selector": "typeProperty", "format": [] },
+      { "selector": "objectLiteralProperty", "format": [] },
+      { "selector": "variableLike", "format": ["UPPER_CASE", "camelCase", "PascalCase"] }
+    ],
     "react/jsx-filename-extension": 0,
     "arrow-parens": ["error", "always"],
     "comma-dangle": ["error", "always-multiline"],
     "no-only-tests/no-only-tests": 2,
     "no-script-url": 0,
+    "@typescript-eslint/no-unsafe-member-access": 0, // this needs to be off until mailpoet.js is converted to typescript
+    "@typescript-eslint/no-unsafe-call": 0, // this needs to be off until mailpoet.js is converted to typescript
+    "@typescript-eslint/no-unsafe-assignment": 0, // this needs to be off until mailpoet.js is converted to typescript
     "import/extensions": 0, // we wouldn't be able to import jQuery without this line
     "import/prefer-default-export": 0, // we want to stop using default exports and start using named exports
     "react/destructuring-assignment": 0, // that would be too many changes to fix this one
@@ -74,6 +86,98 @@
       ],
       "rules": {
         "@typescript-eslint/await-thenable": 0
+      }
+    },
+    {
+      // too many violations, skipping for now
+      "files": [
+        "assets/js/src/announcements/feature_announcement.tsx",
+        "assets/js/src/announcements/with_feature_announcement.tsx",
+        "assets/js/src/common/controls/call_api.ts",
+        "assets/js/src/common/form/react_select/react_select.tsx",
+        "assets/js/src/common/functions/is_email.ts",
+        "assets/js/src/common/functions/t.ts",
+        "assets/js/src/common/listings/newsletter_stats/stats.tsx",
+        "assets/js/src/common/listings/newsletter_status.tsx",
+        "assets/js/src/common/set_from_address_modal.tsx",
+        "assets/js/src/common/tabs/routed_tabs.tsx",
+        "assets/js/src/common/thumbnail.ts",
+        "assets/js/src/form_editor/blocks/submit/edit.tsx",
+        "assets/js/src/form_editor/components/close_button_settings.tsx",
+        "assets/js/src/form_editor/components/font_family_settings.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_placement_options/below_pages.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_placement_options/fixed_bar.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_placement_options/other.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_placement_options/popup.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_placement_options/settings_panels/animation_settings.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_placement_options/settings_panels/below_posts_settings.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_placement_options/settings_panels/fixed_bar_settings.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_placement_options/settings_panels/other_settings.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_placement_options/settings_panels/placement_settings.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_placement_options/settings_panels/popup_settings.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_placement_options/settings_panels/slide_in_settings.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_placement_options/slide_in.tsx",
+        "assets/js/src/form_editor/components/form_settings/form_settings.tsx",
+        "assets/js/src/form_editor/components/fullscreen.tsx",
+        "assets/js/src/form_editor/components/history_redo.tsx",
+        "assets/js/src/form_editor/components/history_undo.tsx",
+        "assets/js/src/form_editor/components/preview/preview.tsx",
+        "assets/js/src/form_editor/components/sidebar/default_sidebar.tsx",
+        "assets/js/src/form_editor/components/sidebar/placement_settings_sidebar.tsx",
+        "assets/js/src/form_editor/components/sidebar/sidebar.tsx",
+        "assets/js/src/form_editor/components/tutorial.tsx",
+        "assets/js/src/form_editor/form_preview.ts",
+        "assets/js/src/form_editor/hooks.tsx",
+        "assets/js/src/form_editor/rich_text/font_selection_format.tsx",
+        "assets/js/src/form_editor/store/actions.ts",
+        "assets/js/src/form_editor/store/reducers/change_active_sidebar.ts",
+        "assets/js/src/form_editor/store/reducers/history_record.ts",
+        "assets/js/src/form_editor/store/reducers/toggle_form.ts",
+        "assets/js/src/form_editor/store/reducers/toggle_fullscreen.ts",
+        "assets/js/src/form_editor/store/reducers/tutorial_dismiss.ts",
+        "assets/js/src/form_editor/templates/selection.tsx",
+        "assets/js/src/form_editor/templates/store/actions.ts",
+        "assets/js/src/form_editor/utils/link_suggestions.tsx",
+        "assets/js/src/logs/list.tsx",
+        "assets/js/src/newsletters/automatic_emails/events/event_options.tsx",
+        "assets/js/src/newsletters/campaign_stats/newsletter_general_stats.tsx",
+        "assets/js/src/newsletters/campaign_stats/page.tsx",
+        "assets/js/src/newsletters/listings/heading_steps.tsx",
+        "assets/js/src/newsletters/send/congratulate/success_pitch_mss.tsx",
+        "assets/js/src/newsletters/types.tsx",
+        "assets/js/src/segments/dynamic/dynamic_segments_filters/email_opens_absolute_count.tsx",
+        "assets/js/src/segments/dynamic/dynamic_segments_filters/email_statistics.tsx",
+        "assets/js/src/segments/dynamic/dynamic_segments_filters/subscriber_subscribed_date.tsx",
+        "assets/js/src/segments/dynamic/dynamic_segments_filters/subscriber_wordpress_role.tsx",
+        "assets/js/src/segments/dynamic/dynamic_segments_filters/woocommerce.tsx",
+        "assets/js/src/segments/dynamic/dynamic_segments_filters/woocommerce_subscription.tsx",
+        "assets/js/src/segments/dynamic/form.tsx",
+        "assets/js/src/segments/dynamic/subscribers_calculator.ts",
+        "assets/js/src/segments/dynamic/subscribers_counter.tsx",
+        "assets/js/src/segments/dynamic/validator.ts",
+        "assets/js/src/settings/components/segments_select.tsx",
+        "assets/js/src/settings/pages/basics/stats_notifications.tsx",
+        "assets/js/src/settings/pages/basics/subscribe_on.tsx",
+        "assets/js/src/settings/pages/send_with/other/sending_frequency.tsx",
+        "assets/js/src/settings/pages/send_with/send_with_choice.tsx",
+        "assets/js/src/settings/pages/woo_commerce/checkout_optin.tsx",
+        "assets/js/src/settings/pages/woo_commerce/email_customizer.tsx",
+        "assets/js/src/settings/pages/woo_commerce/enable_cookies.tsx",
+        "assets/js/src/settings/pages/woo_commerce/subscribe_old_customers.tsx",
+        "assets/js/src/settings/store/actions/settings.ts",
+        "assets/js/src/settings/store/controls.ts",
+        "assets/js/src/settings/store/hooks/useActions.ts",
+        "assets/js/src/settings/store/hooks/useSelector.ts",
+        "assets/js/src/settings/store/hooks/useSetting.ts",
+        "assets/js/src/settings/store/index.ts",
+        "assets/js/src/settings/store/normalize_settings.ts",
+        "assets/js/src/settings/store/selectors.ts",
+        "assets/js/src/settings/store/types.ts",
+        "assets/js/src/subscribers/importExport/export.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/restrict-template-expressions": 0,
+        "@typescript-eslint/no-unsafe-return": 0
       }
     },
     {

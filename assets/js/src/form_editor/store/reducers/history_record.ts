@@ -52,7 +52,7 @@ const createRecord = (
 
 export const createHistoryRecord = (state) => {
   let editorHistory: HistoryRecord[] = state.editorHistory;
-  let editorHistoryOffset = state.editorHistoryOffset;
+  let editorHistoryOffset: number = state.editorHistoryOffset;
 
   const newHistoryRecord = createRecord(editorHistory, state);
   if (newHistoryRecord === null) {
@@ -62,7 +62,7 @@ export const createHistoryRecord = (state) => {
   // When we want to create a history record, and we aren't at the end,
   // then we have to drop the rest of the history stack
   if (state.editorHistoryOffset !== 0) {
-    const offset = state.editorHistory.length - (state.editorHistoryOffset + 1);
+    const offset = state.editorHistory.length - ((state.editorHistoryOffset as number) + 1);
     editorHistoryOffset = 0;
     editorHistory = editorHistory.slice(0, offset);
   }
@@ -81,7 +81,7 @@ export const createHistoryRecord = (state) => {
 };
 
 const historyMove = (state, increment: number) => {
-  let offset = state.editorHistoryOffset;
+  let offset: number = state.editorHistoryOffset;
 
   // When we move undo, then we need save current state as last record in history
   if (offset === 0) {

@@ -23,7 +23,7 @@ interface NewsletterTypesWindow extends Window {
   mailpoet_woocommerce_transactional_email_id: string;
   mailpoet_is_new_user: boolean;
   mailpoet_editor_javascript_url: string;
-  mailpoet_woocommerce_automatic_emails: object;
+  mailpoet_woocommerce_automatic_emails: Record<string, unknown>;
 }
 
 declare let window: NewsletterTypesWindow;
@@ -105,7 +105,7 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
     );
   };
 
-  const getAdditionalTypes = (): object[] => {
+  const getAdditionalTypes = (): Record<string, unknown>[] => {
     const show = MailPoet.isWoocommerceActive;
     if (!show) {
       return [];
@@ -120,11 +120,11 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
             automationId="customize_woocommerce"
             onClick={openWooCommerceCustomizer}
             tabIndex={0}
-            onKeyDown={(event): void => {
+            onKeyDown={async (event): Promise<void> => {
               if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
               ) {
                 event.preventDefault();
-                openWooCommerceCustomizer();
+                await openWooCommerceCustomizer();
               }
             }}
           >

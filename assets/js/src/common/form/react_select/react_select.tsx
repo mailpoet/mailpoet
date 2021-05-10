@@ -36,6 +36,7 @@ type Option = {
   isDisabled: boolean;
   isFocused: boolean;
   isSelected: boolean;
+  // eslint-disable-next-line @typescript-eslint/ban-types -- we need to match react-select
   innerProps: object;
   innerRef: LegacyRef<HTMLDivElement>;
 };
@@ -86,6 +87,7 @@ type MultiValueLabel = {
     count?: React.ReactNode;
     tag?: React.ReactNode;
   };
+  // eslint-disable-next-line @typescript-eslint/ban-types -- we need to match react-select
   innerProps: object;
 };
 

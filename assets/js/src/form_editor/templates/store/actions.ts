@@ -6,6 +6,7 @@ import {
   CategoryType,
 } from './types';
 
+// eslint-disable-next-line @typescript-eslint/ban-types -- IDK what else could be the return value
 export function* selectTemplate(templateId: string, templateName: string): object {
   yield { type: 'SELECT_TEMPLATE_START' };
   const { res, success, error } = yield {
@@ -31,7 +32,7 @@ export function* selectTemplate(templateId: string, templateName: string): objec
   };
   const url = select('mailpoet-form-editor-templates').getFormEditorUrl();
 
-  window.location = url + res.data.id;
+  window.location.href = `${url}${res.data.id}`;
   return {};
 }
 

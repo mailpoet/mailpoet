@@ -28,7 +28,7 @@ interface ThumbnailIframe extends HTMLIFrameElement {
 export const fromUrl = (url) => new Promise((resolve, reject) => {
   const iframe: ThumbnailIframe = document.createElement('iframe');
   const protocol = document.location.href.startsWith('https://') ? 'https:' : 'http:';
-  iframe.src = protocol + url.replace(/^https?:/, '');
+  iframe.src = `${protocol}${url.replace(/^https?:/, '')}`;
   iframe.style.opacity = '0';
   iframe.scrolling = 'no';
   iframe.onload = async () => {

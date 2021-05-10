@@ -71,12 +71,19 @@ const stepsListingHeading = (
   );
 };
 
+interface Props {
+  step: number;
+  emailType: string;
+  automationId: string;
+  location: Location;
+}
+
 const ListingHeadingSteps = ({
   step,
   emailType,
   location,
   automationId,
-}): JSX.Element => {
+}: Props): JSX.Element => {
   const stepNumber = step || mapPathToSteps(location);
   if (stepNumber !== null) {
     return stepsListingHeading(stepNumber, emailType, automationId);

@@ -22,7 +22,7 @@ interface ExportWindow extends Window {
       text: string; // Required select2 property
       type: string | null;
       custom: boolean;
-      params: object;
+      params: Record<string, unknown>;
     }>;
   }>;
 }

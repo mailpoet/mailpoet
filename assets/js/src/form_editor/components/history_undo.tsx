@@ -6,7 +6,7 @@ import { undo as undoIcon } from '@wordpress/icons';
 import { displayShortcut } from '@wordpress/keycodes';
 import { useShortcut } from '@wordpress/keyboard-shortcuts';
 
-function HistoryUndo(props: object): JSX.Element {
+function HistoryUndo(props: Record<string, unknown>): JSX.Element {
   const hasUndo = useSelect(
     (select) => select('mailpoet-form-editor').hasEditorUndo(),
     []
