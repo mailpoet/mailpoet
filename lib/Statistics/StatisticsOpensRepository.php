@@ -55,8 +55,8 @@ class StatisticsOpensRepository extends Repository {
 
   public function resetSubscribersScoreCalculation() {
     $this->entityManager->createQueryBuilder()->update(SubscriberEntity::class, 's')
-      ->set('s.engagementScoreUpdatedAt', ':verified')
-      ->setParameter('verified', null)
+      ->set('s.engagementScoreUpdatedAt', ':updatedAt')
+      ->setParameter('updatedAt', null)
       ->getQuery()->execute();
   }
 
@@ -103,10 +103,10 @@ class StatisticsOpensRepository extends Repository {
     $this->entityManager->flush();
   }
 
-  public function resetNewslettersScoreCalculation(): void {
+  public function resetSegmentsScoreCalculation(): void {
     $this->entityManager->createQueryBuilder()->update(SegmentEntity::class, 's')
-      ->set('s.averageEngagementScoreUpdatedAt', ':verified')
-      ->setParameter('verified', null)
+      ->set('s.averageEngagementScoreUpdatedAt', ':updatedAt')
+      ->setParameter('updatedAt', null)
       ->getQuery()->execute();
   }
 }
