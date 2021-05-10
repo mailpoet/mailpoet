@@ -72,7 +72,7 @@ class WooCommerceDynamicSegmentsCest {
       ->create();
     $this->customerCountrySegment = $segmentFactory
       ->withName(self::CUSTOMER_IN_COUNTRY)
-      ->withWooCommerceCutomerCountryFilter('FR')
+      ->withWooCommerceCustomerCountryFilter('FR')
       ->create();
   }
 
