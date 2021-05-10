@@ -90,7 +90,7 @@ class Segments {
     $data['products'] = $this->wpPostListLoader->getProducts();
     $data['subscription_products'] = $this->wpPostListLoader->getSubscriptionProducts();
     $data['is_woocommerce_active'] = $this->woocommerceHelper->isWooCommerceActive();
-    $wcCountries = $this->woocommerceHelper->isWooCommerceActive() ? $this->woocommerceHelper->getCountries() : [];
+    $wcCountries = $this->woocommerceHelper->isWooCommerceActive() ? $this->woocommerceHelper->getAllowedCountries() : [];
     $data['woocommerce_countries'] = array_map(function ($code, $name) {
       return [
         'name' => $name,

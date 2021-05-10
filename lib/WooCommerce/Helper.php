@@ -65,7 +65,7 @@ class Helper {
     return html_entity_decode(strip_tags($htmlPrice));
   }
 
-  public function getCountries(): array {
-    return (new \WC_Countries)->get_countries() ?? [];
+  public function getAllowedCountries(): array {
+    return (new \WC_Countries)->get_allowed_countries() ?? [];
   }
 }
