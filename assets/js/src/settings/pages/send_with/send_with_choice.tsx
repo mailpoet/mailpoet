@@ -30,13 +30,13 @@ export default function SendWithChoice() {
     return saveSettings();
   };
 
-  const mssChosen = (e) => {
+  const mssChosen = async (e) => {
     e.preventDefault();
     if (!isMssActive && !isMssKeyValid) {
       history.push('/premium');
     }
     if (!isMssActive && isMssKeyValid) {
-      activateMss();
+      await activateMss();
     }
   };
 

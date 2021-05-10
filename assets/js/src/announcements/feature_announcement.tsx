@@ -5,7 +5,7 @@ import { withFeatureAnnouncement } from './with_feature_announcement';
 
 type props = {
   hasNews: boolean;
-  onBeamerClick: () => {};
+  onBeamerClick: () => void;
 }
 
 function FeatureAnnouncement({ hasNews, onBeamerClick }: props) {

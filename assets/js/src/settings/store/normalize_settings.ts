@@ -48,7 +48,7 @@ function asIs<T>(value: T): T {
   return value;
 }
 
-export default function normalizeSettings(data: object): Settings {
+export default function normalizeSettings(data: Record<string, unknown>): Settings {
   const text = asString('');
   const disabledCheckbox = asBoolean('1', '0', '0');
   const enabledCheckbox = asBoolean('1', '0', '1');

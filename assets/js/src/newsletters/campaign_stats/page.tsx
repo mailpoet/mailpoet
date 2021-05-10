@@ -24,6 +24,7 @@ type Props = {
   history: {
     push: (string) => void;
   };
+  // eslint-disable-next-line @typescript-eslint/ban-types -- we need to match `withRouter`
   location: object;
 };
 

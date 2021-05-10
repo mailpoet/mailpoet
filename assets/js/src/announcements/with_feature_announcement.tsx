@@ -22,7 +22,7 @@ interface FeatureAnnouncementWindow extends Window {
 
 declare let window: FeatureAnnouncementWindow;
 
-export const withFeatureAnnouncement = <P extends object>(
+export const withFeatureAnnouncement = <P extends Record<string, unknown>>(
   Component: React.ComponentType<P>
 ): React.FC<Omit<P, 'hasNews'|'onBeamerClick'>> => {
   const isBeamerInitialized = () => typeof window.Beamer !== 'undefined';
@@ -44,7 +44,6 @@ export const withFeatureAnnouncement = <P extends object>(
   }
 
   function updateLastAnnouncementSeenValue() {
-    // eslint-disable-next-line @typescript-eslint/camelcase
     const data = { last_announcement_seen: Math.floor(Date.now() / 1000) };
     MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
@@ -55,7 +54,6 @@ export const withFeatureAnnouncement = <P extends object>(
   }
 
   function loadBeamer() {
-    // eslint-disable-next-line @typescript-eslint/camelcase
     window.beamer_config = {
       product_id: 'VvHbhYWy7118',
       selector: '#beamer-empty-element',
@@ -66,7 +64,6 @@ export const withFeatureAnnouncement = <P extends object>(
       window.beamer_config.filter = 'woocommerce';
     }
     MailPoet.Modal.loading(true);
-    // eslint-disable-next-line @typescript-eslint/camelcase
     window.mailpoet_feature_announcement_has_news = false;
     const s = document.createElement('script');
     s.type = 'text/javascript';

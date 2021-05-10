@@ -86,7 +86,7 @@ export type Settings = {
       | 'expiring'
       | 'already_used'
       | 'check_error';
-      data: object;
+      data: Record<string, unknown>;
     };
   };
   mailpoet_smtp_provider: 'server' | 'manual' | 'AmazonSES' | 'SendGrid';
@@ -123,7 +123,7 @@ export type Settings = {
       | 'expiring'
       | 'already_used'
       | 'check_error';
-      data: object;
+      data: Record<string, unknown>;
     };
   };
   authorized_emails_addresses_check: null | {

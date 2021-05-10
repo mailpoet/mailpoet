@@ -6,7 +6,7 @@ import { redo as redoIcon } from '@wordpress/icons';
 import { displayShortcut } from '@wordpress/keycodes';
 import { useShortcut } from '@wordpress/keyboard-shortcuts';
 
-function HistoryRedo(props: object): JSX.Element {
+function HistoryRedo(props: Record<string, unknown>): JSX.Element {
   const hasRedo = useSelect(
     (select) => select('mailpoet-form-editor').hasEditorRedo(),
     []
