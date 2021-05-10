@@ -11,6 +11,7 @@ use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -43,6 +44,7 @@ class SettingsTest extends \MailPoetTest {
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false])
     );
   }
@@ -79,6 +81,7 @@ class SettingsTest extends \MailPoetTest {
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false])
     );
 
@@ -106,6 +109,7 @@ class SettingsTest extends \MailPoetTest {
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false])
     );
 
@@ -127,6 +131,7 @@ class SettingsTest extends \MailPoetTest {
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
       $this->make(ServicesChecker::class)
     );
 

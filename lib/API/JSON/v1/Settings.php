@@ -9,6 +9,7 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\SubscribersEngagementScore;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -44,6 +45,9 @@ class Settings extends APIEndpoint {
   /** @var StatisticsOpensRepository */
   private $statisticsOpensRepository;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
@@ -56,6 +60,7 @@ class Settings extends APIEndpoint {
     WPFunctions $wp,
     EntityManager $entityManager,
     StatisticsOpensRepository $statisticsOpensRepository,
+    ScheduledTasksRepository $scheduledTasksRepository,
     ServicesChecker $servicesChecker
   ) {
     $this->settings = $settings;
@@ -66,6 +71,7 @@ class Settings extends APIEndpoint {
     $this->wp = $wp;
     $this->entityManager = $entityManager;
     $this->statisticsOpensRepository = $statisticsOpensRepository;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
   }
 
   public function get() {
@@ -104,10 +110,16 @@ class Settings extends APIEndpoint {
   public function recalculateSubscribersScore() {
     $this->statisticsOpensRepository->resetSubscribersScoreCalculation();
     $this->statisticsOpensRepository->resetSegmentsScoreCalculation();
-    $task = new ScheduledTaskEntity();
-    $task->setType(SubscribersEngagementScore::TASK_TYPE);
+    $task = $this->scheduledTasksRepository->findOneBy([
+      'type' => SubscribersEngagementScore::TASK_TYPE,
+      'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
+    ]);
+    if (!$task) {
+      $task = new ScheduledTaskEntity();
+      $task->setType(SubscribersEngagementScore::TASK_TYPE);
+      $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    }
     $task->setScheduledAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
-    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
     $this->entityManager->persist($task);
     $this->entityManager->flush();
     return $this->successResponse();
