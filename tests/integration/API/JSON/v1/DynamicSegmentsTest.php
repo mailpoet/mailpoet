@@ -56,7 +56,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     ]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
     expect($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
-    expect($response->errors[0]['message'])->equals('Segment type is missing.');
+    expect($response->errors[0]['message'])->equals('The segment type is missing.');
   }
 
   public function testSaverReturnsErrorOnDuplicateRecord() {
