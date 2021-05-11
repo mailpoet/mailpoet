@@ -121,22 +121,22 @@ class DynamicSegments extends APIEndpoint {
   private function getErrorString(InvalidFilterException $e) {
     switch ($e->getCode()) {
       case InvalidFilterException::MISSING_TYPE:
-        return WPFunctions::get()->__('Segment type is missing.', 'mailpoet');
+        return WPFunctions::get()->__('The segment type is missing.', 'mailpoet');
       case InvalidFilterException::INVALID_TYPE:
-        return WPFunctions::get()->__('Segment type is unknown.', 'mailpoet');
+        return WPFunctions::get()->__('The segment type is unknown.', 'mailpoet');
       case InvalidFilterException::MISSING_ROLE:
-        return WPFunctions::get()->__('Please select user role.', 'mailpoet');
+        return WPFunctions::get()->__('Please select a user role.', 'mailpoet');
       case InvalidFilterException::MISSING_ACTION:
       case InvalidFilterException::INVALID_EMAIL_ACTION:
-        return WPFunctions::get()->__('Please select email action.', 'mailpoet');
+        return WPFunctions::get()->__('Please select an email action.', 'mailpoet');
       case InvalidFilterException::MISSING_NEWSLETTER_ID:
         return WPFunctions::get()->__('Please select an email.', 'mailpoet');
       case InvalidFilterException::MISSING_PRODUCT_ID:
-        return WPFunctions::get()->__('Please select product.', 'mailpoet');
+        return WPFunctions::get()->__('Please select a product.', 'mailpoet');
       case InvalidFilterException::MISSING_COUNTRY:
-        return WPFunctions::get()->__('Please select country.', 'mailpoet');
+        return WPFunctions::get()->__('Please select a country.', 'mailpoet');
       case InvalidFilterException::MISSING_CATEGORY_ID:
-        return WPFunctions::get()->__('Please select category.', 'mailpoet');
+        return WPFunctions::get()->__('Please select a category.', 'mailpoet');
       case InvalidFilterException::MISSING_VALUE:
         return WPFunctions::get()->__('Please fill all required values.', 'mailpoet');
       case InvalidFilterException::MISSING_NUMBER_OF_ORDERS_FIELDS:
