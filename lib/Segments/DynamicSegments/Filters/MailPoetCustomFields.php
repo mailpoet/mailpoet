@@ -24,18 +24,6 @@ class MailPoetCustomFields implements Filter {
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
     $customFieldType = $filterData->getParam('customFieldType');
-    if ($customFieldType === CustomFieldEntity::TYPE_TEXT) {
-      $queryBuilder = $this->applyForText($queryBuilder, $filter);
-    }
-    return $queryBuilder;
-  }
-
-  private function applyForText(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
-    $filterData = $filter->getFilterData();
-
-    $operator = $filterData->getParam('operator');
-    $value = $filterData->getParam('value');
-    $valueParam = ':value' . $filter->getId();
     $customFieldId = $filterData->getParam('customFieldId');
     $customFieldIdParam = ':customFieldId' . $filter->getId();
 
@@ -49,6 +37,26 @@ class MailPoetCustomFields implements Filter {
       "$subscribersTable.id = subscribers_custom_field.subscriber_id"
     );
     $queryBuilder->andWhere("subscribers_custom_field.custom_field_id = $customFieldIdParam");
+    $queryBuilder->setParameter($customFieldIdParam, $customFieldId);
+
+    if (
+      ($customFieldType === CustomFieldEntity::TYPE_TEXT)
+      || ($customFieldType === CustomFieldEntity::TYPE_TEXTAREA)
+      || ($customFieldType === CustomFieldEntity::TYPE_RADIO)
+      || ($customFieldType === CustomFieldEntity::TYPE_SELECT)
+    ) {
+      $queryBuilder = $this->applyEquality($queryBuilder, $filter);
+    }
+    return $queryBuilder;
+  }
+
+  private function applyEquality(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
+    $filterData = $filter->getFilterData();
+
+    $operator = $filterData->getParam('operator');
+    $value = $filterData->getParam('value');
+    $valueParam = ':value' . $filter->getId();
+
     if ($operator === 'equals') {
       $queryBuilder->andWhere("subscribers_custom_field.value = $valueParam");
       $queryBuilder->setParameter($valueParam, $value);
@@ -56,7 +64,6 @@ class MailPoetCustomFields implements Filter {
       $queryBuilder->andWhere("subscribers_custom_field.value LIKE $valueParam");
       $queryBuilder->setParameter($valueParam, '%' . Helpers::escapeSearch($value)) . '%';
     }
-    $queryBuilder->setParameter($customFieldIdParam, $customFieldId);
 
     return $queryBuilder;
   }
