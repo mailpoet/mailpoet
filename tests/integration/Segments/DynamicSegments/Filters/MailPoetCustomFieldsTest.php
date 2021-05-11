@@ -84,7 +84,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
 
   public function testItFiltersRadio() {
     $subscriber = $this->subscribers[1];
-    $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_RADIO);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, 'Option 2'));
     $this->entityManager->persist($customField);
     $this->entityManager->flush();
@@ -107,6 +107,60 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
+  }
+
+  public function testItFiltersCheckboxChecked() {
+    $subscriber = $this->subscribers[1];
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_CHECKBOX);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, '1'));
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => MailPoetCustomFields::TYPE,
+      'customFieldId' => $customField->getId(),
+      'customFieldType' => CustomFieldEntity::TYPE_CHECKBOX,
+      'operator' => 'equals',
+      'value' => '1',
+    ]));
+    $this->entityManager->flush();
+
+    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
+      ->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAll();
+
+    expect(count($result))->equals(1);
+    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
+    expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
+  }
+
+  public function testItFiltersCheckboxUnChecked() {
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_CHECKBOX);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '1'));
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[1], $customField, '0'));
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => MailPoetCustomFields::TYPE,
+      'customFieldId' => $customField->getId(),
+      'customFieldType' => CustomFieldEntity::TYPE_CHECKBOX,
+      'operator' => 'equals',
+      'value' => '0',
+    ]));
+    $this->entityManager->flush();
+
+    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
+      ->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAll();
+
+    expect(count($result))->equals(1);
+    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
+    expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());
   }
 
   private function getSegmentFilter($segmentFilterData): DynamicSegmentFilterEntity {
@@ -141,6 +195,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->truncateEntity(CustomFieldEntity::class);
     $this->truncateEntity(SubscriberCustomFieldEntity::class);
     $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }
 
   private function getQueryBuilder() {
