@@ -47,6 +47,21 @@ class MailPoetCustomFields implements Filter {
     ) {
       $queryBuilder = $this->applyEquality($queryBuilder, $filter);
     }
+    if ($customFieldType === CustomFieldEntity::TYPE_CHECKBOX) {
+      $queryBuilder = $this->applyForCheckbox($queryBuilder, $filter);
+    }
+    return $queryBuilder;
+  }
+
+  private function applyForCheckbox(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
+    $filterData = $filter->getFilterData();
+    $value = $filterData->getParam('value');
+
+    if ($value === '1') {
+      $queryBuilder->andWhere("subscribers_custom_field.value = 1");
+    } else {
+      $queryBuilder->andWhere("subscribers_custom_field.value <> 1");
+    }
     return $queryBuilder;
   }
 
