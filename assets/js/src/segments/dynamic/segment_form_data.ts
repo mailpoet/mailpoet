@@ -30,6 +30,15 @@ interface SegmentFormDataWindow extends Window {
     id: string;
   }[];
 
+  mailpoet_custom_fields: {
+    created_at: string;
+    id: number;
+    name: string;
+    type: string;
+    params: Record<string, unknown>;
+    updated_at: string;
+  }
+
   mailpoet_can_use_woocommerce_subscriptions: boolean;
   mailpoet_woocommerce_currency_symbol: string;
 }
@@ -45,4 +54,5 @@ export const SegmentFormData = {
   canUseWooSubscriptions: window.mailpoet_can_use_woocommerce_subscriptions,
   wooCurrencySymbol: window.mailpoet_woocommerce_currency_symbol,
   wooCountries: window.mailpoet_woocommerce_countries,
+  customFieldsList: window.mailpoet_custom_fields,
 };
