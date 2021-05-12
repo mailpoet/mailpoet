@@ -1,9 +1,8 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\CustomFieldEntity;
-use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -67,10 +66,8 @@ class MailPoetCustomFields implements Filter {
       return $this->applyForDateMonth($queryBuilder, $valueParam);
     } elseif ($dateType === 'year') {
       return $this->applyForDateYear($queryBuilder, $operator, $valueParam);
-    } elseif ($dateType === 'year_month') {
-      return $this->applyForDateYearMonth($queryBuilder, $operator, $valueParam);
     }
-    return $queryBuilder;
+    return $this->applyForDateEqual($queryBuilder, $operator, $valueParam);
   }
 
   private function applyForDateMonth(QueryBuilder $queryBuilder, string $valueParam): QueryBuilder {
@@ -89,7 +86,7 @@ class MailPoetCustomFields implements Filter {
     return $queryBuilder;
   }
 
-  private function applyForDateYearMonth(QueryBuilder $queryBuilder, ?string $operator, string $valueParam): QueryBuilder {
+  private function applyForDateEqual(QueryBuilder $queryBuilder, ?string $operator, string $valueParam): QueryBuilder {
     if ($operator === 'before') {
       $queryBuilder->andWhere("subscribers_custom_field.value < $valueParam");
     } elseif ($operator === 'after') {
