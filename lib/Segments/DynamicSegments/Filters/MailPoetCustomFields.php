@@ -50,6 +50,21 @@ class MailPoetCustomFields implements Filter {
     if ($customFieldType === CustomFieldEntity::TYPE_CHECKBOX) {
       $queryBuilder = $this->applyForCheckbox($queryBuilder, $filter);
     }
+    if ($customFieldType === CustomFieldEntity::TYPE_DATE) {
+      $queryBuilder = $this->applyForDate($queryBuilder, $filter);
+    }
+    return $queryBuilder;
+  }
+
+  private function applyForDate(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
+    $filterData = $filter->getFilterData();
+    $dateType = $filterData->getParam('dateType');
+    $value = $filterData->getParam('value');
+    $valueParam = ':value' . $filter->getId();
+    if ($dateType === 'month') {
+      $queryBuilder->andWhere("month(subscribers_custom_field.value) = $valueParam");
+      $queryBuilder->setParameter($valueParam, $value);
+    }
     return $queryBuilder;
   }
 
@@ -58,9 +73,9 @@ class MailPoetCustomFields implements Filter {
     $value = $filterData->getParam('value');
 
     if ($value === '1') {
-      $queryBuilder->andWhere("subscribers_custom_field.value = 1");
+      $queryBuilder->andWhere('subscribers_custom_field.value = 1');
     } else {
-      $queryBuilder->andWhere("subscribers_custom_field.value <> 1");
+      $queryBuilder->andWhere('subscribers_custom_field.value <> 1');
     }
     return $queryBuilder;
   }
