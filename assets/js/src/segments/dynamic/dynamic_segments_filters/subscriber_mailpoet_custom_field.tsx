@@ -6,6 +6,7 @@ import ReactSelect from 'common/form/react_select/react_select';
 
 import { SegmentFormData } from '../segment_form_data';
 import { Text } from './custom_fields/text';
+import { RadioSelect } from './custom_fields/select';
 
 import {
   WordpressRoleFormItem,
@@ -30,6 +31,8 @@ interface Props {
 const componentsMap = {
   [CustomFieldsTypes.TEXT]: Text,
   [CustomFieldsTypes.TEXTAREA]: Text,
+  [CustomFieldsTypes.RADIO]: RadioSelect,
+  [CustomFieldsTypes.SELECT]: RadioSelect,
 };
 
 export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
@@ -59,7 +62,12 @@ export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange,
           const customField = find({ id: Number(option.value) }, SegmentFormData.customFieldsList);
           if (!customField) return;
           onChange(
-            assign(item, { customFieldId: option.value, customFieldType: customField.type })
+            assign(item, {
+              customFieldId: option.value,
+              customFieldType: customField.type,
+              operator: undefined,
+              value: undefined,
+            })
           );
         }}
         automationId="segment-wordpress-role"
