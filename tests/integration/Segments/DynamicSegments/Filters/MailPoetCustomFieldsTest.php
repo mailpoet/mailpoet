@@ -176,7 +176,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
       'customFieldId' => $customField->getId(),
       'customFieldType' => CustomFieldEntity::TYPE_DATE,
       'dateType' => 'month',
-      'value' => '4',
+      'value' => '2017-04-01 00:00:00',
     ]));
     $this->entityManager->flush();
 
@@ -191,7 +191,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
   }
 
-  public function testItFiltersMonthYear() {
+  public function testItFiltersDateYear() {
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_DATE);
     $this->entityManager->persist($customField);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '2017-03-14 00:00:00'));
@@ -204,7 +204,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
       'customFieldId' => $customField->getId(),
       'customFieldType' => CustomFieldEntity::TYPE_DATE,
       'dateType' => 'year',
-      'value' => '2017',
+      'value' => '2017-01-01 00:00:00',
     ]));
     $this->entityManager->flush();
 
@@ -219,7 +219,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
   }
 
-  public function testItFiltersMonthYearBefore() {
+  public function testItFiltersDateYearBefore() {
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_DATE);
     $this->entityManager->persist($customField);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '2016-03-14 00:00:00'));
@@ -233,7 +233,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
       'customFieldType' => CustomFieldEntity::TYPE_DATE,
       'dateType' => 'year',
       'operator' => 'before',
-      'value' => '2017',
+      'value' => '2017-01-01 00:00:00',
     ]));
     $this->entityManager->flush();
 

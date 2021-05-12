@@ -72,18 +72,18 @@ class MailPoetCustomFields implements Filter {
   }
 
   private function applyForDateMonth(QueryBuilder $queryBuilder, string $valueParam, string $value): QueryBuilder {
-    $queryBuilder->andWhere("month(subscribers_custom_field.value) = $valueParam");
+    $queryBuilder->andWhere("month(subscribers_custom_field.value) = month('$valueParam')");
     $queryBuilder->setParameter($valueParam, $value);
     return $queryBuilder;
   }
 
   private function applyForDateYear(QueryBuilder $queryBuilder, ?string $operator, string $valueParam, string $value): QueryBuilder {
     if ($operator === 'before') {
-      $queryBuilder->andWhere("year(subscribers_custom_field.value) < $valueParam");
+      $queryBuilder->andWhere("year(subscribers_custom_field.value) < year('$valueParam')");
     } elseif ($operator === 'after') {
-      $queryBuilder->andWhere("year(subscribers_custom_field.value) > $valueParam");
+      $queryBuilder->andWhere("year(subscribers_custom_field.value) > year('$valueParam')");
     } else {
-      $queryBuilder->andWhere("year(subscribers_custom_field.value) = $valueParam");
+      $queryBuilder->andWhere("year(subscribers_custom_field.value) = year('$valueParam')");
     }
     $queryBuilder->setParameter($valueParam, $value);
     return $queryBuilder;
