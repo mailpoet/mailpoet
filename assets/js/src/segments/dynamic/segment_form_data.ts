@@ -37,7 +37,7 @@ interface SegmentFormDataWindow extends Window {
     type: string;
     params: Record<string, unknown>;
     updated_at: string;
-  }
+  }[];
 
   mailpoet_can_use_woocommerce_subscriptions: boolean;
   mailpoet_woocommerce_currency_symbol: string;

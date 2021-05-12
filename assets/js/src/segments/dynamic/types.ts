@@ -16,6 +16,7 @@ export enum EmailActionTypes {
 }
 
 export enum SubscriberActionTypes {
+  MAILPOET_CUSTOM_FIELD = 'mailpoetCustomField',
   WORDPRESS_ROLE = 'wordpressRole',
   SUBSCRIBED_DATE = 'subscribedDate',
 }
@@ -40,6 +41,7 @@ export interface WordpressRoleFormItem extends FormItem {
   wordpressRole?: string;
   operator?: string;
   value?: string;
+  customFieldId: string;
 }
 
 export interface WooCommerceFormItem extends FormItem {

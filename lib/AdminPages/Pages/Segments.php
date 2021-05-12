@@ -89,7 +89,7 @@ class Segments {
     $data['subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
     $data['has_premium_support'] = $this->subscribersFeature->hasPremiumSupport();
     $data['mss_key_invalid'] = ($this->servicesChecker->isMailPoetAPIKeyValid() === false);
-    $customFields = $this->customFieldsRepository->findAll();
+    $customFields = $this->customFieldsRepository->findBy([], ['name' => 'asc']);
     $data['custom_fields'] = $this->customFieldsResponseBuilder->buildBatch($customFields);
 
     $wpRoles = $this->wp->getEditableRoles();
