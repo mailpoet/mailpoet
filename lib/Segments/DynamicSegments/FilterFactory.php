@@ -78,30 +78,46 @@ class FilterFactory {
     $action = $filterData->getParam('action');
     switch ($filterType) {
       case DynamicSegmentFilterData::TYPE_USER_ROLE:
-        if ($action === SubscriberSubscribedDate::TYPE) {
-          return $this->subscriberSubscribedDate;
-        }
-        return $this->userRole;
+        return $this->userRole($action);
       case DynamicSegmentFilterData::TYPE_EMAIL:
-        if ($action === EmailOpensAbsoluteCountAction::TYPE) {
-          return $this->emailOpensAbsoluteCount;
-        }
-        return $this->emailAction;
+        return $this->email($action);
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION:
-        return $this->wooCommerceSubscription;
+        return $this->wooCommerceSubscription();
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE:
-        if ($action === WooCommerceProduct::ACTION_PRODUCT) {
-          return $this->wooCommerceProduct;
-        } elseif ($action === WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS) {
-          return $this->wooCommerceNumberOfOrders;
-        } elseif ($action === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
-          return $this->wooCommerceTotalSpent;
-        } elseif ($action === WooCommerceCountry::ACTION_CUSTOMER_COUNTRY) {
-          return $this->wooCommerceCountry;
-        }
-        return $this->wooCommerceCategory;
+        return $this->wooCommerce($action);
       default:
         throw new InvalidFilterException('Invalid type', InvalidFilterException::INVALID_TYPE);
     }
+  }
+
+  private function userRole($action) {
+    if ($action === SubscriberSubscribedDate::TYPE) {
+      return $this->subscriberSubscribedDate;
+    }
+    return $this->userRole;
+  }
+
+  private function email($action) {
+    if ($action === EmailOpensAbsoluteCountAction::TYPE) {
+      return $this->emailOpensAbsoluteCount;
+    }
+    return $this->emailAction;
+  }
+
+  private function wooCommerceSubscription() {
+    return $this->wooCommerceSubscription;
+  }
+
+  private function wooCommerce($action) {
+    if ($action === WooCommerceProduct::ACTION_PRODUCT) {
+      return $this->wooCommerceProduct;
+    } elseif ($action === WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS) {
+      return $this->wooCommerceNumberOfOrders;
+    } elseif ($action === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
+      return $this->wooCommerceTotalSpent;
+    } elseif ($action === WooCommerceCountry::ACTION_CUSTOMER_COUNTRY) {
+      return $this->wooCommerceCountry;
+    }
+    return $this->wooCommerceCategory;
   }
 }
