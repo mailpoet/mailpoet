@@ -3,7 +3,9 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Newsletter;
@@ -43,6 +45,12 @@ class Segments {
   /** @var SegmentDependencyValidator */
   private $segmentDependencyValidator;
 
+  /** @var CustomFieldsRepository */
+  private $customFieldsRepository;
+
+  /** @var CustomFieldsResponseBuilder */
+  private $customFieldsResponseBuilder;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -52,6 +60,8 @@ class Segments {
     WPPostListLoader $wpPostListLoader,
     SubscribersFeature $subscribersFeature,
     SettingsController $settings,
+    CustomFieldsRepository $customFieldsRepository,
+    CustomFieldsResponseBuilder $customFieldsResponseBuilder,
     SegmentDependencyValidator $segmentDependencyValidator
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -63,6 +73,8 @@ class Segments {
     $this->wpPostListLoader = $wpPostListLoader;
     $this->settings = $settings;
     $this->segmentDependencyValidator = $segmentDependencyValidator;
+    $this->customFieldsRepository = $customFieldsRepository;
+    $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
   }
 
   public function render() {
@@ -77,6 +89,8 @@ class Segments {
     $data['subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
     $data['has_premium_support'] = $this->subscribersFeature->hasPremiumSupport();
     $data['mss_key_invalid'] = ($this->servicesChecker->isMailPoetAPIKeyValid() === false);
+    $customFields = $this->customFieldsRepository->findAll();
+    $data['custom_fields'] = $this->customFieldsResponseBuilder->buildBatch($customFields);
 
     $wpRoles = $this->wp->getEditableRoles();
     $data['wordpress_editable_roles_list'] = array_map(function($roleId, $role) {
