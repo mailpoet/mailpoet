@@ -62,30 +62,41 @@ class MailPoetCustomFields implements Filter {
     $value = $filterData->getParam('value');
     $operator = $filterData->getParam('operator');
     $valueParam = ':value' . $filter->getId();
+    $queryBuilder->setParameter($valueParam, $value);
     if ($dateType === 'month') {
-      return $this->applyForDateMonth($queryBuilder, $value, $valueParam);
-    }
-    if ($dateType === 'year') {
-      return $this->applyForDateYear($queryBuilder, $operator, $value, $valueParam);
+      return $this->applyForDateMonth($queryBuilder, $valueParam);
+    } elseif ($dateType === 'year') {
+      return $this->applyForDateYear($queryBuilder, $operator, $valueParam);
+    } elseif ($dateType === 'year_month') {
+      return $this->applyForDateYearMonth($queryBuilder, $operator, $valueParam);
     }
     return $queryBuilder;
   }
 
-  private function applyForDateMonth(QueryBuilder $queryBuilder, string $valueParam, string $value): QueryBuilder {
-    $queryBuilder->andWhere("month(subscribers_custom_field.value) = month('$valueParam')");
-    $queryBuilder->setParameter($valueParam, $value);
+  private function applyForDateMonth(QueryBuilder $queryBuilder, string $valueParam): QueryBuilder {
+    $queryBuilder->andWhere("month(subscribers_custom_field.value) = month($valueParam)");
     return $queryBuilder;
   }
 
-  private function applyForDateYear(QueryBuilder $queryBuilder, ?string $operator, string $valueParam, string $value): QueryBuilder {
+  private function applyForDateYear(QueryBuilder $queryBuilder, ?string $operator, string $valueParam): QueryBuilder {
     if ($operator === 'before') {
-      $queryBuilder->andWhere("year(subscribers_custom_field.value) < year('$valueParam')");
+      $queryBuilder->andWhere("year(subscribers_custom_field.value) < year($valueParam)");
     } elseif ($operator === 'after') {
-      $queryBuilder->andWhere("year(subscribers_custom_field.value) > year('$valueParam')");
+      $queryBuilder->andWhere("year(subscribers_custom_field.value) > year($valueParam)");
     } else {
-      $queryBuilder->andWhere("year(subscribers_custom_field.value) = year('$valueParam')");
+      $queryBuilder->andWhere("year(subscribers_custom_field.value) = year($valueParam)");
     }
-    $queryBuilder->setParameter($valueParam, $value);
+    return $queryBuilder;
+  }
+
+  private function applyForDateYearMonth(QueryBuilder $queryBuilder, ?string $operator, string $valueParam): QueryBuilder {
+    if ($operator === 'before') {
+      $queryBuilder->andWhere("subscribers_custom_field.value < $valueParam");
+    } elseif ($operator === 'after') {
+      $queryBuilder->andWhere("subscribers_custom_field.value > $valueParam");
+    } else {
+      $queryBuilder->andWhere("subscribers_custom_field.value = $valueParam");
+    }
     return $queryBuilder;
   }
 
