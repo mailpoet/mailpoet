@@ -35,8 +35,8 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
 }
 
 export const SubscriberSegmentOptions = [
-  { value: SubscriberActionTypes.WORDPRESS_ROLE, label: MailPoet.I18n.t('segmentsSubscriber'), group: SegmentTypes.WordPressRole },
   { value: SubscriberActionTypes.SUBSCRIBED_DATE, label: MailPoet.I18n.t('subscribedDate'), group: SegmentTypes.WordPressRole },
+  { value: SubscriberActionTypes.WORDPRESS_ROLE, label: MailPoet.I18n.t('segmentsSubscriber'), group: SegmentTypes.WordPressRole },
 ];
 
 const componentsMap = {

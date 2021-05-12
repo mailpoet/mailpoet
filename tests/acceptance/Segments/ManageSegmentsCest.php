@@ -95,7 +95,7 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->fillField(['name' => 'description'], $segmentDesc);
-    $i->selectOptionInReactSelect('has WordPress user role', '[data-automation-id="select-segment-action"]');
+    $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect('Subscriber', '[data-automation-id="segment-wordpress-role"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
@@ -108,7 +108,7 @@ class ManageSegmentsCest {
     $i->clearField('#field_name');
     $i->fillField(['name' => 'name'], $segmentEditedTitle);
     $i->fillField(['name' => 'description'], $segmentEditedDesc);
-    $i->selectOptionInReactSelect('has WordPress user role', '[data-automation-id="select-segment-action"]');
+    $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect('Editor', '[data-automation-id="segment-wordpress-role"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
@@ -268,7 +268,7 @@ class ManageSegmentsCest {
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
-    $i->selectOptionInReactSelect('has WordPress user role', '[data-automation-id="select-segment-action"]');
+    $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect('Editor', '[data-automation-id="segment-wordpress-role"]');
     $i->waitForText('Calculating segment size…');
     $i->waitForText('This segment has 2 subscribers.');
