@@ -58,6 +58,8 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $this->createStatsNewsletter($subscriber, $newsletter2);
     $open = $this->createStatisticsOpens($subscriber, $newsletter2);
     $open->setCreatedAt(CarbonImmutable::now()->subDays(1));
+
+    $subscriber = $this->createSubscriber('opened-no-opens@example.com');
   }
 
   public function testGetOpened() {
@@ -94,13 +96,16 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
       ->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
-    expect(count($result))->equals(2);
+    expect(count($result))->equals(3);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmail())->equals('opened-less-opens@example.com');
     $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber2->getEmail())->equals('opened-old-opens@example.com');
+    expect($subscriber2->getEmail())->equals('opened-no-opens@example.com');
+    $subscriber3 = $this->entityManager->find(SubscriberEntity::class, $result[2]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
+    expect($subscriber3->getEmail())->equals('opened-old-opens@example.com');
   }
 
   private function getQueryBuilder() {
