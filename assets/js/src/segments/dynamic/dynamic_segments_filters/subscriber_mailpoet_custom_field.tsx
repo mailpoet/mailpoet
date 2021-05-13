@@ -5,9 +5,9 @@ import MailPoet from 'mailpoet';
 import ReactSelect from 'common/form/react_select/react_select';
 
 import { SegmentFormData } from '../segment_form_data';
-import { Text } from './custom_fields/text';
-import { RadioSelect } from './custom_fields/select';
-import { Checkbox } from './custom_fields/checkbox';
+import { Text, validateText } from './custom_fields/text';
+import { RadioSelect, validateRadioSelect } from './custom_fields/select';
+import { Checkbox, validateCheckbox } from './custom_fields/checkbox';
 
 import {
   WordpressRoleFormItem,
@@ -22,6 +22,21 @@ enum CustomFieldsTypes {
   RADIO = 'radio',
   CHECKBOX = 'checkbox',
   SELECT = 'select',
+}
+
+const validationMap = {
+  [CustomFieldsTypes.TEXT]: validateText,
+  [CustomFieldsTypes.TEXTAREA]: validateText,
+  [CustomFieldsTypes.RADIO]: validateRadioSelect,
+  [CustomFieldsTypes.SELECT]: validateRadioSelect,
+  [CustomFieldsTypes.CHECKBOX]: validateCheckbox,
+};
+
+export function validateMailPoetCustomField(formItems: WordpressRoleFormItem): boolean {
+  const validator: (WordpressRoleFormItem) => boolean = validationMap[formItems.customFieldType];
+  if (!validator) return false;
+
+  return validator(formItems);
 }
 
 interface Props {

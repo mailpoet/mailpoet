@@ -22,6 +22,14 @@ interface Props {
   item: WordpressRoleFormItem;
 }
 
+export function validateText(item: WordpressRoleFormItem): boolean {
+  return (
+    (typeof item.value === 'string')
+    && (item.value.length > 0)
+    && ((item.operator === 'equals') || (item.operator === 'contains'))
+  );
+}
+
 export const Text: React.FunctionComponent<Props> = ({ onChange, item }) => {
   useEffect(() => {
     if (item.operator === undefined) {

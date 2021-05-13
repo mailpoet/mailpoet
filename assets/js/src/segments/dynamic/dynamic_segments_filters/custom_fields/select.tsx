@@ -24,6 +24,13 @@ interface ParamsType {
   }[];
 }
 
+export function validateRadioSelect(item: WordpressRoleFormItem): boolean {
+  return (
+    (typeof item.value === 'string')
+    && (item.value.length > 0)
+  );
+}
+
 export const RadioSelect: React.FunctionComponent<Props> = ({ onChange, item }) => {
   const customField = find({ id: Number(item.customFieldId) }, SegmentFormData.customFieldsList);
   if (!customField) return null;

@@ -20,6 +20,10 @@ interface Props {
   item: WordpressRoleFormItem;
 }
 
+export function validateCheckbox(item: WordpressRoleFormItem): boolean {
+  return ((item.value === '1') || (item.value === '0'));
+}
+
 export const Checkbox: React.FunctionComponent<Props> = ({ onChange, item }) => {
   useEffect(() => {
     if ((item.value !== '1') && (item.value !== '0')) {

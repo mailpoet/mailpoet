@@ -9,11 +9,14 @@ import {
 } from '../types';
 import { WordpressRoleFields } from './subscriber_wordpress_role';
 import { SubscribedDateFields, SubscribedDateOperator } from './subscriber_subscribed_date';
-import { MailPoetCustomFields } from './subscriber_mailpoet_custom_field';
+import { MailPoetCustomFields, validateMailPoetCustomField } from './subscriber_mailpoet_custom_field';
 
 export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if ((!formItems.action) || (formItems.action === SubscriberActionTypes.WORDPRESS_ROLE)) {
     return !!formItems.wordpressRole;
+  }
+  if (formItems.action === SubscriberActionTypes.MAILPOET_CUSTOM_FIELD) {
+    return validateMailPoetCustomField(formItems);
   }
   if (!formItems.operator || !formItems.value) {
     return false;
