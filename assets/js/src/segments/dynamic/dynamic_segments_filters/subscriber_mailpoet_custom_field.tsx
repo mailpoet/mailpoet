@@ -7,6 +7,7 @@ import ReactSelect from 'common/form/react_select/react_select';
 import { SegmentFormData } from '../segment_form_data';
 import { Text } from './custom_fields/text';
 import { RadioSelect } from './custom_fields/select';
+import { Checkbox } from './custom_fields/checkbox';
 
 import {
   WordpressRoleFormItem,
@@ -33,6 +34,7 @@ const componentsMap = {
   [CustomFieldsTypes.TEXTAREA]: Text,
   [CustomFieldsTypes.RADIO]: RadioSelect,
   [CustomFieldsTypes.SELECT]: RadioSelect,
+  [CustomFieldsTypes.CHECKBOX]: Checkbox,
 };
 
 export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
