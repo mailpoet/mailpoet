@@ -8,6 +8,7 @@ import { SegmentFormData } from '../segment_form_data';
 import { Text, validateText } from './custom_fields/text';
 import { RadioSelect, validateRadioSelect } from './custom_fields/select';
 import { Checkbox, validateCheckbox } from './custom_fields/checkbox';
+import { CustomFieldDate, validateDate } from './custom_fields/date';
 
 import {
   WordpressRoleFormItem,
@@ -30,6 +31,7 @@ const validationMap = {
   [CustomFieldsTypes.RADIO]: validateRadioSelect,
   [CustomFieldsTypes.SELECT]: validateRadioSelect,
   [CustomFieldsTypes.CHECKBOX]: validateCheckbox,
+  [CustomFieldsTypes.DATE]: validateDate,
 };
 
 export function validateMailPoetCustomField(formItems: WordpressRoleFormItem): boolean {
@@ -50,9 +52,14 @@ const componentsMap = {
   [CustomFieldsTypes.RADIO]: RadioSelect,
   [CustomFieldsTypes.SELECT]: RadioSelect,
   [CustomFieldsTypes.CHECKBOX]: Checkbox,
+  [CustomFieldsTypes.DATE]: CustomFieldDate,
 };
 
 export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
+  const selectedCustomField = find(
+    { id: Number(item.customFieldId) },
+    SegmentFormData.customFieldsList
+  );
   const options = SegmentFormData.customFieldsList.map((currentValue) => ({
     value: currentValue.id.toString(),
     label: currentValue.name,
@@ -64,7 +71,7 @@ export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange,
     <>
       <ReactSelect
         isFullWidth
-        placeholder={MailPoet.I18n.t('selectUserRolePlaceholder')}
+        placeholder={MailPoet.I18n.t('selectCustomFieldPlaceholder')}
         options={options}
         value={
           find(
@@ -94,6 +101,7 @@ export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange,
           <TypeComponent
             item={item}
             onChange={onChange}
+            customField={selectedCustomField}
           />
         )
       }
