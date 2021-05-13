@@ -26,7 +26,7 @@ class EmailOpensAbsoluteCountAction implements Filter {
     $statsTable = $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $queryBuilder->addSelect("count(opens.id) as oc");
-    $queryBuilder->innerJoin(
+    $queryBuilder->leftJoin(
       $subscribersTable,
       $statsTable,
       'opens',
