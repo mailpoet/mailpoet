@@ -99,6 +99,8 @@ class FilterFactory {
   private function userRole($action) {
     if ($action === SubscriberSubscribedDate::TYPE) {
       return $this->subscriberSubscribedDate;
+    } elseif($action === MailPoetCustomFields::TYPE) {
+      return $this->mailPoetCustomFields;
     }
     return $this->userRole;
   }
@@ -106,8 +108,6 @@ class FilterFactory {
   private function email($action) {
     if ($action === EmailOpensAbsoluteCountAction::TYPE) {
       return $this->emailOpensAbsoluteCount;
-    } elseif($action === MailPoetCustomFields::TYPE) {
-      return $this->mailPoetCustomFields;
     }
     return $this->emailAction;
   }
