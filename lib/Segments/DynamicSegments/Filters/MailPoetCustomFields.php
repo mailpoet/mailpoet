@@ -121,7 +121,7 @@ class MailPoetCustomFields implements Filter {
       $queryBuilder->setParameter($valueParam, $value);
     } else {
       $queryBuilder->andWhere("subscribers_custom_field.value LIKE $valueParam");
-      $queryBuilder->setParameter($valueParam, '%' . Helpers::escapeSearch($value)) . '%';
+      $queryBuilder->setParameter($valueParam, '%' . Helpers::escapeSearch($value). '%');
     }
 
     return $queryBuilder;
