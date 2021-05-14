@@ -65,8 +65,8 @@ class FilterDataMapper {
         'customFieldId' => $data['customFieldId'],
         'customFieldType' => $data['customFieldType'],
       ];
-      if (!empty($data['dateType'])) $filterData[] = $data['dateType'];
-      if (!empty($data['operator'])) $filterData[] = $data['operator'];
+      if (!empty($data['dateType'])) $filterData['dateType'] = $data['dateType'];
+      if (!empty($data['operator'])) $filterData['operator'] = $data['operator'];
       return new DynamicSegmentFilterData($filterData);
     }
     if (empty($data['wordpressRole'])) throw new InvalidFilterException('Missing role', InvalidFilterException::MISSING_ROLE);
