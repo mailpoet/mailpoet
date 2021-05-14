@@ -45,6 +45,7 @@ export const Text: React.FunctionComponent<Props> = ({ onChange, item }) => {
       <Grid.CenteredRow>
         <Select
           key="select"
+          automationId="text-custom-field-operator"
           value={item.operator}
           onChange={compose([
             onChange,
@@ -59,6 +60,7 @@ export const Text: React.FunctionComponent<Props> = ({ onChange, item }) => {
         </Select>
         <Input
           key="input"
+          data-automation-id="text-custom-field-value"
           value={item.value || ''}
           onChange={compose([
             onChange,

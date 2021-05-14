@@ -99,7 +99,7 @@ class FilterFactory {
   private function userRole($action) {
     if ($action === SubscriberSubscribedDate::TYPE) {
       return $this->subscriberSubscribedDate;
-    } elseif($action === MailPoetCustomFields::TYPE) {
+    } elseif ($action === MailPoetCustomFields::TYPE) {
       return $this->mailPoetCustomFields;
     }
     return $this->userRole;

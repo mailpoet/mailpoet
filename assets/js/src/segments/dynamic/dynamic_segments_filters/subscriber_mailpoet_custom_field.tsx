@@ -73,6 +73,7 @@ export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange,
         isFullWidth
         placeholder={MailPoet.I18n.t('selectCustomFieldPlaceholder')}
         options={options}
+        automationId="select-custom-field"
         value={
           find(
             (option) => {
@@ -94,7 +95,6 @@ export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange,
             })
           );
         }}
-        automationId="segment-wordpress-role"
       />
       {
         TypeComponent && (
