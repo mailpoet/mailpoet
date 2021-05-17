@@ -37,8 +37,8 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => MailPoetCustomFields::TYPE,
-      'customFieldId' => $customField->getId(),
-      'customFieldType' => CustomFieldEntity::TYPE_TEXT,
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
       'operator' => 'equals',
       'value' => 'some value',
     ]));
@@ -64,8 +64,8 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => MailPoetCustomFields::TYPE,
-      'customFieldId' => $customField->getId(),
-      'customFieldType' => CustomFieldEntity::TYPE_TEXT,
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
       'operator' => 'contains',
       'value' => 'value',
     ]));
@@ -91,8 +91,8 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => MailPoetCustomFields::TYPE,
-      'customFieldId' => $customField->getId(),
-      'customFieldType' => CustomFieldEntity::TYPE_RADIO,
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_RADIO,
       'operator' => 'equals',
       'value' => 'Option 2',
     ]));
@@ -118,8 +118,8 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => MailPoetCustomFields::TYPE,
-      'customFieldId' => $customField->getId(),
-      'customFieldType' => CustomFieldEntity::TYPE_CHECKBOX,
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_CHECKBOX,
       'operator' => 'equals',
       'value' => '1',
     ]));
@@ -145,8 +145,8 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => MailPoetCustomFields::TYPE,
-      'customFieldId' => $customField->getId(),
-      'customFieldType' => CustomFieldEntity::TYPE_CHECKBOX,
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_CHECKBOX,
       'operator' => 'equals',
       'value' => '0',
     ]));
@@ -173,9 +173,9 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => MailPoetCustomFields::TYPE,
-      'customFieldId' => $customField->getId(),
-      'customFieldType' => CustomFieldEntity::TYPE_DATE,
-      'dateType' => 'month',
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'month',
       'value' => '2017-04-01 00:00:00',
     ]));
     $this->entityManager->flush();
@@ -201,9 +201,9 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => MailPoetCustomFields::TYPE,
-      'customFieldId' => $customField->getId(),
-      'customFieldType' => CustomFieldEntity::TYPE_DATE,
-      'dateType' => 'year',
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'year',
       'value' => '2017-01-01 00:00:00',
     ]));
     $this->entityManager->flush();
@@ -229,9 +229,9 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => MailPoetCustomFields::TYPE,
-      'customFieldId' => $customField->getId(),
-      'customFieldType' => CustomFieldEntity::TYPE_DATE,
-      'dateType' => 'year',
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'year',
       'operator' => 'before',
       'value' => '2017-01-01 00:00:00',
     ]));
@@ -258,9 +258,9 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => MailPoetCustomFields::TYPE,
-      'customFieldId' => $customField->getId(),
-      'customFieldType' => CustomFieldEntity::TYPE_DATE,
-      'dateType' => 'year_month',
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'year_month',
       'value' => '2017-04-01 00:00:00',
     ]));
     $this->entityManager->flush();
@@ -286,9 +286,9 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => MailPoetCustomFields::TYPE,
-      'customFieldId' => $customField->getId(),
-      'customFieldType' => CustomFieldEntity::TYPE_DATE,
-      'dateType' => 'year_month',
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'year_month',
       'operator' => 'before',
       'value' => '2017-04-01 00:00:00',
     ]));
@@ -315,9 +315,9 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => MailPoetCustomFields::TYPE,
-      'customFieldId' => $customField->getId(),
-      'customFieldType' => CustomFieldEntity::TYPE_DATE,
-      'dateType' => 'year_month_day',
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'year_month_day',
       'value' => '2017-04-01 00:00:00',
     ]));
     $this->entityManager->flush();
@@ -343,9 +343,9 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => MailPoetCustomFields::TYPE,
-      'customFieldId' => $customField->getId(),
-      'customFieldType' => CustomFieldEntity::TYPE_DATE,
-      'dateType' => 'year_month_day',
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_DATE,
+      'date_type' => 'year_month_day',
       'operator' => 'after',
       'value' => '2017-03-02 00:00:00',
     ]));

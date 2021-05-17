@@ -41,9 +41,9 @@ export interface WordpressRoleFormItem extends FormItem {
   wordpressRole?: string;
   operator?: string;
   value?: string;
-  customFieldId?: string;
-  customFieldType?: string;
-  dateType?: string;
+  custom_field_id?: string;
+  custom_field_type?: string;
+  date_type?: string;
 }
 
 export interface WooCommerceFormItem extends FormItem {
