@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.7
-Stable tag: 3.60.12
+Stable tag: 3.61.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.61.0 - 2021-05-17 =
+* Added: visualize the average "Subscriber score" for an email list to help gauge engagement;
+* Added: new segment for customer's country;
+* Added: welcome emails are now scheduled when subscribing through "Manage subscription" page. Thanks, Ron!
+* Fixed: unable to segment by 0 opened emails;
+* Fixed: broken product attributes in WooCommerce order email.
 
 = 3.60.12 - 2021-05-11 =
 * Fixed: a Doctrine error causing some MailPoet functionality to stop working in rare cases;
