@@ -403,6 +403,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
       ->getConnection()
       ->createQueryBuilder()
       ->select("$subscribersTable.id")
-      ->from($subscribersTable);
+      ->from($subscribersTable)
+      ->orderBy("$subscribersTable.id");
   }
 }
