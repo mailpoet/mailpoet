@@ -182,18 +182,6 @@ class Forms extends APIEndpoint {
     return $this->successResponse();
   }
 
-  public function exportsEditor($data = []) {
-    $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $form = Form::findOne($id);
-    if ($form instanceof Form) {
-      $exports = Util\Export::getAll($form->asArray());
-      return $this->successResponse($exports);
-    }
-    return $this->errorResponse([
-      APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet'),
-    ]);
-  }
-
   public function saveEditor($data = []) {
     $formId = (isset($data['id']) ? (int)$data['id'] : 0);
     $name = (isset($data['name']) ? $data['name'] : WPFunctions::get()->__('New form', 'mailpoet'));
