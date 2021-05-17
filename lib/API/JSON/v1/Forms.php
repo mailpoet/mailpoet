@@ -97,7 +97,7 @@ class Forms extends APIEndpoint {
       return $this->successResponse($this->formsResponseBuilder->build($form));
     }
     return $this->errorResponse([
-      APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet'),
+      APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet'),
     ]);
   }
 
@@ -186,16 +186,16 @@ class Forms extends APIEndpoint {
 
   public function saveEditor($data = []) {
     $formId = (isset($data['id']) ? (int)$data['id'] : 0);
-    $name = (isset($data['name']) ? $data['name'] : WPFunctions::get()->__('New form', 'mailpoet'));
-    $body = (isset($data['body']) ? $data['body'] : []);
+    $name = ($data['name'] ?? __('New form', 'mailpoet'));
+    $body = ($data['body'] ?? []);
     $body = $this->dataSanitizer->sanitizeBody($body);
-    $settings = (isset($data['settings']) ? $data['settings'] : []);
-    $styles = (isset($data['styles']) ? $data['styles'] : '');
-    $status = (isset($data['status']) ? $data['status'] : FormEntity::STATUS_ENABLED);
+    $settings = ($data['settings'] ?? []);
+    $styles = ($data['styles'] ?? '');
+    $status = ($data['status'] ?? FormEntity::STATUS_ENABLED);
 
     // check if the form is used as a widget
     $isWidget = false;
-    $widgets = WPFunctions::get()->getOption('widget_mailpoet_form');
+    $widgets = $this->wp->getOption('widget_mailpoet_form');
     if (!empty($widgets)) {
       foreach ($widgets as $widget) {
         if (isset($widget['form']) && (int)$widget['form'] === $formId) {
@@ -271,7 +271,7 @@ class Forms extends APIEndpoint {
       );
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -287,7 +287,7 @@ class Forms extends APIEndpoint {
       );
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -301,7 +301,7 @@ class Forms extends APIEndpoint {
       return $this->successResponse(null, ['count' => 1]);
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet'),
       ]);
     }
   }
@@ -323,7 +323,7 @@ class Forms extends APIEndpoint {
       );
     } else {
       return $this->errorResponse([
-        APIError::NOT_FOUND => WPFunctions::get()->__('This form does not exist.', 'mailpoet'),
+        APIError::NOT_FOUND => __('This form does not exist.', 'mailpoet'),
       ]);
     }
   }
