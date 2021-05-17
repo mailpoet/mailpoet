@@ -537,6 +537,36 @@ workflows:
             - static_analysis_php8
             - qa_js
             - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_6
+          group_arg: -g acceptance_group_6
+          requires:
+            - unit_tests
+            - static_analysis_php7
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_7
+          group_arg: -g acceptance_group_7
+          requires:
+            - unit_tests
+            - static_analysis_php7
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_8
+          group_arg: -g acceptance_group_8
+          requires:
+            - unit_tests
+            - static_analysis_php7
+            - static_analysis_php8
+            - qa_js
+            - qa_php
       - js_tests:
           <<: *slack-fail-post-step
           requires:
@@ -574,6 +604,21 @@ workflows:
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_5
           group_arg: -g acceptance_group_5
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          <<: *multisite_acceptance_config
+          name: acceptance_tests_multisite_6
+          group_arg: -g acceptance_group_6
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          <<: *multisite_acceptance_config
+          name: acceptance_tests_multisite_7
+          group_arg: -g acceptance_group_7
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          <<: *multisite_acceptance_config
+          name: acceptance_tests_multisite_8
+          group_arg: -g acceptance_group_8
       - integration_tests:
           <<: *slack-fail-post-step
           <<: *only_master_and_release
@@ -595,6 +640,9 @@ workflows:
             - acceptance_tests_3
             - acceptance_tests_4
             - acceptance_tests_5
+            - acceptance_tests_6
+            - acceptance_tests_7
+            - acceptance_tests_8
             - js_tests
             - integration_tests
       - test_deployment:
