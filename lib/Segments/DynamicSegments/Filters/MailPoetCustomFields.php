@@ -92,6 +92,8 @@ class MailPoetCustomFields implements Filter {
     } elseif ($operator === 'after') {
       $queryBuilder->andWhere("subscribers_custom_field.value > $valueParam");
     } else {
+      // we always save full date in the database: 2018-03-01 00:00:00
+      // so this works even for year_month where we save the first day of the month
       $queryBuilder->andWhere("subscribers_custom_field.value = $valueParam");
     }
     return $queryBuilder;
