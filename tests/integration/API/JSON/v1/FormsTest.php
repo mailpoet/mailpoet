@@ -96,17 +96,6 @@ class FormsTest extends \MailPoetTest {
     expect($storedData['settings'])->notEmpty();
   }
 
-  public function testItCanExportAForm() {
-    $response = $this->endpoint->create();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-
-    $response = $this->endpoint->exportsEditor($response->data);
-    expect($response->data['html'])->notEmpty();
-    expect($response->data['php'])->notEmpty();
-    expect($response->data['iframe'])->notEmpty();
-    expect($response->data['shortcode'])->notEmpty();
-  }
-
   public function testItCanSaveFormEditor() {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
