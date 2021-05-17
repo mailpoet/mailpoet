@@ -17,9 +17,7 @@ use MailPoet\Form\FormSaveController;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Listing\FormListingRepository;
 use MailPoet\Form\PreviewPage;
-use MailPoet\Form\Util;
 use MailPoet\Listing;
-use MailPoet\Models\Form;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -234,28 +232,32 @@ class Forms extends APIEndpoint {
       $body = $this->emoji->sanitizeEmojisInFormBody($body);
     }
 
-    $form = Form::createOrUpdate([
-      'id' => $formId,
-      'name' => $name,
-      'body' => $body,
-      'settings' => $settings,
-      'styles' => $styles,
-      'status' => $status,
-    ]);
+    $form = $this->getForm($data);
 
-    $errors = $form->getErrors();
-
-    if (!empty($errors)) {
-      return $this->badRequest($errors);
+    if (!$form instanceof FormEntity) {
+      $form = new FormEntity($name);
     }
+    $form->setName($name);
+    $form->setBody($body);
+    $form->setSettings($settings);
+    $form->setStyles($styles);
+    $form->setStatus($status);
+    $this->formsRepository->persist($form);
+
+    try {
+      $this->formsRepository->flush();
+    } catch (\Exception $e) {
+      return $this->badRequest();
+    }
+
     if (isset($data['editor_version']) && $data['editor_version'] === "2") {
       $this->userFlags->set('display_new_form_editor_nps_survey', true);
     }
 
-    $form = Form::findOne($form->id);
-    if(!$form instanceof Form) return $this->errorResponse();
+    $form = $this->getForm(['id' => $form->getId()]);
+    if(!$form instanceof FormEntity) return $this->errorResponse();
     return $this->successResponse(
-      $form->asArray(),
+      $this->formsResponseBuilder->build($form),
       ['is_widget' => $isWidget]
     );
   }
