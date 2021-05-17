@@ -4,13 +4,18 @@ namespace MailPoet\Subscription;
 
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Models\CustomField;
+use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Util\Url as UrlHelper;
 
 class Manage {
@@ -30,18 +35,33 @@ class Manage {
   /** @var Unsubscribes */
   private $unsubscribesTracker;
 
+  /** @var NewSubscriberNotificationMailer */
+  private $newSubscriberNotificationMailer;
+
+  /** @var WelcomeScheduler */
+  private $welcomeScheduler;
+
+  /** @var SubscriberSegmentRepository */
+  private $subscriberSegmentRepository;
+
   public function __construct(
     UrlHelper $urlHelper,
     FieldNameObfuscator $fieldNameObfuscator,
     LinkTokens $linkTokens,
     Unsubscribes $unsubscribesTracker,
-    SettingsController $settings
+    SettingsController $settings,
+    NewSubscriberNotificationMailer $newSubscriberNotificationMailer,
+    WelcomeScheduler $welcomeScheduler,
+    SubscriberSegmentRepository $subscriberSegmentRepository
   ) {
     $this->urlHelper = $urlHelper;
     $this->fieldNameObfuscator = $fieldNameObfuscator;
     $this->unsubscribesTracker = $unsubscribesTracker;
     $this->linkTokens = $linkTokens;
     $this->settings = $settings;
+    $this->newSubscriberNotificationMailer = $newSubscriberNotificationMailer;
+    $this->welcomeScheduler = $welcomeScheduler;
+    $this->subscriberSegmentRepository = $subscriberSegmentRepository;
   }
 
   public function onSave() {
@@ -107,6 +127,17 @@ class Manage {
       }
     }
 
+    // Store new segments for notifications
+    $subscriberSegments = $this->subscriberSegmentRepository->findBy([
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'subscriber' => $subscriber->id,
+    ]);
+    $currentSegmentIds = array_filter(array_map(function (SubscriberSegmentEntity $subscriberSegment): ?string {
+      $segment = $subscriberSegment->getSegment();
+      return $segment ? (string)$segment->getId() : null;
+    }, $subscriberSegments));
+    $newSegmentIds = array_diff($segmentsIds, $currentSegmentIds);
+
     // Allow subscribing only to allowed segments
     if ($allowedSegments) {
       $segmentsIds = array_intersect($segmentsIds, $allowedSegments);
@@ -117,6 +148,14 @@ class Manage {
         'segment_id' => $segmentId,
         'status' => Subscriber::STATUS_SUBSCRIBED,
       ]);
+    }
+
+    if ($subscriber->status === SubscriberEntity::STATUS_SUBSCRIBED && $newSegmentIds) {
+      $this->newSubscriberNotificationMailer->send($subscriber, Segment::whereIn('id', $newSegmentIds)->findMany());
+      $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
+        $subscriber->id,
+        $newSegmentIds
+      );
     }
   }
 
