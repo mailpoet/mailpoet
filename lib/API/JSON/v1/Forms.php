@@ -168,9 +168,11 @@ class Forms extends APIEndpoint {
       $formEntity = $this->formFactory->createEmptyForm();
     }
 
-    $form = Form::findOne($formEntity->getId());
-    if(!$form instanceof Form) return $this->errorResponse();
-    return $this->successResponse($form->asArray());
+    $form = $this->formsRepository->findOneById($formEntity->getId());
+    if ($form instanceof FormEntity) {
+      return $this->successResponse($this->formsResponseBuilder->build($form));
+    }
+    return $this->errorResponse();
   }
 
   public function previewEditor($data = []) {
