@@ -35,7 +35,7 @@ const validationMap = {
 };
 
 export function validateMailPoetCustomField(formItems: WordpressRoleFormItem): boolean {
-  const validator: (WordpressRoleFormItem) => boolean = validationMap[formItems.customFieldType];
+  const validator: (WordpressRoleFormItem) => boolean = validationMap[formItems.custom_field_type];
   if (!validator) return false;
 
   return validator(formItems);
@@ -57,7 +57,7 @@ const componentsMap = {
 
 export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
   const selectedCustomField = find(
-    { id: Number(item.customFieldId) },
+    { id: Number(item.custom_field_id) },
     SegmentFormData.customFieldsList
   );
   const options = SegmentFormData.customFieldsList.map((currentValue) => ({
@@ -65,7 +65,7 @@ export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange,
     label: currentValue.name,
   }));
 
-  const TypeComponent = componentsMap[item.customFieldType];
+  const TypeComponent = componentsMap[item.custom_field_type];
 
   return (
     <>
@@ -77,8 +77,8 @@ export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange,
         value={
           find(
             (option) => {
-              if (!item.customFieldId) return undefined;
-              return item.customFieldId === option.value;
+              if (!item.custom_field_id) return undefined;
+              return item.custom_field_id === option.value;
             },
             options
           )
@@ -88,8 +88,8 @@ export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange,
           if (!customField) return;
           onChange(
             assign(item, {
-              customFieldId: option.value,
-              customFieldType: customField.type,
+              custom_field_id: option.value,
+              custom_field_type: customField.type,
               operator: undefined,
               value: undefined,
             })

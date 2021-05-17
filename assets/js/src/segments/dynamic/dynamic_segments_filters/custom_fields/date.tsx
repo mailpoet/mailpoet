@@ -174,7 +174,7 @@ const DateFullDate = ({ onChange, item }: ComponentProps) => {
 };
 
 export function validateDate(item: WordpressRoleFormItem): boolean {
-  if ((item.dateType !== 'month')
+  if ((item.date_type !== 'month')
     && (
       (typeof item.operator !== 'string')
       || (item.operator.length < 1)
@@ -207,9 +207,9 @@ export const CustomFieldDate: React.FunctionComponent<Props> = (
   { onChange, item, customField }
 ) => {
   useEffect(() => {
-    if (item.dateType === customField.params.date_type) {
+    if (item.date_type === customField.params.date_type) {
       onChange(
-        assign(item, { dateType: customField.params.date_type, value: '' })
+        assign(item, { date_type: customField.params.date_type, value: '' })
       );
     }
   }, [onChange, item, customField.params.date_type]);

@@ -32,7 +32,7 @@ export function validateRadioSelect(item: WordpressRoleFormItem): boolean {
 }
 
 export const RadioSelect: React.FunctionComponent<Props> = ({ onChange, item }) => {
-  const customField = find({ id: Number(item.customFieldId) }, SegmentFormData.customFieldsList);
+  const customField = find({ id: Number(item.custom_field_id) }, SegmentFormData.customFieldsList);
   if (!customField) return null;
   const params = (customField.params as ParamsType);
   if (!params || !Array.isArray(params.values)) return null;

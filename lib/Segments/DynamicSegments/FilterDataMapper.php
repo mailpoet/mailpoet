@@ -55,17 +55,17 @@ class FilterDataMapper {
       ]);
     }
     if ($data['action'] === MailPoetCustomFields::TYPE) {
-      if (empty($data['customFieldId'])) throw new InvalidFilterException('Missing custom field id', InvalidFilterException::MISSING_VALUE);
-      if (empty($data['customFieldType'])) throw new InvalidFilterException('Missing custom field type', InvalidFilterException::MISSING_VALUE);
+      if (empty($data['custom_field_id'])) throw new InvalidFilterException('Missing custom field id', InvalidFilterException::MISSING_VALUE);
+      if (empty($data['custom_field_type'])) throw new InvalidFilterException('Missing custom field type', InvalidFilterException::MISSING_VALUE);
       if (empty($data['value'])) throw new InvalidFilterException('Missing value', InvalidFilterException::MISSING_VALUE);
       $filterData = [
         'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
         'action' => $data['action'],
         'value' => $data['value'],
-        'customFieldId' => $data['customFieldId'],
-        'customFieldType' => $data['customFieldType'],
+        'custom_field_id' => $data['custom_field_id'],
+        'custom_field_type' => $data['custom_field_type'],
       ];
-      if (!empty($data['dateType'])) $filterData['dateType'] = $data['dateType'];
+      if (!empty($data['date_type'])) $filterData['date_type'] = $data['date_type'];
       if (!empty($data['operator'])) $filterData['operator'] = $data['operator'];
       return new DynamicSegmentFilterData($filterData);
     }

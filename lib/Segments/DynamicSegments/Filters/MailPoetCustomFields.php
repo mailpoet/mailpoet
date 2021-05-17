@@ -22,8 +22,8 @@ class MailPoetCustomFields implements Filter {
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
-    $customFieldType = $filterData->getParam('customFieldType');
-    $customFieldId = $filterData->getParam('customFieldId');
+    $customFieldType = $filterData->getParam('custom_field_type');
+    $customFieldId = $filterData->getParam('custom_field_id');
     $customFieldIdParam = ':customFieldId' . $filter->getId();
 
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
@@ -57,7 +57,7 @@ class MailPoetCustomFields implements Filter {
 
   private function applyForDate(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
-    $dateType = $filterData->getParam('dateType');
+    $dateType = $filterData->getParam('date_type');
     $value = $filterData->getParam('value');
     $operator = $filterData->getParam('operator');
     $valueParam = ':value' . $filter->getId();
