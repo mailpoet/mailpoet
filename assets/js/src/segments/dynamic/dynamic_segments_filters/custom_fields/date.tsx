@@ -173,6 +173,47 @@ const DateFullDate = ({ onChange, item }: ComponentProps) => {
   );
 };
 
+const DateMonthYear = ({ onChange, item }: ComponentProps) => {
+  useEffect(() => {
+    if ((item.value === undefined) || item.value === '') {
+      onChange(
+        assign(item, {
+          value: `${format(new Date(), 'yyyy-MM-dd')} 00:00:00`,
+          operator: 'equals',
+        })
+      );
+    }
+  }, [onChange, item]);
+
+  return (
+    <Grid.CenteredRow>
+      <Select
+        key="select-operator"
+        value={item.operator}
+        onChange={compose([
+          onChange,
+          assign(item),
+          set('operator', __, {}),
+          get('value'),
+          get('target'),
+        ])}
+      >
+        <option value="equals">{MailPoet.I18n.t('equals')}</option>
+        <option value="before">{MailPoet.I18n.t('before')}</option>
+        <option value="after">{MailPoet.I18n.t('after')}</option>
+      </Select>
+      <Datepicker
+        onChange={(value): void => onChange(
+          assign(item, { value: convertDateToString(value) })
+        )}
+        selected={item.value ? parseDate(item.value) : undefined}
+        dateFormat="MM/yyyy"
+        showMonthYearPicker
+      />
+    </Grid.CenteredRow>
+  );
+};
+
 export function validateDate(item: WordpressRoleFormItem): boolean {
   if ((item.date_type !== 'month')
     && (
@@ -199,7 +240,7 @@ interface Props {
 const componentsMap = {
   month: DateMonth,
   year: DateYear,
-  year_month: DateFullDate,
+  year_month: DateMonthYear,
   year_month_day: DateFullDate,
 };
 
