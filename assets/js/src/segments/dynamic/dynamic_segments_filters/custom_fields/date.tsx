@@ -248,7 +248,7 @@ export const CustomFieldDate: React.FunctionComponent<Props> = (
   { onChange, item, customField }
 ) => {
   useEffect(() => {
-    if (item.date_type === customField.params.date_type) {
+    if (item.date_type !== customField.params.date_type) {
       onChange(
         assign(item, { date_type: customField.params.date_type, value: '' })
       );
