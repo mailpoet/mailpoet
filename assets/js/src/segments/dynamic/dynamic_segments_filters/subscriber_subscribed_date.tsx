@@ -25,6 +25,13 @@ export enum SubscribedDateOperator {
   NOT_IN_THE_LAST = 'notInTheLast',
 }
 
+const availableOperators = [
+  SubscribedDateOperator.BEFORE,
+  SubscribedDateOperator.AFTER,
+  SubscribedDateOperator.IN_THE_LAST,
+  SubscribedDateOperator.NOT_IN_THE_LAST,
+];
+
 const convertDateToString = (value: Date): string | undefined => {
   if (value === null) {
     return undefined;
@@ -40,7 +47,7 @@ const parseDate = (value: string): Date | undefined => {
 
 export const SubscribedDateFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
   useEffect(() => {
-    if (item.operator === undefined) {
+    if (!availableOperators.includes((item.operator as SubscribedDateOperator))) {
       onChange(assign(item, { operator: SubscribedDateOperator.BEFORE }));
     }
     if (
