@@ -9,7 +9,6 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\PreviewPage;
-use MailPoet\Models\Form;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -51,7 +50,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->get(['id' => $this->form1->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      $this->reloadForm((int)$this->form1->getId())->asArray()
+      $this->reloadForm((int)$this->form1->getId())->toArray()
     );
   }
 
@@ -74,7 +73,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      $this->reloadForm((int)$response->data['id'])->asArray()
+      $this->reloadForm((int)$response->data['id'])->toArray()
     );
     expect($response->data['name'])->equals('');
   }
@@ -84,7 +83,7 @@ class FormsTest extends \MailPoetTest {
     $formId = $response->data['id'];
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
-      $this->reloadForm((int)$formId)->asArray()
+      $this->reloadForm((int)$formId)->toArray()
     );
     $response->data['styles'] = '/* Custom Styles */';
 
@@ -100,7 +99,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $form = $this->reloadForm((int)$response->data['id'])->asArray();
+    $form = $this->reloadForm((int)$response->data['id'])->toArray();
     $form['name'] = 'Updated form';
 
     $response = $this->endpoint->saveEditor($form);
@@ -116,7 +115,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $form = $this->reloadForm((int)$response->data['id'])->asArray();
+    $form = $this->reloadForm((int)$response->data['id'])->toArray();
     $form['body'][] = [
       'type' => FormEntity::HTML_BLOCK_TYPE,
       'params' => [
@@ -136,7 +135,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $form = $this->reloadForm((int)$response->data['id'])->asArray();
+    $form = $this->reloadForm((int)$response->data['id'])->toArray();
     $form['body'][] = [
       'type' => 'segment',
       'params' => [
@@ -154,7 +153,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->create();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
-    $form = $this->reloadForm((int)$response->data['id'])->asArray();
+    $form = $this->reloadForm((int)$response->data['id'])->toArray();
     $form['body'][] = [
       'type' => 'segment',
       'params' => [
@@ -276,7 +275,7 @@ class FormsTest extends \MailPoetTest {
     ]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $form = $this->reloadForm((int)$this->form1->getId());
-    expect($form->status)->equals(FormEntity::STATUS_ENABLED);
+    expect($form->getStatus())->equals(FormEntity::STATUS_ENABLED);
 
     $response = $this->endpoint->setStatus([
       'status' => FormEntity::STATUS_DISABLED,
@@ -284,7 +283,7 @@ class FormsTest extends \MailPoetTest {
     ]);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $form = $this->reloadForm((int)$this->form1->getId());
-    expect($form->status)->equals(FormEntity::STATUS_DISABLED);
+    expect($form->getStatus())->equals(FormEntity::STATUS_DISABLED);
 
     $response = $this->endpoint->setStatus([
       'status' => FormEntity::STATUS_DISABLED,
@@ -318,9 +317,9 @@ class FormsTest extends \MailPoetTest {
     $segmentsRepository->flush();
   }
 
-  private function reloadForm(int $id): Form {
-    $reloaded = Form::findOne($id);
-    assert($reloaded instanceof Form);
+  private function reloadForm(int $id): FormEntity {
+    $reloaded = $this->formsRepository->findOneById($id);
+    assert($reloaded instanceof FormEntity);
     return $reloaded;
   }
 
