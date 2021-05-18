@@ -57,7 +57,7 @@ class FilterDataMapper {
     if ($data['action'] === MailPoetCustomFields::TYPE) {
       if (empty($data['custom_field_id'])) throw new InvalidFilterException('Missing custom field id', InvalidFilterException::MISSING_VALUE);
       if (empty($data['custom_field_type'])) throw new InvalidFilterException('Missing custom field type', InvalidFilterException::MISSING_VALUE);
-      if (empty($data['value'])) throw new InvalidFilterException('Missing value', InvalidFilterException::MISSING_VALUE);
+      if (!isset($data['value'])) throw new InvalidFilterException('Missing value', InvalidFilterException::MISSING_VALUE);
       $filterData = [
         'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
         'action' => $data['action'],

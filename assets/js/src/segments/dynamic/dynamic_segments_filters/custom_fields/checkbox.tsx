@@ -38,7 +38,7 @@ export const Checkbox: React.FunctionComponent<Props> = ({ onChange, item }) => 
       <div className="mailpoet-gap" />
       <Select
         key="select"
-        value={item.operator}
+        value={item.value}
         onChange={compose([
           onChange,
           assign(item),
