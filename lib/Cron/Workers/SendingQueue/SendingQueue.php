@@ -97,7 +97,14 @@ class SendingQueue {
 
       $task = $queue->task();
       if (!$task instanceof ScheduledTask) continue;
-      if ($this->isInProgress($task)) continue;
+
+      if ($this->isInProgress($task)) {
+        if ($this->isTimeout($task)) {
+          $this->stopProgress($task);
+        } else {
+          continue;
+        }
+      }
 
 
       $this->startProgress($task);
@@ -430,8 +437,20 @@ class SendingQueue {
     $task->save();
   }
 
-  public function getExecutionLimit(): int {
-    // Convert seconds to minutes
-    return (int)round($this->cronHelper->getDaemonExecutionLimit() * 2 / 60);
+  private function isTimeout(ScheduledTask $task): bool {
+    $currentTime = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $updated = strtotime((string)$task->updatedAt);
+    if ($updated !== false) {
+      $updatedAt = Carbon::createFromTimestamp($updated);
+    }
+    if (isset($updatedAt) && $updatedAt->diffInSeconds($currentTime, false) > $this->getExecutionLimit()) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private function getExecutionLimit(): int {
+    return $this->cronHelper->getDaemonExecutionLimit() * 3;
   }
 }
