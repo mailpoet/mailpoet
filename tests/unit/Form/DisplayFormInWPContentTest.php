@@ -35,6 +35,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->wp->expects($this->any())->method('inTheLoop')->willReturn(true);
     $this->wp->expects($this->any())->method('isMainQuery')->willReturn(true);
     $this->wp->expects($this->any())->method('wpCreateNonce')->willReturn('asdfgh');
+    $this->wp->expects($this->any())->method('applyFilters')->willReturn(false);
     WPFunctions::set($this->wp);
     $this->assetsController = $this->createMock(AssetsController::class);
     $this->templateRenderer = $this->createMock(TemplateRenderer::class);
