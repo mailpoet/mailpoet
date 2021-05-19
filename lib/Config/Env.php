@@ -80,7 +80,7 @@ class Env {
     self::$dbPrefix = $wpdb->prefix . self::$pluginPrefix;
     self::$dbHost = $host;
     self::$dbIsIpv6 = $isIpv6;
-    self::$dbPort = $port ?: 3306;
+    self::$dbPort = $port;
     self::$dbSocket = $socket;
     self::$dbName = $dbName;
     self::$dbUsername = $dbUser;
