@@ -33,7 +33,6 @@ class ConnectionFactoryTest extends \MailPoetTest {
     expect($connection->getDriver())->isInstanceOf(PDOMySql\Driver::class);
     expect($connection->getDatabasePlatform())->isInstanceOf(MySqlPlatform::class);
     expect($connection->getHost())->equals(Env::$dbHost);
-    expect($connection->getPort())->equals(Env::$dbPort);
     expect($connection->getParams())->notContains('unix_socket');
     expect($connection->getUsername())->equals(Env::$dbUsername);
     expect($connection->getPassword())->equals(Env::$dbPassword);
