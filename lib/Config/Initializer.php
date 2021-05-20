@@ -5,6 +5,7 @@ namespace MailPoet\Config;
 use MailPoet\API\JSON\API;
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Cron\CronTrigger;
+use MailPoet\InvalidStateException;
 use MailPoet\PostEditorBlocks\PostEditorBlock;
 use MailPoet\Router;
 use MailPoet\Settings\SettingsController;
@@ -227,6 +228,8 @@ class Initializer {
       $this->postEditorBlock->init();
 
       WPFunctions::get()->doAction('mailpoet_initialized', MAILPOET_VERSION);
+    } catch (InvalidStateException $e) {
+      return $this->handleRunningInitialization($e);
     } catch (\Exception $e) {
       return $this->handleFailedInitialization($e);
     }
@@ -344,6 +347,13 @@ class Initializer {
       Menu::addErrorPage($this->accessControl);
     }
     return WPNotice::displayError($exception);
+  }
+
+  private function handleRunningInitialization(InvalidStateException $exception) {
+    if (function_exists('wp_get_current_user')) {
+      Menu::addErrorPage($this->accessControl);
+    }
+    return WPNotice::displayWarning($exception->getMessage());
   }
 
   public function setupDeactivationSurvey() {

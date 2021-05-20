@@ -40,7 +40,7 @@ class SetupTest extends \MailPoetTest {
       $this->entityManager,
       $this->diContainer->get(WP::class)
     );
-    $router = new Setup($wpStub, new Activator($settings, $populator));
+    $router = new Setup($wpStub, new Activator($settings, $populator, $wpStub));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
