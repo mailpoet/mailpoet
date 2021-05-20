@@ -229,7 +229,7 @@ class Initializer {
 
       WPFunctions::get()->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
-      return $this->handleRunningInitialization($e);
+      return $this->handleRunningMigration($e);
     } catch (\Exception $e) {
       return $this->handleFailedInitialization($e);
     }
@@ -349,7 +349,7 @@ class Initializer {
     return WPNotice::displayError($exception);
   }
 
-  private function handleRunningInitialization(InvalidStateException $exception) {
+  private function handleRunningMigration(InvalidStateException $exception) {
     if (function_exists('wp_get_current_user')) {
       Menu::addErrorPage($this->accessControl);
     }
