@@ -43,6 +43,18 @@ class ConnectionFactoryTest extends \MailPoetTest {
     expect(Type::getType(JsonOrSerializedType::NAME))->isInstanceOf(JsonOrSerializedType::class);
   }
 
+  public function testItSetsUpPort() {
+    $backup = Env::$dbPort;
+    try {
+      Env::$dbPort = 3456;
+      $connectionFactory = new ConnectionFactory();
+      $connection = $connectionFactory->createConnection();
+      expect($connection->getPort())->equals(3456);
+    } finally {
+      Env::$dbPort = $backup;
+    }
+  }
+
   public function testItIgnoresEmptyCharset() {
     Env::$dbCharset = '';
     $connectionFactory = new ConnectionFactory();
