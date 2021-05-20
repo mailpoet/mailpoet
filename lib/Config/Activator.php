@@ -8,7 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Activator {
   public const TRANSIENT_ACTIVATE_KEY = 'mailpoet_activator_activate';
-  private const TRANSIENT_EXPIRATION = 120;
+  private const TRANSIENT_EXPIRATION = 120; // seconds
 
   /** @var SettingsController */
   private $settings;
