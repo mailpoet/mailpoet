@@ -2,9 +2,13 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\InvalidStateException;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Activator {
+  public const TRANSIENT_ACTIVATE_KEY = 'mailpoet_activator_activate';
+  private const TRANSIENT_EXPIRATION = 120;
 
   /** @var SettingsController */
   private $settings;
@@ -12,12 +16,27 @@ class Activator {
   /** @var Populator */
   private $populator;
 
-  public function __construct(SettingsController $settings, Populator $populator) {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(SettingsController $settings, Populator $populator, WPFunctions $wp) {
     $this->settings = $settings;
     $this->populator = $populator;
+    $this->wp = $wp;
   }
 
   public function activate() {
+    $isRunning = $this->wp->getTransient(self::TRANSIENT_ACTIVATE_KEY);
+    if ($isRunning === false) {
+      $this->wp->setTransient(self::TRANSIENT_ACTIVATE_KEY, '1', self::TRANSIENT_EXPIRATION);
+      $this->processActivate();
+      $this->wp->deleteTransient(self::TRANSIENT_ACTIVATE_KEY);
+    } else {
+      throw new InvalidStateException(__('MailPoet version update is in progress, please refresh the page in a minute.', 'mailpoet'));
+    }
+  }
+
+  private function processActivate(): void {
     $migrator = new Migrator();
     $migrator->up();
 
