@@ -62,44 +62,21 @@ class StatisticsOpensRepository extends Repository {
 
   public function recalculateSegmentScore(SegmentEntity $segment): void {
     $segment->setAverageEngagementScoreUpdatedAt(new \DateTimeImmutable());
-    $dateTime = (new Carbon())->subYear();
-    $newslettersSentCount = $this
-      ->entityManager
-      ->createQueryBuilder()
-      ->select('count(DISTINCT statisticsNewsletter.newsletter)')
-      ->from(StatisticsNewsletterEntity::class, 'statisticsNewsletter')
-      ->join('statisticsNewsletter.subscriber', 'subscriber')
-      ->join('subscriber.subscriberSegments', 'subscriberSegments')
-      ->where('subscriber.status = :subscribed')
-      ->andWhere('subscriberSegments.segment = :segment')
-      ->andWhere('subscriberSegments.status = :subscribed')
-      ->andWhere('subscriber.deletedAt IS NULL')
-      ->andWhere('subscriber.engagementScore IS NOT NULL')
-      ->andWhere('statisticsNewsletter.sentAt > :dateTime')
-      ->setParameter('segment', $segment)
-      ->setParameter('subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
-      ->setParameter('dateTime', $dateTime)
-      ->getQuery()
-      ->getSingleScalarResult();
-    if ($newslettersSentCount < 3) {
-      $this->entityManager->flush();
-      return;
-    }
     $avgScore = $this
       ->entityManager
       ->createQueryBuilder()
-      ->select('avg(DISTINCT subscriber.engagementScore)')
+      ->select('avg(subscriber.engagementScore)')
       ->from(SubscriberEntity::class, 'subscriber')
       ->join('subscriber.subscriberSegments', 'subscriberSegments')
       ->where('subscriberSegments.segment = :segment')
       ->andWhere('subscriber.status = :subscribed')
+      ->andWhere('subscriber.deletedAt IS NULL')
       ->andWhere('subscriberSegments.status = :subscribed')
-      ->andWhere('subscriber.engagementScore IS NOT NULL')
       ->setParameter('segment', $segment)
       ->setParameter('subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
       ->getQuery()
       ->getSingleScalarResult();
-    $segment->setAverageEngagementScore((float)$avgScore);
+    $segment->setAverageEngagementScore($avgScore === null ? $avgScore : (float)$avgScore);
     $this->entityManager->flush();
   }
 
