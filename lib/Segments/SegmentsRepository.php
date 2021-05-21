@@ -185,8 +185,8 @@ class SegmentsRepository extends Repository {
     return $rows;
   }
 
-  public function findByUpdatedScoreNotInLastMonth(int $limit): array {
-    $dateTime = (new Carbon())->subMonths(1);
+  public function findByUpdatedScoreNotInLastDay(int $limit): array {
+    $dateTime = (new Carbon())->subDay();
     return $this->entityManager->createQueryBuilder()
       ->select('s')
       ->from(SegmentEntity::class, 's')

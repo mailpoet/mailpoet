@@ -59,7 +59,7 @@ class SubscribersEngagementScore extends SimpleWorker {
   }
 
   private function recalculateSegments(): int {
-    $segments = $this->segmentsRepository->findByUpdatedScoreNotInLastMonth(self::BATCH_SIZE);
+    $segments = $this->segmentsRepository->findByUpdatedScoreNotInLastDay(self::BATCH_SIZE);
     foreach ($segments as $segment) {
       $this->statisticsOpensRepository->recalculateSegmentScore($segment);
     }
