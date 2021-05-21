@@ -52,3 +52,4 @@ import 'newsletter_editor/blocks/abandonedCartContent.js'; // side effect - call
 import 'newsletter_editor/blocks/social.js'; // side effect - calls App.on()
 import 'newsletter_editor/blocks/woocommerceContent.js'; // side effect - calls App.on()
 import 'newsletter_editor/blocks/woocommerceHeading.js'; // side effect - calls App.on()
+import 'newsletter_editor/blocks/unknownBlockFallback.js'; // side effect - calls App.on()
