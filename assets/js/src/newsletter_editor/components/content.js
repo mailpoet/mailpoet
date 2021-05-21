@@ -34,13 +34,13 @@ Module.getBlockTypeModel = function getBlockTypeModel(type) {
   if (type in Module._blockTypes) {
     return Module._blockTypes[type].blockModel;
   }
-  throw new Error('Block type not supported: ' + type);
+  return Module._blockTypes.unknownBlockFallback.blockModel;
 };
 Module.getBlockTypeView = function getBlockTypeView(type) {
   if (type in Module._blockTypes) {
     return Module._blockTypes[type].blockView;
   }
-  throw new Error('Block type not supported: ' + type);
+  return Module._blockTypes.unknownBlockFallback.blockView;
 };
 
 Module.getBody = function getBody() {

@@ -313,6 +313,14 @@
     'newsletter_editor_template_woocommerce_heading_widget',
     'newsletter/templates/blocks/woocommerceHeading/widget.hbs'
   ) %>
+  <%= partial(
+    'newsletter_editor_template_unknown_block_fallback_block',
+    'newsletter/templates/blocks/unknownBlockFallback/block.hbs'
+  ) %>
+  <%= partial(
+    'newsletter_editor_template_unknown_block_fallback_widget',
+    'newsletter/templates/blocks/unknownBlockFallback/widget.hbs'
+  ) %>
 <% endblock %>
 
 <% block content %>
@@ -688,6 +696,13 @@
       ),
       woocommerceHeadingInsertion: Handlebars.compile(
         jQuery('#newsletter_editor_template_woocommerce_heading_widget').html()
+      ),
+
+      unknownBlockFallbackBlock: Handlebars.compile(
+        jQuery('#newsletter_editor_template_unknown_block_fallback_block').html()
+      ),
+      unknownBlockFallbackInsertion: Handlebars.compile(
+        jQuery('#newsletter_editor_template_unknown_block_fallback_widget').html()
       ),
     };
 
