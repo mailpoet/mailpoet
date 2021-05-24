@@ -72,9 +72,9 @@ const stepsListingHeading = (
 };
 
 interface Props {
-  step: number;
-  emailType: string;
-  automationId: string;
+  step?: number;
+  emailType?: string;
+  automationId?: string;
   location: Location;
 }
 
