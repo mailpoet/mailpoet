@@ -82,6 +82,11 @@ class AutomatedLatestContent {
     }
     $parameters['tax_query'] = $this->constructTaxonomiesQuery($args);
 
+    // WP posts with the type attachment have always post_status `inherit`
+    if ($parameters['post_type'] === 'attachment' && $parameters['post_status'] === 'publish') {
+      $parameters['post_status'] = 'inherit';
+    }
+
     // This enables using posts query filters for get_posts, where by default
     // it is disabled.
     // However, it also enables other plugins and themes to hook in and alter
