@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.7
-Stable tag: 3.61.0
+Stable tag: 3.62.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,16 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.62.0 - 2021-05-24 =
+* Added: new segment for MailPoet's custom fields;
+* Improved: segment score calculation performance;
+* Improved: better customization of the opt-in checkbox in the registration form;
+* Fixed: Gutenberg form block to work with latest version of Gutenberg;
+* Fixed: low-probability double sending on high-traffic sites.
+* Fixed: failing to connect to DB when using non-standard port;
+* Fixed: plugin update from timing out on high-traffic sites. Thank you, Edda!
+* Fixed: pop-up form not showing on WooCommerce product page built using DIVI theme builder.
 
 = 3.61.0 - 2021-05-17 =
 * Added: visualize the average "Subscriber score" for an email list to help gauge engagement;
