@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 .mailpoet-form-select {
   height: auto;
   min-height: $form-control-height;
@@ -48,9 +50,9 @@
 
 .mailpoet-form-react-select__value-container {
   padding:
-    $form-control-spacing / 2
+    math.div($form-control-spacing, 2)
     $form-control-icon-small + 2 * $form-control-spacing
-    $form-control-spacing / 2
+    math.div($form-control-spacing, 2)
     $form-control-spacing * 2 !important;
 }
 

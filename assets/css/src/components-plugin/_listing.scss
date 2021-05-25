@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 // Fix for notice being above "Screen options" button
 .notice,
 .error {
@@ -91,7 +93,7 @@ div.mailpoet-listing-bulk-actions-container {
 }
 
 .mailpoet-listing-bulk-actions {
-  padding: ($grid-gap / 2) $grid-gap;
+  padding: math.div($grid-gap, 2) $grid-gap;
 
   a {
     color: red;
@@ -107,7 +109,7 @@ div.mailpoet-listing-bulk-actions-container {
 .mailpoet-listing-select-all {
   color: $color-tertiary;
   font-size: $font-size-small;
-  padding: ($grid-gap / 2) $grid-gap;
+  padding: math.div($grid-gap, 2) $grid-gap;
   text-align: right;
 
   a {

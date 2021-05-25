@@ -1,4 +1,6 @@
-$badge-fancy-border-width: $grid-gap-medium / 2;
+@use 'sass:math';
+
+$badge-fancy-border-width: math.div($grid-gap-medium, 2);
 
 .mailpoet-badge {
   background-color: $color-tertiary;

@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 $mailpoet-form-template-thumbnail-width: 480px;
 $mailpoet-form-template-thumbnail-height: 316px;
 
@@ -10,7 +12,7 @@ $mailpoet-form-template-thumbnail-height: 316px;
 
 .mailpoet-templates {
   @include formTemplatesGrid;
-  padding-bottom: $mailpoet-form-template-thumbnail-height / 3;
+  padding-bottom: math.div($mailpoet-form-template-thumbnail-height, 3);
   padding-top: $grid-gap-large;
 
   .mailpoet-categories {
@@ -21,12 +23,12 @@ $mailpoet-form-template-thumbnail-height: 316px;
 
 .mailpoet-form-template {
   height: $mailpoet-form-template-thumbnail-height + (2 * $grid-gap-large);
-  padding-bottom: ($grid-gap-half / 2);
+  padding-bottom: math.div($grid-gap-half, 2);
   width: $mailpoet-form-template-thumbnail-width + $grid-gap-half;
 
   .mailpoet-template-thumbnail {
     height: $mailpoet-form-template-thumbnail-height;
-    padding: ($grid-gap-half / 2) ($grid-gap-half / 2) 0;
+    padding: math.div($grid-gap-half, 2) math.div($grid-gap-half, 2) 0;
   }
 }
 
