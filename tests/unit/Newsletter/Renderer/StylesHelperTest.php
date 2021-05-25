@@ -66,4 +66,24 @@ class StylesHelperTest extends \MailPoetUnitTest {
     expect(StylesHelper::getCustomFontsLinks($stylesWithoutCustomFonts))
       ->equals('');
   }
+
+  public function testItAddsMsoStyles() {
+    $styles = [
+      "fontSize" => "16px",
+      "lineHeight" => "1",
+    ];
+    $styles = StylesHelper::setStyle($styles, '.mailpoet_paragraph');
+    expect($styles)->stringContainsString('mso-ansi-font-size:16px;');
+    expect($styles)->stringContainsString('mso-line-height-alt:16px;');
+
+    $styles = [
+      "fontSize" => "17px",
+      "lineHeight" => "1.1",
+    ];
+    $styles = StylesHelper::setStyle($styles, '.mailpoet_paragraph');
+    expect($styles)->stringContainsString('mso-ansi-font-size:18px;');
+    expect($styles)->stringContainsString('font-size:17px;');
+    expect($styles)->stringContainsString('line-height:18.7px;');
+    expect($styles)->stringContainsString('mso-line-height-alt:20px;');
+  }
 }

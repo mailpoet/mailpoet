@@ -16,6 +16,8 @@ class StylesHelper {
     'borderColor' => 'border-color',
     'borderRadius' => 'border-radius',
     'lineHeight' => 'line-height',
+    'msoLineHeightAlt' => 'mso-line-height-alt',
+    'msoFontSize' => 'mso-ansi-font-size',
   ];
   public static $font = [
     'Arial' => "Arial, 'Helvetica Neue', Helvetica, sans-serif",
@@ -147,7 +149,18 @@ class StylesHelper {
     if (!preg_match('/mailpoet_paragraph|h[1-4]/i', $selector)) return $style;
     $lineHeight = isset($style['lineHeight']) ? (float)$style['lineHeight'] : self::$defaultLineHeight;
     $fontSize = (int)$style['fontSize'];
+    $msoLineHeight = round($lineHeight * $fontSize);
+    if ($msoLineHeight % 2 === 1) {
+      $msoLineHeight++;
+    }
+    $msoFontSize = $fontSize;
+    if ($msoFontSize % 2 === 1) {
+      $msoFontSize++;
+    }
+    $style['msoLineHeightAlt'] = sprintf('%spx', $msoLineHeight);
+    $style = ['msoFontSize' => sprintf('%spx', $msoFontSize)] + $style;
     $style['lineHeight'] = sprintf('%spx', $lineHeight * $fontSize);
+
     return $style;
   }
 
