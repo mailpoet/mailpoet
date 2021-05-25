@@ -6,6 +6,9 @@ use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 class Renderer {
   public function render($contentBlock, $columnsData) {
+    if (is_null($contentBlock['blocks']) && isset($contentBlock['type'])) {
+      return "<!-- Skipped unsupported block type: {$contentBlock['type']} -->";
+    }
 
     $columnsCount = count($contentBlock['blocks']);
 

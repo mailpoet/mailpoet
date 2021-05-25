@@ -57,6 +57,9 @@ class Renderer {
   }
 
   public function render(NewsletterEntity $newsletter, $data) {
+    if (is_null($data['blocks']) && isset($data['type'])) {
+      return null;
+    }
     $columnCount = count($data['blocks']);
     $columnsLayout = isset($data['columnLayout']) ? $data['columnLayout'] : null;
     $columnWidths = ColumnsHelper::columnWidth($columnCount, $columnsLayout);
@@ -111,7 +114,7 @@ class Renderer {
       case 'text':
         return $this->text->render($block);
     }
-    return '';
+    return "<!-- Skipped unsupported block type: {$block['type']} -->";
   }
 
   public function processAutomatedLatestContent(NewsletterEntity $newsletter, $args, $columnBaseWidth) {
