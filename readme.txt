@@ -184,7 +184,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 3.62.0 - 2021-05-24 =
+= 3.62.0 - 2021-05-25 =
 * Added: new segment for MailPoet's custom fields;
 * Improved: segment score calculation performance;
 * Improved: better customization of the opt-in checkbox in the registration form;
@@ -192,7 +192,6 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 * Fixed: low-probability double sending on high-traffic sites.
 * Fixed: failing to connect to DB when using non-standard port;
 * Fixed: plugin update from timing out on high-traffic sites. Thank you, Edda!
-* Fixed: pop-up form not showing on WooCommerce product page built using DIVI theme builder.
 
 = 3.61.0 - 2021-05-17 =
 * Added: visualize the average "Subscriber score" for an email list to help gauge engagement;
