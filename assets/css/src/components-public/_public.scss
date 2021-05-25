@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 $form-break-small-width: 500px;
 $form-block-margin: 20px;
 $form-columns-with-background-padding: 10px;
@@ -424,7 +426,7 @@ div.mailpoet_form_slide_in.active {
   @include breakpoint-max-width($form-break-small-width - 1) {
     font-size: $form-mobile-low-level-heading-font-size !important;
     line-height: $form-line-height !important;
-    margin: $form-mobile-low-level-heading-font-size * ($form-line-height / 2) 0 !important;
+    margin: $form-mobile-low-level-heading-font-size * math.div($form-line-height, 2) 0 !important;
   }
 }
 
@@ -432,7 +434,7 @@ h1.mailpoet-heading {
   @include breakpoint-max-width($form-break-small-width - 1) {
     font-size: $form-mobile-level1-heading-font-size !important;
     line-height: $form-line-height !important;
-    margin: $form-mobile-level1-heading-font-size * ($form-line-height / 2) 0 !important;
+    margin: $form-mobile-level1-heading-font-size * math.div($form-line-height, 2) 0 !important;
   }
 }
 
@@ -440,7 +442,7 @@ h2.mailpoet-heading {
   @include breakpoint-max-width($form-break-small-width - 1) {
     font-size: $form-mobile-level2-heading-font-size !important;
     line-height: $form-line-height !important;
-    margin: $form-mobile-level2-heading-font-size * ($form-line-height / 2) 0 !important;
+    margin: $form-mobile-level2-heading-font-size * math.div($form-line-height, 2) 0 !important;
   }
 
   &:before {

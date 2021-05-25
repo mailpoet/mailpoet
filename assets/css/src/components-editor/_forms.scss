@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 input.mailpoet_color {
   width: 5em;
 }
@@ -65,7 +67,7 @@ select.mailpoet_font-size {
     border-radius: $range-border-radius;
     cursor: pointer;
     height: $range-thumb-height;
-    margin-top: -1 * $range-thumb-height / 3;
+    margin-top: -1 * math.div($range-thumb-height, 3);
     width: $range-thumb-width;
   }
 

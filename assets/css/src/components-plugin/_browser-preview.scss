@@ -1,7 +1,9 @@
+@use 'sass:math';
+
 .mailpoet_browser_preview_toggle {
   flex: 0 1 auto;
   height: 34px;
-  padding-bottom: $grid-gap / 2;
+  padding-bottom: math.div($grid-gap, 2);
   text-align: center;
   width: 100%;
 }

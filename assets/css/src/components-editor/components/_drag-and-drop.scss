@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 .mailpoet_drop_marker {
   background-color: $color-primary;
   box-shadow: 0 0 1px 0 $color-primary;
@@ -28,7 +30,7 @@
 .mailpoet_drop_marker.mailpoet_drop_marker_middle,
 .mailpoet_drop_marker.mailpoet_drop_marker_first.mailpoet_drop_marker_after,
 .mailpoet_drop_marker.mailpoet_drop_marker_last.mailpoet_drop_marker_before {
-  margin-top: -1 * ($editor-dnd-drop-size / 2);
+  margin-top: -1 * math.div($editor-dnd-drop-size, 2);
 }
 
 .mailpoet_drop_marker.mailpoet_drop_marker_last.mailpoet_drop_marker_after {

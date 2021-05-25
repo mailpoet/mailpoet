@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 .mailpoet-form-toggle {
   cursor: pointer;
   display: inline-block;
@@ -16,7 +18,7 @@
 .mailpoet-form-toggle-control {
   background: $color-input-background;
   border: 1px solid $color-input-border;
-  border-radius: $form-control-choice-height / 2;
+  border-radius: math.div($form-control-choice-height, 2);
   box-sizing: border-box;
   height: 100%;
   left: 0;
@@ -28,7 +30,7 @@
   &:after {
     background: #fff;
     border: 1px solid $color-input-border;
-    border-radius: $form-control-choice-height / 2;
+    border-radius: math.div($form-control-choice-height, 2);
     box-shadow: 0 4px 8px rgba(#dcdcdc, .5);
     box-sizing: border-box;
     content: '';
