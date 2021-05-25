@@ -112,6 +112,7 @@ class SendingQueue extends Model {
     return (Helpers::isJson($this->meta) && is_string($this->meta)) ? json_decode($this->meta, true) : $this->meta;
   }
 
+  /** @deprecated \MailPoet\Newsletter\Sending\SendingQueuesRepository::isSubscriberProcessed */
   public function isSubscriberProcessed($subscriberId) {
     if (!empty($this->subscribers)
       && ScheduledTaskSubscriber::getTotalCount($this->taskId) === 0

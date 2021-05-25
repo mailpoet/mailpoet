@@ -20,6 +20,7 @@ class Subscribers {
     return ScheduledTaskSubscriber::where('task_id', $this->task->id);
   }
 
+  /** @deprecated \MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository::isSubscriberProcessed */
   public function isSubscriberProcessed($subscriberId) {
     $subscriber = $this->getSubscribers()
       ->where('subscriber_id', $subscriberId)
