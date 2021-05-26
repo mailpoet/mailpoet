@@ -110,10 +110,7 @@ class Track {
       return $data;
     }
     // check if the newsletter was sent to the subscriber
-    $queue = SendingQueue::findOne($data->queue_id); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    if (!$queue instanceof SendingQueue) return false;
-
-    return ($queue->isSubscriberProcessed($data->subscriber->getId())) ?
+    return ($this->sendingQueuesRepository->isSubscriberProcessed($data->queue, $data->subscriber)) ?
       $data :
       false;
   }

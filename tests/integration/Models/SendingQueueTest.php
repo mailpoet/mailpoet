@@ -26,23 +26,6 @@ class SendingQueueTest extends \MailPoetTest {
     ];
   }
 
-  public function testItChecksProcessedSubscribersForOldQueues() {
-    $subscriberId = 123;
-    expect($this->queue->isSubscriberProcessed($subscriberId))->false();
-    $this->queue->subscribers = ['processed' => [$subscriberId]];
-    expect($this->queue->isSubscriberProcessed($subscriberId))->true();
-  }
-
-  public function testItChecksProcessedSubscribersForNewQueues() {
-    $subscriberId = 123;
-    $queue = SendingTask::create();
-    $queue->setSubscribers([$subscriberId]);
-    $queue->save();
-    expect($queue->isSubscriberProcessed($subscriberId))->false();
-    $queue->updateProcessedSubscribers([$subscriberId]);
-    expect($queue->isSubscriberProcessed($subscriberId))->true();
-  }
-
   public function testItReadsSerializedRenderedNewsletterBody() {
     $queue = $this->queue;
     $data = [
