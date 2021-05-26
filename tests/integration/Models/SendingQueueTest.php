@@ -5,7 +5,6 @@ namespace MailPoet\Test\Models;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Idiorm\ORM;
 

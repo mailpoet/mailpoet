@@ -5,7 +5,6 @@ namespace MailPoet\Router\Endpoints;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
