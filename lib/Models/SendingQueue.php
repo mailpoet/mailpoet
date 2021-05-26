@@ -112,23 +112,6 @@ class SendingQueue extends Model {
     return (Helpers::isJson($this->meta) && is_string($this->meta)) ? json_decode($this->meta, true) : $this->meta;
   }
 
-  /** @deprecated \MailPoet\Newsletter\Sending\SendingQueuesRepository::isSubscriberProcessed */
-  public function isSubscriberProcessed($subscriberId) {
-    if (!empty($this->subscribers)
-      && ScheduledTaskSubscriber::getTotalCount($this->taskId) === 0
-    ) {
-      $subscribers = $this->getSubscribers();
-      return in_array($subscriberId, $subscribers['processed']);
-    } else {
-      $task = $this->task()->findOne();
-      if ($task) {
-        $taskSubscribers = new TaskSubscribers($task);
-        return $taskSubscribers->isSubscriberProcessed($subscriberId);
-      }
-      return false;
-    }
-  }
-
   public function asArray() {
     $model = parent::asArray();
     $model['newsletter_rendered_body'] = $this->getNewsletterRenderedBody();
