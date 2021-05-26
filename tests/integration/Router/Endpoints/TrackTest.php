@@ -13,6 +13,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -106,6 +107,7 @@ class TrackTest extends \MailPoetTest {
     $this->entityManager->flush();
     $track = Stub::make(Track::class, [
       'linkTokens' => new LinkTokens,
+      'sendingQueuesRepository' => $this->diContainer->get(SendingQueuesRepository::class),
       'terminate' => function($code) {
         expect($code)->equals(403);
       },
@@ -131,6 +133,7 @@ class TrackTest extends \MailPoetTest {
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
     $data->subscriber->setId($subscriber->getId());
+    $data->subscriber = $subscriber;
     expect($this->track->_validateTrackData($data))->false();
   }
 

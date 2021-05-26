@@ -73,11 +73,10 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     $newsletter = new NewsletterEntity();
     $newsletter->setType('type');
     $newsletter->setSubject('Subject');
-    $this->newsletter = $newsletter;
     $this->entityManager->persist($newsletter);
 
     $queue = new SendingQueueEntity();
-    $queue->setNewsletter($this->newsletter);
+    $queue->setNewsletter($newsletter);
     $queue->setTask($task);
     $this->entityManager->persist($queue);
 

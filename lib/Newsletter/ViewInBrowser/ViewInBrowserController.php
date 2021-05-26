@@ -2,9 +2,10 @@
 
 namespace MailPoet\Newsletter\ViewInBrowser;
 
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -19,14 +20,19 @@ class ViewInBrowserController {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   public function __construct(
     LinkTokens $linkTokens,
     ViewInBrowserRenderer $viewInBrowserRenderer,
+    SendingQueuesRepository $sendingQueuesRepository,
     SubscribersRepository $subscribersRepository
   ) {
     $this->linkTokens = $linkTokens;
     $this->viewInBrowserRenderer = $viewInBrowserRenderer;
     $this->subscribersRepository = $subscribersRepository;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
   }
 
   public function view(array $data) {
@@ -43,7 +49,7 @@ class ViewInBrowserController {
 
     // if queue and subscriber exist, subscriber must have received the newsletter
     $queue = $this->getQueue($newsletter, $data);
-    if (!$isPreview && $queue && $subscriber && !$queue->isSubscriberProcessed($subscriber->getId())) {
+    if (!$isPreview && $queue && $subscriber && !$this->sendingQueuesRepository->isSubscriberProcessed($queue, $subscriber)) {
       throw new \InvalidArgumentException("Subscriber did not receive the newsletter yet");
     }
 
@@ -95,7 +101,7 @@ class ViewInBrowserController {
     return $subscriber;
   }
 
-  private function getQueue(Newsletter $newsletter, array $data) {
+  private function getQueue(Newsletter $newsletter, array $data): ?SendingQueueEntity {
     // queue is optional; try to find it if it's not defined and this is not a welcome email
     if ($newsletter->type === Newsletter::TYPE_WELCOME) {
       return null;
@@ -106,10 +112,8 @@ class ViewInBrowserController {
       return null;
     }
 
-    $queue = !empty($data['queue_id'])
-      ? SendingQueue::findOne($data['queue_id'])
-      : SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
-
-    return $queue ?: null;
+    return !empty($data['queue_id'])
+      ? $this->sendingQueuesRepository->findOneById($data['queue_id'])
+      : $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter->id]);
   }
 }

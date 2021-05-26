@@ -3,6 +3,10 @@
 namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub\Expected;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
@@ -11,6 +15,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
@@ -165,22 +170,26 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Renderer::class)
     );
+    /** @var SendingQueuesRepository $sendingQueueRepository */
+    $sendingQueueRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $renderedBody = $viewInBrowser->render(
       $preview = false,
       $this->newsletter,
       $this->subscriber,
-      $this->sendingTask->queue()
+      $sendingQueueRepository->findOneById($this->sendingTask->queue()->id)
     );
     expect($renderedBody)->regExp('/Newsletter from queue/');
   }
 
   public function testItConvertsShortcodes() {
+    /** @var SendingQueuesRepository $sendingQueueRepository */
+    $sendingQueueRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->settings->set('tracking.enabled', false);
     $renderedBody = $this->viewInBrowserRenderer->render(
       $preview = false,
       $this->newsletter,
       $this->subscriber,
-      $this->sendingTask->queue()
+      $sendingQueueRepository->findOneById($this->sendingTask->queue()->id)
     );
     expect($renderedBody)->stringContainsString('Hello, First');
     expect($renderedBody)->stringContainsString(Router::NAME . '&endpoint=view_in_browser');
@@ -188,8 +197,11 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
 
   public function testItRewritesLinksToRouterEndpointWhenTrackingIsEnabled() {
     $this->settings->set('tracking.enabled', true);
-    $queue = $this->sendingTask->queue();
-    $queue->newsletterRenderedBody = $this->queueRenderedNewsletterWithTracking;
+    /** @var SendingQueuesRepository $sendingQueueRepository */
+    $sendingQueueRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $queue = $sendingQueueRepository->findOneById($this->sendingTask->queue()->id);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $queue->setNewsletterRenderedBody($this->queueRenderedNewsletterWithTracking);
     $renderedBody = $this->viewInBrowserRenderer->render(
       $preview = false,
       $this->newsletter,
@@ -200,8 +212,11 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
   }
 
   public function testItConvertsHashedLinksToUrlsWhenPreviewIsEnabledAndNewsletterWasSent() {
-    $queue = $this->sendingTask->queue();
-    $queue->newsletterRenderedBody = $this->queueRenderedNewsletterWithTracking;
+    /** @var SendingQueuesRepository $sendingQueueRepository */
+    $sendingQueueRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $queue = $sendingQueueRepository->findOneById($this->sendingTask->queue()->id);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $queue->setNewsletterRenderedBody($this->queueRenderedNewsletterWithTracking);
     $renderedBody = $this->viewInBrowserRenderer->render(
       $preview = true,
       $this->newsletter,
@@ -214,8 +229,11 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
   }
 
   public function testRemovesOpenTrackingTagWhenPreviewIsEnabledAndNewsletterWasSent() {
-    $queue = $this->sendingTask->queue();
-    $queue->newsletterRenderedBody = $this->queueRenderedNewsletterWithTracking;
+    /** @var SendingQueuesRepository $sendingQueueRepository */
+    $sendingQueueRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $queue = $sendingQueueRepository->findOneById($this->sendingTask->queue()->id);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $queue->setNewsletterRenderedBody($this->queueRenderedNewsletterWithTracking);
     $renderedBody = $this->viewInBrowserRenderer->render(
       $preview = true,
       $this->newsletter,
@@ -228,10 +246,10 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(NewsletterLinkEntity::class);
   }
 }
