@@ -125,6 +125,7 @@ class SMTP {
     if (!empty($newsletter['body']['text'])) {
       $message = $message->addPart($newsletter['body']['text'], 'text/plain');
     }
+    $message = $this->wp->applyFilters('mailpoet_mailer_smtp_message', $message, $newsletter, $subscriber, $extraParams);
     return $message;
   }
 
