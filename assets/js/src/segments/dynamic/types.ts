@@ -21,6 +21,11 @@ export enum SubscriberActionTypes {
   SUBSCRIBED_DATE = 'subscribedDate',
 }
 
+export type GroupFilterValue = {
+  label: string;
+  options: FilterValue[];
+}
+
 export interface SelectOption {
   value: string;
   label: string;

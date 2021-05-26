@@ -11,7 +11,7 @@ import SegmentList from 'segments/list.jsx';
 import SegmentForm from 'segments/form.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
-import DynamicSegmentForm from './dynamic/form';
+import DynamicSegmentForm from './dynamic/dynamic_segments_form';
 import DynamicSegmentList from './dynamic/list.jsx';
 import ListHeading from './heading';
 
