@@ -10,9 +10,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -22,7 +19,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Emoji;
-use MailPoetVendor\Idiorm\ORM;
 
 class ViewInBrowserRendererTest extends \MailPoetTest {
   /** @var SettingsController */
