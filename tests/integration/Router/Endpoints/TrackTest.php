@@ -132,7 +132,6 @@ class TrackTest extends \MailPoetTest {
     $subscriber->setLinkToken($this->subscriber->getLinkToken());
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
-    $data->subscriber->setId($subscriber->getId());
     $data->subscriber = $subscriber;
     expect($this->track->_validateTrackData($data))->false();
   }
