@@ -1,11 +1,11 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
+import { useSelect } from '@wordpress/data';
 
 import {
   EmailActionTypes,
   EmailFormItem,
-  OnFilterChange,
-  SegmentTypes,
+  SegmentTypes, WordpressRoleFormItem,
 } from '../types';
 
 import { EmailStatisticsFields } from './email_statistics';
@@ -43,11 +43,6 @@ export function validateEmail(formItems: EmailFormItem): boolean {
   );
 }
 
-interface Props {
-  onChange: OnFilterChange;
-  item: EmailFormItem;
-}
-
 const componentsMap = {
   [EmailActionTypes.OPENS_ABSOLUTE_COUNT]: EmailOpensAbsoluteCountFields,
   [EmailActionTypes.CLICKED]: EmailStatisticsFields,
@@ -57,15 +52,17 @@ const componentsMap = {
   [EmailActionTypes.CLICKED_ANY]: null,
 };
 
-export const EmailFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
-  const Component = componentsMap[item.action];
+export const EmailFields: React.FunctionComponent = () => {
+  const segment: WordpressRoleFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
+
+  const Component = componentsMap[segment.action];
 
   if (!Component) return null;
 
   return (
-    <Component
-      item={item}
-      onChange={onChange}
-    />
+    <Component />
   );
 };

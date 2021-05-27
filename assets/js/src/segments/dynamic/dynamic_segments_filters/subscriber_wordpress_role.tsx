@@ -1,23 +1,24 @@
 import React from 'react';
-import { assign, compose, find } from 'lodash/fp';
+import { find } from 'lodash/fp';
 import MailPoet from 'mailpoet';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import Select from 'common/form/react_select/react_select';
 
 import {
   WordpressRoleFormItem,
-  OnFilterChange,
   SelectOption,
   WindowEditableRoles,
 } from '../types';
 
-interface Props {
-  onChange: OnFilterChange;
-  item: WordpressRoleFormItem;
-}
+export const WordpressRoleFields: React.FunctionComponent = () => {
+  const segment: WordpressRoleFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
 
-export const WordpressRoleFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
+  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+
   const wordpressRoles: WindowEditableRoles = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getWordpressRoles(),
     []
@@ -35,16 +36,15 @@ export const WordpressRoleFields: React.FunctionComponent<Props> = ({ onChange, 
       value={
         find(
           (option) => {
-            if (!item.wordpressRole) return undefined;
-            return item.wordpressRole.toLowerCase() === option.value.toLowerCase();
+            if (!segment.wordpressRole) return undefined;
+            return segment.wordpressRole.toLowerCase() === option.value.toLowerCase();
           },
           options
         )
       }
-      onChange={(option: SelectOption): void => compose([
-        onChange,
-        assign(item),
-      ])({ wordpressRole: option.value })}
+      onChange={(option: SelectOption): void => {
+        updateSegment({ wordpressRole: option.value });
+      }}
       automationId="segment-wordpress-role"
     />
   );

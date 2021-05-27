@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import MailPoet from 'mailpoet';
-import { assign, compose, find } from 'lodash/fp';
+import { find } from 'lodash/fp';
 import ReactSelect from 'common/form/react_select/react_select';
 import Select from 'common/form/select/select';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import { Grid } from 'common/grid';
 import Input from 'common/form/input/input';
 import {
-  OnFilterChange,
   SegmentTypes,
   SelectOption,
   WindowProductCategories,
@@ -64,12 +63,14 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   return true;
 }
 
-interface Props {
-  onChange: OnFilterChange;
-  item: WooCommerceFormItem;
-}
+export const WooCommerceFields: React.FunctionComponent = () => {
+  const segment: WooCommerceFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
 
-export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
+  const { updateSegment, updateSegmentFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
+
   const productCategories: WindowProductCategories = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getProductCategories(),
     []
@@ -105,61 +106,54 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
 
   useEffect(() => {
     if (
-      item.number_of_orders_type === undefined
-      && item.action === WooCommerceActionTypes.NUMBER_OF_ORDERS
+      segment.number_of_orders_type === undefined
+      && segment.action === WooCommerceActionTypes.NUMBER_OF_ORDERS
     ) {
-      onChange(assign(item, { number_of_orders_type: '=' }));
+      updateSegment({ number_of_orders_type: '=' });
     }
     if (
-      item.total_spent_type === undefined
-      && item.action === WooCommerceActionTypes.TOTAL_SPENT
+      segment.total_spent_type === undefined
+      && segment.action === WooCommerceActionTypes.TOTAL_SPENT
     ) {
-      onChange(assign(item, { total_spent_type: '>' }));
+      updateSegment({ total_spent_type: '>' });
     }
-  }, [onChange, item]);
+  }, [updateSegment, segment]);
 
-  if (item.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
+  if (segment.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
     optionFields = (
       <ReactSelect
         key="select-segment-product"
         isFullWidth
         placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
         options={productOptions}
-        value={find(['value', item.product_id], productOptions)}
-        onChange={(option: SelectOption): void => compose([
-          onChange,
-          assign(item),
-        ])({ product_id: option.value })}
+        value={find(['value', segment.product_id], productOptions)}
+        onChange={(option: SelectOption): void => updateSegment({ product_id: option.value })}
         automationId="select-segment-product"
       />
     );
-  } else if (item.action === WooCommerceActionTypes.PURCHASED_CATEGORY) {
+  } else if (segment.action === WooCommerceActionTypes.PURCHASED_CATEGORY) {
     optionFields = (
       <ReactSelect
         key="select-segment-category"
         isFullWidth
         placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
         options={categoryOptions}
-        value={find(['value', item.category_id], categoryOptions)}
-        onChange={(option: SelectOption): void => compose([
-          onChange,
-          assign(item),
-        ])({ category_id: option.value })}
+        value={find(['value', segment.category_id], categoryOptions)}
+        onChange={(option: SelectOption): void => updateSegment({ category_id: option.value })}
         automationId="select-segment-category"
       />
     );
-  } else if (item.action === WooCommerceActionTypes.NUMBER_OF_ORDERS) {
+  } else if (segment.action === WooCommerceActionTypes.NUMBER_OF_ORDERS) {
     optionFields = (
       <div>
         <div className="mailpoet-gap" />
         <Grid.CenteredRow className="mailpoet-form-field">
           <Select
             key="select"
-            value={item.number_of_orders_type}
-            onChange={(e): void => compose([
-              onChange,
-              assign(item),
-            ])({ number_of_orders_type: e.target.value })}
+            value={segment.number_of_orders_type}
+            onChange={(e): void => {
+              updateSegmentFromEvent('number_of_orders_type', e);
+            }}
             automationId="select-number-of-orders-type"
           >
             <option value="=">{MailPoet.I18n.t('equal')}</option>
@@ -170,12 +164,11 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
             data-automation-id="input-number-of-orders-count"
             type="number"
             min={0}
-            value={item.number_of_orders_count || ''}
+            value={segment.number_of_orders_count || ''}
             placeholder={MailPoet.I18n.t('wooNumberOfOrdersCount')}
-            onChange={(event): void => compose([
-              onChange,
-              assign(item),
-            ])({ number_of_orders_count: event.target.value })}
+            onChange={(e): void => {
+              updateSegmentFromEvent('number_of_orders_count', e);
+            }}
           />
           <div>{MailPoet.I18n.t('wooNumberOfOrdersOrders')}</div>
         </Grid.CenteredRow>
@@ -186,29 +179,27 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
             data-automation-id="input-number-of-orders-days"
             type="number"
             min={1}
-            value={item.number_of_orders_days || ''}
+            value={segment.number_of_orders_days || ''}
             placeholder={MailPoet.I18n.t('daysPlaceholder')}
-            onChange={(event): void => compose([
-              onChange,
-              assign(item),
-            ])({ number_of_orders_days: event.target.value })}
+            onChange={(e): void => {
+              updateSegmentFromEvent('number_of_orders_days', e);
+            }}
           />
           <div>{MailPoet.I18n.t('days')}</div>
         </Grid.CenteredRow>
       </div>
     );
-  } else if (item.action === WooCommerceActionTypes.TOTAL_SPENT) {
+  } else if (segment.action === WooCommerceActionTypes.TOTAL_SPENT) {
     optionFields = (
       <div>
         <div className="mailpoet-gap" />
         <Grid.CenteredRow className="mailpoet-form-field">
           <Select
             key="select"
-            value={item.total_spent_type}
-            onChange={(e): void => compose([
-              onChange,
-              assign(item),
-            ])({ total_spent_type: e.target.value })}
+            value={segment.total_spent_type}
+            onChange={(e): void => {
+              updateSegmentFromEvent('total_spent_type', e);
+            }}
             automationId="select-total-spent-type"
           >
             <option value=">">{MailPoet.I18n.t('moreThan')}</option>
@@ -219,12 +210,11 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
             type="number"
             min={0}
             step={0.01}
-            value={item.total_spent_amount || ''}
+            value={segment.total_spent_amount || ''}
             placeholder={MailPoet.I18n.t('wooTotalSpentAmount')}
-            onChange={(event): void => compose([
-              onChange,
-              assign(item),
-            ])({ total_spent_amount: event.target.value })}
+            onChange={(e): void => {
+              updateSegmentFromEvent('total_spent_amount', e);
+            }}
           />
           <div>{wooCurrencySymbol}</div>
         </Grid.CenteredRow>
@@ -235,29 +225,25 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
             data-automation-id="input-total-spent-days"
             type="number"
             min={1}
-            value={item.total_spent_days || ''}
+            value={segment.total_spent_days || ''}
             placeholder={MailPoet.I18n.t('daysPlaceholder')}
-            onChange={(event): void => compose([
-              onChange,
-              assign(item),
-            ])({ total_spent_days: event.target.value })}
+            onChange={(e): void => {
+              updateSegmentFromEvent('total_spent_days', e);
+            }}
           />
           <div>{MailPoet.I18n.t('days')}</div>
         </Grid.CenteredRow>
       </div>
     );
-  } else if (item.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY) {
+  } else if (segment.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY) {
     optionFields = (
       <ReactSelect
         key="select-segment-country"
         isFullWidth
         placeholder={MailPoet.I18n.t('selectWooCountry')}
         options={countryOptions}
-        value={find(['value', item.country_code], countryOptions)}
-        onChange={(option: SelectOption): void => compose([
-          onChange,
-          assign(item),
-        ])({ country_code: option.value })}
+        value={find(['value', segment.country_code], countryOptions)}
+        onChange={(option: SelectOption): void => updateSegment({ country_code: option.value })}
         automationId="select-segment-country"
       />
     );

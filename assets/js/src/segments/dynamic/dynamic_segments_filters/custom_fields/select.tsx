@@ -1,24 +1,17 @@
 import React from 'react';
 import {
-  assign,
   find,
 } from 'lodash/fp';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';
 import ReactSelect from 'common/form/react_select/react_select';
 
 import {
   WordpressRoleFormItem,
-  OnFilterChange,
   SelectOption,
   WindowCustomFields,
 } from '../../types';
-
-interface Props {
-  onChange: OnFilterChange;
-  item: WordpressRoleFormItem;
-}
 
 interface ParamsType {
   values?: {
@@ -33,12 +26,19 @@ export function validateRadioSelect(item: WordpressRoleFormItem): boolean {
   );
 }
 
-export const RadioSelect: React.FunctionComponent<Props> = ({ onChange, item }) => {
+export const RadioSelect: React.FunctionComponent = () => {
+  const segment: WordpressRoleFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
+
+  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+
   const customFieldsList: WindowCustomFields = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getCustomFieldsList(),
     []
   );
-  const customField = find({ id: Number(item.custom_field_id) }, customFieldsList);
+  const customField = find({ id: Number(segment.custom_field_id) }, customFieldsList);
   if (!customField) return null;
   const params = (customField.params as ParamsType);
   if (!params || !Array.isArray(params.values)) return null;
@@ -56,12 +56,10 @@ export const RadioSelect: React.FunctionComponent<Props> = ({ onChange, item }) 
         placeholder={MailPoet.I18n.t('selectValue')}
         options={options}
         value={
-          item.value ? { value: item.value, label: item.value } : null
+          segment.value ? { value: segment.value, label: segment.value } : null
         }
         onChange={(option: SelectOption): void => {
-          onChange(
-            assign(item, { value: option.value, operator: 'equals' })
-          );
+          updateSegment({ value: option.value, operator: 'equals' });
         }}
         automationId="segment-wordpress-role"
       />

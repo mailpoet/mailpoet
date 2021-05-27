@@ -1,51 +1,38 @@
 import React, { useEffect } from 'react';
-import {
-  __,
-  assign,
-  compose,
-  get,
-  set,
-} from 'lodash/fp';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';
 import Select from 'common/form/select/select';
 
 import {
   WordpressRoleFormItem,
-  OnFilterChange,
 } from '../../types';
-
-interface Props {
-  onChange: OnFilterChange;
-  item: WordpressRoleFormItem;
-}
 
 export function validateCheckbox(item: WordpressRoleFormItem): boolean {
   return ((item.value === '1') || (item.value === '0'));
 }
 
-export const Checkbox: React.FunctionComponent<Props> = ({ onChange, item }) => {
+export const Checkbox: React.FunctionComponent = () => {
+  const segment: WordpressRoleFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
+
+  const { updateSegmentFromEvent, updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+
   useEffect(() => {
-    if ((item.value !== '1') && (item.value !== '0')) {
-      onChange(
-        assign(item, { operator: 'equals', value: '1' })
-      );
+    if ((segment.value !== '1') && (segment.value !== '0')) {
+      updateSegment({ operator: 'equals', value: '1' });
     }
-  }, [onChange, item]);
+  }, [updateSegment, segment]);
 
   return (
     <>
       <div className="mailpoet-gap" />
       <Select
         key="select"
-        value={item.value}
-        onChange={compose([
-          onChange,
-          assign(item),
-          set('value', __, {}),
-          get('value'),
-          get('target'),
-        ])}
+        value={segment.value}
+        onChange={(e) => updateSegmentFromEvent('value', e)}
       >
         <option value="1">{MailPoet.I18n.t('checked')}</option>
         <option value="0">{MailPoet.I18n.t('unchecked')}</option>

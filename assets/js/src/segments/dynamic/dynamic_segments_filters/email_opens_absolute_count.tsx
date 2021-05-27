@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import ReactStringReplace from 'react-string-replace';
-import { assign, compose } from 'lodash/fp';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import { Grid } from 'common/grid';
 import Select from 'common/form/select/select';
@@ -9,13 +9,7 @@ import MailPoet from 'mailpoet';
 
 import {
   EmailFormItem,
-  OnFilterChange,
 } from '../types';
-
-interface Props {
-  onChange: OnFilterChange;
-  item: EmailFormItem;
-}
 
 function replaceElementsInDaysSentence(fn): JSX.Element[] {
   return MailPoet.I18n.t('emailActionOpensDaysSentence')
@@ -23,15 +17,18 @@ function replaceElementsInDaysSentence(fn): JSX.Element[] {
     .map(fn);
 }
 
-export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
-  onChange,
-  item,
-}) => {
+export const EmailOpensAbsoluteCountFields: React.FunctionComponent = () => {
+  const segment: EmailFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
+
+  const { updateSegment, updateSegmentFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
   useEffect(() => {
-    if (item.operator === undefined) {
-      onChange(assign(item, { operator: 'more' }));
+    if (segment.operator === undefined) {
+      updateSegment({ operator: 'more' });
     }
-  }, [onChange, item]);
+  }, [updateSegment, segment]);
 
   return (
     <>
@@ -46,11 +43,10 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
               return (
                 <Select
                   key="select"
-                  value={item.operator}
-                  onChange={(e): void => compose([
-                    onChange,
-                    assign(item),
-                  ])({ operator: e.target.value })}
+                  value={segment.operator}
+                  onChange={(e) => {
+                    updateSegmentFromEvent('operator', e);
+                  }}
                 >
                   <option value="more">{MailPoet.I18n.t('moreThan')}</option>
                   <option value="less">{MailPoet.I18n.t('lessThan')}</option>
@@ -62,12 +58,11 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
                 <Input
                   key="input"
                   type="number"
-                  value={item.opens}
+                  value={segment.opens}
                   data-automation-id="segment-number-of-opens"
-                  onChange={(e): void => compose([
-                    onChange,
-                    assign(item),
-                  ])({ opens: e.target.value })}
+                  onChange={(e) => {
+                    updateSegmentFromEvent('opens', e);
+                  }}
                   min="0"
                   placeholder={MailPoet.I18n.t('emailActionOpens')}
                 />
@@ -93,12 +88,11 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({
                 <Input
                   key="input"
                   type="number"
-                  value={item.days}
+                  value={segment.days}
                   data-automation-id="segment-number-of-days"
-                  onChange={(e): void => compose([
-                    onChange,
-                    assign(item),
-                  ])({ days: e.target.value })}
+                  onChange={(e) => {
+                    updateSegmentFromEvent('days', e);
+                  }}
                   min="0"
                   placeholder={MailPoet.I18n.t('emailActionDays')}
                 />

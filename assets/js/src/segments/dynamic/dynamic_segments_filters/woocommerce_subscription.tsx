@@ -1,12 +1,11 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import { assign, compose, find } from 'lodash/fp';
-import { useSelect } from '@wordpress/data';
+import { find } from 'lodash/fp';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import Select from 'common/form/react_select/react_select';
 
 import {
-  OnFilterChange,
   SegmentTypes,
   SelectOption,
   WindowSubscriptionProducts,
@@ -33,14 +32,14 @@ export function validateWooCommerceSubscription(
   return true;
 }
 
-interface Props {
-  onChange: OnFilterChange;
-  item: WooCommerceSubscriptionFormItem;
-}
+export const WooCommerceSubscriptionFields: React.FunctionComponent = () => {
+  const segment: WooCommerceSubscriptionFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
 
-export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = (
-  { onChange, item }
-) => {
+  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+
   const subscriptionProducts: WindowSubscriptionProducts = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSubscriptionProducts(),
     []
@@ -57,11 +56,10 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = (
         placeholder={MailPoet.I18n.t('selectWooSubscription')}
         automationId="segment-woo-subscription-action"
         options={productOptions}
-        value={find(['value', item.product_id], productOptions)}
-        onChange={(option: SelectOption): void => compose([
-          onChange,
-          assign(item),
-        ])({ product_id: option.value })}
+        value={find(['value', segment.product_id], productOptions)}
+        onChange={(option: SelectOption): void => {
+          updateSegment({ product_id: option.value });
+        }}
       />
     </>
   );

@@ -1,10 +1,10 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
+import { useSelect } from '@wordpress/data';
 
 import {
   SegmentTypes,
   WordpressRoleFormItem,
-  OnFilterChange,
   SubscriberActionTypes,
 } from '../types';
 import { WordpressRoleFields } from './subscriber_wordpress_role';
@@ -50,25 +50,22 @@ const componentsMap = {
   [SubscriberActionTypes.MAILPOET_CUSTOM_FIELD]: MailPoetCustomFields,
 };
 
-interface Props {
-  onChange: OnFilterChange;
-  item: WordpressRoleFormItem;
-}
+export const SubscriberFields: React.FunctionComponent = () => {
+  const segment: WordpressRoleFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
 
-export const SubscriberFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
   let Component;
-  if (!item.action) {
+  if (!segment.action) {
     Component = WordpressRoleFields;
   } else {
-    Component = componentsMap[item.action];
+    Component = componentsMap[segment.action];
   }
 
   if (!Component) return null;
 
   return (
-    <Component
-      item={item}
-      onChange={onChange}
-    />
+    <Component />
   );
 };

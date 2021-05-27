@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  assign,
-} from 'lodash/fp';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';
 import Button from 'common/button/button';
@@ -21,22 +19,25 @@ import {
 
 interface Props {
   onSave: (Event) => void;
-  item: AnyFormItem;
   segmentType: FilterValue | undefined;
-  onItemChange: (AnyFormItem) => void;
   onSegmentTypeChange: (FilterValue) => void;
   segmentFilters: GroupFilterValue[];
 }
 
 export const Form: React.FunctionComponent<Props> = ({
   onSave,
-  item,
   segmentType,
-  onItemChange,
   onSegmentTypeChange,
   segmentFilters,
-}) => (
-  <>
+}) => {
+  const segment: AnyFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
+
+  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+
+  return (
     <form className="mailpoet_form">
       <div className="mailpoet-form-grid">
         <div className="mailpoet-form-field-name form-field-row-name">
@@ -50,9 +51,9 @@ export const Form: React.FunctionComponent<Props> = ({
               type="text"
               name="name"
               id="field_name"
-              defaultValue={item.name}
+              defaultValue={segment.name}
               onChange={
-                (e): void => onItemChange(assign(item, { name: e.target.value }))
+                (e): void => updateSegment({ name: e.target.value })
               }
             />
           </div>
@@ -70,9 +71,9 @@ export const Form: React.FunctionComponent<Props> = ({
             <Textarea
               name="description"
               id="field_description"
-              defaultValue={item.description}
+              defaultValue={segment.description}
               onChange={
-                (e): void => onItemChange(assign(item, { description: e.target.value }))
+                (e): void => updateSegment({ description: e.target.value })
               }
             />
           </div>
@@ -88,10 +89,10 @@ export const Form: React.FunctionComponent<Props> = ({
             options={segmentFilters}
             value={segmentType}
             onChange={(newValue: FilterValue): void => {
-              onItemChange(assign(item, {
+              updateSegment({
                 segmentType: newValue.group,
                 action: newValue.value,
-              }));
+              });
               onSegmentTypeChange(newValue);
             }}
             automationId="select-segment-action"
@@ -100,18 +101,16 @@ export const Form: React.FunctionComponent<Props> = ({
           {segmentType !== undefined && (
             <FormFilterFields
               segmentType={segmentType}
-              updateItem={onItemChange}
-              item={item}
             />
           )}
         </div>
-        <SubscribersCounter item={item} />
+        <SubscribersCounter />
         <div className="mailpoet-form-actions">
-          <Button type="submit" onClick={onSave} isDisabled={!isFormValid(item)}>
+          <Button type="submit" onClick={onSave} isDisabled={!isFormValid(segment)}>
             {MailPoet.I18n.t('save')}
           </Button>
         </div>
       </div>
     </form>
-  </>
-);
+  );
+};

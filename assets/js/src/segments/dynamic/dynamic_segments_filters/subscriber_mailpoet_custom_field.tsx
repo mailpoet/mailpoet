@@ -1,6 +1,6 @@
 import React from 'react';
-import { assign, find } from 'lodash/fp';
-import { useSelect } from '@wordpress/data';
+import { find } from 'lodash/fp';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';
 import ReactSelect from 'common/form/react_select/react_select';
@@ -12,7 +12,6 @@ import { CustomFieldDate, validateDate } from './custom_fields/date';
 
 import {
   WordpressRoleFormItem,
-  OnFilterChange,
   SelectOption,
   WindowCustomFields,
 } from '../types';
@@ -42,11 +41,6 @@ export function validateMailPoetCustomField(formItems: WordpressRoleFormItem): b
   return validator(formItems);
 }
 
-interface Props {
-  onChange: OnFilterChange;
-  item: WordpressRoleFormItem;
-}
-
 const componentsMap = {
   [CustomFieldsTypes.TEXT]: Text,
   [CustomFieldsTypes.TEXTAREA]: Text,
@@ -56,13 +50,20 @@ const componentsMap = {
   [CustomFieldsTypes.DATE]: CustomFieldDate,
 };
 
-export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
+export const MailPoetCustomFields: React.FunctionComponent = () => {
+  const segment: WordpressRoleFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
+
+  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+
   const customFieldsList: WindowCustomFields = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getCustomFieldsList(),
     []
   );
   const selectedCustomField = find(
-    { id: Number(item.custom_field_id) },
+    { id: Number(segment.custom_field_id) },
     customFieldsList
   );
   const options = customFieldsList.map((currentValue) => ({
@@ -70,7 +71,7 @@ export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange,
     label: currentValue.name,
   }));
 
-  const TypeComponent = componentsMap[item.custom_field_type];
+  const TypeComponent = componentsMap[segment.custom_field_type];
 
   return (
     <>
@@ -82,8 +83,8 @@ export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange,
         value={
           find(
             (option) => {
-              if (!item.custom_field_id) return undefined;
-              return item.custom_field_id === option.value;
+              if (!segment.custom_field_id) return undefined;
+              return segment.custom_field_id === option.value;
             },
             options
           )
@@ -91,21 +92,17 @@ export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange,
         onChange={(option: SelectOption): void => {
           const customField = find({ id: Number(option.value) }, customFieldsList);
           if (!customField) return;
-          onChange(
-            assign(item, {
-              custom_field_id: option.value,
-              custom_field_type: customField.type,
-              operator: undefined,
-              value: undefined,
-            })
-          );
+          updateSegment({
+            custom_field_id: option.value,
+            custom_field_type: customField.type,
+            operator: undefined,
+            value: undefined,
+          });
         }}
       />
       {
         TypeComponent && (
           <TypeComponent
-            item={item}
-            onChange={onChange}
             customField={selectedCustomField}
           />
         )

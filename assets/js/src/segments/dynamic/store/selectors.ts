@@ -1,4 +1,5 @@
 import {
+  AnyFormItem,
   StateType,
   WindowCustomFields,
   WindowEditableRoles,
@@ -35,4 +36,7 @@ export const getWooCommerceCountries = (state: StateType): WindowWooCommerceCoun
 );
 export const getCustomFieldsList = (state: StateType): WindowCustomFields => (
   state.customFieldsList
+);
+export const getSegment = (state: StateType): AnyFormItem => (
+  state.segment
 );

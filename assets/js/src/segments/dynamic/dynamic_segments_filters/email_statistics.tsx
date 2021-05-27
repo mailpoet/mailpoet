@@ -1,22 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import MailPoet from 'mailpoet';
-import { assign, compose, find } from 'lodash/fp';
-import { useSelect } from '@wordpress/data';
+import { find } from 'lodash/fp';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import APIErrorsNotice from 'notices/api_errors_notice';
 import Select from 'common/form/react_select/react_select';
 import {
   EmailActionTypes,
   EmailFormItem,
-  OnFilterChange,
   SelectOption,
   WindowNewslettersList,
 } from '../types';
-
-interface Props {
-  onChange: OnFilterChange;
-  item: EmailFormItem;
-}
 
 const shouldDisplayLinks = (itemAction: string, itemNewsletterId?: string): boolean => (
   (
@@ -26,11 +20,19 @@ const shouldDisplayLinks = (itemAction: string, itemNewsletterId?: string): bool
   && (itemNewsletterId != null)
 );
 
-export const EmailStatisticsFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
+export const EmailStatisticsFields: React.FunctionComponent = () => {
+  const segment: EmailFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
+
+  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+
   const newslettersList: WindowNewslettersList = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getNewslettersList(),
     []
   );
+
   const [errors, setErrors] = useState([]);
   const [links, setLinks] = useState<SelectOption[]>([]);
   const [loadingLinks, setLoadingLinks] = useState<boolean>(false);
@@ -67,14 +69,14 @@ export const EmailStatisticsFields: React.FunctionComponent<Props> = ({ onChange
   }
 
   const loadLinksCB = useCallback(() => {
-    if (!shouldDisplayLinks(item.action, item.newsletter_id)) return;
+    if (!shouldDisplayLinks(segment.action, segment.newsletter_id)) return;
     setLinks([]);
-    loadLinks(item.newsletter_id);
-  }, [item.action, item.newsletter_id]);
+    loadLinks(segment.newsletter_id);
+  }, [segment.action, segment.newsletter_id]);
 
   useEffect(() => {
     loadLinksCB();
-  }, [loadLinksCB, item.action, item.newsletter_id]);
+  }, [loadLinksCB, segment.action, segment.newsletter_id]);
 
   return (
     <>
@@ -86,26 +88,24 @@ export const EmailStatisticsFields: React.FunctionComponent<Props> = ({ onChange
         isFullWidth
         placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
         options={newsletterOptions}
-        value={find(['value', item.newsletter_id], newsletterOptions)}
-        onChange={(option: SelectOption): void => compose([
-          onChange,
-          assign(item),
-        ])({ newsletter_id: option.value })}
+        value={find(['value', segment.newsletter_id], newsletterOptions)}
+        onChange={(option: SelectOption): void => {
+          updateSegment({ newsletter_id: option.value });
+        }}
         automationId="segment-email"
       />
       {(loadingLinks && (MailPoet.I18n.t('loadingDynamicSegmentItems')))}
       {
-        (!!links.length && shouldDisplayLinks(item.action, item.newsletter_id))
+        (!!links.length && shouldDisplayLinks(segment.action, segment.newsletter_id))
         && (
           <Select
             isFullWidth
             placeholder={MailPoet.I18n.t('selectLinkPlaceholder')}
             options={links}
-            value={find(['value', item.link_id], links)}
-            onChange={(option: SelectOption): void => compose([
-              onChange,
-              assign(item),
-            ])({ link_id: option.value })}
+            value={find(['value', segment.link_id], links)}
+            onChange={(option: SelectOption): void => {
+              updateSegment({ link_id: option.value });
+            }}
           />
         )
       }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MailPoet from 'mailpoet';
+import { useSelect } from '@wordpress/data';
 
 import { isFormValid } from './validator';
 import { loadCount } from './subscribers_calculator';
@@ -14,16 +15,17 @@ interface SubscriberCount {
   errors?: string[];
 }
 
-interface Props {
-  item: AnyFormItem;
-}
-
-const SubscribersCounter: React.FunctionComponent<Props> = ({ item }: Props) => {
+const SubscribersCounter: React.FunctionComponent = () => {
   const [subscribersCount, setSubscribersCount] = useState<SubscriberCount>({
     loading: false,
     count: undefined,
     errors: undefined,
   });
+
+  const segment: AnyFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
 
   useEffect(() => {
     function load(loadItem: AnyFormItem): void {
@@ -51,15 +53,15 @@ const SubscribersCounter: React.FunctionComponent<Props> = ({ item }: Props) => 
       });
     }
 
-    if (isFormValid(item)) {
-      load(item);
+    if (isFormValid(segment)) {
+      load(segment);
     } else {
       setSubscribersCount({
         count: undefined,
         loading: false,
       });
     }
-  }, [item]);
+  }, [segment]);
 
   if (subscribersCount.errors) {
     return (

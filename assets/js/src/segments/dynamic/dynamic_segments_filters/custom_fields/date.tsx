@@ -13,6 +13,7 @@ import {
   isValid,
   parseISO,
 } from 'date-fns';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';
 import Select from 'common/form/select/select';
@@ -228,8 +229,6 @@ export function validateDate(item: WordpressRoleFormItem): boolean {
 }
 
 interface Props {
-  onChange: OnFilterChange;
-  item: WordpressRoleFormItem;
   customField: {
     params: {
       date_type: string;
@@ -245,15 +244,20 @@ const componentsMap = {
 };
 
 export const CustomFieldDate: React.FunctionComponent<Props> = (
-  { onChange, item, customField }
+  { customField }
 ) => {
+  const segment: WordpressRoleFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
+
+  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+
   useEffect(() => {
-    if (item.date_type !== customField.params.date_type) {
-      onChange(
-        assign(item, { date_type: customField.params.date_type, value: '' })
-      );
+    if (segment.date_type !== customField.params.date_type) {
+      updateSegment({ date_type: customField.params.date_type, value: '' });
     }
-  }, [onChange, item, customField.params.date_type]);
+  }, [segment.date_type, updateSegment, customField.params.date_type]);
 
   const Component = componentsMap[customField.params.date_type];
   if (!Component) return null;
@@ -261,8 +265,8 @@ export const CustomFieldDate: React.FunctionComponent<Props> = (
     <>
       <div className="mailpoet-gap" />
       <Component
-        item={item}
-        onChange={onChange}
+        item={segment}
+        onChange={updateSegment}
       />
     </>
   );

@@ -1,11 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  __,
-  assign,
-  compose,
-  get,
-  set,
-} from 'lodash/fp';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';
 import Select from 'common/form/select/select';
@@ -14,13 +8,7 @@ import { Grid } from 'common/grid';
 
 import {
   WordpressRoleFormItem,
-  OnFilterChange,
 } from '../../types';
-
-interface Props {
-  onChange: OnFilterChange;
-  item: WordpressRoleFormItem;
-}
 
 export function validateText(item: WordpressRoleFormItem): boolean {
   return (
@@ -30,14 +18,19 @@ export function validateText(item: WordpressRoleFormItem): boolean {
   );
 }
 
-export const Text: React.FunctionComponent<Props> = ({ onChange, item }) => {
+export const Text: React.FunctionComponent = () => {
+  const segment: WordpressRoleFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
+
+  const { updateSegmentFromEvent, updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+
   useEffect(() => {
-    if (item.operator === undefined) {
-      onChange(
-        assign(item, { operator: 'equals', value: '' })
-      );
+    if (segment.operator === undefined) {
+      updateSegment({ operator: 'equals', value: '' });
     }
-  }, [onChange, item]);
+  }, [updateSegment, segment]);
 
   return (
     <>
@@ -46,14 +39,10 @@ export const Text: React.FunctionComponent<Props> = ({ onChange, item }) => {
         <Select
           key="select"
           automationId="text-custom-field-operator"
-          value={item.operator}
-          onChange={compose([
-            onChange,
-            assign(item),
-            set('operator', __, {}),
-            get('value'),
-            get('target'),
-          ])}
+          value={segment.operator}
+          onChange={(e) => {
+            updateSegmentFromEvent('operator', e);
+          }}
         >
           <option value="equals">{MailPoet.I18n.t('equals')}</option>
           <option value="contains">{MailPoet.I18n.t('contains')}</option>
@@ -61,14 +50,10 @@ export const Text: React.FunctionComponent<Props> = ({ onChange, item }) => {
         <Input
           key="input"
           data-automation-id="text-custom-field-value"
-          value={item.value || ''}
-          onChange={compose([
-            onChange,
-            assign(item),
-            set('value', __, {}),
-            get('value'),
-            get('target'),
-          ])}
+          value={segment.value || ''}
+          onChange={(e) => {
+            updateSegmentFromEvent('value', e);
+          }}
           placeholder={MailPoet.I18n.t('value')}
         />
       </Grid.CenteredRow>

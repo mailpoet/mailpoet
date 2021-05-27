@@ -1,9 +1,7 @@
 import React from 'react';
 
 import {
-  AnyFormItem,
   FilterValue,
-  OnFilterChange,
   SegmentTypes,
 } from './types';
 
@@ -14,8 +12,6 @@ import { WooCommerceSubscriptionFields } from './dynamic_segments_filters/woocom
 
 export interface FilterFieldsProps {
   segmentType: FilterValue;
-  updateItem: OnFilterChange;
-  item: AnyFormItem;
 }
 
 const filterFieldsMap = {
@@ -27,16 +23,11 @@ const filterFieldsMap = {
 
 export const FormFilterFields: React.FunctionComponent<FilterFieldsProps> = ({
   segmentType,
-  updateItem,
-  item,
 }) => {
   if (filterFieldsMap[segmentType.group] === undefined) return null;
   const Component = filterFieldsMap[segmentType.group];
 
   return (
-    <Component
-      onChange={updateItem}
-      item={item}
-    />
+    <Component />
   );
 };

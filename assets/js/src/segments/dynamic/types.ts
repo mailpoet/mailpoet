@@ -145,4 +145,18 @@ export interface StateType {
   wooCurrencySymbol: string;
   wooCountries: WindowWooCommerceCountries;
   customFieldsList: WindowCustomFields;
+  segment: AnyFormItem,
+}
+
+export enum Actions {
+  SET_SEGMENT = 'SET_SEGMENT',
+  UPDATE_SEGMENT = 'UPDATE_SEGMENT',
+}
+
+export interface ActionType {
+  type: Actions;
+}
+
+export interface SetSegmentActionType extends ActionType {
+  segment: AnyFormItem;
 }

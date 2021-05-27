@@ -5,6 +5,7 @@
 import { registerStore } from '@wordpress/data';
 import * as selectors from './selectors';
 import { createReducer } from './reducer';
+import * as actions from './actions';
 
 import {
   StateType,
@@ -25,10 +26,12 @@ export const createStore = (): void => {
     wooCurrencySymbol: window.mailpoet_woocommerce_currency_symbol,
     wooCountries: window.mailpoet_woocommerce_countries,
     customFieldsList: window.mailpoet_custom_fields,
+    segment: {},
   };
 
   const config = {
     selectors,
+    actions,
     reducer: createReducer(defaultState),
     resolvers: {},
   };

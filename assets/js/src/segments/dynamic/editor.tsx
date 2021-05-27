@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import {
   assign,
   compose,
@@ -43,7 +43,6 @@ const messages = {
 const Editor: React.FunctionComponent = () => {
   const [errors, setErrors] = useState([]);
   const [segmentType, setSegmentType] = useState<FilterValue | undefined>(undefined);
-  const [item, setItem] = useState<AnyFormItem>({});
   const match = useRouteMatch<{id: string}>();
   const history = useHistory();
 
@@ -51,6 +50,13 @@ const Editor: React.FunctionComponent = () => {
     (select) => select('mailpoet-dynamic-segments-form').canUseWooSubscriptions(),
     []
   );
+
+  const segment: AnyFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
+
+  const { setSegment } = useDispatch('mailpoet-dynamic-segments-form');
 
   function getAvailableFilters(): GroupFilterValue[] {
     const filters: GroupFilterValue[] = [
@@ -127,7 +133,7 @@ const Editor: React.FunctionComponent = () => {
           if (response.data.is_plugin_missing) {
             history.push('/segments');
           } else {
-            setItem(convertSavedData(response.data));
+            setSegment(convertSavedData(response.data));
             setSegmentType(findSegmentType(response.data));
           }
         })
@@ -139,7 +145,7 @@ const Editor: React.FunctionComponent = () => {
     if (match.params.id !== undefined) {
       loadSegment(match.params.id);
     }
-  }, [segmentFilters, match.params.id, history]);
+  }, [setSegment, segmentFilters, match.params.id, history]);
 
   function handleSave(e: Event): void {
     e.preventDefault();
@@ -148,14 +154,14 @@ const Editor: React.FunctionComponent = () => {
       api_version: MailPoet.apiVersion,
       endpoint: 'dynamic_segments',
       action: 'save',
-      data: item,
+      data: segment,
     }).done(() => {
       history.push('/segments');
 
       if (match.params.id !== undefined) {
         messages.onUpdate();
       } else {
-        messages.onCreate(item);
+        messages.onCreate(segment);
       }
     }).fail(compose([setErrors, prop('errors')]));
   }
@@ -176,8 +182,6 @@ const Editor: React.FunctionComponent = () => {
       <Form
         onSave={handleSave}
         segmentType={segmentType}
-        item={item}
-        onItemChange={setItem}
         onSegmentTypeChange={setSegmentType}
         segmentFilters={segmentFilters}
       />
