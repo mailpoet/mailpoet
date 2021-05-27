@@ -12,7 +12,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Subscribers\LinkTokens;
@@ -25,6 +24,9 @@ class TrackTest extends \MailPoetTest {
   public $queue;
   public $subscriber;
   public $newsletter;
+
+  /** @var LinkTokens */
+  private $linkTokens;
 
   public function _before() {
     parent::_before();
@@ -60,21 +62,20 @@ class TrackTest extends \MailPoetTest {
     $scheduledTaskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber, 1);
     $this->entityManager->persist($scheduledTaskSubscriber);
     $this->entityManager->flush();
-    $subscriberModel = Subscriber::findOne($subscriber->getId());
-    $linkTokens = new LinkTokens;
+    $this->linkTokens = $this->diContainer->get(LinkTokens::class);
     // build track data
     $this->trackData = [
       'queue_id' => $queue->getId(),
       'subscriber_id' => $subscriber->getId(),
       'newsletter_id' => $newsletter->getId(),
-      'subscriber_token' => $linkTokens->getToken($subscriberModel),
+      'subscriber_token' => $this->linkTokens->getToken($subscriber),
       'link_hash' => $link->getHash(),
       'preview' => false,
     ];
     $queue = SendingQueue::findOne($queue->getId());
     assert($queue instanceof SendingQueue);
     $queue = SendingTask::createFromQueue($queue);
-    $queue->updateProcessedSubscribers([$subscriberModel->id]);
+    $queue->updateProcessedSubscribers([$subscriber->getId()]);
     // instantiate class
     $this->track = $this->diContainer->get(Track::class);
   }
@@ -106,8 +107,8 @@ class TrackTest extends \MailPoetTest {
     $data->subscriber->setEmail('random@email.com');
     $this->entityManager->flush();
     $track = Stub::make(Track::class, [
-      'linkTokens' => new LinkTokens,
       'sendingQueuesRepository' => $this->diContainer->get(SendingQueuesRepository::class),
+      'linkTokens' => $this->linkTokens,
       'terminate' => function($code) {
         expect($code)->equals(403);
       },

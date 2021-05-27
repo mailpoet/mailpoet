@@ -6,6 +6,7 @@ use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
+use MailPoet\InvalidStateException;
 use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -16,6 +17,7 @@ use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Url as UrlHelper;
 
 class Manage {
@@ -41,6 +43,9 @@ class Manage {
   /** @var WelcomeScheduler */
   private $welcomeScheduler;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
@@ -52,6 +57,7 @@ class Manage {
     SettingsController $settings,
     NewSubscriberNotificationMailer $newSubscriberNotificationMailer,
     WelcomeScheduler $welcomeScheduler,
+    SubscribersRepository $subscribersRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository
   ) {
     $this->urlHelper = $urlHelper;
@@ -61,6 +67,7 @@ class Manage {
     $this->settings = $settings;
     $this->newSubscriberNotificationMailer = $newSubscriberNotificationMailer;
     $this->welcomeScheduler = $welcomeScheduler;
+    $this->subscribersRepository = $subscribersRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
   }
 
@@ -76,25 +83,29 @@ class Manage {
 
     $result = [];
     if (!empty($subscriberData['email'])) {
-      $subscriber = Subscriber::where('email', $subscriberData['email'])->findOne();
+      $subscriber = $this->subscribersRepository->findOneBy(['email' => $subscriberData['email']]);
 
       if (
         ($subscriberData['status'] === SubscriberEntity::STATUS_UNSUBSCRIBED)
-        && ($subscriber instanceof Subscriber)
-        && ($subscriber->status === SubscriberEntity::STATUS_SUBSCRIBED)
+        && ($subscriber instanceof SubscriberEntity)
+        && ($subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)
       ) {
         $this->unsubscribesTracker->track(
-          (int)$subscriber->id,
+          (int)$subscriber->getId(),
           StatisticsUnsubscribeEntity::SOURCE_MANAGE
         );
       }
 
       if ($subscriber && $this->linkTokens->verifyToken($subscriber, $token)) {
+        $subscriberModel = Subscriber::findOne($subscriber->getId());
+        if (!$subscriberModel instanceof Subscriber) {
+          throw new InvalidStateException();
+        }
         if ($subscriberData['email'] !== Pages::DEMO_EMAIL) {
-          $this->updateSubscriptions($subscriber, $subscriberData);
+          $this->updateSubscriptions($subscriberModel, $subscriberData);
           unset($subscriberData['segments']);
-          $subscriber = Subscriber::createOrUpdate($this->filterOutEmptyMandatoryFields($subscriberData));
-          $subscriber->getErrors();
+          $subscriberModel = Subscriber::createOrUpdate($this->filterOutEmptyMandatoryFields($subscriberData));
+          $subscriberModel->getErrors();
         }
       }
       $result = ['success' => true];

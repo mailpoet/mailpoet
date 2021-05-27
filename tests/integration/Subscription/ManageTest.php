@@ -13,6 +13,7 @@ use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Manage;
 use MailPoet\Util\Url as UrlHelper;
 use MailPoetVendor\Idiorm\ORM;
@@ -62,6 +63,7 @@ class ManageTest extends \MailPoetTest {
       $this->settings,
       $this->diContainer->get(NewSubscriberNotificationMailer::class),
       $this->diContainer->get(WelcomeScheduler::class),
+      $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriberSegmentRepository::class)
     );
     $_POST['action'] = 'mailpoet_subscription_update';
