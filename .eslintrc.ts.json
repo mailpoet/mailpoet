@@ -52,6 +52,7 @@
     "comma-dangle": ["error", "always-multiline"],
     "no-only-tests/no-only-tests": 2,
     "no-script-url": 0,
+    "@typescript-eslint/no-unsafe-return": 0, // we need to disable it for wordpress select :(
     "@typescript-eslint/no-unsafe-member-access": 0, // this needs to be off until mailpoet.js is converted to typescript
     "@typescript-eslint/no-unsafe-call": 0, // this needs to be off until mailpoet.js is converted to typescript
     "@typescript-eslint/no-unsafe-assignment": 0, // this needs to be off until mailpoet.js is converted to typescript

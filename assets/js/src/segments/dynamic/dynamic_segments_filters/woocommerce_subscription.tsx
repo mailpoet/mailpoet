@@ -1,15 +1,17 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import { assign, compose, find } from 'lodash/fp';
+import { useSelect } from '@wordpress/data';
+
 import Select from 'common/form/react_select/react_select';
 
 import {
   OnFilterChange,
   SegmentTypes,
   SelectOption,
+  WindowSubscriptionProducts,
   WooCommerceSubscriptionFormItem,
 } from '../types';
-import { SegmentFormData } from '../segment_form_data';
 
 enum WooCommerceSubscriptionsActionTypes {
   ACTIVE_SUBSCRIPTIONS = 'hasActiveSubscription',
@@ -39,7 +41,11 @@ interface Props {
 export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = (
   { onChange, item }
 ) => {
-  const productOptions = SegmentFormData.subscriptionProducts?.map((product) => ({
+  const subscriptionProducts: WindowSubscriptionProducts = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSubscriptionProducts(),
+    []
+  );
+  const productOptions = subscriptionProducts.map((product) => ({
     value: product.id,
     label: product.name,
   }));

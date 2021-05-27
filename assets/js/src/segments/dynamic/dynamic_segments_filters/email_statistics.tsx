@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import MailPoet from 'mailpoet';
 import { assign, compose, find } from 'lodash/fp';
+import { useSelect } from '@wordpress/data';
 
 import APIErrorsNotice from 'notices/api_errors_notice';
 import Select from 'common/form/react_select/react_select';
@@ -9,8 +10,8 @@ import {
   EmailFormItem,
   OnFilterChange,
   SelectOption,
+  WindowNewslettersList,
 } from '../types';
-import { SegmentFormData } from '../segment_form_data';
 
 interface Props {
   onChange: OnFilterChange;
@@ -25,18 +26,22 @@ const shouldDisplayLinks = (itemAction: string, itemNewsletterId?: string): bool
   && (itemNewsletterId != null)
 );
 
-const newsletterOptions = SegmentFormData.newslettersList?.map((newsletter) => {
-  const sentAt = (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet');
-  return {
-    label: `${newsletter.subject} (${sentAt})`,
-    value: newsletter.id,
-  };
-});
-
 export const EmailStatisticsFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
+  const newslettersList: WindowNewslettersList = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getNewslettersList(),
+    []
+  );
   const [errors, setErrors] = useState([]);
   const [links, setLinks] = useState<SelectOption[]>([]);
   const [loadingLinks, setLoadingLinks] = useState<boolean>(false);
+
+  const newsletterOptions = newslettersList?.map((newsletter) => {
+    const sentAt = (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet');
+    return {
+      label: `${newsletter.subject} (${sentAt})`,
+      value: newsletter.id,
+    };
+  });
 
   function loadLinks(newsletterId: string): void {
     setErrors([]);

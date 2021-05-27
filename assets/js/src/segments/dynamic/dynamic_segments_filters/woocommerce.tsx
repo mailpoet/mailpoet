@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import { assign, compose, find } from 'lodash/fp';
 import ReactSelect from 'common/form/react_select/react_select';
 import Select from 'common/form/select/select';
+import { useSelect } from '@wordpress/data';
 
 import { Grid } from 'common/grid';
 import Input from 'common/form/input/input';
@@ -10,9 +11,11 @@ import {
   OnFilterChange,
   SegmentTypes,
   SelectOption,
+  WindowProductCategories,
+  WindowProducts,
+  WindowWooCommerceCountries,
   WooCommerceFormItem,
 } from '../types';
-import { SegmentFormData } from '../segment_form_data';
 
 enum WooCommerceActionTypes {
   NUMBER_OF_ORDERS = 'numberOfOrders',
@@ -67,17 +70,33 @@ interface Props {
 }
 
 export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
-  const productOptions = SegmentFormData.products?.map((product) => ({
+  const productCategories: WindowProductCategories = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getProductCategories(),
+    []
+  );
+  const woocommerceCountries: WindowWooCommerceCountries = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getWooCommerceCountries(),
+    []
+  );
+  const products: WindowProducts = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getProducts(),
+    []
+  );
+  const wooCurrencySymbol: string = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getWooCommerceCurrencySymbol(),
+    []
+  );
+  const productOptions = products.map((product) => ({
     value: product.id,
     label: product.name,
   }));
 
-  const categoryOptions = SegmentFormData.productCategories?.map((product) => ({
+  const categoryOptions = productCategories.map((product) => ({
     value: product.id,
     label: product.name,
   }));
 
-  const countryOptions = SegmentFormData.wooCountries.map((country) => ({
+  const countryOptions = woocommerceCountries.map((country) => ({
     value: country.code,
     label: country.name,
   }));
@@ -207,7 +226,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ onChange, it
               assign(item),
             ])({ total_spent_amount: event.target.value })}
           />
-          <div>{SegmentFormData.wooCurrencySymbol}</div>
+          <div>{wooCurrencySymbol}</div>
         </Grid.CenteredRow>
         <div className="mailpoet-gap" />
         <Grid.CenteredRow className="mailpoet-form-field">

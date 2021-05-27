@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelect } from '@wordpress/data';
 import {
   assign,
   compose,
@@ -15,7 +16,6 @@ import { EmailSegmentOptions } from './dynamic_segments_filters/email';
 import { WooCommerceOptions } from './dynamic_segments_filters/woocommerce';
 import { SubscriberSegmentOptions } from './dynamic_segments_filters/subscriber';
 import { WooCommerceSubscriptionOptions } from './dynamic_segments_filters/woocommerce_subscription';
-import { SegmentFormData } from './segment_form_data';
 import { Form } from './form';
 
 import {
@@ -40,39 +40,45 @@ const messages = {
   },
 };
 
-function getAvailableFilters(): GroupFilterValue[] {
-  const filters: GroupFilterValue[] = [
-    {
-      label: MailPoet.I18n.t('email'),
-      options: EmailSegmentOptions,
-    },
-    {
-      label: MailPoet.I18n.t('wpUserRole'),
-      options: SubscriberSegmentOptions,
-    },
-  ];
-  if (MailPoet.isWoocommerceActive) {
-    filters.push({
-      label: MailPoet.I18n.t('woocommerce'),
-      options: WooCommerceOptions,
-    });
-  }
-  if (MailPoet.isWoocommerceActive && SegmentFormData.canUseWooSubscriptions) {
-    filters.push({
-      label: MailPoet.I18n.t('woocommerceSubscriptions'),
-      options: WooCommerceSubscriptionOptions,
-    });
-  }
-  return filters;
-}
-
-const DynamicSegmentForm: React.FunctionComponent = () => {
-  const [segmentFilters] = useState(getAvailableFilters());
+const Editor: React.FunctionComponent = () => {
   const [errors, setErrors] = useState([]);
   const [segmentType, setSegmentType] = useState<FilterValue | undefined>(undefined);
   const [item, setItem] = useState<AnyFormItem>({});
   const match = useRouteMatch<{id: string}>();
   const history = useHistory();
+
+  const canUseWooSubscriptions: boolean = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').canUseWooSubscriptions(),
+    []
+  );
+
+  function getAvailableFilters(): GroupFilterValue[] {
+    const filters: GroupFilterValue[] = [
+      {
+        label: MailPoet.I18n.t('email'),
+        options: EmailSegmentOptions,
+      },
+      {
+        label: MailPoet.I18n.t('wpUserRole'),
+        options: SubscriberSegmentOptions,
+      },
+    ];
+    if (MailPoet.isWoocommerceActive) {
+      filters.push({
+        label: MailPoet.I18n.t('woocommerce'),
+        options: WooCommerceOptions,
+      });
+    }
+    if (MailPoet.isWoocommerceActive && canUseWooSubscriptions) {
+      filters.push({
+        label: MailPoet.I18n.t('woocommerceSubscriptions'),
+        options: WooCommerceSubscriptionOptions,
+      });
+    }
+    return filters;
+  }
+
+  const segmentFilters = getAvailableFilters();
 
   useEffect(() => {
     function findSegmentType(itemSearch): FilterValue | undefined {
@@ -179,4 +185,4 @@ const DynamicSegmentForm: React.FunctionComponent = () => {
   );
 };
 
-export default DynamicSegmentForm;
+export default Editor;

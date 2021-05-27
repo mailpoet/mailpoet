@@ -3,15 +3,17 @@ import {
   assign,
   find,
 } from 'lodash/fp';
+import { useSelect } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';
 import ReactSelect from 'common/form/react_select/react_select';
 
 import {
   WordpressRoleFormItem,
-  OnFilterChange, SelectOption,
+  OnFilterChange,
+  SelectOption,
+  WindowCustomFields,
 } from '../../types';
-import { SegmentFormData } from '../../segment_form_data';
 
 interface Props {
   onChange: OnFilterChange;
@@ -32,7 +34,11 @@ export function validateRadioSelect(item: WordpressRoleFormItem): boolean {
 }
 
 export const RadioSelect: React.FunctionComponent<Props> = ({ onChange, item }) => {
-  const customField = find({ id: Number(item.custom_field_id) }, SegmentFormData.customFieldsList);
+  const customFieldsList: WindowCustomFields = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getCustomFieldsList(),
+    []
+  );
+  const customField = find({ id: Number(item.custom_field_id) }, customFieldsList);
   if (!customField) return null;
   const params = (customField.params as ParamsType);
   if (!params || !Array.isArray(params.values)) return null;

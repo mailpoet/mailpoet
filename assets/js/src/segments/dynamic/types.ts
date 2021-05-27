@@ -82,3 +82,67 @@ export type AnyFormItem =
   EmailFormItem;
 
 export type OnFilterChange = (value: AnyFormItem) => void;
+
+export type WindowEditableRoles = {
+  role_id: string;
+  role_name: string;
+}[];
+
+export type WindowProducts = {
+  id: string;
+  name: string;
+}[];
+
+export type WindowSubscriptionProducts = {
+  id: string;
+  name: string;
+}[];
+
+export type WindowProductCategories = {
+  id: string;
+  name: string;
+}[];
+
+export type WindowNewslettersList = {
+  sent_at: string;
+  subject: string;
+  id: string;
+}[];
+
+export type WindowWooCommerceCountries = {
+  code: string;
+  name: string;
+}[];
+
+export type WindowCustomFields = {
+  created_at: string;
+  id: number;
+  name: string;
+  type: string;
+  params: Record<string, unknown>;
+  updated_at: string;
+}[];
+
+export interface SegmentFormDataWindow extends Window {
+  wordpress_editable_roles_list: WindowEditableRoles;
+  mailpoet_products: WindowProducts;
+  mailpoet_subscription_products: WindowSubscriptionProducts;
+  mailpoet_product_categories: WindowProductCategories;
+  mailpoet_woocommerce_countries: WindowWooCommerceCountries;
+  mailpoet_newsletters_list: WindowNewslettersList;
+  mailpoet_custom_fields: WindowCustomFields;
+  mailpoet_can_use_woocommerce_subscriptions: boolean;
+  mailpoet_woocommerce_currency_symbol: string;
+}
+
+export interface StateType {
+  products: WindowProducts;
+  subscriptionProducts: WindowSubscriptionProducts;
+  wordpressRoles: WindowEditableRoles;
+  productCategories: WindowProductCategories;
+  newslettersList: WindowNewslettersList;
+  canUseWooSubscriptions: boolean;
+  wooCurrencySymbol: string;
+  wooCountries: WindowWooCommerceCountries;
+  customFieldsList: WindowCustomFields;
+}

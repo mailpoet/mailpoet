@@ -1,10 +1,10 @@
 import React from 'react';
 import { assign, find } from 'lodash/fp';
+import { useSelect } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';
 import ReactSelect from 'common/form/react_select/react_select';
 
-import { SegmentFormData } from '../segment_form_data';
 import { Text, validateText } from './custom_fields/text';
 import { RadioSelect, validateRadioSelect } from './custom_fields/select';
 import { Checkbox, validateCheckbox } from './custom_fields/checkbox';
@@ -14,6 +14,7 @@ import {
   WordpressRoleFormItem,
   OnFilterChange,
   SelectOption,
+  WindowCustomFields,
 } from '../types';
 
 enum CustomFieldsTypes {
@@ -56,11 +57,15 @@ const componentsMap = {
 };
 
 export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange, item }) => {
+  const customFieldsList: WindowCustomFields = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getCustomFieldsList(),
+    []
+  );
   const selectedCustomField = find(
     { id: Number(item.custom_field_id) },
-    SegmentFormData.customFieldsList
+    customFieldsList
   );
-  const options = SegmentFormData.customFieldsList.map((currentValue) => ({
+  const options = customFieldsList.map((currentValue) => ({
     value: currentValue.id.toString(),
     label: currentValue.name,
   }));
@@ -84,7 +89,7 @@ export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ onChange,
           )
         }
         onChange={(option: SelectOption): void => {
-          const customField = find({ id: Number(option.value) }, SegmentFormData.customFieldsList);
+          const customField = find({ id: Number(option.value) }, customFieldsList);
           if (!customField) return;
           onChange(
             assign(item, {
