@@ -62,6 +62,9 @@ class SendingQueue {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var Links */
+  private $links;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     SendingThrottlingHandler $throttlingHandler,
@@ -72,6 +75,7 @@ class SendingQueue {
     SubscribersFinder $subscriberFinder,
     SegmentsRepository $segmentsRepository,
     WPFunctions $wp,
+    Links $links,
     $mailerTask = false,
     $newsletterTask = false
   ) {
@@ -87,6 +91,7 @@ class SendingQueue {
     $this->loggerFactory = $loggerFactory;
     $this->newslettersRepository = $newslettersRepository;
     $this->cronHelper = $cronHelper;
+    $this->links = $links;
   }
 
   public function process($timer = false) {
@@ -260,7 +265,7 @@ class SendingQueue {
       );
       $preparedSubscribersIds[] = $subscriber->id;
       // create personalized instant unsubsribe link
-      $unsubscribeUrls[] = Links::getUnsubscribeUrl($queue, $subscriber->id);
+      $unsubscribeUrls[] = $this->links->getUnsubscribeUrl($queue, $subscriber->id);
       $metas[] = $this->mailerMetaInfo->getNewsletterMetaInfo($newsletter, $subscriber);
       // keep track of values for statistics purposes
       $statistics[] = [
