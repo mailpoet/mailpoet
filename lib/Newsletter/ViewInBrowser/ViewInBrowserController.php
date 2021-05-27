@@ -4,7 +4,6 @@ namespace MailPoet\Newsletter\ViewInBrowser;
 
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Subscribers\LinkTokens;
@@ -91,11 +90,7 @@ class ViewInBrowserController {
       throw new \InvalidArgumentException("Missing 'subscriber_token'");
     }
 
-    $subscriberModel = Subscriber::findOne($subscriber->getId());
-    if (!$subscriberModel) {
-      return null;
-    }
-    if (!$this->linkTokens->verifyToken($subscriberModel, $data['subscriber_token'])) {
+    if (!$this->linkTokens->verifyToken($subscriber, $data['subscriber_token'])) {
       throw new \InvalidArgumentException("Invalid 'subscriber_token'");
     }
     return $subscriber;

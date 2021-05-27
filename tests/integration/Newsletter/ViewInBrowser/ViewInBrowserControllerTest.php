@@ -66,16 +66,14 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $sendingTask->setSubscribers([$subscriber->getId()]);
     $sendingTask->updateProcessedSubscribers([$subscriber->getId()]);
     $this->sendingTask = $sendingTask->save();
-    $linkTokens = new LinkTokens;
 
     // build browser preview data
-    $subscriberModel = Subscriber::findOne($subscriber->getId());
     $this->browserPreviewData = [
       'queue_id' => $sendingTask->queue()->id,
       'subscriber_id' => $subscriber->getId(),
       'newsletter_id' => $newsletter->id,
       'newsletter_hash' => $newsletter->hash,
-      'subscriber_token' => $linkTokens->getToken($subscriberModel),
+      'subscriber_token' => $this->linkTokens->getToken($subscriber),
       'preview' => false,
     ];
   }

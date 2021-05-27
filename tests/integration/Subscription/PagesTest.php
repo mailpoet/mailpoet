@@ -3,9 +3,9 @@
 namespace MailPoet\Test\Subscription;
 
 use Codeception\Stub;
-use Codeception\Util\Fixtures;
 use MailPoet\Config\Renderer;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\AssetsController;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -21,6 +21,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\CaptchaRenderer;
 use MailPoet\Subscription\ManageSubscriptionFormRenderer;
 use MailPoet\Subscription\Pages;
@@ -32,18 +33,24 @@ use MailPoetVendor\Idiorm\ORM;
 class PagesTest extends \MailPoetTest {
   private $testData = [];
 
-  /** @var Subscriber */
+  /** @var SubscriberEntity */
   private $subscriber;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
 
   public function _before() {
     parent::_before();
-    $this->subscriber = Subscriber::create();
-    $this->subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $this->subscriber->status = Subscriber::STATUS_UNCONFIRMED;
-    $this->subscriber->save();
-    $linkTokens = new LinkTokens;
-    expect($this->subscriber->getErrors())->false();
-    $this->testData['email'] = $this->subscriber->email;
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->subscriber = new SubscriberEntity();
+    $this->subscriber->setFirstName('John');
+    $this->subscriber->setLastName('John');
+    $this->subscriber->setEmail('john.doe@example.com');
+    $this->subscriber->setStatus(Subscriber::STATUS_UNCONFIRMED);
+    $this->subscribersRepository->persist($this->subscriber);
+    $this->subscribersRepository->flush();
+    $linkTokens = $this->diContainer->get(LinkTokens::class);
+    $this->testData['email'] = $this->subscriber->getEmail();
     $this->testData['token'] = $linkTokens->getToken($this->subscriber);
   }
 
@@ -52,7 +59,7 @@ class PagesTest extends \MailPoetTest {
     $pages = $this->getPages($newSubscriberNotificationSender);
     $subscription = $pages->init($action = false, $this->testData, false, false);
     $subscription->confirm();
-    $confirmedSubscriber = Subscriber::findOne($this->subscriber->id);
+    $confirmedSubscriber = Subscriber::findOne($this->subscriber->getId());
     expect($confirmedSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
     expect($confirmedSubscriber->lastSubscribedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond());
     expect($confirmedSubscriber->lastSubscribedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond());
@@ -62,21 +69,23 @@ class PagesTest extends \MailPoetTest {
     $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::never()]);
     $pages = $this->getPages($newSubscriberNotificationSender);
     $subscriber = $this->subscriber;
-    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $subscriber->firstName = 'First name';
-    $subscriber->unconfirmedData = '{"first_name" : "Updated first name", "email" : "' . $this->subscriber->email . '"}';
-    $subscriber->lastSubscribedAt = Carbon::now()->subDays(10);
-    $subscriber->confirmedAt = Carbon::now()->subDays(10);
-    $subscriber->save();
+    $subscriber->setStatus(Subscriber::STATUS_SUBSCRIBED);
+    $subscriber->setFirstName('First name');
+    $subscriber->setUnconfirmedData('{"first_name" : "Updated first name", "email" : "' . $this->subscriber->getEmail() . '"}');
+    $subscriber->setLastSubscribedAt(Carbon::now()->subDays(10));
+    $subscriber->setConfirmedIp(Carbon::now()->subDays(10));
+    $this->entityManager->flush();
     $subscription = $pages->init($action = false, $this->testData, false, false);
     $subscription->confirm();
-    $confirmedSubscriber = Subscriber::findOne($this->subscriber->id);
-    expect($confirmedSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($confirmedSubscriber->confirmedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond());
-    expect($confirmedSubscriber->confirmedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond());
-    expect($confirmedSubscriber->lastSubscribedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond());
-    expect($confirmedSubscriber->lastSubscribedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond());
-    expect($confirmedSubscriber->firstName)->equals('Updated first name');
+    $this->entityManager->clear();
+    $confirmedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
+    assert($confirmedSubscriber instanceof SubscriberEntity);
+    expect($confirmedSubscriber->getStatus())->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($confirmedSubscriber->getConfirmedAt())->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond());
+    expect($confirmedSubscriber->getConfirmedAt())->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond());
+    expect($confirmedSubscriber->getLastSubscribedAt())->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond());
+    expect($confirmedSubscriber->getLastSubscribedAt())->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond());
+    expect($confirmedSubscriber->getFirstName())->equals('Updated first name');
   }
 
   public function testItSendsWelcomeNotificationUponConfirmingSubscription() {
@@ -92,7 +101,7 @@ class PagesTest extends \MailPoetTest {
     $subscriberSegment = SubscriberSegment::create();
     $subscriberSegment->hydrate(
       [
-        'subscriber_id' => $this->subscriber->id,
+        'subscriber_id' => $this->subscriber->getId(),
         'segment_id' => $segment->id,
       ]
     );
@@ -143,7 +152,7 @@ class PagesTest extends \MailPoetTest {
   public function testItUnsubscribes() {
     $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
-    $updatedSubscriber = Subscriber::findOne($this->subscriber->id);
+    $updatedSubscriber = Subscriber::findOne($this->subscriber->getId());
     expect($updatedSubscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
@@ -167,7 +176,7 @@ class PagesTest extends \MailPoetTest {
     $this->testData['preview'] = 1;
     $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
-    $updatedSubscriber = Subscriber::findOne($this->subscriber->id);
+    $updatedSubscriber = Subscriber::findOne($this->subscriber->getId());
     expect($updatedSubscriber->status)->notEquals(Subscriber::STATUS_UNSUBSCRIBED);
   }
 
@@ -199,7 +208,8 @@ class PagesTest extends \MailPoetTest {
       $container->get(AssetsController::class),
       $container->get(Renderer::class),
       $unsubscribesMock ?? $container->get(Unsubscribes::class),
-      $container->get(ManageSubscriptionFormRenderer::class)
+      $container->get(ManageSubscriptionFormRenderer::class),
+      $this->subscribersRepository
     );
   }
 }

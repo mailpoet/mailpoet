@@ -12,6 +12,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -60,6 +61,9 @@ class Pages {
   /** @var ManageSubscriptionFormRenderer */
   private $manageSubscriptionFormRenderer;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -71,7 +75,8 @@ class Pages {
     AssetsController $assetsController,
     TemplateRenderer $templateRenderer,
     Unsubscribes $unsubscribesTracker,
-    ManageSubscriptionFormRenderer $manageSubscriptionFormRenderer
+    ManageSubscriptionFormRenderer $manageSubscriptionFormRenderer,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -84,6 +89,7 @@ class Pages {
     $this->templateRenderer = $templateRenderer;
     $this->unsubscribesTracker = $unsubscribesTracker;
     $this->manageSubscriptionFormRenderer = $manageSubscriptionFormRenderer;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -135,7 +141,8 @@ class Pages {
     }
 
     $subscriber = Subscriber::where('email', $email)->findOne();
-    return ($subscriber && $this->linkTokens->verifyToken($subscriber, $token)) ? $subscriber : null;
+    $subscriberEntity = $subscriber ? $this->subscribersRepository->findOneById($subscriber->id) : null;
+    return ($subscriber && $subscriberEntity && $this->linkTokens->verifyToken($subscriberEntity, $token)) ? $subscriber : null;
   }
 
   public function confirm() {
