@@ -46,6 +46,9 @@ class Newsletter {
   /** @var Emoji */
   private $emoji;
 
+  /** @var LinksTask */
+  private $linksTask;
+
   public function __construct(
     WPFunctions $wp = null,
     PostsTask $postsTask = null,
@@ -73,6 +76,7 @@ class Newsletter {
     $this->emoji = $emoji;
     $this->renderer = ContainerWrapper::getInstance()->get(Renderer::class);
     $this->newslettersRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
+    $this->linksTask = ContainerWrapper::getInstance()->get(LinksTask::class);
   }
 
   public function getNewsletterFromQueue($queue) {
@@ -127,7 +131,7 @@ class Newsletter {
       );
       $renderedNewsletter = $this->gaTracking->applyGATracking($renderedNewsletter, $newsletter);
       // hash and save all links
-      $renderedNewsletter = LinksTask::process($renderedNewsletter, $newsletter, $sendingTask);
+      $renderedNewsletter = $this->linksTask->process($renderedNewsletter, $newsletter, $sendingTask);
     } else {
       // render newsletter
       $renderedNewsletter = $this->renderer->render($newsletter, $sendingTask);

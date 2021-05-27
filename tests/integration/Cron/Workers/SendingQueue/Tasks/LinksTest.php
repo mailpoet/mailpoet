@@ -8,6 +8,14 @@ use MailPoet\Models\NewsletterLink;
 use MailPoetVendor\Idiorm\ORM;
 
 class LinksTest extends \MailPoetTest {
+  /** @var Links */
+  private $links;
+
+  protected function _before() {
+    parent::_before();
+    $this->links = $this->diContainer->get(Links::class);
+  }
+
   public function testItCanSaveLinks() {
     $links = [
       [
@@ -17,7 +25,7 @@ class LinksTest extends \MailPoetTest {
     ];
     $newsletter = (object)['id' => 1];
     $queue = (object)['id' => 2];
-    $result = Links::saveLinks($links, $newsletter, $queue);
+    $result = $this->links->saveLinks($links, $newsletter, $queue);
     $newsletterLink = NewsletterLink::where('hash', $links[0]['hash'])
       ->findOne();
     assert($newsletterLink instanceof NewsletterLink);
@@ -31,7 +39,7 @@ class LinksTest extends \MailPoetTest {
       'html' => '<a href="http://example.com">Example Link</a>',
       'text' => '<a href="http://example.com">Example Link</a>',
     ];
-    $result = Links::hashAndReplaceLinks($renderedNewsletter, 0, 0);
+    $result = $this->links->hashAndReplaceLinks($renderedNewsletter, 0, 0);
     $processedRenderedNewsletterBody = $result[0];
     $processedAndHashedLinks = $result[1];
     expect($processedRenderedNewsletterBody['html'])
@@ -50,7 +58,7 @@ class LinksTest extends \MailPoetTest {
       'text' => '<a href="http://example.com">Example Link</a>',
     ];
     $queue = (object)['id' => 2];
-    $result = Links::process($renderedNewsletter, $newsletter, $queue);
+    $result = $this->links->process($renderedNewsletter, $newsletter, $queue);
     $newsletterLink = NewsletterLink::where('newsletter_id', $newsletter->id)
       ->findOne();
     assert($newsletterLink instanceof NewsletterLink);
@@ -66,7 +74,7 @@ class LinksTest extends \MailPoetTest {
       'text' => '<a href="http://example.com">Example Link</a>',
     ];
     $queue = (object)['id' => 2];
-    Links::process($renderedNewsletter, $newsletter, $queue);
+    $this->links->process($renderedNewsletter, $newsletter, $queue);
     $unsubscribeCount = NewsletterLink::where('newsletter_id', $newsletter->id)
       ->where('url', NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE)->count();
     expect($unsubscribeCount)->equals(1);
