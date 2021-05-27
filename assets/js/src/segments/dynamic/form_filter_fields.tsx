@@ -1,18 +1,15 @@
 import React from 'react';
+import { useSelect } from '@wordpress/data';
 
 import {
-  FilterValue,
   SegmentTypes,
+  WordpressRoleFormItem,
 } from './types';
 
 import { EmailFields } from './dynamic_segments_filters/email';
 import { SubscriberFields } from './dynamic_segments_filters/subscriber';
 import { WooCommerceFields } from './dynamic_segments_filters/woocommerce';
 import { WooCommerceSubscriptionFields } from './dynamic_segments_filters/woocommerce_subscription';
-
-export interface FilterFieldsProps {
-  segmentType: FilterValue;
-}
 
 const filterFieldsMap = {
   [SegmentTypes.Email]: EmailFields,
@@ -21,11 +18,14 @@ const filterFieldsMap = {
   [SegmentTypes.WooCommerceSubscription]: WooCommerceSubscriptionFields,
 };
 
-export const FormFilterFields: React.FunctionComponent<FilterFieldsProps> = ({
-  segmentType,
-}) => {
-  if (filterFieldsMap[segmentType.group] === undefined) return null;
-  const Component = filterFieldsMap[segmentType.group];
+export const FormFilterFields: React.FunctionComponent = () => {
+  const segment: WordpressRoleFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
+    []
+  );
+
+  if (filterFieldsMap[segment.segmentType] === undefined) return null;
+  const Component = filterFieldsMap[segment.segmentType];
 
   return (
     <Component />

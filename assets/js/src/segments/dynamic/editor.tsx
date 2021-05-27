@@ -12,17 +12,10 @@ import MailPoet from 'mailpoet';
 import Background from 'common/background/background';
 import Heading from 'common/typography/heading/heading';
 import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
-import { EmailSegmentOptions } from './dynamic_segments_filters/email';
-import { WooCommerceOptions } from './dynamic_segments_filters/woocommerce';
-import { SubscriberSegmentOptions } from './dynamic_segments_filters/subscriber';
-import { WooCommerceSubscriptionOptions } from './dynamic_segments_filters/woocommerce_subscription';
 import { Form } from './form';
 
 import {
   AnyFormItem,
-  FilterValue,
-  GroupFilterValue,
-  SubscriberActionTypes,
 } from './types';
 import APIErrorsNotice from '../../notices/api_errors_notice';
 
@@ -42,14 +35,8 @@ const messages = {
 
 const Editor: React.FunctionComponent = () => {
   const [errors, setErrors] = useState([]);
-  const [segmentType, setSegmentType] = useState<FilterValue | undefined>(undefined);
   const match = useRouteMatch<{id: string}>();
   const history = useHistory();
-
-  const canUseWooSubscriptions: boolean = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').canUseWooSubscriptions(),
-    []
-  );
 
   const segment: AnyFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
@@ -58,56 +45,7 @@ const Editor: React.FunctionComponent = () => {
 
   const { setSegment } = useDispatch('mailpoet-dynamic-segments-form');
 
-  function getAvailableFilters(): GroupFilterValue[] {
-    const filters: GroupFilterValue[] = [
-      {
-        label: MailPoet.I18n.t('email'),
-        options: EmailSegmentOptions,
-      },
-      {
-        label: MailPoet.I18n.t('wpUserRole'),
-        options: SubscriberSegmentOptions,
-      },
-    ];
-    if (MailPoet.isWoocommerceActive) {
-      filters.push({
-        label: MailPoet.I18n.t('woocommerce'),
-        options: WooCommerceOptions,
-      });
-    }
-    if (MailPoet.isWoocommerceActive && canUseWooSubscriptions) {
-      filters.push({
-        label: MailPoet.I18n.t('woocommerceSubscriptions'),
-        options: WooCommerceSubscriptionOptions,
-      });
-    }
-    return filters;
-  }
-
-  const segmentFilters = getAvailableFilters();
-
   useEffect(() => {
-    function findSegmentType(itemSearch): FilterValue | undefined {
-      let found: FilterValue | undefined;
-      if (itemSearch.action === undefined) {
-        // bc compatibility, the wordpress user role segment doesn't have action
-        return SubscriberSegmentOptions.find(
-          (value) => value.value === SubscriberActionTypes.WORDPRESS_ROLE
-        );
-      }
-
-      segmentFilters.forEach((filter: GroupFilterValue) => {
-        filter.options.forEach((option: FilterValue) => {
-          if (option.group === itemSearch.segmentType) {
-            if (itemSearch.action === option.value) {
-              found = option;
-            }
-          }
-        });
-      });
-      return found;
-    }
-
     function convertSavedData(data: {
       [key: string]: string | number;
     }): AnyFormItem {
@@ -134,7 +72,6 @@ const Editor: React.FunctionComponent = () => {
             history.push('/segments');
           } else {
             setSegment(convertSavedData(response.data));
-            setSegmentType(findSegmentType(response.data));
           }
         })
         .fail(() => {
@@ -145,7 +82,7 @@ const Editor: React.FunctionComponent = () => {
     if (match.params.id !== undefined) {
       loadSegment(match.params.id);
     }
-  }, [setSegment, segmentFilters, match.params.id, history]);
+  }, [setSegment, match.params.id, history]);
 
   function handleSave(e: Event): void {
     e.preventDefault();
@@ -181,9 +118,6 @@ const Editor: React.FunctionComponent = () => {
 
       <Form
         onSave={handleSave}
-        segmentType={segmentType}
-        onSegmentTypeChange={setSegmentType}
-        segmentFilters={segmentFilters}
       />
     </>
   );

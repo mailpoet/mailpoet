@@ -15,27 +15,52 @@ import {
   AnyFormItem,
   FilterValue,
   GroupFilterValue,
+  SubscriberActionTypes,
 } from './types';
+import { SubscriberSegmentOptions } from './dynamic_segments_filters/subscriber';
+import { getAvailableFilters } from './all_available_filters';
 
 interface Props {
   onSave: (Event) => void;
-  segmentType: FilterValue | undefined;
-  onSegmentTypeChange: (FilterValue) => void;
-  segmentFilters: GroupFilterValue[];
 }
 
 export const Form: React.FunctionComponent<Props> = ({
   onSave,
-  segmentType,
-  onSegmentTypeChange,
-  segmentFilters,
 }) => {
   const segment: AnyFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
     []
   );
 
+  const canUseWooSubscriptions: boolean = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').canUseWooSubscriptions(),
+    []
+  );
+
   const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+
+  function findSegmentType(itemSearch): FilterValue | undefined {
+    let found: FilterValue | undefined;
+    if (itemSearch.action === undefined) {
+      // bc compatibility, the wordpress user role segment doesn't have action
+      return SubscriberSegmentOptions.find(
+        (value) => value.value === SubscriberActionTypes.WORDPRESS_ROLE
+      );
+    }
+
+    segmentFilters.forEach((filter: GroupFilterValue) => {
+      filter.options.forEach((option: FilterValue) => {
+        if (option.group === itemSearch.segmentType) {
+          if (itemSearch.action === option.value) {
+            found = option;
+          }
+        }
+      });
+    });
+    return found;
+  }
+
+  const segmentFilters = getAvailableFilters(canUseWooSubscriptions);
 
   return (
     <form className="mailpoet_form">
@@ -87,21 +112,18 @@ export const Form: React.FunctionComponent<Props> = ({
           <Select
             placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
             options={segmentFilters}
-            value={segmentType}
+            value={findSegmentType(segment)}
             onChange={(newValue: FilterValue): void => {
               updateSegment({
                 segmentType: newValue.group,
                 action: newValue.value,
               });
-              onSegmentTypeChange(newValue);
             }}
             automationId="select-segment-action"
             isFullWidth
           />
-          {segmentType !== undefined && (
-            <FormFilterFields
-              segmentType={segmentType}
-            />
+          {segment.segmentType !== undefined && (
+            <FormFilterFields />
           )}
         </div>
         <SubscribersCounter />
