@@ -408,7 +408,8 @@ class Pages {
       ? htmlspecialchars($params['text'])
       : $this->wp->__('Manage your subscription', 'mailpoet')
     );
+    $subscriberEntity = $this->subscribersRepository->findOneById($this->subscriber->id);
 
-    return '<a href="' . $this->subscriptionUrlFactory->getManageUrl($this->subscriber) . '">' . $text . '</a>';
+    return '<a href="' . $this->subscriptionUrlFactory->getManageUrl($subscriberEntity) . '">' . $text . '</a>';
   }
 }
