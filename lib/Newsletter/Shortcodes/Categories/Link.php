@@ -52,7 +52,7 @@ class Link implements CategoryInterface {
       case 'subscription_unsubscribe_url':
         return self::processUrl(
           $shortcodeDetails['action'],
-          $subscriptionUrlFactory->getConfirmUnsubscribeUrl($wpUserPreview ? null : $subscriberModel, self::getSendingQueueId($queue)),
+          $subscriptionUrlFactory->getConfirmUnsubscribeUrl($wpUserPreview ? null : $subscriber, self::getSendingQueueId($queue)),
           $queue,
           $wpUserPreview
         );
@@ -60,7 +60,7 @@ class Link implements CategoryInterface {
       case 'subscription_instant_unsubscribe_url':
         return self::processUrl(
           $shortcodeDetails['action'],
-          $subscriptionUrlFactory->getUnsubscribeUrl($wpUserPreview ? null : $subscriberModel, self::getSendingQueueId($queue)),
+          $subscriptionUrlFactory->getUnsubscribeUrl($wpUserPreview ? null : $subscriber, self::getSendingQueueId($queue)),
           $queue,
           $wpUserPreview
         );
@@ -68,7 +68,7 @@ class Link implements CategoryInterface {
       case 'subscription_manage_url':
         return self::processUrl(
           $shortcodeDetails['action'],
-          $subscriptionUrlFactory->getManageUrl($wpUserPreview ? null : $subscriberModel),
+          $subscriptionUrlFactory->getManageUrl($wpUserPreview ? null : $subscriber),
           $queue,
           $wpUserPreview
         );
@@ -120,13 +120,13 @@ class Link implements CategoryInterface {
     $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     switch ($shortcodeAction) {
       case 'subscription_unsubscribe_url':
-        $url = $subscriptionUrlFactory->getConfirmUnsubscribeUrl($subscriberModel, self::getSendingQueueId($queue));
+        $url = $subscriptionUrlFactory->getConfirmUnsubscribeUrl($subscriber, self::getSendingQueueId($queue));
         break;
       case 'subscription_instant_unsubscribe_url':
-        $url = $subscriptionUrlFactory->getUnsubscribeUrl($subscriberModel, self::getSendingQueueId($queue));
+        $url = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber, self::getSendingQueueId($queue));
         break;
       case 'subscription_manage_url':
-        $url = $subscriptionUrlFactory->getManageUrl($subscriberModel);
+        $url = $subscriptionUrlFactory->getManageUrl($subscriber);
         break;
       case 'newsletter_view_in_browser_url':
         $url = $this->newsletterUrl->getViewInBrowserUrl(

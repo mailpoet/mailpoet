@@ -3,7 +3,7 @@
 namespace MailPoet\Subscription;
 
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\Subscriber;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Router\Endpoints\Subscription as SubscriptionEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Settings\Pages as SettingsPages;
@@ -46,23 +46,23 @@ class SubscriptionUrlFactory {
     );
   }
 
-  public function getConfirmationUrl(Subscriber $subscriber = null) {
+  public function getConfirmationUrl(SubscriberEntity $subscriber = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.confirmation'));
     return $this->getSubscriptionUrl($post, 'confirm', $subscriber);
   }
 
-  public function getConfirmUnsubscribeUrl(Subscriber $subscriber = null, int $queueId = null) {
+  public function getConfirmUnsubscribeUrl(SubscriberEntity $subscriber = null, int $queueId = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.confirm_unsubscribe'));
     $data = $queueId && $subscriber ? ['queueId' => $queueId] : null;
     return $this->getSubscriptionUrl($post, 'confirm_unsubscribe', $subscriber, $data);
   }
 
-  public function getManageUrl(Subscriber $subscriber = null) {
+  public function getManageUrl(SubscriberEntity $subscriber = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.manage'));
     return $this->getSubscriptionUrl($post, 'manage', $subscriber);
   }
 
-  public function getUnsubscribeUrl(Subscriber $subscriber = null, int $queueId = null) {
+  public function getUnsubscribeUrl(SubscriberEntity $subscriber = null, int $queueId = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.unsubscribe'));
     $data = $queueId && $subscriber ? ['queueId' => $queueId] : null;
     return $this->getSubscriptionUrl($post, 'unsubscribe', $subscriber, $data);
@@ -71,7 +71,7 @@ class SubscriptionUrlFactory {
   public function getSubscriptionUrl(
     $post = null,
     $action = null,
-    Subscriber $subscriber = null,
+    SubscriberEntity $subscriber = null,
     $data = null
   ) {
     if ($post === null || $action === null) return;
@@ -80,7 +80,7 @@ class SubscriptionUrlFactory {
     if ($subscriber !== null) {
       $subscriberData = [
         'token' => $this->linkTokens->getToken($subscriber),
-        'email' => $subscriber->email,
+        'email' => $subscriber->getEmail(),
       ];
       $data = array_merge($data ?? [], $subscriberData);
     } elseif (is_null($data)) {
