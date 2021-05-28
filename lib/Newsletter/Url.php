@@ -2,23 +2,38 @@
 
 namespace MailPoet\Newsletter;
 
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Router\Endpoints\ViewInBrowser as ViewInBrowserEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Subscribers\SubscribersRepository;
 
 class Url {
-  public static function getViewInBrowserUrl(
+  /** @var LinkTokens */
+  private $linkTokens;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  public function __construct(LinkTokens $linkTokens, SubscribersRepository $subscribersRepository) {
+    $this->linkTokens = $linkTokens;
+    $this->subscribersRepository = $subscribersRepository;
+  }
+
+  public function getViewInBrowserUrl(
     $newsletter,
     $subscriber = false,
     $queue = false,
     bool $preview = true
   ) {
-    $linkTokens = new LinkTokens;
     if ($subscriber instanceof SubscriberModel) {
-      $subscriber->token = $linkTokens->getToken($subscriber);
+      $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
+      if ($subscriberEntity instanceof SubscriberEntity) {
+        $subscriber->token = $this->linkTokens->getToken($subscriberEntity);
+      }
     }
-    $data = self::createUrlDataObject($newsletter, $subscriber, $queue, $preview);
+    $data = $this->createUrlDataObject($newsletter, $subscriber, $queue, $preview);
     return Router::buildRequest(
       ViewInBrowserEndpoint::ENDPOINT,
       ViewInBrowserEndpoint::ACTION_VIEW,
@@ -26,7 +41,7 @@ class Url {
     );
   }
 
-  public static function createUrlDataObject($newsletter, $subscriber, $queue, $preview) {
+  public function createUrlDataObject($newsletter, $subscriber, $queue, $preview) {
     return [
       (!empty($newsletter->id)) ?
         (int)$newsletter->id :
@@ -47,7 +62,7 @@ class Url {
     ];
   }
 
-  public static function transformUrlDataObject($data) {
+  public function transformUrlDataObject($data) {
     reset($data);
     if (!is_int(key($data))) return $data;
     $transformedData = [];

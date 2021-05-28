@@ -8,8 +8,8 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Url;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -39,12 +39,16 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /** @var Url */
+  private $newsletterUrl;
+
   public function _before() {
     // instantiate class
     $this->viewInBrowserController = $this->diContainer->get(ViewInBrowserController::class);
     $this->linkTokens = $this->diContainer->get(LinkTokens::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $this->newsletterUrl = $this->diContainer->get(Url::class);
 
     // create newsletter
     $newsletter = Newsletter::create();
@@ -230,6 +234,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   private function createController($viewInBrowserRenderer): ViewInBrowserController {
     return new ViewInBrowserController(
       $this->linkTokens,
+      $this->newsletterUrl,
       $viewInBrowserRenderer,
       $this->sendingQueuesRepository,
       $this->subscribersRepository

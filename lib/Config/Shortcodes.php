@@ -25,16 +25,21 @@ class Shortcodes {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var NewsletterUrl */
+  private $newsletterUrl;
+
   public function __construct(
     Pages $subscriptionPages,
     WPFunctions $wp,
     SegmentSubscribersRepository $segmentSubscribersRepository,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    NewsletterUrl $newsletterUrl
   ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
     $this->segmentSubscribersRepository = $segmentSubscribersRepository;
     $this->subscribersRepository = $subscribersRepository;
+    $this->newsletterUrl = $newsletterUrl;
   }
 
   public function init() {
@@ -145,7 +150,7 @@ class Shortcodes {
   }
 
   public function renderArchiveSubject($newsletter, $subscriber, $queue) {
-    $previewUrl = NewsletterUrl::getViewInBrowserUrl($newsletter, $subscriber, $queue);
+    $previewUrl = $this->newsletterUrl->getViewInBrowserUrl($newsletter, $subscriber, $queue);
     return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'
       . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'
       . esc_attr($newsletter->newsletterRenderedSubject) .

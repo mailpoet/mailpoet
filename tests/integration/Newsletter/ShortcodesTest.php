@@ -37,10 +37,18 @@ class ShortcodesTest extends \MailPoetTest {
   /** @var SubscriptionUrlFactory */
   private $subscriptionUrlFactory;
 
+  /** @var LinkTokens */
+  private $linkTokens;
+
+  /** @var NewsletterUrl */
+  private $newsletterUrl;
+
   public function _before() {
     parent::_before();
     $this->cleanup();
     $this->settings = SettingsController::getInstance();
+    $this->linkTokens = $this->diContainer->get(LinkTokens::class);
+    $this->newsletterUrl = $this->diContainer->get(NewsletterUrl::class);
     $populator = $this->diContainer->get(Populator::class);
     $populator->up();
     $this->wPUser = $this->_createWPUser();
@@ -54,7 +62,7 @@ class ShortcodesTest extends \MailPoetTest {
     $this->shortcodesObject->setSubscriber($this->subscriber);
     $this->shortcodesObject->setWpUserPreview(false);
     $this->settings->set('tracking.enabled', false);
-    $this->subscriptionUrlFactory = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, new LinkTokens);
+    $this->subscriptionUrlFactory = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, $this->linkTokens);
     $this->entityManager->flush();
   }
 
@@ -292,7 +300,7 @@ class ShortcodesTest extends \MailPoetTest {
     $parsedUrlQuery = parse_url($link, PHP_URL_QUERY);
     $queryData = [];
     parse_str((string)$parsedUrlQuery, $queryData);
-    return NewsletterUrl::transformUrlDataObject(json_decode(base64_decode($queryData['data']), true));
+    return $this->newsletterUrl->transformUrlDataObject(json_decode(base64_decode($queryData['data']), true));
   }
 
   public function testItReturnsShortcodeWhenTrackingEnabled() {
@@ -346,7 +354,7 @@ class ShortcodesTest extends \MailPoetTest {
       $this->subscriptionUrlFactory->getConfirmUnsubscribeUrl(null),
       $this->subscriptionUrlFactory->getUnsubscribeUrl(null),
       $this->subscriptionUrlFactory->getManageUrl(null),
-      NewsletterUrl::getViewInBrowserUrl($newsletterModel),
+      $this->newsletterUrl->getViewInBrowserUrl($newsletterModel),
     ];
     $result = $shortcodesObject->process($shortcodes);
     // hash is returned
