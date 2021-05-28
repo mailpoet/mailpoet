@@ -40,3 +40,6 @@ export const getCustomFieldsList = (state: StateType): WindowCustomFields => (
 export const getSegment = (state: StateType): AnyFormItem => (
   state.segment
 );
+export const getErrors = (state: StateType): string[] => (
+  state.errors
+);

@@ -38,3 +38,23 @@ export async function LOAD_SEGMENT({ segmentId }: { segmentId: number }): Promis
     return { success: false, error, res };
   }
 }
+
+export async function SAVE_SEGMENT({ segment }: {segment: AnyFormItem }): Promise<{
+  success: boolean,
+  error?: string[],
+}> {
+  try {
+    await MailPoet.Ajax.post({
+      api_version: MailPoet.apiVersion,
+      endpoint: 'dynamic_segments',
+      action: 'save',
+      data: segment,
+    });
+    return {
+      success: true,
+    };
+  } catch (res) {
+    const error = res.errors.map((e) => e.message);
+    return { success: false, error };
+  }
+}

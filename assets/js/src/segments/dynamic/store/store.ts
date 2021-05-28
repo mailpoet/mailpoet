@@ -28,6 +28,7 @@ export const createStore = (): void => {
     wooCountries: window.mailpoet_woocommerce_countries,
     customFieldsList: window.mailpoet_custom_fields,
     segment: {},
+    errors: [],
   };
 
   const config = {

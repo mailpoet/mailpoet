@@ -146,10 +146,12 @@ export interface StateType {
   wooCountries: WindowWooCommerceCountries;
   customFieldsList: WindowCustomFields;
   segment: AnyFormItem,
+  errors: string[],
 }
 
 export enum Actions {
   SET_SEGMENT = 'SET_SEGMENT',
+  SET_ERRORS = 'SET_ERRORS',
   UPDATE_SEGMENT = 'UPDATE_SEGMENT',
 }
 
@@ -159,4 +161,8 @@ export interface ActionType {
 
 export interface SetSegmentActionType extends ActionType {
   segment: AnyFormItem;
+}
+
+export interface SetErrorsActionType extends ActionType {
+  errors: string[];
 }
