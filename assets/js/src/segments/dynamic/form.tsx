@@ -21,11 +21,11 @@ import { SubscriberSegmentOptions } from './dynamic_segments_filters/subscriber'
 import { getAvailableFilters } from './all_available_filters';
 
 interface Props {
-  onSave: (Event) => void;
+  segmentId?: number;
 }
 
 export const Form: React.FunctionComponent<Props> = ({
-  onSave,
+  segmentId,
 }) => {
   const segment: AnyFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
@@ -37,7 +37,7 @@ export const Form: React.FunctionComponent<Props> = ({
     []
   );
 
-  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegment, handleSave } = useDispatch('mailpoet-dynamic-segments-form');
 
   function findSegmentType(itemSearch): FilterValue | undefined {
     let found: FilterValue | undefined;
@@ -128,7 +128,7 @@ export const Form: React.FunctionComponent<Props> = ({
         </div>
         <SubscribersCounter />
         <div className="mailpoet-form-actions">
-          <Button type="submit" onClick={onSave} isDisabled={!isFormValid(segment)}>
+          <Button type="submit" onClick={(): void => { handleSave(segmentId); }} isDisabled={!isFormValid(segment)}>
             {MailPoet.I18n.t('save')}
           </Button>
         </div>

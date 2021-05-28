@@ -9,25 +9,23 @@ import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 import { Form } from './form';
 
 import APIErrorsNotice from '../../notices/api_errors_notice';
+import { createStore } from './store/store';
 
 const Editor: React.FunctionComponent = () => {
   const match = useRouteMatch<{id: string}>();
+
+  createStore();
 
   const errors: string[] = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getErrors(),
     []
   );
 
-  const { pageLoaded, handleSave } = useDispatch('mailpoet-dynamic-segments-form');
+  const { pageLoaded } = useDispatch('mailpoet-dynamic-segments-form');
 
   useEffect(() => {
     pageLoaded(match.params.id);
   }, [match.params.id, pageLoaded]);
-
-  function save(e: Event): void {
-    e.preventDefault();
-    handleSave(match.params.id);
-  }
 
   return (
     <>
@@ -42,9 +40,7 @@ const Editor: React.FunctionComponent = () => {
         <Link className="mailpoet-button mailpoet-button-small" to="/segments">{MailPoet.I18n.t('backToList')}</Link>
       </Heading>
 
-      <Form
-        onSave={save}
-      />
+      <Form segmentId={Number(match.params.id)} />
     </>
   );
 };

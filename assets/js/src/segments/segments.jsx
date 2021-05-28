@@ -15,8 +15,6 @@ import Editor from './dynamic/editor';
 import DynamicSegmentList from './dynamic/list.jsx';
 import ListHeading from './heading';
 
-import { createStore } from './dynamic/store/store';
-
 const container = document.getElementById('segments_container');
 
 const Tabs = () => (
@@ -42,25 +40,22 @@ const Tabs = () => (
   </>
 );
 
-const App = () => {
-  createStore();
-  return (
-    <GlobalContext.Provider value={useGlobalContextValue(window)}>
-      <HashRouter>
-        <Notices />
-        <Switch>
-          <Route exact path="/" render={() => <Redirect to="/lists" />} />
-          <Route path="/new" component={SegmentForm} />
-          <Route path="/edit/:id" component={SegmentForm} />
-          <Route path="/new-segment" component={Editor} />
-          <Route path="/edit-segment/:id" component={Editor} />
-          <Route path="/segments/(.*)?" component={Tabs} />
-          <Route path="/lists/(.*)?" component={Tabs} />
-        </Switch>
-      </HashRouter>
-    </GlobalContext.Provider>
-  );
-};
+const App = () => (
+  <GlobalContext.Provider value={useGlobalContextValue(window)}>
+    <HashRouter>
+      <Notices />
+      <Switch>
+        <Route exact path="/" render={() => <Redirect to="/lists" />} />
+        <Route path="/new" component={SegmentForm} />
+        <Route path="/edit/:id" component={SegmentForm} />
+        <Route path="/new-segment" component={Editor} />
+        <Route path="/edit-segment/:id" component={Editor} />
+        <Route path="/segments/(.*)?" component={Tabs} />
+        <Route path="/lists/(.*)?" component={Tabs} />
+      </Switch>
+    </HashRouter>
+  </GlobalContext.Provider>
+);
 
 if (container) {
   ReactDOM.render(<App />, container);
