@@ -52,6 +52,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $mailer,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
       $subcriptionUrlFacroryMock
     );
 
@@ -95,6 +96,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $mailer,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class)
     );
 
@@ -122,6 +124,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $mailer,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class)
     );
 
@@ -149,6 +152,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $mailer,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class)
     );
 
@@ -177,6 +181,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $mailer,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscriptionUrlFactory::class)
     );
 

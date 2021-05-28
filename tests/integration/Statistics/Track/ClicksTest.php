@@ -68,7 +68,7 @@ class ClicksTest extends \MailPoetTest {
     $this->entityManager->persist($link);
     $this->entityManager->flush();
     $subscriberModel = Subscriber::findOne($subscriber->getId());
-    $linkTokens = new LinkTokens;
+    $linkTokens = $this->diContainer->get(LinkTokens::class);
     // build track data
     $this->trackData = (object)[
       'queue' => $queue,

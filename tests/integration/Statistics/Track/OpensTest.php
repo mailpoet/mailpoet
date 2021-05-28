@@ -59,7 +59,7 @@ class OpensTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->queue = $queue;
-    $linkTokens = new LinkTokens;
+    $linkTokens = $this->diContainer->get(LinkTokens::class);
     // build track data
     $this->trackData = (object)[
       'queue' => $queue,
