@@ -10,6 +10,7 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingThrottlingHandler;
+use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as TasksLinks;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
@@ -79,6 +80,8 @@ class SendingQueueTest extends \MailPoetTest {
   private $segmentsRepository;
   /** @var WPFunctions */
   private $wp;
+  /** @var TasksLinks */
+  private $tasksLinks;
 
   public function _before() {
     parent::_before();
@@ -131,6 +134,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->cronHelper = $this->diContainer->get(CronHelper::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
+    $this->tasksLinks = $this->diContainer->get(TasksLinks::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker(Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]));
   }
 
@@ -139,8 +143,9 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   private function getTrackedUnsubscribeURL() {
-    $linkTokens = new LinkTokens;
-    $data = Links::createUrlDataObject(
+    $linkTokens = $this->diContainer->get(LinkTokens::class);
+    $links = $this->diContainer->get(Links::class);
+    $data = $links->createUrlDataObject(
       $this->subscriber->id,
       $linkTokens->getToken($this->subscriber),
       $this->queue->id,
@@ -181,7 +186,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->cronHelper,
       $this->subscribersFinder,
       $this->segmentsRepository,
-      $this->wp
+      $this->wp,
+      $this->tasksLinks
     );
     try {
       $sendingQueueWorker->process();
@@ -207,6 +213,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersFinder,
       $this->segmentsRepository,
       $this->wp,
+      $this->tasksLinks,
       Stub::make(
         new MailerTask(),
         [
@@ -249,6 +256,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersFinder,
       $this->segmentsRepository,
       $this->wp,
+      $this->tasksLinks,
       Stub::make(
         new MailerTask(),
         [
@@ -289,7 +297,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->cronHelper,
       $this->subscribersFinder,
       $this->segmentsRepository,
-      $this->wp
+      $this->wp,
+      $this->tasksLinks
     );
     $sendingQueueWorker->process();
   }
@@ -1021,6 +1030,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersFinder,
       $this->segmentsRepository,
       $this->wp,
+      $this->tasksLinks,
       $mailerMock
     );
   }

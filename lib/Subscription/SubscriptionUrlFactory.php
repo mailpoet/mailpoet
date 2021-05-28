@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Subscriber;
 use MailPoet\Router\Endpoints\Subscription as SubscriptionEndpoint;
 use MailPoet\Router\Router;
@@ -111,7 +112,8 @@ class SubscriptionUrlFactory {
    */
   public static function getInstance() {
     if (!self::$instance instanceof SubscriptionUrlFactory) {
-      self::$instance = new SubscriptionUrlFactory(new WPFunctions, SettingsController::getInstance(), new LinkTokens);
+      $linkTokens = ContainerWrapper::getInstance()->get(LinkTokens::class);
+      self::$instance = new SubscriptionUrlFactory(new WPFunctions, SettingsController::getInstance(), $linkTokens);
     }
     return self::$instance;
   }

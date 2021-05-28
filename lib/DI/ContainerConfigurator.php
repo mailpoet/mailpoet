@@ -320,6 +320,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\NewslettersRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\AutomaticEmailsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\NewsletterHtmlSanitizer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Newsletter\Links\Links::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Listing\NewsletterListingRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Options\NewsletterOptionsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository::class)->setPublic(true);
@@ -353,6 +354,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\Sending\SendingQueuesRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\ViewInBrowser\ViewInBrowserController::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\ViewInBrowser\ViewInBrowserRenderer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Statistics\GATracking::class)->setPublic(true);
     // Newsletter templates
     $container->autowire(\MailPoet\NewsletterTemplates\NewsletterTemplatesRepository::class)->setPublic(true);
     // Util
