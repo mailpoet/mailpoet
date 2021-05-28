@@ -6,6 +6,7 @@ import { registerStore } from '@wordpress/data';
 import * as selectors from './selectors';
 import { createReducer } from './reducer';
 import * as actions from './actions';
+import * as controls from './controls';
 
 import {
   StateType,
@@ -32,6 +33,7 @@ export const createStore = (): void => {
   const config = {
     selectors,
     actions,
+    controls,
     reducer: createReducer(defaultState),
     resolvers: {},
   };
