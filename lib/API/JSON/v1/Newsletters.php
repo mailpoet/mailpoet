@@ -72,6 +72,9 @@ class Newsletters extends APIEndpoint {
   /** @var NewsletterSaveController */
   private $newsletterSaveController;
 
+  /** @var NewsletterUrl */
+  private $newsletterUrl;
+
   public function __construct(
     Listing\Handler $listingHandler,
     WPFunctions $wp,
@@ -84,7 +87,8 @@ class Newsletters extends APIEndpoint {
     Emoji $emoji,
     SubscribersFeature $subscribersFeature,
     SendPreviewController $sendPreviewController,
-    NewsletterSaveController $newsletterSaveController
+    NewsletterSaveController $newsletterSaveController,
+    NewsletterUrl $newsletterUrl
   ) {
     $this->listingHandler = $listingHandler;
     $this->wp = $wp;
@@ -98,6 +102,7 @@ class Newsletters extends APIEndpoint {
     $this->subscribersFeature = $subscribersFeature;
     $this->sendPreviewController = $sendPreviewController;
     $this->newsletterSaveController = $newsletterSaveController;
+    $this->newsletterUrl = $newsletterUrl;
   }
 
   public function get($data = []) {
@@ -375,7 +380,7 @@ class Newsletters extends APIEndpoint {
 
   private function getViewInBrowserUrl(NewsletterEntity $newsletter): string {
     $this->fixMissingHash([$newsletter]); // Fix for MAILPOET-3275. Remove after May 2021
-    $url = NewsletterUrl::getViewInBrowserUrl(
+    $url = $this->newsletterUrl->getViewInBrowserUrl(
       (object)[
         'id' => $newsletter->getId(),
         'hash' => $newsletter->getHash(),

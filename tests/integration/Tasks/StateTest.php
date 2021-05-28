@@ -6,6 +6,7 @@ use MailPoet\Cron\Workers\SendingQueue\Migration;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\Url;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\State;
 use MailPoetVendor\Idiorm\ORM;
@@ -17,7 +18,9 @@ class StateTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->tasksState = new State();
+    $this->tasksState = new State(
+      $this->diContainer->get(Url::class)
+    );
   }
 
   public function testItCanFetchBasicTasksData() {

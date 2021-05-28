@@ -19,14 +19,19 @@ class Link implements CategoryInterface {
   /** @var SettingsController */
   private $settings;
 
+  /** @var NewsletterUrl */
+  private $newsletterUrl;
+
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
     SettingsController $settings,
+    NewsletterUrl $newsletterUrl,
     WPFunctions $wp
   ) {
     $this->settings = $settings;
+    $this->newsletterUrl = $newsletterUrl;
     $this->wp = $wp;
   }
 
@@ -69,7 +74,7 @@ class Link implements CategoryInterface {
         );
 
       case 'newsletter_view_in_browser_url':
-        $url = NewsletterUrl::getViewInBrowserUrl(
+        $url = $this->newsletterUrl->getViewInBrowserUrl(
           $newsletterModel,
           $wpUserPreview ? null : $subscriberModel,
           $queueModel,
@@ -124,7 +129,7 @@ class Link implements CategoryInterface {
         $url = $subscriptionUrlFactory->getManageUrl($subscriberModel);
         break;
       case 'newsletter_view_in_browser_url':
-        $url = NewsletterUrl::getViewInBrowserUrl(
+        $url = $this->newsletterUrl->getViewInBrowserUrl(
           $newsletterModel,
           $subscriberModel,
           $queueModel,

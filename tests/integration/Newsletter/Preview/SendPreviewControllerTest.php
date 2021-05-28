@@ -24,10 +24,14 @@ class SendPreviewControllerTest extends \MailPoetTest {
   /** @var NewsletterEntity */
   private $newsletter;
 
+  /** @var Url */
+  private $newsletterUrl;
+
   public function _before() {
     parent::_before();
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
+    $this->newsletterUrl = $this->diContainer->get(Url::class);
     $this->subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
     $newsletter = new NewsletterEntity();
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
@@ -47,7 +51,7 @@ class SendPreviewControllerTest extends \MailPoetTest {
     $wpUser->ID = 5;
     $wp = $this->make(WPFunctions::class, ['wpGetCurrentUser' => $wpUser]);
     WPFunctions::set($wp);
-    
+
     $this->newsletter = $newsletter;
   }
 
@@ -61,7 +65,7 @@ class SendPreviewControllerTest extends \MailPoetTest {
         function ($newsletter, $subscriber, $extraParams) {
           $unsubscribeLink = $this->subscriptionUrlFactory->getConfirmUnsubscribeUrl(null);
           $manageLink = $this->subscriptionUrlFactory->getManageUrl(null);
-          $viewInBrowserLink = Url::getViewInBrowserUrl(
+          $viewInBrowserLink = $this->newsletterUrl->getViewInBrowserUrl(
             (object)[
               'id' => $this->newsletter->getId(),
               'hash' => $this->newsletter->getHash(),

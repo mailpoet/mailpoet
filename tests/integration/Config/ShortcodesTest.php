@@ -1,10 +1,9 @@
 <?php
 
-namespace MailPoet\Test\Config;
+namespace MailPoet\Config;
 
 use Codeception\Util\Fixtures;
 use Helper\WordPress;
-use MailPoet\Config\Shortcodes;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
@@ -20,8 +19,12 @@ class ShortcodesTest extends \MailPoetTest {
   public $queue;
   public $newsletter;
 
+  /** @var Url */
+  private $newsletterUrl;
+
   public function _before() {
     parent::_before();
+    $this->newsletterUrl = $this->diContainer->get(Url::class);
     $newsletter = Newsletter::create();
     $newsletter->type = Newsletter::TYPE_STANDARD;
     $newsletter->status = Newsletter::STATUS_SENT;
@@ -55,7 +58,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($link)->stringContainsString('endpoint=view_in_browser');
     $parsedLink = parse_url($link, PHP_URL_QUERY);
     parse_str(html_entity_decode((string)$parsedLink), $data);
-    $requestData = Url::transformUrlDataObject(
+    $requestData = $this->newsletterUrl->transformUrlDataObject(
       Router::decodeRequestData($data['data'])
     );
     expect($requestData['newsletter_hash'])->equals($this->newsletter->hash);

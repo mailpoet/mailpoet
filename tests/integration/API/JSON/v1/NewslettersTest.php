@@ -79,6 +79,9 @@ class NewslettersTest extends \MailPoetTest {
   /** @var NewslettersResponseBuilder */
   private $newslettersResponseBuilder;
 
+  /** @var Url */
+  private $newsletterUrl;
+
   public function _before() {
     parent::_before();
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
@@ -88,6 +91,7 @@ class NewslettersTest extends \MailPoetTest {
     $this->segmentRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
     $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
     $this->newslettersResponseBuilder = ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class);
+    $this->newsletterUrl = ContainerWrapper::getInstance()->get(Url::class);
     $this->endpoint = Stub::copy(
       ContainerWrapper::getInstance()->get(Newsletters::class),
       [
@@ -97,7 +101,8 @@ class NewslettersTest extends \MailPoetTest {
           new NewsletterStatisticsRepository(
             $this->diContainer->get(EntityManager::class),
             $this->makeEmpty(WCHelper::class)
-          )
+          ),
+          $this->diContainer->get(Url::class)
         ),
       ]
     );
@@ -175,7 +180,7 @@ class NewslettersTest extends \MailPoetTest {
       'subscribersFeature' => Stub::make(SubscribersFeature::class),
     ]);
     $response = $this->endpoint->get(['id' => $this->newsletter->getId()]);
-    
+
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
     assert($newsletter instanceof NewsletterEntity);
@@ -648,7 +653,7 @@ class NewslettersTest extends \MailPoetTest {
     $response = $this->endpoint->listing();
     $previewLink = $response->data[0]['preview_url'];
     parse_str((string)parse_url($previewLink, PHP_URL_QUERY), $previewLinkData);
-    $previewLinkData = Url::transformUrlDataObject(Router::decodeRequestData($previewLinkData['data']));
+    $previewLinkData = $this->newsletterUrl->transformUrlDataObject(Router::decodeRequestData($previewLinkData['data']));
     expect($previewLinkData['newsletter_hash'])->notEmpty();
     expect($previewLinkData['subscriber_id'])->false();
     expect($previewLinkData['subscriber_token'])->false();
@@ -680,7 +685,8 @@ class NewslettersTest extends \MailPoetTest {
       $mocks['emoji'] ?? $this->diContainer->get(Emoji::class),
       $mocks['subscribersFeature'] ?? $this->diContainer->get(SubscribersFeature::class),
       $mocks['sendPreviewController'] ?? $this->diContainer->get(SendPreviewController::class),
-      $this->diContainer->get(NewsletterSaveController::class)
+      $this->diContainer->get(NewsletterSaveController::class),
+      $this->diContainer->get(Url::class)
     );
   }
 
@@ -710,7 +716,7 @@ class NewslettersTest extends \MailPoetTest {
       $optionField = $this->newsletterOptionFieldsRepository->findOneBy(['name' => $name]);
       assert($optionField instanceof NewsletterOptionFieldEntity);
       $option = new NewsletterOptionEntity($newsletter, $optionField);
-      $newsletter->getOptions()->add($option);      
+      $newsletter->getOptions()->add($option);
     }
     $option->setValue($value);
     $this->newsletterOptionsRepository->persist($option);

@@ -13,6 +13,9 @@ class ViewInBrowserController {
   /** @var LinkTokens */
   private $linkTokens;
 
+  /** @var NewsletterUrl */
+  private $newsletterUrl;
+
   /** @var ViewInBrowserRenderer */
   private $viewInBrowserRenderer;
 
@@ -24,6 +27,7 @@ class ViewInBrowserController {
 
   public function __construct(
     LinkTokens $linkTokens,
+    NewsletterUrl $newsletterUrl,
     ViewInBrowserRenderer $viewInBrowserRenderer,
     SendingQueuesRepository $sendingQueuesRepository,
     SubscribersRepository $subscribersRepository
@@ -32,10 +36,11 @@ class ViewInBrowserController {
     $this->viewInBrowserRenderer = $viewInBrowserRenderer;
     $this->subscribersRepository = $subscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
+    $this->newsletterUrl = $newsletterUrl;
   }
 
   public function view(array $data) {
-    $data = NewsletterUrl::transformUrlDataObject($data);
+    $data = $this->newsletterUrl->transformUrlDataObject($data);
     $isPreview = !empty($data['preview']);
     $newsletter = $this->getNewsletter($data);
     $subscriber = $this->getSubscriber($data);

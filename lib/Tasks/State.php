@@ -10,6 +10,13 @@ use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoetVendor\Carbon\Carbon;
 
 class State {
+  /** @var NewsletterUrl */
+  private $newsletterUrl;
+
+  public function __construct(NewsletterUrl $newsletterUrl) {
+    $this->newsletterUrl = $newsletterUrl;
+  }
+
   /**
    * @return array
    */
@@ -88,7 +95,7 @@ class State {
         'newsletter_id' => (int)$queue->newsletterId,
         'queue_id' => (int)$queue->id,
         'subject' => $queue->newsletterRenderedSubject ?: $newsletter->subject,
-        'preview_url' => NewsletterUrl::getViewInBrowserUrl(
+        'preview_url' => $this->newsletterUrl->getViewInBrowserUrl(
           $newsletter,
           null,
           $queue
