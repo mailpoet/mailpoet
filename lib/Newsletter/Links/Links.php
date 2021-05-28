@@ -3,13 +3,14 @@
 namespace MailPoet\Newsletter\Links;
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\InvalidStateException;
 use MailPoet\Models\NewsletterLink;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Router\Endpoints\Track as TrackEndpoint;
 use MailPoet\Router\Router;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\pQuery\pQuery as DomParser;
 use MailPoet\Util\Security;
@@ -20,14 +21,25 @@ class Links {
   const LINK_TYPE_SHORTCODE = 'shortcode';
   const LINK_TYPE_URL = 'link';
 
-  public static function process($content, $newsletterId, $queueId) {
-    $extractedLinks = self::extract($content);
-    $savedLinks = self::load($newsletterId, $queueId);
-    $processedLinks = self::hash($extractedLinks, $savedLinks);
-    return self::replace($content, $processedLinks);
+  /** @var LinkTokens */
+  private $linkTokens;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  public function __construct(LinkTokens $linkTokens, SubscribersRepository $subscribersRepository) {
+    $this->linkTokens = $linkTokens;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
-  public static function extract($content) {
+  public function process($content, $newsletterId, $queueId) {
+    $extractedLinks = $this->extract($content);
+    $savedLinks = $this->load($newsletterId, $queueId);
+    $processedLinks = $this->hash($extractedLinks, $savedLinks);
+    return $this->replace($content, $processedLinks);
+  }
+
+  public function extract($content) {
     $extractedLinks = [];
     // extract link shortcodes
     /** @var Shortcodes $shortcodes */
@@ -56,7 +68,7 @@ class Links {
     return array_unique($extractedLinks, SORT_REGULAR);
   }
 
-  public static function replace($content, $processedLinks) {
+  public function replace($content, $processedLinks) {
     // replace HTML anchor tags
     $DOM = DomParser::parseStr($content);
     foreach ($DOM->query('a') as $link) {
@@ -87,24 +99,26 @@ class Links {
     ];
   }
 
-  public static function replaceSubscriberData(
+  public function replaceSubscriberData(
     $subscriberId,
     $queueId,
     $content,
     $preview = false
   ) {
     // match data tags
-    $subscriber = Subscriber::findOne($subscriberId);
-    preg_match_all(self::getLinkRegex(), $content, $matches);
+    $subscriber = $this->subscribersRepository->findOneById($subscriberId);
+    if (!$subscriber) {
+      throw new InvalidStateException();
+    }
+    preg_match_all($this->getLinkRegex(), $content, $matches);
     foreach ($matches[1] as $index => $match) {
       $hash = null;
       if (preg_match('/-/', $match)) {
         [, $hash] = explode('-', $match);
       }
-      $linkTokens = new LinkTokens;
-      $data = self::createUrlDataObject(
-        $subscriber->id,
-        $linkTokens->getToken($subscriber),
+      $data = $this->createUrlDataObject(
+        $subscriber->getId(),
+        $this->linkTokens->getToken($subscriber),
         $queueId,
         $hash,
         $preview
@@ -122,7 +136,7 @@ class Links {
     return $content;
   }
 
-  public static function save(array $links, $newsletterId, $queueId) {
+  public function save(array $links, $newsletterId, $queueId) {
     foreach ($links as $link) {
       if (isset($link['id']))
         continue;
@@ -136,22 +150,22 @@ class Links {
     }
   }
 
-  public static function ensureInstantUnsubscribeLink(array $processedLinks) {
+  public function ensureInstantUnsubscribeLink(array $processedLinks) {
     if (in_array(
       NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
       array_column($processedLinks, 'link'))
     ) {
       return $processedLinks;
     }
-    $processedLinks[] = self::hashLink(
+    $processedLinks[] = $this->hashLink(
       NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
       Links::LINK_TYPE_SHORTCODE
     );
     return $processedLinks;
   }
 
-  public static function convertHashedLinksToShortcodesAndUrls($content, $queueId, $convertAll = false) {
-    preg_match_all(self::getLinkRegex(), $content, $links);
+  public function convertHashedLinksToShortcodesAndUrls($content, $queueId, $convertAll = false) {
+    preg_match_all($this->getLinkRegex(), $content, $links);
     $links = array_unique(Helpers::flattenArray($links));
     foreach ($links as $link) {
       $linkHash = explode('-', $link);
@@ -170,7 +184,7 @@ class Links {
     return $content;
   }
 
-  public static function getLinkRegex() {
+  public function getLinkRegex() {
     return sprintf(
       '/((%s|%s)(?:-\w+)?)/',
       preg_quote(self::DATA_TAG_CLICK),
@@ -178,7 +192,7 @@ class Links {
     );
   }
 
-  public static function createUrlDataObject(
+  public function createUrlDataObject(
     $subscriberId, $subscriberLinkToken, $queueId, $linkHash, $preview
   ) {
     return [
@@ -190,7 +204,7 @@ class Links {
     ];
   }
 
-  public static function transformUrlDataObject($data) {
+  public function transformUrlDataObject($data) {
     reset($data);
     if (!is_int(key($data))) return $data;
     $transformedData = [];
@@ -214,7 +228,7 @@ class Links {
     ];
   }
 
-  private static function hash($extractedLinks, $savedLinks) {
+  private function hash($extractedLinks, $savedLinks) {
     $processedLinks = array_map(function($link) {
       $link['type'] = Links::LINK_TYPE_URL;
       $link['link'] = $link['url'];
@@ -227,12 +241,12 @@ class Links {
         continue;
       // Use URL as a key to map between extracted and processed links
       // regardless of their sequential position (useful for link skips etc.)
-      $processedLinks[$link] = self::hashLink($link, $extractedLink['type']);
+      $processedLinks[$link] = $this->hashLink($link, $extractedLink['type']);
     }
     return $processedLinks;
   }
 
-  private static function load($newsletterId, $queueId) {
+  private function load($newsletterId, $queueId) {
     $links = NewsletterLink::whereEqual('newsletter_id', $newsletterId)
       ->whereEqual('queue_id', $queueId)
       ->findMany();
