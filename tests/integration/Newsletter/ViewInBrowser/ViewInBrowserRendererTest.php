@@ -168,7 +168,8 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $emoji,
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(Shortcodes::class),
-      $this->diContainer->get(Renderer::class)
+      $this->diContainer->get(Renderer::class),
+      $this->diContainer->get(Links::class)
     );
     $renderedBody = $viewInBrowser->render(
       $preview = false,

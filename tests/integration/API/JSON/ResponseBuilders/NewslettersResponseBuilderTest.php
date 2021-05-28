@@ -8,6 +8,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
+use MailPoet\Newsletter\Url;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class NewslettersResponseBuilderTest extends \MailPoetTest {
@@ -35,7 +36,8 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
       'getStatistics' => new NewsletterStatistics(4, 6, 2, 10, null),
     ]);
     $newsletterRepository = Stub::make(NewslettersRepository::class);
-    $responseBuilder = new NewslettersResponseBuilder($em, $newsletterRepository, $newsletterStatsRepository);
+    $newsletterUrl = $this->diContainer->get(Url::class);
+    $responseBuilder = new NewslettersResponseBuilder($em, $newsletterRepository, $newsletterStatsRepository, $newsletterUrl);
     $response = $responseBuilder->build($newsletter, [
       NewslettersResponseBuilder::RELATION_CHILDREN_COUNT,
       NewslettersResponseBuilder::RELATION_TOTAL_SENT,

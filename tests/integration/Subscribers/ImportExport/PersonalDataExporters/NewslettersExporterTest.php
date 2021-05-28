@@ -7,6 +7,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Url;
 
 class NewslettersExporterTest extends \MailPoetTest {
 
@@ -15,7 +16,7 @@ class NewslettersExporterTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->exporter = new NewslettersExporter();
+    $this->exporter = new NewslettersExporter($this->diContainer->get(Url::class));
   }
 
   public function testExportWorksWhenSubscriberNotFound() {
