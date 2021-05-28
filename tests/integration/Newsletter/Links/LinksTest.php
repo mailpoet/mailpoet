@@ -11,9 +11,16 @@ use MailPoet\Router\Router;
 use MailPoetVendor\Idiorm\ORM;
 
 class LinksTest extends \MailPoetTest {
+  /** @var Links */
+  private $links;
+
+  public function _before() {
+    $this->links = $this->diContainer->get(Links::class);
+  }
+
   public function testItOnlyExtractsLinksFromAnchorTags() {
     $template = '<a href="http://example.com">some site</a> http://link2.com <img src="http://link3.com">';
-    $result = Links::extract($template);
+    $result = $this->links->extract($template);
 
     expect($result[0])->equals(
       [
@@ -25,7 +32,7 @@ class LinksTest extends \MailPoetTest {
 
   public function testItOnlyHashesAndReplacesLinksInAnchorTags() {
     $template = '<a href="http://example.com"><img src="http://example.com" /></a>';
-    $result = Links::process($template, 0, 0);
+    $result = $this->links->process($template, 0, 0);
     expect($result[0])->equals(
       sprintf(
         '<a href="%s-%s"><img src="http://example.com" /></a>',
@@ -44,7 +51,7 @@ class LinksTest extends \MailPoetTest {
     $link->save();
 
     $template = '<a href="http://example.com"><img src="http://example.com" /></a>';
-    $result = Links::process($template, 3, 3);
+    $result = $this->links->process($template, 3, 3);
     expect($result[0])->equals(
       sprintf(
         '<a href="%s-%s"><img src="http://example.com" /></a>',
@@ -56,7 +63,7 @@ class LinksTest extends \MailPoetTest {
 
   public function testItCanExtactLinkShortcodes() {
     $template = '[notlink:shortcode] [link:some_link_shortcode]';
-    $result = Links::extract($template);
+    $result = $this->links->extract($template);
 
     expect($result[0])->equals(
       [
@@ -68,7 +75,7 @@ class LinksTest extends \MailPoetTest {
 
   public function testItHashesAndReplacesLinks() {
     $template = '<a href="http://example.com">some site</a> [link:some_link_shortcode]';
-    list($updatedContent, $hashedLinks) = Links::process($template, 0, 0);
+    list($updatedContent, $hashedLinks) = $this->links->process($template, 0, 0);
 
     // 2 links were hashed
     expect(count($hashedLinks))->equals(2);
@@ -82,7 +89,7 @@ class LinksTest extends \MailPoetTest {
 
   public function testItHashesAndReplacesLinksWithSpecialCharacters() {
     $template = '<a href="http://сайт.cóm/彌撒時間">some site</a>';
-    $result = Links::process($template, 0, 0);
+    $result = $this->links->process($template, 0, 0);
     expect($result[0])->equals(
       sprintf(
         '<a href="%s-%s">some site</a>',
@@ -103,8 +110,7 @@ class LinksTest extends \MailPoetTest {
       ],
     ];
 
-    list($updatedContent, $replacedLinks) =
-      Links::replace($template, $processedLinks);
+    [$updatedContent, $replacedLinks] = $this->links->replace($template, $processedLinks);
 
     expect($replacedLinks)->count(1);
     // links in returned content were replaced with hashes
@@ -124,7 +130,7 @@ class LinksTest extends \MailPoetTest {
       'link_hash' => 'hash',
       'preview' => false,
     ];
-    $urlDataObject = Links::createUrlDataObject(
+    $urlDataObject = $this->links->createUrlDataObject(
       $data['subscriber_id'],
       $data['subscriber_token'],
       $data['queue_id'],
@@ -134,7 +140,7 @@ class LinksTest extends \MailPoetTest {
     // URL data object should be an indexed array
     expect($urlDataObject)->equals(array_values($data));
     // transformed URL object should be an associative array
-    $transformedUrlDataObject = Links::transformUrlDataObject($urlDataObject);
+    $transformedUrlDataObject = $this->links->transformUrlDataObject($urlDataObject);
     expect($transformedUrlDataObject)->equals($data);
   }
 
@@ -146,7 +152,7 @@ class LinksTest extends \MailPoetTest {
     $queue->newsletterId = 1;
     $queue->save();
     $template = '<a href="[mailpoet_click_data]-1234">some site</a> <img src="[mailpoet_open_data]"/>';
-    $result = Links::replaceSubscriberData($subscriber->id, $queue->id, $template);
+    $result = $this->links->replaceSubscriberData($subscriber->id, $queue->id, $template);
 
     // there are no click/open data tags
     expect($result)->stringNotContainsString(Links::DATA_TAG_CLICK);
@@ -162,7 +168,7 @@ class LinksTest extends \MailPoetTest {
     preg_match_all('/data=(?P<data>.*?)"/', $result, $result);
     foreach ($result['data'] as $data) {
       $data = Router::decodeRequestData($data);
-      $data = Links::transformUrlDataObject($data);
+      $data = $this->links->transformUrlDataObject($data);
       expect($data['subscriber_id'])->equals($subscriber->id);
       expect($data['queue_id'])->equals($queue->id);
       expect(isset($data['subscriber_token']))->true();
@@ -176,7 +182,7 @@ class LinksTest extends \MailPoetTest {
         'hash' => '123',
       ],
     ];
-    Links::save(
+    $this->links->save(
       $links,
       $newsletterId = 1,
       $queueId = 1
@@ -206,7 +212,7 @@ class LinksTest extends \MailPoetTest {
     $link->url = 'http://demo.com';
     $link->save();
 
-    list($content, $links) = Links::process('<a href="http://example.com">x</a>', 1, 2);
+    list($content, $links) = $this->links->process('<a href="http://example.com">x</a>', 1, 2);
     expect(is_array($links))->true();
     expect(count($links))->equals(1);
     expect($links[0]['hash'])->equals('123');
@@ -214,7 +220,7 @@ class LinksTest extends \MailPoetTest {
   }
 
   public function testItMatchesHashedLinks() {
-    $regex = Links::getLinkRegex();
+    $regex = $this->links->getLinkRegex();
     expect((boolean)preg_match($regex, '[some_tag]-123'))->false();
     expect((boolean)preg_match($regex, '[some_tag]'))->false();
     expect((boolean)preg_match($regex, '[mailpoet_click_data]-123'))->true();
@@ -233,7 +239,7 @@ class LinksTest extends \MailPoetTest {
     $content = '
       <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
-    $result = Links::convertHashedLinksToShortcodesAndUrls($content, $queueId);
+    $result = $this->links->convertHashedLinksToShortcodesAndUrls($content, $queueId);
     expect($result)->stringContainsString($newsletterLink->url);
     expect($result)->stringContainsString('[mailpoet_click_data]-123');
   }
@@ -247,13 +253,13 @@ class LinksTest extends \MailPoetTest {
         'hash' => 'abcdfgh',
       ],
     ];
-    $links = Links::ensureInstantUnsubscribeLink($links);
+    $links = $this->links->ensureInstantUnsubscribeLink($links);
     expect(count($links))->equals(2);
     expect($links[1]['link'])->equals(NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE);
     expect($links[1]['type'])->equals(Links::LINK_TYPE_SHORTCODE);
     expect($links[1])->hasKey('processed_link');
     expect($links[1])->hasKey('hash');
-    $links = Links::ensureInstantUnsubscribeLink($links);
+    $links = $this->links->ensureInstantUnsubscribeLink($links);
     expect(count($links))->equals(2);
   }
 
@@ -275,7 +281,7 @@ class LinksTest extends \MailPoetTest {
     $content = '
       <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
-    $result = Links::convertHashedLinksToShortcodesAndUrls($content, $queueId, $convertAll = true);
+    $result = $this->links->convertHashedLinksToShortcodesAndUrls($content, $queueId, $convertAll = true);
     expect($result)->stringContainsString($newsletterLink1->url);
     expect($result)->stringContainsString($newsletterLink2->url);
   }
