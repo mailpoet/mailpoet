@@ -3,12 +3,12 @@
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Models\NewsletterLink as NewsletterLinkModel;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 
@@ -19,12 +19,17 @@ class Links {
   /** @var NewsletterLinks */
   private $newsletterLinks;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     LinkTokens $linkTokens,
-    NewsletterLinks $newsletterLinks
+    NewsletterLinks $newsletterLinks,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->linkTokens = $linkTokens;
     $this->newsletterLinks = $newsletterLinks;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function process($renderedNewsletter, $newsletter, $queue) {
@@ -52,9 +57,9 @@ class Links {
   }
 
   public function getUnsubscribeUrl($queue, $subscriberId) {
-    $subscriber = Subscriber::where('id', $subscriberId)->findOne();
+    $subscriber = $this->subscribersRepository->findOneById($subscriberId);
     $settings = SettingsController::getInstance();
-    if ((boolean)$settings->get('tracking.enabled')) {
+    if ((boolean)$settings->get('tracking.enabled') && $subscriber) {
       $linkHash = NewsletterLinkModel::where('queue_id', $queue->id)
         ->where('url', NewsletterLinkModel::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE)
         ->findOne();
@@ -62,7 +67,7 @@ class Links {
         return '';
       }
       $data = $this->newsletterLinks->createUrlDataObject(
-        $subscriber->id,
+        $subscriber->getId(),
         $this->linkTokens->getToken($subscriber),
         $queue->id,
         $linkHash->hash,

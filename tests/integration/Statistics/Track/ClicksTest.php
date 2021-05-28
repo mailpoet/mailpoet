@@ -14,7 +14,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
@@ -67,21 +66,20 @@ class ClicksTest extends \MailPoetTest {
     $this->link = $link;
     $this->entityManager->persist($link);
     $this->entityManager->flush();
-    $subscriberModel = Subscriber::findOne($subscriber->getId());
     $linkTokens = $this->diContainer->get(LinkTokens::class);
     // build track data
     $this->trackData = (object)[
       'queue' => $queue,
       'subscriber' => $subscriber,
       'newsletter' => $newsletter,
-      'subscriber_token' => $linkTokens->getToken($subscriberModel),
+      'subscriber_token' => $linkTokens->getToken($subscriber),
       'link' => $link,
       'preview' => false,
     ];
     $queue = SendingQueue::findOne($queue->getId());
     assert($queue instanceof SendingQueue);
     $queue = SendingTask::createFromQueue($queue);
-    $queue->updateProcessedSubscribers([$subscriberModel->id]);
+    $queue->updateProcessedSubscribers([$subscriber->getId()]);
     // instantiate class
     $this->settingsController = Stub::makeEmpty(SettingsController::class, [
       'get' => false,

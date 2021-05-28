@@ -52,6 +52,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SendingQueueTest extends \MailPoetTest {
+  /** @var SendingQueueWorker */
   public $sendingQueueWorker;
   public $cronHelper;
   public $newsletterLink;
@@ -60,6 +61,7 @@ class SendingQueueTest extends \MailPoetTest {
   public $newsletter;
   public $subscriberSegment;
   public $segment;
+  /** @var SubscriberEntity */
   public $subscriber;
   private $mailerTaskDummyResponse = ['response' => true];
   /** @var SendingThrottlingHandler */
@@ -91,18 +93,19 @@ class SendingQueueTest extends \MailPoetTest {
     $populator = $this->diContainer->get(Populator::class);
     $populator->up();
     $this->wp = $this->diContainer->get(WPFunctions::class);
-    $this->subscriber = Subscriber::create();
-    $this->subscriber->email = 'john@doe.com';
-    $this->subscriber->firstName = 'John';
-    $this->subscriber->lastName = 'Doe';
-    $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $this->subscriber->source = 'administrator';
-    $this->subscriber->save();
+    $this->subscriber = new SubscriberEntity();
+    $this->subscriber->setEmail('john@doe.com');
+    $this->subscriber->setFirstName('John');
+    $this->subscriber->setLastName('Doe');
+    $this->subscriber->setStatus(Subscriber::STATUS_SUBSCRIBED);
+    $this->subscriber->setSource('administrator');
+    $this->entityManager->persist($this->subscriber);
+    $this->entityManager->flush();
     $this->segment = Segment::create();
     $this->segment->name = 'segment';
     $this->segment->save();
     $this->subscriberSegment = SubscriberSegment::create();
-    $this->subscriberSegment->subscriberId = $this->subscriber->id;
+    $this->subscriberSegment->subscriberId = (int)$this->subscriber->getId();
     $this->subscriberSegment->segmentId = (int)$this->segment->id;
     $this->subscriberSegment->save();
     $this->newsletter = Newsletter::create();
@@ -117,7 +120,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newsletterSegment->save();
     $this->queue = SendingTask::create();
     $this->queue->newsletterId = $this->newsletter->id;
-    $this->queue->setSubscribers([$this->subscriber->id]);
+    $this->queue->setSubscribers([$this->subscriber->getId()]);
     $this->queue->countCotal = 1;
     $this->queue->save();
     $this->newsletterLink = NewsletterLink::create();
@@ -146,7 +149,7 @@ class SendingQueueTest extends \MailPoetTest {
     $linkTokens = $this->diContainer->get(LinkTokens::class);
     $links = $this->diContainer->get(Links::class);
     $data = $links->createUrlDataObject(
-      $this->subscriber->id,
+      $this->subscriber->getId(),
       $linkTokens->getToken($this->subscriber),
       $this->queue->id,
       $this->newsletterLink->hash,
@@ -402,14 +405,14 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
       ->equals([]);
     expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
-      ->equals([$this->subscriber->id]);
+      ->equals([$this->subscriber->getId()]);
     expect($updatedQueue->countTotal)->equals(1);
     expect($updatedQueue->countProcessed)->equals(1);
     expect($updatedQueue->countToProcess)->equals(0);
 
     // statistics entry should be created
     $statistics = StatisticsNewsletters::where('newsletter_id', $this->newsletter->id)
-      ->where('subscriber_id', $this->subscriber->id)
+      ->where('subscriber_id', $this->subscriber->getId())
       ->where('queue_id', $this->queue->id)
       ->findOne();
     expect($statistics)->notEquals(false);
@@ -451,14 +454,14 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
       ->equals([]);
     expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
-      ->equals([$this->subscriber->id]);
+      ->equals([$this->subscriber->getId()]);
     expect($updatedQueue->countTotal)->equals(1);
     expect($updatedQueue->countProcessed)->equals(1);
     expect($updatedQueue->countToProcess)->equals(0);
 
     // statistics entry should be created
     $statistics = StatisticsNewsletters::where('newsletter_id', $this->newsletter->id)
-      ->where('subscriber_id', $this->subscriber->id)
+      ->where('subscriber_id', $this->subscriber->getId())
       ->where('queue_id', $this->queue->id)
       ->findOne();
     expect($statistics)->notEquals(false);
@@ -498,14 +501,14 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
       ->equals([]);
     expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
-      ->equals([$this->subscriber->id]);
+      ->equals([$this->subscriber->getId()]);
     expect($updatedQueue->countTotal)->equals(1);
     expect($updatedQueue->countProcessed)->equals(1);
     expect($updatedQueue->countToProcess)->equals(0);
 
     // statistics entry should be created
     $statistics = StatisticsNewsletters::where('newsletter_id', $this->newsletter->id)
-      ->where('subscriber_id', $this->subscriber->id)
+      ->where('subscriber_id', $this->subscriber->getId())
       ->where('queue_id', $this->queue->id)
       ->findOne();
     expect($statistics)->notEquals(false);
@@ -569,14 +572,14 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
       ->equals([]);
     expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
-      ->equals([$this->subscriber->id]);
+      ->equals([$this->subscriber->getId()]);
     expect($updatedQueue->countTotal)->equals(1);
     expect($updatedQueue->countProcessed)->equals(1);
     expect($updatedQueue->countToProcess)->equals(0);
 
     // statistics entry should be created
     $statistics = StatisticsNewsletters::where('newsletter_id', $this->newsletter->id)
-      ->where('subscriber_id', $this->subscriber->id)
+      ->where('subscriber_id', $this->subscriber->getId())
       ->where('queue_id', $this->queue->id)
       ->findOne();
     expect($statistics)->notEquals(false);
@@ -584,8 +587,8 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItPreventsSendingWelcomeEmailWhenSubscriberIsUnsubscribed() {
     $this->newsletter->type = Newsletter::TYPE_WELCOME;
-    $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
-    $this->subscriber->save();
+    $this->subscriber->setStatus(Subscriber::STATUS_UNSUBSCRIBED);
+    $this->entityManager->flush();
     $this->newsletterSegment->delete();
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
@@ -615,7 +618,7 @@ class SendingQueueTest extends \MailPoetTest {
   public function testItRemovesNonexistentSubscribersFromProcessingList() {
     $queue = $this->queue;
     $queue->setSubscribers([
-      $this->subscriber->id(),
+      $this->subscriber->getId(),
       12345645454,
     ]);
     $queue->countTotal = 2;
@@ -639,7 +642,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
       ->equals([]);
     expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
-      ->equals([$this->subscriber->id]);
+      ->equals([$this->subscriber->getId()]);
     expect($updatedQueue->countTotal)->equals(1);
     expect($updatedQueue->countProcessed)->equals(1);
     expect($updatedQueue->countToProcess)->equals(0);
@@ -655,7 +658,7 @@ class SendingQueueTest extends \MailPoetTest {
     while (count($subscribers) < 2 * SendingThrottlingHandler::BATCH_SIZE) {
       $subscribers[] = 1234564545 + count($subscribers);
     }
-    $subscribers[] = $this->subscriber->id();
+    $subscribers[] = $this->subscriber->getId();
     $queue->setSubscribers($subscribers);
     $queue->countTotal = count($subscribers);
     $queue->save();
@@ -678,7 +681,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
       ->equals([]);
     expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
-      ->equals([$this->subscriber->id]);
+      ->equals([$this->subscriber->getId()]);
     expect($updatedQueue->countTotal)->equals(1);
     expect($updatedQueue->countProcessed)->equals(1);
     expect($updatedQueue->countToProcess)->equals(0);
@@ -728,10 +731,11 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter is not sent to trashed subscriber
     $this->_after();
+    $this->entityManager->clear();
     $this->_before();
     $subscriber = $this->subscriber;
-    $subscriber->deletedAt = Carbon::now();
-    $subscriber->save();
+    $subscriber->setDeletedAt(Carbon::now());
+    $this->entityManager->flush();
     $sendingQueueWorker->process();
     /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
@@ -748,8 +752,8 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter is not sent to globally unsubscribed subscriber
     $subscriber = $this->subscriber;
-    $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
-    $subscriber->save();
+    $subscriber->setStatus(Subscriber::STATUS_UNSUBSCRIBED);
+    $this->entityManager->flush();
     $sendingQueueWorker->process();
     /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
@@ -784,8 +788,8 @@ class SendingQueueTest extends \MailPoetTest {
 
     // newsletter is not sent to inactive subscriber
     $subscriber = $this->subscriber;
-    $subscriber->status = Subscriber::STATUS_INACTIVE;
-    $subscriber->save();
+    $subscriber->setStatus(Subscriber::STATUS_INACTIVE);
+    $this->entityManager->flush();
     $sendingQueueWorker->process();
     /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
@@ -815,6 +819,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersFinder,
       $this->segmentsRepository,
       $this->wp,
+      $this->tasksLinks,
       Stub::make(
         new MailerTask(),
         [

@@ -13,7 +13,6 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Subscribers\LinkTokens;
@@ -65,7 +64,7 @@ class OpensTest extends \MailPoetTest {
       'queue' => $queue,
       'subscriber' => $subscriber,
       'newsletter' => $newsletter,
-      'subscriber_token' => $linkTokens->getToken(SubscriberModel::findOne('test@example.com')),
+      'subscriber_token' => $linkTokens->getToken($subscriber),
       'preview' => false,
     ];
     // instantiate class
