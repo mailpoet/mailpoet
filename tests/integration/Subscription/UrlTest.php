@@ -3,11 +3,11 @@
 namespace MailPoet\Test\Subscription;
 
 use MailPoet\Config\Populator;
-use MailPoet\Models\Subscriber;
-use MailPoet\Newsletter\Url;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -23,9 +23,9 @@ class UrlTest extends \MailPoetTest {
     parent::_before();
     $this->settings = $this->diContainer->get(SettingsController::class);
     $populator = $this->diContainer->get(Populator::class);
-    $url = $this->diContainer->get(Url::class);
+    $linkTokens = $this->diContainer->get(LinkTokens::class);
     $populator->up();
-    $this->url = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, $url);
+    $this->url = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, $linkTokens);
   }
 
   public function testItReturnsTheDefaultPageUrlIfNoPageIsSetInSettings() {
@@ -64,9 +64,7 @@ class UrlTest extends \MailPoetTest {
     expect($url)->stringContainsString('endpoint=subscription');
 
     // actual subscriber
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'john@mailpoet.com',
-    ]);
+    $subscriber = $this->createSubscriber();
     $url = $this->url->getConfirmationUrl($subscriber);
     expect($url)->stringContainsString('action=confirm');
     expect($url)->stringContainsString('endpoint=subscription');
@@ -82,9 +80,7 @@ class UrlTest extends \MailPoetTest {
     expect($url)->stringContainsString('endpoint=subscription');
 
     // actual subscriber
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'john@mailpoet.com',
-    ]);
+    $subscriber = $this->createSubscriber();
     $url = $this->url->getManageUrl($subscriber);
     expect($url)->stringContainsString('action=manage');
     expect($url)->stringContainsString('endpoint=subscription');
@@ -102,9 +98,7 @@ class UrlTest extends \MailPoetTest {
     expect($data['preview'])->equals(1);
 
     // actual subscriber
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'john@mailpoet.com',
-    ]);
+    $subscriber = $this->createSubscriber();
     $url = $this->url->getUnsubscribeUrl($subscriber);
     expect($url)->stringContainsString('action=unsubscribe');
     expect($url)->stringContainsString('endpoint=subscription');
@@ -139,9 +133,7 @@ class UrlTest extends \MailPoetTest {
     expect($data['preview'])->equals(1);
 
     // actual subscriber
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'john@mailpoet.com',
-    ]);
+    $subscriber = $this->createSubscriber();
     $url = $this->url->getConfirmUnsubscribeUrl($subscriber);
     expect($url)->stringContainsString('action=confirm_unsubscribe');
     expect($url)->stringContainsString('endpoint=subscription');
@@ -180,8 +172,16 @@ class UrlTest extends \MailPoetTest {
     return Router::decodeRequestData($params['data']);
   }
 
+  private function createSubscriber(): SubscriberEntity {
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('john@mailpoet.com');
+    $this->entityManager->persist($subscriber);
+    $this->entityManager->flush();
+    return $subscriber;
+  }
+
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
-    Subscriber::deleteMany();
+    $this->truncateEntity(SubscriberEntity::class);
   }
 }

@@ -84,6 +84,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       'last_name' => 'Mailer',
       'email' => 'john@mailpoet.com',
     ]);
+    $subscriber->save();
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' =>
@@ -112,6 +113,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       'last_name' => 'Mailer',
       'email' => 'john@mailpoet.com',
     ]);
+    $subscriber->save();
 
     $mailer = $this->makeEmpty(Mailer::class, [
       'send' => Stub\Expected::never(),
@@ -142,6 +144,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       'last_name' => 'Mailer',
       'email' => 'john@mailpoet.com',
     ]);
+    $subscriber->save();
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' => function() {
@@ -171,6 +174,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       'last_name' => 'Mailer',
       'email' => 'john@mailpoet.com',
     ]);
+    $subscriber->save();
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' => function() {
