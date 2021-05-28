@@ -47,6 +47,9 @@ class Track {
   /** @var NewsletterLinkRepository */
   private $newsletterLinkRepository;
 
+  /** @var Links */
+  private $links;
+
   public function __construct(
     Clicks $clicks,
     Opens $opens,
@@ -54,7 +57,8 @@ class Track {
     SubscribersRepository $subscribersRepository,
     NewslettersRepository $newslettersRepository,
     NewsletterLinkRepository $newsletterLinkRepository,
-    LinkTokens $linkTokens
+    LinkTokens $linkTokens,
+    Links $links
   ) {
     $this->clicks = $clicks;
     $this->opens = $opens;
@@ -63,6 +67,7 @@ class Track {
     $this->subscribersRepository = $subscribersRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterLinkRepository = $newsletterLinkRepository;
+    $this->links = $links;
   }
 
   public function click($data) {
@@ -74,7 +79,7 @@ class Track {
   }
 
   public function _processTrackData($data) {
-    $data = (object)Links::transformUrlDataObject($data);
+    $data = (object)$this->links->transformUrlDataObject($data);
     if (empty($data->queue_id) || // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       empty($data->subscriber_id) || // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
       empty($data->subscriber_token) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps

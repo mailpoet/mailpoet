@@ -16,8 +16,15 @@ class Links {
   /** @var LinkTokens */
   private $linkTokens;
 
-  public function __construct(LinkTokens $linkTokens) {
+  /** @var NewsletterLinks */
+  private $newsletterLinks;
+
+  public function __construct(
+    LinkTokens $linkTokens,
+    NewsletterLinks $newsletterLinks
+  ) {
     $this->linkTokens = $linkTokens;
+    $this->newsletterLinks = $newsletterLinks;
   }
 
   public function process($renderedNewsletter, $newsletter, $queue) {
@@ -29,8 +36,8 @@ class Links {
   public function hashAndReplaceLinks($renderedNewsletter, $newsletterId, $queueId) {
     // join HTML and TEXT rendered body into a text string
     $content = Helpers::joinObject($renderedNewsletter);
-    list($content, $links) = NewsletterLinks::process($content, $newsletterId, $queueId);
-    $links = NewsletterLinks::ensureInstantUnsubscribeLink($links);
+    [$content, $links] = $this->newsletterLinks->process($content, $newsletterId, $queueId);
+    $links = $this->newsletterLinks->ensureInstantUnsubscribeLink($links);
     // split the processed body with hashed links back to HTML and TEXT
     list($renderedNewsletter['html'], $renderedNewsletter['text'])
       = Helpers::splitObject($content);
@@ -41,7 +48,7 @@ class Links {
   }
 
   public function saveLinks($links, $newsletter, $queue) {
-    return NewsletterLinks::save($links, $newsletter->id, $queue->id);
+    return $this->newsletterLinks->save($links, $newsletter->id, $queue->id);
   }
 
   public function getUnsubscribeUrl($queue, $subscriberId) {
@@ -54,7 +61,7 @@ class Links {
       if (!$linkHash instanceof NewsletterLinkModel) {
         return '';
       }
-      $data = NewsletterLinks::createUrlDataObject(
+      $data = $this->newsletterLinks->createUrlDataObject(
         $subscriber->id,
         $this->linkTokens->getToken($subscriber),
         $queue->id,

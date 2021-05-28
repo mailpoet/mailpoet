@@ -12,8 +12,12 @@ class GATracking {
   /** @var SecondLevelDomainNames */
   private $secondLevelDomainNames;
 
-  public function __construct() {
+  /** @var NewsletterLinks */
+  private $newsletterLinks;
+
+  public function __construct(NewsletterLinks $newsletterLinks) {
     $this->secondLevelDomainNames = new SecondLevelDomainNames();
+    $this->newsletterLinks = $newsletterLinks;
   }
 
   public function applyGATracking($renderedNewsletter, $newsletter, $internalHost = null) {
@@ -32,9 +36,9 @@ class GATracking {
   private function addGAParamsToLinks($renderedNewsletter, $gaCampaign, $internalHost = null) {
     // join HTML and TEXT rendered body into a text string
     $content = Helpers::joinObject($renderedNewsletter);
-    $extractedLinks = NewsletterLinks::extract($content);
+    $extractedLinks = $this->newsletterLinks->extract($content);
     $processedLinks = $this->addParams($extractedLinks, $gaCampaign, $internalHost);
-    list($content, $links) = NewsletterLinks::replace($content, $processedLinks);
+    list($content, $links) = $this->newsletterLinks->replace($content, $processedLinks);
     // split the processed body with hashed links back to HTML and TEXT
     list($renderedNewsletter['html'], $renderedNewsletter['text'])
       = Helpers::splitObject($content);

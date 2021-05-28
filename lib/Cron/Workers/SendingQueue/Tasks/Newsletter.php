@@ -49,6 +49,9 @@ class Newsletter {
   /** @var LinksTask */
   private $linksTask;
 
+  /** @var NewsletterLinks */
+  private $newsletterLinks;
+
   public function __construct(
     WPFunctions $wp = null,
     PostsTask $postsTask = null,
@@ -66,7 +69,7 @@ class Newsletter {
     }
     $this->postsTask = $postsTask;
     if ($gaTracking === null) {
-      $gaTracking = new GATracking;
+      $gaTracking = ContainerWrapper::getInstance()->get(GATracking::class);
     }
     $this->gaTracking = $gaTracking;
     $this->loggerFactory = LoggerFactory::getInstance();
@@ -77,6 +80,7 @@ class Newsletter {
     $this->renderer = ContainerWrapper::getInstance()->get(Renderer::class);
     $this->newslettersRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
     $this->linksTask = ContainerWrapper::getInstance()->get(LinksTask::class);
+    $this->newsletterLinks = ContainerWrapper::getInstance()->get(NewsletterLinks::class);
   }
 
   public function getNewsletterFromQueue($queue) {
@@ -209,7 +213,7 @@ class Newsletter {
       $queue
     );
     if ($this->trackingEnabled) {
-      $preparedNewsletter = NewsletterLinks::replaceSubscriberData(
+      $preparedNewsletter = $this->newsletterLinks->replaceSubscriberData(
         $subscriber->id,
         $queue->id,
         $preparedNewsletter

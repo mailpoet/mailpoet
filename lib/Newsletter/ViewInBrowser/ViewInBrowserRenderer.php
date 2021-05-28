@@ -27,16 +27,21 @@ class ViewInBrowserRenderer {
   /** @var Shortcodes */
   private $shortcodes;
 
+  /** @var Links */
+  private $links;
+
   public function __construct(
     Emoji $emoji,
     SettingsController $settings,
     Shortcodes $shortcodes,
-    Renderer $renderer
+    Renderer $renderer,
+    Links $links
   ) {
     $this->emoji = $emoji;
     $this->isTrackingEnabled = $settings->get('tracking.enabled');
     $this->renderer = $renderer;
     $this->shortcodes = $shortcodes;
+    $this->links = $links;
   }
 
   public function render(
@@ -58,8 +63,8 @@ class ViewInBrowserRenderer {
       // isolate "view in browser", "unsubscribe" and "manage subscription" links
       // and convert them to shortcodes, which later will be replaced with "#" when
       // newsletter is previewed
-      if ($wpUserPreview && preg_match(Links::getLinkRegex(), $newsletterBody)) {
-        $newsletterBody = Links::convertHashedLinksToShortcodesAndUrls(
+      if ($wpUserPreview && preg_match($this->links->getLinkRegex(), $newsletterBody)) {
+        $newsletterBody = $this->links->convertHashedLinksToShortcodesAndUrls(
           $newsletterBody,
           $queue->getId(),
           $convertAll = true
@@ -82,7 +87,7 @@ class ViewInBrowserRenderer {
     );
     $renderedNewsletter = $this->shortcodes->replace($newsletterBody);
     if (!$wpUserPreview && $queue && $subscriber && $this->isTrackingEnabled) {
-      $renderedNewsletter = Links::replaceSubscriberData(
+      $renderedNewsletter = $this->links->replaceSubscriberData(
         $subscriber->getId(),
         $queue->getId(),
         $renderedNewsletter

@@ -25,7 +25,7 @@ class LinksTest extends \MailPoetTest {
     ];
     $newsletter = (object)['id' => 1];
     $queue = (object)['id' => 2];
-    $result = $this->links->saveLinks($links, $newsletter, $queue);
+    $this->links->saveLinks($links, $newsletter, $queue);
     $newsletterLink = NewsletterLink::where('hash', $links[0]['hash'])
       ->findOne();
     assert($newsletterLink instanceof NewsletterLink);
