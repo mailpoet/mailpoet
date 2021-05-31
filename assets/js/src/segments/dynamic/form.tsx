@@ -134,7 +134,14 @@ export const Form: React.FunctionComponent<Props> = ({
         </div>
         <SubscribersCounter />
         <div className="mailpoet-form-actions">
-          <Button type="submit" onClick={(): void => { handleSave(segmentId); }} isDisabled={!isFormValid(segment)}>
+          <Button
+            type="submit"
+            onClick={(e): void => {
+              e.preventDefault();
+              handleSave(segmentId);
+            }}
+            isDisabled={!isFormValid(segment)}
+          >
             {MailPoet.I18n.t('save')}
           </Button>
         </div>

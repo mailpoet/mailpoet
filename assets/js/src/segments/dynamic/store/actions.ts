@@ -56,7 +56,7 @@ export function* pageLoaded(segmentId?: number): Generator<{
     segmentId,
   }));
   if (!success || res.is_plugin_missing) {
-    window.location.href = '#/segments';
+    window.location.href = 'admin.php?page=mailpoet-segments#/segments';
   }
   yield setSegment(res);
   MailPoet.Modal.loading(false);
@@ -90,7 +90,7 @@ export function* handleSave(segmentId?: number): Generator<{
   }));
 
   if (success) {
-    window.location.href = '#/segments';
+    window.location.href = 'admin.php?page=mailpoet-segments#/segments';
 
     if (segmentId !== undefined) {
       messages.onUpdate();

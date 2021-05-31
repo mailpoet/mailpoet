@@ -11,6 +11,7 @@ import * as controls from './controls';
 import {
   StateType,
   SegmentFormDataWindow,
+  SegmentTypes,
 } from '../types';
 
 declare let window: SegmentFormDataWindow;
@@ -27,7 +28,9 @@ export const createStore = (): void => {
     wooCurrencySymbol: window.mailpoet_woocommerce_currency_symbol,
     wooCountries: window.mailpoet_woocommerce_countries,
     customFieldsList: window.mailpoet_custom_fields,
-    segment: {},
+    segment: {
+      segmentType: SegmentTypes.WordPressRole,
+    },
     errors: [],
   };
 
