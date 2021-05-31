@@ -110,6 +110,7 @@ export const Form: React.FunctionComponent<Props> = ({
             </label>
           </Heading>
           <Select
+            dimension="small"
             placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
             options={segmentFilters}
             value={findSegmentType(segment)}

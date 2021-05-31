@@ -85,6 +85,7 @@ export const EmailStatisticsFields: React.FunctionComponent = () => {
       ))}
 
       <Select
+        dimension="small"
         isFullWidth
         placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
         options={newsletterOptions}
@@ -99,6 +100,7 @@ export const EmailStatisticsFields: React.FunctionComponent = () => {
         (!!links.length && shouldDisplayLinks(segment.action, segment.newsletter_id))
         && (
           <Select
+            dimension="small"
             isFullWidth
             placeholder={MailPoet.I18n.t('selectLinkPlaceholder')}
             options={links}

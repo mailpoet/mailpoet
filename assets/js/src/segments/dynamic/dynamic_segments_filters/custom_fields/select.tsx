@@ -52,6 +52,7 @@ export const RadioSelect: React.FunctionComponent = () => {
     <>
       <div className="mailpoet-gap" />
       <ReactSelect
+        dimension="small"
         isFullWidth
         placeholder={MailPoet.I18n.t('selectValue')}
         options={options}

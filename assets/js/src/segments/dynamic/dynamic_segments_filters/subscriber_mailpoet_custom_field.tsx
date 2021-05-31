@@ -76,6 +76,7 @@ export const MailPoetCustomFields: React.FunctionComponent = () => {
   return (
     <>
       <ReactSelect
+        dimension="small"
         isFullWidth
         placeholder={MailPoet.I18n.t('selectCustomFieldPlaceholder')}
         options={options}

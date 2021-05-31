@@ -122,6 +122,7 @@ export const WooCommerceFields: React.FunctionComponent = () => {
   if (segment.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
     optionFields = (
       <ReactSelect
+        dimension="small"
         key="select-segment-product"
         isFullWidth
         placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
@@ -134,6 +135,7 @@ export const WooCommerceFields: React.FunctionComponent = () => {
   } else if (segment.action === WooCommerceActionTypes.PURCHASED_CATEGORY) {
     optionFields = (
       <ReactSelect
+        dimension="small"
         key="select-segment-category"
         isFullWidth
         placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
@@ -238,6 +240,7 @@ export const WooCommerceFields: React.FunctionComponent = () => {
   } else if (segment.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY) {
     optionFields = (
       <ReactSelect
+        dimension="small"
         key="select-segment-country"
         isFullWidth
         placeholder={MailPoet.I18n.t('selectWooCountry')}
