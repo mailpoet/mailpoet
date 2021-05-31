@@ -389,7 +389,8 @@ class Pages {
       return '';
     }
     $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
-    $unsubscribeUrl = $this->subscriptionUrlFactory->getUnsubscribeUrl($this->subscriber, $queueId);
+    $subscriberEntity = $this->subscribersRepository->findOneById($this->subscriber->id);
+    $unsubscribeUrl = $this->subscriptionUrlFactory->getUnsubscribeUrl($subscriberEntity, $queueId);
     $templateData = [
       'unsubscribeUrl' => $unsubscribeUrl,
     ];
