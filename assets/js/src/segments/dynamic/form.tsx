@@ -65,7 +65,7 @@ export const Form: React.FunctionComponent<Props> = ({
   return (
     <form className="mailpoet_form">
       <div className="mailpoet-form-grid">
-        <div className="mailpoet-form-field-name form-field-row-name">
+        <div className="mailpoet-form-field-name form-field-row-name mailpoet-segments-name-section">
           <Heading level={4}>
             <label htmlFor="field_name">
               {MailPoet.I18n.t('name')}
@@ -73,6 +73,7 @@ export const Form: React.FunctionComponent<Props> = ({
           </Heading>
           <div className="mailpoet-form-field">
             <Input
+              isFullWidth
               type="text"
               name="name"
               id="field_name"
@@ -83,7 +84,7 @@ export const Form: React.FunctionComponent<Props> = ({
             />
           </div>
         </div>
-        <div className="mailpoet-form-field-description form-field-row-description">
+        <div className="mailpoet-form-field-description form-field-row-description mailpoet-segments-description-section">
           <Heading level={4}>
             <label htmlFor="field_description">
               {MailPoet.I18n.t('description')}
@@ -94,6 +95,7 @@ export const Form: React.FunctionComponent<Props> = ({
           </p>
           <div className="mailpoet-form-field">
             <Textarea
+              isFullWidth
               name="description"
               id="field_description"
               defaultValue={segment.description}
@@ -103,7 +105,7 @@ export const Form: React.FunctionComponent<Props> = ({
             />
           </div>
         </div>
-        <div>
+        <div className="mailpoet-segments-segments-section">
           <Heading level={4}>
             <label htmlFor="field_filters">
               {MailPoet.I18n.t('formPageTitle')}
