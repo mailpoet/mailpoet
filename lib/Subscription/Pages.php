@@ -15,6 +15,7 @@ use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 class Pages {
   const DEMO_EMAIL = 'demo@mailpoet.com';
@@ -156,8 +157,8 @@ class Pages {
 
     $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $this->subscriber->confirmedIp = Helpers::getIP();
-    $this->subscriber->setExpr('confirmed_at', 'NOW()');
-    $this->subscriber->setExpr('last_subscribed_at', 'NOW()');
+    $this->subscriber->confirmedAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $this->subscriber->lastSubscribedAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     $this->subscriber->unconfirmedData = null;
     $this->subscriber->save();
 

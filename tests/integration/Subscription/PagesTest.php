@@ -39,9 +39,13 @@ class PagesTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function _before() {
     parent::_before();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->subscriber = new SubscriberEntity();
     $this->subscriber->setFirstName('John');
     $this->subscriber->setLastName('John');
@@ -57,12 +61,12 @@ class PagesTest extends \MailPoetTest {
   public function testItConfirmsSubscription() {
     $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
     $pages = $this->getPages($newSubscriberNotificationSender);
-    $subscription = $pages->init($action = false, $this->testData, false, false);
+    $subscription = $pages->init(false, $this->testData, false, false);
     $subscription->confirm();
     $confirmedSubscriber = Subscriber::findOne($this->subscriber->getId());
     expect($confirmedSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($confirmedSubscriber->lastSubscribedAt)->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond());
-    expect($confirmedSubscriber->lastSubscribedAt)->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond());
+    expect($confirmedSubscriber->lastSubscribedAt)->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
+    expect($confirmedSubscriber->lastSubscribedAt)->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
   }
 
   public function testItUpdatesSubscriptionOnDuplicateAttemptButDoesntSendNotification() {
@@ -72,19 +76,19 @@ class PagesTest extends \MailPoetTest {
     $subscriber->setStatus(Subscriber::STATUS_SUBSCRIBED);
     $subscriber->setFirstName('First name');
     $subscriber->setUnconfirmedData('{"first_name" : "Updated first name", "email" : "' . $this->subscriber->getEmail() . '"}');
-    $subscriber->setLastSubscribedAt(Carbon::now()->subDays(10));
-    $subscriber->setConfirmedIp(Carbon::now()->subDays(10));
+    $subscriber->setLastSubscribedAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(10));
+    $subscriber->setConfirmedIp(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(10));
     $this->entityManager->flush();
-    $subscription = $pages->init($action = false, $this->testData, false, false);
+    $subscription = $pages->init(false, $this->testData, false, false);
     $subscription->confirm();
     $this->entityManager->clear();
     $confirmedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     assert($confirmedSubscriber instanceof SubscriberEntity);
     expect($confirmedSubscriber->getStatus())->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($confirmedSubscriber->getConfirmedAt())->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond());
-    expect($confirmedSubscriber->getConfirmedAt())->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond());
-    expect($confirmedSubscriber->getLastSubscribedAt())->greaterOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->subSecond());
-    expect($confirmedSubscriber->getLastSubscribedAt())->lessOrEquals(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSecond());
+    expect($confirmedSubscriber->getConfirmedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
+    expect($confirmedSubscriber->getConfirmedAt())->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
+    expect($confirmedSubscriber->getLastSubscribedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
+    expect($confirmedSubscriber->getLastSubscribedAt())->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
     expect($confirmedSubscriber->getFirstName())->equals('Updated first name');
   }
 
