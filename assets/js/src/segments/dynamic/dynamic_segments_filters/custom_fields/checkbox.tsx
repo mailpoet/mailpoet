@@ -28,7 +28,6 @@ export const Checkbox: React.FunctionComponent = () => {
 
   return (
     <>
-      <div className="mailpoet-gap" />
       <Select
         key="select"
         value={segment.value}

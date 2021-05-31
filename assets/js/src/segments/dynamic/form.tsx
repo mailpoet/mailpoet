@@ -7,6 +7,7 @@ import Heading from 'common/typography/heading/heading';
 import Input from 'common/form/input/input';
 import Select from 'common/form/react_select/react_select';
 import Textarea from 'common/form/textarea/textarea';
+import { Grid } from 'common/grid';
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';
 import { isFormValid } from './validator';
@@ -111,23 +112,25 @@ export const Form: React.FunctionComponent<Props> = ({
               {MailPoet.I18n.t('formPageTitle')}
             </label>
           </Heading>
-          <Select
-            dimension="small"
-            placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
-            options={segmentFilters}
-            value={findSegmentType(segment)}
-            onChange={(newValue: FilterValue): void => {
-              updateSegment({
-                segmentType: newValue.group,
-                action: newValue.value,
-              });
-            }}
-            automationId="select-segment-action"
-            isFullWidth
-          />
-          {segment.segmentType !== undefined && (
-            <FormFilterFields />
-          )}
+          <Grid.ThreeColumns>
+            <Select
+              dimension="small"
+              placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
+              options={segmentFilters}
+              value={findSegmentType(segment)}
+              onChange={(newValue: FilterValue): void => {
+                updateSegment({
+                  segmentType: newValue.group,
+                  action: newValue.value,
+                });
+              }}
+              automationId="select-segment-action"
+              isFullWidth
+            />
+            {segment.segmentType !== undefined && (
+              <FormFilterFields />
+            )}
+          </Grid.ThreeColumns>
         </div>
         <SubscribersCounter />
         <div className="mailpoet-form-actions">

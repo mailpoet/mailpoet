@@ -83,32 +83,35 @@ export const EmailStatisticsFields: React.FunctionComponent = () => {
       {(errors.length > 0 && (
         <APIErrorsNotice errors={errors} />
       ))}
-
-      <Select
-        dimension="small"
-        isFullWidth
-        placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
-        options={newsletterOptions}
-        value={find(['value', segment.newsletter_id], newsletterOptions)}
-        onChange={(option: SelectOption): void => {
-          updateSegment({ newsletter_id: option.value });
-        }}
-        automationId="segment-email"
-      />
+      <div>
+        <Select
+          dimension="small"
+          isFullWidth
+          placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
+          options={newsletterOptions}
+          value={find(['value', segment.newsletter_id], newsletterOptions)}
+          onChange={(option: SelectOption): void => {
+            updateSegment({ newsletter_id: option.value });
+          }}
+          automationId="segment-email"
+        />
+      </div>
       {(loadingLinks && (MailPoet.I18n.t('loadingDynamicSegmentItems')))}
       {
         (!!links.length && shouldDisplayLinks(segment.action, segment.newsletter_id))
         && (
-          <Select
-            dimension="small"
-            isFullWidth
-            placeholder={MailPoet.I18n.t('selectLinkPlaceholder')}
-            options={links}
-            value={find(['value', segment.link_id], links)}
-            onChange={(option: SelectOption): void => {
-              updateSegment({ link_id: option.value });
-            }}
-          />
+          <div>
+            <Select
+              dimension="small"
+              isFullWidth
+              placeholder={MailPoet.I18n.t('selectLinkPlaceholder')}
+              options={links}
+              value={find(['value', segment.link_id], links)}
+              onChange={(option: SelectOption): void => {
+                updateSegment({ link_id: option.value });
+              }}
+            />
+          </div>
         )
       }
     </>

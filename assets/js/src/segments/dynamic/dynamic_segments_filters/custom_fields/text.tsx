@@ -34,7 +34,6 @@ export const Text: React.FunctionComponent = () => {
 
   return (
     <>
-      <div className="mailpoet-gap" />
       <Grid.CenteredRow>
         <Select
           key="select"

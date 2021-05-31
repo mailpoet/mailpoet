@@ -50,8 +50,7 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent = () => {
   }));
 
   return (
-    <>
-      <div className="mailpoet-gap" />
+    <div>
       <Select
         dimension="small"
         placeholder={MailPoet.I18n.t('selectWooSubscription')}
@@ -62,6 +61,6 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent = () => {
           updateSegment({ product_id: option.value });
         }}
       />
-    </>
+    </div>
   );
 };

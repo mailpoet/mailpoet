@@ -50,7 +50,6 @@ export const RadioSelect: React.FunctionComponent = () => {
 
   return (
     <>
-      <div className="mailpoet-gap" />
       <ReactSelect
         dimension="small"
         isFullWidth

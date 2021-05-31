@@ -121,35 +121,38 @@ export const WooCommerceFields: React.FunctionComponent = () => {
 
   if (segment.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
     optionFields = (
-      <ReactSelect
-        dimension="small"
-        key="select-segment-product"
-        isFullWidth
-        placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
-        options={productOptions}
-        value={find(['value', segment.product_id], productOptions)}
-        onChange={(option: SelectOption): void => updateSegment({ product_id: option.value })}
-        automationId="select-segment-product"
-      />
+      <div>
+        <ReactSelect
+          dimension="small"
+          key="select-segment-product"
+          isFullWidth
+          placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
+          options={productOptions}
+          value={find(['value', segment.product_id], productOptions)}
+          onChange={(option: SelectOption): void => updateSegment({ product_id: option.value })}
+          automationId="select-segment-product"
+        />
+      </div>
     );
   } else if (segment.action === WooCommerceActionTypes.PURCHASED_CATEGORY) {
     optionFields = (
-      <ReactSelect
-        dimension="small"
-        key="select-segment-category"
-        isFullWidth
-        placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
-        options={categoryOptions}
-        value={find(['value', segment.category_id], categoryOptions)}
-        onChange={(option: SelectOption): void => updateSegment({ category_id: option.value })}
-        automationId="select-segment-category"
-      />
+      <div>
+        <ReactSelect
+          dimension="small"
+          key="select-segment-category"
+          isFullWidth
+          placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
+          options={categoryOptions}
+          value={find(['value', segment.category_id], categoryOptions)}
+          onChange={(option: SelectOption): void => updateSegment({ category_id: option.value })}
+          automationId="select-segment-category"
+        />
+      </div>
     );
   } else if (segment.action === WooCommerceActionTypes.NUMBER_OF_ORDERS) {
     optionFields = (
-      <div>
-        <div className="mailpoet-gap" />
-        <Grid.CenteredRow className="mailpoet-form-field">
+      <>
+        <Grid.CenteredRow>
           <Select
             key="select"
             value={segment.number_of_orders_type}
@@ -174,8 +177,7 @@ export const WooCommerceFields: React.FunctionComponent = () => {
           />
           <div>{MailPoet.I18n.t('wooNumberOfOrdersOrders')}</div>
         </Grid.CenteredRow>
-        <div className="mailpoet-gap" />
-        <Grid.CenteredRow className="mailpoet-form-field">
+        <Grid.CenteredRow>
           <div>{MailPoet.I18n.t('inTheLast')}</div>
           <Input
             data-automation-id="input-number-of-orders-days"
@@ -189,13 +191,12 @@ export const WooCommerceFields: React.FunctionComponent = () => {
           />
           <div>{MailPoet.I18n.t('days')}</div>
         </Grid.CenteredRow>
-      </div>
+      </>
     );
   } else if (segment.action === WooCommerceActionTypes.TOTAL_SPENT) {
     optionFields = (
-      <div>
-        <div className="mailpoet-gap" />
-        <Grid.CenteredRow className="mailpoet-form-field">
+      <>
+        <Grid.CenteredRow>
           <Select
             key="select"
             value={segment.total_spent_type}
@@ -220,8 +221,7 @@ export const WooCommerceFields: React.FunctionComponent = () => {
           />
           <div>{wooCurrencySymbol}</div>
         </Grid.CenteredRow>
-        <div className="mailpoet-gap" />
-        <Grid.CenteredRow className="mailpoet-form-field">
+        <Grid.CenteredRow>
           <div>{MailPoet.I18n.t('inTheLast')}</div>
           <Input
             data-automation-id="input-total-spent-days"
@@ -235,20 +235,22 @@ export const WooCommerceFields: React.FunctionComponent = () => {
           />
           <div>{MailPoet.I18n.t('days')}</div>
         </Grid.CenteredRow>
-      </div>
+      </>
     );
   } else if (segment.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY) {
     optionFields = (
-      <ReactSelect
-        dimension="small"
-        key="select-segment-country"
-        isFullWidth
-        placeholder={MailPoet.I18n.t('selectWooCountry')}
-        options={countryOptions}
-        value={find(['value', segment.country_code], countryOptions)}
-        onChange={(option: SelectOption): void => updateSegment({ country_code: option.value })}
-        automationId="select-segment-country"
-      />
+      <div>
+        <ReactSelect
+          dimension="small"
+          key="select-segment-country"
+          isFullWidth
+          placeholder={MailPoet.I18n.t('selectWooCountry')}
+          options={countryOptions}
+          value={find(['value', segment.country_code], countryOptions)}
+          onChange={(option: SelectOption): void => updateSegment({ country_code: option.value })}
+          automationId="select-segment-country"
+        />
+      </div>
     );
   }
 

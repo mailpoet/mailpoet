@@ -73,7 +73,6 @@ export const SubscribedDateFields: React.FunctionComponent = () => {
 
   return (
     <>
-      <div className="mailpoet-gap" />
       <Grid.CenteredRow>
         <Select
           key="select"

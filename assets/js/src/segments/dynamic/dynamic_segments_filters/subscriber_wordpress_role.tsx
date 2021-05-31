@@ -29,23 +29,25 @@ export const WordpressRoleFields: React.FunctionComponent = () => {
   }));
 
   return (
-    <Select
-      isFullWidth
-      placeholder={MailPoet.I18n.t('selectUserRolePlaceholder')}
-      options={options}
-      value={
-        find(
-          (option) => {
-            if (!segment.wordpressRole) return undefined;
-            return segment.wordpressRole.toLowerCase() === option.value.toLowerCase();
-          },
-          options
-        )
-      }
-      onChange={(option: SelectOption): void => {
-        updateSegment({ wordpressRole: option.value });
-      }}
-      automationId="segment-wordpress-role"
-    />
+    <div>
+      <Select
+        isFullWidth
+        placeholder={MailPoet.I18n.t('selectUserRolePlaceholder')}
+        options={options}
+        value={
+          find(
+            (option) => {
+              if (!segment.wordpressRole) return undefined;
+              return segment.wordpressRole.toLowerCase() === option.value.toLowerCase();
+            },
+            options
+          )
+        }
+        onChange={(option: SelectOption): void => {
+          updateSegment({ wordpressRole: option.value });
+        }}
+        automationId="segment-wordpress-role"
+      />
+    </div>
   );
 };

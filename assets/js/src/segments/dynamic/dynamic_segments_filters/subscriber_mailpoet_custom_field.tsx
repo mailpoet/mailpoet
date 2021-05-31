@@ -75,39 +75,43 @@ export const MailPoetCustomFields: React.FunctionComponent = () => {
 
   return (
     <>
-      <ReactSelect
-        dimension="small"
-        isFullWidth
-        placeholder={MailPoet.I18n.t('selectCustomFieldPlaceholder')}
-        options={options}
-        automationId="select-custom-field"
-        value={
-          find(
-            (option) => {
-              if (!segment.custom_field_id) return undefined;
-              return segment.custom_field_id === option.value;
-            },
-            options
+      <div>
+        <ReactSelect
+          dimension="small"
+          isFullWidth
+          placeholder={MailPoet.I18n.t('selectCustomFieldPlaceholder')}
+          options={options}
+          automationId="select-custom-field"
+          value={
+            find(
+              (option) => {
+                if (!segment.custom_field_id) return undefined;
+                return segment.custom_field_id === option.value;
+              },
+              options
+            )
+          }
+          onChange={(option: SelectOption): void => {
+            const customField = find({ id: Number(option.value) }, customFieldsList);
+            if (!customField) return;
+            updateSegment({
+              custom_field_id: option.value,
+              custom_field_type: customField.type,
+              operator: undefined,
+              value: undefined,
+            });
+          }}
+        />
+      </div>
+      <div>
+        {
+          TypeComponent && (
+            <TypeComponent
+              customField={selectedCustomField}
+            />
           )
         }
-        onChange={(option: SelectOption): void => {
-          const customField = find({ id: Number(option.value) }, customFieldsList);
-          if (!customField) return;
-          updateSegment({
-            custom_field_id: option.value,
-            custom_field_type: customField.type,
-            operator: undefined,
-            value: undefined,
-          });
-        }}
-      />
-      {
-        TypeComponent && (
-          <TypeComponent
-            customField={selectedCustomField}
-          />
-        )
-      }
+      </div>
     </>
   );
 };

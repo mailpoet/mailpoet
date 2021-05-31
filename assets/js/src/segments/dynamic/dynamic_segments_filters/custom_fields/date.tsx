@@ -263,7 +263,6 @@ export const CustomFieldDate: React.FunctionComponent<Props> = (
   if (!Component) return null;
   return (
     <>
-      <div className="mailpoet-gap" />
       <Component
         item={segment}
         onChange={updateSegment}
