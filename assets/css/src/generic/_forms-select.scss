@@ -96,6 +96,10 @@
 
 .mailpoet-form-react-select__input {
   color: $color-text !important;
+
+  input {
+    min-height: 0;
+  }
 }
 
 .mailpoet-form-react-select__indicators {
