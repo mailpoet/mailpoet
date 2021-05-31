@@ -3,6 +3,7 @@
 namespace MailPoet\Subscription;
 
 use MailPoet\Config\Renderer as TemplateRenderer;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Block\Date as FormBlockDate;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\InvalidStateException;
@@ -86,7 +87,16 @@ class ManageSubscriptionFormRenderer {
 
     $form = $this->wp->applyFilters('mailpoet_manage_subscription_page_form_fields', $form);
 
-    $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
+    // Because subscriber isn't stored in DB Doctrine can't found entity in DB, we need temporary workaround
+    if ($subscriber->email !== Pages::DEMO_EMAIL) {
+      $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
+    } else {
+      $subscriberEntity = new SubscriberEntity();
+      $subscriberEntity->setEmail($subscriber->email);
+      $subscriberEntity->setFirstName($subscriber->firstName);
+      $subscriberEntity->setLastName($subscriber->lastName);
+      $subscriberEntity->setLinkToken($subscriber->linkToken);
+    }
     if (!$subscriberEntity) {
       throw new InvalidStateException();
     }
