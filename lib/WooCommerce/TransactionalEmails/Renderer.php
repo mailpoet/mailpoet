@@ -44,14 +44,14 @@ class Renderer {
       throw new \Exception("You should call 'render' before 'getHTMLBeforeContent'");
     }
     $html = str_replace(Preprocessor::WC_HEADING_PLACEHOLDER, $headingText, $this->htmlBeforeContent);
-    return $html . '<div id="' . self::CONTENT_CONTAINER_ID . '"><div id="body_content"><div id="body_content_inner">';
+    return $html . '<div id="' . self::CONTENT_CONTAINER_ID . '"><div id="body_content"><div id="body_content_inner"><table><tr><td>';
   }
 
   public function getHTMLAfterContent() {
     if (empty($this->htmlAfterContent)) {
       throw new \Exception("You should call 'render' before 'getHTMLAfterContent'");
     }
-    return '</div></div></div>' . $this->htmlAfterContent;
+    return '</td></tr></table></div></div></div>' . $this->htmlAfterContent;
   }
 
   public function prefixCss($css) {
