@@ -3,15 +3,10 @@
 namespace MailPoet\Settings;
 
 use MailPoet\Cron\CronTrigger;
-use MailPoet\Cron\Workers\InactiveSubscribers;
-use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Form\FormsRepository;
-use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
 
 class SettingsController {
 
@@ -30,9 +25,6 @@ class SettingsController {
   /** @var SettingsRepository */
   private $settingsRepository;
 
-  /** @var ScheduledTasksRepository */
-  private $tasksRepository;
-
   /** @var FormsRepository */
   private $formsRepository;
 
@@ -40,11 +32,9 @@ class SettingsController {
 
   public function __construct(
     SettingsRepository $settingsRepository,
-    ScheduledTasksRepository $scheduledTasksRepository,
     FormsRepository $formsRepository
   ) {
     $this->settingsRepository = $settingsRepository;
-    $this->tasksRepository = $scheduledTasksRepository;
     $this->formsRepository = $formsRepository;
   }
 
@@ -141,34 +131,6 @@ class SettingsController {
     unset($this->settings[$key]);
   }
 
-  public function onSubscribeOldWoocommerceCustomersChange(): void {
-    $task = $this->tasksRepository->findOneBy([
-      'type' => WooCommerceSync::TASK_TYPE,
-      'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
-    ]);
-    if (!($task instanceof ScheduledTaskEntity)) {
-      $task = $this->createScheduledTask(WooCommerceSync::TASK_TYPE);
-    }
-    $datetime = Carbon::createFromTimestamp((int)WPFunctions::get()->currentTime('timestamp'));
-    $task->setScheduledAt($datetime->subMinute());
-    $this->tasksRepository->persist($task);
-    $this->tasksRepository->flush();
-  }
-
-  public function onInactiveSubscribersIntervalChange(): void {
-    $task = $this->tasksRepository->findOneBy([
-      'type' => InactiveSubscribers::TASK_TYPE,
-      'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
-    ]);
-    if (!($task instanceof ScheduledTaskEntity)) {
-      $task = $this->createScheduledTask(InactiveSubscribers::TASK_TYPE);
-    }
-    $datetime = Carbon::createFromTimestamp((int)WPFunctions::get()->currentTime('timestamp'));
-    $task->setScheduledAt($datetime->subMinute());
-    $this->tasksRepository->persist($task);
-    $this->tasksRepository->flush();
-  }
-
   public function updateSuccessMessages(): void {
     $rightMessage = $this->getDefaultSuccessMessage();
     $wrongMessage = (
@@ -193,13 +155,6 @@ class SettingsController {
       return __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet');
     }
     return __('You’ve been successfully subscribed to our newsletter!', 'mailpoet');
-  }
-
-  private function createScheduledTask(string $type): ScheduledTaskEntity {
-    $task = new ScheduledTaskEntity();
-    $task->setType($type);
-    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
-    return $task;
   }
 
   private function ensureLoaded() {
