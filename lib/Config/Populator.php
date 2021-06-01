@@ -179,7 +179,6 @@ class Populator {
     $this->scheduleUnsubscribeTokens();
     $this->scheduleSubscriberLinkTokens();
     $this->detectReferral();
-    $this->updateFormsSuccessMessages();
     $this->moveGoogleAnalyticsFromPremium();
     $this->addPlacementStatusToForms();
     $this->migrateFormPlacement();
@@ -663,17 +662,6 @@ class Populator {
     $task->status = ScheduledTask::STATUS_SCHEDULED;
     $task->scheduledAt = $datetime;
     $task->save();
-  }
-
-  /**
-   * Remove this comment when this private function is actually used
-   * @phpcsSuppress SlevomatCodingStandard.Classes.UnusedPrivateElements
-   */
-  private function updateFormsSuccessMessages() {
-    if (version_compare($this->settings->get('db_version', '3.23.2'), '3.23.1', '>')) {
-      return;
-    }
-    $this->settings->updateSuccessMessages();
   }
 
   private function enableStatsNotificationsForAutomatedEmails() {
