@@ -8,6 +8,8 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Settings;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\WooCommerceSync;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -31,9 +33,13 @@ class SettingsTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
+  /** @var ScheduledTasksRepository */
+  private $tasksRepository;
+
   public function _before() {
     parent::_before();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    $this->tasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->settings = SettingsController::getInstance();
     $this->settings->set('some.setting.key', true);
     $this->endpoint = new Settings(
@@ -179,7 +185,72 @@ class SettingsTest extends \MailPoetTest {
     expect($this->settings->get('reply_to'))->isEmpty();
   }
 
+  public function testItReschedulesScheduledTaskForWoocommerceSync(): void {
+    $newTask = $this->createScheduledTask(WooCommerceSync::TASK_TYPE);
+    assert($newTask instanceof ScheduledTaskEntity);
+
+    $this->endpoint->onSubscribeOldWoocommerceCustomersChange();
+
+    $this->entityManager->clear();
+    $task = $this->getScheduledTaskByType(WooCommerceSync::TASK_TYPE);
+    assert($task instanceof ScheduledTaskEntity);
+    $scheduledAt = $task->getScheduledAt();
+    assert($scheduledAt instanceof \DateTime);
+    $expectedScheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $expectedScheduledAt->subMinute();
+    expect($scheduledAt)->equals($expectedScheduledAt);
+    expect($newTask->getId())->equals($task->getId());
+  }
+
+  public function testItCreatesScheduledTaskForWoocommerceSync(): void {
+    $task = $this->getScheduledTaskByType(WooCommerceSync::TASK_TYPE);
+    expect($task)->null();
+    $this->endpoint->onSubscribeOldWoocommerceCustomersChange();
+    $task = $this->getScheduledTaskByType(WooCommerceSync::TASK_TYPE);
+    expect($task)->isInstanceOf(ScheduledTaskEntity::class);
+  }
+
+  public function testItReschedulesScheduledTaskForInactiveSubscribers(): void {
+    $newTask = $this->createScheduledTask(InactiveSubscribers::TASK_TYPE);
+    assert($newTask instanceof ScheduledTaskEntity);
+    $this->endpoint->onInactiveSubscribersIntervalChange();
+
+    $task = $this->getScheduledTaskByType(InactiveSubscribers::TASK_TYPE);
+    assert($task instanceof ScheduledTaskEntity);
+    $scheduledAt = $task->getScheduledAt();
+    assert($scheduledAt instanceof \DateTime);
+    $expectedScheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $expectedScheduledAt->subMinute();
+    expect($scheduledAt)->equals($expectedScheduledAt);
+    expect($newTask->getId())->equals($task->getId());
+  }
+
+  public function testItCreatesScheduledTaskForInactiveSubscribers(): void {
+    $task = $this->getScheduledTaskByType(InactiveSubscribers::TASK_TYPE);
+    expect($task)->null();
+    $this->endpoint->onInactiveSubscribersIntervalChange();
+    $task = $this->getScheduledTaskByType(InactiveSubscribers::TASK_TYPE);
+    expect($task)->isInstanceOf(ScheduledTaskEntity::class);
+  }
+
+  private function createScheduledTask(string $type): ScheduledTaskEntity {
+    $task = new ScheduledTaskEntity();
+    $task->setType($type);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->tasksRepository->persist($task);
+    $this->tasksRepository->flush();
+    return $task;
+  }
+
+  private function getScheduledTaskByType(string $type): ?ScheduledTaskEntity {
+    return $this->tasksRepository->findOneBy([
+      'type' => $type,
+      'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
+    ]);
+  }
+
   public function _after() {
+    $this->truncateEntity(ScheduledTaskEntity::class);
     $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }
