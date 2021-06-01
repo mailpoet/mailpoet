@@ -4,8 +4,6 @@ namespace MailPoet\Settings;
 
 use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Entities\FormEntity;
-use MailPoet\Form\FormsRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SettingsController {
@@ -25,17 +23,12 @@ class SettingsController {
   /** @var SettingsRepository */
   private $settingsRepository;
 
-  /** @var FormsRepository */
-  private $formsRepository;
-
   private static $instance;
 
   public function __construct(
-    SettingsRepository $settingsRepository,
-    FormsRepository $formsRepository
+    SettingsRepository $settingsRepository
   ) {
     $this->settingsRepository = $settingsRepository;
-    $this->formsRepository = $formsRepository;
   }
 
   public function get($key, $default = null) {
@@ -129,32 +122,6 @@ class SettingsController {
       $this->settingsRepository->flush();
     }
     unset($this->settings[$key]);
-  }
-
-  public function updateSuccessMessages(): void {
-    $rightMessage = $this->getDefaultSuccessMessage();
-    $wrongMessage = (
-    $rightMessage === __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet')
-      ? __('You’ve been successfully subscribed to our newsletter!', 'mailpoet')
-      : __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet')
-    );
-    /** @var FormEntity[] $forms */
-    $forms = $this->formsRepository->findAll();
-    foreach ($forms as $form) {
-      $settings = $form->getSettings();
-      if (isset($settings['success_message']) && $settings['success_message'] === $wrongMessage) {
-        $settings['success_message'] = $rightMessage;
-        $form->setSettings($settings);
-        $this->settingsRepository->flush();
-      }
-    }
-  }
-
-  public function getDefaultSuccessMessage(): string {
-    if ($this->get('signup_confirmation.enabled')) {
-      return __('Check your inbox or spam folder to confirm your subscription.', 'mailpoet');
-    }
-    return __('You’ve been successfully subscribed to our newsletter!', 'mailpoet');
   }
 
   private function ensureLoaded() {

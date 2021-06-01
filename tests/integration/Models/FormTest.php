@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Models;
 
+use MailPoet\Form\FormMessageController;
 use MailPoet\Models\Form;
 use MailPoet\Settings\SettingsController;
 
@@ -10,9 +11,13 @@ class FormTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
+  /** @var FormMessageController */
+  private $messageController;
+
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
+    $this->messageController = $this->diContainer->get(FormMessageController::class);
     $this->form = Form::createOrUpdate([
       'name' => 'My Form',
     ]);
@@ -153,7 +158,7 @@ class FormTest extends \MailPoetTest {
       'settings' => ['success_message' => 'Thanks for joining us!'],
     ]);
     $this->settings->set('signup_confirmation.enabled', '0');
-    $this->settings->updateSuccessMessages();
+    $this->messageController->updateSuccessMessages();
     $default = Form::findOne($default->id);
     $custom = Form::findOne($custom->id);
     assert($default instanceof Form);
@@ -174,7 +179,7 @@ class FormTest extends \MailPoetTest {
       'settings' => ['success_message' => 'Thanks for joining us!'],
     ]);
     $this->settings->set('signup_confirmation.enabled', '1');
-    $this->settings->updateSuccessMessages();
+    $this->messageController->updateSuccessMessages();
     $default = Form::findOne($default->id);
     $custom = Form::findOne($custom->id);
     assert($default instanceof Form);

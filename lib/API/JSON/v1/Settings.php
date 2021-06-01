@@ -10,6 +10,7 @@ use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\SubscribersEngagementScore;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -50,6 +51,9 @@ class Settings extends APIEndpoint {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** @var FormMessageController */
+  private $messageController;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
@@ -63,6 +67,7 @@ class Settings extends APIEndpoint {
     EntityManager $entityManager,
     StatisticsOpensRepository $statisticsOpensRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
+    FormMessageController $messageController,
     ServicesChecker $servicesChecker
   ) {
     $this->settings = $settings;
@@ -74,6 +79,7 @@ class Settings extends APIEndpoint {
     $this->entityManager = $entityManager;
     $this->statisticsOpensRepository = $statisticsOpensRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->messageController = $messageController;
   }
 
   public function get() {
@@ -103,7 +109,7 @@ class Settings extends APIEndpoint {
 
       $this->authorizedEmailsController->onSettingsSave($settings);
       if ($signupConfirmation !== $this->settings->get('signup_confirmation.enabled')) {
-        $this->settings->updateSuccessMessages();
+        $this->messageController->updateSuccessMessages();
       }
       return $this->successResponse($this->settings->getAll());
     }
