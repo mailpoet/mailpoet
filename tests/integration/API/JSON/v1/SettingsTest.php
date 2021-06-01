@@ -10,6 +10,7 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -51,6 +52,7 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false])
     );
   }
@@ -88,6 +90,7 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false])
     );
 
@@ -116,6 +119,7 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false])
     );
 
@@ -138,6 +142,7 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class)
     );
 
