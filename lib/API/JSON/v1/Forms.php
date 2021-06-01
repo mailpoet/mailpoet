@@ -8,6 +8,7 @@ use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\FormsResponseBuilder;
+use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\ApiDataSanitizer;
@@ -19,18 +20,14 @@ use MailPoet\Form\Listing\FormListingRepository;
 use MailPoet\Form\PreviewPage;
 use MailPoet\Listing;
 use MailPoet\Settings\UserFlagsController;
+use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Forms extends APIEndpoint {
-
-
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_FORMS,
   ];
-
-  /** @var Listing\BulkActionController */
-  private $bulkAction;
 
   /** @var Listing\Handler */
   private $listingHandler;
@@ -63,7 +60,6 @@ class Forms extends APIEndpoint {
   private $formSaveController;
 
   public function __construct(
-    Listing\BulkActionController $bulkAction,
     Listing\Handler $listingHandler,
     UserFlagsController $userFlags,
     FormFactory $formFactory,
@@ -75,7 +71,6 @@ class Forms extends APIEndpoint {
     ApiDataSanitizer $dataSanitizer,
     FormSaveController $formSaveController
   ) {
-    $this->bulkAction = $bulkAction;
     $this->listingHandler = $listingHandler;
     $this->userFlags = $userFlags;
     $this->formFactory = $formFactory;
@@ -330,15 +325,20 @@ class Forms extends APIEndpoint {
     }
   }
 
-  public function bulkAction($data = []) {
-    try {
-      $meta = $this->bulkAction->apply('\MailPoet\Models\Form', $data);
-      return $this->successResponse(null, $meta);
-    } catch (\Exception $e) {
-      return $this->errorResponse([
-        $e->getCode() => $e->getMessage(),
-      ]);
+  public function bulkAction($data = []): SuccessResponse {
+    $definition = $this->listingHandler->getListingDefinition($data['listing']);
+    $ids = $this->formListingRepository->getActionableIds($definition);
+    if ($data['action'] === 'trash') {
+      $this->formsRepository->bulkTrash($ids);
+    } elseif ($data['action'] === 'restore') {
+      $this->formsRepository->bulkRestore($ids);
+    } elseif ($data['action'] === 'delete') {
+      $this->formsRepository->bulkDelete($ids);
+    } else {
+      throw UnexpectedValueException::create()
+        ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
     }
+    return $this->successResponse(null, ['count' => count($ids)]);
   }
 
   private function getForm(array $data): ?FormEntity {
