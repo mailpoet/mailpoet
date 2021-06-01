@@ -6,7 +6,6 @@ import { withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
 import Button from 'common/button/button';
-import OfferMigration from './step_results/offer_migration.jsx';
 
 function ResultMessage({ subscribersCount, segments, initialMessage }) {
   if (subscribersCount) {
@@ -130,13 +129,6 @@ function StepResults({
   if (errors.length) {
     MailPoet.Notice.error(_.flatten(errors));
   }
-  let totalNumberOfSubscribers = 0;
-  if (createdSubscribers != null) {
-    totalNumberOfSubscribers += createdSubscribers;
-  }
-  if (updatedSubscribers != null) {
-    totalNumberOfSubscribers += updatedSubscribers;
-  }
   return (
     <>
       <div className="updated">
@@ -181,9 +173,6 @@ function StepResults({
           </Button>
         </div>
       </div>
-      <OfferMigration
-        subscribersCount={totalNumberOfSubscribers}
-      />
     </>
   );
 }
