@@ -11,6 +11,7 @@ import { Grid } from 'common/grid';
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';
 import { isFormValid } from './validator';
+import plusIcon from '../../common/button/icon/plus';
 
 import {
   AnyFormItem,
@@ -110,6 +111,15 @@ export const Form: React.FunctionComponent<Props> = ({
               <FormFilterFields />
             )}
           </Grid.ThreeColumns>
+          <div className="mailpoet-gap" />
+          <Button
+            type="button"
+            dimension="small"
+            variant="link"
+            iconStart={plusIcon}
+          >
+            {MailPoet.I18n.t('addCondition')}
+          </Button>
         </div>
         <SubscribersCounter />
         <div className="mailpoet-form-actions">
