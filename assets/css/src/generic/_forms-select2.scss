@@ -102,7 +102,6 @@
   }
 
   .select2-search__field {
-    font-family: $font-family !important;
     font-size: $font-size !important;
     line-height: 24px;
     margin-bottom: 2px !important;
@@ -120,7 +119,6 @@
   border-radius: $form-control-border-radius;
   box-sizing: content-box;
   color: $color-text;
-  font-family: $font-family;
   font-size: $font-size;
   margin-left: -1px;
 
