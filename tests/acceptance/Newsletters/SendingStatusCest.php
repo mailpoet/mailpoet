@@ -33,12 +33,12 @@ class SendingStatusCest {
     // When I visit the newsletters page
     $i->login();
     $i->amOnMailPoetPage('Emails');
-    $i->waitForText($newsletter->subject);
+    $i->waitForText($newsletter->getSubject());
     // I click on the "Sent to 2 of 2" link
-    $i->click('[data-automation-id="sending_status_' . $newsletter->id . '"]');
+    $i->click('[data-automation-id="sending_status_' . $newsletter->getId() . '"]');
     $i->waitForText('Sending status');
     // I see the subscribers with related statuses
-    $taskId = $newsletter->getQueue()->task_id;
+    $taskId = $newsletter->getLatestQueue()->getTask()->getId();
     $this->checkSubscriber($i, $taskId, $luckySubscriber, 'Sent');
     $this->checkSubscriber($i, $taskId, $unluckySubscriber, 'Failed', 'Oh no!');
   }

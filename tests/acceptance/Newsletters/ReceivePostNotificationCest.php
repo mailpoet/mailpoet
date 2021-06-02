@@ -54,7 +54,7 @@ class ReceivePostNotificationCest {
       'UPDATE `' . ScheduledTask::$_table . '` t '
       . ' JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` '
       . ' SET t.scheduled_at="2016-01-01 01:02:03", t.updated_at="2016-01-01 01:02:03" '
-      . ' WHERE q.newsletter_id=' . $newsletter->id()
+      . ' WHERE q.newsletter_id=' . $newsletter->getId()
     );
 
     // confirm newsletter has been sent
@@ -63,7 +63,7 @@ class ReceivePostNotificationCest {
     $i->waitForText($newsletterSubject, 90);
 
     $i->waitForText('View history', 90);
-    $selector = sprintf('[data-automation-id="history-%d"]', $newsletter->id());
+    $selector = sprintf('[data-automation-id="history-%d"]', $newsletter->getId());
     $i->click($selector);
     $i->waitForText('1 / 1', 90);
 

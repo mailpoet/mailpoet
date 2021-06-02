@@ -18,7 +18,7 @@ class SaveNewsletterAsTemplateCest {
 
     // step 2 - Go to editor
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
 
     //step 3 - save as a template
     $i->click('[data-automation-id="newsletter_save_options_toggle"]');

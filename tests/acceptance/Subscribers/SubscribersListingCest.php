@@ -75,8 +75,8 @@ class SubscribersListingCest {
 
     $i->wantTo('Select first two subscribers and unsubscribe them');
     $i->waitForText('subscriber1@example.com');
-    $i->click("[data-automation-id='listing-row-checkbox-$subscriber1->id']");
-    $i->click("[data-automation-id='listing-row-checkbox-$subscriber2->id']");
+    $i->click("[data-automation-id='listing-row-checkbox-{$subscriber1->getId()}']");
+    $i->click("[data-automation-id='listing-row-checkbox-{$subscriber2->getId()}']");
 
     $i->waitForElement("[data-automation-id='action-unsubscribe']");
     $i->click("[data-automation-id='action-unsubscribe']");
@@ -87,11 +87,11 @@ class SubscribersListingCest {
 
     $i->wantTo('Check the final status');
     $i->waitForText('subscriber2@example.com');
-    $i->waitForText('Unsubscribed', 10, "[data-automation-id='listing_item_$subscriber1->id']");
-    $i->waitForText('Unsubscribed', 10, "[data-automation-id='listing_item_$subscriber2->id']");
-    $i->waitForText('Subscribed', 10, "[data-automation-id='listing_item_$subscriber3->id']");
-    $i->waitForText('Subscribed', 10, "[data-automation-id='listing_item_$subscriber4->id']");
-    $i->dontSee('Unsubscribed', "[data-automation-id='listing_item_$subscriber3->id']");
-    $i->dontSee('Unsubscribed', "[data-automation-id='listing_item_$subscriber4->id']");
+    $i->waitForText('Unsubscribed', 10, "[data-automation-id='listing_item_{$subscriber1->getId()}']");
+    $i->waitForText('Unsubscribed', 10, "[data-automation-id='listing_item_{$subscriber2->getId()}']");
+    $i->waitForText('Subscribed', 10, "[data-automation-id='listing_item_{$subscriber3->getId()}']");
+    $i->waitForText('Subscribed', 10, "[data-automation-id='listing_item_{$subscriber4->getId()}']");
+    $i->dontSee('Unsubscribed', "[data-automation-id='listing_item_{$subscriber3->getId()}']");
+    $i->dontSee('Unsubscribed', "[data-automation-id='listing_item_{$subscriber4->getId()}']");
   }
 }

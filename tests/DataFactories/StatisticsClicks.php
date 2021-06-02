@@ -2,21 +2,29 @@
 
 namespace MailPoet\Test\DataFactories;
 
-use MailPoet\Models\NewsletterLink;
-use MailPoet\Models\StatisticsClicks as StatisticsClicksModel;
-use MailPoet\Models\Subscriber;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class StatisticsClicks {
   protected $data;
 
-  public function __construct(NewsletterLink $newsletterLink, Subscriber $subscriber) {
+  /** @var NewsletterLinkEntity */
+  private $newsletterLink;
+
+  /** @var SubscriberEntity */
+  private $subscriber;
+
+  public function __construct(NewsletterLinkEntity $newsletterLink, SubscriberEntity $subscriber) {
     $this->data = [
-      'newsletter_id' => $newsletterLink->newsletterId,
-      'subscriber_id' => $subscriber->id,
-      'queue_id' => $newsletterLink->queueId,
-      'link_id' => $newsletterLink->id,
       'count' => 1,
     ];
+    $this->newsletterLink = $newsletterLink;
+    $this->subscriber = $subscriber;
   }
 
   public function withCount($count) {
@@ -24,8 +32,21 @@ class StatisticsClicks {
     return $this;
   }
 
-  /** @return StatisticsClicksModel */
-  public function create() {
-    return StatisticsClicksModel::createOrUpdate($this->data);
+  public function create(): StatisticsClickEntity {
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $newsletter = $this->newsletterLink->getNewsletter();
+    assert($newsletter instanceof NewsletterEntity);
+    $queue = $newsletter->getLatestQueue();
+    assert($queue instanceof SendingQueueEntity);
+    $entity = new StatisticsClickEntity(
+      $newsletter,
+      $queue,
+      $this->subscriber,
+      $this->newsletterLink,
+      $this->data['count']
+    );
+    $entityManager->persist($entity);
+    $entityManager->flush();
+    return $entity;
   }
 }

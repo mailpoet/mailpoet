@@ -20,7 +20,7 @@ class SavePostNotificationEmailAsTemplateCest {
 
     // step 2 - Go to editor
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
 
     // step 3 - Save as template
     $saveTemplateOption = '[data-automation-id="newsletter_save_as_template_option"]';

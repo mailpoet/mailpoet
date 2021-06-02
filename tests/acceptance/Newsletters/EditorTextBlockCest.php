@@ -17,7 +17,7 @@ class EditorTextBlockCest {
       ->loadBodyFrom('newsletterWithText.json')
       ->create();
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->dragAndDrop('#automation_editor_block_text', '#mce_1');
     $i->waitForText('Edit this to insert text.');
   }
@@ -30,7 +30,7 @@ class EditorTextBlockCest {
       ->loadBodyFrom('newsletterThreeCols.json')
       ->create();
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->click(self::TEXT_BLOCK_SELECTOR);
     $i->waitForElementVisible(self::TINYMCE_SELECTOR);
     $i->click(self::CONTAINER_SELECTOR);

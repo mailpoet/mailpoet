@@ -17,7 +17,7 @@ class SaveNotificationAsDraftCest {
     $segmentName = $i->createListWithSubscriber();
     // step 2 - Go to editor
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->click('Next');
     //Save Notification As Draft
     $sendFormElement = '[data-automation-id="newsletter_send_form"]';

@@ -19,7 +19,7 @@ class ConfirmTitleAlignmentSettingsInALCBlockCest {
 
     // open the newsletter in editor
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->waitForText($postTitle);
 
     // open settings

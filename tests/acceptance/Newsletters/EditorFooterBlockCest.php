@@ -14,7 +14,7 @@ class EditorFooterBlockCest {
       ->loadBodyFrom('newsletterWithTextNoFooter.json')
       ->create();
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->dragAndDrop('#automation_editor_block_footer', '#mce_0');
     //Open settings by clicking on block
     $i->moveMouseOver($footerInEditor, 3, 2);

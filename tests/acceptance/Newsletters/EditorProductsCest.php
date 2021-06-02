@@ -2,13 +2,12 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Models\Newsletter as NewsletterModel;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 use MailPoet\Util\Security;
 
 class EditorProductsCest {
-
   const EDITOR_PRODUCTS_SELECTOR = '.mailpoet_products_container > .mailpoet_block > .mailpoet_container';
   const EDITOR_PRODUCT_SELECTOR = '.mailpoet_products_container > .mailpoet_block > .mailpoet_container > .mailpoet_block';
   const PRICE_XPATH = '//*[name()="h2"][.//*[name()="span"][contains(@class, "woocommerce-Price-amount")]]';
@@ -30,7 +29,7 @@ class EditorProductsCest {
   /** @var WooCommerceProduct */
   private $productFactory;
 
-  /** @var NewsletterModel */
+  /** @var NewsletterEntity */
   private $newsletter;
 
   private function initializeNewsletter(\AcceptanceTester $i) {
@@ -44,7 +43,7 @@ class EditorProductsCest {
     $i->deactivateWooCommerce();
 
     $i->login();
-    $i->amEditingNewsletter($this->newsletter->id);
+    $i->amEditingNewsletter($this->newsletter->getId());
 
     $i->waitForElementNotVisible('#automation_editor_block_products');
   }
@@ -91,7 +90,7 @@ class EditorProductsCest {
 
   private function filterProducts(\AcceptanceTester $i) {
     $i->wantTo('Filter products');
-    $i->amEditingNewsletter($this->newsletter->id);
+    $i->amEditingNewsletter($this->newsletter->getId());
 
     // Create products block (added wait checks to avoid flakiness)
     $i->waitForText('Content');

@@ -159,10 +159,13 @@ class AcceptanceTester extends \Codeception\Actor {
   /**
    * Navigate to the editor for a newsletter.
    *
-   * @param int $id
+   * @param int|null $id
    */
   public function amEditingNewsletter($id) {
     $i = $this;
+    if (is_null($id)) {
+      throw new \Exception('No valid id passed');
+    }
     $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletter-editor&id=' . $id);
     $i->waitForElement('[data-automation-id="newsletter_title"]');
     $i->waitForElementNotVisible('.velocity-animating');
@@ -171,12 +174,12 @@ class AcceptanceTester extends \Codeception\Actor {
   public function createFormAndSubscribe(FormEntity $form = null) {
     $i = $this;
     // create form widget
-    if ($form instanceof FormEntity) {
+    if (!$form instanceof FormEntity) {
       $formFactory = new Form();
       $form = $formFactory->withName('Confirmation Form')->create();
     }
     $i->cli(['widget', 'reset', 'sidebar-1']);
-    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->getId()", '--title=Subscribe to Our Newsletter']);
+    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form={$form->getId()}", '--title=Subscribe to Our Newsletter']);
 
     // subscribe
     /** @var FormMessageController $messageController */

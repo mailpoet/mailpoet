@@ -2,8 +2,11 @@
 
 namespace MailPoet\Test\DataFactories;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Models\SubscriberSegment;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Subscriber {
 
@@ -76,17 +79,24 @@ class Subscriber {
   }
 
   /**
-   * @return \MailPoet\Models\Subscriber
    * @throws \Exception
    */
-  public function create() {
-    $subscriber = \MailPoet\Models\Subscriber::createOrUpdate($this->data);
+  public function create(): SubscriberEntity {
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $subscriber = new SubscriberEntity();
+    $subscriber->setStatus($this->data['status']);
+    $subscriber->setEmail($this->data['email']);
+    if (isset($this->data['count_confirmations'])) $subscriber->setConfirmationsCount($this->data['count_confirmations']);
+    if (isset($this->data['last_name'])) $subscriber->setLastName($this->data['last_name']);
+    if (isset($this->data['first_name'])) $subscriber->setFirstName($this->data['first_name']);
+    $entityManager->persist($subscriber);
+
     foreach ($this->segments as $segment) {
-      SubscriberSegment::createOrUpdate([
-        'subscriber_id' => $subscriber->id(),
-        'segment_id' => $segment->getId(),
-      ]);
+      $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, 'subscribed');
+      $entityManager->persist($subscriberSegment);
     }
+
+    $entityManager->flush();
     return $subscriber;
   }
 }

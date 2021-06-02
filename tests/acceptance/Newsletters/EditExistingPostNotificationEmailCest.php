@@ -24,7 +24,7 @@ class EditExistingPostNotificationEmailCest {
     $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
 
     // step 3 - Open editation of post notifcation newsletter
-    $listingAutomationSelector = '[data-automation-id="listing_item_' . $newsletter->id . '"]';
+    $listingAutomationSelector = '[data-automation-id="listing_item_' . $newsletter->getId() . '"]';
     $i->waitForText('Edit Test Post Notification', 10, $listingAutomationSelector);
     $i->clickItemRowActionByItemName($newsletterTitle, 'Edit');
 

@@ -15,7 +15,7 @@ class EditorDividerBlockCest {
       ->loadBodyFrom('newsletterWithText.json')
       ->create();
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->dragAndDrop('#automation_editor_block_divider', '#mce_0');
     $i->waitForElementNotVisible('.velocity-animating');
     //Open settings
