@@ -3,9 +3,11 @@
 namespace MailPoet\Test\DataFactories;
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Form\FormMessageController;
-use MailPoet\Models\Form as FormModel;
+use MailPoet\Form\FormsRepository;
+use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Carbon\Carbon;
 
 class Form {
@@ -13,10 +15,15 @@ class Form {
   /** @var FormMessageController */
   private $messageController;
 
+  /** @var FormsRepository  */
+  private $formsRepository;
+
   private $data;
 
   public function __construct() {
     $this->messageController = ContainerWrapper::getInstance()->get(FormMessageController::class);
+    $this->formsRepository = ContainerWrapper::getInstance()->get(FormsRepository::class);
+    $this->settingsController = ContainerWrapper::getInstance()->get(SettingsController::class);
     $this->data = [
       'name' => 'New form',
       'body' => 'a:2:{i:0;a:5:{s:2:"id";s:5:"email";s:4:"name";s:5:"Email";s:4:"type";s:4:"text";s:6:"static";b:1;s:6:"params";a:2:{s:5:"label";s:5:"Email";s:8:"required";b:1;}}i:1;a:5:{s:2:"id";s:6:"submit";s:4:"name";s:6:"Submit";s:4:"type";s:6:"submit";s:6:"static";b:1;s:6:"params";a:1:{s:5:"label";s:10:"Subscribe!";}}}',
@@ -125,11 +132,6 @@ class Form {
     return $this;
   }
 
-  /** @return \MailPoet\Models\Form */
-  public function create() {
-    return FormModel::createOrUpdate($this->data);
-  }
-
   public function withDefaultSuccessMessage() {
     $this->messageController->updateSuccessMessages();
   }
@@ -141,5 +143,17 @@ class Form {
     $this->data['settings']['on_success'] = 'message';
     $this->data['settings']['success_message'] = $message;
     return $this;
+  }
+
+  public function create(): FormEntity {
+    $form = new FormEntity($this->data['name']);
+    $form->setSettings($this->data['settings']);
+    if (isset($this->data['deleted_at'])) {
+      $form->setDeletedAt($this->data['deleted_at']);
+    }
+    $form->setBody(unserialize($this->data['body']));
+    $this->formsRepository->persist($form);
+    $this->formsRepository->flush();
+    return $form;
   }
 }
