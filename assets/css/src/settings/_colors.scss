@@ -28,9 +28,12 @@ $color-destructive: #b52727;
 $color-destructive-hover: #a02222;
 
 // Typography colors
-$color-text: $color-tertiary;
+$color-wordpress-text: #3c434a;
+$color-wordpress-heading: #1d2327;
+$color-heading: $color-wordpress-heading;
+$color-text: $color-wordpress-text;
 $color-text-hover: darken($color-text, 10%);
-$color-text-light: #9ca6cc;
+$color-text-light: #757575;
 $color-text-light-hover: darken($color-text-light, 10%);
 
 // Form colors
