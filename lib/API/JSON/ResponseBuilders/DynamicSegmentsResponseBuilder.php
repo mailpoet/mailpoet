@@ -2,7 +2,6 @@
 
 namespace MailPoet\API\JSON\ResponseBuilders;
 
-use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\SegmentDependencyValidator;
@@ -39,12 +38,15 @@ class DynamicSegmentsResponseBuilder {
   public function build(SegmentEntity $segmentEntity) {
     $data = $this->segmentsResponseBuilder->build($segmentEntity);
     $data = $this->addMissingPluginProperties($segmentEntity, $data);
-    // So far we allow dynamic segments to have only one filter
-    $filter = $segmentEntity->getDynamicFilters()->first();
-    if (!$filter instanceof DynamicSegmentFilterEntity) {
-      return $data;
+    $dynamicFilters = $segmentEntity->getDynamicFilters();
+    $filters = [];
+    foreach ($dynamicFilters as $dynamicFilter) {
+      $filter = $dynamicFilter->getFilterData()->getData();
+      $filter['id'] = $dynamicFilter->getId();
+      $filters[] = $filter;
     }
-    return array_merge($data, $filter->getFilterData()->getData() ?? []);
+    $data['filters'] = $filters;
+    return $data;
   }
 
   public function buildForListing(array $segments): array {
