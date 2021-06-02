@@ -1,6 +1,6 @@
 import {
-  AnyFormItem,
-  StateType,
+  AnyFormItem, FilterValue, GroupFilterValue,
+  StateType, SubscriberActionTypes,
   WindowCustomFields,
   WindowEditableRoles,
   WindowNewslettersList,
@@ -9,6 +9,7 @@ import {
   WindowSubscriptionProducts,
   WindowWooCommerceCountries,
 } from '../types';
+import { SubscriberSegmentOptions } from '../dynamic_segments_filters/subscriber';
 
 export const getProducts = (state: StateType): WindowProducts => (
   state.products
@@ -43,3 +44,29 @@ export const getSegment = (state: StateType): AnyFormItem => (
 export const getErrors = (state: StateType): string[] => (
   state.errors
 );
+export const getAvailableFilters = (state: StateType): GroupFilterValue[] => (
+  state.allAvailableFilters
+);
+export const findFilterValueForSegment = (
+  state: StateType,
+  itemSearch: AnyFormItem
+): FilterValue | undefined => {
+  let found: FilterValue | undefined;
+  if (itemSearch.action === undefined) {
+    // bc compatibility, the wordpress user role segment doesn't have action
+    return SubscriberSegmentOptions.find(
+      (value) => value.value === SubscriberActionTypes.WORDPRESS_ROLE
+    );
+  }
+
+  state.allAvailableFilters.forEach((filter: GroupFilterValue) => {
+    filter.options.forEach((option: FilterValue) => {
+      if (option.group === itemSearch.segmentType) {
+        if (itemSearch.action === option.value) {
+          found = option;
+        }
+      }
+    });
+  });
+  return found;
+};

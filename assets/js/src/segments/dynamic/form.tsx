@@ -16,10 +16,7 @@ import {
   AnyFormItem,
   FilterValue,
   GroupFilterValue,
-  SubscriberActionTypes,
 } from './types';
-import { SubscriberSegmentOptions } from './dynamic_segments_filters/subscriber';
-import { getAvailableFilters } from './all_available_filters';
 
 interface Props {
   segmentId?: number;
@@ -33,35 +30,17 @@ export const Form: React.FunctionComponent<Props> = ({
     []
   );
 
-  const canUseWooSubscriptions: boolean = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').canUseWooSubscriptions(),
+  const segmentFilters: GroupFilterValue[] = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getAvailableFilters(),
     []
   );
 
+  const filterValue: FilterValue | undefined = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').findFilterValueForSegment(segment),
+    [segment]
+  );
+
   const { updateSegment, handleSave } = useDispatch('mailpoet-dynamic-segments-form');
-
-  function findSegmentType(itemSearch): FilterValue | undefined {
-    let found: FilterValue | undefined;
-    if (itemSearch.action === undefined) {
-      // bc compatibility, the wordpress user role segment doesn't have action
-      return SubscriberSegmentOptions.find(
-        (value) => value.value === SubscriberActionTypes.WORDPRESS_ROLE
-      );
-    }
-
-    segmentFilters.forEach((filter: GroupFilterValue) => {
-      filter.options.forEach((option: FilterValue) => {
-        if (option.group === itemSearch.segmentType) {
-          if (itemSearch.action === option.value) {
-            found = option;
-          }
-        }
-      });
-    });
-    return found;
-  }
-
-  const segmentFilters = getAvailableFilters(canUseWooSubscriptions);
 
   return (
     <form className="mailpoet_form">
@@ -117,7 +96,7 @@ export const Form: React.FunctionComponent<Props> = ({
               dimension="small"
               placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
               options={segmentFilters}
-              value={findSegmentType(segment)}
+              value={filterValue}
               onChange={(newValue: FilterValue): void => {
                 updateSegment({
                   segmentType: newValue.group,

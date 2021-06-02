@@ -1,10 +1,10 @@
 import MailPoet from 'mailpoet';
 
-import { GroupFilterValue } from './types';
-import { EmailSegmentOptions } from './dynamic_segments_filters/email';
-import { SubscriberSegmentOptions } from './dynamic_segments_filters/subscriber';
-import { WooCommerceOptions } from './dynamic_segments_filters/woocommerce';
-import { WooCommerceSubscriptionOptions } from './dynamic_segments_filters/woocommerce_subscription';
+import { GroupFilterValue } from '../types';
+import { EmailSegmentOptions } from '../dynamic_segments_filters/email';
+import { SubscriberSegmentOptions } from '../dynamic_segments_filters/subscriber';
+import { WooCommerceOptions } from '../dynamic_segments_filters/woocommerce';
+import { WooCommerceSubscriptionOptions } from '../dynamic_segments_filters/woocommerce_subscription';
 
 export function getAvailableFilters(canUseWooSubscriptions: boolean): GroupFilterValue[] {
   const filters: GroupFilterValue[] = [

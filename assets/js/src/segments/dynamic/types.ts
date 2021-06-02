@@ -147,6 +147,7 @@ export interface StateType {
   customFieldsList: WindowCustomFields;
   segment: AnyFormItem,
   errors: string[],
+  allAvailableFilters: GroupFilterValue[],
 }
 
 export enum Actions {

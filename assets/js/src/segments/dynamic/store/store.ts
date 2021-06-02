@@ -13,6 +13,7 @@ import {
   SegmentFormDataWindow,
   SegmentTypes,
 } from '../types';
+import { getAvailableFilters } from './all_available_filters';
 
 declare let window: SegmentFormDataWindow;
 
@@ -32,6 +33,7 @@ export const createStore = (): void => {
       segmentType: SegmentTypes.WordPressRole,
     },
     errors: [],
+    allAvailableFilters: getAvailableFilters(window.mailpoet_can_use_woocommerce_subscriptions),
   };
 
   const config = {
