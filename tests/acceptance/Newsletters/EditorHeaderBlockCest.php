@@ -15,7 +15,7 @@ class EditorHeaderBlockCest {
       ->loadBodyFrom('newsletterWithTextNoHeader.json')
       ->create();
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->dragAndDrop('#automation_editor_block_header', '#mce_0');
     //Prevent flakyness by adding footer mouse over and some checks
     $i->moveMouseOver($footer, 3, 2);

@@ -17,7 +17,7 @@ class ScheduleNewsletterCest {
 
     // step 2 - Go to editor
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->click('Next');
 
     // step 4 - Choose list and schedule

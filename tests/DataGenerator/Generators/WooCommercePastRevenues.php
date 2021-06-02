@@ -97,7 +97,7 @@ class WooCommercePastRevenues implements Generator {
         ->withPostNotificationHistoryType()
         ->withSegments([$subscribersListEntity])
         ->withCreatedAt($sentAt)
-        ->withParentId($postNotification->id)
+        ->withParent($postNotification)
         ->create();
       $sentPostNotifications[] = $this->createSentEmailData($newsletter, $sentAt, $subscribersIds, $subscribersList->id);
     }

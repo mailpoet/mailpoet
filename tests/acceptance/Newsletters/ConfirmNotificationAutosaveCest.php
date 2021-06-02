@@ -15,7 +15,7 @@ class ConfirmNotificationAutosaveCest {
       ->create();
     // step 2 - Go to editor
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     // step 3 - Add subject, wait for Autosave
     $titleElement = '[data-automation-id="newsletter_title"]';
     $i->waitForElement($titleElement);

@@ -13,7 +13,7 @@ class SubscriptionFormCest {
   /** @var string */
   private $subscriberEmail;
 
-  /** @var string|null */
+  /** @var int|null */
   private $formId;
 
   public function __construct() {

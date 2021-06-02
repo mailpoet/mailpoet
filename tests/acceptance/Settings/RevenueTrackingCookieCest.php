@@ -37,7 +37,7 @@ class RevenueTrackingCookieCest {
     $i->waitForText('Settings saved');
 
     // send any newsletter with a link
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->click('Next');
 
     $i->waitForElement('[data-automation-id="newsletter_send_form"]');
@@ -75,7 +75,7 @@ class RevenueTrackingCookieCest {
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
     // send any newsletter with a link
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->click('Next');
 
     $i->waitForElement('[data-automation-id="newsletter_send_form"]');

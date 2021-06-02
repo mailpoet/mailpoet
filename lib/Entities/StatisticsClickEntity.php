@@ -119,6 +119,13 @@ class StatisticsClickEntity {
   }
 
   /**
+   * @return SubscriberEntity|null
+   */
+  public function getSubscriber(): ?SubscriberEntity {
+    return $this->subscriber;
+  }
+
+  /**
    * @param NewsletterLinkEntity|null $link
    */
   public function setLink($link) {

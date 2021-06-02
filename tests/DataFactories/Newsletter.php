@@ -2,12 +2,18 @@
 
 namespace MailPoet\Test\DataFactories;
 
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Models\NewsletterSegment;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Newsletter {
 
@@ -60,22 +66,22 @@ class Newsletter {
   }
 
   public function withActiveStatus() {
-    $this->data['status'] = \MailPoet\Models\Newsletter::STATUS_ACTIVE;
+    $this->data['status'] = NewsletterEntity::STATUS_ACTIVE;
     return $this;
   }
 
   public function withSentStatus() {
-    $this->data['status'] = \MailPoet\Models\Newsletter::STATUS_SENT;
+    $this->data['status'] = NewsletterEntity::STATUS_SENT;
     return $this;
   }
 
   public function withDraftStatus() {
-    $this->data['status'] = \MailPoet\Models\Newsletter::STATUS_DRAFT;
+    $this->data['status'] = NewsletterEntity::STATUS_DRAFT;
     return $this;
   }
 
   public function withScheduledStatus() {
-    $this->data['status'] = \MailPoet\Models\Newsletter::STATUS_SCHEDULED;
+    $this->data['status'] = NewsletterEntity::STATUS_SCHEDULED;
     return $this;
   }
 
@@ -93,8 +99,8 @@ class Newsletter {
     return $this;
   }
 
-  public function withParentId($parentId) {
-    $this->data['parent_id'] = $parentId;
+  public function withParent(NewsletterEntity $parent) {
+    $this->data['parent'] = $parent;
     return $this;
   }
 
@@ -130,7 +136,7 @@ class Newsletter {
    * @return Newsletter
    */
   public function withPostNotificationHistoryType() {
-    $this->data['type'] = \MailPoet\Models\Newsletter::TYPE_NOTIFICATION_HISTORY;
+    $this->data['type'] = NewsletterEntity::TYPE_NOTIFICATION_HISTORY;
     $this->withOptions([]);
     return $this;
   }
@@ -247,14 +253,14 @@ class Newsletter {
    */
   public function withSegments(array $segments) {
     foreach ($segments as $segment) {
-      $this->segments[] = $segment->getId();
+      $this->segments[] = $segment;
     }
     return $this;
   }
 
   public function withSendingQueue(array $options = []) {
     $this->queueOptions = [
-      'status' => ScheduledTask::STATUS_COMPLETED,
+      'status' => ScheduledTaskEntity::STATUS_COMPLETED,
       'count_processed' => 1,
       'count_total' => 1,
     ];
@@ -264,7 +270,7 @@ class Newsletter {
 
   public function withScheduledQueue(array $options = []) {
     $this->queueOptions = [
-      'status' => ScheduledTask::STATUS_SCHEDULED,
+      'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
       'count_processed' => 0,
       'count_total' => 1,
     ];
@@ -272,9 +278,9 @@ class Newsletter {
     return $this;
   }
 
-  public function withSubscriber($subscriber, array $data = []) {
+  public function withSubscriber(SubscriberEntity $subscriber, array $data = []) {
     $this->taskSubscribers[] = array_merge([
-      'subscriber_id' => $subscriber->id,
+      'subscriber' => $subscriber,
       'processed' => 1,
       'failed' => 0,
       'error' => '',
@@ -282,49 +288,78 @@ class Newsletter {
     return $this;
   }
 
-  /**
-   * @return \MailPoet\Models\Newsletter
-   */
-  public function create() {
-    $newsletter = \MailPoet\Models\Newsletter::createOrUpdate($this->data);
-    foreach ($this->options as $optionId => $optionValue) {
-      \MailPoet\Models\NewsletterOption::createOrUpdate(
-        [
-          'newsletter_id' => $newsletter->id,
-          'option_field_id' => $optionId,
-          'value' => $optionValue,
-        ]
-      );
-    }
-    if ($this->data['sender_address']) {
-      $newsletter->senderAddress = $this->data['sender_address'];
-      $newsletter->save();
-    }
-    foreach ($this->segments as $segmentId) {
-      NewsletterSegment::createOrUpdate([
-        'newsletter_id' => $newsletter->id,
-        'segment_id' => $segmentId,
-      ]);
-    }
-    if ($this->queueOptions) {
-      $sendingTask = SendingTask::create();
-      $sendingTask->newsletterId = $newsletter->id;
-      $sendingTask->status = $this->queueOptions['status'];
-      $sendingTask->countProcessed = $this->queueOptions['count_processed'];
-      $sendingTask->countTotal = $this->queueOptions['count_total'];
-      $sendingTask->newsletterRenderedSubject = $this->queueOptions['subject'] ?? $this->data['subject'];
-      $sendingTask->save();
+  public function create(): NewsletterEntity {
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $newsletter = $this->createNewsletter();
+    $entityManager->persist($newsletter);
 
-      foreach ($this->taskSubscribers as $data) {
-        $taskSubscriber = ScheduledTaskSubscriber::createOrUpdate([
-          'subscriber_id' => $data['subscriber_id'],
-          'task_id' => $sendingTask->taskId,
-          'error' => $data['error'],
-          'failed' => $data['failed'],
-          'processed' => $data['processed'],
-        ]);
-      }
+    foreach ($this->options as $optionId => $optionValue) {
+      $newsletterOption = $this->createOption($newsletter, $optionId, $optionValue);
+      $entityManager->persist($newsletterOption);
     }
+
+    foreach ($this->segments as $segment) {
+      $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
+      $entityManager->persist($newsletterSegment);
+    }
+
+    if ($this->queueOptions) {
+      $this->createQueue($newsletter);
+    }
+
+    $entityManager->flush();
     return $newsletter;
+  }
+
+  private function createNewsletter(): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject($this->data['subject']);
+    $newsletter->setPreheader($this->data['preheader']);
+    $newsletter->setType($this->data['type']);
+    $newsletter->setStatus($this->data['status']);
+    $newsletter->setBody($this->data['body']);
+    if (isset($this->data['sender_address'])) {
+      $newsletter->setSenderAddress($this->data['sender_address']);
+    } else {
+      $newsletter->setSenderAddress('john.doe@example.com');
+      $newsletter->setSenderName('John Doe');
+    }
+    if (isset($this->data['parent'])) $newsletter->setParent($this->data['parent']);
+    if (isset($this->data['deleted_at'])) $newsletter->setDeletedAt($this->data['deleted_at']);
+    return $newsletter;
+  }
+
+  private function createOption(NewsletterEntity $newsletter, int $optionId, string $optionValue): NewsletterOptionEntity {
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $newsletterOptionField = $entityManager->getReference(NewsletterOptionFieldEntity::class, $optionId);
+    $newsletterOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
+    $newsletterOption->setValue($optionValue);
+    return $newsletterOption;
+  }
+
+  private function createQueue(NewsletterEntity $newsletter) {
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $scheduledTask = new ScheduledTaskEntity();
+    $entityManager->persist($scheduledTask);
+    $sendingQueue = new SendingQueueEntity();
+    $sendingQueue->setTask($scheduledTask);
+    $entityManager->persist($sendingQueue);
+    $sendingQueue->setNewsletter($newsletter);
+    $scheduledTask->setStatus($this->queueOptions['status']);
+    $sendingQueue->setCountProcessed($this->queueOptions['count_processed']);
+    $sendingQueue->setCountTotal($this->queueOptions['count_total']);
+    $sendingQueue->setNewsletterRenderedSubject($this->queueOptions['subject'] ?? $this->data['subject']);
+    $newsletter->getQueues()->add($sendingQueue);
+
+    foreach ($this->taskSubscribers as $data) {
+      $taskSubscriber = new ScheduledTaskSubscriberEntity(
+        $scheduledTask,
+        $data['subscriber'],
+        $data['processed'],
+        $data['failed'],
+        $data['error']
+      );
+      $entityManager->persist($taskSubscriber);
+    }
   }
 }

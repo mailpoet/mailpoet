@@ -15,7 +15,7 @@ class EditorSocialBlockCest {
       ->loadBodyFrom('newsletterWithText.json')
       ->create();
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->dragAndDrop('#automation_editor_block_social', '#mce_1');
     //Prevent flakyness by adding footer mouse over
     $i->moveMouseOver($footer, 3, 2);

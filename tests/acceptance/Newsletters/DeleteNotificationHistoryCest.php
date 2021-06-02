@@ -16,16 +16,16 @@ class DeleteNotificationHistoryCest {
     $postNotificationHistory = (new Newsletter())
       ->withSubject($newsletterName)
       ->withPostNotificationHistoryType()
-      ->withParentId($postNotification->id)
+      ->withParent($postNotification)
       ->create();
     // step 2 - Open list
     $i->login();
     $i->amOnMailpoetPage('Emails');
     $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
-    $i->waitForElement('[data-automation-id="history-' . $postNotification->id . '"]');
-    $i->click('[data-automation-id="history-' . $postNotification->id . '"]');
+    $i->waitForElement('[data-automation-id="history-' . $postNotification->getId() . '"]');
+    $i->click('[data-automation-id="history-' . $postNotification->getId() . '"]');
     //step 3 - Delete Notification
-    $i->waitForElement('[data-automation-id="listing_item_' . $postNotificationHistory->id . '"]');
+    $i->waitForElement('[data-automation-id="listing_item_' . $postNotificationHistory->getId() . '"]');
     $i->clickItemRowActionByItemName($newsletterName, 'Move to trash');
     $i->waitForElement('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');

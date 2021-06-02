@@ -20,7 +20,7 @@ class EditorHistoryCest {
         ->create();
 
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $this->assessButtons($i, false, false);
 
     $i->dragAndDrop('#automation_editor_block_button', '#mce_0');

@@ -7,33 +7,30 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\Subscriber;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class StatisticsOpens {
   protected $data;
 
-  public function __construct(Newsletter $newsletter, Subscriber $subscriber) {
-    $this->data = [
-      'newsletter_id' => $newsletter->id,
-      'subscriber_id' => $subscriber->id,
-      'queue_id' => $newsletter->getQueue()->id,
-    ];
+  /** @var NewsletterEntity */
+  private $newsletter;
+
+  /** @var SubscriberEntity */
+  private $subscriber;
+
+  public function __construct(NewsletterEntity $newsletter, SubscriberEntity $subscriber) {
+    $this->newsletter = $newsletter;
+    $this->subscriber = $subscriber;
   }
 
-  public function withCount($count) {
-    $this->data['count'] = $count;
-    return $this;
-  }
-
-  /** @return StatisticsOpenEntity */
-  public function create() {
+  public function create(): StatisticsOpenEntity {
     $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $queue = $this->newsletter->getLatestQueue();
+    assert($queue instanceof SendingQueueEntity);
     $entity = new StatisticsOpenEntity(
-      $entityManager->getReference(NewsletterEntity::class, $this->data['newsletter_id']),
-      $entityManager->getReference(SendingQueueEntity::class, $this->data['queue_id']),
-      $entityManager->getReference(SubscriberEntity::class, $this->data['subscriber_id'])
+      $this->newsletter,
+      $queue,
+      $this->subscriber
     );
     $entityManager->persist($entity);
     $entityManager->flush();

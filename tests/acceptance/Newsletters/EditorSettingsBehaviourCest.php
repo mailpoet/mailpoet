@@ -24,7 +24,7 @@ class EditorSettingsBehaviourCest {
         ->withSubject($newsletterTitle)
         ->create();
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
 
     // Check settings are not visible at the beginning
     $i->dontSee(self::SETTINGS_PANEL_SELECTOR);

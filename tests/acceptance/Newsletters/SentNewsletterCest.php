@@ -14,7 +14,7 @@ class SentNewsletterCest {
       ->create();
 
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->waitForElement('.mailpoet_save_next.button-disabled');
     $i->see('This email has already been sent.');
     $i->see('It can be edited, but not sent again.');

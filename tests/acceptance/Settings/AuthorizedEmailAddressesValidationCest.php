@@ -88,7 +88,7 @@ class AuthorizedEmailAddressesValidationCest {
         ->create();
 
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->click('Next');
     $i->waitForText('Sender');
     $i->fillField('[name="sender_address"]', 'unauthorized@email.com');

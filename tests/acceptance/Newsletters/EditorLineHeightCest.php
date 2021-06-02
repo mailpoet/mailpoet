@@ -21,7 +21,7 @@ class EditorLineHeightCest {
       ->create();
 
     $i->login();
-    $i->amEditingNewsletter($newsletter->id);
+    $i->amEditingNewsletter($newsletter->getId());
     $i->click('.mailpoet_styles_region');
 
     // set text sizes

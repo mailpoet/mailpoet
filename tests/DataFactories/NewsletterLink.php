@@ -2,19 +2,24 @@
 
 namespace MailPoet\Test\DataFactories;
 
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink as NewsletterLinkModel;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class NewsletterLink {
   protected $data;
 
-  public function __construct(Newsletter $newsletter) {
+  /** @var NewsletterEntity */
+  private $newsletter;
+
+  public function __construct(NewsletterEntity $newsletter) {
     $this->data = [
-      'newsletter_id' => $newsletter->id,
-      'queue_id' => $newsletter->getQueue()->id,
       'url' => 'https://example.com/test',
       'hash' => 'hash',
     ];
+    $this->newsletter = $newsletter;
   }
 
   public function withUrl($url) {
@@ -36,8 +41,18 @@ class NewsletterLink {
     return $this;
   }
 
-  /** @return NewsletterLinkModel */
-  public function create() {
-    return NewsletterLinkModel::createOrUpdate($this->data);
+  public function create(): NewsletterLinkEntity {
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $queue = $this->newsletter->getLatestQueue();
+    assert($queue instanceof SendingQueueEntity);
+    $entity = new NewsletterLinkEntity(
+      $this->newsletter,
+      $queue,
+      $this->data['url'],
+      $this->data['hash']
+    );
+    $entityManager->persist($entity);
+    $entityManager->flush();
+    return $entity;
   }
 }

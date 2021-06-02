@@ -18,8 +18,8 @@ class MailPoetCustomFieldSegmentCest {
     $subscriber3 = (new Subscriber())
       ->withEmail('test3@example.com')
       ->create();
-    $customField->withSubscriber($subscriber2->id(), 'some value1 here');
-    $customField->withSubscriber($subscriber3->id(), 'some value2 here');
+    $customField->withSubscriber($subscriber2->getId(), 'some value1 here');
+    $customField->withSubscriber($subscriber3->getId(), 'some value2 here');
     $customField->create();
   }
 
