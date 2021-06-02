@@ -44,7 +44,7 @@ class DeprecatedShortcodeNotice {
     $error = $errorString . '<br><br>' . Helpers::replaceLinkTags($linkString, 'https://kb.mailpoet.com/article/160-create-a-custom-shortcode', [
       'target' => '_blank',
       'data-beacon-article' => '581f6faac697914aa838044f',
-      'class' => 'mailpoet-button mailpoet-button-small',
+      'class' => 'mailpoet-button button-primary',
     ]);
 
     $extraClasses = 'mailpoet-dismissible-notice is-dismissible';

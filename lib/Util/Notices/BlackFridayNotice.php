@@ -27,7 +27,7 @@ class BlackFridayNotice {
       ->count();
     $header = '<h3 class="mailpoet-h3">' . __('MailPoet Black Friday: 33% discount on all our plans!', 'mailpoet') . '</h3>';
     $body = '<h5 class="mailpoet-h5">' . __('Signup to a yearly plan today and get 4 months for free.', 'mailpoet') . '</h5>';
-    $link = "<p><a href='https://account.mailpoet.com/?s=$subscribers' class='mailpoet-button mailpoet-button-small' target='_blank'>"
+    $link = "<p><a href='https://account.mailpoet.com/?s=$subscribers' class='mailpoet-button button-primary' target='_blank'>"
       . __('Buy Now', 'mailpoet')
       . '</a></p>';
 
