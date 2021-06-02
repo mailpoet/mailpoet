@@ -34,7 +34,7 @@ class GutenbergFormBlockCest {
 
   public function subscriptionGutenbergBlock(\AcceptanceTester $i): void {
     $formFactory = new Form();
-    $formId = (int)$formFactory->withName('Acceptance Test Block Form')->create()->id;
+    $formId = (int)$formFactory->withName('Acceptance Test Block Form')->create()->getId();
     $postId = $this->createPost($i, $formId);
 
     $i->wantTo('Add Gutenberg form block to the post');
@@ -52,7 +52,7 @@ class GutenbergFormBlockCest {
       ->withName('Acceptance Test Block Form')
       ->withLastName()
       ->withFirstName()
-      ->create()->id;
+      ->create()->getId();
     $postId = $this->createPost($i, $formId);
 
     $i->wantTo('Add Gutenberg form block to the post');

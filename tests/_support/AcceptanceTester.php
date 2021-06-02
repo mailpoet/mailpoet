@@ -3,7 +3,9 @@
 use Facebook\WebDriver\Exception\UnrecognizedExceptionException;
 use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormMessageController;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -166,15 +168,15 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->waitForElementNotVisible('.velocity-animating');
   }
 
-  public function createFormAndSubscribe($form = null) {
+  public function createFormAndSubscribe(FormEntity $form = null) {
     $i = $this;
     // create form widget
-    if (!$form) {
+    if ($form instanceof FormEntity) {
       $formFactory = new Form();
       $form = $formFactory->withName('Confirmation Form')->create();
     }
     $i->cli(['widget', 'reset', 'sidebar-1']);
-    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->id", '--title=Subscribe to Our Newsletter']);
+    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$form->getId()", '--title=Subscribe to Our Newsletter']);
 
     // subscribe
     /** @var FormMessageController $messageController */

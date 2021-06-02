@@ -29,7 +29,7 @@ class SubscriptionFormCest {
 
     $formName = 'Subscription Acceptance Test Form';
     $formFactory = new Form();
-    $this->formId = $formFactory->withName($formName)->create()->id;
+    $this->formId = $formFactory->withName($formName)->create()->getId();
 
     $i->havePostInDatabase([
       'post_author' => 1,
