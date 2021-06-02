@@ -6,7 +6,7 @@
   box-sizing: border-box;
   color: #fff;
   cursor: pointer;
-  display: inline-flex;
+  display: inline-flex !important;
   font-family: inherit;
   font-size: $font-size-button;
   font-weight: normal;
@@ -24,15 +24,6 @@
     background: $color-primary-hover;
     border-color: $color-primary-hover;
     color: #fff;
-    text-decoration: none;
-  }
-
-  &:focus {
-    background: $color-primary-hover;
-    border-color: #fff;
-    box-shadow: 0 0 0 1.5px $color-primary-hover;
-    color: #fff;
-    outline: none;
     text-decoration: none;
   }
 
@@ -71,58 +62,12 @@
   }
 }
 
-.mailpoet-button-secondary {
-  background: #fff;
-  color: $color-primary;
-}
-
-.mailpoet-button-tertiary {
-  background: transparent;
-  border-color: transparent;
-  color: $color-primary;
-}
-
-.mailpoet-button-secondary,
-.mailpoet-button-tertiary {
-  &:hover {
-    background: #fff;
-    border-color: $color-primary-hover;
-    color: $color-primary-hover;
-  }
-
-  &:focus {
-    background: #fff;
-    border-color: #fff;
-    box-shadow: 0 0 0 1.5px $color-primary-hover;
-    color: $color-primary-hover;
-  }
-}
-
-.mailpoet-button-destructive {
-  background: #fff;
-  border-color: #fff;
-  color: $color-destructive;
-
-  &:hover {
-    background: #fff;
-    border-color: $color-destructive-hover;
-    color: $color-destructive-hover;
-  }
-
-  &:focus {
-    background: #fff;
-    border-color: #fff;
-    box-shadow: 0 0 0 1.5px $color-destructive-hover;
-    color: $color-destructive-hover;
-  }
-}
-
 .mailpoet-button-with-spinner {
   pointer-events: none;
   touch-action: none;
 
   &:after {
-    background: rgba($color-primary, .8) no-repeat center;
+    background: rgba(#fff, .8) no-repeat center;
     background-size: 24px 24px;
     border-radius: 4px;
     content: '';
@@ -132,27 +77,9 @@
     top: 0;
     width: 100%;
   }
-
-  &.mailpoet-button-secondary:after,
-  &.mailpoet-button-tertiary:after,
-  &.mailpoet-button-destructive:after {
-    background-color: rgba(#fff, .8);
-  }
 }
 
 .mailpoet-button-disabled {
-  color: rgba(#fff, .4);
   pointer-events: none;
   touch-action: none;
-
-  &.mailpoet-button-secondary,
-  &.mailpoet-button-tertiary {
-    background: #eaeaea;
-    border-color: #eaeaea;
-    color: #828282;
-  }
-
-  &.mailpoet-button-destructive {
-    color: rgba($color-destructive, .4);
-  }
 }

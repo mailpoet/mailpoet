@@ -44,6 +44,7 @@ const Button = ({
       type={type}
       target={target}
       rel={rel}
+      disabled={isDisabled}
       className={
         classnames(
           className,
