@@ -24,6 +24,7 @@ export const FormsHeading = () => {
         }}
         withSpinner={loading}
         automationId="create_new_form"
+        variant="secondary"
         iconStart={plusIcon}
       >
         {MailPoet.I18n.t('new')}
