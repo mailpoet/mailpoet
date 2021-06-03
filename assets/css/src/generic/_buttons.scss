@@ -1,31 +1,10 @@
 .mailpoet-button {
   align-items: center;
-  background: $color-primary;
-  border: 1px solid $color-primary;
-  border-radius: 2px;
-  box-sizing: border-box;
-  color: #fff;
-  cursor: pointer;
   display: inline-flex !important;
-  font-family: inherit;
-  font-size: $font-size-button;
-  font-weight: normal;
   justify-content: center;
-  line-height: 20px;
   max-width: 100%;
-  min-height: 36px;
-  padding: 8px 12px 6px;
   position: relative;
   text-align: center;
-  text-decoration: none;
-  vertical-align: top;
-
-  &:hover {
-    background: $color-primary-hover;
-    border-color: $color-primary-hover;
-    color: #fff;
-    text-decoration: none;
-  }
 
   svg {
     fill: currentColor;
