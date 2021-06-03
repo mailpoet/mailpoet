@@ -48,9 +48,9 @@ const Button = ({
       className={
         classnames(
           className,
+          'button',
           'mailpoet-button',
           {
-            [`mailpoet-button-${dimension}`]: dimension,
             [`mailpoet-button-${variant}`]: variant,
             'mailpoet-button-with-spinner': withSpinner,
             'mailpoet-button-disabled': isDisabled,
@@ -59,6 +59,7 @@ const Button = ({
             'button-secondary': variant === 'secondary',
             'button-link': variant === 'tertiary',
             'button-link button-link-delete': variant === 'destructive',
+            'button-small': dimension === 'small',
           }
         )
       }
