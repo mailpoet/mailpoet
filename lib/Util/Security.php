@@ -35,7 +35,7 @@ class Security {
    * @param int $length Minimal lenght is 5
    * @return string
    */
-  public static function generateRandomString($length = 5) {
+  public static function generateRandomString($length = 5): string {
     $length = max(5, (int)$length);
     $string = base_convert(
       bin2hex(
@@ -46,7 +46,10 @@ class Security {
       16,
       36
     );
-    return substr($string, 0, $length);
+    $result = substr($string, 0, $length);
+    if (strlen($result) === $length) return $result;
+    // in very rare occasions we generate a shorter string when random_bytes generates something starting with 0 let's try again
+    return self::generateRandomString($length);
   }
 
   /**
