@@ -24,7 +24,7 @@ const MssNotActiveMessage = ({ activationCallback }: MssNotActiveMessageProps) =
   <div className="mailpoet_error">
     {MailPoet.I18n.t('premiumTabMssNotActiveMessage')}
     {' '}
-    <button type="button" className="mailpoet-button mailpoet-button-small button-primary" onClick={activationCallback}>
+    <button type="button" className="mailpoet-button button button-primary button-small" onClick={activationCallback}>
       {MailPoet.I18n.t('premiumTabMssActivateMessage')}
     </button>
   </div>
