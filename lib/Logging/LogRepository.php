@@ -5,6 +5,7 @@ namespace MailPoet\Logging;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\LogEntity;
 use MailPoet\Util\Helpers;
+use MailPoetVendor\Carbon\Carbon;
 
 /**
  * @extends Repository<LogEntity>
@@ -61,5 +62,13 @@ class LogRepository extends Repository {
 
 
     return $query->getQuery()->getResult();
+  }
+
+  public function purgeOldLogs(int $daysToKeepLogs) {
+    $queryBuilder = $this->entityManager->createQueryBuilder();
+    return $queryBuilder->delete(LogEntity::class, 'l')
+      ->where('l.createdAt < :days')
+      ->setParameter('days', Carbon::now()->subDays($daysToKeepLogs)->toDateTimeString())
+      ->getQuery()->execute();
   }
 }
