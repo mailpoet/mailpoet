@@ -50,13 +50,17 @@ const componentsMap = {
   [CustomFieldsTypes.DATE]: CustomFieldDate,
 };
 
-export const MailPoetCustomFields: React.FunctionComponent = () => {
+type Props = {
+  filterIndex: number;
+}
+
+export const MailPoetCustomFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
-  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
 
   const customFieldsList: WindowCustomFields = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getCustomFieldsList(),
@@ -94,12 +98,12 @@ export const MailPoetCustomFields: React.FunctionComponent = () => {
           onChange={(option: SelectOption): void => {
             const customField = find({ id: Number(option.value) }, customFieldsList);
             if (!customField) return;
-            updateSegment({
+            updateSegmentFilter({
               custom_field_id: option.value,
               custom_field_type: customField.type,
               operator: undefined,
               value: undefined,
-            });
+            }, filterIndex);
           }}
         />
       </div>
@@ -108,6 +112,7 @@ export const MailPoetCustomFields: React.FunctionComponent = () => {
           TypeComponent && (
             <TypeComponent
               customField={selectedCustomField}
+              filterIndex={filterIndex}
             />
           )
         }

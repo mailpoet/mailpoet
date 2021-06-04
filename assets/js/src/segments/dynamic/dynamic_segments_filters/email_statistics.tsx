@@ -20,13 +20,17 @@ const shouldDisplayLinks = (itemAction: string, itemNewsletterId?: string): bool
   && (itemNewsletterId != null)
 );
 
-export const EmailStatisticsFields: React.FunctionComponent = () => {
+type Props = {
+  filterIndex: number;
+}
+
+export const EmailStatisticsFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: EmailFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
-  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
 
   const newslettersList: WindowNewslettersList = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getNewslettersList(),
@@ -91,7 +95,7 @@ export const EmailStatisticsFields: React.FunctionComponent = () => {
           options={newsletterOptions}
           value={find(['value', segment.newsletter_id], newsletterOptions)}
           onChange={(option: SelectOption): void => {
-            updateSegment({ newsletter_id: option.value });
+            updateSegmentFilter({ newsletter_id: option.value }, filterIndex);
           }}
           automationId="segment-email"
         />
@@ -108,7 +112,7 @@ export const EmailStatisticsFields: React.FunctionComponent = () => {
               options={links}
               value={find(['value', segment.link_id], links)}
               onChange={(option: SelectOption): void => {
-                updateSegment({ link_id: option.value });
+                updateSegmentFilter({ link_id: option.value }, filterIndex);
               }}
             />
           </div>

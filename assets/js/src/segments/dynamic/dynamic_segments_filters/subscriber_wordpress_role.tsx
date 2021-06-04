@@ -11,13 +11,17 @@ import {
   WindowEditableRoles,
 } from '../types';
 
-export const WordpressRoleFields: React.FunctionComponent = () => {
+type Props = {
+  filterIndex: number;
+}
+
+export const WordpressRoleFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
-  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
 
   const wordpressRoles: WindowEditableRoles = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getWordpressRoles(),
@@ -44,7 +48,7 @@ export const WordpressRoleFields: React.FunctionComponent = () => {
           )
         }
         onChange={(option: SelectOption): void => {
-          updateSegment({ wordpressRole: option.value });
+          updateSegmentFilter({ wordpressRole: option.value }, filterIndex);
         }}
         automationId="segment-wordpress-role"
       />

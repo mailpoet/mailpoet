@@ -50,10 +50,14 @@ const componentsMap = {
   [SubscriberActionTypes.MAILPOET_CUSTOM_FIELD]: MailPoetCustomFields,
 };
 
-export const SubscriberFields: React.FunctionComponent = () => {
+type Props = {
+  filterIndex: number;
+}
+
+export const SubscriberFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
   let Component;
@@ -66,6 +70,6 @@ export const SubscriberFields: React.FunctionComponent = () => {
   if (!Component) return null;
 
   return (
-    <Component />
+    <Component filterIndex={filterIndex} />
   );
 };

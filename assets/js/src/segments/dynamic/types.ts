@@ -92,7 +92,7 @@ export type AnyFormItem =
   WooCommerceSubscriptionFormItem |
   EmailFormItem;
 
-export type OnFilterChange = (value: AnyFormItem) => void;
+export type OnFilterChange = (value: AnyFormItem, filterIndex: number) => void;
 
 export type WindowEditableRoles = {
   role_id: string;

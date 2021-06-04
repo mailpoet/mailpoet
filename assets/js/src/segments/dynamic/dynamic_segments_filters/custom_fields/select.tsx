@@ -26,13 +26,17 @@ export function validateRadioSelect(item: WordpressRoleFormItem): boolean {
   );
 }
 
-export const RadioSelect: React.FunctionComponent = () => {
+type Props = {
+  filterIndex: number;
+}
+
+export const RadioSelect: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
-  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
 
   const customFieldsList: WindowCustomFields = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getCustomFieldsList(),
@@ -59,7 +63,7 @@ export const RadioSelect: React.FunctionComponent = () => {
           segment.value ? { value: segment.value, label: segment.value } : null
         }
         onChange={(option: SelectOption): void => {
-          updateSegment({ value: option.value, operator: 'equals' });
+          updateSegmentFilter({ value: option.value, operator: 'equals' }, filterIndex);
         }}
         automationId="segment-wordpress-role"
       />

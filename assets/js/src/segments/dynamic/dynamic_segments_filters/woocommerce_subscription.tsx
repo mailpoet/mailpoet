@@ -32,13 +32,17 @@ export function validateWooCommerceSubscription(
   return true;
 }
 
-export const WooCommerceSubscriptionFields: React.FunctionComponent = () => {
+type Props = {
+  filterIndex: number;
+}
+
+export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: WooCommerceSubscriptionFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
-  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
 
   const subscriptionProducts: WindowSubscriptionProducts = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSubscriptionProducts(),
@@ -58,7 +62,7 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent = () => {
         options={productOptions}
         value={find(['value', segment.product_id], productOptions)}
         onChange={(option: SelectOption): void => {
-          updateSegment({ product_id: option.value });
+          updateSegmentFilter({ product_id: option.value }, filterIndex);
         }}
       />
     </div>

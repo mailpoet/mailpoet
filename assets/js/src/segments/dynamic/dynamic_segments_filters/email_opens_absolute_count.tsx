@@ -17,18 +17,22 @@ function replaceElementsInDaysSentence(fn): JSX.Element[] {
     .map(fn);
 }
 
-export const EmailOpensAbsoluteCountFields: React.FunctionComponent = () => {
+type Props = {
+  filterIndex: number;
+}
+
+export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: EmailFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
-  const { updateSegment, updateSegmentFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
   useEffect(() => {
     if (segment.operator === undefined) {
-      updateSegment({ operator: 'more' });
+      updateSegmentFilter({ operator: 'more' }, filterIndex);
     }
-  }, [updateSegment, segment]);
+  }, [updateSegmentFilter, segment, filterIndex]);
 
   return (
     <>
@@ -44,7 +48,7 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent = () => {
                   key="select"
                   value={segment.operator}
                   onChange={(e) => {
-                    updateSegmentFromEvent('operator', e);
+                    updateSegmentFilterFromEvent('operator', filterIndex, e);
                   }}
                 >
                   <option value="more">{MailPoet.I18n.t('moreThan')}</option>
@@ -57,10 +61,10 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent = () => {
                 <Input
                   key="input"
                   type="number"
-                  value={segment.opens}
+                  value={segment.opens || ''}
                   data-automation-id="segment-number-of-opens"
                   onChange={(e) => {
-                    updateSegmentFromEvent('opens', e);
+                    updateSegmentFilterFromEvent('opens', filterIndex, e);
                   }}
                   min="0"
                   placeholder={MailPoet.I18n.t('emailActionOpens')}
@@ -86,10 +90,10 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent = () => {
                 <Input
                   key="input"
                   type="number"
-                  value={segment.days}
+                  value={segment.days || ''}
                   data-automation-id="segment-number-of-days"
                   onChange={(e) => {
-                    updateSegmentFromEvent('days', e);
+                    updateSegmentFilterFromEvent('days', filterIndex, e);
                   }}
                   min="0"
                   placeholder={MailPoet.I18n.t('emailActionDays')}

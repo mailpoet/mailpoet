@@ -1,6 +1,11 @@
 import {
-  AnyFormItem, FilterValue, GroupFilterValue,
-  StateType, SubscriberActionTypes,
+  AnyFormItem,
+  FilterRow,
+  FilterValue,
+  GroupFilterValue,
+  Segment,
+  StateType,
+  SubscriberActionTypes,
   WindowCustomFields,
   WindowEditableRoles,
   WindowNewslettersList,
@@ -38,34 +43,51 @@ export const getWooCommerceCountries = (state: StateType): WindowWooCommerceCoun
 export const getCustomFieldsList = (state: StateType): WindowCustomFields => (
   state.customFieldsList
 );
-export const getSegment = (state: StateType): AnyFormItem => (
+export const getSegment = (state: StateType): Segment => (
   state.segment
 );
+export const getSegmentFilter = (state: StateType, index: number): AnyFormItem | undefined => {
+  let found: AnyFormItem | undefined;
+  if (!Array.isArray(state.segment.filters)) {
+    return found;
+  }
+
+  found = { ...state.segment.filters[index] };
+  return found;
+};
 export const getErrors = (state: StateType): string[] => (
   state.errors
 );
 export const getAvailableFilters = (state: StateType): GroupFilterValue[] => (
   state.allAvailableFilters
 );
-export const findFilterValueForSegment = (
+export const findFiltersValueForSegment = (
   state: StateType,
-  itemSearch: AnyFormItem
-): FilterValue | undefined => {
-  let found: FilterValue | undefined;
-  if (itemSearch.action === undefined) {
+  itemSearch: Segment
+): FilterRow[] => {
+  const found: FilterRow[] = [];
+  if (itemSearch.filters === undefined) {
     // bc compatibility, the wordpress user role segment doesn't have action
-    return SubscriberSegmentOptions.find(
+    const filterValue: FilterValue = SubscriberSegmentOptions.find(
       (value) => value.value === SubscriberActionTypes.WORDPRESS_ROLE
     );
+    found.push({
+      filterValue,
+      index: 0,
+    });
+    return found;
   }
 
-  state.allAvailableFilters.forEach((filter: GroupFilterValue) => {
-    filter.options.forEach((option: FilterValue) => {
-      if (option.group === itemSearch.segmentType) {
-        if (itemSearch.action === option.value) {
-          found = option;
+  itemSearch.filters.forEach((formItem: AnyFormItem, index) => {
+    state.allAvailableFilters.forEach((filter: GroupFilterValue) => {
+      filter.options.forEach((option: FilterValue) => {
+        if (option.group === formItem.segmentType && option.value === formItem.action) {
+          found.push({
+            filterValue: option,
+            index,
+          });
         }
-      }
+      });
     });
   });
   return found;

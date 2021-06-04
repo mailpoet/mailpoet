@@ -18,16 +18,20 @@ const filterFieldsMap = {
   [SegmentTypes.WooCommerceSubscription]: WooCommerceSubscriptionFields,
 };
 
-export const FormFilterFields: React.FunctionComponent = () => {
-  const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+type Props = {
+  filterIndex: number;
+}
+
+export const FormFilterFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
+  const filter: WordpressRoleFormItem = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
-  if (filterFieldsMap[segment.segmentType] === undefined) return null;
-  const Component = filterFieldsMap[segment.segmentType];
+  if (filter === undefined || filterFieldsMap[filter.segmentType] === undefined) return null;
+  const Component = filterFieldsMap[filter.segmentType];
 
   return (
-    <Component />
+    <Component filterIndex={filterIndex} />
   );
 };
