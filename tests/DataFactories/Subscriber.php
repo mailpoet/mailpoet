@@ -74,7 +74,9 @@ class Subscriber {
    * @return $this
    */
   public function withSegments(array $segments) {
-    $this->segments = array_merge($this->segments, $segments);
+    foreach ($segments as $segment) {
+      $this->segments[$segment->getId()] = $segment;
+    }
     return $this;
   }
 
