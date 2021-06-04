@@ -331,6 +331,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Footer::class);
     $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Header::class);
     $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Image::class);
+    $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Placeholder::class);
     $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Social::class);
     $container->autowire(\MailPoet\Newsletter\Renderer\Blocks\Spacer::class);
