@@ -253,7 +253,7 @@ class Newsletter {
    */
   public function withSegments(array $segments) {
     foreach ($segments as $segment) {
-      $this->segments[] = $segment;
+      $this->segments[$segment->getId()] = $segment;
     }
     return $this;
   }
@@ -279,7 +279,7 @@ class Newsletter {
   }
 
   public function withSubscriber(SubscriberEntity $subscriber, array $data = []) {
-    $this->taskSubscribers[] = array_merge([
+    $this->taskSubscribers[$subscriber->getId()] = array_merge([
       'subscriber' => $subscriber,
       'processed' => 1,
       'failed' => 0,
