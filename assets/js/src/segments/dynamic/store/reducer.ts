@@ -5,6 +5,7 @@ import {
   SetSegmentActionType,
   SetErrorsActionType,
   StateType,
+  SetSegmentFilerActionType,
 } from '../types';
 
 function setSegment(state: StateType, action: SetSegmentActionType): StateType {
@@ -29,6 +30,15 @@ function updateSegment(state: StateType, action: SetSegmentActionType): StateTyp
   };
 }
 
+function updateSegmentFilter(state: StateType, action: SetSegmentFilerActionType): StateType {
+  const segment = { ...state.segment };
+  segment.filters[action.filterIndex] = assign(segment.filters[action.filterIndex], action.filter);
+  return {
+    ...state,
+    segment,
+  };
+}
+
 export const createReducer = (defaultState: StateType) => (
   state: StateType = defaultState,
   action: ActionType
@@ -37,6 +47,8 @@ export const createReducer = (defaultState: StateType) => (
     case Actions.SET_SEGMENT: return setSegment(state, action as SetSegmentActionType);
     case Actions.SET_ERRORS: return setErrors(state, action as SetErrorsActionType);
     case Actions.UPDATE_SEGMENT: return updateSegment(state, action as SetSegmentActionType);
+    case Actions.UPDATE_SEGMENT_FILTER:
+      return updateSegmentFilter(state, action as SetSegmentFilerActionType);
     default:
       return state;
   }
