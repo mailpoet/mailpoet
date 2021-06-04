@@ -44,7 +44,7 @@ class Renderer {
       throw new \Exception("You should call 'render' before 'getHTMLBeforeContent'");
     }
     $html = str_replace(Preprocessor::WC_HEADING_PLACEHOLDER, $headingText, $this->htmlBeforeContent);
-    return $html . '<div id="' . self::CONTENT_CONTAINER_ID . '"><div id="body_content"><div id="body_content_inner"><table><tr><td>';
+    return $html . '<div id="' . self::CONTENT_CONTAINER_ID . '"><div id="body_content"><div id="body_content_inner"><table style="width: 100%"><tr><td>';
   }
 
   public function getHTMLAfterContent() {
