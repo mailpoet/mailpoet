@@ -2,6 +2,7 @@
 
 namespace MailPoet\Logging;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Monolog\Processor\IntrospectionProcessor;
 use MailPoetVendor\Monolog\Processor\MemoryUsageProcessor;
@@ -37,8 +38,12 @@ class LoggerFactory {
   /** @var SettingsController */
   private $settings;
 
-  public function __construct(SettingsController $settings) {
+  /** @var LogRepository */
+  private $logRepository;
+
+  public function __construct(LogRepository $logRepository, SettingsController $settings) {
     $this->settings = $settings;
+    $this->logRepository = $logRepository;
   }
 
   /**
@@ -60,14 +65,17 @@ class LoggerFactory {
         $this->loggerInstances[$name]->pushProcessor(new MemoryUsageProcessor());
       }
 
-      $this->loggerInstances[$name]->pushHandler(new LogHandler($this->getDefaultLogLevel()));
+      $this->loggerInstances[$name]->pushHandler(new LogHandler($this->logRepository, $this->getDefaultLogLevel()));
     }
     return $this->loggerInstances[$name];
   }
 
   public static function getInstance() {
     if (!self::$instance instanceof LoggerFactory) {
-      self::$instance = new LoggerFactory(SettingsController::getInstance());
+      self::$instance = new LoggerFactory(
+        ContainerWrapper::getInstance()->get(LogRepository::class),
+        SettingsController::getInstance()
+      );
     }
     return self::$instance;
   }

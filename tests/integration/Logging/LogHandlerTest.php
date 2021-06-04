@@ -2,13 +2,21 @@
 
 namespace MailPoet\Logging;
 
+use MailPoet\Entities\LogEntity;
 use MailPoet\Models\Log;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class LogHandlerTest extends \MailPoetTest {
+  /** @var LogRepository */
+  private $repository;
+
+  public function _before() {
+    $this->truncateEntity(LogEntity::class);
+    $this->repository = $this->diContainer->get(LogRepository::class);
+  }
+
   public function testItCreatesLog() {
-    $logHandler = new LogHandler();
+    $logHandler = new LogHandler($this->repository);
     $time = new \DateTime();
     $logHandler->handle([
       'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
@@ -37,7 +45,7 @@ class LogHandlerTest extends \MailPoetTest {
       return 0;
     };
 
-    $logHandler = new LogHandler(\MailPoetVendor\Monolog\Logger::DEBUG, true, $random);
+    $logHandler = new LogHandler($this->repository, \MailPoetVendor\Monolog\Logger::DEBUG, true, $random);
     $logHandler->handle([
       'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
       'extra' => [],
@@ -52,8 +60,7 @@ class LogHandlerTest extends \MailPoetTest {
 
   public function testItNotPurgesOldLogs() {
     $model = Log::create();
-    $date = Carbon::create();
-    assert($date instanceof Carbon);
+    $date = Carbon::now();
     $model->hydrate([
       'name' => 'old name keep',
       'level' => '5',
@@ -65,7 +72,7 @@ class LogHandlerTest extends \MailPoetTest {
       return 100;
     };
 
-    $logHandler = new LogHandler(\MailPoetVendor\Monolog\Logger::DEBUG, true, $random);
+    $logHandler = new LogHandler($this->repository, \MailPoetVendor\Monolog\Logger::DEBUG, true, $random);
     $logHandler->handle([
       'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
       'extra' => [],
@@ -76,9 +83,5 @@ class LogHandlerTest extends \MailPoetTest {
 
     $log = Log::whereEqual('name', 'old name keep')->findMany();
     expect($log)->notEmpty();
-  }
-
-  public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Log::$_table);
   }
 }

@@ -2,6 +2,7 @@
 
 namespace MailPoet\Logging;
 
+use MailPoet\Entities\LogEntity;
 use MailPoet\Models\Log;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Monolog\Handler\AbstractProcessingHandler;
@@ -22,28 +23,33 @@ class LogHandler extends AbstractProcessingHandler {
   /** @var callable|null */
   private $randFunction;
 
-  public function __construct($level = \MailPoetVendor\Monolog\Logger::DEBUG, $bubble = \true, $randFunction = null) {
+  /** @var LogRepository */
+  private $logRepository;
+
+  public function __construct(
+    LogRepository $logRepository,
+    $level = \MailPoetVendor\Monolog\Logger::DEBUG,
+    $bubble = \true,
+    $randFunction = null
+  ) {
     parent::__construct($level, $bubble);
     $this->randFunction = $randFunction;
+    $this->logRepository = $logRepository;
   }
 
   protected function write(array $record) {
-    $model = $this->createNewLogModel();
-    $model->hydrate([
-      'name' => $record['channel'],
-      'level' => $record['level'],
-      'message' => $record['formatted'],
-      'created_at' => $record['datetime']->format('Y-m-d H:i:s'),
-    ]);
-    $model->save();
+    $entity = new LogEntity();
+    $entity->setName($record['channel']);
+    $entity->setLevel($record['level']);
+    $entity->setMessage($record['formatted']);
+    $entity->setCreatedAt($record['datetime']);
+
+    $this->logRepository->persist($entity);
+    $this->logRepository->flush();
 
     if ($this->getRandom() <= self::LOG_PURGE_PROBABILITY) {
       $this->purgeOldLogs();
     }
-  }
-
-  private function createNewLogModel() {
-    return Log::create();
   }
 
   private function getRandom() {
