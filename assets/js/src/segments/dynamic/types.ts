@@ -154,6 +154,7 @@ export enum Actions {
   SET_SEGMENT = 'SET_SEGMENT',
   SET_ERRORS = 'SET_ERRORS',
   UPDATE_SEGMENT = 'UPDATE_SEGMENT',
+  UPDATE_SEGMENT_FILTER = 'UPDATE_SEGMENT_FILTER',
 }
 
 export interface ActionType {
@@ -162,6 +163,11 @@ export interface ActionType {
 
 export interface SetSegmentActionType extends ActionType {
   segment: AnyFormItem;
+}
+
+export interface SetSegmentFilerActionType extends ActionType {
+  filter: AnyFormItem;
+  filterIndex: number;
 }
 
 export interface SetErrorsActionType extends ActionType {

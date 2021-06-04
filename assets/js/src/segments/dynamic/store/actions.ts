@@ -7,6 +7,7 @@ import {
   AnyFormItem,
   SetSegmentActionType,
   SetErrorsActionType,
+  SetSegmentFilerActionType,
 } from '../types';
 
 export function setSegment(segment: AnyFormItem): SetSegmentActionType {
@@ -30,6 +31,15 @@ export function updateSegment(data: AnyFormItem): SetSegmentActionType {
   };
 }
 
+export function updateSegmentFilter(filter: AnyFormItem, filterIndex: number)
+  : SetSegmentFilerActionType {
+  return {
+    type: Actions.UPDATE_SEGMENT_FILTER,
+    filter,
+    filterIndex,
+  };
+}
+
 export function updateSegmentFromEvent(
   propertyName: string,
   event: ChangeEvent<HTMLSelectElement | HTMLInputElement>
@@ -39,6 +49,20 @@ export function updateSegmentFromEvent(
     segment: {
       [propertyName]: event.target.value,
     },
+  };
+}
+
+export function updateSegmentFilterFromEvent(
+  propertyName: string,
+  filterIndex: number,
+  event: ChangeEvent<HTMLSelectElement | HTMLInputElement>
+): SetSegmentFilerActionType {
+  return {
+    type: Actions.UPDATE_SEGMENT_FILTER,
+    filter: {
+      [propertyName]: event.target.value,
+    },
+    filterIndex,
   };
 }
 
