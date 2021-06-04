@@ -176,7 +176,8 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
       $wp,
       $this->settings,
       $renderer,
-      $this->diContainer->get(NewslettersRepository::class)
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(TransactionalEmails::class)
     );
     $transactionalEmails->useTemplateForWoocommerceEmails();
     expect($addedActions)->count(1);
@@ -194,6 +195,33 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     expect(ob_get_clean())->equals('HTML after content');
     expect($addedActions['woocommerce_email_styles'])->callable();
     expect($addedActions['woocommerce_email_styles']('some css'))->equals('prefixed some css');
+  }
+
+  public function testUseTemplateForWCEmailsWorksWithNoEmail() {
+    $addedActions = [];
+    $removedActions = [];
+
+    $this->settings->set(TransactionalEmails::SETTING_EMAIL_ID, 2);
+    $wp = Stub::make(new WPFunctions, [
+      'getOption' => function($name) {
+        return '';
+      },
+      'addAction' => function ($name, $action) use(&$addedActions) {
+        $addedActions[$name] = $action;
+      },
+      'removeAction' => function ($name, $action) use(&$removedActions) {
+        $removedActions[$name] = $action;
+      },
+    ]);
+
+    new TransactionalEmailHooks(
+      $wp,
+      $this->settings,
+      $this->diContainer->get(Renderer::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(TransactionalEmails::class)
+    );
+
   }
 
   public function _after() {

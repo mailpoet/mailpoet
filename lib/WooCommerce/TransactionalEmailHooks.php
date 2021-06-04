@@ -23,16 +23,21 @@ class TransactionalEmailHooks {
   /** @var NewslettersRepository */
   private $newsletterRepository;
 
+  /** @var TransactionalEmails */
+  private $transactionalEmails;
+
   public function __construct(
     WPFunctions $wp,
     SettingsController $settings,
     Renderer $renderer,
-    NewslettersRepository $newsletterRepository
+    NewslettersRepository $newsletterRepository,
+    TransactionalEmails $transactionalEmails
   ) {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->renderer = $renderer;
     $this->newsletterRepository = $newsletterRepository;
+    $this->transactionalEmails = $transactionalEmails;
   }
 
   public function useTemplateForWoocommerceEmails() {
@@ -45,13 +50,15 @@ class TransactionalEmailHooks {
       $this->wp->removeAction('woocommerce_email_footer', $emailFooterCallback);
       $this->wp->addAction('woocommerce_email_header', function($emailHeading) {
         $newsletterEntity = $this->getNewsletter();
-        // Temporary load old model until we refactor renderer
-        $newsletterModel = Newsletter::findOne($newsletterEntity->getId());
-        if (!$newsletterModel instanceof Newsletter) {
-          throw new InvalidStateException('WooCommerce email template is missing!');
+        if ($newsletterEntity) {
+          // Temporary load old model until we refactor renderer
+          $newsletterModel = Newsletter::findOne($newsletterEntity->getId());
+          if (!$newsletterModel instanceof Newsletter) {
+            throw new InvalidStateException('WooCommerce email template is missing!');
+          }
+          $this->renderer->render($newsletterModel, $emailHeading);
+          echo $this->renderer->getHTMLBeforeContent($emailHeading);
         }
-        $this->renderer->render($newsletterModel, $emailHeading);
-        echo $this->renderer->getHTMLBeforeContent($emailHeading);
       });
       $this->wp->addAction('woocommerce_email_footer', function() {
         echo $this->renderer->getHTMLAfterContent();
@@ -60,33 +67,37 @@ class TransactionalEmailHooks {
     });
   }
 
-  private function getNewsletter(): NewsletterEntity {
+  private function getNewsletter(): ?NewsletterEntity {
+    if (empty($this->settings->get(TransactionalEmails::SETTING_EMAIL_ID))) {
+      return null;
+    }
     $newsletter = $this->newsletterRepository->findOneById($this->settings->get(TransactionalEmails::SETTING_EMAIL_ID));
-    if (!$newsletter instanceof NewsletterEntity) {
-      throw new InvalidStateException('WooCommerce email template is missing!');
+    if (!$newsletter) {
+      $this->transactionalEmails->init();
+      $this->settings->set('woocommerce.use_mailpoet_editor', false);
     }
     return $newsletter;
   }
 
   public function overrideStylesForWooEmails() {
-    // Don't override anything if woo email template is not set
-    if (empty($this->settings->get(TransactionalEmails::SETTING_EMAIL_ID))) {
-      return;
-    }
     $this->wp->addAction('option_woocommerce_email_background_color', function($value) {
       $newsletter = $this->getNewsletter();
+      if (!$newsletter instanceof NewsletterEntity) return $value;
       return $newsletter->getGlobalStyle('body', 'backgroundColor') ?? $value;
     });
     $this->wp->addAction('option_woocommerce_email_base_color', function($value) {
       $newsletter = $this->getNewsletter();
+      if (!$newsletter instanceof NewsletterEntity) return $value;
       return $newsletter->getGlobalStyle('woocommerce', 'brandingColor') ?? $value;
     });
     $this->wp->addAction('option_woocommerce_email_body_background_color', function($value) {
       $newsletter = $this->getNewsletter();
+      if (!$newsletter instanceof NewsletterEntity) return $value;
       return $newsletter->getGlobalStyle('wrapper', 'backgroundColor') ?? $value;
     });
     $this->wp->addAction('option_woocommerce_email_text_color', function($value) {
       $newsletter = $this->getNewsletter();
+      if (!$newsletter instanceof NewsletterEntity) return $value;
       return $newsletter->getGlobalStyle('text', 'fontColor') ?? $value;
     });
   }
