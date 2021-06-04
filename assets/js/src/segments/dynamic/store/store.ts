@@ -30,7 +30,9 @@ export const createStore = (): void => {
     wooCountries: window.mailpoet_woocommerce_countries,
     customFieldsList: window.mailpoet_custom_fields,
     segment: {
-      segmentType: SegmentTypes.WordPressRole,
+      filters: [
+        { segmentType: SegmentTypes.WordPressRole },
+      ],
     },
     errors: [],
     allAvailableFilters: getAvailableFilters(window.mailpoet_can_use_woocommerce_subscriptions),

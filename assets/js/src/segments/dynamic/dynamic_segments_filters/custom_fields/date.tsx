@@ -1,10 +1,6 @@
 import React, { useEffect } from 'react';
 import {
-  __,
   assign,
-  compose,
-  get,
-  set,
   range,
 } from 'lodash/fp';
 import {
@@ -28,28 +24,26 @@ import {
 interface ComponentProps {
   onChange: OnFilterChange;
   item: WordpressRoleFormItem;
+  filterIndex: number;
 }
 
-const DateMonth = ({ onChange, item }: ComponentProps) => {
+const DateMonth = ({ onChange, item, filterIndex }: ComponentProps) => {
   useEffect(() => {
     if ((item.value === undefined) || item.value === '') {
       onChange(
-        assign(item, { value: '2017-01-01 00:00:00' })
+        assign(item, { value: '2017-01-01 00:00:00' }),
+        filterIndex
       );
     }
-  }, [onChange, item]);
+  }, [onChange, item, filterIndex]);
 
   return (
     <Select
       key="select"
       value={item.value}
-      onChange={compose([
-        onChange,
-        assign(item),
-        set('value', __, {}),
-        get('value'),
-        get('target'),
-      ])}
+      onChange={(e) => {
+        onChange(assign(item, { value: e.target.value }), filterIndex);
+      }}
     >
       <option value="2017-01-01 00:00:00">{MailPoet.I18n.t('january')}</option>
       <option value="2017-02-01 00:00:00">{MailPoet.I18n.t('february')}</option>
@@ -67,7 +61,7 @@ const DateMonth = ({ onChange, item }: ComponentProps) => {
   );
 };
 
-const DateYear = ({ onChange, item }: ComponentProps) => {
+const DateYear = ({ onChange, item, filterIndex }: ComponentProps) => {
   const currentYear = getYear(new Date());
   useEffect(() => {
     if ((item.value === undefined) || item.value === '') {
@@ -75,23 +69,20 @@ const DateYear = ({ onChange, item }: ComponentProps) => {
         assign(item, {
           value: `${currentYear}-01-01 00:00:00`,
           operator: 'equals',
-        })
+        }),
+        filterIndex
       );
     }
-  }, [currentYear, onChange, item]);
+  }, [currentYear, onChange, item, filterIndex]);
 
   return (
     <Grid.CenteredRow>
       <Select
         key="select-operator"
         value={item.operator}
-        onChange={compose([
-          onChange,
-          assign(item),
-          set('operator', __, {}),
-          get('value'),
-          get('target'),
-        ])}
+        onChange={(e) => {
+          onChange(assign(item, { operator: e.target.value }), filterIndex);
+        }}
       >
         <option value="equals">{MailPoet.I18n.t('equals')}</option>
         <option value="before">{MailPoet.I18n.t('before')}</option>
@@ -100,13 +91,9 @@ const DateYear = ({ onChange, item }: ComponentProps) => {
       <Select
         key="select-year"
         value={item.value}
-        onChange={compose([
-          onChange,
-          assign(item),
-          set('value', __, {}),
-          get('value'),
-          get('target'),
-        ])}
+        onChange={(e) => {
+          onChange(assign(item, { value: e.target.value }), filterIndex);
+        }}
       >
         {range(0, 100).map((sub) => (
           <option
@@ -134,30 +121,27 @@ const parseDate = (value: string): Date | undefined => {
   return date;
 };
 
-const DateFullDate = ({ onChange, item }: ComponentProps) => {
+const DateFullDate = ({ onChange, item, filterIndex }: ComponentProps) => {
   useEffect(() => {
     if ((item.value === undefined) || item.value === '') {
       onChange(
         assign(item, {
           value: `${format(new Date(), 'yyyy-MM-dd')} 00:00:00`,
           operator: 'equals',
-        })
+        }),
+        filterIndex
       );
     }
-  }, [onChange, item]);
+  }, [onChange, item, filterIndex]);
 
   return (
     <Grid.CenteredRow>
       <Select
         key="select-operator"
         value={item.operator}
-        onChange={compose([
-          onChange,
-          assign(item),
-          set('operator', __, {}),
-          get('value'),
-          get('target'),
-        ])}
+        onChange={(e) => {
+          onChange(assign(item, { operator: e.target.value }), filterIndex);
+        }}
       >
         <option value="equals">{MailPoet.I18n.t('equals')}</option>
         <option value="before">{MailPoet.I18n.t('before')}</option>
@@ -166,7 +150,8 @@ const DateFullDate = ({ onChange, item }: ComponentProps) => {
       <Datepicker
         dateFormat="MMMM d, yyyy"
         onChange={(value): void => onChange(
-          assign(item, { value: convertDateToString(value) })
+          assign(item, { value: convertDateToString(value) }),
+          filterIndex
         )}
         selected={item.value ? parseDate(item.value) : undefined}
       />
@@ -174,30 +159,27 @@ const DateFullDate = ({ onChange, item }: ComponentProps) => {
   );
 };
 
-const DateMonthYear = ({ onChange, item }: ComponentProps) => {
+const DateMonthYear = ({ onChange, item, filterIndex }: ComponentProps) => {
   useEffect(() => {
     if ((item.value === undefined) || item.value === '') {
       onChange(
         assign(item, {
           value: `${format(new Date(), 'yyyy-MM-dd')} 00:00:00`,
           operator: 'equals',
-        })
+        }),
+        filterIndex
       );
     }
-  }, [onChange, item]);
+  }, [onChange, item, filterIndex]);
 
   return (
     <Grid.CenteredRow>
       <Select
         key="select-operator"
         value={item.operator}
-        onChange={compose([
-          onChange,
-          assign(item),
-          set('operator', __, {}),
-          get('value'),
-          get('target'),
-        ])}
+        onChange={(e) => {
+          onChange(assign(item, { operator: e.target.value }), filterIndex);
+        }}
       >
         <option value="equals">{MailPoet.I18n.t('equals')}</option>
         <option value="before">{MailPoet.I18n.t('before')}</option>
@@ -205,7 +187,8 @@ const DateMonthYear = ({ onChange, item }: ComponentProps) => {
       </Select>
       <Datepicker
         onChange={(value): void => onChange(
-          assign(item, { value: convertDateToString(value) })
+          assign(item, { value: convertDateToString(value) }),
+          filterIndex
         )}
         selected={item.value ? parseDate(item.value) : undefined}
         dateFormat="MM/yyyy"
@@ -234,6 +217,7 @@ interface Props {
       date_type: string;
     }
   };
+  filterIndex: number;
 }
 
 const componentsMap = {
@@ -244,20 +228,20 @@ const componentsMap = {
 };
 
 export const CustomFieldDate: React.FunctionComponent<Props> = (
-  { customField }
+  { customField, filterIndex }
 ) => {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
-  const { updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
 
   useEffect(() => {
     if (segment.date_type !== customField.params.date_type) {
-      updateSegment({ date_type: customField.params.date_type, value: '' });
+      updateSegmentFilter({ date_type: customField.params.date_type, value: '' }, filterIndex);
     }
-  }, [segment.date_type, updateSegment, customField.params.date_type]);
+  }, [segment.date_type, updateSegmentFilter, customField.params.date_type, filterIndex]);
 
   const Component = componentsMap[customField.params.date_type];
   if (!Component) return null;
@@ -265,7 +249,8 @@ export const CustomFieldDate: React.FunctionComponent<Props> = (
     <>
       <Component
         item={segment}
-        onChange={updateSegment}
+        onChange={updateSegmentFilter}
+        filterIndex={filterIndex}
       />
     </>
   );

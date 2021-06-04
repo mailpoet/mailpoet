@@ -12,26 +12,30 @@ export function validateCheckbox(item: WordpressRoleFormItem): boolean {
   return ((item.value === '1') || (item.value === '0'));
 }
 
-export const Checkbox: React.FunctionComponent = () => {
+type Props = {
+  filterIndex: number;
+}
+
+export const Checkbox: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
-  const { updateSegmentFromEvent, updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilterFromEvent, updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
 
   useEffect(() => {
     if ((segment.value !== '1') && (segment.value !== '0')) {
-      updateSegment({ operator: 'equals', value: '1' });
+      updateSegmentFilter({ operator: 'equals', value: '1' }, filterIndex);
     }
-  }, [updateSegment, segment]);
+  }, [updateSegmentFilter, segment, filterIndex]);
 
   return (
     <>
       <Select
         key="select"
         value={segment.value}
-        onChange={(e) => updateSegmentFromEvent('value', e)}
+        onChange={(e) => updateSegmentFilterFromEvent('value', filterIndex, e)}
       >
         <option value="1">{MailPoet.I18n.t('checked')}</option>
         <option value="0">{MailPoet.I18n.t('unchecked')}</option>

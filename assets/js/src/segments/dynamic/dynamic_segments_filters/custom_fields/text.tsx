@@ -18,19 +18,23 @@ export function validateText(item: WordpressRoleFormItem): boolean {
   );
 }
 
-export const Text: React.FunctionComponent = () => {
+type Props = {
+  filterIndex: number;
+}
+
+export const Text: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
-  const { updateSegmentFromEvent, updateSegment } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilterFromEvent, updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
 
   useEffect(() => {
     if (segment.operator === undefined) {
-      updateSegment({ operator: 'equals', value: '' });
+      updateSegmentFilter({ operator: 'equals', value: '' }, filterIndex);
     }
-  }, [updateSegment, segment]);
+  }, [updateSegmentFilter, segment, filterIndex]);
 
   return (
     <>
@@ -40,7 +44,7 @@ export const Text: React.FunctionComponent = () => {
           automationId="text-custom-field-operator"
           value={segment.operator}
           onChange={(e) => {
-            updateSegmentFromEvent('operator', e);
+            updateSegmentFilterFromEvent('operator', filterIndex, e);
           }}
         >
           <option value="equals">{MailPoet.I18n.t('equals')}</option>
@@ -51,7 +55,7 @@ export const Text: React.FunctionComponent = () => {
           data-automation-id="text-custom-field-value"
           value={segment.value || ''}
           onChange={(e) => {
-            updateSegmentFromEvent('value', e);
+            updateSegmentFilterFromEvent('value', filterIndex, e);
           }}
           placeholder={MailPoet.I18n.t('value')}
         />

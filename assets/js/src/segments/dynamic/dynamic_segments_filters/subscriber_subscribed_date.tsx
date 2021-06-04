@@ -39,17 +39,21 @@ const parseDate = (value: string): Date | undefined => {
   return date;
 };
 
-export const SubscribedDateFields: React.FunctionComponent = () => {
+type Props = {
+  filterIndex: number;
+}
+
+export const SubscribedDateFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
-  const { updateSegment, updateSegmentFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
 
   useEffect(() => {
     if (!availableOperators.includes((segment.operator as SubscribedDateOperator))) {
-      updateSegment({ operator: SubscribedDateOperator.BEFORE });
+      updateSegmentFilter({ operator: SubscribedDateOperator.BEFORE }, filterIndex);
     }
     if (
       (
@@ -58,7 +62,7 @@ export const SubscribedDateFields: React.FunctionComponent = () => {
       )
       && ((parseDate(segment.value) === undefined) || !new RegExp(/^\d+-\d+-\d+$/).test(segment.value))
     ) {
-      updateSegment({ value: convertDateToString(new Date()) });
+      updateSegmentFilter({ value: convertDateToString(new Date()) }, filterIndex);
     }
     if (
       (
@@ -67,9 +71,9 @@ export const SubscribedDateFields: React.FunctionComponent = () => {
       )
       && ((typeof segment.value === 'string') && !new RegExp(/^\d*$/).exec(segment.value))
     ) {
-      updateSegment({ value: '' });
+      updateSegmentFilter({ value: '' }, filterIndex);
     }
-  }, [updateSegment, segment]);
+  }, [updateSegmentFilter, segment, filterIndex]);
 
   return (
     <>
@@ -78,7 +82,7 @@ export const SubscribedDateFields: React.FunctionComponent = () => {
           key="select"
           value={segment.operator}
           onChange={(e) => {
-            updateSegmentFromEvent('operator', e);
+            updateSegmentFilterFromEvent('operator', filterIndex, e);
           }}
         >
           <option value={SubscribedDateOperator.BEFORE}>{MailPoet.I18n.t('before')}</option>
@@ -93,7 +97,7 @@ export const SubscribedDateFields: React.FunctionComponent = () => {
           <Datepicker
             dateFormat="MMMM d, yyyy"
             onChange={(value): void => {
-              updateSegment({ value: convertDateToString(value) });
+              updateSegmentFilter({ value: convertDateToString(value) }, filterIndex);
             }}
             maxDate={new Date()}
             selected={segment.value ? parseDate(segment.value) : undefined}
@@ -109,7 +113,7 @@ export const SubscribedDateFields: React.FunctionComponent = () => {
               type="number"
               value={segment.value}
               onChange={(e) => {
-                updateSegmentFromEvent('value', e);
+                updateSegmentFilterFromEvent('value', filterIndex, e);
               }}
               min="1"
               placeholder={MailPoet.I18n.t('daysPlaceholder')}

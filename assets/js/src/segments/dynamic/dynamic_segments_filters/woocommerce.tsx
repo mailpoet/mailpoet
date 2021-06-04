@@ -63,13 +63,17 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   return true;
 }
 
-export const WooCommerceFields: React.FunctionComponent = () => {
+type Props = {
+  filterIndex: number;
+}
+
+export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: WooCommerceFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
-  const { updateSegment, updateSegmentFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
 
   const productCategories: WindowProductCategories = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getProductCategories(),
@@ -109,15 +113,15 @@ export const WooCommerceFields: React.FunctionComponent = () => {
       segment.number_of_orders_type === undefined
       && segment.action === WooCommerceActionTypes.NUMBER_OF_ORDERS
     ) {
-      updateSegment({ number_of_orders_type: '=' });
+      updateSegmentFilter({ number_of_orders_type: '=' }, filterIndex);
     }
     if (
       segment.total_spent_type === undefined
       && segment.action === WooCommerceActionTypes.TOTAL_SPENT
     ) {
-      updateSegment({ total_spent_type: '>' });
+      updateSegmentFilter({ total_spent_type: '>' }, filterIndex);
     }
-  }, [updateSegment, segment]);
+  }, [updateSegmentFilter, segment, filterIndex]);
 
   if (segment.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
     optionFields = (
@@ -129,7 +133,10 @@ export const WooCommerceFields: React.FunctionComponent = () => {
           placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
           options={productOptions}
           value={find(['value', segment.product_id], productOptions)}
-          onChange={(option: SelectOption): void => updateSegment({ product_id: option.value })}
+          onChange={(option: SelectOption): void => updateSegmentFilter(
+            { product_id: option.value },
+            filterIndex
+          )}
           automationId="select-segment-product"
         />
       </div>
@@ -144,7 +151,10 @@ export const WooCommerceFields: React.FunctionComponent = () => {
           placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
           options={categoryOptions}
           value={find(['value', segment.category_id], categoryOptions)}
-          onChange={(option: SelectOption): void => updateSegment({ category_id: option.value })}
+          onChange={(option: SelectOption): void => updateSegmentFilter(
+            { category_id: option.value },
+            filterIndex
+          )}
           automationId="select-segment-category"
         />
       </div>
@@ -157,7 +167,7 @@ export const WooCommerceFields: React.FunctionComponent = () => {
             key="select"
             value={segment.number_of_orders_type}
             onChange={(e): void => {
-              updateSegmentFromEvent('number_of_orders_type', e);
+              updateSegmentFilterFromEvent('number_of_orders_type', filterIndex, e);
             }}
             automationId="select-number-of-orders-type"
           >
@@ -172,7 +182,7 @@ export const WooCommerceFields: React.FunctionComponent = () => {
             value={segment.number_of_orders_count || ''}
             placeholder={MailPoet.I18n.t('wooNumberOfOrdersCount')}
             onChange={(e): void => {
-              updateSegmentFromEvent('number_of_orders_count', e);
+              updateSegmentFilterFromEvent('number_of_orders_count', filterIndex, e);
             }}
           />
           <div>{MailPoet.I18n.t('wooNumberOfOrdersOrders')}</div>
@@ -186,7 +196,7 @@ export const WooCommerceFields: React.FunctionComponent = () => {
             value={segment.number_of_orders_days || ''}
             placeholder={MailPoet.I18n.t('daysPlaceholder')}
             onChange={(e): void => {
-              updateSegmentFromEvent('number_of_orders_days', e);
+              updateSegmentFilterFromEvent('number_of_orders_days', filterIndex, e);
             }}
           />
           <div>{MailPoet.I18n.t('days')}</div>
@@ -201,7 +211,7 @@ export const WooCommerceFields: React.FunctionComponent = () => {
             key="select"
             value={segment.total_spent_type}
             onChange={(e): void => {
-              updateSegmentFromEvent('total_spent_type', e);
+              updateSegmentFilterFromEvent('total_spent_type', filterIndex, e);
             }}
             automationId="select-total-spent-type"
           >
@@ -216,7 +226,7 @@ export const WooCommerceFields: React.FunctionComponent = () => {
             value={segment.total_spent_amount || ''}
             placeholder={MailPoet.I18n.t('wooTotalSpentAmount')}
             onChange={(e): void => {
-              updateSegmentFromEvent('total_spent_amount', e);
+              updateSegmentFilterFromEvent('total_spent_amount', filterIndex, e);
             }}
           />
           <div>{wooCurrencySymbol}</div>
@@ -230,7 +240,7 @@ export const WooCommerceFields: React.FunctionComponent = () => {
             value={segment.total_spent_days || ''}
             placeholder={MailPoet.I18n.t('daysPlaceholder')}
             onChange={(e): void => {
-              updateSegmentFromEvent('total_spent_days', e);
+              updateSegmentFilterFromEvent('total_spent_days', filterIndex, e);
             }}
           />
           <div>{MailPoet.I18n.t('days')}</div>
@@ -247,7 +257,10 @@ export const WooCommerceFields: React.FunctionComponent = () => {
           placeholder={MailPoet.I18n.t('selectWooCountry')}
           options={countryOptions}
           value={find(['value', segment.country_code], countryOptions)}
-          onChange={(option: SelectOption): void => updateSegment({ country_code: option.value })}
+          onChange={(option: SelectOption): void => updateSegmentFilter(
+            { country_code: option.value },
+            filterIndex
+          )}
           automationId="select-segment-country"
         />
       </div>

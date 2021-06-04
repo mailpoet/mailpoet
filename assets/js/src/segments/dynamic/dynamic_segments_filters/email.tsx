@@ -52,10 +52,14 @@ const componentsMap = {
   [EmailActionTypes.CLICKED_ANY]: null,
 };
 
-export const EmailFields: React.FunctionComponent = () => {
+type Props = {
+  filterIndex: number;
+}
+
+export const EmailFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    [filterIndex]
   );
 
   const Component = componentsMap[segment.action];
@@ -63,6 +67,6 @@ export const EmailFields: React.FunctionComponent = () => {
   if (!Component) return null;
 
   return (
-    <Component />
+    <Component filterIndex={filterIndex} />
   );
 };
