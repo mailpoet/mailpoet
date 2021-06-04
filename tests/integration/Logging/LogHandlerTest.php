@@ -3,7 +3,6 @@
 namespace MailPoet\Logging;
 
 use MailPoet\Entities\LogEntity;
-use MailPoet\Models\Log;
 use MailPoetVendor\Carbon\Carbon;
 
 class LogHandlerTest extends \MailPoetTest {
@@ -26,21 +25,21 @@ class LogHandlerTest extends \MailPoetTest {
       'datetime' => $time,
     ]);
 
-    $log = Log::where('name', 'name')->orderByDesc('id')->findOne();
-    assert($log instanceof Log);
-    expect($log->createdAt)->equals($time->format('Y-m-d H:i:s'));
-
+    $log = $this->repository->findOneBy(['name' => 'name'], ['id' => 'desc']);
+    assert($log instanceof LogEntity);
+    expect($log->getCreatedAt()->format('Y-m-d H:i:s'))->equals($time->format('Y-m-d H:i:s'));
   }
 
   public function testItPurgesOldLogs() {
-    $model = Log::create();
-    $model->hydrate([
-      'name' => 'old name',
-      'level' => '5',
-      'message' => 'xyz',
-      'created_at' => Carbon::now()->subDays(100)->toDateTimeString(),
-    ]);
-    $model->save();
+    $entity = new LogEntity();
+    $entity->setName( 'old name');
+    $entity->setLevel(5);
+    $entity->setMessage('xyz');
+    $entity->setCreatedAt(Carbon::now()->subDays(100));
+
+    $this->repository->persist($entity);
+    $this->repository->flush();
+
     $random = function() {
       return 0;
     };
@@ -54,20 +53,20 @@ class LogHandlerTest extends \MailPoetTest {
       'datetime' => new \DateTime(),
     ]);
 
-    $log = Log::whereEqual('name', 'old name')->findMany();
+    $log = $this->repository->findBy(['name' => 'old name']);
     expect($log)->isEmpty();
   }
 
   public function testItNotPurgesOldLogs() {
-    $model = Log::create();
-    $date = Carbon::now();
-    $model->hydrate([
-      'name' => 'old name keep',
-      'level' => '5',
-      'message' => 'xyz',
-      'created_at' => $date->subDays(100)->toDateTimeString(),
-    ]);
-    $model->save();
+    $entity = new LogEntity();
+    $entity->setName( 'old name keep');
+    $entity->setLevel(5);
+    $entity->setMessage('xyz');
+    $entity->setCreatedAt(Carbon::now()->subDays(100));
+
+    $this->repository->persist($entity);
+    $this->repository->flush();
+
     $random = function() {
       return 100;
     };
@@ -81,7 +80,7 @@ class LogHandlerTest extends \MailPoetTest {
       'datetime' => new \DateTime(),
     ]);
 
-    $log = Log::whereEqual('name', 'old name keep')->findMany();
+    $log = $this->repository->findBy(['name' => 'old name keep']);
     expect($log)->notEmpty();
   }
 }
