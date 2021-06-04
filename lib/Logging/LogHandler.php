@@ -3,22 +3,19 @@
 namespace MailPoet\Logging;
 
 use MailPoet\Entities\LogEntity;
-use MailPoet\Models\Log;
-use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Monolog\Handler\AbstractProcessingHandler;
 
 class LogHandler extends AbstractProcessingHandler {
+  /**
+   * Logs older than this many days will be deleted
+   */
+  const DAYS_TO_KEEP_LOGS = 30;
 
   /**
    * Percentage value, what is the probability of running purge routine
    * @var int
    */
   const LOG_PURGE_PROBABILITY = 5;
-
-  /**
-   * Logs older than this many days will be deleted
-   */
-  const DAYS_TO_KEEP_LOGS = 30;
 
   /** @var callable|null */
   private $randFunction;
@@ -60,7 +57,6 @@ class LogHandler extends AbstractProcessingHandler {
   }
 
   private function purgeOldLogs() {
-    Log::whereLt('created_at', Carbon::now()->subDays(self::DAYS_TO_KEEP_LOGS)->toDateTimeString())
-       ->deleteMany();
+    $this->logRepository->purgeOldLogs(self::DAYS_TO_KEEP_LOGS);
   }
 }
