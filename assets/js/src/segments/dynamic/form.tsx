@@ -14,9 +14,12 @@ import { isFormValid } from './validator';
 import plusIcon from '../../common/button/icon/plus';
 
 import {
-  AnyFormItem,
+  FilterRow,
   FilterValue,
   GroupFilterValue,
+  Segment,
+  SegmentTypes,
+  SubscriberActionTypes,
 } from './types';
 
 interface Props {
@@ -26,7 +29,7 @@ interface Props {
 export const Form: React.FunctionComponent<Props> = ({
   segmentId,
 }) => {
-  const segment: AnyFormItem = useSelect(
+  const segment: Segment = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
     []
   );
@@ -36,12 +39,12 @@ export const Form: React.FunctionComponent<Props> = ({
     []
   );
 
-  const filterValue: FilterValue | undefined = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').findFilterValueForSegment(segment),
+  const filterRows: FilterRow[] = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').findFiltersValueForSegment(segment),
     [segment]
   );
 
-  const { updateSegment, handleSave } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegment, updateSegmentFilter, handleSave } = useDispatch('mailpoet-dynamic-segments-form');
 
   return (
     <form className="mailpoet_form">
@@ -92,31 +95,46 @@ export const Form: React.FunctionComponent<Props> = ({
               {MailPoet.I18n.t('formPageTitle')}
             </label>
           </Heading>
-          <Grid.ThreeColumns>
-            <Select
-              dimension="small"
-              placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
-              options={segmentFilters}
-              value={filterValue}
-              onChange={(newValue: FilterValue): void => {
-                updateSegment({
-                  segmentType: newValue.group,
-                  action: newValue.value,
-                });
-              }}
-              automationId="select-segment-action"
-              isFullWidth
-            />
-            {segment.segmentType !== undefined && (
-              <FormFilterFields />
-            )}
-          </Grid.ThreeColumns>
-          <div className="mailpoet-gap" />
+          {Array.isArray(filterRows) && filterRows.map((filterRow, index) => (
+            <>
+              <Grid.ThreeColumns>
+                <Select
+                  dimension="small"
+                  placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
+                  options={segmentFilters}
+                  value={filterRow.filterValue}
+                  onChange={(newValue: FilterValue): void => {
+                    updateSegmentFilter({
+                      segmentType: newValue.group,
+                      action: newValue.value,
+                    }, index);
+                  }}
+                  automationId="select-segment-action"
+                  isFullWidth
+                />
+                {filterRow.index !== undefined && (
+                  <FormFilterFields filterIndex={filterRow.index} />
+                )}
+              </Grid.ThreeColumns>
+              <div className="mailpoet-gap" />
+            </>
+          ))}
           <Button
             type="button"
             dimension="small"
             variant="link"
             iconStart={plusIcon}
+            onClick={(e): void => {
+              e.preventDefault();
+              const filters = segment.filters;
+              filters.push({
+                segmentType: SegmentTypes.WordPressRole,
+                action: SubscriberActionTypes.WORDPRESS_ROLE,
+              });
+              updateSegment({
+                filters,
+              });
+            }}
           >
             {MailPoet.I18n.t('addCondition')}
           </Button>
