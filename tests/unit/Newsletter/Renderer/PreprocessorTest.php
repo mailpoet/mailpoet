@@ -19,7 +19,8 @@ class PreprocessorTest extends \MailPoetUnitTest {
         'base_text_color' => '{base_text_color}',
       ],
     ]);
-    $preprocessor = new Preprocessor($acc, $alc, $transactionalEmails);
+    $wooPreprocessor = new TransactionalEmails\ContentPreprocessor($transactionalEmails);
+    $preprocessor = new Preprocessor($acc, $alc, $wooPreprocessor);
     expect($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceHeading']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
@@ -45,7 +46,8 @@ class PreprocessorTest extends \MailPoetUnitTest {
   public function testProcessWooCommerceContentBlock() {
     $acc = Stub::make(AbandonedCartContent::class);
     $alc = Stub::make(AutomatedLatestContentBlock::class);
-    $preprocessor = new Preprocessor($acc, $alc, Stub::make(TransactionalEmails::class));
+    $wooPreprocessor = new TransactionalEmails\ContentPreprocessor(Stub::make(TransactionalEmails::class));
+    $preprocessor = new Preprocessor($acc, $alc, $wooPreprocessor);
     expect($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceContent']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
@@ -59,8 +61,8 @@ class PreprocessorTest extends \MailPoetUnitTest {
           'styles' => ['block' => ['backgroundColor' => 'transparent']],
           'blocks' => [
             [
-              'type' => 'text',
-              'text' => '[mailpoet_woocommerce_content_placeholder]',
+              'type' => 'placeholder',
+              'placeholder' => '[mailpoet_woocommerce_content_placeholder]',
             ],
           ],
         ],

@@ -35,21 +35,22 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testGetHTMLBeforeContent() {
+    $wooPreprocessor = new ContentPreprocessor(Stub::make(
+      \MailPoet\WooCommerce\TransactionalEmails::class,
+      [
+        'getWCEmailSettings' => [
+          'base_text_color' => '',
+          'base_color' => '',
+        ],
+      ]
+    ));
     $newsletterRenderer = new NewsletterRenderer(
       $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
       $this->diContainer->get(\MailPoet\Newsletter\Renderer\Columns\Renderer::class),
       new Preprocessor(
         $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent::class),
         $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock::class),
-        Stub::make(
-          \MailPoet\WooCommerce\TransactionalEmails::class,
-          [
-            'getWCEmailSettings' => [
-              'base_text_color' => '',
-              'base_color' => '',
-            ],
-          ]
-        )
+        $wooPreprocessor
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->diContainer->get(Bridge::class),
@@ -67,21 +68,22 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testGetHTMLAfterContent() {
+    $wooPreprocessor = new ContentPreprocessor(Stub::make(
+      \MailPoet\WooCommerce\TransactionalEmails::class,
+      [
+        'getWCEmailSettings' => [
+          'base_text_color' => '',
+          'base_color' => '',
+        ],
+      ]
+    ));
     $newsletterRenderer = new NewsletterRenderer(
       $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
       $this->diContainer->get(\MailPoet\Newsletter\Renderer\Columns\Renderer::class),
       new Preprocessor(
         $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent::class),
         $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock::class),
-        Stub::make(
-          \MailPoet\WooCommerce\TransactionalEmails::class,
-          [
-            'getWCEmailSettings' => [
-              'base_text_color' => '',
-              'base_color' => '',
-            ],
-          ]
-        )
+        $wooPreprocessor
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
       $this->diContainer->get(Bridge::class),
