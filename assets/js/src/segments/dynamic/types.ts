@@ -35,10 +35,14 @@ export interface FilterValue extends SelectOption {
   group: SegmentTypes;
 }
 
+export interface FilterRow {
+  filterValue: FilterValue;
+  index: number;
+}
+
 export interface FormItem {
+  id?: number;
   segmentType?: string;
-  name?: string;
-  description?: string;
   action?: string;
 }
 
@@ -73,6 +77,13 @@ export interface EmailFormItem extends FormItem {
   operator?: string;
   opens?: string;
   days?: string;
+}
+
+export type Segment = {
+  id?: number;
+  name?: string;
+  description?: string;
+  filters?: AnyFormItem[];
 }
 
 export type AnyFormItem =
@@ -145,7 +156,7 @@ export interface StateType {
   wooCurrencySymbol: string;
   wooCountries: WindowWooCommerceCountries;
   customFieldsList: WindowCustomFields;
-  segment: AnyFormItem,
+  segment: Segment,
   errors: string[],
   allAvailableFilters: GroupFilterValue[],
 }
