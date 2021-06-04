@@ -17,7 +17,8 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
   public function _before() {
     parent::_before();
     $this->settings = $this->createMock(SettingsController::class);
-    $this->loggerFactory = new LoggerFactory($this->settings);
+    $repository = $this->createMock(LogRepository::class);
+    $this->loggerFactory = new LoggerFactory($repository, $this->settings);
   }
 
   public function testItCreatesLogger() {

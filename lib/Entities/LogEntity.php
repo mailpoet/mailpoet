@@ -2,6 +2,7 @@
 
 namespace MailPoet\Entities;
 
+use DateTimeInterface;
 use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
@@ -51,5 +52,21 @@ class LogEntity {
    */
   public function getMessage(): ?string {
     return $this->message;
+  }
+
+  public function setName(?string $name): void {
+    $this->name = $name;
+  }
+
+  public function setLevel(?int $level): void {
+    $this->level = $level;
+  }
+
+  public function setMessage(?string $message): void {
+    $this->message = $message;
+  }
+
+  public function setCreatedAt(DateTimeInterface $createdAt): void {
+    $this->createdAt = $createdAt;
   }
 }
