@@ -70,18 +70,14 @@ class Preprocessor {
       case 'woocommerceHeading':
         $wcEmailSettings = $this->transactionalEmails->getWCEmailSettings();
         $content = self::WC_HEADING_BEFORE . '<h1 style="color:' . $wcEmailSettings['base_text_color'] . ';">' . self::WC_HEADING_PLACEHOLDER . '</h1>' . self::WC_HEADING_AFTER;
-        return $this->placeholder($content, ['backgroundColor' => $wcEmailSettings['base_color']]);
+        return $this->renderTextBlock($content, ['backgroundColor' => $wcEmailSettings['base_color']]);
       case 'woocommerceContent':
-        return $this->placeholder(self::WC_CONTENT_PLACEHOLDER);
+        return $this->renderPlaceholderBlock(self::WC_CONTENT_PLACEHOLDER);
     }
     return [$block];
   }
 
-  /**
-   * @param string $text
-   * @return array
-   */
-  private function placeholder($text, $styles = []) {
+  private function renderTextBlock(string $text, array $styles = []): array {
     return [
       LayoutHelper::row([
         LayoutHelper::col([[
@@ -89,6 +85,17 @@ class Preprocessor {
           'text' => $text,
         ]]),
         ], $styles),
+    ];
+  }
+
+  private function renderPlaceholderBlock(string $placeholder): array {
+    return [
+      LayoutHelper::row([
+        LayoutHelper::col([[
+          'type' => 'placeholder',
+          'placeholder' => $placeholder,
+        ]]),
+      ]),
     ];
   }
 }
