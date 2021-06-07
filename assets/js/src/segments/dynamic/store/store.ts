@@ -12,6 +12,7 @@ import {
   StateType,
   SegmentFormDataWindow,
   SegmentTypes,
+  SegmentConnectTypes,
 } from '../types';
 import { getAvailableFilters } from './all_available_filters';
 
@@ -30,6 +31,7 @@ export const createStore = (): void => {
     wooCountries: window.mailpoet_woocommerce_countries,
     customFieldsList: window.mailpoet_custom_fields,
     segment: {
+      filters_connect: SegmentConnectTypes.AND,
       filters: [
         { segmentType: SegmentTypes.WordPressRole },
       ],

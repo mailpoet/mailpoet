@@ -8,6 +8,8 @@ import Input from 'common/form/input/input';
 import Select from 'common/form/react_select/react_select';
 import Textarea from 'common/form/textarea/textarea';
 import { Grid } from 'common/grid';
+import { ConditionType } from './condition_type';
+import { FilterSeparator } from './filter_separator';
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';
 import { isFormValid } from './validator';
@@ -95,6 +97,7 @@ export const Form: React.FunctionComponent<Props> = ({
               {MailPoet.I18n.t('formPageTitle')}
             </label>
           </Heading>
+          <ConditionType />
           {Array.isArray(filterRows) && filterRows.map((filterRow, index) => (
             <>
               <Grid.ThreeColumns>
@@ -116,7 +119,7 @@ export const Form: React.FunctionComponent<Props> = ({
                   <FormFilterFields filterIndex={filterRow.index} />
                 )}
               </Grid.ThreeColumns>
-              <div className="mailpoet-gap" />
+              <FilterSeparator index={index} />
             </>
           ))}
           <Button
