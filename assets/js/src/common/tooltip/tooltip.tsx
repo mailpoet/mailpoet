@@ -7,7 +7,7 @@ const Tooltip = ({
 }: TooltipProps) => (
   <ReactTooltip
     effect={effect || 'solid'}
-    textColor={textColor || '#071c6d'}
+    textColor={textColor || '#1d2327'}
     backgroundColor={backgroundColor || '#fafbfe'}
     borderColor={borderColor || '#e5e9f8'}
     className={classNames('mailpoet-tooltip', className)}

@@ -8,7 +8,7 @@ type Props = {
 const Loader = ({ variant, size }: Props) => {
   let color = '#ff5301';
   if (variant === 'light') color = '#ffe0d0';
-  if (variant === 'dark') color = '#071c6d';
+  if (variant === 'dark') color = '#1d2327';
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
