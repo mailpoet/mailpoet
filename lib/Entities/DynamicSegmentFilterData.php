@@ -13,6 +13,9 @@ class DynamicSegmentFilterData {
   const TYPE_WOOCOMMERCE = 'woocommerce';
   const TYPE_WOOCOMMERCE_SUBSCRIPTION = 'woocommerceSubscription';
 
+  public const CONNECT_TYPE_AND = 'and';
+  public const CONNECT_TYPE_OR = 'or';
+
   /**
    * @ORM\Column(type="serialized_array")
    * @var array|null

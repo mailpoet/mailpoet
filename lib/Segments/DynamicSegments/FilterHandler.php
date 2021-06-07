@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\SegmentDependencyValidator;
@@ -62,7 +63,7 @@ class FilterHandler {
     $data = $filterData->getData();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
 
-    if (!isset($data['connect']) || $data['connect'] === 'or') {
+    if (!isset($data['connect']) || $data['connect'] === DynamicSegmentFilterData::CONNECT_TYPE_OR) {
       // the final query: SELECT * FROM subscribers INNER JOIN (filter_select1 UNION filter_select2) filtered_subscribers ON filtered_subscribers.inner_subscriber_id = id
       $queryBuilder->innerJoin(
         $subscribersTable,
