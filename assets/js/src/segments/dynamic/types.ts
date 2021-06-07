@@ -21,6 +21,11 @@ export enum SubscriberActionTypes {
   SUBSCRIBED_DATE = 'subscribedDate',
 }
 
+export enum SegmentConnectTypes {
+  AND = 'and',
+  OR = 'or',
+}
+
 export type GroupFilterValue = {
   label: string;
   options: FilterValue[];
@@ -83,6 +88,7 @@ export type Segment = {
   id?: number;
   name?: string;
   description?: string;
+  filters_connect?: SegmentConnectTypes;
   filters?: AnyFormItem[];
 }
 
