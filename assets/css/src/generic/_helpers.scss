@@ -50,10 +50,10 @@ span.mailpoet-gap-half {
 }
 
 .mailpoet-show-on-mobile {
-  display: none;
+  display: none !important;
 
   @include respond-to(small-screen) {
-    display: block;
+    display: inline-flex !important;
   }
 }
 
