@@ -13,6 +13,7 @@ import { FilterSeparator } from './filter_separator';
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';
 import { isFormValid } from './validator';
+import { MinusIcon } from '../../common/button/icon/minus';
 import plusIcon from '../../common/button/icon/plus';
 
 import {
@@ -101,6 +102,22 @@ export const Form: React.FunctionComponent<Props> = ({
           {Array.isArray(filterRows) && filterRows.map((filterRow, index) => (
             <>
               <Grid.ThreeColumns>
+                {filterRows.length > 1 && (
+                  <a
+                    href={undefined}
+                    className="mailpoet-form-segment-delete"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const filters = segment.filters;
+                      filters.splice(index, 1);
+                      updateSegment({
+                        filters,
+                      });
+                    }}
+                  >
+                    {MinusIcon}
+                  </a>
+                )}
                 <Select
                   dimension="small"
                   placeholder={MailPoet.I18n.t('selectActionPlaceholder')}

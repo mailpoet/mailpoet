@@ -4,6 +4,39 @@
   grid-column: span 2;
 }
 
+.mailpoet-segments-segments-section .mailpoet-grid-three-columns {
+  padding-right: 40px;
+  position: relative;
+}
+
 .mailpoet-segments-description-section .mailpoet-form-textarea textarea {
   height: 100px;
+}
+
+.mailpoet-segments-segments-section .mailpoet-form-segment-delete {
+  align-items: center;
+  border: 1px solid #f00;
+  border-radius: 12px;
+  color: #f00;
+  cursor: pointer;
+  display: flex;
+  height: 20px;
+  justify-content: center;
+  margin-top: -11px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 20px;
+}
+
+.mailpoet-segments-segments-section .mailpoet-form-segment-delete svg {
+  fill: currentColor;
+  height: 12px;
+  width: 12px;
+}
+
+.mailpoet-segments-segments-section .mailpoet-form-segment-delete:hover,
+.mailpoet-segments-segments-section .mailpoet-form-segment-delete:focus {
+  background: #f00;
+  color: #fff;
 }
