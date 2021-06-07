@@ -125,15 +125,20 @@ class SegmentSubscribersRepository {
   }
 
   public function addConstraintsForSubscribersWithoutSegment(ORMQueryBuilder $queryBuilder): void {
+    $deletedSegmentsQueryBuilder = $this->entityManager->createQueryBuilder();
+    $deletedSegmentsQueryBuilder->select('sg.id')
+      ->from(SegmentEntity::class, 'sg')
+      ->where($deletedSegmentsQueryBuilder->expr()->isNotNull('sg.deletedAt'));
+
     $queryBuilder
-      ->leftJoin('s.subscriberSegments', 'ssg')
-      ->leftJoin('ssg.segment', 'sg')
-      ->leftJoin(SubscriberEntity::class, 's2', Join::WITH, (string)$queryBuilder->expr()->eq('s.id', 's2.id'))
-      ->leftJoin('s2.subscriberSegments', 'ssg2', Join::WITH, 'ssg2.status = :statusSubscribed AND sg.id <> ssg2.segment')
-      ->leftJoin('ssg2.segment', 'sg2', Join::WITH, (string)$queryBuilder->expr()->isNull('sg2.deletedAt'))
+      ->leftJoin('s.subscriberSegments', 'ssg', Join::WITH,
+        (string)$queryBuilder->expr()->andX(
+          $queryBuilder->expr()->eq('ssg.subscriber', 's.id'),
+          $queryBuilder->expr()->eq('ssg.status', ':statusSubscribed'),
+          $queryBuilder->expr()->notIn('ssg.segment', $deletedSegmentsQueryBuilder->getDQL())
+        ))
       ->andWhere('s.deletedAt IS NULL')
-      ->andWhere('(ssg.status != :statusSubscribed OR ssg.id IS NULL OR sg.deletedAt IS NOT NULL)')
-      ->andWhere('sg2.id IS NULL')
+      ->andWhere('ssg.id IS NULL')
       ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
