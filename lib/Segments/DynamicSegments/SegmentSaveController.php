@@ -25,11 +25,11 @@ class SegmentSaveController {
     $id = isset($data['id']) ? (int)$data['id'] : null;
     $name = $data['name'] ?? '';
     $description = $data['description'] ?? '';
-    $filterData = $this->filterDataMapper->map($data);
+    $filtersData = $this->filterDataMapper->map($data);
 
     $this->checkSegmentUniqueName($name, $id);
 
-    return $this->segmentsRepository->createOrUpdate($name, $description, SegmentEntity::TYPE_DYNAMIC, $filterData, $id);
+    return $this->segmentsRepository->createOrUpdate($name, $description, SegmentEntity::TYPE_DYNAMIC, $filtersData, $id);
   }
 
   private function checkSegmentUniqueName(string $name, ?int $id): void {
