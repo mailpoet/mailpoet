@@ -66,6 +66,7 @@ class Migrator {
       $output = array_merge(dbDelta($this->$modelMethod()), $output);
     }
     $this->updateNullInUnsubscribeStats();
+    $this->fixScheduledTasksSubscribersTimestampColumns();
     return $output;
   }
 
@@ -589,6 +590,44 @@ class Migrator {
       CHANGE `queue_id` `queue_id` int(11) unsigned NULL;
     ";
     $wpdb->query($query);
+    return true;
+  }
+
+  /**
+   * This method adds updated_at column to scheduled_task_subscribers for users with old MySQL..
+   * Updated_at was added after created_at column and created_at used to have default CURRENT_TIMESTAMP.
+   * Since MySQL versions below 5.6.5 allow only one column with CURRENT_TIMESTAMP as default per table
+   * and db_delta doesn't remove default values we need to perform this change manually..
+   * @return bool
+   */
+  private function fixScheduledTasksSubscribersTimestampColumns() {
+    // skip the migration if the DB version is higher than 3.63.0 or is not set (a new install)
+    if (version_compare($this->settings->get('db_version', '3.63.1'), '3.63.0', '>')) {
+      return false;
+    }
+
+    global $wpdb;
+    $scheduledTasksSubscribersTable = "{$this->prefix}scheduled_task_subscribers";
+    // Remove default CURRENT_TIMESTAMP from created_at
+    $updateCreatedAtQuery = "
+      ALTER TABLE `$scheduledTasksSubscribersTable`
+      CHANGE `created_at` `created_at` timestamp NULL;
+    ";
+    $wpdb->query($updateCreatedAtQuery);
+
+    // Add updated_at column in case it doesn't exist
+    $updatedAtColumnExists = $wpdb->get_results("
+      SELECT COLUMN_NAME
+      FROM INFORMATION_SCHEMA.COLUMNS
+      WHERE table_name = '$scheduledTasksSubscribersTable' AND column_name = 'updated_at';
+     ");
+    if (empty($updatedAtColumnExists)) {
+      $addUpdatedAtQuery = "
+        ALTER TABLE `$scheduledTasksSubscribersTable`
+        ADD `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+      ";
+      $wpdb->query($addUpdatedAtQuery);
+    }
     return true;
   }
 }
