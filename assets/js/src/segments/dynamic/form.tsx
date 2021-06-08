@@ -167,7 +167,7 @@ export const Form: React.FunctionComponent<Props> = ({
               e.preventDefault();
               handleSave(segmentId);
             }}
-            isDisabled={!isFormValid(segment)}
+            isDisabled={!isFormValid(segment.filters)}
           >
             {MailPoet.I18n.t('save')}
           </Button>

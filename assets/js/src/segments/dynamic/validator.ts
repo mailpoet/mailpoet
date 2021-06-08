@@ -11,7 +11,12 @@ const validationMap = {
   [SegmentTypes.WooCommerceSubscription]: validateWooCommerceSubscription,
 };
 
-export function isFormValid(item: AnyFormItem): boolean {
-  if (validationMap[item.segmentType] === undefined) return false;
-  return validationMap[item.segmentType](item);
+export function isFormValid(items: AnyFormItem[]): boolean {
+  if (items.length < 1) return false;
+  const validationResults: boolean[] = items.map((item: AnyFormItem) => {
+    if (validationMap[item.segmentType] === undefined) return false;
+    return validationMap[item.segmentType](item);
+  });
+
+  return validationResults.filter((result) => result === false).length === 0;
 }
