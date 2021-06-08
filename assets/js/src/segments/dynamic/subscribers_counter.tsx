@@ -6,7 +6,7 @@ import { isFormValid } from './validator';
 import { loadCount } from './subscribers_calculator';
 
 import {
-  AnyFormItem,
+  Segment,
 } from './types';
 
 interface SubscriberCount {
@@ -22,13 +22,14 @@ const SubscribersCounter: React.FunctionComponent = () => {
     errors: undefined,
   });
 
-  const segment: AnyFormItem = useSelect(
+  const segment: Segment = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
     []
   );
 
+  const serializedSegment = JSON.stringify(segment);
   useEffect(() => {
-    function load(loadItem: AnyFormItem): void {
+    function load(loadItem: Segment): void {
       setSubscribersCount({
         loading: true,
         count: undefined,
@@ -53,7 +54,7 @@ const SubscribersCounter: React.FunctionComponent = () => {
       });
     }
 
-    if (isFormValid(segment)) {
+    if (isFormValid(segment.filters)) {
       load(segment);
     } else {
       setSubscribersCount({
@@ -61,7 +62,7 @@ const SubscribersCounter: React.FunctionComponent = () => {
         loading: false,
       });
     }
-  }, [segment]);
+  }, [segment, serializedSegment]);
 
   if (subscribersCount.errors) {
     return (
