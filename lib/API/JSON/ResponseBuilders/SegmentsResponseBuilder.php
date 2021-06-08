@@ -26,6 +26,7 @@ class SegmentsResponseBuilder {
 
   public function build(SegmentEntity $segment): array {
     $firstFilter = $segment->getDynamicFilters()->first();
+    $filterData = $firstFilter ? $firstFilter->getFilterData() : null;
     return [
       'id' => (string)$segment->getId(), // (string) for BC
       'name' => $segment->getName(),
@@ -35,7 +36,7 @@ class SegmentsResponseBuilder {
       'updated_at' => $segment->getUpdatedAt()->format(self::DATE_FORMAT),
       'deleted_at' => ($deletedAt = $segment->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'average_engagement_score' => $segment->getAverageEngagementScore(),
-      'filters_connect' => $firstFilter && isset($firstFilter->getFilterData['connect']) ? $firstFilter->getFilterData['connect'] : DynamicSegmentFilterData::CONNECT_TYPE_AND,
+      'filters_connect' => $filterData && $filterData->getParam('connect') ? $filterData->getParam('connect') : DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ];
   }
 
