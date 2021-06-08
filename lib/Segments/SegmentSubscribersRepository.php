@@ -91,9 +91,16 @@ class SegmentSubscribersRepository {
     return (int)$result;
   }
 
-  public function getDynamicSubscribersCount(DynamicSegmentFilterData $filter): int {
+  /**
+   * @param DynamicSegmentFilterData[] $filters
+   * @return int
+   * @throws InvalidStateException
+   */
+  public function getDynamicSubscribersCount(array $filters): int {
     $segment = new SegmentEntity('temporary segment', SegmentEntity::TYPE_DYNAMIC, '');
-    $segment->addDynamicFilter(new DynamicSegmentFilterEntity($segment, $filter));
+    foreach ($filters as $filter) {
+      $segment->addDynamicFilter(new DynamicSegmentFilterEntity($segment, $filter));
+    }
     $queryBuilder = $this->createCountQueryBuilder();
     $queryBuilder = $this->filterSubscribersInDynamicSegment($queryBuilder, $segment, null);
     $statement = $this->executeQuery($queryBuilder);

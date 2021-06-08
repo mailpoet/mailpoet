@@ -16,16 +16,32 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
 
 class FilterDataMapper {
-  public function map(array $data = []): DynamicSegmentFilterData {
-    switch ($this->getSegmentType($data)) {
+  /**
+   * @param array $data
+   * @return DynamicSegmentFilterData[]
+   */
+  public function map(array $data = []): array {
+    $filters = [];
+    if (!isset($data['filters']) || count($data['filters'] ?? []) < 1) {
+      throw new InvalidFilterException('Filters are missing', InvalidFilterException::MISSING_FILTER);
+    }
+    foreach ($data['filters'] as $filter) {
+      $filter['connect'] = $data['filters_connect'] ?? DynamicSegmentFilterData::CONNECT_TYPE_AND;
+      $filters[] = $this->createFilter($filter);
+    }
+    return $filters;
+  }
+
+  private function createFilter(array $filterData): DynamicSegmentFilterData {
+    switch ($this->getSegmentType($filterData)) {
       case DynamicSegmentFilterData::TYPE_USER_ROLE:
-        return $this->createSubscriber($data);
+        return $this->createSubscriber($filterData);
       case DynamicSegmentFilterData::TYPE_EMAIL:
-        return $this->createEmail($data);
+        return $this->createEmail($filterData);
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE:
-        return $this->createWooCommerce($data);
+        return $this->createWooCommerce($filterData);
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION:
-        return $this->createWooCommerceSubscription($data);
+        return $this->createWooCommerceSubscription($filterData);
       default:
         throw new InvalidFilterException('Invalid type', InvalidFilterException::INVALID_TYPE);
     }
@@ -52,6 +68,7 @@ class FilterDataMapper {
         'action' => $data['action'],
         'value' => $data['value'],
         'operator' => $data['operator'] ?? SubscriberSubscribedDate::BEFORE,
+        'connect' => $data['connect'],
       ]);
     }
     if ($data['action'] === MailPoetCustomFields::TYPE) {
@@ -64,6 +81,7 @@ class FilterDataMapper {
         'value' => $data['value'],
         'custom_field_id' => $data['custom_field_id'],
         'custom_field_type' => $data['custom_field_type'],
+        'connect' => $data['connect'],
       ];
       if (!empty($data['date_type'])) $filterData['date_type'] = $data['date_type'];
       if (!empty($data['operator'])) $filterData['operator'] = $data['operator'];
@@ -73,6 +91,8 @@ class FilterDataMapper {
     return new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'wordpressRole' => $data['wordpressRole'],
+      'action' => $data['action'],
+      'connect' => $data['connect'],
     ]);
   }
 
@@ -87,6 +107,7 @@ class FilterDataMapper {
         return new DynamicSegmentFilterData([
           'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
           'action' => $data['action'],
+          'connect' => $data['connect'],
         ]);
     }
     if (empty($data['newsletter_id'])) throw new InvalidFilterException('Missing newsletter id', InvalidFilterException::MISSING_NEWSLETTER_ID);
@@ -94,6 +115,7 @@ class FilterDataMapper {
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => $data['action'],
       'newsletter_id' => $data['newsletter_id'],
+      'connect' => $data['connect'],
     ];
     if (isset($data['link_id'])) {
       $filterData['link_id'] = $data['link_id'];
@@ -113,6 +135,7 @@ class FilterDataMapper {
       'opens' => $data['opens'],
       'days' => $data['days'],
       'operator' => $data['operator'] ?? 'more',
+      'connect' => $data['connect'],
     ];
     return new DynamicSegmentFilterData($filterData);
   }
@@ -125,6 +148,7 @@ class FilterDataMapper {
     $filterData = [
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => $data['action'],
+      'connect' => $data['connect'],
     ];
     if ($data['action'] === WooCommerceCategory::ACTION_CATEGORY) {
       if (!isset($data['category_id'])) throw new InvalidFilterException('Missing category', InvalidFilterException::MISSING_CATEGORY_ID);
@@ -169,6 +193,7 @@ class FilterDataMapper {
     $filterData = [
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION,
       'action' => $data['action'],
+      'connect' => $data['connect'],
     ];
     if ($data['action'] === WooCommerceSubscription::ACTION_HAS_ACTIVE) {
       if (!isset($data['product_id'])) throw new InvalidFilterException('Missing product', InvalidFilterException::MISSING_PRODUCT_ID);
