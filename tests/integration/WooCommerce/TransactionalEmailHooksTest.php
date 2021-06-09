@@ -25,9 +25,8 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
   private $newslettersRepository;
 
   public function _before() {
-    $this->settings = SettingsController::getInstance();
+    $this->settings = $this->diContainer->get(SettingsController::class);
     $this->originalWcSettings = $this->settings->get('woocommerce');
-    $this->newslettersRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
   }
 
   public function testItSynchronizesEmailSettingsToWooCommerce() {
@@ -161,7 +160,8 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     $transactionalEmails = new TransactionalEmailHooks(
       $wp,
       $this->settings,
-      $renderer
+      $renderer,
+      $this->diContainer->get(NewslettersRepository::class)
     );
     $transactionalEmails->useTemplateForWoocommerceEmails();
     expect($addedActions)->count(1);
