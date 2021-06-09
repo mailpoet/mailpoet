@@ -110,6 +110,7 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'description'], $segmentEditedDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect('Editor', '[data-automation-id="segment-wordpress-role"]');
+    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
@@ -135,6 +136,7 @@ class ManageSegmentsCest {
 
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Move to trash');
     $i->waitForText('1 segment was moved to the trash.');
+    $i->wait(1);
     $i->waitForElementClickable('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
     $i->waitForText($segmentEditedTitle);
