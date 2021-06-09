@@ -9,6 +9,8 @@ use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class UserRole implements Filter {
+  const TYPE = 'wordpressRole';
+
   /** @var EntityManager */
   private $entityManager;
 
