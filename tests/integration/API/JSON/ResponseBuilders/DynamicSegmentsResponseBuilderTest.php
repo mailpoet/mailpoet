@@ -7,6 +7,7 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 
 class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
   public function _before() {
@@ -28,11 +29,15 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     expect($response['name'])->equals($name);
     expect($response['description'])->equals($description);
     expect($response['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
-    expect($response['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
-    expect($response['wordpressRole'])->equals('editor');
     expect($response)->hasKey('created_at');
     expect($response)->hasKey('updated_at');
     expect($response)->hasKey('deleted_at');
+    expect($response['filters_connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+    expect($response['filters'])->array();
+    expect($response['filters'])->count(1);
+    expect($response['filters'][0]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    expect($response['filters'][0]['wordpressRole'])->equals('editor');
+    expect($response['filters'][0]['action'])->equals(UserRole::TYPE);
   }
 
   public function testItBuildsListingsResponse() {
@@ -69,6 +74,8 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     $dynamicFilter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData([
       'wordpressRole' => 'editor',
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => UserRole::TYPE,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]));
     $segment->getDynamicFilters()->add($dynamicFilter);
     $this->entityManager->persist($segment);
