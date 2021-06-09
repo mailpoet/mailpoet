@@ -40,9 +40,7 @@ class SettingsArchivePageCest {
     $segment3 = $segmentFactory->withName('SentNewsletters')->create();
     $newsletterFactory = new Newsletter();
     $newsletterFactory->withSubject('SentNewsletter')->withSentStatus()->withSendingQueue()->withSegments([$segment3])->create();
-    $newsletterFactory = new Newsletter();
     $newsletterFactory->withSubject('DraftNewsletter')->withDraftStatus()->withScheduledQueue()->withSegments([$segment3])->create();
-    $newsletterFactory = new Newsletter();
     $newsletterFactory->withSubject('ScheduledNewsletter')->withScheduledStatus()->withScheduledQueue()->withSegments([$segment3])->create();
     $pageTitle3 = 'SentNewsletterArchive';
     $pageContent3 = "[mailpoet_archive segments=\"{$segment3->getId()}\"]";
