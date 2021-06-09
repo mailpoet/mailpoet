@@ -62,9 +62,11 @@ const SubscribersCounter: React.FunctionComponent = () => {
 
   if (subscribersCount.errors) {
     return (
-      <span className="mailpoet-form-error-message">
-        {MailPoet.I18n.t('dynamicSegmentSizeCalculatingTimeout')}
-      </span>
+      <div className="mailpoet-form-field">
+        <span className="mailpoet-form-error-message">
+          {MailPoet.I18n.t('dynamicSegmentSizeCalculatingTimeout')}
+        </span>
+      </div>
     );
   }
 
@@ -76,16 +78,20 @@ const SubscribersCounter: React.FunctionComponent = () => {
 
   if (subscribersCount.loading) {
     return (
-      <span className="mailpoet-form-notice-message">
-        {MailPoet.I18n.t('dynamicSegmentSizeIsCalculated')}
-      </span>
+      <div className="mailpoet-form-field">
+        <span className="mailpoet-form-notice-message">
+          {MailPoet.I18n.t('dynamicSegmentSizeIsCalculated')}
+        </span>
+      </div>
     );
   }
 
   return (
-    <span className="mailpoet-form-notice-message">
-      {(MailPoet.I18n.t('dynamicSegmentSize')).replace('%$1d', subscribersCount.count.toLocaleString())}
-    </span>
+    <div className="mailpoet-form-field">
+      <span className="mailpoet-form-notice-message">
+        {(MailPoet.I18n.t('dynamicSegmentSize')).replace('%$1d', subscribersCount.count.toLocaleString())}
+      </span>
+    </div>
   );
 };
 

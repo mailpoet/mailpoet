@@ -23,6 +23,7 @@ import {
   Segment,
   SegmentTypes,
   SubscriberActionTypes,
+  SubscriberCount,
 } from './types';
 
 interface Props {
@@ -45,6 +46,11 @@ export const Form: React.FunctionComponent<Props> = ({
   const filterRows: FilterRow[] = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').findFiltersValueForSegment(segment),
     [segment]
+  );
+
+  const subscriberCount: SubscriberCount = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSubscriberCount(),
+    []
   );
 
   const { updateSegment, updateSegmentFilter, handleSave } = useDispatch('mailpoet-dynamic-segments-form');
@@ -158,7 +164,9 @@ export const Form: React.FunctionComponent<Props> = ({
             {MailPoet.I18n.t('addCondition')}
           </Button>
         </div>
-        <SubscribersCounter />
+        <div className="mailpoet-segments-counter-section">
+          <SubscribersCounter />
+        </div>
         <div className="mailpoet-form-actions">
           <Button
             type="submit"
@@ -166,7 +174,7 @@ export const Form: React.FunctionComponent<Props> = ({
               e.preventDefault();
               handleSave(segmentId);
             }}
-            isDisabled={!isFormValid(segment.filters)}
+            isDisabled={!isFormValid(segment.filters) || subscriberCount.count === undefined}
           >
             {MailPoet.I18n.t('save')}
           </Button>
