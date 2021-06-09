@@ -1,36 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import MailPoet from 'mailpoet';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 
 import { isFormValid } from './validator';
 import { loadCount } from './subscribers_calculator';
 
 import {
   Segment,
+  SubscriberCount,
 } from './types';
 
-interface SubscriberCount {
-  count?: number;
-  loading?: boolean;
-  errors?: string[];
-}
-
 const SubscribersCounter: React.FunctionComponent = () => {
-  const [subscribersCount, setSubscribersCount] = useState<SubscriberCount>({
-    loading: false,
-    count: undefined,
-    errors: undefined,
-  });
-
   const segment: Segment = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
     []
   );
 
+  const subscribersCount: SubscriberCount = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getSubscriberCount(),
+    []
+  );
+
+  const { updateSubscriberCount } = useDispatch('mailpoet-dynamic-segments-form');
+
   const serializedSegment = JSON.stringify(segment);
   useEffect(() => {
     function load(loadItem: Segment): void {
-      setSubscribersCount({
+      updateSubscriberCount({
         loading: true,
         count: undefined,
         errors: undefined,
@@ -43,26 +39,26 @@ const SubscribersCounter: React.FunctionComponent = () => {
           finished.count = response.count;
           finished.errors = response.errors;
         }
-        setSubscribersCount(finished);
+        updateSubscriberCount(finished);
       }, (errorResponse) => {
         const finished = {} as SubscriberCount;
         const errors = errorResponse.errors.map((error) => error.message);
         finished.loading = false;
         finished.count = undefined;
         finished.errors = errors;
-        setSubscribersCount(finished);
+        updateSubscriberCount(finished);
       });
     }
 
     if (isFormValid(segment.filters)) {
       load(segment);
     } else {
-      setSubscribersCount({
+      updateSubscriberCount({
         count: undefined,
         loading: false,
       });
     }
-  }, [segment, serializedSegment]);
+  }, [segment, serializedSegment, updateSubscriberCount]);
 
   if (subscribersCount.errors) {
     return (
