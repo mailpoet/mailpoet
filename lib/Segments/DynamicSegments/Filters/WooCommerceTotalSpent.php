@@ -4,6 +4,7 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -27,6 +28,7 @@ class WooCommerceTotalSpent implements Filter {
     $days = $filterData->getParam('total_spent_days');
 
     $date = Carbon::now()->subDays($days);
+    $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
 
     $queryBuilder->innerJoin(
       $subscribersTable,
@@ -37,25 +39,25 @@ class WooCommerceTotalSpent implements Filter {
       'postmeta',
       $wpdb->posts,
       'posts',
-      'posts.ID = postmeta.post_id AND posts.post_date >= :date' . $filter->getId() . ' AND postmeta.post_id NOT IN ( SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed"))'
+      'posts.ID = postmeta.post_id AND posts.post_date >= :date' . $parameterSuffix . ' AND postmeta.post_id NOT IN ( SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed"))'
     )->leftJoin(
       'posts',
       $wpdb->postmeta,
       'order_total',
       "posts.ID = order_total.post_id AND order_total.meta_key = '_order_total'"
     )->setParameter(
-      'date' . $filter->getId(), $date->toDateTimeString()
+      'date' . $parameterSuffix, $date->toDateTimeString()
     )->groupBy(
       'inner_subscriber_id'
     );
 
     if ($type === '>') {
-      $queryBuilder->having('SUM(order_total.meta_value) > :amount' . $filter->getId());
+      $queryBuilder->having('SUM(order_total.meta_value) > :amount' . $parameterSuffix);
     } elseif ($type === '<') {
-      $queryBuilder->having('SUM(order_total.meta_value) < :amount' . $filter->getId());
+      $queryBuilder->having('SUM(order_total.meta_value) < :amount' . $parameterSuffix);
     }
 
-    $queryBuilder->setParameter('amount' . $filter->getId(), $amount);
+    $queryBuilder->setParameter('amount' . $parameterSuffix, $amount);
 
     return $queryBuilder;
   }

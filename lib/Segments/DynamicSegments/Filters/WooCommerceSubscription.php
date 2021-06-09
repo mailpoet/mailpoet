@@ -4,6 +4,7 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -22,6 +23,7 @@ class WooCommerceSubscription implements Filter {
     $filterData = $filter->getFilterData();
     $productId = (int)$filterData->getParam('product_id');
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $parameterSuffix = $filter->getId() ?: Security::generateRandomString();
     return $queryBuilder->innerJoin(
       $subscribersTable,
       $wpdb->postmeta,
@@ -41,7 +43,7 @@ class WooCommerceSubscription implements Filter {
       'items',
       $wpdb->prefix . 'woocommerce_order_itemmeta',
       'itemmeta',
-      "itemmeta.order_item_id=items.order_item_id AND itemmeta.meta_key='_product_id' AND itemmeta.meta_value=:product" . $filter->getId()
-    )->setParameter('product' . $filter->getId(), $productId);
+      "itemmeta.order_item_id=items.order_item_id AND itemmeta.meta_key='_product_id' AND itemmeta.meta_value=:product" . $parameterSuffix
+    )->setParameter('product' . $parameterSuffix, $productId);
   }
 }

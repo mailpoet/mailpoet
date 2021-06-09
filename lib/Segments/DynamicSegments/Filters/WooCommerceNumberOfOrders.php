@@ -4,6 +4,7 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -25,6 +26,7 @@ class WooCommerceNumberOfOrders implements Filter {
     $type = $filterData->getParam('number_of_orders_type');
     $count = $filterData->getParam('number_of_orders_count');
     $days = $filterData->getParam('number_of_orders_days');
+    $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
 
     $date = Carbon::now()->subDays($days);
 
@@ -37,22 +39,22 @@ class WooCommerceNumberOfOrders implements Filter {
       'postmeta',
       $wpdb->posts,
       'posts',
-      'posts.ID = postmeta.post_id AND posts.post_date >= :date' . $filter->getId() . ' AND postmeta.post_id NOT IN ( SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed"))'
+      'posts.ID = postmeta.post_id AND posts.post_date >= :date' . $parameterSuffix . ' AND postmeta.post_id NOT IN ( SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed"))'
     )->setParameter(
-      'date' . $filter->getId(), $date->toDateTimeString()
+      'date' . $parameterSuffix, $date->toDateTimeString()
     )->groupBy(
       'inner_subscriber_id'
     );
 
     if ($type === '=') {
-      $queryBuilder->having('COUNT(posts.ID) = :count' . $filter->getId());
+      $queryBuilder->having('COUNT(posts.ID) = :count' . $parameterSuffix);
     } elseif ($type === '>') {
-      $queryBuilder->having('COUNT(posts.ID) > :count' . $filter->getId());
+      $queryBuilder->having('COUNT(posts.ID) > :count' . $parameterSuffix);
     } elseif ($type === '<') {
-      $queryBuilder->having('COUNT(posts.ID) < :count' . $filter->getId());
+      $queryBuilder->having('COUNT(posts.ID) < :count' . $parameterSuffix);
     }
 
-    $queryBuilder->setParameter('count' . $filter->getId(), $count);
+    $queryBuilder->setParameter('count' . $parameterSuffix, $count);
 
     return $queryBuilder;
   }
