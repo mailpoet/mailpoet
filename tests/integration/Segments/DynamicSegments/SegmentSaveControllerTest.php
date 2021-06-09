@@ -6,6 +6,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
+use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 
 class SegmentSaveControllerTest extends \MailPoetTest {
   /** @var SegmentSaveController */
@@ -21,8 +22,11 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $segmentData = [
       'name' => 'Test Segment',
       'description' => 'Description',
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-      'wordpressRole' => 'editor',
+      'filters' => [[
+        'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+        'wordpressRole' => 'editor',
+        'action' => UserRole::TYPE,
+      ]],
     ];
 
     $segment = $this->saveController->save($segmentData);
@@ -35,6 +39,8 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     expect($filter->getFilterData()->getData())->equals([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'wordpressRole' => 'editor',
+      'action' => UserRole::TYPE,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
   }
 
@@ -44,8 +50,11 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $segmentData = [
       'name' => $name,
       'description' => 'Description',
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-      'wordpressRole' => 'editor',
+      'filters' => [[
+        'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+        'wordpressRole' => 'editor',
+        'action' => UserRole::TYPE,
+      ]],
     ];
     $this->expectException(\InvalidArgumentException::class);
     $this->expectExceptionMessage("Segment with name: 'Test name' already exists.");
@@ -58,8 +67,11 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $segmentData = [
       'name' => $name,
       'description' => 'Description',
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-      'wordpressRole' => null,
+      'filters' => [[
+        'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+        'wordpressRole' => null,
+        'action' => UserRole::TYPE,
+      ]],
     ];
     $this->expectException(InvalidFilterException::class);
     $this->saveController->save($segmentData);
