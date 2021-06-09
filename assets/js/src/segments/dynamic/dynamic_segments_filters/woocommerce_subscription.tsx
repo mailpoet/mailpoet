@@ -57,6 +57,7 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = ({ 
     <div>
       <Select
         dimension="small"
+        isFullWidth
         placeholder={MailPoet.I18n.t('selectWooSubscription')}
         automationId="segment-woo-subscription-action"
         options={productOptions}
