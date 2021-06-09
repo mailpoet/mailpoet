@@ -13,6 +13,7 @@ import {
   SegmentFormDataWindow,
   SegmentTypes,
   SegmentConnectTypes,
+  SubscriberActionTypes,
 } from '../types';
 import { getAvailableFilters } from './all_available_filters';
 
@@ -33,7 +34,10 @@ export const createStore = (): void => {
     segment: {
       filters_connect: SegmentConnectTypes.AND,
       filters: [
-        { segmentType: SegmentTypes.WordPressRole },
+        {
+          segmentType: SegmentTypes.WordPressRole,
+          action: SubscriberActionTypes.WORDPRESS_ROLE,
+        },
       ],
     },
     errors: [],
