@@ -12,9 +12,7 @@ class ExportSubscribersCest {
     $segment = $segmentFactory->withName($segmentName)->create();
     $subscriberFactory = new Subscriber();
     $subscriberFactory->withSegments([$segment])->withEmail('one@fake.fake')->create();
-    $subscriberFactory = new Subscriber();
     $subscriberFactory->withSegments([$segment])->withEmail('two@fake.fake')->create();
-    $subscriberFactory = new Subscriber();
     $subscriberFactory->withSegments([$segment])->withEmail('three@fake.fake')->create();
     $i->wantTo('Export a list of subscribers');
     $i->login();
