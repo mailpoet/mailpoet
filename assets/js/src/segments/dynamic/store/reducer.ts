@@ -4,8 +4,9 @@ import {
   ActionType,
   SetSegmentActionType,
   SetErrorsActionType,
-  StateType,
   SetSegmentFilerActionType,
+  SetSubscriberCountActionType,
+  StateType,
 } from '../types';
 
 function setSegment(state: StateType, action: SetSegmentActionType): StateType {
@@ -39,6 +40,14 @@ function updateSegmentFilter(state: StateType, action: SetSegmentFilerActionType
   };
 }
 
+function updateSubscriberCount(state: StateType, action: SetSubscriberCountActionType): StateType {
+  const oldCount = state.subscriberCount;
+  return {
+    ...state,
+    subscriberCount: assign(oldCount, action.subscriberCount),
+  };
+}
+
 export const createReducer = (defaultState: StateType) => (
   state: StateType = defaultState,
   action: ActionType
@@ -49,6 +58,8 @@ export const createReducer = (defaultState: StateType) => (
     case Actions.UPDATE_SEGMENT: return updateSegment(state, action as SetSegmentActionType);
     case Actions.UPDATE_SEGMENT_FILTER:
       return updateSegmentFilter(state, action as SetSegmentFilerActionType);
+    case Actions.UPDATE_SUBSCRIBER_COUNT:
+      return updateSubscriberCount(state, action as SetSubscriberCountActionType);
     default:
       return state;
   }

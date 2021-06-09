@@ -98,6 +98,12 @@ export type AnyFormItem =
   WooCommerceSubscriptionFormItem |
   EmailFormItem;
 
+export interface SubscriberCount {
+  count?: number;
+  loading?: boolean;
+  errors?: string[];
+}
+
 export type OnFilterChange = (value: AnyFormItem, filterIndex: number) => void;
 
 export type WindowEditableRoles = {
@@ -163,6 +169,7 @@ export interface StateType {
   wooCountries: WindowWooCommerceCountries;
   customFieldsList: WindowCustomFields;
   segment: Segment,
+  subscriberCount: SubscriberCount,
   errors: string[],
   allAvailableFilters: GroupFilterValue[],
 }
@@ -172,6 +179,7 @@ export enum Actions {
   SET_ERRORS = 'SET_ERRORS',
   UPDATE_SEGMENT = 'UPDATE_SEGMENT',
   UPDATE_SEGMENT_FILTER = 'UPDATE_SEGMENT_FILTER',
+  UPDATE_SUBSCRIBER_COUNT = 'UPDATE_SUBSCRIBER_COUNT',
 }
 
 export interface ActionType {
@@ -185,6 +193,10 @@ export interface SetSegmentActionType extends ActionType {
 export interface SetSegmentFilerActionType extends ActionType {
   filter: AnyFormItem;
   filterIndex: number;
+}
+
+export interface SetSubscriberCountActionType extends ActionType {
+  subscriberCount: SubscriberCount;
 }
 
 export interface SetErrorsActionType extends ActionType {

@@ -5,7 +5,7 @@ import {
   GroupFilterValue,
   Segment,
   StateType,
-  SubscriberActionTypes,
+  SubscriberActionTypes, SubscriberCount,
   WindowCustomFields,
   WindowEditableRoles,
   WindowNewslettersList,
@@ -45,6 +45,9 @@ export const getCustomFieldsList = (state: StateType): WindowCustomFields => (
 );
 export const getSegment = (state: StateType): Segment => (
   state.segment
+);
+export const getSubscriberCount = (state: StateType): SubscriberCount => (
+  state.subscriberCount
 );
 export const getSegmentFilter = (state: StateType, index: number): AnyFormItem | undefined => {
   let found: AnyFormItem | undefined;

@@ -40,6 +40,9 @@ export const createStore = (): void => {
         },
       ],
     },
+    subscriberCount: {
+      loading: false,
+    },
     errors: [],
     allAvailableFilters: getAvailableFilters(window.mailpoet_can_use_woocommerce_subscriptions),
   };

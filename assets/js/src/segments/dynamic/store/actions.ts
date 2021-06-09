@@ -8,6 +8,8 @@ import {
   SetSegmentActionType,
   SetErrorsActionType,
   SetSegmentFilerActionType,
+  SubscriberCount,
+  SetSubscriberCountActionType,
 } from '../types';
 
 export function setSegment(segment: AnyFormItem): SetSegmentActionType {
@@ -63,6 +65,13 @@ export function updateSegmentFilterFromEvent(
       [propertyName]: event.target.value,
     },
     filterIndex,
+  };
+}
+
+export function updateSubscriberCount(data: SubscriberCount): SetSubscriberCountActionType {
+  return {
+    type: Actions.UPDATE_SUBSCRIBER_COUNT,
+    subscriberCount: data,
   };
 }
 
