@@ -106,7 +106,7 @@ export const Form: React.FunctionComponent<Props> = ({
           </Heading>
           <ConditionType />
           {Array.isArray(filterRows) && filterRows.map((filterRow, index) => (
-            <>
+            <React.Fragment key={filterRow.index}>
               <Grid.ThreeColumns>
                 {filterRows.length > 1 && (
                   <a
@@ -143,7 +143,7 @@ export const Form: React.FunctionComponent<Props> = ({
                 )}
               </Grid.ThreeColumns>
               <FilterSeparator index={index} />
-            </>
+            </React.Fragment>
           ))}
           <Button
             type="button"
