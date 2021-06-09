@@ -7,6 +7,7 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -24,7 +25,8 @@ class MailPoetCustomFields implements Filter {
     $filterData = $filter->getFilterData();
     $customFieldType = $filterData->getParam('custom_field_type');
     $customFieldId = $filterData->getParam('custom_field_id');
-    $customFieldIdParam = ':customFieldId' . $filter->getId();
+    $parameterSuffix = (string)$filter->getId() ?? Security::generateRandomString();
+    $customFieldIdParam = ':customFieldId' . $parameterSuffix;
 
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscribersCustomFieldTable = $this->entityManager->getClassMetadata(SubscriberCustomFieldEntity::class)->getTableName();
@@ -38,29 +40,29 @@ class MailPoetCustomFields implements Filter {
     $queryBuilder->andWhere("subscribers_custom_field.custom_field_id = $customFieldIdParam");
     $queryBuilder->setParameter($customFieldIdParam, $customFieldId);
 
+    $valueParam = ':value' . $parameterSuffix;
     if (
       ($customFieldType === CustomFieldEntity::TYPE_TEXT)
       || ($customFieldType === CustomFieldEntity::TYPE_TEXTAREA)
       || ($customFieldType === CustomFieldEntity::TYPE_RADIO)
       || ($customFieldType === CustomFieldEntity::TYPE_SELECT)
     ) {
-      $queryBuilder = $this->applyEquality($queryBuilder, $filter);
+      $queryBuilder = $this->applyEquality($queryBuilder, $filter, $valueParam);
     }
     if ($customFieldType === CustomFieldEntity::TYPE_CHECKBOX) {
       $queryBuilder = $this->applyForCheckbox($queryBuilder, $filter);
     }
     if ($customFieldType === CustomFieldEntity::TYPE_DATE) {
-      $queryBuilder = $this->applyForDate($queryBuilder, $filter);
+      $queryBuilder = $this->applyForDate($queryBuilder, $filter, $valueParam);
     }
     return $queryBuilder;
   }
 
-  private function applyForDate(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
+  private function applyForDate(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter, string $valueParam): QueryBuilder {
     $filterData = $filter->getFilterData();
     $dateType = $filterData->getParam('date_type');
     $value = $filterData->getParam('value');
     $operator = $filterData->getParam('operator');
-    $valueParam = ':value' . $filter->getId();
     $queryBuilder->setParameter($valueParam, $value);
     if ($dateType === 'month') {
       return $this->applyForDateMonth($queryBuilder, $valueParam);
@@ -111,12 +113,11 @@ class MailPoetCustomFields implements Filter {
     return $queryBuilder;
   }
 
-  private function applyEquality(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
+  private function applyEquality(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter, string $valueParam): QueryBuilder {
     $filterData = $filter->getFilterData();
 
     $operator = $filterData->getParam('operator');
     $value = $filterData->getParam('value');
-    $valueParam = ':value' . $filter->getId();
 
     if ($operator === 'equals') {
       $queryBuilder->andWhere("subscribers_custom_field.value = $valueParam");

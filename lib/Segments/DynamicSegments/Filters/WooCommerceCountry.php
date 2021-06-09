@@ -4,6 +4,7 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -21,7 +22,7 @@ class WooCommerceCountry implements Filter {
     global $wpdb;
     $filterData = $filter->getFilterData();
     $countryCode = (string)$filterData->getParam('country_code');
-    $countryFilterParam = 'countryCode' . $filter->getId();
+    $countryFilterParam = 'countryCode' . $filter->getId() ?? Security::generateRandomString();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $queryBuilder->innerJoin(
       $subscribersTable,
