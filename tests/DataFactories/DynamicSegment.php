@@ -67,7 +67,9 @@ class DynamicSegment extends Segment {
     if (empty($this->filterData['segmentType'])) {
       $this->withUserRoleFilter('editor');
     }
-    $segment = $this->saveController->save(array_merge($this->data, $this->filterData));
+    $data = $this->data;
+    $data['filters'][] = $this->filterData;
+    $segment = $this->saveController->save($data);
     if (($this->data['deleted_at'] ?? null) instanceof \DateTimeInterface) {
       $segment->setDeletedAt($this->data['deleted_at']);
       $this->entityManager->flush();
