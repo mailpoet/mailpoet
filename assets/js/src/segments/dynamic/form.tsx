@@ -141,8 +141,7 @@ export const Form: React.FunctionComponent<Props> = ({
           ))}
           <Button
             type="button"
-            dimension="small"
-            variant="link"
+            variant="tertiary"
             iconStart={plusIcon}
             onClick={(e): void => {
               e.preventDefault();
