@@ -73,6 +73,8 @@ class TransactionalEmailHooks {
     }
     $newsletter = $this->newsletterRepository->findOneById($this->settings->get(TransactionalEmails::SETTING_EMAIL_ID));
     if (!$newsletter) {
+      // the newsletter should always be present in the database, if it s not we shouldn't keep using this feature
+      // we need to recreate the newsletter and turn off the feature
       $this->transactionalEmails->init();
       $this->settings->set('woocommerce.use_mailpoet_editor', false);
     }
