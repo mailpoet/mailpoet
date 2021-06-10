@@ -110,6 +110,23 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     expect($this->wp->getOption('woocommerce_email_text_color'))->equals('#111111');
   }
 
+  public function testItDoesntReplaceWoocommerceEmailStylesIfEmailIsNotSet() {
+    $this->settings->set(TransactionalEmails::SETTING_EMAIL_ID, null);
+    // Set woo options
+    $this->wp->updateOption('woocommerce_email_background_color', 'white');
+    $this->wp->updateOption('woocommerce_email_base_color', 'red');
+    $this->wp->updateOption('woocommerce_email_body_background_color', 'blue');
+    $this->wp->updateOption('woocommerce_email_text_color', 'black');
+
+    $transactionalEmails = $this->diContainer->get(TransactionalEmailHooks::class);
+    $transactionalEmails->overrideStylesForWooEmails();
+
+    expect($this->wp->getOption('woocommerce_email_background_color'))->equals('white');
+    expect($this->wp->getOption('woocommerce_email_base_color'))->equals('red');
+    expect($this->wp->getOption('woocommerce_email_body_background_color'))->equals('blue');
+    expect($this->wp->getOption('woocommerce_email_text_color'))->equals('black');
+  }
+
   public function testUseTemplateForWCEmails() {
     $addedActions = [];
     $removedActions = [];
