@@ -107,11 +107,12 @@ export const Form: React.FunctionComponent<Props> = ({
           <ConditionType />
           {Array.isArray(filterRows) && filterRows.map((filterRow, index) => (
             <React.Fragment key={filterRow.index}>
-              <Grid.ThreeColumns>
+              <Grid.ThreeColumns automationId={`filter-row-${index}`}>
                 {filterRows.length > 1 && (
                   <a
                     href={undefined}
                     className="mailpoet-form-segment-delete"
+                    data-automation-id="delete-filter-row"
                     onClick={(e) => {
                       e.preventDefault();
                       const filters = segment.filters;
