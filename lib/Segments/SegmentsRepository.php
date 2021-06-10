@@ -108,9 +108,11 @@ class SegmentsRepository extends Repository {
       $this->persist($segment);
     }
 
+    // We want to remove redundant filters before update
     while ($segment->getDynamicFilters()->count() > count($filtersData)) {
-      $segment->getDynamicFilters()->removeElement($segment->getDynamicFilters()->last());
-      $this->entityManager->remove($segment->getDynamicFilters()->last());
+      $filterEntity = $segment->getDynamicFilters()->last();
+      $segment->getDynamicFilters()->removeElement($filterEntity);
+      $this->entityManager->remove($filterEntity);
     }
     foreach ($filtersData as $key => $filterData) {
       if ($filterData instanceof DynamicSegmentFilterData) {
