@@ -377,11 +377,9 @@ class Initializer {
   private function setupWoocommerceTransactionalEmails() {
     $wcEnabled = $this->wcHelper->isWooCommerceActive();
     $optInEnabled = $this->settings->get('woocommerce.use_mailpoet_editor', false);
-    if ($wcEnabled) {
-      $this->wcTransactionalEmails->enableEmailSettingsSyncToWooCommerce();
-      if ($optInEnabled) {
-        $this->wcTransactionalEmails->useTemplateForWoocommerceEmails();
-      }
+    if ($wcEnabled && $optInEnabled) {
+      $this->wcTransactionalEmails->overrideStylesForWooEmails();
+      $this->wcTransactionalEmails->useTemplateForWoocommerceEmails();
     }
   }
 }

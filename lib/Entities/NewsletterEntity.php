@@ -459,4 +459,12 @@ class NewsletterEntity {
     $criteria->where($expr->neq('countToProcess', 0));
     return $this->queues->matching($criteria);
   }
+
+  public function getGlobalStyle(string $category, string $style): ?string {
+    $body = $this->getBody();
+    if ($body === null) {
+      return null;
+    }
+    return $body['globalStyles'][$category][$style] ?? null;
+  }
 }
