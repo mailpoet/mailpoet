@@ -69,6 +69,10 @@ class TransactionalEmailHooks {
   }
 
   public function overrideStylesForWooEmails() {
+    // Don't override anything if woo email template is not set
+    if (empty($this->settings->get(TransactionalEmails::SETTING_EMAIL_ID))) {
+      return;
+    }
     $this->wp->addAction('option_woocommerce_email_background_color', function($value) {
       $newsletter = $this->getNewsletter();
       return $newsletter->getGlobalStyle('body', 'backgroundColor') ?? $value;
