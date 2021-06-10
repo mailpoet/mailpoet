@@ -22,7 +22,7 @@ const ConditionType: React.FunctionComponent = () => {
   return (
     <>
       <div>
-        <label className="mailpoet-form-radio">
+        <label className="mailpoet-form-radio" data-automation-id="dynamic-segment-condition-type-and">
           <input
             type="radio"
             value={SegmentConnectTypes.AND}
@@ -40,7 +40,7 @@ const ConditionType: React.FunctionComponent = () => {
             )}
           </span>
         </label>
-        <label className="mailpoet-form-radio">
+        <label className="mailpoet-form-radio" data-automation-id="dynamic-segment-condition-type-or">
           <input
             type="radio"
             value={SegmentConnectTypes.OR}
