@@ -4,6 +4,7 @@ namespace MailPoet\Test\DataFactories;
 
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\SegmentSaveController;
 
 class DynamicSegment extends Segment {
@@ -21,6 +22,7 @@ class DynamicSegment extends Segment {
   public function withUserRoleFilter($role) {
     $this->filterData['segmentType'] = 'userRole';
     $this->filterData['wordpressRole'] = $role;
+    $this->filterData['action'] = UserRole::TYPE;
     return $this;
   }
 
