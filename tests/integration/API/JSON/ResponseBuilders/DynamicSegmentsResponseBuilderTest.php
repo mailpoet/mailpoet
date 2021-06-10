@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\API\JSON\ResponseBuilders;
 
@@ -19,6 +19,7 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     $name = 'Response Listings Builder Test';
     $description = 'Testing description';
     $segment = $this->createDynamicSegmentEntity($name, $description);
+    $this->addDynamicFilter($segment, 'editor');
     $this->entityManager->flush();
 
     /** @var DynamicSegmentsResponseBuilder $responseBuilder */
@@ -40,6 +41,38 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     expect($response['filters'][0]['action'])->equals(UserRole::TYPE);
   }
 
+  public function testItBuildsGetResponseWithTwoFilters() {
+    $name = 'Response Listings Builder Test';
+    $description = 'Testing description';
+    $segment = $this->createDynamicSegmentEntity($name, $description);
+    $this->addDynamicFilter($segment, 'editor');
+    $this->addDynamicFilter($segment, 'administrator');
+    $this->entityManager->flush();
+
+    /** @var DynamicSegmentsResponseBuilder $responseBuilder */
+    $responseBuilder = $this->diContainer->get(DynamicSegmentsResponseBuilder::class);
+    $response = $responseBuilder->build($segment);
+    expect($response)->array();
+    expect($response['id'])->equals($segment->getId());
+    expect($response['name'])->equals($name);
+    expect($response['description'])->equals($description);
+    expect($response['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
+    expect($response)->hasKey('created_at');
+    expect($response)->hasKey('updated_at');
+    expect($response)->hasKey('deleted_at');
+    expect($response['filters_connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+    expect($response['filters'])->array();
+    expect($response['filters'])->count(2);
+    expect($response['filters'][0]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    expect($response['filters'][0]['wordpressRole'])->equals('editor');
+    expect($response['filters'][0]['action'])->equals(UserRole::TYPE);
+    expect($response['filters'][0]['connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+    expect($response['filters'][1]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    expect($response['filters'][1]['wordpressRole'])->equals('administrator');
+    expect($response['filters'][1]['action'])->equals(UserRole::TYPE);
+    expect($response['filters'][1]['connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+  }
+
   public function testItBuildsListingsResponse() {
     $name = 'Response Listings Builder Test';
     $description = 'Testing description';
@@ -53,6 +86,7 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     assert($wpUserSubscriber instanceof SubscriberEntity);
     $wpUserSubscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $segment = $this->createDynamicSegmentEntity($name, $description);
+    $this->addDynamicFilter($segment, 'editor');
     $this->entityManager->flush();
 
     /** @var DynamicSegmentsResponseBuilder $responseBuilder */
@@ -71,14 +105,18 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
 
   private function createDynamicSegmentEntity(string $name, string $description): SegmentEntity {
     $segment = new SegmentEntity($name, SegmentEntity::TYPE_DYNAMIC, $description);
+    $this->entityManager->persist($segment);
+    return $segment;
+  }
+
+  private function addDynamicFilter(SegmentEntity $segment, string $wordpressRole): SegmentEntity {
     $dynamicFilter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData([
-      'wordpressRole' => 'editor',
+      'wordpressRole' => $wordpressRole,
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => UserRole::TYPE,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]));
     $segment->getDynamicFilters()->add($dynamicFilter);
-    $this->entityManager->persist($segment);
     $this->entityManager->persist($dynamicFilter);
     return $segment;
   }
