@@ -105,12 +105,13 @@ class ManageSegmentsCest {
     $i->wantTo('Edit existing segment');
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementNotVisible('.mailpoet_form_loading');
-    $i->clearField('#field_name');
+    $i->clearField(['name' => 'name']);
+    $i->clearField(['name' => 'description']);
+    $i->wait(1);
     $i->fillField(['name' => 'name'], $segmentEditedTitle);
     $i->fillField(['name' => 'description'], $segmentEditedDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect('Editor', '[data-automation-id="segment-wordpress-role"]');
-    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
