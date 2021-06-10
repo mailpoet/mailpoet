@@ -12,6 +12,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WooCommerce\TransactionalEmailHooks;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -45,6 +46,9 @@ class NewsletterEditor {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var TransactionalEmailHooks */
+  private $wooEmailHooks;
+
   public function __construct(
     PageRenderer $pageRenderer,
     SettingsController $settings,
@@ -54,7 +58,8 @@ class NewsletterEditor {
     TransactionalEmails $wcTransactionalEmails,
     ShortcodesHelper $shortcodesHelper,
     ServicesChecker $servicesChecker,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    TransactionalEmailHooks $wooEmailHooks
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->settings = $settings;
@@ -65,6 +70,7 @@ class NewsletterEditor {
     $this->servicesChecker = $servicesChecker;
     $this->shortcodesHelper = $shortcodesHelper;
     $this->subscribersRepository = $subscribersRepository;
+    $this->wooEmailHooks = $wooEmailHooks;
   }
 
   public function render() {
@@ -88,6 +94,10 @@ class NewsletterEditor {
     $subscriberData = $subscriber ? $this->formatSubscriber($subscriber) : [];
     $woocommerceData = [];
     if ($this->woocommerceHelper->isWooCommerceActive()) {
+      // Activate hooks for Woo emails styles so that we always load styles set in Woo email customizer
+      if ($newsletterId === (int)$this->settings->get(TransactionalEmails::SETTING_EMAIL_ID)) {
+        $this->wooEmailHooks->overrideStylesForWooEmails();
+      }
       $wcEmailSettings = $this->wcTransactionalEmails->getWCEmailSettings();
       $woocommerceData = [
         'email_headings' => $this->wcTransactionalEmails->getEmailHeadings(),
