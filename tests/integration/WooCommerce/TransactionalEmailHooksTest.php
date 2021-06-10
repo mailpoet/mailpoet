@@ -3,8 +3,6 @@
 namespace MailPoet\WooCommerce;
 
 use Codeception\Stub;
-use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
@@ -24,12 +22,17 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function _before() {
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->originalWcSettings = $this->settings->get('woocommerce');
+    $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->wp = $this->diContainer->get(WPFunctions::class);
   }
 
-  public function testItSynchronizesEmailSettingsToWooCommerce() {
+  public function testItCanReplaceWoocommerceEmailStyles() {
     $newsletter = new NewsletterEntity;
     $newsletter->setType(Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL);
     $newsletter->setSubject('WooCommerce Transactional Email');
@@ -85,31 +88,26 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     ]);
     $this->newslettersRepository->persist($newsletter);
     $this->newslettersRepository->flush();
+    $this->settings->set(TransactionalEmails::SETTING_EMAIL_ID, $newsletter->getId());
 
-    $options = [];
-    $wp = Stub::make(new WPFunctions, [
-      'updateOption' => function($name, $value) use (&$options) {
-        $options[$name] = $value;
-      },
-      'getOption' => function($name) use (&$options) {
-        return $options[$name];
-      },
-    ]);
+    // Set woo options
+    $this->wp->updateOption('woocommerce_email_background_color', 'white');
+    $this->wp->updateOption('woocommerce_email_base_color', 'red');
+    $this->wp->updateOption('woocommerce_email_body_background_color', 'blue');
+    $this->wp->updateOption('woocommerce_email_text_color', 'black');
 
-    $transactionalEmails = new TransactionalEmailHooks(
-      $wp,
-      $this->settings,
-      ContainerWrapper::getInstance()->get(Renderer::class)
-    );
-    $transactionalEmails->enableEmailSettingsSyncToWooCommerce();
+    expect($this->wp->getOption('woocommerce_email_background_color'))->equals('white');
+    expect($this->wp->getOption('woocommerce_email_base_color'))->equals('red');
+    expect($this->wp->getOption('woocommerce_email_body_background_color'))->equals('blue');
+    expect($this->wp->getOption('woocommerce_email_text_color'))->equals('black');
 
-    $newsletterData = $this->diContainer->get(NewslettersResponseBuilder::class)->build($newsletter);
-    $wp->applyFilters('mailpoet_api_newsletters_save_after', $newsletterData);
+    $transactionalEmails = $this->diContainer->get(TransactionalEmailHooks::class);
+    $transactionalEmails->overrideStylesForWooEmails();
 
-    expect($wp->getOption('woocommerce_email_background_color'))->equals('#777777');
-    expect($wp->getOption('woocommerce_email_base_color'))->equals('#888888');
-    expect($wp->getOption('woocommerce_email_body_background_color'))->equals('#666666');
-    expect($wp->getOption('woocommerce_email_text_color'))->equals('#111111');
+    expect($this->wp->getOption('woocommerce_email_background_color'))->equals('#777777');
+    expect($this->wp->getOption('woocommerce_email_base_color'))->equals('#888888');
+    expect($this->wp->getOption('woocommerce_email_body_background_color'))->equals('#666666');
+    expect($this->wp->getOption('woocommerce_email_text_color'))->equals('#111111');
   }
 
   public function testUseTemplateForWCEmails() {

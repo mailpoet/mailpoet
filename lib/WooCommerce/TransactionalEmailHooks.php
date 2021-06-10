@@ -60,10 +60,6 @@ class TransactionalEmailHooks {
     });
   }
 
-  public function enableEmailSettingsSyncToWooCommerce() {
-    $this->wp->addFilter('mailpoet_api_newsletters_save_after', [$this, 'syncEmailSettingsToWooCommerce']);
-  }
-
   private function getNewsletter(): NewsletterEntity {
     $newsletter = $this->newsletterRepository->findOneById($this->settings->get(TransactionalEmails::SETTING_EMAIL_ID));
     if (!$newsletter instanceof NewsletterEntity) {
@@ -72,21 +68,22 @@ class TransactionalEmailHooks {
     return $newsletter;
   }
 
-  public function syncEmailSettingsToWooCommerce(array $newsletterData) {
-    if ($newsletterData['type'] !== NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL) {
-      return $newsletterData;
-    }
-
-    $styles = $newsletterData['body']['globalStyles'];
-    $optionsToSync = [
-      'woocommerce_email_background_color' => $styles['body']['backgroundColor'],
-      'woocommerce_email_base_color' => $styles['woocommerce']['brandingColor'],
-      'woocommerce_email_body_background_color' => $styles['wrapper']['backgroundColor'],
-      'woocommerce_email_text_color' => $styles['text']['fontColor'],
-    ];
-    foreach ($optionsToSync as $wcName => $value) {
-      $this->wp->updateOption($wcName, $value);
-    }
-    return $newsletterData;
+  public function overrideStylesForWooEmails() {
+    $this->wp->addAction('option_woocommerce_email_background_color', function($value) {
+      $newsletter = $this->getNewsletter();
+      return $newsletter->getGlobalStyle('body', 'backgroundColor') ?? $value;
+    });
+    $this->wp->addAction('option_woocommerce_email_base_color', function($value) {
+      $newsletter = $this->getNewsletter();
+      return $newsletter->getGlobalStyle('woocommerce', 'brandingColor') ?? $value;
+    });
+    $this->wp->addAction('option_woocommerce_email_body_background_color', function($value) {
+      $newsletter = $this->getNewsletter();
+      return $newsletter->getGlobalStyle('wrapper', 'backgroundColor') ?? $value;
+    });
+    $this->wp->addAction('option_woocommerce_email_text_color', function($value) {
+      $newsletter = $this->getNewsletter();
+      return $newsletter->getGlobalStyle('text', 'fontColor') ?? $value;
+    });
   }
 }
