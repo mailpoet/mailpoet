@@ -44,6 +44,80 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItCanSaveASegmentWithTwoFilters() {
+    $segmentData = [
+      'name' => 'Test Segment',
+      'description' => 'Description',
+      'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
+      'filters' => [
+        [
+          'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+          'wordpressRole' => 'administrator',
+          'action' => UserRole::TYPE,
+        ],
+        [
+          'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+          'wordpressRole' => 'editor',
+          'action' => UserRole::TYPE,
+        ],
+      ],
+    ];
+
+    $segment = $this->saveController->save($segmentData);
+    expect($segment->getName())->equals('Test Segment');
+    expect($segment->getDescription())->equals('Description');
+    expect($segment->getDynamicFilters()->count())->equals(2);
+    expect($segment->getType())->equals(SegmentEntity::TYPE_DYNAMIC);
+    $filter = $segment->getDynamicFilters()->first();
+    assert($filter instanceof DynamicSegmentFilterEntity);
+    expect($filter->getFilterData()->getData())->equals([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'wordpressRole' => 'administrator',
+      'action' => UserRole::TYPE,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
+    ]);
+    $filter = $segment->getDynamicFilters()->next();
+    assert($filter instanceof DynamicSegmentFilterEntity);
+    expect($filter->getFilterData()->getData())->equals([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'wordpressRole' => 'editor',
+      'action' => UserRole::TYPE,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
+    ]);
+  }
+
+  public function testItCanRemoveRedundantFilter() {
+    $segment = $this->createSegment('Test Segment');
+    $this->addDynamicFilter($segment, 'editor');
+    $this->addDynamicFilter($segment, 'administrator');
+    $segmentData = [
+      'id' => $segment->getId(),
+      'name' => 'Test Segment Edited',
+      'description' => 'Description Edited',
+      'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
+      'filters' => [[
+        'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+        'wordpressRole' => 'subscriber',
+        'action' => UserRole::TYPE,
+        'connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
+      ]],
+    ];
+
+    $segment = $this->saveController->save($segmentData);
+    expect($segment->getName())->equals('Test Segment Edited');
+    expect($segment->getDescription())->equals('Description Edited');
+    expect($segment->getDynamicFilters()->count())->equals(1);
+    expect($segment->getType())->equals(SegmentEntity::TYPE_DYNAMIC);
+    $filter = $segment->getDynamicFilters()->first();
+    assert($filter instanceof DynamicSegmentFilterEntity);
+    expect($filter->getFilterData()->getData())->equals([
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'wordpressRole' => 'subscriber',
+      'action' => UserRole::TYPE,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
+    ]);
+  }
+
   public function testItCheckDuplicateSegment() {
     $name = 'Test name';
     $this->createSegment($name);
@@ -78,10 +152,23 @@ class SegmentSaveControllerTest extends \MailPoetTest {
   }
 
   private function createSegment(string $name): SegmentEntity {
-    $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, 'description');
+    $segment = new SegmentEntity($name, SegmentEntity::TYPE_DYNAMIC, 'description');
     $this->entityManager->persist($segment);
     $this->entityManager->flush();
     return $segment;
+  }
+
+  private function addDynamicFilter(SegmentEntity $segment, string $wordpressRole): DynamicSegmentFilterEntity {
+    $dynamicFilter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData([
+      'wordpressRole' => $wordpressRole,
+      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+      'action' => UserRole::TYPE,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]));
+    $segment->getDynamicFilters()->add($dynamicFilter);
+    $this->entityManager->persist($dynamicFilter);
+    $this->entityManager->flush();
+    return $dynamicFilter;
   }
 
   private function cleanup() {
