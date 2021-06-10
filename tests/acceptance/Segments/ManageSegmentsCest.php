@@ -519,7 +519,9 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'name'], $editedTitle);
     $i->fillField(['name' => 'description'], $editedDesc);
     $i->selectOption($totalSpentTypeElement, '<');
+    $i->clearField($totalSpentAmountElement);
     $i->fillField($totalSpentAmountElement, 4);
+    $i->clearField($totalSpentDaysElement);
     $i->fillField($totalSpentDaysElement, 20);
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
