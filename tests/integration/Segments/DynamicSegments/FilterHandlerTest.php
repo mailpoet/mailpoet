@@ -11,7 +11,10 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WP\Functions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 
 class FilterHandlerTest extends \MailPoetTest {
@@ -49,10 +52,19 @@ class FilterHandlerTest extends \MailPoetTest {
     $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber1 = $subscribersRepository->findOneBy(['email' => 'user-role-test1@example.com']);
     assert($subscriber1 instanceof SubscriberEntity);
+    $subscriber1->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $subscriber1->setLastSubscribedAt(new Carbon());
     $this->subscriber1 = $subscriber1;
     $subscriber2 = $subscribersRepository->findOneBy(['email' => 'user-role-test2@example.com']);
     assert($subscriber2 instanceof SubscriberEntity);
+    $subscriber2->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $subscriber2->setLastSubscribedAt(new Carbon());
     $this->subscriber2 = $subscriber2;
+    $subscriber3 = $subscribersRepository->findOneBy(['email' => 'user-role-test3@example.com']);
+    assert($subscriber3 instanceof SubscriberEntity);
+    $subscriber3->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $subscriber3->setLastSubscribedAt(new Carbon());
+    $this->entityManager->flush();
   }
 
   public function testItAppliesFilter() {
@@ -70,10 +82,13 @@ class FilterHandlerTest extends \MailPoetTest {
   }
 
   public function testItAppliesTwoFiltersWithoutSpecifyingConnection() {
+    $wp = $this->diContainer->get(Functions::class);
     $segment = $this->getSegment('editor');
     $filter = new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-      'wordpressRole' => 'administrator',
+      'action' => SubscriberSubscribedDate::TYPE,
+      'operator' => SubscriberSubscribedDate::IN_THE_LAST,
+      'value' => 30,
     ]);
     $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filter);
     $this->entityManager->persist($dynamicSegmentFilter);
@@ -82,7 +97,7 @@ class FilterHandlerTest extends \MailPoetTest {
     $statement = $this->filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
     assert($statement instanceof Statement);
     $result = $statement->fetchAll();
-    expect($result)->count(3);
+    expect($result)->count(2);
   }
 
   public function testItAppliesTwoFiltersWithOr() {
