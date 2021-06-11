@@ -116,7 +116,6 @@ class SegmentsRepository extends Repository {
     }
     foreach ($filtersData as $key => $filterData) {
       if ($filterData instanceof DynamicSegmentFilterData) {
-        // So far we allow only one filter
         $filterEntity = $segment->getDynamicFilters()->get($key);
         if (!$filterEntity instanceof DynamicSegmentFilterEntity) {
           $filterEntity = new DynamicSegmentFilterEntity($segment, $filterData);
