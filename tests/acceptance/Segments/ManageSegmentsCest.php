@@ -108,7 +108,7 @@ class ManageSegmentsCest {
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->clearField(['name' => 'name']);
     $i->clearField(['name' => 'description']);
-    $i->wait(1);
+    $i->wait(1); // Sometimes were input fields incorrectly, and the value was appended. This wait should solve the issue
     $i->fillField(['name' => 'name'], $segmentEditedTitle);
     $i->fillField(['name' => 'description'], $segmentEditedDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
@@ -139,7 +139,7 @@ class ManageSegmentsCest {
 
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Move to trash');
     $i->waitForText('1 segment was moved to the trash.');
-    $i->wait(1);
+    $i->wait(1); // We need to wait for loading subscribers
     $i->waitForElementClickable('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
     $i->waitForText($segmentEditedTitle);
@@ -468,6 +468,9 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'name'], $editedTitle);
     $i->fillField(['name' => 'description'], $editedDesc);
     $i->selectOption($numberOfOrdersTypeElement, '=');
+    $i->clearField($numberOfOrdersCountElement);
+    $i->clearField($numberOfOrdersDaysElement);
+    $i->wait(1); // Sometimes were input fields incorrectly, and the value was appended. This wait should solve the issue
     $i->fillField($numberOfOrdersCountElement, 4);
     $i->fillField($numberOfOrdersDaysElement, 20);
     $i->waitForElementClickable('button[type="submit"]');
@@ -528,10 +531,11 @@ class ManageSegmentsCest {
     $editedDesc = 'Segment description Edited';
     $i->fillField(['name' => 'name'], $editedTitle);
     $i->fillField(['name' => 'description'], $editedDesc);
-    $i->selectOption($totalSpentTypeElement, '<');
     $i->clearField($totalSpentAmountElement);
-    $i->fillField($totalSpentAmountElement, 4);
     $i->clearField($totalSpentDaysElement);
+    $i->wait(1); // Sometimes were input fields incorrectly, and the value was appended. This wait should solve the issue
+    $i->selectOption($totalSpentTypeElement, '<');
+    $i->fillField($totalSpentAmountElement, 4);
     $i->fillField($totalSpentDaysElement, 20);
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
