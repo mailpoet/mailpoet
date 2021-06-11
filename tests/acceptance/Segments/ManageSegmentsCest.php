@@ -97,6 +97,7 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect('Subscriber', '[data-automation-id="segment-wordpress-role"]');
+    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
@@ -112,6 +113,7 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'description'], $segmentEditedDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect('Editor', '[data-automation-id="segment-wordpress-role"]');
+    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
@@ -170,6 +172,7 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('opened', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect($emailSubject, '[data-automation-id="segment-email"]');
+    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->amOnMailpoetPage('Lists');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
@@ -338,6 +341,7 @@ class ManageSegmentsCest {
     $i->selectOptionInReactSelect('purchased in this category', $actionSelectElement);
     $i->waitForElement($categorySelectElement);
     $i->selectOptionInReactSelect('Category 2', $categorySelectElement);
+    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
@@ -356,6 +360,7 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'name'], $editedTitle);
     $i->fillField(['name' => 'description'], $editedDesc);
     $i->selectOptionInReactSelect('Category 1', $categorySelectElement);
+    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
@@ -388,6 +393,7 @@ class ManageSegmentsCest {
     $i->selectOptionInReactSelect('purchased this product', $actionSelectElement);
     $i->waitForElement($productSelectElement);
     $i->selectOptionInReactSelect('Product 2', $productSelectElement);
+    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
@@ -406,6 +412,7 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'name'], $editedTitle);
     $i->fillField(['name' => 'description'], $editedDesc);
     $i->selectOptionInReactSelect('Product 1', $productSelectElement);
+    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
@@ -440,6 +447,7 @@ class ManageSegmentsCest {
     $i->fillField($numberOfOrdersCountElement, 2);
     $i->fillField($numberOfOrdersDaysElement, 10);
 
+    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
@@ -462,6 +470,7 @@ class ManageSegmentsCest {
     $i->selectOption($numberOfOrdersTypeElement, '=');
     $i->fillField($numberOfOrdersCountElement, 4);
     $i->fillField($numberOfOrdersDaysElement, 20);
+    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
@@ -498,6 +507,7 @@ class ManageSegmentsCest {
     $i->fillField($totalSpentAmountElement, 2);
     $i->fillField($totalSpentDaysElement, 10);
 
+    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
@@ -523,6 +533,7 @@ class ManageSegmentsCest {
     $i->fillField($totalSpentAmountElement, 4);
     $i->clearField($totalSpentDaysElement);
     $i->fillField($totalSpentDaysElement, 20);
+    $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText($segmentTitle);
@@ -540,14 +551,14 @@ class ManageSegmentsCest {
   }
 
   public function createAndEditDynamicSegmentWithMoreFilters(\AcceptanceTester $i) {
-    $wpEditorEmail = 'test-editor-' . rand(1, 100000) . '@example.com';
-    $wpEditorEmail2 = 'test-editor2-' . rand(1, 100000) . '@example.com';
-    $wpAuthorEmail = 'test-author-' . rand(1, 100000) . '@example.com';
+    $wpEditorEmail = 'test-editor3' . rand(1, 100000) . '@example.com';
+    $wpEditorEmail2 = 'test-editor4-' . rand(1, 100000) . '@example.com';
+    $wpAuthorEmail = 'test-author2-' . rand(1, 100000) . '@example.com';
 
     $userFactory = new User();
-    $userFactory->createUser('Test Editor', 'editor', $wpEditorEmail);
-    $userFactory->createUser('Test Editor 2', 'editor', $wpEditorEmail2);
-    $userFactory->createUser('Test Author', 'author', $wpAuthorEmail);
+    $userFactory->createUser('Test Editor 3', 'editor', $wpEditorEmail);
+    $userFactory->createUser('Test Editor 4', 'editor', $wpEditorEmail2);
+    $userFactory->createUser('Test Author 2', 'author', $wpAuthorEmail);
 
     $i->activateWooCommerce();
     $filterRowOne = '[data-automation-id="filter-row-0"]';
