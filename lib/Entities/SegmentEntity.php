@@ -150,4 +150,17 @@ class SegmentEntity {
   public function setAverageEngagementScoreUpdatedAt(?\DateTimeInterface $averageEngagementScoreUpdatedAt): void {
     $this->averageEngagementScoreUpdatedAt = $averageEngagementScoreUpdatedAt;
   }
+
+  /**
+   * Returns connect operand from the first filter, when doesn't exist, then returns a default value.
+   * @return string
+   */
+  public function getFiltersConnectOperand(): string {
+    $firstFilter = $this->getDynamicFilters()->first();
+    $filterData = $firstFilter ? $firstFilter->getFilterData() : null;
+    if (!$firstFilter || !$filterData) {
+      return DynamicSegmentFilterData::CONNECT_TYPE_AND;
+    }
+    return $filterData->getParam('connect') ?: DynamicSegmentFilterData::CONNECT_TYPE_AND;
+  }
 }

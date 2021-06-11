@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\API\JSON\ResponseBuilders;
 
-use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\WP\Functions;
@@ -25,8 +24,6 @@ class SegmentsResponseBuilder {
   }
 
   public function build(SegmentEntity $segment): array {
-    $firstFilter = $segment->getDynamicFilters()->first();
-    $filterData = $firstFilter ? $firstFilter->getFilterData() : null;
     return [
       'id' => (string)$segment->getId(), // (string) for BC
       'name' => $segment->getName(),
@@ -36,7 +33,7 @@ class SegmentsResponseBuilder {
       'updated_at' => $segment->getUpdatedAt()->format(self::DATE_FORMAT),
       'deleted_at' => ($deletedAt = $segment->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'average_engagement_score' => $segment->getAverageEngagementScore(),
-      'filters_connect' => $filterData && $filterData->getParam('connect') ? $filterData->getParam('connect') : DynamicSegmentFilterData::CONNECT_TYPE_AND,
+      'filters_connect' => $segment->getFiltersConnectOperand(),
     ];
   }
 
