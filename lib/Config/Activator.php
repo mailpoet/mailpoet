@@ -29,8 +29,11 @@ class Activator {
     $isRunning = $this->wp->getTransient(self::TRANSIENT_ACTIVATE_KEY);
     if ($isRunning === false) {
       $this->wp->setTransient(self::TRANSIENT_ACTIVATE_KEY, '1', self::TRANSIENT_EXPIRATION);
-      $this->processActivate();
-      $this->wp->deleteTransient(self::TRANSIENT_ACTIVATE_KEY);
+      try {
+        $this->processActivate();
+      } finally {
+        $this->wp->deleteTransient(self::TRANSIENT_ACTIVATE_KEY);
+      }
     } else {
       throw new InvalidStateException(__('MailPoet version update is in progress, please refresh the page in a minute.', 'mailpoet'));
     }
