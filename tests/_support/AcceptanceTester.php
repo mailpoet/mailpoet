@@ -311,6 +311,12 @@ class AcceptanceTester extends \Codeception\Actor {
     return $this->_waitForText($text, $this->getDefaultTimeout($timeout), $selector);
   }
 
+  public function waitForNoticeAndClose($text, $timeout = 10, $selector = null) {
+    $this->_waitForText($text, $this->getDefaultTimeout($timeout), $selector);
+    $this->waitForElementVisible('.notice-dismiss', 1);
+    $this->click('.notice-dismiss');
+  }
+
   public function scrollToTop() {
     return $this->scrollTo('#wpcontent');
   }

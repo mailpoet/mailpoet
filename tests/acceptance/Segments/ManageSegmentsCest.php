@@ -87,14 +87,16 @@ class ManageSegmentsCest {
 
     $i->wantTo('Create a new segment');
 
+    $nameElement = '[name="name"]';
+    $descriptionElement = '[name="description"]';
+
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->click('[data-automation-id="new-segment"]');
-    $i->fillField(['name' => 'name'], $segmentTitle);
-    $i->fillField(['name' => 'description'], $segmentDesc);
-    $i->fillField(['name' => 'description'], $segmentDesc);
+    $i->fillField($nameElement, $segmentTitle);
+    $i->fillField($descriptionElement, $segmentDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect('Subscriber', '[data-automation-id="segment-wordpress-role"]');
     $i->waitForElementClickable('button[type="submit"]');
@@ -105,12 +107,12 @@ class ManageSegmentsCest {
 
     $i->wantTo('Edit existing segment');
     $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
-    $i->waitForElementNotVisible('.mailpoet_form_loading');
-    $i->clearField(['name' => 'name']);
-    $i->clearField(['name' => 'description']);
-    $i->wait(1); // Sometimes were input fields incorrectly, and the value was appended. This wait should solve the issue
-    $i->fillField(['name' => 'name'], $segmentEditedTitle);
-    $i->fillField(['name' => 'description'], $segmentEditedDesc);
+    $i->waitForText('This segment has 0 subscribers.');
+    $i->clearFormField($nameElement);
+    $i->clearField($descriptionElement, '');
+    $i->waitForElement('[value=""]' . $nameElement);
+    $i->fillField($nameElement, $segmentEditedTitle);
+    $i->fillField($descriptionElement, $segmentEditedDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect('Editor', '[data-automation-id="segment-wordpress-role"]');
     $i->waitForElementClickable('button[type="submit"]');
@@ -122,14 +124,14 @@ class ManageSegmentsCest {
 
     $i->wantTo('Trash existing segment');
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Move to trash');
-    $i->waitForText('1 segment was moved to the trash.');
+    $i->waitForNoticeAndClose('1 segment was moved to the trash.');
     $i->click('[data-automation-id="filters_trash"]');
     $i->waitForText($segmentEditedTitle);
     $i->seeNoJSErrors();
 
     $i->wantTo('Restore trashed segment');
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Restore');
-    $i->waitForText('1 segment has been restored from the Trash.');
+    $i->waitForNoticeAndClose('1 segment has been restored from the Trash.');
     $i->seeInCurrentURL(urlencode('group[trash]'));
     $i->click('[data-automation-id="filters_all"]');
     $i->waitForText($segmentEditedTitle);
@@ -138,13 +140,12 @@ class ManageSegmentsCest {
     $i->wantTo('Trash and delete existing segment');
 
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Move to trash');
-    $i->waitForText('1 segment was moved to the trash.');
-    $i->wait(1); // We need to wait for loading subscribers
+    $i->waitForNoticeAndClose('1 segment was moved to the trash.');
     $i->waitForElementClickable('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
     $i->waitForText($segmentEditedTitle);
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Delete permanently');
-    $i->waitForText('1 segment was permanently deleted.');
+    $i->waitForNoticeAndClose('1 segment was permanently deleted.');
     $i->seeNoJSErrors();
     $i->waitForText($segmentTitle . ' TRASHED 1');
     $i->waitForText($segmentTitle . ' TRASHED 2');
@@ -465,12 +466,13 @@ class ManageSegmentsCest {
     $i->wantTo('Edit segment and save');
     $editedTitle = 'Segment Woo Number of Orders Test Edited';
     $editedDesc = 'Segment description Edited';
+    $i->clearFormField($numberOfOrdersCountElement);
+    $i->clearFormField($numberOfOrdersDaysElement);
     $i->fillField(['name' => 'name'], $editedTitle);
     $i->fillField(['name' => 'description'], $editedDesc);
     $i->selectOption($numberOfOrdersTypeElement, '=');
-    $i->clearField($numberOfOrdersCountElement);
-    $i->clearField($numberOfOrdersDaysElement);
-    $i->wait(1); // Sometimes were input fields incorrectly, and the value was appended. This wait should solve the issue
+    $i->waitForElementVisible('input[value=""]' . $numberOfOrdersCountElement);
+    $i->waitForElementVisible('input[value=""]' . $numberOfOrdersDaysElement);
     $i->fillField($numberOfOrdersCountElement, 4);
     $i->fillField($numberOfOrdersDaysElement, 20);
     $i->waitForElementClickable('button[type="submit"]');
@@ -529,11 +531,12 @@ class ManageSegmentsCest {
     $i->wantTo('Edit segment and save');
     $editedTitle = 'Segment Woo Total Spent Test Edited';
     $editedDesc = 'Segment description Edited';
+    $i->clearFormField($totalSpentAmountElement);
+    $i->clearFormField($totalSpentDaysElement);
     $i->fillField(['name' => 'name'], $editedTitle);
     $i->fillField(['name' => 'description'], $editedDesc);
-    $i->clearField($totalSpentAmountElement);
-    $i->clearField($totalSpentDaysElement);
-    $i->wait(1); // Sometimes were input fields incorrectly, and the value was appended. This wait should solve the issue
+    $i->waitForElementVisible('input[value=""]' . $totalSpentAmountElement);
+    $i->waitForElementVisible('input[value=""]' . $totalSpentDaysElement);
     $i->selectOption($totalSpentTypeElement, '<');
     $i->fillField($totalSpentAmountElement, 4);
     $i->fillField($totalSpentDaysElement, 20);
