@@ -152,7 +152,7 @@ jQuery(($) => {
     }
   });
 
-  $(() => {
+  (() => {
     $('.mailpoet_form').each((index, element) => {
       $(element).children('.mailpoet_paragraph, .mailpoet_form_image, .mailpoet_form_paragraph').last().addClass('last');
     });
@@ -303,5 +303,5 @@ jQuery(($) => {
     $('.mailpoet-manage-subscription').on('submit', () => {
       $('.mailpoet-manage-subscription .mailpoet-submit-success').hide();
     });
-  });
+  })();
 });
