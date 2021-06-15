@@ -6,7 +6,7 @@
 }
 
 .mailpoet-segments-segments-section .mailpoet-grid-three-columns {
-  padding-right: 40px;
+  padding-right: $grid-gap-large;
   position: relative;
 }
 
@@ -16,9 +16,9 @@
 
 .mailpoet-segments-segments-section .mailpoet-form-segment-delete {
   align-items: center;
-  border: 1px solid #f00;
+  border: 1px solid $color-input-error;
   border-radius: 12px;
-  color: #f00;
+  color: $color-input-error;
   cursor: pointer;
   display: flex;
   height: 20px;
@@ -38,6 +38,6 @@
 
 .mailpoet-segments-segments-section .mailpoet-form-segment-delete:hover,
 .mailpoet-segments-segments-section .mailpoet-form-segment-delete:focus {
-  background: #f00;
-  color: #fff;
+  background: $color-input-error;
+  color: $color-white;
 }
