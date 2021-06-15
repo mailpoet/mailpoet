@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.7
-Stable tag: 3.63.0
+Stable tag: 3.64.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.64.0 - 2021-06-15 =
+* Fixed: rare error when activating MailPoet;
+* Fixed: missing column in DBs running old MySQL;
+* Fixed: WooCommerce emails stay the same when MailPoet customizer is disabled;
+* Fixed: big margins in WooCommerce emails.
 
 = 3.63.0 - 2021-06-07 =
 * Improved: Subscribers page load time for sites with higher number of lists;
