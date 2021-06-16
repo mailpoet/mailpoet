@@ -7,7 +7,7 @@ use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 use MailPoetVendor\Doctrine\Common\Proxy\AbstractProxyFactory;
 use MailPoetVendor\Doctrine\ORM\Configuration;
 use MailPoetVendor\Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use MailPoetVendor\Doctrine\ORM\Mapping\Driver\PHPDriver;
+use MailPoetVendor\Doctrine\Persistence\Mapping\Driver\PHPDriver;
 use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 
 class ConfigurationFactory {
@@ -51,8 +51,8 @@ class ConfigurationFactory {
 
     // metadata cache (for production cache is pre-generated at build time)
     $isReadOnly = !$annotationReader;
-    $metadataStorage = new MetadataCache(self::METADATA_DIR, $isReadOnly);
-    $configuration->setMetadataCacheImpl($metadataStorage);
+    $metadataStorage = new PSRMetadataCache(self::METADATA_DIR, $isReadOnly);
+    $configuration->setMetadataCache($metadataStorage);
   }
 
   private function configureProxies(Configuration $configuration) {
