@@ -19,20 +19,6 @@ foreach ($files as $file) {
   }
 }
 
-// Fix Throwable interface incompatibility in DriverException
-$file = __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/DriverException.php';
-$data = file_get_contents($file);
-// Throwable already has getMessage() there is no need to add it in DriverException.
-$data = str_replace('public function getMessage();', '// public function getMessage();', $data);
-file_put_contents($file, $data);
-
-// Fix ResultStatement interface issues
-$file = __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/ResultStatement.php';
-$data = file_get_contents($file);
-$data = str_replace('@param int|null     $fetchArgument', '@param int|string|null    $fetchArgument', $data);
-$data = str_replace('@param mixed[]|null $ctorArgs', '@param mixed|null $ctorArgs', $data);
-file_put_contents($file, $data);
-
 // cleanup file types by extension
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name '*.xsd' -delete");
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'phpstan.neon' -delete");
@@ -137,7 +123,7 @@ exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Plat
 
 // cleanup Doctrine ORM
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/bin');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/docs');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/ci');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/SimplifiedXmlDriver.php');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/SimplifiedYamlDriver.php');
@@ -152,7 +138,13 @@ exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Tools/
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/inflector');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/lexer/docs');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/annotations/docs');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/collections/docs');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/common/docs');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/common/psalm.xml');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/lib/Doctrine/Deprecations/PHPUnit');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/test_fixtures');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/phpcs.xml');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/instantiator/docs');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/instantiator/phpbench.json');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/persistence/phpstan-baseline.neon');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/console');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/debug');
