@@ -155,7 +155,7 @@ class SegmentEntity {
    * Returns connect operand from the first filter, when doesn't exist, then returns a default value.
    * @return string
    */
-  public function getFiltersConnectOperand(): string {
+  public function getFiltersConnectOperator(): string {
     $firstFilter = $this->getDynamicFilters()->first();
     $filterData = $firstFilter ? $firstFilter->getFilterData() : null;
     if (!$firstFilter || !$filterData) {
