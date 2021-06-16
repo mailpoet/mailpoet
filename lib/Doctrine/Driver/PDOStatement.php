@@ -60,7 +60,6 @@ class PDOStatement implements \IteratorAggregate, Statement {
   }
 
   public function bindParam($param, &$variable, $type = ParameterType::STRING, $length = null, $driverOptions = null) {
-    if (is_null($type)) $type = ParameterType::STRING;
     $type = $this->convertParamType($type);
 
     try {

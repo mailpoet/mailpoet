@@ -32,7 +32,8 @@ class TablePrefixMetadataFactory extends ClassMetadataFactory {
 
     // prefix tables only after they are saved to cache so the prefix does not get included in cache
     // (getMetadataFor can call itself recursively but it saves to cache only after the recursive calls)
-    $isCached = ($cache = $this->getCacheDriver()) ? $cache->contains($classMetadata->getName() . $this->cacheSalt) : false;
+    $cacheKey = $this->getCacheKey($classMetadata->getName());
+    $isCached = ($cache = $this->getCache()) ? $cache->hasItem($cacheKey) : false;
     if ($classMetadata instanceof ClassMetadata && $isCached) {
       $this->addPrefix($classMetadata);
       $this->prefixedMap[$classMetadata->getName()] = true;

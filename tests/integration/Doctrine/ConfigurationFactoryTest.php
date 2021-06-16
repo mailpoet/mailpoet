@@ -5,6 +5,7 @@ namespace MailPoet\Test\Config;
 use MailPoet\Doctrine\Annotations\AnnotationReaderProvider;
 use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\MetadataCache;
+use MailPoet\Doctrine\PSRMetadataCache;
 use MailPoet\Doctrine\TablePrefixMetadataFactory;
 use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 use MailPoetVendor\Doctrine\Common\Proxy\AbstractProxyFactory;
@@ -22,7 +23,7 @@ class ConfigurationFactoryTest extends \MailPoetTest {
 
     // metadata
     expect($configuration->getClassMetadataFactoryName())->equals(TablePrefixMetadataFactory::class);
-    expect($configuration->getMetadataCacheImpl())->isInstanceOf(MetadataCache::class);
+    expect($configuration->getMetadataCache())->isInstanceOf(PSRMetadataCache::class);
     expect($configuration->getMetadataDriverImpl())->isInstanceOf(AnnotationDriver::class);
 
     // cache
