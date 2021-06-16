@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "cerdic/css-tidy",
-            "version": "v1.7.1",
+            "version": "v1.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Cerdic/CSSTidy.git",
-                "reference": "47bc70fc6d78a37cb91f9df4518585a9e62b565a"
+                "reference": "919411b2c16ab985f7c61e0d9bb6c35d080f6cf6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Cerdic/CSSTidy/zipball/47bc70fc6d78a37cb91f9df4518585a9e62b565a",
-                "reference": "47bc70fc6d78a37cb91f9df4518585a9e62b565a",
+                "url": "https://api.github.com/repos/Cerdic/CSSTidy/zipball/919411b2c16ab985f7c61e0d9bb6c35d080f6cf6",
+                "reference": "919411b2c16ab985f7c61e0d9bb6c35d080f6cf6",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,11 @@
                 }
             ],
             "description": "CSSTidy is a CSS minifier",
-            "time": "2019-09-14T17:59:23+00:00"
+            "support": {
+                "issues": "https://github.com/Cerdic/CSSTidy/issues",
+                "source": "https://github.com/Cerdic/CSSTidy/tree/v1.7.3"
+            },
+            "time": "2020-11-03T13:08:18+00:00"
         },
         {
             "name": "composer/package-versions-deprecated",
