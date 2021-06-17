@@ -22,6 +22,7 @@ class TablePrefixMetadataFactory extends ClassMetadataFactory {
       throw new \RuntimeException('DB table prefix not initialized');
     }
     $this->prefix = Env::$dbPrefix;
+    $this->setProxyClassNameResolver(new ProxyClassNameResolver());
   }
 
   public function getMetadataFor($className) {
