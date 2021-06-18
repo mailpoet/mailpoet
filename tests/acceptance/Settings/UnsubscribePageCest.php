@@ -16,7 +16,7 @@ class UnsubscribePageCest {
     $i->wantTo('Make a custom unsubscribe confirmation page');
     $pageTitle = 'Custom Unsubscribe Confirmation';
     $pageContent = 'This is custom unsubscribe confirmation page [mailpoet_page]';
-    $i->cli(['post', 'create', '--post_status=publish', '--post_type=page', "--post_title=$pageTitle", "--post_content=$pageContent"]);
+    $i->cli(['post', 'create', '--post_status=publish', '--post_type=page', "--post_title='$pageTitle'", "--post_content='$pageContent'"]);
     $i->login();
     $i->amOnMailPoetPage('Settings');
     $i->scrollTo('[data-automation-id="subscription-manage-page-selection"]');
@@ -36,7 +36,7 @@ class UnsubscribePageCest {
     $i->wantTo('Make a custom unsubscribe success page');
     $pageTitle = 'Custom Unsubscribe Success';
     $pageContent = 'This is custom unsubscribe success page [mailpoet_page]';
-    $i->cli(['post', 'create', '--post_status=publish', '--post_type=page', "--post_title=$pageTitle", "--post_content=$pageContent"]);
+    $i->cli(['post', 'create', '--post_status=publish', '--post_type=page', "--post_title='$pageTitle'", "--post_content='$pageContent'"]);
     $i->login();
     $i->amOnMailPoetPage('Settings');
     $i->scrollTo('[data-automation-id="subscription-manage-page-selection"]');

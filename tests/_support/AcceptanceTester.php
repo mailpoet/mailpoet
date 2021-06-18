@@ -178,7 +178,7 @@ class AcceptanceTester extends \Codeception\Actor {
       $form = $formFactory->withName('Confirmation Form')->create();
     }
     $i->cli(['widget', 'reset', 'sidebar-1']);
-    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form={$form->getId()}", '--title=Subscribe to Our Newsletter']);
+    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form={$form->getId()}", '--title="Subscribe to Our Newsletter"']);
 
     // subscribe
     /** @var FormMessageController $messageController */
@@ -482,9 +482,9 @@ class AcceptanceTester extends \Codeception\Actor {
    * Creates post and returns its URL
    */
   public function createPost(string $title, string $body): string {
-    $post = $this->cliToArray(['post', 'create', '--format=json', '--porcelain', '--post_status=publish', '--post_type=post', '--post_title="' . $title . '"', '--post_content="' . $body . '"']);
-    $postData = $this->cliToArray(['post', 'get', $post[0], '--format=json']);
-    $postData = json_decode($postData[0], true);
+    $post = $this->cliToString(['post', 'create', '--format=json', '--porcelain', '--post_status=publish', '--post_type=post', '--post_title="' . $title . '"', '--post_content="' . $body . '"']);
+    $postData = $this->cliToString(['post', 'get', $post, '--format=json']);
+    $postData = json_decode($postData, true);
     return $postData['guid'];
   }
 

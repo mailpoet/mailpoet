@@ -43,7 +43,7 @@ class ReceivePostNotificationCest {
       ->create();
     $i->wait(1); //waiting 1 second so that post created time is after the newsletter
 
-    $i->cli(['post', 'create', "--post_title=$postTitle", '--post_content=Lorem Ipsum', '--post_status=publish']);
+    $i->cli(['post', 'create', "--post_title='$postTitle'", '--post_content="Lorem Ipsum"', '--post_status=publish']);
 
     $i->login();
 

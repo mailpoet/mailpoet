@@ -31,7 +31,7 @@ class BuiltInCaptchaSubscriptionCest {
     $subscriberFactory = new Subscriber();
     $subscriberFactory->withEmail($this->subscriberEmail)->withCountConfirmations(1)->create();
 
-    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form={$form->getId()}", '--title=Subscribe to Our Newsletter']);
+    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form={$form->getId()}", '--title="Subscribe to Our Newsletter"']);
   }
 
   public function checkCaptchaPageExistsAfterSubscription(\AcceptanceTester $i) {
