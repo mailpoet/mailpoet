@@ -16,7 +16,7 @@ class SubscriptionPageCest {
     $i->wantTo('Make a custom subscription page');
     $pageTitle = 'CustomSubscriptionPage';
     $pageContent = 'This is custom manage subscription page [mailpoet_manage_subscription]';
-    $i->cli(['post', 'create', '--post_status=publish', '--post_type=page', "--post_title=$pageTitle", "--post_content=$pageContent"]);
+    $i->cli(['post', 'create', '--post_status=publish', '--post_type=page', "--post_title='$pageTitle'", "--post_content='$pageContent'"]);
     $i->login();
     $i->amOnMailPoetPage('Settings');
     $i->click(['css' => '[data-automation-id="subscription-manage-page-selection"]']);

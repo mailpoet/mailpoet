@@ -17,13 +17,13 @@ class EditorPlaceFormOnSpecifiedPageCest {
     $formName = 'My fancy form';
     $form = new Form();
     $form->withName($formName)->withSegments([$segment])->create();
-    $page = $i->cliToArray(['post', 'create', '--format=json', '--porcelain', '--post_status=publish', '--post_type=page', "--post_title=$pageTitle", "--post_content=$pageContent"]);
-    $pageData = $i->cliToArray(['post', 'get', $page[0], '--format=json']);
-    $pageData = json_decode($pageData[0], true);
+    $page = $i->cliToString(['post', 'create', '--format=json', '--porcelain', '--post_status=publish', '--post_type=page', "--post_title='$pageTitle'", "--post_content='$pageContent'"]);
+    $pageData = $i->cliToString(['post', 'get', $page, '--format=json']);
+    $pageData = json_decode($pageData, true);
     $pageUrl = $pageData['guid'];
-    $post = $i->cliToArray(['post', 'create', '--format=json', '--porcelain', '--post_status=publish', '--post_type=post', "--post_title=$pageTitle", "--post_content=$pageContent"]);
-    $postData = $i->cliToArray(['post', 'get', $post[0], '--format=json']);
-    $postData = json_decode($postData[0], true);
+    $post = $i->cliToString(['post', 'create', '--format=json', '--porcelain', '--post_status=publish', '--post_type=post', "--post_title='$pageTitle'", "--post_content='$pageContent'"]);
+    $postData = $i->cliToString(['post', 'get', $post, '--format=json']);
+    $postData = json_decode($postData, true);
     $postUrl = $postData['guid'];
 
     $i->wantTo('Set popup form to display on the created page');

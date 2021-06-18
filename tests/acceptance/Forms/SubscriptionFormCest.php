@@ -49,7 +49,7 @@ class SubscriptionFormCest {
   public function subscriptionFormWidget(\AcceptanceTester $i) {
     $i->wantTo('Subscribe using form widget');
 
-    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$this->formId", '--title=Subscribe to Our Newsletter']);
+    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$this->formId", '--title="Subscribe to Our Newsletter"']);
     //login to avoid time limit for subscribing
     $i->login();
     $i->amOnPage('/');

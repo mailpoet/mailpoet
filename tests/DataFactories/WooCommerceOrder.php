@@ -84,14 +84,14 @@ class WooCommerceOrder {
     $cmd = ['wc', 'shop_order', 'create', '--porcelain', '--user=admin'];
     $cmd[] = '--status=' . $this->data['status'];
     $cmd[] = '--customer_id=' . $this->data['customer_id'];
-    $cmd[] = '--billing=' . json_encode($this->data['billing']);
+    $cmd[] = '--billing=\'' . json_encode($this->data['billing']) . '\'';
     $cmd[] = '--currency=' . $this->data['currency'];
     if (is_array($this->data['products']) && !empty($this->data['products'])) {
-      $cmd[] = '--line_items=' . json_encode($this->data['products']);
+      $cmd[] = '--line_items=\'' . json_encode($this->data['products']) . '\'';
     }
-    $createOutput = $this->tester->cliToArray($cmd);
-    $orderOut = $this->tester->cliToArray(['wc', 'shop_order', 'get', $createOutput[0], '--format=json', '--user=admin']);
-    $order = json_decode($orderOut[0], true);
+    $createOutput = $this->tester->cliToString($cmd);
+    $orderOut = $this->tester->cliToString(['wc', 'shop_order', 'get', $createOutput, '--format=json', '--user=admin']);
+    $order = json_decode($orderOut, true);
     if (isset($this->data['date_created'])) {
       global $wpdb;
       $dateCreated = $this->data['date_created'];

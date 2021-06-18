@@ -68,7 +68,7 @@ class EditorProductsCest {
     }
 
     // Add product image
-    $image = $i->cliToArray(['media', 'import', dirname(__DIR__) . '/../_data/600x400.jpg',  '--title=A product picture', '--porcelain']);
+    $image = $i->cliToArray(['media', 'import', dirname(__DIR__) . '/../_data/600x400.jpg',  '--title="A product picture"', '--porcelain']);
     $imageUrlData = $i->cliToArray(['post', 'get', $image[0], '--field=guid']);
     $imageUrl = $imageUrlData[0];
 
