@@ -21,3 +21,8 @@ $file = __DIR__ . '/../vendor-prefixed/symfony/polyfill-iconv/Iconv.php';
 $data = file_get_contents($file);
 $data = str_replace('\\Normalizer::', '\\MailPoetVendor\\Normalizer::', $data);
 file_put_contents($file, $data);
+
+// Remove unnecessary polyfills these polyfills are required by symfony/console
+// but don't use and remove the package
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/polyfill-php73');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/polyfill-php80');
