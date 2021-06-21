@@ -408,43 +408,6 @@ class WPTest extends \MailPoetTest {
     expect($dbSubscriber)->isEmpty();
   }
 
-  public function testItMarksSpammySubscribersAsUnconfirmed() {
-    $randomNumber = rand();
-    $id = $this->insertUser($randomNumber);
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'user-sync-test' . $randomNumber . '@example.com',
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-      'wp_user_id' => $id,
-    ]);
-    update_user_meta((int)$id, 'default_password_nag', '1');
-    $this->wpSegment->synchronizeUsers();
-    $dbSubscriber = Subscriber::findOne($subscriber->id);
-    expect($dbSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
-  }
-
-  public function testItMarksSpammySubscribersWithUserStatus2AsUnconfirmed() {
-    global $wpdb;
-    $columnExists = $wpdb->query(sprintf('SHOW COLUMNS FROM `%s` LIKE "user_status"', $wpdb->users));
-    if (!$columnExists) {
-      // This column is deprecated in WP, is no longer used by the core
-      // and either may not be present, or may be removed in the future.
-      return false;
-    }
-    $randomNumber = rand();
-    $id = $this->insertUser($randomNumber);
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'user-sync-test' . $randomNumber . '@example.com',
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-      'wp_user_id' => $id,
-    ]);
-    wp_update_user(['ID' => $id, 'user_status' => 2]);
-    $db = ORM::getDb();
-    $db->exec(sprintf('UPDATE %s SET `user_status` = 2 WHERE ID = %s', $wpdb->users, $id));
-    $this->wpSegment->synchronizeUsers();
-    $dbSubscriber = Subscriber::findOne($subscriber->id);
-    expect($dbSubscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
-  }
-
   public function testItAddsNewUserToDisabledWpSegmentAsUnconfirmedAndTrashed() {
     $this->disableWpSegment();
     $id = $this->insertUser();
