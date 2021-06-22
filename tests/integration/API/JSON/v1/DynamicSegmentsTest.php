@@ -67,13 +67,31 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $data = [
       'name' => 'Test dynamic',
       'description' => 'description dynamic',
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-      'wordpressRole' => 'editor',
+      'filters' => [[
+        'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+        'wordpressRole' => 'editor',
+      ]],
     ];
     $this->endpoint->save($data);
     $response = $this->endpoint->save($data);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
     expect($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
+    expect($response->errors[0]['message'])->equals('Another record already exists. Please specify a different "name".');
+  }
+
+  public function testSaverReturnsErrorOnEmptyName() {
+    $data = [
+      'description' => 'description dynamic',
+      'filters' => [[
+        'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+        'wordpressRole' => 'editor',
+      ]],
+    ];
+    $this->endpoint->save($data);
+    $response = $this->endpoint->save($data);
+    expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
+    expect($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
+    expect($response->errors[0]['message'])->equals('Please specify a name.');
   }
 
   public function testSaverSavesMultipleFilters() {
