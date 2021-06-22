@@ -41,7 +41,7 @@ function loadCount(formItem: Segment): Promise<Result | void> {
     endpoint: 'dynamic_segments',
     action: 'getCount',
     data: formItem,
-    timeout: 20000, // 30 seconds
+    timeout: 20000, // 20 seconds
   })
     .then((response) => {
       const { data } = response;
