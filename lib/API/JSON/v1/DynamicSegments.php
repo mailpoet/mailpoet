@@ -8,6 +8,7 @@ use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
+use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\Handler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
@@ -113,7 +114,11 @@ class DynamicSegments extends APIEndpoint {
       ], [], Response::STATUS_BAD_REQUEST);
     } catch (InvalidArgumentException $e) {
       return $this->badRequest([
-        Error::BAD_REQUEST  => __('Another record already exists. Please specify a different "name".', 'mailpoet'),
+        Error::BAD_REQUEST => __('Another record already exists. Please specify a different "name".', 'mailpoet'),
+      ]);
+    } catch (ValidationException $exception) {
+      return $this->badRequest([
+        Error::BAD_REQUEST => __('Please specify a name.', 'mailpoet'),
       ]);
     }
   }
