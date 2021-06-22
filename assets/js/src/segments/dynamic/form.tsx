@@ -15,6 +15,7 @@ import { FormFilterFields } from './form_filter_fields';
 import { isFormValid } from './validator';
 import { MinusIcon } from '../../common/button/icon/minus';
 import plusIcon from '../../common/button/icon/plus';
+import APIErrorsNotice from '../../notices/api_errors_notice';
 
 import {
   FilterRow,
@@ -53,6 +54,11 @@ export const Form: React.FunctionComponent<Props> = ({
     []
   );
 
+  const errors: string[] = useSelect(
+    (select) => select('mailpoet-dynamic-segments-form').getErrors(),
+    []
+  );
+
   const { updateSegment, updateSegmentFilter, handleSave } = useDispatch('mailpoet-dynamic-segments-form');
 
   return (
@@ -64,6 +70,9 @@ export const Form: React.FunctionComponent<Props> = ({
               {MailPoet.I18n.t('name')}
             </label>
           </Heading>
+          {(errors.length > 0 && (
+            <APIErrorsNotice errors={errors.map((error) => ({ message: error }))} />
+          ))}
           <div className="mailpoet-form-field">
             <Input
               isFullWidth
