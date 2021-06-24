@@ -63,6 +63,9 @@ export const Form: React.FunctionComponent<Props> = ({
 
   return (
     <form className="mailpoet_form">
+      {(errors.length > 0 && (
+        <APIErrorsNotice errors={errors.map((error) => ({ message: error }))} />
+      ))}
       <div className="mailpoet-form-grid">
         <div className="mailpoet-form-field-name form-field-row-name mailpoet-segments-name-section">
           <Heading level={4}>
@@ -70,9 +73,6 @@ export const Form: React.FunctionComponent<Props> = ({
               {MailPoet.I18n.t('name')}
             </label>
           </Heading>
-          {(errors.length > 0 && (
-            <APIErrorsNotice errors={errors.map((error) => ({ message: error }))} />
-          ))}
           <div className="mailpoet-form-field">
             <Input
               isFullWidth
