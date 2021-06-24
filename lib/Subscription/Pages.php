@@ -177,8 +177,8 @@ class Pages {
       );
     }
 
-    // Send new subscriber notification only when status changes to subscribed to avoid spamming
-    if ($originalStatus !== Subscriber::STATUS_SUBSCRIBED) {
+    // Send new subscriber notification only when status changes to subscribed or there are unconfirmed data to avoid spamming
+    if ($originalStatus !== Subscriber::STATUS_SUBSCRIBED || $subscriberData !== null) {
       $this->newSubscriberNotificationSender->send($this->subscriber, $subscriberSegments);
     }
 

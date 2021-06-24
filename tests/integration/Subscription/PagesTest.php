@@ -75,7 +75,7 @@ class PagesTest extends \MailPoetTest {
     $subscriber = $this->subscriber;
     $subscriber->setStatus(Subscriber::STATUS_SUBSCRIBED);
     $subscriber->setFirstName('First name');
-    $subscriber->setUnconfirmedData('{"first_name" : "Updated first name", "email" : "' . $this->subscriber->getEmail() . '"}');
+    $subscriber->setUnconfirmedData(null);
     $subscriber->setLastSubscribedAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(10));
     $subscriber->setConfirmedIp(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(10));
     $this->entityManager->flush();
@@ -89,7 +89,7 @@ class PagesTest extends \MailPoetTest {
     expect($confirmedSubscriber->getConfirmedAt())->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
     expect($confirmedSubscriber->getLastSubscribedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
     expect($confirmedSubscriber->getLastSubscribedAt())->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
-    expect($confirmedSubscriber->getFirstName())->equals('Updated first name');
+    expect($confirmedSubscriber->getFirstName())->equals('First name');
   }
 
   public function testItSendsWelcomeNotificationUponConfirmingSubscription() {
