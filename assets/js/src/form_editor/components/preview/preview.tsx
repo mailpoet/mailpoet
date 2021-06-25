@@ -51,6 +51,10 @@ const FormPreview: React.FunctionComponent = () => {
 
   useEffect(() => {
     setIframeLoaded(false);
+    const beacon = document.getElementById('beacon-container');
+    if (isPreview && beacon) { // hide beacon in the preview modal
+      beacon.style.display = 'none';
+    }
   }, [isPreview]);
 
   useEffect(() => {
@@ -62,6 +66,14 @@ const FormPreview: React.FunctionComponent = () => {
   }, [formSettings, iframeElement, previewSettings, iframeLoaded, previewPageUrl]);
 
   if (!isPreview) return null;
+
+  function closePreview(): void {
+    const beacon = document.getElementById('beacon-container');
+    if (beacon) {
+      beacon.style.display = 'block';
+    }
+    hidePreview();
+  }
 
   function setFormType(type): void {
     setIframeLoaded(false);
@@ -84,7 +96,7 @@ const FormPreview: React.FunctionComponent = () => {
   }
   return (
     <Modal
-      onRequestClose={hidePreview}
+      onRequestClose={closePreview}
       fullScreen
       contentClassName="mailpoet_form_preview_modal"
       overlayClassName="mailpoet_form_preview_modal_overlay"
