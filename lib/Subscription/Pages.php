@@ -385,7 +385,7 @@ class Pages {
   }
 
   private function getConfirmUnsubscribeContent() {
-    if (!$this->isPreview() && $this->subscriber === null) {
+    if (!$this->isPreview() && ($this->subscriber === null || $this->subscriber->id === null)) {
       return '';
     }
     $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
