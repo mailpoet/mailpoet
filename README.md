@@ -64,7 +64,6 @@ $ ./do compile:all         # compiles CSS and JS files.
 
 $ ./do watch:css           # watch CSS files for changes and compile them.
 $ ./do watch:js            # watch JS files for changes and compile them.
-$ ./do watch               # watch CSS and JS files for changes and compile them.
 
 $ ./do test:unit [--file=...] [--debug]
   # runs the PHP unit tests.
