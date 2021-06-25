@@ -4,8 +4,8 @@ namespace MailPoet\Statistics\Track;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\StatisticsOpens;
 use MailPoet\Statistics\StatisticsOpensRepository;
 
 class Opens {
@@ -30,11 +30,18 @@ class Opens {
     // log statistics only if the action did not come from
     // a WP user previewing the newsletter
     if (!$wpUserPreview) {
-      StatisticsOpens::getOrCreate(
-        $subscriber->getId(),
-        $newsletter->getId(),
-        $queue->getId()
-      );
+      $oldStatistics = $this->statisticsOpensRepository->findOneBy([
+        'subscriber' => $subscriber->getId(),
+        'newsletter' => $newsletter->getId(),
+        'queue' => $queue->getId(),
+      ]);
+      // Open was already tracked
+      if ($oldStatistics) {
+        return $this->returnResponse($displayImage);
+      }
+      $statistics = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
+      $this->statisticsOpensRepository->persist($statistics);
+      $this->statisticsOpensRepository->flush();
       $this->statisticsOpensRepository->recalculateSubscriberScore($subscriber);
     }
     return $this->returnResponse($displayImage);
