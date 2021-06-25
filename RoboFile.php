@@ -36,7 +36,7 @@ class RoboFile extends \Robo\Tasks {
   public function watch() {
     $this->say('Warning: this lints and compiles all files, not just the changed one. Use separate tasks watch:js and watch:css for faster and more efficient watching.');
     $cssFiles = $this->rsearch('assets/css/src/', ['scss']);
-    $jsFiles = $this->rsearch('assets/js/src/', ['js', 'jsx']);
+    $jsFiles = $this->rsearch('assets/js/src/', ['js', 'jsx', 'ts', 'tsx']);
 
     $this->taskWatch()
       ->monitor($jsFiles, function() {
