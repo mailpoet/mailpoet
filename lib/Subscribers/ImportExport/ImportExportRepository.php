@@ -229,7 +229,7 @@ class ImportExportRepository {
       ->from($customFieldsTable)
       ->execute();
 
-    $customFields = $customFields instanceof Statement ? $customFields->fetchAll() : [];
+    $customFields = $customFields->fetchAll();
 
     foreach ($customFields as $customField) {
       $customFieldId = "customFieldId{$customField['id']}";
