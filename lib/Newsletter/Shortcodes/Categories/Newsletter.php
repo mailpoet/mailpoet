@@ -77,7 +77,7 @@ class Newsletter implements CategoryInterface {
       ]
     );
     WPFunctions::get()->removeAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
-    return (!empty($posts->posts[0])) ?
+    return (!empty($posts->posts[0])) && ($posts->posts[0] instanceof \WP_Post) ?
       $posts->posts[0]->to_array() :
       false;
   }
