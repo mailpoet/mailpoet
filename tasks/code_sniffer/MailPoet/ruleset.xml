@@ -60,14 +60,6 @@
   <rule ref="PSR1.Classes.ClassDeclaration"/> <!-- Each class must be in a file by itself and must be under a namespace -->
   <rule ref="PSR2.Classes.PropertyDeclaration"/> <!-- Properties must have visibility, no trailing "_", one property per statement, "static" before visibility -->
 
-  <!-- checks for unused methods, unused or write-only properties in a class and unused private constants -->
-  <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
-    <properties>
-      <property name="alwaysUsedPropertiesAnnotations" type="array"
-                value="@ORM\Column,@ORM\ManyToOne,@ORM\OneToMany,@ORM\ManyToMany,@ORM\OneToOne"/>
-    </properties>
-  </rule>
-
   <!-- Indentation -->
   <rule ref="Generic.WhiteSpace.DisallowTabIndent"/> <!-- Disallow indenting with tabs -->
   <rule ref="Generic.WhiteSpace.ScopeIndent"> <!-- Control structures, classes, functions indent 2 spaces per level -->
