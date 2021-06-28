@@ -234,7 +234,7 @@ class SubscriberListingRepository extends ListingRepository {
 
     $subscribersWithoutSegment = $subscribersWithoutSegmentQuery->getQuery()->getSingleScalarResult();
     $subscribersWithoutSegmentLabel = sprintf(
-      WPFunctions::get()->__('Subscribers without a list (%s)', 'mailpoet'),
+      WPFunctions::get()->__('Subscribers without a list (~%s)', 'mailpoet'),
       number_format((float)$subscribersWithoutSegment)
     );
 
@@ -261,7 +261,7 @@ class SubscriberListingRepository extends ListingRepository {
     $segmentList = [];
     foreach ($queryBuilder->getQuery()->getResult() as $item) {
       $segmentList[] = [
-        'label' => sprintf('%s (%s)', $item['name'], number_format((float)$item['subscribersCount'])),
+        'label' => sprintf('%s (~%s)', $item['name'], number_format((float)$item['subscribersCount'])),
         'value' => $item['id'],
       ];
     }
@@ -281,7 +281,7 @@ class SubscriberListingRepository extends ListingRepository {
         continue;
       }
       $segmentList[] = [
-        'label' => sprintf('%s (%s)', $segment->getName(), number_format((float)$count)),
+        'label' => sprintf('%s (~%s)', $segment->getName(), number_format((float)$count)),
         'value' => $segment->getId(),
       ];
     }

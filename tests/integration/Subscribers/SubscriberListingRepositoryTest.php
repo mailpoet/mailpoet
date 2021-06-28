@@ -69,8 +69,8 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $filters = $this->repository->getFilters($this->getListingDefinition());
     expect($filters['segment'])->count(3);
     expect($filters['segment'][0]['label'])->equals('All Lists');
-    expect($filters['segment'][1]['label'])->equals('Subscribers without a list (3)');
-    expect($filters['segment'][2]['label'])->endsWith('(2)');
+    expect($filters['segment'][1]['label'])->equals('Subscribers without a list (~3)');
+    expect($filters['segment'][2]['label'])->endsWith('(~2)');
   }
 
   public function testItBuildsGroups() {
