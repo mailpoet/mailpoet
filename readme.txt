@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.7
-Stable tag: 3.64.1
+Stable tag: 3.64.2
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,16 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.64.2 - 2021-06-28 =
+* Improved: performance of the engagement score calculation;
+* Improved: segment form error handling;
+* Improved: hide help icon in form editor preview;
+* Changed: MailPoet no longer unsubscribes from unchecked lists in signup form;
+* Fixed: rare PHP error when unsubscribing;
+* Fixed: duplicated New Subscriber notification;
+* Fixed: large 3rd-party admin menu icons;
+* Fixed: false-positive registration spam detection.
 
 = 3.64.1 - 2021-06-22 =
 * Added: create complex segments using multiple conditions;
