@@ -142,9 +142,9 @@ class Clicks {
   }
 
   public function abort() {
-    global $wp_query;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    global $wp_query;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     WPFunctions::get()->statusHeader(404);
-    $wp_query->set_404();// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $wp_query->set_404();// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     WPFunctions::get()->getTemplatePart((string)404);
     exit;
   }

@@ -46,7 +46,7 @@ class WooCommerceTest extends \MailPoetTest {
     $subscriber->hydrate([
       'first_name' => 'Mike',
       'last_name' => 'Mike',
-      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'wp_user_id' => $user->ID,
     ]);
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
@@ -59,7 +59,7 @@ class WooCommerceTest extends \MailPoetTest {
       ->where('wp_user_id', $user->ID)
       ->findOne();
     expect($subscriber)->notEmpty();
-    expect($subscriber->email)->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect($subscriber->email)->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($subscriber->firstName)->equals($firstName);
     expect($subscriber->lastName)->equals($lastName);
     expect($subscriber->isWoocommerceUser)->equals(1);
@@ -75,7 +75,7 @@ class WooCommerceTest extends \MailPoetTest {
     $subscriber->hydrate([
       'first_name' => 'Mike',
       'last_name' => 'Mike',
-      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'wp_user_id' => $user->ID,
     ]);
     $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
@@ -87,7 +87,7 @@ class WooCommerceTest extends \MailPoetTest {
       ->where('wp_user_id', $user->ID)
       ->findOne();
     expect($subscriber)->notEmpty();
-    expect($subscriber->email)->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect($subscriber->email)->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($subscriber->firstName)->equals($firstName);
     expect($subscriber->lastName)->equals($lastName);
     expect($subscriber->isWoocommerceUser)->equals(1);
@@ -102,7 +102,7 @@ class WooCommerceTest extends \MailPoetTest {
     $subscriber->hydrate([
       'first_name' => 'Mike',
       'last_name' => 'Mike',
-      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'wp_user_id' => $user->ID,
     ]);
     $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
@@ -158,7 +158,7 @@ class WooCommerceTest extends \MailPoetTest {
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(2);
 
-    $subscriber = Subscriber::where('email', $user->user_email)->findOne(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $subscriber = Subscriber::where('email', $user->user_email)->findOne(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
     expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
     $subscriber = Subscriber::where('email', $guest['email'])->findOne();
@@ -234,7 +234,7 @@ class WooCommerceTest extends \MailPoetTest {
     $user = $this->insertRegisteredCustomerWithOrder(null, ['first_name' => '']);
     $this->woocommerceSegment->synchronizeCustomers();
     update_post_meta($user->orderId, '_billing_first_name', 'First name');
-    $this->createOrder(['email' => $user->user_email, 'first_name' => 'First name (newer)']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $this->createOrder(['email' => $user->user_email, 'first_name' => 'First name (newer)']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->woocommerceSegment->synchronizeCustomers();
     $subscriber = Subscriber::where('wp_user_id', $user->ID)->findOne();
     expect($subscriber->firstName)->equals('First name (newer)');
@@ -244,7 +244,7 @@ class WooCommerceTest extends \MailPoetTest {
     $user = $this->insertRegisteredCustomerWithOrder(null, ['last_name' => '']);
     $this->woocommerceSegment->synchronizeCustomers();
     update_post_meta($user->orderId, '_billing_last_name', 'Last name');
-    $this->createOrder(['email' => $user->user_email, 'last_name' => 'Last name (newer)']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $this->createOrder(['email' => $user->user_email, 'last_name' => 'Last name (newer)']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->woocommerceSegment->synchronizeCustomers();
     $subscriber = Subscriber::where('wp_user_id', $user->ID)->findOne();
     expect($subscriber->lastName)->equals('Last name (newer)');
@@ -285,13 +285,13 @@ class WooCommerceTest extends \MailPoetTest {
   public function testItDoesntRemoveRegisteredCustomersFromTrash() {
     $user = $this->insertRegisteredCustomer();
     $this->woocommerceSegment->synchronizeCustomers();
-    $subscriber = Subscriber::where("email", $user->user_email) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $subscriber = Subscriber::where("email", $user->user_email) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       ->where('is_woocommerce_user', 1)
       ->findOne();
     $subscriber->deletedAt = Carbon::now();
     $subscriber->save();
     $this->woocommerceSegment->synchronizeCustomers();
-    $subscriber = Subscriber::where("email", $user->user_email) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $subscriber = Subscriber::where("email", $user->user_email) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       ->where('is_woocommerce_user', 1)
       ->findOne();
     expect($subscriber->deletedAt)->notNull();
@@ -338,7 +338,7 @@ class WooCommerceTest extends \MailPoetTest {
     $subscriber->hydrate([
       'first_name' => 'John',
       'last_name' => 'John',
-      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'wp_user_id' => $user->ID,
     ]);
     $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
@@ -464,7 +464,7 @@ class WooCommerceTest extends \MailPoetTest {
     $user2 = $this->insertRegisteredCustomer();
 
     $subscriber1 = Subscriber::createOrUpdate([
-      'email' => $user1->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'email' => $user1->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'is_woocommerce_user' => 1,
       'status' => Subscriber::STATUS_UNSUBSCRIBED,
     ]);
@@ -475,7 +475,7 @@ class WooCommerceTest extends \MailPoetTest {
     $association1->save();
 
     $subscriber2 = Subscriber::createOrUpdate([
-      'email' => $user2->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'email' => $user2->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'is_woocommerce_user' => 1,
       'status' => Subscriber::STATUS_UNSUBSCRIBED,
       'confirmed_ip' => '123',
@@ -508,7 +508,7 @@ class WooCommerceTest extends \MailPoetTest {
     $user2 = $this->insertRegisteredCustomer();
 
     $subscriber1 = Subscriber::createOrUpdate([
-      'email' => $user1->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'email' => $user1->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'is_woocommerce_user' => 1,
       'status' => Subscriber::STATUS_SUBSCRIBED,
     ]);
@@ -519,7 +519,7 @@ class WooCommerceTest extends \MailPoetTest {
     $association1->save();
 
     $subscriber2 = Subscriber::createOrUpdate([
-      'email' => $user2->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'email' => $user2->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'is_woocommerce_user' => 1,
       'status' => Subscriber::STATUS_SUBSCRIBED,
       'confirmed_ip' => '123',
@@ -673,7 +673,7 @@ class WooCommerceTest extends \MailPoetTest {
     // add customer role
     $user = new WPUserWithExtraProps($id);
     $user->add_role('customer');
-    $this->userEmails[] = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $this->userEmails[] = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     return $user;
   }
 
@@ -697,7 +697,7 @@ class WooCommerceTest extends \MailPoetTest {
     $number = !is_null($number) ? (int)$number : mt_rand();
     $data = is_array($data) ? $data : [];
     $user = $this->insertRegisteredCustomer($number, $data['first_name'] ?? null, $data['last_name'] ?? null);
-    $data['email'] = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $data['email'] = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $data['user_id'] = $user->ID;
     $user->orderId = $this->createOrder($data);
     return $user;

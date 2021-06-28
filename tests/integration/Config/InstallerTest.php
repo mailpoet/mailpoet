@@ -46,18 +46,18 @@ class InstallerTest extends \MailPoetTest {
           $obj = new \stdClass();
           $obj->slug = $this->slug;
           $obj->name = 'MailPoet Premium';
-          $obj->new_version = '3.0.0-alpha.0.0.3.1'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+          $obj->new_version = '3.0.0-alpha.0.0.3.1'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
           $obj->requires = '4.6';
           $obj->tested = '4.7.4';
           $obj->downloaded = 12540;
-          $obj->last_updated = date('Y-m-d'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+          $obj->last_updated = date('Y-m-d'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
           $obj->sections = [
             'description' => 'The new version of the Premium plugin',
             'another_section' => 'This is another section',
             'changelog' => 'Some new features',
           ];
-          $obj->download_link = home_url() . '/wp-content/uploads/mailpoet-premium.zip'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-          $obj->package = $obj->download_link; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+          $obj->download_link = home_url() . '/wp-content/uploads/mailpoet-premium.zip'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          $obj->package = $obj->download_link; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
           return $obj;
         },
       ],
@@ -65,8 +65,8 @@ class InstallerTest extends \MailPoetTest {
     );
     $result = $installer->getPluginInformation(false, 'plugin_information', $args);
     expect($result->slug)->equals($this->slug);
-    expect($result->new_version)->notEmpty(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    expect($result->download_link)->notEmpty(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect($result->new_version)->notEmpty(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($result->download_link)->notEmpty(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($result->package)->notEmpty();
   }
 

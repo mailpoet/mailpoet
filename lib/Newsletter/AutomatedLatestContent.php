@@ -43,8 +43,8 @@ class AutomatedLatestContent {
     // Queries with taxonomies are autodetected as 'is_archive=true' and 'is_home=false'
     // while queries without them end up being 'is_archive=false' and 'is_home=true'.
     // This is to fix that by always enforcing constistent behavior.
-    $query->is_archive = true; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $query->is_home = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $query->is_archive = true; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $query->is_home = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function getPosts($args, $postsToExclude = [], $newsletterId = false, $newerThanTimestamp = false) {
@@ -179,7 +179,7 @@ class AutomatedLatestContent {
     foreach ($posts as $post) {
       $postsToLog[] = [
         'id' => $post->ID,
-        'post_date' => $post->post_date, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        'post_date' => $post->post_date, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       ];
     }
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(

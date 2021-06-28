@@ -84,12 +84,12 @@ class ConflictResolver {
     $_this->permittedAssetsLocations['styles'] = WPFunctions::get()->applyFilters('mailpoet_conflict_resolver_whitelist_style', $_this->permittedAssetsLocations['styles']);
     // unload all styles except from the list of allowed
     $dequeueStyles = function() use($_this) {
-      global $wp_styles; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      if (!isset($wp_styles->registered)) return; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      if (empty($wp_styles->queue)) return; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      foreach ($wp_styles->queue as $wpStyle) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        if (empty($wp_styles->registered[$wpStyle])) continue; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        $registeredStyle = $wp_styles->registered[$wpStyle]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      global $wp_styles; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      if (!isset($wp_styles->registered)) return; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      if (empty($wp_styles->queue)) return; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      foreach ($wp_styles->queue as $wpStyle) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        if (empty($wp_styles->registered[$wpStyle])) continue; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        $registeredStyle = $wp_styles->registered[$wpStyle]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         if (!is_string($registeredStyle->src)) {
           continue;
         }
@@ -115,10 +115,10 @@ class ConflictResolver {
     $_this->permittedAssetsLocations['scripts'] = WPFunctions::get()->applyFilters('mailpoet_conflict_resolver_whitelist_script', $_this->permittedAssetsLocations['scripts']);
     // unload all scripts except from the list of allowed
     $dequeueScripts = function() use($_this) {
-      global $wp_scripts; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      foreach ($wp_scripts->queue as $wpScript) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        if (empty($wp_scripts->registered[$wpScript])) continue; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-        $registeredScript = $wp_scripts->registered[$wpScript]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      global $wp_scripts; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      foreach ($wp_scripts->queue as $wpScript) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        if (empty($wp_scripts->registered[$wpScript])) continue; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        $registeredScript = $wp_scripts->registered[$wpScript]; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         if (!is_string($registeredScript->src)) {
           continue;
         }
@@ -143,8 +143,8 @@ class ConflictResolver {
 
     // mark editor as already enqueued to prevent loading its assets
     // when wp_enqueue_editor() used by some other plugin
-    global $wp_actions; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $wp_actions['wp_enqueue_editor'] = 1; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    global $wp_actions; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $wp_actions['wp_enqueue_editor'] = 1; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     // prevent editor loading when used wp_editor() used by some other plugin
     WPFunctions::get()->addFilter('wp_editor_settings', function () {
@@ -177,12 +177,12 @@ class ConflictResolver {
     ];
 
     $disableWpTinymce = function() use ($tinyMceFooterScriptHooks) {
-      global $wp_filter; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      global $wp_filter; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $actionName = 'admin_print_footer_scripts';
-      if (!isset($wp_filter[$actionName])) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      if (!isset($wp_filter[$actionName])) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         return;
       }
-      foreach ($wp_filter[$actionName]->callbacks as $priority => $callbacks) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      foreach ($wp_filter[$actionName]->callbacks as $priority => $callbacks) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         foreach ($tinyMceFooterScriptHooks as $hook) {
           if (isset($callbacks[$hook])) {
             WPFunctions::get()->removeAction($actionName, $callbacks[$hook]['function'], $priority);

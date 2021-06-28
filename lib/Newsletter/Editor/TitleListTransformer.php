@@ -31,7 +31,7 @@ class TitleListTransformer {
   }
 
   private function getPostTitle($post) {
-    $title = $post->post_title; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $title = $post->post_title; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $alignment = $this->args['titleAlignment'];
     $alignment = (in_array($alignment, ['left', 'right', 'center'])) ? $alignment : 'left';
 

@@ -63,17 +63,17 @@ class PHPMail {
     $mailer->clearAddresses();
     $mailer->clearCustomHeaders();
     $mailer->isHTML(!empty($newsletter['body']['html']));
-    $mailer->CharSet = 'UTF-8'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $mailer->CharSet = 'UTF-8'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $mailer->setFrom($this->sender['from_email'], $this->sender['from_name'], false);
     $mailer->addReplyTo($this->replyTo['reply_to_email'], $this->replyTo['reply_to_name']);
     $subscriber = $this->processSubscriber($subscriber);
     $mailer->addAddress($subscriber['email'], $subscriber['name']);
-    $mailer->Subject = (!empty($newsletter['subject'])) ? $newsletter['subject'] : ''; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $mailer->Body = (!empty($newsletter['body']['html'])) ? $newsletter['body']['html'] : $newsletter['body']['text']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    if ($mailer->ContentType !== 'text/plain') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      $mailer->AltBody = (!empty($newsletter['body']['text'])) ? $newsletter['body']['text'] : ''; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $mailer->Subject = (!empty($newsletter['subject'])) ? $newsletter['subject'] : ''; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $mailer->Body = (!empty($newsletter['body']['html'])) ? $newsletter['body']['html'] : $newsletter['body']['text']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if ($mailer->ContentType !== 'text/plain') { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $mailer->AltBody = (!empty($newsletter['body']['text'])) ? $newsletter['body']['text'] : ''; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
-    $mailer->Sender = $this->returnPath; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $mailer->Sender = $this->returnPath; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     if (!empty($extraParams['unsubscribe_url'])) {
       $this->mailer->addCustomHeader('List-Unsubscribe', $extraParams['unsubscribe_url']);
     }
@@ -85,8 +85,8 @@ class PHPMail {
     //   sendmail command which expects only NL as line endings (POSIX). Since quoted-printable
     //   requires CRLF some of those commands convert LF to CRLF which can break the email body
     //   because it already (correctly) uses CRLF. Such CRLF then (wrongly) becomes CRCRLF.
-    if (\PHPMailer::hasLineLongerThanMax($mailer->Body)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      $mailer->Encoding = 'base64'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    if (\PHPMailer::hasLineLongerThanMax($mailer->Body)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $mailer->Encoding = 'base64'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
 
     return $mailer;

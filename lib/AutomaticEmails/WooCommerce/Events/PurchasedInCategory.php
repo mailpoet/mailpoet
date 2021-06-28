@@ -82,7 +82,7 @@ class PurchasedInCategory {
 
     return array_map(function($category) {
       return [
-        'id' => $category->term_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        'id' => $category->term_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         'name' => $category->name,
       ];
     }, $allCategories);

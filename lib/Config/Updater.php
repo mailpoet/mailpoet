@@ -33,11 +33,11 @@ class Updater {
 
     $latestVersion = $this->getLatestVersion();
 
-    if (isset($latestVersion->new_version)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-      if (version_compare($this->version, $latestVersion->new_version, '<')) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    if (isset($latestVersion->new_version)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      if (version_compare($this->version, $latestVersion->new_version, '<')) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         $updateTransient->response[$this->plugin] = $latestVersion;
       }
-      $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $updateTransient->checked[$this->plugin] = $this->version;
     }
 

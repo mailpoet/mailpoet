@@ -39,7 +39,7 @@ class Beacon {
       CronDaemon::ACTION_PING
     );
     return [
-      'name' => $currentUser->display_name, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'name' => $currentUser->display_name, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'email' => $sender['address'],
       'PHP version' => PHP_VERSION,
       'MailPoet Free version' => MAILPOET_VERSION,

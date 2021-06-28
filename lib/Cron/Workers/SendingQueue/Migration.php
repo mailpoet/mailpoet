@@ -142,7 +142,7 @@ class Migration extends SimpleWorker {
             $queue['id']
           ));
           // link the queue with the task via task_id
-          $newTaskId = $wpdb->insert_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+          $newTaskId = $wpdb->insert_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
           $wpdb->query(sprintf(
             'UPDATE %1$s SET `task_id` = %2$s WHERE `id` = %3$s',
             MP_SENDING_QUEUES_TABLE,
