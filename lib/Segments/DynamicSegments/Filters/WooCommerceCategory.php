@@ -49,12 +49,12 @@ class WooCommerceCategory implements Filter {
       "itemmeta.order_item_id = items.order_item_id AND itemmeta.meta_key = '_product_id'"
     )->join(
       'itemmeta',
-      $wpdb->term_relationships, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $wpdb->term_relationships, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'term_relationships',
       'itemmeta.meta_value = term_relationships.object_id'
     )->innerJoin(
       'term_relationships',
-      $wpdb->term_taxonomy, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $wpdb->term_taxonomy, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'term_taxonomy',
       'term_taxonomy.term_taxonomy_id=term_relationships.term_taxonomy_id
       AND
@@ -69,7 +69,7 @@ class WooCommerceCategory implements Filter {
     $subcategories = $this->wp->getTerms('product_cat', ['child_of' => $categoryId]);
     if (!is_array($subcategories)) return [];
     $ids = array_map(function($category) {
-      return $category->term_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      return $category->term_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }, $subcategories);
     $ids[] = $categoryId;
     return $ids;

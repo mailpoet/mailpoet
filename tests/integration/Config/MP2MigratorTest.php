@@ -64,7 +64,7 @@ class MP2MigratorTest extends \MailPoetTest {
 
     // Check if the subscribers number is equal to the WordPress users number
     // On multisite environment, there's only 1 users table that's shared by subsites
-    $WPUsersCount = ORM::for_table($wpdb->base_prefix . 'users')->count(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $WPUsersCount = ORM::for_table($wpdb->base_prefix . 'users')->count(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect(Subscriber::count())->equals($WPUsersCount);
 
     // Check if the custom fields number is 0
@@ -310,10 +310,10 @@ class MP2MigratorTest extends \MailPoetTest {
     $table = MP_SUBSCRIBERS_TABLE;
     $subscriber = $wpdb->get_row("SELECT * FROM $table WHERE email='$email'");
     expect($subscriber->email)->equals($email);
-    expect($subscriber->first_name)->equals($firstname); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    expect($subscriber->last_name)->equals($lastname); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    expect($subscriber->subscribed_ip)->equals($ip); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    expect($subscriber->confirmed_ip)->equals($confirmedIp); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect($subscriber->first_name)->equals($firstname); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($subscriber->last_name)->equals($lastname); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($subscriber->subscribed_ip)->equals($ip); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($subscriber->confirmed_ip)->equals($confirmedIp); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($subscriber->status)->equals('subscribed');
   }
 

@@ -62,8 +62,8 @@ class Env {
     self::initDbParameters($dbHost, $dbUser, $dbPassword, $dbName);
 
     // back compatibility for older Premium plugin with underscore naming
-    self::$plugin_name = self::$pluginName; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    self::$temp_path = self::$tempPath; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    self::$plugin_name = self::$pluginName; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    self::$temp_path = self::$tempPath; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   /**

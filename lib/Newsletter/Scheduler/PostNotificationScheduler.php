@@ -63,7 +63,7 @@ class PostNotificationScheduler {
       ]
     );
     $types = Posts::getTypes();
-    if (($newStatus !== 'publish') || !isset($types[$post->post_type])) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    if (($newStatus !== 'publish') || !isset($types[$post->post_type])) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       return;
     }
     $this->schedulePostNotification($post->ID);
@@ -112,7 +112,7 @@ class PostNotificationScheduler {
     if ($scheduledAt && $scheduledAt->format('Y-m-d H:i:s') === $nextRunDate) {
       return null;
     }
-    
+
     $sendingTask = SendingTask::create();
     $sendingTask->newsletterId = $newsletter->getId();
     $sendingTask->status = SendingQueue::STATUS_SCHEDULED;

@@ -61,7 +61,7 @@ class WooCommercePastRevenues implements Generator {
     $productCategory = $this->createProductCategory('WC Revenues Test Category ' . $this->getRandomString(), 'revenues-test-cat-' . $this->getRandomString());
     $products = [];
     for ($i = 1; $i <= self::PRODUCTS_COUNT; $i++) {
-      $products[] = $this->createProduct("Product $i " . $this->getRandomString(), 100, [$productCategory->term_id]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $products[] = $this->createProduct("Product $i " . $this->getRandomString(), 100, [$productCategory->term_id]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
     yield "Products done";
 
@@ -155,7 +155,7 @@ class WooCommercePastRevenues implements Generator {
         'id' => $products[$i]->get_name(),
         'name' => $products[$i]->get_id(),
         'categories' => [[
-          'id' => $productCategory->term_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+          'id' => $productCategory->term_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
           'name' => $productCategory->name,
         ]],
       ];

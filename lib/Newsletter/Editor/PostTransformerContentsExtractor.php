@@ -58,19 +58,19 @@ class PostTransformerContentsExtractor {
      *
      * https://mailpoet.atlassian.net/browse/MAILPOET-1365
      */
-    global $content_width; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps, default is NULL
+    global $content_width; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps, default is NULL
 
-    $contentWidthCopy = $content_width; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $content_width = Env::NEWSLETTER_CONTENT_WIDTH; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $contentWidthCopy = $content_width; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $content_width = Env::NEWSLETTER_CONTENT_WIDTH; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $imageInfo = $this->wp->wpGetAttachmentImageSrc($id, 'mailpoet_newsletter_max');
-    $content_width = $contentWidthCopy; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $content_width = $contentWidthCopy; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     return $imageInfo;
   }
 
   public function getFeaturedImage($post) {
     $postId = $post->ID;
-    $postTitle = $this->sanitizeTitle($post->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $postTitle = $this->sanitizeTitle($post->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $imageFullWidth = (bool)filter_var($this->args['imageFullWidth'], FILTER_VALIDATE_BOOLEAN);
 
     if (!has_post_thumbnail($postId)) {
@@ -131,7 +131,7 @@ class PostTransformerContentsExtractor {
   }
 
   public function getTitle($post) {
-    $title = $this->sanitizeTitle($post->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $title = $this->sanitizeTitle($post->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     if (filter_var($this->args['titleIsLink'], FILTER_VALIDATE_BOOLEAN)) {
       $title = '<a href="' . $this->wp->getPermalink($post->ID) . '">' . $title . '</a>';
@@ -188,7 +188,7 @@ class PostTransformerContentsExtractor {
   }
 
   public function isProduct($post) {
-    return $post->post_type === 'product'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    return $post->post_type === 'product'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   /**

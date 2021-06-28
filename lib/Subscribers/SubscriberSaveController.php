@@ -93,7 +93,7 @@ class SubscriberSaveController {
         (int)$oldSubscriber->getId(),
         StatisticsUnsubscribeEntity::SOURCE_ADMINISTRATOR,
         null,
-        $currentUser->display_name // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        $currentUser->display_name // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       );
     }
 

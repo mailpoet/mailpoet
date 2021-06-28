@@ -78,7 +78,7 @@ class Settings {
       'current_user' => $this->wp->wpGetCurrentUser(),
       'is_woocommerce_active' => $this->woocommerceHelper->isWooCommerceActive(),
       'is_members_plugin_active' => $this->wp->isPluginActive('members/members.php'),
-      'premium_plugin_download_url' => $pluginInformation->download_link ?? null, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      'premium_plugin_download_url' => $pluginInformation->download_link ?? null, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'hosts' => [
         'web' => Hosts::getWebHosts(),
         'smtp' => Hosts::getSMTPHosts(),

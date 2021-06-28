@@ -26,7 +26,7 @@
 - we want to avoid using `eslint-disable`
 - if we have to use it we need to use a comment explaining why do we need it:
 `/* eslint-disable no-new -- this class has a side-effect in the constructor and it's a library's. */`
-- for PHP we do the same with the exception `// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps` which for now doesn’t require an explanation
+- for PHP we do the same with the exception `// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps` which for now doesn’t require an explanation
 
 ## Git flow
 - Do not commit to master.

@@ -198,7 +198,7 @@
   <rule ref="Squiz.Scope.MethodScope"/>
 
   <!-- Enforce camelCase naming of variables and properties -->
-  <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps"/>
+  <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps"/>
   <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps"/>
   <rule ref="Squiz.NamingConventions.ValidVariableName.StringNotCamelCaps"/>
 </ruleset>

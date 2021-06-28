@@ -38,7 +38,7 @@ class WordPressMailer extends \PHPMailer {
 
   public function send() {
     // We need this so that the \PHPMailer class will correctly prepare all the headers.
-    $this->Mailer = 'mail'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $this->Mailer = 'mail'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     // Prepare everything (including the message) for sending.
     $this->preSend();
@@ -71,7 +71,7 @@ class WordPressMailer extends \PHPMailer {
   }
 
   private function getEmail() {
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $email = [
       'subject' => $this->Subject,
       'body' => [],

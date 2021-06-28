@@ -28,10 +28,10 @@ class DeprecatedShortcodeNotice {
   }
 
   public function isUsingDeprecatedShortcode() {
-    global $wp_filter;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    global $wp_filter;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $hook = 'mailpoet_newsletter_shortcode';
-    if (empty($wp_filter[$hook])) return false;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    $callbacks = $wp_filter[$hook];// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    if (empty($wp_filter[$hook])) return false;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $callbacks = $wp_filter[$hook];// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     if (empty($callbacks->callbacks) || !is_array($callbacks->callbacks)) return false;
     foreach ($callbacks->callbacks as $callbackByPriority) {
       if (empty($callbackByPriority) || !is_array($callbackByPriority)) continue;

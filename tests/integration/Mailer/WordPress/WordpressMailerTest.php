@@ -8,7 +8,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Subscribers\SubscribersRepository;
 
-// phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 class WordpressMailerTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribersRepository;

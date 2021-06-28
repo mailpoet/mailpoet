@@ -69,7 +69,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect((new WPFunctions)->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $wpUser->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $subscriber->email = $wpUser->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $subscriber->wpUserId = $wpUser->ID;
     $subscriber->save();
 
@@ -86,7 +86,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect($wp->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $wpUser->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $subscriber->email = $wpUser->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $subscriber->wpUserId = $wpUser->ID;
     $subscriber->save();
 
@@ -105,7 +105,7 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItDoesNotDisplayManageSubscriptionFormForLoggedinNonexistentSubscribers() {
     $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
-    expect(Subscriber::findOne($wpUser->user_email))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect(Subscriber::findOne($wpUser->user_email))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
@@ -128,7 +128,7 @@ class ShortcodesTest extends \MailPoetTest {
     expect((new WPFunctions)->isUserLoggedIn())->true();
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $wpUser->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $subscriber->email = $wpUser->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $subscriber->wpUserId = $wpUser->ID;
     $subscriber->save();
 
@@ -141,7 +141,7 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItDoesNotDisplayLinkToManageSubscriptionPageForLoggedinNonexistentSubscribers() {
     $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();
-    expect(Subscriber::findOne($wpUser->user_email))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect(Subscriber::findOne($wpUser->user_email))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();

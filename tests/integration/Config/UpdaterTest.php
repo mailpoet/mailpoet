@@ -39,7 +39,7 @@ class UpdaterTest extends \MailPoetTest {
 
   public function testItChecksForUpdates() {
     $updateTransient = new \stdClass;
-    $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    $updateTransient->last_checked = time(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $updater = Stub::construct(
       $this->updater,
       [
@@ -62,7 +62,7 @@ class UpdaterTest extends \MailPoetTest {
       $this
     );
     $result = $updater->checkForUpdate($updateTransient);
-    expect($result->last_checked)->greaterOrEquals($updateTransient->last_checked); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    expect($result->last_checked)->greaterOrEquals($updateTransient->last_checked); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($result->checked[$this->pluginName])->equals($this->version);
     expect($result->response[$this->pluginName]->slug)->equals($this->slug);
     expect($result->response[$this->pluginName]->plugin)->equals($this->pluginName);

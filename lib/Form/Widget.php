@@ -190,7 +190,7 @@ class Widget extends \WP_Widget {
       'widget_title',
       !empty($instance['title']) ? $instance['title'] : '',
       $instance,
-      $this->id_base // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $this->id_base // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     );
 
     // get form
@@ -216,7 +216,7 @@ class Widget extends \WP_Widget {
     $output = '';
 
     if (!empty($body) && isset($form['settings']) && is_array($form['settings'])) {
-      $formId = $this->id_base . '_' . $form['id']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+      $formId = $this->id_base . '_' . $form['id']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $data = [
         'form_html_id' => $formId,
         'form_id' => $form['id'],

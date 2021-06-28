@@ -50,7 +50,7 @@ class Subscriber implements CategoryInterface {
       case 'displayname':
         if ($subscriber->getWpUserId()) {
           $wpUser = WPFunctions::get()->getUserdata($subscriber->getWpUserId());
-          return $wpUser->user_login; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+          return $wpUser->user_login; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         }
         return $defaultValue;
       case 'count':
