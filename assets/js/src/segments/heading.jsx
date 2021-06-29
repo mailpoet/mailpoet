@@ -6,6 +6,7 @@ import plusIcon from 'common/button/icon/plus';
 import SubscribersInPlan from 'common/subscribers_in_plan';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
+import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
 
 const ListHeading = () => (
   <>
@@ -24,6 +25,8 @@ const ListHeading = () => (
       subscribersInPlan={MailPoet.subscribersCount}
       subscribersInPlanLimit={MailPoet.subscribersLimit}
     />
+
+    <SubscribersCacheMessage cacheCalculation="2021-06-28 18:22:00" />
 
     <SubscribersLimitNotice />
     <InvalidMssKeyNotice
