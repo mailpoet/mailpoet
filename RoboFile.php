@@ -69,7 +69,7 @@ class RoboFile extends \Robo\Tasks {
     $env = ($opts['env']) ?
       sprintf('./node_modules/cross-env/dist/bin/cross-env.js NODE_ENV="%s"', $opts['env']) :
       null;
-    return $this->_exec($env . ' ./node_modules/webpack/bin/webpack.js --bail');
+    return $this->_exec($env . ' ./node_modules/webpack/bin/webpack.js');
   }
 
   public function compileCss($opts = ['env' => null]) {
