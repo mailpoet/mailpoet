@@ -387,7 +387,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Third party classes
     $container->autowire(\MailPoetVendor\CSS::class)->setClass(\MailPoetVendor\CSS::class)->setPublic(true);
     $container->autowire(\MailPoetVendor\csstidy::class)->setClass(\MailPoetVendor\csstidy::class);
-
+    // Cache
+    $container->autowire(\MailPoet\Cache\TransientCache::class)->setPublic(true);
     return $container;
   }
 
