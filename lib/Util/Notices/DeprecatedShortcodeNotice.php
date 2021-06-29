@@ -13,8 +13,15 @@ class DeprecatedShortcodeNotice {
   const DISMISS_NOTICE_TIMEOUT_SECONDS = 15552000; // 6 months
   const OPTION_NAME = 'dismissed-deprecated-shortcode-notice';
 
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(WPFunctions $wp) {
+    $this->wp = $wp;
+  }
+
   public function init($shouldDisplay) {
-    if ($shouldDisplay && $this->isUsingDeprecatedShortcode()) {
+    if ($shouldDisplay && !$this->wp->getTransient(self::OPTION_NAME) && $this->isUsingDeprecatedShortcode()) {
       return $this->display();
     }
     return null;
@@ -53,6 +60,6 @@ class DeprecatedShortcodeNotice {
   }
 
   public function disable() {
-    WPFunctions::get()->setTransient(self::OPTION_NAME, true, self::DISMISS_NOTICE_TIMEOUT_SECONDS);
+    $this->wp->setTransient(self::OPTION_NAME, true, self::DISMISS_NOTICE_TIMEOUT_SECONDS);
   }
 }
