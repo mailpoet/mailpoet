@@ -126,7 +126,7 @@
     "@types/react-datepicker": "^2.11.1",
     "@types/react-dom": "^16.9.12",
     "@types/react-router-dom": "^5.1.7",
-    "@types/react-select": "^4.0.16",
+    "@types/react-select": "^3.0.26",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.1",
     "@wordpress/browserslist-config": "^4.0.0",
