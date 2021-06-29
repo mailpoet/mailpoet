@@ -159,7 +159,7 @@
     "js-yaml": "^3.13.1",
     "jsdom": "^11.12.0",
     "json-loader": "^0.5.7",
-    "lint-staged": "^10.5.2",
+    "lint-staged": "^11.0.0",
     "mocha": "^7.2.0",
     "phplint": "^2.0.5",
     "postcss-cli": "^7.1.1",
