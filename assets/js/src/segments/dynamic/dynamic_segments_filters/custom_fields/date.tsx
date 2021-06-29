@@ -108,9 +108,12 @@ const DateYear = ({ onChange, item, filterIndex }: ComponentProps) => {
   );
 };
 
-const convertDateToString = (value: Date): string | undefined => {
+const convertDateToString = (value: Date|[Date, Date]): string | undefined => {
   if (value === null) {
     return undefined;
+  }
+  if (Array.isArray(value)) {
+    throw new Error('convertDateToString can process only single date array given');
   }
   return format(value, 'yyyy-MM-dd 00:00:00');
 };

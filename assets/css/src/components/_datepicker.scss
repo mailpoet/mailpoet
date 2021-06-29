@@ -1,4 +1,4 @@
-@import '../../../../node_modules/react-datepicker/src/stylesheets/datepicker';
+@import '../../../../node_modules/react-datepicker/dist/react-datepicker';
 
 .mailpoet-datetime-container {
   display: flex;
@@ -28,7 +28,7 @@
     width: 100%;
   }
 
-  .react-datepicker__triangle {
+  .react-datepicker__navigation-icon {
     display: none;
   }
 
@@ -104,6 +104,7 @@
   }
 
   .react-datepicker__navigation {
+    margin: 0 $grid-gap-half;
     top: $grid-gap;
   }
 

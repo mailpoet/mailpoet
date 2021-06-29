@@ -26,9 +26,12 @@ const availableOperators = [
   SubscribedDateOperator.NOT_IN_THE_LAST,
 ];
 
-const convertDateToString = (value: Date): string | undefined => {
+const convertDateToString = (value: Date|[Date, Date]): string | undefined => {
   if (value === null) {
     return undefined;
+  }
+  if (Array.isArray(value)) {
+    throw new Error('convertDateToString can process only single date array given');
   }
   return (MailPoet.Date.format(value, { format: 'Y-m-d' }));
 };
