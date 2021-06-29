@@ -47,7 +47,7 @@ class PermanentNotices {
     $this->inactiveSubscribersNotice = new InactiveSubscribersNotice(SettingsController::getInstance(), $wp);
     $this->blackFridayNotice = new BlackFridayNotice();
     $this->headersAlreadySentNotice = new HeadersAlreadySentNotice(SettingsController::getInstance(), $wp);
-    $this->deprecatedShortcodeNotice = new DeprecatedShortcodeNotice();
+    $this->deprecatedShortcodeNotice = new DeprecatedShortcodeNotice($wp);
     $this->emailWithInvalidListNotice = new EmailWithInvalidSegmentNotice($wp);
   }
 
