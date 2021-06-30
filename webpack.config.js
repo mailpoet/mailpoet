@@ -1,9 +1,9 @@
 const webpack = require('webpack');
 const webpackManifestPlugin = require('webpack-manifest-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpackTerserPlugin = require('terser-webpack-plugin');
 const webpackCopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
+const del = require('del');
 const globalPrefix = 'MailPoetLib';
 const PRODUCTION_ENV = process.env.NODE_ENV === 'production';
 const manifestSeed = {};
@@ -58,9 +58,7 @@ const baseConfig = {
   node: {
     fs: 'empty'
   },
-  plugins: [
-    new CleanWebpackPlugin(),
-  ],
+  plugins: [],
   module: {
     noParse: /node_modules\/lodash\/lodash\.js/,
     rules: [
@@ -406,6 +404,10 @@ module.exports = [adminConfig, publicConfig, migratorConfig, formEditorConfig, f
         seed: manifestSeed,
       })
     );
+  }
+  // Clean output paths before build
+  if (config.output && config.output.path) {
+    del.sync([path.resolve(config.output.path, '**/*')]);
   }
   return Object.assign({}, baseConfig, config);
 });
