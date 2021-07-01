@@ -193,6 +193,7 @@ class RoboFile extends \Robo\Tasks {
       './node_modules/.bin/mocha',
       '-r tests/javascript_newsletter_editor/mochaTestHelper.js',
       'tests/javascript_newsletter_editor/testBundles/**/*.js',
+      '--exit',
     ]);
 
     if (!empty($xmlOutputFile)) {
