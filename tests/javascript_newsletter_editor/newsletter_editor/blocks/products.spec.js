@@ -283,7 +283,7 @@ describe('Products', function () {
     });
   });
 
-  describe('block settings view', function () {
+  describe.skip('block settings view', function () {
     var model;
     var view;
 

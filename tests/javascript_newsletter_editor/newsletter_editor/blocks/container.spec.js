@@ -262,7 +262,7 @@ describe('Container', function () {
         expect(model.get('image.display')).to.equal('tile');
       });
 
-      it('updates the model when background image src changes', function () {
+      it.skip('updates the model when background image src changes', function () {
         global.stubImage(123, 456);
         view.$('.mailpoet_field_image_address').val(newSrc).trigger('input');
         expect(model.get('image.src')).to.equal(newSrc);

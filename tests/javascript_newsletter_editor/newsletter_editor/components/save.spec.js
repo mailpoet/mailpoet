@@ -285,7 +285,7 @@ describe('Save', function () {
       view = new (SaveComponent.NewsletterPreviewView)();
     });
 
-    it('renders', function () {
+    it.skip('renders', function () {
       expect(view.render).to.not.throw();
     });
   });
