@@ -223,29 +223,24 @@ class SubscriberListingRepository extends ListingRepository {
   public function getFilters(ListingDefinition $definition): array {
     $group = $definition->getGroup();
 
-    $queryBuilder = clone $this->queryBuilder;
-    $this->applyFromClause($queryBuilder);
-    $subscribersWithoutSegmentQuery = $this->segmentSubscribersRepository->getSubscribersWithoutSegmentCountQuery();
+    $subscribersWithoutSegmentStats = $this->segmentSubscribersRepository->getSubscribersWithoutSegmentStatisticsCount();
+    $key = $group ?: 'all';
+    $subscribersWithoutSegmentCount = $subscribersWithoutSegmentStats[$key];
 
-    if ($group) {
-      $this->applyGroup($queryBuilder, $group);
-      $this->applyGroup($subscribersWithoutSegmentQuery, $group);
-    }
-
-    $subscribersWithoutSegment = $subscribersWithoutSegmentQuery->getQuery()->getSingleScalarResult();
     $subscribersWithoutSegmentLabel = sprintf(
       WPFunctions::get()->__('Subscribers without a list (~%s)', 'mailpoet'),
-      number_format((float)$subscribersWithoutSegment)
+      number_format((float)$subscribersWithoutSegmentCount)
     );
 
+    $queryBuilder = clone $this->queryBuilder;
     $queryBuilder
-      ->select('sg.id, sg.name, COUNT(s) AS subscribersCount')
-      ->leftJoin('s.subscriberSegments', 'ssg')
-      ->join('ssg.segment', 'sg')
-      ->groupBy('sg.id')
-      ->andWhere('sg.deletedAt IS NULL')
-      ->andWhere('s.deletedAt IS NULL')
-      ->having('subscribersCount > 0');
+      ->select('s')
+      ->from(SegmentEntity::class, 's');
+    if ($group === 'trash') {
+      $queryBuilder->andWhere('s.deletedAt IS NOT NULL');
+    } else {
+      $queryBuilder->andWhere('s.deletedAt IS NULL');
+    }
 
     // format segment list
     $allSubscribersList = [
@@ -259,32 +254,19 @@ class SubscriberListingRepository extends ListingRepository {
     ];
 
     $segmentList = [];
-    foreach ($queryBuilder->getQuery()->getResult() as $item) {
-      $segmentList[] = [
-        'label' => sprintf('%s (~%s)', $item['name'], number_format((float)$item['subscribersCount'])),
-        'value' => $item['id'],
-      ];
-    }
-
-    $queryBuilder = clone $this->queryBuilder;
-    // Load dynamic segments with some subscribers
-    $queryBuilder
-      ->select('s')
-      ->from(SegmentEntity::class, 's')
-      ->andWhere('s.type = :dynamicType')
-      ->andWhere('s.deletedAt IS NULL')
-      ->setParameter('dynamicType', SegmentEntity::TYPE_DYNAMIC);
-
     foreach ($queryBuilder->getQuery()->getResult() as $segment) {
-      $count = $this->segmentSubscribersRepository->getSubscribersCount($segment->getId());
-      if (!$count) {
+      $key = $group ?: 'all';
+      $count = $this->segmentSubscribersRepository->getSubscribersStatisticsCount($segment);
+      if (!$count[$key]) {
         continue;
       }
+
       $segmentList[] = [
-        'label' => sprintf('%s (~%s)', $segment->getName(), number_format((float)$count)),
+        'label' => sprintf('%s (~%s)', $segment->getName(), number_format((float)$count[$key])),
         'value' => $segment->getId(),
       ];
     }
+
     usort($segmentList, function($a, $b) {
       return strcasecmp($a['label'], $b['label']);
     });
