@@ -189,8 +189,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testNewsletterEditor($xmlOutputFile = null) {
-    $this->compileJs();
-
     $command = join(' ', [
       './node_modules/.bin/mocha',
       '-r tests/javascript_newsletter_editor/mochaTestHelper.js',
@@ -204,7 +202,12 @@ class RoboFile extends \Robo\Tasks {
       );
     }
 
-    return $this->_exec($command);
+    return $this->collectionBuilder()
+      ->addCode(function () {
+        $this->compileJs();
+      })
+      ->taskExec($command)
+      ->run();
   }
 
   public function testJavascript($xmlOutputFile = null) {
