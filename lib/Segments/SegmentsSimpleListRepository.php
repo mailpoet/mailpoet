@@ -51,11 +51,12 @@ class SegmentsSimpleListRepository {
    * @return array<array{id: string, name: string, type: string, subscribers: int}>
    */
   public function addVirtualSubscribersWithoutListSegment(array $segments): array {
+    $withoutSegmentStats = $this->segmentsSubscriberRepository->getSubscribersWithoutSegmentStatisticsCount();
     $segments[] = [
       'id' => '0',
       'type' => SegmentEntity::TYPE_WITHOUT_LIST,
       'name' => __('Subscribers without a list', 'mailpoet'),
-      'subscribers' => $this->segmentsSubscriberRepository->getSubscribersWithoutSegmentCount(),
+      'subscribers' => $withoutSegmentStats['all'],
     ];
     return $segments;
   }
