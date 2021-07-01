@@ -260,7 +260,7 @@ jobs:
           name: "QA PHP"
           command: ./do qa:php
   js_tests:
-    executor: wpcli_php_oldest
+    executor: wpcli_php_latest
     steps:
     - attach_workspace:
        at: /home/circleci/mailpoet
