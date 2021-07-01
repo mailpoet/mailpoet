@@ -5,6 +5,7 @@ var chaiJq = require('chai-jq');
 var _ = require('underscore');
 var jsdom = require('jsdom/lib/old-api.js').jsdom;
 var URL = require('url').URL;
+var nodeCrypto = require('crypto');
 
 chai.use(sinonChai);
 chai.use(chaiJq);
@@ -99,6 +100,21 @@ global.stubImage = function (defaultWidth, defaultHeight) {
   };
 };
 
+// Dummy Mutation Observer - needed for select2
+// We will be able to remove this after upgrading to jsdom v13 or higher
+global.window.MutationObserver = class {
+  constructor() { return null; }
+
+  disconnect() { return this; }
+
+  observe() { return this; }
+};
+
+// Add simple polyfill for crypto
+global.crypto = {
+  getRandomValues: (buffer) => nodeCrypto.randomFillSync(buffer),
+};
+
 global.window.matchMedia = window.matchMedia || (
   () => {
     return {
@@ -185,7 +201,6 @@ testHelpers.loadTemplate('components/styles.hbs', window, { id: 'newsletter_edit
 testHelpers.loadTemplate('components/sidebar/sidebar.hbs', window, { id: 'newsletter_editor_template_sidebar' });
 testHelpers.loadTemplate('components/sidebar/content.hbs', window, { id: 'newsletter_editor_template_sidebar_content' });
 testHelpers.loadTemplate('components/sidebar/layout.hbs', window, { id: 'newsletter_editor_template_sidebar_layout' });
-testHelpers.loadTemplate('components/sidebar/preview.hbs', window, { id: 'newsletter_editor_template_sidebar_preview' });
 testHelpers.loadTemplate('components/sidebar/styles.hbs', window, { id: 'newsletter_editor_template_sidebar_styles' });
 
 global.templates = {
