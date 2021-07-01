@@ -15,6 +15,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
+use MailPoet\Cron\Workers\SubscribersCountCacheRecalculation;
 use MailPoet\Cron\Workers\SubscribersEngagementScore;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Cron\Workers\WooCommercePastOrders;
@@ -213,6 +214,13 @@ class WordPress {
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
 
+    // subscriber engagement score
+    $subscribersCountCacheRecalculationTasks = $this->getTasksCount([
+      'type' => SubscribersCountCacheRecalculation::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
+    ]);
+
     // check requirements for each worker
     $sendingQueueActive = (($scheduledQueues || $runningQueues) && !$sendingLimitReached && !$sendingIsPaused);
     $bounceSyncActive = ($mpSendingEnabled && ($bounceDueTasks || !$bounceFutureTasks));
@@ -237,6 +245,7 @@ class WordPress {
       || $unsubscribeTokensTasks
       || $subscriberLinkTokensTasks
       || $subscriberEngagementScoreTasks
+      || $subscribersCountCacheRecalculationTasks
     );
   }
 
