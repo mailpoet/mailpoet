@@ -229,17 +229,17 @@ describe('Image', function () {
         expect(model.get('link')).to.equal(newLink);
       });
 
-      it('updates the model when src changes', function () {
+      it.skip('updates the model when src changes', function () {
         view.$('.mailpoet_field_image_address').val(newSrc).trigger('input');
         expect(model.get('src')).to.equal(newSrc);
       });
 
-      it('updates the width when src changes', function () {
+      it.skip('updates the width when src changes', function () {
         view.$('.mailpoet_field_image_address').val(newSrc).trigger('input');
         expect(model.get('width')).to.equal(newWidth + 'px');
       });
 
-      it('updates the height when src changes', function () {
+      it.skip('updates the height when src changes', function () {
         view.$('.mailpoet_field_image_address').val(newSrc).trigger('input');
         expect(model.get('height')).to.equal(newHeight + 'px');
       });
