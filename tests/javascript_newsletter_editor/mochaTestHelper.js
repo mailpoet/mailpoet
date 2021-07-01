@@ -32,6 +32,7 @@ const jQuery = require('jquery');
 global.$ = jQuery;
 global.jQuery = jQuery;
 global.window.jQuery = jQuery;
+global._ = _;
 
 testHelpers.loadScript('tests/javascript_newsletter_editor/testBundles/vendor.js', global.window);
 const Handlebars = global.window.Handlebars;
