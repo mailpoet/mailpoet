@@ -21,7 +21,8 @@
     "check-types": "tsc --noEmit",
     "storybook": "start-storybook -s ./ -p 8083",
     "build-storybook": "build-storybook",
-    "postinstall": "./tasks/npm_post_install.sh"
+    "postinstall": "./tasks/npm_post_install.sh",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.{scss,css}": "npm run stylelint",
@@ -33,11 +34,6 @@
       "phplint",
       "./do qa:code-sniffer"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "dependencies": {
     "@babel/runtime": "^7.14.0",
@@ -152,7 +148,7 @@
     "exports-loader": "~0.6.4",
     "expose-loader": "^0.7.5",
     "grunt-cli": "~1.2.0",
-    "husky": "^4.3.0",
+    "husky": "^6.0.0",
     "imports-loader": "~0.7.1",
     "inject-loader": "^4.0.1",
     "install": "^0.12.2",
