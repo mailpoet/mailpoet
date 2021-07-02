@@ -124,6 +124,7 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     }
     $this->entityManager->flush();
 
+    $this->clearSubscribersCountCache();
     $subscribersCount = $this->repository->getSubscribersStatisticsCount($segment);
     expect($subscribersCount[SubscriberEntity::STATUS_SUBSCRIBED])->equals(0);
     expect($subscribersCount[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(4);
@@ -139,6 +140,7 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     }
     $this->entityManager->flush();
 
+    $this->clearSubscribersCountCache();
     $subscribersCount = $this->repository->getSubscribersStatisticsCount($segment);
     expect($subscribersCount[SubscriberEntity::STATUS_SUBSCRIBED])->equals(0);
     expect($subscribersCount[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(0);
@@ -246,5 +248,6 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
+    $this->clearSubscribersCountCache();
   }
 }

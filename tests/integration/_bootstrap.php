@@ -1,5 +1,6 @@
 <?php
 
+use MailPoet\Cache\TransientCache;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Settings\SettingsController;
@@ -183,6 +184,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     // Cleanup scheduled tasks from previous tests
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->entityManager->clear();
+    $this->clearSubscribersCountCache();
     parent::setUp();
   }
 
@@ -224,6 +226,11 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $connection->query('SET FOREIGN_KEY_CHECKS=0');
     $connection->executeUpdate("TRUNCATE $tableName");
     $connection->query('SET FOREIGN_KEY_CHECKS=1');
+  }
+
+  public function clearSubscribersCountCache() {
+    $cache = $this->diContainer->get(TransientCache::class);
+    $cache->invalidateItems(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY);
   }
 }
 
