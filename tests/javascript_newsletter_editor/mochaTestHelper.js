@@ -38,8 +38,10 @@ global._ = _;
 testHelpers.loadScript('tests/javascript_newsletter_editor/testBundles/vendor.js', global.window);
 const Handlebars = global.window.Handlebars;
 global.Handlebars = global.window.Handlebars;
-// Fix global access element. It is used in tinymce
+// Fix global access for Element. It is used in tinymce
 global.Element = global.window.Element;
+// Fix global access for HTMLAnchorElement. It is used in FileSaver
+global.HTMLAnchorElement = global.window.HTMLAnchorElement;
 
 // Stub out interact.js
 global.interact = function () {
