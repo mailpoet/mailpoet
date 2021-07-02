@@ -11,7 +11,7 @@ class MailpoetMenuCest {
     $i->click('MailPoet');
 
     $i->click('Emails');
-    $i->waitForElement('[data-automation-id="tab-Newsletters"]');
+    $i->waitForElement('.mailpoet-newsletter-type');
     $i->seeInCurrentUrl('?page=mailpoet-newsletters');
 
     $i->click('Forms');
