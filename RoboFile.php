@@ -67,7 +67,7 @@ class RoboFile extends \Robo\Tasks {
       mkdir('assets/dist/js', 0777, true);
     }
     $env = ($opts['env']) ?
-      sprintf('./node_modules/cross-env/dist/bin/cross-env.js NODE_ENV="%s"', $opts['env']) :
+      sprintf('./node_modules/.bin/cross-env NODE_ENV="%s"', $opts['env']) :
       null;
     return $this->_exec($env . ' ./node_modules/webpack/bin/webpack.js');
   }
