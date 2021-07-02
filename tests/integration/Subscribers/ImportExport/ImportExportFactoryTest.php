@@ -295,5 +295,6 @@ class ImportExportFactoryTest extends \MailPoetTest {
     Segment::deleteMany();
     SubscriberSegment::deleteMany();
     CustomField::deleteMany();
+    $this->clearSubscribersCountCache();
   }
 }
