@@ -53,7 +53,7 @@ class SubscribersCountCacheRecalculation extends SimpleWorker {
     $this->cronHelper->enforceExecutionLimit($timer);
     $now = Carbon::now();
     $item = $this->transientCache->getItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $segmentId);
-    if ($item === null || $now->diffInMinutes($item['created_at']) > self::EXPIRATION_IN_MINUTES) {
+    if ($item === null || !isset($item['created_at']) || $now->diffInMinutes($item['created_at']) > self::EXPIRATION_IN_MINUTES) {
       $this->transientCache->invalidateItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $segmentId);
       if ($segment) {
         $this->segmentSubscribersRepository->getSubscribersStatisticsCount($segment);
