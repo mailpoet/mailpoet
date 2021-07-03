@@ -107,8 +107,10 @@ class ManageSubscribersCest {
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Move to trash');
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($newSubscriberEmail2, 'Move to trash');
+    $i->waitForListingItemsToLoad();
     $i->waitForElement('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
+    $i->waitForListingItemsToLoad();
     $i->waitForText($newSubscriberEmail);
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Delete Permanently');
     $i->waitForText('1 subscriber was permanently deleted.');
