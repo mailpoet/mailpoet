@@ -42,7 +42,7 @@ class ReceiveWelcomeEmailCest {
     $i->login();
     // go and resend confirmation email
     $i->amOnMailpoetPage('Subscribers');
-    $i->waitForText('Subscribers');
+    $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($emailAddress, 'Resend confirmation email');
     $i->waitForText('1 confirmation email has been sent.');
     // confirm subscription
