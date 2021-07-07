@@ -26,7 +26,9 @@ const ListHeading = () => (
       subscribersInPlanLimit={MailPoet.subscribersLimit}
     />
 
-    <SubscribersCacheMessage cacheCalculation="2021-06-28 18:22:00" />
+    <SubscribersCacheMessage
+      cacheCalculation={window.mailpoet_subscribers_counts_cache_created_at}
+    />
 
     <SubscribersLimitNotice />
     <InvalidMssKeyNotice
