@@ -4,6 +4,7 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\Cache\TransientCache;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\InactiveSubscribers;
@@ -13,6 +14,8 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -54,6 +57,15 @@ class Settings extends APIEndpoint {
   /** @var FormMessageController */
   private $messageController;
 
+  /** @var TransientCache */
+  private $transientCache;
+
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
+  /** @var SegmentSubscribersRepository */
+  private $segmentSubscribersRepository;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
@@ -68,7 +80,10 @@ class Settings extends APIEndpoint {
     StatisticsOpensRepository $statisticsOpensRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
     FormMessageController $messageController,
-    ServicesChecker $servicesChecker
+    ServicesChecker $servicesChecker,
+    TransientCache $transientCache,
+    SegmentsRepository $segmentsRepository,
+    SegmentSubscribersRepository $segmentSubscribersRepository
   ) {
     $this->settings = $settings;
     $this->bridge = $bridge;
@@ -80,6 +95,9 @@ class Settings extends APIEndpoint {
     $this->statisticsOpensRepository = $statisticsOpensRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->messageController = $messageController;
+    $this->transientCache = $transientCache;
+    $this->segmentsRepository = $segmentsRepository;
+    $this->segmentSubscribersRepository = $segmentSubscribersRepository;
   }
 
   public function get() {
@@ -236,5 +254,15 @@ class Settings extends APIEndpoint {
     $task->setType($type);
     $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
     return $task;
+  }
+
+  public function recalculateSubscribersCountsCache() {
+    $this->transientCache->invalidateItems(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY);
+    $segments = $this->segmentsRepository->findAll();
+    foreach ($segments as $segment) {
+      $this->segmentSubscribersRepository->getSubscribersStatisticsCount($segment);
+    }
+    $this->segmentSubscribersRepository->getSubscribersWithoutSegmentStatisticsCount();
+    return $this->successResponse();
   }
 }
