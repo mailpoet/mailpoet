@@ -66,21 +66,22 @@ class ManageSegmentsCest {
 
   public function createEditTrashRestoreAndDeleteExistingSegment(\AcceptanceTester $i) {
     $i->wantTo('Create, edit, trash, restore and delete existing segment');
+    $segmentTrashedTitle = 'Trashed Segment';
     $segmentTitle = 'User Segment';
-    $segmentEditedTitle = 'User Segment EDITED';
+    $segmentEditedTitle = 'Edited Segment';
     $segmentDesc = 'Lorem ipsum dolor sit amet';
-    $segmentEditedDesc = 'Lorem ipsum dolor sit amet EDITED';
+    $segmentEditedDesc = 'Edited description';
 
-    $i->wantTo('Prepare (2) additional segments for the test');
+    $i->wantTo('Prepare (2) additional trashed segments for the test');
 
     $segmentFactory = new DynamicSegment();
     $segment = $segmentFactory
-      ->withName($segmentTitle . ' TRASHED 1')
+      ->withName($segmentTrashedTitle . ' 1')
       ->withUserRoleFilter('Administrator')
       ->withDeleted()
       ->create();
       $segmentFactory
-      ->withName($segmentTitle . ' TRASHED 2')
+      ->withName($segmentTrashedTitle . ' 2')
       ->withUserRoleFilter('Administrator')
       ->withDeleted()
       ->create();
@@ -148,8 +149,8 @@ class ManageSegmentsCest {
     $i->clickItemRowActionByItemName($segmentEditedTitle, 'Delete permanently');
     $i->waitForNoticeAndClose('1 segment was permanently deleted.');
     $i->seeNoJSErrors();
-    $i->waitForText($segmentTitle . ' TRASHED 1');
-    $i->waitForText($segmentTitle . ' TRASHED 2');
+    $i->waitForText($segmentTrashedTitle . ' 1');
+    $i->waitForText($segmentTrashedTitle . ' 2');
 
     $i->wantTo('Empty trash from other (2) segments');
     $i->click('[data-automation-id="empty_trash"]');
