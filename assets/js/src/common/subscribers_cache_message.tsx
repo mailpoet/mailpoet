@@ -6,14 +6,27 @@ type Props = {
   cacheCalculation: string;
 };
 
-const handleRecalculate = () => {
-  window.location.reload();
-};
-
-const SubscribersCacheMessage = ({ cacheCalculation }: Props): JSX.Element => {
+export function SubscribersCacheMessage({ cacheCalculation }: Props): JSX.Element {
   const [loading, setLoading] = useState(false);
   const datetimeDiff = new Date().getTime() - new Date(cacheCalculation).getTime();
   const minutes = Math.floor((datetimeDiff / 1000) / 60);
+
+  const handleRecalculate = () => {
+    setLoading(true);
+    MailPoet.Ajax.post({
+      api_version: MailPoet.apiVersion,
+      endpoint: 'settings',
+      action: 'recalculateSubscribersCountsCache',
+    }).done(() => {
+      window.location.reload();
+    }).fail((response) => {
+      MailPoet.Notice.error(
+        response.errors.map((error) => error.message),
+        { scroll: true }
+      );
+    });
+  };
+
   return (
     <div className="mailpoet-subscribers-cache-notice">
       {MailPoet.I18n.t('subscribersCountWereCalculated')}
@@ -24,10 +37,7 @@ const SubscribersCacheMessage = ({ cacheCalculation }: Props): JSX.Element => {
         type="button"
         variant="secondary"
         dimension="small"
-        onClick={() => {
-          setLoading(true);
-          handleRecalculate();
-        }}
+        onClick={handleRecalculate}
         withSpinner={loading}
       >
         {MailPoet.I18n.t('recalculateNow')}
@@ -35,6 +45,4 @@ const SubscribersCacheMessage = ({ cacheCalculation }: Props): JSX.Element => {
       <div className="mailpoet-gap" />
     </div>
   );
-};
-
-export { SubscribersCacheMessage };
+}
