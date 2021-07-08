@@ -6,7 +6,6 @@ use Codeception\Stub\Expected;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Settings;
-use MailPoet\Cache\TransientCache;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\WooCommerceSync;
@@ -17,12 +16,12 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
-use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Statistics\StatisticsOpensRepository;
+use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\WooCommerce\TransactionalEmails;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -57,9 +56,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false]),
-      $this->diContainer->get(TransientCache::class),
       $this->diContainer->get(SegmentsRepository::class),
-      $this->diContainer->get(SegmentSubscribersRepository::class)
+      $this->diContainer->get(SubscribersCountsController::class)
     );
   }
 
@@ -98,9 +96,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false]),
-      $this->diContainer->get(TransientCache::class),
       $this->diContainer->get(SegmentsRepository::class),
-      $this->diContainer->get(SegmentSubscribersRepository::class)
+      $this->diContainer->get(SubscribersCountsController::class)
     );
 
     $response = $this->endpoint->set(/* missing data */);
@@ -130,9 +127,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false]),
-      $this->diContainer->get(TransientCache::class),
       $this->diContainer->get(SegmentsRepository::class),
-      $this->diContainer->get(SegmentSubscribersRepository::class)
+      $this->diContainer->get(SubscribersCountsController::class)
     );
 
     MailerLog::pauseSending(MailerLog::getMailerLog());
@@ -156,9 +152,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class),
-      $this->diContainer->get(TransientCache::class),
       $this->diContainer->get(SegmentsRepository::class),
-      $this->diContainer->get(SegmentSubscribersRepository::class)
+      $this->diContainer->get(SubscribersCountsController::class)
     );
 
     $this->settings->set('sender.address', '');

@@ -38,15 +38,20 @@ class SubscriberListingRepository extends ListingRepository {
   /** @var SegmentSubscribersRepository */
   private $segmentSubscribersRepository;
 
+  /** @var SubscribersCountsController */
+  private $subscribersCountsController;
+
   public function __construct(
     EntityManager $entityManager,
     FilterHandler $dynamicSegmentsFilter,
-    SegmentSubscribersRepository $segmentSubscribersRepository
+    SegmentSubscribersRepository $segmentSubscribersRepository,
+    SubscribersCountsController $subscribersCountsController
   ) {
     parent::__construct($entityManager);
     $this->dynamicSegmentsFilter = $dynamicSegmentsFilter;
     $this->entityManager = $entityManager;
     $this->segmentSubscribersRepository = $segmentSubscribersRepository;
+    $this->subscribersCountsController = $subscribersCountsController;
   }
 
   public function getData(ListingDefinition $definition): array {
@@ -223,7 +228,7 @@ class SubscriberListingRepository extends ListingRepository {
   public function getFilters(ListingDefinition $definition): array {
     $group = $definition->getGroup();
 
-    $subscribersWithoutSegmentStats = $this->segmentSubscribersRepository->getSubscribersWithoutSegmentStatisticsCount();
+    $subscribersWithoutSegmentStats = $this->subscribersCountsController->getSubscribersWithoutSegmentStatisticsCount();
     $key = $group ?: 'all';
     $subscribersWithoutSegmentCount = $subscribersWithoutSegmentStats[$key];
 
@@ -256,7 +261,11 @@ class SubscriberListingRepository extends ListingRepository {
     $segmentList = [];
     foreach ($queryBuilder->getQuery()->getResult() as $segment) {
       $key = $group ?: 'all';
-      $count = $this->segmentSubscribersRepository->getSubscribersStatisticsCount($segment);
+      if ($segment->isStatic()) {
+        $count = $this->subscribersCountsController->getSegmentGlobalStatusStatisticsCount($segment);
+      } else {
+        $count = $this->subscribersCountsController->getSegmentStatisticsCount($segment);
+      }
       if (!$count[$key]) {
         continue;
       }

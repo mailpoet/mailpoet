@@ -39,7 +39,8 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->repository = new SubscriberListingRepository(
       $this->entityManager,
       $this->diContainer->get(FilterHandler::class),
-      $this->diContainer->get(SegmentSubscribersRepository::class)
+      $this->diContainer->get(SegmentSubscribersRepository::class),
+      $this->diContainer->get(SubscribersCountsController::class)
     );
     $this->cleanup();
   }
