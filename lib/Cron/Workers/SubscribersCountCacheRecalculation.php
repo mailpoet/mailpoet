@@ -6,7 +6,7 @@ use MailPoet\Cache\TransientCache;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Segments\SegmentsRepository;
-use MailPoet\Segments\SegmentSubscribersRepository;
+use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -22,19 +22,19 @@ class SubscribersCountCacheRecalculation extends SimpleWorker {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
-  /** @var SegmentSubscribersRepository */
-  private $segmentSubscribersRepository;
+  /** @var SubscribersCountsController */
+  private $subscribersCountsController;
 
   public function __construct(
     TransientCache $transientCache,
     SegmentsRepository $segmentsRepository,
-    SegmentSubscribersRepository $segmentSubscribersRepository,
+    SubscribersCountsController $subscribersCountsController,
     WPFunctions $wp
   ) {
     parent::__construct($wp);
     $this->transientCache = $transientCache;
     $this->segmentsRepository = $segmentsRepository;
-    $this->segmentSubscribersRepository = $segmentSubscribersRepository;
+    $this->subscribersCountsController = $subscribersCountsController;
   }
 
   public function processTaskStrategy(ScheduledTask $task, $timer) {
@@ -54,11 +54,13 @@ class SubscribersCountCacheRecalculation extends SimpleWorker {
     $now = Carbon::now();
     $item = $this->transientCache->getItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $segmentId);
     if ($item === null || !isset($item['created_at']) || $now->diffInMinutes($item['created_at']) > self::EXPIRATION_IN_MINUTES) {
-      $this->transientCache->invalidateItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $segmentId);
       if ($segment) {
-        $this->segmentSubscribersRepository->getSubscribersStatisticsCount($segment);
+        $this->subscribersCountsController->recalculateSegmentStatisticsCache($segment);
+        if ($segment->isStatic()) {
+          $this->subscribersCountsController->recalculateSegmentGlobalStatusStatisticsCache($segment);
+        }
       } else {
-        $this->segmentSubscribersRepository->getSubscribersWithoutSegmentStatisticsCount();
+        $this->subscribersCountsController->recalculateSubscribersWithoutSegmentStatisticsCache();
       }
     }
   }

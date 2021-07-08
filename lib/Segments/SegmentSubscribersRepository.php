@@ -2,7 +2,6 @@
 
 namespace MailPoet\Segments;
 
-use MailPoet\Cache\TransientCache;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -25,17 +24,12 @@ class SegmentSubscribersRepository {
   /** @var FilterHandler */
   private $filterHandler;
 
-  /** @var TransientCache */
-  private $transientCache;
-
   public function __construct(
     EntityManager $entityManager,
-    FilterHandler $filterHandler,
-    TransientCache $transientCache
+    FilterHandler $filterHandler
   ) {
     $this->entityManager = $entityManager;
     $this->filterHandler = $filterHandler;
-    $this->transientCache = $transientCache;
   }
 
   public function findSubscribersIdsInSegment(int $segmentId, array $candidateIds = null): array {
@@ -159,7 +153,7 @@ class SegmentSubscribersRepository {
   private function createStaticStatisticsQueryBuilder(SegmentEntity $segment): QueryBuilder {
     $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $queryBuilder = $this->entityManager
+    return $this->entityManager
       ->getConnection()
       ->createQueryBuilder()
       ->from($subscriberSegmentTable, 'subscriber_segment')
@@ -199,7 +193,51 @@ class SegmentSubscribersRepository {
       ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
       ->setParameter('status_unconfirmed', SubscriberEntity::STATUS_UNCONFIRMED)
       ->setParameter('status_bounced', SubscriberEntity::STATUS_BOUNCED);
-    return $queryBuilder;
+  }
+
+  private function createStaticGlobalStatusStatisticsQueryBuilder(SegmentEntity $segment): QueryBuilder {
+    $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    return $this->entityManager
+      ->getConnection()
+      ->createQueryBuilder()
+      ->from($subscriberSegmentTable, 'subscriber_segment')
+      ->where('subscriber_segment.segment_id = :segment_id')
+      ->setParameter('segment_id', $segment->getId())
+      ->join('subscriber_segment', $subscribersTable, 'subscribers', 'subscribers.id = subscriber_segment.subscriber_id')
+      ->addSelect("SUM(
+            CASE WHEN subscribers.deleted_at IS NULL
+              THEN 1 ELSE 0 END
+        ) as `all`")
+      ->addSelect("SUM(
+            CASE WHEN subscribers.deleted_at IS NOT NULL
+              THEN 1 ELSE 0 END
+        ) as trash")
+      ->addSelect('SUM(
+            CASE WHEN subscribers.status = :status_subscribed AND subscribers.deleted_at IS NULL
+              THEN 1 ELSE 0 END
+        ) as :status_subscribed')
+      ->addSelect('SUM(
+          CASE WHEN subscribers.status = :status_unsubscribed AND subscribers.deleted_at IS NULL
+            THEN 1 ELSE 0 END
+        ) as :status_unsubscribed')
+      ->addSelect('SUM(
+          CASE WHEN subscribers.status = :status_inactive AND subscribers.deleted_at IS NULL
+            THEN 1 ELSE 0 END
+        ) as :status_inactive')
+      ->addSelect('SUM(
+          CASE WHEN subscribers.status = :status_unconfirmed AND subscribers.deleted_at IS NULL
+            THEN 1 ELSE 0 END
+        ) as :status_unconfirmed')
+      ->addSelect('SUM(
+          CASE WHEN subscribers.status = :status_bounced AND subscribers.deleted_at IS NULL
+            THEN 1 ELSE 0 END
+        ) as :status_bounced')
+      ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
+      ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
+      ->setParameter('status_unconfirmed', SubscriberEntity::STATUS_UNCONFIRMED)
+      ->setParameter('status_bounced', SubscriberEntity::STATUS_BOUNCED);
   }
 
   public function getSubscribersWithoutSegmentCount(): int {
@@ -212,54 +250,50 @@ class SegmentSubscribersRepository {
   }
 
   public function getSubscribersWithoutSegmentStatisticsCount(): array {
-    $id = 0;
-    $result = $this->transientCache->getItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $id);
-    if (!$result) {
-      $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-      $queryBuilder = $this->entityManager
-        ->getConnection()
-        ->createQueryBuilder();
-      $queryBuilder
-        ->addSelect("SUM(
-            CASE WHEN s.deleted_at IS NULL
-              THEN 1 ELSE 0 END
-        ) as `all`")
-        ->addSelect("SUM(
-            CASE WHEN s.deleted_at IS NOT NULL
-              THEN 1 ELSE 0 END
-        ) as trash")
-        ->addSelect("SUM(
-            CASE WHEN s.status = :status_subscribed AND s.deleted_at IS NULL
-              THEN 1 ELSE 0 END
-        ) as :status_subscribed")
-        ->addSelect("SUM(
-          CASE WHEN s.status = :status_unsubscribed AND s.deleted_at IS NULL
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $queryBuilder = $this->entityManager
+      ->getConnection()
+      ->createQueryBuilder();
+    $queryBuilder
+      ->addSelect("SUM(
+          CASE WHEN s.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_unsubscribed")
-        ->addSelect("SUM(
-          CASE WHEN s.status = :status_inactive AND s.deleted_at IS NULL
+      ) as `all`")
+      ->addSelect("SUM(
+          CASE WHEN s.deleted_at IS NOT NULL
             THEN 1 ELSE 0 END
-        ) as :status_inactive")
-        ->addSelect("SUM(
-          CASE WHEN s.status = :status_unconfirmed AND s.deleted_at IS NULL
+      ) as trash")
+      ->addSelect("SUM(
+          CASE WHEN s.status = :status_subscribed AND s.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_unconfirmed")
-        ->addSelect("SUM(
-          CASE WHEN s.status = :status_bounced AND s.deleted_at IS NULL
-            THEN 1 ELSE 0 END
-        ) as :status_bounced")
-        ->from($subscribersTable, 's')
-        ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
-        ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
-        ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
-        ->setParameter('status_unconfirmed', SubscriberEntity::STATUS_UNCONFIRMED)
-        ->setParameter('status_bounced', SubscriberEntity::STATUS_BOUNCED);
+      ) as :status_subscribed")
+      ->addSelect("SUM(
+        CASE WHEN s.status = :status_unsubscribed AND s.deleted_at IS NULL
+          THEN 1 ELSE 0 END
+      ) as :status_unsubscribed")
+      ->addSelect("SUM(
+        CASE WHEN s.status = :status_inactive AND s.deleted_at IS NULL
+          THEN 1 ELSE 0 END
+      ) as :status_inactive")
+      ->addSelect("SUM(
+        CASE WHEN s.status = :status_unconfirmed AND s.deleted_at IS NULL
+          THEN 1 ELSE 0 END
+      ) as :status_unconfirmed")
+      ->addSelect("SUM(
+        CASE WHEN s.status = :status_bounced AND s.deleted_at IS NULL
+          THEN 1 ELSE 0 END
+      ) as :status_bounced")
+      ->from($subscribersTable, 's')
+      ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
+      ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
+      ->setParameter('status_unconfirmed', SubscriberEntity::STATUS_UNCONFIRMED)
+      ->setParameter('status_bounced', SubscriberEntity::STATUS_BOUNCED);
 
-      $this->addConstraintsForSubscribersWithoutSegmentToDBAL($queryBuilder);
-      $statement = $this->executeQuery($queryBuilder);
-      $result = $statement->fetch();
-      $this->transientCache->setItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $result, $id);
-    }
+    $this->addConstraintsForSubscribersWithoutSegmentToDBAL($queryBuilder);
+    $statement = $this->executeQuery($queryBuilder);
+    $result = $statement->fetch();
+
     return $result;
   }
 
@@ -391,24 +425,27 @@ class SegmentSubscribersRepository {
     return $statement;
   }
 
-  public function getSubscribersStatisticsCount(SegmentEntity $segment) {
-    $result = $this->transientCache->getItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, (int)$segment->getId());
-    if (!$result) {
-      if ($segment->isStatic()) {
-        $queryBuilder = $this->createStaticStatisticsQueryBuilder($segment);
-      } else {
-        $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
-        $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
-      }
-
-      $statement = $this->executeQuery($queryBuilder);
-      $result = $statement->fetch();
-      $this->transientCache->setItem(
-        TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY,
-        $result,
-        (int)$segment->getId()
-      );
+  public function getSubscribersGlobalStatusStatisticsCount(SegmentEntity $segment): array {
+    if ($segment->isStatic()) {
+      $queryBuilder = $this->createStaticGlobalStatusStatisticsQueryBuilder($segment);
+    } else {
+      $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
+      $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
     }
-    return $result;
+
+    $statement = $this->executeQuery($queryBuilder);
+    return $statement->fetch();
+  }
+
+  public function getSubscribersStatisticsCount(SegmentEntity $segment): array {
+    if ($segment->isStatic()) {
+      $queryBuilder = $this->createStaticStatisticsQueryBuilder($segment);
+    } else {
+      $queryBuilder = $this->createDynamicStatisticsQueryBuilder();
+      $this->filterSubscribersInDynamicSegment($queryBuilder, $segment);
+    }
+
+    $statement = $this->executeQuery($queryBuilder);
+    return $statement->fetch();
   }
 }

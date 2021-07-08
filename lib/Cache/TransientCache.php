@@ -7,6 +7,7 @@ use MailPoetVendor\Carbon\Carbon;
 
 class TransientCache {
   public const SUBSCRIBERS_STATISTICS_COUNT_KEY = 'mailpoet_subscribers_statistics_count_cache';
+  public const SUBSCRIBERS_GLOBAL_STATUS_STATISTICS_COUNT_KEY = 'mailpoet_subscribers_statistics_count_global_status_cache';
 
   /** @var WPFunctions */
   private $wp;
