@@ -115,34 +115,34 @@ class SegmentSubscribersRepository {
       ->getConnection()
       ->createQueryBuilder()
       ->from($subscribersTable)
-      ->addSelect("SUM(
+      ->addSelect("IFNULL(SUM(
             CASE WHEN $subscribersTable.deleted_at IS NULL
               THEN 1 ELSE 0 END
-        ) as `all`")
-      ->addSelect("SUM(
+        ), 0) as `all`")
+      ->addSelect("IFNULL(SUM(
             CASE WHEN $subscribersTable.deleted_at IS NOT NULL
               THEN 1 ELSE 0 END
-        ) as trash")
-      ->addSelect("SUM(
+        ), 0) as trash")
+      ->addSelect("IFNULL(SUM(
             CASE WHEN $subscribersTable.status = :status_subscribed AND $subscribersTable.deleted_at IS NULL
               THEN 1 ELSE 0 END
-        ) as :status_subscribed")
-      ->addSelect("SUM(
+        ), 0) as :status_subscribed")
+      ->addSelect("IFNULL(SUM(
           CASE WHEN $subscribersTable.status = :status_unsubscribed AND $subscribersTable.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_unsubscribed")
-      ->addSelect("SUM(
+        ), 0) as :status_unsubscribed")
+      ->addSelect("IFNULL(SUM(
           CASE WHEN $subscribersTable.status = :status_inactive AND $subscribersTable.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_inactive")
-      ->addSelect("SUM(
+        ), 0) as :status_inactive")
+      ->addSelect("IFNULL(SUM(
           CASE WHEN $subscribersTable.status = :status_unconfirmed AND $subscribersTable.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_unconfirmed")
-      ->addSelect("SUM(
+        ), 0) as :status_unconfirmed")
+      ->addSelect("IFNULL(SUM(
           CASE WHEN $subscribersTable.status = :status_bounced AND $subscribersTable.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_bounced")
+        ), 0) as :status_bounced")
       ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
       ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
       ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
@@ -160,34 +160,34 @@ class SegmentSubscribersRepository {
       ->where('subscriber_segment.segment_id = :segment_id')
       ->setParameter('segment_id', $segment->getId())
       ->join('subscriber_segment', $subscribersTable, 'subscribers', 'subscribers.id = subscriber_segment.subscriber_id')
-      ->addSelect("SUM(
+      ->addSelect('IFNULL(SUM(
             CASE WHEN subscribers.deleted_at IS NULL
               THEN 1 ELSE 0 END
-        ) as `all`")
-      ->addSelect("SUM(
+        ), 0) as `all`')
+      ->addSelect('IFNULL(SUM(
             CASE WHEN subscribers.deleted_at IS NOT NULL
               THEN 1 ELSE 0 END
-        ) as trash")
-      ->addSelect('SUM(
+        ), 0) as trash')
+      ->addSelect('IFNULL(SUM(
             CASE WHEN subscribers.status = :status_subscribed AND subscriber_segment.status = :status_subscribed AND subscribers.deleted_at IS NULL
               THEN 1 ELSE 0 END
-        ) as :status_subscribed')
-      ->addSelect('SUM(
+        ), 0) as :status_subscribed')
+      ->addSelect('IFNULL(SUM(
           CASE WHEN (subscribers.status = :status_unsubscribed OR subscriber_segment.status = :status_unsubscribed) AND subscribers.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_unsubscribed')
-      ->addSelect('SUM(
+        ), 0) as :status_unsubscribed')
+      ->addSelect('IFNULL(SUM(
           CASE WHEN subscribers.status = :status_inactive AND subscriber_segment.status != :status_unsubscribed AND subscribers.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_inactive')
-      ->addSelect('SUM(
+        ), 0) as :status_inactive')
+      ->addSelect('IFNULL(SUM(
           CASE WHEN subscribers.status = :status_unconfirmed  AND subscriber_segment.status != :status_unsubscribed AND subscribers.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_unconfirmed')
-      ->addSelect('SUM(
+        ), 0) as :status_unconfirmed')
+      ->addSelect('IFNULL(SUM(
           CASE WHEN subscribers.status = :status_bounced AND subscriber_segment.status != :status_unsubscribed AND subscribers.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_bounced')
+        ), 0) as :status_bounced')
       ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
       ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
       ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
@@ -205,34 +205,34 @@ class SegmentSubscribersRepository {
       ->where('subscriber_segment.segment_id = :segment_id')
       ->setParameter('segment_id', $segment->getId())
       ->join('subscriber_segment', $subscribersTable, 'subscribers', 'subscribers.id = subscriber_segment.subscriber_id')
-      ->addSelect("SUM(
+      ->addSelect('IFNULL(SUM(
             CASE WHEN subscribers.deleted_at IS NULL
               THEN 1 ELSE 0 END
-        ) as `all`")
-      ->addSelect("SUM(
+        ), 0) as `all`')
+      ->addSelect('IFNULL(SUM(
             CASE WHEN subscribers.deleted_at IS NOT NULL
               THEN 1 ELSE 0 END
-        ) as trash")
-      ->addSelect('SUM(
+        ), 0) as trash')
+      ->addSelect('IFNULL(SUM(
             CASE WHEN subscribers.status = :status_subscribed AND subscribers.deleted_at IS NULL
               THEN 1 ELSE 0 END
-        ) as :status_subscribed')
-      ->addSelect('SUM(
+        ), 0) as :status_subscribed')
+      ->addSelect('IFNULL(SUM(
           CASE WHEN subscribers.status = :status_unsubscribed AND subscribers.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_unsubscribed')
-      ->addSelect('SUM(
+        ), 0) as :status_unsubscribed')
+      ->addSelect('IFNULL(SUM(
           CASE WHEN subscribers.status = :status_inactive AND subscribers.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_inactive')
-      ->addSelect('SUM(
+        ), 0) as :status_inactive')
+      ->addSelect('IFNULL(SUM(
           CASE WHEN subscribers.status = :status_unconfirmed AND subscribers.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_unconfirmed')
-      ->addSelect('SUM(
+        ), 0) as :status_unconfirmed')
+      ->addSelect('IFNULL(SUM(
           CASE WHEN subscribers.status = :status_bounced AND subscribers.deleted_at IS NULL
             THEN 1 ELSE 0 END
-        ) as :status_bounced')
+        ), 0) as :status_bounced')
       ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
       ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
       ->setParameter('status_inactive', SubscriberEntity::STATUS_INACTIVE)
@@ -255,34 +255,34 @@ class SegmentSubscribersRepository {
       ->getConnection()
       ->createQueryBuilder();
     $queryBuilder
-      ->addSelect("SUM(
+      ->addSelect('IFNULL(SUM(
           CASE WHEN s.deleted_at IS NULL
             THEN 1 ELSE 0 END
-      ) as `all`")
-      ->addSelect("SUM(
+      ), 0) as `all`')
+      ->addSelect('IFNULL(SUM(
           CASE WHEN s.deleted_at IS NOT NULL
             THEN 1 ELSE 0 END
-      ) as trash")
-      ->addSelect("SUM(
+      ), 0) as trash')
+      ->addSelect('IFNULL(SUM(
           CASE WHEN s.status = :status_subscribed AND s.deleted_at IS NULL
             THEN 1 ELSE 0 END
-      ) as :status_subscribed")
-      ->addSelect("SUM(
+      ), 0) as :status_subscribed')
+      ->addSelect('IFNULL(SUM(
         CASE WHEN s.status = :status_unsubscribed AND s.deleted_at IS NULL
           THEN 1 ELSE 0 END
-      ) as :status_unsubscribed")
-      ->addSelect("SUM(
+      ), 0) as :status_unsubscribed')
+      ->addSelect('IFNULL(SUM(
         CASE WHEN s.status = :status_inactive AND s.deleted_at IS NULL
           THEN 1 ELSE 0 END
-      ) as :status_inactive")
-      ->addSelect("SUM(
+      ), 0) as :status_inactive')
+      ->addSelect('IFNULL(SUM(
         CASE WHEN s.status = :status_unconfirmed AND s.deleted_at IS NULL
           THEN 1 ELSE 0 END
-      ) as :status_unconfirmed")
-      ->addSelect("SUM(
+      ), 0) as :status_unconfirmed')
+      ->addSelect('IFNULL(SUM(
         CASE WHEN s.status = :status_bounced AND s.deleted_at IS NULL
           THEN 1 ELSE 0 END
-      ) as :status_bounced")
+      ), 0) as :status_bounced')
       ->from($subscribersTable, 's')
       ->setParameter('status_subscribed', SubscriberEntity::STATUS_SUBSCRIBED)
       ->setParameter('status_unsubscribed', SubscriberEntity::STATUS_UNSUBSCRIBED)
