@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
 import Button from 'common/button/button';
+import Notice from '../notices/notice';
 
 type Props = {
   cacheCalculation: string;
@@ -8,6 +9,7 @@ type Props = {
 
 export function SubscribersCacheMessage({ cacheCalculation }: Props): JSX.Element {
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState([]);
   const datetimeDiff = new Date().getTime() - new Date(cacheCalculation).getTime();
   const minutes = Math.floor((datetimeDiff / 1000) / 60);
 
@@ -20,10 +22,8 @@ export function SubscribersCacheMessage({ cacheCalculation }: Props): JSX.Elemen
     }).done(() => {
       window.location.reload();
     }).fail((response) => {
-      MailPoet.Notice.error(
-        response.errors.map((error) => error.message),
-        { scroll: true }
-      );
+      setErrors(response.errors.map((error) => error.message));
+      setLoading(false);
     });
   };
 
@@ -43,6 +43,7 @@ export function SubscribersCacheMessage({ cacheCalculation }: Props): JSX.Elemen
         {MailPoet.I18n.t('recalculateNow')}
       </Button>
       <div className="mailpoet-gap" />
+      {errors.length > 0 && <Notice type="error">{errors.map((error) => <p key={error}>{error}</p>)}</Notice>}
     </div>
   );
 }
