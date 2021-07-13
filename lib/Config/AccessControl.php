@@ -21,6 +21,7 @@ class AccessControl {
         'mailpoet_permission_access_plugin_admin',
         [
           'administrator',
+          'shop_manager',
           'editor',
         ]
       ),
@@ -28,18 +29,21 @@ class AccessControl {
         'mailpoet_permission_manage_settings',
         [
           'administrator',
+          'shop_manager',
         ]
       ),
       self::PERMISSION_MANAGE_FEATURES => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_features',
         [
           'administrator',
+          'shop_manager',
         ]
       ),
       self::PERMISSION_MANAGE_EMAILS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_emails',
         [
           'administrator',
+          'shop_manager',
           'editor',
         ]
       ),
@@ -47,18 +51,21 @@ class AccessControl {
         'mailpoet_permission_manage_subscribers',
         [
           'administrator',
+          'shop_manager',
         ]
       ),
       self::PERMISSION_MANAGE_FORMS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_forms',
         [
           'administrator',
+          'shop_manager',
         ]
       ),
       self::PERMISSION_MANAGE_SEGMENTS => WPFunctions::get()->applyFilters(
         'mailpoet_permission_manage_segments',
         [
           'administrator',
+          'shop_manager',
         ]
       ),
     ];
