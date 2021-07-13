@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.7
-Stable tag: 3.64.3
+Stable tag: 3.65.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.65.0 - 2021-07-13 =
+* Added: Lists and Segments subscribers counts cache to speed up MailPoet pages.
 
 = 3.64.3 - 2021-07-06 =
 * Fixed: custom email shortcodes notice cannot be dismissed.
