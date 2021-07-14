@@ -15,7 +15,7 @@
   var admin_email = <%= json_encode(admin_email) %>;
   var hide_mailpoet_beacon = true;
   var subscribers_count = <%= subscriber_count %>;
-  var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email) | escape('js') %>';
+  var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email|escape('js')) %>';
   var has_mss_key_specified = <%= json_encode(has_mss_key_specified) %>;
   var mailpoet_feature_flags = <%= json_encode(mailpoet_feature_flags) %>;
 </script>
