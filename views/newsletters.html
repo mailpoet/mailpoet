@@ -33,7 +33,7 @@
       var mailpoet_products = <%= json_encode(products) %>;
 
       var has_mss_key_specified = <%= json_encode(has_mss_key_specified) %>;
-      var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email) | escape('js') %>';
+      var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email|escape('js')) %>';
       var mailpoet_feature_flags = <%= json_encode(mailpoet_feature_flags) %>;
 
       var mailpoet_woocommerce_automatic_emails = <%= json_encode(automatic_emails) %>;
