@@ -46,11 +46,11 @@ class AddSendingKeyCest {
     $i->click('Save', '.set-from-address-modal');
     $i->waitForText('Can’t use this email yet! Please authorize it first.');
 
-    $i->fillField(['id' => 'mailpoet-set-from-address-modal-input'], 'inbox@mailpoet.com');
+    $i->fillField(['id' => 'mailpoet-set-from-address-modal-input'], 'blackhole@mailpoet.com');
     $i->click('Save', '.set-from-address-modal');
     $i->waitForText('Excellent. Your authorized email was saved. You can change it in the Basics tab of the MailPoet settings.');
     $i->dontSee('Sending all of your emails has been paused because your email address %s hasn’t been authorized yet.');
-    $i->waitForText('A test email was sent to inbox@mailpoet.com');
+    $i->waitForText('A test email was sent to blackhole@mailpoet.com');
 
     // change MSS key state to pending approval, ensure pending approval notice is displayed
     $settings = new Settings();
@@ -99,9 +99,9 @@ class AddSendingKeyCest {
     // test modal for authorized FROM address
     $i->waitForText('It’s time to set your default FROM address!');
     $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
-    $i->fillField(['id' => 'mailpoet-set-from-address-modal-input'], 'inbox@mailpoet.com');
+    $i->fillField(['id' => 'mailpoet-set-from-address-modal-input'], 'blackhole@mailpoet.com');
     $i->click('Save', '.set-from-address-modal');
-    $i->waitForText('A test email was sent to inbox@mailpoet.com');
+    $i->waitForText('A test email was sent to blackhole@mailpoet.com');
   }
 
   public function resumeSendingWhenKeyApproved(\AcceptanceTester $i, Scenario $scenario) {
