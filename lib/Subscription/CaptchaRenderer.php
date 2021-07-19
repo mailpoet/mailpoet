@@ -98,7 +98,7 @@ class CaptchaRenderer {
       'class="mailpoet_form mailpoet_captcha_form" ' .
       'novalidate>';
     $formHtml .= '<input type="hidden" name="data[form_id]" value="' . $formId . '" />';
-    $formHtml .= '<input type="hidden" name="data[captcha_session_id]" value="' . $this->captchaSession->getId() . '" />';
+    $formHtml .= '<input type="hidden" name="data[captcha_session_id]" value="' . htmlspecialchars($this->captchaSession->getId()) . '" />';
     $formHtml .= '<input type="hidden" name="api_version" value="v1" />';
     $formHtml .= '<input type="hidden" name="endpoint" value="subscribers" />';
     $formHtml .= '<input type="hidden" name="mailpoet_method" value="subscribe" />';
