@@ -68,7 +68,7 @@ class TransientCache {
     $this->wp->setTransient($key, $items);
   }
 
-  private function getItems(string $key): array {
+  public function getItems(string $key): array {
     return $this->wp->getTransient($key) ?: [];
   }
 }
