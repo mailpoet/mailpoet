@@ -90,4 +90,21 @@ class SubscribersCountsController {
     $this->transientCache->setItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $result, 0);
     return $result;
   }
+
+  public function removeRedundancyFromStatisticsCache() {
+    $segments = $this->segmentsRepository->findAll();
+    $segmentIds = array_map(function (SegmentEntity $segment): int {
+      return (int)$segment->getId();
+    }, $segments);
+    foreach ($this->transientCache->getItems(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY) as $id => $item) {
+      if (!in_array($id, $segmentIds)) {
+        $this->transientCache->invalidateItem(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY, $id);
+      }
+    }
+    foreach ($this->transientCache->getItems(TransientCache::SUBSCRIBERS_GLOBAL_STATUS_STATISTICS_COUNT_KEY) as $id => $item) {
+      if (!in_array($id, $segmentIds)) {
+        $this->transientCache->invalidateItem(TransientCache::SUBSCRIBERS_GLOBAL_STATUS_STATISTICS_COUNT_KEY, $id);
+      }
+    }
+  }
 }

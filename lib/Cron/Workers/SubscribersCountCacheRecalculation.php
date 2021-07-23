@@ -46,6 +46,9 @@ class SubscribersCountCacheRecalculation extends SimpleWorker {
     // update cache for subscribers without segment
     $this->recalculateSegmentCache($timer, 0);
 
+    // remove redundancies from cache
+    $this->subscribersCountsController->removeRedundancyFromStatisticsCache();
+
     return true;
   }
 
