@@ -30,7 +30,6 @@ parameters:
   # exclude level 6 errors
   checkGenericClassInNonGenericObjectType: false
   checkMissingIterableValueType: false
-  checkMissingTypehints: false
 
   # analysis of templates is extremely slow, let's skip them for now
   excludes_analyse:
