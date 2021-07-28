@@ -34,7 +34,6 @@ parameters:
   # exclude level 6 errors
   checkGenericClassInNonGenericObjectType: false
   checkMissingIterableValueType: false
-  checkMissingVarTagTypehint: false
   checkMissingTypehints: false
 
 includes:
