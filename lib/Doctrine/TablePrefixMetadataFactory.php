@@ -25,6 +25,9 @@ class TablePrefixMetadataFactory extends ClassMetadataFactory {
     $this->setProxyClassNameResolver(new ProxyClassNameResolver());
   }
 
+  /**
+   * @return ClassMetadata<object>
+   */
   public function getMetadataFor($className) {
     $classMetadata = parent::getMetadataFor($className);
     if (isset($this->prefixedMap[$classMetadata->getName()])) {
@@ -42,6 +45,9 @@ class TablePrefixMetadataFactory extends ClassMetadataFactory {
     return $classMetadata;
   }
 
+  /**
+   * @param ClassMetadata<object> $classMetadata
+   */
   public function addPrefix(ClassMetadata $classMetadata) {
     if (!$classMetadata->isInheritanceTypeSingleTable() || $classMetadata->getName() === $classMetadata->rootEntityName) {
       $classMetadata->setPrimaryTable([

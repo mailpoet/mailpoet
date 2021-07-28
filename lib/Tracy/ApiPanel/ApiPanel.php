@@ -20,10 +20,10 @@ class ApiPanel implements IBarPanel {
   /** @var array */
   protected $requestData;
 
-  /** @var ReflectionClass */
+  /** @var ReflectionClass<APIEndpoint> */
   protected $endpointReflection;
 
-  public function __construct($endpoint, $requestMethod, $requestData) {
+  public function __construct(APIEndpoint $endpoint, $requestMethod, $requestData) {
     $this->endpoint = $endpoint;
     $this->requestMethod = $requestMethod;
     $this->requestData = $requestData;

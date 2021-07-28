@@ -54,6 +54,9 @@ class ImportExportRepository {
     $this->filterHandler = $filterHandler;
   }
 
+  /**
+   * @return ClassMetadata<object>
+   */
   protected function getClassMetadata(string $className): ClassMetadata {
     return $this->entityManager->getClassMetadata($className);
   }
