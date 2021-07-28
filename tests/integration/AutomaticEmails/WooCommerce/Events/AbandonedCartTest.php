@@ -364,6 +364,9 @@ class AbandonedCartTest extends \MailPoetTest {
     return $expectedTime;
   }
 
+  /**
+   * @param class-string<WooCommerce|WC_Cart> $className
+   */
   private function mockWooCommerceClass($className, array $methods) {
     // WooCommerce class needs to be mocked without default 'disallowMockingUnknownTypes'
     // since WooCommerce may not be active (would result in error mocking undefined class)
