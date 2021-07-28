@@ -112,6 +112,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       return $optionField && $optionField->getName() === 'schedule';
     })->first();
 
+    assert($scheduleOption instanceof NewsletterOptionEntity); // PHPStan
     expect($scheduleOption->getValue())->equals('0 14 * * 1');
 
     // schedule should be recalculated when options change
@@ -123,6 +124,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       return $optionField && $optionField->getName() === 'schedule';
     })->first();
 
+    assert($scheduleOption instanceof NewsletterOptionEntity); // PHPStan
     expect($scheduleOption->getValue())->equals('* * * * *');
   }
 
@@ -165,6 +167,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       return $optionField && $optionField->getName() === 'schedule';
     })->first();
     expect($task1->getScheduledAt())->notEquals($currentTime);
+    assert($scheduleOption instanceof NewsletterOptionEntity); // PHPStan
     expect($task1->getScheduledAt())->equals(Scheduler::getNextRunDate($scheduleOption->getValue()));
     expect($task2->getScheduledAt())->null();
   }
@@ -187,7 +190,11 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
 
     $newsletter = $this->saveController->save($newsletterData);
     expect(count($newsletter->getNewsletterSegments()))->equals(1);
-    expect($newsletter->getNewsletterSegments()->first()->getSegment()->getName())->equals('Segment 1');
+    $newsletterSegment = $newsletter->getNewsletterSegments()->first();
+    assert($newsletterSegment instanceof NewsletterSegmentEntity); // PHPStan
+    $segment = $newsletterSegment->getSegment();
+    assert($segment instanceof SegmentEntity); // PHPStan
+    expect($segment->getName())->equals('Segment 1');
   }
 
   public function testItDeletesSendingQueueAndSetsNewsletterStatusToDraftWhenItIsUnscheduled() {

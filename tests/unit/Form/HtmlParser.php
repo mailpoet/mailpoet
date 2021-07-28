@@ -6,6 +6,9 @@ class HtmlParser {
 
   private $allowedHtml5Tags = ['<figure', '<figcaption'];
 
+  /**
+   * @return \DOMNodeList<\DOMNode>
+   */
   public function findByXpath(string $html, string $xpath): \DOMNodeList {
     $isHtml5 = str_replace($this->allowedHtml5Tags, '', $html) !== $html;
     $dom = new \DOMDocument();

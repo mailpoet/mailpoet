@@ -28,7 +28,6 @@ parameters:
     objectManagerLoader: create-entity-manager.php
 
   # exclude level 6 errors
-  checkGenericClassInNonGenericObjectType: false
   checkMissingIterableValueType: false
 
   # analysis of templates is extremely slow, let's skip them for now

@@ -48,7 +48,7 @@ class StatisticsClickEntity {
 
   /**
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\StatisticsWooCommercePurchaseEntity", mappedBy="click", fetch="EXTRA_LAZY")*
-   * @var StatisticsWooCommercePurchaseEntity[]|ArrayCollection
+   * @var ArrayCollection<int, StatisticsWooCommercePurchaseEntity>
    */
   private $wooCommercePurchases;
 
@@ -140,7 +140,7 @@ class StatisticsClickEntity {
   }
 
   /**
-   * @return StatisticsWooCommercePurchaseEntity[]|ArrayCollection
+   * @return ArrayCollection<int, StatisticsWooCommercePurchaseEntity>
    */
   public function getWooCommercePurchases() {
     return $this->wooCommercePurchases;

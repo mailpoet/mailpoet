@@ -32,7 +32,6 @@ parameters:
     maximumNumberOfProcesses: 4
 
   # exclude level 6 errors
-  checkGenericClassInNonGenericObjectType: false
   checkMissingIterableValueType: false
   checkMissingTypehints: false
 
