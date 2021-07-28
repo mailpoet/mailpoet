@@ -33,7 +33,6 @@ parameters:
 
   # exclude level 6 errors
   checkMissingIterableValueType: false
-  checkMissingTypehints: false
 
 includes:
   - vendor/phpstan/phpstan-doctrine/extension.neon
