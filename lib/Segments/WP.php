@@ -13,6 +13,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -25,9 +26,13 @@ class WP {
   /** @var WelcomeScheduler */
   private $welcomeScheduler;
 
-  public function __construct(WPFunctions $wp, WelcomeScheduler $welcomeScheduler) {
+  /** @var WooCommerceHelper */
+  private $wooHelper;
+
+  public function __construct(WPFunctions $wp, WelcomeScheduler $welcomeScheduler, WooCommerceHelper $wooHelper) {
     $this->wp = $wp;
     $this->welcomeScheduler = $welcomeScheduler;
+    $this->wooHelper = $wooHelper;
   }
 
   public function synchronizeUser($wpUserId, $oldWpUserData = false) {
@@ -99,8 +104,10 @@ class WP {
         return $segment['type'] !== SegmentEntity::TYPE_WP_USERS && $segment['deleted_at'] === null;
       });
     }
+    $isWooCustomer = $this->wooHelper->isWooCommerceActive() && in_array('customer', $wpUser->roles ?? [], true);
     // When WP Segment is disabled force trashed state and unconfirmed status for new WPUsers without active segment
-    if ($addingNewUserToDisabledWPSegment && !$otherActiveSegments) {
+    // or who are not WooCommerce customers at the same time since customers are added to the WooCommerce list
+    if ($addingNewUserToDisabledWPSegment && !$otherActiveSegments && !$isWooCustomer) {
       $data['deleted_at'] = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
       $data['status'] = SubscriberEntity::STATUS_UNCONFIRMED;
     }

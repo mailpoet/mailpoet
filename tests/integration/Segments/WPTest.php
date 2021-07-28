@@ -13,6 +13,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Registration;
+use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -418,7 +419,7 @@ class WPTest extends \MailPoetTest {
       ],
       $this
     );
-    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class));
+    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class), $this->diContainer->get(Helper::class));
     $wpSegment->synchronizeUser($id);
     $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
     $deletedAt = Carbon::createFromFormat('Y-m-d H:i:s', $subscriber->deletedAt);
@@ -445,7 +446,7 @@ class WPTest extends \MailPoetTest {
       ],
       $this
     );
-    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class));
+    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class), $this->diContainer->get(Helper::class));
     $wpSegment->synchronizeUser($id);
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wpSubscriber->countConfirmations)->equals(0);
@@ -473,11 +474,42 @@ class WPTest extends \MailPoetTest {
       ],
       $this
     );
-    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class));
+    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class), $this->diContainer->get(Helper::class));
     $wpSegment->synchronizeUser($id);
     $subscriber1 = Subscriber::where("wp_user_id", $id)->findOne();
     expect($subscriber1->status)->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($subscriber1->deletedAt)->null();
+  }
+
+  public function testItDoesNotTrashNewUsersWhoIsWooCustomerToDisabledWPSegment() {
+    $this->disableWpSegment();
+    $randomNumber = rand();
+    $id = $this->insertUser($randomNumber);
+    add_role('customer', 'customer', []);
+    $wpUser = get_user_by('id', $id);
+    $this->assertInstanceOf(\WP_User::class, $wpUser);
+    $wpUser->add_role('customer');
+
+    $wp = Stub::make(
+      $this->diContainer->get(Functions::class),
+      [
+        'currentFilter' => 'user_register',
+      ],
+      $this
+    );
+    $wooHelper = Stub::make(
+      $this->diContainer->get(Helper::class),
+      [
+        'isWooCommerceActive' => true,
+      ],
+      $this
+    );
+    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class), $wooHelper);
+    $wpSegment->synchronizeUser($id);
+    $subscriber1 = Subscriber::where("wp_user_id", $id)->findOne();
+    expect($subscriber1->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    expect($subscriber1->deletedAt)->null();
+    remove_role('customer');
   }
 
   public function _after() {
