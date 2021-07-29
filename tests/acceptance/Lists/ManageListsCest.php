@@ -5,6 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\User;
@@ -204,6 +205,32 @@ class ManageListsCest {
     $i->waitForText($listTitle, 5, '[data-automation-id="listing_item_' . $segment->getId() . '"]');
     $i->clickItemRowActionByItemName($listTitle, 'Move to trash');
     $i->waitForText("List cannot be deleted because it’s used for '{$subject}' email");
+    $i->seeNoJSErrors();
+    $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment->getId() . '"]');
+    $i->waitForText('Move to trash');
+    $i->click('Move to trash');
+    $i->waitForText('0 lists were moved to the trash.');
+  }
+
+  public function cantTrashOrBulkTrashListWithForm(\AcceptanceTester $i) {
+    $listTitle = 'List with form';
+    $segmentFactory = new Segment();
+    $segment = $segmentFactory
+      ->withName($listTitle)
+      ->create();
+    $formName = 'My Form';
+    $formFactory = new Form();
+    $formFactory
+      ->withName($formName)
+      ->withSegments([$segment])
+      ->create();
+
+    $i->wantTo('Check that user can’t delete a list that is assigned to a form');
+    $i->login();
+    $i->amOnMailpoetPage('Lists');
+    $i->waitForText($listTitle, 5, '[data-automation-id="listing_item_' . $segment->getId() . '"]');
+    $i->clickItemRowActionByItemName($listTitle, 'Move to trash');
+    $i->waitForText("List cannot be deleted because it’s used for '{$formName}' form");
     $i->seeNoJSErrors();
     $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment->getId() . '"]');
     $i->waitForText('Move to trash');
