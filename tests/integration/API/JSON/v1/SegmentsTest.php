@@ -7,6 +7,7 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder;
 use MailPoet\API\JSON\v1\Segments;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -162,6 +163,62 @@ class SegmentsTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals("List cannot be deleted because it’s used for 'Subject' email");
   }
 
+  public function testItReturnsErrorWhenTrashingSegmentWithActiveForm() {
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => [(string)$this->segment3->getId()],
+    ]);
+    $this->entityManager->persist($form);
+    $this->entityManager->flush();
+
+    $response = $this->endpoint->trash(['id' => $this->segment3->getId()]);
+    $this->entityManager->refresh($this->segment3);
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals("List cannot be deleted because it’s used for 'My Form' form");
+  }
+
+  public function testItReturnsPluralErrorWhenTrashingSegmentWithActiveForms() {
+    $form1 = new FormEntity('My Form');
+    $form1->setSettings([
+      'segments' => [(string)$this->segment3->getId()],
+    ]);
+    $this->entityManager->persist($form1);
+    $this->entityManager->flush();
+
+    $form2 = new FormEntity('My other Form');
+    $form2->setSettings([
+      'segments' => [(string)$this->segment3->getId()],
+    ]);
+    $this->entityManager->persist($form2);
+    $this->entityManager->flush();
+
+    $response = $this->endpoint->trash(['id' => $this->segment3->getId()]);
+    $this->entityManager->refresh($this->segment3);
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals("List cannot be deleted because it’s used for 'My Form', 'My other Form' forms");
+  }
+
+  public function testItCanTrashSegmentWithoutActiveForm() {
+    $form1 = new FormEntity('My Form');
+    $form1->setSettings([
+      'segments' => [(string)$this->segment3->getId()],
+    ]);
+    $this->entityManager->persist($form1);
+    $this->entityManager->flush();
+
+    $response = $this->endpoint->trash(['id' => $this->segment2->getId()]);
+    $this->entityManager->clear();
+    $segment = $this->segmentRepository->findOneById($this->segment2->getId());
+    assert($segment instanceof SegmentEntity);
+
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      $this->responseBuilder->build($segment)
+    );
+    expect($response->data['deleted_at'])->notNull();
+    expect($response->meta['count'])->equals(1);
+  }
+
   public function testItCanDeleteASegment() {
     $response = $this->endpoint->delete(['id' => $this->segment3->getId()]);
     expect($response->data)->isEmpty();
@@ -232,5 +289,6 @@ class SegmentsTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(NewsletterSegmentEntity::class);
+    $this->truncateEntity(FormEntity::class);
   }
 }
