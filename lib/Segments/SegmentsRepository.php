@@ -8,6 +8,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\NotFoundException;
 use MailPoet\WP\Functions as WPFunctions;
@@ -23,12 +24,17 @@ class SegmentsRepository extends Repository {
   /** @var NewsletterSegmentRepository */
   private $newsletterSegmentRepository;
 
+  /** @var FormsRepository */
+  private $formsRepository;
+
   public function __construct(
     EntityManager $entityManager,
-    NewsletterSegmentRepository $newsletterSegmentRepository
+    NewsletterSegmentRepository $newsletterSegmentRepository,
+    FormsRepository $formsRepository
   ) {
     parent::__construct($entityManager);
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
+    $this->formsRepository = $formsRepository;
   }
 
   protected function getEntityClassName() {
@@ -169,8 +175,10 @@ class SegmentsRepository extends Repository {
   }
 
   public function bulkTrash(array $ids, string $type = SegmentEntity::TYPE_DEFAULT): int {
-    $activelyUsed = $this->newsletterSegmentRepository->getSubjectsOfActivelyUsedEmailsForSegments($ids);
-    $ids = array_diff($ids, array_keys($activelyUsed));
+    $activelyUsedInNewsletters = $this->newsletterSegmentRepository->getSubjectsOfActivelyUsedEmailsForSegments($ids);
+    $activelyUsedInForms = $this->formsRepository->getNamesOfFormsForSegments();
+    $activelyUsed = array_unique(array_merge(array_keys($activelyUsedInNewsletters), array_keys($activelyUsedInForms)));
+    $ids = array_diff($ids, $activelyUsed);
     return $this->updateDeletedAt($ids, new Carbon(), $type);
   }
 
