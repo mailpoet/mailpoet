@@ -105,8 +105,8 @@ wp plugin get woocommerce-subscriptions
 wp plugin activate mailpoet/mailpoet.php
 
 if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
-  # Softlink MailPoet Premium to plugin path
-  ln -s /project/mp3premium /wp-core/wp-content/plugins/mailpoet-premium
+  # Copy MailPoet Premium to plugin path
+  cp -r -n /project/mp3premium /wp-core/wp-content/plugins/mailpoet-premium
   # Activate MailPoet Premium
   wp plugin activate mailpoet-premium
 fi
