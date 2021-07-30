@@ -14,6 +14,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -79,6 +80,14 @@ class WP {
     if (isset($_POST['mailpoet']['subscribe_on_register_active']) && (bool)$_POST['mailpoet']['subscribe_on_register_active'] === true) {
       $status = SubscriberEntity::STATUS_UNSUBSCRIBED;
     }
+
+    // we want to mark a new subscriber as unsubscribed when the checkbox on Woo checkout is unchecked
+    if (isset($_POST[WooCommerceSubscription::CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME])
+      && !isset($_POST[WooCommerceSubscription::CHECKOUT_OPTIN_INPUT_NAME])
+    ) {
+      $status = SubscriberEntity::STATUS_UNSUBSCRIBED;
+    }
+
     // subscriber data
     $data = [
       'wp_user_id' => $wpUser->ID,

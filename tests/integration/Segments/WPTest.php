@@ -14,6 +14,7 @@ use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\Registration;
 use MailPoet\WooCommerce\Helper;
+use MailPoet\WooCommerce\Subscription;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -426,6 +427,22 @@ class WPTest extends \MailPoetTest {
     assert($deletedAt instanceof Carbon);
     expect($subscriber->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
     expect($deletedAt->timestamp)->equals(Carbon::now()->timestamp, 1);
+  }
+
+  public function testItAddsNewUserWhoUncheckedOptInOnCheckoutPageAsUnsubscribed() {
+    $id = $this->insertUser();
+    $wp = Stub::make(
+      $this->diContainer->get(Functions::class),
+      [
+        'currentFilter' => 'user_register',
+      ],
+      $this
+    );
+    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class), $this->diContainer->get(Helper::class));
+    $_POST[Subscription::CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME] = 1;
+    $wpSegment->synchronizeUser($id);
+    $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
+    expect($subscriber->status)->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function testItDoesNotSendConfirmationEmailForNewUserWhenWPSegmentIsDisabledOnRegisterEnabled() {
