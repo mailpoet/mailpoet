@@ -87,9 +87,9 @@ class Link implements CategoryInterface {
         $url = $this->wp->applyFilters(
           'mailpoet_newsletter_shortcode_link',
           $shortcode,
-          $newsletterModel,
-          $subscriberModel,
-          $queueModel,
+          $newsletter,
+          $subscriber,
+          $queue,
           $shortcodeDetails['arguments'],
           $wpUserPreview
         );
@@ -141,9 +141,9 @@ class Link implements CategoryInterface {
         $url = $this->wp->applyFilters(
           'mailpoet_newsletter_shortcode_link',
           $shortcode,
-          $newsletterModel,
-          $subscriberModel,
-          $queueModel,
+          $newsletter,
+          $subscriber,
+          $queue,
           $wpUserPreview
         );
         $url = ($url !== $shortcodeAction) ? $url : null;
