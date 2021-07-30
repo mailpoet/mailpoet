@@ -209,7 +209,7 @@ class Segments extends APIEndpoint {
       $this->subscribersRepository->bulkTrash($subscriberIds);
     }
 
-    $this->segmentsRepository->bulkTrash([$segment->getId()], $segment->getType());
+    $this->segmentsRepository->doTrash([$segment->getId()], $segment->getType());
     $this->segmentsRepository->refresh($segment);
     return $this->successResponse(
       $this->segmentsResponseBuilder->build($segment),
