@@ -34,7 +34,7 @@ class FormsRepository extends Repository {
     foreach ($allNonDeletedForms as $form) {
       $blockSegmentsIds = $form->getSettingsSegmentIds();
       foreach ($blockSegmentsIds as $blockSegmentId) {
-        $nameMap[(string)$blockSegmentId][] = $form->getName();
+        $nameMap[$blockSegmentId][] = $form->getName();
       }
     }
 
