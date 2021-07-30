@@ -15,6 +15,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Subscription {
   const CHECKOUT_OPTIN_INPUT_NAME = 'mailpoet_woocommerce_checkout_optin';
+  const CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME = 'mailpoet_woocommerce_checkout_optin_present';
   const OPTIN_ENABLED_SETTING_NAME = 'woocommerce.optin_on_checkout.enabled';
   const OPTIN_SEGMENTS_SETTING_NAME = 'woocommerce.optin_on_checkout.segments';
   const OPTIN_MESSAGE_SETTING_NAME = 'woocommerce.optin_on_checkout.message';
@@ -63,6 +64,9 @@ class Subscription {
       $labelString
     );
     echo $template;
+    if ($template) {
+      $this->printSubscriptionPresenceCheckField();
+    }
   }
 
   private function getSubscriptionField($inputName, $checked, $labelString) {
@@ -75,6 +79,16 @@ class Subscription {
         'return' => true,
       ],
       $checked ? '1' : '0'
+    );
+  }
+
+  private function printSubscriptionPresenceCheckField() {
+    return $this->wcHelper->woocommerceFormField(
+      self::CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME,
+      [
+        'type' => 'hidden',
+      ],
+      1
     );
   }
 
