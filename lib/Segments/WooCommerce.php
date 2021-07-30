@@ -89,7 +89,6 @@ class WooCommerce {
           'is_woocommerce_user' => 1,
         ];
         if (!empty($newCustomer)) {
-          $data['status'] = Subscriber::STATUS_SUBSCRIBED;
           $data['source'] = Source::WOOCOMMERCE_USER;
         }
         $data['id'] = $subscriber->id();
