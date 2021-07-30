@@ -72,6 +72,7 @@ class Subscription {
         'type' => 'checkbox',
         'label' => $this->wp->escHtml($labelString),
         'custom_attributes' => ['data-automation-id' => 'woo-commerce-subscription-opt-in'],
+        'return' => true,
       ],
       $checked ? '1' : '0'
     );
