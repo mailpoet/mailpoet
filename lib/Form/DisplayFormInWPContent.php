@@ -193,7 +193,7 @@ class DisplayFormInWPContent {
       return false;
     }
 
-    if ($this->wp->isSingular(self::SUPPORTED_POST_TYPES)) {
+    if ($this->wp->isSingular($this->wp->applyFilters('mailpoet_display_form_supported_post_types', self::SUPPORTED_POST_TYPES))) {
       if ($this->shouldDisplayFormOnPost($setup, 'posts')) return true;
       if ($this->shouldDisplayFormOnCategory($setup)) return true;
       if ($this->shouldDisplayFormOnTag($setup)) return true;
