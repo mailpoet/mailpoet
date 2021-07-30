@@ -182,6 +182,10 @@ class SegmentsRepository extends Repository {
     return $this->updateDeletedAt($ids, new Carbon(), $type);
   }
 
+  public function doTrash(array $ids, string $type = SegmentEntity::TYPE_DEFAULT): int {
+    return $this->updateDeletedAt($ids, new Carbon(), $type);
+  }
+
   public function bulkRestore(array $ids, string $type = SegmentEntity::TYPE_DEFAULT): int {
     return $this->updateDeletedAt($ids, null, $type);
   }

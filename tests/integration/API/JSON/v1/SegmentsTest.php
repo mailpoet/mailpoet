@@ -164,12 +164,8 @@ class SegmentsTest extends \MailPoetTest {
   }
 
   public function testItReturnsErrorWhenTrashingSegmentWithActiveForm() {
-    $form = new FormEntity('My Form');
-    $form->setSettings([
-      'segments' => [(string)$this->segment3->getId()],
-    ]);
-    $this->entityManager->persist($form);
-    $this->entityManager->flush();
+    $settings = ['segments' => [(string)$this->segment3->getId()]];
+    $this->createForm('My Form', $settings);
 
     $response = $this->endpoint->trash(['id' => $this->segment3->getId()]);
     $this->entityManager->refresh($this->segment3);
@@ -178,19 +174,9 @@ class SegmentsTest extends \MailPoetTest {
   }
 
   public function testItReturnsPluralErrorWhenTrashingSegmentWithActiveForms() {
-    $form1 = new FormEntity('My Form');
-    $form1->setSettings([
-      'segments' => [(string)$this->segment3->getId()],
-    ]);
-    $this->entityManager->persist($form1);
-    $this->entityManager->flush();
-
-    $form2 = new FormEntity('My other Form');
-    $form2->setSettings([
-      'segments' => [(string)$this->segment3->getId()],
-    ]);
-    $this->entityManager->persist($form2);
-    $this->entityManager->flush();
+    $settings = ['segments' => [(string)$this->segment3->getId()]];
+    $this->createForm('My Form', $settings);
+    $this->createForm('My other Form', $settings);
 
     $response = $this->endpoint->trash(['id' => $this->segment3->getId()]);
     $this->entityManager->refresh($this->segment3);
@@ -199,15 +185,11 @@ class SegmentsTest extends \MailPoetTest {
   }
 
   public function testItCanTrashSegmentWithoutActiveForm() {
-    $form1 = new FormEntity('My Form');
-    $form1->setSettings([
-      'segments' => [(string)$this->segment3->getId()],
-    ]);
-    $this->entityManager->persist($form1);
-    $this->entityManager->flush();
+    $settings = ['segments' => [(string)$this->segment3->getId()]];
+    $this->createForm('My Form', $settings);
 
     $response = $this->endpoint->trash(['id' => $this->segment2->getId()]);
-    $this->entityManager->clear();
+    $this->entityManager->refresh($this->segment2);
     $segment = $this->segmentRepository->findOneById($this->segment2->getId());
     assert($segment instanceof SegmentEntity);
 
@@ -266,6 +248,14 @@ class SegmentsTest extends \MailPoetTest {
 
     $subsribers = $this->subscriberSegmentRepository->findBy(['segment' => $this->segment1]);
     expect($subsribers)->count(0);
+  }
+
+  private function createForm(string $formName, array $settings ) {
+    $form = new FormEntity($formName);
+    $form->setSettings($settings);
+    $this->entityManager->persist($form);
+    $this->entityManager->flush();
+    return $form;
   }
 
   private function createSubscriberSegment(SubscriberEntity $subscriber, SegmentEntity $segment): SubscriberSegmentEntity {
