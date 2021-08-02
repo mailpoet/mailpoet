@@ -215,23 +215,35 @@ class ImportTest extends \MailPoetTest {
       'adam@smith.com',
       'jane@doe.com',
     ];
-    // invalid confirmed_ip is removed from data object
+    // invalid confirmed_ip is empty in data object
     $data['confirmed_ip'] = [
       '2019-05-31 18:42:35',
       '192.68.69.32',
     ];
     $result = $this->import->validateSubscribersData($data);
-    expect($result['confirmed_ip'])->count(1);
-    expect($result['confirmed_ip'][0])->equals('192.68.69.32');
+    expect($result['confirmed_ip'])->count(2);
+    expect($result['confirmed_ip'][0])->isEmpty();
+    expect($result['confirmed_ip'][1])->equals('192.68.69.32');
 
-    // invalid IPv4 confirmed_ip is removed from data object
+    // invalid IPv4 confirmed_ip is empty in the data object
     $data['confirmed_ip'] = [
       '392.68.69.32',
       '192.68.69.32',
     ];
     $result = $this->import->validateSubscribersData($data);
-    expect($result['confirmed_ip'])->count(1);
-    expect($result['confirmed_ip'][0])->equals('192.68.69.32');
+    expect($result['confirmed_ip'])->count(2);
+    expect($result['confirmed_ip'][0])->isEmpty();
+    expect($result['confirmed_ip'][1])->equals('192.68.69.32');
+
+    // Empty confirmed_ip is empty in the data object
+    $data['confirmed_ip'] = [
+      '',
+      '192.68.69.32',
+    ];
+    $result = $this->import->validateSubscribersData($data);
+    expect($result['confirmed_ip'])->count(2);
+    expect($result['confirmed_ip'][0])->isEmpty();
+    expect($result['confirmed_ip'][1])->equals('192.68.69.32');
 
     // normalize confirmed_at
     $data['confirmed_ip'] = [
