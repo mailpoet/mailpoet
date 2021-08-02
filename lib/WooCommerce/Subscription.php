@@ -122,14 +122,15 @@ class Subscription {
     $checkoutOptinEnabled = (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME);
     $wcSegment = Segment::getWooCommerceSegment();
     $moreSegmentsToSubscribe = (array)$this->settings->get(self::OPTIN_SEGMENTS_SETTING_NAME, []);
-
     if (!$checkoutOptinEnabled || empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])) {
       // Opt-in is disabled or checkbox is unchecked
       SubscriberSegment::unsubscribeFromSegments(
         $subscriber,
         [$wcSegment->id]
       );
-      $this->updateSubscriberStatus($subscriber);
+      if ($checkoutOptinEnabled) {
+        $this->updateSubscriberStatus($subscriber);
+      }
       return false;
     }
     $subscriber->source = Source::WOOCOMMERCE_CHECKOUT;
