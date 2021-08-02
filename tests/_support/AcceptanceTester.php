@@ -350,6 +350,14 @@ class AcceptanceTester extends \Codeception\Actor {
     return in_array($plugin, $i->grabOptionFromDatabase('active_plugins', true));
   }
 
+  public function orderProductWithoutRegistration(array $product, $userEmail, $doSubscribe = true) {
+    $this->orderProduct($product, $userEmail, false, $doSubscribe);
+  }
+
+  public function orderProductWithRegistration(array $product, $userEmail, $doSubscribe = true) {
+    $this->orderProduct($product, $userEmail, true, $doSubscribe);
+  }
+
   /**
    * Order a product and create an account within the order process
    */
@@ -528,6 +536,49 @@ class AcceptanceTester extends \Codeception\Actor {
       $i->amOnMailboxAppPage();
       $i->waitForText($subject, 60);
     }
+  }
+
+  /**
+   * Checks if the subscriber has correct global status
+   * and if some lists are passed also validates that they are subscribed in those lists
+   * @param string $email
+   * @param string $status
+   * @param string[]|null $listsSubscribed Array of lists in that subscriber should be subscribed
+   * @param string[]|null $listsNotSubscribed Array of lists in that subscriber shouldn't be subscribed
+   */
+  public function checkSubscriberStatusAndLists(string $email, string $status, $listsSubscribed = null, $listsNotSubscribed = null) {
+    $i = $this;
+    $i->amOnMailpoetPage('Subscribers');
+    $i->searchFor($email);
+    $i->waitForListingItemsToLoad();
+    $i->waitForText($email);
+    $i->see(ucfirst($status), 'td[data-colname="Status"]');
+    if (is_array($listsSubscribed)) {
+      foreach ($listsSubscribed as $list) {
+        $i->see($list, 'td[data-colname="Lists"]');
+      }
+    }
+    if (is_array($listsNotSubscribed)) {
+      foreach ($listsNotSubscribed as $list) {
+        $i->dontSee($list, 'td[data-colname="Lists"]');
+      }
+    }
+  }
+
+  /**
+   * Checks if any confirmation email is in mailbox
+   */
+  public function seeConfirmationEmailWasReceived() {
+    $this->checkEmailWasReceived('Confirm your subscription to');
+  }
+
+  /**
+   * Checks if there are no confirmation emails in mailbox
+   */
+  public function seeConfirmationEmailWasNotReceived() {
+    $i = $this;
+    $i->amOnMailboxAppPage();
+    $i->dontSee('Confirm your subscription to');
   }
 
   /**
