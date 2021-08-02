@@ -140,21 +140,24 @@ class SubscriptionTest extends \MailPoetTest {
     expect($subscribed)->equals(null);
   }
 
-  public function testItUnsubscribesIfCheckoutOptinIsDisabled() {
+  public function testItKeepsSubscribedStatusWhenOptinIsDisabledAndSignUpConfirmationIsEnabled() {
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $this->subscribeToSegment($this->subscriber, $this->wcSegment);
-    $this->entityManager->clear();
-    $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
-    assert($subscriber instanceof SubscriberEntity);
-    $subscribedSegments = $subscriber->getSegments();
+    $this->entityManager->refresh($this->subscriber);
+    $subscribedSegments = $this->subscriber->getSegments();
     expect($subscribedSegments)->count(1);
 
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, false);
+    $this->settings->set('signup_confirmation', ['enabled' => true]);
     $data['billing_email'] = $this->subscriber->getEmail();
-    $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
-    expect($subscribed)->equals(false);
 
+    $subscribedInWooSegment = $this->subscription->subscribeOnCheckout($this->orderId, $data);
+    expect($subscribedInWooSegment)->equals(false);
+
+    $this->entityManager->refresh($this->subscriber);
     $subscribedSegments = $this->subscriber->getSegments();
-    expect($subscribedSegments)->count(0);
+    expect($subscribedSegments)->count(1);
+    expect($this->subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItUnsubscribesIfCheckboxIsNotChecked() {
@@ -166,6 +169,7 @@ class SubscriptionTest extends \MailPoetTest {
     expect($subscribedSegments)->count(1);
 
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
+    $_POST[Subscription::CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME] = 1;
     $data['billing_email'] = $this->subscriber->getEmail();
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
     expect($subscribed)->equals(false);
@@ -198,6 +202,7 @@ class SubscriptionTest extends \MailPoetTest {
 
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
     $_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
+    $_POST[Subscription::CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME] = 1;
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     $data['billing_email'] = $this->subscriber->getEmail();
 
