@@ -28,6 +28,28 @@ Fixtures::add(
                ]
              }
            ]
+         },
+         {
+           "type": "container",
+           "styles": { "block": {} },
+           "orientation": "horizontal",
+           "blocks": [
+             {
+               "type": "container",
+               "orientation": "vertical",
+               "styles": { "block": {} },
+               "blocks": [
+                 {
+                   "type": "button",
+                   "text": "Action!",
+                   "url": "",
+                   "styles": {
+                     "block": {"backgroundColor":"#2ea1cd","borderColor":"#0074a2","borderWidth":"1px","borderRadius":"5px","borderStyle":"solid","width":"180px","lineHeight":"40px","fontColor":"#ffffff","fontFamily":"Verdana","fontSize":"18px","fontWeight":"normal","textAlign":"center"}
+                   }
+                 }
+               ]
+             }
+           ]
          }
        ]
      }

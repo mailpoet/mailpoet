@@ -518,6 +518,7 @@ class RendererTest extends \MailPoetTest {
         '/fillcolor="#666666/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
     )->equals(1);
+    codecept_debug($DOM('tr > td > div > table > tr > td', 0)->html());
   }
 
   public function testItUsesFullFontFamilyNameInElementStyles() {
@@ -633,5 +634,8 @@ class RendererTest extends \MailPoetTest {
     // spaces are only replaces in image tag URLs
     expect(preg_match('/image%20with%20space.jpg/s', $template['html']))->equals(1);
     expect(preg_match('/link%20with%20space.jpg/s', $template['html']))->equals(0);
+
+    // non mso condition for button is rendered correctly
+    expect(preg_match('/<\!--\[if \!mso\]><\!-- -->\s+<a class=\"mailpoet\_button\".+<\/a>\s+<\!--<\!\[endif\]-->/s', $template['html']))->equals(1);
   }
 }
