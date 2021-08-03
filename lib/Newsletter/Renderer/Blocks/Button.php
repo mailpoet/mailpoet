@@ -33,7 +33,10 @@ class Button {
                     font-weight:bold;">' . EHelper::escapeHtmlText($element['text']) . '
                   </center>
                   </v:roundrect>
-                  <![endif]--><a class="mailpoet_button" href="' . EHelper::escapeHtmlLinkAttr($element['url']) . '" style="' . $styles . '"> ' . EHelper::escapeHtmlText($element['text']) . '</a>
+                  <![endif]-->
+                  <!--[if !mso]><!-- -->
+                  <a class="mailpoet_button" href="' . EHelper::escapeHtmlLinkAttr($element['url']) . '" style="' . $styles . '"> ' . EHelper::escapeHtmlText($element['text']) . '</a>
+                  <!--<![endif]-->
                 </td>
               </tr>
             </table>
