@@ -195,6 +195,11 @@ class Settings {
     return $this;
   }
 
+  public function withSubscribeOnRegisterDisabled() {
+    $this->settings->set('subscribe.on_register.enabled', false);
+    return $this;
+  }
+
   public function withCaptchaType($type = null) {
     $this->settings->set('captcha.type', $type);
     return $this;

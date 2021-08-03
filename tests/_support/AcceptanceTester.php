@@ -474,6 +474,23 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->waitForText('Your order has been received');
   }
 
+  /**
+   * Register a customer on my-account page
+   * @param string $email
+   * @param bool $optIn  Whether to check optin checkbox or not
+   * @throws UnrecognizedExceptionException
+   */
+  public function registerCustomerOnMyAccountPage(string $email, $optIn = false) {
+    $i = $this;
+    $i->amOnPage('my-account');
+    $i->fillField('Email address', $email);
+    if ($optIn) {
+      $i->checkOption('mailpoet[subscribe_on_register]');
+    }
+    $i->click('Register', '.woocommerce-form-register');
+    $i->waitForText('From your account dashboard you can view your recent orders');
+  }
+
   // Enforce WP-CLI to be called with array because:
   //  - It's recommended now (https://github.com/lucatume/wp-browser/commit/6dbf93709194c630191c0c7de527b577105be743).
   //  - It's default in Symfony\Process now.
