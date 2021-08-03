@@ -3,11 +3,13 @@
 namespace MailPoet\WooCommerce;
 
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -58,7 +60,14 @@ class SubscriptionTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->confirmationEmailMailer = $this->createMock(ConfirmationEmailMailer::class);
-    $this->subscription = new Subscription($this->settings, $this->confirmationEmailMailer, $wp, $wcHelper, $this->subscribersRepository);
+    $this->subscription = new Subscription(
+      $this->settings,
+      $this->confirmationEmailMailer,
+      $wp,
+      $wcHelper,
+      $this->subscribersRepository,
+      $this->diContainer->get(Unsubscribes::class)
+    );
     $this->wcSegment = $this->segmentsRepository->getWooCommerceSegment();
     $this->wp = $this->diContainer->get(WP::class);
 
@@ -181,6 +190,9 @@ class SubscriptionTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     assert($subscriber instanceof SubscriberEntity);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $unsubscribeLog = $this->entityManager->getRepository(StatisticsUnsubscribeEntity::class)->findOneBy(['subscriber' => $subscriber]);
+    $this->assertInstanceOf(StatisticsUnsubscribeEntity::class, $unsubscribeLog);
+    expect($unsubscribeLog->getSource())->equals(StatisticsUnsubscribeEntity::SOURCE_ORDER_CHECKOUT);
   }
 
   public function testItSubscribesIfCheckboxIsChecked() {

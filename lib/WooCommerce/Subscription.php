@@ -2,11 +2,13 @@
 
 namespace MailPoet\WooCommerce;
 
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -35,18 +37,23 @@ class Subscription {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var Unsubscribes */
+  private $unsubscribesTracker;
+
   public function __construct(
     SettingsController $settings,
     ConfirmationEmailMailer $confirmationEmailMailer,
     WPFunctions $wp,
     Helper $wcHelper,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    Unsubscribes $unsubscribesTracker
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->wcHelper = $wcHelper;
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->subscribersRepository = $subscribersRepository;
+    $this->unsubscribesTracker = $unsubscribesTracker;
   }
 
   public function extendWooCommerceCheckoutForm() {
@@ -171,10 +178,12 @@ class Subscription {
   }
 
   private function updateSubscriberStatus(Subscriber $subscriber) {
-    $segmentsCount = $subscriber->segments()->count();
+    $ss = Subscriber::findOne($subscriber->id);
+    $segmentsCount = $ss->segments()->count();
     if (!$segmentsCount) {
       $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
       $subscriber->save();
+      $this->unsubscribesTracker->track($subscriber->id, StatisticsUnsubscribeEntity::SOURCE_ORDER_CHECKOUT);
     }
   }
 }
