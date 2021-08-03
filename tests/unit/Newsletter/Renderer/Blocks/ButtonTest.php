@@ -53,7 +53,7 @@ class ButtonTest extends \MailPoetUnitTest {
                   </v:roundrect>
                   <![endif]-->
                   <!--[if !mso]><!-- -->
-                  <a class="mailpoet_button" href="https://example.com" style="display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-decoration:none !important;text-align:center;background-color: #252525;border-color: #363636;border-width: 2px;border-radius: 5px;border-style: solid;width: 156px;line-height: 40px;color: #ffffff;font-family: \'source sans pro\', \'helvetica neue\', helvetica, arial, sans-serif;font-size: 14px;font-weight: bold;"> Button</a>
+                  <a class="mailpoet_button" href="https://example.com" style="display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-decoration:none;text-align:center;background-color: #252525;border-color: #363636;border-width: 2px;border-radius: 5px;border-style: solid;width: 156px;line-height: 40px;color: #ffffff;font-family: \'source sans pro\', \'helvetica neue\', helvetica, arial, sans-serif;font-size: 14px;font-weight: bold;"> Button</a>
                   <!--<![endif]-->
                 </td>
               </tr>
