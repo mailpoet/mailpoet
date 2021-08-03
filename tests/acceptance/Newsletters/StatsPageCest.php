@@ -5,8 +5,11 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 
 class StatsPageCest {
-  public function statsPage(\AcceptanceTester $i) {
+  public function statsPage(\AcceptanceTester $i, $scenario) {
     $i->wantTo('Open stats page of a sent newsletter');
+    if ($i->isPluginActive('mailpoet-premium/mailpoet-premium.php')) {
+      $scenario->skip('We skip this test because the Mailpoet Premium plugin is active!');
+    }
 
     $newsletterTitle = 'Stats Page Test';
     (new Newsletter())->withSubject($newsletterTitle)

@@ -345,6 +345,11 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->cli(['plugin', 'deactivate', self::WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN]);
   }
 
+  public function isPluginActive(string $plugin): bool {
+    $i = $this;
+    return in_array($plugin, $i->grabOptionFromDatabase('active_plugins', true));
+  }
+
   /**
    * Order a product and create an account within the order process
    */
