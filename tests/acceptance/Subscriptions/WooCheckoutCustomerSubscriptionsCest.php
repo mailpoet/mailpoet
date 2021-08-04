@@ -3,7 +3,9 @@
 namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
+use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 
 /**
@@ -83,6 +85,38 @@ class WooCheckoutCustomerSubscriptionsCest {
     $i->orderProductWithRegistration($this->product, $customerEmail, false);
     $i->login();
     $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNSUBSCRIBED, ['WordPress Users'], ['WooCommerce Customers']);
+    $i->seeConfirmationEmailWasNotReceived();
+  }
+
+  public function checkoutOptInDisabledExistingSubscriber(\AcceptanceTester $i) {
+    $this->settingsFactory->withWooCommerceCheckoutOptinDisabled();
+    $list = (new Segment())->create();
+    $customerEmail = 'woo_customer_disabled_exist@example.com';
+    (new Subscriber())
+      ->withEmail($customerEmail)
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$list])
+      ->create();
+
+    $i->orderProductWithRegistration($this->product, $customerEmail, false);
+    $i->login();
+    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_SUBSCRIBED, [$list->getName()], ['WooCommerce Customers']);
+    $i->seeConfirmationEmailWasNotReceived();
+  }
+
+  public function checkoutOptInUncheckedExistingSubscriber(\AcceptanceTester $i) {
+    $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
+    $list = (new Segment())->create();
+    $customerEmail = 'woo_customer_uncheck_exist@example.com';
+    (new Subscriber())
+      ->withEmail($customerEmail)
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$list])
+      ->create();
+
+    $i->orderProductWithRegistration($this->product, $customerEmail, false);
+    $i->login();
+    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_SUBSCRIBED, [$list->getName()], ['WooCommerce Customers']);
     $i->seeConfirmationEmailWasNotReceived();
   }
 }
