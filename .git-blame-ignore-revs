@@ -22,7 +22,7 @@ f49757bd4e129d44102a932246c5e892d362054d
 # Convert properties not caught by Code Sniffer to camel case
 94afd663259d6600e51c8e13084f7f126874d29e
 
-# Exclude globals from camel case conversion 
+# Exclude globals from camel case conversion
 6522635dc7455e39ca77370a18a9987de13c61b0
 
 # Convert Doctrine specific code to camel case
@@ -33,3 +33,7 @@ fbcaeaadbca33e6cc9aef0925be019e9b4923a93
 
 # Exclude MailPoet data structures from camel case conversion
 e66c76133ec3ef667e382203426d91a4b4aa5174
+
+# Updating rule name in php:cs ignore comments
+65b834a9fff72b1ec5fc81ac383ebb27321da9dc
+
