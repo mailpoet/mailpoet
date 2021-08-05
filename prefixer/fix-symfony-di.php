@@ -11,7 +11,7 @@ $replacements = [
   [
     'file' => '../vendor-prefixed/symfony/dependency-injection/Dumper/PhpDumper.php',
     'find' => [
-      '\MailPoetVendor\Symfony\Component\DependencyInjection\Loader\FileLoader::ANONYMOUS_ID_REGEXP',
+      'FileLoader::ANONYMOUS_ID_REGEXP',
     ],
     'replace' => [
       "'/^\\.\\d+_[^~]*+~[._a-zA-Z\\d]{7}$/'",
