@@ -1,10 +1,10 @@
 {
     "require": {
         "php-stubs/woocommerce-stubs": "^5.4",
-        "phpstan/phpstan": "0.12.90",
-        "phpstan/phpstan-doctrine": "0.12.39",
-        "phpstan/phpstan-phpunit": "0.12.20",
-        "szepeviktor/phpstan-wordpress": "^0.7.6"
+        "phpstan/phpstan": "0.12.94",
+        "phpstan/phpstan-doctrine": "0.12.42",
+        "phpstan/phpstan-phpunit": "0.12.21",
+        "szepeviktor/phpstan-wordpress": "^0.7.7"
     },
     "autoload": {
         "psr-4": {

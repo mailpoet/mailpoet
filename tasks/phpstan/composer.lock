@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "778500e89c7d747c99cb2cd23793372f",
+    "content-hash": "acc2f913652d4691afa2c0349a5e4483",
     "packages": [
         {
             "name": "php-stubs/woocommerce-stubs",
-            "version": "v5.4.0",
+            "version": "v5.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-stubs/woocommerce-stubs.git",
-                "reference": "f0f6a806d92d8918d0dfccde5c7300ce182aec0d"
+                "reference": "b80d16b146a6858b4c53afff116c7af7d59afad5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-stubs/woocommerce-stubs/zipball/f0f6a806d92d8918d0dfccde5c7300ce182aec0d",
-                "reference": "f0f6a806d92d8918d0dfccde5c7300ce182aec0d",
+                "url": "https://api.github.com/repos/php-stubs/woocommerce-stubs/zipball/b80d16b146a6858b4c53afff116c7af7d59afad5",
+                "reference": "b80d16b146a6858b4c53afff116c7af7d59afad5",
                 "shasum": ""
             },
             "require": {
@@ -46,9 +46,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-stubs/woocommerce-stubs/issues",
-                "source": "https://github.com/php-stubs/woocommerce-stubs/tree/v5.4.0"
+                "source": "https://github.com/php-stubs/woocommerce-stubs/tree/v5.5.0"
             },
-            "time": "2021-06-09T05:54:56+00:00"
+            "time": "2021-07-12T13:57:36+00:00"
         },
         {
             "name": "php-stubs/wordpress-stubs",
@@ -96,16 +96,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.90",
+            "version": "0.12.94",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "f0e4b56630fc3d4eb5be86606d07212ac212ede4"
+                "reference": "3d0ba4c198a24e3c3fc489f3ec6ac9612c4be5d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f0e4b56630fc3d4eb5be86606d07212ac212ede4",
-                "reference": "f0e4b56630fc3d4eb5be86606d07212ac212ede4",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/3d0ba4c198a24e3c3fc489f3ec6ac9612c4be5d6",
+                "reference": "3d0ba4c198a24e3c3fc489f3ec6ac9612c4be5d6",
                 "shasum": ""
             },
             "require": {
@@ -136,7 +136,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/0.12.90"
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.94"
             },
             "funding": [
                 {
@@ -156,20 +156,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-06-18T07:15:38+00:00"
+            "time": "2021-07-30T09:05:27+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
-            "version": "0.12.39",
+            "version": "0.12.42",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-doctrine.git",
-                "reference": "c35261fe7fe54bd0338c7ab43e85db20b7dc483c"
+                "reference": "e3173175dcdaf808d5ca6408528dca669e4de19f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/c35261fe7fe54bd0338c7ab43e85db20b7dc483c",
-                "reference": "c35261fe7fe54bd0338c7ab43e85db20b7dc483c",
+                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/e3173175dcdaf808d5ca6408528dca669e4de19f",
+                "reference": "e3173175dcdaf808d5ca6408528dca669e4de19f",
                 "shasum": ""
             },
             "require": {
@@ -222,22 +222,22 @@
             "description": "Doctrine extensions for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-doctrine/issues",
-                "source": "https://github.com/phpstan/phpstan-doctrine/tree/0.12.39"
+                "source": "https://github.com/phpstan/phpstan-doctrine/tree/0.12.42"
             },
-            "time": "2021-06-10T12:42:07+00:00"
+            "time": "2021-07-08T08:41:15+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "0.12.20",
+            "version": "0.12.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "efc009981af383eb3303f0ca9868c29acad7ce74"
+                "reference": "6aaff1196c4f808769774b49a94a60e5fdf18de7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/efc009981af383eb3303f0ca9868c29acad7ce74",
-                "reference": "efc009981af383eb3303f0ca9868c29acad7ce74",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/6aaff1196c4f808769774b49a94a60e5fdf18de7",
+                "reference": "6aaff1196c4f808769774b49a94a60e5fdf18de7",
                 "shasum": ""
             },
             "require": {
@@ -276,9 +276,9 @@
             "description": "PHPUnit extensions and rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-phpunit/issues",
-                "source": "https://github.com/phpstan/phpstan-phpunit/tree/0.12.20"
+                "source": "https://github.com/phpstan/phpstan-phpunit/tree/0.12.21"
             },
-            "time": "2021-06-17T08:28:30+00:00"
+            "time": "2021-07-14T10:48:30+00:00"
         },
         {
             "name": "symfony/polyfill-php73",
@@ -361,16 +361,16 @@
         },
         {
             "name": "szepeviktor/phpstan-wordpress",
-            "version": "v0.7.6",
+            "version": "v0.7.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/szepeviktor/phpstan-wordpress.git",
-                "reference": "3721127a9ddc62c8dc14fc8726cbfb3e47529bbe"
+                "reference": "bdbea69b2ba4a69998c3b6fe2b7106d78a23bd72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/szepeviktor/phpstan-wordpress/zipball/3721127a9ddc62c8dc14fc8726cbfb3e47529bbe",
-                "reference": "3721127a9ddc62c8dc14fc8726cbfb3e47529bbe",
+                "url": "https://api.github.com/repos/szepeviktor/phpstan-wordpress/zipball/bdbea69b2ba4a69998c3b6fe2b7106d78a23bd72",
+                "reference": "bdbea69b2ba4a69998c3b6fe2b7106d78a23bd72",
                 "shasum": ""
             },
             "require": {
@@ -396,7 +396,7 @@
             },
             "autoload": {
                 "psr-4": {
-                    "PHPStan\\WordPress\\": "src/"
+                    "SzepeViktor\\PHPStan\\WordPress\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -413,7 +413,7 @@
             ],
             "support": {
                 "issues": "https://github.com/szepeviktor/phpstan-wordpress/issues",
-                "source": "https://github.com/szepeviktor/phpstan-wordpress/tree/v0.7.6"
+                "source": "https://github.com/szepeviktor/phpstan-wordpress/tree/v0.7.7"
             },
             "funding": [
                 {
@@ -421,7 +421,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2021-06-19T15:51:50+00:00"
+            "time": "2021-07-14T09:19:15+00:00"
         }
     ],
     "packages-dev": [],
@@ -432,5 +432,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
