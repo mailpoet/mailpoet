@@ -15,11 +15,15 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var SubscriberSegmentRepository */
+  private $subscriberSegmentRepository;
+
   public function _before() {
     parent::_before();
     $this->cleanup();
     $this->saveController = $this->diContainer->get(SubscriberSaveController::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
+    $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
   }
 
   public function testItCreatesNewSubscriber(): void {
@@ -83,6 +87,38 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     expect($subscriber->getSubscriberSegments())->count(1);
   }
 
+  public function testItDeletesOrphanSubscriberSegmentsOnUpdate(): void {
+    $subscriber = $this->createSubscriber('second@test.com', SubscriberEntity::STATUS_UNCONFIRMED);
+    $segmentOne = $this->segmentsRepository->createOrUpdate('Segment One');
+    $segmentTwo = $this->segmentsRepository->createOrUpdate('Segment Two');
+
+    // Create orphan record on SubscriberSegments
+    $orphanSegment = $this->segmentsRepository->createOrUpdate('Orphan');
+    $this->createSubscriberSegment($subscriber, $orphanSegment);
+    $this->entityManager->remove($orphanSegment);
+    $this->entityManager->flush();
+    $subscriberSegments = $this->subscriberSegmentRepository->findBy(['subscriber' => $subscriber]);
+    expect($subscriberSegments)->count(1);
+
+    // Update subscriber with new segments
+    $data = [
+      'id' => $subscriber->getId(),
+      'first_name' => 'John',
+      'last_name' => 'Doe',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segments' => [
+        $segmentOne->getId(),
+        $segmentTwo->getId(),
+      ],
+    ];
+
+    $this->entityManager->clear();
+    $subscriber = $this->saveController->save($data);
+    // Check the $orphanSegment is gone
+    $subscriberSegments = $this->subscriberSegmentRepository->findBy(['subscriber' => $subscriber]);
+    expect($subscriberSegments)->count(2);
+  }
+
   public function _after(): void {
     $this->cleanup();
   }
@@ -94,6 +130,13 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
     return $subscriber;
+  }
+
+  private function createSubscriberSegment(SubscriberEntity $subscriber, SegmentEntity $segment): SubscriberSegmentEntity {
+    $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->entityManager->persist($subscriberSegment);
+    $this->entityManager->flush();
+    return $subscriberSegment;
   }
 
   private function cleanup(): void {
