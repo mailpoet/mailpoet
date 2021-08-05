@@ -34,7 +34,7 @@ class PersonalDataExporters {
   }
 
   public function registerNewslettersExporter($exporters) {
-    $newsletterExporter = ContainerWrapper::getInstance(NewslettersExporter::class);
+    $newsletterExporter = ContainerWrapper::getInstance()->get(NewslettersExporter::class);
     $exporters[] = [
       'exporter_friendly_name' => WPFunctions::get()->__('MailPoet Emails', 'mailpoet'),
       'callback' => [$newsletterExporter, 'export'],
