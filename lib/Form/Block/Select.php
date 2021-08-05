@@ -53,7 +53,7 @@ class Select {
       }
       $html .= '<option value="" disabled selected hidden>' . $label . '</option>';
     } else {
-      if (empty($block['params']['required']) || !$block['params']['required']) {
+      if (empty($block['params']['required'])) {
         $html .= '<option value="">-</option>';
       }
     }
