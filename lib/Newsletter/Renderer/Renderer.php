@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Config\Env;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
@@ -63,11 +64,13 @@ class Renderer {
    * @return NewsletterEntity|null
    */
   private function getNewsletter($newsletter) {
-    if ($newsletter instanceof NewsletterEntity) return $newsletter;
     if ($newsletter instanceof Newsletter) {
-      $newsletterId = $newsletter->id;
+      return $this->newslettersRepository->findOneById($newsletter->id);
     }
-    return $this->newslettersRepository->findOneById($newsletterId);
+    if (!$newsletter instanceof NewsletterEntity) {
+      throw new InvalidStateException();
+    }
+    return $newsletter;
   }
 
   public function render($newsletter, SendingTask $sendingTask = null, $type = false) {

@@ -179,7 +179,7 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
           $model = $model->where($field, $value);
         }
       }
-      if ($model) $model = $model->findOne();
+      if ($model !== false) $model = $model->findOne();
     }
 
     if ($model === false) {
