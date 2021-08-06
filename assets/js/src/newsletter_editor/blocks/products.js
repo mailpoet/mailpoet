@@ -98,6 +98,7 @@ Module.ProductsBlockModel = base.BlockModel.extend({
     this.on('change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:pricePosition change:readMoreType change:readMoreText change:showDivider change:titlePosition', refreshTransformedProducts);
     this.listenTo(this.get('readMoreButton'), 'change', refreshTransformedProducts);
     this.listenTo(this.get('divider'), 'change', refreshTransformedProducts);
+    this.listenTo(App.getChannel(), 'hideSettings', this.destroy);
 
     this.on('insertSelectedProducts', this._insertSelectedProducts, this);
   },
