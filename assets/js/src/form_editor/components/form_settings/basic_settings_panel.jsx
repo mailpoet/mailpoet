@@ -108,7 +108,7 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
               values: segments,
               multiple: true,
               placeholder: MailPoet.I18n.t('settingsPleaseSelectList'),
-              getLabel: (seg) => (`${seg.name} (~${parseInt(seg.subscribers, 10).toLocaleString()})`),
+              getLabel: (seg) => (`${seg.name} (${parseInt(seg.subscribers, 10).toLocaleString()})`),
               filter: (seg) => (!!(!seg.deleted_at && seg.type === 'default')),
             }}
           />

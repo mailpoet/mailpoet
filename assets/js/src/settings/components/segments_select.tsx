@@ -16,7 +16,7 @@ export default (props: Props) => {
   const segments = useSelector(selector)().map((segment) => ({
     value: segment.id,
     label: segment.name,
-    count: `~${segment.subscribers}`,
+    count: `${segment.subscribers}`,
   }));
 
   const defaultValue = segments.filter((segment) => props.value.includes(segment.value));
