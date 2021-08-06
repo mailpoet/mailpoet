@@ -4,6 +4,7 @@ import { Link, withRouter } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import plusIcon from 'common/button/icon/plus';
+import { SubscribersCacheMessage } from '../common/subscribers_cache_message';
 
 const SubscribersHeading = ({ location }) => (
   <>
@@ -35,6 +36,10 @@ const SubscribersHeading = ({ location }) => (
         {MailPoet.I18n.t('export')}
       </a>
     </TopBarWithBeamer>
+
+    <SubscribersCacheMessage
+      cacheCalculation={window.mailpoet_subscribers_counts_cache_created_at}
+    />
   </>
 );
 
