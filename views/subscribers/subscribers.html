@@ -27,6 +27,7 @@
     var mailpoet_subscribers_count = <%= subscriber_count %>;
     var mailpoet_has_premium_support = <%= has_premium_support ? 'true' : 'false' %>;
     var mailpoet_premium_link = <%= json_encode(link_premium) %>;
+    var mailpoet_subscribers_counts_cache_created_at = <%= json_encode(subscribers_counts_cache_created_at) %>;
   </script>
 <% endblock %>
 
@@ -159,6 +160,10 @@
     'averageBadgeTooltip': __('Something to improve.'),
     'tooltipAverage': __('Read 20% or fewer of sent emails'),
     'engagementScoreDescription': __('Average percent of emails subscribers read in the last year'),
+
+    'subscribersCountWereCalculated': __('Lists and Segments subscribers counts were calculated'),
+    'subscribersMinutesAgo': __('minutes ago'),
+    'recalculateNow': __('Recalculate now'),
   }) %>
 <% endblock %>
 
