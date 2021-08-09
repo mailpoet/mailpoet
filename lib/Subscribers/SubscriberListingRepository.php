@@ -233,7 +233,7 @@ class SubscriberListingRepository extends ListingRepository {
     $subscribersWithoutSegmentCount = $subscribersWithoutSegmentStats[$key];
 
     $subscribersWithoutSegmentLabel = sprintf(
-      WPFunctions::get()->__('Subscribers without a list (%s)', 'mailpoet'),
+      __('Subscribers without a list (%s)', 'mailpoet'),
       number_format((float)$subscribersWithoutSegmentCount)
     );
 
