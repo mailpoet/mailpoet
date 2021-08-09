@@ -27,7 +27,7 @@ const segmentField = {
   placeholder: MailPoet.I18n.t('selectSegmentPlaceholder'),
   forceSelect2: true,
   values: availableSegments,
-  getCount: (segment) => `${parseInt(segment.subscribers, 10).toLocaleString()}`,
+  getCount: (segment) => parseInt(segment.subscribers, 10).toLocaleString(),
   getLabel: (segment) => segment.name,
   getValue: (segment) => segment.id,
 };
