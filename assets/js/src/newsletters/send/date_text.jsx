@@ -124,6 +124,7 @@ class DateText extends React.Component {
         disabled={this.props.disabled}
         onChange={this.onChange}
         minDate={this.getDate(window.mailpoet_current_date)}
+        calendarStartDay={locale.options.weekStartsOn}
         locale="mailpoet"
         {...this.props.validation} // eslint-disable-line react/jsx-props-no-spreading
       />
