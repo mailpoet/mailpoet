@@ -175,6 +175,11 @@ class Renderer {
           $selector = '.mailpoet_content-wrapper';
           break;
       }
+
+      if (!is_array($style)) {
+        continue;
+      }
+
       $css .= StylesHelper::setStyle($style, $selector);
     }
     return $css;

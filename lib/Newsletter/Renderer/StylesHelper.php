@@ -87,7 +87,7 @@ class StylesHelper {
       $attribute;
   }
 
-  public static function setStyle($style, $selector) {
+  public static function setStyle(array $style, string $selector): string {
     $css = $selector . '{' . PHP_EOL;
     $style = self::applyHeadingMargin($style, $selector);
     $style = self::applyLineHeight($style, $selector);
@@ -138,14 +138,14 @@ class StylesHelper {
         self::$font['Arial'];
   }
 
-  public static function applyHeadingMargin($style, $selector) {
+  public static function applyHeadingMargin(array $style, string $selector): array {
     if (!preg_match('/h[1-4]/i', $selector)) return $style;
     $fontSize = (int)$style['fontSize'];
     $style['margin'] = sprintf('0 0 %spx 0', self::$headingMarginMultiplier * $fontSize);
     return $style;
   }
 
-  public static function applyLineHeight($style, $selector) {
+  public static function applyLineHeight(array $style, string $selector): array {
     if (!preg_match('/mailpoet_paragraph|h[1-4]/i', $selector)) return $style;
     $lineHeight = isset($style['lineHeight']) ? (float)$style['lineHeight'] : self::$defaultLineHeight;
     $fontSize = (int)$style['fontSize'];
