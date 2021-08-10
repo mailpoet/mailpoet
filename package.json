@@ -38,6 +38,8 @@
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "@babel/runtime-corejs3": "^7.14.0",
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
     "@wordpress/api-fetch": "^5.2.1",
     "@wordpress/block-editor": "^7.0.1",
     "@wordpress/block-library": "^5.0.1",
