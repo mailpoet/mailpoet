@@ -6,7 +6,7 @@ import {
   ToggleControl,
   SandBox,
 } from '@wordpress/components';
-import { InspectorControls, __experimentalUseEditorFeature } from '@wordpress/block-editor';
+import { InspectorControls, useSetting } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { debounce } from 'lodash';
@@ -16,7 +16,7 @@ import { mapColorSlugToValue } from 'form_editor/store/mapping/from_blocks/style
 import ParagraphEdit from '../paragraph_edit.jsx';
 
 const CustomHtmlEdit = ({ attributes, setAttributes, clientId }) => {
-  const colorDefinitions = __experimentalUseEditorFeature('color.palette');
+  const colorDefinitions = useSetting('color.palette');
   const {
     fontColor,
     fontSize,

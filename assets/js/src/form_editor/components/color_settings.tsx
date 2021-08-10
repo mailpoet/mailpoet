@@ -3,7 +3,7 @@ import {
   ColorIndicator,
   ColorPalette,
 } from '@wordpress/components';
-import { __experimentalUseEditorFeature } from '@wordpress/block-editor';
+import { useSetting } from '@wordpress/block-editor';
 
 type Props = {
   name: string;
@@ -16,7 +16,7 @@ const ColorSettings: React.FunctionComponent<Props> = ({
   value,
   onChange,
 }: Props) => {
-  const settingsColors = __experimentalUseEditorFeature('color.palette');
+  const settingsColors = useSetting('color.palette');
   return (
     <div>
       <h3 className="mailpoet-styles-settings-heading">
