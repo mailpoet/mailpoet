@@ -11,6 +11,7 @@ import {
   BlockEditorProvider,
   BlockList,
   BlockSelectionClearer,
+  BlockTools,
   WritingFlow,
   ObserveTyping,
 } from '@wordpress/block-editor';
@@ -120,8 +121,8 @@ export default () => {
                   </div>
                 )}
                 <div className="interface-interface-skeleton__content">
+                  <BlockTools />
                   <Notices />
-                  <Popover.Slot name="block-toolbar" />
                   <UnsavedChangesNotice />
                   <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
                     <BlockEditorKeyboardShortcuts />
