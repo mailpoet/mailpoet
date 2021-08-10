@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import '@wordpress/core-data';
 import { useSelect, useDispatch } from '@wordpress/data';
 import {
-  DropZoneProvider,
   Popover,
   SlotFillProvider,
 } from '@wordpress/components';
@@ -98,61 +97,59 @@ export default () => {
   return (
     <>
       <CustomFontsStyleSheetLink />
-      <DropZoneProvider>
-        <SlotFillProvider>
-          <div className={layoutClass}>
-            <div className="interface-interface-skeleton__editor">
-              <div className="interface-interface-skeleton__header">
-                <Header
-                  isInserterOpened={isInserterOpen}
-                  setIsInserterOpened={setIsInserterOpen}
-                />
-              </div>
-              <div className="interface-interface-skeleton__body">
-                <BlockEditorProvider
-                  value={formBlocks}
-                  onInput={blocksChangedInBlockEditor}
-                  onChange={blocksChangedInBlockEditor}
-                  settings={editorSettings}
-                  useSubRegistry={false}
-                >
-                  {(isInserterOpen) && (
-                    <div className="interface-interface-skeleton__left-sidebar">
-                      <Inserter setIsInserterOpened={setIsInserterOpen} />
-                    </div>
-                  )}
-                  <div className="interface-interface-skeleton__content">
-                    <Notices />
-                    <Popover.Slot name="block-toolbar" />
-                    <UnsavedChangesNotice />
-                    <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
-                      <BlockEditorKeyboardShortcuts />
-                      <BlockEditorKeyboardShortcuts.Register />
-                      <div className="mailpoet_form">
-                        <WritingFlow>
-                          <ObserveTyping>
-                            <FormStylingBackground>
-                              <BlockList />
-                            </FormStylingBackground>
-                          </ObserveTyping>
-                        </WritingFlow>
-                      </div>
-                    </BlockSelectionClearer>
-                  </div>
-                  {(sidebarOpened) && (
-                    <div className="interface-interface-skeleton__sidebar">
-                      <Sidebar />
-                    </div>
-                  )}
-                </BlockEditorProvider>
-              </div>
-              <FormStyles />
-              <Fullscreen />
+      <SlotFillProvider>
+        <div className={layoutClass}>
+          <div className="interface-interface-skeleton__editor">
+            <div className="interface-interface-skeleton__header">
+              <Header
+                isInserterOpened={isInserterOpen}
+                setIsInserterOpened={setIsInserterOpen}
+              />
             </div>
-            <Popover.Slot />
+            <div className="interface-interface-skeleton__body">
+              <BlockEditorProvider
+                value={formBlocks}
+                onInput={blocksChangedInBlockEditor}
+                onChange={blocksChangedInBlockEditor}
+                settings={editorSettings}
+                useSubRegistry={false}
+              >
+                {(isInserterOpen) && (
+                  <div className="interface-interface-skeleton__left-sidebar">
+                    <Inserter setIsInserterOpened={setIsInserterOpen} />
+                  </div>
+                )}
+                <div className="interface-interface-skeleton__content">
+                  <Notices />
+                  <Popover.Slot name="block-toolbar" />
+                  <UnsavedChangesNotice />
+                  <BlockSelectionClearer className="edit-post-visual-editor editor-styles-wrapper">
+                    <BlockEditorKeyboardShortcuts />
+                    <BlockEditorKeyboardShortcuts.Register />
+                    <div className="mailpoet_form">
+                      <WritingFlow>
+                        <ObserveTyping>
+                          <FormStylingBackground>
+                            <BlockList />
+                          </FormStylingBackground>
+                        </ObserveTyping>
+                      </WritingFlow>
+                    </div>
+                  </BlockSelectionClearer>
+                </div>
+                {(sidebarOpened) && (
+                  <div className="interface-interface-skeleton__sidebar">
+                    <Sidebar />
+                  </div>
+                )}
+              </BlockEditorProvider>
+            </div>
+            <FormStyles />
+            <Fullscreen />
           </div>
-        </SlotFillProvider>
-      </DropZoneProvider>
+          <Popover.Slot />
+        </div>
+      </SlotFillProvider>
       <Preview />
       <Tutorial />
     </>
