@@ -13,7 +13,7 @@ const baseConfig = {
   mode: PRODUCTION_ENV ? 'production' : 'development',
   devtool: PRODUCTION_ENV ? undefined : 'eval-source-map',
   cache: true,
-  bail: true,
+  bail: PRODUCTION_ENV,
   context: __dirname,
   watchOptions: {
     aggregateTimeout: 300,
