@@ -2,7 +2,7 @@ import React from 'react';
 import {
   FontSizePicker,
 } from '@wordpress/components';
-import { __experimentalUseEditorFeature } from '@wordpress/block-editor';
+import { useSetting } from '@wordpress/block-editor';
 
 type Props = {
   value: number|undefined;
@@ -13,7 +13,7 @@ const FontSizeSettings: React.FunctionComponent<Props> = ({
   value,
   onChange,
 }: Props) => {
-  const fontSizes = __experimentalUseEditorFeature('typography.fontSizes');
+  const fontSizes = useSetting('typography.fontSizes');
   return (
     <FontSizePicker
       value={value}
