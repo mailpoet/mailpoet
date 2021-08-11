@@ -492,7 +492,7 @@ describe('Form Body To Blocks', () => {
     // First level
     const column1 = blocks[1].innerBlocks[0];
     expect(column1.name).to.be.equal('core/column');
-    expect(column1.attributes.width).to.be.equal(66.66);
+    expect(column1.attributes.width).to.be.equal('66.66%');
     expect(column1.attributes.verticalAlignment).to.be.equal('center');
     expect(column1.innerBlocks.length).to.be.equal(2);
     const columns11 = column1.innerBlocks[0];
@@ -505,9 +505,11 @@ describe('Form Body To Blocks', () => {
     expect(columns11.innerBlocks.length).to.be.equal(2);
     const column11 = columns11.innerBlocks[0];
     expect(column11.innerBlocks.length).to.be.equal(1);
+    expect(column11.attributes.width).to.be.equal('50rem');
     checkBlockBasics(column11.innerBlocks[0]);
     const column12 = columns11.innerBlocks[1];
     expect(column12.innerBlocks.length).to.be.equal(0);
+    expect(column12.attributes.width).to.be.equal('50%');
   });
 
   it('Should map columns colors', () => {

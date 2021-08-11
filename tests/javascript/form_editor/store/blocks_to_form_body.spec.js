@@ -570,12 +570,12 @@ describe('Blocks to Form Body', () => {
     const column1 = columns.body[0];
     const column2 = columns.body[1];
     expect(column1.type).to.be.equal('column');
-    expect(column1.params.width).to.be.equal(66.66);
+    expect(column1.params.width).to.be.equal('200px');
     expect(column1.params.vertical_alignment).to.be.equal('center');
     expect(column1.body.length).to.be.equal(2);
     expect(column2.type).to.be.equal('column');
     expect(column2.body.length).to.be.equal(1);
-    expect(column2.params.width).to.be.equal(33.33);
+    expect(column2.params.width).to.be.equal('33%');
     const divider = column1.body[1];
     checkBodyInputBasics(divider);
     const submit = column2.body[0];
@@ -587,11 +587,11 @@ describe('Blocks to Form Body', () => {
     const column11 = columns11.body[0];
     const column12 = columns11.body[1];
     expect(column11.type).to.be.equal('column');
-    expect(column11.params.width).to.be.equal(50);
+    expect(column11.params.width).to.be.null;
     expect(column11.body.length).to.be.equal(1);
     expect(column12.type).to.be.equal('column');
     expect(column12.body.length).to.be.equal(0);
-    expect(column12.params.width).to.be.equal(50);
+    expect(column12.params.width).to.be.equal('40px');
     const input = column11.body[0];
     checkBodyInputBasics(input);
   });

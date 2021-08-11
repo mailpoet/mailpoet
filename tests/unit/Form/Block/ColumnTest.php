@@ -36,7 +36,16 @@ class ColumnTest extends \MailPoetUnitTest {
 
   public function testItShouldRenderWidth() {
     $block = $this->block;
-    $block['params']['width'] = 30;
+    $block['params']['width'] = '30px';
+    $html = $this->columns->render($block, 'content');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[@class="mailpoet_form_column"]');
+    $style = $this->htmlParser->getAttribute($column, 'style');
+    expect($style->textContent)->stringContainsString('flex-basis:30px;');
+  }
+
+  public function testItShouldRenderWidthBackwardCompatible() {
+    $block = $this->block;
+    $block['params']['width'] = '30';
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[@class="mailpoet_form_column"]');
     $style = $this->htmlParser->getAttribute($column, 'style');
