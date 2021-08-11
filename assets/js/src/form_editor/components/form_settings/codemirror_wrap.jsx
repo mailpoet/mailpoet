@@ -30,12 +30,14 @@ const CodemirrorWrap = ({ options, value, onChange }) => {
   }, [value, changeEvent]);
 
   return (
-    <textarea
-      ref={textArea}
-      name="name"
-      defaultValue={value}
-      autoComplete="off"
-    />
+    <div>
+      <textarea
+        ref={textArea}
+        name="name"
+        defaultValue={value}
+        autoComplete="off"
+      />
+    </div>
   );
 };
 
