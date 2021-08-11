@@ -247,7 +247,7 @@ export const nestedColumns = {
       name: 'core/column',
       isValid: true,
       attributes: {
-        width: 66.66,
+        width: '200px',
         verticalAlignment: 'center',
       },
       innerBlocks: [
@@ -268,7 +268,9 @@ export const nestedColumns = {
               clientId: 'columns-1-1-2',
               name: 'core/column',
               isValid: true,
-              attributes: {},
+              attributes: {
+                width: '40px',
+              },
               innerBlocks: [],
             },
           ],
@@ -281,7 +283,7 @@ export const nestedColumns = {
       name: 'core/column',
       isValid: true,
       attributes: {
-        width: 33.33,
+        width: '33%',
       },
       innerBlocks: [submitBlock],
     },

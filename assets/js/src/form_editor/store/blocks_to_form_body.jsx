@@ -85,10 +85,9 @@ const blocksToFormBodyFactory = (
 
   /**
    * @param blocks
-   * @param parent  - parent block of nested block
    * @returns {*}
    */
-  const mapBlocks = (blocks, parent = null) => {
+  const mapBlocks = (blocks) => {
     if (!Array.isArray(blocks)) {
       throw new Error('Mapper expects blocks to be an array.');
     }
@@ -107,7 +106,6 @@ const blocksToFormBodyFactory = (
       if (block.attributes.labelWithinInput) {
         mapped.params.label_within = '1';
       }
-      const childrenCount = parent ? parent.innerBlocks.length : 1;
       switch (block.name) {
         case 'core/heading':
           return {
@@ -193,15 +191,14 @@ const blocksToFormBodyFactory = (
             params: {
               class_name: block.attributes.className || null,
               vertical_alignment: block.attributes.verticalAlignment || null,
-              width: block.attributes.width
-                ? block.attributes.width : Math.round(100 / childrenCount),
+              width: block.attributes.width || null,
             },
-            body: mapBlocks(block.innerBlocks, block),
+            body: mapBlocks(block.innerBlocks),
           };
         case 'core/columns':
           return {
             type: 'columns',
-            body: mapBlocks(block.innerBlocks, block),
+            body: mapBlocks(block.innerBlocks),
             params: {
               vertical_alignment: block.attributes.verticalAlignment || null,
               class_name: block.attributes.className || null,

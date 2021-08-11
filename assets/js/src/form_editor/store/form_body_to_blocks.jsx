@@ -106,7 +106,8 @@ const mapColumnBlocks = (
   const backgroundColorSlug = mapColorSlug(colorDefinitions, data.params.background_color);
   const gradientSlug = mapGradientSlug(gradientDefinitions, data.params.gradient);
   if (has(data.params, 'width')) {
-    mapped.attributes.width = parseFloat(data.params.width);
+    // BC fix: Set % as unit for values saved before units were introduced
+    mapped.attributes.width = Number.isNaN(Number(data.params.width)) ? data.params.width : `${data.params.width}%`;
   }
   if (has(data.params, 'vertical_alignment')) {
     mapped.attributes.verticalAlignment = data.params.vertical_alignment;

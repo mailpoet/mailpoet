@@ -218,7 +218,7 @@ export const nestedColumns = {
               position: '1',
               type: 'column',
               params: {
-                width: 50,
+                width: '50rem',
               },
               body: [firstNameInput],
             },
