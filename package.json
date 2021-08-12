@@ -153,7 +153,7 @@
     "inject-loader": "^4.0.1",
     "install": "^0.13.0",
     "js-yaml": "^4.1.0",
-    "jsdom": "^11.12.0",
+    "jsdom": "^16.7.0",
     "json-loader": "^0.5.7",
     "lint-staged": "^11.0.0",
     "mocha": "^7.2.0",
