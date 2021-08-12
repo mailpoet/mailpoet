@@ -13,7 +13,7 @@ export default function createReducer(defaultValue: State) {
       case 'SET_SETTINGS':
         return { ...state, data: normalizeSettings(action.value) };
       case 'SET_ERROR_FLAG':
-        return { ...state, flags: { ...state.flags, error: action.value } };
+        return { ...state, flags: { ...state.flags, error: !!action.value } };
       case 'SAVE_STARTED':
         return { ...state, save: { inProgress: true, error: null } };
       case 'SAVE_DONE':
