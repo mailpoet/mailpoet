@@ -25,6 +25,10 @@ const MailerError = (props) => {
   if (!props.mta_log.error || props.mta_log.status !== 'paused' || props.mta_log.error.operation === 'authorization') {
     return null;
   }
+  // do not display MailPoet API Key error twice
+  if (props.mta_log.error.operation === 'send' && props.mta_method === 'MailPoet' && MailPoet.hasInvalidMssApiKey) {
+    return null;
+  }
   if (props.mta_log.error.operation === 'migration') {
     return (
       <div className="mailpoet_notice notice notice-warning">
