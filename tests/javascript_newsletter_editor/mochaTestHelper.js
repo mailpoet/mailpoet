@@ -3,7 +3,7 @@ var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
 var chaiJq = require('chai-jq');
 var _ = require('underscore');
-var jsdom = require('jsdom/lib/old-api.js').jsdom;
+var { JSDOM } = require('jsdom');
 var URL = require('url').URL;
 var nodeCrypto = require('crypto');
 
@@ -15,16 +15,17 @@ global.sinon = sinon;
 global.URL = URL;
 
 if (!global.document || !global.window) {
-  global.document = jsdom('<html><head><script></script></head><body></body></html>', {
-    url: 'http://example.com',
-  }, {
-    FetchExternalResources: ['script'],
-    ProcessExternalResources: ['script'],
-    MutationEvents: '2.0',
-    QuerySelector: false,
-  });
+  global.document = new JSDOM(
+    '<html><head><script></script></head><body></body></html>',
+    {
+      url: 'http://example.com',
+      runScripts: 'dangerously',
+      resources: 'usable',
+      pretendToBeVisual: true,
+    }
+  ).window.document;
 
-  global.window = document.defaultView;
+  global.window = global.document.defaultView;
   global.navigator = global.window.navigator;
 }
 const testHelpers = require('./loadHelpers.js');
@@ -38,8 +39,9 @@ global._ = _;
 testHelpers.loadScript('tests/javascript_newsletter_editor/testBundles/vendor.js', global.window);
 const Handlebars = global.window.Handlebars;
 global.Handlebars = global.window.Handlebars;
-// Fix global access for Element. It is used in tinymce
+// Fix global access for Element and Node. It is used in tinymce
 global.Element = global.window.Element;
+global.Node = global.window.Node;
 // Fix global access for HTMLAnchorElement. It is used in FileSaver
 global.HTMLAnchorElement = global.window.HTMLAnchorElement;
 
@@ -58,7 +60,6 @@ global.interact = function () {
 };
 global.spectrum = function () { return this; };
 jQuery.fn.spectrum = global.spectrum;
-jQuery.fn.stick_in_parent = function () { return this; };
 
 // Add global stubs for convenience
 global.stubChannel = function (EditorApplication, returnObject) {
@@ -102,16 +103,6 @@ global.stubImage = function (defaultWidth, defaultHeight) {
   };
 };
 
-// Dummy Mutation Observer - needed for select2
-// We will be able to remove this after upgrading to jsdom v13 or higher
-global.window.MutationObserver = class {
-  constructor() { return null; }
-
-  disconnect() { return this; }
-
-  observe() { return this; }
-};
-
 // Add simple polyfill for crypto
 global.crypto = {
   getRandomValues: (buffer) => nodeCrypto.randomFillSync(buffer),
@@ -126,6 +117,8 @@ global.window.matchMedia = window.matchMedia || (
     };
   }
 );
+
+global.window.fontsSelect = function () {};
 
 testHelpers.loadTemplate('blocks/base/toolsGeneric.hbs', window, { id: 'newsletter_editor_template_tools_generic' });
 
