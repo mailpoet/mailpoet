@@ -37,12 +37,9 @@
 // Fix for default appender appearance
 // We don't use any default block (WP Post editor has paragraph)
 // and CSS distributed within packages is works only with the paragraph block
-.block-editor-button-block-appender.block-list-appender__toggle {
-  width: 100%;
-
-  svg {
-    height: 24px;
-  }
+// We want to display it in center
+.block-editor-inserter .block-editor-button-block-appender.block-list-appender__toggle {
+  margin: 0 auto;
 }
 
 // Html blocks contains iframe which captures clicks and in some cases prevents selecting block.
