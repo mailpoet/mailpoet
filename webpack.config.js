@@ -193,12 +193,17 @@ const adminConfig = {
       'react-string-replace',
       'prop-types',
       'classnames',
+      'lodash',
+      '@emotion/react',
+      '@emotion/styled',
       'help-tooltip.jsx',
       'listing/listing.jsx',
       'common/index.ts',
     ],
     admin: 'webpack_admin_index.jsx',
     newsletter_editor: 'newsletter_editor/webpack_index.jsx',
+    form_editor: 'form_editor/form_editor.jsx',
+    settings: 'settings/index.tsx'
   },
   plugins: [
     ...baseConfig.plugins,
@@ -237,7 +242,7 @@ const adminConfig = {
 
             // add admin/form_editor_legacy/newsletter_editor shared modules
             const filteredChunks = chunks.filter((chunk) => {
-              return ['admin', 'newsletter_editor'].includes(chunk.name);
+              return ['admin', 'newsletter_editor', 'form_editor', 'settings'].includes(chunk.name);
             });
             return filteredChunks.length > 1;
           },
@@ -354,18 +359,6 @@ const testConfig = {
   },
 };
 
-// FormEditor config
-const formEditorConfig = {
-  name: 'form_editor',
-  entry: {
-    form_editor: 'form_editor/form_editor.jsx',
-  },
-  externals: {
-    'jquery': 'jQuery',
-    'mailpoet': 'MailPoet',
-  },
-};
-
 // Form preview config
 const formPreviewConfig = {
   name: 'form_preview',
@@ -385,18 +378,7 @@ const postEditorBlock = {
   },
 };
 
-// Settings config
-const settingsConfig = {
-  name: 'settings',
-  entry: {
-    settings: 'settings/index.tsx',
-  },
-  externals: {
-    'mailpoet': 'MailPoet',
-  },
-};
-
-module.exports = [adminConfig, publicConfig, migratorConfig, formEditorConfig, formPreviewConfig, testConfig, postEditorBlock, settingsConfig].map((config) => {
+module.exports = [adminConfig, publicConfig, migratorConfig, formPreviewConfig, testConfig, postEditorBlock].map((config) => {
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(
