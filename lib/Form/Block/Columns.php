@@ -44,6 +44,10 @@ class Columns {
     if (!empty($params['text_color'])) {
       $classes[] = "has-{$params['text_color']}-color";
     }
+    // BC !isset for older forms that were saved without the flag
+    if (!isset($params['is_stacked_on_mobile']) || $params['is_stacked_on_mobile'] === '1') {
+      $classes[] = "mailpoet_stack_on_mobile";
+    }
     if (!empty($params['class_name'])) {
       $classes[] = $params['class_name'];
     }

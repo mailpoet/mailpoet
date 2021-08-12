@@ -201,6 +201,8 @@ const blocksToFormBodyFactory = (
             body: mapBlocks(block.innerBlocks),
             params: {
               vertical_alignment: block.attributes.verticalAlignment || null,
+              is_stacked_on_mobile: (block.attributes.isStackedOnMobile
+                || block.attributes.isStackedOnMobile === undefined) ? '1' : '0',
               class_name: block.attributes.className || null,
               text_color: mapColorSlugToValue(
                 colorDefinitions,

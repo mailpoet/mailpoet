@@ -129,6 +129,13 @@ const mapColumnBlocks = (
   if (has(data.params, 'class_name') && data.params.class_name) {
     mapped.attributes.className = data.params.class_name;
   }
+  if (has(data.params, 'is_stacked_on_mobile')) {
+    mapped.attributes.isStackedOnMobile = data.params.is_stacked_on_mobile === '1';
+  }
+  // BC for columns data without is_stacked_on_mobile property
+  if (data.type === 'columns' && !has(data.params, 'is_stacked_on_mobile')) {
+    mapped.attributes.isStackedOnMobile = true;
+  }
   return mapped;
 };
 

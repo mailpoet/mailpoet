@@ -240,6 +240,7 @@ export const nestedColumns = {
   isValid: true,
   attributes: {
     verticalAlignment: 'center',
+    isStackedOnMobile: false,
   },
   innerBlocks: [
     {

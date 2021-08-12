@@ -199,6 +199,7 @@ export const nestedColumns = {
   type: 'columns',
   params: {
     vertical_alignment: 'center',
+    is_stacked_on_mobile: '0',
   },
   body: [
     {
