@@ -65,8 +65,9 @@ class FormWithColumnsCest {
 
   private function addFieldInColumn(\AcceptanceTester $i, $name) {
     $i->click('(//button[@class="components-button block-editor-button-block-appender"])[1]');
-    $i->waitForElementVisible('.block-editor-inserter__search-input');
-    $i->fillField('.block-editor-inserter__search-input', $name);
+    $blockInserterSearchInput = '.block-editor-inserter__search .components-search-control__input';
+    $i->waitForElementVisible($blockInserterSearchInput);
+    $i->fillField($blockInserterSearchInput, $name);
     $i->waitForText($name, 5, '.block-editor-block-types-list__item-title');
     $i->click($name, '.block-editor-block-types-list__list-item');
   }
