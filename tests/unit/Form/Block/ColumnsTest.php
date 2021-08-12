@@ -30,7 +30,7 @@ class ColumnsTest extends \MailPoetUnitTest {
 
   public function testItShouldRenderColumns() {
     $html = $this->columns->render($this->block, 'content');
-    expect($html)->equals('<div class="mailpoet_form_columns mailpoet_paragraph">content</div>');
+    expect($html)->equals('<div class="mailpoet_form_columns mailpoet_paragraph mailpoet_stack_on_mobile">content</div>');
   }
 
   public function testItShouldRenderVerticalAlignClass() {
@@ -49,6 +49,32 @@ class ColumnsTest extends \MailPoetUnitTest {
     $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
     expect($class->textContent)->stringContainsString('my-class');
+  }
+
+  public function testItShouldRenderStackOnMobileClassWhenFlagIsNotSet() {
+    $block = $this->block;
+    $html = $this->columns->render($block, 'content');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $class = $this->htmlParser->getAttribute($column, 'class');
+    expect($class->textContent)->stringContainsString('mailpoet_stack_on_mobile');
+  }
+
+  public function testItShouldRenderStackOnMobileClassWhenFlagIsTurnedOn() {
+    $block = $this->block;
+    $block['params']['is_stacked_on_mobile'] = '1';
+    $html = $this->columns->render($block, 'content');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $class = $this->htmlParser->getAttribute($column, 'class');
+    expect($class->textContent)->stringContainsString('mailpoet_stack_on_mobile');
+  }
+
+  public function testItShouldNotRenderStackOnMobileClassWhenFlagTurnedOff() {
+    $block = $this->block;
+    $block['params']['is_stacked_on_mobile'] = '0';
+    $html = $this->columns->render($block, 'content');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $class = $this->htmlParser->getAttribute($column, 'class');
+    expect($class->textContent)->stringNotContainsString('mailpoet_stack_on_mobile');
   }
 
   public function testItShouldRenderCustomBackground() {

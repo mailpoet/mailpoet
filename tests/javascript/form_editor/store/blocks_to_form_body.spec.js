@@ -567,6 +567,7 @@ describe('Blocks to Form Body', () => {
     expect(columns.body.length).to.be.equal(2);
     expect(columns.type).to.be.equal('columns');
     expect(columns.params.vertical_alignment).to.be.equal('center');
+    expect(columns.params.is_stacked_on_mobile).to.be.equal('0');
     const column1 = columns.body[0];
     const column2 = columns.body[1];
     expect(column1.type).to.be.equal('column');
@@ -583,6 +584,7 @@ describe('Blocks to Form Body', () => {
     const columns11 = column1.body[0];
     expect(columns11.type).to.be.equal('columns');
     expect(columns11.body.length).to.be.equal(2);
+    expect(columns11.params.is_stacked_on_mobile).to.be.equal('1');
     // Second level
     const column11 = columns11.body[0];
     const column12 = columns11.body[1];
