@@ -83,6 +83,16 @@ export const Datepickers = () => (
     </div>
     <br />
 
+    <Heading level={3}>Datepicker with calendar start day on Monday</Heading>
+    <div>
+      <DatepickerWrapper
+        dateFormat="MMMM d, yyyy"
+        calendarStartDay={1}
+        onChange={action('datepicker with calendar start day')}
+      />
+    </div>
+    <br />
+
     <Heading level={3}>Disabled datepicker</Heading>
     <div>
       <DatepickerWrapper

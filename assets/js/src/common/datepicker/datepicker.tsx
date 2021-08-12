@@ -1,6 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker';
+import MailPoet from 'mailpoet';
 
 type Props = ReactDatePickerProps & {
   dimension?: 'small';
@@ -31,6 +32,7 @@ const Datepicker = ({
     {iconStart}
     <ReactDatePicker
       useWeekdaysShort
+      calendarStartDay={props.calendarStartDay ?? MailPoet.wpWeekStartsOn}
       {...props} // eslint-disable-line react/jsx-props-no-spreading
     />
     {iconEnd}

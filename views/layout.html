@@ -56,6 +56,7 @@ jQuery('#adminmenu #toplevel_page_mailpoet-newsletters')
   var mailpoet_time_format = "<%= wp_time_format()|escape('js') %>";
   var mailpoet_version = "<%= mailpoet_version() %>";
   var mailpoet_locale = "<%= mailpoet_locale() %>";
+  var mailpoet_wp_week_starts_on = "<%= wp_start_of_week() %>";
   var mailpoet_premium_version = <%= json_encode(mailpoet_premium_version()) %>;
   var mailpoet_3rd_party_libs_enabled = <%= is_loading_3rd_party_enabled() | json_encode %>;
   var mailpoet_analytics_enabled = <%= is_analytics_enabled() | json_encode %>;
