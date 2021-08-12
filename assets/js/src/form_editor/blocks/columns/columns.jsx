@@ -13,6 +13,10 @@ const settings = {
   ...columns.settings,
   ...settingsReset,
   category: 'design',
+  supports: {
+    ...columns.metadata.supports,
+    anchor: false,
+  },
 };
 
 export { settings };

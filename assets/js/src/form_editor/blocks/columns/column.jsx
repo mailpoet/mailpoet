@@ -13,5 +13,9 @@ const settings = {
   ...column.settings,
   ...settingsReset,
   category: 'design',
+  supports: {
+    ...column.metadata.supports,
+    anchor: false,
+  },
 };
 export { settings };
