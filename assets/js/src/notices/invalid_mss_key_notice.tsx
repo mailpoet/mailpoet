@@ -1,6 +1,7 @@
 import React from 'react';
 import Notice from 'notices/notice';
 import MailPoet from 'mailpoet';
+import ReactStringReplace from 'react-string-replace';
 
 type Props = {
   mssKeyInvalid: boolean;
@@ -12,7 +13,15 @@ const InvalidMssKeyNotice = ({ mssKeyInvalid, subscribersCount }: Props) => {
   return (
     <Notice type="error" timeout={false} closable={false} renderInPlace>
       <h3>{MailPoet.I18n.t('allSendingPausedHeader')}</h3>
-      <p>{MailPoet.I18n.t('allSendingPausedBody')}</p>
+      <p>
+        {
+          ReactStringReplace(
+            MailPoet.I18n.t('allSendingPausedBody'),
+            /\[link\](.*?)\[\/link\]/g,
+            (match) => <a href="?page=mailpoet-settings#premium" key="check-sending">{ match }</a>
+          )
+        }
+      </p>
       <p>
         <a
           href={`https://account.mailpoet.com?s=${subscribersCount}`}

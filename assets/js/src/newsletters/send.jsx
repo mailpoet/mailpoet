@@ -15,7 +15,6 @@ import { fromUrl } from 'common/thumbnail.ts';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
-import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import slugify from 'slugify';
 import { GlobalContext } from 'context/index.jsx';
 
@@ -478,10 +477,6 @@ class NewsletterSend extends React.Component {
           onChange={this.handleFormChange}
           onSubmit={this.handleSave}
         >
-          <InvalidMssKeyNotice
-            mssKeyInvalid={window.mailpoet_mss_key_invalid}
-            subscribersCount={window.mailpoet_subscribers_count}
-          />
           <p>
             <Button variant="secondary" type="submit" automationId="email-save-draft">
               {MailPoet.I18n.t('saveDraftAndClose')}
