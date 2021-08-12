@@ -76,8 +76,8 @@ locale.localize.day = buildLocalizeFn({
   values: dayValues,
   defaultWidth: 'wide',
 });
-locale.options.weekStartsOn = typeof window.mailpoet_start_of_week !== 'undefined'
-  ? window.mailpoet_start_of_week
+locale.options.weekStartsOn = typeof MailPoet.wpWeekStartsOn !== 'undefined'
+  ? MailPoet.wpWeekStartsOn
   : 1;
 
 registerLocale('mailpoet', locale);
@@ -124,7 +124,6 @@ class DateText extends React.Component {
         disabled={this.props.disabled}
         onChange={this.onChange}
         minDate={this.getDate(window.mailpoet_current_date)}
-        calendarStartDay={locale.options.weekStartsOn}
         locale="mailpoet"
         {...this.props.validation} // eslint-disable-line react/jsx-props-no-spreading
       />
