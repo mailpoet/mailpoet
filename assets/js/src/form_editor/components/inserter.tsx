@@ -14,14 +14,14 @@ type Props = {
 const Inserter: React.FunctionComponent<Props> = ({
   setIsInserterOpened,
 }: Props) => (
-  <div className="edit-post-layout__inserter-panel">
-    <div className="edit-post-layout__inserter-panel-header">
+  <div className="edit-post-editor__inserter-panel">
+    <div className="edit-post-editor__inserter-panel-header">
       <Button
         icon={close}
         onClick={(): void => setIsInserterOpened(false)}
       />
     </div>
-    <div className="edit-post-layout__inserter-panel-content">
+    <div className="edit-post-editor__inserter-panel-content">
       <Library
         showMostUsedBlocks
         showInserterHelpPanel={false}
