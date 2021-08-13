@@ -17,7 +17,10 @@ class Column {
   }
 
   private function getStyles(array $params): string {
-    if (!empty($params['width'])) {
+    if (
+      !empty($params['width']) &&
+      (strlen($params['width']) > 0 && ctype_digit(substr($params['width'], 0, 1)))
+    ) {
       $widthValue = $this->wp->escAttr($params['width']) . (is_numeric($params['width']) ? '%' : '');
       return " style=\"flex-basis:{$widthValue};\"";
     }
