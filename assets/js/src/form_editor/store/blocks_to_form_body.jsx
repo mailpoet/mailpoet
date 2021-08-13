@@ -192,6 +192,7 @@ const blocksToFormBodyFactory = (
               class_name: block.attributes.className || null,
               vertical_alignment: block.attributes.verticalAlignment || null,
               width: block.attributes.width || null,
+              padding: block.attributes.style?.spacing?.padding || null,
             },
             body: mapBlocks(block.innerBlocks),
           };

@@ -61,6 +61,15 @@ class ColumnTest extends \MailPoetUnitTest {
     expect($style->textContent)->stringContainsString('flex-basis:30%;');
   }
 
+  public function testItShouldRenderPadding() {
+    $block = $this->block;
+    $block['params']['padding'] = ['top' => '10px', 'right' => '20px', 'bottom' => '30px', 'left' => '40px'];
+    $html = $this->columns->render($block, 'content');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[@class="mailpoet_form_column"]');
+    $style = $this->htmlParser->getAttribute($column, 'style');
+    expect($style->textContent)->stringContainsString('padding:10px 20px 30px 40px;');
+  }
+
   public function testItShouldRenderVerticalAlignClass() {
     $block = $this->block;
     $block['params']['vertical_alignment'] = 'top';

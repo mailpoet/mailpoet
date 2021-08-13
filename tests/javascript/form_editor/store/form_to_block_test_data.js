@@ -208,6 +208,12 @@ export const nestedColumns = {
       params: {
         width: 66.66,
         vertical_alignment: 'center',
+        padding: {
+          top: '10px',
+          right: '20px',
+          bottom: '30px',
+          left: '40px',
+        },
       },
       body: [
         {

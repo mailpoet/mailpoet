@@ -17,14 +17,23 @@ class Column {
   }
 
   private function getStyles(array $params): string {
+    $styles = [];
     if (
       !empty($params['width']) &&
       (strlen($params['width']) > 0 && ctype_digit(substr($params['width'], 0, 1)))
     ) {
       $widthValue = $this->wp->escAttr($params['width']) . (is_numeric($params['width']) ? '%' : '');
-      return " style=\"flex-basis:{$widthValue};\"";
+      $styles[] = "flex-basis:{$widthValue}";
     }
-    return '';
+    if (!empty($params['padding']) && is_array($params['padding'])) {
+      $styles[] = $this->wp->escAttr(
+        "padding:{$params['padding']['top']} {$params['padding']['right']} {$params['padding']['bottom']} {$params['padding']['left']}"
+      );
+    }
+    if (!count($styles)) {
+      return '';
+    }
+    return ' style="' . implode(';', $styles) . ';"';
   }
 
   private function getClass(array $params): string {

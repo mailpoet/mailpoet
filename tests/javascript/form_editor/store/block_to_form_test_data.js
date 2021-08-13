@@ -250,6 +250,16 @@ export const nestedColumns = {
       attributes: {
         width: '200px',
         verticalAlignment: 'center',
+        style: {
+          spacing: {
+            padding: {
+              top: '10px',
+              right: '20px',
+              bottom: '30px',
+              left: '40px',
+            },
+          },
+        },
       },
       innerBlocks: [
         {
