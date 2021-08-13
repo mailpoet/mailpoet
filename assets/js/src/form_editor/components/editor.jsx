@@ -116,7 +116,7 @@ export default () => {
                 useSubRegistry={false}
               >
                 {(isInserterOpen) && (
-                  <div className="interface-interface-skeleton__left-sidebar">
+                  <div className="interface-interface-skeleton__secondary-sidebar">
                     <Inserter setIsInserterOpened={setIsInserterOpen} />
                   </div>
                 )}
