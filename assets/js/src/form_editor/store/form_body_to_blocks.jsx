@@ -129,6 +129,9 @@ const mapColumnBlocks = (
   if (has(data.params, 'class_name') && data.params.class_name) {
     mapped.attributes.className = data.params.class_name;
   }
+  if (has(data.params, 'padding')) {
+    mapped.attributes.style.spacing = { padding: data.params.padding };
+  }
   if (has(data.params, 'is_stacked_on_mobile')) {
     mapped.attributes.isStackedOnMobile = data.params.is_stacked_on_mobile === '1';
   }

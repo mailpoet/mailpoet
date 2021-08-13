@@ -74,6 +74,7 @@ export default () => {
   const editorSettings = {
     mediaUpload: canUserUpload ? uploadMedia : null,
     maxWidth: 580,
+    enableCustomSpacing: true,
     __experimentalFetchLinkSuggestions: fetchLinkSuggestions,
     __experimentalBlockPatterns: [], // we don't want patterns in our inserter
     __experimentalBlockPatternCategories: [],

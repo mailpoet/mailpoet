@@ -495,6 +495,12 @@ describe('Form Body To Blocks', () => {
     expect(column1.name).to.be.equal('core/column');
     expect(column1.attributes.width).to.be.equal('66.66%');
     expect(column1.attributes.verticalAlignment).to.be.equal('center');
+    expect(column1.attributes.style.spacing.padding).to.be.deep.equal({
+      top: '10px',
+      right: '20px',
+      bottom: '30px',
+      left: '40px',
+    });
     expect(column1.innerBlocks.length).to.be.equal(2);
     const columns11 = column1.innerBlocks[0];
     checkBlockBasics(column1.innerBlocks[1]);
