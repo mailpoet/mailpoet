@@ -63,7 +63,7 @@ class Router {
   }
 
   public static function decodeRequestData($data) {
-    $data = json_decode(base64_decode($data), true);
+    $data = !is_array($data) ? json_decode(base64_decode($data), true) : [];
     if (!is_array($data)) {
       $data = [];
     }
