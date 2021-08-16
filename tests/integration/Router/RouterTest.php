@@ -253,6 +253,8 @@ class RouterTest extends \MailPoetTest {
   public function testItCanConvertInvalidRequestDataToArray() {
     $result = Router::decodeRequestData('some_invalid_data');
     expect($result)->equals([]);
+    $result = Router::decodeRequestData(['key' => 'some_invalid_data']);
+    expect($result)->equals([]);
   }
 
   public function testItCanBuildRequest() {
