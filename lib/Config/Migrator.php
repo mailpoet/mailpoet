@@ -53,6 +53,7 @@ class Migrator {
       'user_flags',
       'feature_flags',
       'dynamic_segment_filters',
+      'user_agents',
     ];
   }
 
@@ -563,6 +564,18 @@ class Migrator {
       'filter_data longblob,',
       'PRIMARY KEY (id),',
       'KEY segment_id (segment_id)',
+    ];
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  public function userAgents() {
+    $attributes = [
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'hash varchar(32) UNIQUE NOT NULL, ',
+      'user_agent text NOT NULL, ',
+      'created_at timestamp NULL,',
+      'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY (id)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
