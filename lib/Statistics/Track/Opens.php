@@ -7,13 +7,21 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Statistics\StatisticsOpensRepository;
+use MailPoet\Statistics\UserAgentsRepository;
 
 class Opens {
   /** @var StatisticsOpensRepository */
   private $statisticsOpensRepository;
 
-  public function __construct(StatisticsOpensRepository $statisticsOpensRepository) {
+  /** @var UserAgentsRepository */
+  private $userAgentsRepository;
+
+  public function __construct(
+    StatisticsOpensRepository $statisticsOpensRepository,
+    UserAgentsRepository $userAgentsRepository
+  ) {
     $this->statisticsOpensRepository = $statisticsOpensRepository;
+    $this->userAgentsRepository = $userAgentsRepository;
   }
 
   public function track($data, $displayImage = true) {
@@ -40,6 +48,9 @@ class Opens {
         return $this->returnResponse($displayImage);
       }
       $statistics = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
+      if (!empty($data->userAgent)) {
+        $statistics->setUserAgent($this->userAgentsRepository->findOrCreate($data->userAgent));
+      }
       $this->statisticsOpensRepository->persist($statistics);
       $this->statisticsOpensRepository->flush();
       $this->statisticsOpensRepository->recalculateSubscriberScore($subscriber);
