@@ -20,6 +20,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
+use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Cookies;
@@ -91,6 +92,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class)
     );
   }
@@ -103,6 +105,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
     ], [
       'abort' => Expected::exactly(2),
@@ -126,6 +129,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
     ], [
       'redirectToUrl' => null,
@@ -143,6 +147,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
     ], [
       'redirectToUrl' => null,
@@ -152,6 +157,28 @@ class ClicksTest extends \MailPoetTest {
     expect(StatisticsOpens::findMany())->notEmpty();
   }
 
+  public function testItTracksUserAgent() {
+    $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
+    $data = $this->trackData;
+    $data->userAgent = 'User Agent';
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Opens::class),
+      $clicksRepository,
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+    ], [
+      'redirectToUrl' => null,
+    ], $this);
+    $clicks->track($data);
+    $trackedClicks = $clicksRepository->findAll();
+    expect($trackedClicks)->count(1);
+    $click = $trackedClicks[0];
+    expect($click->getUserAgent()->getUserAgent())->equals('User Agent');
+  }
+
   public function testItRedirectsToUrlAfterTracking() {
     $clicks = Stub::construct($this->clicks, [
       $this->settingsController,
@@ -159,6 +186,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
     ], [
       'redirectToUrl' => Expected::exactly(1),
@@ -173,6 +201,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
     ], [
       'redirectToUrl' => null,
@@ -201,6 +230,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
     ], [
       'abort' => Expected::exactly(1),
