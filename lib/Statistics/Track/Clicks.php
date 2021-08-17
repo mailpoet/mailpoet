@@ -11,6 +11,7 @@ use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsClicksRepository;
+use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -40,12 +41,16 @@ class Clicks {
   /** @var StatisticsClicksRepository */
   private $statisticsClicksRepository;
 
+  /** @var UserAgentsRepository */
+  private $userAgentsRepository;
+
   public function __construct(
     SettingsController $settingsController,
     Cookies $cookies,
     Shortcodes $shortcodes,
     Opens $opens,
     StatisticsClicksRepository $statisticsClicksRepository,
+    UserAgentsRepository $userAgentsRepository,
     LinkShortcodeCategory $linkShortcodeCategory
   ) {
     $this->settingsController = $settingsController;
@@ -54,6 +59,7 @@ class Clicks {
     $this->linkShortcodeCategory = $linkShortcodeCategory;
     $this->opens = $opens;
     $this->statisticsClicksRepository = $statisticsClicksRepository;
+    $this->userAgentsRepository = $userAgentsRepository;
   }
 
   /**
@@ -81,6 +87,9 @@ class Clicks {
         $newsletter,
         $queue
       );
+      if (!empty($data->userAgent)) {
+        $statisticsClicks->setUserAgent($this->userAgentsRepository->findOrCreate($data->userAgent));
+      }
       $this->statisticsClicksRepository->flush();
       $this->sendRevenueCookie($statisticsClicks);
       $this->sendAbandonedCartCookie($subscriber);
