@@ -443,6 +443,7 @@ class Migrator {
       'newsletter_id int(11) unsigned NOT NULL,',
       'subscriber_id int(11) unsigned NOT NULL,',
       'queue_id int(11) unsigned NOT NULL,',
+      'user_agent_id int(11) unsigned NULL,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id_subscriber_id (newsletter_id, subscriber_id),',

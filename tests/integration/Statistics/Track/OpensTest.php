@@ -7,17 +7,13 @@ use Codeception\Stub\Expected;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsOpens;
-use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoetVendor\Idiorm\ORM;
 
 class OpensTest extends \MailPoetTest {
   public $opens;
@@ -25,6 +21,9 @@ class OpensTest extends \MailPoetTest {
   public $queue;
   public $subscriber;
   public $newsletter;
+
+  /** @var StatisticsOpensRepository */
+  private $statisticsOpensRepository;
 
   public function _before() {
     parent::_before();
@@ -68,7 +67,8 @@ class OpensTest extends \MailPoetTest {
       'preview' => false,
     ];
     // instantiate class
-    $this->opens = new Opens($this->diContainer->get(StatisticsOpensRepository::class));
+    $this->statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
+    $this->opens = new Opens($this->statisticsOpensRepository);
   }
 
   public function testItReturnsImageWhenTrackDataIsEmpty() {
@@ -119,15 +119,36 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
   }
 
+  public function testItSavesNewUserAgent() {
+    $this->trackData->userAgent = 'User agent';
+    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
+      'returnResponse' => null,
+    ], $this);
+    $opens->track($this->trackData);
+    $opens = $this->statisticsOpensRepository->findAll();
+    expect($opens)->count(1);
+    $open = $opens[0];
+    $userAgent = $open->getUserAgent();
+    expect($userAgent)->notNull();
+  }
+
+  public function testItSavesOpenWithExistingUserAgent() {
+
+  }
+
+  public function testItOverridesOldUserAgent() {
+
+  }
+
   public function _after() {
     $this->cleanup();
   }
 
   public function cleanup() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(StatisticsOpenEntity::class);
   }
 }
