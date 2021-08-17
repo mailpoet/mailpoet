@@ -70,11 +70,14 @@ class OpensTest extends \MailPoetTest {
     ];
     // instantiate class
     $this->statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
-    $this->opens = new Opens($this->statisticsOpensRepository);
+    $this->opens = new Opens($this->statisticsOpensRepository, $this->diContainer->get(UserAgentsRepository::class));
   }
 
   public function testItReturnsImageWhenTrackDataIsEmpty() {
-    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+    ], [
       'returnResponse' => Expected::exactly(1),
     ], $this);
     $opens->track(false);
@@ -85,7 +88,10 @@ class OpensTest extends \MailPoetTest {
     $data = $this->trackData;
     $data->subscriber->setWpUserId(99);
     $data->preview = true;
-    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+    ], [
       'returnResponse' => null,
     ], $this);
     $opens->track($data);
@@ -97,7 +103,10 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItTracksOpenEvent() {
-    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+    ], [
       'returnResponse' => null,
     ], $this);
     $opens->track($this->trackData);
@@ -105,7 +114,10 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItDoesNotTrackRepeatedOpenEvents() {
-    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+    ], [
       'returnResponse' => null,
     ], $this);
     for ($count = 0; $count <= 2; $count++) {
@@ -115,7 +127,10 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItReturnsImageAfterTracking() {
-    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+    ], [
       'returnResponse' => Expected::exactly(1),
     ], $this);
     $opens->track($this->trackData);
@@ -123,7 +138,10 @@ class OpensTest extends \MailPoetTest {
 
   public function testItSavesNewUserAgent() {
     $this->trackData->userAgent = 'User agent';
-    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+    ], [
       'returnResponse' => null,
     ], $this);
     $opens->track($this->trackData);
@@ -138,7 +156,10 @@ class OpensTest extends \MailPoetTest {
     $this->entityManager->persist(new UserAgentEntity('User agent1'));
     $this->entityManager->flush();
     $this->trackData->userAgent = 'User agent1';
-    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+    ], [
       'returnResponse' => null,
     ], $this);
     $opens->track($this->trackData);
@@ -153,7 +174,23 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItOverridesOldUserAgent() {
-
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+    ], [
+      'returnResponse' => null,
+    ], $this);
+    $this->trackData->userAgent = 'User agent2';
+    $opens->track($this->trackData);
+    $this->trackData->userAgent = 'User agent3';
+    $opens->track($this->trackData);
+    expect(count(StatisticsOpens::findMany()))->equals(1);
+    $opens = $this->statisticsOpensRepository->findAll();
+    expect($opens)->count(1);
+    $open = $opens[0];
+    $userAgent = $open->getUserAgent();
+    $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
+    expect($userAgent->getUserAgent())->equals('User agent3');
   }
 
   public function _after() {
@@ -166,5 +203,6 @@ class OpensTest extends \MailPoetTest {
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(StatisticsOpenEntity::class);
+    $this->truncateEntity(UserAgentEntity::class);
   }
 }
