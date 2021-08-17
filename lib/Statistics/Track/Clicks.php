@@ -5,11 +5,12 @@ namespace MailPoet\Statistics\Track;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\StatisticsClicks;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -36,11 +37,15 @@ class Clicks {
   /** @var Opens */
   private $opens;
 
+  /** @var StatisticsClicksRepository */
+  private $statisticsClicksRepository;
+
   public function __construct(
     SettingsController $settingsController,
     Cookies $cookies,
     Shortcodes $shortcodes,
     Opens $opens,
+    StatisticsClicksRepository $statisticsClicksRepository,
     LinkShortcodeCategory $linkShortcodeCategory
   ) {
     $this->settingsController = $settingsController;
@@ -48,6 +53,7 @@ class Clicks {
     $this->shortcodes = $shortcodes;
     $this->linkShortcodeCategory = $linkShortcodeCategory;
     $this->opens = $opens;
+    $this->statisticsClicksRepository = $statisticsClicksRepository;
   }
 
   /**
@@ -69,12 +75,13 @@ class Clicks {
     // log statistics only if the action did not come from
     // a WP user previewing the newsletter
     if (!$wpUserPreview) {
-      $statisticsClicks = StatisticsClicks::createOrUpdateClickCount(
-        $link->getId(),
-        $subscriber->getId(),
-        $newsletter->getId(),
-        $queue->getId()
+      $statisticsClicks = $this->statisticsClicksRepository->createOrUpdateClickCount(
+        $link,
+        $subscriber,
+        $newsletter,
+        $queue
       );
+      $this->statisticsClicksRepository->flush();
       $this->sendRevenueCookie($statisticsClicks);
       $this->sendAbandonedCartCookie($subscriber);
       // track open event
@@ -84,12 +91,12 @@ class Clicks {
     $this->redirectToUrl($url);
   }
 
-  private function sendRevenueCookie(StatisticsClicks $clicks) {
+  private function sendRevenueCookie(StatisticsClickEntity $clicks) {
     if ($this->settingsController->get('woocommerce.accept_cookie_revenue_tracking.enabled')) {
       $this->cookies->set(
         self::REVENUE_TRACKING_COOKIE_NAME,
         [
-          'statistics_clicks' => $clicks->id,
+          'statistics_clicks' => $clicks->getId(),
           'created_at' => time(),
         ],
         [
