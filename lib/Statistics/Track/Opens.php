@@ -45,6 +45,10 @@ class Opens {
       ]);
       // Open was already tracked
       if ($oldStatistics) {
+        if (!empty($data->userAgent)) {
+          $oldStatistics->setUserAgent($this->userAgentsRepository->findOrCreate($data->userAgent));
+          $this->statisticsOpensRepository->flush();
+        }
         return $this->returnResponse($displayImage);
       }
       $statistics = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
