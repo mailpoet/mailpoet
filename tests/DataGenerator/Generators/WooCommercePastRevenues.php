@@ -334,7 +334,7 @@ class WooCommercePastRevenues implements Generator {
   /**
    * @return array
    */
-  private function createSentEmailData( NewsletterEntity $newsletter, $sentAt, $subscribersIds, $segmentId) {
+  private function createSentEmailData(NewsletterEntity $newsletter, $sentAt, $subscribersIds, $segmentId) {
     // Sending task
     $task = ScheduledTask::createOrUpdate([
       'type' => Sending::TASK_TYPE,
