@@ -2,6 +2,8 @@
 
 namespace MailPoet\Test\DataGenerator\Generators;
 
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
@@ -16,6 +18,7 @@ use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Idiorm\ORM;
 
 class WooCommercePastRevenues implements Generator {
@@ -331,7 +334,7 @@ class WooCommercePastRevenues implements Generator {
   /**
    * @return array
    */
-  private function createSentEmailData(\MailPoet\Models\Newsletter $newsletter, $sentAt, $subscribersIds, $segmentId) {
+  private function createSentEmailData( NewsletterEntity $newsletter, $sentAt, $subscribersIds, $segmentId) {
     // Sending task
     $task = ScheduledTask::createOrUpdate([
       'type' => Sending::TASK_TYPE,
@@ -344,11 +347,14 @@ class WooCommercePastRevenues implements Generator {
     // Sending queue
     $queue = SendingQueue::createOrUpdate([
       'task_id' => $task->id,
-      'newsletter_id' => $newsletter->id,
+      'newsletter_id' => $newsletter->getId(),
       'count_total' => count($subscribersIds),
       'count_processed' => count($subscribersIds),
     ]);
     $queue->save();
+
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $entityManager->refresh($newsletter);
 
     // Add subscribers to task and stats sent
     $batchData = [];
@@ -361,7 +367,7 @@ class WooCommercePastRevenues implements Generator {
         );
         $batchData = [];
       }
-      $statsBatchData[] = "({$newsletter->id}, $subscriberId, $queue->id, '$sentAt')";
+      $statsBatchData[] = "({$newsletter->getId()}, $subscriberId, $queue->id, '$sentAt')";
       if (count($statsBatchData) % 1000 === 0) {
         ORM::rawExecute(
           "INSERT INTO " . StatisticsNewsletters::$_table . " (`newsletter_id`, `subscriber_id`, `queue_id`, `sent_at`) VALUES " . implode(', ', $statsBatchData)
@@ -384,24 +390,25 @@ class WooCommercePastRevenues implements Generator {
     // Link
     $link = (new \MailPoet\Test\DataFactories\NewsletterLink($newsletter))
       ->withCreatedAt($sentAt)
-      ->create()
-      ->save();
+      ->create();
 
     // Newsletter segment
-    NewsletterSegment::createOrUpdate(['newsletter_id' => $newsletter->id, 'segment_id' => $segmentId])->save();
+    NewsletterSegment::createOrUpdate(['newsletter_id' => $newsletter->getId(), 'segment_id' => $segmentId])->save();
 
-    if ($newsletter->status === \MailPoet\Models\Newsletter::STATUS_DRAFT) {
-      $newsletter->status = \MailPoet\Models\Newsletter::STATUS_SENT;
-      $newsletter->sentAt = $sentAt;
-      $newsletter->save();
+    $entityManager->refresh($newsletter);
+
+    if ($newsletter->getStatus() === \MailPoet\Models\Newsletter::STATUS_DRAFT) {
+      $newsletter->setStatus(\MailPoet\Models\Newsletter::STATUS_SENT);
+      $newsletter->setSentAt(Carbon::createFromFormat('Y-m-d H:i:s', $sentAt));
+      $entityManager->flush();
     }
 
     return [
-      'newsletter_id' => $newsletter->id,
+      'newsletter_id' => $newsletter->getId(),
       'task_id' => $task->id,
       'queue_id' => $queue->id,
       'sent_at' => strtotime($sentAt),
-      'link_id' => $link->id,
+      'link_id' => $link->getId(),
     ];
   }
 
