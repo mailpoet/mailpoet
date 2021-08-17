@@ -14,25 +14,6 @@ use DateTimeInterface;
 class StatisticsClicks extends Model {
   public static $_table = MP_STATISTICS_CLICKS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
-  public static function createOrUpdateClickCount($linkId, $subscriberId, $newsletterId, $queueId) {
-    $statistics = self::where('link_id', $linkId)
-      ->where('subscriber_id', $subscriberId)
-      ->where('newsletter_id', $newsletterId)
-      ->where('queue_id', $queueId)
-      ->findOne();
-    if (!$statistics instanceof self) {
-      $statistics = self::create();
-      $statistics->linkId = $linkId;
-      $statistics->subscriberId = $subscriberId;
-      $statistics->newsletterId = $newsletterId;
-      $statistics->queueId = $queueId;
-      $statistics->count = 1;
-    } else {
-      $statistics->count++;
-    }
-    return $statistics->save();
-  }
-
   public static function getAllForSubscriber(Subscriber $subscriber) {
     return static::tableAlias('clicks')
       ->select('clicks.id', 'id')

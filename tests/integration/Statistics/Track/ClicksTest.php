@@ -17,6 +17,7 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Subscribers\LinkTokens;
@@ -89,6 +90,7 @@ class ClicksTest extends \MailPoetTest {
       new Cookies(),
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
+      $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class)
     );
   }
@@ -100,6 +102,7 @@ class ClicksTest extends \MailPoetTest {
       new Cookies(),
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
+      $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
     ], [
       'abort' => Expected::exactly(2),
@@ -122,6 +125,7 @@ class ClicksTest extends \MailPoetTest {
       new Cookies(),
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
+      $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
     ], [
       'redirectToUrl' => null,
@@ -138,6 +142,7 @@ class ClicksTest extends \MailPoetTest {
       new Cookies(),
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
+      $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
     ], [
       'redirectToUrl' => null,
@@ -153,6 +158,7 @@ class ClicksTest extends \MailPoetTest {
       new Cookies(),
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
+      $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
     ], [
       'redirectToUrl' => Expected::exactly(1),
@@ -166,6 +172,7 @@ class ClicksTest extends \MailPoetTest {
       new Cookies(),
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
+      $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
     ], [
       'redirectToUrl' => null,
@@ -193,6 +200,7 @@ class ClicksTest extends \MailPoetTest {
       new Cookies(),
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Opens::class),
+      $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
     ], [
       'abort' => Expected::exactly(1),
