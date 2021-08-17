@@ -9,9 +9,11 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\Track\Opens;
+use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Tasks\Sending as SendingTask;
 
@@ -133,7 +135,21 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItSavesOpenWithExistingUserAgent() {
-
+    $this->entityManager->persist(new UserAgentEntity('User agent1'));
+    $this->entityManager->flush();
+    $this->trackData->userAgent = 'User agent1';
+    $opens = Stub::construct($this->opens, [$this->diContainer->get(StatisticsOpensRepository::class)], [
+      'returnResponse' => null,
+    ], $this);
+    $opens->track($this->trackData);
+    $opens = $this->statisticsOpensRepository->findAll();
+    expect($opens)->count(1);
+    $open = $opens[0];
+    $userAgent = $open->getUserAgent();
+    expect($userAgent)->notNull();
+    $uaRepository = $this->diContainer->get(UserAgentsRepository::class);
+    $userAgents = $uaRepository->findBy(['userAgent' => 'User agent1']);
+    expect($userAgents)->count(1);
   }
 
   public function testItOverridesOldUserAgent() {
