@@ -5,7 +5,8 @@ namespace MailPoet\Test\API\JSON\v1;
 use MailPoet\API\JSON\v1\ImportExport;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\ScheduledTask;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -14,54 +15,64 @@ class ImportExportTest extends \MailPoetTest {
   /** @var ImportExport */
   private $endpoint;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function _before() {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(ImportExport::class);
-    ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->deleteMany();
+    $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
+    $this->entityManager->createQueryBuilder()
+      ->delete(ScheduledTaskEntity::class, 's')
+      ->where('s.type = :type')
+      ->setParameter(':type',WooCommerceSync::TASK_TYPE )
+      ->getQuery()
+      ->execute();
   }
 
-  public function testItSchedulesTaskWhenNoneExistss() {
+  public function testItSchedulesTaskWhenNoneExists() {
     $response = $this->endpoint->setupWooCommerceInitialImport();
     expect($response->status)->equals(200);
-    $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->findOne();
-    assert($task instanceof ScheduledTask);
-    expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
+    $task = $this->scheduledTasksRepository->findOneBy(['type' => WooCommerceSync::TASK_TYPE]);
+    assert($task instanceof ScheduledTaskEntity);
+    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $now = time();
-    $scheduledAt = new Carbon($task->scheduledAt);
+    $scheduledAt = new Carbon($task->getScheduledAt());
     expect($scheduledAt->timestamp)->greaterOrEquals($now - 1);
     expect($scheduledAt->timestamp)->lessOrEquals($now + 1);
   }
 
   public function testItReschedulesScheduledTaskToNow() {
-    $originalSchedule = Carbon::createFromTimestamp(time() + 3000);
-    $this->createTask(WooCommerceSync::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED, $originalSchedule);
+    $originalSchedule = Carbon::createFromTimestamp((int)current_time('timestamp') + 3000);
+    $this->createTask(WooCommerceSync::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $originalSchedule);
+    $this->entityManager->clear();
     $this->endpoint->setupWooCommerceInitialImport();
-    $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->findOne();
-    assert($task instanceof ScheduledTask);
-    expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
+    $task = $this->scheduledTasksRepository->findOneBy(['type' => WooCommerceSync::TASK_TYPE]);
+    assert($task instanceof ScheduledTaskEntity);
+    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $now = time();
-    $scheduledAt = new Carbon($task->scheduledAt);
+    $scheduledAt = new Carbon($task->getScheduledAt());
     expect($scheduledAt->timestamp)->greaterOrEquals($now - 1);
     expect($scheduledAt->timestamp)->lessOrEquals($now + 1);
-    $taskCount = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->count();
+    $taskCount = $this->scheduledTasksRepository->countBy(['type' => WooCommerceSync::TASK_TYPE]);
     expect($taskCount)->equals(1);
   }
 
   public function testItDoesNothingForRunningTask() {
     $this->createTask(WooCommerceSync::TASK_TYPE, null);
     $this->endpoint->setupWooCommerceInitialImport();
-    $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->findOne();
-    assert($task instanceof ScheduledTask);
-    expect($task->status)->equals(null);
-    $taskCount = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->count();
+    $task = $this->scheduledTasksRepository->findOneBy(['type' => WooCommerceSync::TASK_TYPE]);
+    assert($task instanceof ScheduledTaskEntity);
+    expect($task->getStatus())->equals(null);
+    $taskCount = $this->scheduledTasksRepository->countBy(['type' => WooCommerceSync::TASK_TYPE]);
     expect($taskCount)->equals(1);
   }
 
   public function testItIgnoresCompletedAndPausedTasks() {
-    $this->createTask(WooCommerceSync::TASK_TYPE, ScheduledTask::STATUS_PAUSED);
-    $this->createTask(WooCommerceSync::TASK_TYPE, ScheduledTask::STATUS_COMPLETED);
+    $this->createTask(WooCommerceSync::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED);
+    $this->createTask(WooCommerceSync::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED);
     $this->endpoint->setupWooCommerceInitialImport();
-    $taskCount = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)->count();
+    $taskCount = $this->scheduledTasksRepository->countBy(['type' => WooCommerceSync::TASK_TYPE]);
     expect($taskCount)->equals(3);
   }
 
@@ -69,11 +80,11 @@ class ImportExportTest extends \MailPoetTest {
     if (!$scheduledAt) {
       Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     }
-    $task = ScheduledTask::create();
-    $task->type = $type;
-    $task->status = $status;
-    $task->scheduledAt = $scheduledAt;
-    $task->save();
-    return $task;
+    $task = new ScheduledTaskEntity();
+    $task->setType($type);
+    $task->setStatus($status);
+    $task->setScheduledAt($scheduledAt);
+    $this->scheduledTasksRepository->persist($task);
+    $this->scheduledTasksRepository->flush();
   }
 }
