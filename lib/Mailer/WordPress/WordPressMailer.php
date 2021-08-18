@@ -51,7 +51,15 @@ class WordPressMailer extends \PHPMailer {
     ];
 
     $sendWithMailer = function ($mailer) use ($email, $address, $extraParams) {
+      // we need to call Mailer::init() for every single WP e-mail to make sure reply-to is set
+      $replyTo = $this->getReplyToAddress();
+      $mailer->init(false, false, $replyTo);
+
       $result = $mailer->send($email, $address, $extraParams);
+
+      // make sure Mailer::init() is called again to clear the reply-to address that was just set if Mailer is used in another context
+      $mailer->mailerInstance = null;
+
       if (!$result['response']) {
         throw new \Exception($result['error']->getMessage());
       }
@@ -102,5 +110,26 @@ class WordPressMailer extends \PHPMailer {
       $result['full_name'] = $data[1];
     }
     return $result;
+  }
+
+  private function getReplyToAddress() {
+    $replyToAddress = false;
+    $addresses = $this->getReplyToAddresses();
+
+    if (!empty($addresses)) {
+      // only one reply-to address supported by \MailPoet\Mailer
+      $address = array_shift($addresses);
+      $replyToAddress = [];
+
+      if ($address[1]) {
+        $replyToAddress['name'] = $address[1];
+      }
+
+      if ($address[0]) {
+        $replyToAddress['address'] = $address[0];
+      }
+    }
+
+    return $replyToAddress;
   }
 }
