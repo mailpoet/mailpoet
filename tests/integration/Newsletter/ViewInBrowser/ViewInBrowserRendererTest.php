@@ -8,9 +8,9 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Newsletter\Links\Links;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
@@ -27,7 +27,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
   /** @var ViewInBrowserRenderer */
   private $viewInBrowserRenderer;
 
-  /** @var Newsletter */
+  /** @var NewsletterEntity */
   public $newsletter;
 
   /** @var SendingTask */
@@ -48,9 +48,13 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
   /** @var SendingQueuesRepository */
   private $sendingQueueRepository;
 
+  /** @var NewslettersRepository */
+  private $newsletterRepository;
+
   public function _before() {
     $this->sendingQueueRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
     $newsletterData = [
       'body' => json_decode(
         '{
@@ -92,7 +96,6 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
           ]
         }
       }', true),
-      'id' => 1,
       'subject' => 'Some subject',
       'preheader' => 'Some preheader',
       'type' => 'standard',
@@ -108,9 +111,15 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     ];
 
     // create newsletter
-    $newsletter = Newsletter::create();
-    $newsletter->hydrate($newsletterData);
-    $this->newsletter = $newsletter->save();
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject($newsletterData['subject']);
+    $newsletter->setPreheader($newsletterData['preheader']);
+    $newsletter->setType($newsletterData['type']);
+    $newsletter->setStatus($newsletterData['status']);
+    $newsletter->setBody($newsletterData['body']);
+    $this->newsletterRepository->persist($newsletter);
+    $this->newsletterRepository->flush();
+    $this->newsletter = $newsletter;
 
     // create subscriber
     $subscriber = new SubscriberEntity();
@@ -123,7 +132,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
 
     // create queue
     $queue = SendingTask::create();
-    $queue->newsletterId = $newsletter->id;
+    $queue->newsletterId = $newsletter->getId();
     $queue->newsletterRenderedBody = $this->queueRenderedNewsletterWithoutTracking;
     $queue->setSubscribers([$subscriber->getId()]);
     $this->sendingTask = $queue->save();
@@ -132,14 +141,14 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     $newsletterLink1 = NewsletterLink::create();
     $newsletterLink1->hash = '90e56';
     $newsletterLink1->url = '[link:newsletter_view_in_browser_url]';
-    $newsletterLink1->newsletterId = $this->newsletter->id;
+    $newsletterLink1->newsletterId = $this->newsletter->getId();
     $newsletterLink1->queueId = $this->sendingTask->id;
     $newsletterLink1->save();
 
     $newsletterLink2 = NewsletterLink::create();
     $newsletterLink2->hash = 'i1893';
     $newsletterLink2->url = 'http://google.com';
-    $newsletterLink2->newsletterId = $this->newsletter->id;
+    $newsletterLink2->newsletterId = $this->newsletter->getId();
     $newsletterLink2->queueId = $this->sendingTask->id;
     $newsletterLink2->save();
 

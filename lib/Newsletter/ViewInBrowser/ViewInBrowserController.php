@@ -2,8 +2,9 @@
 
 namespace MailPoet\Newsletter\ViewInBrowser;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Models\Newsletter;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Subscribers\LinkTokens;
@@ -25,9 +26,13 @@ class ViewInBrowserController {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
   public function __construct(
     LinkTokens $linkTokens,
     NewsletterUrl $newsletterUrl,
+    NewslettersRepository $newslettersRepository,
     ViewInBrowserRenderer $viewInBrowserRenderer,
     SendingQueuesRepository $sendingQueuesRepository,
     SubscribersRepository $subscribersRepository
@@ -37,6 +42,7 @@ class ViewInBrowserController {
     $this->subscribersRepository = $subscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->newsletterUrl = $newsletterUrl;
+    $this->newslettersRepository = $newslettersRepository;
   }
 
   public function view(array $data) {
@@ -69,12 +75,12 @@ class ViewInBrowserController {
       throw new \InvalidArgumentException("Missing 'newsletter_hash'");
     }
 
-    $newsletter = Newsletter::findOne($data['newsletter_id']) ?: null;
+    $newsletter = $this->newslettersRepository->findOneById($data['newsletter_id']);
     if (!$newsletter) {
       throw new \InvalidArgumentException("Invalid 'newsletter_id'");
     }
 
-    if ($data['newsletter_hash'] !== $newsletter->hash) {
+    if ($data['newsletter_hash'] !== $newsletter->getHash()) {
       throw new \InvalidArgumentException("Invalid 'newsletter_hash'");
     }
     return $newsletter;
@@ -101,19 +107,19 @@ class ViewInBrowserController {
     return $subscriber;
   }
 
-  private function getQueue(Newsletter $newsletter, array $data): ?SendingQueueEntity {
+  private function getQueue(NewsletterEntity $newsletter, array $data): ?SendingQueueEntity {
     // queue is optional; try to find it if it's not defined and this is not a welcome email
-    if ($newsletter->type === Newsletter::TYPE_WELCOME) {
+    if ($newsletter->getType() === NewsletterEntity::TYPE_WELCOME) {
       return null;
     }
 
     // reset queue when automatic email is being previewed
-    if ($newsletter->type === Newsletter::TYPE_AUTOMATIC && !empty($data['preview'])) {
+    if ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATIC && !empty($data['preview'])) {
       return null;
     }
 
     return !empty($data['queue_id'])
       ? $this->sendingQueuesRepository->findOneById($data['queue_id'])
-      : $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter->id]);
+      : $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter->getId()]);
   }
 }
