@@ -2,12 +2,10 @@
 
 namespace MailPoet\Newsletter\ViewInBrowser;
 
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Links\Links;
-use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
@@ -97,9 +95,6 @@ class ViewInBrowserRenderer {
 
   /** this is here to prepare entities for the shortcodes library, when this whole file uses doctrine, this can be deleted */
   private function prepareShortcodes($newsletter, $subscriber, $queue, $wpUserPreview) {
-    /** @var NewslettersRepository $newsletterRepository */
-    $newsletterRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
-
     if ($queue instanceof SendingQueueEntity) {
       $this->shortcodes->setQueue($queue);
     }
@@ -109,6 +104,7 @@ class ViewInBrowserRenderer {
     }
 
     $this->shortcodes->setWpUserPreview($wpUserPreview);
+
     if ($subscriber instanceof SubscriberEntity) {
       $this->shortcodes->setSubscriber($subscriber);
     }
