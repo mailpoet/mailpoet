@@ -2,10 +2,14 @@
 
 namespace MailPoet\Mailer\WordPress;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Models\Subscriber;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\SubscribersRepository;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -16,6 +20,9 @@ class WordpressMailerTest extends \MailPoetTest {
   public function _before() {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->subscribersRepository->truncate();
+
+    $settings = SettingsController::getInstance();
+    $settings->set('send_transactional_emails', true);
   }
 
   public function testItdoesNotSendWhenPreSendCheckFails() {
@@ -266,6 +273,131 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'Body';
     $wpMailer->send();
+  }
+
+  /*
+   * Test for issue https://mailpoet.atlassian.net/browse/MAILPOET-3707
+   */
+  public function testItPreservesWPReplyTo() {
+    list($mailer, $fallbackMailer) = $this->getMailerInstancesForReplyToTests();
+
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer->addAddress('email@example.com', 'Full Name');
+    $wpMailer->addReplyTo('reply-to@example.com', 'Reply To');
+    $wpMailer->From = 'email-from@example.com';
+    $wpMailer->Body = 'Body';
+    $wpMailer->send();
+
+    $mailer = $this->getPrivateProperty($wpMailer, 'mailer');
+
+    $this->assertEquals('reply-to@example.com', $mailer->replyTo['reply_to_email']);
+    $this->assertEquals('Reply To', $mailer->replyTo['reply_to_name']);
+  }
+
+  /*
+   * Test for issue https://mailpoet.atlassian.net/browse/MAILPOET-3707
+   */
+  public function testItSetsSenderAsReplyToWhenReplyToIsNotDefined() {
+    list($mailer, $fallbackMailer) = $this->getMailerInstancesForReplyToTests();
+
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer->addAddress('email@example.com', 'Full Name');
+    $wpMailer->From = 'email-from@example.com';
+    $wpMailer->Body = 'Body';
+    $wpMailer->send();
+
+    $mailer = $this->getPrivateProperty($wpMailer, 'mailer');
+
+    $this->assertEquals('staff@mailinator.com', $mailer->replyTo['reply_to_email']);
+    $this->assertEquals('Sender', $mailer->replyTo['reply_to_name']);
+  }
+
+  /*
+   * Test for issue https://mailpoet.atlassian.net/browse/MAILPOET-3707
+   */
+  public function testItChangesReplyToEmailOnDifferentCalls() {
+    list($mailer, $fallbackMailer) = $this->getMailerInstancesForReplyToTests();
+
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer->addAddress('email@example.com', 'Full Name');
+    $wpMailer->addReplyTo('reply-to@example.com', 'Reply To');
+    $wpMailer->From = 'email-from@example.com';
+    $wpMailer->Body = 'Body';
+    $wpMailer->send();
+
+    $mailer = $this->getPrivateProperty($wpMailer, 'mailer');
+
+    $this->assertEquals('reply-to@example.com', $mailer->replyTo['reply_to_email']);
+    $this->assertEquals('Reply To', $mailer->replyTo['reply_to_name']);
+
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer->addAddress('email@example.com', 'Full Name');
+    $wpMailer->From = 'email-from@example.com';
+    $wpMailer->Body = 'Body';
+    $wpMailer->send();
+
+    $mailer = $this->getPrivateProperty($wpMailer, 'mailer');
+
+    $this->assertEquals('staff@mailinator.com', $mailer->replyTo['reply_to_email']);
+    $this->assertEquals('Sender', $mailer->replyTo['reply_to_name']);
+  }
+
+  public function testWPEmailReplyToShouldntAffectOtherEmails() {
+    // for now there are no assertions in this test. check mailhog to see that the ConfirmationEmail is using the same
+    // reply-to address that was used in the WP e-mail that was sent before it and this shouldn't happen.
+
+    $settings = SettingsController::getInstance();
+    $settings->set(
+      'sender',
+      [
+        'name' => 'Sender',
+        'address' => 'staff@mailinator.com',
+      ]
+    );
+    $settings->set('send_transactional_emails', true);
+
+    wp_mail('email@example.com', 'Subject', 'Body', ['Reply-To: Reply To <reply-to@example.com>', 'From: My Site Name <support@example.com>']);
+
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate([
+      'first_name' => 'John',
+      'last_name' => 'Mailer',
+      'email' => 'john@mailpoet.com',
+      'status' => 'unconfirmed',
+      'source' => 'api',
+    ]);
+    $subscriber->save();
+
+    $confirmationMailer = ContainerWrapper::getInstance()->get(ConfirmationEmailMailer::class);
+    $confirmationMailer->sendConfirmationEmail($subscriber);
+  }
+
+  private function getMailerInstancesForReplyToTests() {
+    $settings = SettingsController::getInstance();
+    $settings->set(
+      'sender',
+      [
+        'name' => 'Sender',
+        'address' => 'staff@mailinator.com',
+      ]
+    );
+
+    $mailer = new Mailer();
+
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer->expects($this->never())->method('send');
+
+    return [
+      $mailer,
+      $fallbackMailer,
+    ];
+  }
+
+  private function getPrivateProperty($object, $property) {
+    $reflectedClass = new \ReflectionClass($object);
+    $reflection = $reflectedClass->getProperty($property);
+    $reflection->setAccessible(true);
+    return $reflection->getValue($object);
   }
 
   public function _after() {
