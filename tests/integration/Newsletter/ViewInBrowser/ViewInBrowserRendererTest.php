@@ -8,7 +8,6 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\NewsletterLink;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Renderer;
@@ -136,21 +135,20 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     $queue->newsletterRenderedBody = $this->queueRenderedNewsletterWithoutTracking;
     $queue->setSubscribers([$subscriber->getId()]);
     $this->sendingTask = $queue->save();
+    $this->newsletterRepository->refresh($newsletter);
+    $this->newsletter = $newsletter;
 
     // create newsletter link associations
-    $newsletterLink1 = NewsletterLink::create();
-    $newsletterLink1->hash = '90e56';
-    $newsletterLink1->url = '[link:newsletter_view_in_browser_url]';
-    $newsletterLink1->newsletterId = $this->newsletter->getId();
-    $newsletterLink1->queueId = $this->sendingTask->id;
-    $newsletterLink1->save();
 
-    $newsletterLink2 = NewsletterLink::create();
-    $newsletterLink2->hash = 'i1893';
-    $newsletterLink2->url = 'http://google.com';
-    $newsletterLink2->newsletterId = $this->newsletter->getId();
-    $newsletterLink2->queueId = $this->sendingTask->id;
-    $newsletterLink2->save();
+    $newsletterLink1 = (new \MailPoet\Test\DataFactories\NewsletterLink($newsletter))
+      ->withUrl('[link:newsletter_view_in_browser_url]')
+      ->withHash('90e56')
+      ->create();
+
+    $newsletterLink2 = (new \MailPoet\Test\DataFactories\NewsletterLink($newsletter))
+      ->withUrl('http://google.com')
+      ->withHash('i1893')
+      ->create();
 
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->viewInBrowserRenderer = $this->diContainer->get(ViewInBrowserRenderer::class);
