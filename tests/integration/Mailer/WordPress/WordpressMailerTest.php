@@ -6,6 +6,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MetaInfo;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -266,6 +267,101 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'Body';
     $wpMailer->send();
+  }
+
+  /*
+   * Test for issue https://mailpoet.atlassian.net/browse/MAILPOET-3707
+   */
+  public function testItPreservesWPReplyTo() {
+    list($mailer, $fallbackMailer) = $this->getMailerInstancesForReplyToTests();
+
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer->addAddress('email@example.com', 'Full Name');
+    $wpMailer->addReplyTo('reply-to@example.com', 'Reply To');
+    $wpMailer->From = 'email-from@example.com';
+    $wpMailer->Body = 'Body';
+    $wpMailer->send();
+
+    $mailer = $this->getPrivateProperty($wpMailer, 'mailer');
+
+    $this->assertEquals('reply-to@example.com', $mailer->replyTo['reply_to_email']);
+    $this->assertEquals('Reply To', $mailer->replyTo['reply_to_name']);
+  }
+
+  /*
+   * Test for issue https://mailpoet.atlassian.net/browse/MAILPOET-3707
+   */
+  public function testItSetsSenderAsReplyToWhenReplyToIsNotDefined() {
+    list($mailer, $fallbackMailer) = $this->getMailerInstancesForReplyToTests();
+
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer->addAddress('email@example.com', 'Full Name');
+    $wpMailer->From = 'email-from@example.com';
+    $wpMailer->Body = 'Body';
+    $wpMailer->send();
+
+    $mailer = $this->getPrivateProperty($wpMailer, 'mailer');
+
+    $this->assertEquals('staff@mailinator.com', $mailer->replyTo['reply_to_email']);
+    $this->assertEquals('Sender', $mailer->replyTo['reply_to_name']);
+  }
+
+  /*
+   * Test for issue https://mailpoet.atlassian.net/browse/MAILPOET-3707
+   */
+  public function testItChangesReplyToEmailOnDifferentCalls() {
+    list($mailer, $fallbackMailer) = $this->getMailerInstancesForReplyToTests();
+
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer->addAddress('email@example.com', 'Full Name');
+    $wpMailer->addReplyTo('reply-to@example.com', 'Reply To');
+    $wpMailer->From = 'email-from@example.com';
+    $wpMailer->Body = 'Body';
+    $wpMailer->send();
+
+    $mailer = $this->getPrivateProperty($wpMailer, 'mailer');
+
+    $this->assertEquals('reply-to@example.com', $mailer->replyTo['reply_to_email']);
+    $this->assertEquals('Reply To', $mailer->replyTo['reply_to_name']);
+
+    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer->addAddress('email@example.com', 'Full Name');
+    $wpMailer->From = 'email-from@example.com';
+    $wpMailer->Body = 'Body';
+    $wpMailer->send();
+
+    $mailer = $this->getPrivateProperty($wpMailer, 'mailer');
+
+    $this->assertEquals('staff@mailinator.com', $mailer->replyTo['reply_to_email']);
+    $this->assertEquals('Sender', $mailer->replyTo['reply_to_name']);
+  }
+
+  private function getMailerInstancesForReplyToTests() {
+    $settings = SettingsController::getInstance();
+    $settings->set(
+      'sender',
+      [
+        'name' => 'Sender',
+        'address' => 'staff@mailinator.com',
+      ]
+    );
+
+    $mailer = new Mailer();
+
+    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer->expects($this->never())->method('send');
+
+    return [
+      $mailer,
+      $fallbackMailer,
+    ];
+  }
+
+  private function getPrivateProperty($object, $property) {
+    $reflectedClass = new \ReflectionClass($object);
+    $reflection = $reflectedClass->getProperty($property);
+    $reflection->setAccessible(true);
+    return $reflection->getValue($object);
   }
 
   public function _after() {
