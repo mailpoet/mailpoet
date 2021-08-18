@@ -4,7 +4,7 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Config\AccessControl;
-use MailPoet\Models\NewsletterLink;
+use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 
 class NewsletterLinks extends APIEndpoint {
 
@@ -12,8 +12,22 @@ class NewsletterLinks extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS,
   ];
 
+  /** @var NewsletterLinkRepository */
+  private $newsletterLinkRepository;
+
+  public function __construct(NewsletterLinkRepository $newsletterLinkRepository) {
+    $this->newsletterLinkRepository = $newsletterLinkRepository;
+  }
+
   public function get($data = []) {
-    $links = NewsletterLink::select(['id', 'url'])->where('newsletter_id', $data['newsletterId'])->findArray();
-    return $this->successResponse($links);
+    $links = $this->newsletterLinkRepository->findBy(['newsletter' => $data['newsletterId']]);
+    $response = [];
+    foreach ($links as $link) {
+      $response[] = [
+        'id' => $link->getId(),
+        'url' => $link->getUrl(),
+      ];
+    }
+    return $this->successResponse($response);
   }
 }
