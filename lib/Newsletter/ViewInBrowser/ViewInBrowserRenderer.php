@@ -6,7 +6,6 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Renderer;
@@ -46,7 +45,7 @@ class ViewInBrowserRenderer {
 
   public function render(
     bool $isPreview,
-    Newsletter $newsletter,
+    NewsletterEntity $newsletter,
     SubscriberEntity $subscriber = null,
     SendingQueueEntity $queue = null
   ) {
@@ -104,9 +103,7 @@ class ViewInBrowserRenderer {
     if ($queue instanceof SendingQueueEntity) {
       $this->shortcodes->setQueue($queue);
     }
-    if ($newsletter instanceof Newsletter) {
-      $newsletter = $newsletterRepository->findOneById($newsletter->id);
-    }
+
     if ($newsletter instanceof NewsletterEntity) {
       $this->shortcodes->setNewsletter($newsletter);
     }
