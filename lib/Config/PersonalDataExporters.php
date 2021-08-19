@@ -4,6 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Subscribers\ImportExport\PersonalDataExporters\NewsletterClicksExporter;
+use MailPoet\Subscribers\ImportExport\PersonalDataExporters\NewsletterOpensExporter;
 use MailPoet\Subscribers\ImportExport\PersonalDataExporters\NewslettersExporter;
 use MailPoet\Subscribers\ImportExport\PersonalDataExporters\SegmentsExporter;
 use MailPoet\Subscribers\ImportExport\PersonalDataExporters\SubscriberExporter;
@@ -15,6 +16,7 @@ class PersonalDataExporters {
     WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerSegmentsExporter']);
     WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerNewslettersExporter']);
     WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerNewsletterClicksExporter']);
+    WPFunctions::get()->addFilter('wp_privacy_personal_data_exporters', [$this, 'registerNewsletterOpensExporter']);
   }
 
   public function registerSegmentsExporter($exporters) {
@@ -46,6 +48,14 @@ class PersonalDataExporters {
     $exporters[] = [
       'exporter_friendly_name' => WPFunctions::get()->__('MailPoet Email Clicks', 'mailpoet'),
       'callback' => [new NewsletterClicksExporter(), 'export'],
+    ];
+    return $exporters;
+  }
+
+  public function registerNewsletterOpensExporter($exporters) {
+    $exporters[] = [
+      'exporter_friendly_name' => WPFunctions::get()->__('MailPoet Email Opens', 'mailpoet'),
+      'callback' => [new NewsletterOpensExporter(), 'export'],
     ];
     return $exporters;
   }

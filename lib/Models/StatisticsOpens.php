@@ -2,6 +2,10 @@
 
 namespace MailPoet\Models;
 
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\UserAgentEntity;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
+
 /**
  * @property int $newsletterId
  * @property int $subscriberId
@@ -23,5 +27,28 @@ class StatisticsOpens extends Model {
       $statistics->save();
     }
     return $statistics;
+  }
+
+  public static function getAllForSubscriber(Subscriber $subscriber) {
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    $userAgentsTable = $entityManager->getClassMetadata(UserAgentEntity::class)->getTableName();
+
+    return static::tableAlias('opens')
+      ->select('opens.id', 'id')
+      ->select('newsletter_rendered_subject')
+      ->select('opens.created_at', 'created_at')
+      ->select('user_agent.user_agent')
+      ->join(
+        SendingQueue::$_table,
+        ['opens.queue_id', '=', 'queue.id'],
+        'queue'
+      )
+      ->leftOuterJoin(
+        $userAgentsTable,
+        ['opens.user_agent_id', '=', 'user_agent.id'],
+        'user_agent'
+      )
+      ->where('opens.subscriber_id', $subscriber->id())
+      ->orderByAsc('newsletter_rendered_subject');
   }
 }
