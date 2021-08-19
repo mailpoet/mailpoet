@@ -2,15 +2,18 @@
 
 namespace MailPoet\API\JSON\v1;
 
+use InvalidArgumentException;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
+use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\ResponseBuilders\SegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\Segment;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Segments\SegmentSaveController;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Subscribers\ImportExport\Export\Export;
@@ -43,6 +46,12 @@ class ImportExport extends APIEndpoint {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** @var SegmentSaveController */
+  private $segmentSavecontroller;
+
+  /** @var SegmentsResponseBuilder */
+  private $segmentsResponseBuilder;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
   ];
@@ -54,6 +63,8 @@ class ImportExport extends APIEndpoint {
     NewsletterOptionsRepository $newsletterOptionsRepository,
     SegmentsRepository $segmentsRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
+    SegmentSaveController $segmentSavecontroller,
+    SegmentsResponseBuilder $segmentsResponseBuilder,
     SubscribersRepository $subscribersRepository
   ) {
     $this->wpSegment = $wpSegment;
@@ -63,6 +74,8 @@ class ImportExport extends APIEndpoint {
     $this->segmentsRepository = $segmentsRepository;
     $this->subscriberRepository = $subscribersRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->segmentSavecontroller = $segmentSavecontroller;
+    $this->segmentsResponseBuilder = $segmentsResponseBuilder;
   }
 
   public function getMailChimpLists($data) {
@@ -90,15 +103,18 @@ class ImportExport extends APIEndpoint {
   }
 
   public function addSegment($data) {
-    $segment = Segment::createOrUpdate($data);
-    $errors = $segment->getErrors();
-
-    if (!empty($errors)) {
-      return $this->errorResponse($errors);
-    } else {
-      $segment = Segment::findOne($segment->id);
-      if(!$segment instanceof Segment) return $this->errorResponse();
-      return $this->successResponse($segment->asArray());
+    try {
+      $segment = $this->segmentSavecontroller->save($data);
+      $response = $this->segmentsResponseBuilder->build($segment);
+      return $this->successResponse($response);
+    } catch (ValidationException $exception) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST  => __('Please specify a name.', 'mailpoet'),
+      ]);
+    } catch (InvalidArgumentException $exception) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST  => __('Another record already exists. Please specify a different "name".', 'mailpoet'),
+      ]);
     }
   }
 
