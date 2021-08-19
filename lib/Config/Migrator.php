@@ -68,6 +68,7 @@ class Migrator {
     }
     $this->updateNullInUnsubscribeStats();
     $this->fixScheduledTasksSubscribersTimestampColumns();
+    $this->removeDeprecatedStatisticsIndexes();
     return $output;
   }
 
@@ -427,11 +428,12 @@ class Migrator {
       'queue_id int(11) unsigned NOT NULL,',
       'link_id int(11) unsigned NOT NULL,',
       'user_agent_id int(11) unsigned NULL,',
+      'user_agent_type varchar(50) NULL,',
       'count int(11) unsigned NOT NULL,',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'KEY newsletter_id_subscriber_id (newsletter_id, subscriber_id),',
+      'KEY newsletter_id_subscriber_id_user_agent_type (newsletter_id, subscriber_id, user_agent_type),',
       'KEY queue_id (queue_id),',
       'KEY subscriber_id (subscriber_id)',
     ];
@@ -445,9 +447,10 @@ class Migrator {
       'subscriber_id int(11) unsigned NOT NULL,',
       'queue_id int(11) unsigned NOT NULL,',
       'user_agent_id int(11) unsigned NULL,',
+      'user_agent_type varchar(50) NULL,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
-      'KEY newsletter_id_subscriber_id (newsletter_id, subscriber_id),',
+      'KEY newsletter_id_subscriber_id_user_agent_type (newsletter_id, subscriber_id, user_agent_type),',
       'KEY queue_id (queue_id),',
       'KEY subscriber_id (subscriber_id),',
       'KEY created_at (created_at),',
@@ -643,6 +646,38 @@ class Migrator {
       ";
       $wpdb->query($addUpdatedAtQuery);
     }
+    return true;
+  }
+
+  private function removeDeprecatedStatisticsIndexes(): bool {
+    global $wpdb;
+    // skip the migration if the DB version is higher than 3.67.1 or is not set (a new install)
+    if (version_compare($this->settings->get('db_version', '3.67.1'), '3.67.1', '>')) {
+      return false;
+    }
+
+    $dbName = Env::$dbName;
+    $statisticsTables = [
+      "{$this->prefix}statistics_clicks",
+      "{$this->prefix}statistics_opens",
+    ];
+    foreach ($statisticsTables as $statisticsTable) {
+      $oldStatisticsIndexExists = $wpdb->get_results("
+      SELECT DISTINCT INDEX_NAME
+      FROM INFORMATION_SCHEMA.STATISTICS
+      WHERE TABLE_SCHEMA = '{$dbName}'
+        AND TABLE_NAME = '$statisticsTable'
+        AND INDEX_NAME='newsletter_id_subscriber_id'
+     ");
+      if (!empty($oldStatisticsIndexExists)) {
+        $dropIndexQuery = "
+        ALTER TABLE `{$statisticsTable}`
+          DROP INDEX `newsletter_id_subscriber_id`
+      ";
+        $wpdb->query($dropIndexQuery);
+      }
+    }
+
     return true;
   }
 }
