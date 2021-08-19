@@ -6,9 +6,11 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\CustomFields\CustomFieldsRepository;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Subscribers\ImportExport\Export\Export;
@@ -38,6 +40,9 @@ class ImportExport extends APIEndpoint {
   /** @var SubscribersRepository */
   private $subscriberRepository;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
   ];
@@ -48,6 +53,7 @@ class ImportExport extends APIEndpoint {
     ImportExportRepository $importExportRepository,
     NewsletterOptionsRepository $newsletterOptionsRepository,
     SegmentsRepository $segmentsRepository,
+    ScheduledTasksRepository $scheduledTasksRepository,
     SubscribersRepository $subscribersRepository
   ) {
     $this->wpSegment = $wpSegment;
@@ -56,6 +62,7 @@ class ImportExport extends APIEndpoint {
     $this->newsletterOptionsRepository = $newsletterOptionsRepository;
     $this->segmentsRepository = $segmentsRepository;
     $this->subscriberRepository = $subscribersRepository;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
   }
 
   public function getMailChimpLists($data) {
@@ -133,19 +140,18 @@ class ImportExport extends APIEndpoint {
 
   public function setupWooCommerceInitialImport() {
     try {
-      $task = ScheduledTask::where('type', WooCommerceSync::TASK_TYPE)
-        ->whereRaw('status = ? OR status IS NULL', [ScheduledTask::STATUS_SCHEDULED])
-        ->findOne();
-      if (($task instanceof ScheduledTask) && $task->status === null) {
+      $task = $this->scheduledTasksRepository->findScheduledOrRunningTask([WooCommerceSync::TASK_TYPE]);
+      if (($task instanceof ScheduledTaskEntity) && $task->getStatus() === null) {
         return $this->successResponse();
       }
-      if (!($task instanceof ScheduledTask)) {
-        $task = ScheduledTask::create();
-        $task->type = WooCommerceSync::TASK_TYPE;
-        $task->status = ScheduledTask::STATUS_SCHEDULED;
+      if (!($task instanceof ScheduledTaskEntity)) {
+        $task = new ScheduledTaskEntity();
+        $task->setType(WooCommerceSync::TASK_TYPE);
+        $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+        $this->scheduledTasksRepository->persist($task);
       }
-      $task->scheduledAt = Carbon::createFromTimestamp((int)current_time('timestamp'));
-      $task->save();
+      $task->setScheduledAt(Carbon::createFromTimestamp((int)current_time('timestamp')));
+      $this->scheduledTasksRepository->flush();
       return $this->successResponse();
     } catch (\Exception $e) {
       return $this->errorResponse([

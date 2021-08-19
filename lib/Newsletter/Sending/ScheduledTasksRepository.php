@@ -46,6 +46,23 @@ class ScheduledTasksRepository extends Repository {
       ->getResult();
   }
 
+  /**
+   * @param string[] $types
+   * @return ScheduledTaskEntity|null
+   */
+  public function findScheduledOrRunningTask(array $types = []): ?ScheduledTaskEntity {
+    $queryBuilder = $this->doctrineRepository->createQueryBuilder('st')
+      ->select('st')
+      ->where('(st.status = :scheduledStatus) OR (st.status is NULL)')
+      ->setParameter('scheduledStatus', ScheduledTaskEntity::STATUS_SCHEDULED);
+    if (!empty($types)) {
+      $queryBuilder
+        ->andWhere('st.type in (:types)')
+        ->setParameter('types', $types);
+    }
+    return $queryBuilder->getQuery()->getOneOrNullResult();
+  }
+
   protected function getEntityClassName() {
     return ScheduledTaskEntity::class;
   }
