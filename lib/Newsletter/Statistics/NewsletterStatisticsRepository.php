@@ -9,6 +9,7 @@ use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
+use MailPoet\Entities\UserAgentEntity;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\UnexpectedResultException;
@@ -131,12 +132,18 @@ class NewsletterStatisticsRepository extends Repository {
   }
 
   private function getStatisticCounts(string $statisticsEntityName, array $newsletters): array {
-    $results = $this->entityManager->createQueryBuilder()
+    $qb = $this->entityManager->createQueryBuilder()
       ->select('IDENTITY(stats.newsletter) AS id, COUNT(DISTINCT stats.subscriber) as cnt')
       ->from($statisticsEntityName, 'stats')
       ->where('stats.newsletter IN (:newsletters)')
       ->groupBy('stats.newsletter')
-      ->setParameter('newsletters', $newsletters)
+      ->setParameter('newsletters', $newsletters);
+    if (in_array($statisticsEntityName, [StatisticsOpenEntity::class, StatisticsClickEntity::class], true)) {
+      $qb->andWhere('(stats.userAgentType = :userAgentType) OR (stats.userAgentType IS NULL)')
+        ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    }
+
+    $results = $qb
       ->getQuery()
       ->getResult();
 
