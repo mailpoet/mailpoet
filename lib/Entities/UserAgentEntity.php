@@ -16,6 +16,13 @@ class UserAgentEntity {
   use CreatedAtTrait;
   use UpdatedAtTrait;
 
+  public const USER_AGENT_TYPE_HUMAN = 'human';
+  public const USER_AGENT_TYPE_MACHINE = 'machine';
+
+  public const MACHINE_USER_AGENTS = [
+    'Mozilla/5.0',
+  ];
+
   /**
    * @ORM\Column(type="string")
    * @var string
@@ -43,5 +50,12 @@ class UserAgentEntity {
 
   public function getHash(): string {
     return $this->hash;
+  }
+
+  public function getUserAgentType(): string {
+    if (in_array($this->getUserAgent(), self::MACHINE_USER_AGENTS, true)) {
+      return self::USER_AGENT_TYPE_MACHINE;
+    }
+    return self::USER_AGENT_TYPE_HUMAN;
   }
 }
