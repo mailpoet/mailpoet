@@ -43,6 +43,12 @@ class StatisticsOpenEntity {
    */
   private $userAgent;
 
+  /**
+   * @ORM\Column(type="string", nullable=true)
+   * @var string|null
+   */
+  private $userAgentType;
+
   public function __construct(
     NewsletterEntity $newsletter,
     SendingQueueEntity $queue,
@@ -96,5 +102,13 @@ class StatisticsOpenEntity {
 
   public function setUserAgent(?UserAgentEntity $userAgent): void {
     $this->userAgent = $userAgent;
+  }
+
+  public function getUserAgentType(): ?string {
+    return $this->userAgentType;
+  }
+
+  public function setUserAgentType(?string $userAgentType): void {
+    $this->userAgentType = $userAgentType;
   }
 }
