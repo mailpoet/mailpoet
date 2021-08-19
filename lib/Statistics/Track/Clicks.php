@@ -7,6 +7,7 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
@@ -88,7 +89,13 @@ class Clicks {
         $queue
       );
       if (!empty($data->userAgent)) {
-        $statisticsClicks->setUserAgent($this->userAgentsRepository->findOrCreate($data->userAgent));
+        $userAgent = $this->userAgentsRepository->findOrCreate($data->userAgent);
+        if ($userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN
+          || $statisticsClicks->getUserAgentType() !== UserAgentEntity::USER_AGENT_TYPE_HUMAN
+        ) {
+          $statisticsClicks->setUserAgent($userAgent);
+          $statisticsClicks->setUserAgentType($userAgent->getUserAgentType());
+        }
       }
       $this->statisticsClicksRepository->flush();
       $this->sendRevenueCookie($statisticsClicks);
