@@ -49,6 +49,18 @@ class NewsletterClicksExporter {
       'name' => WPFunctions::get()->__('URL', 'mailpoet'),
       'value' => $row['url'],
     ];
+
+    if (!is_null($row['user_agent'])) {
+      $userAgent = $row['user_agent'];
+    } else {
+      $userAgent = WPFunctions::get()->__('Unknown', 'mailpoet');
+    }
+
+    $newsletterData[] = [
+      'name' => WPFunctions::get()->__('User-agent', 'mailpoet'),
+      'value' => $userAgent,
+    ];
+
     return [
       'group_id' => 'mailpoet-newsletter-clicks',
       'group_label' => WPFunctions::get()->__('MailPoet Emails Clicks', 'mailpoet'),
