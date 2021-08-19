@@ -47,7 +47,7 @@ class PersonalDataExporters {
   public function registerNewsletterClicksExporter($exporters) {
     $exporters[] = [
       'exporter_friendly_name' => WPFunctions::get()->__('MailPoet Email Clicks', 'mailpoet'),
-      'callback' => [new NewsletterClicksExporter(), 'export'],
+      'callback' => [ContainerWrapper::getInstance()->get(NewsletterClicksExporter::class), 'export'],
     ];
     return $exporters;
   }
@@ -55,7 +55,7 @@ class PersonalDataExporters {
   public function registerNewsletterOpensExporter($exporters) {
     $exporters[] = [
       'exporter_friendly_name' => WPFunctions::get()->__('MailPoet Email Opens', 'mailpoet'),
-      'callback' => [new NewsletterOpensExporter(), 'export'],
+      'callback' => [ContainerWrapper::getInstance()->get(NewsletterOpensExporter::class), 'export'],
     ];
     return $exporters;
   }

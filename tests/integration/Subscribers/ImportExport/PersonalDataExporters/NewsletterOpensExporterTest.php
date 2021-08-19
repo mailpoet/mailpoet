@@ -19,7 +19,7 @@ class NewsletterOpensExporterTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->exporter = new NewsletterOpensExporter();
+    $this->exporter = $this->diContainer->get(NewsletterOpensExporter::class);
   }
 
   public function testExportWorksWhenSubscriberNotFound() {

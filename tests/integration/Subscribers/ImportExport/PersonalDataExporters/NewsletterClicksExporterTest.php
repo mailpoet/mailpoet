@@ -20,7 +20,7 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->exporter = new NewsletterClicksExporter();
+    $this->exporter = $this->diContainer->get(NewsletterClicksExporter::class);
   }
 
   public function testExportWorksWhenSubscriberNotFound() {
