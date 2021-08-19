@@ -9,6 +9,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
+use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends Repository<StatisticsClickEntity>
@@ -42,5 +43,17 @@ class StatisticsClicksRepository extends Repository {
       $statistics->setCount($statistics->getCount() + 1);
     }
     return $statistics;
+  }
+
+  public function getAllForSubscriber(SubscriberEntity $subscriber): QueryBuilder {
+    return $this->entityManager->createQueryBuilder()
+      ->select('clicks.id id, queue.newsletterRenderedSubject, clicks.createdAt, link.url, userAgent.userAgent')
+      ->from(StatisticsClickEntity::class, 'clicks')
+      ->join('clicks.queue', 'queue')
+      ->join('clicks.link', 'link')
+      ->leftJoin('clicks.userAgent', 'userAgent')
+      ->where('clicks.subscriber = :subscriber')
+      ->orderBy('link.url')
+      ->setParameter('subscriber', $subscriber->getId());
   }
 }

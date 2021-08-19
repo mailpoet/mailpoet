@@ -2,25 +2,25 @@
 
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
-use MailPoet\Models\StatisticsOpens;
+use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class NewsletterOpensExporter extends NewsletterStatsBaseExporter {
-  protected $statsClass = StatisticsOpens::class;
+  protected $statsClassName = StatisticsOpensRepository::class;
 
   protected function getEmailStats(array $row): array {
     $newsletterData = [];
     $newsletterData[] = [
       'name' => WPFunctions::get()->__('Email subject', 'mailpoet'),
-      'value' => $row['newsletter_rendered_subject'],
+      'value' => $row['newsletterRenderedSubject'],
     ];
     $newsletterData[] = [
       'name' => WPFunctions::get()->__('Timestamp of the open event', 'mailpoet'),
-      'value' => $row['created_at'],
+      'value' => $row['createdAt']->format("Y-m-d H:i:s"),
     ];
 
-    if (!is_null($row['user_agent'])) {
-      $userAgent = $row['user_agent'];
+    if (!is_null($row['userAgent'])) {
+      $userAgent = $row['userAgent'];
     } else {
       $userAgent = WPFunctions::get()->__('Unknown', 'mailpoet');
     }

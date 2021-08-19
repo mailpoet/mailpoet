@@ -265,6 +265,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Subscribers\SubscriberSubscribeController::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\ImportExport\ImportExportRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\ImportExport\PersonalDataExporters\NewslettersExporter::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\ImportExport\PersonalDataExporters\NewsletterOpensExporter::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscribers\ImportExport\PersonalDataExporters\NewsletterClicksExporter::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository::class);
     $container->autowire(\MailPoet\Subscribers\SubscribersCountsController::class)->setPublic(true);
     // Segments
