@@ -2,25 +2,21 @@
 
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
-use MailPoet\Models\StatisticsClicks;
+use MailPoet\Models\StatisticsOpens;
 use MailPoet\WP\Functions as WPFunctions;
 
-class NewsletterClicksExporter extends NewsletterStatsBaseExporter {
-  protected $statsClass = StatisticsClicks::class;
+class NewsletterOpensExporter extends NewsletterStatsBaseExporter {
+  protected $statsClass = StatisticsOpens::class;
 
-  protected function getEmailStats(array $row) {
+  protected function getEmailStats(array $row): array {
     $newsletterData = [];
     $newsletterData[] = [
       'name' => WPFunctions::get()->__('Email subject', 'mailpoet'),
       'value' => $row['newsletter_rendered_subject'],
     ];
     $newsletterData[] = [
-      'name' => WPFunctions::get()->__('Timestamp of the click event', 'mailpoet'),
+      'name' => WPFunctions::get()->__('Timestamp of the open event', 'mailpoet'),
       'value' => $row['created_at'],
-    ];
-    $newsletterData[] = [
-      'name' => WPFunctions::get()->__('URL', 'mailpoet'),
-      'value' => $row['url'],
     ];
 
     if (!is_null($row['user_agent'])) {
@@ -35,8 +31,8 @@ class NewsletterClicksExporter extends NewsletterStatsBaseExporter {
     ];
 
     return [
-      'group_id' => 'mailpoet-newsletter-clicks',
-      'group_label' => WPFunctions::get()->__('MailPoet Emails Clicks', 'mailpoet'),
+      'group_id' => 'mailpoet-newsletter-opens',
+      'group_label' => WPFunctions::get()->__('MailPoet Emails Opens', 'mailpoet'),
       'item_id' => 'newsletter-' . $row['id'],
       'data' => $newsletterData,
     ];
