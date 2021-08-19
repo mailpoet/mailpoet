@@ -6,6 +6,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\UserAgentsRepository;
 
@@ -46,14 +47,22 @@ class Opens {
       // Open was already tracked
       if ($oldStatistics) {
         if (!empty($data->userAgent)) {
-          $oldStatistics->setUserAgent($this->userAgentsRepository->findOrCreate($data->userAgent));
-          $this->statisticsOpensRepository->flush();
+          $userAgent = $this->userAgentsRepository->findOrCreate($data->userAgent);
+          if ($userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN
+            || $oldStatistics->getUserAgentType() !== UserAgentEntity::USER_AGENT_TYPE_HUMAN
+          ) {
+            $oldStatistics->setUserAgent($userAgent);
+            $oldStatistics->setUserAgentType($userAgent->getUserAgentType());
+            $this->statisticsOpensRepository->flush();
+          }
         }
         return $this->returnResponse($displayImage);
       }
       $statistics = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
       if (!empty($data->userAgent)) {
-        $statistics->setUserAgent($this->userAgentsRepository->findOrCreate($data->userAgent));
+        $userAgent = $this->userAgentsRepository->findOrCreate($data->userAgent);
+        $statistics->setUserAgent($userAgent);
+        $statistics->setUserAgentType($userAgent->getUserAgentType());
       }
       $this->statisticsOpensRepository->persist($statistics);
       $this->statisticsOpensRepository->flush();
