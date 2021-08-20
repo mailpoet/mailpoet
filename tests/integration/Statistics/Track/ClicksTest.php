@@ -309,7 +309,7 @@ class ClicksTest extends \MailPoetTest {
     expect($trackedClicks)->count(1);
     $click = $trackedClicks[0];
     expect($click->getUserAgent())->null();
-    expect($click->getUserAgentType())->null();
+    expect($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     // Track Machine User Agent
     $machineUserAgentName = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $data->userAgent = $machineUserAgentName;
@@ -318,7 +318,7 @@ class ClicksTest extends \MailPoetTest {
     expect($trackedClicks)->count(1);
     $click = $trackedClicks[0];
     expect($click->getUserAgent())->null();
-    expect($click->getUserAgentType())->null();
+    expect($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
   }
 
   public function testItOverridesUnknownUserAgentWithHuman(): void {
@@ -342,7 +342,7 @@ class ClicksTest extends \MailPoetTest {
     expect($trackedClicks)->count(1);
     $click = $trackedClicks[0];
     expect($click->getUserAgent())->null();
-    expect($click->getUserAgentType())->null();
+    expect($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     // Track Machine User Agent
     $humanUserAgentName = 'User Agent';
     $data->userAgent = $humanUserAgentName;

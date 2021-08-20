@@ -16,8 +16,8 @@ class UserAgentEntity {
   use CreatedAtTrait;
   use UpdatedAtTrait;
 
-  public const USER_AGENT_TYPE_HUMAN = 'human';
-  public const USER_AGENT_TYPE_MACHINE = 'machine';
+  public const USER_AGENT_TYPE_HUMAN = 0;
+  public const USER_AGENT_TYPE_MACHINE = 1;
 
   public const MACHINE_USER_AGENTS = [
     'Mozilla/5.0',
@@ -52,7 +52,7 @@ class UserAgentEntity {
     return $this->hash;
   }
 
-  public function getUserAgentType(): string {
+  public function getUserAgentType(): int {
     if (in_array($this->getUserAgent(), self::MACHINE_USER_AGENTS, true)) {
       return self::USER_AGENT_TYPE_MACHINE;
     }

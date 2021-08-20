@@ -44,10 +44,10 @@ class StatisticsOpenEntity {
   private $userAgent;
 
   /**
-   * @ORM\Column(type="string", nullable=true)
-   * @var string|null
+   * @ORM\Column(type="smallint")
+   * @var int
    */
-  private $userAgentType;
+  private $userAgentType = 0;
 
   public function __construct(
     NewsletterEntity $newsletter,
@@ -104,11 +104,11 @@ class StatisticsOpenEntity {
     $this->userAgent = $userAgent;
   }
 
-  public function getUserAgentType(): ?string {
+  public function getUserAgentType(): int {
     return $this->userAgentType;
   }
 
-  public function setUserAgentType(?string $userAgentType): void {
+  public function setUserAgentType(int $userAgentType): void {
     $this->userAgentType = $userAgentType;
   }
 }

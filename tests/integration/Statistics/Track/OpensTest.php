@@ -283,7 +283,7 @@ class OpensTest extends \MailPoetTest {
     $openEntity = reset($openEntities);
     assert($openEntity instanceof StatisticsOpenEntity);
     expect($openEntity->getUserAgent())->null();
-    expect($openEntity->getUserAgentType())->null();
+    expect($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     // Track Machine User Agent
     $machineUserAgentName = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $this->trackData->userAgent = $machineUserAgentName;
@@ -294,7 +294,7 @@ class OpensTest extends \MailPoetTest {
     $openEntity = reset($openEntities);
     assert($openEntity instanceof StatisticsOpenEntity);
     expect($openEntity->getUserAgent())->null();
-    expect($openEntity->getUserAgentType())->null();
+    expect($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
   }
 
   public function testItOverridesUnknownUserAgentWithHuman(): void {
@@ -313,7 +313,7 @@ class OpensTest extends \MailPoetTest {
     $openEntity = reset($openEntities);
     assert($openEntity instanceof StatisticsOpenEntity);
     expect($openEntity->getUserAgent())->null();
-    expect($openEntity->getUserAgentType())->null();
+    expect($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     // Track Human User Agent
     $humanUserAgentName = 'User Agent';
     $this->trackData->userAgent = $humanUserAgentName;
