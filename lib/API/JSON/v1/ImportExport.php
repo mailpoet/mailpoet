@@ -156,7 +156,7 @@ class ImportExport extends APIEndpoint {
 
   public function setupWooCommerceInitialImport() {
     try {
-      $task = $this->scheduledTasksRepository->findScheduledOrRunningTask([WooCommerceSync::TASK_TYPE]);
+      $task = $this->scheduledTasksRepository->findScheduledOrRunningTask(WooCommerceSync::TASK_TYPE);
       if (($task instanceof ScheduledTaskEntity) && $task->getStatus() === null) {
         return $this->successResponse();
       }
