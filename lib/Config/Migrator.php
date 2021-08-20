@@ -428,7 +428,7 @@ class Migrator {
       'queue_id int(11) unsigned NOT NULL,',
       'link_id int(11) unsigned NOT NULL,',
       'user_agent_id int(11) unsigned NULL,',
-      'user_agent_type varchar(50) NULL,',
+      'user_agent_type tinyint(1) NOT NULL DEFAULT 0,',
       'count int(11) unsigned NOT NULL,',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
@@ -447,7 +447,7 @@ class Migrator {
       'subscriber_id int(11) unsigned NOT NULL,',
       'queue_id int(11) unsigned NOT NULL,',
       'user_agent_id int(11) unsigned NULL,',
-      'user_agent_type varchar(50) NULL,',
+      'user_agent_type tinyint(1) NOT NULL DEFAULT 0,',
       'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
       'KEY newsletter_id_subscriber_id_user_agent_type (newsletter_id, subscriber_id, user_agent_type),',

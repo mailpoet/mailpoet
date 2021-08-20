@@ -59,10 +59,10 @@ class StatisticsClickEntity {
   private $userAgent;
 
   /**
-   * @ORM\Column(type="string", nullable=true)
-   * @var string|null
+   * @ORM\Column(type="smallint")
+   * @var int
    */
-  private $userAgentType;
+  private $userAgentType = 0;
 
   /**
    * @ORM\Column(type="integer")
@@ -170,11 +170,11 @@ class StatisticsClickEntity {
     $this->userAgent = $userAgent;
   }
 
-  public function getUserAgentType(): ?string {
+  public function getUserAgentType(): int {
     return $this->userAgentType;
   }
 
-  public function setUserAgentType(?string $userAgentType): void {
+  public function setUserAgentType(int $userAgentType): void {
     $this->userAgentType = $userAgentType;
   }
 }
