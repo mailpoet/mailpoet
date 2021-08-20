@@ -82,20 +82,20 @@ class Clicks {
     // log statistics only if the action did not come from
     // a WP user previewing the newsletter
     if (!$wpUserPreview) {
+      $userAgent = !empty($data->userAgent) ? $this->userAgentsRepository->findOrCreate($data->userAgent) : null;
       $statisticsClicks = $this->statisticsClicksRepository->createOrUpdateClickCount(
         $link,
         $subscriber,
         $newsletter,
-        $queue
+        $queue,
+        $userAgent
       );
-      if (!empty($data->userAgent)) {
-        $userAgent = $this->userAgentsRepository->findOrCreate($data->userAgent);
-        if ($userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN
-          || $statisticsClicks->getUserAgentType() !== UserAgentEntity::USER_AGENT_TYPE_HUMAN
-        ) {
-          $statisticsClicks->setUserAgent($userAgent);
-          $statisticsClicks->setUserAgentType($userAgent->getUserAgentType());
-        }
+      if ($userAgent instanceof UserAgentEntity &&
+          ($userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN
+          || $statisticsClicks->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_MACHINE)
+      ) {
+        $statisticsClicks->setUserAgent($userAgent);
+        $statisticsClicks->setUserAgentType($userAgent->getUserAgentType());
       }
       $this->statisticsClicksRepository->flush();
       $this->sendRevenueCookie($statisticsClicks);

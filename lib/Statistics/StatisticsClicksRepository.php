@@ -8,6 +8,7 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\UserAgentEntity;
 
 /**
  * @extends Repository<StatisticsClickEntity>
@@ -21,7 +22,8 @@ class StatisticsClicksRepository extends Repository {
     NewsletterLinkEntity $link,
     SubscriberEntity $subscriber,
     NewsletterEntity $newsletter,
-    SendingQueueEntity $queue
+    SendingQueueEntity $queue,
+    ?UserAgentEntity $userAgent
   ): StatisticsClickEntity {
     $statistics = $this->findOneBy([
       'link' => $link,
@@ -31,6 +33,10 @@ class StatisticsClicksRepository extends Repository {
     ]);
     if (!$statistics instanceof StatisticsClickEntity) {
       $statistics = new StatisticsClickEntity($newsletter, $queue, $subscriber, $link, 1);
+      if ($userAgent) {
+        $statistics->setUserAgent($userAgent);
+        $statistics->setUserAgentType($userAgent->getUserAgentType());
+      }
       $this->persist($statistics);
     } else {
       $statistics->setCount($statistics->getCount() + 1);

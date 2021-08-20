@@ -233,6 +233,7 @@ class ClicksTest extends \MailPoetTest {
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
     expect($userAgent->getUserAgent())->equals($humanUserAgentName);
     expect($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    expect($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     // Track Machine User Agent
     $machineUserAgentName = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $data->userAgent = $machineUserAgentName;
@@ -244,6 +245,7 @@ class ClicksTest extends \MailPoetTest {
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
     expect($userAgent->getUserAgent())->equals($humanUserAgentName);
     expect($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    expect($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
   }
 
   public function testItOverridesMachineUserAgentWithHuman(): void {
@@ -271,6 +273,7 @@ class ClicksTest extends \MailPoetTest {
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
     expect($userAgent->getUserAgent())->equals($machineUserAgentName);
     expect($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
+    expect($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
     // Track Human User Agent
     $humanUserAgentName = 'Human user Agent';
     $data->userAgent = $humanUserAgentName;
@@ -282,6 +285,76 @@ class ClicksTest extends \MailPoetTest {
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
     expect($userAgent->getUserAgent())->equals($humanUserAgentName);
     expect($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    expect($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+  }
+
+  public function testItDoesNotOverrideUnknownUserAgentWithMachine(): void {
+    $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Opens::class),
+      $clicksRepository,
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+    ], [
+      'redirectToUrl' => null,
+    ], $this);
+    $data = $this->trackData;
+    // Track Unknown User Agent
+    $data->userAgent = null;
+    $clicks->track($data);
+    $trackedClicks = $clicksRepository->findAll();
+    expect($trackedClicks)->count(1);
+    $click = $trackedClicks[0];
+    expect($click->getUserAgent())->null();
+    expect($click->getUserAgentType())->null();
+    // Track Machine User Agent
+    $machineUserAgentName = UserAgentEntity::MACHINE_USER_AGENTS[0];
+    $data->userAgent = $machineUserAgentName;
+    $clicks->track($data);
+    $trackedClicks = $clicksRepository->findAll();
+    expect($trackedClicks)->count(1);
+    $click = $trackedClicks[0];
+    expect($click->getUserAgent())->null();
+    expect($click->getUserAgentType())->null();
+  }
+
+  public function testItOverridesUnknownUserAgentWithHuman(): void {
+    $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Opens::class),
+      $clicksRepository,
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+    ], [
+      'redirectToUrl' => null,
+    ], $this);
+    $data = $this->trackData;
+    // Track Unknown User Agent
+    $data->userAgent = null;
+    $clicks->track($data);
+    $trackedClicks = $clicksRepository->findAll();
+    expect($trackedClicks)->count(1);
+    $click = $trackedClicks[0];
+    expect($click->getUserAgent())->null();
+    expect($click->getUserAgentType())->null();
+    // Track Machine User Agent
+    $humanUserAgentName = 'User Agent';
+    $data->userAgent = $humanUserAgentName;
+    $clicks->track($data);
+    $trackedClicks = $clicksRepository->findAll();
+    expect($trackedClicks)->count(1);
+    $click = $trackedClicks[0];
+    $userAgent = $click->getUserAgent();
+    $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
+    expect($userAgent->getUserAgent())->equals($humanUserAgentName);
+    expect($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    expect($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
   }
 
   public function testItRedirectsToUrlAfterTracking() {

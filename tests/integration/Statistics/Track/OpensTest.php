@@ -213,6 +213,7 @@ class OpensTest extends \MailPoetTest {
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
     expect($userAgent->getUserAgent())->equals($humanUserAgentName);
     expect($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    expect($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     // Track Machine User Agent
     $machineUserAgentName = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $this->trackData->userAgent = $machineUserAgentName;
@@ -226,6 +227,7 @@ class OpensTest extends \MailPoetTest {
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
     expect($userAgent->getUserAgent())->equals($humanUserAgentName);
     expect($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    expect($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
   }
 
   public function testItOverridesMachineUserAgentWithHuman(): void {
@@ -248,6 +250,7 @@ class OpensTest extends \MailPoetTest {
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
     expect($userAgent->getUserAgent())->equals($machineUserAgentName);
     expect($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
+    expect($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
     // Track Human User Agent
     $humanUserAgentName = 'Human User Agent';
     $this->trackData->userAgent = $humanUserAgentName;
@@ -261,6 +264,70 @@ class OpensTest extends \MailPoetTest {
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
     expect($userAgent->getUserAgent())->equals($humanUserAgentName);
     expect($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    expect($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+  }
+
+  public function testItDoesNotOverrideUnknownUserAgentWithMachine(): void {
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+    ], [
+      'returnResponse' => null,
+    ], $this);
+    // Track Unknown User Agent
+    $this->trackData->userAgent = null;
+    $opens->track($this->trackData);
+    expect(count(StatisticsOpens::findMany()))->equals(1);
+    $openEntities = $this->statisticsOpensRepository->findAll();
+    expect($openEntities)->count(1);
+    $openEntity = reset($openEntities);
+    assert($openEntity instanceof StatisticsOpenEntity);
+    expect($openEntity->getUserAgent())->null();
+    expect($openEntity->getUserAgentType())->null();
+    // Track Machine User Agent
+    $machineUserAgentName = UserAgentEntity::MACHINE_USER_AGENTS[0];
+    $this->trackData->userAgent = $machineUserAgentName;
+    $opens->track($this->trackData);
+    expect(count(StatisticsOpens::findMany()))->equals(1);
+    $openEntities = $this->statisticsOpensRepository->findAll();
+    expect($openEntities)->count(1);
+    $openEntity = reset($openEntities);
+    assert($openEntity instanceof StatisticsOpenEntity);
+    expect($openEntity->getUserAgent())->null();
+    expect($openEntity->getUserAgentType())->null();
+  }
+
+  public function testItOverridesUnknownUserAgentWithHuman(): void {
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+    ], [
+      'returnResponse' => null,
+    ], $this);
+    // Track Unknown User Agent
+    $this->trackData->userAgent = null;
+    $opens->track($this->trackData);
+    expect(count(StatisticsOpens::findMany()))->equals(1);
+    $openEntities = $this->statisticsOpensRepository->findAll();
+    expect($openEntities)->count(1);
+    $openEntity = reset($openEntities);
+    assert($openEntity instanceof StatisticsOpenEntity);
+    expect($openEntity->getUserAgent())->null();
+    expect($openEntity->getUserAgentType())->null();
+    // Track Human User Agent
+    $humanUserAgentName = 'User Agent';
+    $this->trackData->userAgent = $humanUserAgentName;
+    $opens->track($this->trackData);
+    expect(count(StatisticsOpens::findMany()))->equals(1);
+    $openEntities = $this->statisticsOpensRepository->findAll();
+    expect($openEntities)->count(1);
+    $openEntity = reset($openEntities);
+    $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
+    $userAgent = $openEntity->getUserAgent();
+    $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
+    expect($userAgent->getUserAgent())->equals($humanUserAgentName);
+    expect($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    expect($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
   }
 
   public function _after() {
