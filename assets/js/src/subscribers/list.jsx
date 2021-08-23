@@ -13,7 +13,9 @@ import Modal from 'common/modal/modal.tsx';
 import Selection from 'form/fields/selection.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
-import SubscribersInPlan from '../common/subscribers_in_plan';
+import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
+import SubscribersInPlan from 'common/subscribers_in_plan';
+
 import SubscribersHeading from './heading';
 import { ListingsEngagementScore } from './listings_engagement_score';
 
@@ -456,6 +458,10 @@ const SubscriberList = ({ match }) => {
       <InvalidMssKeyNotice
         mssKeyInvalid={window.mailpoet_mss_key_invalid}
         subscribersCount={window.mailpoet_subscribers_count}
+      />
+
+      <SubscribersCacheMessage
+        cacheCalculation={window.mailpoet_subscribers_counts_cache_created_at}
       />
 
       <Listing
