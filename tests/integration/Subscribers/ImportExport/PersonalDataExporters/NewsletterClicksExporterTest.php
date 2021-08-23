@@ -3,15 +3,13 @@
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsClicks;
-use MailPoet\Models\Subscriber;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoetVendor\Carbon\Carbon;
 
 class NewsletterClicksExporterTest extends \MailPoetTest {
 
@@ -33,9 +31,11 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
   }
 
   public function testExportWorksForSubscriberWithNoNewsletters() {
-    Subscriber::createOrUpdate([
-      'email' => 'email.that@has.no.newsletters',
-    ]);
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('email.that@has.no.newsletters');
+    $this->entityManager->persist($subscriber);
+    $this->entityManager->flush();
+
     $result = $this->exporter->export('email.that@has.no.newsletters');
     expect($result)->array();
     expect($result)->hasKey('data');
@@ -75,51 +75,46 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
   }
 
   protected function prepareDataToBeExported(string $userEmail, string $userAgentName = null) {
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => $userEmail,
-    ]);
-    $queue = SendingQueue::createOrUpdate([
-      'newsletter_rendered_subject' => 'Email Subject',
-      'task_id' => 1,
-      'newsletter_id' => 8,
-    ]);
-    $newsletter = Newsletter::createOrUpdate([
-      'subject' => 'Email Subject1',
-      'type' => Newsletter::TYPE_STANDARD,
-    ]);
-    $link = NewsletterLink::createOrUpdate([
-      'url' => 'Link url',
-      'newsletter_id' => $newsletter->id(),
-      'queue_id' => $queue->id(),
-      'hash' => 'xyz',
-    ]);
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail($userEmail);
+    $this->entityManager->persist($subscriber);
+
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Email Subject1');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $this->entityManager->persist($newsletter);
+
+    $task = new ScheduledTaskEntity();
+    $this->entityManager->persist($task);
+
+    $queue = new SendingQueueEntity();
+    $queue->setTask($task);
+    $queue->setNewsletter($newsletter);
+    $queue->setNewsletterRenderedSubject('Email Subject');
+    $this->entityManager->persist($queue);
+
+    $newsletterLink = new NewsletterLinkEntity($newsletter, $queue, 'Link url', 'xyz');
+    $this->entityManager->persist($newsletterLink);
+
+    $statisticsClicks = new StatisticsClickEntity($newsletter, $queue, $subscriber, $newsletterLink, 1);
+    $statisticsClicks->setCreatedAt(new Carbon('2018-01-02 15:16:17'));
 
     if ($userAgentName) {
       $userAgent = new UserAgentEntity($userAgentName);
       $this->entityManager->persist($userAgent);
-      $this->entityManager->flush();
-      $userAgentId = $userAgent->getId();
-    } else {
-      $userAgentId = null;
+      $statisticsClicks->setUserAgent($userAgent);
     }
 
-    StatisticsClicks::createOrUpdate([
-      'newsletter_id' => $newsletter->id(),
-      'queue_id' => $queue->id(),
-      'subscriber_id' => $subscriber->id(),
-      'link_id' => $link->id(),
-      'count' => 1,
-      'created_at' => '2018-01-02 15:16:17',
-      'user_agent_id' => $userAgentId,
-    ]);
+    $this->entityManager->persist($statisticsClicks);
+    $this->entityManager->flush();
   }
 
   public function _after() {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(NewsletterEntity::class);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    $this->truncateEntity(NewsletterLinkEntity::class);
     $this->truncateEntity(UserAgentEntity::class);
-    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
+    $this->truncateEntity(StatisticsClickEntity::class);
   }
 }
