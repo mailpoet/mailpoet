@@ -110,7 +110,7 @@ export const EmailStatisticsFields: React.FunctionComponent<Props> = ({ filterIn
               isFullWidth
               placeholder={MailPoet.I18n.t('selectLinkPlaceholder')}
               options={links}
-              value={find(['value', segment.link_id], links)}
+              value={find(['value', Number(segment.link_id)], links)}
               onChange={(option: SelectOption): void => {
                 updateSegmentFilter({ link_id: option.value }, filterIndex);
               }}
