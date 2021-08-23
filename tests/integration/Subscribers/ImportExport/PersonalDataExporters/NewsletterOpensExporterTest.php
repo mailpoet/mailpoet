@@ -3,14 +3,12 @@
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsOpens;
-use MailPoet\Models\Subscriber;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoetVendor\Carbon\Carbon;
 
 class NewsletterOpensExporterTest extends \MailPoetTest {
 
@@ -33,9 +31,10 @@ class NewsletterOpensExporterTest extends \MailPoetTest {
   }
 
   public function testExportWorksForSubscriberWithNoNewsletters() {
-    Subscriber::createOrUpdate([
-      'email' => 'email.that@has.no.newsletters',
-    ]);
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail('email.that@has.no.newsletters');
+    $this->entityManager->persist($subscriber);
+    $this->entityManager->flush();
 
     $result = $this->exporter->export('email.that@has.no.newsletters');
 
@@ -81,37 +80,35 @@ class NewsletterOpensExporterTest extends \MailPoetTest {
   }
 
   protected function prepareDataToBeExported(string $userEmail, string $userAgentName = null) {
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => $userEmail,
-    ]);
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail($userEmail);
+    $this->entityManager->persist($subscriber);
 
-    $queue = SendingQueue::createOrUpdate([
-      'newsletter_rendered_subject' => 'Email Subject',
-      'task_id' => 1,
-      'newsletter_id' => 8,
-    ]);
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Email Subject1');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $this->entityManager->persist($newsletter);
 
-    $newsletter = Newsletter::createOrUpdate([
-      'subject' => 'Email Subject1',
-      'type' => Newsletter::TYPE_STANDARD,
-    ]);
+    $task = new ScheduledTaskEntity();
+    $this->entityManager->persist($task);
+
+    $queue = new SendingQueueEntity();
+    $queue->setTask($task);
+    $queue->setNewsletter($newsletter);
+    $queue->setNewsletterRenderedSubject('Email Subject');
+    $this->entityManager->persist($queue);
+
+    $statisticsOpens = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
+    $statisticsOpens->setCreatedAt(new Carbon('2018-01-02 15:16:17'));
 
     if ($userAgentName) {
       $userAgent = new UserAgentEntity($userAgentName);
       $this->entityManager->persist($userAgent);
-      $this->entityManager->flush();
-      $userAgentId = $userAgent->getId();
-    } else {
-      $userAgentId = null;
+      $statisticsOpens->setUserAgent($userAgent);
     }
 
-    StatisticsOpens::createOrUpdate([
-      'newsletter_id' => $newsletter->id(),
-      'subscriber_id' => $subscriber->id(),
-      'queue_id' => $queue->id(),
-      'created_at' => '2018-01-02 15:16:17',
-      'user_agent_id' => $userAgentId,
-    ]);
+    $this->entityManager->persist($statisticsOpens);
+    $this->entityManager->flush();
   }
 
   public function _after() {
@@ -119,6 +116,6 @@ class NewsletterOpensExporterTest extends \MailPoetTest {
     $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(UserAgentEntity::class);
-    ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
+    $this->truncateEntity(StatisticsOpenEntity::class);
   }
 }
