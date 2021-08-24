@@ -35,7 +35,7 @@ class EditorAddListSelectionCest {
     $i->click('[data-automation-id="mailpoet_list_selection_block"]');
     $i->click('[data-automation-id="mailpoet_block_settings_tab"]');
     $i->fillField('[data-automation-id="settings_first_name_label_input"]', 'Choose your list:');
-    $i->selectOption('[data-automation-id="select_list_selections_list"] select', $secondSegmentName);
+    $i->selectOption('[data-automation-id="select_list_selections_list"]', $secondSegmentName);
     $i->seeNoJSErrors();
 
     $i->wantTo('Save the form');
