@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.67.0
+Stable tag: 3.67.1
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.67.1 - 2021-08-24 =
+* Added: differentiating human and machine email opens;
+* Added: saving opens and clicks User-agent;
+* Improved: Unified notice for invalid API key;
+* Fixed: conflict with "Invoices for WooCommerce" plugin when signing up for newsletters on checkout;
+* Fixed: potential error in MailPoet Router;
+* Fixed: cannot edit a subscriber when they are subscribed to a non-existing list.
 
 = 3.67.0 - 2021-08-17 =
 * Improved: better handle potential errors when previewing an email;
