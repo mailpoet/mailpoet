@@ -16,7 +16,6 @@ import {
   ObserveTyping,
 } from '@wordpress/block-editor';
 import classnames from 'classnames';
-import { global as SETTINGS_DEFAULTS } from '../store/experimental-default-theme.json';
 import fetchLinkSuggestions from '../utils/link_suggestions';
 import Header from './header.jsx';
 import { Tutorial } from './tutorial';
@@ -75,25 +74,15 @@ export default () => {
     mediaUpload: canUserUpload ? uploadMedia : null,
     maxWidth: 580,
     enableCustomSpacing: true,
+    enableCustomLineHeight: true,
+    disableCustomFontSizes: false,
+    enableCustomUnits: true,
+    disableCustomGradients: false,
+    disableCustomColors: false,
     __experimentalFetchLinkSuggestions: fetchLinkSuggestions,
     __experimentalBlockPatterns: [], // we don't want patterns in our inserter
     __experimentalBlockPatternCategories: [],
     __experimentalSetIsInserterOpened: setIsInserterOpen,
-    __experimentalFeatures: {
-      defaults: {
-        color: {
-          palette: SETTINGS_DEFAULTS.presets.color,
-          gradients: SETTINGS_DEFAULTS.presets.gradient,
-          custom: true,
-          customGradient: true,
-        },
-        typography: {
-          fontSizes: SETTINGS_DEFAULTS.presets['font-size'],
-          customFontSize: true,
-          customLineHeight: true,
-        },
-      },
-    },
   };
 
   return (

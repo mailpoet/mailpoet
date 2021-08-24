@@ -1,7 +1,7 @@
 import { select, dispatch } from '@wordpress/data';
+import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
 import blocksToFormBodyFactory from './blocks_to_form_body';
 import mapFormDataBeforeSaving from './map_form_data_before_saving';
-import { global as SETTINGS_DEFAULTS } from './experimental-default-theme.json';
 
 export function toggleSidebar(toggleTo) {
   return {
@@ -199,9 +199,9 @@ export function* showPreview() {
   const formData = select('mailpoet-form-editor').getFormData();
   const formBlocks = select('mailpoet-form-editor').getFormBlocks();
   const blocksToFormBody = blocksToFormBodyFactory(
-    SETTINGS_DEFAULTS.presets['font-size'],
-    SETTINGS_DEFAULTS.presets.color,
-    SETTINGS_DEFAULTS.presets.gradient,
+    SETTINGS_DEFAULTS.fontSizes,
+    SETTINGS_DEFAULTS.colors,
+    SETTINGS_DEFAULTS.gradients,
     customFields
   );
   const { success, error } = yield {

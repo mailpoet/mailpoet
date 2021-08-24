@@ -4,7 +4,7 @@ import { merge } from 'lodash';
 import Cookies from 'js-cookie';
 import { createBlock, unregisterBlockType } from '@wordpress/blocks';
 import CALL_API from 'common/controls/call_api';
-import { global as SETTINGS_DEFAULTS } from './experimental-default-theme.json';
+import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
 import blocksToFormBodyFactory from './blocks_to_form_body.jsx';
 import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
 import getCustomFieldBlockSettings from '../blocks/custom_fields_blocks.jsx';
@@ -44,9 +44,9 @@ export default {
     const formBlocks = select('mailpoet-form-editor').getFormBlocks();
     const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
     const blocksToFormBody = blocksToFormBodyFactory(
-      SETTINGS_DEFAULTS.presets['font-size'],
-      SETTINGS_DEFAULTS.presets.color,
-      SETTINGS_DEFAULTS.presets.gradient,
+      SETTINGS_DEFAULTS.fontSizes,
+      SETTINGS_DEFAULTS.colors,
+      SETTINGS_DEFAULTS.gradients,
       customFields
     );
     const requestData = {
