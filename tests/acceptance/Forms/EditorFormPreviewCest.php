@@ -32,7 +32,7 @@ class EditorFormPreviewCest {
     $i->switchToIFrame();
 
     // Change preview type and form type and check again
-    $formTypeSelect = '[data-automation-id="form_type_selection"] select';
+    $formTypeSelect = '[data-automation-id="form_type_selection"]';
     $i->click('[data-automation-id="preview_type_mobile"]');
     $i->selectOption($formTypeSelect, 'Fixed bar');
     $i->switchToIFrame('[data-automation-id="form_preview_iframe"]');
