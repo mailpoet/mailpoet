@@ -10,6 +10,13 @@ export function toggleSidebar(toggleTo) {
   };
 }
 
+export function toggleInserter(toggleTo) {
+  return {
+    type: 'TOGGLE_INSERTER_SIDEBAR',
+    toggleTo: !!toggleTo,
+  };
+}
+
 export function toggleForm(enabled) {
   if (enabled) {
     return {

@@ -22,6 +22,9 @@ export default {
   isFullscreenEnabled(state) {
     return state.fullscreenStatus;
   },
+  isInserterOpened(state) {
+    return state.isInserterOpened;
+  },
   getSidebarOpened(state) {
     return state.sidebarOpened;
   },

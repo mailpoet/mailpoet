@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '@wordpress/core-data';
 import { useSelect, useDispatch } from '@wordpress/data';
 import {
@@ -39,11 +39,16 @@ import Fullscreen from './fullscreen';
  * https://developer.wordpress.org/block-editor/packages/packages-block-editor/
  */
 export default () => {
-  const [isInserterOpen, setIsInserterOpen] = useState(false);
   const sidebarOpened = useSelect(
     (sel) => sel('mailpoet-form-editor').getSidebarOpened(),
     []
   );
+
+  const isInserterOpened = useSelect(
+    (sel) => sel('mailpoet-form-editor').isInserterOpened(),
+    []
+  );
+
   const formBlocks = useSelect(
     (sel) => sel('mailpoet-form-editor').getFormBlocks(),
     []
@@ -67,7 +72,7 @@ export default () => {
     }
   );
 
-  const { blocksChangedInBlockEditor } = useDispatch('mailpoet-form-editor');
+  const { blocksChangedInBlockEditor, toggleInserter } = useDispatch('mailpoet-form-editor');
 
   // Editor settings - see @wordpress/block-editor/src/store/defaults.js
   const editorSettings = {
@@ -82,7 +87,7 @@ export default () => {
     __experimentalFetchLinkSuggestions: fetchLinkSuggestions,
     __experimentalBlockPatterns: [], // we don't want patterns in our inserter
     __experimentalBlockPatternCategories: [],
-    __experimentalSetIsInserterOpened: setIsInserterOpen,
+    __experimentalSetIsInserterOpened: toggleInserter,
   };
 
   return (
@@ -93,8 +98,8 @@ export default () => {
           <div className="interface-interface-skeleton__editor">
             <div className="interface-interface-skeleton__header">
               <Header
-                isInserterOpened={isInserterOpen}
-                setIsInserterOpened={setIsInserterOpen}
+                isInserterOpened={isInserterOpened}
+                setIsInserterOpened={toggleInserter}
               />
             </div>
             <div className="interface-interface-skeleton__body">
@@ -105,9 +110,9 @@ export default () => {
                 settings={editorSettings}
                 useSubRegistry={false}
               >
-                {(isInserterOpen) && (
+                {(isInserterOpened) && (
                   <div className="interface-interface-skeleton__secondary-sidebar">
-                    <Inserter setIsInserterOpened={setIsInserterOpen} />
+                    <Inserter setIsInserterOpened={toggleInserter} />
                   </div>
                 )}
                 <div className="interface-interface-skeleton__content">
