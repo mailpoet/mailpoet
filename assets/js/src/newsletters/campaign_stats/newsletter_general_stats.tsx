@@ -22,15 +22,18 @@ export const NewsletterGeneralStats = ({
 
   let percentageClicked = 0;
   let percentageOpened = 0;
+  let percentageMachineOpened = 0;
   let percentageUnsubscribed = 0;
   if (totalSent > 0) {
     percentageClicked = (newsletter.statistics.clicked * 100) / totalSent;
     percentageOpened = (newsletter.statistics.opened * 100) / totalSent;
+    percentageMachineOpened = (newsletter.statistics.machineOpens * 100) / totalSent;
     percentageUnsubscribed = (newsletter.statistics.unsubscribed * 100) / totalSent;
   }
   // format to 1 decimal place
   const percentageClickedDisplay = MailPoet.Num.toLocaleFixed(percentageClicked, 1);
   const percentageOpenedDisplay = MailPoet.Num.toLocaleFixed(percentageOpened, 1);
+  const percentageMachineOpenedDisplay = MailPoet.Num.toLocaleFixed(percentageMachineOpened, 1);
   const percentageUnsubscribedDisplay = MailPoet.Num.toLocaleFixed(percentageUnsubscribed, 1);
 
   const displayBadges = ((totalSent >= minNewslettersSent)
@@ -44,6 +47,16 @@ export const NewsletterGeneralStats = ({
         {'% '}
       </span>
       {MailPoet.I18n.t('percentageOpened')}
+    </div>
+  );
+
+  const machineOpened = (
+    <div className="mailpoet-statistics-value-small">
+      <span className="mailpoet-statistics-value-number">
+        {percentageMachineOpenedDisplay}
+        {'% '}
+      </span>
+      {MailPoet.I18n.t('percentageMachineOpened')}
     </div>
   );
 
@@ -102,6 +115,7 @@ export const NewsletterGeneralStats = ({
         </div>
         <div className="mailpoet-statistics-with-left-separator">
           {opened}
+          {machineOpened}
         </div>
         {isWoocommerceActive && (
           <div className="mailpoet-statistics-with-left-separator">

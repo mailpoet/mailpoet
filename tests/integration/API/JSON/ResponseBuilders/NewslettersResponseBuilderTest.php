@@ -27,13 +27,16 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
         'opened' => 6,
         'clicked' => 4,
         'unsubscribed' => 2,
+        'machineOpens' => 9,
         'revenue' => null,
       ],
     ];
+    $statistics = new NewsletterStatistics(4, 6, 2, 10, null);
+    $statistics->setMachineOpens(9);
     $newsletterStatsRepository = Stub::make(NewsletterStatisticsRepository::class, [
       'getTotalSentCount' => $stats['total_sent'],
       'getChildrenCount' => $stats['children_count'],
-      'getStatistics' => new NewsletterStatistics(4, 6, 2, 10, null),
+      'getStatistics' => $statistics,
     ]);
     $newsletterRepository = Stub::make(NewslettersRepository::class);
     $newsletterUrl = $this->diContainer->get(Url::class);
