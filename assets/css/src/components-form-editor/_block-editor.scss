@@ -38,7 +38,7 @@
 // We don't use any default block (WP Post editor has paragraph)
 // and CSS distributed within packages is works only with the paragraph block
 // We want to display it in center
-.block-editor-inserter .block-editor-button-block-appender.block-list-appender__toggle {
+.block-editor .block-editor-inserter .block-editor-button-block-appender.block-list-appender__toggle {
   margin: 0 auto;
 }
 
