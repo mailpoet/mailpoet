@@ -627,6 +627,30 @@ describe('Blocks to Form Body', () => {
     expect(mapped2.params.background_color).to.be.equal('#bbbbbb');
   });
 
+  it('Should map colors for single column', () => {
+    const columns = { ...nestedColumns };
+    const column = columns.innerBlocks[0];
+    column.attributes = {
+      textColor: 'black',
+      backgroundColor: 'white',
+    };
+    const [mapped] = formBlocksToBody([columns]);
+    expect(mapped.body[0].params.text_color).to.be.equal('#000000');
+    expect(mapped.body[0].params.background_color).to.be.equal('#ffffff');
+
+    column.attributes = {
+      style: {
+        color: {
+          text: '#aaaaaa',
+          background: '#bbbbbb',
+        },
+      },
+    };
+    const [mapped2] = formBlocksToBody([columns]);
+    expect(mapped2.body[0].params.text_color).to.be.equal('#aaaaaa');
+    expect(mapped2.body[0].params.background_color).to.be.equal('#bbbbbb');
+  });
+
   it('Should map gradient for columns', () => {
     const columns = { ...nestedColumns };
     columns.attributes = {
@@ -644,6 +668,26 @@ describe('Blocks to Form Body', () => {
     };
     const [mapped2] = formBlocksToBody([columns]);
     expect(mapped2.params.gradient).to.be.equal('linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)');
+  });
+
+  it('Should map gradient for single column', () => {
+    const columns = { ...nestedColumns };
+    const column = columns.innerBlocks[0];
+    column.attributes = {
+      gradient: 'black-white',
+    };
+    const [mapped] = formBlocksToBody([columns]);
+    expect(mapped.body[0].params.gradient).to.be.equal('linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)');
+
+    column.attributes = {
+      style: {
+        color: {
+          gradient: 'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+        },
+      },
+    };
+    const [mapped2] = formBlocksToBody([columns]);
+    expect(mapped2.body[0].params.gradient).to.be.equal('linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)');
   });
 
   it('Should map class names', () => {

@@ -188,13 +188,28 @@ const blocksToFormBodyFactory = (
         case 'core/column':
           return {
             type: 'column',
+            body: mapBlocks(block.innerBlocks),
             params: {
               class_name: block.attributes.className || null,
               vertical_alignment: block.attributes.verticalAlignment || null,
               width: block.attributes.width || null,
               padding: block.attributes.style?.spacing?.padding || null,
+              text_color: mapColorSlugToValue(
+                colorDefinitions,
+                block.attributes.textColor,
+                block.attributes.style?.color?.text
+              ),
+              background_color: mapColorSlugToValue(
+                colorDefinitions,
+                block.attributes.backgroundColor,
+                block.attributes.style?.color?.background
+              ),
+              gradient: mapGradientSlugToValue(
+                gradientDefinitions,
+                block.attributes.gradient,
+                block.attributes.style?.color?.gradient
+              ),
             },
-            body: mapBlocks(block.innerBlocks),
           };
         case 'core/columns':
           return {

@@ -30,6 +30,15 @@ class Column {
         "padding:{$params['padding']['top']} {$params['padding']['right']} {$params['padding']['bottom']} {$params['padding']['left']}"
       );
     }
+    if (isset($params['text_color'])) {
+      $styles[] = "color:{$params['text_color']};";
+    }
+    if (!empty($params['background_color'])) {
+      $styles[] = "background-color:{$params['background_color']};";
+    }
+    if (isset($params['gradient'])) {
+      $styles[] = "background:{$params['gradient']};";
+    }
     if (!count($styles)) {
       return '';
     }
