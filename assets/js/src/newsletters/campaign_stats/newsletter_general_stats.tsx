@@ -1,8 +1,10 @@
 import React from 'react';
+import ReactStringReplace from 'react-string-replace';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import { Grid } from 'common/grid';
 import { StatsBadge, getBadgeType } from 'common/listings/newsletter_stats/stats';
+import Tooltip from 'help-tooltip';
 
 import { NewsletterType } from './newsletter_type';
 
@@ -57,6 +59,25 @@ export const NewsletterGeneralStats = ({
         {'% '}
       </span>
       {MailPoet.I18n.t('percentageMachineOpened')}
+      <Tooltip
+        tooltip={ReactStringReplace(
+          MailPoet.I18n.t('percentageMachineOpenedTooltip'),
+          /\[link](.*?)\[\/link]/,
+          (match) => (
+            <span style={{ pointerEvents: 'all' }}>
+              <a
+                href="https://kb.mailpoet.com/article/368-what-are-machine-opens"
+                key="kb-link"
+                target="_blank"
+                data-beacon-article="6124b7fb21ef206e5592e188"
+                rel="noopener noreferrer"
+              >
+                { match }
+              </a>
+            </span>
+          )
+        )}
+      />
     </div>
   );
 
