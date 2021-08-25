@@ -25,27 +25,27 @@ const NewsletterStats = ({
   const openedDisplay = MailPoet.Num.toLocaleFixed(opened, 1);
   const clickedDisplay = MailPoet.Num.toLocaleFixed(clicked, 1);
 
-  let openedAndClickedStats = (
+  let clickedAndOpenedStats = (
     <div className="mailpoet-listing-stats-opened-clicked">
       <div className="mailpoet-listing-stats-percentages">
-        {openedDisplay}
+        {clickedDisplay}
         %
         <br />
-        {clickedDisplay}
+        {openedDisplay}
         %
       </div>
       {!hideBadges && (
         <div>
           <StatsBadge
-            stat="opened"
-            rate={opened}
-            tooltipId={`opened-${newsletterId || '0'}`}
-          />
-          <br />
-          <StatsBadge
             stat="clicked"
             rate={clicked}
             tooltipId={`clicked-${newsletterId || '0'}`}
+          />
+          <br />
+          <StatsBadge
+            stat="opened"
+            rate={opened}
+            tooltipId={`opened-${newsletterId || '0'}`}
           />
         </div>
       )}
@@ -72,13 +72,13 @@ const NewsletterStats = ({
   }
 
   if (wrapContentInLink) {
-    openedAndClickedStats = wrapContentInLink(openedAndClickedStats, 'opened-and-clicked');
+    clickedAndOpenedStats = wrapContentInLink(clickedAndOpenedStats, 'opened-and-clicked');
     revenueStats = wrapContentInLink(revenueStats, 'revenue');
   }
 
   return (
     <div className="mailpoet-listing-stats">
-      {openedAndClickedStats}
+      {clickedAndOpenedStats}
       {revenueStats}
     </div>
   );
