@@ -11,6 +11,9 @@ class NewsletterStatistics {
   private $openCount;
 
   /** @var int */
+  private $machineOpens;
+
+  /** @var int */
   private $unsubscribeCount;
 
   /** @var int */
@@ -27,49 +30,40 @@ class NewsletterStatistics {
     $this->wooCommerceRevenue = $wooCommerceRevenue;
   }
 
-  /**
-   * @return int
-   */
-  public function getClickCount() {
+  public function getClickCount(): int {
     return $this->clickCount;
   }
 
-  /**
-   * @return int
-   */
-  public function getOpenCount() {
+  public function getOpenCount(): int {
     return $this->openCount;
   }
 
-  /**
-   * @return int
-   */
-  public function getUnsubscribeCount() {
+  public function getUnsubscribeCount(): int {
     return $this->unsubscribeCount;
   }
 
-  /**
-   * @return int
-   */
-  public function getTotalSentCount() {
+  public function getTotalSentCount(): int {
     return $this->totalSentCount;
   }
 
-  /**
-   * @return WooCommerceRevenue|null
-   */
-  public function getWooCommerceRevenue() {
+  public function getWooCommerceRevenue(): ?WooCommerceRevenue {
     return $this->wooCommerceRevenue;
   }
 
-  /**
-   * @return array
-   */
-  public function asArray() {
+  public function setMachineOpens(int $machineOpens): void {
+    $this->machineOpens = $machineOpens;
+  }
+
+  public function getMachineOpens(): int {
+    return $this->machineOpens;
+  }
+
+  public function asArray(): array {
     return [
-      'clicked' => (int)$this->clickCount,
-      'opened' => (int)$this->openCount,
-      'unsubscribed' => (int)$this->unsubscribeCount,
+      'clicked' => $this->clickCount,
+      'opened' => $this->openCount,
+      'machineOpens' => $this->machineOpens,
+      'unsubscribed' => $this->unsubscribeCount,
       'revenue' => empty($this->wooCommerceRevenue) ? null : $this->wooCommerceRevenue->asArray(),
     ];
   }
