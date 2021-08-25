@@ -64,7 +64,7 @@ export default () => {
     isFormSaving: false,
     isCustomFieldSaving: false,
     isCustomFieldCreating: false,
-    isInserterOpened: false,
+    inserterPanel: null,
     notices: [],
     hasUnsavedChanges: false,
     sidebar: {
