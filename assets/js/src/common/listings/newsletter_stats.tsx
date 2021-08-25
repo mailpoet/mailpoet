@@ -31,7 +31,7 @@ const NewsletterStats = ({
         {clickedDisplay}
         %
         <br />
-        {openedDisplay}
+        <span className="mailpoet-listing-stats-percentages-opens">{openedDisplay}</span>
         %
       </div>
       {!hideBadges && (
@@ -40,12 +40,6 @@ const NewsletterStats = ({
             stat="clicked"
             rate={clicked}
             tooltipId={`clicked-${newsletterId || '0'}`}
-          />
-          <br />
-          <StatsBadge
-            stat="opened"
-            rate={opened}
-            tooltipId={`opened-${newsletterId || '0'}`}
           />
         </div>
       )}
