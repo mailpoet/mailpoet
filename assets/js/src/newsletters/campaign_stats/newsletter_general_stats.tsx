@@ -37,26 +37,14 @@ export const NewsletterGeneralStats = ({
     && (newsletter.statistics.opened >= minNewslettersOpened)
   );
 
-  const badgeTypeOpened = getBadgeType('opened', percentageOpened);
   const opened = (
-    <>
-      <div className="mailpoet-statistics-value">
-        <span className={`mailpoet-statistics-value-number mailpoet-statistics-value-number-${badgeTypeOpened}`}>
-          {percentageOpenedDisplay}
-          {'% '}
-        </span>
-        {MailPoet.I18n.t('percentageOpened')}
-      </div>
-      {displayBadges && (
-        <StatsBadge
-          isInverted={false}
-          stat="opened"
-          rate={percentageOpened}
-          tooltipId={`opened-${newsletter.id || '0'}`}
-          tooltipPlace="right"
-        />
-      )}
-    </>
+    <div className="mailpoet-statistics-value-small">
+      <span className="mailpoet-statistics-value-number">
+        {percentageOpenedDisplay}
+        {'% '}
+      </span>
+      {MailPoet.I18n.t('percentageOpened')}
+    </div>
   );
 
   const unsubscribed = (
