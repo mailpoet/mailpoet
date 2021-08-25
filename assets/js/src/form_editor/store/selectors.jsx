@@ -23,7 +23,10 @@ export default {
     return state.fullscreenStatus;
   },
   isInserterOpened(state) {
-    return state.isInserterOpened;
+    return !!state.inserterPanel;
+  },
+  getInserterPanelInsertPoint(state) {
+    return state.inserterPanel;
   },
   getSidebarOpened(state) {
     return state.sidebarOpened;

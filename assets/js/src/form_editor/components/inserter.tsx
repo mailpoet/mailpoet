@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelect } from '@wordpress/data';
 import { close } from '@wordpress/icons';
 import {
   Button,
@@ -13,21 +14,29 @@ type Props = {
 
 const Inserter: React.FunctionComponent<Props> = ({
   setIsInserterOpened,
-}: Props) => (
-  <div className="edit-post-editor__inserter-panel">
-    <div className="edit-post-editor__inserter-panel-header">
-      <Button
-        icon={close}
-        onClick={(): void => setIsInserterOpened(false)}
-      />
+}: Props) => {
+  const insertPoint = useSelect(
+    (sel) => sel('mailpoet-form-editor').getInserterPanelInsertPoint(),
+    []
+  );
+  return (
+    <div className="edit-post-editor__inserter-panel">
+      <div className="edit-post-editor__inserter-panel-header">
+        <Button
+          icon={close}
+          onClick={(): void => setIsInserterOpened(false)}
+        />
+      </div>
+      <div className="edit-post-editor__inserter-panel-content">
+        <Library
+          showMostUsedBlocks
+          showInserterHelpPanel={false}
+          rootClientId={insertPoint.rootClientId ?? undefined}
+          __experimentalInsertionIndex={insertPoint.insertionIndex ?? undefined}
+        />
+      </div>
     </div>
-    <div className="edit-post-editor__inserter-panel-content">
-      <Library
-        showMostUsedBlocks
-        showInserterHelpPanel={false}
-      />
-    </div>
-  </div>
-);
+  );
+};
 
 export default Inserter;
