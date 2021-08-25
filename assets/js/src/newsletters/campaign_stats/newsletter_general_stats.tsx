@@ -110,10 +110,10 @@ export const NewsletterGeneralStats = ({
       </Grid.ThreeColumns>
       <Grid.ThreeColumns>
         <div>
-          {opened}
+          {clicked}
         </div>
         <div className="mailpoet-statistics-with-left-separator">
-          {clicked}
+          {opened}
         </div>
         {isWoocommerceActive && (
           <div className="mailpoet-statistics-with-left-separator">
