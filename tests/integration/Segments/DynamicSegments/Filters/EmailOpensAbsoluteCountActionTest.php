@@ -11,6 +11,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\UserAgentEntity;
 use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 
@@ -24,7 +25,11 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $newsletter1 = $this->createNewsletter();
     $newsletter2 = $this->createNewsletter();
     $newsletter3 = $this->createNewsletter();
+    $newsletter4 = $this->createNewsletter();
     $this->entityManager->flush();
+
+    $userAgent = new UserAgentEntity(UserAgentEntity::MACHINE_USER_AGENTS[0]);
+    $this->entityManager->persist($userAgent);
 
     $subscriber = $this->createSubscriber('opened-3-newsletters@example.com');
 
@@ -38,6 +43,11 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $open = $this->createStatisticsOpens($subscriber, $newsletter3);
     $open->setCreatedAt(CarbonImmutable::now()->subDays(2));
 
+    $open = $this->createStatisticsOpens($subscriber, $newsletter4);
+    $open->setCreatedAt(CarbonImmutable::now()->subMinutes(5));
+    $open->setUserAgentType(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
+    $open->setUserAgent($userAgent);
+
     $subscriber = $this->createSubscriber('opened-old-opens@example.com');
 
     $this->createStatsNewsletter($subscriber, $newsletter1);
@@ -49,6 +59,10 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $this->createStatsNewsletter($subscriber, $newsletter3);
     $open = $this->createStatisticsOpens($subscriber, $newsletter3);
     $open->setCreatedAt(CarbonImmutable::now()->subDays(5));
+    $open = $this->createStatisticsOpens($subscriber, $newsletter4);
+    $open->setCreatedAt(CarbonImmutable::now()->subDays(5));
+    $open->setUserAgentType(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
+    $open->setUserAgent($userAgent);
 
     $subscriber = $this->createSubscriber('opened-less-opens@example.com');
 
@@ -58,8 +72,16 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $this->createStatsNewsletter($subscriber, $newsletter2);
     $open = $this->createStatisticsOpens($subscriber, $newsletter2);
     $open->setCreatedAt(CarbonImmutable::now()->subDays(1));
+    $open = $this->createStatisticsOpens($subscriber, $newsletter4);
+    $open->setCreatedAt(CarbonImmutable::now()->subDays(1));
+    $open->setUserAgentType(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
+    $open->setUserAgent($userAgent);
 
     $subscriber = $this->createSubscriber('opened-no-opens@example.com');
+    $open = $this->createStatisticsOpens($subscriber, $newsletter4);
+    $open->setCreatedAt(CarbonImmutable::now()->subDays(1));
+    $open->setUserAgentType(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
+    $open->setUserAgent($userAgent);
   }
 
   public function testGetOpened() {
@@ -189,5 +211,6 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(StatisticsOpenEntity::class);
     $this->truncateEntity(StatisticsNewsletterEntity::class);
+    $this->truncateEntity(UserAgentEntity::class);
   }
 }
