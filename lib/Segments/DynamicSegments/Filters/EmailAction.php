@@ -8,6 +8,7 @@ use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -97,6 +98,10 @@ class EmailAction implements Filter {
         'stats',
         "stats.subscriber_id = $subscribersTable.id AND stats.newsletter_id = :newsletter" . $parameterSuffix
       )->setParameter('newsletter' . $parameterSuffix, $newsletterId);
+    }
+    if ($action === EmailAction::ACTION_OPENED) {
+      $queryBuilder->andWhere('(stats.user_agent_type = :userAgentType) OR (stats.user_agent_type IS NULL)')
+        ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     }
     if ($action === EmailAction::ACTION_CLICKED && $linkId) {
       $where .= ' AND stats.link_id = :link' . $parameterSuffix;
