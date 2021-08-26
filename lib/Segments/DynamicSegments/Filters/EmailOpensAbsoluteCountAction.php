@@ -5,6 +5,7 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -41,6 +42,8 @@ class EmailOpensAbsoluteCountAction implements Filter {
       $queryBuilder->having("count(opens.id) > :opens" . $parameterSuffix);
     }
     $queryBuilder->setParameter('opens' . $parameterSuffix, $filterData->getParam('opens'));
+    $queryBuilder->andWhere('(opens.user_agent_type = :userAgentType) OR (opens.user_agent_type IS NULL)')
+      ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     return $queryBuilder;
   }
 }
