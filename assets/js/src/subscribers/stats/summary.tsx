@@ -1,6 +1,8 @@
 import React from 'react';
+import ReactStringReplace from 'react-string-replace';
 import MailPoet from 'mailpoet';
 import Tag from 'common/tag/tag';
+import Tooltip from 'help-tooltip';
 import { ListingsEngagementScore } from '../listings_engagement_score';
 
 export type PropTypes = {
@@ -61,6 +63,25 @@ export default ({
             <tr>
               <td>
                 <Tag>{MailPoet.I18n.t('statsMachineOpened')}</Tag>
+                <Tooltip
+                  tooltip={ReactStringReplace(
+                    MailPoet.I18n.t('statsMachineOpenedTooltip'),
+                    /\[link](.*?)\[\/link]/,
+                    (match) => (
+                      <span style={{ pointerEvents: 'all' }} key="machine-opened-info">
+                        <a
+                          href="https://kb.mailpoet.com/article/368-what-are-machine-opens"
+                          key="kb-link"
+                          target="_blank"
+                          data-beacon-article="6124b7fb21ef206e5592e188"
+                          rel="noopener noreferrer"
+                        >
+                          { match }
+                        </a>
+                      </span>
+                    )
+                  )}
+                />
               </td>
               <td><b>{machineOpen.toLocaleString()}</b></td>
               <td>

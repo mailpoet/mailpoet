@@ -38,6 +38,7 @@ function Tooltip(props) {
       />
       <ReactTooltip
         globalEventOff="click"
+        className="mailpoet-tooltip-message"
         multiline
         id={tooltipId}
         efect="solid"
