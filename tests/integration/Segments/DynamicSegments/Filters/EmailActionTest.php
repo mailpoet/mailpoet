@@ -13,6 +13,7 @@ use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\UserAgentEntity;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 
 class EmailActionTest extends \MailPoetTest {
@@ -177,6 +178,23 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('not_opened@example.com');
   }
 
+  public function testOpensNotIncludeMachineOpens() {
+    $subscriberOpenedMachine = $this->createSubscriber('opened_machine@example.com');
+    $this->createStatsNewsletter($subscriberOpenedMachine);
+    $open = $this->createStatisticsOpens($subscriberOpenedMachine);
+    $open->setUserAgentType(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
+    $userAgent = new UserAgentEntity(UserAgentEntity::MACHINE_USER_AGENTS[0]);
+    $this->entityManager->persist($userAgent);
+    $open->setUserAgent($userAgent);
+    $this->entityManager->flush();
+
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_OPENED, (int)$this->newsletter->getId());
+    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
+    assert($statement instanceof Statement);
+    $result = $statement->rowCount();
+    expect($result)->equals(2);
+  }
+
   private function getQueryBuilder() {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager
@@ -258,5 +276,6 @@ class EmailActionTest extends \MailPoetTest {
     $this->truncateEntity(StatisticsClickEntity::class);
     $this->truncateEntity(StatisticsNewsletterEntity::class);
     $this->truncateEntity(NewsletterLinkEntity::class);
+    $this->truncateEntity(UserAgentEntity::class);
   }
 }
