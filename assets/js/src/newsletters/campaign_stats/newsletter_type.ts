@@ -17,7 +17,7 @@ export type NewsletterType = {
   statistics: {
     clicked: number;
     opened: number;
-    machineOpens: number;
+    machineOpened: number;
     unsubscribed: number;
     revenue: {
       value: number;
