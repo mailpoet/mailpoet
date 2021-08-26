@@ -6,6 +6,7 @@ import { ListingsEngagementScore } from '../listings_engagement_score';
 export type PropTypes = {
   totalSent: number;
   open: number;
+  machineOpen: number;
   click: number;
   subscriber: {
     id: number;
@@ -16,17 +17,21 @@ export type PropTypes = {
 export default ({
   totalSent,
   open,
+  machineOpen,
   click,
   subscriber,
 }: PropTypes): JSX.Element => {
   let openPercent = 0;
+  let machineOpenPercent = 0;
   let clickPercent = 0;
   let notOpenPercent = 0;
+  const notOpen = totalSent - (open + machineOpen);
   const displayPercentages = (totalSent > 0);
   if (displayPercentages) {
     openPercent = Math.round((open / totalSent) * 100);
+    machineOpenPercent = Math.round((machineOpen / totalSent) * 100);
     clickPercent = Math.round((click / totalSent) * 100);
-    notOpenPercent = Math.round(((totalSent - open) / totalSent) * 100);
+    notOpenPercent = Math.round((notOpen / totalSent) * 100);
   }
   return (
     <div className="mailpoet-tab-content mailpoet-subscriber-stats-summary">
@@ -55,6 +60,21 @@ export default ({
             </tr>
             <tr>
               <td>
+                <Tag>{MailPoet.I18n.t('statsMachineOpened')}</Tag>
+              </td>
+              <td><b>{machineOpen.toLocaleString()}</b></td>
+              <td>
+                {displayPercentages
+                && (
+                  <>
+                    {machineOpenPercent}
+                    %
+                  </>
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td>
                 <Tag isInverted>{MailPoet.I18n.t('statsClicked')}</Tag>
               </td>
               <td><b>{click.toLocaleString()}</b></td>
@@ -70,7 +90,7 @@ export default ({
             </tr>
             <tr>
               <td>{MailPoet.I18n.t('statsNotClicked')}</td>
-              <td><b>{(totalSent - open).toLocaleString()}</b></td>
+              <td><b>{notOpen.toLocaleString()}</b></td>
               <td>
                 {displayPercentages
                 && (

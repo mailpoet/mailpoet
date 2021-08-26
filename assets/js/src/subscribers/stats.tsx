@@ -16,6 +16,7 @@ export type StatsType = {
   email: string;
   total_sent: number;
   open: number;
+  machine_open: number;
   click: number;
   engagement_score: number;
   woocommerce: {
@@ -68,6 +69,7 @@ export const SubscriberStats: React.FunctionComponent = () => {
         <Summary
           click={stats.click}
           open={stats.open}
+          machineOpen={stats.machine_open}
           totalSent={stats.total_sent}
           subscriber={{
             id: Number(match.params.id),
