@@ -31,8 +31,10 @@ const NewsletterStats = ({
         {clickedDisplay}
         %
         <br />
-        <span className="mailpoet-listing-stats-percentages-opens">{openedDisplay}</span>
-        %
+        <span className="mailpoet-listing-stats-percentages-opens">
+          {openedDisplay}
+          %
+        </span>
       </div>
       {!hideBadges && (
         <div>
