@@ -55,6 +55,14 @@
     }
   }
 
+  .tooltip {
+    margin-left: $grid-gap-half * .5;
+  }
+
+  .mailpoet-tooltip-message a {
+    color: $color-white;
+  }
+
   .mailpoet-listing-table tr:last-child td {
     border-bottom: 0;
   }
