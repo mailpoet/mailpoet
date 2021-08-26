@@ -11,7 +11,7 @@ class NewsletterStatistics {
   private $openCount;
 
   /** @var int */
-  private $machineOpens;
+  private $machineOpenCount;
 
   /** @var int */
   private $unsubscribeCount;
@@ -50,19 +50,19 @@ class NewsletterStatistics {
     return $this->wooCommerceRevenue;
   }
 
-  public function setMachineOpens(int $machineOpens): void {
-    $this->machineOpens = $machineOpens;
+  public function setMachineOpenCount(int $machineOpenCount): void {
+    $this->machineOpenCount = $machineOpenCount;
   }
 
-  public function getMachineOpens(): int {
-    return $this->machineOpens;
+  public function getMachineOpenCount(): int {
+    return $this->machineOpenCount;
   }
 
   public function asArray(): array {
     return [
       'clicked' => $this->clickCount,
       'opened' => $this->openCount,
-      'machineOpens' => $this->machineOpens,
+      'machineOpened' => $this->machineOpenCount,
       'unsubscribed' => $this->unsubscribeCount,
       'revenue' => empty($this->wooCommerceRevenue) ? null : $this->wooCommerceRevenue->asArray(),
     ];

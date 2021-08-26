@@ -29,7 +29,7 @@ export const NewsletterGeneralStats = ({
   if (totalSent > 0) {
     percentageClicked = (newsletter.statistics.clicked * 100) / totalSent;
     percentageOpened = (newsletter.statistics.opened * 100) / totalSent;
-    percentageMachineOpened = (newsletter.statistics.machineOpens * 100) / totalSent;
+    percentageMachineOpened = (newsletter.statistics.machineOpened * 100) / totalSent;
     percentageUnsubscribed = (newsletter.statistics.unsubscribed * 100) / totalSent;
   }
   // format to 1 decimal place

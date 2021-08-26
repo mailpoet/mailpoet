@@ -40,7 +40,7 @@ class NewsletterStatisticsRepository extends Repository {
       $this->getTotalSentCount($newsletter),
       $this->getWooCommerceRevenue($newsletter)
     );
-    $stats->setMachineOpens($this->getStatisticsMachineOpenCount($newsletter));
+    $stats->setMachineOpenCount($this->getStatisticsMachineOpenCount($newsletter));
     return $stats;
   }
 
