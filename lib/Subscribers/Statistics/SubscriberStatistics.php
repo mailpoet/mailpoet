@@ -13,35 +13,34 @@ class SubscriberStatistics {
   private $openCount;
 
   /** @var int */
+  private $machineOpenCount;
+
+  /** @var int */
   private $totalSentCount;
 
   /** @var WooCommerceRevenue|null */
   private $wooCommerceRevenue;
 
-  public function __construct($clickCount, $openCount, $totalSentCount, $wooCommerceRevenue = null) {
+  public function __construct($clickCount, $openCount, $machineOpenCount, $totalSentCount, $wooCommerceRevenue = null) {
     $this->clickCount = $clickCount;
     $this->openCount = $openCount;
+    $this->machineOpenCount = $machineOpenCount;
     $this->totalSentCount = $totalSentCount;
     $this->wooCommerceRevenue = $wooCommerceRevenue;
   }
 
-  /**
-   * @return int
-   */
   public function getClickCount(): int {
     return $this->clickCount;
   }
 
-  /**
-   * @return int
-   */
   public function getOpenCount(): int {
     return $this->openCount;
   }
 
-  /**
-   * @return int
-   */
+  public function getMachineOpenCount(): int {
+    return $this->machineOpenCount;
+  }
+
   public function getTotalSentCount(): int {
     return $this->totalSentCount;
   }
