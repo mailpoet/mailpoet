@@ -57,7 +57,7 @@ class TransactionalEmailHooks {
             throw new InvalidStateException('WooCommerce email template is missing!');
           }
           $this->renderer->render($newsletterModel, $emailHeading);
-          echo $this->renderer->getHTMLBeforeContent($emailHeading);
+          echo $this->renderer->getHTMLBeforeContent();
         }
       });
       $this->wp->addAction('woocommerce_email_footer', function() {

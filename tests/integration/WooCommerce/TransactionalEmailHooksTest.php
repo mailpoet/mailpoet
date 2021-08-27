@@ -157,11 +157,12 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
       },
     ]);
     $renderer = Stub::make(Renderer::class, [
-      'render' => function($email) use(&$newsletter) {
+      'render' => function($email, $subject) use(&$newsletter) {
         expect($email->id)->equals($newsletter->getId());
+        expect($subject)->equals('heading text');
       },
-      'getHTMLBeforeContent' => function($headingText) {
-        return 'HTML before content with ' . $headingText;
+      'getHTMLBeforeContent' => function() {
+        return 'HTML before content.';
       },
       'getHTMLAfterContent' => function() {
         return 'HTML after content';
@@ -188,7 +189,7 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     expect($addedActions['woocommerce_email_header'])->callable();
     ob_start();
     $addedActions['woocommerce_email_header']('heading text');
-    expect(ob_get_clean())->equals('HTML before content with heading text');
+    expect(ob_get_clean())->equals('HTML before content.');
     expect($addedActions['woocommerce_email_footer'])->callable();
     ob_start();
     $addedActions['woocommerce_email_footer']();
