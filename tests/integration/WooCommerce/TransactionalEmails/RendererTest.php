@@ -59,8 +59,8 @@ class RendererTest extends \MailPoetTest {
     );
 
     $renderer = new Renderer(new csstidy, $newsletterRenderer);
-    $renderer->render($this->newsletter);
-    $html = $renderer->getHTMLBeforeContent('Heading Text');
+    $renderer->render($this->newsletter, 'Heading Text');
+    $html = $renderer->getHTMLBeforeContent();
     expect($html)->stringContainsString('Some text before heading');
     expect($html)->stringContainsString('Heading Text');
     expect($html)->stringContainsString('Some text between heading and content');
@@ -91,11 +91,51 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(License::class)
     );
     $renderer = new Renderer(new csstidy, $newsletterRenderer);
-    $renderer->render($this->newsletter);
+    $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLAfterContent();
     expect($html)->stringNotContainsString('Some text before heading');
     expect($html)->stringNotContainsString('Heading Text');
     expect($html)->stringNotContainsString('Some text between heading and content');
+    expect($html)->stringContainsString('Some text after content');
+  }
+
+  public function testRenderHeadingTextWhenHeadingBlockMovedToFooter() {
+    $wooPreprocessor = new ContentPreprocessor(Stub::make(
+      \MailPoet\WooCommerce\TransactionalEmails::class,
+      [
+        'getWCEmailSettings' => [
+          'base_text_color' => '',
+          'base_color' => '',
+        ],
+      ]
+    ));
+    $newsletterRenderer = new NewsletterRenderer(
+      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
+      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Columns\Renderer::class),
+      new Preprocessor(
+        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent::class),
+        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock::class),
+        $wooPreprocessor
+      ),
+      $this->diContainer->get(\MailPoetVendor\CSS::class),
+      $this->diContainer->get(Bridge::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(License::class)
+    );
+    $this->newsletter->body = [
+      'content' => L::col([
+        L::row([L::col([['type' => 'text', 'text' => 'Some text before heading']])]),
+        L::row([L::col([['type' => 'text', 'text' => 'Some text between heading and content']])]),
+        ['type' => 'woocommerceContent'],
+        ['type' => 'woocommerceHeading'],
+        L::row([L::col([['type' => 'text', 'text' => 'Some text after content']])]),
+      ]),
+    ];
+    $this->newsletter->save();
+    $renderer = new Renderer(new csstidy, $newsletterRenderer);
+    $renderer->render($this->newsletter, 'Heading Text');
+    $html = $renderer->getHTMLAfterContent();
+    expect($html)->stringContainsString('Heading Text');
     expect($html)->stringContainsString('Some text after content');
   }
 
