@@ -35,30 +35,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testGetHTMLBeforeContent() {
-    $wooPreprocessor = new ContentPreprocessor(Stub::make(
-      \MailPoet\WooCommerce\TransactionalEmails::class,
-      [
-        'getWCEmailSettings' => [
-          'base_text_color' => '',
-          'base_color' => '',
-        ],
-      ]
-    ));
-    $newsletterRenderer = new NewsletterRenderer(
-      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
-      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Columns\Renderer::class),
-      new Preprocessor(
-        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent::class),
-        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock::class),
-        $wooPreprocessor
-      ),
-      $this->diContainer->get(\MailPoetVendor\CSS::class),
-      $this->diContainer->get(Bridge::class),
-      $this->diContainer->get(NewslettersRepository::class),
-      $this->diContainer->get(License::class)
-    );
-
-    $renderer = new Renderer(new csstidy, $newsletterRenderer);
+    $renderer = new Renderer(new csstidy, $this->getNewsletterRenderer());
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLBeforeContent();
     expect($html)->stringContainsString('Some text before heading');
@@ -68,29 +45,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testGetHTMLAfterContent() {
-    $wooPreprocessor = new ContentPreprocessor(Stub::make(
-      \MailPoet\WooCommerce\TransactionalEmails::class,
-      [
-        'getWCEmailSettings' => [
-          'base_text_color' => '',
-          'base_color' => '',
-        ],
-      ]
-    ));
-    $newsletterRenderer = new NewsletterRenderer(
-      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
-      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Columns\Renderer::class),
-      new Preprocessor(
-        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent::class),
-        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock::class),
-        $wooPreprocessor
-      ),
-      $this->diContainer->get(\MailPoetVendor\CSS::class),
-      $this->diContainer->get(Bridge::class),
-      $this->diContainer->get(NewslettersRepository::class),
-      $this->diContainer->get(License::class)
-    );
-    $renderer = new Renderer(new csstidy, $newsletterRenderer);
+    $renderer = new Renderer(new csstidy, $this->getNewsletterRenderer());
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLAfterContent();
     expect($html)->stringNotContainsString('Some text before heading');
@@ -100,28 +55,6 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testRenderHeadingTextWhenHeadingBlockMovedToFooter() {
-    $wooPreprocessor = new ContentPreprocessor(Stub::make(
-      \MailPoet\WooCommerce\TransactionalEmails::class,
-      [
-        'getWCEmailSettings' => [
-          'base_text_color' => '',
-          'base_color' => '',
-        ],
-      ]
-    ));
-    $newsletterRenderer = new NewsletterRenderer(
-      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
-      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Columns\Renderer::class),
-      new Preprocessor(
-        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent::class),
-        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock::class),
-        $wooPreprocessor
-      ),
-      $this->diContainer->get(\MailPoetVendor\CSS::class),
-      $this->diContainer->get(Bridge::class),
-      $this->diContainer->get(NewslettersRepository::class),
-      $this->diContainer->get(License::class)
-    );
     $this->newsletter->body = [
       'content' => L::col([
         L::row([L::col([['type' => 'text', 'text' => 'Some text before heading']])]),
@@ -132,7 +65,7 @@ class RendererTest extends \MailPoetTest {
       ]),
     ];
     $this->newsletter->save();
-    $renderer = new Renderer(new csstidy, $newsletterRenderer);
+    $renderer = new Renderer(new csstidy, $this->getNewsletterRenderer());
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLAfterContent();
     expect($html)->stringContainsString('Heading Text');
@@ -151,5 +84,30 @@ class RendererTest extends \MailPoetTest {
     expect($css)->stringContainsString("#mailpoet_woocommerce_container #some_id {\ncolor:black\n}");
     expect($css)->stringContainsString("#mailpoet_woocommerce_container .some-class {\nheight:50px;\nwidth:30px\n}");
     expect($css)->stringContainsString("#mailpoet_woocommerce_container h1 {\nfont-weight:700\n}");
+  }
+
+  private function getNewsletterRenderer(): NewsletterRenderer {
+    $wooPreprocessor = new ContentPreprocessor(Stub::make(
+      \MailPoet\WooCommerce\TransactionalEmails::class,
+      [
+        'getWCEmailSettings' => [
+          'base_text_color' => '',
+          'base_color' => '',
+        ],
+      ]
+    ));
+    return new NewsletterRenderer(
+      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
+      $this->diContainer->get(\MailPoet\Newsletter\Renderer\Columns\Renderer::class),
+      new Preprocessor(
+        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent::class),
+        $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock::class),
+        $wooPreprocessor
+      ),
+      $this->diContainer->get(\MailPoetVendor\CSS::class),
+      $this->diContainer->get(Bridge::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(License::class)
+    );
   }
 }
