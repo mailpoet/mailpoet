@@ -224,6 +224,7 @@ class Migrator {
       'link_token char(32) NULL,',
       'engagement_score FLOAT unsigned NULL,',
       'engagement_score_updated_at timestamp NULL,',
+      'last_engagement_at timestamp NULL,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email),',
       'UNIQUE KEY unsubscribe_token (unsubscribe_token),',
