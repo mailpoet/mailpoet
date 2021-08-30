@@ -29,6 +29,7 @@ class EmailAction implements Filter {
     self::ACTION_NOT_CLICKED,
     self::ACTION_CLICKED_ANY,
     EmailOpensAbsoluteCountAction::TYPE,
+    EmailOpensAbsoluteCountAction::MACHINE_TYPE,
   ];
 
   const CLICK_ACTIONS = [

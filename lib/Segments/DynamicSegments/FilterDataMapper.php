@@ -102,7 +102,12 @@ class FilterDataMapper {
   private function createEmail(array $data): DynamicSegmentFilterData {
     if (empty($data['action'])) throw new InvalidFilterException('Missing action', InvalidFilterException::MISSING_ACTION);
     if (!in_array($data['action'], EmailAction::ALLOWED_ACTIONS)) throw new InvalidFilterException('Invalid email action', InvalidFilterException::INVALID_EMAIL_ACTION);
-    if ($data['action'] === EmailOpensAbsoluteCountAction::TYPE) return $this->createEmailOpensAbsoluteCount($data);
+    if (
+      ($data['action'] === EmailOpensAbsoluteCountAction::TYPE)
+      || ($data['action'] === EmailOpensAbsoluteCountAction::MACHINE_TYPE)
+    ) {
+      return $this->createEmailOpensAbsoluteCount($data);
+    }
     if ($data['action'] === EmailAction::ACTION_CLICKED_ANY) {
         return new DynamicSegmentFilterData([
           'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
