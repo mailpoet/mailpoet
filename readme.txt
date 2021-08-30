@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.67.1
+Stable tag: 3.68.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,16 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.68.0 - 2021-08-30 =
+* Added: show machine-opened percentage on the email stats page;
+* Added: open and click User-agents in Export Personal Data tool;
+* Improved: subscribers in your plan shown on top of the page;
+* Improved: MailPoet will honor the Reply-to address for WordPress emails sent with MailPoet. Thanks, Mark!
+* Improved: Gutenberg updated for form editor;
+* Improved: React updated to v17;
+* Changed: put less emphasis on open metric on the emails listing;
+* Fixed: a conflict if PHPMailer is already loaded by another plugin.
 
 = 3.67.1 - 2021-08-24 =
 * Added: differentiating human and machine email opens;
