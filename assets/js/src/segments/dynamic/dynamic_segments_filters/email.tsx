@@ -14,6 +14,7 @@ import { EmailOpensAbsoluteCountFields } from './email_opens_absolute_count';
 export const EmailSegmentOptions = [
   { value: EmailActionTypes.OPENS_ABSOLUTE_COUNT, label: MailPoet.I18n.t('emailActionOpensAbsoluteCount'), group: SegmentTypes.Email },
   { value: EmailActionTypes.OPENED, label: MailPoet.I18n.t('emailActionOpened'), group: SegmentTypes.Email },
+  { value: EmailActionTypes.MACHINE_OPENED, label: MailPoet.I18n.t('emailActionMachineOpened'), group: SegmentTypes.Email },
   { value: EmailActionTypes.NOT_OPENED, label: MailPoet.I18n.t('emailActionNotOpened'), group: SegmentTypes.Email },
   { value: EmailActionTypes.CLICKED, label: MailPoet.I18n.t('emailActionClicked'), group: SegmentTypes.Email },
   { value: EmailActionTypes.CLICKED_ANY, label: MailPoet.I18n.t('emailActionClickedAnyEmail'), group: SegmentTypes.Email },
@@ -48,6 +49,7 @@ const componentsMap = {
   [EmailActionTypes.CLICKED]: EmailStatisticsFields,
   [EmailActionTypes.NOT_CLICKED]: EmailStatisticsFields,
   [EmailActionTypes.OPENED]: EmailStatisticsFields,
+  [EmailActionTypes.MACHINE_OPENED]: EmailStatisticsFields,
   [EmailActionTypes.NOT_OPENED]: EmailStatisticsFields,
   [EmailActionTypes.CLICKED_ANY]: null,
 };

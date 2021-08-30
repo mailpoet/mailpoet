@@ -195,6 +195,23 @@ class EmailActionTest extends \MailPoetTest {
     expect($result)->equals(2);
   }
 
+  public function testMachineOpens() {
+    $subscriberOpenedMachine = $this->createSubscriber('opened_machine@example.com');
+    $this->createStatsNewsletter($subscriberOpenedMachine);
+    $open = $this->createStatisticsOpens($subscriberOpenedMachine);
+    $open->setUserAgentType(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
+    $userAgent = new UserAgentEntity(UserAgentEntity::MACHINE_USER_AGENTS[0]);
+    $this->entityManager->persist($userAgent);
+    $open->setUserAgent($userAgent);
+    $this->entityManager->flush();
+
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_MACHINE_OPENED, (int)$this->newsletter->getId());
+    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
+    assert($statement instanceof Statement);
+    $result = $statement->rowCount();
+    expect($result)->equals(1);
+  }
+
   private function getQueryBuilder() {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager
