@@ -64,8 +64,9 @@ h2 {
   font-size: 1.7em;
 }
 
-// Fix for form padding rendering
-.mailpoet-form-background > div > .block-editor-block-list__layout > .block-editor-block-list__block:first-child {
+// Remove block margins for first block and also first block in columns
+// This is done to improve WYSIWYG experience
+.mailpoet-form-background .block-editor-block-list__block:first-child {
   margin-top: 0;
 }
 
