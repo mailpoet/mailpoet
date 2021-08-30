@@ -15,6 +15,7 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class EmailAction implements Filter {
   const ACTION_OPENED = 'opened';
+  const ACTION_MACHINE_OPENED = 'machineOpened';
   const ACTION_NOT_OPENED = 'notOpened';
   const ACTION_CLICKED = 'clicked';
   const ACTION_CLICKED_ANY = 'clickedAny';
@@ -22,6 +23,7 @@ class EmailAction implements Filter {
 
   const ALLOWED_ACTIONS = [
     self::ACTION_OPENED,
+    self::ACTION_MACHINE_OPENED,
     self::ACTION_NOT_OPENED,
     self::ACTION_CLICKED,
     self::ACTION_NOT_CLICKED,
@@ -102,6 +104,10 @@ class EmailAction implements Filter {
     if ($action === EmailAction::ACTION_OPENED) {
       $queryBuilder->andWhere('(stats.user_agent_type = :userAgentType) OR (stats.user_agent_type IS NULL)')
         ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+    }
+    if ($action === EmailAction::ACTION_MACHINE_OPENED) {
+      $queryBuilder->andWhere('(stats.user_agent_type = :userAgentType)')
+        ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_MACHINE);
     }
     if ($action === EmailAction::ACTION_CLICKED && $linkId) {
       $where .= ' AND stats.link_id = :link' . $parameterSuffix;
