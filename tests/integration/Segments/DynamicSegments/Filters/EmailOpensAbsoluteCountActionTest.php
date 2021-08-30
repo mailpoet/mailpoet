@@ -47,6 +47,10 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $open->setCreatedAt(CarbonImmutable::now()->subMinutes(5));
     $open->setUserAgentType(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
     $open->setUserAgent($userAgent);
+    $open = $this->createStatisticsOpens($subscriber, $newsletter4);
+    $open->setCreatedAt(CarbonImmutable::now()->subMinutes(6));
+    $open->setUserAgentType(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
+    $open->setUserAgent($userAgent);
 
     $subscriber = $this->createSubscriber('opened-old-opens@example.com');
 
@@ -86,6 +90,17 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
 
   public function testGetOpened() {
     $segmentFilter = $this->getSegmentFilter(2, 'more', 3);
+    $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAll();
+    expect(count($result))->equals(1);
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    expect($subscriber1->getEmail())->equals('opened-3-newsletters@example.com');
+  }
+
+  public function testGetMachineOpened() {
+    $segmentFilter = $this->getSegmentFilter(1, 'more', 5, EmailOpensAbsoluteCountAction::MACHINE_TYPE);
     $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
@@ -139,10 +154,10 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
       ->from($subscribersTable);
   }
 
-  private function getSegmentFilter(int $opens, string $operator, int $days): DynamicSegmentFilterEntity {
+  private function getSegmentFilter(int $opens, string $operator, int $days, string $action = EmailOpensAbsoluteCountAction::TYPE): DynamicSegmentFilterEntity {
     $segmentFilterData = new DynamicSegmentFilterData([
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
-      'action' => EmailOpensAbsoluteCountAction::TYPE,
+      'action' => $action,
       'operator' => $operator,
       'opens' => $opens,
       'days' => $days,

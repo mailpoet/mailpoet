@@ -8,6 +8,7 @@ export enum SegmentTypes {
 
 export enum EmailActionTypes {
   OPENS_ABSOLUTE_COUNT = 'opensAbsoluteCount',
+  MACHINE_OPENS_ABSOLUTE_COUNT = 'machineOpensAbsoluteCount',
   OPENED = 'opened',
   MACHINE_OPENED = 'machineOpened',
   NOT_OPENED = 'notOpened',
