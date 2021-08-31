@@ -312,6 +312,10 @@ class SubscribersRepository extends Repository {
     if ($userAgent instanceof UserAgentEntity && $userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_MACHINE) {
       return;
     }
+    // Do not update engagement if was recently updated to avoid unnecessary updates in DB
+    if ($subscriberEntity->getLastEngagementAt() && $subscriberEntity->getLastEngagementAt() > Carbon::now()->subMinute()) {
+      return;
+    }
     // Update last engagement for human (and also unknown) user agent
     $subscriberEntity->setLastEngagementAt(Carbon::now());
     $this->flush();
