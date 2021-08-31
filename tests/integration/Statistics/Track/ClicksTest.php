@@ -545,6 +545,28 @@ class ClicksTest extends \MailPoetTest {
     expect($this->subscriber->getLastEngagementAt())->null();
   }
 
+  public function testItWontUpdateSubscriberThatWasRecentlyUpdated() {
+    $lastEngagement = Carbon::now()->subSeconds(10);
+    $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
+    $this->subscriber->setLastEngagementAt($lastEngagement);
+    $data = $this->trackData;
+    $data->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Opens::class),
+      $clicksRepository,
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
+    ], [
+      'redirectToUrl' => null,
+    ], $this);
+    $clicks->track($data);
+    expect($this->subscriber->getLastEngagementAt())->equals($lastEngagement);
+  }
+
   public function cleanup() {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
