@@ -23,19 +23,31 @@ use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Cookies;
+use MailPoetVendor\Carbon\Carbon;
 
 class ClicksTest extends \MailPoetTest {
+  /** @var \stdClass */
   public $trackData;
+
+  /** @var NewsletterLinkEntity */
   public $link;
+
+  /** @var SendingQueueEntity */
   public $queue;
+
+  /** @var SubscriberEntity */
   public $subscriber;
+
+  /** @var NewsletterEntity */
   public $newsletter;
 
   /** @var Clicks */
   private $clicks;
 
+  /** @var SettingsController */
   private $settingsController;
 
   public function _before() {
@@ -94,7 +106,8 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(Opens::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      $this->diContainer->get(LinkShortcodeCategory::class)
+      $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class)
     );
   }
 
@@ -108,6 +121,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'abort' => Expected::exactly(2),
     ], $this);
@@ -132,6 +146,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -150,6 +165,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -170,6 +186,7 @@ class ClicksTest extends \MailPoetTest {
       $clicksRepository,
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -192,6 +209,7 @@ class ClicksTest extends \MailPoetTest {
       $clicksRepository,
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -218,6 +236,7 @@ class ClicksTest extends \MailPoetTest {
       $clicksRepository,
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -258,6 +277,7 @@ class ClicksTest extends \MailPoetTest {
       $clicksRepository,
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -298,6 +318,7 @@ class ClicksTest extends \MailPoetTest {
       $clicksRepository,
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -331,6 +352,7 @@ class ClicksTest extends \MailPoetTest {
       $clicksRepository,
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -366,6 +388,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'redirectToUrl' => Expected::exactly(1),
     ], $this);
@@ -381,6 +404,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -410,6 +434,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'abort' => Expected::exactly(1),
     ], $this);
@@ -454,6 +479,70 @@ class ClicksTest extends \MailPoetTest {
       $preview = false
     );
     expect($link)->equals('http://example.com/?email=test@example.com&newsletter_subject=Subject');
+  }
+
+  public function testItUpdatesSubscriberEngagementForHumanAgent() {
+    Carbon::setTestNow($now = Carbon::now());
+    $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
+    $data = $this->trackData;
+    $data->userAgent = 'User Agent';
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Opens::class),
+      $clicksRepository,
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
+    ], [
+      'redirectToUrl' => null,
+    ], $this);
+    $clicks->track($data);
+    expect($this->subscriber->getLastEngagementAt())->equals($now);
+    Carbon::setTestNow();
+  }
+
+  public function testItUpdatesSubscriberEngagementForUnknownAgent() {
+    Carbon::setTestNow($now = Carbon::now());
+    $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
+    $data = $this->trackData;
+    $data->userAgent = null;
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Opens::class),
+      $clicksRepository,
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
+    ], [
+      'redirectToUrl' => null,
+    ], $this);
+    $clicks->track($data);
+    expect($this->subscriber->getLastEngagementAt())->equals($now);
+    Carbon::setTestNow();
+  }
+
+  public function testItWontUpdateSubscriberEngagementForMachineAgent() {
+    $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
+    $data = $this->trackData;
+    $data->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
+    $clicks = Stub::construct($this->clicks, [
+      $this->settingsController,
+      new Cookies(),
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Opens::class),
+      $clicksRepository,
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(LinkShortcodeCategory::class),
+      $this->diContainer->get(SubscribersRepository::class),
+    ], [
+      'redirectToUrl' => null,
+    ], $this);
+    $clicks->track($data);
+    expect($this->subscriber->getLastEngagementAt())->null();
   }
 
   public function cleanup() {

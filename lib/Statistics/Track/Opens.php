@@ -10,7 +10,6 @@ use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoetVendor\Carbon\Carbon;
 
 class Opens {
   /** @var StatisticsOpensRepository */
@@ -63,7 +62,7 @@ class Opens {
             $this->statisticsOpensRepository->flush();
           }
         }
-        $this->maybeUpdateLastEngagement($subscriber, $userAgent ?? null);
+        $this->subscribersRepository->maybeUpdateLastEngagement($subscriber, $userAgent ?? null);
         return $this->returnResponse($displayImage);
       }
       $statistics = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
@@ -74,19 +73,10 @@ class Opens {
       }
       $this->statisticsOpensRepository->persist($statistics);
       $this->statisticsOpensRepository->flush();
-      $this->maybeUpdateLastEngagement($subscriber, $userAgent ?? null);
+      $this->subscribersRepository->maybeUpdateLastEngagement($subscriber, $userAgent ?? null);
       $this->statisticsOpensRepository->recalculateSubscriberScore($subscriber);
     }
     return $this->returnResponse($displayImage);
-  }
-
-  private function maybeUpdateLastEngagement(SubscriberEntity $subscriberEntity, ?UserAgentEntity $userAgent): void {
-    if ($userAgent instanceof UserAgentEntity && $userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_MACHINE) {
-      return;
-    }
-    // Update last engagement for human (and also unknown) user agent
-    $subscriberEntity->setLastEngagementAt(Carbon::now());
-    $this->subscribersRepository->flush();
   }
 
   public function returnResponse($displayImage) {

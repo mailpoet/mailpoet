@@ -13,6 +13,7 @@ use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\UserAgentsRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Cookies;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -45,6 +46,9 @@ class Clicks {
   /** @var UserAgentsRepository */
   private $userAgentsRepository;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     SettingsController $settingsController,
     Cookies $cookies,
@@ -52,7 +56,8 @@ class Clicks {
     Opens $opens,
     StatisticsClicksRepository $statisticsClicksRepository,
     UserAgentsRepository $userAgentsRepository,
-    LinkShortcodeCategory $linkShortcodeCategory
+    LinkShortcodeCategory $linkShortcodeCategory,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->settingsController = $settingsController;
     $this->cookies = $cookies;
@@ -61,6 +66,7 @@ class Clicks {
     $this->opens = $opens;
     $this->statisticsClicksRepository = $statisticsClicksRepository;
     $this->userAgentsRepository = $userAgentsRepository;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   /**
@@ -102,6 +108,8 @@ class Clicks {
       $this->sendAbandonedCartCookie($subscriber);
       // track open event
       $this->opens->track($data, $displayImage = false);
+      // Update engagement date
+      $this->subscribersRepository->maybeUpdateLastEngagement($subscriber, $userAgent ?? null);
     }
     $url = $this->processUrl($link->getUrl(), $newsletter, $subscriber, $queue, $wpUserPreview);
     $this->redirectToUrl($url);
