@@ -15,13 +15,24 @@ use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoetVendor\Carbon\Carbon;
 
 class OpensTest extends \MailPoetTest {
+  /** @var Opens */
   public $opens;
+
+  /** @var \stdClass */
   public $trackData;
+
+  /** @var SendingQueueEntity */
   public $queue;
+
+  /** @var SubscriberEntity */
   public $subscriber;
+
+  /** @var NewsletterEntity */
   public $newsletter;
 
   /** @var StatisticsOpensRepository */
@@ -70,13 +81,18 @@ class OpensTest extends \MailPoetTest {
     ];
     // instantiate class
     $this->statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
-    $this->opens = new Opens($this->statisticsOpensRepository, $this->diContainer->get(UserAgentsRepository::class));
+    $this->opens = new Opens(
+      $this->statisticsOpensRepository,
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class)
+    );
   }
 
   public function testItReturnsImageWhenTrackDataIsEmpty() {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => Expected::exactly(1),
     ], $this);
@@ -91,6 +107,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -106,6 +123,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -117,6 +135,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -130,6 +149,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => Expected::exactly(1),
     ], $this);
@@ -141,6 +161,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -159,6 +180,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -177,6 +199,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -197,6 +220,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -234,6 +258,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -271,6 +296,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -301,6 +327,7 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -328,6 +355,52 @@ class OpensTest extends \MailPoetTest {
     expect($userAgent->getUserAgent())->equals($humanUserAgentName);
     expect($userAgent->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     expect($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
+  }
+
+  public function testItUpdatesSubscriberEngagementForHumanAgent() {
+    Carbon::setTestNow($now = Carbon::now());
+    $this->trackData->userAgent = 'User agent';
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
+    ], [
+      'returnResponse' => null,
+    ], $this);
+
+    $opens->track($this->trackData);
+    expect($this->subscriber->getLastEngagementAt())->equals($now);
+    Carbon::setTestNow();
+  }
+
+  public function testItUpdatesSubscriberEngagementFoUnknownAgent() {
+    Carbon::setTestNow($now = Carbon::now());
+    $this->trackData->userAgent = null;
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
+    ], [
+      'returnResponse' => null,
+    ], $this);
+
+    $opens->track($this->trackData);
+    expect($this->subscriber->getLastEngagementAt())->equals($now);
+    Carbon::setTestNow();
+  }
+
+  public function testItWontUpdateSubscriberEngagementForMachineAgent() {
+    $this->trackData->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
+    $opens = Stub::construct($this->opens, [
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(UserAgentsRepository::class),
+      $this->diContainer->get(SubscribersRepository::class),
+    ], [
+      'returnResponse' => null,
+    ], $this);
+
+    $opens->track($this->trackData);
+    expect($this->subscriber->getLastEngagementAt())->null();
   }
 
   public function _after() {
