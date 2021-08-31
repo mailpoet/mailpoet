@@ -308,7 +308,7 @@ class SubscribersRepository extends Repository {
       ->getResult();
   }
 
-  public function maybeUpdateLastEngagement(SubscriberEntity $subscriberEntity, ?UserAgentEntity $userAgent): void {
+  public function maybeUpdateLastEngagement(SubscriberEntity $subscriberEntity, ?UserAgentEntity $userAgent = null): void {
     if ($userAgent instanceof UserAgentEntity && $userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_MACHINE) {
       return;
     }

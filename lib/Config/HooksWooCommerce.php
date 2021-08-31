@@ -7,6 +7,7 @@ use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Registration;
 use MailPoet\WooCommerce\Settings as WooCommerceSettings;
+use MailPoet\WooCommerce\SubscriberEngagement;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 
 class HooksWooCommerce {
@@ -28,13 +29,17 @@ class HooksWooCommerce {
   /** @var LoggerFactory */
   private $loggerFactory;
 
+  /** @var SubscriberEngagement */
+  private $subscriberEngagement;
+
   public function __construct(
     WooCommerceSubscription $woocommerceSubscription,
     WooCommerceSegment $woocommerceSegment,
     WooCommerceSettings $woocommerceSettings,
     WooCommercePurchases $woocommercePurchases,
     Registration $subscriberRegistration,
-    LoggerFactory $loggerFactory
+    LoggerFactory $loggerFactory,
+    SubscriberEngagement $subscriberEngagement
   ) {
     $this->woocommerceSubscription = $woocommerceSubscription;
     $this->woocommerceSegment = $woocommerceSegment;
@@ -42,6 +47,7 @@ class HooksWooCommerce {
     $this->woocommercePurchases = $woocommercePurchases;
     $this->loggerFactory = $loggerFactory;
     $this->subscriberRegistration = $subscriberRegistration;
+    $this->subscriberEngagement = $subscriberEngagement;
   }
 
   public function extendWooCommerceCheckoutForm() {
@@ -109,6 +115,14 @@ class HooksWooCommerce {
       $this->logError($e, 'WooCommerce on Register');
     }
     return $errors;
+  }
+
+  public function updateSubscriberEngagement($orderId) {
+    try {
+      $this->subscriberEngagement->updateSubscriberEngagement($orderId);
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce Update Subscriber Engagement');
+    }
   }
 
   private function logError(\Throwable $e, $name) {
