@@ -13,6 +13,7 @@ use MailPoet\Newsletter\Url;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Util\Security;
 
 class ViewInBrowserControllerTest extends \MailPoetTest {
@@ -56,62 +57,9 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $this->newsletterUrl = $this->diContainer->get(Url::class);
 
     // create newsletter
-    $newsletterData = [
-      'body' => json_decode(
-        '{
-        "content": {
-          "type": "container",
-          "orientation": "vertical",
-          "styles": {
-            "block": {
-              "backgroundColor": "transparent"
-            }
-          },
-          "blocks": [
-            {
-              "type": "container",
-              "orientation": "horizontal",
-              "styles": {
-                "block": {
-                  "backgroundColor": "transparent"
-                }
-              },
-              "blocks": [
-                {
-                  "type": "container",
-                  "orientation": "vertical",
-                  "styles": {
-                    "block": {
-                      "backgroundColor": "transparent"
-                    }
-                  },
-                  "blocks": [
-                    {
-                      "type": "text",
-                      "text": "<p>Rendered newsletter. Hello, [subscriber:firstname | default:reader]. <a href=\"[link:newsletter_view_in_browser_url]\">Unsubscribe</a> or visit <a href=\"http://google.com\">Google</a></p>"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      }', true),
-      'subject' => 'Some subject',
-      'preheader' => 'Some preheader',
-      'type' => 'standard',
-      'status' => 'active',
-    ];
-    // create newsletter
-    $newsletter = new NewsletterEntity();
-    $newsletter->setSubject($newsletterData['subject']);
-    $newsletter->setPreheader($newsletterData['preheader']);
-    $newsletter->setType($newsletterData['type']);
-    $newsletter->setStatus($newsletterData['status']);
-    $newsletter->setBody($newsletterData['body']);
+    $newsletterFactory = new Newsletter();
+    $newsletter = $newsletterFactory->create();
     $newsletter->setHash(Security::generateHash());
-    $this->newslettersRepository->persist($newsletter);
-    $this->newslettersRepository->flush();
     $this->newsletter = $newsletter;
 
     // create subscriber
@@ -129,7 +77,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $sendingTask->setSubscribers([$subscriber->getId()]);
     $sendingTask->updateProcessedSubscribers([$subscriber->getId()]);
     $this->sendingTask = $sendingTask->save();
-    $this->newslettersRepository->refresh($newsletter);
+
     // build browser preview data
     $this->browserPreviewData = [
       'queue_id' => $sendingTask->queue()->id,

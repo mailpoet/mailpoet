@@ -93,7 +93,6 @@ class ViewInBrowserRenderer {
     return $renderedNewsletter;
   }
 
-  /** this is here to prepare entities for the shortcodes library, when this whole file uses doctrine, this can be deleted */
   private function prepareShortcodes($newsletter, $subscriber, $queue, $wpUserPreview) {
     if ($queue instanceof SendingQueueEntity) {
       $this->shortcodes->setQueue($queue);
