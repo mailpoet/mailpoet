@@ -5,6 +5,7 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Cache\TransientCache;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -25,16 +26,21 @@ class SubscribersCountCacheRecalculation extends SimpleWorker {
   /** @var SubscribersCountsController */
   private $subscribersCountsController;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function __construct(
     TransientCache $transientCache,
     SegmentsRepository $segmentsRepository,
     SubscribersCountsController $subscribersCountsController,
+    ScheduledTasksRepository $scheduledTasksRepository,
     WPFunctions $wp
   ) {
     parent::__construct($wp);
     $this->transientCache = $transientCache;
     $this->segmentsRepository = $segmentsRepository;
     $this->subscribersCountsController = $subscribersCountsController;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
   }
 
   public function processTaskStrategy(ScheduledTask $task, $timer) {
@@ -73,6 +79,10 @@ class SubscribersCountCacheRecalculation extends SimpleWorker {
   }
 
   public function shouldBeScheduled(): bool {
+    $scheduledOrRunningTask = $this->scheduledTasksRepository->findScheduledOrRunningTask(self::TASK_TYPE);
+    if ($scheduledOrRunningTask) {
+      return false;
+    }
     $now = Carbon::now();
     $oldestCreatedAt = $this->transientCache->getOldestCreatedAt(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY);
     return $oldestCreatedAt === null || $now->diffInMinutes($oldestCreatedAt) > self::EXPIRATION_IN_MINUTES;
