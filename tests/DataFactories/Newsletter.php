@@ -58,10 +58,9 @@ class Newsletter {
   }
 
   /**
-   * @param $body
    * @return Newsletter
    */
-  public function withBody($body): Newsletter {
+  public function withBody($body) {
     $this->data['body'] = $body;
     return $this;
   }
