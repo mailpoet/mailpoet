@@ -96,6 +96,11 @@ class WorkersFactory {
     return $this->container->get(SubscribersEngagementScore::class);
   }
 
+  /** @return SubscribersLastEngagement */
+  public function createSubscribersLastEngagementWorker() {
+    return $this->container->get(SubscribersLastEngagement::class);
+  }
+
   /** @return AuthorizedSendingEmailsCheck */
   public function createAuthorizedSendingEmailsCheckWorker() {
     return $this->container->get(AuthorizedSendingEmailsCheck::class);
