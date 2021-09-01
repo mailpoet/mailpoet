@@ -45,10 +45,10 @@ class EmailOpensAbsoluteCountAction implements Filter {
     }
     $queryBuilder->setParameter('opens' . $parameterSuffix, $filterData->getParam('opens'));
     if ($action === EmailOpensAbsoluteCountAction::TYPE) {
-      $queryBuilder->andWhere('(opens.user_agent_type = :userAgentType) OR (opens.user_agent_type IS NULL)')
+      $queryBuilder->andWhere('opens.user_agent_type = :userAgentType')
         ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     } else {
-      $queryBuilder->andWhere('(opens.user_agent_type = :userAgentType)')
+      $queryBuilder->andWhere('opens.user_agent_type = :userAgentType')
         ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_MACHINE);
     }
     return $queryBuilder;

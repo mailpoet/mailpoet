@@ -103,7 +103,7 @@ class EmailAction implements Filter {
       )->setParameter('newsletter' . $parameterSuffix, $newsletterId);
     }
     if ($action === EmailAction::ACTION_OPENED) {
-      $queryBuilder->andWhere('(stats.user_agent_type = :userAgentType) OR (stats.user_agent_type IS NULL)')
+      $queryBuilder->andWhere('stats.user_agent_type = :userAgentType')
         ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     }
     if ($action === EmailAction::ACTION_MACHINE_OPENED) {
