@@ -17,6 +17,8 @@ use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\WP\Emoji;
 
 class ViewInBrowserRendererTest extends \MailPoetTest {
@@ -54,8 +56,8 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     $this->sendingQueueRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
-    $newsletterData = [
-      'body' => json_decode(
+    $newsletterBody =
+      json_decode(
         '{
         "content": {
           "type": "container",
@@ -94,12 +96,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
             }
           ]
         }
-      }', true),
-      'subject' => 'Some subject',
-      'preheader' => 'Some preheader',
-      'type' => 'standard',
-      'status' => 'active',
-    ];
+      }', true);
     $this->queueRenderedNewsletterWithoutTracking = [
       'html' => '<p>Newsletter from queue. Hello, [subscriber:firstname | default:reader]. <a href="[link:newsletter_view_in_browser_url]">Unsubscribe</a> or visit <a href="http://google.com">Google</a></p>',
       'text' => 'test',
@@ -110,14 +107,9 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     ];
 
     // create newsletter
-    $newsletter = new NewsletterEntity();
-    $newsletter->setSubject($newsletterData['subject']);
-    $newsletter->setPreheader($newsletterData['preheader']);
-    $newsletter->setType($newsletterData['type']);
-    $newsletter->setStatus($newsletterData['status']);
-    $newsletter->setBody($newsletterData['body']);
-    $this->newsletterRepository->persist($newsletter);
-    $this->newsletterRepository->flush();
+    $newsletter = (new Newsletter())
+      ->withBody($newsletterBody)
+      ->create();
     $this->newsletter = $newsletter;
 
     // create subscriber
@@ -139,13 +131,12 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
     $this->newsletter = $newsletter;
 
     // create newsletter link associations
-
-    $newsletterLink1 = (new \MailPoet\Test\DataFactories\NewsletterLink($newsletter))
+    $newsletterLinkFactory = new NewsletterLink($newsletter);
+    $newsletterLinkFactory
       ->withUrl('[link:newsletter_view_in_browser_url]')
       ->withHash('90e56')
       ->create();
-
-    $newsletterLink2 = (new \MailPoet\Test\DataFactories\NewsletterLink($newsletter))
+    $newsletterLinkFactory
       ->withUrl('http://google.com')
       ->withHash('i1893')
       ->create();

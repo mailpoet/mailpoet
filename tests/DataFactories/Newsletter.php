@@ -58,6 +58,15 @@ class Newsletter {
   }
 
   /**
+   * @param $body
+   * @return Newsletter
+   */
+  public function withBody($body): Newsletter {
+    $this->data['body'] = $body;
+    return $this;
+  }
+
+  /**
    * @return Newsletter
    */
   public function withSubject($subject) {
