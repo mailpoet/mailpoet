@@ -16,16 +16,20 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
   /** @var SubscribersLastEngagement */
   private $worker;
 
+  /** @var array */
+  private $orderIds = [];
+
   public function _before() {
     parent::_before();
     $this->worker = $this->diContainer->get(SubscribersLastEngagement::class);
+    $this->orderIds = [];
   }
 
   public function testItCanSetLastEngagementFromOpens() {
     $openTime = new Carbon('2021-08-10 12:13:14');
     $subscriber = $this->createSubscriber();
     $newsletter = $this->createSentNewsletter();
-    $this->createOpen(new Carbon($openTime), $newsletter, $subscriber);
+    $this->createOpen($openTime, $newsletter, $subscriber);
 
     $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
     $this->entityManager->refresh($subscriber);
@@ -36,24 +40,73 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     $clickTime = new Carbon('2021-08-10 13:14:15');
     $subscriber = $this->createSubscriber();
     $newsletter = $this->createSentNewsletter();
-    $this->createOpen(new Carbon($clickTime), $newsletter, $subscriber);
+    $this->createOpen($clickTime, $newsletter, $subscriber);
 
     $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->equals($clickTime);
   }
 
-  public function testItPicksLatestTime() {
+  public function testItCanSetLastEngagementFromWooOrder() {
+    $orderTime = new Carbon('2021-08-10 16:17:18');
+    $subscriber = $this->createSubscriber();
+    $this->createWooOrder($orderTime, $subscriber->getEmail());
+
+    $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
+    $this->entityManager->refresh($subscriber);
+    expect($subscriber->getLastEngagementAt())->equals($orderTime);
+  }
+
+  public function testItPicksLatestTimeFromClick() {
     $openTime = new Carbon('2021-08-10 12:13:14');
     $clickTime = new Carbon('2021-08-10 13:14:15');
+    $wooOrderTime = new Carbon('2021-08-10 12:14:15');
     $subscriber = $this->createSubscriber();
     $newsletter = $this->createSentNewsletter();
-    $this->createOpen(new Carbon($openTime), $newsletter, $subscriber);
-    $this->createClick(new Carbon($clickTime), $newsletter, $subscriber);
+    $this->createOpen($openTime, $newsletter, $subscriber);
+    $this->createClick($clickTime, $newsletter, $subscriber);
+    $this->createWooOrder($wooOrderTime, $subscriber->getEmail());
 
     $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->equals($clickTime);
+  }
+
+  public function testItPicksLatestTimeFromOrder() {
+    $openTime = new Carbon('2021-08-10 12:13:14');
+    $clickTime = new Carbon('2021-08-10 13:14:15');
+    $wooOrderTime = new Carbon('2021-08-10 14:14:15');
+    $subscriber = $this->createSubscriber();
+    $newsletter = $this->createSentNewsletter();
+    $this->createOpen($openTime, $newsletter, $subscriber);
+    $this->createClick($clickTime, $newsletter, $subscriber);
+    $this->createWooOrder($wooOrderTime, $subscriber->getEmail());
+
+    $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
+    $this->entityManager->refresh($subscriber);
+    expect($subscriber->getLastEngagementAt())->equals($wooOrderTime);
+  }
+
+  public function testItPicksLatestTimeFromOpen() {
+    $openTime = new Carbon('2021-08-10 14:13:14');
+    $clickTime = new Carbon('2021-08-10 13:14:15');
+    $wooOrderTime = new Carbon('2021-08-10 11:14:15');
+    $subscriber = $this->createSubscriber();
+    $newsletter = $this->createSentNewsletter();
+    $this->createOpen($openTime, $newsletter, $subscriber);
+    $this->createClick($clickTime, $newsletter, $subscriber);
+    $this->createWooOrder($wooOrderTime, $subscriber->getEmail());
+
+    $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
+    $this->entityManager->refresh($subscriber);
+    expect($subscriber->getLastEngagementAt())->equals($openTime);
+  }
+
+  public function testItKeepsNullIfNoTimeFound() {
+    $subscriber = $this->createSubscriber();
+    $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
+    $this->entityManager->refresh($subscriber);
+    expect($subscriber->getLastEngagementAt())->null();
   }
 
   private function createSubscriber(): SubscriberEntity {
@@ -101,7 +154,20 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     return $newsletter;
   }
 
-  public function _after() {
+  private function createWooOrder(Carbon $postDate, string $email): void {
+    $this->orderIds[] = wp_insert_post([
+      'post_type' => 'shop_order',
+      'post_date' => $postDate->toDateTimeString(),
+      'meta_input' => [
+        '_billing_email' => $email,
+      ],
+    ]);
+  }
+
+  public function _after(): void {
+    foreach ($this->orderIds as $orderId) {
+      wp_delete_post($orderId);
+    }
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);
