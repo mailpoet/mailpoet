@@ -385,11 +385,11 @@ class Pages {
   }
 
   private function getConfirmUnsubscribeContent() {
-    if (!$this->isPreview() && ($this->subscriber === null || $this->subscriber->id === null)) {
+    if (!$this->isPreview() && $this->subscriber === null) {
       return '';
     }
     $queueId = isset($this->data['queueId']) ? (int)$this->data['queueId'] : null;
-    $subscriberEntity = $this->subscribersRepository->findOneById($this->subscriber->id);
+    $subscriberEntity = $this->subscriber ? $this->subscribersRepository->findOneById($this->subscriber->id) : null;
     $unsubscribeUrl = $this->subscriptionUrlFactory->getUnsubscribeUrl($subscriberEntity, $queueId);
     $templateData = [
       'unsubscribeUrl' => $unsubscribeUrl,
