@@ -109,16 +109,63 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     expect($subscriber->getLastEngagementAt())->null();
   }
 
-  private function createSubscriber(): SubscriberEntity {
+  public function testItReturnsTrueWhenCompleted() {
+    $this->createSubscriber();
+    $task = ScheduledTask::create();
+    $result = $this->worker->processTaskStrategy($task, microtime(true));
+    expect($result)->true();
+  }
+
+  public function testItInterruptsProcessIfExecutionLimitReachedIsReachedAndFinishesOnSecondRun() {
+    $this->createSubscriber();
+    $exception = null;
+    $task = ScheduledTask::create();
+    try {
+      $this->worker->processTaskStrategy($task, 0);
+    } catch (\Exception $e) {
+      $exception = $e;
+    }
+    $this->assertInstanceOf(\Exception::class, $exception);
+    expect($exception->getMessage())->equals('Maximum execution time has been reached.');
+    $result = $this->worker->processTaskStrategy($task, microtime(true));
+    expect($result)->true();
+  }
+
+  public function testItProcessMultipleBatches() {
+    $subscriberInFirstBatch = $this->createSubscriber('last-engagement1@test.com');
+    $this->createSubscriber('last-engagement2@test.com');
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("UPDATE $subscribersTable SET id = 1001 WHERE email='last-engagement2@test.com'");
+    $subscriberInSecondBatch = $this->entityManager->find(SubscriberEntity::class, 1001);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberInSecondBatch);
+    $firstOpenTime = new Carbon('2021-08-10 12:13:14');
+    $secondOpenTime = new Carbon('2021-08-10 14:13:14');
+    $newsletter = $this->createSentNewsletter();
+    $this->createOpen($firstOpenTime, $newsletter, $subscriberInFirstBatch);
+    $this->createOpen($secondOpenTime, $newsletter, $subscriberInSecondBatch);
+
+    $task = ScheduledTask::create();
+    $result = $this->worker->processTaskStrategy($task, microtime(true));
+    expect($result)->true();
+    $this->entityManager->refresh($subscriberInFirstBatch);
+    $this->entityManager->refresh($subscriberInSecondBatch);
+    expect($subscriberInFirstBatch->getLastEngagementAt())->equals($firstOpenTime);
+    expect($subscriberInSecondBatch->getLastEngagementAt())->equals($secondOpenTime);
+    expect($task->getMeta())->equals(['nextId' => 2001]);
+  }
+
+  private function createSubscriber($email = 'last-engagement@test.com'): SubscriberEntity {
     $subscriber = new SubscriberEntity();
-    $subscriber->setEmail('last-engagement@test.com');
+    $subscriber->setEmail($email);
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
     return $subscriber;
   }
 
   private function createOpen(Carbon $time, NewsletterEntity $newsletter, SubscriberEntity $subscriber): StatisticsOpenEntity {
-    $open = new StatisticsOpenEntity($newsletter, $newsletter->getLatestQueue(), $subscriber);
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $open = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
     $open->setCreatedAt($time);
     $this->entityManager->persist($open);
     $this->entityManager->flush();
@@ -126,9 +173,11 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
   }
 
   private function createClick(Carbon $time, NewsletterEntity $newsletter, SubscriberEntity $subscriber): StatisticsClickEntity {
-    $link = new NewsletterLinkEntity($newsletter, $newsletter->getLatestQueue(), 'http://example.com', 'hash123');
+    $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $link = new NewsletterLinkEntity($newsletter, $queue, 'http://example.com', 'hash123');
     $this->entityManager->persist($link);
-    $click = new StatisticsClickEntity($newsletter, $newsletter->getLatestQueue(), $subscriber, $link, 1);
+    $click = new StatisticsClickEntity($newsletter, $queue, $subscriber, $link, 1);
     $click->setCreatedAt($time);
     $this->entityManager->persist($click);
     $this->entityManager->flush();
