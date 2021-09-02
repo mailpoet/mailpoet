@@ -38,7 +38,7 @@ let fields = [
   },
   {
     name: 'options',
-    label: MailPoet.I18n.t('sendWelcomeEmailWhen'),
+    label: MailPoet.I18n.t('selectEventToSendWelcomeEmail'),
     type: 'reactComponent',
     component: Scheduling,
   },
