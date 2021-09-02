@@ -11,7 +11,7 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 class SubscribersLastEngagement extends SimpleWorker {
   const AUTOMATIC_SCHEDULING = false;
   const SUPPORT_MULTIPLE_INSTANCES = false;
-  const BATCH_SIZE = 60;
+  const BATCH_SIZE = 2000;
   const TASK_TYPE = 'subscribers_last_engagement';
 
   /** @var EntityManager */
@@ -24,7 +24,22 @@ class SubscribersLastEngagement extends SimpleWorker {
     $this->entityManager = $entityManager;
   }
 
-  public function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTask $task, $timer): bool {
+    $meta = $task->getMeta();
+    $minId = $meta['nextId'] ?? 1;
+    $highestId = $this->getHighestSubscriberId();
+    while ($minId <= $highestId) {
+      $maxId = $minId + self::BATCH_SIZE;
+      $this->processBatch($minId, $maxId);
+      $task->meta = ['nextId' => $maxId];
+      $task->save();
+      $this->cronHelper->enforceExecutionLimit($timer); // Throws exception and interrupts process if over execution limit
+      $minId = $maxId;
+    }
+    return true;
+  }
+
+  private function processBatch(int $minSubscriberId, int $maxSubscriberId): void {
     global $wpdb;
     $statisticsClicksTable = $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
     $statisticsOpensTable = $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName();
@@ -38,7 +53,13 @@ class SubscribersLastEngagement extends SimpleWorker {
       LEFT JOIN (SELECT MAX(post_id) AS post_id, meta_value as email FROM $postsmetaTable WHERE meta_key = '_billing_email' GROUP BY email) AS newestOrderIds ON newestOrderIds.email = mps.email
       LEFT JOIN (SELECT ID, post_date FROM $postsTable WHERE post_type = 'shop_order') AS shopOrders ON newestOrderIds.post_id = shopOrders.ID
     SET mps.last_engagement_at = NULLIF(GREATEST(COALESCE(mpso.created_at, 0), COALESCE(mpsc.created_at,0), COALESCE(shopOrders.post_date, 0)), 0)
-    WHERE mps.last_engagement_at IS NULL;
+    WHERE mps.last_engagement_at IS NULL AND mps.id >= $minSubscriberId AND  mps.id < $maxSubscriberId;
     ");
+  }
+
+  private function getHighestSubscriberId(): int {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $result = $this->entityManager->getConnection()->executeQuery("SELECT MAX(id) FROM $subscribersTable LIMIT 1;")->fetchNumeric();
+    return is_array($result) && isset($result[0]) ? (int)$result[0] : 0;
   }
 }
