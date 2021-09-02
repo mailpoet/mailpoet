@@ -18,7 +18,7 @@ class CreateWelcomeEmailCest {
     $i->waitForElement($titleElement);
     $i->fillField($titleElement, $newsletterTitle);
     $i->click('Next');
-    $i->waitForText('Send this Welcome Email when');
+    $i->waitForText('When to send this welcome email?');
     $i->click('Activate');
     $i->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
     $i->searchFor($newsletterTitle);
