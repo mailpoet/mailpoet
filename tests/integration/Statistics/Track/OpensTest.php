@@ -17,6 +17,7 @@ use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class OpensTest extends \MailPoetTest {
@@ -358,35 +359,45 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItUpdatesSubscriberEngagementForHumanAgent() {
-    Carbon::setTestNow($now = Carbon::now());
+    $now = Carbon::now();
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->expects($this->once())
+      ->method('currentTime')
+      ->willReturn($now->getTimestamp());
     $this->trackData->userAgent = 'User agent';
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      $this->diContainer->get(SubscribersRepository::class),
+      new SubscribersRepository($this->entityManager, $wpMock),
     ], [
       'returnResponse' => null,
     ], $this);
 
     $opens->track($this->trackData);
-    expect($this->subscriber->getLastEngagementAt())->equals($now);
-    Carbon::setTestNow();
+    $savedEngagementTime = $this->subscriber->getLastEngagementAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
+    expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
   }
 
-  public function testItUpdatesSubscriberEngagementFoUnknownAgent() {
-    Carbon::setTestNow($now = Carbon::now());
+  public function testItUpdatesSubscriberEngagementForUnknownAgent() {
+    $now = Carbon::now();
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->expects($this->once())
+      ->method('currentTime')
+      ->willReturn($now->getTimestamp());
     $this->trackData->userAgent = null;
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      $this->diContainer->get(SubscribersRepository::class),
+      new SubscribersRepository($this->entityManager, $wpMock),
     ], [
       'returnResponse' => null,
     ], $this);
 
     $opens->track($this->trackData);
-    expect($this->subscriber->getLastEngagementAt())->equals($now);
-    Carbon::setTestNow();
+    $savedEngagementTime = $this->subscriber->getLastEngagementAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
+    expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
   }
 
   public function testItWontUpdateSubscriberEngagementForMachineAgent() {
