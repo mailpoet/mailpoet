@@ -7,6 +7,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Util\DBCollationChecker;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class SubscribersLastEngagement extends SimpleWorker {
@@ -21,16 +22,21 @@ class SubscribersLastEngagement extends SimpleWorker {
   /** @var DBCollationChecker */
   private $dbCollationChecker;
 
+  /** @var WooCommerceHelper */
+  private $wooCommereHelper;
+
   /** @var null|string */
   private $emailCollationCorrection;
 
   public function __construct(
     EntityManager $entityManager,
-    DBCollationChecker $dbCollationChecker
+    DBCollationChecker $dbCollationChecker,
+    WooCommerceHelper $wooCommereHelper
   ) {
     parent::__construct();
     $this->entityManager = $entityManager;
     $this->dbCollationChecker = $dbCollationChecker;
+    $this->wooCommereHelper = $wooCommereHelper;
   }
 
   public function processTaskStrategy(ScheduledTask $task, $timer): bool {
@@ -66,15 +72,27 @@ class SubscribersLastEngagement extends SimpleWorker {
     }
     $emailCollate = $this->emailCollationCorrection;
 
-    $this->entityManager->getConnection()->executeStatement("
-    UPDATE $subscribersTable as mps
-      LEFT JOIN (SELECT max(created_at) as created_at, subscriber_id FROM $statisticsOpensTable as mpsoinner GROUP BY mpsoinner.subscriber_id) as mpso ON mpso.subscriber_id = mps.id
-      LEFT JOIN (SELECT max(created_at) as created_at, subscriber_id FROM $statisticsClicksTable as mpscinner GROUP BY mpscinner.subscriber_id) as mpsc ON mpsc.subscriber_id = mps.id
-      LEFT JOIN (SELECT MAX(post_id) AS post_id, meta_value as email FROM $postsmetaTable WHERE meta_key = '_billing_email' GROUP BY email) AS newestOrderIds ON newestOrderIds.email $emailCollate = mps.email
-      LEFT JOIN (SELECT ID, post_date FROM $postsTable WHERE post_type = 'shop_order') AS shopOrders ON newestOrderIds.post_id = shopOrders.ID
-    SET mps.last_engagement_at = NULLIF(GREATEST(COALESCE(mpso.created_at, 0), COALESCE(mpsc.created_at,0), COALESCE(shopOrders.post_date, 0)), 0)
-    WHERE mps.last_engagement_at IS NULL AND mps.id >= $minSubscriberId AND  mps.id < $maxSubscriberId;
-    ");
+    $query = "
+      UPDATE $subscribersTable as mps
+        LEFT JOIN (SELECT max(created_at) as created_at, subscriber_id FROM $statisticsOpensTable as mpsoinner GROUP BY mpsoinner.subscriber_id) as mpso ON mpso.subscriber_id = mps.id
+        LEFT JOIN (SELECT max(created_at) as created_at, subscriber_id FROM $statisticsClicksTable as mpscinner GROUP BY mpscinner.subscriber_id) as mpsc ON mpsc.subscriber_id = mps.id
+      SET mps.last_engagement_at = NULLIF(GREATEST(COALESCE(mpso.created_at, 0), COALESCE(mpsc.created_at,0)), 0)
+      WHERE mps.last_engagement_at IS NULL AND mps.id >= $minSubscriberId AND  mps.id < $maxSubscriberId;
+    ";
+
+    // Use more complex query that takes into the account also subscriber's latest WooCommerce order
+    if ($this->wooCommereHelper->isWooCommerceActive()) {
+      $query = "
+        UPDATE $subscribersTable as mps
+          LEFT JOIN (SELECT max(created_at) as created_at, subscriber_id FROM $statisticsOpensTable as mpsoinner GROUP BY mpsoinner.subscriber_id) as mpso ON mpso.subscriber_id = mps.id
+          LEFT JOIN (SELECT max(created_at) as created_at, subscriber_id FROM $statisticsClicksTable as mpscinner GROUP BY mpscinner.subscriber_id) as mpsc ON mpsc.subscriber_id = mps.id
+          LEFT JOIN (SELECT MAX(post_id) AS post_id, meta_value as email FROM $postsmetaTable WHERE meta_key = '_billing_email' GROUP BY email) AS newestOrderIds ON newestOrderIds.email $emailCollate = mps.email
+          LEFT JOIN (SELECT ID, post_date FROM $postsTable WHERE post_type = 'shop_order') AS shopOrders ON newestOrderIds.post_id = shopOrders.ID
+        SET mps.last_engagement_at = NULLIF(GREATEST(COALESCE(mpso.created_at, 0), COALESCE(mpsc.created_at,0), COALESCE(shopOrders.post_date, 0)), 0)
+        WHERE mps.last_engagement_at IS NULL AND mps.id >= $minSubscriberId AND  mps.id < $maxSubscriberId;
+      ";
+    }
+    $this->entityManager->getConnection()->executeStatement($query);
   }
 
   private function getHighestSubscriberId(): int {
