@@ -27,8 +27,15 @@ class Bounce extends SimpleWorker {
   /** @var SettingsController */
   private $settings;
 
-  public function __construct(SettingsController $settings) {
+  /** @var Bridge */
+  private $bridge;
+
+  public function __construct(
+    SettingsController $settings,
+    Bridge $bridge
+  ) {
     $this->settings = $settings;
+    $this->bridge = $bridge;
     parent::__construct();
   }
 
@@ -39,7 +46,7 @@ class Bounce extends SimpleWorker {
   }
 
   public function checkProcessingRequirements() {
-    return Bridge::isMPSendingServiceEnabled();
+    return $this->bridge->isMailpoetSendingServiceEnabled();
   }
 
   public function prepareTaskStrategy(ScheduledTask $task, $timer) {
