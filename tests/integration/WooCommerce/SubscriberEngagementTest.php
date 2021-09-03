@@ -4,11 +4,15 @@ namespace MailPoet\WooCommerce;
 
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 use WC_Order;
 
 class SubscriberEngagementTest extends \MailPoetTest {
+
+  /** @var WPFunctions & MockObject */
+  private $wpMock;
 
   /** @var Helper & MockObject */
   private $wooCommerceHelperMock;
@@ -18,15 +22,19 @@ class SubscriberEngagementTest extends \MailPoetTest {
 
   public function _before() {
     $this->wooCommerceHelperMock = $this->createMock(Helper::class);
+    $this->wpMock = $this->createMock(WPFunctions::class);
     $this->subscriberEngagement = new SubscriberEngagement(
       $this->wooCommerceHelperMock,
-      $this->diContainer->get(SubscribersRepository::class)
+      new SubscribersRepository($this->entityManager, $this->wpMock)
     );
     $this->truncateEntity(SubscriberEntity::class);
   }
 
   public function testItUpdatesLastEngagementForSubscriberWhoCreatedNewOrder() {
-    Carbon::setTestNow($now = new Carbon('2021-08-31 13:13:00'));
+    $now = new Carbon('2021-08-31 13:13:00');
+    $this->wpMock->expects($this->once())
+      ->method('currentTime')
+      ->willReturn($now->getTimestamp());
     $subscriber = $this->createSubscriber();
     $order = $this->createOrderMock($subscriber->getEmail());
     $this->wooCommerceHelperMock
@@ -36,7 +44,6 @@ class SubscriberEngagementTest extends \MailPoetTest {
     $this->subscriberEngagement->updateSubscriberEngagement(1);
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->equals($now);
-    Carbon::setTestNow();
   }
 
   public function testItDoesntUpdateAnythingForNonExistingOder() {

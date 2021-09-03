@@ -26,6 +26,7 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Cookies;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class ClicksTest extends \MailPoetTest {
@@ -482,7 +483,11 @@ class ClicksTest extends \MailPoetTest {
   }
 
   public function testItUpdatesSubscriberEngagementForHumanAgent() {
-    Carbon::setTestNow($now = Carbon::now());
+    $now = Carbon::now();
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->expects($this->once())
+      ->method('currentTime')
+      ->willReturn($now->getTimestamp());
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = 'User Agent';
@@ -494,17 +499,22 @@ class ClicksTest extends \MailPoetTest {
       $clicksRepository,
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
-      $this->diContainer->get(SubscribersRepository::class),
+      new SubscribersRepository($this->entityManager, $wpMock),
     ], [
       'redirectToUrl' => null,
     ], $this);
     $clicks->track($data);
-    expect($this->subscriber->getLastEngagementAt())->equals($now);
-    Carbon::setTestNow();
+    $savedEngagementTime = $this->subscriber->getLastEngagementAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
+    expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
   }
 
   public function testItUpdatesSubscriberEngagementForUnknownAgent() {
-    Carbon::setTestNow($now = Carbon::now());
+    $now = Carbon::now();
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->expects($this->once())
+      ->method('currentTime')
+      ->willReturn($now->getTimestamp());
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = null;
@@ -516,13 +526,14 @@ class ClicksTest extends \MailPoetTest {
       $clicksRepository,
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
-      $this->diContainer->get(SubscribersRepository::class),
+      new SubscribersRepository($this->entityManager, $wpMock),
     ], [
       'redirectToUrl' => null,
     ], $this);
     $clicks->track($data);
-    expect($this->subscriber->getLastEngagementAt())->equals($now);
-    Carbon::setTestNow();
+    $savedEngagementTime = $this->subscriber->getLastEngagementAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
+    expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
   }
 
   public function testItWontUpdateSubscriberEngagementForMachineAgent() {
