@@ -448,7 +448,7 @@ class SubscriberEntity {
     return $this->lastEngagementAt;
   }
 
-  public function setLastEngagementAt(?DateTimeInterface $lastEngagementAt): void {
+  public function setLastEngagementAt(DateTimeInterface $lastEngagementAt): void {
     $this->lastEngagementAt = $lastEngagementAt;
   }
 
