@@ -40,7 +40,7 @@ class ThrottlingTest extends \MailPoetTest {
     expect($this->throttling->throttle())->greaterThan(0);
   }
 
-  public function testItDoesNotThrottleForLoggedInUsers() {
+  public function testItDoesNotThrottleForExemptRoleUsers() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     $wpUsers = get_users();
     wp_set_current_user($wpUsers[0]->ID);
@@ -48,6 +48,17 @@ class ThrottlingTest extends \MailPoetTest {
     expect($this->throttling->throttle())->equals(false);
     wp_set_current_user(0);
     expect($this->throttling->throttle())->greaterThan(0);
+  }
+
+  public function testItThrottlesForNotExemptRoleUsers() {
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+    $wpUsers = get_users();
+    $wpUsers[0]->remove_role('administrator');
+    wp_set_current_user($wpUsers[0]->ID);
+    expect($this->throttling->throttle())->equals(false);
+    expect($this->throttling->throttle())->equals(60);
+    $wpUsers[0]->add_role('administrator');
+    wp_set_current_user(0);
   }
 
   public function testItPurgesOldSubscriberIps() {

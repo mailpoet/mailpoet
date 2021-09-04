@@ -27,7 +27,7 @@ class Throttling {
 
     $subscriberIp = Helpers::getIP();
 
-    if ($subscriptionLimitEnabled && !$this->wp->isUserLoggedIn()) {
+    if ($subscriptionLimitEnabled && !$this->isUserExemptFromThrottling()) {
       if (!empty($subscriberIp)) {
         $subscriptionCount = $this->subscriberIPsRepository->getCountByIPAndCreatedAtAfterTimeInSeconds($subscriberIp, $subscriptionLimitWindow);
         if ($subscriptionCount > 0) {
@@ -69,5 +69,14 @@ class Throttling {
       'seconds' => $sec ? sprintf(__('%d seconds', 'mailpoet'), $sec) : '',
     ];
     return join(' ', array_filter($result));
+  }
+
+  private function isUserExemptFromThrottling(): bool {
+    if (!$this->wp->isUserLoggedIn()) {
+      return false;
+    }
+    $user = $this->wp->wpGetCurrentUser();
+    $roles = $this->wp->applyFilters('mailpoet_subscription_throttling_exclude_roles', ['administrator', 'editor']);
+    return !empty(array_intersect($roles, (array)$user->roles));
   }
 }
