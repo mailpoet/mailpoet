@@ -10,7 +10,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
@@ -50,6 +49,7 @@ class BounceTest extends \MailPoetTest {
 
     $this->worker = new Bounce(
       $this->diContainer->get(SettingsController::class),
+      $this->subscribersRepository,
       $this->diContainer->get(Bridge::class)
     );
 
@@ -64,7 +64,11 @@ class BounceTest extends \MailPoetTest {
 
   public function testItCanInitializeBridgeAPI() {
     $this->setMailPoetSendingMethod();
-    $worker = new Bounce($this->diContainer->get(SettingsController::class), $this->diContainer->get(Bridge::class));
+    $worker = new Bounce(
+      $this->diContainer->get(SettingsController::class),
+      $this->subscribersRepository,
+      $this->diContainer->get(Bridge::class)
+    );
     $worker->init();
     expect($worker->api instanceof API)->true();
   }
