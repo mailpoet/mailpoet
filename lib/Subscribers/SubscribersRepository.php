@@ -329,4 +329,19 @@ class SubscribersRepository extends Repository {
     $subscriberEntity->setLastEngagementAt($now);
     $this->flush();
   }
+
+  /**
+   * @param array $ids
+   * @return string[]
+   */
+  public function getUndeletedSubscribersEmailsByIds(array $ids): array {
+    return $this->entityManager->createQueryBuilder()
+      ->select('s.email')
+      ->from(SubscriberEntity::class, 's')
+      ->where('s.deletedAt IS NULL')
+      ->andWhere('s.id IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()
+      ->getArrayResult();
+  }
 }

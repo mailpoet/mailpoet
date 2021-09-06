@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
@@ -9,6 +10,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Bounce as BounceTask;
 use MailPoet\Tasks\Subscribers as TaskSubscribers;
 use MailPoet\Tasks\Subscribers\BatchIterator;
@@ -30,13 +32,18 @@ class Bounce extends SimpleWorker {
   /** @var Bridge */
   private $bridge;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     SettingsController $settings,
+    SubscribersRepository $subscribersRepository,
     Bridge $bridge
   ) {
     $this->settings = $settings;
     $this->bridge = $bridge;
     parent::__construct();
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function init() {
@@ -73,10 +80,7 @@ class Bounce extends SimpleWorker {
       // abort if execution limit is reached
       $this->cronHelper->enforceExecutionLimit($timer);
 
-      $subscriberEmails = Subscriber::select('email')
-        ->whereIn('id', $subscribersToProcessIds)
-        ->whereNull('deleted_at')
-        ->findArray();
+      $subscriberEmails = $this->subscribersRepository->getUndeletedSubscribersEmailsByIds($subscribersToProcessIds);
       $subscriberEmails = array_column($subscriberEmails, 'email');
 
       $this->processEmails($subscriberEmails);
@@ -98,11 +102,12 @@ class Bounce extends SimpleWorker {
         continue;
       }
       if ($email['bounce'] === self::BOUNCED_HARD) {
-        $subscriber = Subscriber::findOne($email['address']);
-        $subscriber->status = Subscriber::STATUS_BOUNCED;
-        $subscriber->save();
+        $subscriber = $this->subscribersRepository->findOneBy(['email' => $email['address']]);
+        if (!$subscriber instanceof SubscriberEntity) continue;
+        $subscriber->setStatus(SubscriberEntity::STATUS_BOUNCED);
       }
     }
+    $this->subscribersRepository->flush();
   }
 
   public function getNextRunDate() {
