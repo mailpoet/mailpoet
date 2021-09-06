@@ -44,6 +44,7 @@ class Migrator {
       'forms',
       'statistics_newsletters',
       'statistics_clicks',
+      'statistics_bounces',
       'statistics_opens',
       'statistics_unsubscribes',
       'statistics_forms',
@@ -417,6 +418,18 @@ class Migrator {
       'PRIMARY KEY  (id),',
       'KEY newsletter_id (newsletter_id),',
       'KEY subscriber_id (subscriber_id)',
+    ];
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  public function statisticsBounces() {
+    $attributes = [
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'newsletter_id int(11) unsigned NOT NULL,',
+      'subscriber_id int(11) unsigned NOT NULL,',
+      'queue_id int(11) unsigned NOT NULL,',
+      'created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,',
+      'PRIMARY KEY  (id)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
