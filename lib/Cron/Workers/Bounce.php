@@ -2,11 +2,13 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
@@ -35,15 +37,25 @@ class Bounce extends SimpleWorker {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   public function __construct(
     SettingsController $settings,
     SubscribersRepository $subscribersRepository,
+    ScheduledTasksRepository $scheduledTasksRepository,
+    SendingQueuesRepository $sendingQueuesRepository,
     Bridge $bridge
   ) {
     $this->settings = $settings;
     $this->bridge = $bridge;
     parent::__construct();
     $this->subscribersRepository = $subscribersRepository;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
   }
 
   public function init() {
@@ -83,7 +95,7 @@ class Bounce extends SimpleWorker {
       $subscriberEmails = $this->subscribersRepository->getUndeletedSubscribersEmailsByIds($subscribersToProcessIds);
       $subscriberEmails = array_column($subscriberEmails, 'email');
 
-      $this->processEmails($subscriberEmails);
+      $this->processEmails($task, $subscriberEmails);
 
       $taskSubscribers->updateProcessedSubscribers($subscribersToProcessIds);
     }
@@ -91,12 +103,13 @@ class Bounce extends SimpleWorker {
     return true;
   }
 
-  public function processEmails(array $subscriberEmails) {
+  public function processEmails($task, array $subscriberEmails) {
     $checkedEmails = $this->api->checkBounces($subscriberEmails);
-    $this->processApiResponse((array)$checkedEmails);
+    $this->processApiResponse($task, (array)$checkedEmails);
   }
 
-  public function processApiResponse(array $checkedEmails) {
+  public function processApiResponse($task, array $checkedEmails) {
+    $previousTask = $this->findPreviousTask($task);
     foreach ($checkedEmails as $email) {
       if (!isset($email['address'], $email['bounce'])) {
         continue;
@@ -105,6 +118,7 @@ class Bounce extends SimpleWorker {
         $subscriber = $this->subscribersRepository->findOneBy(['email' => $email['address']]);
         if (!$subscriber instanceof SubscriberEntity) continue;
         $subscriber->setStatus(SubscriberEntity::STATUS_BOUNCED);
+        $this->saveBouncedStatistics($subscriber, $task, $previousTask);
       }
     }
     $this->subscribersRepository->flush();
@@ -117,5 +131,24 @@ class Bounce extends SimpleWorker {
       ->addHours(rand(0, 5))
       ->addMinutes(rand(0, 59))
       ->addSeconds(rand(0, 59));
+  }
+
+  private function findPreviousTask(ScheduledTask $task): ?ScheduledTaskEntity {
+    $taskEntity = $this->scheduledTasksRepository->findOneById($task->id);
+    if (!$taskEntity instanceof ScheduledTaskEntity) return null;
+    return $this->scheduledTasksRepository->findPreviousTask($taskEntity);
+  }
+
+  private function saveBouncedStatistics(SubscriberEntity $subscriber, ScheduledTask $task, ?ScheduledTaskEntity $previousTask) {
+    $taskEntity = $this->scheduledTasksRepository->findOneById($task->id);
+    if (!$taskEntity instanceof ScheduledTaskEntity) return null;
+    $dateFrom = null;
+    if ($previousTask instanceof ScheduledTaskEntity) {
+      $dateFrom = $previousTask->getScheduledAt();
+    }
+    $queues = $this->sendingQueuesRepository->findAllForSubscriberSentBetween($subscriber, $taskEntity->getScheduledAt(), $dateFrom);
+    foreach ($queues as $queue) {
+      // todo save statistics
+    }
   }
 }

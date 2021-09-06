@@ -4,16 +4,22 @@ namespace MailPoet\Test\Cron\Workers;
 
 use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\Bounce\BounceTestMockAPI as MockAPI;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsBounceEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Statistics\StatisticsBouncesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -33,6 +39,7 @@ class BounceTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    $this->cleanup();
     $this->emails = [
       'soft_bounce@example.com',
       'hard_bounce@example.com',
@@ -50,6 +57,9 @@ class BounceTest extends \MailPoetTest {
     $this->worker = new Bounce(
       $this->diContainer->get(SettingsController::class),
       $this->subscribersRepository,
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(SendingQueuesRepository::class),
+      $this->diContainer->get(StatisticsBouncesRepository::class),
       $this->diContainer->get(Bridge::class)
     );
 
@@ -67,6 +77,9 @@ class BounceTest extends \MailPoetTest {
     $worker = new Bounce(
       $this->diContainer->get(SettingsController::class),
       $this->subscribersRepository,
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(SendingQueuesRepository::class),
+      $this->diContainer->get(StatisticsBouncesRepository::class),
       $this->diContainer->get(Bridge::class)
     );
     $worker->init();
@@ -122,7 +135,8 @@ class BounceTest extends \MailPoetTest {
   }
 
   public function testItSetsSubscriberStatusAsBounced() {
-    $this->worker->processEmails($this->emails);
+    $task = $this->createRunningTask();
+    $this->worker->processEmails($task, $this->emails);
 
     $subscribers = $this->subscribersRepository->findAll();
 
@@ -160,10 +174,13 @@ class BounceTest extends \MailPoetTest {
     return $task;
   }
 
-  public function _after() {
+  public function cleanup() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(StatisticsBounceEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
   }
 }
