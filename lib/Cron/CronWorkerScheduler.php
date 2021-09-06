@@ -23,6 +23,23 @@ class CronWorkerScheduler {
     $this->scheduledTaskRepository = $scheduledTaskRepository;
   }
 
+  public function scheduleImmediatelyIfNotRunning($taskType, $priority = ScheduledTaskEntity::PRIORITY_LOW): ScheduledTaskEntity {
+    $task = $this->scheduledTaskRepository->findScheduledOrRunningTask($taskType);
+    // Do nothing when task is running
+    if (($task instanceof ScheduledTaskEntity) && $task->getStatus() === null) {
+      return $task;
+    }
+    $now = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    // Reschedule existing scheduled task
+    if ($task instanceof ScheduledTaskEntity) {
+      $task->setScheduledAt($now);
+      $task->setPriority($priority);
+      $this->scheduledTaskRepository->flush();
+    }
+    // Schedule new task
+    return $this->schedule($taskType, $now, $priority);
+  }
+
   public function schedule($taskType, $nextRunDate, $priority = ScheduledTaskEntity::PRIORITY_LOW): ScheduledTaskEntity {
     $alreadyScheduled = $this->scheduledTaskRepository->findScheduledTask($taskType);
     if ($alreadyScheduled) {
