@@ -4,23 +4,33 @@ namespace MailPoet\Test\Cron\Workers;
 
 use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\Bounce\BounceTestMockAPI as MockAPI;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 require_once('BounceTestMockAPI.php');
 
 class BounceTest extends \MailPoetTest {
-  public $worker;
-  public $emails;
+
+  /** @var Bounce */
+  private $worker;
+
+  /** @var string[] */
+  private $emails;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
 
   public function _before() {
     parent::_before();
@@ -29,12 +39,13 @@ class BounceTest extends \MailPoetTest {
       'hard_bounce@example.com',
       'good_address@example.com',
     ];
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
 
     foreach ($this->emails as $email) {
-        Subscriber::createOrUpdate([
-          'status' => Subscriber::STATUS_SUBSCRIBED,
-          'email' => $email,
-        ]);
+      $subscriber = new SubscriberEntity();
+      $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+      $subscriber->setEmail($email);
+      $this->subscribersRepository->persist($subscriber);
     }
 
     $this->worker = new Bounce(
@@ -43,6 +54,8 @@ class BounceTest extends \MailPoetTest {
     );
 
     $this->worker->api = new MockAPI();
+    $this->subscribersRepository->flush();
+    $this->entityManager->clear();
   }
 
   public function testItDefinesConstants() {
@@ -69,7 +82,7 @@ class BounceTest extends \MailPoetTest {
     expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->notEmpty();
 
     // 2nd run - nothing more to process, ScheduledTaskSubscriber will be cleaned up
-    Subscriber::deleteMany();
+    $this->truncateEntity(SubscriberEntity::class);
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
     expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->isEmpty();
@@ -90,7 +103,7 @@ class BounceTest extends \MailPoetTest {
     expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->notEmpty();
 
     // process - no subscribers found, ScheduledTaskSubscriber will be cleaned up
-    Subscriber::deleteMany();
+    $this->truncateEntity(SubscriberEntity::class);
     $task = $this->createScheduledTask();
     $this->worker->processTaskStrategy($task, microtime(true));
     expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->isEmpty();
@@ -105,16 +118,13 @@ class BounceTest extends \MailPoetTest {
   }
 
   public function testItSetsSubscriberStatusAsBounced() {
-    $emails = Subscriber::select('email')->findArray();
-    $emails = array_column($emails, 'email');
+    $this->worker->processEmails($this->emails);
 
-    $this->worker->processEmails($emails);
+    $subscribers = $this->subscribersRepository->findAll();
 
-    $subscribers = Subscriber::findMany();
-
-    expect($subscribers[0]->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($subscribers[1]->status)->equals(Subscriber::STATUS_BOUNCED);
-    expect($subscribers[2]->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscribers[0]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    expect($subscribers[1]->getStatus())->equals(SubscriberEntity::STATUS_BOUNCED);
+    expect($subscribers[2]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   private function setMailPoetSendingMethod() {
@@ -148,8 +158,8 @@ class BounceTest extends \MailPoetTest {
 
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
   }
 }
