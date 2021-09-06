@@ -31,19 +31,20 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
 
   public function testItDoesNotScheduleTaskTwice() {
     $nextRunDate = Carbon::now()->addWeek();
-    $this->cronWorkerScheduler->schedule('test', $nextRunDate);
+    $task = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
     expect(ScheduledTask::findMany())->count(1);
 
     $result = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
-    expect($result)->false();
+    expect($result->getId())->equals($task->getId());
     expect(ScheduledTask::findMany())->count(1);
   }
 
   public function testItReschedulesTask() {
     $nextRunDate = Carbon::now()->subDay();
     $task = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
-    $this->cronWorkerScheduler->reschedule($task, 10);
-
+    $oldModel = ScheduledTask::findOne($task->getId());
+    $this->assertInstanceOf(ScheduledTask::class, $oldModel);
+    $this->cronWorkerScheduler->reschedule($oldModel, 10);
     $tasks = ScheduledTask::findMany();
     expect($tasks)->count(1);
     expect($tasks[0]->type)->same('test');
