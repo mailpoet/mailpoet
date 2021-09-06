@@ -38,6 +38,43 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     expect($this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll())->count(1);
   }
 
+  public function testItDoesntScheduleRunningTaskImmediatelyIfRunning() {
+    $nextRunDate = Carbon::now()->addWeek();
+    $task = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
+    $task->setStatus(null);
+    $this->entityManager->flush();
+    $immediateTask = $this->cronWorkerScheduler->scheduleImmediatelyIfNotRunning('test');
+    $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
+    expect($immediateTask->getId())->equals($task->getId());
+    expect($tasks)->count(1);
+    expect($tasks[0]->getType())->same('test');
+    expect($tasks[0]->getStatus())->null();
+    expect($tasks[0]->getScheduledAt())->same($nextRunDate);
+  }
+
+  public function testItRescheduleScheduledTaskImmediatelyIfNotRunning() {
+    $nextRunDate = Carbon::now()->addWeek();
+    $task = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
+    $immediateTask = $this->cronWorkerScheduler->scheduleImmediatelyIfNotRunning('test');
+    $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
+    expect($immediateTask->getId())->equals($task->getId());
+    expect($tasks)->count(1);
+    expect($tasks[0]->getType())->same('test');
+    expect($tasks[0]->getStatus())->same(ScheduledTask::STATUS_SCHEDULED);
+    expect($tasks[0]->getScheduledAt())->greaterOrEquals(Carbon::now()->subSecond());
+    expect($tasks[0]->getScheduledAt())->lessOrEquals(Carbon::now()->addSecond());
+  }
+
+  public function testItScheduleTaskImmediatelyIfNotRunning() {
+    $this->cronWorkerScheduler->scheduleImmediatelyIfNotRunning('test');
+    $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
+    expect($tasks)->count(1);
+    expect($tasks[0]->getType())->equals('test');
+    expect($tasks[0]->getStatus())->equals(ScheduledTask::STATUS_SCHEDULED);
+    expect($tasks[0]->getScheduledAt())->greaterOrEquals(Carbon::now()->subSecond());
+    expect($tasks[0]->getScheduledAt())->lessOrEquals(Carbon::now()->addSecond());
+  }
+
   public function testItReschedulesTask() {
     $nextRunDate = Carbon::now()->subDay();
     $task = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
