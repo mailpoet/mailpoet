@@ -148,7 +148,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testIntegration(array $opts=['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
-    $command = 'vendor/bin/codecept run integration';
+    $command = 'vendor/bin/codecept run integration -vvv';
 
     if ($opts['multisite']) {
       $command = 'MULTISITE=true ' . $command;
