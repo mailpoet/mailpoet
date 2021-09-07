@@ -82,6 +82,8 @@ class Subscription {
       [
         'type' => 'checkbox',
         'label' => $this->wp->escHtml($labelString),
+        'input_class' => ['woocommerce-form__input', 'woocommerce-form__input-checkbox', 'input-checkbox'],
+        'label_class' => ['woocommerce-form__label', 'woocommerce-form__label-for-checkbox', 'checkbox'],
         'custom_attributes' => ['data-automation-id' => 'woo-commerce-subscription-opt-in'],
         'return' => true,
       ],
