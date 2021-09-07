@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.68.0
+Stable tag: 3.69.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.69.0 - 2021-09-07 =
+* Added: saving subscribers' last engagement date;
+* Added: show machine-opened emails on the subscriber stats page;
+* Improved: performance of subscribers count recalculation;
+* Fixed: heading shortcode not rendered in WooCommerce transactional emails if moved below order content;
+* Fixed: unsubscribing from a preview email when logged out throws fatal error.
 
 = 3.68.0 - 2021-08-30 =
 * Added: show machine-opened percentage on the email stats page;
