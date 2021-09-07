@@ -25,7 +25,7 @@ class MailPoetCustomFields implements Filter {
     $filterData = $filter->getFilterData();
     $customFieldType = $filterData->getParam('custom_field_type');
     $customFieldId = $filterData->getParam('custom_field_id');
-    $parameterSuffix = (string)$filter->getId() ?? Security::generateRandomString();
+    $parameterSuffix = (string)($filter->getId() ?? Security::generateRandomString());
     $customFieldIdParam = ':customFieldId' . $parameterSuffix;
 
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();

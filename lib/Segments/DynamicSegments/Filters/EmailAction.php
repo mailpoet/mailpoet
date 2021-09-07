@@ -46,7 +46,7 @@ class EmailAction implements Filter {
     $action = $filterData->getParam('action');
     $newsletterId = (int)$filterData->getParam('newsletter_id');
     $linkId = $filterData->getParam('link_id') ? (int)$filterData->getParam('link_id') : null;
-    $parameterSuffix = (string)$filter->getId() ?? Security::generateRandomString();
+    $parameterSuffix = (string)($filter->getId() ?? Security::generateRandomString());
 
     $statsSentTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
