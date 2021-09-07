@@ -2,7 +2,9 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\StatisticsBounceEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
@@ -12,6 +14,7 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\StatisticsBouncesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Bounce as BounceTask;
 use MailPoet\Tasks\Subscribers as TaskSubscribers;
@@ -43,11 +46,15 @@ class Bounce extends SimpleWorker {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /** @var StatisticsBouncesRepository */
+  private $statisticsBouncesRepository;
+
   public function __construct(
     SettingsController $settings,
     SubscribersRepository $subscribersRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
     SendingQueuesRepository $sendingQueuesRepository,
+    StatisticsBouncesRepository $statisticsBouncesRepository,
     Bridge $bridge
   ) {
     $this->settings = $settings;
@@ -56,6 +63,7 @@ class Bounce extends SimpleWorker {
     $this->subscribersRepository = $subscribersRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
+    $this->statisticsBouncesRepository = $statisticsBouncesRepository;
   }
 
   public function init() {
@@ -148,7 +156,11 @@ class Bounce extends SimpleWorker {
     }
     $queues = $this->sendingQueuesRepository->findAllForSubscriberSentBetween($subscriber, $taskEntity->getScheduledAt(), $dateFrom);
     foreach ($queues as $queue) {
-      // todo save statistics
+      $newsletter = $queue->getNewsletter();
+      if ($newsletter instanceof NewsletterEntity) {
+        $statistics = new StatisticsBounceEntity($newsletter, $queue, $subscriber);
+        $this->statisticsBouncesRepository->persist($statistics);
+      }
     }
   }
 }
