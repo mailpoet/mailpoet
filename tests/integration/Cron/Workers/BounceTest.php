@@ -145,6 +145,40 @@ class BounceTest extends \MailPoetTest {
     expect($subscribers[2]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
+  public function testItCreatesStatistics() {
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'hard_bounce@example.com']);
+    // create old data that shouldn't be picked by the code
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $oldNewsletter = $this->createNewsletter();
+    $oldSendingTask = $this->createSendingTask();
+    $oldSendingTask->setUpdatedAt(Carbon::now()->subDays(5));
+    $this->createSendingQueue($oldNewsletter, $oldSendingTask);
+    $this->createScheduledTaskSubscriber($oldSendingTask, $subscriber);
+    // create previous bounce task
+    $previousBounceTask = $this->createRunningTask();
+    $previousBounceTask->status = ScheduledTask::STATUS_COMPLETED;
+    $previousBounceTask->createdAt = Carbon::now()->subDays(6);
+    $previousBounceTask->scheduledAt = Carbon::now()->subDays(4);
+    $previousBounceTask->updatedAt = Carbon::now()->subDays(4);
+    $previousBounceTask->save();
+    // create data that should be used for the current bounce task run
+    $newsletter = $this->createNewsletter();
+    $sendingTask = $this->createSendingTask() ;
+    $sendingTask->setCreatedAt(Carbon::now()->subDays(3));
+    $sendingTask->setUpdatedAt(Carbon::now()->subDays(3));
+    $this->createSendingQueue($newsletter, $sendingTask);
+    $this->createScheduledTaskSubscriber($sendingTask, $subscriber);
+    // flush
+    $this->entityManager->flush();
+    $this->entityManager->clear();
+    // run the code
+    $this->worker->processEmails($this->createRunningTask(), $this->emails);
+    // test it
+    $statisticsRepository = $this->diContainer->get(StatisticsBouncesRepository::class);
+    $statistics = $statisticsRepository->findAll();
+    expect($statistics)->count(1);
+  }
+
   private function setMailPoetSendingMethod() {
     $settings = SettingsController::getInstance();
     $settings->set(
@@ -172,6 +206,36 @@ class BounceTest extends \MailPoetTest {
     $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task->save();
     return $task;
+  }
+
+  private function createNewsletter(): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setSubject('Subject');
+    $this->entityManager->persist($newsletter);
+    return $newsletter;
+  }
+
+  private function createSendingQueue(NewsletterEntity $newsletter, ScheduledTaskEntity $task): SendingQueueEntity {
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setTask($task);
+    $this->entityManager->persist($queue);
+    return $queue;
+  }
+
+  private function createSendingTask(): ScheduledTaskEntity {
+    $task = new ScheduledTaskEntity();
+    $task->setType('sending');
+    $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $this->entityManager->persist($task);
+    return $task;
+  }
+
+  private function createScheduledTaskSubscriber(ScheduledTaskEntity $task, SubscriberEntity $subscriber) {
+    $entity = new ScheduledTaskSubscriberEntity($task, $subscriber);
+    $this->entityManager->persist($entity);
+    return $entity;
   }
 
   public function cleanup() {
