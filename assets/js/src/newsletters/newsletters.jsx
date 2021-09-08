@@ -13,6 +13,7 @@ import NewsletterCongratulate from 'newsletters/send/congratulate/congratulate.j
 import NewsletterTypeStandard from 'newsletters/types/standard.jsx';
 import NewsletterTypeNotification from 'newsletters/types/notification/notification.jsx';
 import NewsletterTypeWelcome from 'newsletters/types/welcome/welcome.jsx';
+import { NewsletterTypeReEngagement } from 'newsletters/types/re_engagement/re_engagement';
 import AutomaticEmailEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
 import EventsConditions from 'newsletters/automatic_emails/events_conditions.jsx';
 import NewsletterListStandard from 'newsletters/listings/standard.jsx';
@@ -176,6 +177,10 @@ const routes = [
   {
     path: '/new/welcome',
     component: NewsletterTypeWelcome,
+  },
+  {
+    path: '/new/re-engagement',
+    component: NewsletterTypeReEngagement,
   },
   /* Newsletter: type selection */
   {
