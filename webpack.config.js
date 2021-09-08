@@ -286,44 +286,16 @@ const adminConfig = {
     }),
   ],
   optimization: {
-    runtimeChunk: {
-      name: 'vendor',
-    },
+    runtimeChunk: 'single',
     splitChunks: {
       cacheGroups: {
         chunks: 'all',
-        default: false,
-        vendors: false,
-        vendor: {
-          name: 'vendor',
-          chunks: (chunk) => chunk.name === 'vendor',
-          priority: 1,
-          enforce: true,
-        },
-        admin_vendor_chunk: {
-          name: 'admin_vendor_chunk',
-          test: (module, chunks) => {
-            // add all modules from 'admin_vendor' entrypoint
-            if (chunks.some((chunk) => chunk.name === 'admin_vendor')) {
-              return true;
-            }
-
-            // add admin/form_editor_legacy/newsletter_editor shared modules
-            const filteredChunks = chunks.filter((chunk) => {
-              return ['admin', 'newsletter_editor', 'form_editor', 'settings'].includes(chunk.name);
-            });
-            return filteredChunks.length > 1;
-          },
-          enforce: true,
-          chunks: (chunk) => ['admin_vendor', 'admin', 'newsletter_editor'].includes(chunk.name),
-          priority: 0,
-        },
-      }
+      },
     }
   },
   externals: {
     'jquery': 'jQuery',
-  }
+  },
 };
 
 // Public config
