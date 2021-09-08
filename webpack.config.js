@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const webpackManifestPlugin = require('webpack-manifest-plugin');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const webpackTerserPlugin = require('terser-webpack-plugin');
 const webpackCopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
@@ -382,7 +382,7 @@ module.exports = [adminConfig, publicConfig, migratorConfig, formPreviewConfig, 
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(
-      new webpackManifestPlugin({
+      new WebpackManifestPlugin({
         // create single manifest file for all Webpack configs
         seed: manifestSeed,
       })
