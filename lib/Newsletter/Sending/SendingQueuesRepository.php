@@ -60,13 +60,12 @@ class SendingQueuesRepository extends Repository {
       ->from(SendingQueueEntity::class, 's')
       ->join('s.task', 't')
       ->join('t.subscribers', 'tsub')
-      ->join('tsub.subscriber', 'sub')
       ->join('s.newsletter', 'n')
       ->where('t.status = :status')
       ->setParameter('status', ScheduledTaskEntity::STATUS_COMPLETED)
       ->andWhere('t.type = :sendingType')
       ->setParameter('sendingType', 'sending')
-      ->andWhere('sub.id = :subscriber')
+      ->andWhere('tsub.subscriber = :subscriber')
       ->setParameter('subscriber', $subscriber);
     if ($dateTo) {
       $qb->andWhere('t.updatedAt < :dateTo')
