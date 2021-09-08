@@ -19,6 +19,7 @@ export type StatsType = {
   machine_open: number;
   click: number;
   engagement_score: number;
+  last_engagement?: string;
   woocommerce: {
     currency: string;
     value: number;
@@ -65,6 +66,13 @@ export const SubscriberStats: React.FunctionComponent = () => {
   return (
     <div className="mailpoet-subscriber-stats">
       <Heading email={stats.email} />
+      <p>
+        {MailPoet.I18n.t('lastEngagement')}
+        {': '}
+        {
+          stats.last_engagement ? MailPoet.Date.format(stats.last_engagement) : MailPoet.I18n.t('never')
+        }
+      </p>
       <div className="mailpoet-subscriber-stats-summary-grid">
         <Summary
           click={stats.click}
