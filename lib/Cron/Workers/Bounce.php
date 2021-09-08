@@ -147,9 +147,9 @@ class Bounce extends SimpleWorker {
     return $this->scheduledTasksRepository->findPreviousTask($taskEntity);
   }
 
-  private function saveBouncedStatistics(SubscriberEntity $subscriber, ScheduledTask $task, ?ScheduledTaskEntity $previousTask) {
+  private function saveBouncedStatistics(SubscriberEntity $subscriber, ScheduledTask $task, ?ScheduledTaskEntity $previousTask): void {
     $taskEntity = $this->scheduledTasksRepository->findOneById($task->id);
-    if (!$taskEntity instanceof ScheduledTaskEntity) return null;
+    if (!$taskEntity instanceof ScheduledTaskEntity) return;
     $dateFrom = null;
     if ($previousTask instanceof ScheduledTaskEntity) {
       $dateFrom = $previousTask->getScheduledAt();
