@@ -11,6 +11,7 @@ import Heading from 'common/typography/heading/heading';
 import ModalCloseIcon from 'common/modal/close_icon';
 import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 import APIErrorsNotice from '../notices/api_errors_notice';
+import { GlobalContext } from '../context';
 
 interface Props {
   filter?: () => void;
@@ -35,6 +36,9 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
   hideScreenOptions = true,
 }: Props) => {
   const [isCreating, setIsCreating] = useState(false);
+  // this is here temporarily and the global context isn't in typescript yet
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { features } = React.useContext<any>(GlobalContext);
 
   const setupNewsletter = (type): void => {
     if (type !== undefined) {
@@ -195,6 +199,7 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
   const createStandardNewsletter = _.partial(createNewsletter, 'standard');
   const createNotificationNewsletter = _.partial(setupNewsletter, 'notification');
   const createWelcomeNewsletter = _.partial(setupNewsletter, 'welcome');
+  const createReEngagementNewsletter = _.partial(setupNewsletter, 're-engagement');
 
   const defaultTypes = [
     {
@@ -268,6 +273,30 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
       ),
     },
   ];
+  if (features.isSupported('re-engagement-email')) {
+    defaultTypes.push({
+      slug: 're_engagement',
+      title: MailPoet.I18n.t('tabReEngagementTitle'),
+      description: MailPoet.I18n.t('reEngagementDescription'),
+      action: (
+        <Button
+          automationId="create_notification"
+          onClick={createReEngagementNewsletter}
+          withSpinner={isCreating}
+          tabIndex={0}
+          onKeyDown={(event): void => {
+            if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+            ) {
+              event.preventDefault();
+              createReEngagementNewsletter();
+            }
+          }}
+        >
+          {MailPoet.I18n.t('setUp')}
+        </Button>
+      ),
+    });
+  }
 
   let types = Hooks.applyFilters('mailpoet_newsletters_types', [
     ...defaultTypes,
