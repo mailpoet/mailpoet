@@ -413,6 +413,7 @@ const testConfig = {
     ],
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
+      'handlebars': 'handlebars/dist/handlebars.js',
       'sticky-kit': 'vendor/jquery.sticky-kit.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
