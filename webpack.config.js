@@ -41,6 +41,9 @@ const baseConfig = {
       'node_modules',
       'assets/js/src',
     ],
+    fallback: {
+      fs: false,
+    },
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
       'handlebars': 'handlebars/dist/handlebars.js',
@@ -55,9 +58,6 @@ const baseConfig = {
       'html2canvas': 'html2canvas/dist/html2canvas.js',
       'asyncqueue': 'vendor/jquery.asyncqueue.js',
     },
-  },
-  node: {
-    fs: 'empty'
   },
   plugins: [],
   module: {
@@ -350,6 +350,9 @@ const testConfig = {
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
       'blob$': 'blob-tmp/Blob.js',
       'wp-js-hooks': path.resolve(__dirname, 'assets/js/src/hooks.js'),
+    },
+    fallback: {
+      fs: false,
     },
   },
   externals: {
