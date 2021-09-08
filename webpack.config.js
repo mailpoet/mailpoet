@@ -70,85 +70,153 @@ const baseConfig = {
       },
       {
         test: /form_editor\.js$/,
-        loader: 'expose-loader?WysijaForm',
+        loader: 'expose-loader',
+        options: {
+          exposes: 'WysijaForm',
+        },
       },
       {
         include: require.resolve('codemirror'),
-        loader: 'expose-loader?CodeMirror',
+        loader: 'expose-loader',
+        options: {
+          exposes: 'CodeMirror',
+        },
       },
       {
         include: require.resolve('backbone'),
-        loader: 'expose-loader?Backbone',
+        loader: 'expose-loader',
+        options: {
+          exposes: 'Backbone',
+        },
       },
       {
         include: require.resolve('underscore'),
-        loader: 'expose-loader?_',
+        loader: 'expose-loader',
+        options: {
+          exposes: '_',
+        },
       },
       {
         include: require.resolve('react-tooltip'),
-        loader: 'expose-loader?' + globalPrefix + '.ReactTooltip',
+        loader: 'expose-loader',
+        options: {
+          exposes: globalPrefix + '.ReactTooltip',
+        },
       },
       {
         include: require.resolve('react'),
-        loader: 'expose-loader?' + globalPrefix + '.React',
+        loader: 'expose-loader',
+        options: {
+          exposes: globalPrefix + '.React',
+        },
       },
       {
         include: require.resolve('react-dom'),
-        loader: 'expose-loader?' + globalPrefix + '.ReactDOM',
+        loader: 'expose-loader',
+        options: {
+          exposes: globalPrefix + '.ReactDOM',
+        },
       },
       {
         include: require.resolve('react-router-dom'),
-        use: 'expose-loader?' + globalPrefix + '.ReactRouter',
+        loader: 'expose-loader',
+        options: {
+          exposes: globalPrefix + '.ReactRouter',
+        },
       },
       {
         include: require.resolve('react-string-replace'),
-        loader: 'expose-loader?' + globalPrefix + '.ReactStringReplace',
+        loader: 'expose-loader',
+        options: {
+          exposes: globalPrefix + '.ReactStringReplace',
+        },
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/hooks.js'),
-        use: 'expose-loader?' + globalPrefix + '.Hooks',
+        loader: 'expose-loader',
+        options: {
+          exposes: {
+            globalName: globalPrefix + '.Hooks',
+            override: true,
+          },
+        },
       },
       {
         test: /listing.jsx/i,
         use: [
-          'expose-loader?' + globalPrefix + '.Listing',
+          {
+            loader: 'expose-loader',
+            options: {
+              exposes: globalPrefix + '.Listing',
+            },
+          },
           'babel-loader'
         ],
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/help-tooltip.jsx'),
         use: [
-          'expose-loader?' + globalPrefix + '.HelpTooltip',
+          {
+            loader: 'expose-loader',
+            options: {
+              exposes: globalPrefix + '.HelpTooltip',
+            },
+          },
           'babel-loader',
         ]
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/common/index.ts'),
         use: [
-          'expose-loader?' + globalPrefix + '.Common',
+          {
+            loader: 'expose-loader',
+            options: {
+              exposes: globalPrefix + '.Common',
+            },
+          },
           'babel-loader',
         ]
       },
       {
         include: /Blob.js$/,
-        loader: 'exports-loader?window.Blob',
+        loader: 'exports-loader',
+        options: {
+          exports: 'default window.Blob',
+        }
       },
       {
         test: /backbone.supermodel/,
-        loader: 'exports-loader?Backbone.SuperModel',
+        loader: 'exports-loader',
+        options: {
+          exports: 'default Backbone.SuperModel',
+        }
       },
       {
         include: require.resolve('handlebars'),
-        loader: 'expose-loader?Handlebars',
+        loader: 'expose-loader',
+        options: {
+          exposes: 'Handlebars',
+        },
       },
       {
         include: require.resolve('velocity-animate'),
-        loader: 'imports-loader?jQuery=jquery',
+        loader: 'imports-loader',
+        options: {
+          imports: {
+            name: 'jQuery',
+            moduleName: 'jquery',
+          },
+        },
       },
       {
         include: require.resolve('classnames'),
         use: [
-          'expose-loader?' + globalPrefix + '.ClassNames',
+          {
+            loader: 'expose-loader',
+            options: {
+              exposes: globalPrefix + '.ClassNames',
+            },
+          },
           'babel-loader',
         ]
       },
