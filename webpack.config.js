@@ -43,6 +43,7 @@ const baseConfig = {
     ],
     fallback: {
       fs: false,
+      path: false, // path is used in css module, but we don't use the functionality which requires it
     },
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
