@@ -6,7 +6,7 @@ import Background from 'common/background/background';
 import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
-import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
+import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
 import WelcomeScheduling from './scheduling.jsx';
 
 const field = {

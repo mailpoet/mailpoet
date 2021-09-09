@@ -1,4 +1,5 @@
 import React from 'react';
+import { Location } from 'history';
 import MailPoet from 'mailpoet';
 import HideScreenOptions from '../../common/hide_screen_options/hide_screen_options';
 import Steps from '../../common/steps/steps';
@@ -31,6 +32,7 @@ const getEmailTypeTitle = (emailType: string): string => {
     welcome: MailPoet.I18n.t('stepNameTypeWelcome'),
     notification: MailPoet.I18n.t('stepNameTypeNotification'),
     woocommerce: MailPoet.I18n.t('stepNameTypeWooCommerce'),
+    re_engagement: MailPoet.I18n.t('stepNameTypeReEngagement'),
   };
 
   return typeMap[emailType] || MailPoet.I18n.t('stepNameTypeStandard');
@@ -42,6 +44,7 @@ const getEmailSendTitle = (emailType: string): string => {
     welcome: MailPoet.I18n.t('stepNameActivate'),
     notification: MailPoet.I18n.t('stepNameActivate'),
     woocommerce: MailPoet.I18n.t('stepNameActivate'),
+    re_engagement: MailPoet.I18n.t('stepNameActivate'),
   };
 
   return typeMap[emailType] || MailPoet.I18n.t('stepNameSend');
@@ -71,7 +74,7 @@ const stepsListingHeading = (
   );
 };
 
-interface Props {
+export interface Props {
   step?: number;
   emailType?: string;
   automationId?: string;
