@@ -506,42 +506,6 @@ class Newsletter extends Model {
       ->findMany();
   }
 
-  public static function getArchives($segmentIds = []) {
-    $orm = self::tableAlias('newsletters')
-      ->distinct()->select('newsletters.*')
-      ->select('newsletter_rendered_subject')
-      ->select('task_id')
-      ->whereIn('newsletters.type', [
-        self::TYPE_STANDARD,
-        self::TYPE_NOTIFICATION_HISTORY,
-      ])
-      ->join(
-        MP_SENDING_QUEUES_TABLE,
-        'queues.newsletter_id = newsletters.id',
-        'queues'
-      )
-      ->join(
-        MP_SCHEDULED_TASKS_TABLE,
-        'queues.task_id = tasks.id',
-        'tasks'
-      )
-      ->where('tasks.status', SendingQueue::STATUS_COMPLETED)
-      ->whereNull('newsletters.deleted_at')
-      ->select('tasks.processed_at')
-      ->orderByDesc('tasks.processed_at')
-      ->orderByAsc('task_id');
-
-    if (!empty($segmentIds)) {
-      $orm->join(
-        MP_NEWSLETTER_SEGMENT_TABLE,
-        'newsletter_segments.newsletter_id = newsletters.id',
-        'newsletter_segments'
-      )
-      ->whereIn('newsletter_segments.segment_id', $segmentIds);
-    }
-    return $orm->findMany();
-  }
-
   public static function getByHash($hash) {
     return parent::where('hash', $hash)
       ->findOne();
