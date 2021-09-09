@@ -87,7 +87,10 @@ const baseConfig = {
         include: require.resolve('backbone'),
         loader: 'expose-loader',
         options: {
-          exposes: 'Backbone',
+          exposes: {
+            globalName: 'Backbone',
+            override: true,
+          },
         },
       },
       {
