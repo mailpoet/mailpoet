@@ -33,22 +33,37 @@ class CaptchaTest extends \MailPoetTest {
     $this->captchaSession->reset();
   }
 
-  public function testItDoesNotRequireCaptchaForTheFirstSubscription() {
+  public function testItRequiresCaptchaForFirstSubscription() {
+    $email = 'non-existent-subscriber@example.com';
+    $result = $this->captcha->isRequired($email);
+    expect($result)->equals(true);
+  }
+
+  public function testItRequiresCaptchaForUnrepeatedIPAddress() {
+    $result = $this->captcha->isRequired();
+    expect($result)->equals(true);
+  }
+
+  public function testItTakesFilterIntoAccountToDisableCaptcha() {
+    $wp = new WPFunctions;
+    $filter = function() {
+      return 1;
+    };
+    $wp->addFilter('mailpoet_subscription_captcha_recipient_limit', $filter);
     $email = 'non-existent-subscriber@example.com';
     $result = $this->captcha->isRequired($email);
     expect($result)->equals(false);
-  }
 
-  public function testItRequiresCaptchaForRepeatedRecipient() {
+    $result = $this->captcha->isRequired();
+    expect($result)->equals(false);
+
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->countConfirmations = 1;
     $subscriber->save();
     $result = $this->captcha->isRequired($subscriber->email);
     expect($result)->equals(true);
-  }
 
-  public function testItRequiresCaptchaForRepeatedIPAddress() {
     $ip = new SubscriberIPEntity('127.0.0.1');
     $ip->setCreatedAt(Carbon::now()->subMinutes(1));
     $this->entityManager->persist($ip);
@@ -56,6 +71,8 @@ class CaptchaTest extends \MailPoetTest {
     $email = 'non-existent-subscriber@example.com';
     $result = $this->captcha->isRequired($email);
     expect($result)->equals(true);
+
+    $wp->removeFilter('mailpoet_subscription_captcha_recipient_limit', $filter);
   }
 
   public function testItRendersImageAndStoresHashToSession() {
