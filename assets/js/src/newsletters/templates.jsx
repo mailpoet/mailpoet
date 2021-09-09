@@ -1,6 +1,6 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
+import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
 import Loading from 'common/loading.jsx';
 import Background from 'common/background/background';
 import Categories from 'common/categories/categories';

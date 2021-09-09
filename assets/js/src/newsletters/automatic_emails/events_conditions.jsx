@@ -4,7 +4,7 @@ import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
 import Selection from 'form/fields/selection.jsx';
-import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
+import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
 import EventScheduling from 'newsletters/automatic_emails/events/event_scheduling.jsx';
 import EventOptions from 'newsletters/automatic_emails/events/event_options';
 import MailPoet from 'mailpoet';

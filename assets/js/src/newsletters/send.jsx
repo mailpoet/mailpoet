@@ -1,7 +1,7 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
-import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route.jsx';
+import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
 import { Button } from 'common';
 import Form from 'form/form.jsx';
 import StandardNewsletterFields from 'newsletters/send/standard.jsx';
