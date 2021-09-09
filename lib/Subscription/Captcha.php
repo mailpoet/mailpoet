@@ -43,12 +43,16 @@ class Captcha {
   }
 
   public function isRequired($subscriberEmail = null) {
-    if ($this->isUserExemptFromCaptcha()) {
+    if ($this->isUserExemptFromCaptcha() ) {
       return false;
     }
 
-    // Check limits per recipient
-    $subscriptionCaptchaRecipientLimit = $this->wp->applyFilters('mailpoet_subscription_captcha_recipient_limit', 1);
+    $subscriptionCaptchaRecipientLimit = $this->wp->applyFilters('mailpoet_subscription_captcha_recipient_limit', 0);
+    if ($subscriptionCaptchaRecipientLimit === 0) {
+      return true;
+    }
+
+    // Check limits per recipient if enabled
     if ($subscriberEmail) {
       $subscriber = Subscriber::where('email', $subscriberEmail)->findOne();
       if ($subscriber instanceof Subscriber
