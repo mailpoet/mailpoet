@@ -19,8 +19,10 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoetVendor\Carbon\Carbon;
 
 class NewsletterRepositoryTest extends \MailPoetTest {
   /** @var NewslettersRepository */
@@ -211,8 +213,65 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     expect($this->entityManager->find(StatisticsWooCommercePurchaseEntity::class, $statisticsPurchase->getId()))->null();
   }
 
-  public function _after() {
-    $this->cleanup();
+  public function testItGetsArchiveNewslettersForSegments() {
+    $types = [
+      NewsletterEntity::TYPE_STANDARD,
+      NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
+    ];
+
+    list($newsletters) = $this->createNewslettersAndSendingTasks($types);
+
+    // set segment association for the last newsletter
+    $segment = new SegmentEntity('Segment', SegmentEntity::TYPE_DEFAULT, 'description');
+    $this->entityManager->persist($segment);
+    $newsletterSegment = new NewsletterSegmentEntity($newsletters[1], $segment);
+    $this->entityManager->persist($newsletterSegment);
+    $this->entityManager->flush();
+
+    expect($this->repository->findAll())->count(2);
+
+    // return archives in a given segment
+    $results = $this->repository->getArchives([$segment->getId()]);
+
+    expect($results)->count(1);
+    expect($results[0]->getId())->equals($newsletters[1]->getId());
+    expect($results[0]->getType())->equals(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+  }
+
+  public function testItGetsAllArchiveNewsletters() {
+    $types = [
+      Newsletter::TYPE_STANDARD,
+      Newsletter::TYPE_STANDARD, // should be returned
+      Newsletter::TYPE_WELCOME,
+      Newsletter::TYPE_AUTOMATIC,
+      Newsletter::TYPE_NOTIFICATION,
+      Newsletter::TYPE_NOTIFICATION_HISTORY, // should be returned
+      Newsletter::TYPE_NOTIFICATION_HISTORY,
+    ];
+
+    list($newsletters, $sendingQueues) = $this->createNewslettersAndSendingTasks($types);
+
+    // set the sending queue status of the first newsletter to null
+    $sendingQueues[0]->status = null;
+    $sendingQueues[0]->save();
+
+    // trash the last newsletter
+    end($newsletters)->setDeletedAt(new Carbon());
+    $this->entityManager->flush();
+
+    expect($this->repository->findAll())->count(7);
+
+    // archives return only:
+    // 1. STANDARD and NOTIFICATION HISTORY newsletters
+    // 2. active newsletters (i.e., not trashed)
+    // 3. with sending queue records that are COMPLETED
+    $results = $this->repository->getArchives();
+
+    expect($results)->count(2);
+    expect($results[0]->getId())->equals($newsletters[1]->getId());
+    expect($results[0]->getType())->equals(NewsletterEntity::TYPE_STANDARD);
+    expect($results[1]->getId())->equals($newsletters[5]->getId());
+    expect($results[1]->getType())->equals(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
   }
 
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT, $parent = null): NewsletterEntity {
@@ -225,6 +284,21 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($newsletter);
     $this->entityManager->flush();
     return $newsletter;
+  }
+
+  private function createNewslettersAndSendingTasks(array $types): array {
+    $newsletters = [];
+    $sendingQueues = [];
+    for ($i = 0; $i < count($types); $i++) {
+      $newsletters[$i] = $this->createNewsletter($types[$i]);
+
+      $sendingQueues[$i] = SendingTask::create();
+      $sendingQueues[$i]->newsletter_id = $newsletters[$i]->getId();
+      $sendingQueues[$i]->status = SendingQueueEntity::STATUS_COMPLETED;
+      $sendingQueues[$i]->save();
+    }
+
+    return [$newsletters, $sendingQueues];
   }
 
   private function createQueueWithTaskAndSegmentAndSubscribers(NewsletterEntity $newsletter, $status = ScheduledTaskEntity::STATUS_SCHEDULED): SendingQueueEntity {

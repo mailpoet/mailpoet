@@ -2,6 +2,8 @@
 
 namespace MailPoet\Newsletter;
 
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Router\Endpoints\ViewInBrowser as ViewInBrowserEndpoint;
@@ -42,22 +44,30 @@ class Url {
   }
 
   public function createUrlDataObject($newsletter, $subscriber, $queue, $preview) {
+    if ($newsletter instanceof NewsletterEntity) {
+      $newsletterId = (!empty($newsletter->getId())) ? (int)$newsletter->getId() : 0;
+      $newsletterHash = (!empty($newsletter->getHash())) ? $newsletter->getHash() : 0;
+    } else {
+      $newsletterId = (!empty($newsletter->id)) ? (int)$newsletter->id : 0;
+      $newsletterHash = (!empty($newsletter->hash)) ? $newsletter->hash : 0;
+    }
+
+    if ($queue instanceof SendingQueueEntity) {
+      $sendingQueueId = (!empty($queue->getId())) ? (int)$queue->getId() : 0;
+    } else {
+      $sendingQueueId = (!empty($queue->id)) ? (int)$queue->id : 0;
+    }
+
     return [
-      (!empty($newsletter->id)) ?
-        (int)$newsletter->id :
-        0,
-      (!empty($newsletter->hash)) ?
-        $newsletter->hash :
-        0,
+      $newsletterId,
+      $newsletterHash,
       (!empty($subscriber->id)) ?
         (int)$subscriber->id :
         0,
       (!empty($subscriber->token)) ?
         $subscriber->token :
         0,
-      (!empty($queue->id)) ?
-        (int)$queue->id :
-        0,
+      $sendingQueueId,
       (int)$preview,
     ];
   }

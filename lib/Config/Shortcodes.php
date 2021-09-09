@@ -2,10 +2,13 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Widget;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -28,18 +31,23 @@ class Shortcodes {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
   public function __construct(
     Pages $subscriptionPages,
     WPFunctions $wp,
     SegmentSubscribersRepository $segmentSubscribersRepository,
     SubscribersRepository $subscribersRepository,
-    NewsletterUrl $newsletterUrl
+    NewsletterUrl $newsletterUrl,
+    NewslettersRepository $newslettersRepository
   ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
     $this->segmentSubscribersRepository = $segmentSubscribersRepository;
     $this->subscribersRepository = $subscribersRepository;
     $this->newsletterUrl = $newsletterUrl;
+    $this->newslettersRepository = $newslettersRepository;
   }
 
   public function init() {
@@ -110,7 +118,7 @@ class Shortcodes {
 
     $html = '';
 
-    $newsletters = Newsletter::getArchives($segmentIds);
+    $newsletters = $this->newslettersRepository->getArchives($segmentIds);
 
     $subscriber = $this->subscribersRepository->getCurrentWPUser();
     $subscriber = $subscriber ? Subscriber::findOne($subscriber->getId()) : null;
@@ -127,10 +135,17 @@ class Shortcodes {
       }
       $html .= '<ul class="mailpoet_archive">';
       foreach ($newsletters as $newsletter) {
-        $queue = $newsletter->queue()->findOne();
+        $queue = $newsletter->getQueues()->first();
+
+        if ($queue instanceof SendingQueueEntity) {
+          $task = $queue->getTask();
+        } else {
+          $task = null;
+        }
+
         $html .= '<li>' .
           '<span class="mailpoet_archive_date">' .
-            $this->wp->applyFilters('mailpoet_archive_date', $newsletter) .
+            $this->wp->applyFilters('mailpoet_archive_date', $task) .
           '</span>
           <span class="mailpoet_archive_subject">' .
             $this->wp->applyFilters('mailpoet_archive_subject', $newsletter, $subscriber, $queue) .
@@ -142,18 +157,27 @@ class Shortcodes {
     return $html;
   }
 
-  public function renderArchiveDate($newsletter) {
+  public function renderArchiveDate($task) {
+    $timestamp = null;
+
+    if ($task instanceof ScheduledTaskEntity) {
+      $processedAt = $task->getProcessedAt();
+      if (!is_null($processedAt)) {
+        $timestamp = $processedAt->getTimestamp();
+      }
+    }
+
     return $this->wp->dateI18n(
       $this->wp->getOption('date_format'),
-      strtotime($newsletter->processedAt)
+      $timestamp
     );
   }
 
-  public function renderArchiveSubject($newsletter, $subscriber, $queue) {
+  public function renderArchiveSubject(NewsletterEntity $newsletter, $subscriber, SendingQueueEntity $queue) {
     $previewUrl = $this->newsletterUrl->getViewInBrowserUrl($newsletter, $subscriber, $queue);
     return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'
       . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'
-      . esc_attr($newsletter->newsletterRenderedSubject) .
+      . esc_attr((string)$queue->getNewsletterRenderedSubject()) .
     '</a>';
   }
 }
