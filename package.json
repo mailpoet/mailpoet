@@ -84,6 +84,7 @@
     "papaparse": "^5.2.0",
     "parsleyjs": "^2.9.2",
     "postcss": "^8.3.6",
+    "process": "^0.11.10",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.0.0",
