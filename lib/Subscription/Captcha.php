@@ -43,7 +43,7 @@ class Captcha {
   }
 
   public function isRequired($subscriberEmail = null) {
-    if ($this->isUserExemptFromCaptcha() ) {
+    if ($this->isUserExemptFromCaptcha()) {
       return false;
     }
 
