@@ -120,3 +120,7 @@
     padding-left: 16px;
   }
 }
+// This style hides the horizontal scrollbar in Firefox browser
+.interface-interface-skeleton__sidebar {
+  overflow-x: hidden;
+}
