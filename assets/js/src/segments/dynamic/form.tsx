@@ -16,6 +16,7 @@ import { isFormValid } from './validator';
 import { MinusIcon } from '../../common/button/icon/minus';
 import plusIcon from '../../common/button/icon/plus';
 import APIErrorsNotice from '../../notices/api_errors_notice';
+import { PrivacyProtectionNotice } from './privacy_protection_notice';
 
 import {
   FilterRow,
@@ -176,6 +177,7 @@ export const Form: React.FunctionComponent<Props> = ({
         </div>
         <div className="mailpoet-segments-counter-section">
           <SubscribersCounter />
+          <PrivacyProtectionNotice />
         </div>
         <div className="mailpoet-form-actions">
           <Button
