@@ -18,6 +18,7 @@ declare let window: ReengagementWindow;
 export function NewsletterTypeReEngagement(): JSX.Element {
   const [options] = useState({
     afterTimeNumber: window.settings.deactivate_subscriber_after_inactive_days,
+    afterTimeType: 'months',
   });
   return (
     <div>
@@ -28,6 +29,7 @@ export function NewsletterTypeReEngagement(): JSX.Element {
       <Grid.Column align="center" className="mailpoet-schedule-email">
         <Scheduling
           afterTimeNumber={options.afterTimeNumber}
+          afterTimeType={options.afterTimeType}
         />
 
         <Button
