@@ -55,6 +55,7 @@ const baseConfig = {
       'spectrum$': 'spectrum-colorpicker/spectrum.js',
       'wp-js-hooks': path.resolve(__dirname, 'assets/js/src/hooks.js'),
       'blob$': 'blob-tmp/Blob.js',
+      'chai': 'chai/index.js',
       'papaparse': 'papaparse/papaparse.min.js',
       'html2canvas': 'html2canvas/dist/html2canvas.js',
       'asyncqueue': 'vendor/jquery.asyncqueue.js',
