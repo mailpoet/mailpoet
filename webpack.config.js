@@ -33,8 +33,8 @@ const baseConfig = {
   output: {
     publicPath: '', // This is needed to have correct names in WebpackManifestPlugin
     path: path.join(__dirname, 'assets/dist/js'),
-    filename: (PRODUCTION_ENV) ? '[name].[hash:8].js' : '[name].js',
-    chunkFilename: (PRODUCTION_ENV) ? '[name].[hash:8].chunk.js' : '[name].chunk.js',
+    filename: (PRODUCTION_ENV) ? '[name].[fullhash:8].js' : '[name].js',
+    chunkFilename: (PRODUCTION_ENV) ? '[name].[fullhash:8].chunk.js' : '[name].chunk.js',
   },
   resolve: {
     modules: [
