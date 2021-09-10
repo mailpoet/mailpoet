@@ -30,6 +30,9 @@ export function NewsletterTypeReEngagement(): JSX.Element {
         <Scheduling
           afterTimeNumber={options.afterTimeNumber}
           afterTimeType={options.afterTimeType}
+          inactiveSubscribersPeriod={
+            Number(window.settings.deactivate_subscriber_after_inactive_days)
+          }
         />
 
         <Button
