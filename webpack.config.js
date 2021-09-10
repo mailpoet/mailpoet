@@ -439,9 +439,10 @@ module.exports = [adminConfig, publicConfig, migratorConfig, formPreviewConfig, 
       })
     );
   }
+  const finalConfig = Object.assign({}, baseConfig, config);
   // Clean output paths before build
-  if (config.output && config.output.path) {
-    del.sync([path.resolve(config.output.path, '**/*')]);
+  if (finalConfig.output && finalConfig.output.path) {
+    del.sync([path.resolve(finalConfig.output.path, '**/*')]);
   }
-  return Object.assign({}, baseConfig, config);
+  return finalConfig;
 });
