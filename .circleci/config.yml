@@ -106,7 +106,7 @@ executors:
 jobs:
   build:
     executor: wpcli_php_latest
-    resource_class: medium
+    resource_class: medium+
     steps:
       - checkout
       - run:
@@ -417,7 +417,7 @@ jobs:
           destination: fake-mailer
   build_release_zip:
     executor: wpcli_php_mysql_latest
-    resource_class: medium
+    resource_class: medium+
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
