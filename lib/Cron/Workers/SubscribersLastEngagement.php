@@ -88,7 +88,7 @@ class SubscribersLastEngagement extends SimpleWorker {
           LEFT JOIN (SELECT max(created_at) as created_at, subscriber_id FROM $statisticsClicksTable as mpscinner GROUP BY mpscinner.subscriber_id) as mpsc ON mpsc.subscriber_id = mps.id
           LEFT JOIN (SELECT MAX(post_id) AS post_id, meta_value as email FROM $postsmetaTable WHERE meta_key = '_billing_email' GROUP BY email) AS newestOrderIds ON newestOrderIds.email $emailCollate = mps.email
           LEFT JOIN (SELECT ID, post_date FROM $postsTable WHERE post_type = 'shop_order') AS shopOrders ON newestOrderIds.post_id = shopOrders.ID
-        SET mps.last_engagement_at = NULLIF(GREATEST(COALESCE(mpso.created_at, 0), COALESCE(mpsc.created_at,0), COALESCE(shopOrders.post_date, 0)), 0)
+        SET mps.last_engagement_at = NULLIF(GREATEST(COALESCE(mpso.created_at, '0'), COALESCE(mpsc.created_at, '0'), COALESCE(shopOrders.post_date, '0')), '0')
         WHERE mps.last_engagement_at IS NULL AND mps.id >= $minSubscriberId AND  mps.id < $maxSubscriberId;
       ";
     }
