@@ -54,14 +54,28 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     $apiResult = [
       'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
       'status' => API::SENDING_STATUS_SEND_ERROR,
-      'message' => 'this is a spam',
+      'message' => MailerError::MESSAGE_EMAIL_FORBIDDEN_ACTION,
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
 
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->stringContainsString('The MailPoet Sending Service has stopped sending your emails for one of the following reasons');
+    expect($error->getMessage())->stringContainsString('MailPoet Sending Service has been temporarily suspended for your site due to');
+  }
+
+  public function testGetErrorInsufficientPrivileges(): void {
+    $apiResult = [
+      'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
+      'status' => API::SENDING_STATUS_SEND_ERROR,
+      'message' => MailerError::MESSAGE_EMAIL_INSUFFICIENT_PRIVILEGES,
+    ];
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
+
+    expect($error)->isInstanceOf(MailerError::class);
+    expect($error->getOperation())->equals(MailerError::OPERATION_INSUFFICIENT_PRIVILEGES);
+    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    expect($error->getMessage())->stringContainsString('You have reached the subscriber limit of your plan.');
   }
 
   public function testGetErrorUnauthorizedEmail() {
