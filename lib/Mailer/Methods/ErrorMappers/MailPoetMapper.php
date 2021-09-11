@@ -56,7 +56,10 @@ class MailPoetMapper {
         $retryInterval = self::TEMPORARY_UNAVAILABLE_RETRY_INTERVAL;
         break;
       case API::RESPONSE_CODE_CAN_NOT_SEND:
-        if ($result['message'] === MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED) {
+        if ($result['message'] === MailerError::MESSAGE_EMAIL_INSUFFICIENT_PRIVILEGES) {
+          $operation = MailerError::OPERATION_INSUFFICIENT_PRIVILEGES;
+          $message = $this->getInsufficientPrivilegesMessage();
+        } elseif ($result['message'] === MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED) {
           $operation = MailerError::OPERATION_AUTHORIZATION;
           $message = $this->getUnauthorizedEmailMessage($sender);
         } else {
@@ -108,27 +111,51 @@ class MailPoetMapper {
     return $message;
   }
 
-  private function getAccountBannedMessage() {
-    $message = WPFunctions::get()->__('The MailPoet Sending Service has stopped sending your emails for one of the following reasons:', 'mailpoet');
-
-    $subscriberLimitMessage = Helpers::replaceLinkTags(
-      WPFunctions::get()->__('You may have reached the subscriber limit of your plan. [link]Manage your subscriptions[/link].', 'mailpoet'),
-      'https://account.mailpoet.com/account',
+  private function getInsufficientPrivilegesMessage(): string {
+    $message = __('You have reached the subscriber limit of your plan. Please [link1]upgrade your plan[/link1], or [link2]contact our support team[/link2] if you have any questions.', 'mailpoet');
+    $message = Helpers::replaceLinkTags(
+      $message,
+      'https://account.mailpoet.com/account/',
       [
         'target' => '_blank',
         'rel' => 'noopener noreferrer',
-      ]
+      ],
+      'link1'
     );
-
-    $deliverabilityMessage = Helpers::replaceLinkTags(
-      WPFunctions::get()->__('You may have had a poor deliverability rate. Please [link]contact our support team[/link] to resolve the issue.', 'mailpoet'),
+    $message = Helpers::replaceLinkTags(
+      $message,
       'https://www.mailpoet.com/support/',
       [
         'target' => '_blank',
         'rel' => 'noopener noreferrer',
-      ]
+      ],
+      'link2'
     );
 
-    return "$message<br><br>$subscriberLimitMessage<br>$deliverabilityMessage<br>";
+    return "{$message}<br/>";
+  }
+
+  private function getAccountBannedMessage(): string {
+    $message = __('MailPoet Sending Service has been temporarily suspended for your site due to [link1]degraded email deliverability[/link1]. Please [link2]contact our support team[/link2] to resolve the issue.', 'mailpoet');
+    $message = Helpers::replaceLinkTags(
+      $message,
+      'https://kb.mailpoet.com/article/231-sending-does-not-work#suspended',
+      [
+        'target' => '_blank',
+        'rel' => 'noopener noreferrer',
+      ],
+      'link1'
+    );
+    $message = Helpers::replaceLinkTags(
+      $message,
+      'https://www.mailpoet.com/support/',
+      [
+        'target' => '_blank',
+        'rel' => 'noopener noreferrer',
+      ],
+      'link2'
+    );
+
+    return "{$message}<br/>";
   }
 }

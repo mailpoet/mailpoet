@@ -73,6 +73,28 @@ const MailerError = (props) => {
     () => <br key={`br-${brKey++}`} /> // eslint-disable-line no-plusplus
   );
 
+  if (props.mta_log.error.operation === 'insufficient_privileges') {
+    return (
+      <div className="mailpoet_notice notice notice-error">
+        <p>
+          { message }
+        </p>
+        <p>
+          <a
+            href="#"
+            className="button button-primary"
+            onClick={(event) => {
+              event.preventDefault();
+              resumeMailerSending(event);
+            }}
+          >
+            { MailPoet.I18n.t('mailerResumeSendingAfterUpgradeButton') }
+          </a>
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="mailpoet_notice notice notice-error">
       <p>
