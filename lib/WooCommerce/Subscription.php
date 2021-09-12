@@ -81,7 +81,7 @@ class Subscription {
       $this->wp->escAttr($inputName),
       [
         'type' => 'checkbox',
-        'label' => $this->wp->escHtml($labelString),
+        'label' => esc_html__($labelString, 'mailpoet'),
         'custom_attributes' => ['data-automation-id' => 'woo-commerce-subscription-opt-in'],
         'return' => true,
       ],
