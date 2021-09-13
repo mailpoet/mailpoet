@@ -425,32 +425,41 @@ class Populator {
       ],
       [
         'name' => 'group',
-        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATIC,
       ],
       [
         'name' => 'event',
-        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATIC,
       ],
       [
         'name' => 'sendTo',
-        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATIC,
       ],
       [
         'name' => 'segment',
-        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATIC,
       ],
       [
         'name' => 'afterTimeNumber',
-        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATIC,
       ],
       [
         'name' => 'afterTimeType',
-        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATIC,
       ],
       [
         'name' => 'meta',
-        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
+        'newsletter_type' => NewsletterEntity::TYPE_AUTOMATIC,
       ],
+      [
+        'name' => 'afterTimeNumber',
+        'newsletter_type' => NewsletterEntity::TYPE_RE_ENGAGEMENT,
+      ],
+      [
+        'name' => 'afterTimeType',
+        'newsletter_type' => NewsletterEntity::TYPE_RE_ENGAGEMENT,
+      ],
+
     ];
 
     return [
