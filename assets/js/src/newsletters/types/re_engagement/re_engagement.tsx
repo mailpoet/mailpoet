@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { __, assoc, compose } from 'lodash/fp';
 
 import MailPoet from 'mailpoet';
 import Background from 'common/background/background';
@@ -16,8 +17,10 @@ interface ReengagementWindow extends Window {
 declare let window: ReengagementWindow;
 
 export function NewsletterTypeReEngagement(): JSX.Element {
-  const [options] = useState({
-    afterTimeNumber: window.settings.deactivate_subscriber_after_inactive_days,
+  const [options, setOptions] = useState({
+    afterTimeNumber: (
+      (Number(window.settings.deactivate_subscriber_after_inactive_days) / 30) - 1
+    ).toString(),
     afterTimeType: 'months',
   });
   return (
@@ -33,6 +36,8 @@ export function NewsletterTypeReEngagement(): JSX.Element {
           inactiveSubscribersPeriod={
             Number(window.settings.deactivate_subscriber_after_inactive_days)
           }
+          updateAfterTimeNumber={compose([setOptions, assoc('afterTimeNumber', __, options)])}
+          updateAfterTimeType={compose([setOptions, assoc('afterTimeType', __, options)])}
         />
 
         <Button
