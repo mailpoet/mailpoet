@@ -19,6 +19,7 @@ import EventsConditions from 'newsletters/automatic_emails/events_conditions.jsx
 import NewsletterListStandard from 'newsletters/listings/standard.jsx';
 import NewsletterListWelcome from 'newsletters/listings/welcome.jsx';
 import NewsletterListNotification from 'newsletters/listings/notification.jsx';
+import NewsletterListReEngagement from 'newsletters/listings/re_engagement.jsx';
 import NewsletterListNotificationHistory from 'newsletters/listings/notification_history.jsx';
 import NewsletterSendingStatus from 'newsletters/sending_status.jsx';
 import Listings from 'newsletters/automatic_emails/listings.jsx';
@@ -83,6 +84,14 @@ const Tabs = withNpsPoll(() => {
               ? <NewsletterListNotificationHistory parentId={parentId} />
               : <NewsletterListNotification />
           }
+        </Tab>
+        <Tab
+          key="re_engagement"
+          route="re_engagement/(.*)?"
+          title={MailPoet.I18n.t('tabReEngagementTitle')}
+          automationId={`tab-${MailPoet.I18n.t('tabReEngagementTitle')}`}
+        >
+          <NewsletterListReEngagement />
         </Tab>
         {window.mailpoet_woocommerce_active && _.map(automaticEmails, (email) => (
           <Tab
@@ -162,7 +171,7 @@ const routes = [
     component: Tabs,
   },
   {
-    path: '/(standard|welcome|notification)/(.*)?',
+    path: '/(standard|welcome|notification|re_engagement)/(.*)?',
     component: Tabs,
   },
   /* New newsletter: types */
