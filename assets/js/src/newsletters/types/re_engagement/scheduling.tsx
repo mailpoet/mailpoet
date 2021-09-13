@@ -12,8 +12,8 @@ interface Props {
   afterTimeNumber: string;
   afterTimeType: string;
   inactiveSubscribersPeriod: number;
-  updateAfterTimeNumber: (string) => void;
-  updateAfterTimeType: (string) => void;
+  updateAfterTimeNumber: (arg: string) => void;
+  updateAfterTimeType: (arg: string) => void;
 }
 
 export function Scheduling({

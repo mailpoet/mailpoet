@@ -8,6 +8,7 @@ import StandardNewsletterFields from 'newsletters/send/standard.jsx';
 import NotificationNewsletterFields from 'newsletters/send/notification.jsx';
 import WelcomeNewsletterFields from 'newsletters/send/welcome.jsx';
 import AutomaticEmailFields from 'newsletters/send/automatic.jsx';
+import { ReEngagementNewsletterFields } from 'newsletters/send/re_engagement';
 import HelpTooltip from 'help-tooltip.jsx';
 import jQuery from 'jquery';
 import Background from 'common/background/background';
@@ -68,6 +69,7 @@ class NewsletterSend extends React.Component {
     switch (newsletter.type) {
       case 'notification': return NotificationNewsletterFields;
       case 'welcome': return WelcomeNewsletterFields;
+      case 're_engagement': return ReEngagementNewsletterFields;
       case 'automatic':
         if (automaticEmails[newsletter.options.group]) {
           return AutomaticEmailFields;
