@@ -1,4 +1,6 @@
 import React from 'react';
+import ReactStringReplace from 'react-string-replace';
+
 import MailPoet from 'mailpoet';
 import Heading from 'common/typography/heading/heading';
 import Input from 'common/form/input/input';
@@ -46,7 +48,26 @@ export function Scheduling({
       </Grid.CenteredRow>
       {
         (inactiveSubscribersPeriod <= daysSelected) && (
-          <div>note</div>
+          <p className="mailpoet-re-engagement-scheduling-note">
+            {
+              ReactStringReplace(
+                MailPoet.I18n.t('reEngagementEmailWarning')
+                  .replace('{$months}', inactiveSubscribersPeriod / 30),
+                /\[link\](.*?)\[\/link\]/g,
+                (match) => (
+                  <a
+                    key="link"
+                    href="https://kb.mailpoet.com/article/264-inactive-subscribers"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-beacon-article="5cbf19622c7d3a026fd3efe1"
+                  >
+                    {match}
+                  </a>
+                )
+              )
+            }
+          </p>
         )
       }
     </>
