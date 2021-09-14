@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import MailPoet from 'mailpoet';
+import classNames from 'classnames';
 import { Link, withRouter } from 'react-router-dom';
 
 import Toggle from 'common/form/toggle/toggle';
@@ -11,9 +13,9 @@ import {
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
 import NewsletterTypes from 'newsletters/types';
-
-import classNames from 'classnames';
-import MailPoet from 'mailpoet';
+import ReactStringReplace from 'react-string-replace';
+import Tags from '../../common/tag/tags';
+import { ScheduledIcon } from '../../common/listings/newsletter_status';
 
 const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
 
@@ -71,6 +73,10 @@ const columns = [
     name: 'subject',
     label: MailPoet.I18n.t('subject'),
     sortable: true,
+  },
+  {
+    name: 'settings',
+    label: MailPoet.I18n.t('settings'),
   },
   {
     name: 'statistics',
@@ -214,6 +220,48 @@ class NewsletterListReEngagement extends React.Component {
     );
   };
 
+  renderSettings = (newsletter) => {
+    if (newsletter.segments.length === 0) {
+      return (
+        <Link className="mailpoet-listing-error" to={`/send/${newsletter.id}`}>
+          { MailPoet.I18n.t('sendingToSegmentsNotSpecified') }
+        </Link>
+      );
+    }
+    const sendingToSegments = ReactStringReplace(
+      MailPoet.I18n.t('sendTo'),
+      '%1$s',
+      (match, i) => (
+        <Tags segments={newsletter.segments} key={i} />
+      )
+    );
+
+    let frequencyKey = 'reEngagementFrequencyMonth';
+    if ((newsletter.options.afterTimeNumber > 1) && (newsletter.options.afterTimeType === 'months')) {
+      frequencyKey = 'reEngagementFrequencyMonths';
+    } else if ((newsletter.options.afterTimeNumber > 1) && (newsletter.options.afterTimeType === 'weeks')) {
+      frequencyKey = 'reEngagementFrequencyWeeks';
+    } else if ((newsletter.options.afterTimeNumber === 1) && (newsletter.options.afterTimeType === 'weeks')) {
+      frequencyKey = 'reEngagementFrequencyWeek';
+    }
+
+    const sendingFrequency = MailPoet.I18n.t('reEngagementSettings')
+      .replace('{$count}', newsletter.options.afterTimeNumber)
+      .replace('{$frequency}', MailPoet.I18n.t(frequencyKey));
+
+    return (
+      <span>
+        { sendingToSegments }
+        <div className="mailpoet-listing-schedule">
+          <div className="mailpoet-listing-schedule-icon">
+            <ScheduledIcon />
+          </div>
+          { sendingFrequency }
+        </div>
+      </span>
+    );
+  }
+
   renderItem = (newsletter, actions) => {
     const rowClasses = classNames(
       'manage-column',
@@ -231,6 +279,9 @@ class NewsletterListReEngagement extends React.Component {
             { newsletter.subject }
           </a>
           { actions }
+        </td>
+        <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('settings')}>
+          { this.renderSettings(newsletter) }
         </td>
         { (mailpoetTrackingEnabled === true) ? (
           <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('statistics')}>
