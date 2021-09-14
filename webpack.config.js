@@ -260,6 +260,7 @@ const adminConfig = {
   entry: {
     vendor: 'webpack_vendor_index.jsx',
     mailpoet: 'webpack_mailpoet_index.jsx',
+    // Admin vendor contains libraries shared between free and premium plugin
     admin_vendor: [
       'react',
       'react-dom',
@@ -268,8 +269,6 @@ const adminConfig = {
       'prop-types',
       'classnames',
       'lodash',
-      '@emotion/react',
-      '@emotion/styled',
       'help-tooltip.jsx',
       'listing/listing.jsx',
       'common/index.ts',
