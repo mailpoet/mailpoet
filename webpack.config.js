@@ -72,30 +72,6 @@ const baseConfig = {
         loader: 'babel-loader',
       },
       {
-        test: /form_editor\.js$/,
-        loader: 'expose-loader',
-        options: {
-          exposes: 'WysijaForm',
-        },
-      },
-      {
-        include: require.resolve('codemirror'),
-        loader: 'expose-loader',
-        options: {
-          exposes: 'CodeMirror',
-        },
-      },
-      {
-        include: require.resolve('backbone'),
-        loader: 'expose-loader',
-        options: {
-          exposes: {
-            globalName: 'Backbone',
-            override: true,
-          },
-        },
-      },
-      {
         include: require.resolve('underscore'),
         loader: 'expose-loader',
         options: {
@@ -196,13 +172,6 @@ const baseConfig = {
         options: {
           exports: 'default Backbone.SuperModel',
         }
-      },
-      {
-        include: require.resolve('handlebars'),
-        loader: 'expose-loader',
-        options: {
-          exposes: 'Handlebars',
-        },
       },
       {
         include: require.resolve('velocity-animate'),
