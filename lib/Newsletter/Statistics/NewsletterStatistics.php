@@ -17,15 +17,26 @@ class NewsletterStatistics {
   private $unsubscribeCount;
 
   /** @var int */
+  private $bounceCount;
+
+  /** @var int */
   private $totalSentCount;
 
   /** @var WooCommerceRevenue|null */
   private $wooCommerceRevenue;
 
-  public function __construct($clickCount, $openCount, $unsubscribeCount, $totalSentCount, $wooCommerceRevenue) {
+  public function __construct(
+    $clickCount,
+    $openCount,
+    $unsubscribeCount,
+    $bounceCount,
+    $totalSentCount,
+    $wooCommerceRevenue
+  ) {
     $this->clickCount = $clickCount;
     $this->openCount = $openCount;
     $this->unsubscribeCount = $unsubscribeCount;
+    $this->bounceCount = $bounceCount;
     $this->totalSentCount = $totalSentCount;
     $this->wooCommerceRevenue = $wooCommerceRevenue;
   }
@@ -39,6 +50,10 @@ class NewsletterStatistics {
   }
 
   public function getUnsubscribeCount(): int {
+    return $this->unsubscribeCount;
+  }
+
+  public function getBounceCount(): int {
     return $this->unsubscribeCount;
   }
 
@@ -64,6 +79,7 @@ class NewsletterStatistics {
       'opened' => $this->openCount,
       'machineOpened' => $this->machineOpenCount,
       'unsubscribed' => $this->unsubscribeCount,
+      'bounced' => $this->bounceCount,
       'revenue' => empty($this->wooCommerceRevenue) ? null : $this->wooCommerceRevenue->asArray(),
     ];
   }
