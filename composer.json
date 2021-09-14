@@ -30,7 +30,7 @@
     "consolidation/robo": "3.0.3",
     "guzzlehttp/guzzle": "6.5.5",
     "hoa/console": "^3.17",
-    "lucatume/wp-browser": "^3.0.8",
+    "lucatume/wp-browser": "^3.0.10",
     "phpunit/phpunit": "7.5.20",
     "redcomponent/teststatistics": "^2.2",
     "totten/lurkerlite": "^1.3",
