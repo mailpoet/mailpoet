@@ -35,8 +35,13 @@ class BlockRendererHelper {
     }
 
     if (($blockId === 'first_name') || ($blockId === 'last_name')) {
-      $rules['pattern'] = "^[^><]*$";
-      $rules['error-message'] = __('Please specify a valid name', 'mailpoet');
+      $errorMessages = [
+        __('Please specify a valid name', 'mailpoet'),
+        __('Addresses in names are not permitted, please add your name instead.', 'mailpoet'),
+      ];
+      $rules['names'] = '[' . implode(',', array_map(function (string $errorMessage): string {
+        return htmlspecialchars((string)json_encode($errorMessage), ENT_QUOTES);
+      }, $errorMessages)) . ']';
     }
 
     if ($blockId === 'segments') {
@@ -82,7 +87,12 @@ class BlockRendererHelper {
         if (is_bool($value)) {
           $value = ($value) ? 'true' : 'false';
         }
-        $validation[] = 'data-parsley-' . $rule . '="' . $value . '"';
+        // We need to use single quotes because we need to pass array of strings as a parameter for custom validation
+        if ($rule === 'names') {
+          $validation[] = 'data-parsley-' . $rule . '=\'' . $value . '\'';
+        } else {
+          $validation[] = 'data-parsley-' . $rule . '="' . $value . '"';
+        }
       }
     }
     return join(' ', $validation);

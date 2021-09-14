@@ -1,11 +1,34 @@
 import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 import Cookies from 'js-cookie';
-import 'parsleyjs';
+import Parsley from 'parsleyjs';
 
 const exitIntentEvent = 'mouseleave.mailpoet.form-exit-intent';
 
 jQuery(($) => {
+  Parsley.addValidator('names', {
+    requirementType: ['string', 'string'],
+    validateString: (value, errorBrackets, errorURL) => {
+      // Name can't contain angle brackets - https://mailpoet.atlassian.net/browse/MAILPOET-3408
+      const bracketsExpression = /[><]+/gi;
+      const bracketsRegex = new RegExp(bracketsExpression);
+      if (value.match(bracketsRegex)) {
+        return $.Deferred().reject(errorBrackets);
+      }
+      // Name can't contain URL - https://mailpoet.atlassian.net/browse/MAILPOET-3786
+      const urlExpression = /https?:\/\/(www\.)?(.+)\.(.+)/gi;
+      const urlRegex = new RegExp(urlExpression);
+      if (value.match(urlRegex)) {
+        return $.Deferred().reject(errorURL);
+      }
+
+      return true;
+    },
+    messages: {
+      en: 'Please specify a valid name',
+    },
+  });
+
   function renderCaptcha(element, iteration) {
     if (!window.recaptcha || !window.grecaptcha.ready) {
       if (iteration < 20) {
