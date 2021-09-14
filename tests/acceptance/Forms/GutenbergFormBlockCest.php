@@ -66,6 +66,42 @@ class GutenbergFormBlockCest {
     $i->seeNoJSErrors();
   }
 
+  public function subscriptionGutenbergBlockWithNameErrorMessages(\AcceptanceTester $i): void {
+    $formFactory = new Form();
+    $formId = (int)$formFactory
+      ->withName('Acceptance Test Block Form Error Messages')
+      ->withLastName()
+      ->withFirstName()
+      ->create()->getId();
+    $postId = $this->createPost($i, $formId);
+
+    $i->wantTo('Add Gutenberg form block to the post and test error messages');
+    $i->amOnPage("/?p={$postId}");
+    $i->waitForElementVisible('[data-automation-id="form_email"]');
+
+    $i->wantTo('Test error message for angle brackets');
+    $i->fillField('[data-automation-id="form_first_name"]', '><img src=x onError=prompt(1)>');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Please specify a valid name');
+
+    $i->wantTo('Test error message for name with URL');
+    $i->fillField('[data-automation-id="form_first_name"]', 'Здравствуйте, Забирайте подарок http://bit.ly/2Z8SdDC .');
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Addresses in names are not permitted, please add your name instead.');
+
+    $i->wantTo('Test error message for invalid email');
+    $i->fillField('[data-automation-id="form_first_name"]', $this->firstName);
+    $i->fillField('[data-automation-id="form_last_name"]', $this->lastName);
+    $i->fillField('[data-automation-id="form_email"]', $this->firstName);
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Please specify a valid email address.');
+
+    $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
+    $i->click('.mailpoet_submit');
+    $i->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
+    $i->seeNoJSErrors();
+  }
+
   private function createPost(\AcceptanceTester $i, int $formId): int {
     return $i->havePostInDatabase([
       'post_author' => 1,
