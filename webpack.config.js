@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpackTerserPlugin = require('terser-webpack-plugin');
 const webpackCopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
@@ -430,7 +431,7 @@ const postEditorBlock = {
   },
 };
 
-module.exports = [adminConfig, publicConfig, migratorConfig, formPreviewConfig, testConfig, postEditorBlock].map((config) => {
+module.exports = [publicConfig, adminConfig, migratorConfig, formPreviewConfig, testConfig, postEditorBlock].map((config, index) => {
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(
@@ -440,10 +441,9 @@ module.exports = [adminConfig, publicConfig, migratorConfig, formPreviewConfig, 
       })
     );
   }
-  const finalConfig = Object.assign({}, baseConfig, config);
-  // Clean output paths before build
-  if (finalConfig.output && finalConfig.output.path) {
-    del.sync([path.resolve(finalConfig.output.path, '**/*')]);
+  // Cleanup output path but only once to keep output files for subsequent builds
+  if (index === 0) {
+    config.plugins.unshift(new CleanWebpackPlugin());
   }
-  return finalConfig;
+  return Object.assign({}, baseConfig, config);
 });
