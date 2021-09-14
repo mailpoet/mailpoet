@@ -89,7 +89,7 @@ class NewsletterStatisticsRepository extends Repository {
     $result = $qb->andWhere('(stats.userAgentType = :userAgentType)')
       ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_MACHINE)
       ->getQuery()
-      ->getResult();
+      ->getOneOrNullResult();
 
     if (empty($result)) return 0;
     return $result['cnt'] ?? 0;
