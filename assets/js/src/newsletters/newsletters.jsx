@@ -45,6 +45,7 @@ const trackTabSwitch = (tabKey) => MailPoet.trackEvent(
 
 const Tabs = withNpsPoll(() => {
   const { parentId } = useParams();
+  const { features } = React.useContext(GlobalContext);
   return (
     <>
       <ListingHeadingDisplay>
@@ -85,14 +86,16 @@ const Tabs = withNpsPoll(() => {
               : <NewsletterListNotification />
           }
         </Tab>
-        <Tab
-          key="re_engagement"
-          route="re_engagement/(.*)?"
-          title={MailPoet.I18n.t('tabReEngagementTitle')}
-          automationId={`tab-${MailPoet.I18n.t('tabReEngagementTitle')}`}
-        >
-          <NewsletterListReEngagement />
-        </Tab>
+        {(features.isSupported('re-engagement-email')) && (
+          <Tab
+            key="re_engagement"
+            route="re_engagement/(.*)?"
+            title={MailPoet.I18n.t('tabReEngagementTitle')}
+            automationId={`tab-${MailPoet.I18n.t('tabReEngagementTitle')}`}
+          >
+            <NewsletterListReEngagement />
+          </Tab>
+        )}
         {window.mailpoet_woocommerce_active && _.map(automaticEmails, (email) => (
           <Tab
             key={email.slug}
