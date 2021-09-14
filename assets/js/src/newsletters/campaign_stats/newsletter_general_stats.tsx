@@ -26,17 +26,20 @@ export const NewsletterGeneralStats = ({
   let percentageOpened = 0;
   let percentageMachineOpened = 0;
   let percentageUnsubscribed = 0;
+  let percentageBounced = 0;
   if (totalSent > 0) {
     percentageClicked = (newsletter.statistics.clicked * 100) / totalSent;
     percentageOpened = (newsletter.statistics.opened * 100) / totalSent;
     percentageMachineOpened = (newsletter.statistics.machineOpened * 100) / totalSent;
     percentageUnsubscribed = (newsletter.statistics.unsubscribed * 100) / totalSent;
+    percentageBounced = (newsletter.statistics.bounced * 100) / totalSent;
   }
   // format to 1 decimal place
   const percentageClickedDisplay = MailPoet.Num.toLocaleFixed(percentageClicked, 1);
   const percentageOpenedDisplay = MailPoet.Num.toLocaleFixed(percentageOpened, 1);
   const percentageMachineOpenedDisplay = MailPoet.Num.toLocaleFixed(percentageMachineOpened, 1);
   const percentageUnsubscribedDisplay = MailPoet.Num.toLocaleFixed(percentageUnsubscribed, 1);
+  const percentageBouncedDisplay = MailPoet.Num.toLocaleFixed(percentageBounced, 1);
 
   const displayBadges = ((totalSent >= minNewslettersSent)
     && (newsletter.statistics.opened >= minNewslettersOpened)
@@ -91,6 +94,16 @@ export const NewsletterGeneralStats = ({
     </div>
   );
 
+  const bounced = (
+    <div className="mailpoet-statistics-value-small">
+      <span className="mailpoet-statistics-value-number">
+        {percentageBouncedDisplay}
+        {'% '}
+      </span>
+      {MailPoet.I18n.t('percentageBounced')}
+    </div>
+  );
+
   const badgeTypeClicked = getBadgeType('clicked', percentageClicked);
   const clicked = (
     <>
@@ -128,7 +141,9 @@ export const NewsletterGeneralStats = ({
         <div className="mailpoet-statistics-with-left-separator">
           {unsubscribed}
         </div>
-        <div />
+        <div className="mailpoet-statistics-with-left-separator">
+          {bounced}
+        </div>
       </Grid.ThreeColumns>
       <Grid.ThreeColumns>
         <div>

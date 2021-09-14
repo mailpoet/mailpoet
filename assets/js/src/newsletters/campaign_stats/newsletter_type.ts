@@ -19,6 +19,7 @@ export type NewsletterType = {
     opened: number;
     machineOpened: number;
     unsubscribed: number;
+    bounced: number;
     revenue: {
       value: number;
       formatted: string;
