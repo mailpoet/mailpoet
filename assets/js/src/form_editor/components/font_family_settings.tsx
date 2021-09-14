@@ -87,6 +87,7 @@ const FontFamilySettings: React.FunctionComponent<Props> = ({
     selectedValue = options[0];
   }
   return (
+    // CustomSelectControl generates a warning in the console. See [MAILPOET-3399]
     <CustomSelectControl
       options={options}
       onChange={(selected): void => {
