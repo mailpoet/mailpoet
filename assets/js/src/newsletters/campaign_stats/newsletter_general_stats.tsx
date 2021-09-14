@@ -64,7 +64,7 @@ export const NewsletterGeneralStats = ({
           MailPoet.I18n.t('percentageMachineOpenedTooltip'),
           /\[link](.*?)\[\/link]/,
           (match) => (
-            <span style={{ pointerEvents: 'all' }}>
+            <span style={{ pointerEvents: 'all' }} key="machine-opened-tooltip">
               <a
                 href="https://kb.mailpoet.com/article/368-what-are-machine-opens"
                 key="kb-link"
