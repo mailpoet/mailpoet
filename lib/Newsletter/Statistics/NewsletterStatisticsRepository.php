@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter\Statistics;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\StatisticsBounceEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
@@ -37,6 +38,7 @@ class NewsletterStatisticsRepository extends Repository {
       $this->getStatisticsClickCount($newsletter),
       $this->getStatisticsOpenCount($newsletter),
       $this->getStatisticsUnsubscribeCount($newsletter),
+      $this->getStatisticsBounceCount($newsletter),
       $this->getTotalSentCount($newsletter),
       $this->getWooCommerceRevenue($newsletter)
     );
@@ -53,6 +55,7 @@ class NewsletterStatisticsRepository extends Repository {
     $clickCounts = $this->getStatisticCounts(StatisticsClickEntity::class, $newsletters);
     $openCounts = $this->getStatisticCounts(StatisticsOpenEntity::class, $newsletters);
     $unsubscribeCounts = $this->getStatisticCounts(StatisticsUnsubscribeEntity::class, $newsletters);
+    $bounceCounts = $this->getStatisticCounts(StatisticsBounceEntity::class, $newsletters);
     $wooCommerceRevenues = $this->getWooCommerceRevenues($newsletters);
 
     $statistics = [];
@@ -62,6 +65,7 @@ class NewsletterStatisticsRepository extends Repository {
         $clickCounts[$id] ?? 0,
         $openCounts[$id] ?? 0,
         $unsubscribeCounts[$id] ?? 0,
+        $bounceCounts[$id] ?? 0,
         $totalSentCounts[$id] ?? 0,
         $wooCommerceRevenues[$id] ?? null
       );
@@ -97,6 +101,11 @@ class NewsletterStatisticsRepository extends Repository {
 
   public function getStatisticsUnsubscribeCount(NewsletterEntity $newsletter): int {
     $counts = $this->getStatisticCounts(StatisticsUnsubscribeEntity::class, [$newsletter]);
+    return $counts[$newsletter->getId()] ?? 0;
+  }
+
+  public function getStatisticsBounceCount(NewsletterEntity $newsletter): int {
+    $counts = $this->getStatisticCounts(StatisticsBounceEntity::class, [$newsletter]);
     return $counts[$newsletter->getId()] ?? 0;
   }
 
