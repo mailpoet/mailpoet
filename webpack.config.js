@@ -298,7 +298,11 @@ const adminConfig = {
     runtimeChunk: 'single',
     splitChunks: {
       cacheGroups: {
-        chunks: 'all',
+        commons: {
+          name: 'commons',
+          chunks: 'initial',
+          minChunks: 2,
+        },
       },
     }
   },
