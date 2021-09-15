@@ -158,6 +158,29 @@ class NewsletterEntityTest extends \MailPoetTest {
     expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
   }
 
+  public function testItGetProcessedAtReturnsNullIfEmailHasNotBeingQueuedYet() {
+    $newsletter = $this->createNewsletter();
+    $this->assertNull($newsletter->getProcessedAt());
+  }
+
+  public function testItGetProcessedReturnsValue() {
+    $processedAt = new \DateTimeImmutable('2012-01-02 12:32:34');
+    $newsletter = $this->createNewsletter();
+    $task = new ScheduledTaskEntity();
+    $task->setProcessedAt($processedAt);
+    $this->entityManager->persist($task);
+
+    $queue = new SendingQueueEntity();
+    $queue->setNewsletter($newsletter);
+    $queue->setTask($task);
+    $this->entityManager->persist($queue);
+
+    $newsletter->getQueues()->add($queue);
+    $this->entityManager->flush();
+
+    $this->assertSame($processedAt, $newsletter->getProcessedAt());
+  }
+
   public function _after() {
     $this->cleanup();
   }
