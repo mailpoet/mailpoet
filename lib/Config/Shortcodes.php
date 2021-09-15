@@ -3,7 +3,6 @@
 namespace MailPoet\Config;
 
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Widget;
@@ -158,15 +157,9 @@ class Shortcodes {
       foreach ($newsletters as $newsletter) {
         $queue = $newsletter->getLatestQueue();
 
-        if ($queue instanceof SendingQueueEntity) {
-          $task = $queue->getTask();
-        } else {
-          $task = null;
-        }
-
         $html .= '<li>' .
           '<span class="mailpoet_archive_date">' .
-            $this->wp->applyFilters('mailpoet_archive_email_processed_date', $task) .
+            $this->wp->applyFilters('mailpoet_archive_email_processed_date', $newsletter) .
           '</span>
           <span class="mailpoet_archive_subject">' .
             $this->wp->applyFilters('mailpoet_archive_email_subject', $newsletter, $subscriber, $queue) .
@@ -178,14 +171,12 @@ class Shortcodes {
     return $html;
   }
 
-  public function renderArchiveDate($task) {
+  public function renderArchiveDate(NewsletterEntity $newsletter) {
     $timestamp = null;
+    $processedAt = $newsletter->getProcessedAt();
 
-    if ($task instanceof ScheduledTaskEntity) {
-      $processedAt = $task->getProcessedAt();
-      if (!is_null($processedAt)) {
-        $timestamp = $processedAt->getTimestamp();
-      }
+    if (!is_null($processedAt)) {
+      $timestamp = $processedAt->getTimestamp();
     }
 
     return $this->wp->dateI18n(

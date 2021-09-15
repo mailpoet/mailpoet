@@ -470,4 +470,19 @@ class NewsletterEntity {
     }
     return $body['globalStyles'][$category][$style] ?? null;
   }
+
+  public function getProcessedAt(): ?DateTimeInterface {
+    $processedAt = null;
+    $queue = $this->getLatestQueue();
+
+    if ($queue instanceof SendingQueueEntity) {
+      $task = $queue->getTask();
+
+      if ($task instanceof ScheduledTaskEntity) {
+        $processedAt = $task->getProcessedAt();
+      }
+    }
+
+    return $processedAt;
+  }
 }
