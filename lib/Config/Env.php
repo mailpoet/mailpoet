@@ -58,7 +58,7 @@ class Env {
     self::$tempUrl = $wpUploadDir['baseurl'] . '/' . self::$pluginName;
     self::$languagesPath = self::$path . '/lang';
     self::$libPath = self::$path . '/lib';
-    self::$pluginPrefix = 'mailpoet_';
+    self::$pluginPrefix = WPFunctions::get()->applyFilters('mailpoet_db_prefix', 'mailpoet_');
     self::initDbParameters($dbHost, $dbUser, $dbPassword, $dbName);
 
     // back compatibility for older Premium plugin with underscore naming
