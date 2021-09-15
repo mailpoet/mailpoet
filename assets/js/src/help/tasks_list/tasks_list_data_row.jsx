@@ -8,6 +8,9 @@ const TasksListDataRow = (props) => {
   if (scheduled) {
     scheduled = parseDate(scheduled, 'yyyy-MM-dd HH:mm:ss', new Date());
   }
+
+  const updated = parseDate(props.task.updated_at, 'yyyy-MM-dd HH:mm:ss', new Date());
+
   return (
     <tr>
       <td className="column column-primary">
@@ -38,7 +41,7 @@ const TasksListDataRow = (props) => {
         </td>
       ) : null}
       <td className="column-date">
-        <abbr>{MailPoet.Date.format(props.task.updated_at * 1000)}</abbr>
+        <abbr>{`${MailPoet.Date.short(updated)} ${MailPoet.Date.time(updated)}`}</abbr>
       </td>
     </tr>
   );
@@ -50,7 +53,7 @@ TasksListDataRow.propTypes = {
     id: PropTypes.number.isRequired,
     type: PropTypes.string.isRequired,
     priority: PropTypes.number.isRequired,
-    updated_at: PropTypes.number.isRequired,
+    updated_at: PropTypes.string.isRequired,
     scheduled_at: PropTypes.string,
     status: PropTypes.string,
     newsletter: PropTypes.shape({
