@@ -26,8 +26,8 @@ class Styles {
   }
 
   public function renderFormSettingsStyles(FormEntity $form, string $selector, string $displayType): string {
-    if (!isset($form['settings']) || !is_array($form['settings'])) return '';
-    $formSettings = $form['settings'];
+    if (!is_array($form->getSettings())) return '';
+    $formSettings = $form->getSettings();
     // Wrapper styles
     $styles = [];
 

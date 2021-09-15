@@ -7,7 +7,6 @@ use MailPoet\Config\Renderer as ConfigRenderer;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Renderer as FormRenderer;
-use MailPoet\Models\Form;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
@@ -22,6 +21,9 @@ class Widget extends \WP_Widget {
   /** @var FormRenderer */
   private $formRenderer;
 
+  /** @var FormsRepository */
+  private $formsRepository;
+
   public function __construct() {
     parent::__construct(
       'mailpoet_form',
@@ -32,6 +34,7 @@ class Widget extends \WP_Widget {
     $this->renderer = new \MailPoet\Config\Renderer(!WP_DEBUG, !WP_DEBUG);
     $this->assetsController = new AssetsController($this->wp, $this->renderer, SettingsController::getInstance());
     $this->formRenderer = ContainerWrapper::getInstance()->get(FormRenderer::class);
+    $this->formsRepository = ContainerWrapper::getInstance()->get(FormsRepository::class);
     if (!is_admin()) {
       $this->setupIframe();
     } else {
@@ -44,7 +47,7 @@ class Widget extends \WP_Widget {
 
   public function setupIframe() {
     $formId = (isset($_GET['mailpoet_form_iframe']) ? (int)$_GET['mailpoet_form_iframe'] : 0);
-    if (!$formId || !Form::findOne($formId)) return;
+    if (!$formId || !$this->formsRepository->findOneById($formId)) return;
 
     $formHtml = $this->widget(
       [
@@ -120,7 +123,7 @@ class Widget extends \WP_Widget {
     $selectedForm = isset($instance['form']) ? (int)($instance['form']) : 0;
 
     // get forms list
-    $forms = Form::getPublished()->orderByAsc('name')->findArray();
+    $forms = $this->formsRepository->findBy(['deletedAt' => null], ['name' => 'asc']);
     ?><p>
       <label for="<?php $this->get_field_id( 'title' ) ?>"><?php WPFunctions::get()->_e('Title:', 'mailpoet'); ?></label>
       <input
@@ -135,10 +138,10 @@ class Widget extends \WP_Widget {
       <select class="widefat" id="<?php echo $this->get_field_id('form') ?>" name="<?php echo $this->get_field_name('form'); ?>">
         <?php
         foreach ($forms as $form) {
-          $isSelected = ($selectedForm === (int)$form['id']) ? 'selected="selected"' : '';
-          $formName = $form['name'] ? $this->wp->escHtml($form['name']) : "({$this->wp->_x('no name', 'fallback for forms without a name in a form list')})"
+          $isSelected = ($selectedForm === $form->getId()) ? 'selected="selected"' : '';
+          $formName = $form->getName() ? $this->wp->escHtml($form->getName()) : "({$this->wp->_x('no name', 'fallback for forms without a name in a form list')})"
           ?>
-        <option value="<?php echo (int)$form['id']; ?>" <?php echo $isSelected; ?>><?php echo $formName; ?></option>
+        <option value="<?php echo $form->getId(); ?>" <?php echo $isSelected; ?>><?php echo $formName; ?></option>
         <?php }  ?>
       </select>
     </p>
@@ -194,11 +197,11 @@ class Widget extends \WP_Widget {
     );
 
     // get form
-    $form = Form::getPublished()->findOne($instance['form']);
+    $form = $this->formsRepository->findOneById($instance['form']);
     if (!$form) return '';
-    if ($form->status !== FormEntity::STATUS_ENABLED) return '';
+    if ($form->getDeletedAt()) return '';
+    if ($form->getStatus() !== FormEntity::STATUS_ENABLED) return '';
 
-    $form = $form->asArray();
     $formType = 'widget';
     if (isset($instance['form_type']) && in_array(
         $instance['form_type'],
@@ -212,16 +215,17 @@ class Widget extends \WP_Widget {
       $formType = $instance['form_type'];
     }
 
-    $body = (isset($form['body']) ? $form['body'] : []);
+    $body = (!empty($form->getBody()) ? $form->getBody() : []);
     $output = '';
+    $settings = $form->getSettings();
 
-    if (!empty($body) && isset($form['settings']) && is_array($form['settings'])) {
-      $formId = $this->id_base . '_' . $form['id']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if (!empty($body) && is_array($settings)) {
+      $formId = $this->id_base . '_' . $form->getId(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $data = [
         'form_html_id' => $formId,
-        'form_id' => $form['id'],
+        'form_id' => $form->getId(),
         'form_type' => $formType,
-        'form_success_message' => $form['settings']['success_message'],
+        'form_success_message' => $settings['success_message'],
         'title' => $title,
         'styles' => $this->formRenderer->renderStyles($form, '#' . $formId, FormEntity::DISPLAY_TYPE_OTHERS),
         'html' => $this->formRenderer->renderHTML($form),
@@ -235,12 +239,12 @@ class Widget extends \WP_Widget {
       $data['success'] = (
         (isset($_GET['mailpoet_success']))
         &&
-        ((int)$_GET['mailpoet_success'] === (int)$form['id'])
+        ((int)$_GET['mailpoet_success'] === $form->getId())
       );
       $data['error'] = (
         (isset($_GET['mailpoet_error']))
         &&
-        ((int)$_GET['mailpoet_error'] === (int)$form['id'])
+        ((int)$_GET['mailpoet_error'] === $form->getId())
       );
 
       // generate security token
