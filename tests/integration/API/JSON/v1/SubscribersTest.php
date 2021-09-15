@@ -23,7 +23,6 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\CustomField;
-use MailPoet\Models\Form;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -680,21 +679,21 @@ class SubscribersTest extends \MailPoetTest {
       'type' => 'text',
       'params' => ['required' => '1'],
     ]);
-    $form = Form::createOrUpdate([
-      'name' => 'form',
-      'body' => [[
-        'type' => 'text',
-        'name' => 'mandatory',
-        'id' => $customField->id(),
-        'unique' => '1',
-        'static' => '0',
-        'params' => ['required' => '1'],
-        'position' => '0',
-      ]],
-    ]);
+    $form = new FormEntity('form');
+    $form->setBody([[
+      'type' => 'text',
+      'name' => 'mandatory',
+      'id' => $customField->id(),
+      'unique' => '1',
+      'static' => '0',
+      'params' => ['required' => '1'],
+      'position' => '0',
+    ]]);
+    $this->entityManager->persist($form);
+    $this->entityManager->flush();
     $response = $this->endpoint->subscribe([
       $this->obfuscatedEmail => 'toto@mailpoet.com',
-      'form_id' => $form->id,
+      'form_id' => $form->getId(),
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
     ]);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
