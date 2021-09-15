@@ -7,8 +7,8 @@ use MailPoet\API\JSON\API;
 use MailPoet\API\JSON\ErrorResponse;
 use MailPoet\API\JSON\Response;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
-use MailPoet\Models\Form as FormModel;
 use MailPoet\Models\Segment as SegmentModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Settings\SettingsController;
@@ -42,26 +42,24 @@ class FormTest extends \MailPoetTest {
         'name' => 'Test segment',
       ]
     );
-    $this->form = FormModel::createOrUpdate(
+    $this->form = new FormEntity('Test form');
+    $this->form->setBody([
       [
-        'name' => 'Test form',
-        'body' => [
-          [
-            'type' => 'text',
-            'id' => 'email',
-          ],
-        ],
-        'settings' => [
-          'segments' => [$this->segment->id],
-        ],
-      ]
-    );
+        'type' => 'text',
+        'id' => 'email',
+      ],
+    ]);
+    $this->form->setSettings([
+      'segments' => [$this->segment->id],
+    ]);
+    $this->entityManager->persist($this->form);
+    $this->entityManager->flush();
     $obfuscator = new FieldNameObfuscator(WPFunctions::get());
     $obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->requestData = [
       'action' => 'mailpoet_subscription_form',
       'data' => [
-        'form_id' => $this->form->id,
+        'form_id' => $this->form->getId(),
         $obfuscatedEmail => $this->testEmail,
       ],
       'token' => Security::generateToken(),
@@ -88,18 +86,18 @@ class FormTest extends \MailPoetTest {
     $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
     $result = $formController->onSubmit($this->requestData);
     expect(SubscriberModel::findOne($this->testEmail))->notEmpty();
-    expect($result['mailpoet_success'])->equals($this->form->id);
+    expect($result['mailpoet_success'])->equals($this->form->getId());
     expect($result['mailpoet_error'])->null();
   }
 
   public function testItSubscribesAndRedirectsToCustomUrlWithSuccessResponse() {
     // update form with a redirect setting
     $form = $this->form;
-    $formSettings = unserialize($form->settings);
+    $formSettings = $form->getSettings();
     $formSettings['on_success'] = 'page';
     $formSettings['success_page'] = $this->post;
-    $form->settings = serialize($formSettings);
-    $form->save();
+    $form->setSettings($formSettings);
+    $this->entityManager->flush();
     $urlHelper = Stub::make(UrlHelper::class, [
       'redirectTo' => function($params) {
         return $params;
@@ -126,7 +124,7 @@ class FormTest extends \MailPoetTest {
     $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
     $result = $formController->onSubmit($requestData);
     expect(SubscriberModel::findMany())->isEmpty();
-    expect($result['mailpoet_error'])->equals($this->form->id);
+    expect($result['mailpoet_error'])->equals($this->form->getId());
     expect($result['mailpoet_success'])->null();
   }
 
@@ -150,7 +148,7 @@ class FormTest extends \MailPoetTest {
   public function _after() {
     wp_delete_post($this->post);
     ORM::raw_execute('TRUNCATE ' . SegmentModel::$_table);
-    ORM::raw_execute('TRUNCATE ' . FormModel::$_table);
+    $this->truncateEntity(FormEntity::class);
     ORM::raw_execute('TRUNCATE ' . SubscriberModel::$_table);
     $this->diContainer->get(SettingsRepository::class)->truncate();
   }
