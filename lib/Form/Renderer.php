@@ -34,7 +34,7 @@ class Renderer {
     $this->customFonts = $customFonts;
   }
 
-  public function renderStyles(array $form, string $prefix, string $displayType): string {
+  public function renderStyles(FormEntity $form, string $prefix, string $displayType): string {
     $this->customFonts->enqueueStyle();
     $html = '.mailpoet_hp_email_label{display:none!important;}'; // move honeypot field out of sight
     $html .= $this->styleUtils->prefixStyles($this->getCustomStyles($form), $prefix);
@@ -42,17 +42,16 @@ class Renderer {
     return $html;
   }
 
-  public function renderHTML(array $form = []): string {
-    if (isset($form['body']) && !empty($form['body']) && is_array($form['settings'])) {
-      return $this->renderBlocks($form['body'], $form['settings'] ?? []);
+  public function renderHTML(FormEntity $form = null): string {
+    if (($form instanceof FormEntity) && !empty($form->getBody()) && is_array($form->getSettings())) {
+      return $this->renderBlocks($form->getBody(), $form->getSettings() ?? []);
     }
     return '';
   }
 
-  public function getCustomStyles(array $form = []): string {
-    if (isset($form['styles'])
-    && strlen(trim($form['styles'])) > 0) {
-      return strip_tags($form['styles']);
+  public function getCustomStyles(FormEntity $form = null): string {
+    if (($form instanceof FormEntity) && (strlen(trim($form->getStyles() ?? '')) > 0)) {
+      return strip_tags($form->getStyles() ?? '');
     } else {
       return FormTemplate::DEFAULT_STYLES;
     }

@@ -25,7 +25,7 @@ class Styles {
     return implode(PHP_EOL, $formattedStyles);
   }
 
-  public function renderFormSettingsStyles(array $form, string $selector, string $displayType): string {
+  public function renderFormSettingsStyles(FormEntity $form, string $selector, string $displayType): string {
     if (!isset($form['settings']) || !is_array($form['settings'])) return '';
     $formSettings = $form['settings'];
     // Wrapper styles
