@@ -129,7 +129,7 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
             {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
           </Tab>
 
-          <Tab key="bounces" title={MailPoet.I18n.t('bounces')}>
+          <Tab key="bounces" title={MailPoet.I18n.t('bounces')} automationId="bounces-tab">
             {Hooks.applyFilters('mailpoet_newsletters_bounces', <PremiumBanner />, location, match.params)}
           </Tab>
         </Tabs>
