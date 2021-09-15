@@ -129,11 +129,7 @@ class DisplayFormInWPContent {
 
   private function getContentBellow(FormEntity $form, string $displayType): string {
     if (!$this->shouldDisplayFormType($form, $displayType)) return '';
-    $formData = [
-      'body' => $form->getBody(),
-      'styles' => $form->getStyles(),
-      'settings' => $form->getSettings(),
-    ];
+
     $formSettings = $form->getSettings();
     if (!is_array($formSettings)) return '';
     $htmlId = 'mp_form_' . $displayType . $form->getId();
@@ -142,8 +138,8 @@ class DisplayFormInWPContent {
       'form_id' => $form->getId(),
       'form_success_message' => $formSettings['success_message'] ?? null,
       'form_type' => $displayType,
-      'styles' => $this->formRenderer->renderStyles($formData, '#' . $htmlId, $displayType),
-      'html' => $this->formRenderer->renderHTML($formData),
+      'styles' => $this->formRenderer->renderStyles($form, '#' . $htmlId, $displayType),
+      'html' => $this->formRenderer->renderHTML($form),
       'close_button_icon' => $formSettings['close_button'] ?? 'round_white',
     ];
 
