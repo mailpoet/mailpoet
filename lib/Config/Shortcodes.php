@@ -67,12 +67,33 @@ class Shortcodes {
       $this, 'getArchive',
     ]);
 
-    $this->wp->addFilter('mailpoet_archive_date', [
+    $this->wp->addFilter('mailpoet_archive_email_processed_date', [
       $this, 'renderArchiveDate',
     ], 2);
-    $this->wp->addFilter('mailpoet_archive_subject', [
+    $this->wp->addFilter('mailpoet_archive_email_subject', [
       $this, 'renderArchiveSubject',
     ], 2, 3);
+
+    // This deprecated notice can be removed after 2022-06-01
+    if ($this->wp->hasFilter('mailpoet_archive_date')) {
+      $this->wp->deprecatedHook(
+        'mailpoet_archive_date',
+        '3.69.2',
+        'mailpoet_archive_email_processed_date',
+        __('Please note that mailpoet_archive_date no longer runs and that the list of parameters of the new filter is different.', 'mailpoet')
+      );
+    }
+
+    // This deprecated notice can be removed after 2022-06-01
+    if ($this->wp->hasFilter('mailpoet_archive_subject')) {
+      $this->wp->deprecatedHook(
+        'mailpoet_archive_subject',
+        '3.69.2',
+        'mailpoet_archive_email_subject',
+        __('Please note that mailpoet_archive_subject no longer runs and that the list of parameters of the new filter is different.', 'mailpoet')
+      );
+    }
+
     // initialize subscription pages data
     $this->subscriptionPages->init();
     // initialize subscription management shortcodes
@@ -145,10 +166,10 @@ class Shortcodes {
 
         $html .= '<li>' .
           '<span class="mailpoet_archive_date">' .
-            $this->wp->applyFilters('mailpoet_archive_date', $task) .
+            $this->wp->applyFilters('mailpoet_archive_email_processed_date', $task) .
           '</span>
           <span class="mailpoet_archive_subject">' .
-            $this->wp->applyFilters('mailpoet_archive_subject', $newsletter, $subscriber, $queue) .
+            $this->wp->applyFilters('mailpoet_archive_email_subject', $newsletter, $subscriber, $queue) .
           '</span>
         </li>';
       }
