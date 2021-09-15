@@ -6,8 +6,8 @@ use Helper\Database;
 use MailPoet\Config\Activator;
 use MailPoet\Config\MP2Migrator;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Form\FormsRepository;
 use MailPoet\Models\CustomField;
-use MailPoet\Models\Form;
 use MailPoet\Models\MappingToExternalEntities;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
@@ -24,7 +24,11 @@ class MP2MigratorTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
-    $this->MP2Migrator = new MP2Migrator($this->settings, ContainerWrapper::getInstance()->get(Activator::class));
+    $this->MP2Migrator = new MP2Migrator(
+      $this->settings,
+      ContainerWrapper::getInstance()->get(FormsRepository::class),
+      ContainerWrapper::getInstance()->get(Activator::class)
+    );
   }
 
   public function _after() {
@@ -452,12 +456,13 @@ class MP2MigratorTest extends \MailPoetTest {
    */
   public function testImportForms() {
     global $wpdb;
+    $formRepository = ContainerWrapper::getInstance()->get(FormsRepository::class);
 
     // Check the forms number
     $this->initImport();
     $this->loadMP2Fixtures();
     $this->invokeMethod($this->MP2Migrator, 'importForms');
-    expect(Form::count())->equals(2);
+    expect($formRepository->countBy([]))->equals(2);
 
     // Check a form data
     $this->initImport();
