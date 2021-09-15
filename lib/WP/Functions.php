@@ -724,4 +724,8 @@ class Functions {
   public function wpKses(string $string, $allowedHtml, $allowedProtocols = []) {
     return wp_kses($string, $allowedHtml, $allowedProtocols);
   }
+
+  public function deprecatedHook(string $hook_name, string $version, string $replacement, string $message) {
+    _deprecated_hook($hook_name, $version, $replacement, $message);
+  }
 }
