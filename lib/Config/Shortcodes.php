@@ -135,7 +135,7 @@ class Shortcodes {
       }
       $html .= '<ul class="mailpoet_archive">';
       foreach ($newsletters as $newsletter) {
-        $queue = $newsletter->getQueues()->first();
+        $queue = $newsletter->getLatestQueue();
 
         if ($queue instanceof SendingQueueEntity) {
           $task = $queue->getTask();
