@@ -2,34 +2,33 @@
 
 namespace MailPoet\Test\Form;
 
+use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Widget;
-use MailPoet\Models\Form;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WidgetTest extends \MailPoetTest {
   public function testItAllowsModifyingRenderedFormWidgetViaHook() {
-    $form = Form::createOrUpdate(
+    $form = new FormEntity('Test Form');
+    $form->setBody([
       [
-        'name' => 'Test Form',
-        'body' => [
-          [
-            'type' => 'text',
-            'id' => 'email',
-          ],
-        ],
-        'settings' => [
-          'success_message' => 'Hello!',
-        ],
-      ]
-    );
+        'type' => 'text',
+        'id' => 'email',
+      ],
+    ]);
+    $form->setSettings([
+      'success_message' => 'Hello!',
+    ]);
+    $this->entityManager->persist($form);
+    $this->entityManager->flush();
+
     $formWidget = new Widget();
 
     // form target is set to _self by default
     $renderedFormWidget = $formWidget->widget(
       [],
       [
-        'form' => $form->id,
+        'form' => $form->getId(),
         'form_type' => 'html',
       ]
     );
@@ -47,7 +46,7 @@ class WidgetTest extends \MailPoetTest {
     $renderedFormWidget = $formWidget->widget(
       [],
       [
-        'form' => $form->id,
+        'form' => $form->getId(),
         'form_type' => 'html',
       ]
     );
