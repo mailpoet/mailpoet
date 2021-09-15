@@ -31,7 +31,7 @@ class StateTest extends \MailPoetTest {
     expect($data[1]['id'])->equals(1);
     expect($data[1]['type'])->equals(SendingTask::TASK_TYPE);
     expect(is_int($data[1]['priority']))->true();
-    expect(is_int($data[1]['updated_at']))->true();
+    expect(is_string($data[1]['updated_at']))->true();
     expect($data[1])->hasKey('scheduled_at');
     expect($data[1]['status'])->notEmpty();
     expect($data[1])->hasKey('newsletter');
