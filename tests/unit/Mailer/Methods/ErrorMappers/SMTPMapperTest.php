@@ -8,6 +8,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Swift_RfcComplianceException;
+use MailPoetVendor\Swift_TransportException;
 
 class SMTPMapperTest extends \MailPoetUnitTest {
 
@@ -47,17 +48,17 @@ class SMTPMapperTest extends \MailPoetUnitTest {
       . 'Log data:' . PHP_EOL
       . '++ Starting Swift_SmtpTransport' . PHP_EOL
       . '!! Connection could not be established with host localhost [Connection timed out] (code: 463)';
-    $error = $this->mapper->getErrorFromException(new Swift_RfcComplianceException($message), 'john@rambo.com');
+    $error = $this->mapper->getErrorFromException(new Swift_TransportException($message, 463), 'john@rambo.com');
     expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
   }
 
   public function testItCreatesHardErrorForTransportException500to504() {
-    $message = 'Bad sequence of commands' . PHP_EOL
+    $message = 'Connection could not be established with host localhost [Bad sequence of commands]' . PHP_EOL
       . 'Log data:' . PHP_EOL
       . '++ Starting Swift_SmtpTransport' . PHP_EOL
-      . '!! Bad sequence of commands (code: 503)';
-    $error = $this->mapper->getErrorFromException(new Swift_RfcComplianceException($message), 'john@rambo.com');
-    expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
+      . '!! Connection could not be established with host localhost [Bad sequence of commands] (code: 503)';
+    $error = $this->mapper->getErrorFromException(new Swift_TransportException($message, 503), 'john@rambo.com');
+    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
   }
 
   public function testItCanProcessLogMessageWhenOneExists() {
