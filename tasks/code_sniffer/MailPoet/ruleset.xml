@@ -3,7 +3,7 @@
   <config name="installed_paths" value="tasks/code_sniffer/vendor/squizlabs/php_codesniffer,tasks/code_sniffer/vendor/phpcompatibility/php-compatibility,tasks/code_sniffer/vendor/slevomat/coding-standard"/>
   <description>MailPoet specific rule set</description>
   <exclude-pattern>*/phpstan/woocommerce.php</exclude-pattern>
-  <config name="testVersion" value="7.1-"/>
+  <config name="testVersion" value="7.2-"/>
 
   <!-- Files -->
   <rule ref="Generic.Files.ByteOrderMark"/> <!-- Disallow usage of BOMs -->
@@ -59,6 +59,14 @@
   <rule ref="Squiz.Classes.LowercaseClassKeywords"/> <!-- The "class" keyword must be lowercased -->
   <rule ref="PSR1.Classes.ClassDeclaration"/> <!-- Each class must be in a file by itself and must be under a namespace -->
   <rule ref="PSR2.Classes.PropertyDeclaration"/> <!-- Properties must have visibility, no trailing "_", one property per statement, "static" before visibility -->
+  <rule ref="SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature"> <!-- Constructor signature must be always on multi lines -->
+    <properties>
+      <property name="minLineLength" value="0" /> <!-- Always -->
+      <property name="includedMethodPatterns" type="array">
+        <element value="/__construct/" />
+      </property>
+    </properties>
+  </rule>
 
   <!-- Indentation -->
   <rule ref="Generic.WhiteSpace.DisallowTabIndent"/> <!-- Disallow indenting with tabs -->
