@@ -66,6 +66,7 @@ class RoboFile extends \Robo\Tasks {
     if (!is_dir('assets/dist/js')) {
       mkdir('assets/dist/js', 0777, true);
     }
+    $this->_exec('rm -rf ' . __DIR__ . '/assets/dist/js/*');
     $env = ($opts['env']) ?
       sprintf('./node_modules/.bin/cross-env NODE_ENV="%s"', $opts['env']) :
       null;
