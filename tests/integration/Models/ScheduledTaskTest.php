@@ -313,7 +313,7 @@ class ScheduledTaskTest extends \MailPoetTest {
       'scheduled_at' => Carbon::now()->addDay(),
     ]);
 
-    $tasks = ScheduledTask::findDueByType('test', 10);
+    $tasks = ScheduledTask::findFutureScheduledByType('test', 10);
     expect($tasks)->count(1);
   }
 
