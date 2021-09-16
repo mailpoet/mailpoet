@@ -164,14 +164,6 @@ class ScheduledTask extends Model {
       ->findOne() ?: null;
   }
 
-  public static function findDueByType($type, $limit = null) {
-    return self::findByTypeAndStatus($type, ScheduledTask::STATUS_SCHEDULED, $limit);
-  }
-
-  public static function findRunningByType($type, $limit = null) {
-    return self::findByTypeAndStatus($type, null, $limit);
-  }
-
   public static function findFutureScheduledByType($type, $limit = null) {
     return self::findByTypeAndStatus($type, ScheduledTask::STATUS_SCHEDULED, $limit, true);
   }

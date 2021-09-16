@@ -3,6 +3,7 @@
 namespace MailPoet\Cron;
 
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -23,15 +24,20 @@ class CronWorkerRunner {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function __construct(
     CronHelper $cronHelper,
     CronWorkerScheduler $cronWorkerScheduler,
-    WPFunctions $wp
+    WPFunctions $wp,
+    ScheduledTasksRepository $scheduledTasksRepository
   ) {
     $this->timer = microtime(true);
     $this->cronHelper = $cronHelper;
     $this->cronWorkerScheduler = $cronWorkerScheduler;
     $this->wp = $wp;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
   }
 
   public function run(CronWorkerInterface $worker) {
@@ -42,7 +48,8 @@ class CronWorkerRunner {
 
     if (!$worker->checkProcessingRequirements()) {
       foreach (array_merge($dueTasks, $runningTasks) as $task) {
-        $task->delete();
+        $this->scheduledTasksRepository->remove($task);
+        $this->scheduledTasksRepository->flush();
       }
       return false;
     }
@@ -75,11 +82,11 @@ class CronWorkerRunner {
   }
 
   private function getDueTasks(CronWorkerInterface $worker) {
-    return ScheduledTask::findDueByType($worker->getTaskType(), self::TASK_BATCH_SIZE);
+    return $this->scheduledTasksRepository->findDueByType($worker->getTaskType(), self::TASK_BATCH_SIZE);
   }
 
   private function getRunningTasks(CronWorkerInterface $worker) {
-    return ScheduledTask::findRunningByType($worker->getTaskType(), self::TASK_BATCH_SIZE);
+    return $this->scheduledTasksRepository->findRunningByType($worker->getTaskType(), self::TASK_BATCH_SIZE);
   }
 
   private function prepareTask(CronWorkerInterface $worker, ScheduledTask $task) {
