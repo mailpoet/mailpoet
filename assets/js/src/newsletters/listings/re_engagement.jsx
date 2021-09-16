@@ -3,8 +3,11 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 import { Link, withRouter } from 'react-router-dom';
+import ReactStringReplace from 'react-string-replace';
 
 import Toggle from 'common/form/toggle/toggle';
+import Tags from 'common/tag/tags';
+import { ScheduledIcon } from 'common/listings/newsletter_status';
 import Listing from 'listing/listing.jsx';
 import Statistics from 'newsletters/listings/statistics.jsx';
 import {
@@ -13,9 +16,6 @@ import {
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
 import NewsletterTypes from 'newsletters/types';
-import ReactStringReplace from 'react-string-replace';
-import Tags from '../../common/tag/tags';
-import { ScheduledIcon } from '../../common/listings/newsletter_status';
 
 const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
 
