@@ -1,10 +1,8 @@
 const webpack = require('webpack');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpackTerserPlugin = require('terser-webpack-plugin');
 const webpackCopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
-const del = require('del');
 const globalPrefix = 'MailPoetLib';
 const PRODUCTION_ENV = process.env.NODE_ENV === 'production';
 const manifestSeed = {};
@@ -412,10 +410,6 @@ module.exports = [publicConfig, adminConfig, migratorConfig, formPreviewConfig, 
         seed: manifestSeed,
       })
     );
-  }
-  // Cleanup output path but only once to keep output files for subsequent builds
-  if (index === 0) {
-    config.plugins.unshift(new CleanWebpackPlugin());
   }
   return Object.assign({}, baseConfig, config);
 });
