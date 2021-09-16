@@ -42,6 +42,24 @@ class SMTPMapperTest extends \MailPoetUnitTest {
     expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
   }
 
+  public function testItCreatesSoftErrorForMostTransportExceptions() {
+    $message = 'Connection could not be established with host localhost [Connection timed out]' . PHP_EOL
+      . 'Log data:' . PHP_EOL
+      . '++ Starting Swift_SmtpTransport' . PHP_EOL
+      . '!! Connection could not be established with host localhost [Connection timed out] (code: 463)';
+    $error = $this->mapper->getErrorFromException(new Swift_RfcComplianceException($message), 'john@rambo.com');
+    expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
+  }
+
+  public function testItCreatesHardErrorForTransportException500to504() {
+    $message = 'Bad sequence of commands' . PHP_EOL
+      . 'Log data:' . PHP_EOL
+      . '++ Starting Swift_SmtpTransport' . PHP_EOL
+      . '!! Bad sequence of commands (code: 503)';
+    $error = $this->mapper->getErrorFromException(new Swift_RfcComplianceException($message), 'john@rambo.com');
+    expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
+  }
+
   public function testItCanProcessLogMessageWhenOneExists() {
     $log = '++ Swift_SmtpTransport started' . PHP_EOL
       . '>> MAIL FROM:<moi@mrcasual.com>' . PHP_EOL
