@@ -13,7 +13,9 @@ class MP2Migrator extends APIEndpoint {
   /** @var \MailPoet\Config\MP2Migrator  */
   private $MP2Migrator;
 
-  public function __construct(\MailPoet\Config\MP2Migrator $MP2Migrator) {
+  public function __construct(
+      \MailPoet\Config\MP2Migrator $MP2Migrator
+  ) {
     $this->MP2Migrator = $MP2Migrator;
   }
 

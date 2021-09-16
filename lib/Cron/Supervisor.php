@@ -9,7 +9,9 @@ class Supervisor {
   /** @var CronHelper */
   private $cronHelper;
 
-  public function __construct(CronHelper $cronHelper) {
+  public function __construct(
+      CronHelper $cronHelper
+  ) {
     $this->cronHelper = $cronHelper;
   }
 

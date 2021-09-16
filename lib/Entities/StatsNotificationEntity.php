@@ -30,7 +30,10 @@ class StatsNotificationEntity {
    */
   private $task;
 
-  public function __construct(NewsletterEntity $newsletter, ScheduledTaskEntity $task) {
+  public function __construct(
+      NewsletterEntity $newsletter,
+      ScheduledTaskEntity $task
+  ) {
     $this->newsletter = $newsletter;
     $this->task = $task;
   }

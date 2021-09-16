@@ -35,7 +35,11 @@ class Subscription {
   /** @var UserSubscription\Captcha */
   private $captcha;
 
-  public function __construct(UserSubscription\Pages $subscriptionPages, WPFunctions $wp, UserSubscription\Captcha $captcha) {
+  public function __construct(
+      UserSubscription\Pages $subscriptionPages,
+      WPFunctions $wp,
+      UserSubscription\Captcha $captcha
+  ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
     $this->captcha = $captcha;

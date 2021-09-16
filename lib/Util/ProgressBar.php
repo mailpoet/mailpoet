@@ -21,7 +21,9 @@ if (!class_exists('ProgressBar', false)) {
      * Initialize the class and set its properties.
      *
      */
-    public function __construct($progressBarId) {
+    public function __construct(
+        $progressBarId
+    ) {
       $filename = $progressBarId . '-progress.json';
       $this->filename = Env::$tempPath . '/' . $filename;
       $this->url = Env::$tempUrl . '/' . $filename;

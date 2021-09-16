@@ -27,7 +27,9 @@ abstract class SimpleWorker implements CronWorkerInterface {
   /** @var WPFunctions */
   protected $wp;
 
-  public function __construct(WPFunctions $wp = null) {
+  public function __construct(
+      WPFunctions $wp = null
+  ) {
     if (static::TASK_TYPE === null) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
     }

@@ -18,7 +18,10 @@ class StatisticsOpens {
   /** @var SubscriberEntity */
   private $subscriber;
 
-  public function __construct(NewsletterEntity $newsletter, SubscriberEntity $subscriber) {
+  public function __construct(
+      NewsletterEntity $newsletter,
+      SubscriberEntity $subscriber
+  ) {
     $this->newsletter = $newsletter;
     $this->subscriber = $subscriber;
   }

@@ -26,7 +26,12 @@ class DaemonHttpRunner {
   /** @var WordPress */
   private $wordpressTrigger;
 
-  public function __construct(Daemon $daemon = null, CronHelper $cronHelper, SettingsController $settings, WordPress $wordpressTrigger) {
+  public function __construct(
+      Daemon $daemon = null,
+      CronHelper $cronHelper,
+      SettingsController $settings,
+      WordPress $wordpressTrigger
+  ) {
     $this->cronHelper = $cronHelper;
     $this->settingsDaemonData = $this->cronHelper->getDaemon();
     $this->token = $this->cronHelper->createToken();

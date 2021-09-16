@@ -27,7 +27,10 @@ class CronDaemon {
   /** @var CronHelper */
   private $cronHelper;
 
-  public function __construct(DaemonHttpRunner $daemonRunner, CronHelper $cronHelper) {
+  public function __construct(
+      DaemonHttpRunner $daemonRunner,
+      CronHelper $cronHelper
+  ) {
     $this->daemonRunner = $daemonRunner;
     $this->cronHelper = $cronHelper;
   }

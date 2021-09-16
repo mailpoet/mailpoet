@@ -39,7 +39,13 @@ class MailerError {
    * @param int|null $retryInterval
    * @param array $subscribersErrors
    */
-  public function __construct($operation, $level, $message = null, $retryInterval = null, array $subscribersErrors = []) {
+  public function __construct(
+      $operation,
+      $level,
+      $message = null,
+      $retryInterval = null,
+      array $subscribersErrors = []
+  ) {
     $this->operation = $operation;
     $this->level = $level;
     $this->message = $message;

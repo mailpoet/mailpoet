@@ -42,7 +42,10 @@ class MP2Migrator {
   private $mp2UserTable;
   private $mp2UserListTable;
 
-  public function __construct(SettingsController $settings, Activator $activator) {
+  public function __construct(
+      SettingsController $settings,
+      Activator $activator
+  ) {
     $this->defineMP2Tables();
     $logFilename = 'mp2migration.log';
     $this->logFile = Env::$tempPath . '/' . $logFilename;

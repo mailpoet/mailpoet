@@ -40,7 +40,10 @@ class Bridge {
   /** @var SubscribersFeature */
   private $subscribersFeature;
 
-  public function __construct(SettingsController $settingsController = null, SubscribersFeature $subscribersFeature = null) {
+  public function __construct(
+      SettingsController $settingsController = null,
+      SubscribersFeature $subscribersFeature = null
+  ) {
     if ($settingsController === null) {
       $settingsController = SettingsController::getInstance();
     }

@@ -26,7 +26,9 @@ class PurchasedInCategory {
   /** @var AutomaticEmailsRepository */
   private $repository;
 
-  public function __construct(WCHelper $woocommerceHelper = null) {
+  public function __construct(
+      WCHelper $woocommerceHelper = null
+  ) {
     if ($woocommerceHelper === null) {
       $woocommerceHelper = new WCHelper();
     }

@@ -9,7 +9,9 @@ class AutocompletePostListLoader {
   /** @var Functions */
   private $wp;
 
-  public function __construct(Functions $wp) {
+  public function __construct(
+      Functions $wp
+  ) {
     $this->wp = $wp;
   }
 

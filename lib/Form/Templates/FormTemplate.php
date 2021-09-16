@@ -91,7 +91,10 @@ EOL;
   /** @var string */
   protected $assetsDirectory = '';
 
-  public function __construct(CdnAssetUrl $cdnAssetUrl, WPFunctions $wp) {
+  public function __construct(
+    CdnAssetUrl $cdnAssetUrl,
+    WPFunctions $wp
+  ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->wp = $wp;
   }

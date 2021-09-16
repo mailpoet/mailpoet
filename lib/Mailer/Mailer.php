@@ -37,7 +37,10 @@ class Mailer {
   const METHOD_PHPMAIL = 'PHPMail';
   const METHOD_SMTP = 'SMTP';
 
-  public function __construct(SettingsController $settings = null, WPFunctions $wp = null) {
+  public function __construct(
+      SettingsController $settings = null,
+      WPFunctions $wp = null
+  ) {
     if (!$settings) {
       $settings = SettingsController::getInstance();
     }

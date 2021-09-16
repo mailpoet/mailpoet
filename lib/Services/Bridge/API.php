@@ -35,7 +35,10 @@ class API {
   public $urlStats = 'https://bridge.mailpoet.com/api/v0/stats';
   public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v0/authorized_email_addresses';
 
-  public function __construct($apiKey, $wp = null) {
+  public function __construct(
+      $apiKey,
+      $wp = null
+  ) {
     $this->setKey($apiKey);
     if (is_null($wp)) {
       $this->wp = new WPFunctions();

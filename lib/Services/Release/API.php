@@ -9,7 +9,9 @@ class API {
   private $wp;
   public $urlProducts = 'https://release.mailpoet.com/products/';
 
-  public function __construct($apiKey) {
+  public function __construct(
+      $apiKey
+  ) {
     $this->setKey($apiKey);
     $this->wp = new WPFunctions();
   }

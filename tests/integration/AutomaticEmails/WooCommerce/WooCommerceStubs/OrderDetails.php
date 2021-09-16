@@ -10,7 +10,9 @@ class OrderDetails {
   public $total;
   public $orderId;
 
-  public function __construct($orderId = null) {
+  public function __construct(
+      $orderId = null
+  ) {
     $this->orderId = $orderId;
   }
 

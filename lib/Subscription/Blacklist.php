@@ -19,7 +19,10 @@ class Blacklist {
     '813cbef72da3542e783470ecd62589bceb3883d15ab2435ec2486f9762602b8c' => 1,
   ];
 
-  public function __construct(array $blacklistedEmails = null, array $blacklistedDomains = null) {
+  public function __construct(
+      array $blacklistedEmails = null,
+      array $blacklistedDomains = null
+  ) {
     if ($blacklistedEmails) {
       $this->blacklistedEmails = array_fill_keys(array_map([$this, 'hash'], $blacklistedEmails), 1);
     }

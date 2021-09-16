@@ -17,7 +17,10 @@ class SlackNotifier {
   /** @var Client */
   private $httpClient;
 
-  public function __construct($webhookUrl, $project) {
+  public function __construct(
+      $webhookUrl,
+      $project
+  ) {
     $this->webhookUrl = $webhookUrl;
     $this->project = $project;
     $this->httpClient = new Client();

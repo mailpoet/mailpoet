@@ -29,7 +29,10 @@ class SubscribersRepository extends Repository {
     'last_subscribed_at',
   ];
 
-  public function __construct(EntityManager $entityManager, WPFunctions $wp) {
+  public function __construct(
+      EntityManager $entityManager,
+      WPFunctions $wp
+  ) {
     $this->wp = $wp;
     parent::__construct($entityManager);
   }

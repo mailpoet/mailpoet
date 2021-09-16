@@ -10,7 +10,11 @@ class GithubClient {
 
   private const API_BASE_URI = 'https://api.github.com/repos';
 
-  public function __construct($repo, $username = null, $token = null) {
+  public function __construct(
+      $repo,
+      $username = null,
+      $token = null
+  ) {
     $config = [
       'headers' => [
         'Accept' => 'application/vnd.github.v3+json',

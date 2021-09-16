@@ -16,7 +16,11 @@ class Radio {
   /** @var BlockWrapperRenderer */
   private $wrapper;
 
-  public function __construct(BlockRendererHelper $rendererHelper, BlockWrapperRenderer $wrapper, WPFunctions $wp) {
+  public function __construct(
+      BlockRendererHelper $rendererHelper,
+      BlockWrapperRenderer $wrapper,
+      WPFunctions $wp
+  ) {
     $this->rendererHelper = $rendererHelper;
     $this->wrapper = $wrapper;
     $this->wp = $wp;

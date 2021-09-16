@@ -14,7 +14,9 @@ class NewsletterLink {
   /** @var NewsletterEntity */
   private $newsletter;
 
-  public function __construct(NewsletterEntity $newsletter) {
+  public function __construct(
+      NewsletterEntity $newsletter
+  ) {
     $this->data = [
       'url' => 'https://example.com/test',
       'hash' => 'hash',

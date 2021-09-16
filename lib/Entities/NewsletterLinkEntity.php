@@ -54,7 +54,12 @@ class NewsletterLinkEntity {
    */
   private $clicks;
 
-  public function __construct(NewsletterEntity $newsletter, SendingQueueEntity $queue, string $url, string $hash) {
+  public function __construct(
+      NewsletterEntity $newsletter,
+      SendingQueueEntity $queue,
+      string $url,
+      string $hash
+  ) {
     $this->newsletter = $newsletter;
     $this->queue = $queue;
     $this->url = $url;

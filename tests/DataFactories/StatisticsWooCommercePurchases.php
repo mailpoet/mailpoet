@@ -19,7 +19,10 @@ class StatisticsWooCommercePurchases {
   /** @var SubscriberEntity|null  */
   private $subscriber;
 
-  public function __construct(StatisticsClickEntity $click, $order) {
+  public function __construct(
+      StatisticsClickEntity $click,
+      $order
+  ) {
     $this->data = [
       'order_id' => $order['id'],
       'order_currency' => $order['currency'],

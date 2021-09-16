@@ -10,7 +10,9 @@ class ContainerFactory {
   /** @var IContainerConfigurator */
   private $configurator;
 
-  public function __construct(IContainerConfigurator $configurator) {
+  public function __construct(
+      IContainerConfigurator $configurator
+  ) {
     $this->configurator = $configurator;
   }
 

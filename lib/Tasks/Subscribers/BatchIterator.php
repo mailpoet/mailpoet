@@ -13,7 +13,10 @@ class BatchIterator implements \Iterator, \Countable {
   private $lastProcessedId = 0;
   private $batchLastId;
 
-  public function __construct($taskId, $batchSize) {
+  public function __construct(
+      $taskId,
+      $batchSize
+  ) {
     if ($taskId <= 0) {
       throw new \Exception('Task ID must be greater than zero');
     } elseif ($batchSize <= 0) {

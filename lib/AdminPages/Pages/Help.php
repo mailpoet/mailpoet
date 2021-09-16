@@ -24,7 +24,12 @@ class Help {
   /** @var Beacon */
   private $helpscoutBeacon;
 
-  public function __construct(PageRenderer $pageRenderer, State $tasksState, CronHelper $cronHelper, Beacon $helpscoutBeacon) {
+  public function __construct(
+      PageRenderer $pageRenderer,
+      State $tasksState,
+      CronHelper $cronHelper,
+      Beacon $helpscoutBeacon
+  ) {
     $this->pageRenderer = $pageRenderer;
     $this->tasksState = $tasksState;
     $this->cronHelper = $cronHelper;

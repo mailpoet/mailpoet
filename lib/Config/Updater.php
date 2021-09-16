@@ -15,7 +15,11 @@ class Updater {
   /** @var SettingsController */
   private $settings;
 
-  public function __construct($pluginName, $slug, $version) {
+  public function __construct(
+      $pluginName,
+      $slug,
+      $version
+  ) {
     $this->plugin = WPFunctions::get()->pluginBasename($pluginName);
     $this->slug = $slug;
     $this->version = $version;

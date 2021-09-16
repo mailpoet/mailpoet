@@ -30,7 +30,12 @@ class Mailer extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
-  public function __construct(AuthorizedEmailsController $authorizedEmailsController, SettingsController $settings, Bridge $bridge, MetaInfo $mailerMetaInfo) {
+  public function __construct(
+      AuthorizedEmailsController $authorizedEmailsController,
+      SettingsController $settings,
+      Bridge $bridge,
+      MetaInfo $mailerMetaInfo
+  ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->settings = $settings;
     $this->bridge = $bridge;

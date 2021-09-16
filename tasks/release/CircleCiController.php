@@ -27,7 +27,12 @@ class CircleCiController {
   /** @var GitHubController */
   private $githubController;
 
-  public function __construct($username, $token, $project, GitHubController $githubController) {
+  public function __construct(
+      $username,
+      $token,
+      $project,
+      GitHubController $githubController
+  ) {
     $this->token = $token;
     $circleCiProject = $project === self::PROJECT_MAILPOET ? 'mailpoet' : 'mailpoet-premium';
     $this->zipFilename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;

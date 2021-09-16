@@ -10,7 +10,9 @@ class ErrorHandler {
   /** @var string[] */
   private $defaultErrors;
 
-  public function __construct(WPFunctions $wp) {
+  public function __construct(
+      WPFunctions $wp
+  ) {
     $this->defaultErrors = [
       Error::UNKNOWN => $wp->__('An unknown error occurred.', 'mailpoet'),
     ];

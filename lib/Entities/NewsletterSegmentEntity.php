@@ -30,7 +30,10 @@ class NewsletterSegmentEntity {
    */
   private $segment;
 
-  public function __construct(NewsletterEntity $newsletter, SegmentEntity $segment) {
+  public function __construct(
+      NewsletterEntity $newsletter,
+      SegmentEntity $segment
+  ) {
     $this->newsletter = $newsletter;
     $this->segment = $segment;
   }

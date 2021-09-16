@@ -41,7 +41,11 @@ class StatisticsNewsletterEntity {
    */
   private $sentAt;
 
-  public function __construct(NewsletterEntity $newsletter, SendingQueueEntity $queue, SubscriberEntity $subscriber) {
+  public function __construct(
+      NewsletterEntity $newsletter,
+      SendingQueueEntity $queue,
+      SubscriberEntity $subscriber
+  ) {
     $this->newsletter = $newsletter;
     $this->queue = $queue;
     $this->subscriber = $subscriber;
