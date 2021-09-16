@@ -23,7 +23,11 @@ class CronWorkerRunner {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(CronHelper $cronHelper, CronWorkerScheduler $cronWorkerScheduler, WPFunctions $wp) {
+  public function __construct(
+      CronHelper $cronHelper,
+      CronWorkerScheduler $cronWorkerScheduler,
+      WPFunctions $wp
+  ) {
     $this->timer = microtime(true);
     $this->cronHelper = $cronHelper;
     $this->cronWorkerScheduler = $cronWorkerScheduler;

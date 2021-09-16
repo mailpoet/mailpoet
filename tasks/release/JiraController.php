@@ -30,7 +30,11 @@ class JiraController {
   /** @var Client */
   private $httpClient;
 
-  public function __construct($token, $user, $project) {
+  public function __construct(
+      $token,
+      $user,
+      $project
+  ) {
     $this->token = $token;
     $this->user = $user;
     $this->project = $project;

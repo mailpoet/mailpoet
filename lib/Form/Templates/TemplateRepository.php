@@ -140,7 +140,10 @@ class TemplateRepository {
     Template18Widget::ID => Template18Widget::class,
   ];
 
-  public function __construct(CdnAssetUrl $cdnAssetUrl, WPFunctions $wp) {
+  public function __construct(
+    CdnAssetUrl $cdnAssetUrl,
+    WPFunctions $wp
+  ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->wp = $wp;
   }

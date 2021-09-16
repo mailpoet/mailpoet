@@ -18,7 +18,9 @@ class ImportExportFactory {
   /** @var SegmentsSimpleListRepository */
   private $segmentsListRepository;
 
-  public function __construct($action = null) {
+  public function __construct(
+      $action = null
+  ) {
     $this->action = $action;
     $this->segmentsListRepository = ContainerWrapper::getInstance()->get(SegmentsSimpleListRepository::class);
   }

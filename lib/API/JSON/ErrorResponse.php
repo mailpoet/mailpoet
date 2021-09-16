@@ -7,7 +7,11 @@ use MailPoet\WP\Functions as WPFunctions;
 class ErrorResponse extends Response {
   public $errors;
 
-  public function __construct($errors = [], $meta = [], $status = self::STATUS_NOT_FOUND) {
+  public function __construct(
+      $errors = [],
+      $meta = [],
+      $status = self::STATUS_NOT_FOUND
+  ) {
     parent::__construct($status, $meta);
     $this->errors = $this->formatErrors($errors);
   }

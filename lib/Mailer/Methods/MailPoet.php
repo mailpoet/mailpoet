@@ -26,7 +26,13 @@ class MailPoet {
   /** @var BlacklistCheck */
   private $blacklist;
 
-  public function __construct($apiKey, $sender, $replyTo, MailPoetMapper $errorMapper, AuthorizedEmailsController $authorizedEmailsController) {
+  public function __construct(
+      $apiKey,
+      $sender,
+      $replyTo,
+      MailPoetMapper $errorMapper,
+      AuthorizedEmailsController $authorizedEmailsController
+  ) {
     $this->api = new API($apiKey);
     $this->sender = $sender;
     $this->replyTo = $replyTo;

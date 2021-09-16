@@ -20,7 +20,11 @@ class AbandonedCartPageVisitTracker {
   /** @var Cookies */
   private $cookies;
 
-  public function __construct(WPFunctions $wp, WooCommerceHelper $wooCommerceHelper, Cookies $cookies) {
+  public function __construct(
+      WPFunctions $wp,
+      WooCommerceHelper $wooCommerceHelper,
+      Cookies $cookies
+  ) {
     $this->wp = $wp;
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->cookies = $cookies;

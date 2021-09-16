@@ -9,7 +9,9 @@ class ShortcodesHelper {
   /** @var CustomFieldsRepository */
   private $customFieldsRepository;
 
-  public function __construct(CustomFieldsRepository $customFieldsRepository) {
+  public function __construct(
+      CustomFieldsRepository $customFieldsRepository
+  ) {
     $this->customFieldsRepository = $customFieldsRepository;
   }
 

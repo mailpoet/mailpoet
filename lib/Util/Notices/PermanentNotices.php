@@ -38,7 +38,9 @@ class PermanentNotices {
   /** @var EmailWithInvalidSegmentNotice */
   private $emailWithInvalidListNotice;
 
-  public function __construct(WPFunctions $wp) {
+  public function __construct(
+      WPFunctions $wp
+  ) {
     $this->wp = $wp;
     $this->phpVersionWarnings = new PHPVersionWarnings();
     $this->afterMigrationNotice = new AfterMigrationNotice();

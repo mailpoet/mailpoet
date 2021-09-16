@@ -15,7 +15,10 @@ class AutomatedLatestContent extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
-  public function __construct(\MailPoet\Newsletter\AutomatedLatestContent $alc, WPFunctions $wp) {
+  public function __construct(
+      \MailPoet\Newsletter\AutomatedLatestContent $alc,
+      WPFunctions $wp
+  ) {
     $this->ALC = $alc;
     $this->wp = $wp;
   }

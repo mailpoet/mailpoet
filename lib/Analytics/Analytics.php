@@ -21,7 +21,10 @@ class Analytics {
   /** @var WPFunctions */
   private $wp;
 
-  public function __construct(Reporter $reporter, SettingsController $settingsController) {
+  public function __construct(
+      Reporter $reporter,
+      SettingsController $settingsController
+  ) {
     $this->reporter = $reporter;
     $this->settings = $settingsController;
     $this->wp = new WPFunctions;

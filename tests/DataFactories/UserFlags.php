@@ -13,7 +13,9 @@ class UserFlags {
   /** @var UserFlagsRepository */
   private $userFlagsRepository;
 
-  public function __construct($userId) {
+  public function __construct(
+      $userId
+  ) {
     $this->userId = $userId;
     $this->userFlagsRepository = ContainerWrapper::getInstance()->get(UserFlagsRepository::class);
   }

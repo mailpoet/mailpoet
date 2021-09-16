@@ -8,7 +8,9 @@ use MailPoetVendor\Carbon\Carbon;
 class BridgeTestMockAPI extends API {
   public $apiKey;
 
-  public function __construct($apiKey) {
+  public function __construct(
+      $apiKey
+  ) {
     parent::__construct($apiKey);
     $this->setKey($apiKey);
   }

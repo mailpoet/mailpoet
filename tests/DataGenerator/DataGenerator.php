@@ -12,7 +12,9 @@ class DataGenerator {
   /** @var Output */
   private $console;
 
-  public function __construct(Output $console) {
+  public function __construct(
+      Output $console
+  ) {
     $this->console = $console;
   }
 

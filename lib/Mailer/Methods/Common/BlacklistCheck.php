@@ -8,7 +8,9 @@ class BlacklistCheck {
   /** @var Blacklist */
   private $blacklist;
 
-  public function __construct(Blacklist $blacklist = null) {
+  public function __construct(
+      Blacklist $blacklist = null
+  ) {
     if (is_null($blacklist)) {
       $blacklist = new Blacklist();
     }

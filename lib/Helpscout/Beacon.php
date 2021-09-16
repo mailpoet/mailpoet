@@ -20,7 +20,11 @@ class Beacon {
   /** @var SubscribersFeature */
   private $subscribersFeature;
 
-  public function __construct(SettingsController $settings, WPFunctions $wp, SubscribersFeature $subscribersFeature) {
+  public function __construct(
+      SettingsController $settings,
+      WPFunctions $wp,
+      SubscribersFeature $subscribersFeature
+  ) {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->subscribersFeature = $subscribersFeature;

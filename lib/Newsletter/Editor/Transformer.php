@@ -6,7 +6,9 @@ class Transformer {
 
   private $transformer;
 
-  public function __construct($args) {
+  public function __construct(
+      $args
+  ) {
     $titleListOnly = $args['displayType'] === 'titleOnly' && $args['titleFormat'] === 'ul';
 
     if ($titleListOnly) $transformer = new TitleListTransformer($args);

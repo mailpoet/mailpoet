@@ -31,7 +31,9 @@ class FirstPurchase {
   /** @var AutomaticEmailsRepository */
   private $repository;
 
-  public function __construct(WCHelper $helper = null) {
+  public function __construct(
+      WCHelper $helper = null
+  ) {
     if ($helper === null) {
       $helper = new WCHelper();
     }

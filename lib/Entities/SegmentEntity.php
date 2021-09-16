@@ -66,7 +66,11 @@ class SegmentEntity {
    */
   private $averageEngagementScoreUpdatedAt;
 
-  public function __construct(string $name, string $type, string $description) {
+  public function __construct(
+      string $name,
+      string $type,
+      string $description
+  ) {
     $this->name = $name;
     $this->type = $type;
     $this->description = $description;

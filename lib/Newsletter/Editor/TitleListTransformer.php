@@ -8,7 +8,9 @@ class TitleListTransformer {
 
   private $args;
 
-  public function __construct($args) {
+  public function __construct(
+      $args
+  ) {
     $this->args = $args;
   }
 

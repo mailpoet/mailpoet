@@ -11,7 +11,9 @@ class PremiumKeyCheck extends KeyCheckWorker {
   /** @var SettingsController */
   private $settings;
 
-  public function __construct(SettingsController $settings) {
+  public function __construct(
+      SettingsController $settings
+  ) {
     $this->settings = $settings;
     parent::__construct();
   }

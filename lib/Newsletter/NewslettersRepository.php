@@ -35,7 +35,9 @@ class NewslettersRepository extends Repository {
   /** @var LoggerFactory */
   private $loggerFactory;
 
-  public function __construct(EntityManager $entityManager) {
+  public function __construct(
+      EntityManager $entityManager
+  ) {
     parent::__construct($entityManager);
     $this->loggerFactory = LoggerFactory::getInstance();
   }

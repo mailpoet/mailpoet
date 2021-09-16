@@ -64,7 +64,14 @@ class StatisticsWooCommercePurchaseEntity {
    */
   private $orderPriceTotal;
 
-  public function __construct(NewsletterEntity $newsletter, SendingQueueEntity $queue, StatisticsClickEntity $click, int $orderId, string $orderCurrency, float $orderPriceTotal ) {
+  public function __construct(
+      NewsletterEntity $newsletter,
+      SendingQueueEntity $queue,
+      StatisticsClickEntity $click,
+      int $orderId,
+      string $orderCurrency,
+      float $orderPriceTotal 
+  ) {
     $this->newsletter = $newsletter;
     $this->queue = $queue;
     $this->click = $click;

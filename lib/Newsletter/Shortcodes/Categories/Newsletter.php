@@ -13,7 +13,9 @@ class Newsletter implements CategoryInterface {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
-  public function __construct(NewslettersRepository $newslettersRepository) {
+  public function __construct(
+      NewslettersRepository $newslettersRepository
+  ) {
     $this->newslettersRepository = $newslettersRepository;
   }
 

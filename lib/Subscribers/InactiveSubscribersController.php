@@ -19,7 +19,9 @@ class InactiveSubscribersController {
   /** @var SettingsRepository */
   private $settingsRepository;
 
-  public function __construct(SettingsRepository $settingsRepository) {
+  public function __construct(
+      SettingsRepository $settingsRepository
+  ) {
     $this->settingsRepository = $settingsRepository;
   }
 

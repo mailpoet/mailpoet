@@ -35,7 +35,9 @@ class UserAgentEntity {
    */
   private $userAgent;
 
-  public function __construct(string $userAgent) {
+  public function __construct(
+      string $userAgent
+  ) {
     $this->setUserAgent($userAgent);
   }
 

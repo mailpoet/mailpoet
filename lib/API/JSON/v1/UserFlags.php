@@ -17,7 +17,9 @@ class UserFlags extends APIEndpoint {
     'global' => AccessControl::ALL_ROLES_ACCESS,
   ];
 
-  public function __construct(UserFlagsController $userFlags) {
+  public function __construct(
+      UserFlagsController $userFlags
+  ) {
     $this->userFlags = $userFlags;
   }
 

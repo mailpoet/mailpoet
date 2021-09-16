@@ -53,7 +53,10 @@ class Sending {
     'deleted_at',
   ];
 
-  private function __construct(ScheduledTask $task = null, SendingQueue $queue = null) {
+  private function __construct(
+      ScheduledTask $task = null,
+      SendingQueue $queue = null
+  ) {
     if (!$task instanceof ScheduledTask) {
       $task = ScheduledTask::create();
       $task->type = self::TASK_TYPE;

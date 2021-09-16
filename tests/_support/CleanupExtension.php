@@ -25,7 +25,10 @@ class CleanupExtension extends Extension {
   /** @var PDO */
   private $rootConnection;
 
-  public function __construct($config, $options) {
+  public function __construct(
+      $config,
+      $options
+  ) {
     parent::__construct($config, $options);
     $this->rootConnection = new PDO($this->createDsnConnectionString(), self::DB_USERNAME, self::DB_PASSWORD);
     $this->rootConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

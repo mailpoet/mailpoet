@@ -13,7 +13,9 @@ class AuthorizedSendingEmailsCheck extends SimpleWorker {
   /** @var AuthorizedEmailsController */
   private $authorizedEmailsController;
 
-  public function __construct(AuthorizedEmailsController $authorizedEmailsController) {
+  public function __construct(
+      AuthorizedEmailsController $authorizedEmailsController
+  ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     parent::__construct();
   }

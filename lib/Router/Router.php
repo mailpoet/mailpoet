@@ -20,7 +20,11 @@ class Router {
   const RESPONSE_ERROR = 404;
   const RESPONE_FORBIDDEN = 403;
 
-  public function __construct(AccessControl $accessControl, ContainerInterface $container, $apiData = false) {
+  public function __construct(
+      AccessControl $accessControl,
+      ContainerInterface $container,
+      $apiData = false
+  ) {
     $apiData = ($apiData) ? $apiData : $_GET;
     $this->apiRequest = is_array($apiData) && array_key_exists(self::NAME, $apiData);
     $this->endpoint = isset($apiData['endpoint']) ?

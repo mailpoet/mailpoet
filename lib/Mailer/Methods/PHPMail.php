@@ -21,7 +21,12 @@ class PHPMail {
   /** @var BlacklistCheck */
   private $blacklist;
 
-  public function __construct($sender, $replyTo, $returnPath, PHPMailMapper $errorMapper) {
+  public function __construct(
+      $sender,
+      $replyTo,
+      $returnPath,
+      PHPMailMapper $errorMapper
+  ) {
     $this->sender = $sender;
     $this->replyTo = $replyTo;
     $this->returnPath = ($returnPath) ?

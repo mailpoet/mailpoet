@@ -32,7 +32,9 @@ class SplitTestFilesByGroupsTask extends BaseTask implements TaskInterface {
   protected $saveTo = 'tests/_data/paracept_';
   protected $excludePath = 'vendor';
 
-  public function __construct($groups) {
+  public function __construct(
+      $groups
+  ) {
     $this->numGroups = $groups;
   }
 

@@ -8,7 +8,9 @@ class MailPoet {
   /** @var Supervisor */
   private $supervisor;
 
-  public function __construct(Supervisor $supervisor) {
+  public function __construct(
+      Supervisor $supervisor
+  ) {
     $this->supervisor = $supervisor;
   }
 

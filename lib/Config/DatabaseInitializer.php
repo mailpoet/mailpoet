@@ -8,7 +8,9 @@ use MailPoetVendor\Psr\Container\ContainerInterface;
 class DatabaseInitializer {
   private $diContainer;
 
-  public function __construct(ContainerInterface $diContainer) {
+  public function __construct(
+      ContainerInterface $diContainer
+  ) {
     $this->diContainer = $diContainer;
   }
 
