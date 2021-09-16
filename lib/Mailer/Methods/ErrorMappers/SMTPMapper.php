@@ -7,6 +7,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Swift_RfcComplianceException;
+use MailPoetVendor\Swift_TransportException;
 
 class SMTPMapper {
   use BlacklistErrorMapperTrait;
@@ -21,11 +22,17 @@ class SMTPMapper {
   public function getErrorFromException(\Exception $e, $subscriber) {
     // remove redundant information appended by Swift logger to exception messages
     $message = explode(PHP_EOL, $e->getMessage());
+    $code = $e->getCode();
 
     $level = MailerError::LEVEL_HARD;
     if ($e instanceof Swift_RfcComplianceException) {
       $level = MailerError::LEVEL_SOFT;
     }
+
+    if ($e instanceof Swift_TransportException && (($code < 500) || ($code > 504))) {
+      $level = MailerError::LEVEL_SOFT;
+    }
+
     $subscriberErrors = [new SubscriberError($subscriber, null)];
     return new MailerError(MailerError::OPERATION_SEND, $level, $message[0], null, $subscriberErrors);
   }
