@@ -11,18 +11,10 @@ import APIErrorsNotice from 'notices/api_errors_notice';
 import { Scheduling } from './scheduling';
 import ListingHeadingStepsRoute from '../../listings/heading_steps_route';
 
-interface ReengagementWindow extends Window {
-  settings: {
-    deactivate_subscriber_after_inactive_days: string;
-  }
-}
-
-declare let window: ReengagementWindow;
-
 export function NewsletterTypeReEngagement(): JSX.Element {
   const [options, setOptions] = useState({
     afterTimeNumber: (
-      (Number(window.settings.deactivate_subscriber_after_inactive_days) / 30) - 1
+      (Number(MailPoet.settings.deactivate_subscriber_after_inactive_days) / 30) - 1
     ).toString(),
     afterTimeType: 'months',
   });
@@ -66,7 +58,7 @@ export function NewsletterTypeReEngagement(): JSX.Element {
           afterTimeNumber={options.afterTimeNumber}
           afterTimeType={options.afterTimeType}
           inactiveSubscribersPeriod={
-            Number(window.settings.deactivate_subscriber_after_inactive_days)
+            Number(MailPoet.settings.deactivate_subscriber_after_inactive_days)
           }
           updateAfterTimeNumber={compose([setOptions, assoc('afterTimeNumber', __, options)])}
           updateAfterTimeType={compose([setOptions, assoc('afterTimeType', __, options)])}
