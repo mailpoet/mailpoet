@@ -19,6 +19,7 @@ use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsClicksRepository;
+use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\Track\Clicks;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Statistics\UserAgentsRepository;
@@ -485,21 +486,29 @@ class ClicksTest extends \MailPoetTest {
   public function testItUpdatesSubscriberEngagementForHumanAgent() {
     $now = Carbon::now();
     $wpMock = $this->createMock(WPFunctions::class);
-    $wpMock->expects($this->once())
+    $wpMock->expects($this->any())
       ->method('currentTime')
       ->willReturn($now->getTimestamp());
+
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = 'User Agent';
+    $subscribersRepository = new SubscribersRepository($this->entityManager, $wpMock);
+    $statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
+    $opens = new Opens(
+      $statisticsOpensRepository,
+      $this->diContainer->get(UserAgentsRepository::class),
+      $subscribersRepository
+    );
     $clicks = Stub::construct($this->clicks, [
       $this->settingsController,
       new Cookies(),
       $this->diContainer->get(Shortcodes::class),
-      $this->diContainer->get(Opens::class),
+      $opens,
       $clicksRepository,
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
-      new SubscribersRepository($this->entityManager, $wpMock),
+      $subscribersRepository,
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -512,21 +521,28 @@ class ClicksTest extends \MailPoetTest {
   public function testItUpdatesSubscriberEngagementForUnknownAgent() {
     $now = Carbon::now();
     $wpMock = $this->createMock(WPFunctions::class);
-    $wpMock->expects($this->once())
+    $wpMock->expects($this->any())
       ->method('currentTime')
       ->willReturn($now->getTimestamp());
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = null;
+    $subscribersRepository = new SubscribersRepository($this->entityManager, $wpMock);
+    $statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
+    $opens = new Opens(
+      $statisticsOpensRepository,
+      $this->diContainer->get(UserAgentsRepository::class),
+      $subscribersRepository
+    );
     $clicks = Stub::construct($this->clicks, [
       $this->settingsController,
       new Cookies(),
       $this->diContainer->get(Shortcodes::class),
-      $this->diContainer->get(Opens::class),
+      $opens,
       $clicksRepository,
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
-      new SubscribersRepository($this->entityManager, $wpMock),
+      $subscribersRepository,
     ], [
       'redirectToUrl' => null,
     ], $this);
