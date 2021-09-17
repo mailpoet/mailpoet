@@ -18,8 +18,8 @@ class WooCommerceSync extends SimpleWorker {
   private $woocommerceHelper;
 
   public function __construct(
-      WooCommerceSegment $woocommerceSegment,
-      WooCommerceHelper $woocommerceHelper
+    WooCommerceSegment $woocommerceSegment,
+    WooCommerceHelper $woocommerceHelper
   ) {
     $this->woocommerceSegment = $woocommerceSegment;
     $this->woocommerceHelper = $woocommerceHelper;

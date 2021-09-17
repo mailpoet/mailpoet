@@ -80,6 +80,8 @@
       <property name="indent" value="2"/>
     </properties>
   </rule>
+  <!-- Enforce indentation on multiline function declarations -->
+  <rule ref="MailPoet.ControlStructures.FunctionDeclaration"/>
 
   <!-- Spacing -->
   <rule ref="Squiz.WhiteSpace.FunctionSpacing">

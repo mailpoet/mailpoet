@@ -14,9 +14,9 @@ class ReleaseVersionController {
   private $project;
 
   public function __construct(
-      JiraController $jira,
-      GitHubController $github,
-      $project
+    JiraController $jira,
+    GitHubController $github,
+    $project
   ) {
     $this->jira = $jira;
     $this->github = $github;

@@ -26,9 +26,9 @@ class SubscriptionUrlFactory {
   private $linkTokens;
 
   public function __construct(
-      WPFunctions $wp,
-      SettingsController $settings,
-      LinkTokens $linkTokens
+    WPFunctions $wp,
+    SettingsController $settings,
+    LinkTokens $linkTokens
   ) {
     $this->wp = $wp;
     $this->settings = $settings;

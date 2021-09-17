@@ -17,7 +17,7 @@ class UserFlagsController {
   private $userFlagsRepository;
 
   public function __construct(
-      UserFlagsRepository $userFlagsRepository
+    UserFlagsRepository $userFlagsRepository
   ) {
     $this->defaults = [
       'last_announcement_seen' => false,

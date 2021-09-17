@@ -19,7 +19,7 @@ class EmailOpensAbsoluteCountAction implements Filter {
   private $entityManager;
 
   public function __construct(
-      EntityManager $entityManager
+    EntityManager $entityManager
   ) {
     $this->entityManager = $entityManager;
   }

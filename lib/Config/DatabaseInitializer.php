@@ -9,7 +9,7 @@ class DatabaseInitializer {
   private $diContainer;
 
   public function __construct(
-      ContainerInterface $diContainer
+    ContainerInterface $diContainer
   ) {
     $this->diContainer = $diContainer;
   }

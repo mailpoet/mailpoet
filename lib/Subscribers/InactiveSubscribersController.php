@@ -20,7 +20,7 @@ class InactiveSubscribersController {
   private $settingsRepository;
 
   public function __construct(
-      SettingsRepository $settingsRepository
+    SettingsRepository $settingsRepository
   ) {
     $this->settingsRepository = $settingsRepository;
   }

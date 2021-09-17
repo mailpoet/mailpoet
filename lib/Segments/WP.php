@@ -31,9 +31,9 @@ class WP {
   private $wooHelper;
 
   public function __construct(
-      WPFunctions $wp,
-      WelcomeScheduler $welcomeScheduler,
-      WooCommerceHelper $wooHelper
+    WPFunctions $wp,
+    WelcomeScheduler $welcomeScheduler,
+    WooCommerceHelper $wooHelper
   ) {
     $this->wp = $wp;
     $this->welcomeScheduler = $welcomeScheduler;

@@ -29,7 +29,7 @@ class PurchasedProduct {
   private $repository;
 
   public function __construct(
-      WCHelper $helper = null
+    WCHelper $helper = null
   ) {
     if ($helper === null) {
       $helper = new WCHelper();

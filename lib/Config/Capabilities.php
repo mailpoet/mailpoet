@@ -15,8 +15,8 @@ class Capabilities {
   private $accessControl;
 
   public function __construct(
-      $renderer = null,
-      WPFunctions $wp = null
+    $renderer = null,
+    WPFunctions $wp = null
   ) {
     if ($renderer !== null) {
       $this->renderer = $renderer;

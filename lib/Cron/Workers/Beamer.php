@@ -16,8 +16,8 @@ class Beamer extends SimpleWorker {
   private $settings;
 
   public function __construct(
-      SettingsController $settings,
-      WPFunctions $wp
+    SettingsController $settings,
+    WPFunctions $wp
   ) {
     parent::__construct($wp);
     $this->settings = $settings;

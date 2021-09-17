@@ -30,8 +30,8 @@ class SubscribersRepository extends Repository {
   ];
 
   public function __construct(
-      EntityManager $entityManager,
-      WPFunctions $wp
+    EntityManager $entityManager,
+    WPFunctions $wp
   ) {
     $this->wp = $wp;
     parent::__construct($entityManager);

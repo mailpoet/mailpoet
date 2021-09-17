@@ -36,8 +36,8 @@ class API {
   public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v0/authorized_email_addresses';
 
   public function __construct(
-      $apiKey,
-      $wp = null
+    $apiKey,
+    $wp = null
   ) {
     $this->setKey($apiKey);
     if (is_null($wp)) {

@@ -14,7 +14,7 @@ class State {
   private $newsletterUrl;
 
   public function __construct(
-      NewsletterUrl $newsletterUrl
+    NewsletterUrl $newsletterUrl
   ) {
     $this->newsletterUrl = $newsletterUrl;
   }
@@ -55,7 +55,8 @@ class State {
       ScheduledTask::STATUS_SCHEDULED,
       ScheduledTask::VIRTUAL_STATUS_RUNNING,
     ],
-    $limit = Scheduler::TASK_BATCH_SIZE) {
+    $limit = Scheduler::TASK_BATCH_SIZE
+  ) {
     $tasks = [];
     foreach ($statuses as $status) {
       $query = ScheduledTask::orderByDesc('id')

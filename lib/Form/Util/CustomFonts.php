@@ -75,7 +75,7 @@ class CustomFonts {
   private $wp;
 
   public function __construct(
-      Functions $wp
+    Functions $wp
   ) {
     $this->wp = $wp;
   }

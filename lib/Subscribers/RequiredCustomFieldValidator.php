@@ -11,7 +11,7 @@ class RequiredCustomFieldValidator {
   private $customFieldRepository;
 
   public function __construct(
-      CustomFieldsRepository $customFieldRepository
+    CustomFieldsRepository $customFieldRepository
   ) {
     $this->customFieldRepository = $customFieldRepository;
   }

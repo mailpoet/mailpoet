@@ -26,7 +26,7 @@ class ApiDataSanitizer {
   ];
 
   public function __construct(
-      FormHtmlSanitizer $htmlSanitizer
+    FormHtmlSanitizer $htmlSanitizer
   ) {
     $this->htmlSanitizer = $htmlSanitizer;
   }

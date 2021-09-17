@@ -16,9 +16,9 @@ class Updater {
   private $settings;
 
   public function __construct(
-      $pluginName,
-      $slug,
-      $version
+    $pluginName,
+    $slug,
+    $version
   ) {
     $this->plugin = WPFunctions::get()->pluginBasename($pluginName);
     $this->slug = $slug;

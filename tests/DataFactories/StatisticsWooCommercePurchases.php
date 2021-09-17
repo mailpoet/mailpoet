@@ -20,8 +20,8 @@ class StatisticsWooCommercePurchases {
   private $subscriber;
 
   public function __construct(
-      StatisticsClickEntity $click,
-      $order
+    StatisticsClickEntity $click,
+    $order
   ) {
     $this->data = [
       'order_id' => $order['id'],

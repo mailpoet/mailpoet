@@ -25,8 +25,8 @@ class NewsletterStatisticsRepository extends Repository {
   private $wcHelper;
 
   public function __construct(
-      EntityManager $entityManager,
-      WCHelper $wcHelper
+    EntityManager $entityManager,
+    WCHelper $wcHelper
   ) {
     parent::__construct($entityManager);
     $this->wcHelper = $wcHelper;

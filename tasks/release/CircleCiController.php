@@ -28,10 +28,10 @@ class CircleCiController {
   private $githubController;
 
   public function __construct(
-      $username,
-      $token,
-      $project,
-      GitHubController $githubController
+    $username,
+    $token,
+    $project,
+    GitHubController $githubController
   ) {
     $this->token = $token;
     $circleCiProject = $project === self::PROJECT_MAILPOET ? 'mailpoet' : 'mailpoet-premium';

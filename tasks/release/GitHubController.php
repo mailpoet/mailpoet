@@ -25,9 +25,9 @@ class GitHubController {
   private $httpClient;
 
   public function __construct(
-      $username,
-      $token,
-      $project
+    $username,
+    $token,
+    $project
   ) {
     $this->zipFilename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;
     $this->httpClient = new Client([

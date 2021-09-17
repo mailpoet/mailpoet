@@ -20,8 +20,8 @@ class Blacklist {
   ];
 
   public function __construct(
-      array $blacklistedEmails = null,
-      array $blacklistedDomains = null
+    array $blacklistedEmails = null,
+    array $blacklistedDomains = null
   ) {
     if ($blacklistedEmails) {
       $this->blacklistedEmails = array_fill_keys(array_map([$this, 'hash'], $blacklistedEmails), 1);

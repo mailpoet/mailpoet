@@ -11,7 +11,7 @@ class ContainerFactory {
   private $configurator;
 
   public function __construct(
-      IContainerConfigurator $configurator
+    IContainerConfigurator $configurator
   ) {
     $this->configurator = $configurator;
   }

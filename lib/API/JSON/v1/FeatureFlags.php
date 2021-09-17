@@ -21,8 +21,8 @@ class FeatureFlags extends APIEndpoint {
   private $featureFlagsController;
 
   public function __construct(
-      FeaturesController $featuresController,
-      FeatureFlagsController $featureFlags
+    FeaturesController $featuresController,
+    FeatureFlagsController $featureFlags
   ) {
     $this->featuresController = $featuresController;
     $this->featureFlagsController = $featureFlags;

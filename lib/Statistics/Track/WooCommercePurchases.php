@@ -19,8 +19,8 @@ class WooCommercePurchases {
   private $cookies;
 
   public function __construct(
-      Helper $woocommerceHelper,
-      Cookies $cookies
+    Helper $woocommerceHelper,
+    Cookies $cookies
   ) {
     $this->woocommerceHelper = $woocommerceHelper;
     $this->cookies = $cookies;

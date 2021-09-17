@@ -19,7 +19,7 @@ class ViewInBrowser {
   private $viewInBrowserController;
 
   public function __construct(
-      ViewInBrowserController $viewInBrowserController
+    ViewInBrowserController $viewInBrowserController
   ) {
     $this->viewInBrowserController = $viewInBrowserController;
   }

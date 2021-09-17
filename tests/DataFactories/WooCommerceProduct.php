@@ -19,7 +19,7 @@ class WooCommerceProduct {
   const TYPE_VARIABLE_SUBSCRIPTION = 'variable-subscription';
 
   public function __construct(
-      \AcceptanceTester $tester
+    \AcceptanceTester $tester
   ) {
     $this->tester = $tester;
     $this->data = [

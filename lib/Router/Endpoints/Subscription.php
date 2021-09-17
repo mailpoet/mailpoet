@@ -36,9 +36,9 @@ class Subscription {
   private $captcha;
 
   public function __construct(
-      UserSubscription\Pages $subscriptionPages,
-      WPFunctions $wp,
-      UserSubscription\Captcha $captcha
+    UserSubscription\Pages $subscriptionPages,
+    WPFunctions $wp,
+    UserSubscription\Captcha $captcha
   ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;

@@ -31,10 +31,10 @@ class Mailer extends APIEndpoint {
   ];
 
   public function __construct(
-      AuthorizedEmailsController $authorizedEmailsController,
-      SettingsController $settings,
-      Bridge $bridge,
-      MetaInfo $mailerMetaInfo
+    AuthorizedEmailsController $authorizedEmailsController,
+    SettingsController $settings,
+    Bridge $bridge,
+    MetaInfo $mailerMetaInfo
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->settings = $settings;

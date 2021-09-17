@@ -7,7 +7,7 @@ class Html {
   private $rendererHelper;
 
   public function __construct(
-      BlockRendererHelper $rendererHelper
+    BlockRendererHelper $rendererHelper
   ) {
     $this->rendererHelper = $rendererHelper;
   }

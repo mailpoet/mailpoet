@@ -11,7 +11,7 @@ class PageLimit {
   private $wp;
 
   public function __construct(
-      WPFunctions $wp
+    WPFunctions $wp
   ) {
     $this->wp = $wp;
   }

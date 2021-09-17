@@ -20,7 +20,7 @@ class MailChimp {
   private $mapper;
 
   public function __construct(
-      $apiKey
+    $apiKey
   ) {
     $this->apiKey = $this->getAPIKey($apiKey);
     $this->maxPostSize = (int)Helpers::getMaxPostSize('bytes');

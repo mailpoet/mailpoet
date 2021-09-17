@@ -10,8 +10,8 @@ class BulkActionController {
   private $handler;
 
   public function __construct(
-      BulkActionFactory $factory,
-      Handler $handler
+    BulkActionFactory $factory,
+    Handler $handler
   ) {
     $this->factory = $factory;
     $this->handler = $handler;

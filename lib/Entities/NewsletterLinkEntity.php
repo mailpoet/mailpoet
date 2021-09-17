@@ -55,10 +55,10 @@ class NewsletterLinkEntity {
   private $clicks;
 
   public function __construct(
-      NewsletterEntity $newsletter,
-      SendingQueueEntity $queue,
-      string $url,
-      string $hash
+    NewsletterEntity $newsletter,
+    SendingQueueEntity $queue,
+    string $url,
+    string $hash
   ) {
     $this->newsletter = $newsletter;
     $this->queue = $queue;

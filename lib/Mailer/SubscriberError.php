@@ -15,8 +15,8 @@ class SubscriberError {
    * @param string $message|null
    */
   public function __construct(
-      $email,
-      $message = null
+    $email,
+    $message = null
   ) {
     $this->email = $email;
     $this->message = $message;

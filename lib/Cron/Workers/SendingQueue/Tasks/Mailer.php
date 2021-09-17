@@ -9,7 +9,7 @@ class Mailer {
   public $mailer;
 
   public function __construct(
-      $mailer = false
+    $mailer = false
   ) {
     $this->mailer = ($mailer) ? $mailer : $this->configureMailer();
   }

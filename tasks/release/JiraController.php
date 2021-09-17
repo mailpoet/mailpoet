@@ -31,9 +31,9 @@ class JiraController {
   private $httpClient;
 
   public function __construct(
-      $token,
-      $user,
-      $project
+    $token,
+    $user,
+    $project
   ) {
     $this->token = $token;
     $this->user = $user;

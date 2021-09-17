@@ -8,7 +8,7 @@ class PreviewWidget extends \WP_Widget {
   private $formHtml;
 
   public function __construct(
-      $formHtml
+    $formHtml
   ) {
     $this->formHtml = $formHtml;
     parent::__construct(

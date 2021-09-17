@@ -27,11 +27,11 @@ class MailPoet {
   private $blacklist;
 
   public function __construct(
-      $apiKey,
-      $sender,
-      $replyTo,
-      MailPoetMapper $errorMapper,
-      AuthorizedEmailsController $authorizedEmailsController
+    $apiKey,
+    $sender,
+    $replyTo,
+    MailPoetMapper $errorMapper,
+    AuthorizedEmailsController $authorizedEmailsController
   ) {
     $this->api = new API($apiKey);
     $this->sender = $sender;

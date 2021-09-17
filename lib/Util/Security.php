@@ -20,8 +20,8 @@ class Security {
   private $subscribersRepository;
 
   public function __construct(
-      NewslettersRepository $newslettersRepository,
-      SubscribersRepository $subscribersRepository
+    NewslettersRepository $newslettersRepository,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->subscribersRepository = $subscribersRepository;

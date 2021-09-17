@@ -22,8 +22,8 @@ class UnauthorizedEmailInNewslettersNotice {
   private $wp;
 
   public function __construct(
-      SettingsController $settings,
-      WPFunctions $wp
+    SettingsController $settings,
+    WPFunctions $wp
   ) {
     $this->settings = $settings;
     $this->wp = $wp;

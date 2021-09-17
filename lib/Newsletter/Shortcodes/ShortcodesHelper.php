@@ -10,7 +10,7 @@ class ShortcodesHelper {
   private $customFieldsRepository;
 
   public function __construct(
-      CustomFieldsRepository $customFieldsRepository
+    CustomFieldsRepository $customFieldsRepository
   ) {
     $this->customFieldsRepository = $customFieldsRepository;
   }

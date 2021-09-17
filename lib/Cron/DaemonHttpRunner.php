@@ -27,10 +27,10 @@ class DaemonHttpRunner {
   private $wordpressTrigger;
 
   public function __construct(
-      Daemon $daemon = null,
-      CronHelper $cronHelper,
-      SettingsController $settings,
-      WordPress $wordpressTrigger
+    Daemon $daemon = null,
+    CronHelper $cronHelper,
+    SettingsController $settings,
+    WordPress $wordpressTrigger
   ) {
     $this->cronHelper = $cronHelper;
     $this->settingsDaemonData = $this->cronHelper->getDaemon();

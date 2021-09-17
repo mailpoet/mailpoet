@@ -13,7 +13,7 @@ class I18n extends AbstractExtension {
   private $textDomains;
 
   public function __construct(
-      $textDomain
+    $textDomain
   ) {
     // set text domain
     $this->textDomains = [$textDomain, 'woocommerce'];

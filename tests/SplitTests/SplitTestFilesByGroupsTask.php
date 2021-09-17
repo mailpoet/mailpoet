@@ -33,7 +33,7 @@ class SplitTestFilesByGroupsTask extends BaseTask implements TaskInterface {
   protected $excludePath = 'vendor';
 
   public function __construct(
-      $groups
+    $groups
   ) {
     $this->numGroups = $groups;
   }

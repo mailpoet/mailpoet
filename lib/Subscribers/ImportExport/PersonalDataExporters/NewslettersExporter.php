@@ -16,7 +16,7 @@ class NewslettersExporter {
   private $newsletterUrl;
 
   public function __construct(
-      NewsletterUrl $newsletterUrl
+    NewsletterUrl $newsletterUrl
   ) {
     $this->newsletterUrl = $newsletterUrl;
   }

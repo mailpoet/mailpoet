@@ -8,9 +8,9 @@ class ErrorResponse extends Response {
   public $errors;
 
   public function __construct(
-      $errors = [],
-      $meta = [],
-      $status = self::STATUS_NOT_FOUND
+    $errors = [],
+    $meta = [],
+    $status = self::STATUS_NOT_FOUND
   ) {
     parent::__construct($status, $meta);
     $this->errors = $this->formatErrors($errors);

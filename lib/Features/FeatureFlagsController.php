@@ -13,8 +13,8 @@ class FeatureFlagsController {
   private $featureFlagsRepository;
 
   public function __construct(
-      FeaturesController $featuresController,
-      FeatureFlagsRepository $featureFlagsRepository
+    FeaturesController $featuresController,
+    FeatureFlagsRepository $featureFlagsRepository
   ) {
     $this->featuresController = $featuresController;
     $this->featureFlagsRepository = $featureFlagsRepository;

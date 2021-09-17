@@ -27,9 +27,9 @@ class NewSubscriberNotificationMailer {
   private $mailerMetaInfo;
 
   public function __construct(
-      Mailer $mailer,
-      Renderer $renderer,
-      SettingsController $settings
+    Mailer $mailer,
+    Renderer $renderer,
+    SettingsController $settings
   ) {
     $this->mailer = $mailer;
     $this->renderer = $renderer;

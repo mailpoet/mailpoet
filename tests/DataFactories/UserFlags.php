@@ -14,7 +14,7 @@ class UserFlags {
   private $userFlagsRepository;
 
   public function __construct(
-      $userId
+    $userId
   ) {
     $this->userId = $userId;
     $this->userFlagsRepository = ContainerWrapper::getInstance()->get(UserFlagsRepository::class);

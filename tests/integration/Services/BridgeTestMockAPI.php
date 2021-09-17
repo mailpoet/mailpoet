@@ -9,7 +9,7 @@ class BridgeTestMockAPI extends API {
   public $apiKey;
 
   public function __construct(
-      $apiKey
+    $apiKey
   ) {
     parent::__construct($apiKey);
     $this->setKey($apiKey);

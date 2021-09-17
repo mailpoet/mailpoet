@@ -16,7 +16,7 @@ class ApiDataSanitizer {
   ];
 
   public function __construct(
-      NewsletterHtmlSanitizer $htmlSanitizer
+    NewsletterHtmlSanitizer $htmlSanitizer
   ) {
     $this->htmlSanitizer = $htmlSanitizer;
   }

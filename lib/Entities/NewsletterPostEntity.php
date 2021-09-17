@@ -31,8 +31,8 @@ class NewsletterPostEntity {
   private $postId;
 
   public function __construct(
-      NewsletterEntity $newsletter,
-      int $postId
+    NewsletterEntity $newsletter,
+    int $postId
   ) {
     $this->newsletter = $newsletter;
     $this->postId = $postId;

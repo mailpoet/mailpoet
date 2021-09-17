@@ -14,7 +14,7 @@ class DateTime {
   private $wp;
 
   public function __construct(
-      WPFunctions $wp = null
+    WPFunctions $wp = null
   ) {
     if ($wp === null) {
       $wp = new WPFunctions();

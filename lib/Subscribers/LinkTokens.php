@@ -11,7 +11,7 @@ class LinkTokens {
   private $subscribersRepository;
 
   public function __construct(
-      SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository
   ) {
     $this->subscribersRepository = $subscribersRepository;
   }

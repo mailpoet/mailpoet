@@ -18,7 +18,7 @@ class UserFlags extends APIEndpoint {
   ];
 
   public function __construct(
-      UserFlagsController $userFlags
+    UserFlagsController $userFlags
   ) {
     $this->userFlags = $userFlags;
   }

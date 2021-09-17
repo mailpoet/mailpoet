@@ -14,7 +14,7 @@ class PostContentManager {
   private $woocommerceHelper;
 
   public function __construct(
-      WooCommerceHelper $woocommerceHelper = null
+    WooCommerceHelper $woocommerceHelper = null
   ) {
     $wp = new WPFunctions;
     $this->maxExcerptLength = $wp->applyFilters('mailpoet_newsletter_post_excerpt_length', $this->maxExcerptLength);
