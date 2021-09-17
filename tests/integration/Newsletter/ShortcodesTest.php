@@ -105,14 +105,15 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcode = ['[some:shortcode arg1="val1" arg2="val2"]']; // WP style arguments
     $result = $shortcodesObject->process($shortcode);
     expect($result[0])->false();
-    add_filter('mailpoet_newsletter_shortcode', function(
-      $shortcode, $newsletter, $subscriber, $queue, $content, $arguments
-) {
-      expect($arguments)->count(2);
-      expect($arguments['arg1'])->equals('val1');
-      expect($arguments['arg2'])->equals('val2');
-      if (strpos($shortcode, '[some:shortcode') === 0) return 'success';
-    }, 10, 6);
+    add_filter(
+      'mailpoet_newsletter_shortcode',
+      function($shortcode, $newsletter, $subscriber, $queue, $content, $arguments) {
+        expect($arguments)->count(2);
+        expect($arguments['arg1'])->equals('val1');
+        expect($arguments['arg2'])->equals('val2');
+        if (strpos($shortcode, '[some:shortcode') === 0) return 'success';
+      }, 10, 6
+    );
     $result = $shortcodesObject->process($shortcode);
     expect($result[0])->equals('success');
   }
