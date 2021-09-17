@@ -16,7 +16,7 @@ class Analytics extends APIEndpoint {
   ];
 
   public function __construct(
-      Reporter $reporter
+    Reporter $reporter
   ) {
     $this->reporter = $reporter;
   }

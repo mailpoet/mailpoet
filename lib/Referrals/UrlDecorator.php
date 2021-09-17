@@ -14,8 +14,8 @@ class UrlDecorator {
   private $settings;
 
   public function __construct(
-      WPFunctions $wp,
-      SettingsController $settings
+    WPFunctions $wp,
+    SettingsController $settings
   ) {
     $this->wp = $wp;
     $this->settings = $settings;

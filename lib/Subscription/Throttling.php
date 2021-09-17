@@ -15,8 +15,8 @@ class Throttling {
   private $wp;
 
   public function __construct(
-      SubscriberIPsRepository $subscriberIPsRepository,
-      WPFunctions $wp
+    SubscriberIPsRepository $subscriberIPsRepository,
+    WPFunctions $wp
   ) {
     $this->wp = $wp;
     $this->subscriberIPsRepository = $subscriberIPsRepository;

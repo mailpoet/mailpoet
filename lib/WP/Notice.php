@@ -18,11 +18,11 @@ class Notice {
   private $renderInParagraph;
 
   public function __construct(
-      $type,
-      $message,
-      $classes = '',
-      $dataNoticeName = '',
-      $renderInParagraph = true
+    $type,
+    $message,
+    $classes = '',
+    $dataNoticeName = '',
+    $renderInParagraph = true
   ) {
     $this->type = $type;
     $this->message = $message;

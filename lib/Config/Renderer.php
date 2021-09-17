@@ -20,8 +20,8 @@ class Renderer {
   public $assetsManifestCss;
 
   public function __construct(
-      $cachingEnabled = false,
-      $debuggingEnabled = false
+    $cachingEnabled = false,
+    $debuggingEnabled = false
   ) {
     $this->cachingEnabled = $cachingEnabled;
     $this->debuggingEnabled = $debuggingEnabled;

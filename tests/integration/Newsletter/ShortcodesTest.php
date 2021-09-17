@@ -106,7 +106,8 @@ class ShortcodesTest extends \MailPoetTest {
     $result = $shortcodesObject->process($shortcode);
     expect($result[0])->false();
     add_filter('mailpoet_newsletter_shortcode', function(
-      $shortcode, $newsletter, $subscriber, $queue, $content, $arguments) {
+      $shortcode, $newsletter, $subscriber, $queue, $content, $arguments
+) {
       expect($arguments)->count(2);
       expect($arguments['arg1'])->equals('val1');
       expect($arguments['arg2'])->equals('val2');

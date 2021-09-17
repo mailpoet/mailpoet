@@ -16,7 +16,7 @@ class NewsletterLinks extends APIEndpoint {
   private $newsletterLinkRepository;
 
   public function __construct(
-      NewsletterLinkRepository $newsletterLinkRepository
+    NewsletterLinkRepository $newsletterLinkRepository
   ) {
     $this->newsletterLinkRepository = $newsletterLinkRepository;
   }

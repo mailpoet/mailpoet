@@ -11,9 +11,9 @@ class GithubClient {
   private const API_BASE_URI = 'https://api.github.com/repos';
 
   public function __construct(
-      $repo,
-      $username = null,
-      $token = null
+    $repo,
+    $username = null,
+    $token = null
   ) {
     $config = [
       'headers' => [

@@ -19,8 +19,8 @@ class Setup extends APIEndpoint {
   private $activator;
 
   public function __construct(
-      WPFunctions $wp,
-      Activator $activator
+    WPFunctions $wp,
+    Activator $activator
   ) {
     $this->wp = $wp;
     $this->activator = $activator;

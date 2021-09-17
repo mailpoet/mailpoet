@@ -22,11 +22,11 @@ class SubscriberStatistics {
   private $wooCommerceRevenue;
 
   public function __construct(
-      $clickCount,
-      $openCount,
-      $machineOpenCount,
-      $totalSentCount,
-      $wooCommerceRevenue = null
+    $clickCount,
+    $openCount,
+    $machineOpenCount,
+    $totalSentCount,
+    $wooCommerceRevenue = null
   ) {
     $this->clickCount = $clickCount;
     $this->openCount = $openCount;

@@ -9,7 +9,7 @@ class Subscribers {
   private $task;
 
   public function __construct(
-      ScheduledTask $task
+    ScheduledTask $task
   ) {
     $this->task = $task;
   }

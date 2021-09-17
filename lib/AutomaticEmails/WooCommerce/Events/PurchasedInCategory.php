@@ -27,7 +27,7 @@ class PurchasedInCategory {
   private $repository;
 
   public function __construct(
-      WCHelper $woocommerceHelper = null
+    WCHelper $woocommerceHelper = null
   ) {
     if ($woocommerceHelper === null) {
       $woocommerceHelper = new WCHelper();

@@ -22,8 +22,8 @@ class Analytics {
   private $wp;
 
   public function __construct(
-      Reporter $reporter,
-      SettingsController $settingsController
+    Reporter $reporter,
+    SettingsController $settingsController
   ) {
     $this->reporter = $reporter;
     $this->settings = $settingsController;

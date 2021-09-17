@@ -24,7 +24,7 @@ class DynamicSegmentFilterData {
   private $filterData;
 
   public function __construct(
-      array $filterData
+    array $filterData
   ) {
     $this->filterData = $filterData;
   }

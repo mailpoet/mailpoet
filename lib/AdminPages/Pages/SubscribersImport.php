@@ -19,9 +19,9 @@ class SubscribersImport {
   private $dateBlock;
 
   public function __construct(
-      PageRenderer $pageRenderer,
-      Installation $installation,
-      Block\Date $dateBlock
+    PageRenderer $pageRenderer,
+    Installation $installation,
+    Block\Date $dateBlock
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->installation = $installation;

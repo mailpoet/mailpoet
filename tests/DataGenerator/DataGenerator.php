@@ -13,7 +13,7 @@ class DataGenerator {
   private $console;
 
   public function __construct(
-      Output $console
+    Output $console
   ) {
     $this->console = $console;
   }

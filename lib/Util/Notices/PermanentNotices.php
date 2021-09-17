@@ -39,7 +39,7 @@ class PermanentNotices {
   private $emailWithInvalidListNotice;
 
   public function __construct(
-      WPFunctions $wp
+    WPFunctions $wp
   ) {
     $this->wp = $wp;
     $this->phpVersionWarnings = new PHPVersionWarnings();

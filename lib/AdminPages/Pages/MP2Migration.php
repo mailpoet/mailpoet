@@ -13,8 +13,8 @@ class MP2Migration {
   private $mp2Migrator;
 
   public function __construct(
-      PageRenderer $pageRenderer,
-      MP2Migrator $mp2Migrator
+    PageRenderer $pageRenderer,
+    MP2Migrator $mp2Migrator
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->mp2Migrator = $mp2Migrator;

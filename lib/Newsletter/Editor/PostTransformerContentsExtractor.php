@@ -17,7 +17,7 @@ class PostTransformerContentsExtractor {
   private $woocommerceHelper;
 
   public function __construct(
-      $args
+    $args
   ) {
     $this->args = $args;
     $this->wp = new WPFunctions();

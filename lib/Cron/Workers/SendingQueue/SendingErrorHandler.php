@@ -11,7 +11,7 @@ class SendingErrorHandler {
   private $throttlingHandler;
 
   public function __construct(
-      SendingThrottlingHandler $throttlingHandler
+    SendingThrottlingHandler $throttlingHandler
   ) {
     $this->throttlingHandler = $throttlingHandler;
   }

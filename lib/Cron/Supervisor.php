@@ -10,7 +10,7 @@ class Supervisor {
   private $cronHelper;
 
   public function __construct(
-      CronHelper $cronHelper
+    CronHelper $cronHelper
   ) {
     $this->cronHelper = $cronHelper;
   }

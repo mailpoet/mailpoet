@@ -12,7 +12,7 @@ class FormsResponseBuilder {
   private $statisticsFormsRepository;
 
   public function __construct(
-      StatisticsFormsRepository $statisticsFormsRepository
+    StatisticsFormsRepository $statisticsFormsRepository
   ) {
     $this->statisticsFormsRepository = $statisticsFormsRepository;
   }

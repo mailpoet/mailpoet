@@ -54,8 +54,8 @@ class Sending {
   ];
 
   private function __construct(
-      ScheduledTask $task = null,
-      SendingQueue $queue = null
+    ScheduledTask $task = null,
+    SendingQueue $queue = null
   ) {
     if (!$task instanceof ScheduledTask) {
       $task = ScheduledTask::create();

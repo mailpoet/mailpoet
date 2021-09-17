@@ -22,10 +22,10 @@ class PHPMail {
   private $blacklist;
 
   public function __construct(
-      $sender,
-      $replyTo,
-      $returnPath,
-      PHPMailMapper $errorMapper
+    $sender,
+    $replyTo,
+    $returnPath,
+    PHPMailMapper $errorMapper
   ) {
     $this->sender = $sender;
     $this->replyTo = $replyTo;

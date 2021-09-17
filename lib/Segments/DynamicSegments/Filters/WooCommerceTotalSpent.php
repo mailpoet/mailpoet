@@ -16,7 +16,7 @@ class WooCommerceTotalSpent implements Filter {
   private $entityManager;
 
   public function __construct(
-      EntityManager $entityManager
+    EntityManager $entityManager
   ) {
     $this->entityManager = $entityManager;
   }

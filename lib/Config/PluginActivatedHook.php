@@ -8,7 +8,7 @@ class PluginActivatedHook {
   private $deferredAdminNotices;
 
   public function __construct(
-      DeferredAdminNotices $deferredAdminNotices
+    DeferredAdminNotices $deferredAdminNotices
   ) {
     $this->deferredAdminNotices = $deferredAdminNotices;
   }

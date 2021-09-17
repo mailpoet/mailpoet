@@ -16,8 +16,8 @@ class AutomatedLatestContent extends APIEndpoint {
   ];
 
   public function __construct(
-      \MailPoet\Newsletter\AutomatedLatestContent $alc,
-      WPFunctions $wp
+    \MailPoet\Newsletter\AutomatedLatestContent $alc,
+    WPFunctions $wp
   ) {
     $this->ALC = $alc;
     $this->wp = $wp;

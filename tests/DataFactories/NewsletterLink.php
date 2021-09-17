@@ -15,7 +15,7 @@ class NewsletterLink {
   private $newsletter;
 
   public function __construct(
-      NewsletterEntity $newsletter
+    NewsletterEntity $newsletter
   ) {
     $this->data = [
       'url' => 'https://example.com/test',

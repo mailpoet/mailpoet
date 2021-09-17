@@ -19,7 +19,7 @@ class CaptchaSession {
   private $id;
 
   public function __construct(
-      WPFunctions $wp
+    WPFunctions $wp
   ) {
     $this->wp = $wp;
   }

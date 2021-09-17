@@ -14,8 +14,8 @@ class ChangelogController {
   private $jira;
 
   public function __construct(
-      JiraController $jira,
-      $readmeFile
+    JiraController $jira,
+    $readmeFile
   ) {
     $this->jira = $jira;
     $this->readmeFile = $readmeFile;

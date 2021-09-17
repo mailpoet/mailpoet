@@ -31,8 +31,8 @@ class DynamicSegmentFilterEntity {
   private $filterData;
 
   public function __construct(
-      SegmentEntity $segment,
-      DynamicSegmentFilterData $filterData
+    SegmentEntity $segment,
+    DynamicSegmentFilterData $filterData
   ) {
     $this->segment = $segment;
     $this->filterData = $filterData;

@@ -9,7 +9,7 @@ class MailPoet {
   private $supervisor;
 
   public function __construct(
-      Supervisor $supervisor
+    Supervisor $supervisor
   ) {
     $this->supervisor = $supervisor;
   }

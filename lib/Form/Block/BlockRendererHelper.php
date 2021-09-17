@@ -19,8 +19,8 @@ class BlockRendererHelper {
   protected $wp;
 
   public function __construct(
-      FieldNameObfuscator $fieldNameObfuscator,
-      WPFunctions $wp
+    FieldNameObfuscator $fieldNameObfuscator,
+    WPFunctions $wp
   ) {
     $this->fieldNameObfuscator = $fieldNameObfuscator;
     $this->wp = $wp;

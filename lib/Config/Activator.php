@@ -20,9 +20,9 @@ class Activator {
   private $wp;
 
   public function __construct(
-      SettingsController $settings,
-      Populator $populator,
-      WPFunctions $wp
+    SettingsController $settings,
+    Populator $populator,
+    WPFunctions $wp
   ) {
     $this->settings = $settings;
     $this->populator = $populator;

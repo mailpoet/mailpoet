@@ -22,7 +22,7 @@ if (!class_exists('ProgressBar', false)) {
      *
      */
     public function __construct(
-        $progressBarId
+      $progressBarId
     ) {
       $filename = $progressBarId . '-progress.json';
       $this->filename = Env::$tempPath . '/' . $filename;

@@ -16,8 +16,8 @@ class Form {
   private $urlHelper;
 
   public function __construct(
-      API $api,
-      UrlHelper $urlHelper
+    API $api,
+    UrlHelper $urlHelper
   ) {
     $this->api = $api;
     $this->urlHelper = $urlHelper;

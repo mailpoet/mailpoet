@@ -84,7 +84,7 @@ class FormEntity {
   private $styles;
 
   public function __construct(
-      $name
+    $name
   ) {
     $this->name = $name;
     $this->status = self::STATUS_ENABLED;

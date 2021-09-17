@@ -20,7 +20,7 @@ class RequirementsChecker {
   ];
 
   public function __construct(
-      $displayErrorNotice = true
+    $displayErrorNotice = true
   ) {
     $this->displayErrorNotice = $displayErrorNotice;
   }

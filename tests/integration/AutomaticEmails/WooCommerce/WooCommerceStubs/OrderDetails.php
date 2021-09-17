@@ -11,7 +11,7 @@ class OrderDetails {
   public $orderId;
 
   public function __construct(
-      $orderId = null
+    $orderId = null
   ) {
     $this->orderId = $orderId;
   }

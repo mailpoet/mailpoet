@@ -20,8 +20,8 @@ class StatisticsClicks {
   private $subscriber;
 
   public function __construct(
-      NewsletterLinkEntity $newsletterLink,
-      SubscriberEntity $subscriber
+    NewsletterLinkEntity $newsletterLink,
+    SubscriberEntity $subscriber
   ) {
     $this->data = [
       'count' => 1,

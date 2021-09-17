@@ -42,8 +42,8 @@ class LoggerFactory {
   private $logRepository;
 
   public function __construct(
-      LogRepository $logRepository,
-      SettingsController $settings
+    LogRepository $logRepository,
+    SettingsController $settings
   ) {
     $this->settings = $settings;
     $this->logRepository = $logRepository;

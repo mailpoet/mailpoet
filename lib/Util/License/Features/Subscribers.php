@@ -23,8 +23,8 @@ class Subscribers {
   private $subscribersRepository;
 
   public function __construct(
-      SettingsController $settings,
-      SubscribersRepository $subscribersRepository
+    SettingsController $settings,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->settings = $settings;
     $this->subscribersRepository = $subscribersRepository;

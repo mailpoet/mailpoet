@@ -28,8 +28,8 @@ class Links {
   private $subscribersRepository;
 
   public function __construct(
-      LinkTokens $linkTokens,
-      SubscribersRepository $subscribersRepository
+    LinkTokens $linkTokens,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->linkTokens = $linkTokens;
     $this->subscribersRepository = $subscribersRepository;

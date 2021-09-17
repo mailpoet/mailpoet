@@ -50,8 +50,8 @@ class ImportExportRepository {
   private $filterHandler;
 
   public function __construct(
-      EntityManager $entityManager,
-      FilterHandler $filterHandler
+    EntityManager $entityManager,
+    FilterHandler $filterHandler
   ) {
     $this->entityManager = $entityManager;
     $this->filterHandler = $filterHandler;

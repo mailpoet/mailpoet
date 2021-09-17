@@ -9,7 +9,7 @@ class ExperimentalFeatures {
   private $pageRenderer;
 
   public function __construct(
-      PageRenderer $pageRenderer
+    PageRenderer $pageRenderer
   ) {
     $this->pageRenderer = $pageRenderer;
   }

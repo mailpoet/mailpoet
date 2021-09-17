@@ -16,7 +16,7 @@ class GATracking {
   private $newsletterLinks;
 
   public function __construct(
-      NewsletterLinks $newsletterLinks
+    NewsletterLinks $newsletterLinks
   ) {
     $this->secondLevelDomainNames = new SecondLevelDomainNames();
     $this->newsletterLinks = $newsletterLinks;

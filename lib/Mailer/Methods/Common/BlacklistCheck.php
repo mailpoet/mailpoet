@@ -9,7 +9,7 @@ class BlacklistCheck {
   private $blacklist;
 
   public function __construct(
-      Blacklist $blacklist = null
+    Blacklist $blacklist = null
   ) {
     if (is_null($blacklist)) {
       $blacklist = new Blacklist();

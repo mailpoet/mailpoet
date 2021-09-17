@@ -15,7 +15,7 @@ abstract class NewsletterStatsBaseExporter {
   protected $subscriberRepository;
 
   public function __construct(
-      SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository
   ) {
     $this->subscriberRepository = $subscribersRepository;
   }
