@@ -148,6 +148,12 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testIntegration(array $opts=['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
+    if (getenv('MAILPOET_DEV_SITE')) {
+      $run = $this->confirm("You are about to run tests on the development site. Your DB data will be erased. \nDo you want to proceed?", false);
+      if (!$run) {
+        return;
+      }
+    }
     $command = 'vendor/bin/codecept run integration -vvv';
 
     if ($opts['multisite']) {
