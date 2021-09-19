@@ -147,6 +147,10 @@ class Functions {
   public function escHtml($text) {
     return esc_html($text);
   }
+  
+  public function esc_html__($text, $domain) {
+    return esc_html__($text, $domain);
+  }
 
   public function escSql($sql) {
     return esc_sql($sql);
