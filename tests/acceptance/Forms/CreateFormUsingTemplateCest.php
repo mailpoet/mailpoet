@@ -17,7 +17,7 @@ class CreateFormUsingTemplateCest {
 
     $i->waitForElement('[data-automation-id="template_selection_list"]');
     $i->waitForElement('[data-automation-id="select_template_template_1_popup"]');
-    $i->wantTo('Switch template category and crete a form');
+    $i->wantTo('Switch template category and create a form');
     $i->click('[data-title="Fixed bar"]');
     $i->waitForElement('[data-automation-id="select_template_template_1_fixed_bar"]');
     $i->click('[data-automation-id="select_template_template_1_fixed_bar"]');
@@ -26,5 +26,19 @@ class CreateFormUsingTemplateCest {
     $i->selectOptionInSelect2($segmentName);
     $i->click('[data-automation-id="form_save_button"]');
     $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
+  }
+
+  public function cancelFormCreationUsingTemplate(\AcceptanceTester $i) {
+    $i->wantTo('Create a new form');
+    $i->login();
+    $i->amOnMailPoetPage('Forms');
+    $i->click('[data-automation-id="create_new_form"]');
+
+    $i->waitForElement('[data-automation-id="template_selection_list"]');
+    $i->waitForElement('[data-automation-id="select_template_template_1_popup"]');
+    $i->wantTo('Cancel a form creation');
+    $i->amOnMailPoetPage('Forms');
+    $i->waitForText('No forms were found. Why not create a new one?');
+    $i->seeNoJSErrors();
   }
 }
