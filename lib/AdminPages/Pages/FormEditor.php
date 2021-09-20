@@ -228,14 +228,20 @@ class FormEditor {
   }
 
   public function render() {
-    if (!isset($_GET['id']) && !isset($_GET['action'])) {
+    if (!isset($_GET['id']) && !isset($_GET['action']) && !isset($_GET['template_id'])) {
       $this->renderTemplateSelection();
       return;
     }
     if (isset($_GET['action']) && $_GET['action'] === 'create') {
       $this->createForm();
     }
-    $form = $this->getFormData((int)$_GET['id']);
+    if (isset($_GET['template_id'])) {
+      $template = $this->templatesRepository->getFormTemplate($_GET['template_id']);
+      $form = $template->toFormEntity();
+      $form = $form->toArray();
+    } else {
+      $form = $this->getFormData((int)$_GET['id']);
+    }
     $customFields = $this->customFieldsRepository->findAll();
     if (!$form instanceof FormEntity) {
       throw new NotFoundException('Form does not exist');
