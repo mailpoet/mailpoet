@@ -178,6 +178,9 @@ export default {
   getTutorialSeen(state) {
     return state.tutorialSeen;
   },
+  getFormEditorUrl(state) {
+    return state.formEditorUrl;
+  },
   getTutorialUrl(state) {
     return state.tutorialUrl;
   },
