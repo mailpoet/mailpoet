@@ -138,10 +138,14 @@ export function changeFormSettings(settings) {
   };
 }
 
-export function saveFormDone(result) {
-  return {
+export function* saveFormDone(formId) {
+  yield {
     type: 'SAVE_FORM_DONE',
-    result,
+    formId,
+  };
+  yield {
+    type: 'ENSURE_BROWSER_URL',
+    formId,
   };
 }
 
