@@ -70,16 +70,16 @@ class FormsTest extends \MailPoetTest {
   }
 
   public function testItCanCreateANewForm() {
-    $response = $this->endpoint->create();
+    $response = $this->endpoint->saveEditor();
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       $this->reloadForm((int)$response->data['id'])->toArray()
     );
-    expect($response->data['name'])->equals('');
+    expect($response->data['name'])->equals('New form');
   }
 
   public function testItCanStoreDataForPreview() {
-    $response = $this->endpoint->create();
+    $response = $this->endpoint->saveEditor();
     $formId = $response->data['id'];
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
@@ -96,7 +96,7 @@ class FormsTest extends \MailPoetTest {
   }
 
   public function testItCanSaveFormEditor() {
-    $response = $this->endpoint->create();
+    $response = $this->endpoint->saveEditor();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
     $form = $this->reloadForm((int)$response->data['id'])->toArray();
@@ -112,7 +112,7 @@ class FormsTest extends \MailPoetTest {
   public function testItOnlyAdminCanSaveCustomHtml() {
     // Administrator
     wp_set_current_user(1);
-    $response = $this->endpoint->create();
+    $response = $this->endpoint->saveEditor();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
     $form = $this->reloadForm((int)$response->data['id'])->toArray();
@@ -132,7 +132,7 @@ class FormsTest extends \MailPoetTest {
   }
 
   public function testItCanExtractListsFromListSelectionBlock() {
-    $response = $this->endpoint->create();
+    $response = $this->endpoint->saveEditor();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
     $form = $this->reloadForm((int)$response->data['id'])->toArray();
@@ -150,7 +150,7 @@ class FormsTest extends \MailPoetTest {
   }
 
   public function testItCanExtractListsFromNestedListSelectionBlock() {
-    $response = $this->endpoint->create();
+    $response = $this->endpoint->saveEditor();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 
     $form = $this->reloadForm((int)$response->data['id'])->toArray();

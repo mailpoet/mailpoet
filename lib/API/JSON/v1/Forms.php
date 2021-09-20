@@ -13,11 +13,11 @@ use MailPoet\Config\AccessControl;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\ApiDataSanitizer;
 use MailPoet\Form\DisplayFormInWPContent;
-use MailPoet\Form\FormFactory;
 use MailPoet\Form\FormSaveController;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Listing\FormListingRepository;
 use MailPoet\Form\PreviewPage;
+use MailPoet\Form\Templates\TemplateRepository;
 use MailPoet\Listing;
 use MailPoet\Settings\UserFlagsController;
 use MailPoet\UnexpectedValueException;
@@ -35,9 +35,6 @@ class Forms extends APIEndpoint {
   /** @var UserFlagsController */
   private $userFlags;
 
-  /** @var FormFactory */
-  private $formFactory;
-
   /** @var FormsResponseBuilder */
   private $formsResponseBuilder;
 
@@ -46,6 +43,9 @@ class Forms extends APIEndpoint {
 
   /** @var FormsRepository */
   private $formsRepository;
+
+  /** @var TemplateRepository */
+  private $templateRepository;
 
   /** @var FormListingRepository */
   private $formListingRepository;
@@ -62,8 +62,8 @@ class Forms extends APIEndpoint {
   public function __construct(
     Listing\Handler $listingHandler,
     UserFlagsController $userFlags,
-    FormFactory $formFactory,
     FormsRepository $formsRepository,
+    TemplateRepository $templateRepository,
     FormListingRepository $formListingRepository,
     FormsResponseBuilder $formsResponseBuilder,
     WPFunctions $wp,
@@ -73,9 +73,9 @@ class Forms extends APIEndpoint {
   ) {
     $this->listingHandler = $listingHandler;
     $this->userFlags = $userFlags;
-    $this->formFactory = $formFactory;
     $this->wp = $wp;
     $this->formsRepository = $formsRepository;
+    $this->templateRepository = $templateRepository;
     $this->formListingRepository = $formListingRepository;
     $this->formsResponseBuilder = $formsResponseBuilder;
     $this->emoji = $emoji;
@@ -154,20 +154,6 @@ class Forms extends APIEndpoint {
     ]);
   }
 
-  public function create($data = []) {
-    if (isset($data['template-id'])) {
-      $formEntity = $this->formFactory->createFormFromTemplate($data['template-id']);
-    } else {
-      $formEntity = $this->formFactory->createEmptyForm();
-    }
-
-    $form = $this->formsRepository->findOneById($formEntity->getId());
-    if ($form instanceof FormEntity) {
-      return $this->successResponse($this->formsResponseBuilder->build($form));
-    }
-    return $this->errorResponse();
-  }
-
   public function previewEditor($data = []) {
     $formId = $data['id'] ?? null;
     if (!$formId) {
@@ -179,11 +165,12 @@ class Forms extends APIEndpoint {
 
   public function saveEditor($data = []) {
     $formId = (isset($data['id']) ? (int)$data['id'] : 0);
+    $initialForm = $this->getFormTemplateData(TemplateRepository::INITIAL_FORM_TEMPLATE);
     $name = ($data['name'] ?? __('New form', 'mailpoet'));
-    $body = ($data['body'] ?? []);
+    $body = ($data['body'] ?? $initialForm['body']);
     $body = $this->dataSanitizer->sanitizeBody($body);
-    $settings = ($data['settings'] ?? []);
-    $styles = ($data['styles'] ?? '');
+    $settings = ($data['settings'] ?? $initialForm['settings']);
+    $styles = ($data['styles'] ?? $initialForm['styles']);
     $status = ($data['status'] ?? FormEntity::STATUS_ENABLED);
 
     // check if the form is used as a widget
@@ -345,5 +332,11 @@ class Forms extends APIEndpoint {
     return isset($data['id'])
       ? $this->formsRepository->findOneById((int)$data['id'])
       : null;
+  }
+
+  private function getFormTemplateData(string $templateId): array {
+    $formTemplate = $this->templateRepository->getFormTemplate($templateId);
+    $form = $formTemplate->toFormEntity();
+    return $form->toArray();
   }
 }
