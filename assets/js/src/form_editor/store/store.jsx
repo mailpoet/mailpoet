@@ -74,6 +74,7 @@ export default () => {
     previewSettings,
     fullscreenStatus,
     editorUrl: window.location.href,
+    formEditorUrl: window.mailpoet_form_edit_url,
     previewPageUrl: window.mailpoet_form_preview_page,
     closeIconsUrl: window.mailpoet_close_icons_url,
     customFonts: window.mailpoet_custom_fonts,
