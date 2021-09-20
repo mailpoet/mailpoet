@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.69.1
+Stable tag: 3.70.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,19 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.70.0 - 2021-09-20 =
+* Added: filter to alter mailpoet database table prefix;
+* Added: bounced metric on the Email Stats page;
+* Improved: update lucatume/wp-browser;
+* Improved: MailPoet form security against spambots;
+* Improved: coding standards;
+* Improved: refactor to Doctrine;
+* Improved: code comment on warning;
+* Fixed: machine-opened metric on the Email Stats page;
+* Fixed: flaky integration test;
+* Fixed: "Updated at" in the System Status shows time with incorrect time zone;
+* Fixed: horizontal scrollbar in form style settings sidebar.
 
 = 3.69.1 - 2021-09-13 =
 * Added: saving detailed bounce stats;
