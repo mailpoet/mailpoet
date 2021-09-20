@@ -64,7 +64,7 @@ const mainReducer = (state, action) => {
     case 'HIDE_PREVIEW': return hidePreview(state, action);
     case 'PREVIEW_DATA_NOT_SAVED': return previewDataNotSaved(state, action);
     case 'PREVIEW_DATA_SAVED': return previewDataSaved(state, action);
-    case 'SAVE_FORM_DONE': return saveFormDone(state);
+    case 'SAVE_FORM_DONE': return saveFormDone(state, action);
     case 'SAVE_FORM_FAILED': return saveFormFailed(state, action);
     case 'SAVE_FORM_STARTED': return saveFormStarted(state);
     case 'SAVE_CUSTOM_FIELD_DONE': return saveCustomFieldDone(state, action);

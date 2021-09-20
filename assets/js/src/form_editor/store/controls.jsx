@@ -59,8 +59,8 @@ export default {
       endpoint: 'forms',
       action: 'saveEditor',
       data: requestData,
-    }).done(() => {
-      dispatch('mailpoet-form-editor').saveFormDone();
+    }).done((result) => {
+      dispatch('mailpoet-form-editor').saveFormDone(result.data.id);
       Cookies.remove('popup_form_dismissed', { path: '/' });
     }).fail((response) => {
       dispatch('mailpoet-form-editor').saveFormFailed(formatApiErrorMessage(response));

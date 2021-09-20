@@ -1,6 +1,6 @@
 import MailPoet from 'mailpoet';
 
-export default (state) => {
+export default (state, action) => {
   const notices = state.notices.filter((notice) => notice.id !== 'save-form');
   notices.push({
     id: 'save-form',
@@ -10,6 +10,10 @@ export default (state) => {
   });
   return {
     ...state,
+    formData: {
+      ...state.formData,
+      id: action.formId,
+    },
     isFormSaving: false,
     hasUnsavedChanges: false,
     notices,
