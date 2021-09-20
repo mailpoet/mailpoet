@@ -22,7 +22,7 @@
   <% autoescape 'js' %>
   var mailpoet_templates = <%= json_encode(templates) %>;
   var mailpoet_form_edit_url =
-    "<%= admin_url('admin.php?page=mailpoet-form-editor&id=') %>";
+    "<%= admin_url('admin.php?page=mailpoet-form-editor&template_id=') %>";
   <% endautoescape %>
 </script>
 
