@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { __, assoc, compose } from 'lodash/fp';
+import {
+  __,
+  assoc,
+  compose,
+  isEmpty,
+} from 'lodash/fp';
 import { useHistory } from 'react-router-dom';
 
 import MailPoet from 'mailpoet';
@@ -11,11 +16,21 @@ import APIErrorsNotice from 'notices/api_errors_notice';
 import { Scheduling } from './scheduling';
 import ListingHeadingStepsRoute from '../../listings/heading_steps_route';
 
+let defaultAfterTime;
+if (!isEmpty(MailPoet.settings.deactivate_subscriber_after_inactive_days)) {
+  defaultAfterTime = (
+    Math.floor(
+      Number(
+        MailPoet.settings.deactivate_subscriber_after_inactive_days
+      ) / 30
+    )
+  ) - 1;
+  defaultAfterTime = defaultAfterTime.toString()
+}
+
 export function NewsletterTypeReEngagement(): JSX.Element {
   const [options, setOptions] = useState({
-    afterTimeNumber: (
-      (Math.floor(Number(MailPoet.settings.deactivate_subscriber_after_inactive_days) / 30)) - 1
-    ).toString(),
+    afterTimeNumber: defaultAfterTime,
     afterTimeType: 'months',
   });
   const [errors, setErrors] = useState([]);

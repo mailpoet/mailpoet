@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactStringReplace from 'react-string-replace';
+import { isEmpty } from 'lodash/fp';
 
 import MailPoet from 'mailpoet';
 import Heading from 'common/typography/heading/heading';
@@ -9,9 +10,9 @@ import { Grid } from 'common/grid';
 import { onChange } from 'common/functions';
 
 interface Props {
-  afterTimeNumber: string;
+  afterTimeNumber: string | undefined;
   afterTimeType: string;
-  inactiveSubscribersPeriod: number;
+  inactiveSubscribersPeriod: number | undefined;
   updateAfterTimeNumber: (arg: string) => void;
   updateAfterTimeType: (arg: string) => void;
 }
@@ -47,7 +48,7 @@ export function Scheduling({
         </Select>
       </Grid.CenteredRow>
       {
-        (inactiveSubscribersPeriod <= daysSelected) && (
+        ((!isEmpty(inactiveSubscribersPeriod)) && (inactiveSubscribersPeriod <= daysSelected)) && (
           <p className="mailpoet-re-engagement-scheduling-note">
             {
               ReactStringReplace(
