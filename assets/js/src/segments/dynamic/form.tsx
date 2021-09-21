@@ -101,7 +101,7 @@ export const Form: React.FunctionComponent<Props> = ({
               isFullWidth
               name="description"
               id="field_description"
-              defaultValue={segment.description}
+              value={segment.description}
               onChange={
                 (e): void => updateSegment({ description: e.target.value })
               }
