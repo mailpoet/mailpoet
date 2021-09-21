@@ -25,22 +25,12 @@ class InactiveSubscribersController {
     $this->settingsRepository = $settingsRepository;
   }
 
-  /**
-   * @param int $daysToInactive
-   * @param int $batchSize
-   * @return int|bool
-   */
-  public function markInactiveSubscribers($daysToInactive, $batchSize, $startId = null) {
+  public function markInactiveSubscribers(int $daysToInactive, int $batchSize, ?int $startId = null) {
     $thresholdDate = $this->getThresholdDate($daysToInactive);
     return $this->deactivateSubscribers($thresholdDate, $batchSize, $startId);
   }
 
-  /**
-   * @param int $daysToInactive
-   * @param int $batchSize
-   * @return int
-   */
-  public function markActiveSubscribers($daysToInactive, $batchSize) {
+  public function markActiveSubscribers(int $daysToInactive, int $batchSize): int {
     $thresholdDate = $this->getThresholdDate($daysToInactive);
     return $this->activateSubscribers($thresholdDate, $batchSize);
   }
@@ -56,21 +46,15 @@ class InactiveSubscribersController {
     ORM::rawExecute($reactivateAllInactiveQuery);
   }
 
-  /**
-   * @param int $daysToInactive
-   * @return Carbon
-   */
-  private function getThresholdDate($daysToInactive) {
+  private function getThresholdDate(int $daysToInactive): Carbon {
     $now = new Carbon();
     return $now->subDays($daysToInactive);
   }
 
   /**
-   * @param Carbon $thresholdDate
-   * @param int $batchSize
    * @return int|bool
    */
-  private function deactivateSubscribers(Carbon $thresholdDate, $batchSize, $startId = null) {
+  private function deactivateSubscribers(Carbon $thresholdDate, int $batchSize, ?int $startId = null) {
     $subscribersTable = Subscriber::$_table;
     $scheduledTasksTable = ScheduledTask::$_table;
     $scheduledTaskSubcribresTable = ScheduledTaskSubscriber::$_table;
@@ -96,11 +80,6 @@ class InactiveSubscribersController {
       (INDEX task_id_ids (id))
       SELECT DISTINCT task_id as id FROM $sendingQueuesTable as sq
         JOIN $scheduledTasksTable as st ON sq.task_id = st.id
-        JOIN (
-          SELECT so.newsletter_id
-          FROM $statisticsOpensTable as so
-          GROUP BY so.newsletter_id
-        ) sno ON sno.newsletter_id = sq.newsletter_id
         WHERE st.processed_at > '%s'
         AND st.processed_at < '%s'",
         $thresholdDateIso, $dayAgoIso
@@ -124,9 +103,13 @@ class InactiveSubscribersController {
     );
 
     $idsToDeactivate = ORM::forTable($inactiveSubscriberIdsTmpTable)->rawQuery("
-      SELECT s.id FROM $inactiveSubscriberIdsTmpTable s
-        LEFT OUTER JOIN $statisticsOpensTable as so ON s.id = so.subscriber_id AND so.created_at > ?
-        WHERE so.id IS NULL",
+      SELECT isi.id FROM $inactiveSubscriberIdsTmpTable isi
+        LEFT OUTER JOIN $subscribersTable as s ON isi.id = s.id AND GREATEST(
+          COALESCE(s.last_engagement_at, 0),
+          COALESCE(s.last_subscribed_at, 0),
+          COALESCE(s.created_at, 0)
+        ) > ?
+        WHERE s.id IS NULL",
       [$thresholdDateIso]
     )->findArray();
 
@@ -149,12 +132,7 @@ class InactiveSubscribersController {
     return count($idsToDeactivate);
   }
 
-  /**
-   * @param Carbon $thresholdDate
-   * @param int $batchSize
-   * @return int
-   */
-  private function activateSubscribers(Carbon $thresholdDate, $batchSize) {
+  private function activateSubscribers(Carbon $thresholdDate, int $batchSize): int {
     $subscribersTable = Subscriber::$_table;
     $statsOpensTable = StatisticsOpens::$_table;
 
@@ -168,10 +146,14 @@ class InactiveSubscribersController {
         ->findArray();
     } else {
       $idsToActivate = ORM::forTable($subscribersTable)->select("$subscribersTable.id")
-        ->leftOuterJoin($statsOpensTable, "$subscribersTable.id = $statsOpensTable.subscriber_id AND $statsOpensTable.created_at > '$thresholdDate'")
+        ->leftOuterJoin($subscribersTable, "$subscribersTable.id = s2.id AND GREATEST(
+          COALESCE(s2.last_engagement_at, 0),
+          COALESCE(s2.last_subscribed_at, 0),
+          COALESCE(s2.created_at, 0)
+        ) > '$thresholdDate'", 's2')
         ->whereLt("$subscribersTable.last_subscribed_at", $thresholdDate)
         ->where("$subscribersTable.status", Subscriber::STATUS_INACTIVE)
-        ->whereRaw("$statsOpensTable.id IS NOT NULL")
+        ->whereRaw("s2.id IS NOT NULL")
         ->limit($batchSize)
         ->groupByExpr("$subscribersTable.id")
         ->findArray();
