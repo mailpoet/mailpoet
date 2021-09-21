@@ -440,18 +440,6 @@ jobs:
           root: /home/circleci/mailpoet
           paths:
           - release_zip_build_number.txt
-  test_deployment:
-    executor: wpcli_php_latest
-    steps:
-      - attach_workspace:
-          at: /home/circleci/mailpoet
-      - run:
-          name: "Deploy"
-          command: |
-            RELEASE_ZIP_BUILD_NUMBER=`cat release_zip_build_number.txt`
-            curl "${MAILPOET_TEST_DEPLOY_HOST}/wp-admin/admin-ajax.php?action=mailpoet_test_deploy&key=${MAILPOET_TEST_DEPLOY_KEY}&build=${RELEASE_ZIP_BUILD_NUMBER}&plugin_name=${CIRCLE_PROJECT_REPONAME}" | tee deploy.log | grep "Done! Installed successfully"
-      - store_artifacts:
-          path: deploy.log
 
 workflows:
   build_and_test:
@@ -645,11 +633,6 @@ workflows:
             - acceptance_tests_8
             - js_tests
             - integration_tests
-      - test_deployment:
-          <<: *slack-fail-post-step
-          <<: *only_master_and_release
-          requires:
-            - build_release_zip
 
   nightly:
     triggers:
