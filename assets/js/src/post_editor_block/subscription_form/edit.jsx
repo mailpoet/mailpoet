@@ -46,7 +46,7 @@ function Edit({ attributes, setAttributes }) {
     return (
       <div className="mailpoet-block-create-new-content">
         <a
-          href="admin.php?page=mailpoet-form-editor&template_id=initial_form"
+          href="admin.php?page=mailpoet-form-editor-template-selection"
           target="_blank"
           className="mailpoet-block-create-new-link"
         >
