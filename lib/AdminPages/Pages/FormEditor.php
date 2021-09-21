@@ -9,7 +9,6 @@ use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Form\Block;
-use MailPoet\Form\FormFactory;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Templates\TemplateRepository;
@@ -102,9 +101,6 @@ class FormEditor {
 
   /** @var WPFunctions */
   private $wp;
-
-  /** @var FormFactory */
-  private $formsFactory;
 
   /** @var Localizer */
   private $localizer;
@@ -204,7 +200,6 @@ class FormEditor {
     FormRenderer $formRenderer,
     Block\Date $dateBlock,
     WPFunctions $wp,
-    FormFactory $formsFactory,
     Localizer $localizer,
     UserFlagsController $userFlags,
     WPPostListLoader $wpPostListLoader,
@@ -218,7 +213,6 @@ class FormEditor {
     $this->formRenderer = $formRenderer;
     $this->dateBlock = $dateBlock;
     $this->wp = $wp;
-    $this->formsFactory = $formsFactory;
     $this->localizer = $localizer;
     $this->templatesRepository = $templateRepository;
     $this->userFlags = $userFlags;
@@ -228,7 +222,6 @@ class FormEditor {
   }
 
   public function render() {
-    exit();
     if (!isset($_GET['id']) && !isset($_GET['action']) && !isset($_GET['template_id'])) {
       $this->renderTemplateSelection();
       return;

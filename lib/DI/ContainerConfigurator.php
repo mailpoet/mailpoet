@@ -204,7 +204,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Form\Block\Submit::class);
     $container->autowire(\MailPoet\Form\Block\Text::class);
     $container->autowire(\MailPoet\Form\Block\Textarea::class);
-    $container->autowire(\MailPoet\Form\FormFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\FormHtmlSanitizer::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\FormMessageController::class)->setPublic(true);
     $container->autowire(\MailPoet\Form\FormSaveController::class)->setPublic(true);
