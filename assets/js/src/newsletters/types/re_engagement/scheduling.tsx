@@ -10,7 +10,7 @@ import { Grid } from 'common/grid';
 import { onChange } from 'common/functions';
 
 interface Props {
-  afterTimeNumber: string | undefined;
+  afterTimeNumber: string;
   afterTimeType: string;
   inactiveSubscribersPeriod: number | undefined;
   updateAfterTimeNumber: (arg: string) => void;
