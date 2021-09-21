@@ -60,7 +60,6 @@ export default () => {
     formErrors: validateForm(formData, formBlocks),
     segments: window.mailpoet_form_segments,
     customFields,
-    mailpoetPages: window.mailpoet_pages,
     isFormSaving: false,
     isCustomFieldSaving: false,
     isCustomFieldCreating: false,
