@@ -2,8 +2,6 @@
 
 namespace MailPoet\API\MP\v1;
 
-use MailPoet\CustomFields\ApiDataSanitizer;
-use MailPoet\Models\CustomField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -28,89 +26,38 @@ class API {
   /** @var RequiredCustomFieldValidator */
   private $requiredCustomFieldValidator;
 
-  /** @var ApiDataSanitizer */
-  private $customFieldsDataSanitizer;
-
   /** @var WelcomeScheduler */
   private $welcomeScheduler;
 
   /** @var SettingsController */
   private $settings;
 
+  /** @var CustomFields */
+  private $customFields;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationMailer,
     ConfirmationEmailMailer $confirmationEmailMailer,
     RequiredCustomFieldValidator $requiredCustomFieldValidator,
-    ApiDataSanitizer $customFieldsDataSanitizer,
     WelcomeScheduler $welcomeScheduler,
+    CustomFields $customFields,
     SettingsController $settings
   ) {
     $this->newSubscriberNotificationMailer = $newSubscriberNotificationMailer;
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->requiredCustomFieldValidator = $requiredCustomFieldValidator;
-    $this->customFieldsDataSanitizer = $customFieldsDataSanitizer;
     $this->welcomeScheduler = $welcomeScheduler;
     $this->settings = $settings;
+    $this->customFields = $customFields;
   }
 
   public function getSubscriberFields() {
-    $data = [
-      [
-        'id' => 'email',
-        'name' => __('Email', 'mailpoet'),
-        'type' => 'text',
-        'params' => [
-          'required' => '1',
-        ],
-      ],
-      [
-        'id' => 'first_name',
-        'name' => __('First name', 'mailpoet'),
-        'type' => 'text',
-        'params' => [
-          'required' => '',
-        ],
-      ],
-      [
-        'id' => 'last_name',
-        'name' => __('Last name', 'mailpoet'),
-        'type' => 'text',
-        'params' => [
-          'required' => '',
-        ],
-      ],
-    ];
-
-    $customFields = CustomField::selectMany(['id', 'name', 'type', 'params'])->findMany();
-    foreach ($customFields as $customField) {
-      $result = [
-        'id' => 'cf_' . $customField->id,
-        'name' => $customField->name,
-        'type' => $customField->type,
-      ];
-      if (is_serialized($customField->params)) {
-        $result['params'] = unserialize($customField->params);
-      } else {
-        $result['params'] = $customField->params;
-      }
-      $data[] = $result;
-    }
-
-    return $data;
+    return $this->customFields->getSubscriberFields();
   }
 
   public function addSubscriberField(array $data = []) {
     try {
-      $customField = CustomField::createOrUpdate($this->customFieldsDataSanitizer->sanitize($data));
-      $errors = $customField->getErrors();
-      if (!empty($errors)) {
-        throw new APIException('Failed to save a new subscriber field ' . join(', ', $errors), APIException::FAILED_TO_SAVE_SUBSCRIBER_FIELD);
-      }
-      $customField = CustomField::findOne($customField->id);
-      if (!$customField instanceof CustomField) {
-        throw new APIException('Failed to create a new subscriber field', APIException::FAILED_TO_SAVE_SUBSCRIBER_FIELD);
-      }
-      return $customField->asArray();
+      return $this->customFields->addSubscriberField($data);
     } catch (\InvalidArgumentException $e) {
       throw new APIException($e->getMessage(), $e->getCode(), $e);
     }
@@ -288,7 +235,7 @@ class API {
     }
 
     // separate data into default and custom fields
-    list($defaultFields, $customFields) = Subscriber::extractCustomFieldsFromFromObject($subscriber);
+    [$defaultFields, $customFields] = Subscriber::extractCustomFieldsFromFromObject($subscriber);
 
     // filter out all incoming data that we don't want to change, like status ...
     $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip']));

@@ -5,6 +5,7 @@ namespace MailPoet\Test\API\MP;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
+use MailPoet\API\MP\v1\CustomFields;
 use MailPoet\CustomFields\ApiDataSanitizer;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
@@ -38,8 +39,8 @@ class APITest extends \MailPoetTest {
       Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
       Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmail']),
       $this->diContainer->get(RequiredCustomFieldValidator::class),
-      Stub::makeEmpty(ApiDataSanitizer::class),
       Stub::makeEmpty(WelcomeScheduler::class),
+      $this->diContainer->get(CustomFields::class),
       SettingsController::getInstance()
     );
   }
@@ -288,8 +289,8 @@ class APITest extends \MailPoetTest {
       $notificationMailer,
       $this->makeEmpty(ConfirmationEmailMailer::class),
       $this->makeEmpty(RequiredCustomFieldValidator::class),
-      $this->makeEmpty(ApiDataSanitizer::class),
       Stub::makeEmpty(WelcomeScheduler::class),
+      $this->diContainer->get(CustomFields::class),
       SettingsController::getInstance()
     );
     $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false, 'skip_subscriber_notification' => true]);
@@ -301,8 +302,8 @@ class APITest extends \MailPoetTest {
       $notificationMailer,
       $this->makeEmpty(ConfirmationEmailMailer::class),
       $this->makeEmpty(RequiredCustomFieldValidator::class),
-      $this->makeEmpty(ApiDataSanitizer::class),
       Stub::makeEmpty(WelcomeScheduler::class),
+      $this->diContainer->get(CustomFields::class),
       SettingsController::getInstance()
     );
     $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false, 'skip_subscriber_notification' => false]);
@@ -560,8 +561,8 @@ class APITest extends \MailPoetTest {
       Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
       Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmailOnce']),
       $this->diContainer->get(RequiredCustomFieldValidator::class),
-      Stub::makeEmpty(ApiDataSanitizer::class),
       $welcomeScheduler,
+      $this->diContainer->get(CustomFields::class),
       Stub::makeEmpty(SettingsController::class)
     );
     $subscriber = [
