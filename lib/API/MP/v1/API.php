@@ -57,7 +57,7 @@ class API {
     $data = [
       [
         'id' => 'email',
-        'name' => WPFunctions::get()->__('Email', 'mailpoet'),
+        'name' => __('Email', 'mailpoet'),
         'type' => 'text',
         'params' => [
           'required' => '1',
@@ -65,7 +65,7 @@ class API {
       ],
       [
         'id' => 'first_name',
-        'name' => WPFunctions::get()->__('First name', 'mailpoet'),
+        'name' => __('First name', 'mailpoet'),
         'type' => 'text',
         'params' => [
           'required' => '',
@@ -73,7 +73,7 @@ class API {
       ],
       [
         'id' => 'last_name',
-        'name' => WPFunctions::get()->__('Last name', 'mailpoet'),
+        'name' => __('Last name', 'mailpoet'),
         'type' => 'text',
         'params' => [
           'required' => '',
@@ -181,7 +181,7 @@ class API {
       $subscriber->save();
       if ($subscriber->getErrors() !== false) {
         throw new APIException(
-          WPFunctions::get()->__(sprintf('Failed to save a status of a subscriber : %s', strtolower(implode(', ', $subscriber->getErrors()))), 'mailpoet'),
+          __(sprintf('Failed to save a status of a subscriber : %s', strtolower(implode(', ', $subscriber->getErrors()))), 'mailpoet'),
           APIException::FAILED_TO_SAVE_SUBSCRIBER
         );
       }
@@ -197,7 +197,7 @@ class API {
       $result = $this->_sendConfirmationEmail($subscriber);
       if (!$result && $subscriber->getErrors()) {
         throw new APIException(
-          WPFunctions::get()->__(sprintf('Subscriber added to lists, but confirmation email failed to send: %s', strtolower(implode(', ', $subscriber->getErrors()))), 'mailpoet'),
+          __(sprintf('Subscriber added to lists, but confirmation email failed to send: %s', strtolower(implode(', ', $subscriber->getErrors()))), 'mailpoet'),
         APIException::CONFIRMATION_FAILED_TO_SEND);
       }
     }
@@ -270,7 +270,7 @@ class API {
     // throw exception when subscriber email is missing
     if (empty($subscriber['email'])) {
       throw new APIException(
-        WPFunctions::get()->__('Subscriber email address is required.', 'mailpoet'),
+        __('Subscriber email address is required.', 'mailpoet'),
         APIException::EMAIL_ADDRESS_REQUIRED
       );
     }
@@ -278,7 +278,7 @@ class API {
     // throw exception when subscriber already exists
     if (Subscriber::findOne($subscriber['email'])) {
       throw new APIException(
-        WPFunctions::get()->__('This subscriber already exists.', 'mailpoet'),
+        __('This subscriber already exists.', 'mailpoet'),
         APIException::SUBSCRIBER_EXISTS
       );
     }
@@ -305,7 +305,7 @@ class API {
     $newSubscriber->save();
     if ($newSubscriber->getErrors() !== false) {
       throw new APIException(
-        WPFunctions::get()->__(sprintf('Failed to add subscriber: %s', strtolower(implode(', ', $newSubscriber->getErrors()))), 'mailpoet'),
+        __(sprintf('Failed to add subscriber: %s', strtolower(implode(', ', $newSubscriber->getErrors()))), 'mailpoet'),
         APIException::FAILED_TO_SAVE_SUBSCRIBER
       );
     }
@@ -331,7 +331,7 @@ class API {
     // throw exception when list name is missing
     if (empty($list['name'])) {
       throw new APIException(
-        WPFunctions::get()->__('List name is required.', 'mailpoet'),
+        __('List name is required.', 'mailpoet'),
         APIException::LIST_NAME_REQUIRED
       );
     }
@@ -339,7 +339,7 @@ class API {
     // throw exception when list already exists
     if (Segment::where('name', $list['name'])->findOne()) {
       throw new APIException(
-        WPFunctions::get()->__('This list already exists.', 'mailpoet'),
+        __('This list already exists.', 'mailpoet'),
         APIException::LIST_EXISTS
       );
     }
@@ -353,7 +353,7 @@ class API {
     $newList->save();
     if ($newList->getErrors() !== false) {
       throw new APIException(
-        WPFunctions::get()->__(sprintf('Failed to add list: %s', strtolower(implode(', ', $newList->getErrors()))), 'mailpoet'),
+        __(sprintf('Failed to add list: %s', strtolower(implode(', ', $newList->getErrors()))), 'mailpoet'),
         APIException::FAILED_TO_SAVE_LIST
       );
     }
@@ -361,7 +361,7 @@ class API {
     // reload list to get the saved created|updated|delete dates/other fields
     $newList = Segment::findOne($newList->id);
     if (!$newList instanceof Segment) {
-      throw new APIException(WPFunctions::get()->__('Failed to add list', 'mailpoet'), APIException::FAILED_TO_SAVE_LIST);
+      throw new APIException(__('Failed to add list', 'mailpoet'), APIException::FAILED_TO_SAVE_LIST);
     }
 
     return $newList->asArray();
@@ -386,7 +386,7 @@ class API {
       foreach ($result as $queue) {
         if ($queue instanceof Sending && $queue->getErrors()) {
           throw new APIException(
-            WPFunctions::get()->__(sprintf('Subscriber added, but welcome email failed to send: %s', strtolower(implode(', ', $queue->getErrors()))), 'mailpoet'),
+            __(sprintf('Subscriber added, but welcome email failed to send: %s', strtolower(implode(', ', $queue->getErrors()))), 'mailpoet'),
             APIException::WELCOME_FAILED_TO_SEND
           );
         }
