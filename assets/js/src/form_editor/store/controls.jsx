@@ -220,7 +220,7 @@ export default {
     let url = select('mailpoet-form-editor').getFormEditorUrl();
     url = `${url}${formId}`;
     if (window.location !== url) {
-      window.history.replaceState('Form edit', 'Form edit', url);
+      window.history.replaceState(null, '', url);
     }
   },
 };
