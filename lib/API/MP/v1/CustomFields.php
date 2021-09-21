@@ -3,14 +3,22 @@
 namespace MailPoet\API\MP\v1;
 
 use MailPoet\CustomFields\ApiDataSanitizer;
+use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Models\CustomField;
 
 class CustomFields {
   /** @var ApiDataSanitizer */
   private $customFieldsDataSanitizer;
 
-  public function __construct(ApiDataSanitizer $customFieldsDataSanitizer) {
+  /** @var CustomFieldsRepository */
+  private $customFieldsRepository;
+
+  public function __construct(
+    ApiDataSanitizer $customFieldsDataSanitizer,
+    CustomFieldsRepository $customFieldsRepository
+  ) {
     $this->customFieldsDataSanitizer = $customFieldsDataSanitizer;
+    $this->customFieldsRepository = $customFieldsRepository;
   }
 
   public function getSubscriberFields(): array {
@@ -41,18 +49,14 @@ class CustomFields {
       ],
     ];
 
-    $customFields = CustomField::selectMany(['id', 'name', 'type', 'params'])->findMany();
+    $customFields = $this->customFieldsRepository->findAll();
     foreach ($customFields as $customField) {
       $result = [
-        'id' => 'cf_' . $customField->id,
-        'name' => $customField->name,
-        'type' => $customField->type,
+        'id' => 'cf_' . $customField->getId(),
+        'name' => $customField->getName(),
+        'type' => $customField->getType(),
+        'params' => $customField->getParams(),
       ];
-      if (is_serialized($customField->params)) {
-        $result['params'] = unserialize($customField->params);
-      } else {
-        $result['params'] = $customField->params;
-      }
       $data[] = $result;
     }
 
