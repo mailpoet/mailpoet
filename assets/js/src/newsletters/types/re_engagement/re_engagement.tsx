@@ -16,24 +16,26 @@ import APIErrorsNotice from 'notices/api_errors_notice';
 import { Scheduling } from './scheduling';
 import ListingHeadingStepsRoute from '../../listings/heading_steps_route';
 
-let defaultAfterTime;
-if (!isEmpty(MailPoet.settings.deactivate_subscriber_after_inactive_days)) {
-  defaultAfterTime = (
-    Math.floor(
-      Number(
-        MailPoet.settings.deactivate_subscriber_after_inactive_days
-      ) / 30
-    )
-  ) - 1;
-  defaultAfterTime = defaultAfterTime.toString()
-}
-
 export function NewsletterTypeReEngagement(): JSX.Element {
+  let defaultAfterTime = '';
+  if (!isEmpty(MailPoet.settings.deactivate_subscriber_after_inactive_days)) {
+    defaultAfterTime = (
+      (
+        Math.floor(
+          Number(
+            MailPoet.settings.deactivate_subscriber_after_inactive_days
+          ) / 30
+        )
+      ) - 1
+    ).toString();
+  }
+
   const [options, setOptions] = useState({
     afterTimeNumber: defaultAfterTime,
     afterTimeType: 'months',
   });
   const [errors, setErrors] = useState([]);
+  const [loading, setLoading] = useState(false);
   const history = useHistory();
 
   function showTemplateSelection(newsletterId: string) {
@@ -42,6 +44,7 @@ export function NewsletterTypeReEngagement(): JSX.Element {
 
   function handleNext() {
     setErrors([]);
+    setLoading(true);
     MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
       endpoint: 'newsletters',
@@ -54,6 +57,7 @@ export function NewsletterTypeReEngagement(): JSX.Element {
     }).done((response) => {
       showTemplateSelection(response.data.id);
     }).fail((response) => {
+      setLoading(false);
       if (response.errors) {
         setErrors(response.errors);
       }
@@ -83,6 +87,8 @@ export function NewsletterTypeReEngagement(): JSX.Element {
           isFullWidth
           onClick={handleNext}
           type="button"
+          isDisabled={isEmpty(options.afterTimeNumber) || loading}
+          withSpinner={loading}
         >
           {MailPoet.I18n.t('next')}
         </Button>
