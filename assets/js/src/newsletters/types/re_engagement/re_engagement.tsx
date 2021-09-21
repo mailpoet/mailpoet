@@ -14,7 +14,7 @@ import ListingHeadingStepsRoute from '../../listings/heading_steps_route';
 export function NewsletterTypeReEngagement(): JSX.Element {
   const [options, setOptions] = useState({
     afterTimeNumber: (
-      (Number(MailPoet.settings.deactivate_subscriber_after_inactive_days) / 30) - 1
+      (Math.floor(Number(MailPoet.settings.deactivate_subscriber_after_inactive_days) / 30)) - 1
     ).toString(),
     afterTimeType: 'months',
   });
