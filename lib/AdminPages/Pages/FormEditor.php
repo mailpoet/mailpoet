@@ -228,12 +228,10 @@ class FormEditor {
   }
 
   public function render() {
+    exit();
     if (!isset($_GET['id']) && !isset($_GET['action']) && !isset($_GET['template_id'])) {
       $this->renderTemplateSelection();
       return;
-    }
-    if (isset($_GET['action']) && $_GET['action'] === 'create') {
-      $this->createForm();
     }
     if (isset($_GET['template_id'])) {
       $template = $this->templatesRepository->getFormTemplate($_GET['template_id']);
@@ -300,17 +298,6 @@ class FormEditor {
       'templates' => $templatesData,
     ];
     $this->pageRenderer->displayPage('form/template_selection.html', $data);
-  }
-
-  private function createForm() {
-    $form = $this->formsFactory->createEmptyForm();
-
-    $this->wp->wpSafeRedirect(
-      $this->wp->getSiteUrl(null,
-        '/wp-admin/admin.php?page=mailpoet-form-editor&id=' . $form->getId()
-      )
-    );
-    exit;
   }
 
   private function getPreviewPageUrl() {
