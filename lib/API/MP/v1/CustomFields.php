@@ -4,7 +4,7 @@ namespace MailPoet\API\MP\v1;
 
 use MailPoet\CustomFields\ApiDataSanitizer;
 use MailPoet\CustomFields\CustomFieldsRepository;
-use MailPoet\Models\CustomField;
+use MailPoet\Entities\CustomFieldEntity;
 
 class CustomFields {
   /** @var ApiDataSanitizer */
@@ -64,15 +64,20 @@ class CustomFields {
   }
 
   public function addSubscriberField(array $data = []): array {
-    $customField = CustomField::createOrUpdate($this->customFieldsDataSanitizer->sanitize($data));
-    $errors = $customField->getErrors();
-    if (!empty($errors)) {
-      throw new APIException('Failed to save a new subscriber field ' . join(', ', $errors), APIException::FAILED_TO_SAVE_SUBSCRIBER_FIELD);
+    try {
+      $customField = $this->customFieldsRepository->createOrUpdate($this->customFieldsDataSanitizer->sanitize($data));
+    } catch (\Exception $e) {
+      throw new APIException('Failed to save a new subscriber field ' . join(', ', $e->getMessage()), APIException::FAILED_TO_SAVE_SUBSCRIBER_FIELD);
     }
-    $customField = CustomField::findOne($customField->id);
-    if (!$customField instanceof CustomField) {
+    $customField = $this->customFieldsRepository->findOneById($customField->getId());
+    if (!$customField instanceof CustomFieldEntity) {
       throw new APIException('Failed to create a new subscriber field', APIException::FAILED_TO_SAVE_SUBSCRIBER_FIELD);
     }
-    return $customField->asArray();
+    return [
+      'id' => 'cf_' . $customField->getId(),
+      'name' => $customField->getName(),
+      'type' => $customField->getType(),
+      'params' => $customField->getParams(),
+    ];
   }
 }
