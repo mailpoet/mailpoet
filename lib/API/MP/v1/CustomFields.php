@@ -67,7 +67,7 @@ class CustomFields {
     try {
       $customField = $this->customFieldsRepository->createOrUpdate($this->customFieldsDataSanitizer->sanitize($data));
     } catch (\Exception $e) {
-      throw new APIException('Failed to save a new subscriber field ' . join(', ', $e->getMessage()), APIException::FAILED_TO_SAVE_SUBSCRIBER_FIELD);
+      throw new APIException('Failed to save a new subscriber field ' . $e->getMessage(), APIException::FAILED_TO_SAVE_SUBSCRIBER_FIELD);
     }
     $customField = $this->customFieldsRepository->findOneById($customField->getId());
     if (!$customField instanceof CustomFieldEntity) {

@@ -6,7 +6,6 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use MailPoet\API\MP\v1\CustomFields;
-use MailPoet\CustomFields\ApiDataSanitizer;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Models\ScheduledTask;
