@@ -4,7 +4,6 @@ namespace MailPoet\Test\Cron;
 
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Models\ScheduledTask;
 use MailPoetVendor\Carbon\Carbon;
 
 require_once __DIR__ . '/Workers/SimpleWorkerMockImplementation.php';
@@ -24,7 +23,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
     expect($tasks)->count(1);
     expect($tasks[0]->getType())->same('test');
-    expect($tasks[0]->getStatus())->same(ScheduledTask::STATUS_SCHEDULED);
+    expect($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($tasks[0]->getScheduledAt())->same($nextRunDate);
   }
 
@@ -60,7 +59,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     expect($immediateTask->getId())->equals($task->getId());
     expect($tasks)->count(1);
     expect($tasks[0]->getType())->same('test');
-    expect($tasks[0]->getStatus())->same(ScheduledTask::STATUS_SCHEDULED);
+    expect($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($tasks[0]->getScheduledAt())->greaterOrEquals(Carbon::now()->subSecond());
     expect($tasks[0]->getScheduledAt())->lessOrEquals(Carbon::now()->addSecond());
   }
@@ -70,7 +69,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
     expect($tasks)->count(1);
     expect($tasks[0]->getType())->equals('test');
-    expect($tasks[0]->getStatus())->equals(ScheduledTask::STATUS_SCHEDULED);
+    expect($tasks[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($tasks[0]->getScheduledAt())->greaterOrEquals(Carbon::now()->subSecond());
     expect($tasks[0]->getScheduledAt())->lessOrEquals(Carbon::now()->addSecond());
   }
