@@ -181,16 +181,4 @@ class ScheduledTask extends Model {
 
     return $query->findMany();
   }
-
-  // temporary function to convert an ScheduledTaskEntity object to ScheduledTask while we don't migrate the rest of
-  // the code in this class to use Doctrine entities
-  public static function getFromDoctrineEntity(ScheduledTaskEntity $doctrineTask): ?ScheduledTask {
-    $parisTask = self::findOne($doctrineTask->getId());
-
-    if (!$parisTask instanceof ScheduledTask) {
-      return null;
-    }
-
-    return $parisTask;
-  }
 }

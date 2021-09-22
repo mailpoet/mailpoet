@@ -88,9 +88,9 @@ class Bounce extends SimpleWorker {
       return true; // mark completed
     }
 
-    $parisTask = ScheduledTask::getFromDoctrineEntity($task);
+    $parisTask = ScheduledTask::findOne($task->getId());
 
-    if ($parisTask) {
+    if ($parisTask instanceof ScheduledTask) {
       $taskSubscribers = new TaskSubscribers($parisTask);
 
       foreach ($subscriberBatches as $subscribersToProcessIds) {

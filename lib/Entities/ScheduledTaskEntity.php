@@ -67,6 +67,12 @@ class ScheduledTaskEntity {
   private $meta;
 
   /**
+   * @ORM\Column(type="boolean", nullable=true)
+   * @var bool|null
+   */
+  private $inProgress;
+
+  /**
    * @ORM\Column(type="integer", options={"default" : 0})
    * @var int
    */
@@ -159,6 +165,20 @@ class ScheduledTaskEntity {
    */
   public function setMeta($meta) {
     $this->meta = $meta;
+  }
+
+  /**
+   * @return bool|null
+   */
+  public function getInProgress() {
+    return $this->inProgress;
+  }
+
+  /**
+   * @param bool|null $inProgress
+   */
+  public function setInProgress($inProgress) {
+    $this->inProgress = $inProgress;
   }
 
   public function getRescheduleCount(): int {
