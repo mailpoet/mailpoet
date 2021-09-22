@@ -42,7 +42,7 @@ class FormPreview {
   }
 
   public function renderContent(): string {
-    if (!isset($this->data['id']) || !isset($this->data['form_type'])) {
+    if (!array_key_exists('id', $this->data ?? []) || !isset($this->data['form_type'])) {
       return '';
     }
     return $this->formPreviewPage->renderPage(
