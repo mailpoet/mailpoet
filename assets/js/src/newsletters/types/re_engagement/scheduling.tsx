@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactStringReplace from 'react-string-replace';
-import { isEmpty } from 'lodash/fp';
 
 import MailPoet from 'mailpoet';
 import Heading from 'common/typography/heading/heading';
@@ -26,6 +25,7 @@ export function Scheduling({
 }: Props): JSX.Element {
   const daysInPeriod = afterTimeType === 'weeks' ? 7 : 30;
   const daysSelected = Number(afterTimeNumber) * daysInPeriod;
+
   return (
     <>
       <Heading level={4}>{MailPoet.I18n.t('selectEventToSendReEngagementEmail')}</Heading>
@@ -48,7 +48,7 @@ export function Scheduling({
         </Select>
       </Grid.CenteredRow>
       {
-        ((!isEmpty(inactiveSubscribersPeriod)) && (inactiveSubscribersPeriod <= daysSelected)) && (
+        ((!!inactiveSubscribersPeriod) && (inactiveSubscribersPeriod <= daysSelected)) && (
           <p className="mailpoet-re-engagement-scheduling-note">
             {
               ReactStringReplace(
