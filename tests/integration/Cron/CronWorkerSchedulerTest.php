@@ -78,14 +78,12 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
   public function testItReschedulesTask() {
     $nextRunDate = Carbon::now()->subDay();
     $task = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
-    $oldModel = ScheduledTask::findOne($task->getId());
-    $this->assertInstanceOf(ScheduledTask::class, $oldModel);
-    $this->cronWorkerScheduler->reschedule($oldModel, 10);
+    $this->cronWorkerScheduler->reschedule($task, 10);
+
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
-    $this->entityManager->refresh($task);
     expect($tasks)->count(1);
     expect($tasks[0]->getType())->same('test');
-    expect($tasks[0]->getStatus())->same(ScheduledTask::STATUS_SCHEDULED);
+    expect($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($tasks[0]->getScheduledAt())->greaterThan($nextRunDate);
     expect($tasks[0]->getScheduledAt())->greaterThan(Carbon::now());
   }
