@@ -2,14 +2,26 @@
 
 namespace MailPoet\Cron\Workers\KeyCheck;
 
+use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 abstract class KeyCheckWorker extends SimpleWorker {
   public $bridge;
+
+  /** @var CronWorkerScheduler */
+  protected $cronWorkerScheduler;
+
+  public function __construct(
+    CronWorkerScheduler $cronWorkerScheduler,
+    WPFunctions $wp = null
+  ) {
+    parent::__construct($wp);
+    $this->cronWorkerScheduler = $cronWorkerScheduler;
+  }
 
   public function init() {
     if (!$this->bridge) {
@@ -25,10 +37,7 @@ abstract class KeyCheckWorker extends SimpleWorker {
     }
 
     if (empty($result['code']) || $result['code'] == Bridge::CHECK_ERROR_UNAVAILABLE) {
-      $parisTask = ScheduledTask::getFromDoctrineEntity($task);
-      if ($parisTask) {
-        $parisTask->rescheduleProgressively();
-      }
+      $this->cronWorkerScheduler->rescheduleProgressively($task);
       return false;
     }
 

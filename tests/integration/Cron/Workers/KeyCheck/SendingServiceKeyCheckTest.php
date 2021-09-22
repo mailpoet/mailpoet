@@ -5,6 +5,7 @@ namespace MailPoet\Test\Cron\Workers\KeyCheck;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
@@ -23,7 +24,8 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
     $this->mssKey = 'some_key';
     $this->worker = new SendingServiceKeyCheck(
       $this->diContainer->get(SettingsController::class),
-      $this->diContainer->get(ServicesChecker::class)
+      $this->diContainer->get(ServicesChecker::class),
+      $this->diContainer->get(CronWorkerScheduler::class)
     );
   }
 
@@ -64,7 +66,8 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
 
     $worker = new SendingServiceKeyCheck(
       $this->diContainer->get(SettingsController::class),
-      $servicesChecker
+      $servicesChecker,
+      $this->diContainer->get(CronWorkerScheduler::class)
     );
 
     $bridge = $this->make(new Bridge, [

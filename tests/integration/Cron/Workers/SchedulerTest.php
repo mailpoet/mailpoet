@@ -5,6 +5,7 @@ namespace MailPoet\Test\Cron\Workers;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\Scheduler;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
@@ -18,6 +19,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -34,16 +36,24 @@ class SchedulerTest extends \MailPoetTest {
   /** @var SubscribersFinder */
   private $subscribersFinder;
 
+  /** @var CronWorkerScheduler */
+  private $cronWorkerScheduler;
+
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function _before() {
     parent::_before();
     $this->loggerFactory = LoggerFactory::getInstance();
     $this->cronHelper = $this->diContainer->get(CronHelper::class);
     $this->subscribersFinder = $this->diContainer->get(SubscribersFinder::class);
+    $this->cronWorkerScheduler = $this->diContainer->get(CronWorkerScheduler::class);
+    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
   }
 
   public function testItThrowsExceptionWhenExecutionLimitIsReached() {
     try {
-      $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+      $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
       $scheduler->process(microtime(true) - $this->cronHelper->getDaemonExecutionLimit());
       self::fail('Maximum execution time limit exception was not thrown.');
     } catch (\Exception $e) {
@@ -73,7 +83,7 @@ class SchedulerTest extends \MailPoetTest {
     expect($notificationHistory)->isEmpty();
 
     // create notification history and ensure that it exists
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
     $scheduler->createNotificationHistory($newsletter->id);
     $notificationHistory = Newsletter::where('type', Newsletter::TYPE_NOTIFICATION_HISTORY)
       ->where('parent_id', $newsletter->id)
@@ -90,7 +100,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne($newsletter->id);
     assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     // queue and associated newsletter should be deleted when interval type is set to "immediately"
     expect(SendingQueue::findMany())->notEmpty();
@@ -108,7 +118,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne($newsletter->id);
     assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     // queue's next run date should change when interval type is set to anything
     // other than "immediately"
@@ -142,7 +152,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne($newsletter->id);
     assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     // return false and delete queue when subscriber is not a WP user
     $result = $scheduler->verifyWPSubscriber($subscriber->id, $newsletter, $queue);
@@ -166,7 +176,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne($newsletter->id);
     assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     // return false and delete queue when subscriber role is different from the one
     // specified for the welcome email
@@ -189,7 +199,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne($newsletter->id);
     assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     // return true when user exists and WP role matches the one specified for the welcome email
     $result = $scheduler->verifyWPSubscriber($subscriber->id, $newsletter, $queue);
@@ -211,7 +221,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne($newsletter->id);
     assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     // true when user exists and has any role
     $result = $scheduler->verifyWPSubscriber($subscriber->id, $newsletter, $queue);
@@ -225,7 +235,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue->setSubscribers([]);
 
     // delete queue when the list of subscribers to process is blank
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
     $result = $scheduler->processWelcomeNewsletter($newsletter, $queue);
     expect($result)->false();
     expect(SendingQueue::findMany())->count(0);
@@ -299,7 +309,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItFailsMailpoetSubscriberVerificationWhenSubscriberDoesNotExist() {
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
     $newsletter = $this->_createNewsletter();
     $queue = $this->_createQueue($newsletter->id);
 
@@ -320,7 +330,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne($newsletter->id);
     assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     // return false
     $result = $scheduler->verifyMailpoetSubscriber($subscriber->id, $newsletter, $queue);
@@ -352,7 +362,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne($newsletter->id);
     assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     // return false
     $result = $scheduler->verifyMailpoetSubscriber($subscriber->id, $newsletter, $queue);
@@ -384,7 +394,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne($newsletter->id);
     assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     // return false
     $result = $scheduler->verifyMailpoetSubscriber($subscriber->id, $newsletter, $queue);
@@ -408,7 +418,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne($newsletter->id);
     assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     // return true after successful verification
     $result = $scheduler->verifyMailpoetSubscriber($subscriber->id, $newsletter, $queue);
@@ -431,7 +441,7 @@ class SchedulerTest extends \MailPoetTest {
       ->findOne($newsletter->id);
     assert($newsletter instanceof Newsletter);
     $queue = $this->_createQueue($newsletter->id);
-    $scheduler = new Scheduler($this->subscribersFinder, $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->subscribersFinder, $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     // return true
     expect($scheduler->processScheduledStandardNewsletter($newsletter, $queue))->true();
@@ -471,7 +481,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletterSegment = $this->_createNewsletterSegment($newsletter->id, $segment->id);
 
     // delete or reschedule queue when there are no subscribers in segments
-    $scheduler = $this->construct(Scheduler::class, [$this->subscribersFinder, $this->loggerFactory, $this->cronHelper], [
+    $scheduler = $this->construct(Scheduler::class, [$this->subscribersFinder, $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository], [
       'deleteQueueOrUpdateNextRunDate' => Expected::exactly(1, function() {
         return false;
       }),
@@ -495,7 +505,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_NOTIFICATION)
       ->findOne($newsletter->id);
     assert($newsletter instanceof Newsletter);
-    $scheduler = new Scheduler($this->subscribersFinder, $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->subscribersFinder, $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     // return true
     expect($scheduler->processPostNotificationNewsletter($newsletter, $queue))->true();
@@ -520,7 +530,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItFailsToProcessWhenScheduledQueuesNotFound() {
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
     expect($scheduler->process())->false();
   }
 
@@ -528,7 +538,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue = $this->_createQueue(1);
     $queue->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
     $scheduler->process();
     expect(SendingQueue::findMany())->count(0);
   }
@@ -540,7 +550,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue = $this->_createQueue($newsletter->id);
     $queue->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
     $scheduler->process();
     expect(SendingQueue::findMany())->count(0);
   }
@@ -632,7 +642,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter(Newsletter::TYPE_STANDARD, Newsletter::STATUS_DRAFT);
     $queue = $this->_createQueue($newsletter->id);
     $finder = $this->makeEmpty(SubscribersFinder::class);
-    $scheduler = new Scheduler($finder, $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($finder, $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
 
     $scheduler->processScheduledStandardNewsletter($newsletter, $queue);
     $refetchedTask = ScheduledTask::where('id', $task->id)->findOne();
@@ -671,7 +681,7 @@ class SchedulerTest extends \MailPoetTest {
     expect($task->getSubscribers())->equals([$subscriber->id]);
 
     // task should have its status set to null (i.e., sending)
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
     $scheduler->process();
     $task = SendingTask::getByNewsletterId($newsletter->id);
     expect($task->status)->null();
@@ -695,7 +705,7 @@ class SchedulerTest extends \MailPoetTest {
     expect($task->getSubscribers())->equals([$subscriber->id]);
 
     // task should be deleted
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
     $scheduler->process();
     $task = SendingTask::getByNewsletterId($newsletter->id);
     expect($task)->false();
@@ -723,7 +733,7 @@ class SchedulerTest extends \MailPoetTest {
     expect($task->newsletterId)->equals($newsletter->id);
 
     // task should have its status set to null (i.e., sending)
-    $scheduler = new Scheduler($this->subscribersFinder, $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->subscribersFinder, $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
     $scheduler->process();
     $task = SendingTask::getByNewsletterId($newsletter->id);
     expect($task->status)->null();
@@ -740,7 +750,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->updatedAt = $originalUpdated;
     $queue->save();
-    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper);
+    $scheduler = new Scheduler($this->makeEmpty(SubscribersFinder::class), $this->loggerFactory, $this->cronHelper, $this->cronWorkerScheduler, $this->scheduledTasksRepository);
     $scheduler->process();
     $newQueue = ScheduledTask::findOne($queue->taskId);
     assert($newQueue instanceof ScheduledTask);

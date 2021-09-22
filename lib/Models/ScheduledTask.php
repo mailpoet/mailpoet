@@ -30,8 +30,8 @@ class ScheduledTask extends Model {
   const PRIORITY_MEDIUM = ScheduledTaskEntity::PRIORITY_MEDIUM;
   const PRIORITY_LOW = ScheduledTaskEntity::PRIORITY_LOW;
 
-  const BASIC_RESCHEDULE_TIMEOUT = 5; //minutes
-  const MAX_RESCHEDULE_TIMEOUT = 1440; //minutes
+  const BASIC_RESCHEDULE_TIMEOUT = ScheduledTaskEntity::BASIC_RESCHEDULE_TIMEOUT;
+  const MAX_RESCHEDULE_TIMEOUT = ScheduledTaskEntity::MAX_RESCHEDULE_TIMEOUT;
 
   private $wp;
 
@@ -128,16 +128,6 @@ class ScheduledTask extends Model {
       throw $error;
     }
     return null;
-  }
-
-  public function rescheduleProgressively() {
-    $scheduledAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-    $timeout = (int)min(self::BASIC_RESCHEDULE_TIMEOUT * pow(2, $this->rescheduleCount), self::MAX_RESCHEDULE_TIMEOUT);
-    $this->scheduledAt = $scheduledAt->addMinutes($timeout);
-    $this->rescheduleCount++;
-    $this->status = ScheduledTask::STATUS_SCHEDULED;
-    $this->save();
-    return $timeout;
   }
 
   public static function touchAllByIds(array $ids) {

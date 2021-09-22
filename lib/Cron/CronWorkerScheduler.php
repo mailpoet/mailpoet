@@ -61,4 +61,17 @@ class CronWorkerScheduler {
     $this->scheduledTaskRepository->persist($task);
     $this->scheduledTaskRepository->flush();
   }
+
+  public function rescheduleProgressively(ScheduledTaskEntity $task): int {
+    $scheduledAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $rescheduleCount = $task->getRescheduleCount();
+    $timeout = (int)min(ScheduledTaskEntity::BASIC_RESCHEDULE_TIMEOUT * pow(2, $rescheduleCount), ScheduledTaskEntity::MAX_RESCHEDULE_TIMEOUT);
+    $task->setScheduledAt($scheduledAt->addMinutes($timeout));
+    $task->setRescheduleCount($rescheduleCount + 1);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->scheduledTaskRepository->persist($task);
+    $this->scheduledTaskRepository->flush();
+
+    return $timeout;
+  }
 }
