@@ -3,7 +3,9 @@
 namespace MailPoet\Cron\Workers\KeyCheck;
 
 use MailPoet\Cron\Workers\SimpleWorker;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Newsletter\Sending\ScheduledTasks;
 use MailPoet\Services\Bridge;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -24,7 +26,8 @@ abstract class KeyCheckWorker extends SimpleWorker {
     }
 
     if (empty($result['code']) || $result['code'] == Bridge::CHECK_ERROR_UNAVAILABLE) {
-      $task->rescheduleProgressively();
+      $scheduledTasks = ContainerWrapper::getInstance()->get(ScheduledTasks::class);
+      $scheduledTasks->oldRescheduleProgressively($task);
       return false;
     }
 

@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers;
 
 use MailPoet\Cron\CronHelper;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
@@ -12,6 +13,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
+use MailPoet\Newsletter\Sending\ScheduledTasks;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 
@@ -210,7 +212,9 @@ class Scheduler {
   public function verifySubscriber($subscriber, $queue) {
     if ($subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
       // reschedule delivery
-      $queue->rescheduleProgressively();
+      $scheduledTasks = ContainerWrapper::getInstance()->get(ScheduledTasks::class);
+      $scheduledTasks->oldRescheduleProgressively($queue->task());
+
       return false;
     } else if ($subscriber->status === Subscriber::STATUS_UNSUBSCRIBED) {
       $queue->delete();

@@ -22,6 +22,8 @@ class ScheduledTaskEntity {
   const PRIORITY_HIGH = 1;
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
+  const BASIC_RESCHEDULE_TIMEOUT = 5; // minutes
+  const MAX_RESCHEDULE_TIMEOUT = 1440; // minutes
 
   use AutoincrementedIdTrait;
   use CreatedAtTrait;
@@ -63,6 +65,12 @@ class ScheduledTaskEntity {
    * @var array|null
    */
   private $meta;
+
+  /**
+   * @ORM\Column(type="integer", options={"default" : 0})
+   * @var int
+   */
+  private $rescheduleCount = 0;
 
   /**
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\ScheduledTaskSubscriberEntity", mappedBy="task", fetch="EXTRA_LAZY")
@@ -151,5 +159,13 @@ class ScheduledTaskEntity {
    */
   public function setMeta($meta) {
     $this->meta = $meta;
+  }
+
+  public function getRescheduleCount(): int {
+    return $this->rescheduleCount;
+  }
+
+  public function setRescheduleCount(int $rescheduleCount) {
+    $this->rescheduleCount = $rescheduleCount;
   }
 }

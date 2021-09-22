@@ -3,6 +3,7 @@
 namespace MailPoet\Cron;
 
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Newsletter\Sending\ScheduledTasks;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -27,17 +28,22 @@ class CronWorkerRunner {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** * @var ScheduledTasks */
+  private $scheduledTasks;
+
   public function __construct(
       CronHelper $cronHelper,
       CronWorkerScheduler $cronWorkerScheduler,
       WPFunctions $wp,
-      ScheduledTasksRepository $scheduledTasksRepository
+      ScheduledTasksRepository $scheduledTasksRepository,
+      ScheduledTasks $scheduledTasks
   ) {
     $this->timer = microtime(true);
     $this->cronHelper = $cronHelper;
     $this->cronWorkerScheduler = $cronWorkerScheduler;
     $this->wp = $wp;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->scheduledTasks = $scheduledTasks;
   }
 
   public function run(CronWorkerInterface $worker) {
@@ -72,7 +78,7 @@ class CronWorkerRunner {
       }
     } catch (\Exception $e) {
       if ($task && $e->getCode() !== CronHelper::DAEMON_EXECUTION_LIMIT_REACHED) {
-        $task->rescheduleProgressively();
+        $this->scheduledTasks->rescheduleProgressively($task);
       }
       throw $e;
     }

@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Cron\Workers\KeyCheck;
 
 use Codeception\Stub;
-use Codeception\Stub\Expected;
 use MailPoet\Cron\Workers\KeyCheck\KeyCheckWorkerMockImplementation as MockKeyCheckWorker;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Services\Bridge;
@@ -43,11 +42,8 @@ class KeyCheckWorkerTest extends \MailPoetTest {
       ],
       $this
     );
-    $task = Stub::make(
-      ScheduledTask::class,
-      ['rescheduleProgressively' => Expected::once()],
-      $this
-    );
+    $task = $this->createRunningTask();
+
     $result = $worker->processTaskStrategy($task, microtime(true));
     expect($result)->false();
   }
@@ -60,11 +56,8 @@ class KeyCheckWorkerTest extends \MailPoetTest {
       ],
       $this
     );
-    $task = Stub::make(
-      ScheduledTask::class,
-      ['rescheduleProgressively' => Expected::once()],
-      $this
-    );
+    $task = $this->createRunningTask();
+
     $result = $worker->processTaskStrategy($task, microtime(true));
     expect($result)->false();
   }
