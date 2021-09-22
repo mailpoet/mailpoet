@@ -142,16 +142,6 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
-  public function testItDoesNotDeactivateSubscriberWhoReceivedEmailWhichWasNeverOpened() {
-    list($task) = $this->createCompletedSendingTask($completedDaysAgo = 2);
-    $subscriber = $this->createSubscriber('s1@email.com', $createdDaysAgo = 10);
-    $this->addSubcriberToTask($subscriber, $task);
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
-    expect($result)->equals(0);
-    $subscriber = Subscriber::findOne($subscriber->id);
-    expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-  }
-
   public function testItDoesNotDeactivatesSubscribersWhenMP2MigrationHappenedWithinInterval() {
     list($task) = $this->createCompletedSendingTaskWithOneOpen($completedDaysAgo = 3);
 
