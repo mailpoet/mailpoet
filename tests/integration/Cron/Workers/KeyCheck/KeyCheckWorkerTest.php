@@ -3,9 +3,9 @@
 namespace MailPoet\Test\Cron\Workers\KeyCheck;
 
 use Codeception\Stub;
+use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\KeyCheck\KeyCheckWorkerMockImplementation as MockKeyCheckWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -20,14 +20,11 @@ class KeyCheckWorkerTest extends \MailPoetTest {
   /** @var ScheduledTaskFactory */
   private $scheduledTaskFactory;
 
-  /** @var ScheduledTasksRepository */
-  private $scheduledTasksRepository;
-
   public function _before() {
     parent::_before();
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
-    $this->worker = new MockKeyCheckWorker();
-    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $cronWorkerScheduler = $this->diContainer->get(CronWorkerScheduler::class);
+    $this->worker = new MockKeyCheckWorker($cronWorkerScheduler);
   }
 
   public function testItCanInitializeBridgeAPI() {
@@ -42,37 +39,37 @@ class KeyCheckWorkerTest extends \MailPoetTest {
   }
 
   public function testItReschedulesCheckOnException() {
+    $cronWorkerSchedulerMock = $this->createMock(CronWorkerScheduler::class);
+    $cronWorkerSchedulerMock->expects($this->once())->method('rescheduleProgressively');
+
     $worker = Stub::make(
       $this->worker,
       [
         'checkKey' => function () {
           throw new \Exception;
         },
+        'cronWorkerScheduler' => $cronWorkerSchedulerMock,
       ],
       $this
     );
+
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $task = $this->createRunningTask($currentTime);
+
     $result = $worker->processTaskStrategy($task, microtime(true));
 
-    // need to clear Doctrine cache and get the entity again while ScheduledTask::rescheduleProgressively() is not migrated to Doctrine
-    $this->entityManager->clear();
-    $task = $this->scheduledTasksRepository->findOneById($task->getId());
-
-    assert($task instanceof ScheduledTaskEntity);
-    assert($task->getScheduledAt() instanceof \DateTimeInterface);
-    $newScheduledAtTime = $currentTime->addMinutes(5)->format('Y-m-d H:i:s');
-    $scheduledAt = $task->getScheduledAt()->format('Y-m-d H:i:s');
     $this->assertFalse($result);
-    $this->assertSame($newScheduledAtTime, $scheduledAt);
-    $this->assertSame(1, $task->getRescheduleCount());
   }
 
   public function testItReschedulesCheckOnError() {
+    $cronWorkerSchedulerMock = $this->createMock(CronWorkerScheduler::class);
+    $cronWorkerSchedulerMock->expects($this->once())->method('rescheduleProgressively');
+
     $worker = Stub::make(
       $this->worker,
       [
         'checkKey' => ['code' => Bridge::CHECK_ERROR_UNAVAILABLE],
+        'cronWorkerScheduler' => $cronWorkerSchedulerMock,
       ],
       $this
     );
@@ -82,17 +79,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
 
     $result = $worker->processTaskStrategy($task, microtime(true));
 
-    // need to clear Doctrine cache and get the entity again while ScheduledTask::rescheduleProgressively() is not migrated to Doctrine
-    $this->entityManager->clear();
-    $task = $this->scheduledTasksRepository->findOneById($task->getId());
-
-    assert($task instanceof ScheduledTaskEntity);
-    assert($task->getScheduledAt() instanceof \DateTimeInterface);
-    $newScheduledAtTime = $currentTime->addMinutes(5)->format('Y-m-d H:i:s');
-    $scheduledAt = $task->getScheduledAt()->format('Y-m-d H:i:s');
     $this->assertFalse($result);
-    $this->assertSame($newScheduledAtTime, $scheduledAt);
-    $this->assertSame(1, $task->getRescheduleCount());
   }
 
   public function testItNextRunIsNextDay(): void {

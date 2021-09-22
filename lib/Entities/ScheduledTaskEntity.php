@@ -24,6 +24,8 @@ class ScheduledTaskEntity {
   const PRIORITY_HIGH = 1;
   const PRIORITY_MEDIUM = 5;
   const PRIORITY_LOW = 10;
+  const BASIC_RESCHEDULE_TIMEOUT = 5; // minutes
+  const MAX_RESCHEDULE_TIMEOUT = 1440; // minutes
 
   use AutoincrementedIdTrait;
   use CreatedAtTrait;

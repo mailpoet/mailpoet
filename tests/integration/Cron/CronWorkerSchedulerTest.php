@@ -4,6 +4,7 @@ namespace MailPoet\Test\Cron;
 
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoetVendor\Carbon\Carbon;
 
 require_once __DIR__ . '/Workers/SimpleWorkerMockImplementation.php';
@@ -12,8 +13,12 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
   /** @var CronWorkerScheduler */
   private $cronWorkerScheduler;
 
+  /** @var ScheduledTaskFactory */
+  private $scheduledTaskFactory;
+
   public function _before() {
     $this->cronWorkerScheduler = $this->diContainer->get(CronWorkerScheduler::class);
+    $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->truncateEntity(ScheduledTaskEntity::class);
   }
 
@@ -85,6 +90,23 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     expect($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($tasks[0]->getScheduledAt())->greaterThan($nextRunDate);
     expect($tasks[0]->getScheduledAt())->greaterThan(Carbon::now());
+  }
+
+  public function testItCanRescheduleTasksProgressively() {
+    $task = $this->scheduledTaskFactory->create('test', null, new Carbon());
+    $scheduledAt = $task->getScheduledAt();
+
+    $timeout = $this->cronWorkerScheduler->rescheduleProgressively($task);
+    expect($timeout)->equals(ScheduledTaskEntity::BASIC_RESCHEDULE_TIMEOUT);
+    expect($scheduledAt < $task->getScheduledAt())->true();
+    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+
+    $timeout = $this->cronWorkerScheduler->rescheduleProgressively($task);
+    expect($timeout)->equals(ScheduledTaskEntity::BASIC_RESCHEDULE_TIMEOUT * 2);
+
+    $task->setRescheduleCount(123456); // too many
+    $timeout = $this->cronWorkerScheduler->rescheduleProgressively($task);
+    expect($timeout)->equals(ScheduledTaskEntity::MAX_RESCHEDULE_TIMEOUT);
   }
 
   public function _after() {

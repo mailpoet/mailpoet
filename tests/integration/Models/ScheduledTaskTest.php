@@ -163,24 +163,6 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($task->meta)->equals($meta);
   }
 
-  public function testItCanRescheduleTasksProgressively() {
-    $task = $this->task;
-    $task->status = null;
-    $scheduledAt = $task->scheduledAt;
-
-    $timeout = $task->rescheduleProgressively();
-    expect($timeout)->equals(ScheduledTask::BASIC_RESCHEDULE_TIMEOUT);
-    expect($scheduledAt < $task->scheduledAt)->true();
-    expect($task->status)->equals(ScheduledTask::STATUS_SCHEDULED);
-
-    $timeout = $task->rescheduleProgressively();
-    expect($timeout)->equals(ScheduledTask::BASIC_RESCHEDULE_TIMEOUT * 2);
-
-    $task->rescheduleCount = 123456; // too many
-    $timeout = $task->rescheduleProgressively();
-    expect($timeout)->equals(ScheduledTask::MAX_RESCHEDULE_TIMEOUT);
-  }
-
   public function testItCanGetFutureScheduledTasks() {
     // scheduled (in future)
     ScheduledTask::createOrUpdate([

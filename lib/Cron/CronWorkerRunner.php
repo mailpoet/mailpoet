@@ -65,8 +65,6 @@ class CronWorkerRunner {
     }
 
     try {
-      $parisTask = null;
-
       foreach ($dueTasks as $task) {
         $parisTask = ScheduledTask::getFromDoctrineEntity($task);
         if ($parisTask) {
@@ -80,8 +78,8 @@ class CronWorkerRunner {
         }
       }
     } catch (\Exception $e) {
-      if ($parisTask && $e->getCode() !== CronHelper::DAEMON_EXECUTION_LIMIT_REACHED) {
-        $parisTask->rescheduleProgressively();
+      if ($task && $e->getCode() !== CronHelper::DAEMON_EXECUTION_LIMIT_REACHED) {
+        $this->cronWorkerScheduler->rescheduleProgressively($task);
       }
       throw $e;
     }
