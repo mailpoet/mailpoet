@@ -155,10 +155,8 @@ class Forms extends APIEndpoint {
   }
 
   public function previewEditor($data = []) {
-    $formId = $data['id'] ?? null;
-    if (!$formId) {
-      $this->badRequest();
-    }
+    // We want to allow preview for unsaved forms
+    $formId = $data['id'] ?? 0;
     $this->wp->setTransient(PreviewPage::PREVIEW_DATA_TRANSIENT_PREFIX . $formId, $data, PreviewPage::PREVIEW_DATA_EXPIRATION);
     return $this->successResponse();
   }
