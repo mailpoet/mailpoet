@@ -8,15 +8,42 @@ use MailPoet\Cron\Workers\SendingQueue\Migration;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Cron\Workers\WooCommercePastOrders;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class ScheduledTask {
+  private $diContainer;
+  private $entityManager;
+
+  public function __construct() {
+    $this->diContainer = ContainerWrapper::getInstance();
+    $this->entityManager = $this->diContainer->get(EntityManager::class);
+  }
+
   public function deleteAll() {
     $tasks = \MailPoet\Models\ScheduledTask::findMany();
     foreach ($tasks as $task) {
       $task->delete();
     }
+  }
+
+  public function create(string $type, ?string $status, \DateTimeInterface $scheduledAt, \DateTimeInterface $deletedAt = null) {
+    $task = new ScheduledTaskEntity();
+    $task->setType($type);
+    $task->setStatus($status);
+    $task->setScheduledAt($scheduledAt);
+
+    if ($deletedAt) {
+      $task->setDeletedAt($deletedAt);
+    }
+
+    $this->entityManager->persist($task);
+    $this->entityManager->flush();
+
+    return $task;
   }
 
   /**
