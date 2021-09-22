@@ -3,7 +3,6 @@
 namespace MailPoet\Cron;
 
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -55,11 +54,12 @@ class CronWorkerScheduler {
     return $task;
   }
 
-  public function reschedule(ScheduledTask $task, $timeout) {
+  public function reschedule(ScheduledTaskEntity $task, $timeout) {
     $scheduledAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-    $task->scheduledAt = $scheduledAt->addMinutes($timeout);
-    $task->setExpr('updated_at', 'NOW()');
-    $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->save();
+    $task->setScheduledAt($scheduledAt->addMinutes($timeout));
+    $task->setUpdatedAt(new Carbon());
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->scheduledTaskRepository->persist($task);
+    $this->scheduledTaskRepository->flush();
   }
 }
