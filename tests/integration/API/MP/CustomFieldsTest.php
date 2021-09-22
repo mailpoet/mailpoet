@@ -3,6 +3,7 @@
 namespace MailPoet\Test\API\MP;
 
 use MailPoet\API\MP\v1\API;
+use MailPoet\API\MP\v1\APIException;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 
@@ -77,6 +78,32 @@ class CustomFieldsTest extends \MailPoetTest {
       'params' => [
         'required' => '',
         'label' => 'checkbox custom field',
+      ],
+    ]);
+  }
+
+  public function testItCreateNewCustomField() {
+    $response = $this->api->addSubscriberField([
+      'name' => 'text custom field',
+      'type' => 'text',
+      'params' => [
+        'required' => '1',
+        'label' => 'text custom field',
+        'date_type' => 'year_month_day',
+      ],
+    ]);
+    expect($response)->array();
+    expect($response)->hasKey('name');
+  }
+
+  public function testItFailsToCreateNewCustomField() {
+    $this->expectException(APIException::class);
+    $this->api->addSubscriberField([
+      'type' => 'text',
+      'params' => [
+        'required' => '1',
+        'label' => 'text custom field',
+        'date_type' => 'year_month_day',
       ],
     ]);
   }
