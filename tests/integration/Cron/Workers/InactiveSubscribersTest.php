@@ -82,8 +82,8 @@ class InactiveSubscribersTest extends \MailPoetTest {
   public function testRunBatchesUntilItIsFinished() {
     $this->settings->set('deactivate_subscriber_after_inactive_days', 5);
     $controllerMock = Stub::make(InactiveSubscribersController::class, [
-      'markInactiveSubscribers' => Stub::consecutive(InactiveSubscribers::BATCH_SIZE, InactiveSubscribers::BATCH_SIZE, 1, 'ok'),
-      'markActiveSubscribers' => Stub::consecutive(InactiveSubscribers::BATCH_SIZE, 1, 'ok'),
+      'markInactiveSubscribers' => Stub::consecutive(InactiveSubscribers::BATCH_SIZE, InactiveSubscribers::BATCH_SIZE, 1, 0),
+      'markActiveSubscribers' => Stub::consecutive(InactiveSubscribers::BATCH_SIZE, 1, 0),
       'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
@@ -92,8 +92,8 @@ class InactiveSubscribersTest extends \MailPoetTest {
       ['meta' => ['max_subscriber_id' => 2001 /* 3 iterations of BATCH_SIZE in markInactiveSubscribers */]]
     ), microtime(true));
 
-    expect($controllerMock->markInactiveSubscribers(5, 1000))->equals('ok');
-    expect($controllerMock->markActiveSubscribers(5, 1000))->equals('ok');
+    expect($controllerMock->markInactiveSubscribers(5, 1000))->equals(0);
+    expect($controllerMock->markActiveSubscribers(5, 1000))->equals(0);
   }
 
   public function testItCanStopDeactivationIfMarkInactiveSubscribersReturnsFalse() {
