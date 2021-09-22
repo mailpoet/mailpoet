@@ -295,6 +295,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $opened = StatisticsOpens::createOrUpdate(['subscriber_id' => $subscriber->id, 'newsletter_id' => $queue->newsletterId, 'queue_id' => $queue->id]);
     $opened->createdAt = (new Carbon())->subDays($daysAgo)->toDateTimeString();
     $opened->save();
+    $subscriber->lastEngagementAt = (new Carbon())->subDays($daysAgo)->toDateTimeString();
+    $subscriber->save();
   }
 
   private function createSetting($name, $value, $createdAt) {
