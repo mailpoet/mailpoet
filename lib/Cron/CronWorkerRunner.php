@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron;
 
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\Sending\ScheduledTasks;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -54,7 +55,8 @@ class CronWorkerRunner {
 
     if (!$worker->checkProcessingRequirements()) {
       foreach (array_merge($dueTasks, $runningTasks) as $task) {
-        $task->delete();
+        $this->scheduledTasksRepository->remove($task);
+        $this->scheduledTasksRepository->flush();
       }
       return false;
     }
@@ -94,18 +96,19 @@ class CronWorkerRunner {
     return $this->scheduledTasksRepository->findRunningByType($worker->getTaskType(), self::TASK_BATCH_SIZE);
   }
 
-  private function prepareTask(CronWorkerInterface $worker, ScheduledTask $task) {
+  private function prepareTask(CronWorkerInterface $worker, ScheduledTaskEntity $task) {
     // abort if execution limit is reached
     $this->cronHelper->enforceExecutionLimit($this->timer);
 
-    $prepareCompleted = $worker->prepareTaskStrategy($task, $this->timer);
+    $prepareCompleted = $worker->prepareTaskStrategy($this->convertTaskClass($task), $this->timer);
     if ($prepareCompleted) {
-      $task->status = null;
-      $task->save();
+      $task->setStatus(null);
+      $this->scheduledTasksRepository->persist($task);
+      $this->scheduledTasksRepository->flush();
     }
   }
 
-  private function processTask(CronWorkerInterface $worker, ScheduledTask $task) {
+  private function processTask(CronWorkerInterface $worker, ScheduledTaskEntity $task) {
     // abort if execution limit is reached
     $this->cronHelper->enforceExecutionLimit($this->timer);
 
@@ -121,7 +124,7 @@ class CronWorkerRunner {
     $this->startProgress($task);
 
     try {
-      $completed = $worker->processTaskStrategy($task, $this->timer);
+      $completed = $worker->processTaskStrategy($this->convertTaskClass($task), $this->timer);
     } catch (\Exception $e) {
       $this->stopProgress($task);
       throw $e;
@@ -136,18 +139,20 @@ class CronWorkerRunner {
     return (bool)$completed;
   }
 
-  private function rescheduleOutdated(ScheduledTask $task) {
+  private function rescheduleOutdated(ScheduledTaskEntity $task) {
     $currentTime = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-    $updated = strtotime((string)$task->updatedAt);
-    if ($updated === false) {
+
+    if (empty($task->getUpdatedAt())) {
       // missing updatedAt, consider this task outdated (set year to 2000) and reschedule
       $updatedAt = Carbon::createFromDate(2000);
+    } else if (!$task->getUpdatedAt() instanceof Carbon) {
+      $updatedAt = new Carbon($task->getUpdatedAt());
     } else {
-      $updatedAt = Carbon::createFromTimestamp($updated);
+      $updatedAt = $task->getUpdatedAt();
     }
 
     // If the task is running for too long consider it stuck and reschedule
-    if (!empty($task->updatedAt) && $updatedAt->diffInMinutes($currentTime, false) > self::TASK_RUN_TIMEOUT) {
+    if (!empty($task->getUpdatedAt()) && $updatedAt->diffInMinutes($currentTime, false) > self::TASK_RUN_TIMEOUT) {
       $this->stopProgress($task);
       $this->cronWorkerScheduler->reschedule($task, self::TIMED_OUT_TASK_RESCHEDULE_TIMEOUT);
       return true;
@@ -155,27 +160,42 @@ class CronWorkerRunner {
     return false;
   }
 
-  private function isInProgress(ScheduledTask $task) {
-    if (!empty($task->inProgress)) {
+  private function isInProgress(ScheduledTaskEntity $task) {
+    if ($task->getInProgress()) {
       // Do not run multiple instances of the task
       return true;
     }
     return false;
   }
 
-  private function startProgress(ScheduledTask $task) {
-    $task->inProgress = true;
-    $task->save();
+  private function startProgress(ScheduledTaskEntity $task) {
+    $task->setInProgress(true);
+    $this->scheduledTasksRepository->persist($task);
+    $this->scheduledTasksRepository->flush();
   }
 
-  private function stopProgress(ScheduledTask $task) {
-    $task->inProgress = false;
-    $task->save();
+  private function stopProgress(ScheduledTaskEntity $task) {
+    $task->setInProgress(false);
+    $this->scheduledTasksRepository->persist($task);
+    $this->scheduledTasksRepository->flush();
   }
 
-  private function complete(ScheduledTask $task) {
-    $task->processedAt = $this->wp->currentTime('mysql');
-    $task->status = ScheduledTask::STATUS_COMPLETED;
-    $task->save();
+  private function complete(ScheduledTaskEntity $task) {
+    $task->setProcessedAt(new Carbon());
+    $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+    $this->scheduledTasksRepository->persist($task);
+    $this->scheduledTasksRepository->flush();
+  }
+
+  // temporary function to convert an ScheduledTaskEntity object to ScheduledTask while we don't migrate the Workers
+  // to use Doctrine entities
+  private function convertTaskClass(ScheduledTaskEntity $doctrineTask): ScheduledTask {
+    $parisTask = ScheduledTask::findOne($doctrineTask->getId());
+
+    if (!$parisTask instanceof ScheduledTask) {
+      throw new \Exception('Unable to find scheduled task.');
+    }
+
+    return $parisTask;
   }
 }
