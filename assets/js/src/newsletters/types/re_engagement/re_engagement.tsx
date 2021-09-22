@@ -3,7 +3,6 @@ import {
   __,
   assoc,
   compose,
-  isEmpty,
 } from 'lodash/fp';
 import { useHistory } from 'react-router-dom';
 
@@ -18,7 +17,7 @@ import ListingHeadingStepsRoute from '../../listings/heading_steps_route';
 
 export function NewsletterTypeReEngagement(): JSX.Element {
   let defaultAfterTime = '';
-  if (!isEmpty(MailPoet.settings.deactivate_subscriber_after_inactive_days)) {
+  if (MailPoet.settings.deactivate_subscriber_after_inactive_days) {
     defaultAfterTime = (
       (
         Math.floor(
@@ -87,7 +86,7 @@ export function NewsletterTypeReEngagement(): JSX.Element {
           isFullWidth
           onClick={handleNext}
           type="button"
-          isDisabled={isEmpty(options.afterTimeNumber) || loading}
+          isDisabled={(!options.afterTimeNumber) || loading}
           withSpinner={loading}
         >
           {MailPoet.I18n.t('next')}
