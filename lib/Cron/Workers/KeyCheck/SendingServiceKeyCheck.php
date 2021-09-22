@@ -5,6 +5,7 @@ namespace MailPoet\Cron\Workers\KeyCheck;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Newsletter\Sending\ScheduledTasks;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Carbon\Carbon;
@@ -20,11 +21,12 @@ class SendingServiceKeyCheck extends KeyCheckWorker {
 
   public function __construct(
     SettingsController $settings,
-    ServicesChecker $servicesChecker
+    ServicesChecker $servicesChecker,
+    ScheduledTasks $scheduledTasks
   ) {
     $this->settings = $settings;
     $this->servicesChecker = $servicesChecker;
-    parent::__construct();
+    parent::__construct($scheduledTasks);
   }
 
   public function checkProcessingRequirements() {

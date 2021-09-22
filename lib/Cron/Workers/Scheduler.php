@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers;
 
 use MailPoet\Cron\CronHelper;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
@@ -12,6 +13,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
+use MailPoet\Newsletter\Sending\ScheduledTasks;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 
@@ -27,14 +29,19 @@ class Scheduler {
   /** @var CronHelper */
   private $cronHelper;
 
+  /** @var ScheduledTasks */
+  private $scheduledTasks;
+
   public function __construct(
     SubscribersFinder $subscribersFinder,
     LoggerFactory $loggerFactory,
-    CronHelper $cronHelper
+    CronHelper $cronHelper,
+    ScheduledTasks $scheduledTasks
   ) {
     $this->cronHelper = $cronHelper;
     $this->subscribersFinder = $subscribersFinder;
     $this->loggerFactory = $loggerFactory;
+    $this->scheduledTasks = $scheduledTasks;
   }
 
   public function process($timer = false) {
@@ -210,7 +217,12 @@ class Scheduler {
   public function verifySubscriber($subscriber, $queue) {
     if ($subscriber->status === Subscriber::STATUS_UNCONFIRMED) {
       // reschedule delivery
-      $queue->rescheduleProgressively();
+      $task = $this->scheduledTasks->repository->findOneById($queue->task()->id);
+
+      if ($task instanceof ScheduledTaskEntity) {
+        $this->scheduledTasks->rescheduleProgressively($task);
+      }
+
       return false;
     } else if ($subscriber->status === Subscriber::STATUS_UNSUBSCRIBED) {
       $queue->delete();

@@ -8,6 +8,7 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Newsletter\Sending\ScheduledTasks;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
@@ -23,7 +24,8 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
     $this->mssKey = 'some_key';
     $this->worker = new SendingServiceKeyCheck(
       $this->diContainer->get(SettingsController::class),
-      $this->diContainer->get(ServicesChecker::class)
+      $this->diContainer->get(ServicesChecker::class),
+      $this->diContainer->get(ScheduledTasks::class)
     );
   }
 
@@ -64,7 +66,8 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
 
     $worker = new SendingServiceKeyCheck(
       $this->diContainer->get(SettingsController::class),
-      $servicesChecker
+      $servicesChecker,
+      $this->diContainer->get(ScheduledTasks::class)
     );
 
     $bridge = $this->make(new Bridge, [

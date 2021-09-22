@@ -4,6 +4,7 @@ namespace MailPoet\Test\Cron\Workers\KeyCheck;
 
 use Codeception\Util\Stub;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
+use MailPoet\Newsletter\Sending\ScheduledTasks;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
@@ -20,7 +21,8 @@ class PremiumKeyCheckTest extends \MailPoetTest {
     parent::_before();
     $this->settings = SettingsController::getInstance();
     $this->premiumKey = '123457890abcdef';
-    $this->worker = new PremiumKeyCheck($this->settings);
+    $scheduledTasks = $this->diContainer->get(ScheduledTasks::class);
+    $this->worker = new PremiumKeyCheck($this->settings, $scheduledTasks);
   }
 
   public function testItRequiresPremiumKeyToBeSpecified() {

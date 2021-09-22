@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\Workers\KeyCheck;
 
+use MailPoet\Newsletter\Sending\ScheduledTasks;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
@@ -12,10 +13,11 @@ class PremiumKeyCheck extends KeyCheckWorker {
   private $settings;
 
   public function __construct(
-    SettingsController $settings
+    SettingsController $settings,
+    ScheduledTasks $scheduledTasks
   ) {
     $this->settings = $settings;
-    parent::__construct();
+    parent::__construct($scheduledTasks);
   }
 
   public function checkProcessingRequirements() {
