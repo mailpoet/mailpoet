@@ -3,25 +3,30 @@
 namespace MailPoet\Newsletter\Sending;
 
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoetVendor\Carbon\Carbon;
 
 class ScheduledTasksRepositoryTest extends \MailPoetTest {
   /** @var ScheduledTasksRepository */
   private $repository;
 
+  /** @var ScheduledTaskFactory */
+  private $scheduledTaskFactory;
+
   public function _before() {
     parent::_before();
     $this->cleanup();
     $this->repository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->scheduledTaskFactory = new ScheduledTaskFactory();
   }
 
   public function testItCanGetDueTasks() {
-    $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay(), Carbon::now()); // deleted (should not be fetched)
-    $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay()); // scheduled in future (should not be fetched)
-    $this->createScheduledTask('test', '', Carbon::now()->subDay()); // wrong status (should not be fetched)
-    $expectedResult[] = $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // due (scheduled in past)
-    $expectedResult[] = $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // due (scheduled in past)
-    $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // due (scheduled in past)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay(), Carbon::now()); // deleted (should not be fetched)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay()); // scheduled in future (should not be fetched)
+    $this->scheduledTaskFactory->create('test', '', Carbon::now()->subDay()); // wrong status (should not be fetched)
+    $expectedResult[] = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // due (scheduled in past)
+    $expectedResult[] = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // due (scheduled in past)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // due (scheduled in past)
 
     $tasks = $this->repository->findDueByType('test', 2);
     $this->assertCount(2, $tasks);
@@ -29,20 +34,20 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
   }
 
   public function testItCanGetRunningTasks() {
-    $expectedResult[] = $this->createScheduledTask('test', null, Carbon::now()->subDay()); // running (scheduled in past)
-    $this->createScheduledTask('test', null, Carbon::now()->subDay(), Carbon::now()); // deleted (should not be fetched)
-    $this->createScheduledTask('test', null, Carbon::now()->addDay()); // scheduled in future (should not be fetched)
-    $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay()); // wrong status (should not be fetched)
+    $expectedResult[] = $this->scheduledTaskFactory->create('test', null, Carbon::now()->subDay()); // running (scheduled in past)
+    $this->scheduledTaskFactory->create('test', null, Carbon::now()->subDay(), Carbon::now()); // deleted (should not be fetched)
+    $this->scheduledTaskFactory->create('test', null, Carbon::now()->addDay()); // scheduled in future (should not be fetched)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay()); // wrong status (should not be fetched)
 
     $tasks = $this->repository->findRunningByType('test', 10);
     $this->assertSame($expectedResult, $tasks);
   }
 
   public function testItCanGetCompletedTasks() {
-    $expectedResult[] = $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay()); // completed (scheduled in past)
-    $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay(), Carbon::now()); // deleted (should not be fetched)
-    $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay()); // scheduled in future (should not be fetched)
-    $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // wrong status (should not be fetched)
+    $expectedResult[] = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay()); // completed (scheduled in past)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay(), Carbon::now()); // deleted (should not be fetched)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay()); // scheduled in future (should not be fetched)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // wrong status (should not be fetched)
 
     $tasks = $this->repository->findCompletedByType('test', 10);
     $this->assertSame($expectedResult, $tasks);
@@ -50,21 +55,5 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
 
   public function cleanup() {
     $this->truncateEntity(ScheduledTaskEntity::class);
-  }
-
-  private function createScheduledTask(string $type, ?string $status, \DateTimeInterface $scheduledAt, \DateTimeInterface $deletedAt = null) {
-    $task = new ScheduledTaskEntity();
-    $task->setType($type);
-    $task->setStatus($status);
-    $task->setScheduledAt($scheduledAt);
-
-    if ($deletedAt) {
-      $task->setDeletedAt($deletedAt);
-    }
-
-    $this->entityManager->persist($task);
-    $this->entityManager->flush();
-
-    return $task;
   }
 }
