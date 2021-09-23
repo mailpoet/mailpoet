@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import MailPoet from 'mailpoet';
 import Select from 'common/form/select/select';
 
@@ -13,9 +13,9 @@ export const NewSubscribersStatus: React.FunctionComponent<Props> = ({
   newSubscribersStatus,
   setNewSubscribersStatus,
 }) => {
-  function handleChange(event): void {
+  const handleChange = useCallback((event): void => {
     setNewSubscribersStatus(event.target.value);
-  }
+  }, [setNewSubscribersStatus]);
 
   return (
     <>

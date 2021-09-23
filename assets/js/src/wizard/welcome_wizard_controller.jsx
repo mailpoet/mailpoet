@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { partial } from 'underscore';
 import MailPoet from 'mailpoet';
 import WelcomeWizardSenderStep from './steps/sender_step.jsx';
@@ -53,24 +53,24 @@ const WelcomeWizardStepsController = (props) => {
     });
   }
 
-  function submitTracking(tracking, libs3rdParty) {
+  const submitTracking = useCallback((tracking, libs3rdParty) => {
     setLoading(true);
     updateSettings({
       analytics: { enabled: tracking ? '1' : '' },
       '3rd_party_libs': { enabled: libs3rdParty ? '1' : '' },
     }).then(() => (redirect(step)));
-  }
+  }, [redirect, step]);
 
-  function updateSender(data) {
+  const updateSender = useCallback((data) => {
     setSender({ ...sender, ...data });
-  }
+  }, [sender]);
 
-  function submitSender() {
+  const submitSender = useCallback(() => {
     updateSettings(CreateSenderSettings(sender))
       .then(() => (redirect(step)));
-  }
+  }, [redirect, sender, step]);
 
-  function skipSenderStep(e) {
+  const skipSenderStep = useCallback((e) => {
     e.preventDefault();
     setLoading(true);
     updateSettings(CreateSenderSettings({ address: window.admin_email, name: '' }))
@@ -81,7 +81,7 @@ const WelcomeWizardStepsController = (props) => {
           finishWizard();
         }
       });
-  }
+  }, [redirect, stepsCount]);
 
   const stepName = mapStepNumberToStepName(step);
 

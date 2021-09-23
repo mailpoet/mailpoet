@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useEffect,
   useState,
   useRef,
@@ -65,24 +66,24 @@ const FormPreview: React.FunctionComponent = () => {
     iframeElement.current.contentWindow.postMessage(data, previewPageUrl);
   }, [formSettings, iframeElement, previewSettings, iframeLoaded, previewPageUrl]);
 
-  if (!isPreview) return null;
-
-  function closePreview(): void {
+  const closePreview = useCallback((): void => {
     const beacon = document.getElementById('beacon-container');
     if (beacon) {
       beacon.style.display = 'block';
     }
     hidePreview();
-  }
+  }, [hidePreview]);
 
-  function setFormType(type): void {
+  const setFormType = useCallback((type): void => {
     setIframeLoaded(false);
     changePreviewSettings({ ...previewSettings, formType: type });
-  }
+  }, [changePreviewSettings, previewSettings]);
 
-  function onPreviewTypeChange(type): void {
+  const onPreviewTypeChange = useCallback((type): void => {
     changePreviewSettings({ ...previewSettings, displayType: type });
-  }
+  }, [changePreviewSettings, previewSettings]);
+
+  if (!isPreview) return null;
 
   const urlData = {
     id: formId,
