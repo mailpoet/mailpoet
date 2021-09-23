@@ -229,7 +229,6 @@ class FormEditor {
     if (isset($_GET['template_id'])) {
       $template = $this->templatesRepository->getFormTemplate($_GET['template_id']);
       $form = $template->toFormEntity();
-      $form = $form->toArray();
     } else {
       $form = $this->getFormData((int)$_GET['id']);
     }
