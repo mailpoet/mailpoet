@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import Button from 'common/button/button';
@@ -7,17 +7,17 @@ import Select from 'common/form/select/select';
 function LastSentQuestion({ onSubmit }) {
   const [value, setValue] = useState('over2years');
 
-  function handleChange(event) {
+  const handleChange = useCallback((event) => {
     setValue(event.target.value);
-  }
+  }, [setValue]);
 
-  function handleSubmit() {
+  const handleSubmit = useCallback(() => {
     if (value === 'over2years' || value === '1to2years') {
       onSubmit('notRecently');
     } else {
       onSubmit('recently');
     }
-  }
+  }, [onSubmit, value]);
 
   return (
     <div className="mailpoet-settings-grid">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import MailPoet from 'mailpoet';
 import { curry } from 'lodash';
 import { parseISO } from 'date-fns';
@@ -104,7 +104,7 @@ export const List: React.FunctionComponent<ListProps> = ({
     setter(MailPoet.Date.format(value, formatting));
   });
 
-  function filterClick(): void {
+  const filterClick = useCallback((): void => {
     const data: FilterType = {};
     if (from) {
       data.from = from;
@@ -122,7 +122,7 @@ export const List: React.FunctionComponent<ListProps> = ({
       data.search = search.trim();
     }
     onFilter(data);
-  }
+  }, [from, limit, offset, search, to, onFilter]);
 
   return (
     <div className="mailpoet-listing mailpoet-logs">

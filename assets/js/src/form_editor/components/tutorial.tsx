@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import Modal from 'common/modal/modal';
@@ -16,12 +16,12 @@ export const Tutorial: React.FunctionComponent = () => {
   );
   const { tutorialDismissed } = useDispatch('mailpoet-form-editor');
 
+  const onClose = useCallback((): void => {
+    tutorialDismissed();
+  }, [tutorialDismissed]);
+
   if (tutorialSeen) {
     return null;
-  }
-
-  function onClose(): void {
-    tutorialDismissed();
   }
 
   return (

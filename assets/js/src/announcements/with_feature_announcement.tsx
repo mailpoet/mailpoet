@@ -99,7 +99,7 @@ export const withFeatureAnnouncement = <P extends Record<string, unknown>>(
   }: Omit<P, 'hasNews'|'onBeamerClick'>) => (
     <Component
       {...props as P}
-      onBeamerClick={showBeamer}
+      onBeamerClick={(e) => showBeamer(e)}
       hasNews={showDot}
     />
   );

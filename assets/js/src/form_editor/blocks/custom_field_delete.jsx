@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Button,
 } from '@wordpress/components';
@@ -9,12 +9,12 @@ const CustomFieldDelete = ({
   isBusy,
   onDelete,
 }) => {
-  function displayConfirm() {
+  const displayConfirm = useCallback(() => {
     const result = window.confirm(MailPoet.I18n.t('customFieldDeleteConfirm'));// eslint-disable-line no-alert
     if (result) {
       onDelete();
     }
-  }
+  }, [onDelete]);
 
   return (
     <Button

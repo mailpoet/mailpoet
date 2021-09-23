@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -20,12 +20,12 @@ function StepInputValidation({ stepMethodSelectionData, history }) {
     [stepMethodSelectionData, history],
   );
 
-  function lastSentSubmit(when) {
+  const lastSentSubmit = useCallback((when) => {
     setLastSent(when);
     if (when === 'recently') {
       history.push('step_data_manipulation');
     }
-  }
+  }, [history, setLastSent]);
 
   return (
     <>
