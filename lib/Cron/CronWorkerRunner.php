@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron;
 
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\WP\Functions as WPFunctions;
@@ -63,17 +64,24 @@ class CronWorkerRunner {
       return false;
     }
 
-    $task = null;
     try {
-      foreach ($dueTasks as $i => $task) {
-        $this->prepareTask($worker, $task);
+      $parisTask = null;
+
+      foreach ($dueTasks as $task) {
+        $parisTask = $this->convertTaskClass($task);
+        if ($parisTask) {
+          $this->prepareTask($worker, $parisTask);
+        }
       }
-      foreach ($runningTasks as $i => $task) {
-        $this->processTask($worker, $task);
+      foreach ($runningTasks as $task) {
+        $parisTask = $this->convertTaskClass($task);
+        if ($parisTask) {
+          $this->processTask($worker, $parisTask);
+        }
       }
     } catch (\Exception $e) {
-      if ($task && $e->getCode() !== CronHelper::DAEMON_EXECUTION_LIMIT_REACHED) {
-        $task->rescheduleProgressively();
+      if ($parisTask && $e->getCode() !== CronHelper::DAEMON_EXECUTION_LIMIT_REACHED) {
+        $parisTask->rescheduleProgressively();
       }
       throw $e;
     }
@@ -172,5 +180,17 @@ class CronWorkerRunner {
     $task->processedAt = $this->wp->currentTime('mysql');
     $task->status = ScheduledTask::STATUS_COMPLETED;
     $task->save();
+  }
+
+  // temporary function to convert an ScheduledTaskEntity object to ScheduledTask while we don't migrate the rest of
+  // the code in this class to use Doctrine entities
+  private function convertTaskClass(ScheduledTaskEntity $doctrineTask): ?ScheduledTask {
+    $parisTask = ScheduledTask::findOne($doctrineTask->getId());
+
+    if (!$parisTask instanceof ScheduledTask) {
+      return null;
+    }
+
+    return $parisTask;
   }
 }
