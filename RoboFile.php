@@ -474,6 +474,9 @@ class RoboFile extends \Robo\Tasks {
       $task = "ANALYSIS_PHP_VERSION={$opts['php-version']} $task";
     }
 
+    // make sure Codeception support files are present to avoid invalid errors when running PHPStan
+    $this->_exec('vendor/bin/codecept build');
+
     // PHPStan must be run out of main plugin directory to avoid its autoloading
     // from vendor/autoload.php where some dev dependencies cause conflicts.
     return $this->collectionBuilder()
