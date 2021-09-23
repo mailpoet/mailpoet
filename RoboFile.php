@@ -343,7 +343,7 @@ class RoboFile extends \Robo\Tasks {
     $collection = $this->collectionBuilder();
     $collection->addCode([$this, 'qaLint']);
     $collection->addCode(function() {
-      return $this->qaCodeSniffer([], ['severity' => 'all']);
+      return $this->qaCodeSniffer([]);
     });
     return $collection->run();
   }
@@ -367,7 +367,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('npm run stylelint-check -- "assets/css/src/**/*.scss"');
   }
 
-  public function qaCodeSniffer(array $filesToCheck, $opts = ['severity' => 'errors']) {
+  public function qaCodeSniffer(array $filesToCheck, $opts = ['severity' => 'all']) {
     $severityFlag = $opts['severity'] === 'all' ? '-w' : '-n';
     $task = implode(' ', [
       './tasks/code_sniffer/vendor/bin/phpcs',
