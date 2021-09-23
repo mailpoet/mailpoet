@@ -66,7 +66,7 @@ class PreviewPage {
     $formData = $this->wp->getTransient(self::PREVIEW_DATA_TRANSIENT_PREFIX . $id);
     if (is_array($formData)) {
       $form = new FormEntity($formData['name']);
-      $form->setId($formData['id']);
+      $form->setId($formData['id'] ?? 0);
       $form->setBody($formData['body']);
       $form->setSettings($formData['settings']);
       $form->setStyles($formData['styles']);
