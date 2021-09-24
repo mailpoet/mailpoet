@@ -4,7 +4,6 @@ namespace MailPoet\API\MP\v1;
 
 use MailPoet\CustomFields\ApiDataSanitizer;
 use MailPoet\CustomFields\CustomFieldsRepository;
-use MailPoet\Entities\CustomFieldEntity;
 
 class CustomFields {
   /** @var ApiDataSanitizer */
@@ -68,10 +67,6 @@ class CustomFields {
       $customField = $this->customFieldsRepository->createOrUpdate($this->customFieldsDataSanitizer->sanitize($data));
     } catch (\Exception $e) {
       throw new APIException('Failed to save a new subscriber field ' . $e->getMessage(), APIException::FAILED_TO_SAVE_SUBSCRIBER_FIELD);
-    }
-    $customField = $this->customFieldsRepository->findOneById($customField->getId());
-    if (!$customField instanceof CustomFieldEntity) {
-      throw new APIException('Failed to create a new subscriber field', APIException::FAILED_TO_SAVE_SUBSCRIBER_FIELD);
     }
     return [
       'id' => 'cf_' . $customField->getId(),
