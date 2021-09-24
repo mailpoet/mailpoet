@@ -18,5 +18,5 @@ git apply $INIT_CWD/tasks/patches/spectrum-replace-jquery-deprecated.patch || tr
 sed -i -- "s/_focusedField\.focus()/_focusedField\.trigger('focus')/g" node_modules/parsleyjs/dist/parsley*.js
 
 # Fix strict mode issues in Backbone.Supermodel
-sed -i -- "s/lastKeyIndex = keyPath.length-1;/var lastKeyIndex = keyPath.length-1;/g" node_modules/backbone.supermodel/build/backbone.supermodel.js
-sed -i -- "s/key = keyPath\[i\];/var key = keyPath\[i\];/g" node_modules/backbone.supermodel/build/backbone.supermodel.js
+sed -i -- "s/  lastKeyIndex = keyPath.length-1;/  var lastKeyIndex = keyPath.length-1;/g" node_modules/backbone.supermodel/build/backbone.supermodel.js
+sed -i -- "s/  key = keyPath\[i\];/  var key = keyPath\[i\];/g" node_modules/backbone.supermodel/build/backbone.supermodel.js
