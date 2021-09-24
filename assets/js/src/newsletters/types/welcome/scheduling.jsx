@@ -54,7 +54,12 @@ class WelcomeScheduling extends React.Component {
     const oldValue = this.getCurrentValue();
     const newValue = {};
 
-    newValue[name] = value;
+    let newFieldValue = value;
+    if (name === 'afterTimeNumber') {
+      newFieldValue = parseInt(value, 10);
+      newFieldValue = Number.isNaN(newFieldValue) ? '' : newFieldValue;
+    }
+    newValue[name] = newFieldValue;
 
     return this.props.onValueChange({
       target: {
