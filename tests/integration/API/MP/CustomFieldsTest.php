@@ -93,7 +93,11 @@ class CustomFieldsTest extends \MailPoetTest {
       ],
     ]);
     expect($response)->array();
+    expect($response)->hasKey('id');
     expect($response)->hasKey('name');
+    expect($response)->hasKey('type');
+    expect($response)->hasKey('params');
+    expect($response['params'])->array();
   }
 
   public function testItFailsToCreateNewCustomField() {
