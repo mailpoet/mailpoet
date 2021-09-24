@@ -121,9 +121,9 @@ class InactiveSubscribersController {
     $result = $connection->executeQuery("
       SELECT isi.id FROM {$inactiveSubscriberIdsTmpTable} isi
         LEFT OUTER JOIN {$subscribersTable} as s ON isi.id = s.id AND GREATEST(
-          COALESCE(s.last_engagement_at, 0),
-          COALESCE(s.last_subscribed_at, 0),
-          COALESCE(s.created_at, 0)
+          COALESCE(s.last_engagement_at, '0'),
+          COALESCE(s.last_subscribed_at, '0'),
+          COALESCE(s.created_at, '0')
         ) > :thresholdDate
       WHERE s.id IS NULL
     ", [
@@ -172,9 +172,9 @@ class InactiveSubscribersController {
         SELECT s.id
         FROM {$subscribersTable} s
         LEFT OUTER JOIN {$subscribersTable} s2 ON s.id = s2.id AND GREATEST(
-          COALESCE(s2.last_engagement_at, 0),
-          COALESCE(s2.last_subscribed_at, 0),
-          COALESCE(s2.created_at, 0)
+          COALESCE(s2.last_engagement_at, '0'),
+          COALESCE(s2.last_subscribed_at, '0'),
+          COALESCE(s2.created_at, '0')
         ) > :thresholdDate
         WHERE s.last_subscribed_at < :thresholdDate
           AND s.status = :statusInactive
