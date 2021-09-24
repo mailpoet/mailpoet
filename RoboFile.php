@@ -548,16 +548,12 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  public function svnPublish() {
+  public function svnPublish(string $version) {
     $svnDir = ".mp_svn";
-    $pluginVersion = $this->getPluginVersion('mailpoet.php');
     $pluginDistName = 'mailpoet';
     $pluginDistFile = $pluginDistName . '.zip';
 
-    if (!$pluginVersion) {
-      throw new \Exception('Could not parse plugin version, check the plugin header');
-    }
-    $this->say('Publishing version: ' . $pluginVersion);
+    $this->say('Publishing version: ' . $version);
 
     // Sanity checks
     if (!is_readable($pluginDistFile)) {
@@ -566,8 +562,8 @@ class RoboFile extends \Robo\Tasks {
     } elseif (!file_exists($svnDir . "/.svn/")) {
       $this->say("$svnDir/.svn/ dir not found, is it a SVN repository?");
       return;
-    } elseif (file_exists($svnDir . "/tags/" . $pluginVersion)) {
-      $this->say("A SVN tag already exists: " . $pluginVersion);
+    } elseif (file_exists($svnDir . "/tags/" . $version)) {
+      $this->say("A SVN tag already exists: " . $version);
       return;
     }
 
@@ -631,8 +627,8 @@ class RoboFile extends \Robo\Tasks {
 
     if ($result->wasSuccessful()) {
       $repoUrl = "https://plugins.svn.wordpress.org/$pluginDistName";
-      $releaseCmd = "svn ci -m \"Release $pluginVersion\"";
-      $tagCmd = "svn copy $repoUrl/trunk $repoUrl/tags/$pluginVersion -m \"Tag $pluginVersion\"";
+      $releaseCmd = "svn ci -m \"Release $version\"";
+      $tagCmd = "svn copy $repoUrl/trunk $repoUrl/tags/$version -m \"Tag $version\"";
       $svnLogin = getenv('WP_SVN_USERNAME');
       $svnPassword = getenv('WP_SVN_PASSWORD');
       if ($svnLogin && $svnPassword) {
@@ -770,8 +766,8 @@ class RoboFile extends \Robo\Tasks {
       ->addCode(function () {
         return $this->svnCheckout();
       })
-      ->addCode(function () {
-        return $this->svnPublish();
+      ->addCode(function () use ($version) {
+        return $this->svnPublish($version);
       })
       ->addCode(function () use ($version) {
         return $this->releasePublishGithub($version);
@@ -948,12 +944,6 @@ class RoboFile extends \Robo\Tasks {
     }
 
     return $list;
-  }
-
-  protected function getPluginVersion($file) {
-    $data = file_get_contents($file);
-    preg_match('/^[ \t*]*Version:(.*)$/mi', $data, $m);
-    return !empty($m[1]) ? trim($m[1]) : false;
   }
 
   protected function validateVersion($version) {
