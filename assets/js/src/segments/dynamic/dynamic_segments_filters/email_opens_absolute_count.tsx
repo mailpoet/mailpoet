@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import ReactStringReplace from 'react-string-replace';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import { Grid } from 'common/grid';
@@ -14,6 +13,12 @@ import {
 function replaceElementsInDaysSentence(fn): JSX.Element[] {
   return MailPoet.I18n.t('emailActionOpensDaysSentence')
     .split(/({days})/gim)
+    .map(fn);
+}
+
+function replaceEmailActionOpensSentence(fn): JSX.Element[] {
+  return MailPoet.I18n.t('emailActionOpensSentence')
+    .split(/({condition})|({opens})|(\b[a-zA-Z]+\b)/gim)
     .map(fn);
 }
 
@@ -37,10 +42,7 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({ 
   return (
     <>
       <Grid.CenteredRow>
-        {ReactStringReplace(
-          MailPoet.I18n.t('emailActionOpensSentence'),
-          // ReactStringReplace is buggy, a simpler version of this regex doesn't work
-          /({condition})|( )|({opens})|( )|(\b[a-zA-Z]+\b)/gim,
+        {replaceEmailActionOpensSentence(
           (match) => {
             if (match === '{condition}') {
               return (
