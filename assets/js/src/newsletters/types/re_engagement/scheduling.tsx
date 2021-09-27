@@ -25,6 +25,13 @@ export function Scheduling({
 }: Props): JSX.Element {
   const daysInPeriod = afterTimeType === 'weeks' ? 7 : 30;
   const daysSelected = Number(afterTimeNumber) * daysInPeriod;
+  let inactivePeriod = inactiveSubscribersPeriod;
+  // so that we can calculate the dates using division and multiplication
+  // the inactive subscribers feature stores one year as 365 days.
+  // When a user selects 12 months here we multiply 12*30 and that is 360.
+  // When comparing those two numbers to decide
+  // if the notice needs to be displayed we need the numbers to be equal
+  if (inactiveSubscribersPeriod === 365) inactivePeriod = 360;
 
   return (
     <>
@@ -48,7 +55,7 @@ export function Scheduling({
         </Select>
       </Grid.CenteredRow>
       {
-        ((!!inactiveSubscribersPeriod) && (inactiveSubscribersPeriod <= daysSelected)) && (
+        ((!!inactiveSubscribersPeriod) && (inactivePeriod <= daysSelected)) && (
           <p className="mailpoet-re-engagement-scheduling-note">
             {
               ReactStringReplace(
