@@ -84,7 +84,7 @@ export function NewsletterTypeReEngagement(): JSX.Element {
 
         <Button
           isFullWidth
-          onClick={handleNext}
+          onClick={() => handleNext()}
           type="button"
           isDisabled={(!options.afterTimeNumber) || loading}
           withSpinner={loading}
