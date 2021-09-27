@@ -148,7 +148,6 @@ class AutomaticEmailTest extends \MailPoetTest {
 
   public function testItSchedulesAutomaticEmailWhenConditionMatches() {
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($currentTime); // mock carbon to return current time
     $newsletter1 = $this->_createNewsletter();
     $this->_createNewsletterOptions(
       $newsletter1->id,
@@ -175,8 +174,13 @@ class AutomaticEmailTest extends \MailPoetTest {
       return $email->sendTo === 'segment';
     };
 
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->expects($this->any())
+      ->method('currentTime')
+      ->willReturn($currentTime->getTimestamp());
+    $automaticEmailScheduler = new AutomaticEmailScheduler($wpMock);
     // email should only be scheduled if it matches condition ("send to segment")
-    $this->automaticEmailScheduler->scheduleAutomaticEmail('some_group', 'some_event', $condition);
+    $automaticEmailScheduler->scheduleAutomaticEmail('some_group', 'some_event', $condition);
     $result = SendingQueue::findMany();
     expect($result)->count(1);
     expect($result[0]->newsletter_id)->equals($newsletter2->id);

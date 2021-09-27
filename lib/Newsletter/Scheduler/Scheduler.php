@@ -33,8 +33,8 @@ class Scheduler {
     return $previousRunDate;
   }
 
-  public static function getScheduledTimeWithDelay($afterTimeType, $afterTimeNumber) {
-    $wp = WPFunctions::get();
+  public static function getScheduledTimeWithDelay($afterTimeType, $afterTimeNumber, $wp = null): Carbon {
+    $wp = $wp ?? WPFunctions::get();
     $currentTime = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     switch ($afterTimeType) {
       case 'minutes':
