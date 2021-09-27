@@ -53,7 +53,7 @@ export function Scheduling({
             {
               ReactStringReplace(
                 MailPoet.I18n.t('reEngagementEmailWarning')
-                  .replace('{$months}', inactiveSubscribersPeriod / 30),
+                  .replace('{$months}', Math.floor(inactiveSubscribersPeriod / 30)),
                 /\[link\](.*?)\[\/link\]/g,
                 (match) => (
                   <a
