@@ -10,7 +10,10 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -82,11 +85,12 @@ class WelcomeTest extends \MailPoetTest {
       'segment' => $this->segment->getId(),
     ]);
 
-    $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $welcomeScheduler = $this->createWelcomeSchedulerWithMockedWPCurrentTime($currentTime);
+
+    $welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($currentTime); // mock carbon to return current time
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
     assert($task instanceof ScheduledTaskEntity);
@@ -105,10 +109,10 @@ class WelcomeTest extends \MailPoetTest {
       'event' => 'segment',
       'segment' => $this->segment->getId(),
     ]);
-
-    $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($currentTime); // mock carbon to return current time
+    $welcomeScheduler = $this->createWelcomeSchedulerWithMockedWPCurrentTime($currentTime);
+
+    $welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
     expect($queue->getId())->greaterOrEquals(1);
@@ -129,12 +133,12 @@ class WelcomeTest extends \MailPoetTest {
       'event' => 'segment',
       'segment' => $this->segment->getId(),
     ]);
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $welcomeScheduler = $this->createWelcomeSchedulerWithMockedWPCurrentTime($currentTime);
 
-    $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
+    $welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($currentTime); // mock carbon to return current time
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
     assert($task instanceof ScheduledTaskEntity);
@@ -154,11 +158,12 @@ class WelcomeTest extends \MailPoetTest {
       'segment' => $this->segment->getId(),
     ]);
 
-    $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $welcomeScheduler = $this->createWelcomeSchedulerWithMockedWPCurrentTime($currentTime);
+
+    $welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    Carbon::setTestNow($currentTime); // mock carbon to return current time
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
     assert($task instanceof ScheduledTaskEntity);
@@ -450,6 +455,20 @@ class WelcomeTest extends \MailPoetTest {
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
     return $subscriber;
+  }
+
+  private function createWelcomeSchedulerWithMockedWPCurrentTime($currentTime): WelcomeScheduler {
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->expects($this->any())
+      ->method('currentTime')
+      ->willReturn($currentTime->getTimestamp());
+    return new WelcomeScheduler(
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->segmentRepository,
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $wpMock
+    );
   }
 
   public function _after() {
