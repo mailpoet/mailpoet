@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers\SendingQueue;
 
 use MailPoet\Cron\Workers\SimpleWorker;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
@@ -20,7 +21,7 @@ class Migration extends SimpleWorker {
     return empty($completedTasks);
   }
 
-  public function prepareTaskStrategy(ScheduledTask $task, $timer) {
+  public function prepareTaskStrategy(ScheduledTaskEntity $task, $timer) {
     $unmigratedColumns = $this->checkUnmigratedColumnsExist();
     $unmigratedQueuesCount = 0;
     $unmigratedQueueSubscribers = [];
@@ -35,9 +36,10 @@ class Migration extends SimpleWorker {
       && count($unmigratedQueueSubscribers) == 0)
     ) {
       // nothing to migrate, complete task
-      $task->processedAt = WPFunctions::get()->currentTime('mysql');
-      $task->status = ScheduledTask::STATUS_COMPLETED;
-      $task->save();
+      $task->setProcessedAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
+      $task->setStatus(ScheduledTask::STATUS_COMPLETED);
+      $this->scheduledTasksRepository->persist($task);
+      $this->scheduledTasksRepository->flush();
       $this->resumeSending();
       return false;
     }

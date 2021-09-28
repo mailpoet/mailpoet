@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron;
 
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Models\ScheduledTask;
 
 interface CronWorkerInterface {
@@ -20,11 +21,11 @@ interface CronWorkerInterface {
   public function init();
 
   /**
-   * @param ScheduledTask $task
+   * @param ScheduledTaskEntity $task
    * @param float $timer
    * @return bool
    */
-  public function prepareTaskStrategy(ScheduledTask $task, $timer);
+  public function prepareTaskStrategy(ScheduledTaskEntity $task, $timer);
 
   /**
    * @param ScheduledTask $task

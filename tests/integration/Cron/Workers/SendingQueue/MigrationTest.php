@@ -4,6 +4,7 @@ namespace MailPoet\Test\Cron\Workers;
 
 use Codeception\Stub;
 use MailPoet\Cron\Workers\SendingQueue\Migration;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
@@ -11,6 +12,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -23,6 +25,8 @@ class MigrationTest extends \MailPoetTest {
   public $queueRunning;
   public $subscriberProcessed;
   public $subscriberToProcess;
+  /** @var ScheduledTaskFactory */
+  private $scheduledTaskFactory;
   /** @var Migration */
   private $worker;
 
@@ -48,6 +52,7 @@ class MigrationTest extends \MailPoetTest {
     $this->queueCompleted = $this->createSendingQueue(SendingQueue::STATUS_COMPLETED);
     $this->queueScheduled = $this->createSendingQueue(SendingQueue::STATUS_SCHEDULED);
 
+    $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->worker = new Migration();
   }
 
@@ -82,7 +87,7 @@ class MigrationTest extends \MailPoetTest {
     SendingQueue::deleteMany();
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
-    $task = ScheduledTask::findOne($task->id);
+    $task = ScheduledTask::findOne($task->getId());
     assert($task instanceof ScheduledTask);
     expect($task->status)->equals(ScheduledTask::STATUS_COMPLETED);
   }
@@ -137,12 +142,11 @@ class MigrationTest extends \MailPoetTest {
   }
 
   private function createScheduledTask() {
-    $task = ScheduledTask::create();
-    $task->type = Migration::TASK_TYPE;
-    $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    $task->save();
-    return $task;
+    return $this->scheduledTaskFactory->create(
+      Migration::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+    );
   }
 
   private function createRunningTask() {

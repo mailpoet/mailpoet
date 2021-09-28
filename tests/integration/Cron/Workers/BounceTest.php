@@ -20,6 +20,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Statistics\StatisticsBouncesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -36,6 +37,9 @@ class BounceTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var ScheduledTaskFactory */
+  private $scheduledTaskFactory;
+
   public function _before() {
     parent::_before();
     $this->cleanup();
@@ -45,6 +49,7 @@ class BounceTest extends \MailPoetTest {
       'good_address@example.com',
     ];
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->scheduledTaskFactory = new ScheduledTaskFactory();
 
     foreach ($this->emails as $email) {
       $subscriber = new SubscriberEntity();
@@ -93,47 +98,47 @@ class BounceTest extends \MailPoetTest {
     // 1st run - subscribers will be processed
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
-    expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->notEmpty();
+    expect(ScheduledTaskSubscriber::where('task_id', $task->getId())->findMany())->notEmpty();
 
     // 2nd run - nothing more to process, ScheduledTaskSubscriber will be cleaned up
     $this->truncateEntity(SubscriberEntity::class);
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
-    expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->isEmpty();
+    expect(ScheduledTaskSubscriber::where('task_id', $task->getId())->findMany())->isEmpty();
   }
 
   public function testItPreparesTask() {
     $task = $this->createScheduledTask();
-    expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->isEmpty();
+    expect(ScheduledTaskSubscriber::getUnprocessedCount($task->getId()))->isEmpty();
     $result = $this->worker->prepareTaskStrategy($task, microtime(true));
     expect($result)->true();
-    expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->notEmpty();
+    expect(ScheduledTaskSubscriber::getUnprocessedCount($task->getId()))->notEmpty();
   }
 
   public function testItDeletesAllSubscribersIfThereAreNoSubscribersToProcessWhenProcessingTask() {
     // prepare subscribers
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
-    expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->notEmpty();
+    expect(ScheduledTaskSubscriber::where('task_id', $task->getId())->findMany())->notEmpty();
 
     // process - no subscribers found, ScheduledTaskSubscriber will be cleaned up
     $this->truncateEntity(SubscriberEntity::class);
-    $task = $this->createScheduledTask();
-    $this->worker->processTaskStrategy($task, microtime(true));
-    expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->isEmpty();
+    $task = ScheduledTask::getFromDoctrineEntity($this->createScheduledTask());
+    $this->worker->processTaskStrategy($task, microtime(true)); // @phpstan-ignore-line
+    expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->isEmpty(); // @phpstan-ignore-line
   }
 
   public function testItProcessesTask() {
     $task = $this->createRunningTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
-    expect(ScheduledTaskSubscriber::getUnprocessedCount($task->id))->notEmpty();
-    $this->worker->processTaskStrategy($task, microtime(true));
-    expect(ScheduledTaskSubscriber::getProcessedCount($task->id))->notEmpty();
+    expect(ScheduledTaskSubscriber::getUnprocessedCount($task->getId()))->notEmpty();
+    $this->worker->processTaskStrategy(ScheduledTask::getFromDoctrineEntity($task), microtime(true)); // @phpstan-ignore-line
+    expect(ScheduledTaskSubscriber::getProcessedCount($task->getId()))->notEmpty();
   }
 
   public function testItSetsSubscriberStatusAsBounced() {
     $task = $this->createRunningTask();
-    $this->worker->processEmails($task, $this->emails);
+    $this->worker->processEmails(ScheduledTask::getFromDoctrineEntity($task), $this->emails);
 
     $subscribers = $this->subscribersRepository->findAll();
 
@@ -153,11 +158,12 @@ class BounceTest extends \MailPoetTest {
     $this->createScheduledTaskSubscriber($oldSendingTask, $subscriber);
     // create previous bounce task
     $previousBounceTask = $this->createRunningTask();
-    $previousBounceTask->status = ScheduledTask::STATUS_COMPLETED;
-    $previousBounceTask->createdAt = Carbon::now()->subDays(6);
-    $previousBounceTask->scheduledAt = Carbon::now()->subDays(4);
-    $previousBounceTask->updatedAt = Carbon::now()->subDays(4);
-    $previousBounceTask->save();
+    $previousBounceTask->setStatus(ScheduledTask::STATUS_COMPLETED);
+    $previousBounceTask->setCreatedAt(Carbon::now()->subDays(6));
+    $previousBounceTask->setScheduledAt(Carbon::now()->subDays(4));
+    $previousBounceTask->setUpdatedAt(Carbon::now()->subDays(4));
+    $this->entityManager->persist($previousBounceTask);
+    $this->entityManager->flush();
     // create data that should be used for the current bounce task run
     $newsletter = $this->createNewsletter();
     $sendingTask = $this->createSendingTask() ;
@@ -169,7 +175,7 @@ class BounceTest extends \MailPoetTest {
     $this->entityManager->flush();
     $this->entityManager->clear();
     // run the code
-    $this->worker->processEmails($this->createRunningTask(), $this->emails);
+    $this->worker->processEmails(ScheduledTask::getFromDoctrineEntity($this->createRunningTask()), $this->emails);
     // test it
     $statisticsRepository = $this->diContainer->get(StatisticsBouncesRepository::class);
     $statistics = $statisticsRepository->findAll();
@@ -187,22 +193,20 @@ class BounceTest extends \MailPoetTest {
     );
   }
 
-  private function createScheduledTask() {
-    $task = ScheduledTask::create();
-    $task->type = 'bounce';
-    $task->status = ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    $task->save();
-    return $task;
+  private function createScheduledTask(): ScheduledTaskEntity {
+    return $this->scheduledTaskFactory->create(
+      'bounce',
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+    );
   }
 
-  private function createRunningTask() {
-    $task = ScheduledTask::create();
-    $task->type = 'bounce';
-    $task->status = null;
-    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    $task->save();
-    return $task;
+  private function createRunningTask(): ScheduledTaskEntity {
+    return $this->scheduledTaskFactory->create(
+      'bounce',
+      null,
+      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+    );
   }
 
   private function createNewsletter(): NewsletterEntity {

@@ -68,13 +68,13 @@ class CronWorkerRunner {
       $parisTask = null;
 
       foreach ($dueTasks as $task) {
-        $parisTask = $this->convertTaskClass($task);
+        $parisTask = ScheduledTask::getFromDoctrineEntity($task);
         if ($parisTask) {
           $this->prepareTask($worker, $parisTask);
         }
       }
       foreach ($runningTasks as $task) {
-        $parisTask = $this->convertTaskClass($task);
+        $parisTask = ScheduledTask::getFromDoctrineEntity($task);
         if ($parisTask) {
           $this->processTask($worker, $parisTask);
         }
@@ -101,10 +101,13 @@ class CronWorkerRunner {
     // abort if execution limit is reached
     $this->cronHelper->enforceExecutionLimit($this->timer);
 
-    $prepareCompleted = $worker->prepareTaskStrategy($task, $this->timer);
-    if ($prepareCompleted) {
-      $task->status = null;
-      $task->save();
+    $doctrineTask = $this->convertTaskClassToDoctrine($task);
+    if ($doctrineTask) {
+      $prepareCompleted = $worker->prepareTaskStrategy($doctrineTask, $this->timer);
+      if ($prepareCompleted) {
+        $task->status = null;
+        $task->save();
+      }
     }
   }
 
@@ -182,15 +185,15 @@ class CronWorkerRunner {
     $task->save();
   }
 
-  // temporary function to convert an ScheduledTaskEntity object to ScheduledTask while we don't migrate the rest of
+  // temporary function to convert an ScheduledTask object to ScheduledTaskEntity while we don't migrate the rest of
   // the code in this class to use Doctrine entities
-  private function convertTaskClass(ScheduledTaskEntity $doctrineTask): ?ScheduledTask {
-    $parisTask = ScheduledTask::findOne($doctrineTask->getId());
+  private function convertTaskClassToDoctrine(ScheduledTask $parisTask): ?ScheduledTaskEntity {
+    $doctrineTask = $this->scheduledTasksRepository->findOneById($parisTask->id);
 
-    if (!$parisTask instanceof ScheduledTask) {
+    if (!$doctrineTask instanceof ScheduledTaskEntity) {
       return null;
     }
 
-    return $parisTask;
+    return $doctrineTask;
   }
 }

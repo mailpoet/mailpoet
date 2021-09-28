@@ -70,11 +70,11 @@ class Bounce extends SimpleWorker {
     return $this->bridge->isMailpoetSendingServiceEnabled();
   }
 
-  public function prepareTaskStrategy(ScheduledTask $task, $timer) {
+  public function prepareTaskStrategy(ScheduledTaskEntity $task, $timer) {
     BounceTask::prepareSubscribers($task);
 
-    if (!ScheduledTaskSubscriber::getUnprocessedCount($task->id)) {
-      ScheduledTaskSubscriber::where('task_id', $task->id)->deleteMany();
+    if (!ScheduledTaskSubscriber::getUnprocessedCount($task->getId())) {
+      ScheduledTaskSubscriber::where('task_id', $task->getId())->deleteMany();
       return false;
     }
     return true;
