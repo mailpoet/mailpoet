@@ -113,7 +113,7 @@ class ScheduledTasksRepository extends Repository {
     }
 
     if ($future) {
-      $queryBuilder->andWhere('st.scheduledAt >= :now');
+      $queryBuilder->andWhere('st.scheduledAt > :now');
     } else {
       $queryBuilder->andWhere('st.scheduledAt <= :now');
     }
