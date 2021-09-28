@@ -168,10 +168,6 @@ class ScheduledTask extends Model {
     return self::findByTypeAndStatus($type, ScheduledTask::STATUS_SCHEDULED, $limit, true);
   }
 
-  public static function findCompletedByType($type, $limit = null) {
-    return self::findByTypeAndStatus($type, ScheduledTask::STATUS_COMPLETED, $limit);
-  }
-
   private static function findByTypeAndStatus($type, $status, $limit = null, $future = false) {
     $query = ScheduledTask::where('type', $type)
       ->whereNull('deleted_at');

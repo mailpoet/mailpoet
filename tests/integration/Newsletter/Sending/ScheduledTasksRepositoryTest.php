@@ -38,6 +38,16 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->assertSame($expectedResult, $tasks);
   }
 
+  public function testItCanGetCompletedTasks() {
+    $expectedResult[] = $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay()); // completed (scheduled in past)
+    $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay(), Carbon::now()); // deleted (should not be fetched)
+    $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay()); // scheduled in future (should not be fetched)
+    $this->createScheduledTask('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // wrong status (should not be fetched)
+
+    $tasks = $this->repository->findCompletedByType('test', 10);
+    $this->assertSame($expectedResult, $tasks);
+  }
+
   public function cleanup() {
     $this->truncateEntity(ScheduledTaskEntity::class);
   }

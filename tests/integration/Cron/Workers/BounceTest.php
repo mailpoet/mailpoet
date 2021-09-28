@@ -13,7 +13,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
@@ -57,7 +56,6 @@ class BounceTest extends \MailPoetTest {
     $this->worker = new Bounce(
       $this->diContainer->get(SettingsController::class),
       $this->subscribersRepository,
-      $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
       $this->diContainer->get(StatisticsBouncesRepository::class),
       $this->diContainer->get(Bridge::class)
@@ -77,7 +75,6 @@ class BounceTest extends \MailPoetTest {
     $worker = new Bounce(
       $this->diContainer->get(SettingsController::class),
       $this->subscribersRepository,
-      $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
       $this->diContainer->get(StatisticsBouncesRepository::class),
       $this->diContainer->get(Bridge::class)

@@ -181,40 +181,6 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($timeout)->equals(ScheduledTask::MAX_RESCHEDULE_TIMEOUT);
   }
 
-  public function testItCanGetCompletedTasks() {
-    // completed (scheduled in past)
-    ScheduledTask::createOrUpdate([
-      'type' => 'test',
-      'status' => ScheduledTask::STATUS_COMPLETED,
-      'scheduled_at' => Carbon::now()->subDay(),
-    ]);
-
-    // deleted (should not be fetched)
-    ScheduledTask::createOrUpdate([
-      'type' => 'test',
-      'status' => ScheduledTask::STATUS_COMPLETED,
-      'scheduled_at' => Carbon::now()->subDay(),
-      'deleted_at' => Carbon::now(),
-    ]);
-
-    // scheduled in future (should not be fetched)
-    ScheduledTask::createOrUpdate([
-      'type' => 'test',
-      'status' => ScheduledTask::STATUS_COMPLETED,
-      'scheduled_at' => Carbon::now()->addDay(),
-    ]);
-
-    // wrong status (should not be fetched)
-    ScheduledTask::createOrUpdate([
-      'type' => 'test',
-      'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => Carbon::now()->subDay(),
-    ]);
-
-    $tasks = ScheduledTask::findCompletedByType('test', 10);
-    expect($tasks)->count(1);
-  }
-
   public function testItCanGetFutureScheduledTasks() {
     // scheduled (in future)
     ScheduledTask::createOrUpdate([
