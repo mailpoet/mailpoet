@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.70.0
+Stable tag: 3.71.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.71.0 - 2021-09-28 =
+* Improved: handling recipient related SMTP errors;
+* Changed: removed "MailPoet Page" from form's "After submit, go to page" options;
+* Changed: don't save a form without assigned list;
+* Fixed: unable to remove description from segments.
 
 = 3.70.0 - 2021-09-20 =
 * Added: filter to alter mailpoet database table prefix;
