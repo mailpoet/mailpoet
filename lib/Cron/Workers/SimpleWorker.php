@@ -8,6 +8,7 @@ use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Models\ScheduledTask;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -27,6 +28,9 @@ abstract class SimpleWorker implements CronWorkerInterface {
   /** @var WPFunctions */
   protected $wp;
 
+  /** @var ScheduledTasksRepository */
+  protected $scheduledTasksRepository;
+
   public function __construct(
     WPFunctions $wp = null
   ) {
@@ -38,6 +42,7 @@ abstract class SimpleWorker implements CronWorkerInterface {
     $this->wp = $wp;
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->cronWorkerScheduler = ContainerWrapper::getInstance()->get(CronWorkerScheduler::class);
+    $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
   }
 
   public function getTaskType() {
@@ -88,6 +93,6 @@ abstract class SimpleWorker implements CronWorkerInterface {
   }
 
   protected function getCompletedTasks() {
-    return ScheduledTask::findCompletedByType(static::TASK_TYPE, CronWorkerRunner::TASK_BATCH_SIZE);
+    return $this->scheduledTasksRepository->findCompletedByType(static::TASK_TYPE, CronWorkerRunner::TASK_BATCH_SIZE);
   }
 }

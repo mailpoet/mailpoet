@@ -9,7 +9,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
@@ -40,9 +39,6 @@ class Bounce extends SimpleWorker {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
-  /** @var ScheduledTasksRepository */
-  private $scheduledTasksRepository;
-
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
@@ -52,7 +48,6 @@ class Bounce extends SimpleWorker {
   public function __construct(
     SettingsController $settings,
     SubscribersRepository $subscribersRepository,
-    ScheduledTasksRepository $scheduledTasksRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     StatisticsBouncesRepository $statisticsBouncesRepository,
     Bridge $bridge
@@ -61,7 +56,6 @@ class Bounce extends SimpleWorker {
     $this->bridge = $bridge;
     parent::__construct();
     $this->subscribersRepository = $subscribersRepository;
-    $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->statisticsBouncesRepository = $statisticsBouncesRepository;
   }
