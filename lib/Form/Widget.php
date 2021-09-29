@@ -197,6 +197,7 @@ class Widget extends \WP_Widget {
     );
 
     // get form
+    if (empty($instance['form'])) return '';
     $form = $this->formsRepository->findOneById($instance['form']);
     if (!$form) return '';
     if ($form->getDeletedAt()) return '';
