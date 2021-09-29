@@ -75,6 +75,24 @@ class MailPoetAPITest extends \MailPoetTest {
     expect($body[0]['text'])->equals($this->newsletter['body']['text']);
   }
 
+  public function testItRemovesReplyToNameIfEmpty() {
+    $replyTo = [
+      'reply_to_email' => 'reply-to@mailpoet.com',
+      'reply_to_name_email' => '<reply-to@mailpoet.com>',
+    ];
+    $mailer = new MailPoet(
+      $this->settings['api_key'],
+      $this->sender,
+      $replyTo,
+      new MailPoetMapper(),
+      $this->makeEmpty(AuthorizedEmailsController::class)
+    );
+    $body = $mailer->getBody($this->newsletter, $this->subscriber);
+    expect($body[0]['reply_to'])->equals([
+      'address' => 'reply-to@mailpoet.com',
+    ]);
+  }
+
   public function testItCanGenerateBodyForMultipleMessages() {
     $newsletters = array_fill(0, 10, $this->newsletter);
     $subscribers = array_fill(0, 10, $this->subscriber);
