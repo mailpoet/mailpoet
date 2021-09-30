@@ -2,7 +2,7 @@
 
 namespace MailPoet\Cron\Workers;
 
-use MailPoet\Models\ScheduledTask;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsWooCommercePurchases;
 use MailPoet\Statistics\Track\WooCommercePurchases;
@@ -32,7 +32,7 @@ class WooCommercePastOrders extends SimpleWorker {
     return $this->woocommerceHelper->isWooCommerceActive() && empty($this->getCompletedTasks()); // run only once
   }
 
-  public function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     $oldestClick = StatisticsClicks::orderByAsc('created_at')->limit(1)->findOne();
     if (!$oldestClick instanceof StatisticsClicks) {
       return true;
@@ -64,8 +64,11 @@ class WooCommercePastOrders extends SimpleWorker {
       StatisticsWooCommercePurchases::where('order_id', $orderId)->deleteMany();
       $this->woocommercePurchases->trackPurchase($orderId, false);
     }
-    $task->meta = ['last_processed_id' => end($orderIds)];
-    $task->save();
+
+    $task->setMeta(['last_processed_id' => end($orderIds)]);
+    $this->scheduledTasksRepository->persist($task);
+    $this->scheduledTasksRepository->flush();
+
     return false;
   }
 
