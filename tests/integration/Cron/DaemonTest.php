@@ -8,7 +8,7 @@ use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\Cron\Daemon;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Cron\Workers\WorkersFactory;
-use MailPoet\DI\ContainerWrapper;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 
@@ -21,7 +21,7 @@ class DaemonTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
-    $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $this->cronHelper = $this->diContainer->get(CronHelper::class);
   }
 
   public function testItCanRun() {
@@ -32,7 +32,7 @@ class DaemonTest extends \MailPoetTest {
       'token' => 123,
     ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon = new Daemon($this->cronHelper, $cronWorkerRunner, $this->createWorkersFactoryMock());
+    $daemon = new Daemon($this->cronHelper, $cronWorkerRunner, $this->diContainer->get(FeaturesController::class), $this->createWorkersFactoryMock());
     $daemon->run($data);
   }
 
