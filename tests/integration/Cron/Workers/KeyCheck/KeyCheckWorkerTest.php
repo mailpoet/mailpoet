@@ -3,23 +3,31 @@
 namespace MailPoet\Test\Cron\Workers\KeyCheck;
 
 use Codeception\Stub;
-use Codeception\Stub\Expected;
 use MailPoet\Cron\Workers\KeyCheck\KeyCheckWorkerMockImplementation as MockKeyCheckWorker;
-use MailPoet\Models\ScheduledTask;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 require_once('KeyCheckWorkerMockImplementation.php');
 
 class KeyCheckWorkerTest extends \MailPoetTest {
   public $worker;
 
+  /** @var ScheduledTaskFactory */
+  private $scheduledTaskFactory;
+
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function _before() {
     parent::_before();
+    $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->worker = new MockKeyCheckWorker();
+    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
   }
 
   public function testItCanInitializeBridgeAPI() {
@@ -43,13 +51,21 @@ class KeyCheckWorkerTest extends \MailPoetTest {
       ],
       $this
     );
-    $task = Stub::make(
-      ScheduledTask::class,
-      ['rescheduleProgressively' => Expected::once()],
-      $this
-    );
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task = $this->createRunningTask($currentTime);
     $result = $worker->processTaskStrategy($task, microtime(true));
-    expect($result)->false();
+
+    // need to clear Doctrine cache and get the entity again while ScheduledTask::rescheduleProgressively() is not migrated to Doctrine
+    $this->entityManager->clear();
+    $task = $this->scheduledTasksRepository->findOneById($task->getId());
+
+    assert($task instanceof ScheduledTaskEntity);
+    assert($task->getScheduledAt() instanceof \DateTimeInterface);
+    $newScheduledAtTime = $currentTime->addMinutes(5)->format('Y-m-d H:i:s');
+    $scheduledAt = $task->getScheduledAt()->format('Y-m-d H:i:s');
+    $this->assertFalse($result);
+    $this->assertSame($newScheduledAtTime, $scheduledAt);
+    $this->assertSame(1, $task->getRescheduleCount());
   }
 
   public function testItReschedulesCheckOnError() {
@@ -60,13 +76,23 @@ class KeyCheckWorkerTest extends \MailPoetTest {
       ],
       $this
     );
-    $task = Stub::make(
-      ScheduledTask::class,
-      ['rescheduleProgressively' => Expected::once()],
-      $this
-    );
+
+    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $task = $this->createRunningTask($currentTime);
+
     $result = $worker->processTaskStrategy($task, microtime(true));
-    expect($result)->false();
+
+    // need to clear Doctrine cache and get the entity again while ScheduledTask::rescheduleProgressively() is not migrated to Doctrine
+    $this->entityManager->clear();
+    $task = $this->scheduledTasksRepository->findOneById($task->getId());
+
+    assert($task instanceof ScheduledTaskEntity);
+    assert($task->getScheduledAt() instanceof \DateTimeInterface);
+    $newScheduledAtTime = $currentTime->addMinutes(5)->format('Y-m-d H:i:s');
+    $scheduledAt = $task->getScheduledAt()->format('Y-m-d H:i:s');
+    $this->assertFalse($result);
+    $this->assertSame($newScheduledAtTime, $scheduledAt);
+    $this->assertSame(1, $task->getRescheduleCount());
   }
 
   public function testItNextRunIsNextDay(): void {
@@ -94,17 +120,20 @@ class KeyCheckWorkerTest extends \MailPoetTest {
     expect($nextRunDate->diffInSeconds($dateTime))->lessOrEquals(21600 + $secondsToMidnight);
   }
 
-  private function createRunningTask() {
-    $task = ScheduledTask::create();
-    $task->type = MockKeyCheckWorker::TASK_TYPE;
-    $task->status = null;
-    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    $task->save();
-    return $task;
+  private function createRunningTask(Carbon $scheduledAt = null) {
+    if (!$scheduledAt) {
+      $scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    }
+
+    return $this->scheduledTaskFactory->create(
+      MockKeyCheckWorker::TASK_TYPE,
+      null,
+      $scheduledAt
+    );
   }
 
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    $this->truncateEntity(ScheduledTaskEntity::class);
   }
 }
