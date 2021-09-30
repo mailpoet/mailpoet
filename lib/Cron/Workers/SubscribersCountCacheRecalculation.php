@@ -3,8 +3,8 @@
 namespace MailPoet\Cron\Workers;
 
 use MailPoet\Cache\TransientCache;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -37,7 +37,7 @@ class SubscribersCountCacheRecalculation extends SimpleWorker {
     $this->subscribersCountsController = $subscribersCountsController;
   }
 
-  public function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     $segments = $this->segmentsRepository->findAll();
     foreach ($segments as $segment) {
       $this->recalculateSegmentCache($timer, (int)$segment->getId(), $segment);

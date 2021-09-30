@@ -3,21 +3,24 @@
 namespace MailPoet\Test\Cron\Workers;
 
 use MailPoet\Cron\Workers\WooCommerceSync;
-use MailPoet\Models\ScheduledTask;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class WooCommerceSyncTest extends \MailPoetTest {
   public $worker;
   public $woocommerceHelper;
   public $woocommerceSegment;
+  /** @var ScheduledTaskFactory */
+  private $scheduledTaskFactory;
 
   public function _before() {
     $this->woocommerceSegment = $this->createMock(WooCommerceSegment::class);
     $this->woocommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->worker = new WooCommerceSync($this->woocommerceSegment, $this->woocommerceHelper);
   }
 
@@ -36,20 +39,15 @@ class WooCommerceSyncTest extends \MailPoetTest {
   public function testItCallsWooCommerceSync() {
     $this->woocommerceSegment->expects($this->once())
       ->method('synchronizeCustomers');
-    $task = $this->createScheduledTask();
+    $task = $this->scheduledTaskFactory->create(
+      WooCommerceSync::TASK_TYPE,
+      null,
+      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+    );
     expect($this->worker->processTaskStrategy($task, microtime(true)))->equals(true);
   }
 
-  private function createScheduledTask() {
-    $task = ScheduledTask::create();
-    $task->type = WooCommerceSync::TASK_TYPE;
-    $task->status = null;
-    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    $task->save();
-    return $task;
-  }
-
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    $this->truncateEntity(ScheduledTaskEntity::class);
   }
 }
