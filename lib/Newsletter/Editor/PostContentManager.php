@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Editor;
 
+use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -68,7 +69,15 @@ class PostContentManager {
 
     $content = strip_tags($content, implode('', $tagsNotBeingStripped));
     if ($withPostClass) {
-      $content = preg_replace('/<p( class=\".+\")?/', '<p class="' . self::WP_POST_CLASS . '"', WPFunctions::get()->wpautop($content));
+      $dOMParser = new pQuery();
+      $DOM = $dOMParser->parseStr(WPFunctions::get()->wpautop($content));
+      $paragraphs = $DOM->query('p');
+      foreach ($paragraphs as $paragraph) {
+        // We replace the class attribute to avoid conflicts in the newsletter editor
+        $paragraph->removeAttr('class');
+        $paragraph->addClass(self::WP_POST_CLASS);
+      }
+      $content = $DOM->__toString();
     } else {
       $content = WPFunctions::get()->wpautop($content);
     }
