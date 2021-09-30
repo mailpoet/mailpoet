@@ -2,10 +2,10 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Util\DBCollationChecker;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -39,15 +39,16 @@ class SubscribersLastEngagement extends SimpleWorker {
     $this->wooCommereHelper = $wooCommereHelper;
   }
 
-  public function processTaskStrategy(ScheduledTask $task, $timer): bool {
+  public function processTaskStrategy(ScheduledTaskEntity $task, $timer): bool {
     $meta = $task->getMeta();
     $minId = $meta['nextId'] ?? 1;
     $highestId = $this->getHighestSubscriberId();
     while ($minId <= $highestId) {
       $maxId = $minId + self::BATCH_SIZE;
       $this->processBatch($minId, $maxId);
-      $task->meta = ['nextId' => $maxId];
-      $task->save();
+      $task->setMeta(['nextId' => $maxId]);
+      $this->scheduledTasksRepository->persist($task);
+      $this->scheduledTasksRepository->flush();
       $this->cronHelper->enforceExecutionLimit($timer); // Throws exception and interrupts process if over execution limit
       $minId = $maxId;
     }
