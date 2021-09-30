@@ -208,4 +208,15 @@ EOT;
     ];
     expect($this->postContent->getContent($post, 'excerpt'))->equals('Text Text Text');
   }
+
+  public function testItReplaceParagraphClass(): void {
+    $html = '<p class="has-text-align-left">some paragraph text</p>';
+    expect($this->postContent->filterContent($html, 'full'))->equals(
+      '<p class="' . PostContentManager::WP_POST_CLASS . '">some paragraph text</p>'
+    );
+
+    $html = '<p class="has-text-align-center"><span>some text</span></p>';
+    expect($this->postContent->filterContent($html, 'excerpt'))
+      ->equals('<p class="' . PostContentManager::WP_POST_CLASS . '"><span>some text</span></p>');
+  }
 }
