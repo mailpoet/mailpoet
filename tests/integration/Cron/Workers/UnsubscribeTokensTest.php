@@ -4,8 +4,8 @@ namespace MailPoet\Test\Cron\Workers;
 
 use Codeception\Util\Fixtures;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Subscriber;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -17,7 +17,7 @@ class UnsubscribeTokensTest extends \MailPoetTest {
   private $newsletterWithoutToken;
 
   public function _before() {
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    $this->truncateEntity(ScheduledTaskEntity::class);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     parent::_before();
@@ -48,7 +48,7 @@ class UnsubscribeTokensTest extends \MailPoetTest {
 
   public function testItAddsTokensToSubscribers() {
     $worker = new UnsubscribeTokens();
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate(), microtime(true));
+    $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->subscriberWithToken = Subscriber::findOne($this->subscriberWithToken->id);
     $this->subscriberWithoutToken = Subscriber::findOne($this->subscriberWithoutToken->id);
     expect($this->subscriberWithToken->unsubscribe_token)->equals('aaabbbcccdddeee');
@@ -57,7 +57,7 @@ class UnsubscribeTokensTest extends \MailPoetTest {
 
   public function testItAddsTokensToNewsletters() {
     $worker = new UnsubscribeTokens();
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate(), microtime(true));
+    $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->newsletterWithToken = Newsletter::findOne($this->newsletterWithToken->id);
     $this->newsletterWithoutToken = Newsletter::findOne($this->newsletterWithoutToken->id);
     assert($this->newsletterWithToken instanceof Newsletter);
@@ -67,7 +67,7 @@ class UnsubscribeTokensTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    $this->truncateEntity(ScheduledTaskEntity::class);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
   }

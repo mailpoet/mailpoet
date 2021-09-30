@@ -2,8 +2,8 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Subscriber;
 use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
@@ -13,19 +13,26 @@ class UnsubscribeTokens extends SimpleWorker {
   const BATCH_SIZE = 1000;
   const AUTOMATIC_SCHEDULING = false;
 
-  public function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     $meta = $task->getMeta();
+
+    if (!isset($meta['last_subscriber_id'])) {
+      $meta['last_subscriber_id'] = 0;
+    }
+
     do {
       $this->cronHelper->enforceExecutionLimit($timer);
       $subscribersCount = $this->addTokens(Subscriber::class, $meta['last_subscriber_id']);
-      $task->meta = $meta;
-      $task->save();
+      $task->setMeta($meta);
+      $this->scheduledTasksRepository->persist($task);
+      $this->scheduledTasksRepository->flush();
     } while ($subscribersCount === self::BATCH_SIZE);
     do {
       $this->cronHelper->enforceExecutionLimit($timer);
       $newslettersCount = $this->addTokens(Newsletter::class, $meta['last_newsletter_id']);
-      $task->meta = $meta;
-      $task->save();
+      $task->setMeta($meta);
+      $this->scheduledTasksRepository->persist($task);
+      $this->scheduledTasksRepository->flush();
     } while ($newslettersCount === self::BATCH_SIZE);
     if ($subscribersCount > 0 || $newslettersCount > 0) {
       return false;
