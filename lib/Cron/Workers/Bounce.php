@@ -80,37 +80,41 @@ class Bounce extends SimpleWorker {
     return true;
   }
 
-  public function processTaskStrategy(ScheduledTask $task, $timer) {
-    $subscriberBatches = new BatchIterator($task->id, self::BATCH_SIZE);
+  public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
+    $subscriberBatches = new BatchIterator($task->getId(), self::BATCH_SIZE);
 
     if (count($subscriberBatches) === 0) {
-      ScheduledTaskSubscriber::where('task_id', $task->id)->deleteMany();
+      ScheduledTaskSubscriber::where('task_id', $task->getId())->deleteMany();
       return true; // mark completed
     }
 
-    $taskSubscribers = new TaskSubscribers($task);
+    $parisTask = ScheduledTask::getFromDoctrineEntity($task);
 
-    foreach ($subscriberBatches as $subscribersToProcessIds) {
-      // abort if execution limit is reached
-      $this->cronHelper->enforceExecutionLimit($timer);
+    if ($parisTask) {
+      $taskSubscribers = new TaskSubscribers($parisTask);
 
-      $subscriberEmails = $this->subscribersRepository->getUndeletedSubscribersEmailsByIds($subscribersToProcessIds);
-      $subscriberEmails = array_column($subscriberEmails, 'email');
+      foreach ($subscriberBatches as $subscribersToProcessIds) {
+        // abort if execution limit is reached
+        $this->cronHelper->enforceExecutionLimit($timer);
 
-      $this->processEmails($task, $subscriberEmails);
+        $subscriberEmails = $this->subscribersRepository->getUndeletedSubscribersEmailsByIds($subscribersToProcessIds);
+        $subscriberEmails = array_column($subscriberEmails, 'email');
 
-      $taskSubscribers->updateProcessedSubscribers($subscribersToProcessIds);
+        $this->processEmails($task, $subscriberEmails);
+
+        $taskSubscribers->updateProcessedSubscribers($subscribersToProcessIds);
+      }
     }
 
     return true;
   }
 
-  public function processEmails($task, array $subscriberEmails) {
+  public function processEmails(ScheduledTaskEntity $task, array $subscriberEmails) {
     $checkedEmails = $this->api->checkBounces($subscriberEmails);
     $this->processApiResponse($task, (array)$checkedEmails);
   }
 
-  public function processApiResponse($task, array $checkedEmails) {
+  public function processApiResponse(ScheduledTaskEntity $task, array $checkedEmails) {
     $previousTask = $this->findPreviousTask($task);
     foreach ($checkedEmails as $email) {
       if (!isset($email['address'], $email['bounce'])) {
@@ -135,20 +139,16 @@ class Bounce extends SimpleWorker {
       ->addSeconds(rand(0, 59));
   }
 
-  private function findPreviousTask(ScheduledTask $task): ?ScheduledTaskEntity {
-    $taskEntity = $this->scheduledTasksRepository->findOneById($task->id);
-    if (!$taskEntity instanceof ScheduledTaskEntity) return null;
-    return $this->scheduledTasksRepository->findPreviousTask($taskEntity);
+  private function findPreviousTask(ScheduledTaskEntity $task): ?ScheduledTaskEntity {
+    return $this->scheduledTasksRepository->findPreviousTask($task);
   }
 
-  private function saveBouncedStatistics(SubscriberEntity $subscriber, ScheduledTask $task, ?ScheduledTaskEntity $previousTask): void {
-    $taskEntity = $this->scheduledTasksRepository->findOneById($task->id);
-    if (!$taskEntity instanceof ScheduledTaskEntity) return;
+  private function saveBouncedStatistics(SubscriberEntity $subscriber, ScheduledTaskEntity $task, ?ScheduledTaskEntity $previousTask): void {
     $dateFrom = null;
     if ($previousTask instanceof ScheduledTaskEntity) {
       $dateFrom = $previousTask->getScheduledAt();
     }
-    $queues = $this->sendingQueuesRepository->findAllForSubscriberSentBetween($subscriber, $taskEntity->getScheduledAt(), $dateFrom);
+    $queues = $this->sendingQueuesRepository->findAllForSubscriberSentBetween($subscriber, $task->getScheduledAt(), $dateFrom);
     foreach ($queues as $queue) {
       $newsletter = $queue->getNewsletter();
       if ($newsletter instanceof NewsletterEntity) {

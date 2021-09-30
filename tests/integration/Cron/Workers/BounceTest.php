@@ -123,22 +123,22 @@ class BounceTest extends \MailPoetTest {
 
     // process - no subscribers found, ScheduledTaskSubscriber will be cleaned up
     $this->truncateEntity(SubscriberEntity::class);
-    $task = ScheduledTask::getFromDoctrineEntity($this->createScheduledTask());
-    $this->worker->processTaskStrategy($task, microtime(true)); // @phpstan-ignore-line
-    expect(ScheduledTaskSubscriber::where('task_id', $task->id)->findMany())->isEmpty(); // @phpstan-ignore-line
+    $task = $this->createScheduledTask();
+    $this->worker->processTaskStrategy($task, microtime(true));
+    expect(ScheduledTaskSubscriber::where('task_id', $task->getId())->findMany())->isEmpty();
   }
 
   public function testItProcessesTask() {
     $task = $this->createRunningTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
     expect(ScheduledTaskSubscriber::getUnprocessedCount($task->getId()))->notEmpty();
-    $this->worker->processTaskStrategy(ScheduledTask::getFromDoctrineEntity($task), microtime(true)); // @phpstan-ignore-line
+    $this->worker->processTaskStrategy($task, microtime(true));
     expect(ScheduledTaskSubscriber::getProcessedCount($task->getId()))->notEmpty();
   }
 
   public function testItSetsSubscriberStatusAsBounced() {
     $task = $this->createRunningTask();
-    $this->worker->processEmails(ScheduledTask::getFromDoctrineEntity($task), $this->emails);
+    $this->worker->processEmails($task, $this->emails);
 
     $subscribers = $this->subscribersRepository->findAll();
 
@@ -175,7 +175,7 @@ class BounceTest extends \MailPoetTest {
     $this->entityManager->flush();
     $this->entityManager->clear();
     // run the code
-    $this->worker->processEmails(ScheduledTask::getFromDoctrineEntity($this->createRunningTask()), $this->emails);
+    $this->worker->processEmails($this->createRunningTask(), $this->emails);
     // test it
     $statisticsRepository = $this->diContainer->get(StatisticsBouncesRepository::class);
     $statistics = $statisticsRepository->findAll();
