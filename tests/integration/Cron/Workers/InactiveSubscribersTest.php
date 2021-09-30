@@ -6,11 +6,11 @@ use Codeception\Stub;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\ScheduledTask;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\InactiveSubscribersController;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class InactiveSubscribersTest extends \MailPoetTest {
   public $cronHelper;
@@ -18,9 +18,13 @@ class InactiveSubscribersTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settings;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function _before() {
     $this->settings = SettingsController::getInstance();
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
     $this->settings->set('tracking.enabled', true);
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     parent::_before();
@@ -35,15 +39,15 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = new InactiveSubscribers($controllerMock, $this->settings);
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true));
+    $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
 
-    $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
-      ->where('status', ScheduledTask::STATUS_SCHEDULED)
-      ->findOne();
+    $task = $this->scheduledTasksRepository->findOneBy(
+      ['type' => InactiveSubscribers::TASK_TYPE, 'status' => ScheduledTaskEntity::STATUS_SCHEDULED]
+    );
 
-    assert($task instanceof ScheduledTask);
-    expect($task)->isInstanceOf(ScheduledTask::class);
-    expect($task->scheduledAt)->greaterThan(new Carbon());
+    assert($task instanceof ScheduledTaskEntity);
+    expect($task)->isInstanceOf(ScheduledTaskEntity::class);
+    expect($task->getScheduledAt())->greaterThan(new Carbon());
   }
 
   public function testItDoesNotRunWhenTrackingIsDisabled() {
@@ -56,7 +60,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = new InactiveSubscribers($controllerMock, $this->settings);
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true));
+    $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
   }
 
   public function testItSchedulesNextRunWhenFinished() {
@@ -68,15 +72,15 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = new InactiveSubscribers($controllerMock, $this->settings);
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true));
+    $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
 
-    $task = ScheduledTask::where('type', InactiveSubscribers::TASK_TYPE)
-      ->where('status', ScheduledTask::STATUS_SCHEDULED)
-      ->findOne();
+    $task = $this->scheduledTasksRepository->findOneBy(
+      ['type' => InactiveSubscribers::TASK_TYPE, 'status' => ScheduledTaskEntity::STATUS_SCHEDULED]
+    );
 
-    assert($task instanceof ScheduledTask);
-    expect($task)->isInstanceOf(ScheduledTask::class);
-    expect($task->scheduledAt)->greaterThan(new Carbon());
+    assert($task instanceof ScheduledTaskEntity);
+    expect($task)->isInstanceOf(ScheduledTaskEntity::class);
+    expect($task->getScheduledAt())->greaterThan(new Carbon());
   }
 
   public function testRunBatchesUntilItIsFinished() {
@@ -88,9 +92,11 @@ class InactiveSubscribersTest extends \MailPoetTest {
     ], $this);
 
     $worker = new InactiveSubscribers($controllerMock, $this->settings);
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate(
-      ['meta' => ['max_subscriber_id' => 2001 /* 3 iterations of BATCH_SIZE in markInactiveSubscribers */]]
-    ), microtime(true));
+    $task = new ScheduledTaskEntity();
+    $task->setMeta(['max_subscriber_id' => 2001 /* 3 iterations of BATCH_SIZE in markInactiveSubscribers */]);
+    $this->entityManager->persist($task);
+    $this->entityManager->flush();
+    $worker->processTaskStrategy($task, microtime(true));
 
     expect($controllerMock->markInactiveSubscribers(5, 1000))->equals(0);
     expect($controllerMock->markActiveSubscribers(5, 1000))->equals(0);
@@ -104,7 +110,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
       'reactivateInactiveSubscribers' => Stub\Expected::never(),
     ], $this);
 
-    $task = ScheduledTask::createOrUpdate([]);
+    $task = new ScheduledTaskEntity();
 
     $worker = new InactiveSubscribers($controllerMock, $this->settings);
     $worker->processTaskStrategy($task, microtime(true));
@@ -124,6 +130,6 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $worker = new InactiveSubscribers($controllerMock, $this->settings);
     $this->expectException(\Exception::class);
     $this->expectExceptionMessage('Maximum execution time has been reached.');
-    $worker->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true) - $this->cronHelper->getDaemonExecutionLimit());
+    $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true) - $this->cronHelper->getDaemonExecutionLimit());
   }
 }
