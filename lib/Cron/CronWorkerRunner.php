@@ -127,7 +127,11 @@ class CronWorkerRunner {
     $this->startProgress($task);
 
     try {
-      $completed = $worker->processTaskStrategy($task, $this->timer);
+      $completed = false;
+      $doctrineTask = $this->convertTaskClassToDoctrine($task);
+      if ($doctrineTask) {
+        $completed = $worker->processTaskStrategy($doctrineTask, $this->timer);
+      }
     } catch (\Exception $e) {
       $this->stopProgress($task);
       throw $e;
