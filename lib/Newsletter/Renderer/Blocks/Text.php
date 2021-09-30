@@ -120,8 +120,8 @@ class Text {
         $lineBreaks;
       if ($paragraph->hasClass(PostContentManager::WP_POST_CLASS)) {
         $paragraph->removeClass(PostContentManager::WP_POST_CLASS);
-        // if this element is followed by a paragraph, add double line breaks
-        $lineBreaks = ($nextElement && preg_match('/<p/i', $nextElement->getOuterText())) ?
+        // if this element is followed by a paragraph or heading, add double line breaks
+        $lineBreaks = ($nextElement && preg_match('/<(p|h[1-6]{1})/i', $nextElement->getOuterText())) ?
           '<br /><br />' :
           $lineBreaks;
       }
