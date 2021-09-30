@@ -9,7 +9,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\ScheduledTask;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscribersLastEngagementTest extends \MailPoetTest {
@@ -31,7 +30,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     $newsletter = $this->createSentNewsletter();
     $this->createOpen($openTime, $newsletter, $subscriber);
 
-    $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
+    $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->equals($openTime);
   }
@@ -42,7 +41,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     $newsletter = $this->createSentNewsletter();
     $this->createOpen($clickTime, $newsletter, $subscriber);
 
-    $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
+    $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->equals($clickTime);
   }
@@ -52,7 +51,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     $subscriber = $this->createSubscriber();
     $this->createWooOrder($orderTime, $subscriber->getEmail());
 
-    $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
+    $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->equals($orderTime);
   }
@@ -67,7 +66,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     $this->createClick($clickTime, $newsletter, $subscriber);
     $this->createWooOrder($wooOrderTime, $subscriber->getEmail());
 
-    $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
+    $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->equals($clickTime);
   }
@@ -82,7 +81,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     $this->createClick($clickTime, $newsletter, $subscriber);
     $this->createWooOrder($wooOrderTime, $subscriber->getEmail());
 
-    $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
+    $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->equals($wooOrderTime);
   }
@@ -97,21 +96,21 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     $this->createClick($clickTime, $newsletter, $subscriber);
     $this->createWooOrder($wooOrderTime, $subscriber->getEmail());
 
-    $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
+    $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->equals($openTime);
   }
 
   public function testItKeepsNullIfNoTimeFound() {
     $subscriber = $this->createSubscriber();
-    $this->worker->processTaskStrategy(ScheduledTask::create(), microtime(true));
+    $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->null();
   }
 
   public function testItReturnsTrueWhenCompleted() {
     $this->createSubscriber();
-    $task = ScheduledTask::create();
+    $task = new ScheduledTaskEntity();
     $result = $this->worker->processTaskStrategy($task, microtime(true));
     expect($result)->true();
   }
@@ -119,7 +118,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
   public function testItInterruptsProcessIfExecutionLimitReachedIsReachedAndFinishesOnSecondRun() {
     $this->createSubscriber();
     $exception = null;
-    $task = ScheduledTask::create();
+    $task = new ScheduledTaskEntity();
     try {
       $this->worker->processTaskStrategy($task, 0);
     } catch (\Exception $e) {
@@ -144,7 +143,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     $this->createOpen($firstOpenTime, $newsletter, $subscriberInFirstBatch);
     $this->createOpen($secondOpenTime, $newsletter, $subscriberInSecondBatch);
 
-    $task = ScheduledTask::create();
+    $task = new ScheduledTaskEntity();
     $result = $this->worker->processTaskStrategy($task, microtime(true));
     expect($result)->true();
     $this->entityManager->refresh($subscriberInFirstBatch);
