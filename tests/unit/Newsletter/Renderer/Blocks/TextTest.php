@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
+use MailPoet\Newsletter\Editor\PostContentManager;
 use MailPoet\Util\pQuery\pQuery;
 
 class TextTest extends \MailPoetUnitTest {
@@ -43,6 +44,55 @@ class TextTest extends \MailPoetUnitTest {
           </td>
         </tr></table>';
     expect($paragraphTable)->equals($expectedResult);
+  }
+
+  public function testItRendersNewLinesBetweenWordPressParagraphs(): void {
+    $this->block['text'] = '
+      <p class="' . PostContentManager::WP_POST_CLASS . '">First</p>
+      <p class="' . PostContentManager::WP_POST_CLASS . '">Second</p>
+    ';
+    $output = (new Text)->render($this->block);
+    $table = $this->parser->parseStr($output)->query('table');
+    assert($table instanceof \pQuery);
+    $paragraphTable = $table[0]->toString();
+    $expectedResult = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
+        <tr>
+          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;text-align: left;">
+            First<br /><br />
+          </td>
+        </tr></table>';
+    expect($paragraphTable)->equals($expectedResult);
+    $paragraphTable = $table[1]->toString();
+    $expectedResult = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
+        <tr>
+          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;text-align: left;">
+            Second
+          </td>
+        </tr></table>';
+    expect($paragraphTable)->equals($expectedResult);
+  }
+
+  public function testItRendersNewLinesWordPressParagraphAndHeading(): void {
+    $this->block['text'] = '
+      <p class="' . PostContentManager::WP_POST_CLASS . '">First</p>
+      <h1>Second</h1>
+    ';
+    $output = (new Text)->render($this->block);
+    $table = $this->parser->parseStr($output)->query('table');
+    assert($table instanceof \pQuery);
+    $paragraphTable = $table[0]->toString();
+    $expectedResult = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
+        <tr>
+          <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;text-align: left;">
+            First<br /><br />
+          </td>
+        </tr></table>';
+    expect($paragraphTable)->equals($expectedResult);
+    $heading = $this->parser->parseStr($output)->query('h1');
+    assert($heading instanceof \pQuery);
+    $heading = $heading[0]->toString();
+    $expectedResult = '<h1 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Second</h1>';
+    expect($heading)->equals($expectedResult);
   }
 
   public function testItRendersList() {
