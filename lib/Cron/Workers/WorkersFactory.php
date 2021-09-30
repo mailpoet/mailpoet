@@ -117,4 +117,9 @@ class WorkersFactory {
   public function createSubscribersCountCacheRecalculationWorker() {
     return $this->container->get(SubscribersCountCacheRecalculation::class);
   }
+
+  /** @return ReEngagementEmailsScheduler */
+  public function createReEngagementEmailsSchedulerWorker() {
+    return $this->container->get(ReEngagementEmailsScheduler::class);
+  }
 }
