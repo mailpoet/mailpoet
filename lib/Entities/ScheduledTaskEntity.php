@@ -65,6 +65,12 @@ class ScheduledTaskEntity {
   private $meta;
 
   /**
+   * @ORM\Column(type="integer", options={"default" : 0})
+   * @var int
+   */
+  private $rescheduleCount = 0;
+
+  /**
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\ScheduledTaskSubscriberEntity", mappedBy="task", fetch="EXTRA_LAZY")
    */
   public $subscribers;
@@ -151,5 +157,13 @@ class ScheduledTaskEntity {
    */
   public function setMeta($meta) {
     $this->meta = $meta;
+  }
+
+  public function getRescheduleCount(): int {
+    return $this->rescheduleCount;
+  }
+
+  public function setRescheduleCount(int $rescheduleCount) {
+    $this->rescheduleCount = $rescheduleCount;
   }
 }
