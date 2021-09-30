@@ -15,12 +15,14 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class ScheduledTask {
-  private $diContainer;
+  /**
+   * @var EntityManager
+   */
   private $entityManager;
 
   public function __construct() {
-    $this->diContainer = ContainerWrapper::getInstance();
-    $this->entityManager = $this->diContainer->get(EntityManager::class);
+    $diContainer = ContainerWrapper::getInstance();
+    $this->entityManager = $diContainer->get(EntityManager::class);
   }
 
   public function deleteAll() {
