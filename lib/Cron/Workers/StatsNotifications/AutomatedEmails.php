@@ -5,10 +5,10 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
@@ -74,7 +74,7 @@ class AutomatedEmails extends SimpleWorker {
     return (bool)$settings['automated'];
   }
 
-  public function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     try {
       $settings = $this->settings->get(Worker::SETTINGS_KEY);
       $newsletters = $this->getNewsletters();

@@ -2,7 +2,7 @@
 
 namespace MailPoet\Cron\Workers;
 
-use MailPoet\Models\ScheduledTask;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 
@@ -24,7 +24,7 @@ class AuthorizedSendingEmailsCheck extends SimpleWorker {
     return Bridge::isMPSendingServiceEnabled();
   }
 
-  public function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     $this->authorizedEmailsController->checkAuthorizedEmailAddresses();
     return true;
   }

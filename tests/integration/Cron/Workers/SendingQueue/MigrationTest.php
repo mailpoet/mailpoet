@@ -6,10 +6,10 @@ use Codeception\Stub;
 use MailPoet\Cron\Workers\SendingQueue\Migration;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -29,6 +29,9 @@ class MigrationTest extends \MailPoetTest {
   private $scheduledTaskFactory;
   /** @var Migration */
   private $worker;
+
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
 
   public function _before() {
     parent::_before();
@@ -53,6 +56,7 @@ class MigrationTest extends \MailPoetTest {
     $this->queueScheduled = $this->createSendingQueue(SendingQueue::STATUS_SCHEDULED);
 
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
+    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->worker = new Migration();
   }
 
@@ -87,28 +91,30 @@ class MigrationTest extends \MailPoetTest {
     SendingQueue::deleteMany();
     $task = $this->createScheduledTask();
     $this->worker->prepareTaskStrategy($task, microtime(true));
-    $task = ScheduledTask::findOne($task->getId());
-    assert($task instanceof ScheduledTask);
-    expect($task->status)->equals(ScheduledTask::STATUS_COMPLETED);
+    $task = $this->scheduledTasksRepository->findOneById($task->getId());
+    assert($task instanceof ScheduledTaskEntity);
+    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
   }
 
   public function testItMigratesSendingQueuesAndSubscribers() {
     expect($this->worker->getUnmigratedQueues()->count())->equals(4);
-    expect(ScheduledTask::where('type', SendingTask::TASK_TYPE)->findMany())->count(0);
+    $tasks = $this->scheduledTasksRepository->findBy(['type' => SendingTask::TASK_TYPE]);
+    expect($tasks)->count(0);
     expect(ScheduledTaskSubscriber::whereGt('task_id', 0)->count())->equals(0);
 
     $task = $this->createRunningTask();
     $this->worker->processTaskStrategy($task, microtime(true));
 
     expect($this->worker->getUnmigratedQueues()->count())->equals(0);
-    expect(ScheduledTask::where('type', SendingTask::TASK_TYPE)->findMany())->count(4);
+    $tasks = $this->scheduledTasksRepository->findBy(['type' => SendingTask::TASK_TYPE]);
+    expect($tasks)->count(4);
     expect(ScheduledTaskSubscriber::whereGt('task_id', 0)->count())->equals(4); // 2 for running, 2 for paused
 
     $queue = SendingQueue::findOne($this->queueRunning->id);
     assert($queue instanceof SendingQueue);
-    $task = ScheduledTask::findOne($queue->taskId);
-    assert($task instanceof ScheduledTask);
-    expect($task->type)->equals(SendingTask::TASK_TYPE);
+    $task = $this->scheduledTasksRepository->findOneById($queue->taskId);
+    assert($task instanceof ScheduledTaskEntity);
+    expect($task->getType())->equals(SendingTask::TASK_TYPE);
 
     $migratedSubscribers = ScheduledTaskSubscriber::where('task_id', $queue->taskId)
       ->orderByAsc('subscriber_id')
@@ -150,21 +156,19 @@ class MigrationTest extends \MailPoetTest {
   }
 
   private function createRunningTask() {
-    $task = ScheduledTask::create();
-    $task->type = Migration::TASK_TYPE;
-    $task->status = null;
-    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    $task->save();
-    return $task;
+    return $this->scheduledTaskFactory->create(
+      Migration::TASK_TYPE,
+      null,
+      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+    );
   }
 
   private function createCompletedTask() {
-    $task = ScheduledTask::create();
-    $task->type = Migration::TASK_TYPE;
-    $task->status = ScheduledTask::STATUS_COMPLETED;
-    $task->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    $task->save();
-    return $task;
+    return $this->scheduledTaskFactory->create(
+      Migration::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_COMPLETED,
+      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+    );
   }
 
   private function createSendingQueue($status = null) {
@@ -208,7 +212,7 @@ class MigrationTest extends \MailPoetTest {
 
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    $this->truncateEntity(ScheduledTaskEntity::class);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);

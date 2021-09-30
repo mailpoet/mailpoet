@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Cron\Workers;
 
 use MailPoet\Cron\Workers\ExportFilesCleanup;
-use MailPoet\Models\ScheduledTask;
+use MailPoet\Entities\ScheduledTaskEntity;
 
 class ExportFilesCleanupTest extends \MailPoetTest {
   public function testItWorks() {
@@ -14,7 +14,7 @@ class ExportFilesCleanupTest extends \MailPoetTest {
     touch($newFilePath);
 
     $cleanup = new ExportFilesCleanup();
-    $cleanup->processTaskStrategy(ScheduledTask::createOrUpdate([]), microtime(true));
+    $cleanup->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
 
     $this->assertFileExists($newFilePath);
     $this->assertFileNotExists($oldFilePath);

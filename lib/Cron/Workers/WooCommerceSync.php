@@ -2,7 +2,7 @@
 
 namespace MailPoet\Cron\Workers;
 
-use MailPoet\Models\ScheduledTask;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
@@ -30,7 +30,7 @@ class WooCommerceSync extends SimpleWorker {
     return $this->woocommerceHelper->isWooCommerceActive();
   }
 
-  public function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     $this->woocommerceSegment->synchronizeCustomers();
     return true;
   }

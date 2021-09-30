@@ -2,7 +2,7 @@
 
 namespace MailPoet\Cron\Workers;
 
-use MailPoet\Models\ScheduledTask;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Models\Subscriber;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -15,7 +15,7 @@ class SubscriberLinkTokens extends SimpleWorker {
   const BATCH_SIZE = 10000;
   const AUTOMATIC_SCHEDULING = false;
 
-  public function processTaskStrategy(ScheduledTask $task, $timer) {
+  public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     $count = Subscriber::whereNull('link_token')->count();
     if ($count) {
       $authKey = defined('AUTH_KEY') ? AUTH_KEY : '';
