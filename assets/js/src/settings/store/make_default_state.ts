@@ -64,6 +64,7 @@ export default function makeDefaultState(window: any): State {
     inProgress: false,
     congratulatoryMssEmailSentTo: null,
     downloadUrl: window.mailpoet_premium_plugin_download_url,
+    activationUrl: window.mailpoet_premium_plugin_activation_url,
   };
   const testEmail = {
     state: TestEmailState.NONE,

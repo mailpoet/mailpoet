@@ -3,6 +3,7 @@
 namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\API\JSON\v1\Premium;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Segments\SegmentsSimpleListRepository;
@@ -79,6 +80,7 @@ class Settings {
       'is_woocommerce_active' => $this->woocommerceHelper->isWooCommerceActive(),
       'is_members_plugin_active' => $this->wp->isPluginActive('members/members.php'),
       'premium_plugin_download_url' => $pluginInformation->download_link ?? null, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      'premium_plugin_activation_url' => $this->generatePluginActivationUrl(Premium::PREMIUM_PLUGIN_PATH),
       'hosts' => [
         'web' => Hosts::getWebHosts(),
         'smtp' => Hosts::getSMTPHosts(),
@@ -102,5 +104,13 @@ class Settings {
       $notice->displayWPNotice();
     }
     $this->pageRenderer->displayPage('settings.html', $data);
+  }
+
+  private function generatePluginActivationUrl(string $plugin): string {
+    return $this->wp->adminUrl('plugins.php?' . implode('&', [
+      'action=activate',
+      'plugin=' . urlencode($plugin),
+      '_wpnonce=' . wp_create_nonce('activate-plugin_' . $plugin),
+    ]));
   }
 }

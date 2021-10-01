@@ -212,6 +212,7 @@ export type KeyActivationState = {
   congratulatoryMssEmailSentTo: string|null;
   code?: number;
   downloadUrl?: string;
+  activationUrl?: string;
 }
 
 export enum TestEmailState {
