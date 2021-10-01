@@ -19,6 +19,9 @@ const updateEmotionAliases = (config) => ({
 });
 
 module.exports = {
+  core: {
+    builder: 'webpack5',
+  },
   stories: ['../assets/js/src/**/_stories/*.tsx'],
   webpackFinal: (config) => {
     config.resolve.modules = ['node_modules', '../assets/js/src'];
