@@ -104,7 +104,7 @@ const fields = [
     endpoint: 'segments',
     multiple: true,
     filter: function filter(segment) {
-      return !segment.deleted_at;
+      return !segment.deleted_at && segment.type !== 'dynamic';
     },
     getLabel: function getLabel(segment) {
       return segment.name;
