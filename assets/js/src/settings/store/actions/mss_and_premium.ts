@@ -74,8 +74,11 @@ export function* verifyPremiumKey(key: string) {
   yield setSetting(['premium', 'premium_key'], key);
 
   const pluginActive = res.meta.premium_plugin_active;
+  const premiumInstalled = res.meta.premium_plugin_installed;
 
-  let status = PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE;
+  let status = premiumInstalled
+    ? PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE
+    : PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED;
   if (pluginActive) {
     status = PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE;
   }
