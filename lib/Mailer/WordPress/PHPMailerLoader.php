@@ -21,6 +21,8 @@ class PHPMailerLoader {
       // WordPress 5.5+
       if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
         require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
+      }
+      if (!class_exists('PHPMailer\PHPMailer\Exception')) {
         require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
       }
       class_alias(\PHPMailer\PHPMailer\PHPMailer::class, 'PHPMailer');
