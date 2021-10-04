@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import OfferClearout from './offer_clearout';
+import CleanList from './clean_list';
 
 export default ({ history }: RouteComponentProps): JSX.Element => (
-  <OfferClearout onProceed={(): void => history.push('step_method_selection')} />
+  <CleanList onProceed={(): void => history.push('step_method_selection')} />
 );

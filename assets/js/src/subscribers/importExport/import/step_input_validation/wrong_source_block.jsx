@@ -5,7 +5,7 @@ import Button from 'common/button/button';
 function WrongSourceBlock() {
   return (
     <div
-      className="mailpoet-offer-clearout-step-container"
+      className="mailpoet-clean-list-step-container"
       data-automation-id="import_wrong_source_block"
     >
       <p>{MailPoet.I18n.t('validationStepBlock1')}</p>

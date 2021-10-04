@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import OfferClearout from 'subscribers/importExport/import/offer_clearout';
+import CleanList from 'subscribers/importExport/import/clean_list';
 import InitialQuestion from './step_input_validation/initial_question.jsx';
 import WrongSourceBlock from './step_input_validation/wrong_source_block.jsx';
 import LastSentQuestion from './step_input_validation/last_sent_question.jsx';
@@ -47,7 +47,7 @@ function StepInputValidation({ stepMethodSelectionData, history }) {
       )}
 
       {importSource === 'existing-list' && lastSent === 'notRecently' && (
-        <OfferClearout />
+        <CleanList />
       )}
     </>
   );

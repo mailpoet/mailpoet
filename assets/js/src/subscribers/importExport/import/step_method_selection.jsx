@@ -40,7 +40,7 @@ function StepMethodSelection({
   };
 
   const previousStep = () => {
-    history.push('/step_offer_clearout');
+    history.push('/step_clean_list');
   };
 
   const processLocal = () => {
