@@ -419,6 +419,16 @@ class NewsletterEntity {
   }
 
   /**
+   * @return int[]
+   */
+  public function getSegmentIds() {
+    return array_filter($this->newsletterSegments->map(function(NewsletterSegmentEntity $newsletterSegment) {
+      $segment = $newsletterSegment->getSegment();
+      return $segment ? (int)$segment->getId() : null;
+    })->toArray());
+  }
+
+  /**
    * @return ArrayCollection<int, NewsletterOptionEntity>
    */
   public function getOptions() {

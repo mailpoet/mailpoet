@@ -2,9 +2,20 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
+use Carbon\Carbon;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\Subscriber;
 
 class ReEngagementSchedulerTest extends \MailPoetTest {
   /** @var NewsletterOptionFieldEntity */
@@ -15,6 +26,12 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
 
   /** @var ReEngagementScheduler */
   private $scheduler;
+
+  /** @var SegmentEntity */
+  private $segment;
+
+  /** @var NewsletterEntity */
+  private $sentStandardNewsletter;
 
   public function _before() {
     parent::_before();
@@ -28,7 +45,9 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $this->afterTimeTypeField->setName(NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE);
     $this->afterTimeTypeField->setNewsletterType(NewsletterEntity::TYPE_RE_ENGAGEMENT);
     $this->entityManager->persist($this->afterTimeTypeField);
-    $this->entityManager->flush();
+
+    $this->segment = (new Segment())->withName('Re-engagement test')->create();
+    $this->sentStandardNewsletter = (new Newsletter())->withSentStatus()->withSendingQueue()->create();
 
     $this->scheduler = $this->diContainer->get(ReEngagementScheduler::class);
   }
@@ -39,9 +58,73 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     expect($scheduled)->count(0);
   }
 
+  public function testItScheduleEmailWithCorrectSubscribers() {
+    $beforeCheckInterval = Carbon::now();
+    $beforeCheckInterval->subMonths(10);
+    $withinCheckInterval = Carbon::now();
+    $withinCheckInterval->subMonth();
+    $reEngagementEmail = $this->createReEngagementEmail(5);
+
+    // SUBSCRIBERS WHO SHOULD RECEIVE THE RE-ENGAGEMENT EMAIL
+
+    // Subscriber who should match all conditions and should and be scheduled
+    $subscriberToBeScheduled = $this->createSubscriber('ok_subscriber@example.com', $beforeCheckInterval, $this->segment);
+    $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $subscriberToBeScheduled, $withinCheckInterval);
+
+    // Subscriber who received re-engagement email but in the past
+    $subscriberToBeScheduledWithReEmail = $this->createSubscriber('with_reemail_in_past@example.com', $beforeCheckInterval, $this->segment);
+    $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $subscriberToBeScheduledWithReEmail, $withinCheckInterval);
+    $this->addSentEmailToSubscriber($reEngagementEmail, $subscriberToBeScheduledWithReEmail, $beforeCheckInterval);
+
+    // SUBSCRIBERS WHO SHOULD NOT RECEIVE THE RE-ENGAGEMENT EMAIL
+
+    // Subscriber who received re-engagement email within the interval
+    $subscriberWithReEmail = $this->createSubscriber('with_reemail_in_interval@example.com', $beforeCheckInterval, $this->segment);
+    $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $subscriberWithReEmail, $withinCheckInterval);
+    $this->addSentEmailToSubscriber($reEngagementEmail, $subscriberWithReEmail, $withinCheckInterval);
+
+    // Subscriber who didn't receive any newsletter within the interval
+    $subscriberWithoutSentEmail = $this->createSubscriber('without_email@example.com', $beforeCheckInterval, $this->segment);
+
+    // Subscriber who is globally subscribed but unsubscribed from the re-engagement email's list
+    $subscriberUnsubscribedFromList = $this->createSubscriber('list_unsubscribed@example.com', $beforeCheckInterval, $this->segment);
+    $this->entityManager->refresh($subscriberUnsubscribedFromList);
+    $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $subscriberUnsubscribedFromList, $withinCheckInterval);
+    $subscriberSegment = $subscriberUnsubscribedFromList->getSubscriberSegments()->first();
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    // Subscriber who is not globally subscribed
+    $unsubscribedSubscriber = $this->createSubscriber('global_unsubscribed@example.com', $beforeCheckInterval, $this->segment);
+    $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $unsubscribedSubscriber, $withinCheckInterval);
+    $unsubscribedSubscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    // Subscriber who is not in the list
+    $notInListSubscriber = $this->createSubscriber('without_list@example.com', $beforeCheckInterval, null);
+    $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $notInListSubscriber, $withinCheckInterval);
+
+    // Subscriber who engaged recently
+    $subscriberWithoutRecentEngagement = $this->createSubscriber('with_engagement@example.com', $withinCheckInterval, $this->segment);
+    $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $subscriberWithoutRecentEngagement, $withinCheckInterval);
+
+    $this->entityManager->flush();
+
+    $task = $this->scheduler->scheduleAll()[0];
+    $this->entityManager->refresh($task);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    expect($task->getType())->equals(Sending::TASK_TYPE);
+    $scheduledAt = $task->getScheduledAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
+    expect($scheduledAt->getTimestamp())->equals(Carbon::now()->getTimestamp(), 1);
+    expect($task->getSubscribers()->count())->equals(2);
+  }
+
   private function createReEngagementEmail(int $monthsAfter, string $status = NewsletterEntity::STATUS_ACTIVE) {
-    $email = new NewsletterEntity();
-    $email->setSubject("Re-engagement $monthsAfter months");
+    $email = (new Newsletter())
+      ->withSubject("Re-engagement $monthsAfter months")
+      ->withSendingQueue()
+      ->create();
     $email->setType(NewsletterEntity::TYPE_RE_ENGAGEMENT);
     $email->setStatus($status);
     $afterTimeType = new NewsletterOptionEntity($email, $this->afterTimeTypeField);
@@ -53,13 +136,51 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $this->entityManager->persist($afterTimeNumber);
     $email->getOptions()->add($afterTimeNumber);
     $this->entityManager->persist($email);
+    $emailSegment = new NewsletterSegmentEntity($email, $this->segment);
+    $this->entityManager->persist($emailSegment);
+    $email->getNewsletterSegments()->add($emailSegment);
     $this->entityManager->flush();
     return $email;
+  }
+
+  private function addSentEmailToSubscriber(NewsletterEntity $email, SubscriberEntity $subscriber, \DateTimeInterface $sentAt) {
+    $queue = $email->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $sentStats = new StatisticsNewsletterEntity($email, $queue, $subscriber);
+    $sentStats->setSentAt($sentAt);
+    $this->entityManager->persist($sentStats);
+    $this->entityManager->flush();
+  }
+
+  private function createSubscriber($email, $lastEngagement, SegmentEntity $segment = null) {
+    $factory = new Subscriber();
+    if ($segment) {
+      $factory = $factory->withSegments([$segment]);
+    }
+    $subscriber = $factory
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withEmail($email)
+      ->create();
+    $subscriber->setCreatedAt($lastEngagement);
+    $subscriber->setLastEngagementAt($lastEngagement);
+    $subscriber->setLastSubscribedAt($lastEngagement);
+    $this->entityManager->flush();
+    return $subscriber;
   }
 
   private function cleanup() {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(NewsletterSegmentEntity::class);
+  }
+
+  public function _after() {
+    parent::_after();
+    $this->cleanup();
   }
 }
