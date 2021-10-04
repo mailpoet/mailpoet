@@ -7,7 +7,7 @@ class ManageImportExportCest {
     $i->wantTo('Import a big list');
     $i->login();
     $i->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');
-    $this->proceedThroughClearout($i);
+    $this->proceedThroughListCleaning($i);
     $this->uploadCsvFile($i, 'MailPoetImportBigList.csv');
 
     // I see validation step, select a wrong source and should be blocked
@@ -18,7 +18,7 @@ class ManageImportExportCest {
 
     // Repeat the test, this time choose the right source, but say you sent to the list long time ago
     $i->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');
-    $this->proceedThroughClearout($i);
+    $this->proceedThroughListCleaning($i);
     $this->uploadCsvFile($i, 'MailPoetImportBigList.csv');
     $i->waitForElement('[data-automation-id="mailpoet_import_validation_step_option1"]');
     $i->checkOption('[data-automation-id="mailpoet_import_validation_step_option1"]');
@@ -27,11 +27,11 @@ class ManageImportExportCest {
     $i->selectOption('[data-automation-id="last_sent_to_list"]', 'over2years');
     $i->click('[data-automation-id="last_sent_to_list_next"]');
     $i->waitForText('We highly recommend cleaning your lists before importing them to MailPoet.');
-    $i->canSee('Try clearout.io for free');
+    $i->canSee('How can I clean my list?');
 
     // Repeat the test, happy path
     $i->amOnUrl(\AcceptanceTester::WP_URL . '/wp-admin/admin.php?page=mailpoet-import');
-    $this->proceedThroughClearout($i);
+    $this->proceedThroughListCleaning($i);
     $this->uploadCsvFile($i, 'MailPoetImportBigList.csv');
     $i->waitForElement('[data-automation-id="mailpoet_import_validation_step_option1"]');
     $i->checkOption('[data-automation-id="mailpoet_import_validation_step_option1"]');
@@ -47,7 +47,7 @@ class ManageImportExportCest {
     $i->login();
     $i->amOnMailPoetPage ('Subscribers');
     $i->click('[data-automation-id="import-subscribers-button"]');
-    $this->proceedThroughClearout($i);
+    $this->proceedThroughListCleaning($i);
     $this->uploadCsvFile($i);
     $i->waitForText('2 records had issues and were skipped');
     $i->click('[data-automation-id="show-more-details"]');
@@ -89,7 +89,7 @@ class ManageImportExportCest {
     $i->login();
     $i->amOnMailPoetPage ('Subscribers');
     $i->click('[data-automation-id="import-subscribers-button"]');
-    $this->proceedThroughClearout($i);
+    $this->proceedThroughListCleaning($i);
     $this->pasteSimpleList($i);
     $i->click('[data-automation-id="import-next-step"]');
     $this->chooseListAndConfirm($i);
@@ -105,7 +105,7 @@ class ManageImportExportCest {
     $i->login();
     $i->amOnMailPoetPage ('Subscribers');
     $i->click('[data-automation-id="import-subscribers-button"]');
-    $this->proceedThroughClearout($i);
+    $this->proceedThroughListCleaning($i);
     $this->pasteSimpleList($i);
     $i->click('[data-automation-id="import-next-step"]');
     $this->chooseListAndConfirm($i);
@@ -164,7 +164,7 @@ class ManageImportExportCest {
     $i->waitForText('Import again');
   }
 
-  private function proceedThroughClearout(\AcceptanceTester $i) {
+  private function proceedThroughListCleaning(\AcceptanceTester $i) {
     $proceedLinkText = 'Got it, I’ll proceed to import';
     $i->waitForText($proceedLinkText);
     $i->click($proceedLinkText);
