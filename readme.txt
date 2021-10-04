@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.71.1
+Stable tag: 3.71.2
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.71.2 - 2021-10-04 =
+* Improved: better handle reply-to address with missing reply-to name;
+* Improved: use WordPress functions to get post excerpt and content in post notifications;
+* Changed: inactive subscribers conditions;
+* Fixed: PHP warning about PHPMailer class not found;
+* Fixed: welcome email setup accepts non-numerical values;
+* Fixed: missing space between paragraph and heading in post notifications.
 
 = 3.71.1 - 2021-09-29 =
 * Fixed: conflict with Elementor plugin.
