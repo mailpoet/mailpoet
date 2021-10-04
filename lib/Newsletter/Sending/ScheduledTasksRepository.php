@@ -35,6 +35,22 @@ class ScheduledTasksRepository extends Repository {
    * @param NewsletterEntity $newsletter
    * @return ScheduledTaskEntity[]
    */
+  public function findByScheduledAndRunningForNewsletter(NewsletterEntity $newsletter): array {
+    return $this->doctrineRepository->createQueryBuilder('st')
+      ->select('st')
+      ->join(SendingQueueEntity::class, 'sq', Join::WITH, 'st = sq.task')
+      ->andWhere('st.status = :status OR st.status IS NULL')
+      ->andWhere('sq.newsletter = :newsletter')
+      ->setParameter('status', NewsletterEntity::STATUS_SCHEDULED)
+      ->setParameter('newsletter', $newsletter)
+      ->getQuery()
+      ->getResult();
+  }
+
+  /**
+   * @param NewsletterEntity $newsletter
+   * @return ScheduledTaskEntity[]
+   */
   public function findByNewsletterAndSubscriberId(NewsletterEntity $newsletter, int $subscriberId): array {
     return $this->doctrineRepository->createQueryBuilder('st')
       ->select('st')

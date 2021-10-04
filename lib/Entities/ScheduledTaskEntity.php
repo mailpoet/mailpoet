@@ -7,6 +7,8 @@ use MailPoet\Doctrine\EntityTraits\AutoincrementedIdTrait;
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\DeletedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
+use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
+use MailPoetVendor\Doctrine\Common\Collections\Collection;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -72,8 +74,13 @@ class ScheduledTaskEntity {
 
   /**
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\ScheduledTaskSubscriberEntity", mappedBy="task", fetch="EXTRA_LAZY")
+   * @var Collection<int, ScheduledTaskSubscriberEntity>
    */
   public $subscribers;
+
+  public function __construct() {
+    $this->subscribers = new ArrayCollection();
+  }
 
   /**
    * @return string|null
@@ -165,5 +172,12 @@ class ScheduledTaskEntity {
 
   public function setRescheduleCount(int $rescheduleCount) {
     $this->rescheduleCount = $rescheduleCount;
+  }
+
+  /**
+   * @return Collection<int, ScheduledTaskSubscriberEntity>
+   */
+  public function getSubscribers(): Collection {
+    return $this->subscribers;
   }
 }
