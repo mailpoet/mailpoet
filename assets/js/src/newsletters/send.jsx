@@ -95,15 +95,16 @@ class NewsletterSend extends React.Component {
   }
 
   showInvalidFromAddressError = () => {
+    const fromAddress = this.state.item.sender_address;
     let errorMessage = ReactStringReplace(
       MailPoet.I18n.t('newsletterInvalidFromAddress'),
       '%$1s',
-      () => this.state.item.sender_address
+      () => fromAddress
     );
     errorMessage = ReactStringReplace(
       errorMessage,
       /\[link\](.*?)\[\/link\]/g,
-      (match) => `<a href="https://account.mailpoet.com/authorization" target="_blank" rel="noopener noreferrer">${match}</a>`
+      (match) => `<a href="https://account.mailpoet.com/authorization?email=${encodeURIComponent(fromAddress)}" target="_blank" rel="noopener noreferrer">${match}</a>`
     );
     jQuery('#field_sender_address')
       .parsley()

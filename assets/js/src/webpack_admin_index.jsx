@@ -15,3 +15,4 @@ import 'wizard/wizard.jsx'; // side effect - renders ReactDOM to document
 import 'experimental_features/experimental_features.jsx'; // side effect - renders ReactDOM to document
 import 'logs/logs'; // side effect - renders ReactDOM to document
 import 'sending-paused-notices-fix-button.tsx'; // side effect - renders ReactDOM to document
+import 'sending-paused-notices-resume-button.jsx'; // side effect - executes on doc ready, adds events
