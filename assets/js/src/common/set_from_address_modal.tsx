@@ -26,15 +26,16 @@ type error = {
   message: string;
 }
 
-const getErrorMessage = (error: error | null): string => {
+const getErrorMessage = (error: error | null, address: string | null): string => {
   if (!error) {
     return MailPoet.I18n.t('setFromAddressEmailUnknownError');
   }
 
   if (error.error === 'unauthorized') {
+    const fromAddress = encodeURIComponent(address);
     return MailPoet.I18n.t('setFromAddressEmailNotAuthorized').replace(
       /\[link\](.*?)\[\/link\]/g,
-      '<a href="https://account.mailpoet.com/authorization" target="_blank" rel="noopener noreferrer">$1</a>'
+      `<a href="https://account.mailpoet.com/authorization?email=${fromAddress}" target="_blank" rel="noopener noreferrer">$1</a>`
     );
   }
 
@@ -143,7 +144,7 @@ const SetFromAddressModal = ({ onRequestClose, setAuthorizedAddress }: Props) =>
             notices.success(getSuccessMessage(), { timeout: false });
           } catch (e) {
             const error = e.errors && e.errors[0] ? e.errors[0] : null;
-            const message = getErrorMessage(error);
+            const message = getErrorMessage(error, address);
             addressValidator.addError('saveError', { message });
           }
         }}
