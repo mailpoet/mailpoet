@@ -8,6 +8,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\Notices\UnauthorizedEmailNotice;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MailPoetMapper {
@@ -93,21 +94,10 @@ class MailPoetMapper {
   }
 
   private function getUnauthorizedEmailMessage($sender) {
-    $email = $sender ? $sender['from_email'] : null;
-    $message = '<p>';
-    $message .= sprintf(WPFunctions::get()->__('The MailPoet Sending Service did not send your latest email because the address %s is not yet authorized.', 'mailpoet'), '<i>' . ( $email ?: WPFunctions::get()->__('Unknown address') ) . '</i>' );
-    $message .= '</p><p>';
-    $message .= Helpers::replaceLinkTags(
-      WPFunctions::get()->__('[link]Authorize your email in your account now.[/link]', 'mailpoet'),
-      'https://account.mailpoet.com/authorization',
-      [
-        'class' => 'button button-primary',
-        'target' => '_blank',
-        'rel' => 'noopener noreferrer',
-      ]
-    );
-    $message .= ' &nbsp; <button class="button mailpoet-js-button-resume-sending">' . WPFunctions::get()->__('Resume sending', 'mailpoet') . '</button>';
-    $message .= '</p>';
+    $email = $sender ? $sender['from_email'] : WPFunctions::get()->__('Unknown address');
+    $validationError = ['invalid_sender_address' => $email];
+    $notice = new UnauthorizedEmailNotice(WPFunctions::get(), null);
+    $message = $notice->getMessage($validationError);
     return $message;
   }
 

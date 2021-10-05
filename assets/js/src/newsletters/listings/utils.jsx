@@ -38,13 +38,13 @@ export const addStatsCTAAction = (actions) => {
 export const checkMailerStatus = (state) => {
   if (state.meta.mta_log.error && state.meta.mta_log.error.operation === 'authorization') {
     MailPoet.Notice.hide('mailpoet_notice_being_sent');
+    if (state.meta.mta_log.error.error_message.indexOf('mailpoet-js-button-resume-sending') >= 0) {
+      jQuery('.mailpoet-js-error-unauthorized-emails-notice').hide(); // prevent duplicate notices
+    }
     MailPoet.Notice.error(
       state.meta.mta_log.error.error_message,
       { static: true, id: 'mailpoet_authorization_error' }
     );
-    jQuery('.js-button-resume-sending').on('click', () => {
-      jQuery('[data-id="mailpoet_authorization_error"]').slideUp();
-    });
   }
 };
 
