@@ -44,7 +44,7 @@ class PermanentNotices {
     $this->wp = $wp;
     $this->phpVersionWarnings = new PHPVersionWarnings();
     $this->afterMigrationNotice = new AfterMigrationNotice();
-    $this->unauthorizedEmailsNotice = new UnauthorizedEmailNotice(SettingsController::getInstance(), $wp);
+    $this->unauthorizedEmailsNotice = new UnauthorizedEmailNotice($wp, SettingsController::getInstance());
     $this->unauthorizedEmailsInNewslettersNotice = new UnauthorizedEmailInNewslettersNotice(SettingsController::getInstance(), $wp);
     $this->inactiveSubscribersNotice = new InactiveSubscribersNotice(SettingsController::getInstance(), $wp);
     $this->blackFridayNotice = new BlackFridayNotice();

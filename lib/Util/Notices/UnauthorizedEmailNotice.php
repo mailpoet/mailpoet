@@ -12,21 +12,24 @@ class UnauthorizedEmailNotice {
 
   const OPTION_NAME = 'unauthorized-email-addresses-notice';
 
-  /** @var SettingsController */
+  /** @var SettingsController|null */
   private $settings;
 
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
-    SettingsController $settings,
-    WPFunctions $wp
+    WPFunctions $wp,
+    SettingsController $settings = null
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
   }
 
   public function init($shouldDisplay) {
+    if (!$this->settings instanceof SettingsController) {
+      throw new \Exception('This method can only be called if SettingsController is provided');
+    }
     $validationError = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
     if ($shouldDisplay && isset($validationError['invalid_sender_address'])) {
       return $this->display($validationError);
@@ -34,6 +37,12 @@ class UnauthorizedEmailNotice {
   }
 
   public function display($validationError) {
+    $message = $this->getMessage($validationError);
+    $extraClasses = 'mailpoet-js-error-unauthorized-emails-notice';
+    Notice::displayError($message, $extraClasses, self::OPTION_NAME, false, false);
+  }
+
+  public function getMessage($validationError) {
     $message = $this->getMessageText($validationError);
     $message .= sprintf(
       '<p>%s &nbsp; %s &nbsp; %s</p>',
@@ -41,8 +50,7 @@ class UnauthorizedEmailNotice {
       $this->getDifferentEmailButton(),
       $this->getResumeSendingButton($validationError)
     );
-    $extraClasses = 'mailpoet-js-error-unauthorized-emails-notice';
-    Notice::displayError($message, $extraClasses, self::OPTION_NAME, false, false);
+    return $message;
   }
 
   private function getMessageText($validationError) {
