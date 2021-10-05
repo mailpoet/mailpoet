@@ -2,9 +2,11 @@
 
 namespace MailPoet\Test\Mailer\Methods\ErrorMappers;
 
+use Codeception\Stub;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Services\Bridge\API;
+use MailPoet\WP\Functions as WPFunctions;
 
 class MailPoetMapperTest extends \MailPoetUnitTest {
   /** @var MailPoetMapper */
@@ -17,6 +19,14 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     parent::_before();
     $this->mapper = new MailPoetMapper();
     $this->subscribers = ['a@example.com', 'c d <b@example.com>'];
+    WPFunctions::set(Stub::make(new WPFunctions, [
+      '_x' => function ($value) {
+        return $value;
+      },
+      'escAttr' => function ($value) {
+        return $value;
+      },
+    ]));
   }
 
   public function testCreateBlacklistError() {
@@ -89,7 +99,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error)->isInstanceOf(MailerError::class);
     expect($error->getOperation())->equals(MailerError::OPERATION_AUTHORIZATION);
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->stringContainsString('The MailPoet Sending Service did not send your latest email because the address');
+    expect($error->getMessage())->stringContainsString('Sending all of your emails has been paused');
+    expect($error->getMessage())->stringContainsString('because your email address');
   }
 
   public function testGetErrorPayloadTooBig() {

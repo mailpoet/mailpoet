@@ -41,7 +41,7 @@ class UnauthorizedEmailNoticesCest {
     $i->waitForText('Your automatic emails have been paused because some email addresses haven’t been authorized yet.');
 
     // try button in the first notice, fill in invalid email
-    $i->click('Fix this!', '[data-notice="unauthorized-email-addresses-notice"]');
+    $i->click('Use a different email address', '[data-notice="unauthorized-email-addresses-notice"]');
     $i->waitForText('It’s time to set your default FROM address!');
     $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
     $i->fillField(['id' => 'mailpoet-set-from-address-modal-input'], 'invalid@email.com');
@@ -50,7 +50,7 @@ class UnauthorizedEmailNoticesCest {
     $i->click('.mailpoet-modal-close');
 
     // try button in the first notice, fill in authorized email
-    $i->click('Fix this!', '[data-id="mailpoet_authorization_error"]');
+    $i->click('Use a different email address', '[data-notice="unauthorized-email-addresses-notice"]');
     $i->waitForText('It’s time to set your default FROM address!');
     $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
     $i->fillField(['id' => 'mailpoet-set-from-address-modal-input'], 'staff@mailpoet.com');
