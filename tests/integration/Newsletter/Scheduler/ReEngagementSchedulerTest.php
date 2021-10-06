@@ -110,6 +110,12 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $notInListSubscriber = $this->createSubscriber('without_list@example.com', $beforeCheckInterval, null);
     $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $notInListSubscriber, $withinCheckInterval);
 
+    // Subscriber who received the only email within the last day
+    $subscriberWithOnlyRecentEmail = $this->createSubscriber('only_recent_email@example.com', $beforeCheckInterval, $this->segment);
+    $oneHourAgo = Carbon::now();
+    $oneHourAgo->subHour();
+    $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $subscriberWithOnlyRecentEmail, $oneHourAgo);
+
     // Subscriber who engaged recently
     $subscriberWithoutRecentEngagement = $this->createSubscriber('with_engagement@example.com', $withinCheckInterval, $this->segment);
     $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $subscriberWithoutRecentEngagement, $withinCheckInterval);
