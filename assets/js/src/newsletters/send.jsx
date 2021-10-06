@@ -215,6 +215,7 @@ class NewsletterSend extends React.Component {
             case 'notification':
             case 'welcome':
             case 'automatic':
+            case 're_engagement':
               return this.activateNewsletter(response);
             default:
               return this.sendNewsletter(response);
