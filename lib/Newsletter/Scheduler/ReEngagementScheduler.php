@@ -124,9 +124,14 @@ class ReEngagementScheduler {
     } else {
       $thresholdDate->subWeeks($intervalValue);
     }
+    $thresholdDateSql = $thresholdDate->toDateTimeString();
+    // When checking engagement, we ignore emails that subscribers received in the last 24 hours so that we leave them some time to engage.
+    // This is prevention for sending re-engagement emails to subscribers who have received a single email very recently.
+    $upperThresholdDate = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $upperThresholdDate->subDay();
+    $upperThresholdDate = $upperThresholdDate->toDateTimeString();
     $taskId = $scheduledTask->getId();
     $subscribedStatus = SubscriberEntity::STATUS_SUBSCRIBED;
-    $thresholdDateSql = $thresholdDate->toDateTimeString();
     $newsletterId = $email->getId();
     $segmentIds = $email->getSegmentIds();
     $newsletterStatsTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
@@ -140,7 +145,7 @@ class ReEngagementScheduler {
         SELECT DISTINCT ns.subscriber_id as subscriber_id, :taskId as task_id, 0 as processed, :now as created_at FROM $newsletterStatsTable as ns
         JOIN $subscribersTable s ON ns.subscriber_id = s.id AND s.deleted_at is NULL AND s.status = :subscribed AND GREATEST(COALESCE(s.created_at, '0'), COALESCE(s.last_subscribed_at, '0'), COALESCE(s.last_engagement_at, '0')) < :thresholdDate
         JOIN $subscriberSegmentTable as ss ON ns.subscriber_id = ss.subscriber_id AND ss.segment_id IN (" . implode(',', $segmentIds) . ") AND ss.status = :subscribed
-      WHERE ns.sent_at > :thresholdDate AND ns.subscriber_id NOT IN (SELECT DISTINCT subscriber_id as id FROM $newsletterStatsTable WHERE newsletter_id = :newsletterId AND sent_at > :thresholdDate);
+      WHERE ns.sent_at > :thresholdDate AND ns.sent_at < :upperThresholdDate AND ns.subscriber_id NOT IN (SELECT DISTINCT subscriber_id as id FROM $newsletterStatsTable WHERE newsletter_id = :newsletterId AND sent_at > :thresholdDate);
     ";
 
     $statement = $this->entityManager->getConnection()->prepare($query);
@@ -148,6 +153,7 @@ class ReEngagementScheduler {
     $statement->bindParam('taskId', $taskId, ParameterType::INTEGER);
     $statement->bindParam('subscribed', $subscribedStatus, ParameterType::STRING);
     $statement->bindParam('thresholdDate', $thresholdDateSql, ParameterType::STRING);
+    $statement->bindParam('upperThresholdDate', $upperThresholdDate, ParameterType::STRING);
     $statement->bindParam('newsletterId', $newsletterId, ParameterType::INTEGER);
 
     $statement->executeQuery();
