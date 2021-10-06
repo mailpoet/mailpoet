@@ -184,6 +184,12 @@ class WooCommerce {
     $this->wpPostmetaValueCollation = $wpPostmetaValueColumn->Collation; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
+  /**
+   * In MySQL, if you have the same charset and collation in joined tables' columns it's perfect;
+   * if you have different charsets, utf8 and utf8mb4, it works too; but if you have the same charset
+   * with different collations, e.g. utf8mb4_unicode_ci and utf8mb4_unicode_520_ci, it will fail
+   * with an 'Illegal mix of collations' error. That's why we need an optional COLLATE clause to fix this.
+   */
   private function needsCollationChange(): bool {
     $this->ensureColumnCollation();
     $collation1 = (string)$this->mailpoetEmailCollation;
@@ -192,11 +198,9 @@ class WooCommerce {
     if ($collation1 === $collation2) {
       return false;
     }
-    $collation1UnderscorePos = strpos($collation1, '_');
-    $collation2UnderscorePos = strpos($collation2, '_');
+    list($charset1) = explode('_', $collation1);
+    list($charset2) = explode('_', $collation2);
 
-    $charset1 = substr($collation1, 0, $collation1UnderscorePos === false ? strlen($collation1) : $collation1UnderscorePos);
-    $charset2 = substr($collation2, 0, $collation2UnderscorePos === false ? strlen($collation2) : $collation2UnderscorePos);
     return $charset1 === $charset2;
   }
 
