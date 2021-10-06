@@ -61,6 +61,8 @@ class Scheduler {
         $this->processScheduledStandardNewsletter($newsletter, $queue);
       } elseif ($newsletter->type === NewsletterEntity::TYPE_AUTOMATIC) {
         $this->processScheduledAutomaticEmail($newsletter, $queue);
+      } elseif ($newsletter->type === NewsletterEntity::TYPE_RE_ENGAGEMENT) {
+        $this->processReEngagementEmail($queue);
       }
       $this->cronHelper->enforceExecutionLimit($timer);
     }
@@ -169,6 +171,12 @@ class Scheduler {
     $task->save();
     // update newsletter status
     $newsletter->setStatus(Newsletter::STATUS_SENDING);
+    return true;
+  }
+
+  private function processReEngagementEmail($queue) {
+    $queue->status = null;
+    $queue->save();
     return true;
   }
 
