@@ -59,6 +59,12 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     expect($scheduled)->count(0);
   }
 
+  public function testItDoesntScheduleAnythingIfThereAreNoSubscribersToSendTo() {
+    $this->createReEngagementEmail(5);
+    $scheduled = $this->scheduler->scheduleAll();
+    expect($scheduled)->count(0);
+  }
+
   public function testItScheduleEmailWithCorrectSubscribers() {
     $beforeCheckInterval = Carbon::now();
     $beforeCheckInterval->subMonths(10);
@@ -119,6 +125,12 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
     expect($scheduledAt->getTimestamp())->equals(Carbon::now()->getTimestamp(), 1);
     expect($task->getSubscribers()->count())->equals(2);
+
+    $sendingQueue = $this->entityManager->getRepository(SendingQueueEntity::class)->findOneBy(['task' => $task]);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    expect($sendingQueue->getCountToProcess())->equals(2);
+    expect($sendingQueue->getCountTotal())->equals(2);
+    expect($sendingQueue->getCountProcessed())->equals(0);
   }
 
   private function createReEngagementEmail(int $monthsAfter, string $status = NewsletterEntity::STATUS_ACTIVE) {
