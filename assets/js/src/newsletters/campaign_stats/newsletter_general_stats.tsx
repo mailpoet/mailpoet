@@ -16,6 +16,12 @@ type Props = {
 const minNewslettersSent = 20;
 const minNewslettersOpened = 5;
 
+// When percentage value is lower then 0.1 we want to display value with two decimal places
+const formatWithOptimalPrecision = (value) => {
+  const precision = value < 0.1 ? 2 : 1;
+  return MailPoet.Num.toLocaleFixed(value, precision);
+};
+
 export const NewsletterGeneralStats = ({
   newsletter,
   isWoocommerceActive,
@@ -34,12 +40,12 @@ export const NewsletterGeneralStats = ({
     percentageUnsubscribed = (newsletter.statistics.unsubscribed * 100) / totalSent;
     percentageBounced = (newsletter.statistics.bounced * 100) / totalSent;
   }
-  // format to 1 decimal place
-  const percentageClickedDisplay = MailPoet.Num.toLocaleFixed(percentageClicked, 1);
-  const percentageOpenedDisplay = MailPoet.Num.toLocaleFixed(percentageOpened, 1);
-  const percentageMachineOpenedDisplay = MailPoet.Num.toLocaleFixed(percentageMachineOpened, 1);
-  const percentageUnsubscribedDisplay = MailPoet.Num.toLocaleFixed(percentageUnsubscribed, 1);
-  const percentageBouncedDisplay = MailPoet.Num.toLocaleFixed(percentageBounced, 1);
+  // format by decimal places count
+  const percentageClickedDisplay = formatWithOptimalPrecision(percentageClicked);
+  const percentageOpenedDisplay = formatWithOptimalPrecision(percentageOpened);
+  const percentageMachineOpenedDisplay = formatWithOptimalPrecision(percentageMachineOpened);
+  const percentageUnsubscribedDisplay = formatWithOptimalPrecision(percentageUnsubscribed);
+  const percentageBouncedDisplay = formatWithOptimalPrecision(percentageBounced);
 
   const displayBadges = ((totalSent >= minNewslettersSent)
     && (newsletter.statistics.opened >= minNewslettersOpened)
