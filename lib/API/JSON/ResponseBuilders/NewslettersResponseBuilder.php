@@ -164,9 +164,6 @@ class NewslettersResponseBuilder {
       $data['segments'] = $this->buildSegments($newsletter);
       $data['options'] = $this->buildOptions($newsletter);
       $data['total_sent'] = $statistics ? $statistics->getTotalSentCount() : 0;
-      $data['total_scheduled'] = SendingQueue::findTaskByNewsletterId($newsletter->getId())
-        ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
-        ->count();
     }
     return $data;
   }

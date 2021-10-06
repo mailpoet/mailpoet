@@ -193,8 +193,6 @@ class NewsletterListReEngagement extends React.Component {
   renderStatus = (newsletter) => {
     const totalSentMessage = MailPoet.I18n.t('sentToXSubscribers')
       .replace('%$1d', newsletter.total_sent.toLocaleString());
-    const totalScheduledMessage = MailPoet.I18n.t('scheduledToXSubscribers')
-      .replace('%$1d', newsletter.total_scheduled.toLocaleString());
 
     return (
       <div>
@@ -212,9 +210,6 @@ class NewsletterListReEngagement extends React.Component {
           >
             { totalSentMessage }
           </Link>
-          {' '}
-          <br />
-          { totalScheduledMessage }
         </p>
       </div>
     );
