@@ -120,6 +120,7 @@ class WooCommerceTest extends \MailPoetTest {
 
   public function testItSynchronizesNewGuestCustomer() {
     $this->settings->set('signup_confirmation', ['enabled' => true]);
+    $this->settings->set('woocommerce.optin_on_checkout', ['enabled' => false]);
     $guest = $this->insertGuestCustomer();
     $woocommerceSegment = $this->getWooCommerceSegmentForGuestUser($guest);
     $woocommerceSegment->synchronizeGuestCustomer($guest['order_id']);
@@ -136,6 +137,7 @@ class WooCommerceTest extends \MailPoetTest {
 
   public function testItSynchronizesNewGuestCustomerWithDoubleOptinDisabled() {
     $this->settings->set('signup_confirmation', ['enabled' => false]);
+    $this->settings->set('woocommerce.optin_on_checkout', ['enabled' => false]);
     $this->settings->resetCache();
     $guest = $this->insertGuestCustomer();
     $woocommerceSegment = $this->getWooCommerceSegmentForGuestUser($guest);
@@ -147,6 +149,19 @@ class WooCommerceTest extends \MailPoetTest {
     expect($subscriber->isWoocommerceUser)->equals(1);
     expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
     expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+  }
+
+  public function testItSynchronizesNewGuestCustomerWithOptinCheckoutEnabled() {
+    $this->settings->set('signup_confirmation', ['enabled' => false]);
+    $this->settings->set('woocommerce.optin_on_checkout', ['enabled' => true]);
+    $this->settings->resetCache();
+    $guest = $this->insertGuestCustomer();
+    $woocommerceSegment = $this->getWooCommerceSegmentForGuestUser($guest);
+    $woocommerceSegment->synchronizeGuestCustomer($guest['order_id']);
+    $subscriber = Segment::getWooCommerceSegment()->subscribers()
+      ->where('email', $guest['email'])
+      ->findOne();
+    expect($subscriber)->isEmpty();
   }
 
   public function testItSynchronizesCustomers() {
