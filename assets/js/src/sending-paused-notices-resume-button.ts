@@ -2,19 +2,19 @@ import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 
 const loadAuthorizedEmailAddresses = async () => {
-  if (window.mailpoet_mta_method !== 'MailPoet') {
+  if (MailPoet.mtaMethod !== 'MailPoet') {
     return [];
   }
   const response = await MailPoet.Ajax.post({
-    api_version: window.mailpoet_api_version,
+    api_version: MailPoet.apiVersion,
     endpoint: 'mailer',
     action: 'getAuthorizedEmailAddresses',
   });
   return response.data || [];
 };
 
-const isValidFromAddress = async (fromAddress) => {
-  if (window.mailpoet_mta_method !== 'MailPoet') {
+const isValidFromAddress = async (fromAddress: string | null) => {
+  if (MailPoet.mtaMethod !== 'MailPoet') {
     return true;
   }
   const addresses = await loadAuthorizedEmailAddresses();
@@ -23,12 +23,11 @@ const isValidFromAddress = async (fromAddress) => {
 
 const resumeMailerSending = () => {
   MailPoet.Ajax.post({
-    api_version: window.mailpoet_api_version,
+    api_version: MailPoet.apiVersion,
     endpoint: 'mailer',
     action: 'resumeSending',
   }).done(() => {
     MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
-    window.mailpoet_listing.forceUpdate();
   }).fail((response) => {
     if (response.errors.length > 0) {
       MailPoet.Notice.error(
@@ -39,7 +38,7 @@ const resumeMailerSending = () => {
   });
 };
 
-const resumeSendingIfAuthorized = (fromAddress) => isValidFromAddress(fromAddress)
+const resumeSendingIfAuthorized = (fromAddress: string | null) => isValidFromAddress(fromAddress)
   .then((valid) => {
     if (!valid) {
       MailPoet.Notice.error(
