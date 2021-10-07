@@ -225,8 +225,15 @@ class Hooks {
     $this->wp->addAction(
       'woocommerce_checkout_update_order_meta',
       [$this->hooksWooCommerce, 'subscribeOnCheckout'],
-      10, // this should execute after the WC sync call on the same hook
+      10, // this should execute after the WC sync call on the same hook,
       2
+    );
+
+    $this->wp->addAction(
+      'woocommerce_before_pay_action',
+      [$this->hooksWooCommerce, 'subscribeOnOrderPay'],
+      10,
+      1
     );
   }
 

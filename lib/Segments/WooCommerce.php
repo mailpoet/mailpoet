@@ -144,10 +144,12 @@ class WooCommerce {
         $subscriber->save();
       }
       // add subscriber to the WooCommerce Customers segment
-      SubscriberSegment::subscribeToSegments(
-        $subscriber,
-        [$wcSegment->id]
-      );
+      if (!(bool)$this->settings->get('woocommerce.optin_on_checkout.enabled', false)) {
+          SubscriberSegment::subscribeToSegments(
+            $subscriber,
+            [$wcSegment->id]
+          );
+      }
     }
   }
 

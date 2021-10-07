@@ -66,6 +66,14 @@ class HooksWooCommerce {
     }
   }
 
+  public function subscribeOnOrderPay($orderId) {
+    try {
+      $this->woocommerceSubscription->subscribeOnOrderPay($orderId);
+    } catch (\Throwable $e) {
+      $this->logError($e, 'WooCommerce Subscription');
+    }
+  }
+
   public function disableWooCommerceSettings() {
     try {
       $this->woocommerceSettings->disableWooCommerceSettings();

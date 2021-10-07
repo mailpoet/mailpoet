@@ -129,6 +129,16 @@ class Subscription {
       && $subscriberSegment->status === Subscriber::STATUS_SUBSCRIBED;
   }
 
+  public function subscribeOnOrderPay($orderId) {
+    $wcOrder = $this->wcHelper->wcGetOrder($orderId);
+    if (!$wcOrder instanceof \WC_Order) {
+      return null;
+    }
+
+    $data['billing_email'] = $wcOrder->get_billing_email();
+    $this->subscribeOnCheckout($orderId, $data);
+  }
+
   public function subscribeOnCheckout($orderId, $data) {
     if (empty($data['billing_email'])) {
       // no email in posted order data
