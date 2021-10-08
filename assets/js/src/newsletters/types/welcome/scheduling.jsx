@@ -82,27 +82,6 @@ class WelcomeScheduling extends React.Component {
 
   handleAfterTimeTypeChange = (event) => this.handleValueChange('afterTimeType', event.target.value);
 
-  handleNext = () => {
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'newsletters',
-      action: 'create',
-      data: {
-        type: 'welcome',
-        options: this.state,
-      },
-    }).done((response) => {
-      this.showTemplateSelection(response.data.id);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
-          { scroll: true }
-        );
-      }
-    });
-  };
-
   showTemplateSelection = (newsletterId) => {
     this.props.history.push(`/template/${newsletterId}`);
   };
