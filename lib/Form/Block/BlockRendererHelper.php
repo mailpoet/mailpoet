@@ -39,7 +39,7 @@ class BlockRendererHelper {
 
     if (($blockId === 'first_name') || ($blockId === 'last_name')) {
       $errorMessages = [
-        __('Please specify a valid name', 'mailpoet'),
+        __('Please specify a valid name.', 'mailpoet'),
         __('Addresses in names are not permitted, please add your name instead.', 'mailpoet'),
       ];
       $rules['names'] = '[' . implode(',', array_map(function (string $errorMessage): string {
@@ -52,7 +52,7 @@ class BlockRendererHelper {
       $rules['mincheck'] = 1;
       $rules['group'] = $blockId;
       $rules['errors-container'] = '.mailpoet_error_' . $blockId;
-      $rules['required-message'] = __('Please select a list', 'mailpoet');
+      $rules['required-message'] = __('Please select a list.', 'mailpoet');
     }
 
     if (!empty($block['params']['required'])) {
@@ -63,7 +63,7 @@ class BlockRendererHelper {
     if (!empty($block['params']['validate'])) {
       if ($block['params']['validate'] === 'phone') {
         $rules['pattern'] = "^[\d\+\-\.\(\)\/\s]*$";
-        $rules['error-message'] = __('Please specify a valid phone number', 'mailpoet');
+        $rules['error-message'] = __('Please specify a valid phone number.', 'mailpoet');
       } else {
         $rules['type'] = $this->wp->escAttr($block['params']['validate']);
       }
@@ -72,7 +72,7 @@ class BlockRendererHelper {
     if (in_array($block['type'], ['radio', 'checkbox'])) {
       $rules['group'] = 'custom_field_' . $blockId;
       $rules['errors-container'] = '.mailpoet_error_' . $blockId;
-      $rules['required-message'] = __('Please select at least one option', 'mailpoet');
+      $rules['required-message'] = __('Please select at least one option.', 'mailpoet');
     }
 
     if ($block['type'] === 'date') {

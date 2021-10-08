@@ -91,12 +91,12 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     $block = $this->block;
     $block['params']['validate'] = 'phone';
     $validation = $this->rendererHelper->getInputValidation($block);
-    expect($validation)->equals('data-parsley-pattern="^[\d\+\-\.\(\)\/\s]*$" data-parsley-error-message="Please specify a valid phone number"');
+    expect($validation)->equals('data-parsley-pattern="^[\d\+\-\.\(\)\/\s]*$" data-parsley-error-message="Please specify a valid phone number."');
 
     $block = $this->block;
     $block['type'] = 'radio';
     $validation = $this->rendererHelper->getInputValidation($block);
-    expect($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1" data-parsley-required-message="Please select at least one option"');
+    expect($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1" data-parsley-required-message="Please select at least one option."');
 
     $block = $this->block;
     $block['type'] = 'date';
