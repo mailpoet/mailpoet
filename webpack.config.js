@@ -1,8 +1,9 @@
 const webpack = require('webpack');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
-const webpackTerserPlugin = require('terser-webpack-plugin');
-const webpackCopyPlugin = require('copy-webpack-plugin');
+const WebpackTerserPlugin = require('terser-webpack-plugin');
+const WebpackCopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
+
 const globalPrefix = 'MailPoetLib';
 const PRODUCTION_ENV = process.env.NODE_ENV === 'production';
 const manifestSeed = {};
@@ -16,11 +17,11 @@ const baseConfig = {
   context: __dirname,
   watchOptions: {
     aggregateTimeout: 300,
-    poll: true
+    poll: true,
   },
   optimization: {
     minimizer: [
-      new webpackTerserPlugin({
+      new WebpackTerserPlugin({
         terserOptions: {
           // preserve identifier names for easier debugging & support
           mangle: false,
@@ -42,22 +43,24 @@ const baseConfig = {
     ],
     fallback: {
       fs: false,
-      path: false, // path is used in css module, but we don't use the functionality which requires it
+      // We need path polyfill so that eslint is able to lint webpack.config.js
+      // and it is imported in css module, but we don't use the functionality which requires it
+      path: require.resolve('path-browserify'),
     },
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
-      'handlebars': 'handlebars/dist/handlebars.js',
+      handlebars: 'handlebars/dist/handlebars.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
       'sticky-kit': 'vendor/jquery.sticky-kit.js',
-      'interact$': 'interact.js/interact.js',
-      'spectrum$': 'spectrum-colorpicker/spectrum.js',
+      interact$: 'interact.js/interact.js',
+      spectrum$: 'spectrum-colorpicker/spectrum.js',
       'wp-js-hooks': path.resolve(__dirname, 'assets/js/src/hooks.js'),
-      'blob$': 'blob-tmp/Blob.js',
-      'chai': 'chai/index.js',
-      'papaparse': 'papaparse/papaparse.min.js',
-      'html2canvas': 'html2canvas/dist/html2canvas.js',
-      'asyncqueue': 'vendor/jquery.asyncqueue.js',
+      blob$: 'blob-tmp/Blob.js',
+      chai: 'chai/index.js',
+      papaparse: 'papaparse/papaparse.min.js',
+      html2canvas: 'html2canvas/dist/html2canvas.js',
+      asyncqueue: 'vendor/jquery.asyncqueue.js',
     },
   },
   plugins: [],
@@ -80,35 +83,35 @@ const baseConfig = {
         include: require.resolve('react-tooltip'),
         loader: 'expose-loader',
         options: {
-          exposes: globalPrefix + '.ReactTooltip',
+          exposes: `${globalPrefix}.ReactTooltip`,
         },
       },
       {
         include: require.resolve('react'),
         loader: 'expose-loader',
         options: {
-          exposes: globalPrefix + '.React',
+          exposes: `${globalPrefix}.React`,
         },
       },
       {
         include: require.resolve('react-dom'),
         loader: 'expose-loader',
         options: {
-          exposes: globalPrefix + '.ReactDOM',
+          exposes: `${globalPrefix}.ReactDOM`,
         },
       },
       {
         include: require.resolve('react-router-dom'),
         loader: 'expose-loader',
         options: {
-          exposes: globalPrefix + '.ReactRouter',
+          exposes: `${globalPrefix}.ReactRouter`,
         },
       },
       {
         include: require.resolve('react-string-replace'),
         loader: 'expose-loader',
         options: {
-          exposes: globalPrefix + '.ReactStringReplace',
+          exposes: `${globalPrefix}.ReactStringReplace`,
         },
       },
       {
@@ -116,7 +119,7 @@ const baseConfig = {
         loader: 'expose-loader',
         options: {
           exposes: {
-            globalName: globalPrefix + '.Hooks',
+            globalName: `${globalPrefix}.Hooks`,
             override: true,
           },
         },
@@ -127,10 +130,10 @@ const baseConfig = {
           {
             loader: 'expose-loader',
             options: {
-              exposes: globalPrefix + '.Listing',
+              exposes: `${globalPrefix}.Listing`,
             },
           },
-          'babel-loader'
+          'babel-loader',
         ],
       },
       {
@@ -139,11 +142,11 @@ const baseConfig = {
           {
             loader: 'expose-loader',
             options: {
-              exposes: globalPrefix + '.HelpTooltip',
+              exposes: `${globalPrefix}.HelpTooltip`,
             },
           },
           'babel-loader',
-        ]
+        ],
       },
       {
         include: path.resolve(__dirname, 'assets/js/src/common/index.ts'),
@@ -151,25 +154,25 @@ const baseConfig = {
           {
             loader: 'expose-loader',
             options: {
-              exposes: globalPrefix + '.Common',
+              exposes: `${globalPrefix}.Common`,
             },
           },
           'babel-loader',
-        ]
+        ],
       },
       {
         include: /Blob.js$/,
         loader: 'exports-loader',
         options: {
           exports: 'default window.Blob',
-        }
+        },
       },
       {
         test: /backbone.supermodel/,
         loader: 'exports-loader',
         options: {
           exports: 'default Backbone.SuperModel',
-        }
+        },
       },
       {
         include: require.resolve('velocity-animate'),
@@ -187,11 +190,11 @@ const baseConfig = {
           {
             loader: 'expose-loader',
             options: {
-              exposes: globalPrefix + '.ClassNames',
+              exposes: `${globalPrefix}.ClassNames`,
             },
           },
           'babel-loader',
-        ]
+        ],
       },
       {
         test: /node_modules\/tinymce/,
@@ -217,8 +220,8 @@ const baseConfig = {
           ],
         },
       },
-    ]
-  }
+    ],
+  },
 };
 
 // Admin config
@@ -243,16 +246,16 @@ const adminConfig = {
     admin: 'webpack_admin_index.jsx',
     newsletter_editor: 'newsletter_editor/webpack_index.jsx',
     form_editor: 'form_editor/form_editor.jsx',
-    settings: 'settings/index.tsx'
+    settings: 'settings/index.tsx',
   },
   plugins: [
     ...baseConfig.plugins,
 
-    new webpackCopyPlugin({
+    new WebpackCopyPlugin({
       patterns: [
         {
           from: 'node_modules/tinymce/skins/ui/oxide',
-          to: 'skins/ui/oxide'
+          to: 'skins/ui/oxide',
         },
       ],
     }),
@@ -270,10 +273,10 @@ const adminConfig = {
           minChunks: 2,
         },
       },
-    }
+    },
   },
   externals: {
-    'jquery': 'jQuery',
+    jquery: 'jQuery',
   },
 };
 
@@ -293,8 +296,8 @@ const publicConfig = {
     ),
   ],
   externals: {
-    'jquery': 'jQuery'
-  }
+    jquery: 'jQuery',
+  },
 };
 
 // Migrator config
@@ -302,13 +305,13 @@ const migratorConfig = {
   name: 'mp2migrator',
   entry: {
     mp2migrator: [
-      'mp2migrator.js'
-    ]
+      'mp2migrator.js',
+    ],
   },
   externals: {
-    'jquery': 'jQuery',
-    'mailpoet': 'MailPoet'
-  }
+    jquery: 'jQuery',
+    mailpoet: 'MailPoet',
+  },
 };
 
 // Newsletter Editor Tests Config
@@ -360,15 +363,15 @@ const testConfig = {
     modules: [
       'node_modules',
       'assets/js/src',
-      'tests/javascript_newsletter_editor/newsletter_editor'
+      'tests/javascript_newsletter_editor/newsletter_editor',
     ],
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
-      'handlebars': 'handlebars/dist/handlebars.js',
+      handlebars: 'handlebars/dist/handlebars.js',
       'sticky-kit': 'vendor/jquery.sticky-kit.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
       'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
-      'blob$': 'blob-tmp/Blob.js',
+      blob$: 'blob-tmp/Blob.js',
       'wp-js-hooks': path.resolve(__dirname, 'assets/js/src/hooks.js'),
     },
     fallback: {
@@ -376,9 +379,9 @@ const testConfig = {
     },
   },
   externals: {
-    'jquery': 'jQuery',
-    'interact': 'interact',
-    'spectrum': 'spectrum',
+    jquery: 'jQuery',
+    interact: 'interact',
+    spectrum: 'spectrum',
   },
 };
 
@@ -389,7 +392,7 @@ const formPreviewConfig = {
     form_preview: 'form_editor/form_preview.ts',
   },
   externals: {
-    'jquery': 'jQuery',
+    jquery: 'jQuery',
   },
 };
 
@@ -401,7 +404,17 @@ const postEditorBlock = {
   },
 };
 
-module.exports = [publicConfig, adminConfig, migratorConfig, formPreviewConfig, testConfig, postEditorBlock].map((config, index) => {
+const configs = [
+  publicConfig,
+  adminConfig,
+  migratorConfig,
+  formPreviewConfig,
+  testConfig,
+  postEditorBlock,
+];
+
+module.exports = configs.map((conf) => {
+  const config = Object.assign({}, conf);
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(
