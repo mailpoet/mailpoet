@@ -40,6 +40,9 @@ const roleField = {
 const afterTimeNumberField = {
   name: 'afterTimeNumber',
   size: 3,
+  validation: {
+    'data-parsley-required': true,
+  },
 };
 
 const afterTimeTypeField = {

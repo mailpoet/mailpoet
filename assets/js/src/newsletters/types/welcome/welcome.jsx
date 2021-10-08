@@ -7,6 +7,7 @@ import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
+import jQuery from 'jquery';
 import WelcomeScheduling from './scheduling.jsx';
 
 const field = {
@@ -47,26 +48,33 @@ class NewsletterWelcome extends React.Component {
     this.setState(state);
   }
 
-  handleNext() {
-    MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'newsletters',
-      action: 'create',
-      data: _.extend({}, this.state, {
-        type: 'welcome',
-        subject: MailPoet.I18n.t('draftNewsletterTitle'),
-      }),
-    }).done((response) => {
-      this.showTemplateSelection(response.data.id);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
-          { scroll: true }
-        );
-      }
-    });
+  handleNext(event) {
+    event.preventDefault();
+    if (!this.isValid()) {
+      jQuery('#welcome_scheduling').parsley().validate();
+    } else {
+      MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'newsletters',
+        action: 'create',
+        data: _.extend({}, this.state, {
+          type: 'welcome',
+          subject: MailPoet.I18n.t('draftNewsletterTitle'),
+        }),
+      }).done((response) => {
+        this.showTemplateSelection(response.data.id);
+      }).fail((response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map((error) => error.message),
+            { scroll: true }
+          );
+        }
+      });
+    }
   }
+
+  isValid = () => jQuery('#welcome_scheduling').parsley().isValid();
 
   showTemplateSelection(newsletterId) {
     this.props.history.push(`/template/${newsletterId}`);
@@ -81,20 +89,21 @@ class NewsletterWelcome extends React.Component {
 
         <Grid.Column align="center" className="mailpoet-schedule-email">
           <Heading level={4}>{MailPoet.I18n.t('selectEventToSendWelcomeEmail')}</Heading>
+          <form id="welcome_scheduling">
+            <WelcomeScheduling
+              item={this.state}
+              field={field}
+              onValueChange={this.handleValueChange}
+            />
 
-          <WelcomeScheduling
-            item={this.state}
-            field={field}
-            onValueChange={this.handleValueChange}
-          />
-
-          <Button
-            isFullWidth
-            onClick={this.handleNext}
-            type="button"
-          >
-            {MailPoet.I18n.t('next')}
-          </Button>
+            <Button
+              isFullWidth
+              type="submit"
+              onClick={this.handleNext}
+            >
+              {MailPoet.I18n.t('next')}
+            </Button>
+          </form>
         </Grid.Column>
       </div>
     );
