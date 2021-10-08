@@ -1,6 +1,6 @@
 var fs = require('fs');
 module.exports = {
-  loadFileToContainer: function (path, window, containerTagName, opts) {
+  loadFileToContainer: function loadFileToContainer(path, window, containerTagName, opts) {
     var contents = fs.readFileSync(path);
     var container = window.document.createElement(containerTagName);
     var options = opts || {};
@@ -14,10 +14,10 @@ module.exports = {
     }
     global.window.document.body.appendChild(container);
   },
-  loadScript: function (scriptPath, window, options) {
+  loadScript: function loadScript(scriptPath, window, options) {
     this.loadFileToContainer(scriptPath, window, 'script', options);
   },
-  loadTemplate: function (path, window, opts) {
+  loadTemplate: function loadTemplate(path, window, opts) {
     var w = window || global.window;
     var options = opts || {};
     options.type = 'text/x-handlebars-template';

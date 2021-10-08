@@ -30,6 +30,7 @@ if (!global.document || !global.window) {
 }
 const testHelpers = require('./loadHelpers.js');
 global.testHelpers = testHelpers;
+
 const jQuery = require('jquery');
 global.$ = jQuery;
 global.jQuery = jQuery;
@@ -46,7 +47,7 @@ global.Node = global.window.Node;
 global.HTMLAnchorElement = global.window.HTMLAnchorElement;
 
 // Stub out interact.js
-global.interact = function () {
+global.interact = () => {
   return {
     draggable: global.interact,
     restrict: global.interact,
@@ -58,44 +59,40 @@ global.interact = function () {
     styleCursor: global.interact,
   };
 };
-global.spectrum = function () { return this; };
+global.spectrum = function spectrum() { return this; };
 jQuery.fn.spectrum = global.spectrum;
 
 // Add global stubs for convenience
-global.stubChannel = function (EditorApplication, returnObject) {
+global.stubChannel = (EditorApplication, returnObject) => {
   var App = EditorApplication;
   App.getChannel = sinon.stub().returns(_.defaults(returnObject || {}, {
-    request: function () {
-    },
-    trigger: function () {
-    },
-    on: function () {
-    },
-    off: function () {
-    },
+    request: () => {},
+    trigger: () => {},
+    on: () => {},
+    off: () => {},
   }));
 };
-global.stubConfig = function (EditorApplication, opts) {
+global.stubConfig = (EditorApplication, opts) => {
   var App = EditorApplication;
   App.getConfig = sinon.stub().returns(new global.Backbone.SuperModel(opts || {}));
 };
-global.stubAvailableStyles = function (EditorApplication, styles) {
+global.stubAvailableStyles = (EditorApplication, styles) => {
   var App = EditorApplication;
   App.getAvailableStyles = sinon.stub().returns(new global.Backbone.SuperModel(styles || {}));
 };
 
-global.stubImage = function (defaultWidth, defaultHeight) {
-  global.Image = function () {
-    this.onload = function () {};
+global.stubImage = function stubImage(defaultWidth, defaultHeight) {
+  global.Image = function Image() {
+    this.onload = () => {};
     this.naturalWidth = defaultWidth;
     this.naturalHeight = defaultHeight;
     this.address = '';
 
     Object.defineProperty(this, 'src', {
-      get: function () {
+      get: function get() {
         return this.address;
       },
-      set: function (src) {
+      set: function set(src) {
         this.address = src;
         this.onload();
       },
@@ -118,7 +115,7 @@ global.window.matchMedia = window.matchMedia || (
   }
 );
 
-global.window.fontsSelect = function () {};
+global.window.fontsSelect = () => {};
 
 testHelpers.loadTemplate('blocks/base/toolsGeneric.hbs', window, { id: 'newsletter_editor_template_tools_generic' });
 
