@@ -11,7 +11,7 @@
     "lint": "npm run lint6 && npm run lint-ts && npm run lint5 && npm run lint-tests",
     "lint6": "eslint -c .eslintrc.es6.json --max-warnings 0 'assets/js/src/**/*.jsx' 'tests/javascript/**/*.js'",
     "lint-ts": "eslint -c .eslintrc.ts.json --max-warnings 0 'assets/js/src/**/*.tsx' 'assets/js/src/**/*.ts'",
-    "lint5": "eslint -c .eslintrc.es5.json --ignore-pattern helpscout.js --max-warnings 0 'assets/js/src/**/*.js'",
+    "lint5": "eslint -c .eslintrc.es5.json --max-warnings 0 'assets/js/src/**/*.js'",
     "lint-tests": "eslint -c .eslintrc.tests_newsletter_editor.json --max-warnings 0 'tests/javascript_newsletter_editor'",
     "autoprefixer": "postcss assets/dist/css/*.css --use autoprefixer --no-map --replace",
     "scss": "sass assets/css/src/:assets/dist/css/ --style compressed",
@@ -26,7 +26,7 @@
   },
   "lint-staged": {
     "*.{scss,css}": "npm run stylelint",
-    "!(*spec).js": "eslint -c .eslintrc.es5.json --ignore-pattern helpscout.js --max-warnings 0",
+    "!(*spec).js": "eslint -c .eslintrc.es5.json --max-warnings 0",
     "*.jsx": "eslint -c .eslintrc.es6.json --max-warnings 0",
     "*.{tsx,ts}": "eslint -c .eslintrc.ts.json --max-warnings 0",
     "**/newsletter_editor/**/*spec.js": "eslint -c .eslintrc.tests_newsletter_editor.json --max-warnings 0",
