@@ -53,4 +53,13 @@ class SendingThrottlingHandlerTest extends \MailPoetTest {
     }
     expect($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
   }
+
+  public function testForecastTimeIsProportionalToBatchSize(): void {
+    $lastRequestTime = SendingThrottlingHandler::BATCH_SIZE; // one second per email
+    $this->throttlingHandler->setLastRequestTime($lastRequestTime);
+    $this->throttlingHandler->processSuccess();
+    expect($this->throttlingHandler->getForecastTime())->equals($this->throttlingHandler->getBatchSize());
+    $this->throttlingHandler->throttleBatchSize();
+    expect($this->throttlingHandler->getForecastTime())->equals($this->throttlingHandler->getBatchSize());
+  }
 }

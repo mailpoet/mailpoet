@@ -269,6 +269,28 @@ class CronHelperTest extends \MailPoetTest {
     }
   }
 
+  public function testItEnforcesMinExecutionLimit() {
+    $time = microtime(true);
+    $forecast = $this->cronHelper->getDaemonExecutionLimit() / 2;
+    try {
+      $this->cronHelper->enforceMinExecutionLimit($time - ($this->cronHelper->getDaemonExecutionLimit() / 2), $forecast);
+      self::fail('Execution limit exception not thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('Minimum execution time has been enforced.');
+    }
+  }
+
+  public function testItEnforcesMinExecutionLimitAlsoChecksExecutionLimit() {
+    $time = microtime(true);
+    $forecast = 0;
+    try {
+      $this->cronHelper->enforceMinExecutionLimit($time - $this->cronHelper->getDaemonExecutionLimit(), $forecast);
+      self::fail('Execution limit exception not thrown.');
+    } catch (\Exception $e) {
+      expect($e->getMessage())->equals('Maximum execution time has been reached.');
+    }
+  }
+
   public function testItAllowsSettingCustomCronUrl() {
     $filter = function($url) {
       expect($url)->stringContainsString('&endpoint=cron');
