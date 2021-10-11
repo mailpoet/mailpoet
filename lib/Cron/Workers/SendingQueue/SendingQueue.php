@@ -242,6 +242,9 @@ class SendingQueue {
     return $this->throttlingHandler->getBatchSize();
   }
 
+  /**
+   * @throws \Exception
+   */
   public function processQueue($queue, $newsletter, $subscribers, $timer) {
     // determine if processing is done in bulk or individually
     $processingMethod = $this->mailerTask->getProcessingMethod();
@@ -324,10 +327,15 @@ class SendingQueue {
     );
   }
 
+  /**
+   * @throws \Exception
+   */
   public function sendNewsletters(
     SendingTask $sendingTask, $preparedSubscribersIds, $preparedNewsletters,
     $preparedSubscribers, $statistics, $timer, $extraParams = []
   ) {
+    $this->enforceMinRequestTime($timer);
+    $sending_init_time = microtime(true);
     // send newsletters
     $sendResult = $this->mailerTask->sendBulk(
       $preparedNewsletters,
@@ -340,7 +348,8 @@ class SendingQueue {
       $preparedSubscribers,
       $preparedSubscribersIds,
       $statistics,
-      $timer
+      $timer,
+      $sending_init_time
     );
   }
 
@@ -372,12 +381,16 @@ class SendingQueue {
     array $preparedSubscribers,
     array $preparedSubscribersIds,
     array $statistics,
-    $timer
+    $timer,
+    $sending_init_time = null
   ) {
     // log error message and schedule retry/pause sending
     if ($sendResult['response'] === false) {
       $error = $sendResult['error'];
       assert($error instanceof MailerError);
+      if (!empty($sending_init_time)) {
+        $this->throttlingHandler->setLastRequestTime(microtime(true) - $sending_init_time);
+      }
       $this->errorHandler->processError($error, $sendingTask, $preparedSubscribersIds, $preparedSubscribers);
     }
     // update processed/to process list
@@ -393,6 +406,9 @@ class SendingQueue {
     StatisticsNewslettersModel::createMultiple($statistics);
     // update the sent count
     $this->mailerTask->updateSentCount();
+    if (!empty($sending_init_time)) {
+      $this->throttlingHandler->setLastRequestTime(microtime(true) - $sending_init_time);
+    }
     // enforce execution limits if queue is still being processed
     if ($sendingTask->status !== ScheduledTaskModel::STATUS_COMPLETED) {
       $this->enforceSendingAndExecutionLimits($timer);
@@ -406,6 +422,19 @@ class SendingQueue {
     $this->cronHelper->enforceExecutionLimit($timer);
     // abort if sending limit has been reached
     MailerLog::enforceExecutionRequirements();
+  }
+
+  /**
+   * @throws \Exception
+   */
+  public function enforceMinRequestTime($timer) {
+    $forecastTime = $this->throttlingHandler->getForecastTime();
+    try {
+      $this->cronHelper->enforceMinExecutionLimit($timer, $forecastTime);
+    } catch (\Exception $e) {
+      $this->throttlingHandler->setLastRequestTime(0);
+      throw $e;
+    }
   }
 
   public static function getRunningQueues() {
@@ -438,6 +467,7 @@ class SendingQueue {
   }
 
   private function stopProgress(ScheduledTask $task): void {
+    $this->throttlingHandler->setLastRequestTime(0);
     $task->inProgress = false;
     $task->save();
   }

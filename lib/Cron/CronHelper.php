@@ -17,6 +17,7 @@ class CronHelper {
 
   // Error codes
   const DAEMON_EXECUTION_LIMIT_REACHED = 1001;
+  const DAEMON_EXECUTION_MIN_LIMIT_REACHED = 1011;
 
   /** @var SettingsController */
   private $settings;
@@ -214,6 +215,20 @@ class CronHelper {
     $elapsedTime = microtime(true) - $timer;
     if ($elapsedTime >= $this->getDaemonExecutionLimit()) {
       throw new \Exception(__('Maximum execution time has been reached.', 'mailpoet'), self::DAEMON_EXECUTION_LIMIT_REACHED);
+    }
+  }
+
+  /**
+   * @throws \Exception
+   */
+  public function enforceMinExecutionLimit($timer, $forecastTime = 0) {
+    $elapsedTime = microtime(true) - $timer;
+    if ($elapsedTime >= $this->getDaemonExecutionLimit()) {
+      throw new \Exception(__('Maximum execution time has been reached.', 'mailpoet'), self::DAEMON_EXECUTION_LIMIT_REACHED);
+    }
+    $remainingTime = $this->getDaemonExecutionLimit() - $elapsedTime;
+    if ( $remainingTime < $forecastTime) {
+      throw new \Exception(__('Minimum execution time has been enforced.', 'mailpoet'), self::DAEMON_EXECUTION_MIN_LIMIT_REACHED);
     }
   }
 }

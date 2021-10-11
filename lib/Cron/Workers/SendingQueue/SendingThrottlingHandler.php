@@ -11,6 +11,7 @@ class SendingThrottlingHandler {
   public const BATCH_SIZE = 20;
   public const SETTINGS_KEY = 'mta_throttling';
   public const SUCCESS_THRESHOLD_TO_INCREASE = 10;
+  public const MIN_TIME = 0;
 
   /** @var Logger */
   private $logger;
@@ -37,6 +38,26 @@ class SendingThrottlingHandler {
       return $throttlingSettings['batch_size'];
     }
     return $this->getMaxBatchSize();
+  }
+
+  public function getForecastTime(): int {
+    $throttlingSettings = $this->loadSettings();
+    $requestTime = $this->getMinForecastTime();
+    if (isset($throttlingSettings['last_request_time'])) {
+      $requestTime = $throttlingSettings['last_request_time'];
+    }
+    return $requestTime * $this->getBatchSize();
+  }
+
+  public function setLastRequestTime($lastRequestFullTime = 0) {
+    $throttlingSettings = $this->loadSettings();
+    // We store the time it took to send and process one individual email
+    $throttlingSettings['last_request_time'] = $lastRequestFullTime / $this->getBatchSize();
+    $this->saveSettings($throttlingSettings);
+  }
+
+  private function getMinForecastTime(): int {
+    return $this->wp->applyFilters('mailpoet_cron_worker_sending_queue_min_time', self::MIN_TIME);
   }
 
   private function getMaxBatchSize(): int {
