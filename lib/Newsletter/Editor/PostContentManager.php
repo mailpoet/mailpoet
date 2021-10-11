@@ -39,9 +39,9 @@ class PostContentManager {
       if ($this->wp->hasExcerpt($post)) {
         return self::stripShortCodes($this->wp->getTheExcerpt($post));
       }
-      return $this->generateExcerpt($this->wp->getTheContent(null, false, $post));
+      return $this->generateExcerpt($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
-    return self::stripShortCodes($this->wp->getTheContent(null, false, $post));
+    return self::stripShortCodes($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function filterContent($content, $displayType, $withPostClass = true) {
