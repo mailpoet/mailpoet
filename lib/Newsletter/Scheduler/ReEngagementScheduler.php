@@ -74,7 +74,7 @@ class ReEngagementScheduler {
       return null;
     }
 
-    $scheduledTask = $this->scheduleTask($email);
+    $scheduledTask = $this->scheduleTask();
     $enqueuedCount = $this->enqueueSubscribers($newsletter, $scheduledTask, $intervalUnit, $intervalValue);
 
     if ($enqueuedCount) {
@@ -88,7 +88,7 @@ class ReEngagementScheduler {
     }
   }
 
-  private function scheduleTask(NewsletterEntity $email) {
+  private function scheduleTask(): ScheduledTaskEntity {
     // Scheduled task
     $scheduledTask = new ScheduledTaskEntity();
     $scheduledTask->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
