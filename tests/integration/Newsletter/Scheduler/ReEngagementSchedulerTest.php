@@ -8,6 +8,7 @@ use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
@@ -139,6 +140,34 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     expect($sendingQueue->getCountProcessed())->equals(0);
   }
 
+  public function testItSchedulesOneSubscriberInTwoSegmentsOnlyOnce() {
+    $beforeCheckInterval = Carbon::now();
+    $beforeCheckInterval->subMonths(10);
+    $withinCheckInterval = Carbon::now();
+    $withinCheckInterval->subMonth();
+    $this->createReEngagementEmail(5);
+
+    // Subscriber who should match all conditions and should and be scheduled
+    $subscriberToBeScheduled = $this->createSubscriber('ok_subscriber@example.com', $beforeCheckInterval, $this->segment);
+    $this->entityManager->refresh($subscriberToBeScheduled);
+    $this->addSentEmailToSubscriber($this->sentStandardNewsletter, $subscriberToBeScheduled, $withinCheckInterval);
+
+    $secondSegment = (new Segment())->withName('Re-engagement test 2')->create();
+    $subscriberSegment = new SubscriberSegmentEntity($secondSegment, $subscriberToBeScheduled, SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->entityManager->persist($subscriberSegment);
+    $subscriberToBeScheduled->getSubscriberSegments()->add($subscriberSegment);
+    $this->entityManager->flush();
+
+    $task = $this->scheduler->scheduleAll()[0];
+    $this->entityManager->refresh($task);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    expect($task->getSubscribers()->count())->equals(1);
+
+    $sendingQueue = $this->entityManager->getRepository(SendingQueueEntity::class)->findOneBy(['task' => $task]);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    expect($sendingQueue->getCountToProcess())->equals(1);
+  }
+
   private function createReEngagementEmail(int $monthsAfter, string $status = NewsletterEntity::STATUS_ACTIVE) {
     $email = (new Newsletter())
       ->withSubject("Re-engagement $monthsAfter months")
@@ -192,8 +221,10 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(NewsletterOptionEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(NewsletterSegmentEntity::class);
   }
