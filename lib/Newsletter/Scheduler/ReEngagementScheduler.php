@@ -142,11 +142,22 @@ class ReEngagementScheduler {
     $nowSql = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->toDateTimeString();
 
     $query = "INSERT IGNORE INTO $scheduledTaskSubscribersTable
-        (subscriber_id, task_id,  processed, created_at)
-        SELECT DISTINCT ns.subscriber_id as subscriber_id, :taskId as task_id, 0 as processed, :now as created_at FROM $newsletterStatsTable as ns
-        JOIN $subscribersTable s ON ns.subscriber_id = s.id AND s.deleted_at is NULL AND s.status = :subscribed AND GREATEST(COALESCE(s.created_at, '0'), COALESCE(s.last_subscribed_at, '0'), COALESCE(s.last_engagement_at, '0')) < :thresholdDate
-        JOIN $subscriberSegmentTable as ss ON ns.subscriber_id = ss.subscriber_id AND ss.segment_id = :segmentId AND ss.status = :subscribed
-      WHERE ns.sent_at > :thresholdDate AND ns.sent_at < :upperThresholdDate AND ns.subscriber_id NOT IN (SELECT DISTINCT subscriber_id as id FROM $newsletterStatsTable WHERE newsletter_id = :newsletterId AND sent_at > :thresholdDate);
+      (subscriber_id, task_id,  processed, created_at)
+      SELECT DISTINCT ns.subscriber_id as subscriber_id, :taskId as task_id, 0 as processed, :now as created_at
+      FROM $newsletterStatsTable as ns
+      JOIN $subscribersTable s ON
+        ns.subscriber_id = s.id
+        AND s.deleted_at is NULL
+        AND s.status = :subscribed
+        AND GREATEST(COALESCE(s.created_at, '0'), COALESCE(s.last_subscribed_at, '0'), COALESCE(s.last_engagement_at, '0')) < :thresholdDate
+      JOIN $subscriberSegmentTable as ss ON ns.subscriber_id = ss.subscriber_id
+        AND ss.segment_id = :segmentId
+        AND ss.status = :subscribed
+      WHERE ns.sent_at > :thresholdDate
+        AND ns.sent_at < :upperThresholdDate
+        AND ns.subscriber_id NOT IN (
+          SELECT DISTINCT subscriber_id as id FROM $newsletterStatsTable WHERE newsletter_id = :newsletterId AND sent_at > :thresholdDate
+        );
     ";
 
     $statement = $this->entityManager->getConnection()->prepare($query);
