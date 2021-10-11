@@ -60,25 +60,25 @@ class ReEngagementScheduler {
     return array_filter($scheduled);
   }
 
-  private function scheduleForEmail(NewsletterEntity $email): ?ScheduledTaskEntity {
-    $scheduledOrRunning = $this->scheduledTasksRepository->findByScheduledAndRunningForNewsletter($email);
+  private function scheduleForEmail(NewsletterEntity $newsletter): ?ScheduledTaskEntity {
+    $scheduledOrRunning = $this->scheduledTasksRepository->findByScheduledAndRunningForNewsletter($newsletter);
     if ($scheduledOrRunning) {
       return null;
     }
-    $intervalUnit = $email->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE);
-    $intervalValue = (int)$email->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER);
+    $intervalUnit = $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE);
+    $intervalValue = (int)$newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER);
     if (!$intervalValue || !in_array($intervalUnit, ['weeks', 'months'], true)) {
       return null;
     }
-    if (!$email->getNewsletterSegments()->count()) {
+    if (!$newsletter->getNewsletterSegments()->count()) {
       return null;
     }
 
     $scheduledTask = $this->scheduleTask($email);
-    $enqueuedCount = $this->enqueueSubscribers($email, $scheduledTask, $intervalUnit, $intervalValue);
+    $enqueuedCount = $this->enqueueSubscribers($newsletter, $scheduledTask, $intervalUnit, $intervalValue);
 
     if ($enqueuedCount) {
-      $this->createSendingQueue($email, $scheduledTask, $enqueuedCount);
+      $this->createSendingQueue($newsletter, $scheduledTask, $enqueuedCount);
       return $scheduledTask;
     } else {
       // Nothing to send
@@ -100,11 +100,11 @@ class ReEngagementScheduler {
     return $scheduledTask;
   }
 
-  private function createSendingQueue(NewsletterEntity $email, ScheduledTaskEntity $scheduledTask, int $countToProcess): SendingQueueEntity {
+  private function createSendingQueue(NewsletterEntity $newsletter, ScheduledTaskEntity $scheduledTask, int $countToProcess): SendingQueueEntity {
     // Sending queue
     $sendingQueue = new SendingQueueEntity();
     $sendingQueue->setTask($scheduledTask);
-    $sendingQueue->setNewsletter($email);
+    $sendingQueue->setNewsletter($newsletter);
     $sendingQueue->setCountToProcess($countToProcess);
     $sendingQueue->setCountTotal($countToProcess);
     $this->entityManager->persist($sendingQueue);
@@ -116,7 +116,7 @@ class ReEngagementScheduler {
    * Finds subscribers that should receive re-engagement email and saves scheduled tasks subscribers
    * @return int Count of enqueued subscribers
    */
-  private function enqueueSubscribers(NewsletterEntity $email, ScheduledTaskEntity $scheduledTask, string $intervalUnit, int $intervalValue): int {
+  private function enqueueSubscribers(NewsletterEntity $newsletter, ScheduledTaskEntity $scheduledTask, string $intervalUnit, int $intervalValue): int {
     // Parameters for scheduled task subscribers query
     $thresholdDate = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     if ($intervalUnit === 'months') {
@@ -132,8 +132,8 @@ class ReEngagementScheduler {
     $upperThresholdDate = $upperThresholdDate->toDateTimeString();
     $taskId = $scheduledTask->getId();
     $subscribedStatus = SubscriberEntity::STATUS_SUBSCRIBED;
-    $newsletterId = $email->getId();
-    $segmentIds = $email->getSegmentIds();
+    $newsletterId = $newsletter->getId();
+    $segmentIds = $newsletter->getSegmentIds();
     $newsletterStatsTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
     $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
