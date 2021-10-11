@@ -75,7 +75,10 @@ class ReEngagementScheduler {
     }
 
     $scheduledTask = $this->scheduleTask();
-    $enqueuedCount = $this->enqueueSubscribers($newsletter, $scheduledTask, $intervalUnit, $intervalValue);
+    $enqueuedCount = 0;
+    foreach ($newsletter->getSegmentIds() as $segmentId) {
+      $enqueuedCount += $this->enqueueSubscribersForSegment((int)$newsletter->getId(), $segmentId, $scheduledTask, $intervalUnit, $intervalValue);
+    }
 
     if ($enqueuedCount) {
       $this->createSendingQueue($newsletter, $scheduledTask, $enqueuedCount);
@@ -116,7 +119,7 @@ class ReEngagementScheduler {
    * Finds subscribers that should receive re-engagement email and saves scheduled tasks subscribers
    * @return int Count of enqueued subscribers
    */
-  private function enqueueSubscribers(NewsletterEntity $newsletter, ScheduledTaskEntity $scheduledTask, string $intervalUnit, int $intervalValue): int {
+  private function enqueueSubscribersForSegment(int $newsletterId, int $segmentId, ScheduledTaskEntity $scheduledTask, string $intervalUnit, int $intervalValue): int {
     // Parameters for scheduled task subscribers query
     $thresholdDate = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     if ($intervalUnit === 'months') {
@@ -132,8 +135,6 @@ class ReEngagementScheduler {
     $upperThresholdDate = $upperThresholdDate->toDateTimeString();
     $taskId = $scheduledTask->getId();
     $subscribedStatus = SubscriberEntity::STATUS_SUBSCRIBED;
-    $newsletterId = $newsletter->getId();
-    $segmentIds = $newsletter->getSegmentIds();
     $newsletterStatsTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
     $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
@@ -144,7 +145,7 @@ class ReEngagementScheduler {
         (subscriber_id, task_id,  processed, created_at)
         SELECT DISTINCT ns.subscriber_id as subscriber_id, :taskId as task_id, 0 as processed, :now as created_at FROM $newsletterStatsTable as ns
         JOIN $subscribersTable s ON ns.subscriber_id = s.id AND s.deleted_at is NULL AND s.status = :subscribed AND GREATEST(COALESCE(s.created_at, '0'), COALESCE(s.last_subscribed_at, '0'), COALESCE(s.last_engagement_at, '0')) < :thresholdDate
-        JOIN $subscriberSegmentTable as ss ON ns.subscriber_id = ss.subscriber_id AND ss.segment_id IN (" . implode(',', $segmentIds) . ") AND ss.status = :subscribed
+        JOIN $subscriberSegmentTable as ss ON ns.subscriber_id = ss.subscriber_id AND ss.segment_id = :segmentId AND ss.status = :subscribed
       WHERE ns.sent_at > :thresholdDate AND ns.sent_at < :upperThresholdDate AND ns.subscriber_id NOT IN (SELECT DISTINCT subscriber_id as id FROM $newsletterStatsTable WHERE newsletter_id = :newsletterId AND sent_at > :thresholdDate);
     ";
 
@@ -155,6 +156,7 @@ class ReEngagementScheduler {
     $statement->bindParam('thresholdDate', $thresholdDateSql, ParameterType::STRING);
     $statement->bindParam('upperThresholdDate', $upperThresholdDate, ParameterType::STRING);
     $statement->bindParam('newsletterId', $newsletterId, ParameterType::INTEGER);
+    $statement->bindParam('segmentId', $segmentId, ParameterType::INTEGER);
 
     $statement->executeQuery();
     return $statement->rowCount();
