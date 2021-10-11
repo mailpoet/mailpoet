@@ -729,10 +729,6 @@ class Functions {
     _deprecated_hook($hook_name, $version, $replacement, $message);
   }
 
-  public function getTheContent($moreLinkText = null, $stripTeaser = false, $post = null) {
-    return get_the_content($moreLinkText, $stripTeaser, $post);
-  }
-
   public function getTheExcerpt($post = null) {
     return get_the_excerpt($post);
   }
