@@ -127,12 +127,7 @@ class WooCommerceTest extends \MailPoetTest {
     $subscriber = Segment::getWooCommerceSegment()->subscribers()
       ->where('email', $guest['email'])
       ->findOne();
-    expect($subscriber)->notEmpty();
-    expect($subscriber->firstName)->equals($guest['first_name']);
-    expect($subscriber->lastName)->equals($guest['last_name']);
-    expect($subscriber->isWoocommerceUser)->equals(1);
-    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
-    expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+    expect($subscriber)->isEmpty();
   }
 
   public function testItSynchronizesNewGuestCustomerWithDoubleOptinDisabled() {
@@ -145,10 +140,7 @@ class WooCommerceTest extends \MailPoetTest {
     $subscriber = Segment::getWooCommerceSegment()->subscribers()
       ->where('email', $guest['email'])
       ->findOne();
-    expect($subscriber)->notEmpty();
-    expect($subscriber->isWoocommerceUser)->equals(1);
-    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
-    expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscriber)->isEmpty();
   }
 
   public function testItSynchronizesNewGuestCustomerWithOptinCheckoutEnabled() {
