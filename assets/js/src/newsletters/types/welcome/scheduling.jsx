@@ -82,10 +82,6 @@ class WelcomeScheduling extends React.Component {
 
   handleAfterTimeTypeChange = (event) => this.handleValueChange('afterTimeType', event.target.value);
 
-  showTemplateSelection = (newsletterId) => {
-    this.props.history.push(`/template/${newsletterId}`);
-  };
-
   render() {
     const value = this.getCurrentValue();
     let roleSegmentSelection;
