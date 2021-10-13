@@ -60,8 +60,6 @@ class WooCommercePastOrders extends SimpleWorker {
     }
 
     foreach ($orderIds as $orderId) {
-      // clean all records for given order to fix wrong data inserted by a past buggy version
-      StatisticsWooCommercePurchases::where('order_id', $orderId)->deleteMany();
       $this->woocommercePurchases->trackPurchase($orderId, false);
     }
 
