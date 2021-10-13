@@ -56,4 +56,37 @@ class StatisticsClicksRepository extends Repository {
       ->orderBy('link.url')
       ->setParameter('subscriber', $subscriber->getId());
   }
+
+  /**
+   * @param SubscriberEntity $subscriber
+   * @param \DateTimeInterface $from
+   * @param \DateTimeInterface $to
+   * @return StatisticsClickEntity[]
+   */
+  public function findLatestPerNewsletterBySubscriber(SubscriberEntity $subscriber, \DateTimeInterface $from, \DateTimeInterface $to): array {
+    // subquery to find latest click IDs for each newsletter
+    $latestClickIdsPerNewsletterQuery = $this->entityManager->createQueryBuilder()
+      ->select('MAX(clicks.id)')
+      ->from(StatisticsClickEntity::class, 'clicks')
+      ->where('clicks.subscriber = :subscriber')
+      ->andWhere('clicks.updatedAt > :from')
+      ->andWhere('clicks.updatedAt < :to')
+      ->groupBy('clicks.newsletter');
+
+    $expr = $this->entityManager->getExpressionBuilder();
+    return $this->entityManager->createQueryBuilder()
+      ->select('c')
+      ->from(StatisticsClickEntity::class, 'c')
+      ->where(
+        $expr->in(
+          'c.id',
+          $latestClickIdsPerNewsletterQuery->getDQL()
+        )
+      )
+      ->setParameter('subscriber', $subscriber)
+      ->setParameter('from', $from->format('Y-m-d H:i:s'))
+      ->setParameter('to', $to->format('Y-m-d H:i:s'))
+      ->getQuery()
+      ->getResult();
+  }
 }
