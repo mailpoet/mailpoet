@@ -70,7 +70,7 @@ class StatisticsWooCommercePurchaseEntity {
     StatisticsClickEntity $click,
     int $orderId,
     string $orderCurrency,
-    float $orderPriceTotal 
+    float $orderPriceTotal
   ) {
     $this->newsletter = $newsletter;
     $this->queue = $queue;
@@ -80,63 +80,47 @@ class StatisticsWooCommercePurchaseEntity {
     $this->orderPriceTotal = $orderPriceTotal;
   }
 
-  /**
-   * @return NewsletterEntity|null
-   */
-  public function getNewsletter() {
+  public function getNewsletter(): ?NewsletterEntity {
     $this->safelyLoadToOneAssociation('newsletter');
     return $this->newsletter;
   }
 
-  /**
-   * @return SendingQueueEntity|null
-   */
-  public function getQueue() {
+  public function getQueue(): ?SendingQueueEntity {
     $this->safelyLoadToOneAssociation('queue');
     return $this->queue;
   }
 
-  /**
-   * @return SubscriberEntity|null
-   */
-  public function getSubscriber() {
+  public function getSubscriber(): ?SubscriberEntity {
     $this->safelyLoadToOneAssociation('subscriber');
     return $this->subscriber;
   }
 
-  /**
-   * @return StatisticsClickEntity|null
-   */
-  public function getClick() {
+  public function getClick(): ?StatisticsClickEntity {
     $this->safelyLoadToOneAssociation('click');
     return $this->click;
   }
 
-  /**
-   * @return int
-   */
   public function getOrderId(): int {
     return $this->orderId;
   }
 
-  /**
-   * @param SubscriberEntity|null $subscriber
-   */
-  public function setSubscriber($subscriber) {
+  public function setSubscriber(?SubscriberEntity $subscriber) {
     $this->subscriber = $subscriber;
   }
 
-  /**
-   * @return string
-   */
   public function getOrderCurrency(): string {
     return $this->orderCurrency;
   }
 
-  /**
-   * @return float
-   */
   public function getOrderPriceTotal(): float {
     return $this->orderPriceTotal;
+  }
+
+  public function setOrderCurrency(string $orderCurrency): void {
+    $this->orderCurrency = $orderCurrency;
+  }
+
+  public function setOrderPriceTotal(float $orderPriceTotal): void {
+    $this->orderPriceTotal = $orderPriceTotal;
   }
 }
