@@ -2,16 +2,23 @@
 
 namespace MailPoet\Logging;
 
+use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Entities\LogEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class LogHandlerTest extends \MailPoetTest {
   /** @var LogRepository */
   private $repository;
 
+  /** @var EntityManagerFactory */
+  private $entityManagerFactory;
+
   public function _before() {
     $this->truncateEntity(LogEntity::class);
     $this->repository = $this->diContainer->get(LogRepository::class);
+    $this->entityManagerFactory = $this->diContainer->get(EntityManagerFactory::class);
   }
 
   public function testItCreatesLog() {
@@ -82,5 +89,56 @@ class LogHandlerTest extends \MailPoetTest {
 
     $log = $this->repository->findBy(['name' => 'old name keep']);
     expect($log)->notEmpty();
+  }
+
+  public function testItResilientToSqlError(): void {
+    $entityManager = $this->entityManagerFactory->createEntityManager();
+    $logRepository = new LogRepository($entityManager);
+    $logHandler = new LogHandler(
+      $logRepository,
+      $entityManager,
+      $this->entityManagerFactory
+    );
+    $time = new \DateTime();
+
+    try {
+      $this->causeErrorLockingEntityManager($entityManager);
+    } catch (\Exception $exception) {
+      $logHandler->handle([
+        'level' => \MailPoetVendor\Monolog\Logger::ERROR,
+        'extra' => [],
+        'context' => [],
+        'channel' => 'name',
+        'datetime' => $time,
+      ]);
+    }
+
+    $log = $logRepository->findOneBy(['name' => 'name'], ['id' => 'desc']);
+    assert($log instanceof LogEntity);
+    expect($log->getCreatedAt()->format('Y-m-d H:i:s'))->equals($time->format('Y-m-d H:i:s'));
+  }
+
+  public function _after() {
+    $this->cleanup();
+  }
+
+  private function cleanup(): void {
+    $this->truncateEntity(SubscriberEntity::class);
+  }
+
+  /**
+   * Error is caused by unique index on email in the subscribers table
+   */
+  private function causeErrorLockingEntityManager(EntityManager $entityManager): void {
+    for ($i = 1; $i <= 2; $i++) {
+      $this->createSubscriber($entityManager, 'user@test.com');
+    }
+  }
+
+  private function createSubscriber(EntityManager $entityManager, string $email): void {
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail($email);
+    $entityManager->persist($subscriber);
+    $entityManager->flush();
   }
 }
