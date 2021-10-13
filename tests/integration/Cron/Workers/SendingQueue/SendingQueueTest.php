@@ -39,6 +39,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
@@ -84,6 +85,8 @@ class SendingQueueTest extends \MailPoetTest {
   private $wp;
   /** @var TasksLinks */
   private $tasksLinks;
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
 
   public function _before() {
     parent::_before();
@@ -138,6 +141,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->tasksLinks = $this->diContainer->get(TasksLinks::class);
+    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker(Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]));
   }
 
@@ -190,7 +194,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersFinder,
       $this->segmentsRepository,
       $this->wp,
-      $this->tasksLinks
+      $this->tasksLinks,
+      $this->scheduledTasksRepository
     );
     try {
       $sendingQueueWorker->process();
@@ -217,6 +222,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->segmentsRepository,
       $this->wp,
       $this->tasksLinks,
+      $this->scheduledTasksRepository,
       Stub::make(
         new MailerTask(),
         [
@@ -260,6 +266,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->segmentsRepository,
       $this->wp,
       $this->tasksLinks,
+      $this->scheduledTasksRepository,
       Stub::make(
         new MailerTask(),
         [
@@ -301,7 +308,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersFinder,
       $this->segmentsRepository,
       $this->wp,
-      $this->tasksLinks
+      $this->tasksLinks,
+      $this->scheduledTasksRepository
     );
     $sendingQueueWorker->process();
   }
@@ -820,6 +828,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->segmentsRepository,
       $this->wp,
       $this->tasksLinks,
+      $this->scheduledTasksRepository,
       Stub::make(
         new MailerTask(),
         [
@@ -1036,6 +1045,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->segmentsRepository,
       $this->wp,
       $this->tasksLinks,
+      $this->scheduledTasksRepository,
       $mailerMock
     );
   }

@@ -53,6 +53,16 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->assertSame($expectedResult, $tasks);
   }
 
+  public function testItCanGetFutureScheduledTasks() {
+    $expectedResult[] = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay()); // scheduled (in future)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay(), Carbon::now()); // deleted (should not be fetched)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // scheduled in past (should not be fetched)
+    $this->scheduledTaskFactory->create('test', null, Carbon::now()->addDay()); // wrong status (should not be fetched)
+
+    $tasks = $this->repository->findFutureScheduledByType('test', 10);
+    $this->assertSame($expectedResult, $tasks);
+  }
+
   public function cleanup() {
     $this->truncateEntity(ScheduledTaskEntity::class);
   }

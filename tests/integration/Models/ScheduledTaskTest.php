@@ -163,40 +163,6 @@ class ScheduledTaskTest extends \MailPoetTest {
     expect($task->meta)->equals($meta);
   }
 
-  public function testItCanGetFutureScheduledTasks() {
-    // scheduled (in future)
-    ScheduledTask::createOrUpdate([
-      'type' => 'test',
-      'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => Carbon::now()->addDay(),
-    ]);
-
-    // deleted (should not be fetched)
-    ScheduledTask::createOrUpdate([
-      'type' => 'test',
-      'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => Carbon::now()->addDay(),
-      'deleted_at' => Carbon::now(),
-    ]);
-
-    // scheduled in past (should not be fetched)
-    ScheduledTask::createOrUpdate([
-      'type' => 'test',
-      'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => Carbon::now()->subDay(),
-    ]);
-
-    // wrong status (should not be fetched)
-    ScheduledTask::createOrUpdate([
-      'type' => 'test',
-      'status' => null,
-      'scheduled_at' => Carbon::now()->addDay(),
-    ]);
-
-    $tasks = ScheduledTask::findFutureScheduledByType('test', 10);
-    expect($tasks)->count(1);
-  }
-
   public function _after() {
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);

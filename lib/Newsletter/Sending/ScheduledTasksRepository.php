@@ -117,6 +117,10 @@ class ScheduledTasksRepository extends Repository {
     return $this->findByTypeAndStatus($type, ScheduledTaskEntity::STATUS_COMPLETED, $limit);
   }
 
+  public function findFutureScheduledByType($type, $limit = null) {
+    return $this->findByTypeAndStatus($type, ScheduledTaskEntity::STATUS_SCHEDULED, $limit, true);
+  }
+
   protected function findByTypeAndStatus($type, $status, $limit = null, $future = false) {
     $queryBuilder = $this->doctrineRepository->createQueryBuilder('st')
       ->select('st')
