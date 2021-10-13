@@ -197,8 +197,16 @@ class Widget extends \WP_Widget {
     );
 
     // get form
-    if (empty($instance['form'])) return '';
-    $form = $this->formsRepository->findOneById($instance['form']);
+    if (!empty($instance['form'])) {
+      $form = $this->formsRepository->findOneById($instance['form']);
+    } else {
+      // Backwards compatibility for MAILPOET-3847
+      // Get first active form
+      $forms = $this->formsRepository->findAllActive();
+      if (empty($forms)) return '';
+      $form = $forms[0];
+    }
+
     if (!$form) return '';
     if ($form->getDeletedAt()) return '';
     if ($form->getStatus() !== FormEntity::STATUS_ENABLED) return '';
