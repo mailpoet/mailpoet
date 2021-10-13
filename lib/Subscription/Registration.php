@@ -50,7 +50,7 @@ class Registration {
       </label>
     </p>';
 
-    $this->wp->applyFilters('mailpoet_register_form_extend', $form);
+    $form = $this->wp->applyFilters('mailpoet_register_form_extend', $form);
 
     print $form;
   }
