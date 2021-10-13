@@ -59,6 +59,9 @@ export const EventOptions = ({
         selected: () => selected,
         getLabel: _.property('name'),
         getValue: _.property('id'),
+        validation: {
+          'data-parsley-required': true,
+        },
       },
       onValueChange: handleEventOptionChange,
       item: {
