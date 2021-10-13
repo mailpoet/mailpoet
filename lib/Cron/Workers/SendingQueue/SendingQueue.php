@@ -19,6 +19,7 @@ use MailPoet\Models\ScheduledTask as ScheduledTaskModel;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -65,6 +66,9 @@ class SendingQueue {
   /** @var Links */
   private $links;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     SendingThrottlingHandler $throttlingHandler,
@@ -76,6 +80,7 @@ class SendingQueue {
     SegmentsRepository $segmentsRepository,
     WPFunctions $wp,
     Links $links,
+    ScheduledTasksRepository $scheduledTasksRepository,
     $mailerTask = false,
     $newsletterTask = false
   ) {
@@ -92,6 +97,7 @@ class SendingQueue {
     $this->newslettersRepository = $newslettersRepository;
     $this->cronHelper = $cronHelper;
     $this->links = $links;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
   }
 
   public function process($timer = false) {
@@ -413,13 +419,14 @@ class SendingQueue {
   }
 
   private function reScheduleBounceTask() {
-    $bounceTasks = ScheduledTask::findFutureScheduledByType(Bounce::TASK_TYPE);
+    $bounceTasks = $this->scheduledTasksRepository->findFutureScheduledByType(Bounce::TASK_TYPE);
     if (count($bounceTasks)) {
       $bounceTask = reset($bounceTasks);
-      if (Carbon::createFromTimestamp((int)current_time('timestamp'))->addHours(42)->lessThan($bounceTask->scheduledAt)) {
+      if (Carbon::createFromTimestamp((int)current_time('timestamp'))->addHours(42)->lessThan($bounceTask->getScheduledAt())) {
         $randomOffset = rand(-6 * 60 * 60, 6 * 60 * 60);
-        $bounceTask->scheduledAt = Carbon::createFromTimestamp((int)current_time('timestamp'))->addSeconds((36 * 60 * 60) + $randomOffset);
-        $bounceTask->save();
+        $bounceTask->setScheduledAt(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSeconds((36 * 60 * 60) + $randomOffset));
+        $this->scheduledTasksRepository->persist($bounceTask);
+        $this->scheduledTasksRepository->flush();
       }
     }
   }
