@@ -9,6 +9,7 @@ use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsWooCommercePurchases;
+use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoetVendor\Idiorm\ORM;
@@ -32,7 +33,11 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->woocommerceHelper = $this->createMock(WooCommerceHelper::class);
     $this->woocommercePurchases = $this->createMock(WooCommercePurchases::class);
 
-    $this->worker = new WooCommercePastOrders($this->woocommerceHelper, $this->woocommercePurchases);
+    $this->worker = new WooCommercePastOrders(
+      $this->woocommerceHelper,
+      $this->diContainer->get(StatisticsClicksRepository::class),
+      $this->woocommercePurchases
+    );
     $this->cronWorkerRunner = Stub::copy($this->diContainer->get(CronWorkerRunner::class), [
       'timer' => microtime(true), // reset timer to avoid timeout during full test suite run
     ]);
@@ -134,35 +139,6 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $tasks = ScheduledTask::where('type', WooCommercePastOrders::TASK_TYPE)->findMany();
     expect($tasks)->count(1);
     expect($tasks[0]->status)->equals(ScheduledTask::STATUS_COMPLETED);
-  }
-
-  public function testItResetsPreviouslyTrackedOrders() {
-    $this->woocommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    $this->woocommerceHelper->method('wcGetOrders')->willReturnOnConsecutiveCalls([1, 2], [3], [4]);
-    $click = $this->createClick();
-
-    $this->woocommercePurchases->expects($this->exactly(4))->method('trackPurchase');
-
-    // wrong data inserted by a past buggy version should be removed for each order
-    // nothing new is inserted because we don't fully mock WC_Order (expect count 0)
-    $this->createOrder(1, $click);
-    $this->createOrder(2, $click);
-    $this->cronWorkerRunner->run($this->worker); // schedule
-    $this->cronWorkerRunner->run($this->worker); // prepare
-    $this->cronWorkerRunner->run($this->worker); // run for 1, 2
-    expect(StatisticsWooCommercePurchases::findMany())->count(0);
-
-    // don't remove data for unrelated orders (for order ID 4 row should not be removed)
-    $this->createOrder(3, $click);
-    $this->createOrder(4, $click);
-    $this->cronWorkerRunner->run($this->worker); // run for 3
-    $purchaseStats = StatisticsWooCommercePurchases::findMany();
-    expect($purchaseStats)->count(1);
-    expect($purchaseStats[0]->order_id)->equals(4);
-
-    // now row for order ID 4 should be removed as well
-    $this->cronWorkerRunner->run($this->worker); // run for 4
-    expect(StatisticsWooCommercePurchases::findMany())->count(0);
   }
 
   public function _after() {
