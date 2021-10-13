@@ -2,9 +2,12 @@
 
 namespace MailPoet\Statistics\Track;
 
-use MailPoet\Models\StatisticsClicks;
-use MailPoet\Models\StatisticsWooCommercePurchases;
-use MailPoet\Models\Subscriber;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Statistics\StatisticsClicksRepository;
+use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper;
 use WC_Order;
@@ -18,12 +21,27 @@ class WooCommercePurchases {
   /** @var Cookies */
   private $cookies;
 
+  /** @var StatisticsWooCommercePurchasesRepository */
+  private $statisticsWooCommercePurchasesRepository;
+
+  /** @var StatisticsClicksRepository */
+  private $statisticsClicksRepository;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     Helper $woocommerceHelper,
+    StatisticsWooCommercePurchasesRepository $statisticsWooCommercePurchasesRepository,
+    StatisticsClicksRepository $statisticsClicksRepository,
+    SubscribersRepository $subscribersRepository,
     Cookies $cookies
   ) {
     $this->woocommerceHelper = $woocommerceHelper;
     $this->cookies = $cookies;
+    $this->statisticsWooCommercePurchasesRepository = $statisticsWooCommercePurchasesRepository;
+    $this->statisticsClicksRepository = $statisticsClicksRepository;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function trackPurchase($id, $useCookies = true) {
@@ -40,13 +58,18 @@ class WooCommercePurchases {
     $from = clone $fromDate;
     $from->modify(-self::USE_CLICKS_SINCE_DAYS_AGO . ' days');
     $to = $order->get_date_created();
+    if (is_null($to)) {
+      return;
+    }
 
     // track purchases from all clicks matched by order email
     $processedNewsletterIdsMap = [];
     $orderEmailClicks = $this->getClicks($order->get_billing_email(), $from, $to);
     foreach ($orderEmailClicks as $click) {
-      StatisticsWooCommercePurchases::createOrUpdateByClickDataAndOrder($click, $order);
-      $processedNewsletterIdsMap[$click->newsletterId] = true;
+      $this->statisticsWooCommercePurchasesRepository->createOrUpdateByClickDataAndOrder($click, $order);
+      $newsletter = $click->getNewsletter();
+      if (!$newsletter instanceof NewsletterEntity) continue;
+      $processedNewsletterIdsMap[$newsletter->getId()] = true;
     }
 
     if (!$useCookies) {
@@ -56,35 +79,44 @@ class WooCommercePurchases {
     // track purchases from clicks matched by cookie email (only for newsletters not tracked by order)
     $cookieEmailClicks = $this->getClicks($this->getSubscriberEmailFromCookie(), $from, $to);
     foreach ($cookieEmailClicks as $click) {
-      if (isset($processedNewsletterIdsMap[$click->newsletterId])) {
+      $newsletter = $click->getNewsletter();
+      if (!$newsletter instanceof NewsletterEntity) continue;
+      if (isset($processedNewsletterIdsMap[$newsletter->getId()])) {
         continue; // do not track click for newsletters that were already tracked by order email
       }
-      StatisticsWooCommercePurchases::createOrUpdateByClickDataAndOrder($click, $order);
+      $this->statisticsWooCommercePurchasesRepository->createOrUpdateByClickDataAndOrder($click, $order);
     }
   }
 
-  private function getClicks($email, $from, $to) {
-    $subscriber = Subscriber::findOne($email);
-    if (!$subscriber instanceof Subscriber) {
+  /**
+   * @param ?string $email
+   * @param \DateTimeInterface $from
+   * @param \DateTimeInterface $to
+   * @return StatisticsClickEntity[]
+   */
+  private function getClicks(?string $email, \DateTimeInterface $from, \DateTimeInterface $to): array {
+    if (!$email) return [];
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
+    if (!$subscriber instanceof SubscriberEntity) {
       return [];
     }
-    return StatisticsClicks::findLatestPerNewsletterBySubscriber($subscriber, $from, $to);
+    return $this->statisticsClicksRepository->findLatestPerNewsletterBySubscriber($subscriber, $from, $to);
   }
 
-  private function getSubscriberEmailFromCookie() {
+  private function getSubscriberEmailFromCookie(): ?string {
     $cookieData = $this->cookies->get(Clicks::REVENUE_TRACKING_COOKIE_NAME);
     if (!$cookieData) {
       return null;
     }
 
-    $click = StatisticsClicks::findOne($cookieData['statistics_clicks']);
-    if (!$click instanceof StatisticsClicks) {
+    $click = $this->statisticsClicksRepository->findOneById($cookieData['statistics_clicks']);
+    if (!$click instanceof StatisticsClickEntity) {
       return null;
     }
 
-    $subscriber = Subscriber::findOne($click->subscriberId);
-    if ($subscriber) {
-      return $subscriber->email;
+    $subscriber = $click->getSubscriber();
+    if ($subscriber instanceof SubscriberEntity) {
+      return $subscriber->getEmail();
     }
     return null;
   }
