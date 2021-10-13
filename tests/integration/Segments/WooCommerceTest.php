@@ -128,6 +128,10 @@ class WooCommerceTest extends \MailPoetTest {
       ->where('email', $guest['email'])
       ->findOne();
     expect($subscriber)->isEmpty();
+    $subscriber = Subscriber::where('email', $guest['email'])->findOne();
+    expect($subscriber->firstName)->equals($guest['first_name']);
+    expect($subscriber->lastName)->equals($guest['last_name']);
+    expect($subscriber->isWoocommerceUser)->equals(1);
   }
 
   public function testItSynchronizesNewGuestCustomerWithDoubleOptinDisabled() {
@@ -141,6 +145,10 @@ class WooCommerceTest extends \MailPoetTest {
       ->where('email', $guest['email'])
       ->findOne();
     expect($subscriber)->isEmpty();
+    $subscriber = Subscriber::where('email', $guest['email'])->findOne();
+    expect($subscriber->firstName)->equals($guest['first_name']);
+    expect($subscriber->lastName)->equals($guest['last_name']);
+    expect($subscriber->isWoocommerceUser)->equals(1);
   }
 
   public function testItSynchronizesNewGuestCustomerWithOptinCheckoutEnabled() {
@@ -154,6 +162,10 @@ class WooCommerceTest extends \MailPoetTest {
       ->where('email', $guest['email'])
       ->findOne();
     expect($subscriber)->isEmpty();
+    $subscriber = Subscriber::where('email', $guest['email'])->findOne();
+    expect($subscriber->firstName)->equals($guest['first_name']);
+    expect($subscriber->lastName)->equals($guest['last_name']);
+    expect($subscriber->isWoocommerceUser)->equals(1);
   }
 
   public function testItSynchronizesCustomers() {
