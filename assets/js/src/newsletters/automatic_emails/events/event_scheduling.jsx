@@ -104,6 +104,9 @@ class EventScheduling extends React.Component {
         name: 'scheduling_time_duration',
         defaultValue: afterTimeNumber ? afterTimeNumber.toString() : '',
         size: afterTimeNumberSize,
+        validation: {
+          'data-parsley-required': true,
+        },
       },
       item: {},
       onValueChange: _.partial(this.handleChange, _, 'afterTimeNumber'),
