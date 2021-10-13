@@ -132,6 +132,7 @@ class WooCommerceTest extends \MailPoetTest {
     expect($subscriber->firstName)->equals($guest['first_name']);
     expect($subscriber->lastName)->equals($guest['last_name']);
     expect($subscriber->isWoocommerceUser)->equals(1);
+    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
   }
 
   public function testItSynchronizesNewGuestCustomerWithDoubleOptinDisabled() {
@@ -149,6 +150,7 @@ class WooCommerceTest extends \MailPoetTest {
     expect($subscriber->firstName)->equals($guest['first_name']);
     expect($subscriber->lastName)->equals($guest['last_name']);
     expect($subscriber->isWoocommerceUser)->equals(1);
+    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
   }
 
   public function testItSynchronizesNewGuestCustomerWithOptinCheckoutEnabled() {
@@ -166,6 +168,7 @@ class WooCommerceTest extends \MailPoetTest {
     expect($subscriber->firstName)->equals($guest['first_name']);
     expect($subscriber->lastName)->equals($guest['last_name']);
     expect($subscriber->isWoocommerceUser)->equals(1);
+    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
   }
 
   public function testItSynchronizesCustomers() {
