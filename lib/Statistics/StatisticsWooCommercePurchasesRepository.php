@@ -3,6 +3,8 @@
 namespace MailPoet\Statistics;
 
 use MailPoet\Doctrine\Repository;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 
@@ -25,9 +27,12 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
     ]);
 
     if (!$statistics instanceof StatisticsWooCommercePurchaseEntity) {
+      $newsletter = $click->getNewsletter();
+      $queue = $click->getQueue();
+      if ((!$newsletter instanceof NewsletterEntity) || (!$queue instanceof SendingQueueEntity)) return;
       $statistics = new StatisticsWooCommercePurchaseEntity(
-        $click->getNewsletter(),
-        $click->getQueue(),
+        $newsletter,
+        $queue,
         $click,
         $order->get_id(),
         $order->get_currency(),
