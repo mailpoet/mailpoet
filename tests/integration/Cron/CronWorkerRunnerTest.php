@@ -121,7 +121,9 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     expect($result)->true();
 
     $scheduledAt = $task->getScheduledAt();
-    $newUpdatedAt = $task->getUpdatedAt()->subMinutes(CronWorkerRunner::TASK_RUN_TIMEOUT + 1); // @phpstan-ignore-line
+    $newUpdatedAt = $task->getUpdatedAt();
+    $this->assertInstanceOf(Carbon::class, $newUpdatedAt);
+    $newUpdatedAt->subMinutes(CronWorkerRunner::TASK_RUN_TIMEOUT + 1);
     $task->setUpdatedAt($newUpdatedAt);
     $this->scheduledTasksRepository->persist($task);
     $this->scheduledTasksRepository->flush();
@@ -136,7 +138,10 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     expect($task->getInProgress())->isEmpty();
 
     // reset the state of the updatedAt field. this is needed to reset the state of TimestampListener::now otherwise it will impact other tests.
-    $task->getUpdatedAt()->addMinutes(CronWorkerRunner::TASK_RUN_TIMEOUT + 1); // @phpstan-ignore-line
+    // this code can be removed once https://mailpoet.atlassian.net/browse/MAILPOET-3870 is fixed.
+    $updatedAt = $task->getUpdatedAt();
+    $this->assertInstanceOf(Carbon::class, $updatedAt);
+    $updatedAt->addMinutes(CronWorkerRunner::TASK_RUN_TIMEOUT + 1);
   }
 
   public function testItWillRescheduleATaskIfItFails() {
