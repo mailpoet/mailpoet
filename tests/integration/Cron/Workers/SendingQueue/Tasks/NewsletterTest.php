@@ -406,8 +406,10 @@ class NewsletterTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('getErrors')
       ->willReturn([]);
-    $queueMock->id = $queue->id;
-    $queueMock->taskId = $queue->taskId;
+    $queueMock
+      ->expects($this->any())
+      ->method('__get')
+      ->will($this->onConsecutiveCalls($queue->id, $queue->taskId, $queue->id));
 
     $sendingQueue = ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
     assert($sendingQueue instanceof ORM);
@@ -438,8 +440,10 @@ class NewsletterTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('getErrors')
       ->willReturn([]);
-    $queueMock->id = $queue->id;
-    $queueMock->taskId = $queue->taskId;
+    $queueMock
+      ->expects($this->any())
+      ->method('__get')
+      ->will($this->onConsecutiveCalls($queue->id, $queue->taskId, $queue->id, $queue->newsletterRenderedBody));
 
     // properly serialized object
     $sendingQueue = ORM::forTable(SendingQueue::$_table)->findOne($queue->id);
