@@ -22,7 +22,6 @@ use MailPoet\Entities\UserFlagEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
@@ -700,7 +699,7 @@ class Populator {
     global $wpdb;
     $wpdb->query(sprintf(
       $query,
-      NewsletterLink::$_table,
+      $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName(),
       NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
       NewsletterLinkEntity::UNSUBSCRIBE_LINK_SHORT_CODE
     ));
