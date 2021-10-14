@@ -3,20 +3,34 @@
 namespace MailPoet\Test\Newsletter\Links;
 
 use Codeception\Util\Fixtures;
+use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
-use MailPoet\Models\NewsletterLink;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Router\Router;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
 
 class LinksTest extends \MailPoetTest {
   /** @var Links */
   private $links;
 
+  /** @var NewsletterLinkFactory */
+  private $newsletterLinkFactory;
+
+  /** @var NewsletterLinkRepository */
+  private $newsletterLinkRepository;
+
   public function _before() {
     $this->links = $this->diContainer->get(Links::class);
+    $newsletterFactory = new NewsletterFactory();
+    $newsletter = $newsletterFactory->withSendingQueue()->create();
+    $this->newsletterLinkFactory = new NewsletterLinkFactory($newsletter);
+    $this->newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
   }
 
   public function testItOnlyExtractsLinksFromAnchorTags() {
@@ -44,15 +58,13 @@ class LinksTest extends \MailPoetTest {
   }
 
   public function testItDoesNotRehashExistingLinks() {
-    $link = NewsletterLink::create();
-    $link->newsletterId = 3;
-    $link->queueId = 3;
-    $link->hash = '123';
-    $link->url = 'http://example.com';
-    $link->save();
+    $link = $this->newsletterLinkFactory
+      ->withHash('123')
+      ->withUrl('http://example.com')
+      ->create();
 
     $template = '<a href="http://example.com"><img src="http://example.com" /></a>';
-    $result = $this->links->process($template, 3, 3);
+    $result = $this->links->process($template, $link->getNewsletter()->getId(), $link->getQueue()->getId());
     expect($result[0])->equals(
       sprintf(
         '<a href="%s-%s"><img src="http://example.com" /></a>',
@@ -190,28 +202,27 @@ class LinksTest extends \MailPoetTest {
     );
 
     // 1 database record was created
-    $newsltterLink = NewsletterLink::where('newsletter_id', 1)
-      ->where('queue_id', 1)
-      ->findOne();
-    assert($newsltterLink instanceof NewsletterLink);
-    expect($newsltterLink->hash)->equals('123');
-    expect($newsltterLink->url)->equals('http://example.com');
+    $newsletterLink = $this->newsletterLinkRepository->findOneBy(['newsletter' => 1, 'queue' => 1]);
+    assert($newsletterLink instanceof NewsletterLinkEntity);
+    expect($newsletterLink->getHash())->equals('123');
+    expect($newsletterLink->getUrl())->equals('http://example.com');
   }
 
   public function testItCanReuseAlreadySavedLinks() {
-    $link = NewsletterLink::create();
-    $link->newsletterId = 1;
-    $link->queueId = 2;
-    $link->hash = '123';
-    $link->url = 'http://example.com';
-    $link->save();
+    $newsletterLink1 = $this->newsletterLinkFactory
+      ->withHash('123')
+      ->withUrl('http://example.com')
+      ->create();
+    $tableName = $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
+    $this->entityManager->getConnection()
+      ->executeStatement(
+        "UPDATE $tableName SET queue_id = 2 WHERE id = ?", [$newsletterLink1->getId()]
+      );
 
-    $link = NewsletterLink::create();
-    $link->newsletterId = 1;
-    $link->queueId = 3;
-    $link->hash = '456';
-    $link->url = 'http://demo.com';
-    $link->save();
+    $this->newsletterLinkFactory
+      ->withHash('456')
+      ->withUrl('http://demo.com')
+      ->create();
 
     list($content, $links) = $this->links->process('<a href="http://example.com">x</a>', 1, 2);
     expect(is_array($links))->true();
@@ -230,18 +241,18 @@ class LinksTest extends \MailPoetTest {
 
   public function testItCanConvertOnlyHashedLinkShortcodes() {
     // create newsletter link association
-    $queueId = 1;
-    $newsletterLink = NewsletterLink::create();
-    $newsletterLink->newsletterId = 1;
-    $newsletterLink->queueId = $queueId;
-    $newsletterLink->hash = '90e56';
-    $newsletterLink->url = '[link:newsletter_view_in_browser_url]';
-    $newsletterLink = $newsletterLink->save();
+    $newsletterLink = $this->newsletterLinkFactory
+      ->withHash('90e56')
+      ->withUrl('[link:newsletter_view_in_browser_url]')
+      ->create();
+
     $content = '
       <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
-    $result = $this->links->convertHashedLinksToShortcodesAndUrls($content, $queueId);
-    expect($result)->stringContainsString($newsletterLink->url);
+
+    $result = $this->links->convertHashedLinksToShortcodesAndUrls($content, $newsletterLink->getQueue()->getId());
+
+    expect($result)->stringContainsString($newsletterLink->getUrl());
     expect($result)->stringContainsString('[mailpoet_click_data]-123');
   }
 
@@ -266,30 +277,29 @@ class LinksTest extends \MailPoetTest {
 
   public function testItCanConvertAllHashedLinksToUrls() {
     // create newsletter link associations
-    $queueId = 1;
-    $newsletterLink1 = NewsletterLink::create();
-    $newsletterLink1->newsletterId = 1;
-    $newsletterLink1->queueId = $queueId;
-    $newsletterLink1->hash = '90e56';
-    $newsletterLink1->url = '[link:newsletter_view_in_browser_url]';
-    $newsletterLink1 = $newsletterLink1->save();
-    $newsletterLink2 = NewsletterLink::create();
-    $newsletterLink2->newsletterId = 1;
-    $newsletterLink2->queueId = $queueId;
-    $newsletterLink2->hash = '123';
-    $newsletterLink2->url = 'http://google.com';
-    $newsletterLink2 = $newsletterLink2->save();
+    $newsletterLink1 = $this->newsletterLinkFactory
+      ->withHash('90e56')
+      ->withUrl('[link:newsletter_view_in_browser_url]')
+      ->create();
+
+    $newsletterLink2 = $this->newsletterLinkFactory
+      ->withHash('123')
+      ->withUrl('http://google.com')
+      ->create();
+
     $content = '
       <a href="[mailpoet_click_data]-90e56">View in browser</a>
       <a href="[mailpoet_click_data]-123">Some link</a>';
-    $result = $this->links->convertHashedLinksToShortcodesAndUrls($content, $queueId, $convertAll = true);
-    expect($result)->stringContainsString($newsletterLink1->url);
-    expect($result)->stringContainsString($newsletterLink2->url);
+
+    $result = $this->links->convertHashedLinksToShortcodesAndUrls($content, $newsletterLink1->getQueue()->getId(), $convertAll = true);
+    expect($result)->stringContainsString($newsletterLink1->getUrl());
+    expect($result)->stringContainsString($newsletterLink2->getUrl());
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterLinkEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
   }
 }
