@@ -27,22 +27,6 @@ class FormsRepository extends Repository {
       ->getResult();
   }
 
-  /**
-   * @return FormEntity[]
-   */
-  public function findAllActive(): array {
-    return $this->entityManager
-      ->createQueryBuilder()
-      ->select('f')
-      ->from(FormEntity::class, 'f')
-      ->where('f.status = (:enabled)')
-      ->andWhere('f.deletedAt IS NULL')
-      ->setParameter('enabled', FormEntity::STATUS_ENABLED)
-      ->orderBy('f.name', 'asc')
-      ->getQuery()
-      ->getResult();
-  }
-
   public function getNamesOfFormsForSegments(): array {
     $allNonDeletedForms = $this->findAllNotDeleted();
 

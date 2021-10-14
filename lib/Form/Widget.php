@@ -137,6 +137,8 @@ class Widget extends \WP_Widget {
     <p>
       <select class="widefat" id="<?php echo $this->get_field_id('form') ?>" name="<?php echo $this->get_field_name('form'); ?>">
         <?php
+        // Select the first one from the list if none selected
+        if ($selectedForm === 0 && !empty($forms)) $selectedForm = $forms[0]->getId();
         foreach ($forms as $form) {
           $isSelected = ($selectedForm === $form->getId()) ? 'selected="selected"' : '';
           $formName = $form->getName() ? $this->wp->escHtml($form->getName()) : "({$this->wp->_x('no name', 'fallback for forms without a name in a form list')})"
@@ -201,8 +203,8 @@ class Widget extends \WP_Widget {
       $form = $this->formsRepository->findOneById($instance['form']);
     } else {
       // Backwards compatibility for MAILPOET-3847
-      // Get first active form
-      $forms = $this->formsRepository->findAllActive();
+      // Get first non deleted form
+      $forms = $this->formsRepository->findBy(['deletedAt' => null], ['name' => 'asc']);
       if (empty($forms)) return '';
       $form = $forms[0];
     }
