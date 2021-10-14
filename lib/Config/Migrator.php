@@ -317,6 +317,7 @@ class Migrator {
       'description varchar(255) NOT NULL DEFAULT "",',
       'body longtext,',
       'thumbnail longtext,',
+      'thumbnail_data longtext,',
       'readonly tinyint(1) DEFAULT 0,',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
