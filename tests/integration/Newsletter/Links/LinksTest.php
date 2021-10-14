@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Newsletter\Links;
 
 use Codeception\Util\Fixtures;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
@@ -255,7 +256,7 @@ class LinksTest extends \MailPoetTest {
     ];
     $links = $this->links->ensureInstantUnsubscribeLink($links);
     expect(count($links))->equals(2);
-    expect($links[1]['link'])->equals(NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE);
+    expect($links[1]['link'])->equals(NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE);
     expect($links[1]['type'])->equals(Links::LINK_TYPE_SHORTCODE);
     expect($links[1])->hasKey('processed_link');
     expect($links[1])->hasKey('hash');

@@ -2,6 +2,8 @@
 
 namespace MailPoet\Models;
 
+use MailPoet\Entities\NewsletterLinkEntity;
+
 /**
  * @property int $newsletterId
  * @property int $queueId
@@ -11,6 +13,6 @@ namespace MailPoet\Models;
  */
 class NewsletterLink extends Model {
   public static $_table = MP_NEWSLETTER_LINKS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
-  const UNSUBSCRIBE_LINK_SHORT_CODE = '[link:subscription_unsubscribe_url]';
-  const INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE = '[link:subscription_instant_unsubscribe_url]';
+  const UNSUBSCRIBE_LINK_SHORT_CODE = NewsletterLinkEntity::UNSUBSCRIBE_LINK_SHORT_CODE;
+  const INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE = NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE;
 }

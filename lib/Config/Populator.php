@@ -13,6 +13,7 @@ use MailPoet\Cron\Workers\SubscribersLastEngagement;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterTemplateEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -700,8 +701,8 @@ class Populator {
     $wpdb->query(sprintf(
       $query,
       NewsletterLink::$_table,
-      NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
-      NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE
+      NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
+      NewsletterLinkEntity::UNSUBSCRIBE_LINK_SHORT_CODE
     ));
   }
 
