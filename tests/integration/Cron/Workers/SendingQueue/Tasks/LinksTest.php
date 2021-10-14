@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterLink;
 use MailPoetVendor\Idiorm\ORM;
@@ -76,7 +77,7 @@ class LinksTest extends \MailPoetTest {
     $queue = (object)['id' => 2];
     $this->links->process($renderedNewsletter, $newsletter, $queue);
     $unsubscribeCount = NewsletterLink::where('newsletter_id', $newsletter->id)
-      ->where('url', NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE)->count();
+      ->where('url', NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE)->count();
     expect($unsubscribeCount)->equals(1);
   }
 

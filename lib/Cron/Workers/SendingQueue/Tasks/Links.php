@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Models\NewsletterLink as NewsletterLinkModel;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Router\Endpoints\Track;
@@ -61,7 +62,7 @@ class Links {
     $settings = SettingsController::getInstance();
     if ((boolean)$settings->get('tracking.enabled') && $subscriber) {
       $linkHash = NewsletterLinkModel::where('queue_id', $queue->id)
-        ->where('url', NewsletterLinkModel::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE)
+        ->where('url', NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE)
         ->findOne();
       if (!$linkHash instanceof NewsletterLinkModel) {
         return '';

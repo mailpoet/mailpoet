@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Links;
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Models\NewsletterLink;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
@@ -155,13 +156,13 @@ class Links {
 
   public function ensureInstantUnsubscribeLink(array $processedLinks) {
     if (in_array(
-      NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
+      NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
       array_column($processedLinks, 'link'))
     ) {
       return $processedLinks;
     }
     $processedLinks[] = $this->hashLink(
-      NewsletterLink::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
+      NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
       Links::LINK_TYPE_SHORTCODE
     );
     return $processedLinks;

@@ -19,6 +19,9 @@ class NewsletterLinkEntity {
   use UpdatedAtTrait;
   use SafeToOneAssociationLoadTrait;
 
+  public const UNSUBSCRIBE_LINK_SHORT_CODE = '[link:subscription_unsubscribe_url]';
+  public const INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE = '[link:subscription_instant_unsubscribe_url]';
+
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
    * @ORM\JoinColumn(name="newsletter_id", referencedColumnName="id")

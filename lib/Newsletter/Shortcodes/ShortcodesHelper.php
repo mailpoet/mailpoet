@@ -3,7 +3,7 @@
 namespace MailPoet\Newsletter\Shortcodes;
 
 use MailPoet\CustomFields\CustomFieldsRepository;
-use MailPoet\Models\NewsletterLink;
+use MailPoet\Entities\NewsletterLinkEntity;
 
 class ShortcodesHelper {
   /** @var CustomFieldsRepository */
@@ -90,7 +90,7 @@ class ShortcodesHelper {
           'text' => __('Unsubscribe link', 'mailpoet'),
           'shortcode' => sprintf(
             '<a target="_blank" href="%s">%s</a>',
-            NewsletterLink::UNSUBSCRIBE_LINK_SHORT_CODE,
+            NewsletterLinkEntity::UNSUBSCRIBE_LINK_SHORT_CODE,
             __('Unsubscribe', 'mailpoet')
           ),
         ],
