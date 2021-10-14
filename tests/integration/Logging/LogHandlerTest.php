@@ -22,7 +22,11 @@ class LogHandlerTest extends \MailPoetTest {
   }
 
   public function testItCreatesLog() {
-    $logHandler = new LogHandler($this->repository);
+    $logHandler = new LogHandler(
+      $this->repository,
+      $this->entityManager,
+      $this->entityManagerFactory
+    );
     $time = new \DateTime();
     $logHandler->handle([
       'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
@@ -51,7 +55,14 @@ class LogHandlerTest extends \MailPoetTest {
       return 0;
     };
 
-    $logHandler = new LogHandler($this->repository, \MailPoetVendor\Monolog\Logger::DEBUG, true, $random);
+    $logHandler = new LogHandler(
+      $this->repository,
+      $this->entityManager,
+      $this->entityManagerFactory,
+      \MailPoetVendor\Monolog\Logger::DEBUG,
+      true,
+      $random
+    );
     $logHandler->handle([
       'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
       'extra' => [],
@@ -78,7 +89,14 @@ class LogHandlerTest extends \MailPoetTest {
       return 100;
     };
 
-    $logHandler = new LogHandler($this->repository, \MailPoetVendor\Monolog\Logger::DEBUG, true, $random);
+    $logHandler = new LogHandler(
+      $this->repository,
+      $this->entityManager,
+      $this->entityManagerFactory,
+      \MailPoetVendor\Monolog\Logger::DEBUG,
+      true,
+      $random
+    );
     $logHandler->handle([
       'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
       'extra' => [],

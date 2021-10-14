@@ -2,7 +2,9 @@
 
 namespace MailPoet\Logging;
 
+use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Settings\SettingsController;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Monolog\Handler\AbstractHandler;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -18,7 +20,9 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
     parent::_before();
     $this->settings = $this->createMock(SettingsController::class);
     $repository = $this->createMock(LogRepository::class);
-    $this->loggerFactory = new LoggerFactory($repository, $this->settings);
+    $entityManager = $this->createMock(EntityManager::class);
+    $entityManagerFactory = $this->createMock(EntityManagerFactory::class);
+    $this->loggerFactory = new LoggerFactory($repository, $entityManager, $entityManagerFactory, $this->settings);
   }
 
   public function testItCreatesLogger() {
