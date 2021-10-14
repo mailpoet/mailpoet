@@ -2,7 +2,9 @@
 
 namespace MailPoet\Logging;
 
+use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Entities\LogEntity;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Monolog\Handler\AbstractProcessingHandler;
 
 class LogHandler extends AbstractProcessingHandler {
@@ -23,8 +25,16 @@ class LogHandler extends AbstractProcessingHandler {
   /** @var LogRepository */
   private $logRepository;
 
+  /** @var EntityManager */
+  private $entityManager;
+
+  /** @var EntityManagerFactory */
+  private $entityManagerFactory;
+
   public function __construct(
     LogRepository $logRepository,
+    EntityManager $entityManager,
+    EntityManagerFactory $entityManagerFactory,
     $level = \MailPoetVendor\Monolog\Logger::DEBUG,
     $bubble = \true,
     $randFunction = null
@@ -32,6 +42,8 @@ class LogHandler extends AbstractProcessingHandler {
     parent::__construct($level, $bubble);
     $this->randFunction = $randFunction;
     $this->logRepository = $logRepository;
+    $this->entityManager = $entityManager;
+    $this->entityManagerFactory = $entityManagerFactory;
   }
 
   protected function write(array $record) {
@@ -41,6 +53,10 @@ class LogHandler extends AbstractProcessingHandler {
     $entity->setMessage($record['formatted']);
     $entity->setCreatedAt($record['datetime']);
 
+    if (!$this->entityManager->isOpen()) {
+      $this->entityManager = $this->entityManagerFactory->createEntityManager();
+      $this->logRepository = new LogRepository($this->entityManager);
+    }
     $this->logRepository->persist($entity);
     $this->logRepository->flush();
 
