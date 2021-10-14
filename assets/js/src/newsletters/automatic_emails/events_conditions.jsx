@@ -86,51 +86,51 @@ class EventsConditions extends React.Component {
     e.preventDefault();
     if (!this.isValid()) {
       this.validate();
-    } else {
-      const { history } = this.props;
-      const {
-        eventSlug, afterTimeType, afterTimeNumber, event, segment, eventOptionValue,
-      } = this.state;
-      const options = {
-        group: this.email.slug,
-        event: eventSlug,
-        afterTimeType,
-      };
-
-      if (afterTimeNumber) options.afterTimeNumber = afterTimeNumber;
-      options.sendTo = (event.sendToLists) ? 'segment' : 'user';
-      if (segment) options.segment = segment;
-      if (eventOptionValue) {
-        options.meta = JSON.stringify({ option: eventOptionValue });
-      }
-
-      MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'newsletters',
-        action: 'create',
-        data: {
-          type: 'automatic',
-          subject: MailPoet.I18n.t('draftNewsletterTitle'),
-          options,
-        },
-      }).done((response) => {
-        MailPoet.trackEvent('Emails > New Automatic Email Created', {
-          'MailPoet Premium version': window.mailpoet_premium_version,
-          'MailPoet Free version': window.mailpoet_version,
-          'Event type': options.event,
-          'Schedule type': options.afterTimeType,
-          'Schedule value': options.afterTimeNumber,
-        });
-        history.push(`/template/${response.data.id}`);
-      }).fail((response) => {
-        if (response.errors.length > 0) {
-          this.context.notices.error(
-            response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-            { scroll: true }
-          );
-        }
-      });
+      return;
     }
+    const { history } = this.props;
+    const {
+      eventSlug, afterTimeType, afterTimeNumber, event, segment, eventOptionValue,
+    } = this.state;
+    const options = {
+      group: this.email.slug,
+      event: eventSlug,
+      afterTimeType,
+    };
+
+    if (afterTimeNumber) options.afterTimeNumber = afterTimeNumber;
+    options.sendTo = (event.sendToLists) ? 'segment' : 'user';
+    if (segment) options.segment = segment;
+    if (eventOptionValue) {
+      options.meta = JSON.stringify({ option: eventOptionValue });
+    }
+
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'newsletters',
+      action: 'create',
+      data: {
+        type: 'automatic',
+        subject: MailPoet.I18n.t('draftNewsletterTitle'),
+        options,
+      },
+    }).done((response) => {
+      MailPoet.trackEvent('Emails > New Automatic Email Created', {
+        'MailPoet Premium version': window.mailpoet_premium_version,
+        'MailPoet Free version': window.mailpoet_version,
+        'Event type': options.event,
+        'Schedule type': options.afterTimeType,
+        'Schedule value': options.afterTimeNumber,
+      });
+      history.push(`/template/${response.data.id}`);
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        this.context.notices.error(
+          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
+          { scroll: true }
+        );
+      }
+    });
   }
 
   getEvent(eventSlug) {

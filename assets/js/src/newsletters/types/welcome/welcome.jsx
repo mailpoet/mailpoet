@@ -51,30 +51,32 @@ class NewsletterWelcome extends React.Component {
   handleNext(event) {
     event.preventDefault();
     if (!this.isValid()) {
-      jQuery('#welcome_scheduling').parsley().validate();
-    } else {
-      MailPoet.Ajax.post({
-        api_version: window.mailpoet_api_version,
-        endpoint: 'newsletters',
-        action: 'create',
-        data: _.extend({}, this.state, {
-          type: 'welcome',
-          subject: MailPoet.I18n.t('draftNewsletterTitle'),
-        }),
-      }).done((response) => {
-        this.showTemplateSelection(response.data.id);
-      }).fail((response) => {
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
-            { scroll: true }
-          );
-        }
-      });
+      this.validate();
+      return;
     }
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'newsletters',
+      action: 'create',
+      data: _.extend({}, this.state, {
+        type: 'welcome',
+        subject: MailPoet.I18n.t('draftNewsletterTitle'),
+      }),
+    }).done((response) => {
+      this.showTemplateSelection(response.data.id);
+    }).fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map((error) => error.message),
+          { scroll: true }
+        );
+      }
+    });
   }
 
   isValid = () => jQuery('#welcome_scheduling').parsley().isValid();
+
+  validate = () => jQuery('#welcome_scheduling').parsley().validate();
 
   showTemplateSelection(newsletterId) {
     this.props.history.push(`/template/${newsletterId}`);
