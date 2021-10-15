@@ -1,9 +1,8 @@
 <?php
 
-namespace MailPoet\Test\API\JSON\v1;
+namespace MailPoet\NewsletterTemplates;
 
 use MailPoet\Entities\NewsletterTemplateEntity;
-use MailPoet\NewsletterTemplates\NewsletterTemplatesRepository;
 
 class NewsletterTemplatesRepositoryTest extends \MailPoetTest {
   /** @var NewsletterTemplatesRepository */
