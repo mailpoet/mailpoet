@@ -12,6 +12,7 @@ use MailPoet\Cron\Workers\SubscribersLastEngagement;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterTemplateEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsFormEntity;
@@ -184,6 +185,7 @@ class Populator {
     $this->addPlacementStatusToForms();
     $this->migrateFormPlacement();
     $this->scheduleSubscriberLastEngagementDetection();
+    $this->moveNewsletterTemplatesThumbnailData();
   }
 
   private function createMailPoetPage() {
@@ -897,6 +899,18 @@ class Populator {
     $this->scheduleTask(
       SubscribersLastEngagement::TASK_TYPE,
       Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
+    );
+  }
+
+  private function moveNewsletterTemplatesThumbnailData() {
+    if (version_compare($this->settings->get('db_version', '3.71.4'), '3.71.3', '>')) {
+      return;
+    }
+    $newsletterTemplatesTable = $this->entityManager->getClassMetadata(NewsletterTemplateEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeQuery("
+      UPDATE " . $newsletterTemplatesTable . "
+      SET thumbnail_data = thumbnail, thumbnail = NULL
+      WHERE thumbnail LIKE 'data:image%';"
     );
   }
 }
