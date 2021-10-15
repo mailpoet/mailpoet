@@ -77,7 +77,7 @@ class SubscribersLastEngagement extends SimpleWorker {
       UPDATE $subscribersTable as mps
         LEFT JOIN (SELECT max(created_at) as created_at, subscriber_id FROM $statisticsOpensTable as mpsoinner GROUP BY mpsoinner.subscriber_id) as mpso ON mpso.subscriber_id = mps.id
         LEFT JOIN (SELECT max(created_at) as created_at, subscriber_id FROM $statisticsClicksTable as mpscinner GROUP BY mpscinner.subscriber_id) as mpsc ON mpsc.subscriber_id = mps.id
-      SET mps.last_engagement_at = NULLIF(GREATEST(COALESCE(mpso.created_at, 0), COALESCE(mpsc.created_at,0)), 0)
+      SET mps.last_engagement_at = NULLIF(GREATEST(COALESCE(mpso.created_at, '0'), COALESCE(mpsc.created_at, '0')), '0')
       WHERE mps.last_engagement_at IS NULL AND mps.id >= $minSubscriberId AND  mps.id < $maxSubscriberId;
     ";
 
