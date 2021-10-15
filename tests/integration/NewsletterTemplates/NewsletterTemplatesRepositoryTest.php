@@ -18,17 +18,21 @@ class NewsletterTemplatesRepositoryTest extends \MailPoetTest {
     $createdTemplate = $this->newsletterTemplatesRepository->createOrUpdate([
       'name' => 'Another template',
       'body' => '{"content": {}, "globalStyles": {}}',
+      'thumbnail_data' => 'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
     ]);
     expect($createdTemplate->getName())->equals('Another template');
     expect($createdTemplate->getBody())->equals(['content' => [], 'globalStyles' => []]);
+    expect($createdTemplate->getThumbnailData())->equals('data:image/gif;base64,R0lGODlhAQABAAAAACw=');
 
     $updatedTemplate = $this->newsletterTemplatesRepository->createOrUpdate([
       'id' => $createdTemplate->getId(),
       'name' => 'Another template updated',
       'body' => '{"content": "changed"}',
+      'thumbnail_data' => 'data:image/gif;base64,R0lGO==',
     ]);
     expect($updatedTemplate->getName())->equals('Another template updated');
     expect($updatedTemplate->getBody())->equals(['content' => 'changed']);
+    expect($updatedTemplate->getThumbnailData())->equals('data:image/gif;base64,R0lGO==');
   }
 
   public function testItCleansRecentlySent() {
