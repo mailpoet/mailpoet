@@ -110,7 +110,7 @@ class TemplateBox extends React.Component {
           }}
         >
           <div className="mailpoet-template-thumbnail">
-            <img src={thumbnail} alt={MailPoet.I18n.t('templatePreview')} loading="lazy" />
+            {thumbnail ? (<img src={thumbnail} alt={MailPoet.I18n.t('templatePreview')} loading="lazy" />) : ''}
           </div>
           <div className="mailpoet-template-preview-overlay">
             <Button>{MailPoet.I18n.t('zoom')}</Button>
@@ -140,12 +140,16 @@ TemplateBox.propTypes = {
   id: PropTypes.number.isRequired,
   newsletterId: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  thumbnail: PropTypes.string.isRequired,
+  thumbnail: PropTypes.string,
   readonly: PropTypes.bool.isRequired,
   beforeDelete: PropTypes.func.isRequired,
   afterDelete: PropTypes.func.isRequired,
   beforeSelect: PropTypes.func.isRequired,
   afterSelect: PropTypes.func.isRequired,
+};
+
+TemplateBox.defaultProps = {
+  thumbnail: null,
 };
 
 export default TemplateBox;
