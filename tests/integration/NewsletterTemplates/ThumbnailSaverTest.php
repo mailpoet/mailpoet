@@ -28,6 +28,23 @@ class ThumbnailSaverTest extends \MailPoetTest {
     unlink($file); // remove the file after the test
   }
 
+  public function testItUpdatesBaseUrlIfChanged() {
+    $template = $this->createTemplate();
+    $template = $this->thumbnailSaver->ensureTemplateThumbnailFile($template);
+    $thumbnailUrl = $template->getThumbnail();
+    $template->setThumbnail(str_replace(Env::$tempUrl, 'http://example.com', (string)$thumbnailUrl));
+    $template = $this->thumbnailSaver->ensureTemplateThumbnailFile($template);
+    // Base url was updated back to initial value
+    $thumbnailUrl = $template->getThumbnail();
+    expect($thumbnailUrl)->string();
+    expect($thumbnailUrl)->startsWith(Env::$tempUrl);
+    [,$fileName] = explode(ThumbnailSaver::THUMBNAIL_DIRECTORY, (string)$thumbnailUrl);
+    // File is still the same
+    expect($thumbnailUrl)->endsWith($fileName);
+    $file = Env::$tempPath . '/' . ThumbnailSaver::THUMBNAIL_DIRECTORY . $fileName;
+    unlink($file); // remove the file after the test
+  }
+
   private function createTemplate(): NewsletterTemplateEntity {
     $template = new NewsletterTemplateEntity('Template');
     $template->setBody([1]);

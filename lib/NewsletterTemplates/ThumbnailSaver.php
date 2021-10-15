@@ -45,7 +45,12 @@ class ThumbnailSaver {
     if (!$savedFilename || !file_exists($file)) {
       $this->saveTemplateImage($template);
     }
-    // @todo update base url in case it changed e.g. the web was migrated
+
+    // File might exist but domain was changed
+    $thumbnailUrl = $template->getThumbnail();
+    if ($savedBaseUrl && $savedBaseUrl !== $this->baseUrl && $thumbnailUrl) {
+      $template->setThumbnail(str_replace($savedBaseUrl, $this->baseUrl, $thumbnailUrl));
+    }
     return $template;
   }
 
