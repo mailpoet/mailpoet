@@ -108,8 +108,11 @@ class WooCommercePurchases {
     if (!$cookieData) {
       return null;
     }
-
-    $click = $this->statisticsClicksRepository->findOneById($cookieData['statistics_clicks']);
+    try {
+      $click = $this->statisticsClicksRepository->findOneById($cookieData['statistics_clicks']);
+    } catch (\Exception $e) {
+      return null;
+    }
     if (!$click instanceof StatisticsClickEntity) {
       return null;
     }

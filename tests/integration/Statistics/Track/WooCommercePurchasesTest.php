@@ -3,38 +3,41 @@
 namespace MailPoet\Test\Statistics\Track;
 
 use DateTime;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsClicks;
-use MailPoet\Models\StatisticsWooCommercePurchases;
-use MailPoet\Models\Subscriber;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
-use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 use WC_Order;
 
 class WooCommercePurchasesTest extends \MailPoetTest {
-  /** @var Subscriber */
+  /** @var SubscriberEntity */
   private $subscriber;
 
-  /** @var Subscriber */
+  /** @var NewsletterEntity */
   private $newsletter;
 
-  /** @var Sending */
+  /** @var SendingQueueEntity */
   private $queue;
 
-  /** @var NewsletterLink */
+  /** @var NewsletterLinkEntity */
   private $link;
 
   /** @var Cookies */
   private $cookies;
+
+  /** @var StatisticsWooCommercePurchasesRepository */
+  private $statisticsWooCommercePurchasesRepository;
 
   public function _before() {
     parent::_before();
@@ -44,6 +47,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $this->newsletter = $this->createNewsletter();
     $this->queue = $this->createQueue($this->newsletter, $this->subscriber);
     $this->link = $this->createLink($this->newsletter, $this->queue);
+    $this->statisticsWooCommercePurchasesRepository = $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class);
     $this->cookies = new Cookies();
   }
 
@@ -53,8 +57,9 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     // create 'wrong_click' for different subscriber that is newer than the correct 'click'
     $wrongSubscriber = $this->createSubscriber('wrong.subscriber@example.com');
     $wrongClick = $this->createClick($this->link, $wrongSubscriber, 1);
+    $this->entityManager->flush();
 
-    $orderMock = $this->createOrderMock($this->subscriber->email);
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail());
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -63,14 +68,17 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->cookies
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
-    $purchaseStats = StatisticsWooCommercePurchases::findMany();
+    $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
     expect(count($purchaseStats))->equals(1);
-    expect($purchaseStats[0]->click_id)->equals($click->id);
+    $click = $purchaseStats[0]->getClick();
+    assert($click instanceof StatisticsClickEntity);
+    expect($click->getId())->equals($click->getId());
   }
 
   public function testItTracksPayment() {
     $click = $this->createClick($this->link, $this->subscriber);
-    $orderMock = $this->createOrderMock($this->subscriber->email);
+    $this->entityManager->flush();
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail());
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -79,15 +87,23 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->cookies
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
-    $purchaseStats = StatisticsWooCommercePurchases::findMany();
+    $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
     expect(count($purchaseStats))->equals(1);
-    expect($purchaseStats[0]->newsletter_id)->equals($this->newsletter->id);
-    expect($purchaseStats[0]->subscriber_id)->equals($this->subscriber->id);
-    expect($purchaseStats[0]->queue_id)->equals($this->queue->id);
-    expect($purchaseStats[0]->click_id)->equals($click->id);
-    expect($purchaseStats[0]->order_id)->equals($orderMock->get_id());
-    expect($purchaseStats[0]->order_currency)->equals($orderMock->get_currency());
-    expect($purchaseStats[0]->order_price_total)->equals($orderMock->get_total());
+    $newsletter = $purchaseStats[0]->getNewsletter();
+    $subscriber = $purchaseStats[0]->getSubscriber();
+    $queue = $purchaseStats[0]->getQueue();
+    assert($newsletter instanceof NewsletterEntity);
+    assert($subscriber instanceof SubscriberEntity);
+    assert($queue instanceof SendingQueueEntity);
+    expect($newsletter->getId())->equals($this->newsletter->getId());
+    expect($subscriber->getId())->equals($this->subscriber->getId());
+    expect($queue->getId())->equals($this->queue->getId());
+    $click = $purchaseStats[0]->getClick();
+    assert($click instanceof StatisticsClickEntity);
+    expect($click->getId())->equals($click->getId());
+    expect($purchaseStats[0]->getOrderId())->equals($orderMock->get_id());
+    expect($purchaseStats[0]->getOrderCurrency())->equals($orderMock->get_currency());
+    expect($purchaseStats[0]->getOrderPriceTotal())->equals($orderMock->get_total());
   }
 
   public function testItTracksPaymentForMultipleNewsletters() {
@@ -98,8 +114,9 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $queue = $this->createQueue($newsletter, $this->subscriber);
     $link = $this->createLink($newsletter, $queue);
     $click2 = $this->createClick($link, $this->subscriber, 1);
+    $this->entityManager->flush();
 
-    $orderMock = $this->createOrderMock($this->subscriber->email);
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail());
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -108,27 +125,40 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->cookies
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
-    $purchaseStats = StatisticsWooCommercePurchases::findMany();
+    $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
     expect(count($purchaseStats))->equals(2);
 
-    $stats1 = StatisticsWooCommercePurchases::where('newsletter_id', $this->newsletter->id)->findOne();
-    assert($stats1 instanceof StatisticsWooCommercePurchases);
-    expect($stats1->clickId)->equals($click1->id);
-    expect($stats1->subscriberId)->equals($this->subscriber->id);
-    expect($stats1->queueId)->equals($this->queue->id);
+    $stats1 = $this->statisticsWooCommercePurchasesRepository->findOneBy(['newsletter' => $this->newsletter]);
+    assert($stats1 instanceof StatisticsWooCommercePurchaseEntity);
+    $subscriber = $stats1->getSubscriber();
+    $queue = $stats1->getQueue();
+    $click = $stats1->getClick();
+    assert($subscriber instanceof SubscriberEntity);
+    assert($queue instanceof SendingQueueEntity);
+    assert($click instanceof StatisticsClickEntity);
+    expect($click->getId())->equals($click1->getId());
+    expect($subscriber->getId())->equals($this->subscriber->getId());
+    expect($queue->getId())->equals($this->queue->getId());
 
-    $stats2 = StatisticsWooCommercePurchases::where('newsletter_id', $newsletter->id)->findOne();
-    assert($stats2 instanceof StatisticsWooCommercePurchases);
-    expect($stats2->clickId)->equals($click2->id);
-    expect($stats2->subscriberId)->equals($this->subscriber->id);
-    expect($stats2->queueId)->equals($queue->id);
+    $stats2 = $this->statisticsWooCommercePurchasesRepository->findOneBy(['newsletter' => $newsletter]);
+    assert($stats2 instanceof StatisticsWooCommercePurchaseEntity);
+    $subscriber = $stats2->getSubscriber();
+    $queue = $stats2->getQueue();
+    $click = $stats2->getClick();
+    assert($subscriber instanceof SubscriberEntity);
+    assert($queue instanceof SendingQueueEntity);
+    assert($click instanceof StatisticsClickEntity);
+    expect($click->getId())->equals($click2->getId());
+    expect($subscriber->getId())->equals($this->subscriber->getId());
+    expect($queue->getId())->equals($queue->getId());
   }
 
   public function testItTracksPaymentForMultipleOrders() {
     $this->createClick($this->link, $this->subscriber);
+    $this->entityManager->flush();
 
     // first order
-    $orderMock = $this->createOrderMock($this->subscriber->email, 10.0, 123);
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail(), 10.0, 123);
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -139,7 +169,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $woocommercePurchases->trackPurchase($orderMock->get_id());
 
     // second order
-    $orderMock = $this->createOrderMock($this->subscriber->email, 20.0, 456);
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail(), 20.0, 456);
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -149,14 +179,15 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
 
-    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(2);
+    expect(count($this->statisticsWooCommercePurchasesRepository->findBy([])))->equals(2);
   }
 
   public function testItTracksPaymentOnlyForLatestClick() {
     $this->createClick($this->link, $this->subscriber, 3);
     $this->createClick($this->link, $this->subscriber, 5);
     $latestClick = $this->createClick($this->link, $this->subscriber, 1);
-    $orderMock = $this->createOrderMock($this->subscriber->email);
+    $this->entityManager->flush();
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail());
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -166,14 +197,17 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
 
-    $purchaseStats = StatisticsWooCommercePurchases::orderByDesc('created_at')->findMany();
+    $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([], ['createdAt' => 'desc']);
     expect(count($purchaseStats))->equals(1);
-    expect($purchaseStats[0]->click_id)->equals($latestClick->id);
+    $click = $purchaseStats[0]->getClick();
+    assert($click instanceof StatisticsClickEntity);
+    expect($click->getId())->equals($latestClick->getId());
   }
 
   public function testItTracksPaymentOnlyOnce() {
     $this->createClick($this->link, $this->subscriber);
-    $orderMock = $this->createOrderMock($this->subscriber->email);
+    $this->entityManager->flush();
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail());
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -183,12 +217,13 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     $woocommercePurchases->trackPurchase($orderMock->get_id());
-    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(1);
+    expect(count($this->statisticsWooCommercePurchasesRepository->findBy([])))->equals(1);
   }
 
   public function testItTracksPaymentOnlyOnceWhenNewClickAppears() {
     $this->createClick($this->link, $this->subscriber, 5);
-    $orderMock = $this->createOrderMock($this->subscriber->email);
+    $this->entityManager->flush();
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail());
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -199,13 +234,15 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $woocommercePurchases->trackPurchase($orderMock->get_id());
 
     $this->createClick($this->link, $this->subscriber, 1);
+    $this->entityManager->flush();
     $woocommercePurchases->trackPurchase($orderMock->get_id());
-    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(1);
+    expect(count($this->statisticsWooCommercePurchasesRepository->findBy([])))->equals(1);
   }
 
   public function testItDoesNotTrackPaymentWhenClickTooOld() {
     $this->createClick($this->link, $this->subscriber, 20);
-    $orderMock = $this->createOrderMock($this->subscriber->email);
+    $this->entityManager->flush();
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail());
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -214,11 +251,12 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->cookies
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
-    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(0);
+    expect(count($this->statisticsWooCommercePurchasesRepository->findBy([])))->equals(0);
   }
 
   public function testItDoesNotTrackPaymentForDifferentEmail() {
     $this->createClick($this->link, $this->subscriber);
+    $this->entityManager->flush();
     $orderMock = $this->createOrderMock('different.email@example.com');
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
@@ -228,12 +266,13 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->cookies
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
-    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(0);
+    expect(count($this->statisticsWooCommercePurchasesRepository->findBy([])))->equals(0);
   }
 
   public function testItDoesNotTrackPaymentWhenClickNewerThanOrder() {
     $this->createClick($this->link, $this->subscriber, 0);
-    $orderMock = $this->createOrderMock($this->subscriber->email);
+    $this->entityManager->flush();
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail());
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -242,14 +281,15 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->cookies
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
-    expect(count(StatisticsWooCommercePurchases::findMany()))->equals(0);
+    expect(count($this->statisticsWooCommercePurchasesRepository->findBy([])))->equals(0);
   }
 
   public function testItTracksPaymentForCorrectClickWhenClickNewerThanOrderExists() {
     $click = $this->createClick($this->link, $this->subscriber, 5);
     $this->createClick($this->link, $this->subscriber, 0); // wrong click, should not be tracked
+    $this->entityManager->flush();
 
-    $orderMock = $this->createOrderMock($this->subscriber->email);
+    $orderMock = $this->createOrderMock($this->subscriber->getEmail());
     $woocommercePurchases = new WooCommercePurchases(
       $this->createWooCommerceHelperMock($orderMock),
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
@@ -258,9 +298,11 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->cookies
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
-    $purchaseStats = StatisticsWooCommercePurchases::findMany();
+    $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
     expect($purchaseStats)->count(1);
-    expect($purchaseStats[0]->click_id)->equals($click->id);
+    $click = $purchaseStats[0]->getClick();
+    assert($click instanceof StatisticsClickEntity);
+    expect($click->getId())->equals($click->getId());
   }
 
   public function testItTracksByCookie() {
@@ -270,8 +312,9 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $cookieEmailSubscriber = $this->createSubscriber($cookieEmail);
 
     $click = $this->createClick($this->link, $cookieEmailSubscriber);
+    $this->entityManager->flush();
     $_COOKIE['mailpoet_revenue_tracking'] = json_encode([
-      'statistics_clicks' => $click->id,
+      'statistics_clicks' => $click->getId(),
       'created_at' => time(),
     ]);
 
@@ -284,9 +327,11 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->cookies
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
-    $purchaseStats = StatisticsWooCommercePurchases::findMany();
+    $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
     expect(count($purchaseStats))->equals(1);
-    expect($purchaseStats[0]->click_id)->equals($click->id);
+    $click = $purchaseStats[0]->getClick();
+    assert($click instanceof StatisticsClickEntity);
+    expect($click->getId())->equals($click->getId());
   }
 
   public function testItDoesNotTrackByCookieWhenTrackedByOrder() {
@@ -300,9 +345,10 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $cookieEmailClick = $this->createClick($this->link, $cookieEmailSubscriber);
 
     $_COOKIE['mailpoet_revenue_tracking'] = json_encode([
-      'statistics_clicks' => $cookieEmailClick->id,
+      'statistics_clicks' => $cookieEmailClick->getId(),
       'created_at' => time(),
     ]);
+    $this->entityManager->flush();
 
     $orderMock = $this->createOrderMock($orderEmail);
     $woocommercePurchases = new WooCommercePurchases(
@@ -313,9 +359,11 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->cookies
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
-    $purchaseStats = StatisticsWooCommercePurchases::findMany();
+    $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
     expect(count($purchaseStats))->equals(1);
-    expect($purchaseStats[0]->click_id)->equals($orderEmailClick->id);
+    $click = $purchaseStats[0]->getClick();
+    assert($click instanceof StatisticsClickEntity);
+    expect($click->getId())->equals($orderEmailClick->getId());
   }
 
   public function testItTracksByBothOrderAndCookieForDifferentNewsletters() {
@@ -333,8 +381,9 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $link = $this->createLink($newsletter, $queue);
     $cookieEmailClick = $this->createClick($link, $cookieEmailSubscriber);
 
+    $this->entityManager->flush();
     $_COOKIE['mailpoet_revenue_tracking'] = json_encode([
-      'statistics_clicks' => $cookieEmailClick->id,
+      'statistics_clicks' => $cookieEmailClick->getId(),
       'created_at' => time(),
     ]);
 
@@ -347,73 +396,70 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->cookies
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
-    $purchaseStats = StatisticsWooCommercePurchases::findMany();
+    $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
     expect(count($purchaseStats))->equals(2);
     foreach ($purchaseStats as $stats) {
-      if ($stats->clickId === $orderEmailClick->id) {
-        expect($stats->newsletterId)->equals($this->newsletter->id);
+      $click = $stats->getClick();
+      assert($click instanceof StatisticsClickEntity);
+      $statsNewsletter = $stats->getNewsletter();
+      assert($statsNewsletter instanceof NewsletterEntity);
+      if ($click->getId() === $orderEmailClick->getId()) {
+        expect($statsNewsletter->getId())->equals($this->newsletter->getId());
       } else {
-        expect($stats->clickId)->equals($cookieEmailClick->id);
-        expect($stats->newsletterId)->equals($newsletter->id);
+        expect($click->getId())->equals($cookieEmailClick->getId());
+        expect($statsNewsletter->getId())->equals($newsletter->getId());
       }
     }
   }
 
-  public function _after() {
-    $this->cleanup();
+  private function createNewsletter(): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setSubject('Subject');
+    $this->entityManager->persist($newsletter);
+    return $newsletter;
   }
 
-  private function cleanup() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsWooCommercePurchases::$_table);
+  private function createQueue(NewsletterEntity $newsletter, SubscriberEntity $subscriber): SendingQueueEntity {
+    $task = new ScheduledTaskEntity();
+    $this->entityManager->persist($task);
+    $queue = new SendingQueueEntity();
+    $this->entityManager->persist($queue);
+    $queue->setNewsletter($newsletter);
+    $queue->setSubscribers((string)$subscriber->getId());
+    $queue->setTask($task);
+    $sendingTaskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber, 1);
+    $this->entityManager->persist($sendingTaskSubscriber);
+    return $queue;
   }
 
-  private function createNewsletter() {
-    $newsletter = Newsletter::create();
-    $newsletter->type = Newsletter::TYPE_STANDARD;
-    return $newsletter->save();
+  private function createSubscriber($email): SubscriberEntity {
+    $subscriber = new SubscriberEntity();
+    $this->entityManager->persist($subscriber);
+    $subscriber->setEmail($email);
+    $subscriber->setFirstName('First');
+    $subscriber->setLastName('Last');
+    return $subscriber;
   }
 
-  private function createQueue(Newsletter $newsletter, Subscriber $subscriber) {
-    $queue = Sending::create();
-    $queue->newsletterId = $newsletter->id;
-    $queue->setSubscribers([$subscriber->id]);
-    $queue->updateProcessedSubscribers([$subscriber->id]);
-    return $queue->save();
+  private function createLink(NewsletterEntity $newsletter, SendingQueueEntity $queue): NewsletterLinkEntity {
+    $link = new NewsletterLinkEntity($newsletter, $queue, 'url', 'hash');
+    $this->entityManager->persist($link);
+    return $link;
   }
 
-  private function createSubscriber($email) {
-    $subscriber = Subscriber::create();
-    $subscriber->email = $email;
-    $subscriber->firstName = 'First';
-    $subscriber->lastName = 'Last';
-    return $subscriber->save();
-  }
-
-  private function createLink(Newsletter $newsletter, Sending $queue) {
-    $link = NewsletterLink::create();
-    $link->hash = 'hash';
-    $link->url = 'url';
-    $link->newsletterId = $newsletter->id;
-    $link->queueId = $queue->id;
-    return $link->save();
-  }
-
-  private function createClick(NewsletterLink $link, Subscriber $subscriber, $createdDaysAgo = 5) {
-    $click = StatisticsClicks::create();
-    $click->newsletterId = $link->newsletterId;
-    $click->subscriberId = $subscriber->id;
-    $click->queueId = $link->queueId;
-    $click->linkId = (int)$link->id;
-    $click->count = 1;
+  private function createClick(NewsletterLinkEntity $link, SubscriberEntity $subscriber, $createdDaysAgo = 5): StatisticsClickEntity {
+    $newsletter = $link->getNewsletter();
+    $queue = $link->getQueue();
+    assert($newsletter instanceof NewsletterEntity);
+    assert($queue instanceof SendingQueueEntity);
+    $click = new StatisticsClickEntity($newsletter, $queue, $subscriber, $link, 1);
+    $this->entityManager->persist($click);
 
     $timestamp = new DateTime("-$createdDaysAgo days");
-    $click->createdAt = $timestamp->format('Y-m-d H:i:s');
-    $click->updatedAt = $timestamp->format('Y-m-d H:i:s');
-    return $click->save();
+    $click->setCreatedAt($timestamp);
+    $click->setUpdatedAt($timestamp);
+    return $click;
   }
 
   private function createWooCommerceHelperMock(MockObject $orderMock) {
@@ -438,5 +484,14 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $mock->method('get_total')->willReturn((string)$totalPrice);
     $mock->method('get_currency')->willReturn('EUR');
     return $mock;
+  }
+
+  private function cleanup() {
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(StatisticsClickEntity::class);
+    $this->truncateEntity(StatisticsWooCommercePurchaseEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
   }
 }
