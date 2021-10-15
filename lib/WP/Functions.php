@@ -736,4 +736,8 @@ class Functions {
   public function hasExcerpt($post = null) {
     return has_excerpt($post);
   }
+
+  public function wpMkdirP(string $dir) {
+    return wp_mkdir_p($dir);
+  }
 }
