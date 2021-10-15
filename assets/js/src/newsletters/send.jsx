@@ -211,7 +211,7 @@ class NewsletterSend extends React.Component {
   saveTemplate = (response, done) => {
     const thumbnailPromise = this.getThumbnailPromise(response.meta.preview_url);
     thumbnailPromise
-      .then((thumbnail) => {
+      .then((thumbnailData) => {
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'newsletterTemplates',
@@ -219,7 +219,7 @@ class NewsletterSend extends React.Component {
           data: {
             newsletter_id: response.data.id,
             name: response.data.subject,
-            thumbnail,
+            thumbnail_data: thumbnailData,
             body: JSON.stringify(response.data.body),
             categories: '["recent"]',
           },

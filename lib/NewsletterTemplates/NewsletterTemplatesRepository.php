@@ -52,6 +52,10 @@ class NewsletterTemplatesRepository extends Repository {
       $template->setThumbnail($data['thumbnail']);
     }
 
+    if (isset($data['thumbnail_data'])) {
+      $template->setThumbnailData($data['thumbnail_data']);
+    }
+
     if (isset($data['body'])) {
       $template->setBody(json_decode($data['body'], true));
     }
