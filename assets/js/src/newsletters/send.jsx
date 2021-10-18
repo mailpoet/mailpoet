@@ -12,6 +12,7 @@ import { ReEngagementNewsletterFields } from 'newsletters/send/re_engagement';
 import HelpTooltip from 'help-tooltip.jsx';
 import jQuery from 'jquery';
 import Background from 'common/background/background';
+import { Grid } from 'common/grid';
 import { fromUrl } from 'common/thumbnail.ts';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
@@ -517,7 +518,7 @@ class NewsletterSend extends React.Component {
           onChange={this.handleFormChange}
           onSubmit={this.handleSave}
         >
-          <p>
+          <Grid.CenteredRow className="send-newsletter-buttons">
             <Button variant="secondary" type="submit" automationId="email-save-draft">
               {MailPoet.I18n.t('saveDraftAndClose')}
             </Button>
@@ -545,7 +546,13 @@ class NewsletterSend extends React.Component {
                   </Button>
                 )
             }
-          </p>
+            { this.state.validationError !== undefined && (
+              <HelpTooltip
+                tooltip={this.state.validationError}
+                tooltipId={this.state.validationError}
+              />
+            ) }
+          </Grid.CenteredRow>
           <p>
             {MailPoet.I18n.t('orSimply')}
             &nbsp;
