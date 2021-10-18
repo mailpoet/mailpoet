@@ -567,12 +567,6 @@ class NewsletterSend extends React.Component {
             </a>
             .
           </p>
-          { !isPaused && sendButtonOptions.disabled && sendButtonOptions.disabled === 'disabled' && (
-            <HelpTooltip
-              tooltip={MailPoet.I18n.t('helpTooltipSendEmail')}
-              tooltipId="helpTooltipSendEmail"
-            />
-          ) }
           { window.mailpoet_mss_key_pending_approval && (
             <div className="mailpoet_error">
               {
