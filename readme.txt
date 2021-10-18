@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.71.2
+Stable tag: 3.71.3
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,16 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.71.3 - 2021-10-18 =
+* Improved: show email stats with less then 0.1% with two decimal places;
+* Improved: more options when sending is paused because of unauthorized email address;
+* Improved: offer activating premium plugin in settings when already installed;
+* Changed: offer more tools to clean your lists;
+* Fixed: an error when using MySQL in strict mode;
+* Fixed: rare database error when using incompatible collations;
+* Fixed: automatic emails can be set up without providing scheduled time;
+* Fixed: after editing an order the customer is subscribed when they shouldn't be.
 
 = 3.71.2 - 2021-10-04 =
 * Improved: better handle reply-to address with missing reply-to name;
