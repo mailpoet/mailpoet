@@ -25,6 +25,7 @@ if (mailpoet_analytics_enabled) {
 
   if (mailpoet_analytics_data != null) {
     mixpanel.people.set(mailpoet_analytics_data);
+    MailPoet.trackEvent('User Properties', mailpoet_analytics_data);
   }
 
 }
