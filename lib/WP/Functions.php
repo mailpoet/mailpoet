@@ -740,4 +740,8 @@ class Functions {
   public function wpMkdirP(string $dir) {
     return wp_mkdir_p($dir);
   }
+
+  public function wpGetImageEditor(string $path, $args = []) {
+    return wp_get_image_editor($path, $args);
+  }
 }

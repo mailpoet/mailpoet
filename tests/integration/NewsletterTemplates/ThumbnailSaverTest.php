@@ -48,7 +48,7 @@ class ThumbnailSaverTest extends \MailPoetTest {
   private function createTemplate(): NewsletterTemplateEntity {
     $template = new NewsletterTemplateEntity('Template');
     $template->setBody([1]);
-    $template->setThumbnailData('data:image/gif;base64,R0lGODlhAQABAAAAACw=');
+    $template->setThumbnailData('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=');
     $this->entityManager->persist($template);
     $this->entityManager->flush();
     return $template;

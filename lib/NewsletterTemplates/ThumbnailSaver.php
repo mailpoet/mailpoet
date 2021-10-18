@@ -8,6 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class ThumbnailSaver {
   const THUMBNAIL_DIRECTORY = 'newsletter_thumbnails';
+  const IMAGE_QUALITY = 80;
 
   /** @var NewsletterTemplatesRepository */
   private $repository;
@@ -64,10 +65,36 @@ class ThumbnailSaver {
       $this->wp->wpMkdirP($thumbNailsDirectory);
     }
     $file = $thumbNailsDirectory . '/' . uniqid() . '_template_' . $template->getId() . '.jpg';
-    if (file_put_contents($file, file_get_contents($data))) {
+    if ($this->compressAndSaveFile($file, $data)) {
       $url = str_replace($this->baseDirectory, $this->baseUrl, $file);
       $template->setThumbnail($url);
       $this->repository->flush();
     }
+  }
+
+  private function compressAndSaveFile(string $file, string $data): bool {
+    $initialSaveResult = $this->saveBase64AsImageFile($file, $data);
+    $editor = $this->wp->wpGetImageEditor($file);
+    if ($editor instanceof \WP_Error) {
+      return $initialSaveResult;
+    }
+    $result = $editor->set_quality(self::IMAGE_QUALITY);
+    if ($result instanceof \WP_Error) {
+      return $initialSaveResult;
+    }
+    $result = $editor->save($file);
+    if ($result instanceof \WP_Error) {
+      return $initialSaveResult;
+    }
+    unset($editor);
+    return true;
+  }
+
+  /**
+   * Simply saves base64 to a file without any compression
+   * @return bool
+   */
+  private function saveBase64AsImageFile(string $file, string $data): bool {
+    return file_put_contents($file, file_get_contents($data)) !== false;
   }
 }
