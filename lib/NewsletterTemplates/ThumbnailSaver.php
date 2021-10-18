@@ -60,6 +60,10 @@ class ThumbnailSaver {
     if (!$data) {
       return;
     }
+    // Check that data contains Base 64 encoded jpeg
+    if (strpos($data, 'data:image/jpeg;base64') !== 0) {
+      return;
+    }
     $thumbNailsDirectory = $this->baseDirectory . '/' . self::THUMBNAIL_DIRECTORY;
     if (!file_exists($thumbNailsDirectory)) {
       $this->wp->wpMkdirP($thumbNailsDirectory);

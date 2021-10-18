@@ -45,6 +45,15 @@ class ThumbnailSaverTest extends \MailPoetTest {
     unlink($file); // remove the file after the test
   }
 
+  public function testItSkipsNotBase64JpegData() {
+    $template = $this->createTemplate();
+    $template->setThumbnailData('Some data');
+    $template = $this->thumbnailSaver->ensureTemplateThumbnailFile($template);
+    $thumbnailUrl = $template->getThumbnail();
+    // Base url was updated back to initial value
+    expect($thumbnailUrl)->null();
+  }
+
   private function createTemplate(): NewsletterTemplateEntity {
     $template = new NewsletterTemplateEntity('Template');
     $template->setBody([1]);
