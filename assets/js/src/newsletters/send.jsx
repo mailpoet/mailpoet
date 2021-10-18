@@ -548,7 +548,7 @@ class NewsletterSend extends React.Component {
             }
             { this.state.validationError !== undefined && (
               <HelpTooltip
-                tooltip={this.state.validationError}
+                tooltip={(<div>{this.state.validationError}</div>)}
                 tooltipId={this.state.validationError}
               />
             ) }
