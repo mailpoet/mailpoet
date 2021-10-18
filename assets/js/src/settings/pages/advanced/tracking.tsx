@@ -4,9 +4,12 @@ import { t } from 'common/functions';
 import Radio from 'common/form/radio/radio';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
+import { GlobalContext } from 'context/index.jsx';
 
 export default function Tracking() {
   const [enabled, setEnabled] = useSetting('tracking', 'enabled');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { features } = React.useContext<any>(GlobalContext);
 
   return (
     <>
@@ -36,6 +39,14 @@ export default function Tracking() {
         />
         <label htmlFor="tracking-disabled">
           {t('no')}
+          {features.isSupported('re-engagement-email') && !enabled && (
+            <>
+              <br />
+              <span className="mailpoet-note">
+                {t('re-engagementDisabledBecauseTrackingIs')}
+              </span>
+            </>
+          )}
         </label>
       </Inputs>
     </>
