@@ -28,6 +28,38 @@ const generateGaTrackingCampaignName = (id, subject) => {
   return `${name || 'newsletter'}_${id}`;
 };
 
+function validateNewsletter(newsletter) {
+  let body;
+  let content;
+
+  if (newsletter && newsletter.body && newsletter.body.content) {
+    content = newsletter.body.content;
+    body = JSON.stringify(newsletter.body.content);
+    if (!content.blocks || !Array.isArray(content.blocks) || (content.blocks.length === 0)) {
+      return MailPoet.I18n.t('newsletterIsEmpty');
+    }
+  }
+
+  if (body.indexOf('[link:subscription_unsubscribe_url]') < 0
+    && body.indexOf('[link:subscription_unsubscribe]') < 0
+  ) {
+    return MailPoet.I18n.t('unsubscribeLinkMissing');
+  }
+
+  if ((newsletter.type === 'notification')
+    && body.indexOf('"type":"automatedLatestContent"') < 0
+    && body.indexOf('"type":"automatedLatestContentLayout"') < 0
+  ) {
+    return MailPoet.I18n.t('automatedLatestContentMissing');
+  }
+
+  if (newsletter.type === 'standard' && newsletter.status === 'sent') {
+    return MailPoet.I18n.t('emailAlreadySent');
+  }
+
+  return undefined;
+}
+
 class NewsletterSend extends React.Component {
   constructor(props) {
     super(props);
@@ -143,6 +175,7 @@ class NewsletterSend extends React.Component {
         item: response.data,
         fields: this.getFieldsByNewsletter(response.data),
         thumbnailPromise,
+        validationError: validateNewsletter(response.data),
       });
     }).fail(() => {
       this.setState({
@@ -459,8 +492,11 @@ class NewsletterSend extends React.Component {
     });
     const sendButtonOptions = this.getSendButtonOptions();
 
-    const sendingDisabled = !!(window.mailpoet_subscribers_limit_reached
-      || window.mailpoet_mss_key_pending_approval);
+    const sendingDisabled = !!(
+      window.mailpoet_subscribers_limit_reached
+      || window.mailpoet_mss_key_pending_approval
+      || this.state.validationError !== undefined
+    );
 
     let emailType = this.state.item.type;
     if (emailType === 'automatic') {
