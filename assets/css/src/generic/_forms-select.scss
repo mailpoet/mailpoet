@@ -50,14 +50,16 @@
 
 .mailpoet-form-react-select__value-container {
   padding:
-    math.div($form-control-spacing, 2)
+    0
     $form-control-icon-small + 2 * $form-control-spacing
-    math.div($form-control-spacing, 2)
+    0
     $form-control-spacing * 2 !important;
 }
 
 .mailpoet-form-react-select__single-value {
   color: $color-text !important;
+  grid-area: 1 / 1 / 2 / 3;
+  margin-left: 2px;
   max-width: calc(100% - 8px); // leave space for narrow input to search another value
 }
 
