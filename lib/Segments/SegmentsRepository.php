@@ -221,4 +221,14 @@ class SegmentsRepository extends Repository {
       ->setMaxResults($limit)
       ->getResult();
   }
+
+  public function getCountWithMultipleConditions(): int {
+    $qb = $this->entityManager->createQueryBuilder()
+      ->select('COUNT(DISTINCT s.id)')
+      ->from(SegmentEntity::class, 's')
+      ->join('s.dynamicFilters', 'ds')
+      ->groupBy('ds.segment')
+      ->having('COUNT(ds.id) > 1');
+    return (int)$qb->getQuery()->getSingleScalarResult();
+  }
 }
