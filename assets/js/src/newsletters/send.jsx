@@ -40,7 +40,7 @@ function validateNewsletter(newsletter) {
       return MailPoet.I18n.t('newsletterIsEmpty');
     }
   }
-
+  // todo only check this if MSS is active
   if (body.indexOf('[link:subscription_unsubscribe_url]') < 0
     && body.indexOf('[link:subscription_unsubscribe]') < 0
   ) {

@@ -6,11 +6,13 @@ use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SendingQueue as SendingQueueAPI;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
@@ -65,6 +67,7 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(SubscribersFeature::class, [
         'check' => true,
       ]),
+      $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SubscribersFinder::class)
     );
     $res = $sendingQueue->add(['newsletter_id' => $this->newsletter->id]);
@@ -110,6 +113,21 @@ class SendingQueueTest extends \MailPoetTest {
     expect($rescheduledTask->id)->equals($scheduledTask->id);
     // scheduled time was updated
     expect($rescheduledTask->scheduledAt)->equals('2018-11-11 11:00:00');
+  }
+
+  public function testItRejectsNewsletterWithoutUnsubscribeLink() {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setBody(['content' => ['type' => 'container', 'columnLayout' => false, 'orientation' => 'vertical']]);
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    $sendingQueue = $this->diContainer->get(SendingQueueAPI::class);
+    $response = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
+    $response = $response->getData();
+    expect($response['errors'][0])->array();
+    expect($response['errors'][0]['message'])->stringContainsString('Unsubscribe');
+    expect($response['errors'][0]['error'])->stringContainsString('bad_request');
   }
 
   private function _createOrUpdateNewsletterOptions($newsletterId, $newsletterType, $options) {

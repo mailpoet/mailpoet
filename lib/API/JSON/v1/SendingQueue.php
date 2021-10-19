@@ -143,6 +143,25 @@ class SendingQueue extends APIEndpoint {
   }
 
   private function validateNewsletter(NewsletterEntity $newsletterEntity): ?string {
+    if (
+      $newsletterEntity->getBody()
+      && is_array($newsletterEntity->getBody())
+      && $newsletterEntity->getBody()['content']
+    ) {
+      $body = json_encode($newsletterEntity->getBody()['content']);
+      if ($body === false) {
+        return __('Poet, please add prose to your masterpiece before you send it to your followers.');
+      }
+
+      // todo only check this if MSS is active
+      if ((strpos($body, '[link:subscription_unsubscribe_url]') === false)
+        && (strpos($body, '[link:subscription_unsubscribe]') === false)
+      ) {
+        return __('All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.');
+      }
+    } else {
+      return __('Poet, please add prose to your masterpiece before you send it to your followers.');
+    }
     return null;
   }
 
