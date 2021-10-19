@@ -65,6 +65,57 @@
         },
         "backgroundColor": "#ffffff",
         "backgroundColorAlternate": "#eeeeee"
+      },
+      {
+        "type": "container",
+        "columnLayout": false,
+        "orientation": "horizontal",
+        "image": {
+          "src": null,
+          "display": "scale"
+        },
+        "styles": {
+          "block": {
+            "backgroundColor": "#f8f8f8"
+          }
+        },
+        "blocks": [
+          {
+            "type": "container",
+            "columnLayout": false,
+            "orientation": "vertical",
+            "image": {
+              "src": null,
+              "display": "scale"
+            },
+            "styles": {
+              "block": {
+                "backgroundColor": "transparent"
+              }
+            },
+            "blocks": [
+              {
+                "type": "footer",
+                "text": "<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription</a><br />Add your postal address here!</p>",
+                "styles": {
+                  "block": {
+                    "backgroundColor": "transparent"
+                  },
+                  "text": {
+                    "fontColor": "#222222",
+                    "fontFamily": "Arial",
+                    "fontSize": "12px",
+                    "textAlign": "center"
+                  },
+                  "link": {
+                    "fontColor": "#6cb7d4",
+                    "textDecoration": "none"
+                  }
+                }
+              }
+            ]
+          }
+        ]
       }
     ]
   },
