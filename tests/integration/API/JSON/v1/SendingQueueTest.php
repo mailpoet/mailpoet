@@ -14,6 +14,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
@@ -68,6 +69,7 @@ class SendingQueueTest extends \MailPoetTest {
         'check' => true,
       ]),
       $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(Bridge::class),
       $this->diContainer->get(SubscribersFinder::class)
     );
     $res = $sendingQueue->add(['newsletter_id' => $this->newsletter->id]);
@@ -122,7 +124,14 @@ class SendingQueueTest extends \MailPoetTest {
     $newsletter->setBody(['content' => ['type' => 'container', 'columnLayout' => false, 'orientation' => 'vertical']]);
     $this->entityManager->persist($newsletter);
     $this->entityManager->flush();
-    $sendingQueue = $this->diContainer->get(SendingQueueAPI::class);
+    $sendingQueue = new SendingQueueAPI(
+      $this->diContainer->get(SubscribersFeature::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      Stub::make(Bridge::class, [
+        'isMailpoetSendingServiceEnabled' => true,
+      ]),
+      $this->diContainer->get(SubscribersFinder::class)
+    );
     $response = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
     $response = $response->getData();
     expect($response['errors'][0])->array();
