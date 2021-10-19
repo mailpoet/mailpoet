@@ -38,7 +38,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersTrashed')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -53,7 +53,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersDeleted')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -68,7 +68,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersRestored')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -146,7 +146,7 @@ const newsletterActions = [
       }).done((response) => {
         MailPoet.Notice.success(
           (MailPoet.I18n.t('newsletterDuplicated')).replace(
-            '%$1s', response.data.subject
+            '%1$s', response.data.subject
           )
         );
         refresh();
@@ -235,33 +235,33 @@ class NewsletterListNotification extends React.Component {
     switch (newsletter.options.intervalType) {
       case 'daily':
         sendingFrequency = MailPoet.I18n.t('sendDaily').replace(
-          '%$1s', timeOfDayValues[newsletter.options.timeOfDay]
+          '%1$s', timeOfDayValues[newsletter.options.timeOfDay]
         );
         break;
 
       case 'weekly':
         sendingFrequency = MailPoet.I18n.t('sendWeekly').replace(
-          '%$1s', weekDayValues[newsletter.options.weekDay]
+          '%1$s', weekDayValues[newsletter.options.weekDay]
         ).replace(
-          '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
+          '%2$s', timeOfDayValues[newsletter.options.timeOfDay]
         );
         break;
 
       case 'monthly':
         sendingFrequency = MailPoet.I18n.t('sendMonthly').replace(
-          '%$1s', monthDayValues[newsletter.options.monthDay]
+          '%1$s', monthDayValues[newsletter.options.monthDay]
         ).replace(
-          '%$2s', timeOfDayValues[newsletter.options.timeOfDay]
+          '%2$s', timeOfDayValues[newsletter.options.timeOfDay]
         );
         break;
 
       case 'nthWeekDay':
         sendingFrequency = MailPoet.I18n.t('sendNthWeekDay').replace(
-          '%$1s', nthWeekDayValues[newsletter.options.nthWeekDay]
+          '%1$s', nthWeekDayValues[newsletter.options.nthWeekDay]
         ).replace(
-          '%$2s', weekDayValues[newsletter.options.weekDay]
+          '%2$s', weekDayValues[newsletter.options.weekDay]
         ).replace(
-          '%$3s', timeOfDayValues[newsletter.options.timeOfDay]
+          '%3$s', timeOfDayValues[newsletter.options.timeOfDay]
         );
         break;
 

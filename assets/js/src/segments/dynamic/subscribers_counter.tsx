@@ -89,7 +89,7 @@ const SubscribersCounter: React.FunctionComponent = () => {
   return (
     <div className="mailpoet-form-field">
       <span className="mailpoet-form-notice-message">
-        {(MailPoet.I18n.t('dynamicSegmentSize')).replace('%$1d', subscribersCount.count.toLocaleString())}
+        {(MailPoet.I18n.t('dynamicSegmentSize')).replace('%1$d', subscribersCount.count.toLocaleString())}
       </span>
     </div>
   );

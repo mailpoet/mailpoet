@@ -71,7 +71,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleSegmentsTrashed')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -86,7 +86,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleSegmentsDeleted')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -101,7 +101,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleSegmentsRestored')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -146,7 +146,7 @@ const itemActions = [
       },
     }).done((response) => {
       MailPoet.Notice.success(
-        MailPoet.I18n.t('listDuplicated').replace('%$1s', response.data.name)
+        MailPoet.I18n.t('listDuplicated').replace('%1$s', response.data.name)
       );
       refresh();
     }).fail((response) => {
@@ -192,7 +192,7 @@ const itemActions = [
       }).done(() => {
         MailPoet.Modal.loading(false);
         MailPoet.Notice.success(
-          (MailPoet.I18n.t('listSynchronized')).replace('%$1s', item.name)
+          (MailPoet.I18n.t('listSynchronized')).replace('%1$s', item.name)
         );
         refresh();
       }).fail((response) => {
