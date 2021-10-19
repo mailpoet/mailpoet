@@ -2,6 +2,9 @@
 
 namespace MailPoet\Test\Models;
 
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -9,9 +12,6 @@ use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsClicks;
-use MailPoet\Models\StatisticsOpens;
-use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
@@ -539,8 +539,8 @@ class NewsletterTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsOpens::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsUnsubscribes::$_table);
+    $this->truncateEntity(StatisticsClickEntity::class);
+    $this->truncateEntity(StatisticsOpenEntity::class);
+    $this->truncateEntity(StatisticsUnsubscribeEntity::class);
   }
 }

@@ -2,11 +2,11 @@
 
 namespace MailPoet\Test\Statistics\Track;
 
-use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Models\Subscriber;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoetVendor\Idiorm\ORM;
@@ -14,6 +14,9 @@ use MailPoetVendor\Idiorm\ORM;
 class UnsubscribesTest extends \MailPoetTest {
   /** @var Unsubscribes */
   private $unsubscribes;
+
+  /** @var StatisticsUnsubscribesRepository */
+  private $statisticsUnsubscribesRepository;
 
   public $queue;
   public $subscriber;
@@ -38,7 +41,8 @@ class UnsubscribesTest extends \MailPoetTest {
     $queue->updateProcessedSubscribers([$subscriber->id]);
     $this->queue = $queue->save();
     // instantiate class
-    $this->unsubscribes = ContainerWrapper::getInstance()->get(Unsubscribes::class);
+    $this->unsubscribes = $this->diContainer->get(Unsubscribes::class);
+    $this->statisticsUnsubscribesRepository = $this->diContainer->get(StatisticsUnsubscribesRepository::class);
   }
 
   public function testItTracksUnsubscribeEvent() {
@@ -47,7 +51,7 @@ class UnsubscribesTest extends \MailPoetTest {
       'source',
       $this->queue->id
     );
-    expect(count(StatisticsUnsubscribes::findMany()))->equals(1);
+    expect(count($this->statisticsUnsubscribesRepository->findAll()))->equals(1);
   }
 
   public function testItDoesNotTrackRepeatedUnsubscribeEvents() {
@@ -58,13 +62,13 @@ class UnsubscribesTest extends \MailPoetTest {
         $this->queue->id
       );
     }
-    expect(count(StatisticsUnsubscribes::findMany()))->equals(1);
+    expect(count($this->statisticsUnsubscribesRepository->findAll()))->equals(1);
   }
 
   public function _after() {
     ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsUnsubscribes::$_table);
+    $this->truncateEntity(StatisticsUnsubscribeEntity::class);
   }
 }
