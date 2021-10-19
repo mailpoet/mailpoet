@@ -127,4 +127,9 @@ class WorkersFactory {
   public function createSubscribersStatsReportWorker() {
     return $this->container->get(SubscribersStatsReport::class);
   }
+
+  /** @return NewsletterTemplateThumbnails */
+  public function createNewsletterTemplateThumbnailsWorker() {
+    return $this->container->get(NewsletterTemplateThumbnails::class);
+  }
 }
