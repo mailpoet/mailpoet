@@ -13,6 +13,7 @@ use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Services\Bridge;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
@@ -30,14 +31,19 @@ class SendingQueue extends APIEndpoint {
   /** @var NewslettersRepository */
   private $newsletterRepository;
 
+  /** @var Bridge */
+  private $bridge;
+
   public function __construct(
     SubscribersFeature $subscribersFeature,
     NewslettersRepository $newsletterRepository,
+    Bridge $bridge,
     SubscribersFinder $subscribersFinder
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
     $this->newsletterRepository = $newsletterRepository;
+    $this->bridge = $bridge;
   }
 
   public function add($data = []) {
@@ -153,8 +159,9 @@ class SendingQueue extends APIEndpoint {
         return __('Poet, please add prose to your masterpiece before you send it to your followers.');
       }
 
-      // todo only check this if MSS is active
-      if ((strpos($body, '[link:subscription_unsubscribe_url]') === false)
+      if (
+        $this->bridge->isMailpoetSendingServiceEnabled()
+        && (strpos($body, '[link:subscription_unsubscribe_url]') === false)
         && (strpos($body, '[link:subscription_unsubscribe]') === false)
       ) {
         return __('All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.');
