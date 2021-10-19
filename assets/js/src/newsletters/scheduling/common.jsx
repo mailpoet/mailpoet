@@ -56,7 +56,7 @@ const monthDayValues = _.object(
       if (labels[day] !== undefined) {
         label = labels[day];
       } else {
-        label = MailPoet.I18n.t('nth').replace('%$1d', day + 1);
+        label = MailPoet.I18n.t('nth').replace('%1$d', day + 1);
       }
       return [day + 1, label];
     }

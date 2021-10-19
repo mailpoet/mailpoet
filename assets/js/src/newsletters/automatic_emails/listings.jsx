@@ -29,7 +29,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersTrashed')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -44,7 +44,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersDeleted')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -59,7 +59,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersRestored')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -134,7 +134,7 @@ let newsletterActions = [
         id: newsletter.id,
       },
     }).done((response) => {
-      MailPoet.Notice.success((MailPoet.I18n.t('newsletterDuplicated')).replace('%$1s', response.data.subject));
+      MailPoet.Notice.success((MailPoet.I18n.t('newsletterDuplicated')).replace('%1$s', response.data.subject));
       refresh();
     }).fail((response) => {
       if (response.errors.length > 0) {
@@ -195,7 +195,7 @@ class Listings extends React.Component {
   renderStatus = (newsletter) => {
     const totalSent = (parseInt(newsletter.total_sent, 10) > -1)
       ? MailPoet.I18n.t('sentToXCustomers')
-        .replace('%$1d', newsletter.total_sent.toLocaleString())
+        .replace('%1$d', newsletter.total_sent.toLocaleString())
       : null;
 
     return (
@@ -263,19 +263,19 @@ class Listings extends React.Component {
     if (displayText && newsletter.options.afterTimeType !== 'immediate') {
       switch (newsletter.options.afterTimeType) {
         case 'minutes':
-          sendingDelay = MailPoet.I18n.t('sendingDelayMinutes').replace('%$1d', newsletter.options.afterTimeNumber);
+          sendingDelay = MailPoet.I18n.t('sendingDelayMinutes').replace('%1$d', newsletter.options.afterTimeNumber);
           break;
 
         case 'hours':
-          sendingDelay = MailPoet.I18n.t('sendingDelayHours').replace('%$1d', newsletter.options.afterTimeNumber);
+          sendingDelay = MailPoet.I18n.t('sendingDelayHours').replace('%1$d', newsletter.options.afterTimeNumber);
           break;
 
         case 'days':
-          sendingDelay = MailPoet.I18n.t('sendingDelayDays').replace('%$1d', newsletter.options.afterTimeNumber);
+          sendingDelay = MailPoet.I18n.t('sendingDelayDays').replace('%1$d', newsletter.options.afterTimeNumber);
           break;
 
         case 'weeks':
-          sendingDelay = MailPoet.I18n.t('sendingDelayWeeks').replace('%$1d', newsletter.options.afterTimeNumber);
+          sendingDelay = MailPoet.I18n.t('sendingDelayWeeks').replace('%1$d', newsletter.options.afterTimeNumber);
           break;
 
         default:

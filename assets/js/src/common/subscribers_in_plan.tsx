@@ -19,8 +19,8 @@ const SubscribersInPlan = ({
   const subscribersInPlanCount = subscribersInPlanLimit ? (
     <b key="subscribers_count">
       {MailPoet.I18n.t('subscribersInPlanCount')
-        .replace('%$1d', subscribersInPlan.toLocaleString())
-        .replace('%$2d', subscribersInPlanLimit.toLocaleString())}
+        .replace('%1$d', subscribersInPlan.toLocaleString())
+        .replace('%2$d', subscribersInPlanLimit.toLocaleString())}
     </b>
   ) : (
     <b key="subscribers_count">{subscribersInPlan}</b>
