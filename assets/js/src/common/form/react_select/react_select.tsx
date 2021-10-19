@@ -1,12 +1,12 @@
 import React, {
   CSSProperties,
-  LegacyRef,
 } from 'react';
 import classnames from 'classnames';
-import Select, { Props as ReactSelectProps } from 'react-select';
+import Select, { Props as ReactSelectProps, OptionProps } from 'react-select';
 
 export type Props = ReactSelectProps & {
   dimension?: 'small';
+  disabled?: boolean;
   isFullWidth?: boolean;
   iconStart?: JSX.Element;
   automationId?: string;
@@ -26,22 +26,14 @@ const LabelRenderer = (data: LabelRenderer) => (
   </div>
 );
 
-type Option = {
-  data: {
-    style: CSSProperties;
-    label: React.ReactNode;
-    count?: React.ReactNode;
-    tag?: React.ReactNode;
-  };
-  isDisabled: boolean;
-  isFocused: boolean;
-  isSelected: boolean;
-  // eslint-disable-next-line @typescript-eslint/ban-types -- we need to match react-select
-  innerProps: object;
-  innerRef: LegacyRef<HTMLDivElement>;
-};
+type OptionData = {
+  style: CSSProperties;
+  label: React.ReactNode;
+  count?: React.ReactNode;
+  tag?: React.ReactNode;
+}
 
-const Option = (props: Option) => {
+const Option = (props: OptionProps<OptionData>) => {
   let style = {};
   if (props.data?.style) {
     style = props.data.style;
