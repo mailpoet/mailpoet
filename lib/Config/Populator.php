@@ -6,6 +6,7 @@ use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\SubscribersLastEngagement;
@@ -186,6 +187,7 @@ class Populator {
     $this->migrateFormPlacement();
     $this->scheduleSubscriberLastEngagementDetection();
     $this->moveNewsletterTemplatesThumbnailData();
+    $this->scheduleNewsletterTemplateThumbnails();
   }
 
   private function createMailPoetPage() {
@@ -663,7 +665,7 @@ class Populator {
     );
   }
 
-  private function scheduleTask($type, $datetime) {
+  private function scheduleTask($type, $datetime, $priority = null) {
     $task = ScheduledTask::where('type', $type)
       ->whereRaw('(status = ? OR status IS NULL)', [ScheduledTask::STATUS_SCHEDULED])
       ->findOne();
@@ -672,6 +674,9 @@ class Populator {
     }
     $task = ScheduledTask::create();
     $task->type = $type;
+    if ($priority !== null) {
+      $task->priority = $priority;
+    }
     $task->status = ScheduledTask::STATUS_SCHEDULED;
     $task->scheduledAt = $datetime;
     $task->save();
@@ -899,6 +904,14 @@ class Populator {
     $this->scheduleTask(
       SubscribersLastEngagement::TASK_TYPE,
       Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
+    );
+  }
+
+  private function scheduleNewsletterTemplateThumbnails() {
+    $this->scheduleTask(
+      NewsletterTemplateThumbnails::TASK_TYPE,
+      Carbon::createFromTimestamp($this->wp->currentTime('timestamp')),
+      ScheduledTaskEntity::PRIORITY_LOW
     );
   }
 
