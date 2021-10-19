@@ -5,6 +5,7 @@ namespace MailPoet\Test\Subscription;
 use Codeception\Stub;
 use MailPoet\Config\Renderer;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\AssetsController;
 use MailPoet\Models\Newsletter;
@@ -13,7 +14,6 @@ use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsUnsubscribes;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
@@ -193,7 +193,7 @@ class PagesTest extends \MailPoetTest {
     ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
     ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsUnsubscribes::$_table);
+    $this->truncateEntity(StatisticsUnsubscribeEntity::class);
   }
 
   private function getPages(

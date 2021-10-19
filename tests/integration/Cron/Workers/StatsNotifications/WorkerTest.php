@@ -4,8 +4,9 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronHelper;
-use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\StatsNotificationEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
@@ -14,9 +15,11 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
-use MailPoet\Models\StatisticsUnsubscribes;
+use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Idiorm\ORM;
@@ -51,19 +54,28 @@ class WorkerTest extends \MailPoetTest {
   /** @var NewsletterLinkRepository */
   private $newsletterLinkRepository;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
+  /** @var StatisticsUnsubscribesRepository */
+  private $statisticsUnsubscribesRepository;
+
   public function _before() {
     parent::_before();
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    $this->repository = ContainerWrapper::getInstance()->get(StatsNotificationsRepository::class);
-    $this->newsletterLinkRepository = ContainerWrapper::getInstance()->get(NewsletterLinkRepository::class);
+    $this->cleanup();
+    $this->repository = $this->diContainer->get(StatsNotificationsRepository::class);
+    $this->newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
+    $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $this->statisticsUnsubscribesRepository = $this->diContainer->get(StatisticsUnsubscribesRepository::class);
     $this->repository->truncate();
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
     $this->settings = SettingsController::getInstance();
-    $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $this->cronHelper = $this->diContainer->get(CronHelper::class);
     $this->statsNotifications = new Worker(
       $this->mailer,
       $this->renderer,
@@ -72,10 +84,10 @@ class WorkerTest extends \MailPoetTest {
       new MetaInfo,
       $this->repository,
       $this->newsletterLinkRepository,
-      ContainerWrapper::getInstance()->get(NewsletterStatisticsRepository::class),
+      $this->diContainer->get(NewsletterStatisticsRepository::class),
       $this->entityManager,
-      ContainerWrapper::getInstance()->get(SubscribersFeature::class),
-      ContainerWrapper::getInstance()->get(SubscribersRepository::class)
+      $this->diContainer->get(SubscribersFeature::class),
+      $this->diContainer->get(SubscribersRepository::class)
     );
     $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,
@@ -156,10 +168,10 @@ class WorkerTest extends \MailPoetTest {
       'queue_id' => $this->queue->id(),
       'created_at' => '2017-01-02 21:23:45',
     ]);
-    StatisticsUnsubscribes::createOrUpdate([
-      'subscriber_id' => '12',
-      'newsletter_id' => $this->newsletter->id(),
-      'queue_id' => $this->queue->id(),
+    $this->statisticsUnsubscribesRepository->createOrUpdate([
+      'subscriber' => $this->createSubscriber(),
+      'newsletter' => $this->newslettersRepository->findOneById($this->newsletter->id()),
+      'queue' => $this->sendingQueuesRepository->findOneById($this->queue->id()),
       'created_at' => '2017-01-02 21:23:45',
     ]);
   }
@@ -310,5 +322,26 @@ class WorkerTest extends \MailPoetTest {
       ->method('send');
 
     $this->statsNotifications->process();
+  }
+
+  private function createSubscriber(): SubscriberEntity {
+    $subscriber = new SubscriberEntity();
+    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $subscriber->setEmail('subscriber' . rand(0, 10000) . '@example.com');
+    $this->entityManager->persist($subscriber);
+    return $subscriber;
+  }
+
+  private function cleanup() {
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    $this->truncateEntity(StatisticsUnsubscribeEntity::class);
+  }
+
+  public function _after() {
+    parent::_after();
+    $this->cleanup();
   }
 }
