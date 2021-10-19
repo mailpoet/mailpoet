@@ -26,7 +26,7 @@ class AuthorizedEmailAddressesValidationCest {
     $i->amOnMailPoetPage('Settings');
     $i->cantSee($errorMessagePrefix);
 
-    // default sender is invalid
+    $i->wantTo('default sender is invalid');
     $i->fillField('[data-automation-id="from-email-field"]', $unauthorizedSendingEmail);
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
@@ -34,7 +34,7 @@ class AuthorizedEmailAddressesValidationCest {
     $i->canSee($errorMessagePrefix, $errorNoticeElement);
     $i->canSee($unauthorizedSendingEmail, $errorNoticeElement);
 
-    // Error message disappears after email is replaced with authorized email
+    $i->wantTo('Error message disappears after email is replaced with authorized email');
     $i->fillField('[data-automation-id="from-email-field"]', \AcceptanceTester::AUTHORIZED_SENDING_EMAIL);
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
@@ -55,18 +55,18 @@ class AuthorizedEmailAddressesValidationCest {
     $i->wantTo('Check that emails are validated on setting change');
     $i->login();
 
-    // Save settings to trigger initial validation
+    $i->wantTo('Save settings to trigger initial validation');
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
 
-    // Error notice is visible
+    $i->wantTo('Error notice is visible');
     $i->amOnMailPoetPage('Emails');
     $updateLinkText = 'Update the from address of ' . $subject;
     $i->waitForText('Your automatic emails have been paused because some email addresses haven’t been authorized yet.');
     $i->waitForText($updateLinkText);
 
-    // Setting the correct address will fix the error
+    $i->wantTo('Setting the correct address will fix the error');
     $i->click($updateLinkText);
     $i->switchToNextTab();
     $i->waitForElement('[name="sender_address"]');
