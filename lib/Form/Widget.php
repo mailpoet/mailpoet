@@ -114,7 +114,7 @@ class Widget extends \WP_Widget {
       ]
     );
 
-    $formEditUrl = WPFunctions::get()->adminUrl('admin.php?page=mailpoet-form-editor&id=');
+    $formEditUrl = WPFunctions::get()->adminUrl('admin.php?page=mailpoet-form-editor-template-selection');
 
     // set title
     $title = isset($instance['title']) ? strip_tags($instance['title']) : '';
@@ -146,30 +146,8 @@ class Widget extends \WP_Widget {
       </select>
     </p>
     <p>
-      <a href="javascript:;" onClick="createSubscriptionForm()" class="mailpoet_form_new"><?php WPFunctions::get()->_e('Create a new form', 'mailpoet'); ?></a>
+      <a href="<?php echo $formEditUrl; ?>" target="_blank" class="mailpoet_form_new"><?php WPFunctions::get()->_e('Create a new form', 'mailpoet'); ?></a>
     </p>
-    <script type="text/javascript">
-      function createSubscriptionForm() {
-        MailPoet.Ajax.post({
-          endpoint: 'forms',
-          action: 'create',
-          api_version: window.mailpoet_api_version
-        }).done(function(response) {
-          if (response.data && response.data.id) {
-            window.location =
-              "<?php echo $formEditUrl; ?>" + response.data.id;
-          }
-        }).fail((response) => {
-          if (response.errors.length > 0) {
-            MailPoet.Notice.error(
-              response.errors.map((error) => { return error.message; }),
-              { scroll: true }
-            );
-          }
-        });
-        return false;
-      }
-    </script>
     <?php
     return '';
   }
