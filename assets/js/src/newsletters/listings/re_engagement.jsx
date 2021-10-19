@@ -32,7 +32,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersTrashed')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -47,7 +47,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersDeleted')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -62,7 +62,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersRestored')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -126,7 +126,7 @@ let newsletterActions = [
         id: newsletter.id,
       },
     }).done((response) => {
-      MailPoet.Notice.success((MailPoet.I18n.t('newsletterDuplicated')).replace('%$1s', response.data.subject));
+      MailPoet.Notice.success((MailPoet.I18n.t('newsletterDuplicated')).replace('%1$s', response.data.subject));
       refresh();
     }).fail((response) => {
       if (response.errors.length > 0) {
@@ -192,7 +192,7 @@ class NewsletterListReEngagement extends React.Component {
 
   renderStatus = (newsletter) => {
     const totalSentMessage = MailPoet.I18n.t('sentToXSubscribers')
-      .replace('%$1d', newsletter.total_sent.toLocaleString());
+      .replace('%1$d', newsletter.total_sent.toLocaleString());
 
     return (
       <div>

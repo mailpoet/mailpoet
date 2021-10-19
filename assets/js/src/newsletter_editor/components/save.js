@@ -535,7 +535,7 @@ Module.NewsletterPreviewView = Marionette.View.extend({
           const errors = response.errors.map(function (error) {
             let errorMessage = `
               <p>
-                ${MailPoet.I18n.t('newsletterPreviewErrorNotice').replace('%$1s', window.config.mtaMethod)}:
+                ${MailPoet.I18n.t('newsletterPreviewErrorNotice').replace('%1$s', window.config.mtaMethod)}:
                 <i>${error.message}</i>
               </p>
             `;

@@ -48,7 +48,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleFormsTrashed')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -63,7 +63,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleFormsDeleted')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -78,7 +78,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleFormsRestored')
-      ).replace('%$1d', count.toLocaleString());
+      ).replace('%1$d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -146,7 +146,7 @@ const itemActions = [
       }).done((response) => {
         const formName = response.data.name ? response.data.name : MailPoet.I18n.t('noName');
         MailPoet.Notice.success(
-          (MailPoet.I18n.t('formDuplicated')).replace('%$1s', formName)
+          (MailPoet.I18n.t('formDuplicated')).replace('%1$s', formName)
         );
         refresh();
       }).fail((response) => {

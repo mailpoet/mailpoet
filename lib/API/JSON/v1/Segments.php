@@ -183,9 +183,9 @@ class Segments extends APIEndpoint {
     if (isset($activelyUsedNewslettersSubjects[$segment->getId()])) {
       return $this->badRequest([
         APIError::BAD_REQUEST => str_replace(
-          '%$1s',
+          '%1$s',
           "'" . join("', '", $activelyUsedNewslettersSubjects[$segment->getId()] ) . "'",
-          _x('List cannot be deleted because it’s used for %$1s email', 'Alert shown when trying to delete segment, which is assigned to any automatic emails.', 'mailpoet')
+          _x('List cannot be deleted because it’s used for %1$s email', 'Alert shown when trying to delete segment, which is assigned to any automatic emails.', 'mailpoet')
         ),
       ]);
     }
@@ -194,11 +194,11 @@ class Segments extends APIEndpoint {
     if (isset($activelyUsedFormNames[$segment->getId()])) {
       return $this->badRequest([
         APIError::BAD_REQUEST => str_replace(
-          '%$1s',
+          '%1$s',
           "'" . join("', '", $activelyUsedFormNames[$segment->getId()] ) . "'",
           _nx(
-            'List cannot be deleted because it’s used for %$1s form',
-            'List cannot be deleted because it’s used for %$1s forms',
+            'List cannot be deleted because it’s used for %1$s form',
+            'List cannot be deleted because it’s used for %1$s forms',
             count($activelyUsedFormNames[$segment->getId()]),
             'Alert shown when trying to delete segment, when it is assigned to a form.',
             'mailpoet'
