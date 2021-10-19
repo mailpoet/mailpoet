@@ -32,6 +32,13 @@ class ThumbnailSaver {
     $this->baseUrl = Env::$tempUrl;
   }
 
+  public function ensureTemplateThumbnailsForAll() {
+    $templates = $this->repository->findBy(['readonly' => false]);
+    foreach ($templates as $template) {
+      $this->ensureTemplateThumbnailFile($template);
+    }
+  }
+
   public function ensureTemplateThumbnailFile(NewsletterTemplateEntity $template): NewsletterTemplateEntity {
     if ($template->getReadonly()) {
       return $template;

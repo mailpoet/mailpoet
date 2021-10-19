@@ -86,5 +86,6 @@ class Daemon {
     if ($this->featureSwitch->isSupported(FeaturesController::RE_ENGAGEMENT_EMAIL)) {
       yield $this->workersFactory->createReEngagementEmailsSchedulerWorker();
     }
+    yield $this->workersFactory->createNewsletterTemplateThumbnailsWorker();
   }
 }
