@@ -104,6 +104,13 @@ abstract class Repository {
   }
 
   /**
+   * @param T $entity
+   */
+  public function detach($entity) {
+    $this->entityManager->detach($entity);
+  }
+
+  /**
    * @return class-string<T>
    */
   abstract protected function getEntityClassName();

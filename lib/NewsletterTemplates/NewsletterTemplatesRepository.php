@@ -98,4 +98,14 @@ class NewsletterTemplatesRepository extends Repository {
       ->getQuery()
       ->getSingleScalarResult();
   }
+
+  public function getIdsOfEditableTemplates(): array {
+    $result = $this->doctrineRepository->createQueryBuilder('nt')
+      ->select('nt.id')
+      ->where('nt.readonly = :readonly')
+      ->setParameter('readonly', false)
+      ->getQuery()
+      ->getArrayResult();
+    return array_column($result, 'id');
+  }
 }

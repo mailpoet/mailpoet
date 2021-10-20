@@ -34,9 +34,14 @@ class ThumbnailSaver {
   }
 
   public function ensureTemplateThumbnailsForAll() {
-    $templates = $this->repository->findBy(['readonly' => false]);
-    foreach ($templates as $template) {
+    $templateIds = $this->repository->getIdsOfEditableTemplates();
+    foreach ($templateIds as $templateId) {
+      $template = $this->repository->findOneById((int)$templateId);
+      if (!$template) continue;
       $this->ensureTemplateThumbnailFile($template);
+      // Remove template entity from memory after it was processed
+      $this->repository->detach($template);
+      unset($template);
     }
   }
 
