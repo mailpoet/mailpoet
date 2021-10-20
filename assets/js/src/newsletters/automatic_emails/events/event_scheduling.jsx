@@ -1,4 +1,5 @@
 import React from 'react';
+import MailPoet from 'mailpoet';
 import Selection from 'form/fields/selection.jsx';
 import Text from 'form/fields/text.jsx';
 import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
@@ -106,6 +107,8 @@ class EventScheduling extends React.Component {
         size: afterTimeNumberSize,
         validation: {
           'data-parsley-required': true,
+          'data-parsley-errors-container': '.mailpoet-form-errors',
+          'data-parsley-scheduled-at': MailPoet.I18n.t('emailCanBeScheduledUpToFiveYears'),
         },
       },
       item: {},
@@ -136,6 +139,7 @@ class EventScheduling extends React.Component {
           {this.displayAfterTimeNumberField()}
           {this.displayAfterTimeTypeOptions()}
         </div>
+        <div className="mailpoet-form-errors" />
         <div className="mailpoet-gap" />
         {
           event.schedulingReadMoreLink

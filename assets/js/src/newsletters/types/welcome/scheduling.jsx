@@ -42,6 +42,8 @@ const afterTimeNumberField = {
   size: 3,
   validation: {
     'data-parsley-required': true,
+    'data-parsley-errors-container': '.mailpoet-form-errors',
+    'data-parsley-scheduled-at': MailPoet.I18n.t('emailCanBeScheduledUpToFiveYears'),
   },
 };
 
@@ -134,6 +136,7 @@ class WelcomeScheduling extends React.Component {
             onValueChange={this.handleAfterTimeTypeChange}
           />
         </div>
+        <div className="mailpoet-form-errors" />
         <div className="mailpoet-gap" />
       </div>
     );
