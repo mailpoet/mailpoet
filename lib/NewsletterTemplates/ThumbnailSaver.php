@@ -4,6 +4,7 @@ namespace MailPoet\NewsletterTemplates;
 
 use MailPoet\Config\Env;
 use MailPoet\Entities\NewsletterTemplateEntity;
+use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ThumbnailSaver {
@@ -75,7 +76,7 @@ class ThumbnailSaver {
     if (!file_exists($thumbNailsDirectory)) {
       $this->wp->wpMkdirP($thumbNailsDirectory);
     }
-    $file = $thumbNailsDirectory . '/' . uniqid() . '_template_' . $template->getId() . '.jpg';
+    $file = $thumbNailsDirectory . '/' . Security::generateHash(16) . '_template_' . $template->getId() . '.jpg';
     if ($this->compressAndSaveFile($file, $data)) {
       $url = str_replace($this->baseDirectory, $this->baseUrl, $file);
       $template->setThumbnail($url);
