@@ -57,6 +57,9 @@ class StandardScheduling extends React.Component {
   render() {
     let schedulingOptions;
 
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getFullYear() + 5);
+
     if (this.isScheduled()) {
       schedulingOptions = (
         <>
@@ -77,6 +80,7 @@ class StandardScheduling extends React.Component {
               timeOfDayItems={timeOfDayItems}
               dateDisplayFormat={dateDisplayFormat}
               dateStorageFormat={dateStorageFormat}
+              maxDate={maxDate}
             />
           </div>
         </>

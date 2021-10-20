@@ -65,6 +65,7 @@ class DateTime extends React.Component {
           storageFormat={this.props.dateStorageFormat}
           disabled={this.props.disabled}
           validation={this.props.dateValidation}
+          maxDate={this.props.maxDate}
         />
         <TimeSelect
           name="time"
@@ -90,6 +91,7 @@ DateTime.propTypes = {
   dateValidation: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   timeValidation: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   timeOfDayItems: PropTypes.objectOf(PropTypes.string).isRequired,
+  maxDate: PropTypes.instanceOf(Date),
 };
 
 DateTime.defaultProps = {
@@ -98,6 +100,7 @@ DateTime.defaultProps = {
   disabled: false,
   timeValidation: undefined,
   value: undefined,
+  maxDate: null,
 };
 
 export default DateTime;
