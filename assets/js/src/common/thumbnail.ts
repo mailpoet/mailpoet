@@ -11,6 +11,7 @@ import html2canvas from 'html2canvas';
 export const fromDom = async (element) => {
   const canvas = await html2canvas(element, {
     logging: false,
+    scale: 1, // Use a constant scale to prevent generating large images on Retina displays
   });
   return canvas.toDataURL('image/jpeg');
 };
