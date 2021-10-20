@@ -4,6 +4,8 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -19,9 +21,9 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -60,9 +62,6 @@ class WorkerTest extends \MailPoetTest {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
-  /** @var StatisticsUnsubscribesRepository */
-  private $statisticsUnsubscribesRepository;
-
   public function _before() {
     parent::_before();
     $this->cleanup();
@@ -70,7 +69,6 @@ class WorkerTest extends \MailPoetTest {
     $this->newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
-    $this->statisticsUnsubscribesRepository = $this->diContainer->get(StatisticsUnsubscribesRepository::class);
     $this->repository->truncate();
     $this->mailer = $this->createMock(Mailer::class);
     $this->renderer = $this->createMock(Renderer::class);
@@ -168,7 +166,7 @@ class WorkerTest extends \MailPoetTest {
       'queue_id' => $this->queue->id(),
       'created_at' => '2017-01-02 21:23:45',
     ]);
-    $this->statisticsUnsubscribesRepository->createOrUpdate([
+    $this->createStatisticsUnsubscribe([
       'subscriber' => $this->createSubscriber(),
       'newsletter' => $this->newslettersRepository->findOneById($this->newsletter->id()),
       'queue' => $this->sendingQueuesRepository->findOneById($this->queue->id()),
@@ -330,6 +328,17 @@ class WorkerTest extends \MailPoetTest {
     $subscriber->setEmail('subscriber' . rand(0, 10000) . '@example.com');
     $this->entityManager->persist($subscriber);
     return $subscriber;
+  }
+
+  private function createStatisticsUnsubscribe($data): StatisticsUnsubscribeEntity {
+    assert($data['newsletter'] instanceof NewsletterEntity);
+    assert($data['queue'] instanceof SendingQueueEntity);
+    assert($data['subscriber'] instanceof SubscriberEntity);
+    $entity = new StatisticsUnsubscribeEntity($data['newsletter'], $data['queue'], $data['subscriber']);
+    $this->entityManager->persist($entity);
+    if (isset($data['created_at'])) $entity->setCreatedAt(new Carbon($data['created_at']));
+    $this->entityManager->flush();
+    return $entity;
   }
 
   private function cleanup() {
