@@ -54,6 +54,17 @@ class NewsletterTemplatesRepositoryTest extends \MailPoetTest {
     expect($templates[0]->getName())->equals('Testing template 5');
   }
 
+  public function testItCanCreateFromOldDataFormat() {
+    $createdTemplate = $this->newsletterTemplatesRepository->createOrUpdate([
+      'name' => 'Another template',
+      'body' => '{"content": {}, "globalStyles": {}}',
+      'thumbnail' => 'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
+    ]);
+    expect($createdTemplate->getName())->equals('Another template');
+    expect($createdTemplate->getBody())->equals(['content' => [], 'globalStyles' => []]);
+    expect($createdTemplate->getThumbnailData())->equals('data:image/gif;base64,R0lGODlhAQABAAAAACw=');
+  }
+
   public function _after() {
     $this->truncateEntity(NewsletterTemplateEntity::class);
   }
