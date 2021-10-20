@@ -49,7 +49,12 @@ class NewsletterTemplatesRepository extends Repository {
     }
 
     if (isset($data['thumbnail'])) {
-      $template->setThumbnail($data['thumbnail']);
+      // Backward compatibility for importing templates exported from older versions
+      if (strpos($data['thumbnail'], 'data:image') === 0) {
+        $data['thumbnail_data'] = $data['thumbnail'];
+      } else {
+        $template->setThumbnail($data['thumbnail']);
+      }
     }
 
     if (isset($data['thumbnail_data'])) {
