@@ -124,6 +124,7 @@ class DateText extends React.Component {
         disabled={this.props.disabled}
         onChange={this.onChange}
         minDate={this.getDate(window.mailpoet_current_date)}
+        maxDate={this.props.maxDate}
         locale="mailpoet"
         {...this.props.validation} // eslint-disable-line react/jsx-props-no-spreading
       />
@@ -145,10 +146,12 @@ DateText.propTypes = {
     'data-parsley-errors-container': PropTypes.string,
     maxLength: PropTypes.number,
   }).isRequired,
+  maxDate: PropTypes.instanceOf(Date),
 };
 
 DateText.defaultProps = {
   name: 'date',
+  maxDate: null,
 };
 
 export default DateText;
