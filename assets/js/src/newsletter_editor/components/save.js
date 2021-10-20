@@ -69,7 +69,7 @@ Module.saveTemplate = function (options) {
   return Thumbnail.fromNewsletter(App.toJSON())
     .then(function (thumbnail) {
       var data = _.extend(options || {}, {
-        thumbnail: thumbnail,
+        thumbnail_data: thumbnail,
         body: JSON.stringify(App.getBody()),
         categories: JSON.stringify([
           'saved',
@@ -90,7 +90,7 @@ Module.exportTemplate = function (options) {
   return Thumbnail.fromNewsletter(App.toJSON())
     .then(function (thumbnail) {
       var data = _.extend(options || {}, {
-        thumbnail: thumbnail,
+        thumbnail_data: thumbnail,
         body: App.getBody(),
         categories: JSON.stringify(['saved', App.getNewsletter().get('type')]),
       });
