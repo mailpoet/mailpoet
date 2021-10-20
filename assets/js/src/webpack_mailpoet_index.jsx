@@ -8,3 +8,4 @@ import 'mailpoet'; // side effect - assigns MailPoet to window
 import 'dismissible-notice.jsx'; // side effect - adds jQuery event
 import 'jquery.serialize_object'; // side effect - extends jQuery
 import 'parsleyjs'; // side effect - extends jQuery
+import 'parsley-validators.jsx';
