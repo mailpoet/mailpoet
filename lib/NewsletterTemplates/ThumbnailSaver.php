@@ -82,26 +82,34 @@ class ThumbnailSaver {
       $this->wp->wpMkdirP($thumbNailsDirectory);
     }
     $file = $thumbNailsDirectory . '/' . Security::generateHash(16) . '_template_' . $template->getId() . '.jpg';
-    if ($this->compressAndSaveFile($file, $data)) {
-      $url = str_replace($this->baseDirectory, $this->baseUrl, $file);
-      $template->setThumbnail($url);
-      $this->repository->flush();
+
+    // Save the original quality image to a file and update DB record
+    if (!$this->saveBase64AsImageFile($file, $data)) {
+      return;
     }
+    $url = str_replace($this->baseDirectory, $this->baseUrl, $file);
+    $template->setThumbnail($url);
+    $this->repository->flush();
+
+    // It is important that compression happens after the url was saved to DB.
+    // For some large files there is a risk that compression (if done using GD library) may fail due hitting memory limit.
+    // This way if the error occures the url is already saved and next time (e.g. next cron run) the image will be skipped
+    // and the previously saved original quality image used
+    $this->compressImage($file);
   }
 
-  private function compressAndSaveFile(string $file, string $data): bool {
-    $initialSaveResult = $this->saveBase64AsImageFile($file, $data);
+  private function compressImage(string $file): bool {
     $editor = $this->wp->wpGetImageEditor($file);
     if ($editor instanceof \WP_Error) {
-      return $initialSaveResult;
+      return false;
     }
     $result = $editor->set_quality(self::IMAGE_QUALITY);
     if ($result instanceof \WP_Error) {
-      return $initialSaveResult;
+      return false;
     }
     $result = $editor->save($file);
     if ($result instanceof \WP_Error) {
-      return $initialSaveResult;
+      return false;
     }
     unset($editor);
     return true;
