@@ -215,6 +215,11 @@ export type KeyActivationState = {
   activationUrl?: string;
 }
 
+export type ReEngagement = {
+  showNotice: boolean;
+  action?: string;
+}
+
 export enum TestEmailState {
   SENDING,
   NONE,
@@ -247,6 +252,7 @@ export type State = {
   };
   keyActivation: KeyActivationState;
   hosts: Hosts;
+  reEngagement: ReEngagement;
 }
 
 export type Action =
@@ -259,6 +265,7 @@ export type Action =
   | { type: 'SAVE_DONE' }
   | { type: 'SAVE_FAILED'; error: string[] }
   | { type: 'UPDATE_KEY_ACTIVATION_STATE'; fields: Partial<KeyActivationState> }
+  | { type: 'SET_RE_ENGAGEMENT_NOTICE'; value: ReEngagement }
   | { type: 'START_TEST_EMAIL_SENDING' }
   | { type: 'TEST_EMAIL_SUCCESS' }
   | { type: 'TEST_EMAIL_FAILED'; error: string[] }

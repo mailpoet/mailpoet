@@ -70,7 +70,11 @@ export default function makeDefaultState(window: any): State {
     state: TestEmailState.NONE,
     error: null,
   };
+  const reEngagement = {
+    showNotice: false,
+    action: null,
+  };
   return {
-    data, flags, save, keyActivation, segments, pages, paths, hosts, testEmail,
+    data, flags, save, keyActivation, segments, pages, paths, hosts, testEmail, reEngagement,
   };
 }

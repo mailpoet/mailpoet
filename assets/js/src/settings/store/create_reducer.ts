@@ -20,6 +20,11 @@ export default function createReducer(defaultValue: State) {
         return { ...state, save: { inProgress: false, error: null } };
       case 'SAVE_FAILED':
         return { ...state, save: { inProgress: false, error: action.error } };
+      case 'SET_RE_ENGAGEMENT_NOTICE':
+        return {
+          ...state,
+          reEngagement: { showNotice: action.value.showNotice, action: action.value.action },
+        };
       case 'UPDATE_KEY_ACTIVATION_STATE':
         keyActivation = { ...state.keyActivation, ...action.fields };
         keyActivation.isKeyValid = null;

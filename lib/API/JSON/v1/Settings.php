@@ -9,9 +9,11 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\SubscribersEngagementScore;
 use MailPoet\Cron\Workers\WooCommerceSync;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -65,6 +67,8 @@ class Settings extends APIEndpoint {
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
   ];
+  /**  @var NewslettersRepository */
+  private $newsletterRepository;
 
   public function __construct(
     SettingsController $settings,
@@ -73,6 +77,7 @@ class Settings extends APIEndpoint {
     TransactionalEmails $wcTransactionalEmails,
     WPFunctions $wp,
     EntityManager $entityManager,
+    NewslettersRepository $newslettersRepository,
     StatisticsOpensRepository $statisticsOpensRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
     FormMessageController $messageController,
@@ -87,6 +92,7 @@ class Settings extends APIEndpoint {
     $this->servicesChecker = $servicesChecker;
     $this->wp = $wp;
     $this->entityManager = $entityManager;
+    $this->newsletterRepository = $newslettersRepository;
     $this->statisticsOpensRepository = $statisticsOpensRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->messageController = $messageController;
@@ -107,6 +113,7 @@ class Settings extends APIEndpoint {
         ]);
     } else {
       $oldSettings = $this->settings->getAll();
+      $meta = [];
       $signupConfirmation = $this->settings->get('signup_confirmation.enabled');
       foreach ($settings as $name => $value) {
         $this->settings->set($name, $value);
@@ -123,7 +130,19 @@ class Settings extends APIEndpoint {
       if ($signupConfirmation !== $this->settings->get('signup_confirmation.enabled')) {
         $this->messageController->updateSuccessMessages();
       }
-      return $this->successResponse($this->settings->getAll());
+
+      // Tracking and re-engagement Emails
+      $meta['showNotice'] = false;
+      if ($oldSettings['tracking'] !== $this->settings->get('tracking') ) {
+        try {
+          $meta = $this->updateReEngagementEmailStatus($this->settings->get('tracking'));
+        } catch (\Exception $e) {
+          return $this->badRequest([
+            APIError::UNKNOWN => $e->getMessage()]);
+        }
+      }
+
+      return $this->successResponse($this->settings->getAll(), $meta);
     }
   }
 
@@ -262,5 +281,51 @@ class Settings extends APIEndpoint {
     // remove redundancies from cache
       $this->subscribersCountsController->removeRedundancyFromStatisticsCache();
     return $this->successResponse();
+  }
+
+  /**
+   * @throws \Exception
+   */
+  public function updateReEngagementEmailStatus($newTracking): array {
+    if (!empty($newTracking['enabled']) && $newTracking['enabled'] === "1" ) {
+      return $this->reactivateReEngagementEmails();
+    }
+    try {
+      return $this->deactivateReEngagementEmails();
+    } catch (\Exception $e) {
+      throw new \Exception(
+        __('Unable to deactivate re-engagement emails: ' . $e->getMessage()), 'mailpoet');
+    }
+  }
+
+  /**
+   * @throws \Exception
+   */
+  public function deactivateReEngagementEmails(): array {
+    $reEngagementEmails = $this->newsletterRepository->findActiveByTypes(([NewsletterEntity::TYPE_RE_ENGAGEMENT]));
+    if (!$reEngagementEmails) {
+      return [
+        'showNotice' => false,
+        'action' => 'deactivate',
+      ];
+    }
+
+    foreach ($reEngagementEmails as $reEngagementEmail) {
+      $reEngagementEmail->setStatus(NewsletterEntity::STATUS_DRAFT);
+      $this->entityManager->persist($reEngagementEmail);
+      $this->entityManager->flush();
+    }
+    return [
+      'showNotice' => true,
+      'action' => 'deactivate',
+    ];
+  }
+
+  public function reactivateReEngagementEmails(): array {
+    $draftReEngagementEmails = $this->newsletterRepository->findDraftByTypes(([NewsletterEntity::TYPE_RE_ENGAGEMENT]));
+    return [
+      'showNotice' => !!$draftReEngagementEmails,
+      'action' => 'reactivate',
+    ];
   }
 }

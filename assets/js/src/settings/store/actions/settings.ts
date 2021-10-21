@@ -1,7 +1,7 @@
 import { select } from '@wordpress/data';
 
 import { STORE_NAME } from 'settings/store';
-import { Action } from 'settings/store/types';
+import { Action, ReEngagement } from 'settings/store/types';
 import { updateKeyActivationState } from './mss_and_premium';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -16,6 +16,10 @@ export function setSettings(value: any): Action {
 
 export function setErrorFlag(value: boolean): Action {
   return { type: 'SET_ERROR_FLAG', value };
+}
+
+export function setReEngagement(value: ReEngagement): Action {
+  return { type: 'SET_RE_ENGAGEMENT_NOTICE', value };
 }
 
 export function* saveSettings() {
@@ -41,6 +45,7 @@ export function* saveSettings() {
     fromAddressModalCanBeShown: false,
   });
   yield setSettings(res.data);
+  yield setReEngagement(res.meta);
   return { type: 'SAVE_DONE' };
 }
 
