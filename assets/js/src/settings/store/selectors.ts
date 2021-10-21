@@ -89,3 +89,11 @@ export function getSendGridOptions(state: State) {
 export function getTestEmailState(state: State) {
   return state.testEmail;
 }
+
+export function hasReEngagementNotice(state: State): boolean {
+  return state.reEngagement.showNotice;
+}
+
+export function getReEngagementAction(state: State) {
+  return state.reEngagement.action;
+}

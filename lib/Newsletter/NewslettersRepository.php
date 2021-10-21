@@ -65,6 +65,25 @@ class NewslettersRepository extends Repository {
       ->getResult();
   }
 
+  /**
+   * @param string[] $types
+   * @return NewsletterEntity[]
+   */
+  public function findDraftByTypes($types) {
+    return $this->entityManager
+      ->createQueryBuilder()
+      ->select('n')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.status = :status')
+      ->setParameter(':status', NewsletterEntity::STATUS_DRAFT)
+      ->andWhere('n.deletedAt is null')
+      ->andWhere('n.type IN (:types)')
+      ->setParameter('types', $types)
+      ->orderBy('n.subject')
+      ->getQuery()
+      ->getResult();
+  }
+
   public function getStandardNewsletterSentCount(DateTimeInterface $since): int {
     return (int)$this->doctrineRepository->createQueryBuilder('n')
       ->select('COUNT(n)')
