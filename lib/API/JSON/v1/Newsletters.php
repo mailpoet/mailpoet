@@ -172,6 +172,15 @@ class Newsletters extends APIEndpoint {
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
     }
+
+    $tracking = $this->settings->get('tracking');
+    $tracking_enabled = !empty($tracking['enabled']) && $tracking['enabled'] === "1";
+    if ( !$tracking_enabled && $newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT && $status === NewsletterEntity::STATUS_ACTIVE) {
+      return $this->errorResponse([
+        APIError::FORBIDDEN => __('Re-engagement emails are disabled because open and click tracking is disabled.', 'mailpoet'),
+      ], [], Response::STATUS_FORBIDDEN);
+    }
+
     $this->newslettersRepository->prefetchOptions([$newsletter]);
     $newsletter->setStatus($status);
 
