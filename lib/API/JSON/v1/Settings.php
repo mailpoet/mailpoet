@@ -294,7 +294,7 @@ class Settings extends APIEndpoint {
       return $this->deactivateReEngagementEmails();
     } catch (\Exception $e) {
       throw new \Exception(
-        __('Unable to deactivate re-engagement emails: ' . $e->getMessage()), 'mailpoet');
+        __('Unable to deactivate re-engagement emails: ' . $e->getMessage(), 'mailpoet'));
     }
   }
 

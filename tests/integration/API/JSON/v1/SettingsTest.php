@@ -3,12 +3,14 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Stub\Expected;
+use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Settings;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\WooCommerceSync;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Form\FormMessageController;
 use MailPoet\Mailer\MailerLog;
@@ -39,10 +41,14 @@ class SettingsTest extends \MailPoetTest {
   /** @var ScheduledTasksRepository */
   private $tasksRepository;
 
+  /* @var NewslettersRepository */
+  private $newsletterRepository;
+
   public function _before() {
     parent::_before();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
     $this->tasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->settings = SettingsController::getInstance();
     $this->settings->set('some.setting.key', true);
     $this->endpoint = new Settings(
@@ -52,6 +58,7 @@ class SettingsTest extends \MailPoetTest {
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(FormMessageController::class),
@@ -92,6 +99,7 @@ class SettingsTest extends \MailPoetTest {
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(FormMessageController::class),
@@ -123,6 +131,7 @@ class SettingsTest extends \MailPoetTest {
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(FormMessageController::class),
@@ -148,6 +157,7 @@ class SettingsTest extends \MailPoetTest {
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(FormMessageController::class),
@@ -248,6 +258,32 @@ class SettingsTest extends \MailPoetTest {
     expect($task)->isInstanceOf(ScheduledTaskEntity::class);
   }
 
+  public function testItDeactivatesReEngagementEmailsIfTrackingDisabled(): void {
+    $this->createNewsletter(NewsletterEntity::TYPE_RE_ENGAGEMENT, NewsletterEntity::STATUS_ACTIVE);
+    $this->settings->set('tracking', ['enabled' => '1']);
+    $response = $this->endpoint->set(['tracking' => ['enabled' => '0']]);
+    expect($response->meta['showNotice'])->equals(true);
+    expect($response->meta['action'])->equals('deactivate');
+    expect($this->newsletterRepository->findActiveByTypes([NewsletterEntity::TYPE_RE_ENGAGEMENT]))->equals([]);
+  }
+
+  public function testItFlagsNoticeToReactivateReEngagementEmailsIfTrackingEnabled(): void {
+    $this->createNewsletter(NewsletterEntity::TYPE_RE_ENGAGEMENT);
+    $this->settings->set('tracking', ['enabled' => '0']);
+    $response = $this->endpoint->set(['tracking' => ['enabled' => '1']]);
+    expect($response->meta['showNotice'])->equals(true);
+    expect($response->meta['action'])->equals('reactivate');
+  }
+
+  public function testNoNoticeWhenTrackingChangesIfNoReEngagementEmails(): void {
+    $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_ACTIVE);
+    $this->settings->set('tracking', ['enabled' => '0']);
+    $response = $this->endpoint->set(['tracking' => ['enabled' => '1']]);
+    expect($response->meta['showNotice'])->equals(false);
+    $response = $this->endpoint->set(['tracking' => ['enabled' => '0']]);
+    expect($response->meta['showNotice'])->equals(false);
+  }
+
   private function createScheduledTask(string $type): ScheduledTaskEntity {
     $task = new ScheduledTaskEntity();
     $task->setType($type);
@@ -264,8 +300,21 @@ class SettingsTest extends \MailPoetTest {
     ]);
   }
 
+  private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT, $parent = null): NewsletterEntity {
+    $newsletter = new NewsletterEntity();
+    $newsletter->setType($type);
+    $newsletter->setSubject('My Standard Newsletter');
+    $newsletter->setBody(Fixtures::get('newsletter_body_template'));
+    $newsletter->setStatus($status);
+    $newsletter->setParent($parent);
+    $this->entityManager->persist($newsletter);
+    $this->entityManager->flush();
+    return $newsletter;
+  }
+
   public function _after() {
     $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
     $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }
