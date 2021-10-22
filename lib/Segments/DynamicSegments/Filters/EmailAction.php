@@ -49,7 +49,7 @@ class EmailAction implements Filter {
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
-    $action = $filterData->getParam('action');
+    $action = $filterData->getAction();
     $newsletterId = (int)$filterData->getParam('newsletter_id');
     $linkId = $filterData->getParam('link_id') ? (int)$filterData->getParam('link_id') : null;
     $parameterSuffix = (string)($filter->getId() ?? Security::generateRandomString());

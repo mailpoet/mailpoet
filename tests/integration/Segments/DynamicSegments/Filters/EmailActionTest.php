@@ -222,9 +222,7 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   private function getSegmentFilter(string $action, int $newsletterId = null, int $linkId = null): DynamicSegmentFilterEntity {
-    $segmentFilterData = new DynamicSegmentFilterData([
-      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
-      'action' => $action,
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
       'newsletter_id' => $newsletterId,
       'link_id' => $linkId,
     ]);

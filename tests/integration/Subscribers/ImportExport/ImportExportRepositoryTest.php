@@ -10,6 +10,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
@@ -289,10 +290,12 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     $user5 = $this->createSubscriber('user5@export-test.com', 'Five', 'User');
     $segment1 = $this->createSegment('First', SegmentEntity::TYPE_DEFAULT);
     $segment2 = $this->createSegment('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC);
-    $this->createDynamicSegmentFilter($segment2, [
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-      'wordpressRole' => 'editor',
-    ]);
+    $this->createDynamicSegmentFilter(
+      $segment2,
+      DynamicSegmentFilterData::TYPE_USER_ROLE,
+      UserRole::TYPE,
+      ['wordpressRole' => 'editor']
+    );
     $this->createSubscriberSegment($user4, $segment1, SubscriberEntity::STATUS_SUBSCRIBED);
     $this->createSubscriberSegment($user5, $segment1, SubscriberEntity::STATUS_SUBSCRIBED);
 
@@ -381,9 +384,11 @@ class ImportExportRepositoryTest extends \MailPoetTest {
 
   private function createDynamicSegmentFilter(
     SegmentEntity $segment,
+    string $filterType,
+    string $action,
     array $filterData
   ): DynamicSegmentFilterEntity {
-    $filter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData($filterData));
+    $filter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData($filterType, $action, $filterData));
     $this->entityManager->persist($filter);
     $this->entityManager->flush();
     return $filter;

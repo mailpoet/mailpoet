@@ -193,7 +193,7 @@ class Reporter {
   }
 
   private function isFilterTypeActive(string $segmentType, string $action): bool {
-    if ($this->dynamicSegmentFilterRepository->findOnyBySegmentTypeAndAction($segmentType, $action)) {
+    if ($this->dynamicSegmentFilterRepository->findOnyByFilterTypeAndAction($segmentType, $action)) {
       return true;
     }
     return false;

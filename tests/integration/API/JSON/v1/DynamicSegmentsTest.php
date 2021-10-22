@@ -237,10 +237,12 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
   private function createDynamicSegmentEntity(string $name, string $description): SegmentEntity {
     $segment = new SegmentEntity($name, SegmentEntity::TYPE_DYNAMIC, $description);
-    $dynamicFilter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData([
-      'wordpressRole' => 'editor',
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-    ]));
+    $filterData = new DynamicSegmentFilterData(
+      DynamicSegmentFilterData::TYPE_USER_ROLE,
+      UserRole::TYPE,
+      ['wordpressRole' => 'editor']
+    );
+    $dynamicFilter = new DynamicSegmentFilterEntity($segment, $filterData);
     $segment->getDynamicFilters()->add($dynamicFilter);
     $this->entityManager->persist($segment);
     $this->entityManager->persist($dynamicFilter);

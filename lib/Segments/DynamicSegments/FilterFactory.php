@@ -81,7 +81,7 @@ class FilterFactory {
   public function getFilterForFilterEntity(DynamicSegmentFilterEntity $filter): Filter {
     $filterData = $filter->getFilterData();
     $filterType = $filterData->getFilterType();
-    $action = $filterData->getParam('action');
+    $action = $filterData->getAction();
     switch ($filterType) {
       case DynamicSegmentFilterData::TYPE_USER_ROLE:
         return $this->userRole($action);

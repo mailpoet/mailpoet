@@ -65,9 +65,7 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   }
 
   private function getSegmentFilter($comparisonType, $ordersCount, $days): DynamicSegmentFilterEntity {
-    $data = new DynamicSegmentFilterData([
-      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
-      'action' => 'numberOfOrders',
+    $data = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS, [
       'number_of_orders_type' => $comparisonType,
       'number_of_orders_count' => $ordersCount,
       'number_of_orders_days' => $days,

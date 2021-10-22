@@ -7,6 +7,7 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Subscribers\Source;
 
 class SegmentSubscribersRepositoryTest extends \MailPoetTest {
@@ -233,10 +234,12 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
 
   private function createDynamicSegmentEntity(string $role = 'editor'): SegmentEntity {
     $segment = new SegmentEntity('Segment' . rand(0, 10000), SegmentEntity::TYPE_DYNAMIC, 'Segment description');
-    $dynamicFilter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData([
-      'wordpressRole' => $role,
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-    ]));
+    $filterData = new DynamicSegmentFilterData(
+      DynamicSegmentFilterData::TYPE_USER_ROLE,
+      UserRole::TYPE,
+      ['wordpressRole' => $role]
+    );
+    $dynamicFilter = new DynamicSegmentFilterEntity($segment, $filterData);
     $segment->getDynamicFilters()->add($dynamicFilter);
     $this->entityManager->persist($segment);
     $this->entityManager->persist($dynamicFilter);
