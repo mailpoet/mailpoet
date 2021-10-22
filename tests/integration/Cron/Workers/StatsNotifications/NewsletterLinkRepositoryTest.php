@@ -49,7 +49,8 @@ class NewsletterLinkRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $repository = $this->diContainer->get(NewsletterLinkRepository::class);
-    $topLink = $repository->findTopLinkForNewsletter($newsletter->getId());
+    $topLink = $repository->findTopLinkForNewsletter((int)$newsletter->getId());
+    $this->assertInstanceOf(NewsletterLinkEntity::class, $topLink);
     expect($topLink->getUrl())->equals('http://example1.com');
 
     $newsletter2 = new NewsletterEntity();
@@ -59,7 +60,7 @@ class NewsletterLinkRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($newsletter2);
     $this->entityManager->flush();
 
-    $nonExistingTopLink = $repository->findTopLinkForNewsletter($newsletter2->getId());
+    $nonExistingTopLink = $repository->findTopLinkForNewsletter((int)$newsletter2->getId());
     expect($nonExistingTopLink)->null();
   }
 }
