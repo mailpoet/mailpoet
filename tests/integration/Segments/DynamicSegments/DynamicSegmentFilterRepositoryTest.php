@@ -25,20 +25,17 @@ class DynamicSegmentFilterRepositoryTest extends \MailPoetTest {
 
   public function testItReturnsDynamicSegmentFilterBySegmentTypeAndAction(): void {
     $segment = $this->createSegment('Dynamic Segment');
-    $this->createDynamicSegmentFilter($segment, [
-      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
-      'action' => WooCommerceTotalSpent::ACTION_TOTAL_SPENT,
-    ]);
+    $this->createDynamicSegmentFilter($segment, DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceTotalSpent::ACTION_TOTAL_SPENT);
 
-    $dynamicFilter = $this->dynamicSegmentFilterRepository->findOnyBySegmentTypeAndAction(
+    $dynamicFilter = $this->dynamicSegmentFilterRepository->findOnyByFilterTypeAndAction(
       DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       WooCommerceTotalSpent::ACTION_TOTAL_SPENT
     );
     assert($dynamicFilter instanceof DynamicSegmentFilterEntity);
-    expect($dynamicFilter->getFilterData()->getParam('segmentType'))->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
-    expect($dynamicFilter->getFilterData()->getParam('action'))->equals(WooCommerceTotalSpent::ACTION_TOTAL_SPENT);
+    expect($dynamicFilter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    expect($dynamicFilter->getFilterData()->getAction())->equals(WooCommerceTotalSpent::ACTION_TOTAL_SPENT);
 
-    $dynamicFilter = $this->dynamicSegmentFilterRepository->findOnyBySegmentTypeAndAction(
+    $dynamicFilter = $this->dynamicSegmentFilterRepository->findOnyByFilterTypeAndAction(
       DynamicSegmentFilterData::TYPE_USER_ROLE,
       UserRole::TYPE
     );
@@ -54,9 +51,10 @@ class DynamicSegmentFilterRepositoryTest extends \MailPoetTest {
 
   private function createDynamicSegmentFilter(
     SegmentEntity $segment,
-    array $filterData
+    string $filterType,
+    string $action
   ): DynamicSegmentFilterEntity {
-    $filter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData($filterData));
+    $filter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData($filterType, $action));
     $this->dynamicSegmentFilterRepository->persist($filter);
     $this->dynamicSegmentFilterRepository->flush();
     return $filter;
