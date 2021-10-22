@@ -194,6 +194,7 @@ class SubscribersTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneBy(['email' => 'raul.doe@mailpoet.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($response->data['email'])->equals('raul.doe@mailpoet.com');
     expect($response->data['id'])->equals($subscriber->getId());
     expect($response->data['status'])->equals($subscriber->getStatus());
@@ -240,6 +241,7 @@ class SubscribersTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneBy(['email' => 'raul.doe@mailpoet.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($response->data['email'])->equals('raul.doe@mailpoet.com');
     expect($response->data['id'])->equals($subscriber->getId());
     expect($response->data['status'])->equals($subscriber->getStatus());
@@ -291,6 +293,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneById($this->subscriber1->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($response->data['id'])->equals($subscriber->getId());
     expect($response->data['email'])->equals($subscriber->getEmail());
     expect($response->data['status'])->equals($subscriber->getStatus());
@@ -303,6 +306,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneById($this->subscriber2->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($response->data['id'])->equals($subscriber->getId());
     expect($response->data['email'])->equals($subscriber->getEmail());
     expect($response->data['status'])->equals($subscriber->getStatus());
@@ -617,6 +621,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneBy(['email' => 'toto@mailpoet.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $segments = $subscriber->getSegments();
     expect($segments->count())->equals(1);
     expect($segments->get(0)->getId())->equals($this->segment2->getId());
@@ -715,6 +720,7 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneBy(['email' => 'toto@mailpoet.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $segments = $subscriber->getSegments();
     expect($segments->count())->equals(2);
     expect($segments->get(0)->getId())->equals($settings['segments'][0]);
@@ -886,6 +892,7 @@ class SubscribersTest extends \MailPoetTest {
 
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneById($subscriber->id);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $segments = $subscriber->getSegments();
     expect($segments->get(0)->getId())->equals($this->segment1->getId());
     expect($segments->get(1)->getId())->equals($wcSegment->id);

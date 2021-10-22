@@ -196,7 +196,9 @@ class ClicksTest extends \MailPoetTest {
     $trackedClicks = $clicksRepository->findAll();
     expect($trackedClicks)->count(1);
     $click = $trackedClicks[0];
-    expect($click->getUserAgent()->getUserAgent())->equals('User Agent');
+    $userAgent = $click->getUserAgent();
+    $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
+    expect($userAgent->getUserAgent())->equals('User Agent');
   }
 
   public function testItUpdateUserAgent(): void {
@@ -219,13 +221,17 @@ class ClicksTest extends \MailPoetTest {
     $trackedClicks = $clicksRepository->findAll();
     expect($trackedClicks)->count(1);
     $click = $trackedClicks[0];
-    expect($click->getUserAgent()->getUserAgent())->equals('User Agent');
+    $userAgent = $click->getUserAgent();
+    $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
+    expect($userAgent->getUserAgent())->equals('User Agent');
     $data->userAgent = 'User Agent 2';
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
     expect($trackedClicks)->count(1);
     $click = $trackedClicks[0];
-    expect($click->getUserAgent()->getUserAgent())->equals('User Agent 2');
+    $userAgent = $click->getUserAgent();
+    $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
+    expect($userAgent->getUserAgent())->equals('User Agent 2');
   }
 
   public function testItDoesNotOverrideHumanUserAgentWithMachine(): void {
