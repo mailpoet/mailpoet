@@ -2,9 +2,11 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
+use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 
@@ -715,6 +717,10 @@ class Migrator {
         continue;
       }
       $filterData = unserialize($dynamicSegmentFilter['filter_data']);
+      // bc compatibility fix, the filter with the segmentType userRole didn't have filled action
+      if ($filterData['segmentType'] === DynamicSegmentFilterData::TYPE_USER_ROLE && empty($filterData['action'])) {
+        $filterData['action'] = UserRole::TYPE;
+      }
       $wpdb->update($dynamicSegmentFiltersTable, [
         'action' => $filterData['action'] ?? null,
         'filter_type' => $filterData['segmentType'] ?? null,
