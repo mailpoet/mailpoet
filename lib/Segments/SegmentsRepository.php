@@ -222,7 +222,10 @@ class SegmentsRepository extends Repository {
       ->getResult();
   }
 
-  public function getCountWithMultipleConditions(): int {
+  /**
+   * Returns count of segments that have more than one dynamic filter
+   */
+  public function getSegmentCountWithMultipleFilters(): int {
     $qb = $this->entityManager->createQueryBuilder()
       ->select('COUNT(DISTINCT s.id)')
       ->from(SegmentEntity::class, 's')
