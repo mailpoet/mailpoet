@@ -20,16 +20,14 @@ class DynamicSegmentFilterRepository extends Repository {
     return DynamicSegmentFilterEntity::class;
   }
 
-  public function findOnyBySegmentTypeAndAction(string $segmentType, string $action): ?DynamicSegmentFilterEntity {
-    $segmentTypeLength = strlen($segmentType);
-    $actionLength = strlen($action);
+  public function findOnyByFilterTypeAndAction(string $filterType, string $action): ?DynamicSegmentFilterEntity {
     return $this->entityManager->createQueryBuilder()
       ->select('dsf')
       ->from(DynamicSegmentFilterEntity::class, 'dsf')
-      ->where('dsf.filterData.filterData LIKE :segmentType')
-      ->andWhere('dsf.filterData.filterData LIKE :action')
-      ->setParameter('segmentType', "%s:11:\"segmentType\";s:{$segmentTypeLength}:\"{$segmentType}\"%")
-      ->setParameter('action', "%s:6:\"action\";s:{$actionLength}:\"{$action}\"%")
+      ->where('dsf.filterData.filterType = :filterType')
+      ->andWhere('dsf.filterData.action = :action')
+      ->setParameter('filterType', $filterType)
+      ->setParameter('action', $action)
       ->setMaxResults(1)
       ->getQuery()
       ->getOneOrNullResult();
