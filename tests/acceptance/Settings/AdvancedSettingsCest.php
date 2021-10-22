@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Test\DataFactories\Features;
 
 class AdvancedSettingsCest {
   public function toggleAnonymousDataSetting(\AcceptanceTester $i) {
@@ -133,8 +134,10 @@ class AdvancedSettingsCest {
     $i->waitForElement($chooseLogErrors);
   }
 
-  public function checkInactiveSubscribers(\AcceptanceTester $i) {
-    $i->wantTo('Check that inactive subsribers has default value');
+  public function checkInactiveSubscribersAndEmails(\AcceptanceTester $i) {
+    $features = new Features();
+    $features->withFeatureEnabled('re-engagement-email');
+    $i->wantTo('Check that inactive subscribers has default value');
     $inactiveSubscribersDefault = '[data-automation-id="inactive-subscribers-default"]';
     $trackingEnabled = '[data-automation-id="tracking-enabled-radio"]';
     $i->login();
@@ -145,12 +148,14 @@ class AdvancedSettingsCest {
     $i->waitForElement($inactiveSubscribersDefault);
     $i->seeCheckboxIsChecked($inactiveSubscribersDefault . ' input');
 
-    $i->wantTo('See that inactive subsribers is disabled when tracking is disabled');
+    $i->wantTo('See that inactive subscribers and re-engagement emails are disabled when tracking is disabled');
     $trackingDisabled = '[data-automation-id="tracking-disabled-radio"]';
     $inactiveSubscribersDisabled = '[data-automation-id="inactive-subscribers-disabled"]';
     $inactiveSubscribersEnabled = '[data-automation-id="inactive-subscribers-enabled"]';
+    $reEngagementEmailsDisabledNotice = 're-engagement emails are disabled when tracking is disabled';
     $i->click($trackingDisabled);
     $i->waitForElement($inactiveSubscribersDisabled);
     $i->dontSee($inactiveSubscribersEnabled);
+    $i->see($reEngagementEmailsDisabledNotice);
   }
 }

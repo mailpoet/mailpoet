@@ -60,6 +60,25 @@ function validateNewsletter(newsletter) {
     return MailPoet.I18n.t('emailAlreadySent');
   }
 
+  if (newsletter.type === 're_engagement' && !window.mailpoet_tracking_enabled) {
+    return (
+      <span style={{ pointerEvents: 'all' }}>
+        {ReactStringReplace(
+          MailPoet.I18n.t('reEngagementEmailsDisableIfTrackingIs'),
+          /\[link\](.*?)\[\/link\]/g,
+          (match) => (
+            <a
+              key="advancedSettingsTabLink"
+              href="?page=mailpoet-settings#/advanced"
+              rel="noopener noreferrer"
+            >
+              {match}
+            </a>
+          )
+        )}
+      </span>
+    );
+  }
   return undefined;
 }
 
@@ -551,7 +570,7 @@ class NewsletterSend extends React.Component {
             { this.state.validationError !== undefined && (
               <HelpTooltip
                 tooltip={(<div>{this.state.validationError}</div>)}
-                tooltipId={this.state.validationError}
+                tooltipId="helpTooltipSendEmail"
               />
             ) }
           </Grid.CenteredRow>
