@@ -12,6 +12,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
+use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
@@ -84,13 +85,11 @@ class FilterHandlerTest extends \MailPoetTest {
   public function testItAppliesTwoFiltersWithoutSpecifyingConnection() {
     $wp = $this->diContainer->get(Functions::class);
     $segment = $this->getSegment('editor');
-    $filter = new DynamicSegmentFilterData([
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-      'action' => SubscriberSubscribedDate::TYPE,
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberSubscribedDate::TYPE, [
       'operator' => SubscriberSubscribedDate::IN_THE_LAST,
       'value' => 30,
     ]);
-    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filter);
+    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filterData);
     $this->entityManager->persist($dynamicSegmentFilter);
     $segment->addDynamicFilter($dynamicSegmentFilter);
     $this->entityManager->flush();
@@ -103,16 +102,14 @@ class FilterHandlerTest extends \MailPoetTest {
   public function testItAppliesTwoFiltersWithOr() {
     $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
     $this->entityManager->persist($segment);
-    $filterData = new DynamicSegmentFilterData([
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, [
       'wordpressRole' => 'administrator',
       'connect' => 'or',
     ]);
     $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filterData);
     $this->entityManager->persist($dynamicSegmentFilter);
     $segment->addDynamicFilter($dynamicSegmentFilter);
-    $filterData = new DynamicSegmentFilterData([
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, [
       'wordpressRole' => 'editor',
       'connect' => 'or',
     ]);
@@ -130,8 +127,7 @@ class FilterHandlerTest extends \MailPoetTest {
     $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
     $this->entityManager->persist($segment);
     // filter user is an editor
-    $editorData = new DynamicSegmentFilterData([
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+    $editorData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, [
       'wordpressRole' => 'editor',
       'connect' => 'and',
     ]);
@@ -157,9 +153,7 @@ class FilterHandlerTest extends \MailPoetTest {
     $this->entityManager->persist($open);
     $this->entityManager->flush();
 
-    $openedData = new DynamicSegmentFilterData([
-      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
-      'action' => EmailAction::ACTION_OPENED,
+    $openedData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_OPENED, [
       'newsletter_id' => $newsletter->getId(),
       'connect' => 'and',
     ]);
@@ -175,12 +169,11 @@ class FilterHandlerTest extends \MailPoetTest {
   }
 
   private function getSegment(string $role): SegmentEntity {
-    $filter = new DynamicSegmentFilterData([
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, [
       'wordpressRole' => $role,
     ]);
     $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
-    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filter);
+    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filterData);
     $segment->addDynamicFilter($dynamicSegmentFilter);
     $this->entityManager->persist($segment);
     $this->entityManager->persist($dynamicSegmentFilter);

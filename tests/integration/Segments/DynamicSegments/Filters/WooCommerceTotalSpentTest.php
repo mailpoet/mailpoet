@@ -87,9 +87,7 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
   }
 
   private function getSegmentFilter(string $type, float $amount, int $days): DynamicSegmentFilterEntity {
-    $data = new DynamicSegmentFilterData([
-      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
-      'action' => WooCommerceTotalSpent::ACTION_TOTAL_SPENT,
+    $data = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceTotalSpent::ACTION_TOTAL_SPENT, [
       'total_spent_type' => $type,
       'total_spent_amount' => $amount,
       'total_spent_days' => $days,

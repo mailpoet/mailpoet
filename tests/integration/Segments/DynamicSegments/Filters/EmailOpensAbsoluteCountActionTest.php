@@ -155,9 +155,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
   }
 
   private function getSegmentFilter(int $opens, string $operator, int $days, string $action = EmailOpensAbsoluteCountAction::TYPE): DynamicSegmentFilterEntity {
-    $segmentFilterData = new DynamicSegmentFilterData([
-      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
-      'action' => $action,
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
       'operator' => $operator,
       'opens' => $opens,
       'days' => $days,

@@ -122,9 +122,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
   }
 
   private function getSegmentFilter(string $operator, string $value): DynamicSegmentFilterEntity {
-    $segmentFilterData = new DynamicSegmentFilterData([
-      'segmentType' => 'userRole',
-      'action' => SubscriberSubscribedDate::TYPE,
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberSubscribedDate::TYPE, [
       'operator' => $operator,
       'value' => $value,
     ]);

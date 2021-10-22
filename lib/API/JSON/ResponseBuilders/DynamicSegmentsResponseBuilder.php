@@ -49,6 +49,8 @@ class DynamicSegmentsResponseBuilder {
     foreach ($dynamicFilters as $dynamicFilter) {
       $filter = $dynamicFilter->getFilterData()->getData();
       $filter['id'] = $dynamicFilter->getId();
+      $filter['segmentType'] = $dynamicFilter->getFilterData()->getFilterType(); // We need to add filterType with key segmentType due to BC
+      $filter['action'] = $dynamicFilter->getFilterData()->getAction();
       $filters[] = $filter;
     }
     $data['filters'] = $filters;

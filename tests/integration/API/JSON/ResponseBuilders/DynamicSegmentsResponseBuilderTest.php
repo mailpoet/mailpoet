@@ -110,10 +110,8 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
   }
 
   private function addDynamicFilter(SegmentEntity $segment, string $wordpressRole): SegmentEntity {
-    $dynamicFilter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData([
+    $dynamicFilter = new DynamicSegmentFilterEntity($segment, new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, [
       'wordpressRole' => $wordpressRole,
-      'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-      'action' => UserRole::TYPE,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]));
     $segment->getDynamicFilters()->add($dynamicFilter);
