@@ -9,7 +9,7 @@ type Props = {
   automationId?: string;
   linkAutomationId?: string;
   setValue: (x: string) => void;
-  preview: 'manage' | 'unsubscribe' | 'confirm' | 'confirm_unsubscribe';
+  preview: 'manage' | 'unsubscribe' | 'confirm' | 'confirm_unsubscribe' | 're_engagement';
 }
 
 export default (props: Props) => {
