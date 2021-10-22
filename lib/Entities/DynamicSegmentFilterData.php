@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Entities;
 
@@ -23,19 +23,30 @@ class DynamicSegmentFilterData {
    */
   private $filterData;
 
+  /**
+   * @ORM\Column(type="string", nullable=true)
+   * @var string|null
+   */
+  private $filterType;
+
+  /**
+   * @ORM\Column(type="string", nullable=true)
+   * @var string|null
+   */
+  private $action;
+
   public function __construct(
-    array $filterData
+    string $filterType,
+    string $action,
+    array $filterData = []
   ) {
+    $this->filterType = $filterType;
+    $this->action = $action;
     $this->filterData = $filterData;
   }
 
   public function getData(): ?array {
-    $filterData = $this->filterData;
-    // bc compatibility, the wordpress user role segment didn't have action
-    if (($this->filterData['segmentType'] ?? null) === self::TYPE_USER_ROLE && !isset($this->filterData['action'])) {
-      $filterData['action'] = UserRole::TYPE;
-    }
-    return $filterData;
+    return $this->filterData;
   }
 
   /**
@@ -46,7 +57,14 @@ class DynamicSegmentFilterData {
   }
 
   public function getFilterType(): ?string {
-    $filterData = $this->getData();
-    return $filterData['segmentType'] ?? null;
+    return $this->filterType;
+  }
+
+  public function getAction(): ?string {
+    // bc compatibility, the wordpress user role segment didn't have action
+    if ($this->getFilterType() === self::TYPE_USER_ROLE && !$this->action) {
+      return UserRole::TYPE;
+    }
+    return $this->action;
   }
 }
