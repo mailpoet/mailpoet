@@ -22,6 +22,9 @@ export type Settings = {
       segments: string[];
     };
   };
+  reEngagement: {
+    page: string;
+  };
   subscription: {
     pages: {
       manage: string;

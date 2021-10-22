@@ -9,6 +9,7 @@ import StatsNotifications from './stats_notifications';
 import NewSubscriberNotifications from './new_subscriber_notifications';
 import Shortcode from './shortcode';
 import GdprCompliant from './gdpr_compliant';
+import { ReEngagementPage } from './re_engagement_page';
 
 export default function Basics() {
   return (
@@ -26,6 +27,7 @@ export default function Basics() {
       />
       <ManageSubscription />
       <UnsubscribePage />
+      <ReEngagementPage />
       <StatsNotifications />
       <NewSubscriberNotifications />
       <Shortcode
