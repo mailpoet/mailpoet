@@ -47,7 +47,7 @@ class TemplateBox extends React.Component {
       });
     };
     confirmAlert({
-      message: MailPoet.I18n.t('confirmTemplateDeletion').replace('%1$s', name),
+      message: MailPoet.I18n.t('confirmTemplateDeletion').replace('%$1s', name),
       onConfirm,
     });
   }

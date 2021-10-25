@@ -41,7 +41,7 @@ const MailerError = (props) => {
   const code = props.mta_log.error.error_code;
   if (code) {
     message += message ? ', ' : '';
-    message += MailPoet.I18n.t('mailerErrorCode').replace('%1$s', code);
+    message += MailPoet.I18n.t('mailerErrorCode').replace('%$1s', code);
   }
 
   // allow <a> tags with some attributes
@@ -100,7 +100,7 @@ const MailerError = (props) => {
       <p>
         {
           props.mta_log.error.operation === 'send'
-            ? MailPoet.I18n.t('mailerSendErrorNotice').replace('%1$s', props.mta_method)
+            ? MailPoet.I18n.t('mailerSendErrorNotice').replace('%$1s', props.mta_method)
             : MailPoet.I18n.t('mailerConnectionErrorNotice')
         }
         :

@@ -46,7 +46,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleDynamicSegmentsTrashed')
-      ).replace('%1$d', count.toLocaleString());
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -61,7 +61,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleDynamicSegmentsDeleted')
-      ).replace('%1$d', count.toLocaleString());
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -76,7 +76,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleDynamicSegmentsRestored')
-      ).replace('%1$d', count.toLocaleString());
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
