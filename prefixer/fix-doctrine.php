@@ -27,26 +27,6 @@ exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'build.prop
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'UPGRADE_*' -delete");
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'README.markdown' -delete");
 
-// cleanup Doctrine Cache
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/ApcCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/ApcuCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/ChainCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/CouchbaseCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/CouchbaseBucketCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/ExtMongoDBCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/LegacyMongoDBCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/MemcacheCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/MemcachedCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/MongoDBCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/PhpFileCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/PredisCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/RedisCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/SQLite3Cache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/VoidCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/WinCacheCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/XcacheCache.php');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/ZendDataCache.php');
-
 // cleanup Doctrine DBAL
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/bin');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Connections');
