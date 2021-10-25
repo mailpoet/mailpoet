@@ -39,7 +39,7 @@ class ContainerWrapper implements ContainerInterface {
       }
       return $result;
     } catch (NotFoundExceptionInterface $e) {
-      if (!$this->premiumContainer) {
+      if (!$this->premiumContainer || !$this->premiumContainer->has($id)) {
         throw $e;
       }
       $result = $this->premiumContainer->get($id);
