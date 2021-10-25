@@ -117,7 +117,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Doctrine\Annotations\AnnotationReaderProvider::class);
     $container->autowire(\MailPoet\Doctrine\ConfigurationFactory::class);
     $container->autowire(\MailPoet\Doctrine\ConnectionFactory::class)->setPublic(true);
-    $container->autowire(\MailPoet\Doctrine\EntityManagerFactory::class);
+    $container->autowire(\MailPoet\Doctrine\EntityManagerFactory::class)->setPublic(true);
     $container->autowire(\MailPoetVendor\Doctrine\ORM\Configuration::class)
       ->setFactory([new Reference(\MailPoet\Doctrine\ConfigurationFactory::class), 'createConfiguration']);
     $container->autowire(\MailPoetVendor\Doctrine\DBAL\Connection::class)
