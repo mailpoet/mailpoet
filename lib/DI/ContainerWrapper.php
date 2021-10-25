@@ -29,7 +29,7 @@ class ContainerWrapper implements ContainerInterface {
     try {
       return $this->freeContainer->get($id);
     } catch (NotFoundExceptionInterface $e) {
-      if (!$this->premiumContainer) {
+      if (!$this->premiumContainer || !$this->premiumContainer->has($id)) {
         throw $e;
       }
       return $this->premiumContainer->get($id);

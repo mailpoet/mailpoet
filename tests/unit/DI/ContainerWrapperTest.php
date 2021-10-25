@@ -62,6 +62,9 @@ class ContainerWrapperTest extends \MailPoetUnitTest {
       },
     ]);
     $premiumContainerStub = Stub::make(Container::class, [
+      'has' => function () {
+        return true;
+      },
       'get' => function () {
         return 'service_1';
       },
