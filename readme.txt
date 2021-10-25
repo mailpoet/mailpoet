@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.71.3
+Stable tag: 3.72.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,15 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.72.0 - 2021-10-25 =
+* Improved: updated Mixpanel configuration;
+* Improved: refactor CronWorkerRunner and related classes to Doctrine;
+* Improved: removed old StatisticsWooCommercePurchases model and replaced it with code that uses Doctrine;
+* Fixed: mailpoet_register_form_extend filter not working;
+* Fixed: automatic latest content block shows wrong content;
+* Fixed: "Create a new form" link not working in MailPoet widget;
+* Fixed: preselect a first form in form widget.
 
 = 3.71.3 - 2021-10-18 =
 * Improved: show email stats with less then 0.1% with two decimal places;
