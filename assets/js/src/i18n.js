@@ -9,7 +9,7 @@ MailPoet.I18n = {
     translations[key] = value;
   },
   t: function t(key) {
-    return translations[key] || 'TRANSLATION "%1$s" NOT FOUND'.replace('%1$s', key);
+    return translations[key] || 'TRANSLATION "%$1s" NOT FOUND'.replace('%$1s', key);
   },
   all: function all() {
     return translations;

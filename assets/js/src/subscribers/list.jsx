@@ -60,7 +60,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleSubscribersTrashed')
-      ).replace('%1$d', count.toLocaleString());
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -75,7 +75,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleSubscribersDeleted')
-      ).replace('%1$d', count.toLocaleString());
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -90,7 +90,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleSubscribersRestored')
-      ).replace('%1$d', count.toLocaleString());
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -156,8 +156,8 @@ const bulkActions = [
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersMovedToList')
-          .replace('%1$d', (Number(response.meta.count)).toLocaleString())
-          .replace('%2$s', response.meta.segment)
+          .replace('%$1d', (Number(response.meta.count)).toLocaleString())
+          .replace('%$2s', response.meta.segment)
       );
     },
   },
@@ -186,8 +186,8 @@ const bulkActions = [
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersAddedToList')
-          .replace('%1$d', (Number(response.meta.count)).toLocaleString())
-          .replace('%2$s', response.meta.segment)
+          .replace('%$1d', (Number(response.meta.count)).toLocaleString())
+          .replace('%$2s', response.meta.segment)
       );
     },
   },
@@ -216,8 +216,8 @@ const bulkActions = [
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromList')
-          .replace('%1$d', (Number(response.meta.count)).toLocaleString())
-          .replace('%2$s', response.meta.segment)
+          .replace('%$1d', (Number(response.meta.count)).toLocaleString())
+          .replace('%$2s', response.meta.segment)
       );
     },
   },
@@ -227,7 +227,7 @@ const bulkActions = [
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists')
-          .replace('%1$d', (Number(response.meta.count)).toLocaleString())
+          .replace('%$1d', (Number(response.meta.count)).toLocaleString())
       );
     },
   },

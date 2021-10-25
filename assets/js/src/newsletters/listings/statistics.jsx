@@ -118,7 +118,7 @@ const Statistics = ({ newsletter, isSent, currentTime }) => {
       {tooEarlyForStats && wrapContentInLink(
         (
           <Tag className="mailpoet-listing-stats-too-early" dimension="large" variant="excellent" isInverted>
-            {MailPoet.I18n.t('checkBackInHours').replace('%1$d', showStatsTimeout - sentHoursAgo)}
+            {MailPoet.I18n.t('checkBackInHours').replace('%$1d', showStatsTimeout - sentHoursAgo)}
           </Tag>
         ),
         'check-back'

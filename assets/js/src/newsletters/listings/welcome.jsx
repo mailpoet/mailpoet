@@ -36,7 +36,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersTrashed')
-      ).replace('%1$d', count.toLocaleString());
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -51,7 +51,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersDeleted')
-      ).replace('%1$d', count.toLocaleString());
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -66,7 +66,7 @@ const messages = {
     } else {
       message = (
         MailPoet.I18n.t('multipleNewslettersRestored')
-      ).replace('%1$d', count.toLocaleString());
+      ).replace('%$1d', count.toLocaleString());
     }
     MailPoet.Notice.success(message);
   },
@@ -130,7 +130,7 @@ let newsletterActions = [
         id: newsletter.id,
       },
     }).done((response) => {
-      MailPoet.Notice.success((MailPoet.I18n.t('newsletterDuplicated')).replace('%1$s', response.data.subject));
+      MailPoet.Notice.success((MailPoet.I18n.t('newsletterDuplicated')).replace('%$1s', response.data.subject));
       refresh();
     }).fail((response) => {
       if (response.errors.length > 0) {
@@ -196,9 +196,9 @@ class NewsletterListWelcome extends React.Component {
 
   renderStatus = (newsletter) => {
     const totalSentMessage = MailPoet.I18n.t('sentToXSubscribers')
-      .replace('%1$d', newsletter.total_sent.toLocaleString());
+      .replace('%$1d', newsletter.total_sent.toLocaleString());
     const totalScheduledMessage = MailPoet.I18n.t('scheduledToXSubscribers')
-      .replace('%1$d', newsletter.total_scheduled.toLocaleString());
+      .replace('%$1d', newsletter.total_scheduled.toLocaleString());
 
     return (
       <div>
@@ -238,7 +238,7 @@ class NewsletterListWelcome extends React.Component {
         } else {
           sendingEvent = ReactStringReplace(
             MailPoet.I18n.t('welcomeEventWPUserWithRole'),
-            '"%1$s"',
+            '"%$1s"',
             (match, i) => (
               <Tag variant="list" key={i}>{mailpoetRoles[newsletter.options.role]}</Tag>
             )
@@ -263,7 +263,7 @@ class NewsletterListWelcome extends React.Component {
 
         sendingEvent = ReactStringReplace(
           MailPoet.I18n.t('welcomeEventSegment'),
-          '"%1$s"',
+          '"%$1s"',
           (match, i) => (
             <Tag variant="list" key={i}>{segment.name}</Tag>
           )
@@ -278,25 +278,25 @@ class NewsletterListWelcome extends React.Component {
         switch (newsletter.options.afterTimeType) {
           case 'minutes':
             sendingDelay = MailPoet.I18n.t('sendingDelayMinutes').replace(
-              '%1$d', newsletter.options.afterTimeNumber
+              '%$1d', newsletter.options.afterTimeNumber
             );
             break;
 
           case 'hours':
             sendingDelay = MailPoet.I18n.t('sendingDelayHours').replace(
-              '%1$d', newsletter.options.afterTimeNumber
+              '%$1d', newsletter.options.afterTimeNumber
             );
             break;
 
           case 'days':
             sendingDelay = MailPoet.I18n.t('sendingDelayDays').replace(
-              '%1$d', newsletter.options.afterTimeNumber
+              '%$1d', newsletter.options.afterTimeNumber
             );
             break;
 
           case 'weeks':
             sendingDelay = MailPoet.I18n.t('sendingDelayWeeks').replace(
-              '%1$d', newsletter.options.afterTimeNumber
+              '%$1d', newsletter.options.afterTimeNumber
             );
             break;
 

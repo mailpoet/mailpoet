@@ -216,7 +216,7 @@ class ListingPages extends React.Component {
       numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsSingular');
     } else {
       numberOfItemsLabel = MailPoet.I18n.t('numberOfItemsMultiple')
-        .replace('%1$d', parseInt(this.props.count, 10).toLocaleString());
+        .replace('%$1d', parseInt(this.props.count, 10).toLocaleString());
     }
 
     return (

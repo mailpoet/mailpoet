@@ -98,7 +98,7 @@ class NewsletterSend extends React.Component {
     const fromAddress = this.state.item.sender_address;
     let errorMessage = ReactStringReplace(
       MailPoet.I18n.t('newsletterInvalidFromAddress'),
-      '%1$s',
+      '%$1s',
       () => fromAddress
     );
     errorMessage = ReactStringReplace(
