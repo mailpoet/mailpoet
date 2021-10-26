@@ -3,11 +3,10 @@
 namespace MailPoet\Test\Config;
 
 use MailPoet\Doctrine\Annotations\AnnotationReaderProvider;
+use MailPoet\Doctrine\ArrayCache;
 use MailPoet\Doctrine\ConfigurationFactory;
-use MailPoet\Doctrine\MetadataCache;
 use MailPoet\Doctrine\PSRMetadataCache;
 use MailPoet\Doctrine\TablePrefixMetadataFactory;
-use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 use MailPoetVendor\Doctrine\Common\Proxy\AbstractProxyFactory;
 use MailPoetVendor\Doctrine\ORM\Configuration;
 use MailPoetVendor\Doctrine\ORM\Mapping\Driver\AnnotationDriver;
