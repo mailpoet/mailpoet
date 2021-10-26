@@ -916,7 +916,7 @@ class Populator {
   }
 
   private function moveNewsletterTemplatesThumbnailData() {
-    if (version_compare($this->settings->get('db_version', '3.71.4'), '3.71.3', '>')) {
+    if (version_compare($this->settings->get('db_version', '3.73.1'), '3.73.0', '>')) {
       return;
     }
     $newsletterTemplatesTable = $this->entityManager->getClassMetadata(NewsletterTemplateEntity::class)->getTableName();
