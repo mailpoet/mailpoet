@@ -3,18 +3,32 @@
 namespace MailPoet\Test\Cron\Workers\SendingQueue\Tasks;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
+use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 
 class LinksTest extends \MailPoetTest {
   /** @var Links */
   private $links;
 
+  /** @var NewsletterEntity */
+  private $newsletter;
+
+  /** @var SendingQueueEntity */
+  private $queue;
+
+  /** @var NewsletterLinkRepository */
+  private $newsletterLinkRepository;
+
   protected function _before() {
     parent::_before();
+    $newsletterFactory = new NewsletterFactory();
+    $this->newsletter = $newsletterFactory->withSendingQueue()->create();
+    $this->queue = $this->newsletter->getQueues()->first();
     $this->links = $this->diContainer->get(Links::class);
+    $this->newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
   }
 
   public function testItCanSaveLinks() {
@@ -24,15 +38,18 @@ class LinksTest extends \MailPoetTest {
         'hash' => 'some_hash',
       ],
     ];
-    $newsletter = (object)['id' => 1];
-    $queue = (object)['id' => 2];
+    $newsletter = (object)['id' => $this->newsletter->getId()];
+    $queue = (object)['id' => $this->queue->getId()];
+
     $this->links->saveLinks($links, $newsletter, $queue);
-    $newsletterLink = NewsletterLink::where('hash', $links[0]['hash'])
-      ->findOne();
-    assert($newsletterLink instanceof NewsletterLink);
-    expect($newsletterLink->newsletterId)->equals($newsletter->id);
-    expect($newsletterLink->queueId)->equals($queue->id);
-    expect($newsletterLink->url)->equals($links[0]['link']);
+
+    $newsletterLink = $this->newsletterLinkRepository->findOneBy(['hash' => $links[0]['hash']]);
+    assert($newsletterLink instanceof NewsletterLinkEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterLink->getNewsletter());
+    expect($newsletterLink->getNewsletter()->getId())->equals($this->newsletter->getId());
+    $this->assertInstanceOf(SendingQueueEntity::class, $newsletterLink->getQueue());
+    expect($newsletterLink->getQueue()->getId())->equals($this->queue->getId());
+    expect($newsletterLink->getUrl())->equals($links[0]['link']);
   }
 
   public function testItCanHashAndReplaceLinks() {
@@ -51,38 +68,38 @@ class LinksTest extends \MailPoetTest {
   }
 
   public function testItCanProcessRenderedBody() {
-    $newsletter = Newsletter::create();
-    $newsletter->type = Newsletter::TYPE_STANDARD;
-    $newsletter->save();
     $renderedNewsletter = [
       'html' => '<a href="http://example.com">Example Link</a>',
       'text' => '<a href="http://example.com">Example Link</a>',
     ];
-    $queue = (object)['id' => 2];
-    $result = $this->links->process($renderedNewsletter, $newsletter, $queue);
-    $newsletterLink = NewsletterLink::where('newsletter_id', $newsletter->id)
-      ->findOne();
-    assert($newsletterLink instanceof NewsletterLink);
-    expect($result['html'])->stringContainsString($newsletterLink->hash);
+
+    $result = $this->links->process($renderedNewsletter, $this->newsletter, $this->queue);
+
+    $newsletterLink = $this->newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter->getId()]);
+    assert($newsletterLink instanceof NewsletterLinkEntity);
+    expect($result['html'])->stringContainsString($newsletterLink->getHash());
   }
 
   public function testItCanEnsureThatInstantUnsubscribeLinkIsAlwaysPresent() {
-    $newsletter = Newsletter::create();
-    $newsletter->type = Newsletter::TYPE_STANDARD;
-    $newsletter->save();
     $renderedNewsletter = [
       'html' => '<a href="http://example.com">Example Link</a>',
       'text' => '<a href="http://example.com">Example Link</a>',
     ];
-    $queue = (object)['id' => 2];
-    $this->links->process($renderedNewsletter, $newsletter, $queue);
-    $unsubscribeCount = NewsletterLink::where('newsletter_id', $newsletter->id)
-      ->where('url', NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE)->count();
+
+    $this->links->process($renderedNewsletter, $this->newsletter, $this->queue);
+
+    $unsubscribeCount = $this->newsletterLinkRepository->countBy(
+      [
+        'newsletter' => $this->newsletter->getId(),
+        'url' => NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
+      ]
+    );
     expect($unsubscribeCount)->equals(1);
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterLinkEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
   }
 }
