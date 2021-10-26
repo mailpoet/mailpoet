@@ -126,5 +126,4 @@ exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/test_fixtur
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/phpcs.xml');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/instantiator/docs');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/instantiator/phpbench.json');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/persistence/phpstan-baseline.neon');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/console');
