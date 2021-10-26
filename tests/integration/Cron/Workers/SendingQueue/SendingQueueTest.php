@@ -28,7 +28,6 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
@@ -126,19 +125,28 @@ class SendingQueueTest extends \MailPoetTest {
     $this->queue->setSubscribers([$this->subscriber->getId()]);
     $this->queue->countCotal = 1;
     $this->queue->save();
-    $this->newsletterLink = NewsletterLink::create();
-    $this->newsletterLink->newsletterId = $this->newsletter->id;
-    $this->newsletterLink->queueId = $this->queue->id;
-    $this->newsletterLink->url = '[link:subscription_instant_unsubscribe_url]';
-    $this->newsletterLink->hash = 'abcde';
-    $this->newsletterLink->save();
+
+    $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+
+    $newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $queue = $newsletterEntity->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $this->newsletterLink = new NewsletterLinkEntity(
+      $newsletterEntity,
+      $queue,
+      '[link:subscription_instant_unsubscribe_url]',
+      'abcde'
+    );
+    $this->entityManager->persist($this->newsletterLink);
+    $this->entityManager->flush();
+
     $this->subscribersFinder = $this->diContainer->get(SubscribersFinder::class);
     $this->sendingErrorHandler = $this->diContainer->get(SendingErrorHandler::class);
     $this->sendingThrottlingHandler = $this->diContainer->get(SendingThrottlingHandler::class);
     $this->statsNotificationsWorker = Stub::makeEmpty(StatsNotificationsScheduler::class);
     $this->loggerFactory = LoggerFactory::getInstance();
     $this->cronHelper = $this->diContainer->get(CronHelper::class);
-    $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->tasksLinks = $this->diContainer->get(TasksLinks::class);
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
@@ -156,7 +164,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscriber->getId(),
       $linkTokens->getToken($this->subscriber),
       $this->queue->id,
-      $this->newsletterLink->hash,
+      $this->newsletterLink->getHash(),
       false
     );
     return Router::buildRequest(
