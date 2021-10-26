@@ -4,7 +4,7 @@ namespace MailPoet\Test\DataGenerator\Generators;
 
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Models\NewsletterLink;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
@@ -259,6 +259,8 @@ class WooCommercePastRevenues implements Generator {
   }
 
   public function runBefore() {
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+
     // Turn off CURRENT_TIMESTAMP to be able to save generated value
     ORM::rawExecute(
       "ALTER TABLE `" . StatisticsClicks::$_table . "`
@@ -272,7 +274,7 @@ class WooCommercePastRevenues implements Generator {
     ORM::rawExecute("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . Subscriber::$_table . "` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . SubscriberSegment::$_table . "` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . NewsletterLink::$_table . "` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . $entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . ScheduledTask::$_table . "` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` DISABLE KEYS");
@@ -282,6 +284,8 @@ class WooCommercePastRevenues implements Generator {
   }
 
   public function runAfter() {
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+
     ORM::rawExecute(
       "ALTER TABLE `" . StatisticsClicks::$_table . "`
       CHANGE `updated_at` `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;"
@@ -294,7 +298,7 @@ class WooCommercePastRevenues implements Generator {
     ORM::rawExecute("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . Subscriber::$_table . "` ENABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . SubscriberSegment::$_table . "` ENABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . NewsletterLink::$_table . "` ENABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . $entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` ENABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . ScheduledTask::$_table . "` ENABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` ENABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` ENABLE KEYS");
