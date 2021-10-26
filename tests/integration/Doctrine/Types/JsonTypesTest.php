@@ -4,6 +4,7 @@ namespace MailPoet\Test\Doctrine\EventListeners;
 
 use Exception;
 use MailPoet\Doctrine\Annotations\AnnotationReaderProvider;
+use MailPoet\Doctrine\ArrayCache;
 use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Doctrine\EventListeners\EmojiEncodingListener;
@@ -14,7 +15,6 @@ use MailPoet\Doctrine\Validator\ValidatorFactory;
 use MailPoet\Test\Doctrine\Types\JsonEntity;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 use RuntimeException;
 
 require_once __DIR__ . '/JsonEntity.php';
