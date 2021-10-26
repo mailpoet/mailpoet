@@ -891,7 +891,7 @@ class Populator {
   }
 
   private function scheduleSubscriberLastEngagementDetection() {
-    if (version_compare($this->settings->get('db_version', '3.68.1'), '3.68.0', '>')) {
+    if (version_compare($this->settings->get('db_version', '3.72.1'), '3.72.0', '>')) {
       return;
     }
     $this->scheduleTask(
