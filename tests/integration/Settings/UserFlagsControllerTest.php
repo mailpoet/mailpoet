@@ -117,6 +117,6 @@ class UserFlagsControllerTest extends \MailPoetTest {
 
   private function cleanup() {
     $tableName = $this->entityManager->getClassMetadata(UserFlagEntity::class)->getTableName();
-    $this->connection->executeUpdate("TRUNCATE $tableName");
+    $this->connection->executeStatement("TRUNCATE $tableName");
   }
 }

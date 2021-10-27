@@ -20,7 +20,7 @@ class FeatureFlagsTest extends \MailPoetTest {
     parent::_before();
     $this->repository = $this->diContainer->get(FeatureFlagsRepository::class);
     $tableName = $this->entityManager->getClassMetadata(FeatureFlagEntity::class)->getTableName();
-    $this->entityManager->getConnection()->executeUpdate("TRUNCATE $tableName");
+    $this->entityManager->getConnection()->executeStatement("TRUNCATE $tableName");
   }
 
   public function testItReturnsDefaults() {

@@ -600,11 +600,13 @@ class WPTest extends \MailPoetTest {
 
   private function getUser(int $id): array {
     global $wpdb;
-    return $this->entityManager->getConnection()->executeQuery('
+    $user = $this->entityManager->getConnection()->executeQuery('
       SELECT user_login, user_email, user_registered
       FROM ' . $wpdb->users . '
       WHERE id = :id
-    ', ['id' => $id])->fetch();
+    ', ['id' => $id])->fetchAssociative();
+    $this->assertIsArray($user);
+    return $user;
   }
 
   private function updateWPUserEmail($id, $email) {

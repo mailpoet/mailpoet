@@ -40,8 +40,8 @@ class TimestampListenerTest extends \MailPoetTest {
     $this->replaceListeners($originalListener, $newTimestampListener);
 
     $this->tableName = $this->entityManager->getClassMetadata(TimestampEntity::class)->getTableName();
-    $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->tableName");
-    $this->connection->executeUpdate("
+    $this->connection->executeStatement("DROP TABLE IF EXISTS $this->tableName");
+    $this->connection->executeStatement("
       CREATE TABLE $this->tableName (
         id int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
         created_at timestamp NULL,
@@ -63,7 +63,7 @@ class TimestampListenerTest extends \MailPoetTest {
   }
 
   public function testItSetsTimestampOnUpdate() {
-    $this->connection->executeUpdate("
+    $this->connection->executeStatement("
       INSERT INTO $this->tableName (id, created_at, updated_at, name) VALUES (
         123,
         '2000-01-01 12:00:00',
@@ -83,7 +83,7 @@ class TimestampListenerTest extends \MailPoetTest {
 
   public function _after() {
     parent::_after();
-    $this->connection->executeUpdate("DROP TABLE IF EXISTS $this->tableName");
+    $this->connection->executeStatement("DROP TABLE IF EXISTS $this->tableName");
   }
 
   /**

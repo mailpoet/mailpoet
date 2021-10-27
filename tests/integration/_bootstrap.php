@@ -223,9 +223,9 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $classMetadata = $this->entityManager->getClassMetadata($entityName);
     $tableName = $classMetadata->getTableName();
     $connection = $this->entityManager->getConnection();
-    $connection->query('SET FOREIGN_KEY_CHECKS=0');
-    $connection->executeUpdate("TRUNCATE $tableName");
-    $connection->query('SET FOREIGN_KEY_CHECKS=1');
+    $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0');
+    $connection->executeStatement("TRUNCATE $tableName");
+    $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1');
   }
 
   public function clearSubscribersCountCache() {
