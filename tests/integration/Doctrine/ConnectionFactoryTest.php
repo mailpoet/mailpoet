@@ -32,11 +32,12 @@ class ConnectionFactoryTest extends \MailPoetTest {
     expect($connection->getWrappedConnection())->isInstanceOf(PDO::class);
     expect($connection->getDriver())->isInstanceOf(PDOMySql\Driver::class);
     expect($connection->getDatabasePlatform())->isInstanceOf(MySqlPlatform::class);
-    expect($connection->getHost())->equals(Env::$dbHost);
-    expect($connection->getParams())->notContains('unix_socket');
-    expect($connection->getUsername())->equals(Env::$dbUsername);
-    expect($connection->getPassword())->equals(Env::$dbPassword);
-    expect($connection->getParams()['charset'])->equals(Env::$dbCharset);
+    $params = $connection->getParams();
+    expect($params['host'])->equals(Env::$dbHost);
+    expect($params)->notContains('unix_socket');
+    expect($params['user'])->equals(Env::$dbUsername);
+    expect($params['password'])->equals(Env::$dbPassword);
+    expect($params['charset'])->equals(Env::$dbCharset);
     expect($connection->getDatabase())->equals(Env::$dbName);
 
     expect(Type::getType(JsonType::NAME))->isInstanceOf(JsonType::class);
@@ -49,7 +50,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
       Env::$dbPort = 3456;
       $connectionFactory = new ConnectionFactory();
       $connection = $connectionFactory->createConnection();
-      expect($connection->getPort())->equals(3456);
+      expect($connection->getParams()['port'])->equals(3456);
     } finally {
       Env::$dbPort = $backup;
     }
@@ -68,10 +69,10 @@ class ConnectionFactoryTest extends \MailPoetTest {
     Env::$dbSocket = 'socket';
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
-
-    expect($connection->getHost())->null();
-    expect($connection->getPort())->null();
-    expect($connection->getParams()['unix_socket'])->equals('socket');
+    $params = $connection->getParams();
+    expect(isset($params['host']))->false();
+    expect(isset($params['port']))->false();
+    expect($params['unix_socket'])->equals('socket');
   }
 
   public function testItSetsUpIpV6() {
@@ -80,19 +81,19 @@ class ConnectionFactoryTest extends \MailPoetTest {
     Env::$dbHost = '::1';
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
-    expect($connection->getHost())->equals('[::1]');
+    expect($connection->getParams()['host'])->equals('[::1]');
 
     Env::$dbHost = 'b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036';
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
-    expect($connection->getHost())->equals('[b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036]');
+    expect($connection->getParams()['host'])->equals('[b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036]');
 
     // try to actually connect to the DB over IPv6
     Env::$dbHost = '::ffff:' . gethostbyname($this->envBackup['db_host']);
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
     expect($connection->getWrappedConnection())->isInstanceOf(PDO::class);
-    expect($connection->executeQuery('SELECT 1')->fetchColumn())->same('1');
+    expect($connection->executeQuery('SELECT 1')->fetchOne())->same('1');
   }
 
   public function testItSetsDriverOptions() {
@@ -108,7 +109,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
         @@session.character_set_connection,
         @@session.character_set_results,
         @@session.collation_connection
-    ')->fetch();
+    ')->fetchAssociative();
 
     // check timezone, SQL mode, wait timeout
     expect($result['@@session.time_zone'])->equals(Env::$dbTimezoneOffset);

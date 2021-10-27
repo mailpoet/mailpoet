@@ -125,7 +125,7 @@ class SettingsControllerTest extends \MailPoetTest {
 
   private function createOrUpdateSetting($name, $value) {
     $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
-    $this->connection->executeUpdate("
+    $this->connection->executeStatement("
       INSERT INTO $tableName (name, value) VALUES (?, ?)
       ON DUPLICATE KEY UPDATE value = ?
     ", [$name, $value, $value]);
@@ -133,6 +133,6 @@ class SettingsControllerTest extends \MailPoetTest {
 
   private function getSettingValue($name) {
     $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
-    return $this->connection->executeQuery("SELECT value FROM $tableName WHERE name = ?", [$name])->fetchColumn();
+    return $this->connection->executeQuery("SELECT value FROM $tableName WHERE name = ?", [$name])->fetchOne();
   }
 }
