@@ -335,6 +335,13 @@ Module.SaveView = Marionette.View.extend({
       return;
     }
 
+    if (newsletter.get('type') === 're_engagement'
+        && body.indexOf('[link:subscription_re_engage_url]') < 0
+    ) {
+      this.showValidationError(MailPoet.I18n.t('reEngageLinkMissing'));
+      return;
+    }
+
     if ((newsletter.get('type') === 'notification')
         && body.indexOf('"type":"automatedLatestContent"') < 0
         && body.indexOf('"type":"automatedLatestContentLayout"') < 0
