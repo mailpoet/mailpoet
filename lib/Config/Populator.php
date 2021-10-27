@@ -716,7 +716,7 @@ class Populator {
           t.status = :tStatusScheduled
           AND n.status = :nStatusDraft
     ";
-    $this->entityManager->getConnection()->executeUpdate(
+    $this->entityManager->getConnection()->executeStatement(
       $query,
       [
         'tStatusPaused' => ScheduledTaskEntity::STATUS_PAUSED,
