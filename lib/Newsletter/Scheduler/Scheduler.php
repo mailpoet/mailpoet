@@ -53,7 +53,7 @@ class Scheduler {
         break;
     }
     $maxScheduledTime = Carbon::createFromFormat('Y-m-d H:i:s', self::MYSQL_TIMESTAMP_MAX);
-    if ($maxScheduledTime && $currentTime->format('Y-m-d H:i:s') > $maxScheduledTime) {
+    if ($maxScheduledTime && $currentTime > $maxScheduledTime) {
       return $maxScheduledTime;
     }
     return $currentTime;
