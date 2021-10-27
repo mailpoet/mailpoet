@@ -49,6 +49,12 @@ function validateNewsletter(newsletter) {
     return MailPoet.I18n.t('unsubscribeLinkMissing');
   }
 
+  if (newsletter.type === 're_engagement'
+    && body.indexOf('[link:subscription_re_engage_url]') < 0
+  ) {
+    return MailPoet.I18n.t('reEngageLinkMissing');
+  }
+
   if ((newsletter.type === 'notification')
     && body.indexOf('"type":"automatedLatestContent"') < 0
     && body.indexOf('"type":"automatedLatestContentLayout"') < 0

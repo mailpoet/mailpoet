@@ -377,6 +377,7 @@
     'shortcodesWindowTitle': __('Select a shortcode'),
     'newsletterSavingError': __('The email could not be saved. Please, clear browser cache and reload the page. If the problem persists, duplicate the email and try again.'),
     'unsubscribeLinkMissing': __('All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.'),
+    'reEngageLinkMissing': __('A re-engagement email must include a link with [link:subscription_re_engage_url] shortcode.'),
     'newsletterIsEmpty': __('Poet, please add prose to your masterpiece before you send it to your followers.'),
     'emailAlreadySent': __('This email has already been sent. It can be edited, but not sent again. Duplicate this email if you want to send it again.'),
     'automatedLatestContentMissing': _x('Please add an “Automatic Latest Content” widget to the email from the right sidebar.', '(Please reuse the current translation used for the string “Automatic Latest Content”) This Error message is displayed when a user tries to send a “Post Notification” email without any “Automatic Latest Content” widget inside'),
@@ -1543,6 +1544,7 @@
       },
       validation: {
         validateUnsubscribeLinkPresent: <%= mss_active and is_wc_transactional_email != true ? 'true' : 'false' %>,
+        validateReEngageLinkPresent: <%= mss_active and is_wc_transactional_email != true ? 'true' : 'false' %>,
       },
       urls: {
         send: '<%= admin_url('admin.php?page=mailpoet-newsletters#/send/' ~ (params('id') | intval)) %>',
