@@ -389,6 +389,7 @@ class RoboFile extends \Robo\Tasks {
       'tasks/phpstan/vendor',
       'tasks/makepot',
       'tools/vendor',
+      'temp',
       'tests/_data',
       'tests/_output',
       'tests/_support/_generated',
