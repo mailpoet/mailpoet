@@ -13,7 +13,7 @@ class RoboFile extends \Robo\Tasks {
     $xdebugHandler->setPersistent();
     $xdebugHandler->check();
 
-    $dotenv = Dotenv\Dotenv::create(__DIR__);
+    $dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__);
     $dotenv->load();
   }
 
