@@ -123,6 +123,7 @@ class WorkerTest extends \MailPoetTest {
     ]);
 
     $newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
     $this->newsletterLinkFactory = new NewsletterLinkFactory($newsletterEntity);
 
     $link = $this->newsletterLinkFactory
