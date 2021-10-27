@@ -12,7 +12,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
@@ -22,6 +21,7 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -52,6 +52,9 @@ class WorkerTest extends \MailPoetTest {
 
   /** @var StatsNotificationsRepository */
   private $repository;
+
+  /** @var NewsletterLinkFactory */
+  private $newsletterLinkFactory;
 
   /** @var NewsletterLinkRepository */
   private $newsletterLinkRepository;
@@ -118,31 +121,33 @@ class WorkerTest extends \MailPoetTest {
       'newsletter_id' => $this->newsletter->id(),
       'count_processed' => 5,
     ]);
-    $link = NewsletterLink::createOrUpdate([
-      'url' => 'Link url',
-      'newsletter_id' => $this->newsletter->id(),
-      'queue_id' => $this->queue->id(),
-      'hash' => 'xyz',
-    ]);
+
+    $newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->id);
+    $this->newsletterLinkFactory = new NewsletterLinkFactory($newsletterEntity);
+
+    $link = $this->newsletterLinkFactory
+      ->withUrl('Link url')
+      ->withHash('xyz')
+      ->create();
+
     StatisticsClicks::createOrUpdate([
       'newsletter_id' => $this->newsletter->id(),
       'queue_id' => $this->queue->id(),
       'subscriber_id' => '5',
-      'link_id' => $link->id(),
+      'link_id' => $link->getId(),
       'count' => 5,
       'created_at' => '2018-01-02 15:16:17',
     ]);
-    $link2 = NewsletterLink::createOrUpdate([
-      'url' => 'Link url2',
-      'newsletter_id' => $this->newsletter->id(),
-      'queue_id' => $this->queue->id(),
-      'hash' => 'xyzd',
-    ]);
+
+    $link2 = $this->newsletterLinkFactory
+      ->withUrl('Link url2')
+      ->withHash('xyzd')
+      ->create();
     StatisticsClicks::createOrUpdate([
       'newsletter_id' => $this->newsletter->id(),
       'queue_id' => $this->queue->id(),
       'subscriber_id' => '6',
-      'link_id' => $link2->id(),
+      'link_id' => $link2->getId(),
       'count' => 5,
       'created_at' => '2018-01-02 15:16:17',
     ]);
@@ -150,7 +155,7 @@ class WorkerTest extends \MailPoetTest {
       'newsletter_id' => $this->newsletter->id(),
       'queue_id' => $this->queue->id(),
       'subscriber_id' => '7',
-      'link_id' => $link2->id(),
+      'link_id' => $link2->getId(),
       'count' => 5,
       'created_at' => '2018-01-02 15:16:17',
     ]);
@@ -172,6 +177,10 @@ class WorkerTest extends \MailPoetTest {
       'queue' => $this->sendingQueuesRepository->findOneById($this->queue->id()),
       'created_at' => '2017-01-02 21:23:45',
     ]);
+
+    // need as for now we are creating the clicks outside of Doctrine using the old StatisticsClicks class
+    $this->entityManager->refresh($link);
+    $this->entityManager->refresh($link2);
   }
 
   public function testRendersTemplate() {
@@ -239,17 +248,16 @@ class WorkerTest extends \MailPoetTest {
   }
 
   public function testReplacesShortcodeLinks() {
-    $link = NewsletterLink::createOrUpdate([
-      'url' => '[link:subscription_manage_url]',
-      'newsletter_id' => $this->newsletter->id(),
-      'queue_id' => $this->queue->id(),
-      'hash' => 'xyzd',
-    ]);
+    $link = $this->newsletterLinkFactory
+      ->withUrl('[link:subscription_manage_url]')
+      ->withHash('xyzd')
+      ->create();
+
     StatisticsClicks::createOrUpdate([
       'newsletter_id' => $this->newsletter->id(),
       'queue_id' => $this->queue->id(),
       'subscriber_id' => '6',
-      'link_id' => $link->id(),
+      'link_id' => $link->getId(),
       'count' => 1505,
       'created_at' => '2018-01-02 15:16:17',
     ]);
@@ -257,7 +265,7 @@ class WorkerTest extends \MailPoetTest {
       'newsletter_id' => $this->newsletter->id(),
       'queue_id' => $this->queue->id(),
       'subscriber_id' => '7',
-      'link_id' => $link->id(),
+      'link_id' => $link->getId(),
       'count' => 2,
       'created_at' => '2018-01-02 15:16:17',
     ]);
@@ -265,10 +273,14 @@ class WorkerTest extends \MailPoetTest {
       'newsletter_id' => $this->newsletter->id(),
       'queue_id' => $this->queue->id(),
       'subscriber_id' => '8',
-      'link_id' => $link->id(),
+      'link_id' => $link->getId(),
       'count' => 2,
       'created_at' => '2018-01-02 15:16:17',
     ]);
+
+    // need as for now we are creating the clicks outside of Doctrine using the old StatisticsClicks class
+    $this->entityManager->refresh($link);
+
     $this->renderer->expects($this->exactly(2)) // html + text template
     ->method('render')
       ->with(
