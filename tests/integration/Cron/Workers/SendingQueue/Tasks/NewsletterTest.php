@@ -8,14 +8,18 @@ use Codeception\Util\Fixtures;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
+use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterPostEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
 use MailPoet\Models\NewsletterSegment;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewsletterPostsRepository;
@@ -45,6 +49,9 @@ class NewsletterTest extends \MailPoetTest {
   /** @var LoggerFactory */
   private $loggerFactory;
 
+  /** @var NewsletterLinkRepository */
+  private $newsletterLinkRepository;
+
   public function _before() {
     parent::_before();
     $this->newsletterTask = new NewsletterTask();
@@ -71,6 +78,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->queue->newsletter_id = $this->newsletter->id;
     $this->queue->save();
     $this->loggerFactory = LoggerFactory::getInstance();
+    $this->newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
   }
 
   public function testItConstructs() {
@@ -159,15 +167,14 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterTask = new NewsletterTask($wp);
     $newsletterTask->trackingEnabled = true;
     $newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);
-    $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
-    ->findOne();
-    assert($link instanceof NewsletterLink);
+    $link = $this->newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter->id]);
+    assert($link instanceof NewsletterLinkEntity);
     /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
     $renderedNewsletter = $updatedQueue->getNewsletterRenderedBody();
     expect($renderedNewsletter['html'])
-      ->stringContainsString('[mailpoet_click_data]-' . $link->hash);
+      ->stringContainsString('[mailpoet_click_data]-' . $link->getHash());
     expect($renderedNewsletter['html'])
       ->stringContainsString('[mailpoet_open_data]');
 
@@ -184,9 +191,8 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterTask = new NewsletterTask($wp);
     $newsletterTask->trackingEnabled = false;
     $newsletterTask->preProcessNewsletter($this->newsletter, $this->queue);
-    $link = NewsletterLink::where('newsletter_id', $this->newsletter->id)
-      ->findOne();
-    expect($link)->false();
+    $link = $this->newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter->id]);
+    expect($link)->null();
     /** @var SendingQueue $updatedQueue */
     $updatedQueue = SendingQueue::findOne($this->queue->id);
     $updatedQueue = SendingTask::createFromQueue($updatedQueue);
@@ -463,11 +469,11 @@ class NewsletterTest extends \MailPoetTest {
 
   public function _after() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterLink::$_table);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(NewsletterLinkEntity::class);
     $this->truncateEntity(NewsletterPostEntity::class);
   }
 }
