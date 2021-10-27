@@ -3,19 +3,22 @@
 namespace MailPoet\Test\Router\Endpoints;
 
 use Codeception\Stub;
+use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterLink;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Tasks\Sending;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
 
 class TrackTest extends \MailPoetTest {
   public $track;
@@ -177,31 +180,45 @@ class TrackTest extends \MailPoetTest {
 
   public function testItGetsProperHashWhenDuplicateHashesExist() {
     // create another newsletter and queue
-    $newsletter = Newsletter::create();
-    $newsletter->type = 'type';
-    $newsletter = $newsletter->save();
-    $queue = SendingTask::create();
-    $queue->newsletterId = $newsletter->id;
-    $queue->setSubscribers([$this->subscriber->getId()]);
-    $queue->updateProcessedSubscribers([$this->subscriber->getId()]);
-    $queue->save();
+    $newsletterFactory = new NewsletterFactory();
+    $newsletter = $newsletterFactory
+      ->withSendingQueue()
+      ->create();
+    $scheduledTaskEntity = $newsletter->getLatestQueue()->getTask();
+    $scheduledTaskEntity->setType(Sending::TASK_TYPE);
+    $this->entityManager->persist($scheduledTaskEntity);
+    $this->entityManager->flush();
+
+    $scheduledTask = ScheduledTask::where('id', $scheduledTaskEntity->getId())->findOne();
+    $sendingQueue = SendingQueue::where('newsletter_id', $newsletter->getId())->findOne();
+
+    $this->assertInstanceOf(ScheduledTask::class, $scheduledTask);
+    $this->assertInstanceOf(SendingQueue::class, $sendingQueue);
+
+    $sendingTask = SendingTask::create($scheduledTask, $sendingQueue);
+    $sendingTask->newsletterId = $newsletter->getId();
+    $sendingTask->setSubscribers([$this->subscriber->getId()]);
+    $sendingTask->updateProcessedSubscribers([$this->subscriber->getId()]);
+    $sendingTask->save();
     $trackData = $this->trackData;
-    $trackData['queue_id'] = $queue->id;
-    $trackData['newsletter_id'] = $newsletter->id;
+    $trackData['queue_id'] = $sendingTask->id;
+    $trackData['newsletter_id'] = $newsletter->getId();
+
     // create another link with the same hash but different queue ID
-    $link = NewsletterLink::create();
-    $link->hash = $this->link->getHash();
-    $link->url = $this->link->getUrl();
-    $link->newsletterId = $trackData['newsletter_id'];
-    $link->queueId = $trackData['queue_id'];
-    $link = $link->save();
+    $newsletterLinkFactory = new NewsletterLinkFactory($newsletter);
+    $link = $newsletterLinkFactory
+      ->withHash($this->link->getHash())
+      ->withUrl($this->link->getUrl())
+      ->create();
+
     // assert that 2 links with identical hash exist
-    $newsletterLink = NewsletterLink::where('hash', $link->hash)->findMany();
+    $newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
+    $newsletterLink = $newsletterLinkRepository->findBy(['hash' => $link->getHash()]);
     expect($newsletterLink)->count(2);
 
     // assert that the fetched link ID belong to the newly created link
     $processedData = $this->track->_processTrackData($trackData);
-    expect($processedData->link->getId())->equals($link->id);
+    expect($processedData->link->getId())->equals($link->getId());
   }
 
   public function _after() {
