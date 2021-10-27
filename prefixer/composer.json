@@ -4,7 +4,7 @@
     "cerdic/css-tidy": "^1.7",
     "doctrine/common": "3.2.0",
     "doctrine/dbal": "2.13.4",
-    "doctrine/orm": "2.9.3",
+    "doctrine/orm": "2.10.0",
     "gregwar/captcha": "^1.1",
     "monolog/monolog": "^1.23",
     "nesbot/carbon": "2.51.1",
@@ -17,7 +17,7 @@
     "symfony/polyfill-intl-idn": "1.18.1",
     "symfony/polyfill-intl-normalizer": "1.18.1",
     "symfony/polyfill-mbstring": "1.18.1",
-    "symfony/polyfill-php72": "1.18.1",
+    "symfony/polyfill-php72": "1.23.0",
     "symfony/polyfill-php80": "1.23.1",
     "symfony/validator": "4.4.29",
     "twig/twig": "2.13.1"
