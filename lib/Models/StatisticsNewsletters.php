@@ -25,7 +25,7 @@ class StatisticsNewsletters extends Model {
       'INSERT INTO `' . self::$_table . '` ' .
       '(newsletter_id, subscriber_id, queue_id) ' .
       'VALUES ' . rtrim(
-        str_repeat('(?,?,?), ', count($values) / 3),
+        str_repeat('(?,?,?), ', (int)(count($values) / 3)),
         ', '
       ),
       $values
