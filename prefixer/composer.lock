@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "46c52ddcfdf82502ab466d7c320e83b1",
+    "content-hash": "d1acfd363452cf3d874b4b83a51cc4aa",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -57,16 +57,16 @@
         },
         {
             "name": "composer/package-versions-deprecated",
-            "version": "1.11.99.2",
+            "version": "1.11.99.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/package-versions-deprecated.git",
-                "reference": "c6522afe5540d5fc46675043d3ed5a45a740b27c"
+                "reference": "b174585d1fe49ceed21928a945138948cb394600"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/package-versions-deprecated/zipball/c6522afe5540d5fc46675043d3ed5a45a740b27c",
-                "reference": "c6522afe5540d5fc46675043d3ed5a45a740b27c",
+                "url": "https://api.github.com/repos/composer/package-versions-deprecated/zipball/b174585d1fe49ceed21928a945138948cb394600",
+                "reference": "b174585d1fe49ceed21928a945138948cb394600",
                 "shasum": ""
             },
             "require": {
@@ -110,7 +110,7 @@
             "description": "Composer plugin that provides efficient querying for installed package versions (no runtime IO)",
             "support": {
                 "issues": "https://github.com/composer/package-versions-deprecated/issues",
-                "source": "https://github.com/composer/package-versions-deprecated/tree/1.11.99.2"
+                "source": "https://github.com/composer/package-versions-deprecated/tree/1.11.99.4"
             },
             "funding": [
                 {
@@ -126,7 +126,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-24T07:46:03+00:00"
+            "time": "2021-09-13T08:41:34+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -935,44 +935,51 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "2.9.3",
+            "version": "2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/orm.git",
-                "reference": "82e77cf5089a1303733f75f0f0ed01be3ab9ec22"
+                "reference": "07e15a00382982dc8088093669108d2174e456ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/orm/zipball/82e77cf5089a1303733f75f0f0ed01be3ab9ec22",
-                "reference": "82e77cf5089a1303733f75f0f0ed01be3ab9ec22",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/07e15a00382982dc8088093669108d2174e456ea",
+                "reference": "07e15a00382982dc8088093669108d2174e456ea",
                 "shasum": ""
             },
             "require": {
                 "composer/package-versions-deprecated": "^1.8",
-                "doctrine/annotations": "^1.13",
-                "doctrine/cache": "^1.11.3|^2.0.3",
+                "doctrine/cache": "^1.12.1 || ^2.1.1",
                 "doctrine/collections": "^1.5",
                 "doctrine/common": "^3.0.3",
-                "doctrine/dbal": "^2.13.0",
+                "doctrine/dbal": "^2.13.1 || ^3.1.1",
                 "doctrine/deprecations": "^0.5.3",
                 "doctrine/event-manager": "^1.1",
-                "doctrine/inflector": "^1.4|^2.0",
+                "doctrine/inflector": "^1.4 || ^2.0",
                 "doctrine/instantiator": "^1.3",
                 "doctrine/lexer": "^1.0",
                 "doctrine/persistence": "^2.2",
+                "ext-ctype": "*",
                 "ext-pdo": "*",
-                "php": "^7.1|^8.0",
+                "php": "^7.1 ||^8.0",
                 "psr/cache": "^1 || ^2 || ^3",
-                "symfony/console": "^3.0|^4.0|^5.0|^6.0"
+                "symfony/console": "^3.0 || ^4.0 || ^5.0 || ^6.0",
+                "symfony/polyfill-php72": "^1.23",
+                "symfony/polyfill-php80": "^1.15"
+            },
+            "conflict": {
+                "doctrine/annotations": "<1.13 || >= 2.0"
             },
             "require-dev": {
+                "doctrine/annotations": "^1.13",
                 "doctrine/coding-standard": "^9.0",
-                "phpstan/phpstan": "^0.12.83",
-                "phpunit/phpunit": "^7.5|^8.5|^9.4",
+                "phpbench/phpbench": "^0.16.10 || ^1.0",
+                "phpstan/phpstan": "0.12.99",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.4",
                 "squizlabs/php_codesniffer": "3.6.0",
-                "symfony/cache": "^4.4|^5.2",
-                "symfony/yaml": "^3.4|^4.0|^5.0|^6.0",
-                "vimeo/psalm": "4.7.0"
+                "symfony/cache": "^4.4 || ^5.2",
+                "symfony/yaml": "^3.4 || ^4.0 || ^5.0 || ^6.0",
+                "vimeo/psalm": "4.10.0"
             },
             "suggest": {
                 "symfony/cache": "Provides cache support for Setup Tool with doctrine/cache 2.0",
@@ -1021,9 +1028,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/orm/issues",
-                "source": "https://github.com/doctrine/orm/tree/2.9.3"
+                "source": "https://github.com/doctrine/orm/tree/2.10.0"
             },
-            "time": "2021-06-13T10:29:22+00:00"
+            "time": "2021-10-03T15:14:07+00:00"
         },
         {
             "name": "doctrine/persistence",
@@ -1695,36 +1702,37 @@
         },
         {
             "name": "symfony/console",
-            "version": "v4.4.26",
+            "version": "v4.4.30",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "9aa1eb46c1b12fada74dc0c529e93d1ccef22576"
+                "reference": "a3f7189a0665ee33b50e9e228c46f50f5acbed22"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/9aa1eb46c1b12fada74dc0c529e93d1ccef22576",
-                "reference": "9aa1eb46c1b12fada74dc0c529e93d1ccef22576",
+                "url": "https://api.github.com/repos/symfony/console/zipball/a3f7189a0665ee33b50e9e228c46f50f5acbed22",
+                "reference": "a3f7189a0665ee33b50e9e228c46f50f5acbed22",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.1.3",
                 "symfony/polyfill-mbstring": "~1.0",
                 "symfony/polyfill-php73": "^1.8",
-                "symfony/polyfill-php80": "^1.15",
+                "symfony/polyfill-php80": "^1.16",
                 "symfony/service-contracts": "^1.1|^2"
             },
             "conflict": {
+                "psr/log": ">=3",
                 "symfony/dependency-injection": "<3.4",
                 "symfony/event-dispatcher": "<4.3|>=5",
                 "symfony/lock": "<4.4",
                 "symfony/process": "<3.3"
             },
             "provide": {
-                "psr/log-implementation": "1.0"
+                "psr/log-implementation": "1.0|2.0"
             },
             "require-dev": {
-                "psr/log": "~1.0",
+                "psr/log": "^1|^2",
                 "symfony/config": "^3.4|^4.0|^5.0",
                 "symfony/dependency-injection": "^3.4|^4.0|^5.0",
                 "symfony/event-dispatcher": "^4.3",
@@ -1764,7 +1772,7 @@
             "description": "Eases the creation of beautiful and testable command line interfaces",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/console/tree/v4.4.26"
+                "source": "https://github.com/symfony/console/tree/v4.4.30"
             },
             "funding": [
                 {
@@ -1780,7 +1788,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-06-06T09:12:27+00:00"
+            "time": "2021-08-25T19:27:26+00:00"
         },
         {
             "name": "symfony/dependency-injection",
@@ -2410,25 +2418,25 @@
         },
         {
             "name": "symfony/polyfill-php72",
-            "version": "v1.18.1",
+            "version": "v1.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php72.git",
-                "reference": "639447d008615574653fb3bc60d1986d7172eaae"
+                "reference": "9a142215a36a3888e30d0a9eeea9766764e96976"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php72/zipball/639447d008615574653fb3bc60d1986d7172eaae",
-                "reference": "639447d008615574653fb3bc60d1986d7172eaae",
+                "url": "https://api.github.com/repos/symfony/polyfill-php72/zipball/9a142215a36a3888e30d0a9eeea9766764e96976",
+                "reference": "9a142215a36a3888e30d0a9eeea9766764e96976",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": ">=7.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.18-dev"
+                    "dev-main": "1.23-dev"
                 },
                 "thanks": {
                     "name": "symfony/polyfill",
@@ -2466,7 +2474,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php72/tree/master"
+                "source": "https://github.com/symfony/polyfill-php72/tree/v1.23.0"
             },
             "funding": [
                 {
@@ -2482,7 +2490,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-07-14T12:35:20+00:00"
+            "time": "2021-05-27T09:17:38+00:00"
         },
         {
             "name": "symfony/polyfill-php73",
