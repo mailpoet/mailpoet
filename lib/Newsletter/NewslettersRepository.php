@@ -187,7 +187,7 @@ class NewslettersRepository extends Repository {
     // Trash scheduled tasks
     $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
-    $this->entityManager->getConnection()->executeUpdate("
+    $this->entityManager->getConnection()->executeStatement("
        UPDATE $scheduledTasksTable t
        JOIN $sendingQueueTable q ON t.`id` = q.`task_id`
        SET t.`deleted_at` = NOW()
@@ -195,7 +195,7 @@ class NewslettersRepository extends Repository {
     ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
     // Trash sending queues
-    $this->entityManager->getConnection()->executeUpdate("
+    $this->entityManager->getConnection()->executeStatement("
        UPDATE $sendingQueueTable q
        SET q.`deleted_at` = NOW()
        WHERE q.`newsletter_id` IN (:ids)
@@ -222,7 +222,7 @@ class NewslettersRepository extends Repository {
     // Restore scheduled tasks and pause running ones
     $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
-    $this->entityManager->getConnection()->executeUpdate("
+    $this->entityManager->getConnection()->executeStatement("
        UPDATE $scheduledTasksTable t
        JOIN $sendingQueueTable q ON t.`id` = q.`task_id`
        SET t.`deleted_at` = null, t.`status` = IFNULL(t.status, :pausedStatus)
@@ -235,7 +235,7 @@ class NewslettersRepository extends Repository {
     ]);
 
     // Restore sending queues
-    $this->entityManager->getConnection()->executeUpdate("
+    $this->entityManager->getConnection()->executeStatement("
        UPDATE $sendingQueueTable q
        SET q.`deleted_at` = null
        WHERE q.`newsletter_id` IN (:ids)
@@ -255,46 +255,46 @@ class NewslettersRepository extends Repository {
     $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids) {
       // Delete statistics data
       $newsletterStatisticsTable = $entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE s FROM $newsletterStatisticsTable s
          WHERE s.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       $statisticsOpensTable = $entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName();
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE s FROM $statisticsOpensTable s
          WHERE s.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       $statisticsClicksTable = $entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE s FROM $statisticsClicksTable s
          WHERE s.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       $statisticsPurchasesTable = $entityManager->getClassMetadata(StatisticsWooCommercePurchaseEntity::class)->getTableName();
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE s FROM $statisticsPurchasesTable s
          WHERE s.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       // Delete newsletter posts
       $postsTable = $entityManager->getClassMetadata(NewsletterPostEntity::class)->getTableName();
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE np FROM $postsTable np
          WHERE np.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       // Delete newsletter options
       $optionsTable = $entityManager->getClassMetadata(NewsletterOptionEntity::class)->getTableName();
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE no FROM $optionsTable no
          WHERE no.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       // Delete newsletter links
       $linksTable = $entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE nl FROM $linksTable nl
          WHERE nl.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
@@ -305,15 +305,15 @@ class NewslettersRepository extends Repository {
       $taskIds = $entityManager->getConnection()->executeQuery("
          SELECT task_id FROM $statsNotificationsTable sn
          WHERE sn.`newsletter_id` IN (:ids)
-      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY])->fetchAll();
+      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY])->fetchAllAssociative();
       $taskIds = array_column($taskIds, 'task_id');
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE st FROM $scheduledTasksTable st
          WHERE st.`id` IN (:ids)
       ", ['ids' => $taskIds], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       // Delete stats notifications
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE sn FROM $statsNotificationsTable sn
          WHERE sn.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
@@ -323,28 +323,28 @@ class NewslettersRepository extends Repository {
       $scheduledTaskSubscribersTable = $entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
 
       // Delete scheduled tasks subscribers
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE ts FROM $scheduledTaskSubscribersTable ts
          JOIN $scheduledTasksTable t ON t.`id` = ts.`task_id`
          JOIN $sendingQueueTable q ON q.`task_id` = t.`id`
          WHERE q.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE t FROM $scheduledTasksTable t
          JOIN $sendingQueueTable q ON t.`id` = q.`task_id`
          WHERE q.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       // Delete sending queues
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE q FROM $sendingQueueTable q
          WHERE q.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       // Delete newsletter segments
       $newsletterSegmentsTable = $entityManager->getClassMetadata(NewsletterSegmentEntity::class)->getTableName();
-      $entityManager->getConnection()->executeUpdate("
+      $entityManager->getConnection()->executeStatement("
          DELETE ns FROM $newsletterSegmentsTable ns
          WHERE ns.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);

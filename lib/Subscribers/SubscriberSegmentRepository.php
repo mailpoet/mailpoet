@@ -50,7 +50,7 @@ class SubscriberSegmentRepository extends Repository {
     } else {
       $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
       $segmentTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
-      $this->entityManager->getConnection()->executeUpdate("
+      $this->entityManager->getConnection()->executeStatement("
          UPDATE $subscriberSegmentTable ss
          JOIN $segmentTable s ON s.`id` = ss.`segment_id` AND ss.`subscriber_id` = :subscriberId
          SET ss.`status` = :status

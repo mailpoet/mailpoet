@@ -21,7 +21,7 @@ class SettingsRepository extends Repository {
     // by a code solving atomicity of create-or-update on entity (ORM) level in a follow-up ticket.
     $now = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
-    $this->entityManager->getConnection()->executeUpdate("
+    $this->entityManager->getConnection()->executeStatement("
       INSERT INTO $tableName (name, value, created_at, updated_at)
       VALUES (:name, :value, :now, :now)
       ON DUPLICATE KEY UPDATE value = :value, updated_at = :now
