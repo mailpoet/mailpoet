@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f55ae6683fda800306826e5552f73456",
+    "content-hash": "48040846ed16c0514adf3b7e8d5a3f68",
     "packages": [
         {
             "name": "mtdowling/cron-expression",
@@ -1060,16 +1060,16 @@
         },
         {
             "name": "composer/semver",
-            "version": "3.2.5",
+            "version": "3.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/semver.git",
-                "reference": "31f3ea725711245195f62e54ffa402d8ef2fdba9"
+                "reference": "83e511e247de329283478496f7a1e114c9517506"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/semver/zipball/31f3ea725711245195f62e54ffa402d8ef2fdba9",
-                "reference": "31f3ea725711245195f62e54ffa402d8ef2fdba9",
+                "url": "https://api.github.com/repos/composer/semver/zipball/83e511e247de329283478496f7a1e114c9517506",
+                "reference": "83e511e247de329283478496f7a1e114c9517506",
                 "shasum": ""
             },
             "require": {
@@ -1121,7 +1121,7 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/semver/issues",
-                "source": "https://github.com/composer/semver/tree/3.2.5"
+                "source": "https://github.com/composer/semver/tree/3.2.6"
             },
             "funding": [
                 {
@@ -1137,7 +1137,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-24T12:41:47+00:00"
+            "time": "2021-10-25T11:34:17+00:00"
         },
         {
             "name": "composer/spdx-licenses",
@@ -1284,16 +1284,16 @@
         },
         {
             "name": "consolidation/annotated-command",
-            "version": "4.2.4",
+            "version": "4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/annotated-command.git",
-                "reference": "ec297e05cb86557671c2d6cbb1bebba6c7ae2c60"
+                "reference": "308f6ac178566a1ce9aa90ed908dac90a2c1e707"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/ec297e05cb86557671c2d6cbb1bebba6c7ae2c60",
-                "reference": "ec297e05cb86557671c2d6cbb1bebba6c7ae2c60",
+                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/308f6ac178566a1ce9aa90ed908dac90a2c1e707",
+                "reference": "308f6ac178566a1ce9aa90ed908dac90a2c1e707",
                 "shasum": ""
             },
             "require": {
@@ -1305,7 +1305,7 @@
                 "symfony/finder": "^4.4.8|^5"
             },
             "require-dev": {
-                "phpunit/phpunit": ">=7.5.20",
+                "phpunit/phpunit": "^7.5.20 || ^8 || ^9",
                 "squizlabs/php_codesniffer": "^3",
                 "yoast/phpunit-polyfills": "^0.2.0"
             },
@@ -1333,9 +1333,9 @@
             "description": "Initialize Symfony Console commands from annotated command class methods.",
             "support": {
                 "issues": "https://github.com/consolidation/annotated-command/issues",
-                "source": "https://github.com/consolidation/annotated-command/tree/4.2.4"
+                "source": "https://github.com/consolidation/annotated-command/tree/4.4.0"
             },
-            "time": "2020-12-10T16:56:39+00:00"
+            "time": "2021-09-30T01:08:15+00:00"
         },
         {
             "name": "consolidation/config",
@@ -1510,24 +1510,24 @@
         },
         {
             "name": "consolidation/robo",
-            "version": "3.0.3",
+            "version": "3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "734620ad3f9bb457fda1a52338b42439115cf941"
+                "reference": "36dce2965a67abe5cf91f2bc36d2582a64a11258"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/734620ad3f9bb457fda1a52338b42439115cf941",
-                "reference": "734620ad3f9bb457fda1a52338b42439115cf941",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/36dce2965a67abe5cf91f2bc36d2582a64a11258",
+                "reference": "36dce2965a67abe5cf91f2bc36d2582a64a11258",
                 "shasum": ""
             },
             "require": {
-                "consolidation/annotated-command": "^4.2.4",
+                "consolidation/annotated-command": "^4.3",
                 "consolidation/config": "^1.2.1|^2.0.1",
                 "consolidation/log": "^1.1.1|^2.0.2",
                 "consolidation/output-formatters": "^4.1.2",
-                "consolidation/self-update": "^1.2",
+                "consolidation/self-update": "^2.0",
                 "league/container": "^3.3.1",
                 "php": ">=7.1.3",
                 "symfony/console": "^4.4.19 || ^5",
@@ -1545,7 +1545,7 @@
                 "patchwork/jsqueeze": "^2",
                 "pear/archive_tar": "^1.4.4",
                 "phpunit/phpunit": "^7.5.20 | ^8",
-                "squizlabs/php_codesniffer": "^3",
+                "squizlabs/php_codesniffer": "^3.6",
                 "yoast/phpunit-polyfills": "^0.2.0"
             },
             "suggest": {
@@ -1603,25 +1603,26 @@
             "description": "Modern task runner",
             "support": {
                 "issues": "https://github.com/consolidation/Robo/issues",
-                "source": "https://github.com/consolidation/Robo/tree/3.0.3"
+                "source": "https://github.com/consolidation/Robo/tree/3.0.6"
             },
-            "time": "2021-02-21T19:19:43+00:00"
+            "time": "2021-10-05T23:56:45+00:00"
         },
         {
             "name": "consolidation/self-update",
-            "version": "1.2.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/self-update.git",
-                "reference": "dba6b2c0708f20fa3ba8008a2353b637578849b4"
+                "reference": "7d6877f8006c51069e1469a9c57b1435640f74b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/self-update/zipball/dba6b2c0708f20fa3ba8008a2353b637578849b4",
-                "reference": "dba6b2c0708f20fa3ba8008a2353b637578849b4",
+                "url": "https://api.github.com/repos/consolidation/self-update/zipball/7d6877f8006c51069e1469a9c57b1435640f74b7",
+                "reference": "7d6877f8006c51069e1469a9c57b1435640f74b7",
                 "shasum": ""
             },
             "require": {
+                "composer/semver": "^3.2",
                 "php": ">=5.5.0",
                 "symfony/console": "^2.8|^3|^4|^5",
                 "symfony/filesystem": "^2.5|^3|^4|^5"
@@ -1632,7 +1633,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.x-dev"
+                    "dev-main": "2.x-dev"
                 }
             },
             "autoload": {
@@ -1657,9 +1658,9 @@
             "description": "Provides a self:update command for Symfony Console applications.",
             "support": {
                 "issues": "https://github.com/consolidation/self-update/issues",
-                "source": "https://github.com/consolidation/self-update/tree/1.2.0"
+                "source": "https://github.com/consolidation/self-update/tree/2.0.0"
             },
-            "time": "2020-04-13T02:49:20+00:00"
+            "time": "2021-10-05T23:29:47+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -3091,21 +3092,21 @@
         },
         {
             "name": "league/container",
-            "version": "3.3.5",
+            "version": "3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/container.git",
-                "reference": "048ab87810f508dbedbcb7ae941b606eb8ee353b"
+                "reference": "84ecbc2dbecc31bd23faf759a0e329ee49abddbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/container/zipball/048ab87810f508dbedbcb7ae941b606eb8ee353b",
-                "reference": "048ab87810f508dbedbcb7ae941b606eb8ee353b",
+                "url": "https://api.github.com/repos/thephpleague/container/zipball/84ecbc2dbecc31bd23faf759a0e329ee49abddbd",
+                "reference": "84ecbc2dbecc31bd23faf759a0e329ee49abddbd",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.0 || ^8.0",
-                "psr/container": "^1.0.0 || ^2.0.0"
+                "psr/container": "^1.0.0"
             },
             "provide": {
                 "psr/container-implementation": "^1.0"
@@ -3114,8 +3115,8 @@
                 "orno/di": "~2.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.0",
-                "roave/security-advisories": "dev-master",
+                "phpunit/phpunit": "^6.0 || ^7.0",
+                "roave/security-advisories": "dev-latest",
                 "scrutinizer/ocular": "^1.8",
                 "squizlabs/php_codesniffer": "^3.5"
             },
@@ -3158,7 +3159,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/container/issues",
-                "source": "https://github.com/thephpleague/container/tree/3.3.5"
+                "source": "https://github.com/thephpleague/container/tree/3.4.1"
             },
             "funding": [
                 {
@@ -3166,7 +3167,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-03-16T09:42:56+00:00"
+            "time": "2021-07-09T08:23:52+00:00"
         },
         {
             "name": "lucatume/wp-browser",
@@ -6060,21 +6061,22 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v4.4.25",
+            "version": "v4.4.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "2d926ebd76f52352deb3c9577d8c1d4b96eae429"
+                "reference": "517fb795794faf29086a77d99eb8f35e457837a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/2d926ebd76f52352deb3c9577d8c1d4b96eae429",
-                "reference": "2d926ebd76f52352deb3c9577d8c1d4b96eae429",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/517fb795794faf29086a77d99eb8f35e457837a7",
+                "reference": "517fb795794faf29086a77d99eb8f35e457837a7",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.1.3",
-                "symfony/polyfill-ctype": "~1.8"
+                "symfony/polyfill-ctype": "~1.8",
+                "symfony/polyfill-php80": "^1.16"
             },
             "type": "library",
             "autoload": {
@@ -6102,7 +6104,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v4.4.25"
+                "source": "https://github.com/symfony/filesystem/tree/v4.4.27"
             },
             "funding": [
                 {
@@ -6118,7 +6120,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-26T17:30:55+00:00"
+            "time": "2021-07-21T12:19:41+00:00"
         },
         {
             "name": "symfony/finder",
