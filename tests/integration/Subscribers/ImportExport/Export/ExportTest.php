@@ -157,7 +157,7 @@ class ExportTest extends \MailPoetTest {
       ->equals(
         \array_merge(
           $this->export->formattedSubscriberFields,
-          [\MailPoet\WP\Functions::get()->__('List', 'mailpoet')]
+          [__('List', 'mailpoet')]
         )
       );
     expect(
