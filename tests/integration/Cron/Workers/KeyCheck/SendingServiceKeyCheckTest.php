@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Cron\Workers\KeyCheck;
 
 use Codeception\Stub;
-use Codeception\Stub\Expected;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
@@ -73,7 +72,6 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
     $bridge = $this->make(new Bridge, [
       'checkMSSKey' => ['code' => Bridge::KEY_VALID],
       'storeMSSKeyAndState' => null,
-      'updateSubscriberCount' => Expected::once(),
     ]);
     $worker->bridge = $bridge;
 
@@ -90,7 +88,6 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
       [
         'checkMSSKey' => $response,
         'storeMSSKeyAndState' => null,
-        'updateSubscriberCount' => Expected::once(),
       ],
       $this
     );

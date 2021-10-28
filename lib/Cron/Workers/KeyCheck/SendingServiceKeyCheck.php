@@ -51,7 +51,6 @@ class SendingServiceKeyCheck extends KeyCheckWorker {
     $mssKey = $this->settings->get(Mailer::MAILER_CONFIG_SETTING_NAME)['mailpoet_api_key'];
     $result = $this->bridge->checkMSSKey($mssKey);
     $this->bridge->storeMSSKeyAndState($mssKey, $result);
-    $this->bridge->updateSubscriberCount($result);
 
     $isPendingApproval = $this->servicesChecker->isMailPoetAPIKeyPendingApproval();
     if ($wasPendingApproval && !$isPendingApproval) {
