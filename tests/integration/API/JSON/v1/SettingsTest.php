@@ -13,6 +13,7 @@ use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Form\FormMessageController;
+use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -54,7 +55,7 @@ class SettingsTest extends \MailPoetTest {
     $this->endpoint = new Settings(
       $this->settings,
       new Bridge,
-      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => true ]),
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => null ]),
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
@@ -146,6 +147,36 @@ class SettingsTest extends \MailPoetTest {
     expect($response->status)->same(200);
     expect($this->settings->get('sender.address'))->same('authorized@email.com');
     expect(MailerLog::isSendingPaused())->false();
+  }
+
+  public function testItSaveUnauthorizedAddressAndReturnsMeta() {
+    $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized@email.com'])]);
+    $this->endpoint = new Settings(
+      $this->settings,
+      $bridgeMock,
+      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class)),
+      $this->make(TransactionalEmails::class),
+      WPFunctions::get(),
+      $this->diContainer->get(EntityManager::class),
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(StatisticsOpensRepository::class),
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(FormMessageController::class),
+      $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false]),
+      $this->diContainer->get(SegmentsRepository::class),
+      $this->diContainer->get(SubscribersCountsController::class)
+    );
+
+    $response = $this->endpoint->set([
+      'sender' => ['address' => 'invalid@email.com'],
+    ]);
+    expect($response->status)->same(200);
+    expect($this->settings->get('sender.address'))->same('invalid@email.com');
+    expect($response->meta)->equals([
+      'invalid_sender_address' => 'invalid@email.com',
+      'showNotice' => false,
+    ]);
   }
 
   public function testItRejectsUnauthorizedFromAddress() {
