@@ -44,22 +44,31 @@ class IntegrationTester extends \Codeception\Actor {
   }
 
   // generate random users
-  public function generateSubscribers($count, $data = []) {
+  public function generateSubscribers(int $count, array $data = []): void {
     for ($i = 0; $i < $count; $i++) {
       $this->generateSubscriber($data);
     }
   }
 
-  public function generateSubscriber($data = []) {
+  public function generateSubscriber(array $data = []): void {
     $subscriberData = [
       'email' => sprintf('user%s@mailpoet.com', bin2hex(random_bytes(7))), // phpcs:ignore PHPCompatibility
       'first_name' => $this->generateName(),
       'last_name' => $this->generateName(),
     ];
+    $data = array_merge($subscriberData, $data);
 
-    $subscriber = \MailPoet\Models\Subscriber::create();
-    $subscriber->hydrate(array_merge($subscriberData, $data));
-    $subscriber->save();
+    $subscriber = new \MailPoet\Entities\SubscriberEntity();
+    $subscriber->setEmail($data['email']);
+    $subscriber->setFirstName($data['first_name']);
+    $subscriber->setLastName($data['last_name']);
+    if (isset($data['wp_user_id'])) {
+      $subscriber->setWpUserId($data['wp_user_id']);
+    }
+
+    $repository = \MailPoet\DI\ContainerWrapper::getInstance()->get(\MailPoet\Subscribers\SubscribersRepository::class);
+    $repository->persist($subscriber);
+    $repository->flush();
   }
 
   protected function generateName() {
