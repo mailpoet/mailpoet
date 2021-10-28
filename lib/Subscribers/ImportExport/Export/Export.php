@@ -9,7 +9,6 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\ImportExport\ImportExportRepository;
 use MailPoet\Util\Security;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\XLSXWriter;
 
 class Export {
@@ -66,7 +65,7 @@ class Export {
       $this->subscriberCustomFields
     );
     $this->formattedSubscriberFieldsWithList = $this->formattedSubscriberFields;
-    $this->formattedSubscriberFieldsWithList[] = WPFunctions::get()->__('List', 'mailpoet');
+    $this->formattedSubscriberFieldsWithList[] = __('List', 'mailpoet');
     $this->exportPath = self::getExportPath();
     $this->exportFile = $this->getExportFile($this->exportFormatOption);
     $this->exportFileURL = $this->getExportFileURL($this->exportFile);
