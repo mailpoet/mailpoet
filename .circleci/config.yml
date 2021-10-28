@@ -426,8 +426,8 @@ jobs:
           command: |
             source ./.circleci/setup.bash && setup php7
             sudo apt-get update
-            sudo apt-get install python-pip gettext
-            sudo pip install transifex-client
+            sudo apt-get install python3-pip gettext
+            sudo pip3 install transifex-client
             mv wordpress ..
             sed -i 's/^WP_ROOT=.*$/WP_ROOT=\/home\/circleci\/wordpress/g' .env
             echo ${CIRCLE_BUILD_NUM} > release_zip_build_number.txt
