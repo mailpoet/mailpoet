@@ -19,6 +19,7 @@ class Export {
   public $subscriberFields;
   public $subscriberCustomFields;
   public $formattedSubscriberFields;
+  public $formattedSubscriberFieldsWithList;
   public $exportPath;
   public $exportFile;
   public $exportFileURL;
@@ -64,6 +65,8 @@ class Export {
       $this->subscriberFields,
       $this->subscriberCustomFields
     );
+    $this->formattedSubscriberFieldsWithList = $this->formattedSubscriberFields;
+    $this->formattedSubscriberFieldsWithList[] = WPFunctions::get()->__('List', 'mailpoet');
     $this->exportPath = self::getExportPath();
     $this->exportFile = $this->getExportFile($this->exportFormatOption);
     $this->exportFileURL = $this->getExportFileURL($this->exportFile);
@@ -105,7 +108,7 @@ class Export {
 
   public function generateCSV(): int {
     $processedSubscribers = 0;
-    $formattedSubscriberFields = $this->formattedSubscriberFields;
+    $formattedSubscriberFields = $this->formattedSubscriberFieldsWithList;
     $cSVFile = fopen($this->exportFile, 'w');
     if ($cSVFile === false) {
       throw new \Exception(__('Failed opening file for export.', 'mailpoet'));
@@ -113,7 +116,6 @@ class Export {
     $formatCSV = function($row) {
       return '"' . str_replace('"', '\"', $row) . '"';
     };
-    $formattedSubscriberFields[] = WPFunctions::get()->__('List', 'mailpoet');
     // add UTF-8 BOM (3 bytes, hex EF BB BF) at the start of the file for
     // Excel to automatically recognize the encoding
     fwrite($cSVFile, chr(0xEF) . chr(0xBB) . chr(0xBF));
@@ -165,7 +167,7 @@ class Export {
           $this->writeXLSX(
             $xLSXWriter,
             $subscriber['segment_name'],
-            $this->formattedSubscriberFields
+            $this->formattedSubscriberFieldsWithList
           );
           $processedSegments[] = $currentSegment;
         }
@@ -174,14 +176,18 @@ class Export {
         $rTLRegex = '/\p{Arabic}|\p{Hebrew}/u';
         if (!$xLSXWriter->rtl && (
             preg_grep($rTLRegex, $subscriber) ||
-            preg_grep($rTLRegex, $this->formattedSubscriberFields))
+            preg_grep($rTLRegex, $this->formattedSubscriberFieldsWithList))
         ) {
           $xLSXWriter->rtl = true;
         }
+
+        $xlsxData = $this->formatSubscriberData($subscriber);
+        $xlsxData[] = ucwords($subscriber['segment_name']);
+
         $this->writeXLSX(
           $xLSXWriter,
           $lastSegment,
-          $this->formatSubscriberData($subscriber)
+          $xlsxData
         );
       }
     }

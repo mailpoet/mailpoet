@@ -153,6 +153,13 @@ class ExportTest extends \MailPoetTest {
           $this->export->subscriberCustomFields
         )
       );
+    expect($this->export->formattedSubscriberFieldsWithList)
+      ->equals(
+        \array_merge(
+          $this->export->formattedSubscriberFields,
+          [\MailPoet\WP\Functions::get()->__('List', 'mailpoet')]
+        )
+      );
     expect(
       preg_match(
         '|' .
