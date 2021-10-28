@@ -14,7 +14,7 @@ $files = new RecursiveIteratorIterator($iterator, RecursiveIteratorIterator::SEL
 foreach ($files as $file) {
   if (substr($file, -3) === 'php') {
     $data = file_get_contents($file);
-    $data = preg_replace('!^\s*#\[[A-Za-z]+[A-Za-z\-_| \\\)(:]+]$!m', '', $data);
+    $data = preg_replace('!^\s*#\[[A-Za-z\]+[A-Za-z\-_| \\\)(:]+]$!m', '', $data);
     file_put_contents($file, $data);
   }
 }
