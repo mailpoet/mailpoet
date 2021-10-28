@@ -48,6 +48,7 @@ class DaemonTest extends \MailPoetTest {
       'createStatsNotificationsWorkerForAutomatedEmails' => $this->createSimpleWorkerMock(),
       'createSendingServiceKeyCheckWorker' => $this->createSimpleWorkerMock(),
       'createPremiumKeyCheckWorker' => $this->createSimpleWorkerMock(),
+      'createSubscribersStatsReportWorker' => $this->createSimpleWorkerMock(),
       'createBounceWorker' => $this->createSimpleWorkerMock(),
       'createMigrationWorker' => $this->createSimpleWorkerMock(),
       'createWooCommerceSyncWorker' => $this->createSimpleWorkerMock(),

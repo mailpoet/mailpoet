@@ -29,7 +29,7 @@ class BridgeTestMockAPI extends API {
     return $this->processPremiumResponse($code);
   }
 
-  public function updateSubscriberCount($count) {
+  public function updateSubscriberCount($count): bool {
     return true;
   }
 

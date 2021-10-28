@@ -160,6 +160,67 @@ class ServicesCheckerTest extends \MailPoetTest {
     expect($result)->false();
   }
 
+  public function testItReturnsAnyValidKey() {
+    $premiumKey = 'premium_key';
+    $mssKey = 'mss_key';
+    $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, $premiumKey);
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, $mssKey);
+    // Only MSS is Valid
+    $this->settings->set(
+      Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
+      [
+        'state' => '',
+      ]
+    );
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_VALID,
+      ]
+    );
+    expect($this->servicesChecker->getAnyValidKey())->equals($mssKey);
+
+    // Only Premium is Valid
+    $this->settings->set(
+      Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_VALID,
+      ]
+    );
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => '',
+      ]
+    );
+    expect($this->servicesChecker->getAnyValidKey())->equals($premiumKey);
+
+    // Both Valid (lets use MSS in that case)
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_VALID,
+      ]
+    );
+    expect($this->servicesChecker->getAnyValidKey())->equals($mssKey);
+
+    // None valid
+    // Only MSS is Valid
+    $this->settings->set(
+      Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
+      [
+        'state' => '',
+      ]
+    );
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => '',
+      ]
+    );
+    expect($this->servicesChecker->getAnyValidKey())->null();
+  }
+
   private function setMailPoetSendingMethod() {
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,

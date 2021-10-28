@@ -214,20 +214,8 @@ class Bridge {
     return $state;
   }
 
-  public function updateSubscriberCount($result) {
-    if (
-      (
-        !empty($result['state'])
-        && (
-          $result['state'] === self::KEY_VALID
-          || $result['state'] === self::KEY_EXPIRING
-        )
-      )
-      && ($this->api instanceof API)
-    ) {
-      return $this->api->updateSubscriberCount($this->subscribersFeature->getSubscribersCount());
-    }
-    return null;
+  public function updateSubscriberCount(string $key): bool {
+    return $this->getApi($key)->updateSubscriberCount($this->subscribersFeature->getSubscribersCount());
   }
 
   public static function invalidateKey() {

@@ -143,7 +143,7 @@ class API {
     return false;
   }
 
-  public function updateSubscriberCount($count) {
+  public function updateSubscriberCount($count): bool {
     $result = $this->request(
       $this->urlStats,
       ['subscriber_count' => (int)$count],
