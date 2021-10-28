@@ -62,13 +62,13 @@ class AuthorizedEmailsController {
     if (!Bridge::isMPSendingServiceEnabled()) {
       $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
       $this->updateMailerLog();
-      return;
+      return null;
     }
 
     $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses();
     // Keep previous check result for an invalid response from API
     if ($authorizedEmails === false) {
-      return;
+      return null;
     }
     $authorizedEmails = array_map('strtolower', $authorizedEmails);
 
@@ -77,14 +77,16 @@ class AuthorizedEmailsController {
     $result = $this->validateAddressesInScheduledAndAutomaticEmails($authorizedEmails, $result);
     $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, $result ?: null);
     $this->updateMailerLog($result);
+    return $result;
   }
 
-  public function onSettingsSave($settings) {
+  public function onSettingsSave($settings): ?array {
     $senderAddressSet = !empty($settings['sender']['address']);
     $mailpoetSendingMethodSet = ($settings[Mailer::MAILER_CONFIG_SETTING_NAME]['method'] ?? null) === Mailer::METHOD_MAILPOET;
     if ($senderAddressSet || $mailpoetSendingMethodSet) {
-      $this->checkAuthorizedEmailAddresses();
+      return $this->checkAuthorizedEmailAddresses();
     }
+    return null;
   }
 
   public function onNewsletterSenderAddressUpdate(NewsletterEntity $newsletter, string $oldSenderAddress = null) {
