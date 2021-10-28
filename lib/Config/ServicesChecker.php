@@ -131,4 +131,17 @@ class ServicesChecker {
     $mssKeyPendingApproval = $isApproved === false || $isApproved === 'false'; // API unfortunately saves this as a string
     return $mssActive && $mssKeyValid && $mssKeyPendingApproval;
   }
+
+  /**
+   * Returns MSS or Premium valid key.
+   */
+  public function getAnyValidKey(): ?string {
+    if ($this->isMailPoetAPIKeyValid(false, true)) {
+      return $this->settings->get(Bridge::API_KEY_SETTING_NAME);
+    }
+    if ($this->isPremiumKeyValid(false)) {
+      return $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
+    }
+    return null;
+  }
 }

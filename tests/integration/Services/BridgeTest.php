@@ -201,21 +201,6 @@ class BridgeTest extends \MailPoetTest {
     }
   }
 
-  public function testItUpdatesSubscriberCount() {
-    // it performs update if the key is valid or expiring
-    $result = [];
-    $result['state'] = Bridge::KEY_VALID;
-    $updated = $this->bridge->updateSubscriberCount($result);
-    expect($updated)->true();
-    $result['state'] = Bridge::KEY_EXPIRING;
-    $updated = $this->bridge->updateSubscriberCount($result);
-    expect($updated)->true();
-    // it does not perform update if the key is invalid
-    $result['state'] = Bridge::KEY_INVALID;
-    $updated = $this->bridge->updateSubscriberCount($result);
-    expect($updated)->null();
-  }
-
   public function testItInvalidatesMSSKey() {
     $this->settings->set(
       Bridge::API_KEY_STATE_SETTING_NAME,

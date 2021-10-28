@@ -173,6 +173,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Cron\Workers\SubscribersEngagementScore::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\SubscribersLastEngagement::class)->setPublic(true);
     $container->autowire(\MailPoet\Cron\Workers\SubscribersCountCacheRecalculation::class)->setPublic(true);
+    $container->autowire(\MailPoet\Cron\Workers\SubscribersStatsReport::class)->setPublic(true);
     // Custom field
     $container->autowire(\MailPoet\CustomFields\ApiDataSanitizer::class);
     $container->autowire(\MailPoet\CustomFields\CustomFieldsRepository::class)->setPublic(true);
