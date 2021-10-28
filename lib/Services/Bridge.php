@@ -245,9 +245,6 @@ class Bridge {
       $apiKey = $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'];
       $state = $this->checkMSSKey($apiKey);
       $this->storeMSSKeyAndState($apiKey, $state);
-      if (self::isMPSendingServiceEnabled()) {
-        $this->updateSubscriberCount($state);
-      }
     }
     if ($premiumKeySet) {
       $premiumKey = $settings['premium']['premium_key'];
