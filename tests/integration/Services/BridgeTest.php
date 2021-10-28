@@ -246,9 +246,6 @@ class BridgeTest extends \MailPoetTest {
         $this->equalTo($this->validKey),
         $this->equalTo($response)
       );
-    $bridge->expects($this->once())
-      ->method('updateSubscriberCount')
-      ->with($this->equalTo($response));
 
     $bridge->expects($this->once())
       ->method('checkPremiumKey')
