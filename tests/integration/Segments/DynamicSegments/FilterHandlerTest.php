@@ -32,21 +32,9 @@ class FilterHandlerTest extends \MailPoetTest {
   public function _before() {
     $this->cleanWpUsers();
     $this->filterHandler = $this->diContainer->get(FilterHandler::class);
-    $id = $this->tester->createWordPressUser('user-role-test1@example.com', 'editor');
-    $this->tester->generateSubscriber([
-      'email' => 'user-role-test1@example.com',
-      'wp_user_id' => $id,
-    ]);
-    $id = $this->tester->createWordPressUser('user-role-test2@example.com', 'administrator');
-    $this->tester->generateSubscriber([
-      'email' => 'user-role-test2@example.com',
-      'wp_user_id' => $id,
-    ]);
-    $id = $this->tester->createWordPressUser('user-role-test3@example.com', 'editor');
-    $this->tester->generateSubscriber([
-      'email' => 'user-role-test3@example.com',
-      'wp_user_id' => $id,
-    ]);
+    $this->tester->createWordPressUser('user-role-test1@example.com', 'editor');
+    $this->tester->createWordPressUser('user-role-test2@example.com', 'administrator');
+    $this->tester->createWordPressUser('user-role-test3@example.com', 'editor');
 
     // fetch entities
     /** @var SubscribersRepository $subscribersRepository */
