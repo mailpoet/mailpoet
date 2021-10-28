@@ -19,6 +19,7 @@ use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\SubscribersCountCacheRecalculation;
 use MailPoet\Cron\Workers\SubscribersEngagementScore;
 use MailPoet\Cron\Workers\SubscribersLastEngagement;
+use MailPoet\Cron\Workers\SubscribersStatsReport;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\Cron\Workers\WooCommerceSync as WooCommerceSyncWorker;
@@ -147,6 +148,18 @@ class WordPress {
       'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
       'status' => [ScheduledTask::STATUS_SCHEDULED],
     ]);
+    // subscriber stats
+    $isAnyKeySpecified = Bridge::isPremiumKeySpecified() || $premiumKeySpecified;
+    $statsReportDueTasks = $this->getTasksCount([
+      'type' => SubscribersStatsReport::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
+    ]);
+    $statsReportFutureTasks = $this->getTasksCount([
+      'type' => SubscribersStatsReport::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_FUTURE],
+      'status' => [ScheduledTask::STATUS_SCHEDULED],
+    ]);
     // stats notifications
     $statsNotificationsTasks = $this->getTasksCount([
       'type' => StatsNotificationsWorker::TASK_TYPE,
@@ -242,6 +255,7 @@ class WordPress {
     $bounceSyncActive = ($mpSendingEnabled && ($bounceDueTasks || !$bounceFutureTasks));
     $sendingServiceKeyCheckActive = ($mpSendingEnabled && ($msskeycheckDueTasks || !$msskeycheckFutureTasks));
     $premiumKeyCheckActive = ($premiumKeySpecified && ($premiumKeycheckDueTasks || !$premiumKeycheckFutureTasks));
+    $subscribersStatsReportActive = ($isAnyKeySpecified || ($statsReportDueTasks || $statsReportFutureTasks));
     $migrationActive = !$migrationDisabled && ($migrationDueTasks || (!$migrationCompletedTasks && !$migrationFutureTasks));
     $beamerActive = $beamerDueChecks || !$beamerFutureChecks;
 
@@ -251,6 +265,7 @@ class WordPress {
       || $bounceSyncActive
       || $sendingServiceKeyCheckActive
       || $premiumKeyCheckActive
+      || $subscribersStatsReportActive
       || $statsNotificationsTasks
       || $autoStatsNotificationsTasks
       || $inactiveSubscribersTasks
