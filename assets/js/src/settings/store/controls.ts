@@ -44,3 +44,12 @@ export function TRACK_TEST_EMAIL_SENT({ success, method }) {
     }
   );
 }
+
+export function TRACK_UNAUTHORIZED_EMAIL({ meta }) {
+  if (meta !== undefined && meta.invalid_sender_address) {
+    MailPoet.trackEvent(
+      'Unauthorized email used',
+      { 'Unauthorized email source': 'settings' }
+    );
+  }
+}
