@@ -144,6 +144,9 @@ const SetFromAddressModal = ({ onRequestClose, setAuthorizedAddress }: Props) =>
             notices.success(getSuccessMessage(), { timeout: false });
           } catch (e) {
             const error = e.errors && e.errors[0] ? e.errors[0] : null;
+            if (error.error === 'unauthorized') {
+              MailPoet.trackEvent('Unauthorized email used', { 'Unauthorized email source': 'modal' });
+            }
             const message = getErrorMessage(error, address);
             addressValidator.addError('saveError', { message });
           }
