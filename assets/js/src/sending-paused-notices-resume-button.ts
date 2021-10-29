@@ -45,6 +45,7 @@ const resumeSendingIfAuthorized = (fromAddress: string | null) => isValidFromAdd
         MailPoet.I18n.t('mailerSendingNotResumedUnauthorized'),
         { scroll: true }
       );
+      MailPoet.trackEvent('Unauthorized email used', { 'Unauthorized email source': 'send' });
       return false;
     }
     return resumeMailerSending();
