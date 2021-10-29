@@ -46,6 +46,7 @@ export function* saveSettings() {
   });
   yield setSettings(res.data);
   yield setReEngagement(res.meta);
+  yield { type: 'TRACK_UNAUTHORIZED_EMAIL', meta: res.meta };
   return { type: 'SAVE_DONE' };
 }
 
