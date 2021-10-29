@@ -22,6 +22,11 @@
   max-width: 100%;
 }
 
+// Fix for Block toolbar hides under the main top bar
+.interface-interface-skeleton__body {
+  margin-top: 2rem;
+}
+
 // Fix for settings toolbar placement in header
 .edit-post-header {
   flex-direction: row-reverse;
