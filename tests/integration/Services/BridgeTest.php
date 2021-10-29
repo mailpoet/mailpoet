@@ -211,7 +211,7 @@ class BridgeTest extends \MailPoetTest {
   }
 
   public function testItChecksAndStoresKeysOnSettingsSave() {
-    $response = ['abc' => 'def'];
+    $response = ['state' => Bridge::KEY_VALID];
     /** @var Bridge&MockObject $bridge */
     $bridge = Stub::makeEmptyExcept(
       $this->bridge,
@@ -241,6 +241,9 @@ class BridgeTest extends \MailPoetTest {
         $this->equalTo($this->validKey),
         $this->equalTo($response)
       );
+    $bridge->expects($this->once())
+      ->method('updateSubscriberCount')
+      ->with($this->equalTo($this->validKey));
 
     $settings = [];
     $settings[Mailer::MAILER_CONFIG_SETTING_NAME]['mailpoet_api_key'] = $this->validKey;
