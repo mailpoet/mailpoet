@@ -166,6 +166,7 @@ class NewsletterSend extends React.Component {
         'invalidFromAddress',
         { message: errorMessage.join(''), updateClass: true }
       );
+    MailPoet.trackEvent('Unauthorized email used', { 'Unauthorized email source': 'send' });
   };
 
   removeInvalidFromAddressError = () => {
