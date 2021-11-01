@@ -15,6 +15,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use MailPoetVendor\Doctrine\ORM\Query;
 
 /**
  * @extends Repository<SegmentEntity>
@@ -227,11 +228,12 @@ class SegmentsRepository extends Repository {
    */
   public function getSegmentCountWithMultipleFilters(): int {
     $qb = $this->entityManager->createQueryBuilder()
-      ->select('COUNT(DISTINCT s.id)')
+      ->select('COUNT(DISTINCT s.id) AS segmentCount')
       ->from(SegmentEntity::class, 's')
       ->join('s.dynamicFilters', 'ds')
       ->groupBy('ds.segment')
       ->having('COUNT(ds.id) > 1');
-    return (int)$qb->getQuery()->getSingleScalarResult();
+    $result = $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_ARRAY);
+    return (int)($result['segmentCount'] ?? 0);
   }
 }
