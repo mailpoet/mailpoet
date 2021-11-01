@@ -1,0 +1,10 @@
+{
+  "apiVersion": 2,
+  "name": "mailpoet/newsletter-block",
+  "version": "0.1.0",
+  "title": "MailPoet Subscribe to Newsletter block",
+  "category": "widgets",
+  "textdomain": "mailpoet",
+  "editorScript": "file:../../../dist/js/newsletter_block/newsletter_block.js",
+  "editorStyle": "file:../../../dist/js/newsletter_block/style-newsletter-block.css"
+}
