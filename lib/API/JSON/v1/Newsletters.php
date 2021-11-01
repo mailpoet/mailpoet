@@ -177,7 +177,10 @@ class Newsletters extends APIEndpoint {
     $tracking_enabled = !empty($tracking['enabled']) && $tracking['enabled'] === "1";
     if ( !$tracking_enabled && $newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT && $status === NewsletterEntity::STATUS_ACTIVE) {
       return $this->errorResponse([
-        APIError::FORBIDDEN => __('Re-engagement emails are disabled because open and click tracking is disabled.', 'mailpoet'),
+        APIError::FORBIDDEN => __(
+          'Re-engagement emails are disabled because open and click tracking is disabled in MailPoet → Settings → Advanced.',
+          'mailpoet'
+        ),
       ], [], Response::STATUS_FORBIDDEN);
     }
 
