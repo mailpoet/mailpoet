@@ -6,6 +6,7 @@ use MailPoet\API\JSON\API;
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\InvalidStateException;
+use MailPoet\PostEditorBlocks\NewsletterBlock;
 use MailPoet\PostEditorBlocks\PostEditorBlock;
 use MailPoet\Router;
 use MailPoet\Settings\SettingsController;
@@ -71,6 +72,9 @@ class Initializer {
   /** @var \MailPoet\PostEditorBlocks\PostEditorBlock */
   private $postEditorBlock;
 
+  /** @var \MailPoet\PostEditorBlocks\NewsletterBlock */
+  private $newsletterBlock;
+
   /** @var Localizer */
   private $localizer;
 
@@ -95,6 +99,7 @@ class Initializer {
     DatabaseInitializer $databaseInitializer,
     WCTransactionalEmails $wcTransactionalEmails,
     PostEditorBlock $postEditorBlock,
+    NewsletterBlock $newsletterBlock,
     WooCommerceHelper $wcHelper,
     Localizer $localizer,
     AssetsLoader $assetsLoader
@@ -115,6 +120,7 @@ class Initializer {
     $this->wcTransactionalEmails = $wcTransactionalEmails;
     $this->wcHelper = $wcHelper;
     $this->postEditorBlock = $postEditorBlock;
+    $this->newsletterBlock = $newsletterBlock;
     $this->localizer = $localizer;
     $this->assetsLoader = $assetsLoader;
   }
@@ -231,6 +237,7 @@ class Initializer {
       $this->setupPermanentNotices();
       $this->setupAutomaticEmails();
       $this->postEditorBlock->init();
+      $this->newsletterBlock->init();
 
       WPFunctions::get()->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
