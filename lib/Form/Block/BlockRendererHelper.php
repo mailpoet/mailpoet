@@ -191,6 +191,12 @@ class BlockRendererHelper {
             ? $this->wp->escAttr(trim($block['params']['value'])) : '';
   }
 
+  public function getFieldIsRequired($block = []): bool {
+    return (isset($block['params']['required'])
+            && strlen(trim($block['params']['required'])) > 0)
+            ? !empty($block['params']['required']) : false;
+  }
+
   public function getInputModifiers(array $block = []): string {
     $modifiers = [];
 

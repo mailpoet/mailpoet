@@ -40,10 +40,15 @@ class Checkbox {
     );
 
     $selectedValue = $this->rendererHelper->getFieldValue($block);
+    $isFieldRequired = $this->rendererHelper->getFieldIsRequired($block);
 
     foreach ($options as $option) {
+      $hiddenValue = $isFieldRequired ? '1' : '0'; // Mandatory Fields can not be Empty
+      $html .= '<input type="hidden" value="' . $hiddenValue . '"  name="' . $fieldName . '" />';
+
       $html .= '<label class="mailpoet_checkbox_label" '
         . $this->rendererHelper->renderFontStyle($formSettings) . '>';
+
       $html .= '<input type="checkbox" class="mailpoet_checkbox" ';
 
       $html .= 'name="' . $fieldName . '" ';
