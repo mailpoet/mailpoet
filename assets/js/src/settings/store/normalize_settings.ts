@@ -81,6 +81,9 @@ export default function normalizeSettings(data: Record<string, unknown>): Settin
       address: text,
     }),
     subscriber_email_notification: asObject({ enabled: enabledRadio, address: text }),
+    reEngagement: asObject({
+      page: text,
+    }),
     cron_trigger: asObject({
       method: asEnum(['WordPress', 'MailPoet', 'Linux Cron'], 'WordPress'),
     }),
