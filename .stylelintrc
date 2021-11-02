@@ -3,6 +3,7 @@
     "stylelint-order",
     "stylelint-scss"
   ],
+  "customSyntax": "postcss-scss",
   "rules": {
     "at-rule-empty-line-before": ["always", {
       except: ["first-nested", "blockless-after-blockless"],
@@ -39,7 +40,6 @@
     "declaration-colon-space-before": "never",
     "declaration-empty-line-before": "never",
     "font-family-no-duplicate-names": true,
-    "function-calc-no-invalid": true,
     "function-comma-space-after": "always-single-line",
     "function-comma-space-before": "never",
     "function-max-empty-lines": 0,
