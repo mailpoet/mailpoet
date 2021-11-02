@@ -408,6 +408,39 @@ const postEditorBlock = {
   },
 };
 
+const requestToExternal = ( request ) => {
+	// The following default externals are bundled for compatibility with older versions of WP
+	// Note CSS for specific components is bundled via admin/assets/src/index.scss
+	// WP 5.4 is the min version for <Card* />, <TabPanel />
+	const bundled = [
+		'@wordpress/compose',
+		'@wordpress/components',
+		'@wordpress/warning',
+		'@wordpress/primitives',
+	];
+	if ( bundled.includes( request ) ) {
+		return false;
+	}
+
+	const wcDepMap = {
+		'@woocommerce/components': [ 'wc', 'components' ],
+		'@woocommerce/blocks-checkout': [ 'wc', 'blocksCheckout' ],
+	};
+	if ( wcDepMap[ request ] ) {
+		return wcDepMap[ request ];
+	}
+};
+
+const requestToHandle = ( request ) => {
+	const wcHandleMap = {
+		'@woocommerce/components': 'wc-components',
+		'@woocommerce/blocks-checkout': 'wc-blocks-checkout',
+	};
+	if ( wcHandleMap[ request ] ) {
+		return wcHandleMap[ request ];
+	}
+};
+
 // Newsletter config
 const newsletterBlock = {
   ...wpScriptConfig,
@@ -416,17 +449,44 @@ const newsletterBlock = {
     newsletter_block: path.resolve(
       process.cwd(),
       "assets/js/src/newsletter_block",
-      "index.js"
+      "index.tsx"
     ),
     newsletter_block_frontend: path.resolve(
       process.cwd(),
       "assets/js/src/newsletter_block",
-      "frontend.js"
+      "frontend.tsx"
     ),
   },
   output: {
     filename: "[name].js",
     path: path.resolve(process.cwd(), "assets/dist/js/newsletter_block"),
+  },
+  module: {
+    ...wpScriptConfig.module,
+    rules: [
+      ...wpScriptConfig.module.rules,
+      {
+        test: /\.(t|j)sx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader?cacheDirectory',
+          options: {
+            presets: [ '@wordpress/babel-preset-default' ],
+            plugins: [
+              require.resolve(
+                '@babel/plugin-proposal-class-properties'
+              ),
+              require.resolve(
+                '@babel/plugin-proposal-nullish-coalescing-operator'
+              ),
+            ].filter( Boolean ),
+          },
+        },
+      },
+    ],
+  },
+  resolve: {
+    extensions: [ '.js', '.jsx', '.ts', '.tsx' ],
   },
   plugins: [
     ...wpScriptConfig.plugins.filter(
@@ -435,6 +495,8 @@ const newsletterBlock = {
     ),
     new DependencyExtractionWebpackPlugin({
       injectPolyfill: true,
+      requestToExternal,
+      requestToHandle,
     }),
   ],
 };
