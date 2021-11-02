@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.72.0
+Stable tag: 3.73.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.73.0 - 2021-11-02 =
+* Updated: composer dependencies;
+* Improved: don't allow duplicate sending and sending without an unsubscribe link;
+* Fixed: last engagement date is not calculated for some of the old subscribers.
 
 = 3.72.0 - 2021-10-25 =
 * Improved: updated Mixpanel configuration;
