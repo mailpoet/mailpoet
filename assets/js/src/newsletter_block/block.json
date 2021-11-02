@@ -13,10 +13,6 @@
     "inserter": false
   },
   "attributes": {
-    "text": {
-      "type": "string",
-      "required": false
-    },
     "lock": {
       "type": "object",
       "default": {
@@ -26,6 +22,8 @@
     }
   },
   "parent": ["woocommerce/checkout-contact-information-block"],
+  "script": "file:../../../dist/js/newsletter_block/newsletter_block_frontend.js",
+  "style": "file:../../../dist/js/newsletter_block/newsletter_block.css",
   "editorScript": "file:../../../dist/js/newsletter_block/newsletter_block.js",
   "editorStyle": "file:../../../dist/js/newsletter_block/newsletter_block.css"
 }
