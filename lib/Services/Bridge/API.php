@@ -149,7 +149,16 @@ class API {
       ['subscriber_count' => (int)$count],
       'PUT'
     );
-    return $this->wp->wpRemoteRetrieveResponseCode($result) === self::RESPONSE_CODE_STATS_SAVED;
+    $code = $this->wp->wpRemoteRetrieveResponseCode($result);
+    $isSuccess = $code === self::RESPONSE_CODE_STATS_SAVED;
+    if (!$isSuccess) {
+      $logData = [
+        'code' => $code,
+        'error' => is_wp_error($result) ? $result->get_error_message() : null,
+      ];
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_BRIDGE)->addError('Stats API call failed.', $logData);
+    }
+    return $isSuccess;
   }
 
   public function getAuthorizedEmailAddresses() {
