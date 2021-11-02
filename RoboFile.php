@@ -680,6 +680,9 @@ class RoboFile extends \Robo\Tasks {
       ->addCode(function () use ($version) {
         $this->releaseCreatePullRequest($version);
       })
+      ->addCode(function () use ($version) {
+        $this->translationsPrepareLanguagePacks($version);
+      })
       ->run();
   }
 
@@ -750,6 +753,20 @@ class RoboFile extends \Robo\Tasks {
       ->run();
     $this->createGitHubController()
       ->createReleasePullRequest($version);
+  }
+
+  /**
+   * This is part of release prepare script. It imports translations from Transifex to the Wordpress.com translations system
+   * @param string $version
+   */
+  public function translationsPrepareLanguagePacks($version) {
+    $translations = new \MailPoetTasks\Release\TranslationsController();
+    $result = $translations->importTransifex($version);
+    if (!$result['success']) {
+      $this->yell($result['data'], 40, 'red');
+      exit(1);
+    }
+    $this->say('Translations ' . $result['data']);
   }
 
   public function releasePublish($version = null) {
