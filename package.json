@@ -67,7 +67,7 @@
     "backbone.radio": "2.0.0",
     "backbone.supermodel": "1.2.0",
     "blob-tmp": "^1.0.0",
-    "classnames": "^2.2.6",
+    "classnames": "^2.3.1",
     "codemirror": "^5.63.3",
     "css": "^3.0.0",
     "date-fns": "^2.24.0",
