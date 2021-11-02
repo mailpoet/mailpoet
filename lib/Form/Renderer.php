@@ -87,14 +87,14 @@ class Renderer {
       <div class="mailpoet_recaptcha_container"></div>
       <noscript>
         <div>
-          <div style="width: 302px; height: 422px; position: relative;">
-            <div style="width: 302px; height: 422px; position: absolute;">
-              <iframe src="https://www.google.com/recaptcha/api/fallback?k=' . $siteKey . '" frameborder="0" scrolling="no" style="width: 302px; height:422px; border-style: none;">
+          <div class="mailpoet_recaptcha_noscript_container">
+            <div>
+              <iframe src="https://www.google.com/recaptcha/api/fallback?k=' . $siteKey . '" frameborder="0" scrolling="no">
               </iframe>
             </div>
           </div>
-          <div style="width: 300px; height: 60px; border-style: none; bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px; background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">
-            <textarea id="g-recaptcha-response" name="data[recaptcha]" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid #c1c1c1; margin: 10px 25px; padding: 0px; resize: none;" >
+          <div class="mailpoet_recaptcha_noscript_input">
+            <textarea id="g-recaptcha-response" name="data[recaptcha]" class="g-recaptcha-response">
             </textarea>
           </div>
         </div>
