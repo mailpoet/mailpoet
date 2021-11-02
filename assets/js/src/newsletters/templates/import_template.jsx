@@ -87,7 +87,7 @@ class ImportTemplate extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="mailpoet-template-import">
         <h4>
           {MailPoet.I18n.t('importTemplateTitle')}
           <HelpTooltip
