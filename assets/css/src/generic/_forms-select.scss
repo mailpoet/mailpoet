@@ -50,9 +50,9 @@
 
 .mailpoet-form-react-select__value-container {
   padding:
-    0
+    math.div($form-control-spacing, 2)
     $form-control-icon-small + 2 * $form-control-spacing
-    0
+    math.div($form-control-spacing, 2)
     $form-control-spacing * 2 !important;
 }
 
@@ -61,6 +61,8 @@
   grid-area: 1 / 1 / 2 / 3;
   margin-left: 2px;
   max-width: calc(100% - 8px); // leave space for narrow input to search another value
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .mailpoet-form-react-select__multi-value {
@@ -98,10 +100,7 @@
 
 .mailpoet-form-react-select__input {
   color: $color-text !important;
-
-  input {
-    min-height: 0;
-  }
+  min-height: 0 !important;
 }
 
 .mailpoet-form-react-select__indicators {
