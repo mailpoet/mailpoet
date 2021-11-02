@@ -423,7 +423,7 @@ const requestToExternal = ( request ) => {
 	}
 
 	const wcDepMap = {
-		'@woocommerce/components': [ 'wc', 'components' ],
+    '@woocommerce/settings': [ 'wc', 'wcSettings' ],
 		'@woocommerce/blocks-checkout': [ 'wc', 'blocksCheckout' ],
 	};
 	if ( wcDepMap[ request ] ) {
@@ -433,7 +433,7 @@ const requestToExternal = ( request ) => {
 
 const requestToHandle = ( request ) => {
 	const wcHandleMap = {
-		'@woocommerce/components': 'wc-components',
+		'@woocommerce/settings': 'wc-settings',
 		'@woocommerce/blocks-checkout': 'wc-blocks-checkout',
 	};
 	if ( wcHandleMap[ request ] ) {

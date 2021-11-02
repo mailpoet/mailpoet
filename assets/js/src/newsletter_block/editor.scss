@@ -14,3 +14,14 @@
     margin-top: 0;
   }
 }
+
+.wp-block-mailpoet-newsletter-block-placeholder {
+  * {
+    pointer-events: all; // Overrides parent disabled component in editor context
+  }
+
+  .wp-block-mailpoet-newsletter-block-placeholder__description {
+    display: block;
+    margin: 0 0 1em;
+  }
+}
