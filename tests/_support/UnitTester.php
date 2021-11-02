@@ -19,13 +19,6 @@
 class UnitTester extends \Codeception\Actor {
   use _generated\UnitTesterActions;
 
-  // generate random users
-  public function generateSubscribers($count, $data = []) {
-    for ($i = 0; $i < $count; $i++) {
-      $this->generateSubscriber($data);
-    }
-  }
-
   public function generateSubscriber($data = []) {
     $subscriberData = [
       'email' => sprintf('user%s@mailpoet.com', bin2hex(random_bytes(7))), // phpcs:ignore PHPCompatibility
