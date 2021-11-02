@@ -1,0 +1,16 @@
+.wc-block-checkout__newsletter {
+  align-items: flex-start;
+  display: flex;
+  margin: 20px 0;
+  padding-bottom: 4px;
+  padding-top: 4px;
+
+  .block-editor-rich-text__editable {
+    line-height: em(24px);
+    vertical-align: middle;
+  }
+
+  .wc-block-components-checkbox {
+    margin-top: 0;
+  }
+}

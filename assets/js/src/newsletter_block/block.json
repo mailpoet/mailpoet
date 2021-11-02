@@ -3,8 +3,29 @@
   "name": "mailpoet/newsletter-block",
   "version": "0.1.0",
   "title": "MailPoet Subscribe to Newsletter block",
-  "category": "widgets",
+  "category": "woocommerce",
   "textdomain": "mailpoet",
+  "supports": {
+    "align": false,
+    "html": false,
+    "multiple": false,
+    "reusable": false,
+    "inserter": false
+  },
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": false
+    },
+    "lock": {
+      "type": "object",
+      "default": {
+        "remove": true,
+        "move": false
+      }
+    }
+  },
+  "parent": ["woocommerce/checkout-contact-information-block"],
   "editorScript": "file:../../../dist/js/newsletter_block/newsletter_block.js",
-  "editorStyle": "file:../../../dist/js/newsletter_block/style-newsletter-block.css"
+  "editorStyle": "file:../../../dist/js/newsletter_block/newsletter_block.css"
 }
