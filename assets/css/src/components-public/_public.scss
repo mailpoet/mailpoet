@@ -113,6 +113,47 @@ $form-line-height: 1.4;
   cursor: pointer;
 }
 
+.mailpoet_recaptcha_noscript_container {
+  height: 422px;
+  position: relative;
+  width: 302px;
+
+  > div {
+    height: 422px;
+    position: absolute;
+    width: 302px;
+
+    iframe {
+      border-style: none;
+      height: 422px;
+      width: 302px;
+    }
+  }
+}
+
+.mailpoet_recaptcha_noscript_input {
+  background: #f9f9f9;
+  border: 1px solid #c1c1c1;
+  border-radius: 3px;
+  border-style: none;
+  bottom: 12px;
+  height: 60px;
+  left: 25px;
+  margin: 0;
+  padding: 0;
+  right: 25px;
+  width: 300px;
+
+  textarea {
+    border: 1px solid #c1c1c1;
+    height: 40px;
+    margin: 10px 25px;
+    padding: 0;
+    resize: none;
+    width: 250px;
+  }
+}
+
 @keyframes mailpoet-bouncedelay {
   0%,
   80%,
