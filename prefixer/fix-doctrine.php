@@ -19,6 +19,12 @@ foreach ($files as $file) {
   }
 }
 
+// Replace PHP8 version of Doctrine/Common/Cache/Psr6/TypedCacheItem.php with PHP7 version
+// This is needed so that we pass pre-commit checks in the plugin repository.
+$php7CachedItem = file_get_contents(__DIR__ . "/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/Psr6/CacheItem.php");
+$php7CachedItem = str_replace('final class CacheItem', 'final class TypedCacheItem', $php7CachedItem);
+file_put_contents(__DIR__ . "/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/Psr6/TypedCacheItem.php", $php7CachedItem);
+
 // cleanup file types by extension
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name '*.xsd' -delete");
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'phpstan.neon' -delete");
