@@ -21,6 +21,7 @@ class ConflictResolver {
       // WP.com styles
       '^/_static',
       'atomic-plugins/debug-bar/css',
+      'automatewoo/',
     ],
     'scripts' => [
       'mailpoet',
