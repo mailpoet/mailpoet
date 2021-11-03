@@ -1,8 +1,8 @@
 {
   "apiVersion": 2,
-  "name": "mailpoet/newsletter-block",
+  "name": "mailpoet/marketing-optin-block",
   "version": "0.1.0",
-  "title": "MailPoet Subscribe to Newsletter block",
+  "title": "MailPoet Marketing Opt-in",
   "category": "woocommerce",
   "textdomain": "mailpoet",
   "supports": {
@@ -22,8 +22,6 @@
     }
   },
   "parent": ["woocommerce/checkout-contact-information-block"],
-  "script": "file:../../../dist/js/newsletter_block/newsletter_block_frontend.js",
-  "style": "file:../../../dist/js/newsletter_block/newsletter_block.css",
-  "editorScript": "file:../../../dist/js/newsletter_block/newsletter_block.js",
-  "editorStyle": "file:../../../dist/js/newsletter_block/newsletter_block.css"
+  "editorScript": "file:../../../dist/js/marketing_optin_block/marketing-optin-block.js",
+  "editorStyle": "file:../../../dist/js/marketing_optin_block/marketing-optin-block.css"
 }
