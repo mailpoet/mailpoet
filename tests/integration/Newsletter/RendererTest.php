@@ -19,6 +19,7 @@ use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
 use PHPUnit\Framework\MockObject\MockObject;
+use WP_Error;
 
 class RendererTest extends \MailPoetTest {
   public $dOMParser;
@@ -650,11 +651,21 @@ class RendererTest extends \MailPoetTest {
         'post_status' => 'publish',
       ]
     );
+    if ($postId instanceof WP_Error) {
+      $this->fail('Error preparing data for test: failed to create post.');
+    }
+
     $filename = 'tests/_data/600x400.jpg';
     $contents = file_get_contents($filename);
+    if (!$contents) {
+      $this->fail('Error preparing data for test: failed to retrieve file contents.');
+    }
 
     $upload = wp_upload_bits(basename($filename), null, $contents);
     $attachmentId = $this->makeAttachment($upload);
+    if ($attachmentId instanceof WP_Error) {
+      $this->fail('Error preparing data for test: failed to create attachment.');
+    }
     set_post_thumbnail($postId, $attachmentId);
 
     $this->newsletter->setBody(json_decode(
@@ -668,7 +679,7 @@ class RendererTest extends \MailPoetTest {
     wp_delete_post($postId, true);
   }
 
-  public function makeAttachment($upload, $parentPostId = 0) {
+  public function makeAttachment($upload, $parentPostId = 0): mixed {
     if ( ! function_exists( 'wp_crop_image' ) ) {
       include( ABSPATH . 'wp-admin/includes/image.php' );
     }
@@ -692,6 +703,9 @@ class RendererTest extends \MailPoetTest {
     ];
 
     $id = wp_insert_attachment($attachment, $upload['file'], $parentPostId);
+    if ($id instanceof WP_Error) {
+      return $id;
+    }
     $metadata = wp_generate_attachment_metadata($id, $upload['file']);
     wp_update_attachment_metadata($id, $metadata);
 
