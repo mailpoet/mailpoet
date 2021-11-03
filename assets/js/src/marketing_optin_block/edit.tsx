@@ -54,7 +54,7 @@ export const Edit = ({
   const currentText = text || defaultText;
   return (
     <div {...blockProps}>
-      {!optinEnabled ? (
+      {optinEnabled ? (
         <>
           <div className="wc-block-checkout__newsletter">
             <CheckboxControl id="subscribe-to-newsletter" checked={false} />
