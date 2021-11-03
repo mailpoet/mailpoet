@@ -14,17 +14,14 @@
 
 .edit-post-layout .interface-interface-skeleton__content {
   background-color: $color-white;
+  // Fix for Block toolbar hides under the main top bar
+  margin-top: 3.5rem;
 }
 
 // Fix for fixed bar forms
 // This will prevent editor width to grow and push sidebar out of the screen
 .interface-interface-skeleton__editor {
   max-width: 100%;
-}
-
-// Fix for Block toolbar hides under the main top bar
-.interface-interface-skeleton__body {
-  margin-top: 2rem;
 }
 
 // Fix for settings toolbar placement in header
@@ -126,8 +123,7 @@ h2 {
 
 .edit-post-visual-editor {
   background-color: $color-white;
-  // We use lager padding on top so that block tools toolbar doesn't hide under top bar
-  padding: $grid-gap-large 10px 10px;
+  padding: 10px;
 }
 
 // Unify padding o wp-block-columns with background with front end rendering
