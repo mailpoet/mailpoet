@@ -56,8 +56,8 @@ export const Edit = ({
     <div {...blockProps}>
       {optinEnabled ? (
         <>
-          <div className="wc-block-checkout__newsletter">
-            <CheckboxControl id="subscribe-to-newsletter" checked={false} />
+          <div className="wc-block-checkout__marketing">
+            <CheckboxControl id="mailpoet-marketing-optin" checked={false} />
             <RichText
               value={currentText}
               onChange={(value) => setAttributes({ text: value })}
