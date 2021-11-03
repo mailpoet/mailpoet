@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\API\JSON\v1;
 
@@ -202,7 +202,9 @@ class Subscribers extends APIEndpoint {
       if ($this->confirmationEmailMailer->sendConfirmationEmail($subscriber)) {
         return $this->successResponse();
       }
-      return $this->errorResponse();
+      return $this->errorResponse([
+        APIError::UNKNOWN => __('There was a problem with your sending method. Please check if your sending method is properly configured.', 'mailpoet'),
+      ]);
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet'),
