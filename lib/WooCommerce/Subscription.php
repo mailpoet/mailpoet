@@ -116,7 +116,7 @@ class Subscription {
     return str_replace('type="text', 'type="hidden"', $field);
   }
 
-  private function isCurrentUserSubscribed() {
+  public function isCurrentUserSubscribed() {
     $subscriber = $this->subscribersRepository->getCurrentWPUser();
     if (!$subscriber instanceof SubscriberEntity) {
       return false;
@@ -148,44 +148,59 @@ class Subscription {
     $subscriber = Subscriber::where('email', $data['billing_email'])
       ->where('is_woocommerce_user', 1)
       ->findOne();
+
     if (!$subscriber) {
       // no subscriber: WooCommerce sync didn't work
       return null;
     }
 
-    $checkoutOptinEnabled = (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME);
+    $checkoutOptinEnabled = (bool)$this->settings->get( self::OPTIN_ENABLED_SETTING_NAME );
+    $checkoutOptin = ! empty( $_POST[self::CHECKOUT_OPTIN_INPUT_NAME] );
+
+    return $this->handleSubscriberOptin( $subscriber, $checkoutOptinEnabled && $checkoutOptin );
+  }
+
+  /**
+   * Subscribe or unsubscribe a subscriber.
+   *
+   * @param Subscriber $subscriber Subscriber object
+   * @param bool $optin Opting in or opting out.
+   */
+  public function handleSubscriberOptin( Subscriber $subscriber, $optin = true ) {
     $wcSegment = Segment::getWooCommerceSegment();
     $moreSegmentsToSubscribe = (array)$this->settings->get(self::OPTIN_SEGMENTS_SETTING_NAME, []);
-    if (!$checkoutOptinEnabled || empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])) {
+    $signupConfirmation = $this->settings->get('signup_confirmation');
+
+    if ( ! $optin ) {
       // Opt-in is disabled or checkbox is unchecked
       SubscriberSegment::unsubscribeFromSegments(
         $subscriber,
         [$wcSegment->id]
       );
-      if ($checkoutOptinEnabled) {
-        $this->updateSubscriberStatus($subscriber);
-      }
+      $this->updateSubscriberStatus($subscriber);
+
       return false;
     }
-    $subscriber->source = Source::WOOCOMMERCE_CHECKOUT;
 
-    $signupConfirmation = $this->settings->get('signup_confirmation');
-    // checkbox is checked
-    if (
-      ($subscriber->status === Subscriber::STATUS_SUBSCRIBED)
-      || ((bool)$signupConfirmation['enabled'] === false)
-    ) {
-      $this->subscribe($subscriber);
-    } else {
-      $this->requireSubscriptionConfirmation($subscriber);
+    if ( $optin ) {
+      $subscriber->source = Source::WOOCOMMERCE_CHECKOUT;
+
+      if (
+        ($subscriber->status === Subscriber::STATUS_SUBSCRIBED)
+        || ((bool)$signupConfirmation['enabled'] === false)
+      ) {
+        $this->subscribe($subscriber);
+      } else {
+        $this->requireSubscriptionConfirmation($subscriber);
+      }
+
+      SubscriberSegment::subscribeToSegments(
+        $subscriber,
+        array_merge([$wcSegment->id], $moreSegmentsToSubscribe)
+      );
+
+      return true;
     }
-
-    SubscriberSegment::subscribeToSegments(
-      $subscriber,
-      array_merge([$wcSegment->id], $moreSegmentsToSubscribe)
-    );
-
-    return true;
   }
 
   private function subscribe(Subscriber $subscriber) {
