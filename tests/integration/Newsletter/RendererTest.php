@@ -638,4 +638,63 @@ class RendererTest extends \MailPoetTest {
     // non mso condition for button is rendered correctly
     expect(preg_match('/<\!--\[if \!mso\]><\!-- -->\s+<a class=\"mailpoet\_button\".+<\/a>\s+<\!--<\!\[endif\]-->/s', $template['html']))->equals(1);
   }
+
+  // Test case for MAILPOET-3660
+  public function testItRendersPostContentWhenMultipleQuotesInPostTitle() {
+    $postTitle = 'This \"is \'a\" test';
+    $postContent = '<!-- wp:paragraph -->\n<p>This is the post content</p>\n<!-- /wp:paragraph -->';
+    $postId = wp_insert_post(
+      [
+        'post_title' => $postTitle,
+        'post_content' => $postContent,
+        'post_status' => 'publish',
+      ]
+    );
+    $filename = 'tests/_data/600x400.jpg';
+    $contents = file_get_contents($filename);
+
+    $upload = wp_upload_bits(basename($filename), null, $contents);
+    $attachmentId = $this->makeAttachment($upload);
+    set_post_thumbnail($postId, $attachmentId);
+
+    $this->newsletter->setBody(json_decode(
+      (string)file_get_contents(dirname(__FILE__) . '/RendererTestALCdata.json'), true
+    ));
+
+    $template = $this->renderer->render($this->newsletter);
+    expect($template['html'])->stringContainsString('This is the post content');
+
+    wp_delete_attachment($attachmentId, true);
+    wp_delete_post($postId, true);
+  }
+
+  public function makeAttachment($upload, $parentPostId = 0) {
+    if ( ! function_exists( 'wp_crop_image' ) ) {
+      include( ABSPATH . 'wp-admin/includes/image.php' );
+    }
+
+    $type = '';
+    if (!empty($upload['type'])) {
+      $type = $upload['type'];
+    } else {
+      $mime = wp_check_filetype($upload['file']);
+      if ($mime)
+        $type = $mime['type'];
+    }
+
+    $attachment = [
+      'post_title' => basename($upload['file']),
+      'post_content' => '',
+      'post_type' => 'attachment',
+      'post_parent' => $parentPostId,
+      'post_mime_type' => $type,
+      'guid' => $upload['url'],
+    ];
+
+    $id = wp_insert_attachment($attachment, $upload['file'], $parentPostId);
+    $metadata = wp_generate_attachment_metadata($id, $upload['file']);
+    wp_update_attachment_metadata($id, $metadata);
+
+    return $id;
+  }
 }

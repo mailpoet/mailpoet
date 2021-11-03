@@ -1,0 +1,403 @@
+{
+  "content": {
+    "type": "container",
+    "orientation": "vertical",
+    "styles": {
+      "block": {
+        "backgroundColor": "transparent"
+      }
+    },
+    "blocks": [
+      {
+        "orientation": "horizontal",
+        "type": "container",
+        "styles": {
+          "block": {
+            "backgroundColor": "#999999"
+          }
+        },
+        "blocks": [
+          {
+            "orientation": "vertical",
+            "type": "container",
+            "styles": {
+              "block": {
+                "backgroundColor": "#999999"
+              }
+            },
+            "blocks": [
+            {
+              "type": "automatedLatestContent",
+              "withLayout": true,
+              "amount": "3",
+              "contentType": "post",
+              "terms": [],
+              "inclusionType": "include",
+              "displayType": "excerpt",
+              "titleFormat": "h3",
+              "titleAlignment": "left",
+              "titleIsLink": false,
+              "imageFullWidth": false,
+              "titlePosition": "abovePost",
+              "featuredImagePosition": "alternate",
+              "showAuthor": "no",
+              "authorPrecededBy": "Author:",
+              "showCategories": "no",
+              "categoriesPrecededBy": "Categories:",
+              "readMoreType": "button",
+              "readMoreText": "Read more",
+              "readMoreButton": {
+                "type": "button",
+                "text": "Read the post",
+                "url": "[postLink]",
+                "styles": {
+                  "block": {
+                    "backgroundColor": "#2ea1cd",
+                    "borderColor": "#0074a2",
+                    "borderWidth": "1px",
+                    "borderRadius": "5px",
+                    "borderStyle": "solid",
+                    "width": "160px",
+                    "lineHeight": "30px",
+                    "fontColor": "#ffffff",
+                    "fontFamily": "Verdana",
+                    "fontSize": "16px",
+                    "fontWeight": "normal",
+                    "textAlign": "center"
+                  }
+                }
+              },
+              "sortBy": "newest",
+              "showDivider": true,
+              "divider": {
+                "type": "divider",
+                "styles": {
+                  "block": {
+                    "backgroundColor": "transparent",
+                    "padding": "13px",
+                    "borderStyle": "solid",
+                    "borderWidth": "3px",
+                    "borderColor": "#aaaaaa"
+                  }
+                }
+              },
+              "backgroundColor": "#ffffff",
+              "backgroundColorAlternate": "#eeeeee"
+            }
+          ]
+          }
+        ]
+      }
+    ]
+  },
+  "globalStyles": {
+    "text": {
+      "fontColor": "#000000",
+      "fontFamily": "Arial",
+      "fontSize": "16px"
+    },
+    "h1": {
+      "fontColor": "#111111",
+      "fontFamily": "Trebuchet MS",
+      "fontSize": "30px"
+    },
+    "h2": {
+      "fontColor": "#222222",
+      "fontFamily": "Trebuchet MS",
+      "fontSize": "24px"
+    },
+    "h3": {
+      "fontColor": "#333333",
+      "fontFamily": "Trebuchet MS",
+      "fontSize": "22px"
+    },
+    "link": {
+      "fontColor": "#21759B",
+      "textDecoration": "underline"
+    },
+    "wrapper": {
+      "backgroundColor": "#ffffff"
+    },
+    "body": {
+      "backgroundColor": "#eeeeee"
+    }
+  },
+  "blockDefaults": {
+    "automatedLatestContent": {
+      "amount": "5",
+      "withLayout": false,
+      "contentType": "post",
+      "inclusionType": "include",
+      "displayType": "excerpt",
+      "titleFormat": "h1",
+      "titleAlignment": "left",
+      "titleIsLink": false,
+      "imageFullWidth": false,
+      "titlePosition": "abovePost",
+      "featuredImagePosition": "belowTitle",
+      "showAuthor": "no",
+      "authorPrecededBy": "Author:",
+      "showCategories": "no",
+      "categoriesPrecededBy": "Categories:",
+      "readMoreType": "button",
+      "readMoreText": "Read more",
+      "readMoreButton": {
+        "text": "Read more",
+        "url": "[postLink]",
+        "context": "automatedLatestContent.readMoreButton",
+        "styles": {
+          "block": {
+            "backgroundColor": "#2ea1cd",
+            "borderColor": "#0074a2",
+            "borderWidth": "1px",
+            "borderRadius": "5px",
+            "borderStyle": "solid",
+            "width": "180px",
+            "lineHeight": "40px",
+            "fontColor": "#ffffff",
+            "fontFamily": "Verdana",
+            "fontSize": "18px",
+            "fontWeight": "normal",
+            "textAlign": "center"
+          }
+        }
+      },
+      "sortBy": "newest",
+      "showDivider": true,
+      "divider": {
+        "context": "automatedLatestContent.divider",
+        "styles": {
+          "block": {
+            "backgroundColor": "transparent",
+            "padding": "13px",
+            "borderStyle": "solid",
+            "borderWidth": "3px",
+            "borderColor": "#aaaaaa"
+          }
+        }
+      },
+      "backgroundColor": "#ffffff",
+      "backgroundColorAlternate": "#eeeeee"
+    },
+    "automatedLatestContentLayout": {
+      "amount": "5",
+      "withLayout": true,
+      "contentType": "post",
+      "inclusionType": "include",
+      "displayType": "excerpt",
+      "titleFormat": "h1",
+      "titleAlignment": "left",
+      "titleIsLink": false,
+      "imageFullWidth": false,
+      "titlePosition": "abovePost",
+      "featuredImagePosition": "alternate",
+      "showAuthor": "no",
+      "authorPrecededBy": "Author:",
+      "showCategories": "no",
+      "categoriesPrecededBy": "Categories:",
+      "readMoreType": "button",
+      "readMoreText": "Read more",
+      "readMoreButton": {
+        "text": "Read more",
+        "url": "[postLink]",
+        "context": "automatedLatestContentLayout.readMoreButton",
+        "styles": {
+          "block": {
+            "backgroundColor": "#2ea1cd",
+            "borderColor": "#0074a2",
+            "borderWidth": "1px",
+            "borderRadius": "5px",
+            "borderStyle": "solid",
+            "width": "180px",
+            "lineHeight": "40px",
+            "fontColor": "#ffffff",
+            "fontFamily": "Verdana",
+            "fontSize": "18px",
+            "fontWeight": "normal",
+            "textAlign": "center"
+          }
+        }
+      },
+      "sortBy": "newest",
+      "showDivider": true,
+      "divider": {
+        "context": "automatedLatestContentLayout.divider",
+        "styles": {
+          "block": {
+            "backgroundColor": "transparent",
+            "padding": "13px",
+            "borderStyle": "solid",
+            "borderWidth": "3px",
+            "borderColor": "#aaaaaa"
+          }
+        }
+      },
+      "backgroundColor": "#ffffff",
+      "backgroundColorAlternate": "#eeeeee"
+    },
+    "button": {
+      "text": "Read the post",
+      "url": "[postLink]",
+      "styles": {
+        "block": {
+          "backgroundColor": "#2ea1cd",
+          "borderColor": "#0074a2",
+          "borderWidth": "1px",
+          "borderRadius": "5px",
+          "borderStyle": "solid",
+          "width": "180px",
+          "lineHeight": "40px",
+          "fontColor": "#ffffff",
+          "fontFamily": "Verdana",
+          "fontSize": "18px",
+          "fontWeight": "normal",
+          "textAlign": "center"
+        }
+      },
+      "type": "button"
+    },
+    "container": {
+      "styles": {
+        "block": {
+          "backgroundColor": "transparent"
+        }
+      }
+    },
+    "divider": {
+      "styles": {
+        "block": {
+          "backgroundColor": "transparent",
+          "padding": "13px",
+          "borderStyle": "solid",
+          "borderWidth": "3px",
+          "borderColor": "#aaaaaa"
+        }
+      },
+      "type": "divider"
+    },
+    "footer": {
+      "text": "<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe</a> | <a href=\"[link:subscription_manage_url]\">Manage subscription</a><br />Add your postal address here!</p>",
+      "styles": {
+        "block": {
+          "backgroundColor": "transparent"
+        },
+        "text": {
+          "fontColor": "#222222",
+          "fontFamily": "Arial",
+          "fontSize": "12px",
+          "textAlign": "center"
+        },
+        "link": {
+          "fontColor": "#6cb7d4",
+          "textDecoration": "none"
+        }
+      }
+    },
+    "posts": {
+      "amount": "10",
+      "withLayout": true,
+      "contentType": "post",
+      "postStatus": "publish",
+      "inclusionType": "include",
+      "displayType": "excerpt",
+      "titleFormat": "h1",
+      "titleAlignment": "left",
+      "titleIsLink": false,
+      "imageFullWidth": false,
+      "titlePosition": "abovePost",
+      "featuredImagePosition": "alternate",
+      "showAuthor": "no",
+      "authorPrecededBy": "Author:",
+      "showCategories": "no",
+      "categoriesPrecededBy": "Categories:",
+      "readMoreType": "link",
+      "readMoreText": "Read more",
+      "readMoreButton": {
+        "text": "Read more",
+        "url": "[postLink]",
+        "context": "posts.readMoreButton",
+        "styles": {
+          "block": {
+            "backgroundColor": "#2ea1cd",
+            "borderColor": "#0074a2",
+            "borderWidth": "1px",
+            "borderRadius": "5px",
+            "borderStyle": "solid",
+            "width": "180px",
+            "lineHeight": "40px",
+            "fontColor": "#ffffff",
+            "fontFamily": "Verdana",
+            "fontSize": "18px",
+            "fontWeight": "normal",
+            "textAlign": "center"
+          }
+        }
+      },
+      "sortBy": "newest",
+      "showDivider": true,
+      "divider": {
+        "context": "posts.divider",
+        "styles": {
+          "block": {
+            "backgroundColor": "transparent",
+            "padding": "13px",
+            "borderStyle": "solid",
+            "borderWidth": "3px",
+            "borderColor": "#aaaaaa"
+          }
+        }
+      },
+      "backgroundColor": "#ffffff",
+      "backgroundColorAlternate": "#eeeeee"
+    },
+    "social": {
+      "iconSet": "default",
+      "icons": [
+        {
+          "type": "socialIcon",
+          "iconType": "facebook",
+          "link": "http://www.facebook.com",
+          "image": "http://localhost/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/01-social/Facebook.png?mailpoet_version=3.7.8",
+          "height": "32px",
+          "width": "32px",
+          "text": "Facebook"
+        },
+        {
+          "type": "socialIcon",
+          "iconType": "twitter",
+          "link": "http://www.twitter.com",
+          "image": "http://localhost/wp-content/plugins/mailpoet/assets/img/newsletter_editor/social-icons/01-social/Twitter.png?mailpoet_version=3.7.8",
+          "height": "32px",
+          "width": "32px",
+          "text": "Twitter"
+        }
+      ]
+    },
+    "spacer": {
+      "styles": {
+        "block": {
+          "backgroundColor": "transparent",
+          "height": "40px"
+        }
+      }
+    },
+    "header": {
+      "text": "<a href=\"[link:newsletter_view_in_browser_url]\">View this in your browser.</a>",
+      "styles": {
+        "block": {
+          "backgroundColor": "transparent"
+        },
+        "text": {
+          "fontColor": "#222222",
+          "fontFamily": "Arial",
+          "fontSize": "12px",
+          "textAlign": "center"
+        },
+        "link": {
+          "fontColor": "#6cb7d4",
+          "textDecoration": "underline"
+        }
+      }
+    }
+  }
+}
