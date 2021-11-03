@@ -26,7 +26,7 @@ function Edit({ attributes, setAttributes }) {
         <option value="" disabled selected>{window.locale.selectForm}</option>
         {allForms.map((form) => (
           <option value={form.id}>
-            {form.name}
+            {form.name + (form.status === 'disabled' ? ` (${window.locale.inactive})` : '')}
           </option>
         ))}
       </select>
