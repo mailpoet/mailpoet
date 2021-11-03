@@ -16,34 +16,32 @@ import { Icon, megaphone } from '@wordpress/icons';
  */
 import './editor.scss';
 
-const adminUrl = getSetting('adminUrl');
-const { newsletterEnabled, newsletterDefaultText } = getSetting('mailpoet_data');
+const adminUrl = getSetting('adminUrl') as string;
+const { optinEnabled, defaultText } = getSetting('mailpoet_data');
 
-const EmptyState = () => {
-  return (
-    <Placeholder
-      icon={<Icon icon={megaphone} />}
-      label={__('Marketing opt-in', 'automatewoo')}
-      className="wp-block-mailpoet-newsletter-block-placeholder"
+const EmptyState = (): JSX.Element => (
+  <Placeholder
+    icon={<Icon icon={megaphone} />}
+    label={__('Marketing opt-in', 'mailpoet')}
+    className="wp-block-mailpoet-newsletter-block-placeholder"
+  >
+    <span className="wp-block-mailpoet-newsletter-block-placeholder__description">
+      {__(
+        'MailPoet marketing opt-in would be shown here if enabled. You can enable from the settings page.',
+        'mailpoet'
+      )}
+    </span>
+    <Button
+      isPrimary
+      href={`${adminUrl}admin.php?page=mailpoet-settings#/woocommerce`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="wp-block-mailpoet-newsletter-block-placeholder__button"
     >
-      <span className="wp-block-mailpoet-newsletter-block-placeholder__description">
-        {__(
-          'MailPoet marketing opt in would be shown here, you can enable from AutomateWoo settings page.',
-          'mailpoet'
-        )}
-      </span>
-      <Button
-        isPrimary
-        href={`${adminUrl}admin.php?page=mailpoet-settings#/woocommerce`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="wp-block-mailpoet-newsletter-block-placeholder__button"
-      >
-        {__('Enable opt-in for Checkout', 'automatewoo')}
-      </Button>
-    </Placeholder>
-  );
-};
+      {__('Enable opt-in for Checkout', 'mailpoet')}
+    </Button>
+  </Placeholder>
+);
 
 export const Edit = ({
   attributes: { text },
@@ -53,10 +51,10 @@ export const Edit = ({
   setAttributes: (attributes: Record<string, unknown>) => void;
 }): JSX.Element => {
   const blockProps = useBlockProps();
-  const currentText = text || newsletterDefaultText;
+  const currentText = text || defaultText;
   return (
     <div {...blockProps}>
-      {newsletterEnabled ? (
+      {!optinEnabled ? (
         <>
           <div className="wc-block-checkout__newsletter">
             <CheckboxControl id="subscribe-to-newsletter" checked={false} />

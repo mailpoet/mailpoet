@@ -408,58 +408,58 @@ const postEditorBlock = {
   },
 };
 
-const requestToExternal = ( request ) => {
-	// The following default externals are bundled for compatibility with older versions of WP
-	// Note CSS for specific components is bundled via admin/assets/src/index.scss
-	// WP 5.4 is the min version for <Card* />, <TabPanel />
-	const bundled = [
-		'@wordpress/compose',
-		'@wordpress/components',
-		'@wordpress/warning',
-		'@wordpress/primitives',
-	];
-	if ( bundled.includes( request ) ) {
-		return false;
-	}
+const requestToExternal = (request) => {
+  // The following default externals are bundled for compatibility with older versions of WP
+  // Note CSS for specific components is bundled via admin/assets/src/index.scss
+  // WP 5.4 is the min version for <Card* />, <TabPanel />
+  const bundled = [
+    "@wordpress/compose",
+    "@wordpress/components",
+    "@wordpress/warning",
+    "@wordpress/primitives",
+  ];
+  if (bundled.includes(request)) {
+    return false;
+  }
 
-	const wcDepMap = {
-    '@woocommerce/settings': [ 'wc', 'wcSettings' ],
-		'@woocommerce/blocks-checkout': [ 'wc', 'blocksCheckout' ],
-	};
-	if ( wcDepMap[ request ] ) {
-		return wcDepMap[ request ];
-	}
+  const wcDepMap = {
+    "@woocommerce/settings": ["wc", "wcSettings"],
+    "@woocommerce/blocks-checkout": ["wc", "blocksCheckout"],
+  };
+  if (wcDepMap[request]) {
+    return wcDepMap[request];
+  }
 };
 
-const requestToHandle = ( request ) => {
-	const wcHandleMap = {
-		'@woocommerce/settings': 'wc-settings',
-		'@woocommerce/blocks-checkout': 'wc-blocks-checkout',
-	};
-	if ( wcHandleMap[ request ] ) {
-		return wcHandleMap[ request ];
-	}
+const requestToHandle = (request) => {
+  const wcHandleMap = {
+    "@woocommerce/settings": "wc-settings",
+    "@woocommerce/blocks-checkout": "wc-blocks-checkout",
+  };
+  if (wcHandleMap[request]) {
+    return wcHandleMap[request];
+  }
 };
 
-// Newsletter config
-const newsletterBlock = {
+// Marketing Optin config
+const marketingOptinBlock = {
   ...wpScriptConfig,
-  name: "newsletter_block",
+  name: "marketing_optin_block",
   entry: {
-    newsletter_block: path.resolve(
+    "marketing-optin-block": path.resolve(
       process.cwd(),
-      "assets/js/src/newsletter_block",
+      "assets/js/src/marketing_optin_block",
       "index.tsx"
     ),
-    newsletter_block_frontend: path.resolve(
+    "marketing-optin-block-frontend": path.resolve(
       process.cwd(),
-      "assets/js/src/newsletter_block",
+      "assets/js/src/marketing_optin_block",
       "frontend.tsx"
     ),
   },
   output: {
     filename: "[name].js",
-    path: path.resolve(process.cwd(), "assets/dist/js/newsletter_block"),
+    path: path.resolve(process.cwd(), "assets/dist/js/marketing_optin_block"),
   },
   module: {
     ...wpScriptConfig.module,
@@ -469,24 +469,22 @@ const newsletterBlock = {
         test: /\.(t|j)sx?$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader?cacheDirectory',
+          loader: "babel-loader?cacheDirectory",
           options: {
-            presets: [ '@wordpress/babel-preset-default' ],
+            presets: ["@wordpress/babel-preset-default"],
             plugins: [
+              require.resolve("@babel/plugin-proposal-class-properties"),
               require.resolve(
-                '@babel/plugin-proposal-class-properties'
+                "@babel/plugin-proposal-nullish-coalescing-operator"
               ),
-              require.resolve(
-                '@babel/plugin-proposal-nullish-coalescing-operator'
-              ),
-            ].filter( Boolean ),
+            ].filter(Boolean),
           },
         },
       },
     ],
   },
   resolve: {
-    extensions: [ '.js', '.jsx', '.ts', '.tsx' ],
+    extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
   plugins: [
     ...wpScriptConfig.plugins.filter(
@@ -524,5 +522,5 @@ module.exports = [
     }
     return Object.assign({}, baseConfig, config);
   }),
-  newsletterBlock,
+  marketingOptinBlock,
 ];
