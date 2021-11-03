@@ -63,6 +63,7 @@ use MailPoet\Form\Templates\Templates\Template7FixedBar;
 use MailPoet\Form\Templates\Templates\Template7Popup;
 use MailPoet\Form\Templates\Templates\Template7SlideIn;
 use MailPoet\Form\Templates\Templates\Template7Widget;
+use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
@@ -75,6 +76,10 @@ class TemplateRepository {
 
   /** @var WPFunctions */
   private $wp;
+
+  /** @var SettingsController */
+  private $settings;
+
 
   private $templates = [
     InitialForm::ID => InitialForm::class,
@@ -142,10 +147,12 @@ class TemplateRepository {
 
   public function __construct(
     CdnAssetUrl $cdnAssetUrl,
+    SettingsController $settings,
     WPFunctions $wp
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->wp = $wp;
+    $this->settings = $settings;
   }
 
   public function getFormTemplate(string $templateId): FormTemplate {
@@ -154,7 +161,7 @@ class TemplateRepository {
         ->withErrors(["Template with id $templateId doesn't exist."]);
     }
     /** @var FormTemplate $template */
-    $template = new $this->templates[$templateId]($this->cdnAssetUrl, $this->wp);
+    $template = new $this->templates[$templateId]($this->cdnAssetUrl, $this->settings, $this->wp);
     return $template;
   }
 

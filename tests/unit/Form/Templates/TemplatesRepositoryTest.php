@@ -4,6 +4,7 @@ namespace MailPoet\Test\Form\Templates;
 
 use MailPoet\Form\Templates\FormTemplate;
 use MailPoet\Form\Templates\TemplateRepository;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -17,7 +18,8 @@ class TemplatesRepositoryTest extends \MailPoetUnitTest {
     $cdnAssetsMock->method('generateCdnUrl')
       ->willReturn('http://example.com/image.png');
     $wpMock = $this->createMock(WPFunctions::class);
-    $this->repository = new TemplateRepository($cdnAssetsMock, $wpMock);
+    $settings = $this->createMock(SettingsController::class);
+    $this->repository = new TemplateRepository($cdnAssetsMock, $settings, $wpMock);
   }
 
   public function testItCanBuildFormTemplate() {
