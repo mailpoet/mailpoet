@@ -2,6 +2,7 @@
 
 namespace MailPoet\Entities;
 
+use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -56,10 +57,22 @@ class DynamicSegmentFilterData {
   }
 
   public function getFilterType(): ?string {
-    return $this->filterType;
+    if ($this->filterType) {
+      return $this->filterType;
+    }
+    // When a new column is empty, we try to get the value from serialized data
+    return $filterData['segmentType'] ?? null;
   }
 
   public function getAction(): ?string {
-    return $this->action;
+    if ($this->action) {
+      return $this->action;
+    }
+    // When a new column is empty, we try to get the value from serialized data
+    // BC compatibility, the wordpress user role segment didn't have action
+    if ($this->getFilterType() === self::TYPE_USER_ROLE && !isset($this->filterData['action'])) {
+      return UserRole::TYPE;
+    }
+    return $this->filterData['action'] ?? null;
   }
 }
