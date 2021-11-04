@@ -145,6 +145,18 @@ class SubscriberEntity {
   private $lastEngagementAt;
 
   /**
+   * @ORM\Column(type="datetimetz", nullable=true)
+   * @var DateTimeInterface|null
+   */
+  private $woocommerceSyncedAt;
+
+  /**
+   * @ORM\Column(type="boolean")
+   * @var bool
+   */
+  private $isWoocommerceSynced = false;
+
+  /**
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\SubscriberSegmentEntity", mappedBy="subscriber", orphanRemoval=true)
    * @var Collection<int, SubscriberSegmentEntity>
    */
@@ -450,6 +462,22 @@ class SubscriberEntity {
 
   public function setLastEngagementAt(DateTimeInterface $lastEngagementAt): void {
     $this->lastEngagementAt = $lastEngagementAt;
+  }
+
+  public function setWoocommerceSyncedAt(?DateTimeInterface $woocommerceSyncedAt): void {
+    $this->woocommerceSyncedAt = $woocommerceSyncedAt;
+  }
+
+  public function getWoocommerceSyncedAt(): ?DateTimeInterface {
+    return $this->woocommerceSyncedAt;
+  }
+
+  public function getIsWoocommerceSynced(): bool {
+    return $this->isWoocommerceSynced;
+  }
+
+  public function setIsWoocommerceSynced(bool $isWoocommerceSynced): void {
+    $this->isWoocommerceSynced = $isWoocommerceSynced;
   }
 
   /** @ORM\PreFlush */
