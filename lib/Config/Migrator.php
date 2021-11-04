@@ -702,8 +702,8 @@ class Migrator {
 
   private function migrateSerializedFilterDataToNewColumns(): bool {
     global $wpdb;
-    // skip the migration if the DB version is higher than 3.71.3 or is not set (a new install)
-    if (version_compare($this->settings->get('db_version', '3.71.4'), '3.71.3', '>')) {
+    // skip the migration if the DB version is higher than 3.73.1 or is not set (a new install)
+    if (version_compare($this->settings->get('db_version', '3.73.1'), '3.73.0', '>')) {
       return false;
     }
 
