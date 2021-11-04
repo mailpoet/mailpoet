@@ -2,6 +2,7 @@ import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 import Cookies from 'js-cookie';
 import Parsley from 'parsleyjs';
+import Hooks from 'wp-js-hooks';
 
 const exitIntentEvent = 'mouseleave.mailpoet.form-exit-intent';
 
@@ -41,7 +42,8 @@ jQuery(($) => {
     const container = recaptcha.find('> .mailpoet_recaptcha_container').get(0);
     const field = recaptcha.find('> .mailpoet_recaptcha_field');
     if (sitekey) {
-      const widgetId = window.grecaptcha.render(container, { sitekey, size: 'compact' });
+      const size = Hooks.applyFilters('mailpoet_re_captcha_size', 'compact');
+      const widgetId = window.grecaptcha.render(container, { sitekey, size });
       field.val(widgetId);
     }
   }
