@@ -655,7 +655,7 @@ class RendererTest extends \MailPoetTest {
       $this->fail('Error preparing data for test: failed to create post.');
     }
 
-    $filename = 'tests/_data/600x400.jpg';
+    $filename = dirname(__DIR__) . '/../../tests/_data/600x400.jpg';
     $contents = file_get_contents($filename);
     if (!$contents) {
       $this->fail('Error preparing data for test: failed to retrieve file contents.');
