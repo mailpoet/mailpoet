@@ -237,9 +237,14 @@ class Import {
   }
 
   private function validateDateTime(array $data, array &$invalidRecords): array {
+    $siteUsesCustomFormat = WPFunctions::get()->getOption('date_format') === 'd/m/Y';
+    if ($siteUsesCustomFormat) {
+      return $this->validateDateTimeAttemptCustomFormat($data, $invalidRecords);
+    }
+
     $validationRule = 'datetime';
     return array_map(
-      function($index, $date) use($validationRule, &$invalidRecords) {
+      function ($index, $date) use ($validationRule, &$invalidRecords) {
         if (empty($date)) return $date;
         $date = (new DateConverter())->convertDateToDatetime($date, $validationRule);
         if (!$date) {
@@ -248,6 +253,45 @@ class Import {
         return $date;
       }, array_keys($data), $data
     );
+  }
+
+  private function validateDateTimeAttemptCustomFormat(array $data, array &$invalidRecords): array {
+    $validationRule = 'datetime';
+    $dateTimeDates = $data;
+    $dateTimeInvalidRecords = $invalidRecords;
+    $datetimeErrorCount = 0;
+
+    $validationRuleCustom = 'd/m/Y';
+    $customFormatDates = $data;
+    $customFormatInvalidRecords = $invalidRecords;
+    $customFormatErrorCount = 0;
+
+    // We attempt converting with both date formats
+    foreach ($data as $index => $date) {
+      if (empty($date) ) {
+        $dateTimeDates[$index] = $date;
+        $customFormatDates[$index] = $date;
+        continue;
+      };
+      $dateTimeDates[$index] = (new DateConverter())->convertDateToDatetime($date, $validationRule);
+      if (!$dateTimeDates[$index]) {
+        $datetimeErrorCount ++;
+        $dateTimeInvalidRecords[] = $index;
+      }
+      $customFormatDates[$index] = (new DateConverter())->convertDateToDatetime($date, $validationRuleCustom);
+      if (!$customFormatDates[$index]) {
+        $customFormatErrorCount ++;
+        $customFormatInvalidRecords[] = $index;
+      }
+    }
+
+    if ($customFormatErrorCount < $datetimeErrorCount) {
+      $invalidRecords = $customFormatInvalidRecords;
+      return $customFormatDates;
+    }
+
+    $invalidRecords = $dateTimeInvalidRecords;
+    return $dateTimeDates;
   }
 
   public function transformSubscribersData($subscribers, $columns) {

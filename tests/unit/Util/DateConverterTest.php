@@ -66,4 +66,22 @@ class DateConverterTest extends \MailPoetUnitTest {
     expect($this->dateConverter->convertDateToDatetime('0', 'MM'))
       ->equals('');
   }
+
+  public function testItCanConvertCustomFormat() {
+    expect($this->dateConverter->convertDateToDatetime('31/12/2021', 'd/m/Y'))
+      ->equals('2021-12-31 00:00:00');
+    expect($this->dateConverter->convertDateToDatetime('1/12/2021', 'd/m/Y'))
+      ->equals('2021-12-01 00:00:00');
+    expect($this->dateConverter->convertDateToDatetime('12/31/2021', 'd/m/Y'))
+      ->equals(false);
+
+    expect($this->dateConverter->convertDateToDatetime('31/12/2021 10:26', 'd/m/Y'))
+      ->equals('2021-12-31 10:26:00');
+    expect($this->dateConverter->convertDateToDatetime('1/12/2021 17:11', 'd/m/Y'))
+      ->equals('2021-12-01 17:11:00');
+    expect($this->dateConverter->convertDateToDatetime('1/12/2021 1:11', 'd/m/Y'))
+      ->equals('2021-12-01 01:11:00');
+    expect($this->dateConverter->convertDateToDatetime('12/31/2021 11:00', 'd/m/Y'))
+      ->equals(false);
+  }
 }
