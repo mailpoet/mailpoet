@@ -154,10 +154,10 @@ class Subscription {
       return null;
     }
 
-    $checkoutOptinEnabled = (bool)$this->settings->get( self::OPTIN_ENABLED_SETTING_NAME );
-    $checkoutOptin = ! empty( $_POST[self::CHECKOUT_OPTIN_INPUT_NAME] );
+    $checkoutOptinEnabled = (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME);
+    $checkoutOptin = !empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME]);
 
-    return $this->handleSubscriberOptin( $subscriber, $checkoutOptinEnabled && $checkoutOptin );
+    return $this->handleSubscriberOptin($subscriber, $checkoutOptinEnabled && $checkoutOptin);
   }
 
   /**

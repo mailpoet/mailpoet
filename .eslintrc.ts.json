@@ -25,7 +25,21 @@
     "@typescript-eslint"
   ],
   "settings": {
-    "import/resolver": "webpack"
+    "import/resolver": "webpack",
+    "import/core-modules": [
+      "@woocommerce/blocks-checkout",
+      "@woocommerce/settings",
+      "@wordpress/a11y",
+      "@wordpress/api-fetch",
+      "@wordpress/block-editor",
+      "@wordpress/compose",
+      "@wordpress/data",
+      "@wordpress/escape-html",
+      "@wordpress/hooks",
+      "@wordpress/keycodes",
+      "@wordpress/url",
+      "react"
+    ]
   },
   "rules": {
     // PropTypes
