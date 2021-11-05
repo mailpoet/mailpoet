@@ -3,6 +3,8 @@ const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const WebpackTerserPlugin = require('terser-webpack-plugin');
 const WebpackCopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
+const wpScriptConfig = require('@wordpress/scripts/config/webpack.config');
+const DependencyExtractionWebpackPlugin = require('@wordpress/dependency-extraction-webpack-plugin');
 
 const globalPrefix = 'MailPoetLib';
 const PRODUCTION_ENV = process.env.NODE_ENV === 'production';
@@ -404,6 +406,96 @@ const postEditorBlock = {
   },
 };
 
+// Marketing Optin config
+function requestToExternal(request) {
+  // The following default externals are bundled for compatibility with older versions of WP
+  // Note CSS for specific components is bundled via admin/assets/src/index.scss
+  // WP 5.4 is the min version for <Card* />, <TabPanel />
+  const bundled = [
+    '@wordpress/compose',
+    '@wordpress/components',
+    '@wordpress/warning',
+    '@wordpress/primitives',
+  ];
+  if (bundled.includes(request)) {
+    return false;
+  }
+
+  const wcDepMap = {
+    '@woocommerce/settings': ['wc', 'wcSettings'],
+    '@woocommerce/blocks-checkout': ['wc', 'blocksCheckout'],
+  };
+  if (wcDepMap[request]) {
+    return wcDepMap[request];
+  }
+  return false;
+}
+
+function requestToHandle(request) {
+  const wcHandleMap = {
+    '@woocommerce/settings': 'wc-settings',
+    '@woocommerce/blocks-checkout': 'wc-blocks-checkout',
+  };
+  if (wcHandleMap[request]) {
+    return wcHandleMap[request];
+  }
+  return false;
+}
+
+const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
+  name: 'marketing_optin_block',
+  entry: {
+    'marketing-optin-block': path.resolve(
+      process.cwd(),
+      'assets/js/src/marketing_optin_block',
+      'index.tsx'
+    ),
+    'marketing-optin-block-frontend': path.resolve(
+      process.cwd(),
+      'assets/js/src/marketing_optin_block',
+      'frontend.tsx'
+    ),
+  },
+  output: {
+    filename: '[name].js',
+    path: path.resolve(process.cwd(), 'assets/dist/js/marketing_optin_block'),
+  },
+  module: Object.assign({}, wpScriptConfig.module, {
+    rules: [
+      ...wpScriptConfig.module.rules,
+      {
+        test: /\.(t|j)sx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader?cacheDirectory',
+          options: {
+            presets: ['@wordpress/babel-preset-default'],
+            plugins: [
+              require.resolve('@babel/plugin-proposal-class-properties'),
+              require.resolve(
+                '@babel/plugin-proposal-nullish-coalescing-operator'
+              ),
+            ].filter(Boolean),
+          },
+        },
+      },
+    ],
+  }),
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+  },
+  plugins: [
+    ...wpScriptConfig.plugins.filter(
+      (plugin) => plugin.constructor.name !== 'DependencyExtractionWebpackPlugin'
+    ),
+    new DependencyExtractionWebpackPlugin({
+      injectPolyfill: true,
+      requestToExternal,
+      requestToHandle,
+    }),
+  ],
+});
+
 const configs = [
   publicConfig,
   adminConfig,
@@ -411,10 +503,14 @@ const configs = [
   formPreviewConfig,
   testConfig,
   postEditorBlock,
+  marketingOptinBlock,
 ];
 
 module.exports = configs.map((conf) => {
   const config = Object.assign({}, conf);
+  if (config.name === 'marketing_optin_block') {
+    return config;
+  }
   if (config.name !== 'test') {
     config.plugins = config.plugins || [];
     config.plugins.push(
