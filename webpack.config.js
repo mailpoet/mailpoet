@@ -1,19 +1,17 @@
-const webpack = require("webpack");
-const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
-const WebpackTerserPlugin = require("terser-webpack-plugin");
-const WebpackCopyPlugin = require("copy-webpack-plugin");
-const path = require("path");
-const wpScriptConfig = require("@wordpress/scripts/config/webpack.config");
-const DependencyExtractionWebpackPlugin = require("@wordpress/dependency-extraction-webpack-plugin");
+const webpack = require('webpack');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
+const WebpackTerserPlugin = require('terser-webpack-plugin');
+const WebpackCopyPlugin = require('copy-webpack-plugin');
+const path = require('path');
 
-const globalPrefix = "MailPoetLib";
-const PRODUCTION_ENV = process.env.NODE_ENV === "production";
+const globalPrefix = 'MailPoetLib';
+const PRODUCTION_ENV = process.env.NODE_ENV === 'production';
 const manifestSeed = {};
 
 // Base config
 const baseConfig = {
-  mode: PRODUCTION_ENV ? "production" : "development",
-  devtool: PRODUCTION_ENV ? undefined : "eval-source-map",
+  mode: PRODUCTION_ENV ? 'production' : 'development',
+  devtool: PRODUCTION_ENV ? undefined : 'eval-source-map',
   cache: true,
   bail: PRODUCTION_ENV,
   context: __dirname,
@@ -33,36 +31,36 @@ const baseConfig = {
     ],
   },
   output: {
-    publicPath: "", // This is needed to have correct names in WebpackManifestPlugin
-    path: path.join(__dirname, "assets/dist/js"),
-    filename: PRODUCTION_ENV ? "[name].[fullhash:8].js" : "[name].js",
-    chunkFilename: PRODUCTION_ENV
-      ? "[name].[fullhash:8].chunk.js"
-      : "[name].chunk.js",
+    publicPath: '', // This is needed to have correct names in WebpackManifestPlugin
+    path: path.join(__dirname, 'assets/dist/js'),
+    filename: (PRODUCTION_ENV) ? '[name].[fullhash:8].js' : '[name].js',
+    chunkFilename: (PRODUCTION_ENV) ? '[name].[fullhash:8].chunk.js' : '[name].chunk.js',
   },
   resolve: {
-    modules: ["node_modules", "assets/js/src"],
+    modules: [
+      'node_modules',
+      'assets/js/src',
+    ],
     fallback: {
       fs: false,
       // We need path polyfill so that eslint is able to lint webpack.config.js
       // and it is imported in css module, but we don't use the functionality which requires it
-      path: require.resolve("path-browserify"),
+      path: require.resolve('path-browserify'),
     },
-    extensions: [".js", ".jsx", ".ts", ".tsx"],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
-      handlebars: "handlebars/dist/handlebars.js",
-      "backbone.marionette": "backbone.marionette/lib/backbone.marionette",
-      "backbone.supermodel$":
-        "backbone.supermodel/build/backbone.supermodel.js",
-      "sticky-kit": "vendor/jquery.sticky-kit.js",
-      interact$: "interact.js/interact.js",
-      spectrum$: "spectrum-colorpicker/spectrum.js",
-      "wp-js-hooks": path.resolve(__dirname, "assets/js/src/hooks.js"),
-      blob$: "blob-tmp/Blob.js",
-      chai: "chai/index.js",
-      papaparse: "papaparse/papaparse.min.js",
-      html2canvas: "html2canvas/dist/html2canvas.js",
-      asyncqueue: "vendor/jquery.asyncqueue.js",
+      handlebars: 'handlebars/dist/handlebars.js',
+      'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
+      'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
+      'sticky-kit': 'vendor/jquery.sticky-kit.js',
+      interact$: 'interact.js/interact.js',
+      spectrum$: 'spectrum-colorpicker/spectrum.js',
+      'wp-js-hooks': path.resolve(__dirname, 'assets/js/src/hooks.js'),
+      blob$: 'blob-tmp/Blob.js',
+      chai: 'chai/index.js',
+      papaparse: 'papaparse/papaparse.min.js',
+      html2canvas: 'html2canvas/dist/html2canvas.js',
+      asyncqueue: 'vendor/jquery.asyncqueue.js',
     },
   },
   plugins: [],
@@ -72,53 +70,53 @@ const baseConfig = {
       {
         test: /\.(j|t)sx?$/,
         exclude: /(node_modules|src\/vendor)/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
       },
       {
-        include: require.resolve("underscore"),
-        loader: "expose-loader",
+        include: require.resolve('underscore'),
+        loader: 'expose-loader',
         options: {
-          exposes: "_",
+          exposes: '_',
         },
       },
       {
-        include: require.resolve("react-tooltip"),
-        loader: "expose-loader",
+        include: require.resolve('react-tooltip'),
+        loader: 'expose-loader',
         options: {
           exposes: `${globalPrefix}.ReactTooltip`,
         },
       },
       {
-        include: require.resolve("react"),
-        loader: "expose-loader",
+        include: require.resolve('react'),
+        loader: 'expose-loader',
         options: {
           exposes: `${globalPrefix}.React`,
         },
       },
       {
-        include: require.resolve("react-dom"),
-        loader: "expose-loader",
+        include: require.resolve('react-dom'),
+        loader: 'expose-loader',
         options: {
           exposes: `${globalPrefix}.ReactDOM`,
         },
       },
       {
-        include: require.resolve("react-router-dom"),
-        loader: "expose-loader",
+        include: require.resolve('react-router-dom'),
+        loader: 'expose-loader',
         options: {
           exposes: `${globalPrefix}.ReactRouter`,
         },
       },
       {
-        include: require.resolve("react-string-replace"),
-        loader: "expose-loader",
+        include: require.resolve('react-string-replace'),
+        loader: 'expose-loader',
         options: {
           exposes: `${globalPrefix}.ReactStringReplace`,
         },
       },
       {
-        include: path.resolve(__dirname, "assets/js/src/hooks.js"),
-        loader: "expose-loader",
+        include: path.resolve(__dirname, 'assets/js/src/hooks.js'),
+        loader: 'expose-loader',
         options: {
           exposes: {
             globalName: `${globalPrefix}.Hooks`,
@@ -130,94 +128,94 @@ const baseConfig = {
         test: /listing.jsx/i,
         use: [
           {
-            loader: "expose-loader",
+            loader: 'expose-loader',
             options: {
               exposes: `${globalPrefix}.Listing`,
             },
           },
-          "babel-loader",
+          'babel-loader',
         ],
       },
       {
-        include: path.resolve(__dirname, "assets/js/src/help-tooltip.jsx"),
+        include: path.resolve(__dirname, 'assets/js/src/help-tooltip.jsx'),
         use: [
           {
-            loader: "expose-loader",
+            loader: 'expose-loader',
             options: {
               exposes: `${globalPrefix}.HelpTooltip`,
             },
           },
-          "babel-loader",
+          'babel-loader',
         ],
       },
       {
-        include: path.resolve(__dirname, "assets/js/src/common/index.ts"),
+        include: path.resolve(__dirname, 'assets/js/src/common/index.ts'),
         use: [
           {
-            loader: "expose-loader",
+            loader: 'expose-loader',
             options: {
               exposes: `${globalPrefix}.Common`,
             },
           },
-          "babel-loader",
+          'babel-loader',
         ],
       },
       {
         include: /Blob.js$/,
-        loader: "exports-loader",
+        loader: 'exports-loader',
         options: {
-          exports: "default window.Blob",
+          exports: 'default window.Blob',
         },
       },
       {
         test: /backbone.supermodel/,
-        loader: "exports-loader",
+        loader: 'exports-loader',
         options: {
-          exports: "default Backbone.SuperModel",
+          exports: 'default Backbone.SuperModel',
         },
       },
       {
-        include: require.resolve("velocity-animate"),
-        loader: "imports-loader",
+        include: require.resolve('velocity-animate'),
+        loader: 'imports-loader',
         options: {
           imports: {
-            name: "jQuery",
-            moduleName: "jquery",
+            name: 'jQuery',
+            moduleName: 'jquery',
           },
         },
       },
       {
-        include: require.resolve("classnames"),
+        include: require.resolve('classnames'),
         use: [
           {
-            loader: "expose-loader",
+            loader: 'expose-loader',
             options: {
               exposes: `${globalPrefix}.ClassNames`,
             },
           },
-          "babel-loader",
+          'babel-loader',
         ],
       },
       {
         test: /node_modules\/tinymce/,
-        loader: "string-replace-loader",
+        loader: 'string-replace-loader',
         options: {
           // prefix TinyMCE to avoid conflicts with other plugins
           multiple: [
             {
-              search: "window\\.tinymce",
-              replace: "window.mailpoetTinymce",
-              flags: "g",
+              search: 'window\\.tinymce',
+              replace: 'window.mailpoetTinymce',
+              flags: 'g',
             },
             {
-              search: "tinymce\\.util",
-              replace: "window.mailpoetTinymce.util",
-              flags: "g",
+              search: 'tinymce\\.util',
+              replace: 'window.mailpoetTinymce.util',
+              flags: 'g',
             },
             {
-              search: "resolve\\('tinymce",
-              replace: "resolve('mailpoetTinymce",
-              flags: "g",
+              search: 'resolve\\(\'tinymce',
+              replace: 'resolve(\'mailpoetTinymce',
+              flags: 'g',
             },
           ],
         },
@@ -228,27 +226,27 @@ const baseConfig = {
 
 // Admin config
 const adminConfig = {
-  name: "admin",
+  name: 'admin',
   entry: {
-    vendor: "webpack_vendor_index.jsx",
-    mailpoet: "webpack_mailpoet_index.jsx",
+    vendor: 'webpack_vendor_index.jsx',
+    mailpoet: 'webpack_mailpoet_index.jsx',
     // Admin vendor contains libraries shared between free and premium plugin
     admin_vendor: [
-      "react",
-      "react-dom",
-      require.resolve("react-router-dom"),
-      "react-string-replace",
-      "prop-types",
-      "classnames",
-      "lodash",
-      "help-tooltip.jsx",
-      "listing/listing.jsx",
-      "common/index.ts",
+      'react',
+      'react-dom',
+      require.resolve('react-router-dom'),
+      'react-string-replace',
+      'prop-types',
+      'classnames',
+      'lodash',
+      'help-tooltip.jsx',
+      'listing/listing.jsx',
+      'common/index.ts',
     ],
-    admin: "webpack_admin_index.jsx",
-    newsletter_editor: "newsletter_editor/webpack_index.jsx",
-    form_editor: "form_editor/form_editor.jsx",
-    settings: "settings/index.tsx",
+    admin: 'webpack_admin_index.jsx',
+    newsletter_editor: 'newsletter_editor/webpack_index.jsx',
+    form_editor: 'form_editor/form_editor.jsx',
+    settings: 'settings/index.tsx',
   },
   plugins: [
     ...baseConfig.plugins,
@@ -256,37 +254,37 @@ const adminConfig = {
     new WebpackCopyPlugin({
       patterns: [
         {
-          from: "node_modules/tinymce/skins/ui/oxide",
-          to: "skins/ui/oxide",
+          from: 'node_modules/tinymce/skins/ui/oxide',
+          to: 'skins/ui/oxide',
         },
       ],
     }),
     new webpack.ProvidePlugin({
-      process: "process/browser",
+      process: 'process/browser',
     }),
   ],
   optimization: {
-    runtimeChunk: "single",
+    runtimeChunk: 'single',
     splitChunks: {
       cacheGroups: {
         commons: {
-          name: "commons",
-          chunks: "initial",
+          name: 'commons',
+          chunks: 'initial',
           minChunks: 2,
         },
       },
     },
   },
   externals: {
-    jquery: "jQuery",
+    jquery: 'jQuery',
   },
 };
 
 // Public config
 const publicConfig = {
-  name: "public",
+  name: 'public',
   entry: {
-    public: "webpack_public_index.jsx",
+    public: 'webpack_public_index.jsx',
   },
   plugins: [
     ...baseConfig.plugins,
@@ -294,64 +292,63 @@ const publicConfig = {
     // replace MailPoet definition with a smaller version for public
     new webpack.NormalModuleReplacementPlugin(
       /mailpoet\.js/,
-      "./mailpoet_public.js"
+      './mailpoet_public.js'
     ),
   ],
   externals: {
-    jquery: "jQuery",
+    jquery: 'jQuery',
   },
 };
 
 // Migrator config
 const migratorConfig = {
-  name: "mp2migrator",
+  name: 'mp2migrator',
   entry: {
-    mp2migrator: ["mp2migrator.js"],
+    mp2migrator: [
+      'mp2migrator.js',
+    ],
   },
   externals: {
-    jquery: "jQuery",
-    mailpoet: "MailPoet",
+    jquery: 'jQuery',
+    mailpoet: 'MailPoet',
   },
 };
 
 // Newsletter Editor Tests Config
 const testConfig = {
-  name: "test",
+  name: 'test',
   entry: {
-    vendor: "webpack_vendor_index.jsx",
+    vendor: 'webpack_vendor_index.jsx',
     testNewsletterEditor: [
-      "webpack_mailpoet_index.jsx",
-      "newsletter_editor/webpack_index.jsx",
+      'webpack_mailpoet_index.jsx',
+      'newsletter_editor/webpack_index.jsx',
 
-      "components/config.spec.js",
-      "components/content.spec.js",
-      "components/heading.spec.js",
-      "components/history.spec.js",
-      "components/save.spec.js",
-      "components/sidebar.spec.js",
-      "components/styles.spec.js",
-      "components/communication.spec.js",
+      'components/config.spec.js',
+      'components/content.spec.js',
+      'components/heading.spec.js',
+      'components/history.spec.js',
+      'components/save.spec.js',
+      'components/sidebar.spec.js',
+      'components/styles.spec.js',
+      'components/communication.spec.js',
 
-      "blocks/automatedLatestContentLayout.spec.js",
-      "blocks/button.spec.js",
-      "blocks/container.spec.js",
-      "blocks/divider.spec.js",
-      "blocks/footer.spec.js",
-      "blocks/header.spec.js",
-      "blocks/image.spec.js",
-      "blocks/posts.spec.js",
-      "blocks/products.spec.js",
-      "blocks/social.spec.js",
-      "blocks/spacer.spec.js",
-      "blocks/text.spec.js",
+      'blocks/automatedLatestContentLayout.spec.js',
+      'blocks/button.spec.js',
+      'blocks/container.spec.js',
+      'blocks/divider.spec.js',
+      'blocks/footer.spec.js',
+      'blocks/header.spec.js',
+      'blocks/image.spec.js',
+      'blocks/posts.spec.js',
+      'blocks/products.spec.js',
+      'blocks/social.spec.js',
+      'blocks/spacer.spec.js',
+      'blocks/text.spec.js',
     ],
   },
   output: {
-    path: path.join(
-      __dirname,
-      "tests/javascript_newsletter_editor/testBundles"
-    ),
-    filename: "[name].js",
+    path: path.join(__dirname, 'tests/javascript_newsletter_editor/testBundles'),
+    filename: '[name].js',
   },
   plugins: [
     ...baseConfig.plugins,
@@ -359,144 +356,52 @@ const testConfig = {
     // replace MailPoet definition with a smaller version for public
     new webpack.NormalModuleReplacementPlugin(
       /mailpoet\.js/,
-      "./mailpoet_tests.js"
+      './mailpoet_tests.js'
     ),
   ],
   resolve: {
     modules: [
-      "node_modules",
-      "assets/js/src",
-      "tests/javascript_newsletter_editor/newsletter_editor",
+      'node_modules',
+      'assets/js/src',
+      'tests/javascript_newsletter_editor/newsletter_editor',
     ],
-    extensions: [".js", ".jsx", ".ts", ".tsx"],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
-      handlebars: "handlebars/dist/handlebars.js",
-      "sticky-kit": "vendor/jquery.sticky-kit.js",
-      "backbone.marionette": "backbone.marionette/lib/backbone.marionette",
-      "backbone.supermodel$":
-        "backbone.supermodel/build/backbone.supermodel.js",
-      blob$: "blob-tmp/Blob.js",
-      "wp-js-hooks": path.resolve(__dirname, "assets/js/src/hooks.js"),
+      handlebars: 'handlebars/dist/handlebars.js',
+      'sticky-kit': 'vendor/jquery.sticky-kit.js',
+      'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
+      'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
+      blob$: 'blob-tmp/Blob.js',
+      'wp-js-hooks': path.resolve(__dirname, 'assets/js/src/hooks.js'),
     },
     fallback: {
       fs: false,
     },
   },
   externals: {
-    jquery: "jQuery",
-    interact: "interact",
-    spectrum: "spectrum",
+    jquery: 'jQuery',
+    interact: 'interact',
+    spectrum: 'spectrum',
   },
 };
 
 // Form preview config
 const formPreviewConfig = {
-  name: "form_preview",
+  name: 'form_preview',
   entry: {
-    form_preview: "form_editor/form_preview.ts",
+    form_preview: 'form_editor/form_preview.ts',
   },
   externals: {
-    jquery: "jQuery",
+    jquery: 'jQuery',
   },
 };
 
 // Block config
 const postEditorBlock = {
-  name: "post_editor_block",
+  name: 'post_editor_block',
   entry: {
-    post_editor_block: "post_editor_block/blocks.jsx",
+    post_editor_block: 'post_editor_block/blocks.jsx',
   },
-};
-
-const requestToExternal = (request) => {
-  // The following default externals are bundled for compatibility with older versions of WP
-  // Note CSS for specific components is bundled via admin/assets/src/index.scss
-  // WP 5.4 is the min version for <Card* />, <TabPanel />
-  const bundled = [
-    "@wordpress/compose",
-    "@wordpress/components",
-    "@wordpress/warning",
-    "@wordpress/primitives",
-  ];
-  if (bundled.includes(request)) {
-    return false;
-  }
-
-  const wcDepMap = {
-    "@woocommerce/settings": ["wc", "wcSettings"],
-    "@woocommerce/blocks-checkout": ["wc", "blocksCheckout"],
-  };
-  if (wcDepMap[request]) {
-    return wcDepMap[request];
-  }
-};
-
-const requestToHandle = (request) => {
-  const wcHandleMap = {
-    "@woocommerce/settings": "wc-settings",
-    "@woocommerce/blocks-checkout": "wc-blocks-checkout",
-  };
-  if (wcHandleMap[request]) {
-    return wcHandleMap[request];
-  }
-};
-
-// Marketing Optin config
-const marketingOptinBlock = {
-  ...wpScriptConfig,
-  name: "marketing_optin_block",
-  entry: {
-    "marketing-optin-block": path.resolve(
-      process.cwd(),
-      "assets/js/src/marketing_optin_block",
-      "index.tsx"
-    ),
-    "marketing-optin-block-frontend": path.resolve(
-      process.cwd(),
-      "assets/js/src/marketing_optin_block",
-      "frontend.tsx"
-    ),
-  },
-  output: {
-    filename: "[name].js",
-    path: path.resolve(process.cwd(), "assets/dist/js/marketing_optin_block"),
-  },
-  module: {
-    ...wpScriptConfig.module,
-    rules: [
-      ...wpScriptConfig.module.rules,
-      {
-        test: /\.(t|j)sx?$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader?cacheDirectory",
-          options: {
-            presets: ["@wordpress/babel-preset-default"],
-            plugins: [
-              require.resolve("@babel/plugin-proposal-class-properties"),
-              require.resolve(
-                "@babel/plugin-proposal-nullish-coalescing-operator"
-              ),
-            ].filter(Boolean),
-          },
-        },
-      },
-    ],
-  },
-  resolve: {
-    extensions: [".js", ".jsx", ".ts", ".tsx"],
-  },
-  plugins: [
-    ...wpScriptConfig.plugins.filter(
-      (plugin) =>
-        plugin.constructor.name !== "DependencyExtractionWebpackPlugin"
-    ),
-    new DependencyExtractionWebpackPlugin({
-      injectPolyfill: true,
-      requestToExternal,
-      requestToHandle,
-    }),
-  ],
 };
 
 const configs = [
@@ -508,19 +413,16 @@ const configs = [
   postEditorBlock,
 ];
 
-module.exports = [
-  ...configs.map((conf) => {
-    const config = Object.assign({}, conf);
-    if (config.name !== "test") {
-      config.plugins = config.plugins || [];
-      config.plugins.push(
-        new WebpackManifestPlugin({
-          // create single manifest file for all Webpack configs
-          seed: manifestSeed,
-        })
-      );
-    }
-    return Object.assign({}, baseConfig, config);
-  }),
-  marketingOptinBlock,
-];
+module.exports = configs.map((conf) => {
+  const config = Object.assign({}, conf);
+  if (config.name !== 'test') {
+    config.plugins = config.plugins || [];
+    config.plugins.push(
+      new WebpackManifestPlugin({
+        // create single manifest file for all Webpack configs
+        seed: manifestSeed,
+      })
+    );
+  }
+  return Object.assign({}, baseConfig, config);
+});
