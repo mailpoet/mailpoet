@@ -68,11 +68,15 @@ class Select {
         continue;
       }
 
-      $isSelected = (
-        (isset($option['is_checked']) && $option['is_checked'])
-        ||
-        ($this->rendererHelper->getFieldValue($block) === $option['value'])
-      ) ? ' selected="selected"' : '';
+      $isSelected = '';
+
+      if ($this->rendererHelper->getFieldValue($block) === $option['value']) {
+        // use selected value if it exist
+        $isSelected = ' selected="selected"';
+      } elseif ((isset($option['is_checked']) && $option['is_checked']) && !($this->rendererHelper->getFieldValue($block))) {
+        // use default value otherwise
+        $isSelected = ' selected="selected"';
+      }
 
       $isDisabled = (!empty($option['is_disabled'])) ? ' disabled="disabled"' : '';
 
