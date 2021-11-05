@@ -1,6 +1,4 @@
 /* eslint-disable react/react-in-jsx-scope */
-/* eslint-disable import/no-unresolved */
-
 /**
  * External dependencies
  */
