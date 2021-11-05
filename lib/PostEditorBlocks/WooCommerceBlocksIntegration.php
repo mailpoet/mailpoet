@@ -11,7 +11,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 use MailPoet\WP\Functions as WPFunctions;
 
-// @todo Disable if blocks is inactive
 class WooCommerceBlocksIntegration {
   /** @var SettingsController */
   private $settings;
