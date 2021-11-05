@@ -408,19 +408,6 @@ const postEditorBlock = {
 
 // Marketing Optin config
 function requestToExternal(request) {
-  // The following default externals are bundled for compatibility with older versions of WP
-  // Note CSS for specific components is bundled via admin/assets/src/index.scss
-  // WP 5.4 is the min version for <Card* />, <TabPanel />
-  const bundled = [
-    '@wordpress/compose',
-    '@wordpress/components',
-    '@wordpress/warning',
-    '@wordpress/primitives',
-  ];
-  if (bundled.includes(request)) {
-    return false;
-  }
-
   const wcDepMap = {
     '@woocommerce/settings': ['wc', 'wcSettings'],
     '@woocommerce/blocks-checkout': ['wc', 'blocksCheckout'],
@@ -428,7 +415,7 @@ function requestToExternal(request) {
   if (wcDepMap[request]) {
     return wcDepMap[request];
   }
-  return false;
+  return undefined;
 }
 
 function requestToHandle(request) {
@@ -439,7 +426,7 @@ function requestToHandle(request) {
   if (wcHandleMap[request]) {
     return wcHandleMap[request];
   }
-  return false;
+  return undefined;
 }
 
 const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
