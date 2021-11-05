@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers\ImportExport\Import;
 
+use Codeception\Stub;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -707,6 +708,57 @@ class ImportTest extends \MailPoetTest {
       ]);
       expect($subscriberSegment)->isInstanceOf(SubscriberSegmentEntity::class);
     }
+  }
+
+  public function testItImportsSubscribersWithCustomFormat() {
+    WPFunctions::set(Stub::make(new WPFunctions, [
+      'getOption' => 'd/m/Y',
+    ]));
+
+    $data = $this->testData;
+
+    $data['subscribers'][0][4] = '31/08/2021 10:33'; // valid only with d/m/Y
+    $data['subscribers'][0][6] = '03/08/2021';
+    $data['subscribers'][0][2] = 'europeandateformat@yopmail.com';
+
+    $data['subscribers'][1][4] = '12/08/2021 11:33';
+    $data['subscribers'][1][6] = '04/08/2021';
+    $data['subscribers'][1][2] = 'europeandateformat2@yopmail.com';
+    $import = $this->createImportInstance($data);
+    $import->process();
+    /** @var SubscriberEntity[] $newSubscribers */
+    $newSubscribers = $this->subscriberRepository->findBy(['email' => [
+      $data['subscribers'][0][2],
+      $data['subscribers'][1][2],
+    ]]);
+    expect($newSubscribers)->count(2);
+    WPFunctions::set(new WPFunctions());
+  }
+
+  public function testItOnlyAppliesCustomFormatToSitesWithCustomFormat() {
+    WPFunctions::set(Stub::make(new WPFunctions, [
+      'getOption' => 'm/d/Y',
+    ]));
+
+    $data = $this->testData;
+
+    $data['subscribers'][0][4] = '31/08/2021 10:33'; // valid only with d/m/Y
+    $data['subscribers'][0][6] = '03/08/2021';
+    $data['subscribers'][0][2] = 'wrongdateformat@yopmail.com';
+
+    $data['subscribers'][1][4] = '12/08/2021 11:33';
+    $data['subscribers'][1][6] = '04/08/2021';
+    $data['subscribers'][1][2] = 'correctdateformat2@yopmail.com';
+    $import = $this->createImportInstance($data);
+    $import->process();
+    /** @var SubscriberEntity[] $newSubscribers */
+    $newSubscribers = $this->subscriberRepository->findBy(['email' => [
+      $data['subscribers'][0][2],
+      $data['subscribers'][1][2],
+    ]]);
+    expect($newSubscribers)->count(1);
+    expect($newSubscribers[0]->getEmail())->equals('correctdateformat2@yopmail.com');
+    WPFunctions::set(new WPFunctions());
   }
 
   private function createImportInstance(array $data): Import {

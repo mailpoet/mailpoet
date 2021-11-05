@@ -10,8 +10,11 @@ class DateConverter {
    */
   public function convertDateToDatetime(string $date, string $dateFormat) {
     $datetime = false;
+
     if ($dateFormat === 'datetime') {
       $datetime = $date;
+    } elseif ($dateFormat === 'd/m/Y') {
+      $datetime = str_replace('/', '-', $date);
     } else {
       $parsedDate = explode('/', $date);
       $parsedDateFormat = explode('/', $dateFormat);
