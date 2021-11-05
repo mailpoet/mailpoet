@@ -418,11 +418,8 @@ function requestToExternal(request) {
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
   // function.
-  /* eslint-disable consistent-return */
-  /* eslint-disable no-useless-return */
+  /* eslint-disable-next-line consistent-return, no-useless-return */
   return;
-  /* eslint-enable consistent-return */
-  /* eslint-enable no-useless-return */
 }
 
 function requestToHandle(request) {
@@ -436,11 +433,8 @@ function requestToHandle(request) {
   // DependencyExtractionWebpackPlugin has native handling for @wordpress/*
   // packages, for that handling to kick in, we must not return anything from
   // function.
-  /* eslint-disable consistent-return */
-  /* eslint-disable no-useless-return */
+  /* eslint-disable-next-line consistent-return, no-useless-return */
   return;
-  /* eslint-enable consistent-return */
-  /* eslint-enable no-useless-return */
 }
 
 const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
