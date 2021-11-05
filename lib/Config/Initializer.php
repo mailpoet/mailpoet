@@ -392,7 +392,7 @@ class Initializer {
 
   private function setupWoocommerceBlocksIntegration() {
     $wcEnabled = $this->wcHelper->isWooCommerceActive();
-    $wcBlocksEnabled = $this->wcHelper->isWooCommerceBlocksActive( '6.3.0-dev' );
+    $wcBlocksEnabled = $this->wcHelper->isWooCommerceBlocksActive('6.3.0-dev');
     if ($wcEnabled && $wcBlocksEnabled) {
       $this->woocommerceBlocksIntegration->init();
     }
