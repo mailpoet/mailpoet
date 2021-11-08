@@ -69,6 +69,44 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     expect($segment2->getDeletedAt())->null();
   }
 
+  public function testItReturnsCountsOfSegmentsWithMultipleFilters() {
+    // No Segments
+    $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();
+    expect($count)->equals(0);
+
+    // Two segments with one filter each
+    $segment1 = $this->createDynamicSegmentEntityForEditorUsers();
+    $segment2 = $this->createDynamicSegmentEntityForEditorUsers();
+    $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();
+    expect($count)->equals(0);
+
+    // One segment with multiple filters
+    $filterData = new DynamicSegmentFilterData(
+      DynamicSegmentFilterData::TYPE_USER_ROLE,
+      UserRole::TYPE,
+      ['wordpressRole' => 'editor']
+    );
+    $dynamicFilter = new DynamicSegmentFilterEntity($segment1, $filterData);
+    $this->entityManager->persist($dynamicFilter);
+    $segment1->addDynamicFilter($dynamicFilter);
+    $this->segmentsRepository->flush();
+    $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();
+    expect($count)->equals(1);
+
+    // Both segments with multiple filters
+    $filterData = new DynamicSegmentFilterData(
+      DynamicSegmentFilterData::TYPE_USER_ROLE,
+      UserRole::TYPE,
+      ['wordpressRole' => 'editor']
+    );
+    $dynamicFilter = new DynamicSegmentFilterEntity($segment2, $filterData);
+    $this->entityManager->persist($dynamicFilter);
+    $segment1->addDynamicFilter($dynamicFilter);
+    $this->segmentsRepository->flush();
+    $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();
+    expect($count)->equals(2);
+  }
+
   private function createDefaultSegment(string $name): SegmentEntity {
     $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, 'description');
     $this->entityManager->persist($segment);
