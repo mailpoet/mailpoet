@@ -5,21 +5,13 @@ namespace MailPoetTasks\Release;
 use GuzzleHttp\Client;
 
 class TranslationsController {
-  private const API_BASE_URI = 'https://translate.wordpress.com/api/import-transifex/';
+  private const API_IMPORT_BASE_URI = 'https://translate.wordpress.com/api/import-transifex/';
 
-  /** @var Client */
-  private $httpClient;
-
-  public function __construct(
-    $project = 'mailpoet'
-  ) {
-    $this->httpClient = new Client([
-      'base_uri' => self::API_BASE_URI . $project . '/',
+  public function importTransifex(string $version, $project = 'mailpoet'): array {
+    $httpClient = new Client([
+      'base_uri' => self::API_IMPORT_BASE_URI . $project . '/',
     ]);
-  }
-
-  public function importTransifex(string $version): array {
-    $response = $this->httpClient->post($version);
+    $response = $httpClient->post($version);
     $response->getStatusCode();
     if ($response->getStatusCode() !== 200) {
       return [
@@ -35,5 +27,9 @@ class TranslationsController {
       ];
     }
     return $result;
+  }
+
+  public function checkIfTranslationsAreReady(string $version): bool {
+    return true;
   }
 }
