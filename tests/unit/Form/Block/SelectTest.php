@@ -39,7 +39,7 @@ class SelectTest extends \MailPoetUnitTest {
     $this->rendererHelperMock->method('getFieldName')->will($this->returnValue('select'));
     $this->rendererHelperMock->method('renderLabel')->will($this->returnValue('<label></label>'));
     $this->rendererHelperMock->method('getFieldLabel')->will($this->returnValue('Field label'));
-    $this->rendererHelperMock->method('getFieldValue')->will($this->returnValue('1'));
+    $this->rendererHelperMock->method('getFieldValue')->will($this->returnValue(''));
     $this->blockStylesRenderer = $this->createMock(BlockStylesRenderer::class);
     $this->blockStylesRenderer->method('renderForSelect')->willReturn('');
     $this->selectBlock = new Select($this->rendererHelperMock, $this->wrapperMock, $this->blockStylesRenderer, $this->wpMock);
