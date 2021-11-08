@@ -23,6 +23,8 @@ function mapFormDataToParams(fieldType, data) {
           const mapped = { value: value.name };
           if (value.isChecked) {
             mapped.is_checked = '1';
+          } else {
+            mapped.is_checked = '';
           }
           return mapped;
         }),
