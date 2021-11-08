@@ -15,6 +15,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -64,7 +65,9 @@ class SendingQueueTest extends \MailPoetTest {
     $scheduledTask = $repo->findOneById($result->data['task_id']);
     assert($scheduledTask instanceof ScheduledTaskEntity);
     expect($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($scheduledTask->getScheduledAt()->format('Y-m-d H:i:s'))->equals($newletterOptions['scheduledAt']);
+    $scheduled = $scheduledTask->getScheduledAt();
+    assert($scheduled instanceof \DateTimeInterface);
+    expect($scheduled->format('Y-m-d H:i:s'))->equals($newletterOptions['scheduledAt']);
     expect($scheduledTask->getType())->equals(Sending::TASK_TYPE);
   }
 
@@ -74,6 +77,7 @@ class SendingQueueTest extends \MailPoetTest {
         'check' => true,
       ]),
       $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(SendingQueuesRepository::class),
       $this->diContainer->get(Bridge::class),
       $this->diContainer->get(SubscribersFinder::class)
     );
@@ -103,7 +107,9 @@ class SendingQueueTest extends \MailPoetTest {
     $repo = $this->diContainer->get(ScheduledTasksRepository::class);
     $scheduledTask = $repo->findOneById($result->data['task_id']);
     assert($scheduledTask instanceof ScheduledTaskEntity);
-    expect($scheduledTask->getScheduledAt()->format('Y-m-d H:i:s'))->equals('2018-10-10 10:00:00');
+    $scheduled = $scheduledTask->getScheduledAt();
+    assert($scheduled instanceof \DateTimeInterface);
+    expect($scheduled->format('Y-m-d H:i:s'))->equals('2018-10-10 10:00:00');
 
     // update scheduled time
     $newletterOptions = [
@@ -122,7 +128,9 @@ class SendingQueueTest extends \MailPoetTest {
     // new task was not created
     expect($rescheduledTask->getId())->equals($scheduledTask->getId());
     // scheduled time was updated
-    expect($rescheduledTask->getScheduledAt()->format('Y-m-d H:i:s'))->equals('2018-11-11 11:00:00');
+    $scheduled = $rescheduledTask->getScheduledAt();
+    assert($scheduled instanceof \DateTimeInterface);
+    expect($scheduled->format('Y-m-d H:i:s'))->equals('2018-11-11 11:00:00');
   }
 
   public function testItRejectsNewsletterWithoutUnsubscribeLink() {
@@ -135,6 +143,7 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueue = new SendingQueueAPI(
       $this->diContainer->get(SubscribersFeature::class),
       $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(SendingQueuesRepository::class),
       Stub::make(Bridge::class, [
         'isMailpoetSendingServiceEnabled' => true,
       ]),
@@ -163,6 +172,7 @@ class SendingQueueTest extends \MailPoetTest {
       $newsletterOption = $newsletterOptionRepository->findOneBy(['newsletter' => $newsletter, 'optionField' => $newsletterOptionField]);
       if (!$newsletterOption instanceof NewsletterOptionEntity) {
         $newsletterOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
+        $newsletter->getOptions()->add($newsletterOption);
         $this->entityManager->persist($newsletterOption);
       }
       $newsletterOption->setValue($value);

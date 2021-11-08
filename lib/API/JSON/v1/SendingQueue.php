@@ -120,14 +120,13 @@ class SendingQueue extends APIEndpoint {
     }
 
     WordPress::resetRunInterval();
-
-    if ((bool)$newsletter->isScheduled) {
+    if ((bool)$newsletterEntity->getOptionValue('isScheduled')) {
       // set newsletter status
-      $newsletter->setStatus(Newsletter::STATUS_SCHEDULED);
+      $newsletterEntity->setStatus(NewsletterEntity::STATUS_SCHEDULED);
 
       // set queue status
       $queue->status = SendingQueueModel::STATUS_SCHEDULED;
-      $queue->scheduledAt = Scheduler::formatDatetimeString($newsletter->scheduledAt);
+      $queue->scheduledAt = Scheduler::formatDatetimeString($newsletterEntity->getOptionValue('scheduledAt'));
     } else {
       $segments = $newsletter->segments()->findMany();
       $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($queue->task(), $segments);
@@ -141,9 +140,10 @@ class SendingQueue extends APIEndpoint {
       $queue->scheduledAt = null;
 
       // set newsletter status
-      $newsletter->setStatus(Newsletter::STATUS_SENDING);
+      $newsletterEntity->setStatus(Newsletter::STATUS_SENDING);
     }
     $queue->save();
+    $this->newsletterRepository->flush();
 
     $errors = $queue->getErrors();
     if (!empty($errors)) {
