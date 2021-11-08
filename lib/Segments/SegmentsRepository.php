@@ -15,7 +15,6 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
-use MailPoetVendor\Doctrine\ORM\Query;
 
 /**
  * @extends Repository<SegmentEntity>
@@ -227,13 +226,17 @@ class SegmentsRepository extends Repository {
    * Returns count of segments that have more than one dynamic filter
    */
   public function getSegmentCountWithMultipleFilters(): int {
-    $qb = $this->entityManager->createQueryBuilder()
-      ->select('COUNT(DISTINCT s.id) AS segmentCount')
-      ->from(SegmentEntity::class, 's')
-      ->join('s.dynamicFilters', 'ds')
-      ->groupBy('ds.segment')
-      ->having('COUNT(ds.id) > 1');
-    $result = $qb->getQuery()->getOneOrNullResult(Query::HYDRATE_ARRAY);
-    return (int)($result['segmentCount'] ?? 0);
+    $segmentFiltersTable = $this->entityManager->getClassMetadata(DynamicSegmentFilterEntity::class)->getTableName();
+    $qbInner = $this->entityManager->getConnection()->createQueryBuilder()
+      ->select('COUNT(DISTINCT sf.id) AS segmentCount')
+      ->from($segmentFiltersTable, 'sf')
+      ->groupBy('sf.segment_id')
+      ->having('COUNT(sf.id) > 1');
+    $result = $this->entityManager->getConnection()->createQueryBuilder()
+      ->select('count(*)')
+      ->from(sprintf('(%s) as subCounts', $qbInner->getSQL()))
+      ->execute()
+      ->fetchOne();
+    return (int)$result;
   }
 }
