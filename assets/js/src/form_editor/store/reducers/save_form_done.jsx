@@ -12,7 +12,7 @@ export default (state, action) => {
     ...state,
     formData: {
       ...state.formData,
-      id: action.formId,
+      id: parseInt(action.formId, 10),
     },
     isFormSaving: false,
     hasUnsavedChanges: false,
