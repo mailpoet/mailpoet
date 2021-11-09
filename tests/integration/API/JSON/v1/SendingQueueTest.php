@@ -63,10 +63,10 @@ class SendingQueueTest extends \MailPoetTest {
     $result = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
     $repo = $this->diContainer->get(ScheduledTasksRepository::class);
     $scheduledTask = $repo->findOneById($result->data['task_id']);
-    assert($scheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     expect($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $scheduled = $scheduledTask->getScheduledAt();
-    assert($scheduled instanceof \DateTimeInterface);
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduled);
     expect($scheduled->format('Y-m-d H:i:s'))->equals($newletterOptions['scheduledAt']);
     expect($scheduledTask->getType())->equals(Sending::TASK_TYPE);
   }
@@ -106,9 +106,9 @@ class SendingQueueTest extends \MailPoetTest {
     $result = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
     $repo = $this->diContainer->get(ScheduledTasksRepository::class);
     $scheduledTask = $repo->findOneById($result->data['task_id']);
-    assert($scheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $scheduled = $scheduledTask->getScheduledAt();
-    assert($scheduled instanceof \DateTimeInterface);
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduled);
     expect($scheduled->format('Y-m-d H:i:s'))->equals('2018-10-10 10:00:00');
 
     // update scheduled time
@@ -124,12 +124,12 @@ class SendingQueueTest extends \MailPoetTest {
     $repo = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->entityManager->clear();
     $rescheduledTask = $repo->findOneById($result->data['task_id']);
-    assert($rescheduledTask instanceof ScheduledTaskEntity);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $rescheduledTask);
     // new task was not created
     expect($rescheduledTask->getId())->equals($scheduledTask->getId());
     // scheduled time was updated
     $scheduled = $rescheduledTask->getScheduledAt();
-    assert($scheduled instanceof \DateTimeInterface);
+    $this->assertInstanceOf(\DateTimeInterface::class, $scheduled);
     expect($scheduled->format('Y-m-d H:i:s'))->equals('2018-11-11 11:00:00');
   }
 
