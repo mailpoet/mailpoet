@@ -72,6 +72,26 @@ class TimestampListenerTest extends \MailPoetTest {
     expect($entity->getUpdatedAt())->equals($this->now);
   }
 
+  public function testItUsesDifferentTimesWhenCreatingDifferentEntities() {
+    $entity1 = new TimestampEntity();
+    $entity1->setName('Entity 1');
+
+    $this->entityManager->persist($entity1);
+    $this->entityManager->flush();
+
+    $createdAt1 = $entity1->getCreatedAt();
+    $this->assertInstanceOf(Carbon::class, $createdAt1);
+    $createdAt1->subMonth();
+
+    $entity2 = new TimestampEntity();
+    $entity2->setName('Entity 2');
+
+    $this->entityManager->persist($entity2);
+    $this->entityManager->flush();
+
+    $this->assertEquals($this->now, $entity2->getCreatedAt());
+  }
+
   public function _after() {
     parent::_after();
     $this->connection->executeStatement("DROP TABLE IF EXISTS $this->tableName");
