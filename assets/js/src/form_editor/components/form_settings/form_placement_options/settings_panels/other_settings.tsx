@@ -19,6 +19,11 @@ const OtherSettings: React.FunctionComponent = () => {
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
   );
+
+  const isFormSaved = useSelect(
+    (select) => select('mailpoet-form-editor').isFormSaved(),
+    []
+  );
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 
   const addFormWidgetHint = ReactStringReplace(
@@ -70,6 +75,12 @@ const OtherSettings: React.FunctionComponent = () => {
       />
     );
   };
+
+  if (!isFormSaved) {
+    return (
+      <p>{MailPoet.I18n.t('saveFormFirst')}</p>
+    );
+  }
 
   return (
     <>
