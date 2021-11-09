@@ -44,7 +44,11 @@ export default {
     return state.formData.styles;
   },
   getFormExports(state) {
-    return state.formExports;
+    return Object.fromEntries(
+      Object
+        .entries(state.formExports)
+        .map(([k, v]) => [k, v.replace(':form_id:', state.formData.id)])
+    );
   },
   getFormSettings(state) {
     return state.formData.settings;
