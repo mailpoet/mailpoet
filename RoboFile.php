@@ -769,11 +769,28 @@ class RoboFile extends \Robo\Tasks {
     $this->say('Translations ' . $result['data']);
   }
 
+  /**
+   * This is part of release publish script. It checks if translations are ready at Wordpress.com translations system
+   * @param string $version
+   */
+  public function translationsCheckLanguagePacks($version) {
+    $translations = new \MailPoetTasks\Release\TranslationsController();
+    $result = $translations->checkIfTranslationsAreReady($version);
+    if (!$result['success']) {
+      $this->yell('Translations are not ready yet on WordPress.com. ' . $result['data'], 40, 'red');
+      exit(1);
+    }
+    $this->say('Translations check passed');
+  }
+
   public function releasePublish($version = null) {
     $version = $this->releaseVersionGetPrepared($version);
     return $this->collectionBuilder()
       ->addCode(function () use ($version) {
         return $this->releaseCheckPullRequest($version);
+      })
+      ->addCode(function () use ($version) {
+        return $this->translationsCheckLanguagePacks($version);
       })
       ->addCode(function () {
         return $this->releaseDownloadZip();
