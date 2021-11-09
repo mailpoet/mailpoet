@@ -16,6 +16,9 @@ const findBlockPath = (blocks, id, path = []) => (
 );
 
 export default {
+  isFormSaved(state) {
+    return typeof state.formData.id === 'number';
+  },
   isFormEnabled(state) {
     return state.formData.status === 'enabled';
   },
