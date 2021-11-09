@@ -187,7 +187,7 @@ class SendingQueue extends APIEndpoint {
     $newsletter = $this->newsletterRepository->findOneById($newsletterId);
 
     if ($newsletter instanceof NewsletterEntity) {
-      $queue = $newsletter->getLatestQueue();
+      $queue = $newsletter->getLastUpdatedQueue();
 
       if (!$queue instanceof SendingQueueEntity) {
         return $this->errorResponse([
@@ -217,7 +217,7 @@ class SendingQueue extends APIEndpoint {
     $newsletter = $this->newsletterRepository->findOneById($newsletterId);
 
     if ($newsletter instanceof NewsletterEntity) {
-      $queue = $newsletter->getLatestQueue();
+      $queue = $newsletter->getLastUpdatedQueue();
 
       if (!$queue instanceof SendingQueueEntity) {
         return $this->errorResponse([
