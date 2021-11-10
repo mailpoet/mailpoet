@@ -3,15 +3,16 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\SendingQueue;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class ReceivePostNotificationCest {
-
   /** @var Settings */
   private $settings;
 
@@ -50,12 +51,21 @@ class ReceivePostNotificationCest {
     // scheduler will create a task and schedule run in the next whole minute, that can break the test
     // I move the task to the past
     // this workaround is not ideal, but we cannot wait another minute for the task to execute :(
-    ScheduledTask::rawExecute(
-      'UPDATE `' . ScheduledTask::$_table . '` t '
-      . ' JOIN `' . SendingQueue::$_table . '` q ON t.`id` = q.`task_id` '
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+
+    $classMetadata = $entityManager->getClassMetadata(ScheduledTaskEntity::class);
+    $scheduledTaskTable = $classMetadata->getTableName();
+    $classMetadata = $entityManager->getClassMetadata(SendingQueueEntity::class);
+    $sendingQueueTable = $classMetadata->getTableName();
+
+    $sql = 'UPDATE `' . $scheduledTaskTable . '` t '
+      . ' JOIN `' . $sendingQueueTable . '` q ON t.`id` = q.`task_id` '
       . ' SET t.scheduled_at="2016-01-01 01:02:03", t.updated_at="2016-01-01 01:02:03" '
-      . ' WHERE q.newsletter_id=' . $newsletter->getId()
-    );
+      . ' WHERE q.newsletter_id=' . $newsletter->getId();
+
+    $stmt = $entityManager->getConnection()->prepare($sql);
+    $stmt->executeStatement();
+
 
     // confirm newsletter has been sent
     $i->amOnMailpoetPage('Emails');
