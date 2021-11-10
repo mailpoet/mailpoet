@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import {
   Panel,
   PanelBody, SelectControl,
-  TextControl,
   ToggleControl,
 } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
@@ -49,6 +48,7 @@ const CustomTextAreaEdit = ({
       <Panel>
         <PanelBody title={MailPoet.I18n.t('customFieldSettings')} initialOpen>
           <CustomFieldSettings
+            label={attributes.label}
             mandatory={attributes.mandatory}
             validate={attributes.validate}
             isSaving={isSaving}
@@ -61,6 +61,7 @@ const CustomTextAreaEdit = ({
                 mandatory: params.mandatory,
                 validate: params.validate,
                 lines: params.lines,
+                label: params.label,
               }),
             })}
             onCustomFieldDelete={() => deleteCustomField(
@@ -74,12 +75,6 @@ const CustomTextAreaEdit = ({
       </Panel>
       <Panel>
         <PanelBody title={MailPoet.I18n.t('formSettings')} initialOpen>
-          <TextControl
-            label={MailPoet.I18n.t('label')}
-            value={attributes.label}
-            data-automation-id="settings_custom_text_label_input"
-            onChange={(label) => (setAttributes({ label }))}
-          />
           <ToggleControl
             label={MailPoet.I18n.t('displayLabelWithinInput')}
             checked={attributes.labelWithinInput}

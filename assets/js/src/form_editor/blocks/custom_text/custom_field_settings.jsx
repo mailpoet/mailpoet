@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Button,
-  SelectControl,
+  SelectControl, TextControl,
   ToggleControl,
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
@@ -10,6 +10,7 @@ import MailPoet from 'mailpoet';
 import CustomFieldDelete from '../custom_field_delete.jsx';
 
 const CustomFieldSettings = ({
+  label,
   mandatory,
   validate,
   isSaving,
@@ -19,16 +20,19 @@ const CustomFieldSettings = ({
   onChange,
   fieldType,
 }) => {
+  const [localLabel, setLocalLabel] = useState(label);
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localValidate, setLocalValidate] = useState(validate);
 
   const localData = useMemo(() => ({
+    label: localLabel,
     mandatory: localMandatory,
     validate: localValidate,
-  }), [localMandatory, localValidate]);
+  }), [localLabel, localMandatory, localValidate]);
 
   const hasUnsavedChanges = localMandatory !== mandatory
-    || localValidate !== validate;
+    || localValidate !== validate
+    || localLabel !== label;
 
   useEffect(() => {
     if (onChange) {
@@ -38,6 +42,12 @@ const CustomFieldSettings = ({
 
   return (
     <>
+      <TextControl
+        label={MailPoet.I18n.t('label')}
+        value={localLabel}
+        data-automation-id="settings_custom_text_label_input"
+        onChange={setLocalLabel}
+      />
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
         checked={localMandatory}
@@ -89,6 +99,7 @@ const CustomFieldSettings = ({
 };
 
 CustomFieldSettings.propTypes = {
+  label: PropTypes.string,
   mandatory: PropTypes.bool,
   validate: PropTypes.string,
   onSave: PropTypes.func,
@@ -100,6 +111,7 @@ CustomFieldSettings.propTypes = {
 };
 
 CustomFieldSettings.defaultProps = {
+  label: '',
   mandatory: false,
   fieldType: '',
   isSaving: false,

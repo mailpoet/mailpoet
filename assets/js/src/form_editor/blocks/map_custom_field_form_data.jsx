@@ -33,12 +33,14 @@ function mapFormDataToParams(fieldType, data) {
       return {
         required: data.mandatory ? '1' : '',
         validate: data.validate,
+        label: data.label,
       };
     case 'textarea':
       return {
         required: data.mandatory ? '1' : '',
         validate: data.validate,
         lines: data.lines ? data.lines : '1',
+        label: data.label,
       };
     default:
       throw new Error(`Invalid custom field type ${fieldType}!`);
