@@ -19,11 +19,22 @@ import _ from 'underscore';
  */
 var eventsCache = [];
 
-function track(name, data) {
+function track(name, data = []) {
+  let trackedData = data;
+
   if (typeof window.mixpanel.track !== 'function') {
     window.mixpanel.init(window.mixpanelTrackingId);
   }
-  window.mixpanel.track(name, data);
+
+  if (typeof window.mailpoet_version !== 'undefined') {
+    trackedData['MailPoet Free version'] = window.mailpoet_version;
+  }
+
+  if (typeof window.mailpoet_premium_version !== 'undefined') {
+    trackedData['MailPoet Premium version'] = window.mailpoet_premium_version;
+  }
+
+  window.mixpanel.track(name, trackedData);
 }
 
 function exportMixpanel() {
