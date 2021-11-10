@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   BaseControl,
-  Button,
+  Button, TextControl,
   ToggleControl,
 } from '@wordpress/components';
 import { isEmpty } from 'lodash';
@@ -10,6 +10,7 @@ import MailPoet from 'mailpoet';
 import CustomFieldDelete from '../custom_field_delete.jsx';
 
 const CustomFieldSettings = ({
+  label,
   mandatory,
   isSaving,
   onSave,
@@ -19,20 +20,23 @@ const CustomFieldSettings = ({
   onCustomFieldDelete,
   onChange,
 }) => {
+  const [localLabel, setLocalLabel] = useState(label);
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localIsChecked, setLocalIsChecked] = useState(isChecked);
   const [localCheckboxLabel, setLocalCheckboxLabel] = useState(checkboxLabel);
 
   const hasUnsavedChanges = localMandatory !== mandatory
     || localIsChecked !== isChecked
+    || localLabel !== label
     || localCheckboxLabel !== checkboxLabel;
 
   const localData = useMemo(() => ({
     mandatory: localMandatory,
     isChecked: localIsChecked,
+    label: localLabel,
     checkboxLabel: localCheckboxLabel,
     isValid: !isEmpty(localCheckboxLabel),
-  }), [localMandatory, localIsChecked, localCheckboxLabel]);
+  }), [localLabel, localMandatory, localIsChecked, localCheckboxLabel]);
 
   useEffect(() => {
     onChange(localData, hasUnsavedChanges);
@@ -40,6 +44,12 @@ const CustomFieldSettings = ({
 
   return (
     <div className="custom-field-settings">
+      <TextControl
+        label={MailPoet.I18n.t('label')}
+        value={localLabel}
+        data-automation-id="settings_custom_text_label_input"
+        onChange={setLocalLabel}
+      />
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
         checked={localMandatory}
@@ -80,6 +90,7 @@ const CustomFieldSettings = ({
 };
 
 CustomFieldSettings.propTypes = {
+  label: PropTypes.string,
   mandatory: PropTypes.bool,
   onSave: PropTypes.func,
   isSaving: PropTypes.bool,
@@ -91,6 +102,7 @@ CustomFieldSettings.propTypes = {
 };
 
 CustomFieldSettings.defaultProps = {
+  label: '',
   mandatory: false,
   onSave: null,
   isSaving: false,

@@ -2,6 +2,7 @@ function mapFormDataToParams(fieldType, data) {
   switch (fieldType) {
     case 'checkbox':
       return {
+        label: data.label,
         required: data.mandatory ? '1' : '',
         values: [{
           is_checked: data.isChecked ? '1' : '',
@@ -10,6 +11,7 @@ function mapFormDataToParams(fieldType, data) {
       };
     case 'date':
       return {
+        label: data.label,
         required: data.mandatory ? '1' : '',
         date_type: data.dateType,
         date_format: data.dateFormat,
