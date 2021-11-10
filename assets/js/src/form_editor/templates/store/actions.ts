@@ -12,7 +12,6 @@ export function* selectTemplate(templateId: string, templateName: string): objec
     type: 'TRACK_EVENT',
     name: 'Forms > Template selected',
     data: {
-      'MailPoet Free version': MailPoet.version,
       'Template id': templateId,
       'Template name': templateName,
     },

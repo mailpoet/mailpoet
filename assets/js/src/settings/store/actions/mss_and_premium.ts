@@ -60,7 +60,6 @@ export function* verifyPremiumKey(key: string) {
     MailPoet.trackEvent(
       'User has failed to validate a Premium key',
       {
-        'MailPoet Free version': MailPoet.version,
         'Premium plugin is active': !!MailPoet.premiumVersion,
       }
     );
@@ -90,12 +89,7 @@ export function* verifyPremiumKey(key: string) {
     downloadUrl: res?.meta?.premium_plugin_info?.download_link,
   });
 
-  MailPoet.trackEvent(
-    'User has validated a Premium key',
-    {
-      'MailPoet Free version': MailPoet.version,
-    }
-  );
+  MailPoet.trackEvent('User has validated a Premium key');
 
   return null;
 }

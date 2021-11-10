@@ -102,7 +102,6 @@ const messages = {
   onCreate: (data): void => {
     MailPoet.Notice.success(MailPoet.I18n.t('dynamicSegmentAdded'));
     MailPoet.trackEvent('Segments > Add new', {
-      'MailPoet Free version': MailPoet.version,
       type: data.segmentType || 'unknown type',
       subtype: data.action || data.wordpressRole || 'unknown subtype',
     });

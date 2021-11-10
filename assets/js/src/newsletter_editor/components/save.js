@@ -100,9 +100,7 @@ Module.exportTemplate = function (options) {
       );
 
       FileSaver.saveAs(blob, 'template.json');
-      MailPoet.trackEvent('Editor > Template exported', {
-        'MailPoet Free version': window.mailpoet_version,
-      });
+      MailPoet.trackEvent('Editor > Template exported');
     });
 };
 
@@ -210,9 +208,7 @@ Module.SaveView = Marionette.View.extend({
             scroll: true,
           }
         );
-        MailPoet.trackEvent('Editor > Template saved', {
-          'MailPoet Free version': window.mailpoet_version,
-        });
+        MailPoet.trackEvent('Editor > Template saved');
       }).catch(function () {
         MailPoet.Notice.error(
           MailPoet.I18n.t('templateSaveFailed'),
@@ -288,9 +284,7 @@ Module.SaveView = Marionette.View.extend({
         }.bind(this),
       });
 
-      MailPoet.trackEvent('Editor > Browser Preview', {
-        'MailPoet Free version': window.mailpoet_version,
-      });
+      MailPoet.trackEvent('Editor > Browser Preview');
     }.bind(this)).fail(function (response) {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
@@ -383,9 +377,7 @@ Module.SaveView = Marionette.View.extend({
       },
     }).done(function () {
       $el.addClass('mailpoet_hidden');
-      MailPoet.trackEvent('Editor > WooCommerce email customizer enabled', {
-        'MailPoet Free version': window.mailpoet_version,
-      });
+      MailPoet.trackEvent('Editor > WooCommerce email customizer enabled');
     }).fail(function (response) {
       MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
     });
@@ -524,7 +516,6 @@ Module.NewsletterPreviewView = Marionette.View.extend({
         that.model.set('sendingPreview', false);
         that.model.set('previewSendingSuccess', true);
         MailPoet.trackEvent('Editor > Preview sent', {
-          'MailPoet Free version': window.mailpoet_version,
           'Domain name': data.subscriber.substring(data.subscriber.indexOf('@') + 1),
         });
       }).fail(function (response) {

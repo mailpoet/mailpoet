@@ -106,9 +106,7 @@
 <% block after_javascript %>
 <script type="text/javascript">
   jQuery('#mailpoet_helper_link').on('click', function() {
-    MailPoet.trackEvent('Forms page > link to doc page', {
-      'MailPoet Free version': window.mailpoet_version
-    });
+    MailPoet.trackEvent('Forms page > link to doc page');
   });
 </script>
 <% endblock %>

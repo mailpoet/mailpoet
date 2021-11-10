@@ -44,7 +44,6 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
     if (type !== undefined) {
       history.push(`/new/${type}`);
       MailPoet.trackEvent('Emails > Type selected', {
-        'MailPoet Free version': MailPoet.version,
         'Email type': type,
       });
     }
@@ -52,7 +51,6 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
 
   const openWooCommerceCustomizer = async (): Promise<JSX.Element> => {
     MailPoet.trackEvent('Emails > Type selected', {
-      'MailPoet Free version': MailPoet.version,
       'Email type': 'wc_transactional',
     });
     let emailId = window.mailpoet_woocommerce_transactional_email_id;
@@ -67,9 +65,7 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
           },
         });
         emailId = response.data.woocommerce.transactional_email_id;
-        MailPoet.trackEvent('Emails > WooCommerce email customizer enabled', {
-          'MailPoet Free version': MailPoet.version,
-        });
+        MailPoet.trackEvent('Emails > WooCommerce email customizer enabled');
       } catch (response) {
         if (response.errors.length > 0) {
           return (<APIErrorsNotice errors={response.errors} />);
@@ -174,7 +170,6 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
   const createNewsletter = (type): void => {
     setIsCreating(true);
     MailPoet.trackEvent('Emails > Type selected', {
-      'MailPoet Free version': MailPoet.version,
       'Email type': type,
     });
     MailPoet.Ajax.post({

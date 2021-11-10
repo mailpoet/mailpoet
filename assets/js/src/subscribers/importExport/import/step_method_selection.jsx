@@ -48,7 +48,6 @@ function StepMethodSelection({
     processCsv(data, (sanitizedData) => {
       MailPoet.trackEvent('Subscribers import started', {
         source: method === 'file-method' ? 'file upload' : 'pasted data',
-        'MailPoet Free version': window.mailpoet_version,
       });
       finish(sanitizedData);
     });
@@ -84,7 +83,6 @@ function StepMethodSelection({
           onFinish={(data) => {
             MailPoet.trackEvent('Subscribers import started', {
               source: 'MailChimp',
-              'MailPoet Free version': window.mailpoet_version,
             });
             finish(data);
           }}
