@@ -116,7 +116,6 @@ class EventsConditions extends React.Component {
       },
     }).done((response) => {
       MailPoet.trackEvent('Emails > New Automatic Email Created', {
-        'MailPoet Premium version': window.mailpoet_premium_version,
         'Event type': options.event,
         'Schedule type': options.afterTimeType,
         'Schedule value': options.afterTimeNumber,

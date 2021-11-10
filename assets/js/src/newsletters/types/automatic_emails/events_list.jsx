@@ -15,7 +15,6 @@ class AutomaticEmailEventsList extends React.Component {
 
   eventsConfigurator(eventSlug) {
     MailPoet.trackEvent('Emails > Automatic Type selected', {
-      'MailPoet Premium version': window.mailpoet_premium_version,
       'Email type': eventSlug,
     });
     this.props.history.push(`/new/${this.email.slug}/${eventSlug}/conditions`);
