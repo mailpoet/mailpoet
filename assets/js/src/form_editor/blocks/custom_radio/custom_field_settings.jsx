@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Button,
+  Button, TextControl,
   ToggleControl,
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
@@ -11,6 +11,7 @@ import SettingsPreview from './settings_preview.jsx';
 import CustomFieldDelete from '../custom_field_delete.jsx';
 
 const CustomFieldSettings = ({
+  label,
   mandatory,
   values,
   isSaving,
@@ -20,6 +21,7 @@ const CustomFieldSettings = ({
   onChange,
   useDragAndDrop,
 }) => {
+  const [localLabel, setLocalLabel] = useState(label);
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localValues, setLocalValues] = useState(JSON.parse(JSON.stringify(values)));
 
@@ -39,13 +41,15 @@ const CustomFieldSettings = ({
   };
 
   const localData = useMemo(() => ({
+    label: localLabel,
     mandatory: localMandatory,
     values: localValues,
     isValid: reduce(localValues, (acc, value) => !isEmpty(value.name) && acc, true),
-  }), [localMandatory, localValues]);
+  }), [localLabel, localMandatory, localValues]);
 
   const hasUnsavedChanges = localMandatory !== mandatory
-    || !isEqualWith(values, localValues);
+    || !isEqualWith(values, localValues)
+    || localLabel !== label;
 
   useEffect(() => {
     if (onChange) {
@@ -55,6 +59,12 @@ const CustomFieldSettings = ({
 
   return (
     <div className="custom-field-settings" data-automation-id="custom_field_settings">
+      <TextControl
+        label={MailPoet.I18n.t('label')}
+        value={localLabel}
+        data-automation-id="settings_custom_text_label_input"
+        onChange={setLocalLabel}
+      />
       <ToggleControl
         label={MailPoet.I18n.t('blockMandatory')}
         checked={localMandatory}
@@ -88,6 +98,7 @@ const CustomFieldSettings = ({
           onClick={() => onSave({
             mandatory: localMandatory,
             values: localValues,
+            label: localLabel,
           })}
           isBusy={isSaving}
           disabled={isSaving || !hasUnsavedChanges}
@@ -107,6 +118,7 @@ const CustomFieldSettings = ({
 };
 
 CustomFieldSettings.propTypes = {
+  label: PropTypes.string,
   mandatory: PropTypes.bool,
   values: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.string.isRequired,
@@ -121,6 +133,7 @@ CustomFieldSettings.propTypes = {
 };
 
 CustomFieldSettings.defaultProps = {
+  label: '',
   mandatory: false,
   isSaving: false,
   values: [],

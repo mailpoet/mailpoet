@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Panel,
   PanelBody,
-  TextControl,
   ToggleControl,
 } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
@@ -35,6 +34,7 @@ const CustomRadioEdit = ({ attributes, setAttributes, clientId }) => {
       <Panel>
         <PanelBody title={MailPoet.I18n.t('customFieldSettings')} initialOpen>
           <CustomFieldSettings
+            label={attributes.label}
             mandatory={attributes.mandatory}
             values={attributes.values}
             isSaving={isSaving}
@@ -46,6 +46,7 @@ const CustomRadioEdit = ({ attributes, setAttributes, clientId }) => {
               onFinish: () => setAttributes({
                 mandatory: params.mandatory,
                 values: params.values,
+                label: params.label,
               }),
             })}
             onCustomFieldDelete={() => deleteCustomField(
@@ -59,12 +60,6 @@ const CustomRadioEdit = ({ attributes, setAttributes, clientId }) => {
       </Panel>
       <Panel>
         <PanelBody title={MailPoet.I18n.t('formSettings')} initialOpen>
-          <TextControl
-            label={MailPoet.I18n.t('label')}
-            value={attributes.label}
-            data-automation-id="settings_custom_text_label_input"
-            onChange={(label) => (setAttributes({ label }))}
-          />
           <ToggleControl
             label={MailPoet.I18n.t('displayLabel')}
             checked={!attributes.hideLabel}
