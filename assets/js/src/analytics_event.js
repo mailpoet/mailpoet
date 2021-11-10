@@ -50,7 +50,7 @@ function exportMixpanel() {
 function trackCachedEvents() {
   eventsCache.forEach(function trackIfEnabled(event) {
     if (window.mailpoet_analytics_enabled || event.forced) {
-      window.mixpanel.track(event.name, event.data);
+      track(event.name, event.data);
     }
   });
 }
