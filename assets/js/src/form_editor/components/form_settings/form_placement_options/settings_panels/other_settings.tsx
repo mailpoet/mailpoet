@@ -44,7 +44,6 @@ const OtherSettings: React.FunctionComponent = () => {
     event.preventDefault();
     MailPoet.trackEvent('Forms > Embed', {
       'Embed type': type,
-      'MailPoet Free version': MailPoet.version,
     });
     if (type === 'php') {
       return setCopyAreaContent(formExports.php);

@@ -7,10 +7,7 @@ import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 
 export const trackStatsCTAClicked = () => {
-  MailPoet.trackEvent(
-    'User has clicked a CTA to view detailed stats',
-    { 'MailPoet Free version': window.mailpoet_version }
-  );
+  MailPoet.trackEvent('User has clicked a CTA to view detailed stats');
 };
 
 export const addStatsCTAAction = (actions) => {

@@ -142,9 +142,7 @@ const messages = {
   },
   onCreate: function onCreate() {
     MailPoet.Notice.success(MailPoet.I18n.t('subscriberAdded'));
-    MailPoet.trackEvent('Subscribers > Add new', {
-      'MailPoet Free version': window.mailpoet_version,
-    });
+    MailPoet.trackEvent('Subscribers > Add new');
   },
 };
 

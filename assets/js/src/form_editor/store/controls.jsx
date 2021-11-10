@@ -108,7 +108,6 @@ export default {
         const customField = response.data;
         MailPoet.trackEvent('Forms > Add new custom field', {
           'Field type': customField.type,
-          'MailPoet Free version': window.mailpoet_version,
         });
         const blockName = registerCustomFieldBlock(customField);
         const customFieldBlock = createBlock(blockName);
@@ -136,7 +135,6 @@ export default {
       .then(() => {
         MailPoet.trackEvent('Forms > Delete custom field', {
           'Field type': customField.type,
-          'MailPoet Free version': window.mailpoet_version,
         });
         dispatch('mailpoet-form-editor').deleteCustomFieldDone(actionData.customFieldId, actionData.clientId);
         dispatch('core/block-editor').removeBlock(actionData.clientId);

@@ -5,9 +5,7 @@ import Button from 'common/button/button';
 import plusIcon from 'common/button/icon/plus';
 
 export const onAddNewForm = () => {
-  MailPoet.trackEvent('Forms > Add New', {
-    'MailPoet Free version': MailPoet.version,
-  });
+  MailPoet.trackEvent('Forms > Add New');
   setTimeout(() => {
     window.location = window.mailpoet_form_template_selection_url;
   }, 200); // leave some time for the event to track

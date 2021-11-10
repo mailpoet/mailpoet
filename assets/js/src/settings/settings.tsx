@@ -18,7 +18,6 @@ import { useSelector } from './store/hooks';
 
 const trackTabSwitched = (tabKey: string) => {
   MailPoet.trackEvent('User has clicked a tab in Settings', {
-    'MailPoet Free version': MailPoet.version,
     'Tab ID': tabKey,
   });
 };

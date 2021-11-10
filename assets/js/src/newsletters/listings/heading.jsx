@@ -11,10 +11,7 @@ const ListingHeading = () => (
         id="mailpoet-new-email"
         className="mailpoet-button button-secondary"
         to="/new"
-        onClick={() => MailPoet.trackEvent(
-          'Emails > Add New',
-          { 'MailPoet Free version': window.mailpoet_version }
-        )}
+        onClick={() => MailPoet.trackEvent('Emails > Add New')}
         data-automation-id="new_email"
       >
         {plusIcon}

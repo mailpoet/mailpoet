@@ -38,10 +38,7 @@ import PropTypes from 'prop-types';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
-const trackTabSwitch = (tabKey) => MailPoet.trackEvent(
-  `Tab Emails > ${tabKey} clicked`,
-  { 'MailPoet Free version': window.mailpoet_version },
-);
+const trackTabSwitch = (tabKey) => MailPoet.trackEvent(`Tab Emails > ${tabKey} clicked`);
 
 const Tabs = withNpsPoll(() => {
   const { parentId } = useParams();

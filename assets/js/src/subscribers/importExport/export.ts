@@ -166,7 +166,6 @@ jQuery(document).ready(() => {
       MailPoet.trackEvent('Subscribers export completed', {
         'Total exported': response.data.totalExported,
         'File Format': exportFormat,
-        'MailPoet Free version': MailPoet.version,
       });
     }).fail((response) => {
       if (response.errors.length > 0) {

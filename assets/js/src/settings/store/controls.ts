@@ -7,7 +7,6 @@ export { default as CALL_API } from 'common/controls/call_api';
 export function TRACK_SETTINGS_SAVED() {
   const settings = select(STORE_NAME).getSettings();
   const data = {
-    'MailPoet Free version': MailPoet.version,
     'Sending method type': settings.mta_group || null,
     'Sending frequency (emails)': (
       settings.mta_group !== 'mailpoet'
@@ -33,10 +32,7 @@ export function TRACK_SETTINGS_SAVED() {
 }
 
 export function TRACK_REINSTALLED() {
-  MailPoet.trackEvent(
-    'User has reinstalled MailPoet via Settings',
-    { 'MailPoet Free version': MailPoet.version }
-  );
+  MailPoet.trackEvent('User has reinstalled MailPoet via Settings');
 }
 
 export function TRACK_TEST_EMAIL_SENT({ success, method }) {
@@ -45,7 +41,6 @@ export function TRACK_TEST_EMAIL_SENT({ success, method }) {
     {
       'Sending was successful': !!success,
       'Sending method type': method,
-      'MailPoet Free version': MailPoet.version,
     }
   );
 }

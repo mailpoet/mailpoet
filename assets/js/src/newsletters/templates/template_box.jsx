@@ -68,7 +68,6 @@ class TemplateBox extends React.Component {
     beforeSelect();
 
     MailPoet.trackEvent('Emails > Template selected', {
-      'MailPoet Free version': window.mailpoet_version,
       'Email name': name,
     });
 

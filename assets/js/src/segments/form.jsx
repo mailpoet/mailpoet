@@ -28,9 +28,7 @@ const messages = {
   },
   onCreate: function onCreate() {
     MailPoet.Notice.success(MailPoet.I18n.t('segmentAdded'));
-    MailPoet.trackEvent('Lists > Add new', {
-      'MailPoet Free version': window.mailpoet_version,
-    });
+    MailPoet.trackEvent('Lists > Add new');
   },
 };
 

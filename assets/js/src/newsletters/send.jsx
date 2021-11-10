@@ -307,7 +307,6 @@ class NewsletterSend extends React.Component {
         );
         MailPoet.trackEvent('Emails > Newsletter sent', {
           scheduled: true,
-          'MailPoet Free version': window.mailpoet_version,
         });
       } else {
         this.context.notices.success(
@@ -316,7 +315,6 @@ class NewsletterSend extends React.Component {
         );
         MailPoet.trackEvent('Emails > Newsletter sent', {
           scheduled: false,
-          'MailPoet Free version': window.mailpoet_version,
         });
       }
       MailPoet.Modal.loading(false);
@@ -356,7 +354,6 @@ class NewsletterSend extends React.Component {
           <p>{MailPoet.I18n.t('welcomeEmailActivated')}</p>
         );
         MailPoet.trackEvent('Emails > Welcome email activated', {
-          'MailPoet Free version': window.mailpoet_version,
           'List type': opts.event,
           Delay: `${opts.afterTimeNumber} ${opts.afterTimeType}`,
         });
@@ -365,7 +362,6 @@ class NewsletterSend extends React.Component {
           <p>{MailPoet.I18n.t('postNotificationActivated')}</p>
         );
         MailPoet.trackEvent('Emails > Post notifications activated', {
-          'MailPoet Free version': window.mailpoet_version,
           Frequency: opts.intervalType,
         });
       }

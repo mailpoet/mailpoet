@@ -25,9 +25,7 @@ class ImportTemplate extends React.Component {
     reader.onload = (evt) => {
       try {
         this.saveTemplate(JSON.parse(evt.target.result));
-        MailPoet.trackEvent('Emails > Template imported', {
-          'MailPoet Free version': window.mailpoet_version,
-        });
+        MailPoet.trackEvent('Emails > Template imported');
       } catch (err) {
         this.context.notices.error(<p>{MailPoet.I18n.t('templateFileMalformedError')}</p>);
       }
