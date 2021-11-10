@@ -1,5 +1,4 @@
 import { select } from '@wordpress/data';
-import MailPoet from 'mailpoet';
 
 import {
   CategoryActionType,
