@@ -3,7 +3,6 @@ import moment from 'moment';
 import {
   Panel,
   PanelBody,
-  TextControl,
 } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
@@ -40,6 +39,7 @@ const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
       <Panel>
         <PanelBody title={MailPoet.I18n.t('customFieldSettings')} initialOpen>
           <CustomFieldSettings
+            label={attributes.label}
             mandatory={attributes.mandatory}
             dateSettings={dateSettings}
             defaultToday={attributes.defaultToday}
@@ -56,6 +56,7 @@ const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
                 dateType: params.dateType,
                 dateFormat: params.dateFormat,
                 defaultToday: params.defaultToday,
+                label: params.label,
               }),
             })}
             onCustomFieldDelete={() => deleteCustomField(
@@ -64,16 +65,6 @@ const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
             )}
             isDeleting={isDeleting}
             onChange={(data, hasUnsavedChanges) => hasUnsavedChanges && customFieldEdited()}
-          />
-        </PanelBody>
-      </Panel>
-      <Panel>
-        <PanelBody title={MailPoet.I18n.t('formSettings')} initialOpen>
-          <TextControl
-            label={MailPoet.I18n.t('label')}
-            value={attributes.label}
-            data-automation-id="settings_custom_date_label_input"
-            onChange={(label) => (setAttributes({ label }))}
           />
         </PanelBody>
       </Panel>
