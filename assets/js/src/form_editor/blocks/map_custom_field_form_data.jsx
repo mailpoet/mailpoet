@@ -19,6 +19,7 @@ function mapFormDataToParams(fieldType, data) {
     case 'select':
       return {
         required: data.mandatory ? '1' : '',
+        label: data.label,
         values: data.values.map((value) => {
           const mapped = { value: value.name };
           if (value.isChecked) {
