@@ -169,8 +169,8 @@ class Links {
         continue;
       }
 
-      $newsletter = $this->newslettersRepository->findOneById($newsletterId);
-      $sendingQueue = $this->sendingQueueRepository->findOneById($queueId);
+      $newsletter = $this->newslettersRepository->getReference($newsletterId);
+      $sendingQueue = $this->sendingQueueRepository->getReference($queueId);
 
       if (!$newsletter instanceof NewsletterEntity || !$sendingQueue instanceof SendingQueueEntity) {
         continue;

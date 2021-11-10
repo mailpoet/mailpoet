@@ -103,6 +103,10 @@ abstract class Repository {
     $this->entityManager->flush();
   }
 
+  public function getReference($id) {
+    return $this->entityManager->getReference($this->getEntityClassName(), $id);
+  }
+
   /**
    * @param T $entity
    */
