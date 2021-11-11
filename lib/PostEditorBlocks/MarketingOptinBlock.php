@@ -4,6 +4,7 @@ namespace MailPoet\PostEditorBlocks;
 
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
 use MailPoet\Config\Env;
+use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * Class MarketingOptinBlock
@@ -14,18 +15,18 @@ class MarketingOptinBlock implements IntegrationInterface {
   /** @var array */
   private $options;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
-    array $options
+    array $options,
+    WPFunctions $wp
   ) {
     $this->options = $options;
+    $this->wp = $wp;
   }
 
-  /**
-   * The name of the integration.
-   *
-   * @return string
-   */
-  public function get_name() { // phpcs:ignore
+  public function get_name(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName
     return 'mailpoet';
   }
 
@@ -40,14 +41,14 @@ class MarketingOptinBlock implements IntegrationInterface {
         'dependencies' => [],
         'version'      => Env::$version,
       ];
-    wp_register_script(
+    $this->wp->wpRegisterScript(
       'mailpoet-marketing-optin-block-frontend',
       Env::$assetsUrl . '/dist/js/marketing_optin_block/marketing-optin-block-frontend.js',
       $script_asset['dependencies'],
       $script_asset['version'],
       true
     );
-    wp_set_script_translations(
+    $this->wp->wpSetScriptTranslations(
       'mailpoet-marketing-optin-block-frontend',
       'mailpoet',
       Env::$languagesPath
