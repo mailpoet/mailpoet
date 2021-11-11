@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-/* eslint-disable react/react-in-jsx-scope */
 import { registerCheckoutBlock } from '@woocommerce/blocks-checkout';
 
 /**

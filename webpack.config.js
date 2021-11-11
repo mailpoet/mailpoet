@@ -448,7 +448,7 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
     'marketing-optin-block-frontend': path.resolve(
       process.cwd(),
       'assets/js/src/marketing_optin_block',
-      'frontend.tsx'
+      'frontend.ts'
     ),
   },
   output: {
