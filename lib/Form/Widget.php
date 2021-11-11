@@ -7,6 +7,7 @@ use MailPoet\Config\Renderer as ConfigRenderer;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
@@ -82,6 +83,7 @@ class Widget extends \WP_Widget {
         'ajax_url' => WPFunctions::get()->adminUrl('admin-ajax.php', 'absolute'),
         'is_rtl' => $isRtl,
       ],
+      'fonts_link' => CustomFonts::generateHtmlCustomFontLink(),
     ];
 
     try {

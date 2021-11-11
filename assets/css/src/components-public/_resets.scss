@@ -1,0 +1,82 @@
+// basic default styling
+// to allow for consistent styling between mailpoet plugin and user's theme
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  color: rgb(40, 48, 61);
+  font-size: 16px;
+  font-weight: normal;
+  text-align: left;
+}
+
+html,
+body,
+p,
+ol,
+ul,
+li,
+dl,
+dt,
+dd,
+blockquote,
+figure,
+fieldset,
+form,
+legend,
+textarea,
+pre,
+iframe,
+hr,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+.h1,
+h2,
+.h2,
+h3,
+.h3,
+h4,
+.h4,
+h5,
+.h5,
+h6,
+.h6 {
+  font-weight: normal;
+  letter-spacing: normal;
+}
+
+ul,
+ol {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+label {
+  font-family: Arial, Helvetica, sans-serif;
+  margin-bottom: 10px;
+}
+
+a {
+  background-color: transparent;
+  color: rgb(40, 48, 61);
+  cursor: pointer;
+  text-decoration-skip-ink: all;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
