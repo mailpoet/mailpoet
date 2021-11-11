@@ -51,11 +51,14 @@ class WooCommerceBlocksIntegration {
    * Load blocks in frontend with Checkout.
    */
   public function registerCheckoutFrontendBlocks($integration_registry) {
-    $integration_registry->register(new MarketingOptinBlock([
+    $integration_registry->register(new MarketingOptinBlock(
+      [
       'defaultText'  => $this->settings->get('woocommerce.optin_on_checkout.message', ''),
       'optinEnabled' => $this->settings->get('woocommerce.optin_on_checkout.enabled', false),
       'defaultStatus' => $this->woocommerceSubscription->isCurrentUserSubscribed(),
-    ]));
+      ],
+      $this->wp
+    ));
   }
 
   public function addDataAttributesToBlock(array $blocks) {

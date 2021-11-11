@@ -744,4 +744,12 @@ class Functions {
   public function wpGetImageEditor(string $path, $args = []) {
     return wp_get_image_editor($path, $args);
   }
+
+  public function wpRegisterScript(string $handle, $src, $deps = [], $ver = false, $in_footer = false): bool {
+    return wp_register_script($handle, $src, $deps, $ver, $in_footer);
+  }
+
+  public function wpSetScriptTranslations(string $handle, string $domain = 'default', string $path = null): bool {
+    return wp_set_script_translations($handle, $domain, $path);
+  }
 }
