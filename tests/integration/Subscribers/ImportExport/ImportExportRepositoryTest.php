@@ -310,6 +310,30 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     expect($exported[1]['segment_name'])->equals('Dynamic Segment');
   }
 
+  /**
+   * Test for https://mailpoet.atlassian.net/browse/MAILPOET-3900. Tries to make sure that
+   * subscribers are returned only once for a given dynamic segment. Before, subscribers could be
+   * returned multiple times if they had subscribed to other segments.
+   */
+  public function testItDoesntIncludeSubscribersMultipleTimesForDynamicSegments(): void {
+    $wpUserId = $this->tester->createWordPressUser('user1@export-test.com', 'editor');
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $wpUserId]);
+    $staticSegment = $this->createSegment('First', SegmentEntity::TYPE_DEFAULT);
+    $dynamicSegment = $this->createSegment('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC);
+    $this->createDynamicSegmentFilter(
+      $dynamicSegment,
+      DynamicSegmentFilterData::TYPE_USER_ROLE,
+      UserRole::TYPE,
+      ['wordpressRole' => 'editor']
+    );
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->createSubscriberSegment($subscriber, $staticSegment, SubscriberEntity::STATUS_SUBSCRIBED);
+
+    $exported = $this->repository->getSubscribersBatchBySegment($dynamicSegment, 100);
+    $this->assertCount(1, $exported);
+    $this->assertSame('user1', $exported[0]['first_name']);
+  }
+
   public function testItGetBatchSubscribersMoreTimes(): void {
     $user1 = $this->createSubscriber('user1@export-test.com', 'One', 'User');
     $user2 = $this->createSubscriber('user2@export-test.com', 'Two', 'User');
