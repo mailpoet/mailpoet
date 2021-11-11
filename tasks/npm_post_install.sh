@@ -20,3 +20,8 @@ sed -i -- "s/_focusedField\.focus()/_focusedField\.trigger('focus')/g" node_modu
 # Fix strict mode issues in Backbone.Supermodel
 sed -i -- "s/  lastKeyIndex = keyPath.length-1;/  var lastKeyIndex = keyPath.length-1;/g" node_modules/backbone.supermodel/build/backbone.supermodel.js
 sed -i -- "s/  key = keyPath\[i\];/  var key = keyPath\[i\];/g" node_modules/backbone.supermodel/build/backbone.supermodel.js
+
+# Remove older versions of @types/react, @types/react-dom used in @wordpress/element
+# We can remove this fix after @wordpress/element updates @types/react and @types/react-dom to version 17
+rm -rf node_modules/@wordpress/element/node_modules/@types/react
+rm -rf node_modules/@wordpress/element/node_modules/@types/react-dom
