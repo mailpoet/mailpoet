@@ -75,12 +75,12 @@ class EditorCreateCustomFieldCest {
 
     $i->wantTo('Change text input validation');
     $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Alphanumerical');
-    $i->click('Update custom field');
-    $i->waitForText('Custom field saved.');
 
     $i->wantTo('Update label and save the form');
     $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom text input');
-    $i->saveFormInEditor();
+    $i->click('[data-automation-id="custom_field_save"]');
+    $i->waitForText('Custom field saved.');
+    $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
 
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
@@ -110,14 +110,14 @@ class EditorCreateCustomFieldCest {
 
     $i->wantTo('Change text input validation');
     $i->selectOption('[data-automation-id="settings_custom_text_input_validation_type"]', 'Alphanumerical');
-    $i->click('Update custom field');
+    $i->wantTo('Update label and save the form');
+    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom text area');
+    $i->click('[data-automation-id="custom_field_save"]');
     $i->waitForText('Custom field saved.');
 
     $i->wantTo('Change text area to 3 lines');
     $i->selectOption('[data-automation-id="settings_custom_text_area_number_of_lines"]', '3 lines');
 
-    $i->wantTo('Update label and save the form');
-    $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom text area');
     $i->saveFormInEditor();
 
     $i->wantTo('Reload page and check data were saved');
@@ -151,12 +151,12 @@ class EditorCreateCustomFieldCest {
 
     $i->wantTo('Change text input validation');
     $i->fillField('[data-automation-id="custom_field_value_settings_value"][value="Option 1"]', 'New option');
-    $i->click('Update custom field');
-    $i->waitForText('Custom field saved.');
 
     $i->wantTo('Update label and save the form');
     $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom radio buttons');
-    $i->saveFormInEditor();
+    $i->click('[data-automation-id="custom_field_save"]');
+    $i->waitForText('Custom field saved.');
+    $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
 
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
@@ -186,12 +186,12 @@ class EditorCreateCustomFieldCest {
 
     $i->wantTo('Change text input validation');
     $i->fillField('[data-automation-id="settings_custom_checkbox_value"][value="Option 1"]', 'New option');
-    $i->click('Update custom field');
-    $i->waitForText('Custom field saved.');
 
     $i->wantTo('Update label and save the form');
     $i->fillField('[data-automation-id="settings_custom_text_label_input"]', 'My updated custom checkbox');
-    $i->saveFormInEditor();
+    $i->click('[data-automation-id="custom_field_save"]');
+    $i->waitForText('Custom field saved.');
+    $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
 
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
@@ -224,8 +224,10 @@ class EditorCreateCustomFieldCest {
     $i->dontSee('[data-automation-id="settings_custom_date_format"]');
 
     $i->wantTo('Update label and save the form');
+    $i->selectOption('[data-automation-id="settings_custom_date_type"]', 'Year, month');
     $i->fillField('[data-automation-id="settings_custom_date_label_input"]', 'My updated custom date');
-    $i->saveFormInEditor();
+    $i->click('[data-automation-id="custom_field_save"]');
+    $i->waitForText('Form saved', 10, '.automation-dismissible-notices');
 
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();

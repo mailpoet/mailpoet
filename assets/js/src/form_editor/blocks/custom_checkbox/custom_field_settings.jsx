@@ -75,6 +75,7 @@ const CustomFieldSettings = ({
           isBusy={isSaving}
           disabled={isSaving || !hasUnsavedChanges}
           className="button-on-top"
+          data-automation-id="custom_field_save"
         >
           {MailPoet.I18n.t('customFieldSaveCTA')}
         </Button>
