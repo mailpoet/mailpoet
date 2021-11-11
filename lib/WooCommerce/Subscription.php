@@ -182,25 +182,23 @@ class Subscription {
       return false;
     }
 
-    if ( $optin ) {
-      $subscriber->source = Source::WOOCOMMERCE_CHECKOUT;
+    $subscriber->source = Source::WOOCOMMERCE_CHECKOUT;
 
-      if (
-        ($subscriber->status === Subscriber::STATUS_SUBSCRIBED)
-        || ((bool)$signupConfirmation['enabled'] === false)
-      ) {
-        $this->subscribe($subscriber);
-      } else {
-        $this->requireSubscriptionConfirmation($subscriber);
-      }
-
-      SubscriberSegment::subscribeToSegments(
-        $subscriber,
-        array_merge([$wcSegment->id], $moreSegmentsToSubscribe)
-      );
-
-      return true;
+    if (
+      ($subscriber->status === Subscriber::STATUS_SUBSCRIBED)
+      || ((bool)$signupConfirmation['enabled'] === false)
+    ) {
+      $this->subscribe($subscriber);
+    } else {
+      $this->requireSubscriptionConfirmation($subscriber);
     }
+
+    SubscriberSegment::subscribeToSegments(
+      $subscriber,
+      array_merge([$wcSegment->id], $moreSegmentsToSubscribe)
+    );
+
+    return true;
   }
 
   private function subscribe(Subscriber $subscriber) {
