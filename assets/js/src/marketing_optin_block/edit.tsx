@@ -14,7 +14,7 @@ import { Icon, megaphone } from '@wordpress/icons';
  */
 import './editor.scss';
 
-const adminUrl = getSetting('adminUrl') as string;
+const adminUrl = getSetting('adminUrl');
 const { optinEnabled, defaultText } = getSetting('mailpoet_data');
 
 const EmptyState = (): JSX.Element => (
