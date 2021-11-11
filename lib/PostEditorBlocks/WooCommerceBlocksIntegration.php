@@ -18,6 +18,9 @@ class WooCommerceBlocksIntegration {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var WooCommerceSubscription */
+  private $woocommerceSubscription;
+
   public function __construct(
     WPFunctions $wp,
     SettingsController $settings,
@@ -89,7 +92,7 @@ class WooCommerceBlocksIntegration {
       return;
     }
 
-    if (!$order || !$order->get_billing_email()) {
+    if (!$order->get_billing_email()) {
       return;
     }
 
