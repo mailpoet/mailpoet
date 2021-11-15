@@ -67,7 +67,7 @@ class ScheduledTasksRepository extends Repository {
   public function findScheduledOrRunningTask(?string $type): ?ScheduledTaskEntity {
     $queryBuilder = $this->doctrineRepository->createQueryBuilder('st')
       ->select('st')
-      ->where('(st.status = :scheduledStatus) OR (st.status is NULL)')
+      ->where('((st.status = :scheduledStatus) OR (st.status is NULL))')
       ->andWhere('st.deletedAt IS NULL')
       ->setParameter('scheduledStatus', ScheduledTaskEntity::STATUS_SCHEDULED)
       ->setMaxResults(1)
