@@ -10,6 +10,7 @@ use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -20,16 +21,13 @@ class ScheduledTask {
    */
   private $entityManager;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function __construct() {
     $diContainer = ContainerWrapper::getInstance();
     $this->entityManager = $diContainer->get(EntityManager::class);
-  }
-
-  public function deleteAll() {
-    $tasks = \MailPoet\Models\ScheduledTask::findMany();
-    foreach ($tasks as $task) {
-      $task->delete();
-    }
+    $this->scheduledTasksRepository = $diContainer->get(ScheduledTasksRepository::class);
   }
 
   public function create(string $type, ?string $status, \DateTimeInterface $scheduledAt, \DateTimeInterface $deletedAt = null) {
@@ -63,13 +61,19 @@ class ScheduledTask {
   }
 
   private function scheduleTask(string $type, Carbon $datetime) {
-    $task = \MailPoet\Models\ScheduledTask::where('type', $type)->findOne();
-    if (!($task instanceof \MailPoet\Models\ScheduledTask)) {
-      $task = \MailPoet\Models\ScheduledTask::create();
+    $task = $this->scheduledTasksRepository->findOneBy([
+      'type' => $type,
+    ]);
+
+    if (!($task instanceof ScheduledTaskEntity)) {
+      $task = new ScheduledTaskEntity();
     }
-    $task->type = $type;
-    $task->status = \MailPoet\Models\ScheduledTask::STATUS_SCHEDULED;
-    $task->scheduledAt = $datetime;
-    $task->save();
+
+    $task->setType($type);
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $task->setScheduledAt($datetime);
+
+    $this->entityManager->persist($task);
+    $this->entityManager->flush();
   }
 }
