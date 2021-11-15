@@ -141,7 +141,8 @@ class Widget extends \WP_Widget {
         if ($selectedForm === 0 && !empty($forms)) $selectedForm = $forms[0]->getId();
         foreach ($forms as $form) {
           $isSelected = ($selectedForm === $form->getId()) ? 'selected="selected"' : '';
-          $formName = $form->getName() ? $this->wp->escHtml($form->getName()) : "({$this->wp->_x('no name', 'fallback for forms without a name in a form list')})"
+          $formName = $form->getName() ? $this->wp->escHtml($form->getName()) : "({$this->wp->_x('no name', 'fallback for forms without a name in a form list')})";
+          $formName .= $form->getStatus() === FormEntity::STATUS_DISABLED ? ' (' . __('inactive', 'mailpoet') . ')' : '';
           ?>
         <option value="<?php echo $form->getId(); ?>" <?php echo $isSelected; ?>><?php echo $formName; ?></option>
         <?php }  ?>
