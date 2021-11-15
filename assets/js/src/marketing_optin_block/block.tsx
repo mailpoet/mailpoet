@@ -3,7 +3,7 @@
  * External dependencies
  */
 import { CheckboxControl } from '@woocommerce/blocks-checkout';
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useEffect, RawHTML } from '@wordpress/element';
 import { getSetting } from '@woocommerce/settings';
 
 const { optinEnabled, defaultText, defaultStatus } = getSetting('mailpoet_data');
@@ -32,15 +32,8 @@ const Block = (
   }
 
   return (
-    <CheckboxControl
-      checked={checked}
-      onChange={setChecked}
-    >
-      {/* eslint-disable-next-line react/no-danger */}
-      <span dangerouslySetInnerHTML={{
-        __html: text || defaultText,
-      }}
-      />
+    <CheckboxControl checked={checked} onChange={setChecked}>
+      <RawHTML>{ text || defaultText }</RawHTML>
     </CheckboxControl>
   );
 };
