@@ -6,8 +6,8 @@ use Automattic\WooCommerce\Blocks\Domain\Services\ExtendRestApi;
 use Automattic\WooCommerce\Blocks\Package;
 use Automattic\WooCommerce\Blocks\StoreApi\Schemas\CheckoutSchema;
 use MailPoet\Config\Env;
-use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -15,16 +15,21 @@ class WooCommerceBlocksIntegration {
   /** @var SettingsController */
   private $settings;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
     WPFunctions $wp,
     SettingsController $settings,
+    SubscribersRepository $subscribersRepository,
     WooCommerceSubscription $woocommerceSubscription
   ) {
     $this->wp = $wp;
     $this->settings = $settings;
+    $this->subscribersRepository = $subscribersRepository;
     $this->woocommerceSubscription = $woocommerceSubscription;
   }
 
@@ -94,12 +99,11 @@ class WooCommerceBlocksIntegration {
       return;
     }
 
-    // See Subscription::subscribeOnCheckout
-    $subscriber = Subscriber::where('email', $order->get_billing_email())
-      ->where('is_woocommerce_user', 1)
-      ->findOne();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $order->get_billing_email(), 'isWoocommerceUser' => true]);
 
     if (!$subscriber) {
+      // @todo This needs to create a subscriber if a user did not exist so that it supports Guest checkout (logged out) and users
+      // who are not synced. MailPoet\WooCommerce\Subscription does not take care of this use case either.
       return null;
     }
 
