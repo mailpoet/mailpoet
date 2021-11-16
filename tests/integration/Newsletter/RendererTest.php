@@ -679,7 +679,7 @@ class RendererTest extends \MailPoetTest {
     wp_delete_post($postId, true);
   }
 
-  public function makeAttachment($upload, $parentPostId = 0): mixed {
+  public function makeAttachment($upload, $parentPostId = 0) {
     if ( ! function_exists( 'wp_crop_image' ) ) {
       include( ABSPATH . 'wp-admin/includes/image.php' );
     }
