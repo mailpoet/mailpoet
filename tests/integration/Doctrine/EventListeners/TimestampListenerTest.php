@@ -16,9 +16,10 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\Common\Cache\ArrayCache;
 use MailPoetVendor\Doctrine\ORM\Events;
 
+require_once __DIR__ . '/EventListenersBaseTest.php';
 require_once __DIR__ . '/TimestampEntity.php';
 
-class TimestampListenerTest extends \MailPoetTest {
+class TimestampListenerTest extends EventListenersBaseTest {
   /** @var Carbon */
   private $now;
 
@@ -84,21 +85,5 @@ class TimestampListenerTest extends \MailPoetTest {
   public function _after() {
     parent::_after();
     $this->connection->executeStatement("DROP TABLE IF EXISTS $this->tableName");
-  }
-
-  /**
-   * We have to replace event listeners since EventManager
-   * is shared for all entity managers using same DB connection
-   */
-  private function replaceListeners($original, $replacement) {
-    $this->entityManager->getEventManager()->removeEventListener(
-      [Events::prePersist, Events::preUpdate],
-      $original
-    );
-
-    $this->entityManager->getEventManager()->addEventListener(
-      [Events::prePersist, Events::preUpdate],
-      $replacement
-    );
   }
 }
