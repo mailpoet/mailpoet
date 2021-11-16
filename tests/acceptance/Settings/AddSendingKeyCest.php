@@ -19,7 +19,9 @@ class AddSendingKeyCest {
     $i->login();
     $i->amOnMailPoetPage('Settings');
     $i->click($keyActivationTab);
-    $i->fillField('premium[premium_key]', $mailPoetSendingKey);
+
+    $selector = '[name="premium[premium_key]"]';
+    $i->fillFieldWithOnChangeEvent($selector, $mailPoetSendingKey);
     $i->click('Verify');
 
     // validate key, activate MSS, install & activate Premium plugin
@@ -61,7 +63,8 @@ class AddSendingKeyCest {
     $i->dontSee('A test email was sent to');
 
     // try invalid key
-    $i->fillField(['name' => 'premium[premium_key]'], 'invalid-key');
+    $selector = '[name="premium[premium_key]"]';
+    $i->fillFieldWithOnChangeEvent($selector, 'invalid-key');
     $i->click('Verify');
     $i->waitForText('Your key is not valid for the MailPoet Sending Service');
     $i->waitForText('Your key is not valid for MailPoet Premium');
