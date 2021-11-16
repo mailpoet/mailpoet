@@ -86,6 +86,28 @@ class LastSubscribedAtTest extends EventListenersBaseTest {
     $this->assertEquals($pastDate, $entity->getLastSubscribedAt());
   }
 
+  public function testItUsesDifferentTimeObjectsWhenCreatingDifferentEntities() {
+    $entity1 = new SubscriberEntity();
+    $entity1->setEmail('test@test.com');
+    $entity1->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+
+    $this->entityManager->persist($entity1);
+    $this->entityManager->flush();
+
+    $lastSubscribedAt = $entity1->getLastSubscribedAt();
+    $this->assertInstanceOf(Carbon::class, $lastSubscribedAt);
+    $lastSubscribedAt->subMonth();
+
+    $entity2 = new SubscriberEntity();
+    $entity2->setEmail('test2@test.com');
+    $entity2->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+
+    $this->entityManager->persist($entity2);
+    $this->entityManager->flush();
+
+    $this->assertEquals($this->now, $entity2->getLastSubscribedAt());
+  }
+
   public function _after() {
     parent::_after();
     $this->truncateEntity(SubscriberEntity::class);
