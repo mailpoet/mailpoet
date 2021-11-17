@@ -40,7 +40,7 @@ class WooCommerceSubscription implements Filter {
       'postmeta',
       $wpdb->prefix . 'woocommerce_order_items',
       'items',
-      'postmeta.post_id = items.order_id'
+      'postmeta.post_id = items.order_id AND order_item_type = "line_item"'
     )->innerJoin(
       'items',
       $wpdb->prefix . 'woocommerce_order_itemmeta',
