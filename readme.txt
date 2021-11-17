@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.73.2
+Stable tag: 3.74.0
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,30 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.74.0 - 2021-11-17 =
+* Added: a filter to change reCAPTCHA type;
+* Updated: preparation for Black Friday sale;
+* Updated: npm dependencies;
+* Updated: react-select library;
+* Improved: more explanatory error message when there is a problem with sending method;
+* Improved: include List column when exporting subscribers to Excel;
+* Improved: make logger resilient to "The EntityManager is closed" error;
+* Improved: support d/m/y format when importing subscribers;
+* Improved: import a template form is now centered;
+* Improved: load template thumbnails from file system instead of database to improve templates page performance;
+* Changed: custom field labels can no longer be set per form, but are the same in every form;
+* Changed: limit scheduling email to 5 years in the future;
+* Fixed: high CPU usage for some customers;
+* Fixed: missing "Enable auto-updates" for the premium plugin;
+* Fixed: custom select default values can't be changed on Manage subscription page;
+* Fixed: block toolbar hidden under top bar in form editor;
+* Fixed: unable to place a new form unless it's saved;
+* Fixed: wrong placeholders in translatable strings;
+* Fixed: unable to uncheck a checkbox in Manage Subscriptions when the default value is checked;
+* Fixed: wrong WordPress menu icons for AutomateWoo and WC Payments when on MailPoet pages;
+* Fixed: form confirmation message is not shown in some edge cases;
+* Fixed: extra space in Post Notifications when using double quotes.
 
 = 3.73.2 - 2021-11-08 =
 * Fixed: error on dynamic segments filter query.
