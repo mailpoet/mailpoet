@@ -150,7 +150,7 @@ class WordPress {
       'status' => [ScheduledTask::STATUS_SCHEDULED],
     ]);
     // subscriber stats
-    $isAnyKeySpecified = Bridge::isPremiumKeySpecified() || $premiumKeySpecified;
+    $isAnyKeySpecified = Bridge::isMSSKeySpecified() || $premiumKeySpecified;
     $statsReportDueTasks = $this->getTasksCount([
       'type' => SubscribersStatsReport::TASK_TYPE,
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
@@ -263,7 +263,7 @@ class WordPress {
     $bounceSyncActive = ($mpSendingEnabled && ($bounceDueTasks || !$bounceFutureTasks));
     $sendingServiceKeyCheckActive = ($mpSendingEnabled && ($msskeycheckDueTasks || !$msskeycheckFutureTasks));
     $premiumKeyCheckActive = ($premiumKeySpecified && ($premiumKeycheckDueTasks || !$premiumKeycheckFutureTasks));
-    $subscribersStatsReportActive = ($isAnyKeySpecified || ($statsReportDueTasks || $statsReportFutureTasks));
+    $subscribersStatsReportActive = ($isAnyKeySpecified && ($statsReportDueTasks || !$statsReportFutureTasks));
     $migrationActive = !$migrationDisabled && ($migrationDueTasks || (!$migrationCompletedTasks && !$migrationFutureTasks));
     $beamerActive = $beamerDueChecks || !$beamerFutureChecks;
 
