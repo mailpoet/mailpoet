@@ -11,7 +11,6 @@ import Heading from 'common/typography/heading/heading';
 import ModalCloseIcon from 'common/modal/close_icon';
 import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 import APIErrorsNotice from '../notices/api_errors_notice';
-import { GlobalContext } from '../context';
 
 interface Props {
   filter?: () => void;
@@ -36,9 +35,6 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
   hideScreenOptions = true,
 }: Props) => {
   const [isCreating, setIsCreating] = useState(false);
-  // this is here temporarily and the global context isn't in typescript yet
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { features } = React.useContext<any>(GlobalContext);
 
   const setupNewsletter = (type): void => {
     if (type !== undefined) {
@@ -267,9 +263,7 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
         </Button>
       ),
     },
-  ];
-  if (features.isSupported('re-engagement-email')) {
-    defaultTypes.push({
+    {
       slug: 're_engagement',
       title: MailPoet.I18n.t('tabReEngagementTitle'),
       description: MailPoet.I18n.t('reEngagementDescription'),
@@ -290,8 +284,8 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
           {MailPoet.I18n.t('setUp')}
         </Button>
       ),
-    });
-  }
+    },
+  ];
 
   let types = Hooks.applyFilters('mailpoet_newsletters_types', [
     ...defaultTypes,

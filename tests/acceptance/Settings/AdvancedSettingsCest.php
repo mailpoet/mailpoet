@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
-use MailPoet\Test\DataFactories\Features;
 
 class AdvancedSettingsCest {
   public function toggleAnonymousDataSetting(\AcceptanceTester $i) {
@@ -135,8 +134,6 @@ class AdvancedSettingsCest {
   }
 
   public function checkInactiveSubscribersAndEmails(\AcceptanceTester $i) {
-    $features = new Features();
-    $features->withFeatureEnabled('re-engagement-email');
     $i->wantTo('Check that inactive subscribers has default value');
     $inactiveSubscribersDefault = '[data-automation-id="inactive-subscribers-default"]';
     $trackingEnabled = '[data-automation-id="tracking-enabled-radio"]';
