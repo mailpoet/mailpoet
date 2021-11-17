@@ -17,7 +17,7 @@ class ConfirmInterestOrUnsubscribe {
 
   public function get(): array {
     return [
-      'name' => WPFunctions::get()->__('Confirm your interest or unsubscribe', 'mailpoet'),
+      'name' => __('Confirm your interest or unsubscribe', 'mailpoet'),
       'categories' => json_encode(['re_engagement', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),

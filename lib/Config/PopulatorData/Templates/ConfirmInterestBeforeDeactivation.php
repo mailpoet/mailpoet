@@ -17,7 +17,7 @@ class ConfirmInterestBeforeDeactivation {
 
   public function get(): array {
     return [
-      'name' => WPFunctions::get()->__('Confirm interest before deactivation', 'mailpoet'),
+      'name' => __('Confirm interest before deactivation', 'mailpoet'),
       'categories' => json_encode(['re_engagement', 'all']),
       'readonly' => 1,
       'thumbnail' => $this->getThumbnail(),
