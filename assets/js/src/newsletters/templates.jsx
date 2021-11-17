@@ -35,6 +35,10 @@ templatesCategories.push(
       label: MailPoet.I18n.t('tabNotificationTitle'),
     },
     {
+      name: 're_engagement',
+      label: MailPoet.I18n.t('tabReEngagementTitle'),
+    },
+    {
       name: 'blank',
       label: MailPoet.I18n.t('tabBlankTitle'),
     },
@@ -75,8 +79,6 @@ class NewsletterTemplates extends React.Component {
   }
 
   componentDidMount() {
-    this.addReEngagementCategory();
-
     MailPoet.Ajax.get({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletterTemplates',
@@ -104,21 +106,6 @@ class NewsletterTemplates extends React.Component {
     }).always(() => {
       this.selectInitialTab();
     });
-  }
-
-  // We want temporarily to allow re-engagement emails only when the feature is active
-  addReEngagementCategory() {
-    if (this.context.features.isSupported('re-engagement-email')) {
-      const notificationIndex = templatesCategories.map((category) => category.name).indexOf('notification');
-      const categoriesTmp = templatesCategories.splice(notificationIndex + 1);
-      templatesCategories.push(
-        {
-          name: 're_engagement',
-          label: MailPoet.I18n.t('tabReEngagementTitle'),
-        },
-        ...categoriesTmp
-      );
-    }
   }
 
   addTemplate(template) {
