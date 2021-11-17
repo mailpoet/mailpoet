@@ -752,4 +752,11 @@ class Functions {
   public function wpSetScriptTranslations(string $handle, string $domain = 'default', string $path = null): bool {
     return wp_set_script_translations($handle, $domain, $path);
   }
+
+  /**
+   * @return \WP_Scripts
+   */
+  public function getWpScripts() {
+    return wp_scripts();
+  }
 }
