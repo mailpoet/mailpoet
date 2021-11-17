@@ -48,11 +48,6 @@ class MarketingOptinBlock implements IntegrationInterface {
       $script_asset['version'],
       true
     );
-    $this->wp->wpSetScriptTranslations(
-      'mailpoet-marketing-optin-block-frontend',
-      'mailpoet',
-      Env::$languagesPath
-    );
   }
 
   /**
