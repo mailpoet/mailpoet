@@ -25,6 +25,9 @@ class Widget extends \WP_Widget {
   /** @var FormsRepository */
   private $formsRepository;
 
+  /** @var CustomFonts */
+  private $customFonts;
+
   public function __construct() {
     parent::__construct(
       'mailpoet_form',
@@ -36,6 +39,8 @@ class Widget extends \WP_Widget {
     $this->assetsController = new AssetsController($this->wp, $this->renderer, SettingsController::getInstance());
     $this->formRenderer = ContainerWrapper::getInstance()->get(FormRenderer::class);
     $this->formsRepository = ContainerWrapper::getInstance()->get(FormsRepository::class);
+    $this->customFonts = ContainerWrapper::getInstance()->get(CustomFonts::class);
+
     if (!is_admin()) {
       $this->setupIframe();
     } else {
@@ -83,7 +88,7 @@ class Widget extends \WP_Widget {
         'ajax_url' => WPFunctions::get()->adminUrl('admin-ajax.php', 'absolute'),
         'is_rtl' => $isRtl,
       ],
-      'fonts_link' => CustomFonts::generateHtmlCustomFontLink(),
+      'fonts_link' => $this->customFonts->generateHtmlCustomFontLink(),
     ];
 
     try {

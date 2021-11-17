@@ -11,72 +11,94 @@ html {
   box-sizing: inherit;
 }
 
-body {
-  color: rgb(40, 48, 61);
-  font-size: 16px;
-  font-weight: normal;
-  text-align: left;
-}
+.mailpoet_form {
+  body {
+    color: rgb(40, 48, 61);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+    text-align: left;
+  }
 
-html,
-body,
-p,
-ol,
-ul,
-li,
-dl,
-dt,
-dd,
-blockquote,
-figure,
-fieldset,
-form,
-legend,
-textarea,
-pre,
-iframe,
-hr,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-}
+  html,
+  body,
+  p,
+  ol,
+  ul,
+  li,
+  dl,
+  dt,
+  dd,
+  blockquote,
+  figure,
+  fieldset,
+  form,
+  legend,
+  textarea,
+  pre,
+  iframe,
+  hr,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: rgb(40, 48, 61);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-synthesis: none;
+    font-weight: normal;
+    letter-spacing: normal;
+    text-align: left;
+  }
 
-h1,
-.h1,
-h2,
-.h2,
-h3,
-.h3,
-h4,
-.h4,
-h5,
-.h5,
-h6,
-.h6 {
-  font-weight: normal;
-  letter-spacing: normal;
-}
+  h1,
+  .h1,
+  h2,
+  .h2,
+  h3,
+  .h3,
+  h4,
+  .h4,
+  h5,
+  .h5,
+  h6,
+  .h6 {
+    font-weight: normal;
+    letter-spacing: normal;
+    padding-top: 0;
+  }
 
-ul,
-ol {
-  font-family: Arial, Helvetica, sans-serif;
-}
+  ul,
+  ol {
+    font-family: Arial, Helvetica, sans-serif;
+  }
 
-label {
-  font-family: Arial, Helvetica, sans-serif;
-  margin-bottom: 10px;
-}
+  label {
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 10px;
+  }
 
-a {
-  background-color: transparent;
-  color: rgb(40, 48, 61);
-  cursor: pointer;
-  text-decoration-skip-ink: all;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+  input {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  a {
+    background-color: transparent;
+    color: rgb(40, 48, 61);
+    cursor: pointer;
+    text-decoration-skip-ink: all;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  button,
+  input[type='button'],
+  input[type='reset'],
+  input[type='submit'] {
+    text-transform: none;
+  }
 }
