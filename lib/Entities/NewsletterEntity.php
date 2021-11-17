@@ -500,4 +500,9 @@ class NewsletterEntity {
 
     return $processedAt;
   }
+
+  public function getContent(): string {
+    $content = $this->getBody()['content'] ?? '';
+    return json_encode($content) ?: '';
+  }
 }
