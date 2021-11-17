@@ -7,10 +7,13 @@ use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
+use MailPoet\Cron\Workers\SubscribersStatsReport;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -37,7 +40,9 @@ class WordPressTest extends \MailPoetTest {
       'method' => 'none',
     ]);
     ScheduledTask::where('type', Beamer::TASK_TYPE)->deleteMany();
-    $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED, Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 600));
+    $future = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 600);
+    $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED, $future);
+    $this->_addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     $this->wordpressTrigger = $this->diContainer->get(WordPress::class);
   }
 
@@ -173,6 +178,18 @@ class WordPressTest extends \MailPoetTest {
     expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
     $this->wordpressTrigger->run();
     expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
+  }
+
+  public function testItDoesNotTriggerCronWhenFutureStatsReportIsScheduled() {
+    $future = Carbon::now()->addHour();
+    $statsJobType = SubscribersStatsReport::TASK_TYPE;
+    expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
+    $scheduledTaskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("DELETE FROM $scheduledTaskTable WHERE type = '$statsJobType';");
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'asdfgh');
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    $this->_addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function _addMTAConfigAndLog($sent, $status = null) {
