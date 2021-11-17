@@ -173,9 +173,21 @@ class Newsletters extends APIEndpoint {
       ]);
     }
 
+    // if the re-engagement email doesn't contain the re-engage link, it can't be activated
+    if ($newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT && $status === NewsletterEntity::STATUS_ACTIVE) {
+      if (strpos($newsletter->getContent(), '[link:subscription_re_engage_url]') === false) {
+        return $this->errorResponse([
+          APIError::FORBIDDEN => __(
+            'A re-engagement email must include a link with [link:subscription_re_engage_url] shortcode.',
+            'mailpoet'
+          ),
+        ], [], Response::STATUS_FORBIDDEN);
+      }
+    }
+
     $tracking = $this->settings->get('tracking');
     $tracking_enabled = !empty($tracking['enabled']) && $tracking['enabled'] === "1";
-    if ( !$tracking_enabled && $newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT && $status === NewsletterEntity::STATUS_ACTIVE) {
+    if (!$tracking_enabled && $newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT && $status === NewsletterEntity::STATUS_ACTIVE) {
       return $this->errorResponse([
         APIError::FORBIDDEN => __(
           'Re-engagement emails are disabled because open and click tracking is disabled in MailPoet → Settings → Advanced.',
