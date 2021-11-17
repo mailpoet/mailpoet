@@ -20,14 +20,11 @@ const { optinEnabled, defaultText } = getSetting('mailpoet_data');
 const EmptyState = (): JSX.Element => (
   <Placeholder
     icon={<Icon icon={megaphone} />}
-    label={__('Marketing opt-in', 'mailpoet')}
+    label={__('marketing-opt-in-label', 'mailpoet')}
     className="wp-block-mailpoet-newsletter-block-placeholder"
   >
     <span className="wp-block-mailpoet-newsletter-block-placeholder__description">
-      {__(
-        'MailPoet marketing opt-in would be shown here if enabled. You can enable from the settings page.',
-        'mailpoet'
-      )}
+      {__('marketing-opt-in-not-shown', 'mailpoet')}
     </span>
     <Button
       isPrimary
@@ -36,7 +33,7 @@ const EmptyState = (): JSX.Element => (
       rel="noopener noreferrer"
       className="wp-block-mailpoet-newsletter-block-placeholder__button"
     >
-      {__('Enable opt-in for Checkout', 'mailpoet')}
+      {__('marketing-opt-in-enable', 'mailpoet')}
     </Button>
   </Placeholder>
 );
