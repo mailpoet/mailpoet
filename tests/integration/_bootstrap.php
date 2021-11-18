@@ -280,6 +280,12 @@ if (!function_exists('WC')) {
 
     public function get_billing_last_name() { // phpcs:ignore
     }
+
+    public function get_billing_email() { // phpcs:ignore
+    }
+
+    public function get_id() { // phpcs:ignore
+    }
   }
 
   class WC_Emails {} // phpcs:ignore

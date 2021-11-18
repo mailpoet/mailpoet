@@ -2,14 +2,15 @@
 
 namespace MailPoet\Test\Statistics\Track;
 
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoetVendor\Idiorm\ORM;
 
 class UnsubscribesTest extends \MailPoetTest {
   /** @var Unsubscribes */
@@ -24,6 +25,7 @@ class UnsubscribesTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    $this->cleanup();
     // create newsletter
     $newsletter = Newsletter::create();
     $newsletter->type = 'type';
@@ -65,10 +67,14 @@ class UnsubscribesTest extends \MailPoetTest {
     expect(count($this->statisticsUnsubscribesRepository->findAll()))->equals(1);
   }
 
-  public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+  private function cleanup() {
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(StatisticsUnsubscribeEntity::class);
+  }
+
+  public function _after() {
+    $this->cleanup();
   }
 }
