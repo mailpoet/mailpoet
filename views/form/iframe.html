@@ -13,6 +13,23 @@
     <meta name="viewport" content="width=device-width">
     <meta name="robots" content="noindex, nofollow">
     <title><%= __('MailPoet Subscription Form') %></title>
+    <style>
+      html {
+        box-sizing: border-box;
+      }
+      *,
+      *:before,
+      *:after {
+        box-sizing: inherit;
+      }
+      body {
+        color: rgb(40, 48, 61);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 16px;
+        font-weight: normal;
+        text-align: left;
+      }
+    </style>
     <%= fonts_link | raw %>
     <%= stylesheet('mailpoet-public.css') %>
     <%= scripts | raw %>
