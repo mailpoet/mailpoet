@@ -6,8 +6,11 @@ use Automattic\WooCommerce\Blocks\Domain\Services\ExtendRestApi;
 use Automattic\WooCommerce\Blocks\Package;
 use Automattic\WooCommerce\Blocks\StoreApi\Schemas\CheckoutSchema;
 use MailPoet\Config\Env;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Subscriber;
+use MailPoet\Segments\WooCommerce as WooSegment;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -21,14 +24,24 @@ class WooCommerceBlocksIntegration {
   /** @var WooCommerceSubscription */
   private $woocommerceSubscription;
 
+  /** @var WooSegment */
+  private $wooSegment;
+
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     WPFunctions $wp,
     SettingsController $settings,
-    WooCommerceSubscription $woocommerceSubscription
+    WooCommerceSubscription $woocommerceSubscription,
+    WooSegment $wooSegment,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->woocommerceSubscription = $woocommerceSubscription;
+    $this->wooSegment = $wooSegment;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function init() {
@@ -100,15 +113,25 @@ class WooCommerceBlocksIntegration {
       return;
     }
 
-    // See Subscription::subscribeOnCheckout
-    $subscriber = Subscriber::where('email', $order->get_billing_email())
-      ->where('is_woocommerce_user', 1)
-      ->findOne();
+    // Fetch existing woo subscriber and in case there is not any sync as guest
+    $email = $order->get_billing_email();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email , 'isWoocommerceUser' => true]);
+    if (!$subscriber instanceof SubscriberEntity) {
+      $this->wooSegment->synchronizeGuestCustomer($order->get_id());
+      $subscriber = $this->subscribersRepository->findOneBy(['email' => $email , 'isWoocommerceUser' => true]);
+    }
 
-    if (!$subscriber) {
+    // Subscriber not found and guest sync failed
+    if (!$subscriber instanceof SubscriberEntity) {
       return null;
     }
 
-    $this->woocommerceSubscription->handleSubscriberOptin($subscriber, (bool)$request['extensions']['mailpoet']['optin']);
+    // We temporarily need to fetch old model
+    $subscriberOldModel = Subscriber::findOne($subscriber->getId());
+    if (!$subscriberOldModel) {
+      return null;
+    }
+
+    $this->woocommerceSubscription->handleSubscriberOptin($subscriberOldModel, (bool)$request['extensions']['mailpoet']['optin']);
   }
 }
