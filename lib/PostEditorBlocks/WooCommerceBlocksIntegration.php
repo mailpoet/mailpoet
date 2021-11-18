@@ -59,7 +59,7 @@ class WooCommerceBlocksIntegration {
       '__experimental_woocommerce_blocks_add_data_attributes_to_block',
       [$this, 'addDataAttributesToBlock']
     );
-    $this->wp->registerBlockType(Env::$assetsPath . '/js/src/marketing_optin_block');
+    $this->wp->registerBlockType(Env::$assetsPath . '/dist/js/marketing_optin_block');
     $this->extendRestApi();
   }
 

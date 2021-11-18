@@ -488,6 +488,14 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
       requestToExternal,
       requestToHandle,
     }),
+    new WebpackCopyPlugin({
+      patterns: [
+        {
+          from: 'assets/js/src/marketing_optin_block/block.json',
+          to: 'block.json',
+        },
+      ],
+    }),
   ],
 });
 
