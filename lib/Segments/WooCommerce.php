@@ -6,11 +6,10 @@ use MailPoet\Config\Env;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\ModelValidator;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscriberSaveController;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -42,6 +41,12 @@ class WooCommerce {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var SubscriberSegmentRepository */
+  private $subscriberSegmentRepository;
+
+  /** @var SubscriberSaveController */
+  private $subscriberSaveController;
+
   /** @var WCHelper */
   private $woocommerceHelper;
 
@@ -57,6 +62,8 @@ class WooCommerce {
     WCHelper $woocommerceHelper,
     SubscribersRepository $subscribersRepository,
     SegmentsRepository $segmentsRepository,
+    SubscriberSegmentRepository $subscriberSegmentRepository,
+    SubscriberSaveController $subscriberSaveController,
     WP $wpSegment,
     EntityManager $entityManager,
     Connection $connection
@@ -66,6 +73,8 @@ class WooCommerce {
     $this->wpSegment = $wpSegment;
     $this->subscribersRepository = $subscribersRepository;
     $this->segmentsRepository = $segmentsRepository;
+    $this->subscriberSegmentRepository = $subscriberSegmentRepository;
+    $this->subscriberSaveController = $subscriberSaveController;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->entityManager = $entityManager;
     $this->connection = $connection;
@@ -82,9 +91,7 @@ class WooCommerce {
   }
 
   public function synchronizeRegisteredCustomer($wpUserId, $currentFilter = null) {
-    $wcSegment = Segment::getWooCommerceSegment();
-
-    if ($wcSegment === false) return;
+    $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
 
     $currentFilter = $currentFilter ?: $this->wp->currentFilter();
     switch ($currentFilter) {
@@ -98,10 +105,9 @@ class WooCommerce {
       case 'woocommerce_update_customer':
       default:
         $wpUser = $this->wp->getUserdata($wpUserId);
-        $subscriber = Subscriber::where('wp_user_id', $wpUserId)
-          ->findOne();
+        $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $wpUserId]);
 
-        if ($wpUser === false || $subscriber === false) {
+        if ($wpUser === false || $subscriber === null) {
           // registered customers should exist as WP users and WP segment subscribers
           return false;
         }
@@ -112,21 +118,19 @@ class WooCommerce {
         if (!empty($newCustomer)) {
           $data['source'] = Source::WOOCOMMERCE_USER;
         }
-        $data['id'] = $subscriber->id();
+        $data['id'] = $subscriber->getId();
         if ($wpUser->first_name) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
           $data['first_name'] = $wpUser->first_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         }
         if ($wpUser->last_name) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
           $data['last_name'] = $wpUser->last_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         }
-        $subscriber = Subscriber::createOrUpdate($data);
-        if ($subscriber->getErrors() === false && $subscriber->id > 0) {
-          // add subscriber to the WooCommerce Customers segment
-          SubscriberSegment::subscribeToSegments(
-            $subscriber,
-            [$wcSegment->id]
-          );
-        }
+        $subscriber = $this->subscriberSaveController->createOrUpdate($data, $subscriber);
+        // add subscriber to the WooCommerce Customers segment
+        $this->subscriberSegmentRepository->subscribeToSegments(
+          $subscriber,
+          [$wcSegment]
+        );
         break;
     }
 
@@ -135,9 +139,9 @@ class WooCommerce {
 
   public function synchronizeGuestCustomer($orderId) {
     $wcOrder = $this->woocommerceHelper->wcGetOrder($orderId);
-    $wcSegment = Segment::getWooCommerceSegment();
+    $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
 
-    if ((!$wcOrder instanceof \WC_Order) || $wcSegment === false) return;
+    if (!$wcOrder instanceof \WC_Order) return;
     $signupConfirmation = $this->settings->get('signup_confirmation');
     $status = SubscriberEntity::STATUS_UNCONFIRMED;
     if ((bool)$signupConfirmation['enabled'] === false) {
@@ -149,20 +153,19 @@ class WooCommerce {
     if (empty($insertedEmails[0])) {
       return false;
     }
-    $subscriber = Subscriber::where('email', $insertedEmails[0])
-      ->findOne();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $insertedEmails[0]]);
 
-    if ($subscriber !== false) {
+    if ($subscriber) {
       $firstName = $wcOrder->get_billing_first_name(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $lastName = $wcOrder->get_billing_last_name(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       if ($firstName) {
-        $subscriber->firstName = $firstName;
+        $subscriber->setFirstName($firstName);
       }
       if ($lastName) {
-        $subscriber->lastName = $lastName;
+        $subscriber->setLastName($lastName);
       }
       if ($firstName || $lastName) {
-        $subscriber->save();
+        $this->subscribersRepository->flush();
       }
     }
   }
@@ -246,7 +249,7 @@ class WooCommerce {
     ", ['capabilities' => $wpdb->prefix . 'capabilities', 'source' => Source::WOOCOMMERCE_USER]);
   }
 
-  private function insertSubscribersFromOrders($orderId = null, $status = Subscriber::STATUS_SUBSCRIBED): array {
+  private function insertSubscribersFromOrders($orderId = null, $status = SubscriberEntity::STATUS_SUBSCRIBED): array {
     global $wpdb;
     $validator = new ModelValidator();
     $orderId = !is_null($orderId) ? (int)$orderId : null;

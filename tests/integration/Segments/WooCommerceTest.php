@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Test\Segments;
 
@@ -13,6 +13,8 @@ use MailPoet\Segments\WooCommerce;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscriberSaveController;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -773,6 +775,8 @@ class WooCommerceTest extends \MailPoetTest {
       $wooHelperMock ?? $this->diContainer->get(Helper::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SegmentsRepository::class),
+      $this->diContainer->get(SubscriberSegmentRepository::class),
+      $this->diContainer->get(SubscriberSaveController::class),
       $this->diContainer->get(WP::class),
       $this->entityManager,
       $this->entityManager->getConnection()
