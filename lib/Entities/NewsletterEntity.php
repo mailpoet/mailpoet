@@ -505,4 +505,11 @@ class NewsletterEntity {
     $content = $this->getBody()['content'] ?? '';
     return json_encode($content) ?: '';
   }
+
+  /**
+   * Only some types of newsletters can be set as sent. Some others are just active or draft.
+   */
+  public function canBeSetSent(): bool {
+    return in_array($this->getType(), [self::TYPE_NOTIFICATION_HISTORY, self::TYPE_STANDARD], true);
+  }
 }

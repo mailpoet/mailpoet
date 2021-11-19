@@ -54,6 +54,44 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     expect($result)->true();
   }
 
+  public function testItFinishesSendingWhenResumingQueueWithEverythingSent() {
+    $task = $this->createTask();
+    $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $queue = $this->createQueue($task);
+    $newsletter = $queue->getNewsletter();
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $queue->setCountTotal(1);
+    $queue->setCountProcessed(1);
+    $this->entityManager->flush();
+
+    $this->repository->resume($queue);
+    $this->entityManager->refresh($task);
+
+    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+  }
+
+  public function testItResumesSending() {
+    $task = $this->createTask();
+    $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $queue = $this->createQueue($task);
+    $newsletter = $queue->getNewsletter();
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $queue->setCountTotal(1);
+    $queue->setCountProcessed(2);
+    $this->entityManager->flush();
+
+    $this->repository->resume($queue);
+    $this->entityManager->refresh($task);
+
+    expect($task->getStatus())->null();
+    expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+  }
+
   private function createTaskSubscriber(ScheduledTaskEntity $task, SubscriberEntity $subscriber, int $processed) {
     $taskSubscriber = new ScheduledTaskSubscriberEntity(
       $task,
