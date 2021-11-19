@@ -8,6 +8,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 /**
@@ -99,7 +100,8 @@ class SendingQueuesRepository extends Repository {
     if (!$task instanceof ScheduledTaskEntity) return;
 
     if ($queue->getCountProcessed() === $queue->getCountTotal()) {
-      $task->setProcessedAt($this->wp->currentTime('mysql'));
+      $processedAt = Carbon::createFromTimestamp($this->wp->currentTime('mysql'));
+      $task->setProcessedAt($processedAt);
       $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
       $this->flush();
     } else {
