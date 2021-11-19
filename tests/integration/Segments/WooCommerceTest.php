@@ -7,6 +7,7 @@ require_once(ABSPATH . 'wp-admin/includes/user.php');
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Segments\WooCommerce;
 use MailPoet\Segments\WP;
@@ -771,7 +772,10 @@ class WooCommerceTest extends \MailPoetTest {
       $this->diContainer->get(WPFunctions::class),
       $wooHelperMock ?? $this->diContainer->get(Helper::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(WP::class)
+      $this->diContainer->get(SegmentsRepository::class),
+      $this->diContainer->get(WP::class),
+      $this->entityManager,
+      $this->entityManager->getConnection()
     );
   }
 
