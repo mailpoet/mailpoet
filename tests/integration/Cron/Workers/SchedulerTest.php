@@ -522,6 +522,8 @@ class SchedulerTest extends \MailPoetTest {
     $updatedQueueSubscribers = $updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
     expect($updatedQueueSubscribers)->equals([$subscriber->id]);
     expect($updatedQueue->newsletterId)->equals($notificationHistory->id);
+    expect($updatedQueue->countProcessed)->equals(0);
+    expect($updatedQueue->countToProcess)->equals(1);
     // set notification history's status to sending
     $updatedNotificationHistory = Newsletter::where('parent_id', $newsletter->id)
       ->findOne();
