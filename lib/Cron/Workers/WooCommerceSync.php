@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers;
 
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Segments\WooCommerce;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 
@@ -31,7 +32,15 @@ class WooCommerceSync extends SimpleWorker {
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
-    $this->woocommerceSegment->synchronizeCustomers();
+    $countOfSynchronized = $task->getMeta()['count_of_synchronized'] ?? 0;
+    $count = $this->woocommerceSegment->synchronizeCustomers($countOfSynchronized);
+
+    $countOfSynchronized += $count;
+    $task->setMeta(['count_of_synchronized' => $countOfSynchronized]);
+    $this->scheduledTasksRepository->flush();
+    if ($count === WooCommerce::BATCH_SIZE) {
+      return false;
+    }
     return true;
   }
 }
