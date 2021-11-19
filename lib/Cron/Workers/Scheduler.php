@@ -104,7 +104,7 @@ class Scheduler {
     return true;
   }
 
-  public function processPostNotificationNewsletter($newsletter, $queue) {
+  public function processPostNotificationNewsletter($newsletter, SendingTask $queue) {
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
       'process post notification in scheduler',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
@@ -137,6 +137,7 @@ class Scheduler {
 
     // queue newsletter for delivery
     $queue->newsletterId = $notificationHistory->id;
+    $queue->updateCount();
     $queue->status = null;
     $queue->save();
     // update notification status
