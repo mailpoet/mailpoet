@@ -103,6 +103,11 @@ class SendingQueuesRepository extends Repository {
       $processedAt = Carbon::createFromTimestamp($this->wp->currentTime('mysql'));
       $task->setProcessedAt($processedAt);
       $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+      // Update also status of newsletter if necessary
+      $newsletter = $queue->getNewsletter();
+      if ($newsletter instanceof NewsletterEntity && $newsletter->canBeSetSent()) {
+        $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
+      }
       $this->flush();
     } else {
       $newsletter = $queue->getNewsletter();
