@@ -189,6 +189,7 @@ class SubscriberSaveController {
     if (isset($data['wp_user_id'])) $subscriber->setWpUserId($data['wp_user_id']);
     if (isset($data['subscribed_ip'])) $subscriber->setSubscribedIp($data['subscribed_ip']);
     if (isset($data['confirmed_ip'])) $subscriber->setConfirmedIp($data['confirmed_ip']);
+    if (isset($data['is_woocommerce_user'])) $subscriber->setIsWoocommerceUser((bool)$data['is_woocommerce_user']);
     $createdAt = isset($data['created_at']) ? Carbon::createFromFormat('Y-m-d H:i:s', $data['created_at']) : null;
     if ($createdAt) $subscriber->setCreatedAt($createdAt);
     $confirmedAt = isset($data['confirmed_at']) ? Carbon::createFromFormat('Y-m-d H:i:s', $data['confirmed_at']) : null;
