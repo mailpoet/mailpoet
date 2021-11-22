@@ -11,7 +11,7 @@ import { WordpressRoleFields } from './subscriber_wordpress_role';
 import { SubscriberScoreFields, validateSubscriberScore } from './subscriber_score';
 import { SubscribedDateFields, SubscribedDateOperator } from './subscriber_subscribed_date';
 import { MailPoetCustomFields, validateMailPoetCustomField } from './subscriber_mailpoet_custom_field';
-import { SubscribedToList } from './subscriber_subscribed_to_list';
+import { SubscribedToList, validateSubscribedToList } from './subscriber_subscribed_to_list';
 
 export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if ((!formItems.action) || (formItems.action === SubscriberActionTypes.WORDPRESS_ROLE)) {
@@ -22,6 +22,9 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   }
   if (formItems.action === SubscriberActionTypes.SUBSCRIBER_SCORE) {
     return validateSubscriberScore(formItems);
+  }
+  if (formItems.action === SubscriberActionTypes.SUBSCRIBED_TO_LIST) {
+    return validateSubscribedToList(formItems);
   }
   if (!formItems.operator || !formItems.value) {
     return false;
