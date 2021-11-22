@@ -187,9 +187,31 @@ class WordPressTest extends \MailPoetTest {
     $scheduledTaskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $this->entityManager->getConnection()->executeStatement("DELETE FROM $scheduledTaskTable WHERE type = '$statsJobType';");
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'asdfgh');
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => 'valid']);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
     $this->_addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+  }
+
+  public function testItDoesNotTriggerCronForStatsReportIfThereIsNoValidKey() {
+    $statsJobType = SubscribersStatsReport::TASK_TYPE;
+    expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
+    $scheduledTaskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("DELETE FROM $scheduledTaskTable WHERE type = '$statsJobType';");
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'somekey');
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => 'invalid']);
+    $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, null);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+  }
+
+  public function testItTriggersCronIfThereIsValidKeyAndNoStatsReportJobScheduled() {
+    $statsJobType = SubscribersStatsReport::TASK_TYPE;
+    expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
+    $scheduledTaskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("DELETE FROM $scheduledTaskTable WHERE type = '$statsJobType';");
+    $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'somekey');
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => 'valid']);
+    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function _addMTAConfigAndLog($sent, $status = null) {
