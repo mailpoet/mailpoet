@@ -4,12 +4,11 @@ namespace MailPoet\Test\Segments;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
 
-use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
-use MailPoet\Segments\WooCommerce;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\Source;
@@ -19,7 +18,6 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 require_once('WPUserWithExtraProps.php');
 
@@ -28,14 +26,29 @@ class WooCommerceTest extends \MailPoetTest {
 
   private $userEmails = [];
 
-  /** @var WooCommerce */
-  private $woocommerceSegment;
+  /** @var SegmentEntity */
+  private $wooCommerceSegment;
+
+  /** @var WooCommerceSegment */
+  private $wooCommerce;
 
   /** @var SettingsController */
   private $settings;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
+  /** @var SubscriberSegmentRepository */
+  private $subscriberSegmentsRepository;
+
   public function _before() {
-    $this->woocommerceSegment = $this->getWooCommerceSegment();
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
+    $this->subscriberSegmentsRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
+    $this->wooCommerce = $this->getWooCommerce();
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->cleanData();
     $this->addCustomerRole();
@@ -45,80 +58,68 @@ class WooCommerceTest extends \MailPoetTest {
     $firstName = 'Test First';
     $lastName = 'Test Last';
     $user = $this->insertRegisteredCustomerWithOrder(null, ['first_name' => $firstName, 'last_name' => $lastName]);
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate([
-      'first_name' => 'Mike',
-      'last_name' => 'Mike',
-      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      'wp_user_id' => $user->ID,
-    ]);
-    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $subscriber->source = Source::WORDPRESS_USER;
-    $subscriber->save();
-    $subscriber->trash();
+    $this->createSubscriber(
+      'Mike',
+      'Mike',
+      $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_SUBSCRIBED,
+      $user->ID,
+      Source::WORDPRESS_USER
+    );
     $hook = 'woocommerce_new_customer';
-    $this->woocommerceSegment->synchronizeRegisteredCustomer($user->ID, $hook);
-    $subscriber = Segment::getWooCommerceSegment()->subscribers()
-      ->where('wp_user_id', $user->ID)
-      ->findOne();
+    $this->wooCommerce->synchronizeRegisteredCustomer($user->ID, $hook);
+    $subscriber = $this->findWCSubscriberByWpUserId($user->ID);
+    assert($subscriber instanceof SubscriberEntity);
     expect($subscriber)->notEmpty();
-    expect($subscriber->email)->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($subscriber->firstName)->equals($firstName);
-    expect($subscriber->lastName)->equals($lastName);
-    expect($subscriber->isWoocommerceUser)->equals(1);
-    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
-    expect($subscriber->deletedAt)->equals(null);
+    expect($subscriber->getEmail())->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($subscriber->getFirstName())->equals($firstName);
+    expect($subscriber->getLastName())->equals($lastName);
+    expect($subscriber->getIsWoocommerceUser())->equals(true);
+    expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_USER);
+    expect($subscriber->getDeletedAt())->equals(null);
   }
 
   public function testItSynchronizesUpdatedRegisteredCustomer() {
     $firstName = 'Test First';
     $lastName = 'Test Last';
     $user = $this->insertRegisteredCustomerWithOrder(null, ['first_name' => $firstName, 'last_name' => $lastName]);
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate([
-      'first_name' => 'Mike',
-      'last_name' => 'Mike',
-      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      'wp_user_id' => $user->ID,
-    ]);
-    $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
-    $subscriber->source = Source::WORDPRESS_USER;
-    $subscriber->save();
+    $this->createSubscriber(
+      'Mike',
+      'Mike',
+      $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_UNSUBSCRIBED,
+      $user->ID,
+      Source::WORDPRESS_USER
+    );
     $hook = 'woocommerce_update_customer';
-    $this->woocommerceSegment->synchronizeRegisteredCustomer($user->ID, $hook);
-    $subscriber = Segment::getWooCommerceSegment()->subscribers()
-      ->where('wp_user_id', $user->ID)
-      ->findOne();
+    $this->wooCommerce->synchronizeRegisteredCustomer($user->ID, $hook);
+    $subscriber = $this->findWCSubscriberByWpUserId($user->ID);
+    assert($subscriber instanceof SubscriberEntity);
     expect($subscriber)->notEmpty();
-    expect($subscriber->email)->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($subscriber->firstName)->equals($firstName);
-    expect($subscriber->lastName)->equals($lastName);
-    expect($subscriber->isWoocommerceUser)->equals(1);
-    expect($subscriber->source)->equals(Source::WORDPRESS_USER); // no overriding
-    expect($subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED); // no overriding
+    expect($subscriber->getEmail())->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($subscriber->getFirstName())->equals($firstName);
+    expect($subscriber->getLastName())->equals($lastName);
+    expect($subscriber->getIsWoocommerceUser())->equals(true);
+    expect($subscriber->getSource())->equals(Source::WORDPRESS_USER); // no overriding
+    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED); // no overriding
   }
 
   public function testItSynchronizesDeletedRegisteredCustomer() {
-    $wcSegment = Segment::getWooCommerceSegment();
+    $wooCommerceSegment = $this->segmentsRepository->getWooCommerceSegment();
     $user = $this->insertRegisteredCustomer();
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate([
-      'first_name' => 'Mike',
-      'last_name' => 'Mike',
-      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      'wp_user_id' => $user->ID,
-    ]);
-    $subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
-    $subscriber->source = Source::WORDPRESS_USER;
-    $subscriber->save();
-    $association = SubscriberSegment::create();
-    $association->subscriberId = $subscriber->id;
-    $association->segmentId = $wcSegment->id;
-    $association->save();
-    expect(SubscriberSegment::findOne($association->id))->notEmpty();
+    $subscriber = $this->createSubscriber(
+      'Mike',
+      'Mike',
+      $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_UNSUBSCRIBED,
+      $user->ID,
+      Source::WORDPRESS_USER
+    );
+    $association = $this->createSubscriberSegment($subscriber, $wooCommerceSegment);
+    expect($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
     $hook = 'woocommerce_delete_customer';
-    $this->woocommerceSegment->synchronizeRegisteredCustomer($user->ID, $hook);
-    expect(SubscriberSegment::findOne($association->id))->isEmpty();
+    $this->wooCommerce->synchronizeRegisteredCustomer($user->ID, $hook);
+    expect($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
   }
 
   public function testItSynchronizesNewGuestCustomer() {
@@ -127,15 +128,14 @@ class WooCommerceTest extends \MailPoetTest {
     $guest = $this->insertGuestCustomer();
     $woocommerceSegment = $this->getWooCommerceSegmentForGuestUser($guest);
     $woocommerceSegment->synchronizeGuestCustomer($guest['order_id']);
-    $subscriber = Segment::getWooCommerceSegment()->subscribers()
-      ->where('email', $guest['email'])
-      ->findOne();
-    expect($subscriber)->isEmpty();
-    $subscriber = Subscriber::where('email', $guest['email'])->findOne();
-    expect($subscriber->firstName)->equals($guest['first_name']);
-    expect($subscriber->lastName)->equals($guest['last_name']);
-    expect($subscriber->isWoocommerceUser)->equals(1);
-    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
+    $subscribers = $this->getWCSubscribersByEmails([$guest['email']]);
+    expect($subscribers)->isEmpty();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getFirstName())->equals($guest['first_name']);
+    expect($subscriber->getLastName())->equals($guest['last_name']);
+    expect($subscriber->getIsWoocommerceUser())->equals(true);
+    expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_USER);
   }
 
   public function testItSynchronizesNewGuestCustomerWithDoubleOptinDisabled() {
@@ -145,15 +145,14 @@ class WooCommerceTest extends \MailPoetTest {
     $guest = $this->insertGuestCustomer();
     $woocommerceSegment = $this->getWooCommerceSegmentForGuestUser($guest);
     $woocommerceSegment->synchronizeGuestCustomer($guest['order_id']);
-    $subscriber = Segment::getWooCommerceSegment()->subscribers()
-      ->where('email', $guest['email'])
-      ->findOne();
-    expect($subscriber)->isEmpty();
-    $subscriber = Subscriber::where('email', $guest['email'])->findOne();
-    expect($subscriber->firstName)->equals($guest['first_name']);
-    expect($subscriber->lastName)->equals($guest['last_name']);
-    expect($subscriber->isWoocommerceUser)->equals(1);
-    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
+    $subscribers = $this->getWCSubscribersByEmails([$guest['email']]);
+    expect($subscribers)->isEmpty();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getFirstName())->equals($guest['first_name']);
+    expect($subscriber->getLastName())->equals($guest['last_name']);
+    expect($subscriber->getIsWoocommerceUser())->equals(true);
+    expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_USER);
   }
 
   public function testItSynchronizesNewGuestCustomerWithOptinCheckoutEnabled() {
@@ -163,15 +162,14 @@ class WooCommerceTest extends \MailPoetTest {
     $guest = $this->insertGuestCustomer();
     $woocommerceSegment = $this->getWooCommerceSegmentForGuestUser($guest);
     $woocommerceSegment->synchronizeGuestCustomer($guest['order_id']);
-    $subscriber = Segment::getWooCommerceSegment()->subscribers()
-      ->where('email', $guest['email'])
-      ->findOne();
-    expect($subscriber)->isEmpty();
-    $subscriber = Subscriber::where('email', $guest['email'])->findOne();
-    expect($subscriber->firstName)->equals($guest['first_name']);
-    expect($subscriber->lastName)->equals($guest['last_name']);
-    expect($subscriber->isWoocommerceUser)->equals(1);
-    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
+    $subscribers = $this->getWCSubscribersByEmails([$guest['email']]);
+    expect($subscribers)->isEmpty();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getFirstName())->equals($guest['first_name']);
+    expect($subscriber->getLastName())->equals($guest['last_name']);
+    expect($subscriber->getIsWoocommerceUser())->equals(true);
+    expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_USER);
   }
 
   public function testItSynchronizesCustomers() {
@@ -179,68 +177,78 @@ class WooCommerceTest extends \MailPoetTest {
     $this->settings->set('mailpoet_subscribe_old_woocommerce_customers', ['dummy' => '1', 'enabled' => '1']);
     $user = $this->insertRegisteredCustomer();
     $guest = $this->insertGuestCustomer();
-    $this->woocommerceSegment->synchronizeCustomers();
+    $this->wooCommerce->synchronizeCustomers();
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(2);
 
-    $subscriber = Subscriber::where('email', $user->user_email)->findOne(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
-    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
-    $subscriber = Subscriber::where('email', $guest['email'])->findOne();
-    expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($subscriber->source)->equals(Source::WOOCOMMERCE_USER);
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $user->user_email]); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_USER);
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_USER);
   }
 
   public function testItSynchronizesNewCustomers() {
     $this->insertRegisteredCustomer();
     $this->insertGuestCustomer();
-    $this->woocommerceSegment->synchronizeCustomers();
+    $this->wooCommerce->synchronizeCustomers();
     $this->insertRegisteredCustomer();
     $this->insertGuestCustomer();
-    $this->woocommerceSegment->synchronizeCustomers();
+    $this->wooCommerce->synchronizeCustomers();
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(4);
   }
 
   public function testItSynchronizesPresubscribedRegisteredCustomers() {
     $randomNumber = 12345;
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'user-sync-test' . $randomNumber . '@example.com',
-      'status' => Subscriber::STATUS_UNSUBSCRIBED,
-    ]);
+    $subscriber = $this->createSubscriber(
+      'Mike',
+      'Mike',
+      'user-sync-test' . $randomNumber . '@example.com',
+      SubscriberEntity::STATUS_UNSUBSCRIBED,
+      null
+    );
     $user = $this->insertRegisteredCustomer($randomNumber);
-    $this->woocommerceSegment->synchronizeCustomers();
-    $wpSubscriber = Segment::getWooCommerceSegment()->subscribers()
-      ->where('is_woocommerce_user', 1)
-      ->where('wp_user_id', $user->ID)
-      ->findOne();
+    $this->wooCommerce->synchronizeCustomers();
+    $wpSubscriber = $this->subscribersRepository->findOneBy([
+      'wpUserId' => $user->ID,
+      'isWoocommerceUser' => true,
+    ]);
+    assert($wpSubscriber instanceof SubscriberEntity);
     expect($wpSubscriber)->notEmpty();
-    expect($wpSubscriber->id)->equals($subscriber->id);
-    expect($wpSubscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    expect($wpSubscriber->getId())->equals($subscriber->getId());
+    expect($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function testItSynchronizesPresubscribedGuestCustomers() {
     $randomNumber = 12345;
-    $subscriber = Subscriber::createOrUpdate([
-      'email' => 'user-sync-test' . $randomNumber . '@example.com',
-      'status' => Subscriber::STATUS_UNSUBSCRIBED,
-    ]);
+    $subscriber = $this->createSubscriber(
+      'Mike',
+      'Mike',
+      'user-sync-test' . $randomNumber . '@example.com',
+      SubscriberEntity::STATUS_UNSUBSCRIBED,
+      null
+    );
     $guest = $this->insertGuestCustomer($randomNumber);
-    $this->woocommerceSegment->synchronizeCustomers();
-    $wpSubscriber = Segment::getWooCommerceSegment()->subscribers()
-      ->where('is_woocommerce_user', 1)
-      ->where('email', $guest['email'])
-      ->findOne();
+    $this->wooCommerce->synchronizeCustomers();
+    $wpSubscriber = $this->subscribersRepository->findOneBy([
+      'email' => $guest['email'],
+      'isWoocommerceUser' => true,
+    ]);
+    assert($wpSubscriber instanceof SubscriberEntity);
     expect($wpSubscriber)->notEmpty();
-    expect($wpSubscriber->email)->equals($subscriber->email);
-    expect($wpSubscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    expect($wpSubscriber->getEmail())->equals($subscriber->getEmail());
+    expect($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function testItDoesNotSynchronizeEmptyEmailsForNewUsers() {
     $guest = $this->insertGuestCustomer();
     update_post_meta($guest['order_id'], '_billing_email', '');
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscriber = Subscriber::where('email', '')->findOne();
+    $this->wooCommerce->synchronizeCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => '']);
     expect($subscriber)->isEmpty();
     $this->deleteOrder($guest['order_id']);
   }
@@ -249,50 +257,54 @@ class WooCommerceTest extends \MailPoetTest {
     $guest = $this->insertGuestCustomer();
     $invalidEmail = 'ivalid.@email.com';
     update_post_meta($guest['order_id'], '_billing_email', $invalidEmail);
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscriber = Subscriber::where('email', $invalidEmail)->findOne();
+    $this->wooCommerce->synchronizeCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $invalidEmail]);
     expect($subscriber)->isEmpty();
     $this->deleteOrder($guest['order_id']);
   }
 
   public function testItSynchronizesFirstNamesForRegisteredCustomers() {
     $user = $this->insertRegisteredCustomerWithOrder(null, ['first_name' => '']);
-    $this->woocommerceSegment->synchronizeCustomers();
+    $this->wooCommerce->synchronizeCustomers();
     update_post_meta($user->orderId, '_billing_first_name', 'First name');
     $this->createOrder(['email' => $user->user_email, 'first_name' => 'First name (newer)']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscriber = Subscriber::where('wp_user_id', $user->ID)->findOne();
-    expect($subscriber->firstName)->equals('First name (newer)');
+    $this->wooCommerce->synchronizeCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $user->ID]);
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getFirstName())->equals('First name (newer)');
   }
 
   public function testItSynchronizesLastNamesForRegisteredCustomers() {
     $user = $this->insertRegisteredCustomerWithOrder(null, ['last_name' => '']);
-    $this->woocommerceSegment->synchronizeCustomers();
+    $this->wooCommerce->synchronizeCustomers();
     update_post_meta($user->orderId, '_billing_last_name', 'Last name');
     $this->createOrder(['email' => $user->user_email, 'last_name' => 'Last name (newer)']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscriber = Subscriber::where('wp_user_id', $user->ID)->findOne();
-    expect($subscriber->lastName)->equals('Last name (newer)');
+    $this->wooCommerce->synchronizeCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $user->ID]);
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getLastName())->equals('Last name (newer)');
   }
 
   public function testItSynchronizesFirstNamesForGuestCustomers() {
     $guest = $this->insertGuestCustomer(null, ['first_name' => '']);
-    $this->woocommerceSegment->synchronizeCustomers();
+    $this->wooCommerce->synchronizeCustomers();
     update_post_meta($guest['order_id'], '_billing_first_name', 'First name');
     $this->createOrder(['email' => $guest['email'], 'first_name' => 'First name (newer)']);
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscriber = Subscriber::where('email', $guest['email'])->findOne();
-    expect($subscriber->firstName)->equals('First name (newer)');
+    $this->wooCommerce->synchronizeCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getFirstName())->equals('First name (newer)');
   }
 
   public function testItSynchronizesLastNamesForGuestCustomers() {
     $guest = $this->insertGuestCustomer(null, ['last_name' => '']);
-    $this->woocommerceSegment->synchronizeCustomers();
+    $this->wooCommerce->synchronizeCustomers();
     update_post_meta($guest['order_id'], '_billing_last_name', 'Last name');
     $this->createOrder(['email' => $guest['email'], 'last_name' => 'Last name (newer)']);
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscriber = Subscriber::where('email', $guest['email'])->findOne();
-    expect($subscriber->lastName)->equals('Last name (newer)');
+    $this->wooCommerce->synchronizeCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $guest['email']]);
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getLastName())->equals('Last name (newer)');
   }
 
   public function testItSynchronizesSegment() {
@@ -300,41 +312,47 @@ class WooCommerceTest extends \MailPoetTest {
     $this->insertRegisteredCustomer();
     $this->insertGuestCustomer();
     $this->insertGuestCustomer();
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscribers = Segment::getWooCommerceSegment()->subscribers()
-      ->where('is_woocommerce_user', 1)
-      ->whereIn('email', $this->userEmails);
-    expect($subscribers->count())->equals(4);
+    $this->wooCommerce->synchronizeCustomers();
+    $subscribers = $this->getWCSubscribersByEmails($this->userEmails);
+    expect($subscribers)->count(4);
   }
 
   public function testItDoesntRemoveRegisteredCustomersFromTrash() {
     $user = $this->insertRegisteredCustomer();
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscriber = Subscriber::where("email", $user->user_email) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      ->where('is_woocommerce_user', 1)
-      ->findOne();
-    $subscriber->deletedAt = Carbon::now();
-    $subscriber->save();
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscriber = Subscriber::where("email", $user->user_email) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      ->where('is_woocommerce_user', 1)
-      ->findOne();
-    expect($subscriber->deletedAt)->notNull();
+    $this->wooCommerce->synchronizeCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy([
+      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      'isWoocommerceUser' => true,
+    ]);
+    assert($subscriber instanceof SubscriberEntity);
+    $subscriber->setDeletedAt(Carbon::now());
+    $this->subscribersRepository->flush();
+    $this->wooCommerce->synchronizeCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy([
+      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      'isWoocommerceUser' => true,
+    ]);
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getDeletedAt())->notNull();
   }
 
   public function testItDoesntRemoveGuestCustomersFromTrash() {
     $guest = $this->insertGuestCustomer();
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscriber = Subscriber::where("email", $guest['email'])
-      ->where('is_woocommerce_user', 1)
-      ->findOne();
-    $subscriber->deletedAt = Carbon::now();
-    $subscriber->save();
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscriber = Subscriber::where("email", $guest['email'])
-      ->where('is_woocommerce_user', 1)
-      ->findOne();
-    expect($subscriber->deletedAt)->notNull();
+    $this->wooCommerce->synchronizeCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy([
+      'email' => $guest['email'],
+      'isWoocommerceUser' => true,
+    ]);
+    assert($subscriber instanceof SubscriberEntity);
+    $subscriber->setDeletedAt(Carbon::now());
+    $this->entityManager->flush();
+    $this->wooCommerce->synchronizeCustomers();
+    $subscriber = $this->subscribersRepository->findOneBy([
+      'email' => $guest['email'],
+      'isWoocommerceUser' => true,
+    ]);
+    assert($subscriber instanceof SubscriberEntity);
+    expect($subscriber->getDeletedAt())->notNull();
   }
 
   public function testItRemovesOrphanedSubscribers() {
@@ -342,15 +360,13 @@ class WooCommerceTest extends \MailPoetTest {
     $this->insertGuestCustomer();
     $user = $this->insertRegisteredCustomerWithOrder();
     $guest = $this->insertGuestCustomer();
-    $this->woocommerceSegment->synchronizeCustomers();
+    $this->wooCommerce->synchronizeCustomers();
     $user->remove_role('customer');
     $this->deleteOrder($user->orderId);
     $this->deleteOrder($guest['order_id']);
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscribers = Segment::getWooCommerceSegment()->subscribers()
-      ->where('is_woocommerce_user', 1)
-      ->whereIn('email', $this->userEmails);
-    expect($subscribers->count())->equals(2);
+    $this->wooCommerce->synchronizeCustomers();
+    $subscribers = $this->getWCSubscribersByEmails($this->userEmails);
+    expect($subscribers)->count(2);
   }
 
   public function testItDoesntDeleteNonWCData() {
@@ -359,216 +375,210 @@ class WooCommerceTest extends \MailPoetTest {
     // WP user
     $user = $this->insertRegisteredCustomer();
     $user->remove_role('customer');
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate([
-      'first_name' => 'John',
-      'last_name' => 'John',
-      'email' => $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      'wp_user_id' => $user->ID,
-    ]);
-    $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
-    $subscriber->save();
+    $this->createSubscriber(
+      'John',
+      'John',
+      $user->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_UNCONFIRMED,
+      $user->ID
+    );
     // Regular subscriber
-    $subscriber2 = Subscriber::create();
-    $subscriber2->hydrate([
-      'first_name' => 'Mike',
-      'last_name' => 'Mike',
-      'email' => 'user-sync-test2' . rand() . '@example.com',
-    ]);
-    $subscriber2->status = Subscriber::STATUS_SUBSCRIBED;
-    $subscriber2->save();
+    $this->createSubscriber(
+      'Mike',
+      'Mike',
+      'user-sync-test2' . rand() . '@example.com',
+      SubscriberEntity::STATUS_SUBSCRIBED
+    );
     // email is empty
-    $subscriber3 = Subscriber::create();
-    $subscriber3->hydrate([
-      'first_name' => 'Dave',
-      'last_name' => 'Dave',
-      'email' => 'user-sync-test3' . rand() . '@example.com', // need to pass validation
-    ]);
-    $subscriber3->status = Subscriber::STATUS_SUBSCRIBED;
-    $subscriber3->save();
+    $subscriber3 = $this->createSubscriber(
+      'Dave',
+      'Dave',
+      'user-sync-test3' . rand() . '@example.com',
+      SubscriberEntity::STATUS_SUBSCRIBED
+    );
     $this->clearEmail($subscriber3);
-    $this->woocommerceSegment->synchronizeCustomers();
+    $this->wooCommerce->synchronizeCustomers();
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(4);
-    $dbSubscriber = Subscriber::findOne($subscriber3->id);
+    $this->entityManager->clear();
+    $dbSubscriber = $this->subscribersRepository->findOneById($subscriber3->getId());
+    assert($dbSubscriber instanceof SubscriberEntity);
     expect($dbSubscriber)->notEmpty();
-    $subscriber3->delete();
+    $this->entityManager->remove($dbSubscriber);
+    $this->entityManager->flush();
   }
 
   public function testItUnsubscribesSubscribersWithoutWCFlagFromWCSegment() {
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate([
-      'first_name' => 'Mike',
-      'last_name' => 'Mike',
-      'email' => 'user-sync-test' . rand() . '@example.com',
-      'is_woocommerce_user' => 0,
-    ]);
-    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $subscriber->save();
-    $wcSegment = Segment::getWooCommerceSegment();
-    $association = SubscriberSegment::create();
-    $association->subscriberId = $subscriber->id;
-    $association->segmentId = $wcSegment->id;
-    $association->save();
-    expect(SubscriberSegment::findOne($association->id))->notEmpty();
-    $this->woocommerceSegment->synchronizeCustomers();
-    expect(SubscriberSegment::findOne($association->id))->isEmpty();
+    $wooCommerceSegment = $this->segmentsRepository->getWooCommerceSegment();
+    $subscriber = $this->createSubscriber(
+      'Mike',
+      'Mike',
+      'user-sync-test' . rand() . '@example.com',
+      SubscriberEntity::STATUS_SUBSCRIBED
+    );
+    $association = $this->createSubscriberSegment($subscriber, $wooCommerceSegment);
+    expect($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
+    $this->wooCommerce->synchronizeCustomers();
+    $this->entityManager->clear();
+    expect($this->subscriberSegmentsRepository->findOneById($association->getId()))->isEmpty();
   }
 
   public function testItUnsubscribesSubscribersWithoutEmailFromWCSegment() {
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate([
-      'first_name' => 'Mike',
-      'last_name' => 'Mike',
-      'email' => 'user-sync-test' . rand() . '@example.com', // need to pass validation
-      'is_woocommerce_user' => 1,
-    ]);
-    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $subscriber->save();
+    $wooCommerceSegment = $this->segmentsRepository->getWooCommerceSegment();
+    $subscriber = $this->createSubscriber(
+      'Mike',
+      'Mike',
+      'user-sync-test' . rand() . '@example.com', // need to pass validation
+      SubscriberEntity::STATUS_SUBSCRIBED
+    );
+    $subscriber->setIsWoocommerceUser(true);
+    $this->subscribersRepository->flush();
     $this->clearEmail($subscriber);
-    $wcSegment = Segment::getWooCommerceSegment();
-    $association = SubscriberSegment::create();
-    $association->subscriberId = $subscriber->id;
-    $association->segmentId = $wcSegment->id;
-    $association->save();
-    expect(SubscriberSegment::findOne($association->id))->notEmpty();
-    $this->woocommerceSegment->synchronizeCustomers();
-    expect(SubscriberSegment::findOne($association->id))->isEmpty();
+    $association = $this->createSubscriberSegment($subscriber, $wooCommerceSegment);
+    expect($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
+    $this->entityManager->clear();
+    $this->wooCommerce->synchronizeCustomers();
+    expect($this->subscriberSegmentsRepository->findOneById($association->getId()))->isEmpty();
   }
 
   public function testItSetGlobalStatusUnsubscribedForUsersUnsyncedFromWooCommerceSegment() {
     $guest = $this->insertGuestCustomer();
-    $subscriber = Subscriber::createOrUpdate([
-      'first_name' => 'Mike',
-      'last_name' => 'Mike',
-      'email' => $guest['email'],
-      'is_woocommerce_user' => 1,
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-      'confirmed_ip' => '123',
-    ]);
-    $wcSegment = Segment::getWooCommerceSegment();
-    SubscriberSegment::createOrUpdate([
-      'subscriber_id' => $subscriber->id,
-      'segment_id' => $wcSegment->id,
-      'status' => Subscriber::STATUS_UNSUBSCRIBED,
-    ]);
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscriberAfterUpdate = Subscriber::where('email', $subscriber->email)->findOne();
-    expect($subscriberAfterUpdate->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    $wooCommerceSegment = $this->segmentsRepository->getWooCommerceSegment();
+    $subscriber = $this->createSubscriber(
+      'Mike',
+      'Mike',
+      $guest['email'],
+      SubscriberEntity::STATUS_SUBSCRIBED
+    );
+    $subscriber->setIsWoocommerceUser(true);
+    $subscriber->setConfirmedIp('123');
+    $this->subscribersRepository->flush();
+    $this->createSubscriberSegment($subscriber, $wooCommerceSegment, SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->wooCommerce->synchronizeCustomers();
+    $this->entityManager->clear();
+    $subscriberAfterUpdate = $this->subscribersRepository->findOneBy(['email' => $subscriber->getEmail()]);
+    assert($subscriberAfterUpdate instanceof SubscriberEntity);
+    expect($subscriberAfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function testItDoesntSetGlobalStatusUnsubscribedIfUserHasMoreLists() {
+    $wooCommerceSegment = $this->segmentsRepository->getWooCommerceSegment();
     $guest = $this->insertGuestCustomer();
-    $subscriber = Subscriber::createOrUpdate([
-      'first_name' => 'Mike',
-      'last_name' => 'Mike',
-      'email' => $guest['email'],
-      'is_woocommerce_user' => 1,
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-      'confirmed_ip' => '123',
-    ]);
-    $wcSegment = Segment::getWooCommerceSegment();
-    SubscriberSegment::createOrUpdate([
-      'subscriber_id' => $subscriber->id,
-      'segment_id' => $wcSegment->id,
-      'status' => Subscriber::STATUS_UNSUBSCRIBED,
-    ]);
-    SubscriberSegment::createOrUpdate([
-      'subscriber_id' => $subscriber->id,
-      'segment_id' => 5,
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-    ]);
-    $this->woocommerceSegment->synchronizeCustomers();
-    $subscriberAfterUpdate = Subscriber::where('email', $subscriber->email)->findOne();
-    expect($subscriberAfterUpdate->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    $subscriber = $this->createSubscriber(
+      'Mike',
+      'Mike',
+      $guest['email'],
+      SubscriberEntity::STATUS_SUBSCRIBED
+    );
+    $subscriber->setIsWoocommerceUser(true);
+    $subscriber->setConfirmedIp('123');
+    $this->subscribersRepository->flush();
+    $this->createSubscriberSegment(
+      $subscriber,
+      $wooCommerceSegment,
+      SubscriberEntity::STATUS_UNSUBSCRIBED
+    );
+    $segment = $this->createSegment();
+    $this->createSubscriberSegment(
+      $subscriber,
+      $segment
+    );
+    $this->wooCommerce->synchronizeCustomers();
+    $this->entityManager->clear();
+    $subscriberAfterUpdate = $this->subscribersRepository->findOneBy(['email' => $subscriber->getEmail()]);
+    assert($subscriberAfterUpdate instanceof SubscriberEntity);
+    expect($subscriberAfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItSubscribesSubscribersToWCListWhenSettingIsEnabled() {
-    $wcSegment = Segment::getWooCommerceSegment();
+    $wooCommerceSegment = $this->segmentsRepository->getWooCommerceSegment();
     $user1 = $this->insertRegisteredCustomer();
     $user2 = $this->insertRegisteredCustomer();
 
-    $subscriber1 = Subscriber::createOrUpdate([
-      'email' => $user1->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      'is_woocommerce_user' => 1,
-      'status' => Subscriber::STATUS_UNSUBSCRIBED,
-    ]);
-    $association1 = SubscriberSegment::create();
-    $association1->subscriberId = $subscriber1->id;
-    $association1->segmentId = $wcSegment->id;
-    $association1->status = Subscriber::STATUS_UNSUBSCRIBED;
-    $association1->save();
+    $subscriber1 = $this->createSubscriber(
+      'Mike',
+      'Mike',
+      $user1->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_UNSUBSCRIBED
+    );
+    $subscriber1->setIsWoocommerceUser(true);
+    $this->subscribersRepository->flush();
+    $association1 = $this->createSubscriberSegment($subscriber1, $wooCommerceSegment, SubscriberEntity::STATUS_UNSUBSCRIBED);
 
-    $subscriber2 = Subscriber::createOrUpdate([
-      'email' => $user2->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      'is_woocommerce_user' => 1,
-      'status' => Subscriber::STATUS_UNSUBSCRIBED,
-      'confirmed_ip' => '123',
-    ]);
-    $association2 = SubscriberSegment::create();
-    $association2->subscriberId = $subscriber2->id;
-    $association2->segmentId = $wcSegment->id;
-    $association2->status = Subscriber::STATUS_UNSUBSCRIBED;
-    $association2->save();
+    $subscriber2 = $this->createSubscriber(
+      'Mike',
+      'Mike',
+      $user2->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_UNSUBSCRIBED
+    );
+    $subscriber2->setIsWoocommerceUser(true);
+    $subscriber2->setConfirmedIp('123');
+    $this->subscribersRepository->flush();
+
+    $association2 = $this->createSubscriberSegment($subscriber2, $wooCommerceSegment, SubscriberEntity::STATUS_UNSUBSCRIBED);
 
     $this->settings->set('mailpoet_subscribe_old_woocommerce_customers', ['dummy' => '1', 'enabled' => '1']);
-    $this->woocommerceSegment->synchronizeCustomers();
+    $this->wooCommerce->synchronizeCustomers();
 
-    $subscriber1AfterUpdate = Subscriber::where('email', $subscriber1->email)->findOne();
-    $subscriber2AfterUpdate = Subscriber::where('email', $subscriber2->email)->findOne();
-    expect($subscriber1AfterUpdate->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
-    expect($subscriber2AfterUpdate->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    $this->entityManager->clear();
+    $subscriber1AfterUpdate = $this->subscribersRepository->findOneBy(['email' => $subscriber1->getEmail()]);
+    $subscriber2AfterUpdate = $this->subscribersRepository->findOneBy(['email' => $subscriber2->getEmail()]);
+    assert($subscriber1AfterUpdate instanceof SubscriberEntity);
+    assert($subscriber2AfterUpdate instanceof SubscriberEntity);
+    expect($subscriber1AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    expect($subscriber2AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
 
-    $association1AfterUpdate = SubscriberSegment::findOne($association1->id);
-    $association2AfterUpdate = SubscriberSegment::findOne($association2->id);
-    assert($association1AfterUpdate instanceof SubscriberSegment);
-    assert($association2AfterUpdate instanceof SubscriberSegment);
-    expect($association1AfterUpdate->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($association2AfterUpdate->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+    $association1AfterUpdate = $this->subscriberSegmentsRepository->findOneById($association1->getId());
+    $association2AfterUpdate = $this->subscriberSegmentsRepository->findOneById($association2->getId());
+    assert($association1AfterUpdate instanceof SubscriberSegmentEntity);
+    assert($association2AfterUpdate instanceof SubscriberSegmentEntity);
+    expect($association1AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    expect($association2AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function testItUnsubscribesSubscribersFromWCListWhenSettingIsDisabled() {
-    $wcSegment = Segment::getWooCommerceSegment();
+    $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
     $user1 = $this->insertRegisteredCustomer();
     $user2 = $this->insertRegisteredCustomer();
 
-    $subscriber1 = Subscriber::createOrUpdate([
-      'email' => $user1->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      'is_woocommerce_user' => 1,
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-    ]);
-    $association1 = SubscriberSegment::create();
-    $association1->subscriberId = $subscriber1->id;
-    $association1->segmentId = $wcSegment->id;
-    $association1->status = Subscriber::STATUS_SUBSCRIBED;
-    $association1->save();
+    $subscriber1 = $this->createSubscriber(
+      'Mike',
+      'Mike',
+      $user1->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_SUBSCRIBED
+    );
+    $subscriber1->setIsWoocommerceUser(true);
+    $this->subscribersRepository->flush();
+    $association1 = $this->createSubscriberSegment($subscriber1, $wcSegment);
 
-    $subscriber2 = Subscriber::createOrUpdate([
-      'email' => $user2->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      'is_woocommerce_user' => 1,
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-      'confirmed_ip' => '123',
-    ]);
-    $association2 = SubscriberSegment::create();
-    $association2->subscriberId = $subscriber2->id;
-    $association2->segmentId = $wcSegment->id;
-    $association2->status = Subscriber::STATUS_SUBSCRIBED;
-    $association2->save();
+    $subscriber2 = $this->createSubscriber(
+      'Mike',
+      'Mike',
+      $user2->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      SubscriberEntity::STATUS_SUBSCRIBED
+    );
+    $subscriber2->setIsWoocommerceUser(true);
+    $subscriber2->setConfirmedIp('123');
+    $this->subscribersRepository->flush();
+    $association2 = $this->createSubscriberSegment($subscriber2, $wcSegment);
 
     $this->settings->set('mailpoet_subscribe_old_woocommerce_customers', ['dummy' => '1']);
-    $this->woocommerceSegment->synchronizeCustomers();
+    $this->wooCommerce->synchronizeCustomers();
+    $this->entityManager->clear();
 
-    $subscriber1AfterUpdate = Subscriber::where('email', $subscriber1->email)->findOne();
-    $subscriber2AfterUpdate = Subscriber::where('email', $subscriber2->email)->findOne();
-    expect($subscriber1AfterUpdate->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($subscriber2AfterUpdate->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    $subscriber1AfterUpdate = $this->subscribersRepository->findOneBy(['email' => $subscriber1->getEmail()]);
+    $subscriber2AfterUpdate = $this->subscribersRepository->findOneBy(['email' => $subscriber2->getEmail()]);
+    assert($subscriber1AfterUpdate instanceof SubscriberEntity);
+    assert($subscriber2AfterUpdate instanceof SubscriberEntity);
+    expect($subscriber1AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    expect($subscriber2AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
 
-    $association1AfterUpdate = SubscriberSegment::findOne($association1->id);
-    $association2AfterUpdate = SubscriberSegment::findOne($association2->id);
-    assert($association1AfterUpdate instanceof SubscriberSegment);
-    assert($association2AfterUpdate instanceof SubscriberSegment);
-    expect($association1AfterUpdate->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
-    expect($association2AfterUpdate->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    $association1AfterUpdate = $this->subscriberSegmentsRepository->findOneById($association1->getId());
+    $association2AfterUpdate = $this->subscriberSegmentsRepository->findOneById($association2->getId());
+    assert($association1AfterUpdate instanceof SubscriberSegmentEntity);
+    assert($association2AfterUpdate instanceof SubscriberSegmentEntity);
+    expect($association1AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    expect($association2AfterUpdate->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function _after() {
@@ -590,57 +600,66 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   private function cleanData() {
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+    $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $connection->executeQuery('TRUNCATE ' . $segmentsTable);
+    $connection->executeQuery('TRUNCATE ' . $subscriberSegmentTable);
     global $wpdb;
-    $db = ORM::getDb();
-    $db->exec(sprintf('
-       DELETE FROM
-         %s
-       WHERE
-         subscriber_id IN (select id from %s WHERE email LIKE "user-sync-test%%")
-    ', SubscriberSegment::$_table, Subscriber::$_table));
-    $db->exec(sprintf('
-       DELETE FROM
-         %s
-       WHERE
-         user_id IN (select id from %s WHERE user_email LIKE "user-sync-test%%")
-    ', $wpdb->usermeta, $wpdb->users));
-    $db->exec(sprintf('
-       DELETE FROM
-         %s
-       WHERE
-         user_email LIKE "user-sync-test%%"
-         OR user_login LIKE "user-sync-test%%"
-    ', $wpdb->users));
-    $db->exec(sprintf('
-       DELETE FROM
-         %s
-       WHERE
-         email LIKE "user-sync-test%%"
-    ', Subscriber::$_table));
+    $connection->executeQuery("
+      DELETE FROM
+        {$subscriberSegmentTable}
+      WHERE
+        subscriber_id IN (SELECT id FROM {$subscribersTable} WHERE email LIKE 'user-sync-test%')
+    ");
+    $connection->executeQuery("
+      DELETE FROM
+        {$wpdb->usermeta}
+      WHERE
+        user_id IN (select id from {$wpdb->users} WHERE user_email LIKE 'user-sync-test%')
+    ");
+    $connection->executeQuery("
+      DELETE FROM
+        {$wpdb->users}
+      WHERE
+        user_email LIKE 'user-sync-test%'
+        OR user_login LIKE 'user-sync-test%'
+    ");
+    $connection->executeQuery("
+      DELETE FROM
+        {$subscribersTable}
+      WHERE
+        email LIKE 'user-sync-test%'
+    ");
     // delete orders
-    $db->exec(sprintf('
-       DELETE FROM
-         %s
-       WHERE
-         id IN (SELECT DISTINCT post_id FROM %s WHERE meta_value LIKE "user-sync-test%%")
-    ', $wpdb->posts, $wpdb->postmeta));
+    $connection->executeQuery("
+      DELETE FROM
+        {$wpdb->posts}
+      WHERE
+        id IN (SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_value LIKE 'user-sync-test%')
+    ");
     // delete order meta
-    $db->exec(sprintf('
-       DELETE FROM
-         %s
-       WHERE
-         post_id IN (
+    $connection->executeQuery("
+      DELETE FROM
+        {$wpdb->postmeta}
+      WHERE
+        post_id IN (
           SELECT post_id FROM (
-            SELECT DISTINCT post_id FROM %s WHERE meta_value LIKE "user-sync-test%%"
+            SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_value LIKE 'user-sync-test%'
           ) AS t
         )
-    ', $wpdb->postmeta, $wpdb->postmeta));
+    ");
   }
 
-  private function getSubscribersCount($a = null) {
-    return Subscriber::whereLike("email", "user-sync-test%")->count();
+  private function getSubscribersCount(): int {
+    return (int)$this->entityManager->createQueryBuilder()
+      ->select('COUNT(s.id)')
+      ->from(SubscriberEntity::class, 's')
+      ->where('s.email LIKE :prefix')
+      ->setParameter('prefix', 'user-sync-test%')
+      ->getQuery()
+      ->getSingleScalarResult();
   }
 
   /**
@@ -652,48 +671,41 @@ class WooCommerceTest extends \MailPoetTest {
    */
   private function insertRegisteredCustomer($number = null, $firstName = null, $lastName = null) {
     global $wpdb;
-    $db = ORM::getDb();
-    $numberSql = !is_null($number) ? (int)$number : 'rand()';
+    $connection = $this->entityManager->getConnection();
+    $numberSql = !is_null($number) ? (int)$number : mt_rand();
     // add user
-    $db->exec(sprintf('
-         INSERT INTO
-           %s (user_login, user_email, user_registered)
-           VALUES
-           (
-             CONCAT("user-sync-test", ' . $numberSql . '),
-             CONCAT("user-sync-test", ' . $numberSql . ', "@example.com"),
-             "2017-01-02 12:31:12"
-           )', $wpdb->users));
-    $id = $db->lastInsertId();
+    $connection->executeQuery("
+      INSERT INTO {$wpdb->users} (user_login, user_email, user_registered)
+      VALUES (
+        CONCAT('user-sync-test', :number),
+        CONCAT('user-sync-test', :number, '@example.com'),
+        '2017-01-02 12:31:12'
+      )", ['number' => $numberSql]);
+    $id = $connection->lastInsertId();
     if (!is_string($id)) {
       throw new \RuntimeException('Unexpected error when creating WP user.');
     }
     if ($firstName) {
       // add user first name
-
-      $db->exec(sprintf('
-         INSERT INTO
-           %s (user_id, meta_key, meta_value)
-           VALUES
-           (
-             "%s",
-             "first_name",
-             "%s"
-           )', $wpdb->usermeta, $id, $firstName)
-      );
+      $connection->executeQuery("
+        INSERT INTO {$wpdb->usermeta} (user_id, meta_key, meta_value)
+        VALUES (
+          :id,
+          'first_name',
+          :firstName
+        )
+      ", ['id' => $id, 'firstName' => $firstName]);
     }
     if ($lastName) {
       // add user first name
-      $db->exec(sprintf('
-         INSERT INTO
-           %s (user_id, meta_key, meta_value)
-           VALUES
-           (
-             "%s",
-             "last_name",
-             "%s"
-           )', $wpdb->usermeta, $id, $lastName)
-      );
+      $connection->executeQuery("
+        INSERT INTO {$wpdb->usermeta} (user_id, meta_key, meta_value)
+        VALUES (
+          :id,
+          'last_name',
+          :lastName
+        )
+      ", ['id' => $id, 'lastName' => $lastName]);
     }
     // add customer role
     $user = new WPUserWithExtraProps($id);
@@ -744,31 +756,32 @@ class WooCommerceTest extends \MailPoetTest {
     return $id;
   }
 
-  private function deleteOrder($id) {
+  private function deleteOrder(int $id) {
     global $wpdb;
-    $db = ORM::getDb();
-    $db->exec(sprintf('
-       DELETE FROM
-         %s
-       WHERE
-         id = %s
-    ', $wpdb->posts, $id));
-    $db->exec(sprintf('
-       DELETE FROM
-         %s
-       WHERE
-         post_id = %s
-    ', $wpdb->postmeta, $id));
+    $connection = $this->entityManager->getConnection();
+    $connection->executeQuery("
+      DELETE FROM
+        {$wpdb->posts}
+      WHERE
+        id = :id
+    ", ['id' => $id]);
+    $connection->executeQuery("
+      DELETE FROM
+        {$wpdb->postmeta}
+      WHERE
+        post_id = :id
+    ", ['id' => $id]);
   }
 
-  private function clearEmail($subscriber) {
-    ORM::raw_execute('
-      UPDATE ' . MP_SUBSCRIBERS_TABLE . '
-      SET `email` = "" WHERE `id` = ' . $subscriber->id
+  private function clearEmail(SubscriberEntity $subscriber): void {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeQuery('
+      UPDATE ' . $subscribersTable . '
+      SET `email` = "" WHERE `id` = ' . $subscriber->getId()
     );
   }
 
-  private function getWooCommerceSegment($wooHelperMock = null): WooCommerceSegment {
+  private function getWooCommerce($wooHelperMock = null): WooCommerceSegment {
     return new WooCommerceSegment(
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(WPFunctions::class),
@@ -792,6 +805,81 @@ class WooCommerceTest extends \MailPoetTest {
     $wcHelperMock = $this->createMock(Helper::class);
     $wcHelperMock->method('wcGetOrder')
       ->willReturn($wcOrderMock);
-    return $this->getWooCommerceSegment($wcHelperMock);
+    return $this->getWooCommerce($wcHelperMock);
+  }
+
+  private function createSubscriber(
+    string $firstName,
+    string $lastName,
+    string $email,
+    string $status,
+    ?int $wpUserId = null,
+    ?string $source = null
+  ): SubscriberEntity {
+    $subscriber = new SubscriberEntity();
+    $subscriber->setLastName($lastName);
+    $subscriber->setFirstName($firstName);
+    if ($wpUserId) $subscriber->setWpUserId($wpUserId);
+    $subscriber->setEmail($email);
+    $subscriber->setStatus($status);
+    if ($source) $subscriber->setSource($source);
+    $this->entityManager->persist($subscriber);
+    $this->entityManager->flush();
+    return $subscriber;
+  }
+
+  private function createSegment(): SegmentEntity {
+    $segment = new SegmentEntity('Segment', SegmentEntity::TYPE_DEFAULT, '');
+    $this->segmentsRepository->persist($segment);
+    $this->segmentsRepository->flush();
+    return $segment;
+  }
+
+  private function createSubscriberSegment(
+    SubscriberEntity $subscriber,
+    SegmentEntity $segment,
+    string $status = SubscriberEntity::STATUS_SUBSCRIBED
+  ): SubscriberSegmentEntity {
+    $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, $status);
+    $this->entityManager->persist($subscriberSegment);
+    $this->entityManager->flush();
+    return $subscriberSegment;
+  }
+
+  private function findWCSubscriberByWpUserId(int $wpUserId): ?SubscriberEntity {
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $wpUserId]);
+    assert($subscriber instanceof SubscriberEntity);
+    $wooCommerceSegment = $this->segmentsRepository->getWooCommerceSegment();
+    foreach ($subscriber->getSegments() as $segment) {
+      if ($segment->getId() === $wooCommerceSegment->getId()) {
+        return $subscriber;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * @param string[] $emails
+   * @return array
+   */
+  private function getWCSubscribersByEmails(array $emails): array {
+    $subscribers = $this->entityManager->createQueryBuilder()
+      ->select('s')
+      ->from(SubscriberEntity::class, 's')
+      ->where('s.email IN (:emails)')
+      ->andWhere('s.isWoocommerceUser = true')
+      ->setParameter('emails', $emails)
+      ->getQuery()
+      ->getResult();
+    $result = [];
+    $wooCommerceSegment = $this->segmentsRepository->getWooCommerceSegment();
+    foreach ($subscribers as $subscriber) {
+      foreach ($subscriber->getSegments() as $segment) {
+        if ($segment->getId() === $wooCommerceSegment->getId()) {
+          $result[] = $subscriber;
+        }
+      }
+    }
+    return $result;
   }
 }
