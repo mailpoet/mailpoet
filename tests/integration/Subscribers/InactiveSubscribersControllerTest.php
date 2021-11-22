@@ -10,7 +10,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SettingEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
 use MailPoetVendor\Carbon\Carbon;
@@ -211,8 +210,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     assert($subscriber1 instanceof SubscriberEntity);
     assert($subscriber2 instanceof SubscriberEntity);
-    expect($subscriber1->getStatus() === Subscriber::STATUS_INACTIVE || $subscriber2->getStatus() === Subscriber::STATUS_INACTIVE)->true();
-    expect($subscriber1->getStatus() === Subscriber::STATUS_SUBSCRIBED || $subscriber2->getStatus() === Subscriber::STATUS_SUBSCRIBED)->true();
+    expect($subscriber1->getStatus() === SubscriberEntity::STATUS_INACTIVE || $subscriber2->getStatus() === SubscriberEntity::STATUS_INACTIVE)->true();
+    expect($subscriber1->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED || $subscriber2->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)->true();
 
     $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize);
     $this->entityManager->clear();
@@ -221,8 +220,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     assert($subscriber1 instanceof SubscriberEntity);
     assert($subscriber2 instanceof SubscriberEntity);
-    expect($subscriber1->getStatus())->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($subscriber2->getStatus())->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    expect($subscriber2->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItDoesNotActivateOldSubscribersWithUnopenedEmail(): void {
@@ -268,7 +267,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   private function createSubscriber(
     string $email,
     int $createdDaysAgo = 0,
-    string $status = Subscriber::STATUS_SUBSCRIBED
+    string $status = SubscriberEntity::STATUS_SUBSCRIBED
   ): SubscriberEntity {
     $createdAt = (new Carbon())->subDays($createdDaysAgo);
     $subscriber = new SubscriberEntity();
