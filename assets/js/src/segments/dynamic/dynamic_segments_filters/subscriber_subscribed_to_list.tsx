@@ -7,6 +7,14 @@ import Select from 'common/form/select/select';
 
 import { AnyValueTypes, WordpressRoleFormItem } from '../types';
 
+export function validateSubscribedToList(formItems: WordpressRoleFormItem): boolean {
+  return (
+    (formItems.operator !== AnyValueTypes.ANY)
+    && (formItems.operator !== AnyValueTypes.ALL)
+    && (formItems.operator !== AnyValueTypes.NONE)
+  );
+}
+
 type Props = {
   filterIndex: number;
 }
