@@ -22,6 +22,7 @@ export enum SubscriberActionTypes {
   WORDPRESS_ROLE = 'wordpressRole',
   SUBSCRIBED_DATE = 'subscribedDate',
   SUBSCRIBER_SCORE = 'subscriberScore',
+  SUBSCRIBED_TO_LIST = 'subscribedToList',
 }
 
 export enum SegmentConnectTypes {
