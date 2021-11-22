@@ -30,6 +30,12 @@ export enum SegmentConnectTypes {
   OR = 'or',
 }
 
+export enum AnyValueTypes {
+  ANY = 'any',
+  ALL = 'all',
+  NONE = 'none'
+}
+
 export type GroupFilterValue = {
   label: string;
   options: FilterValue[];
