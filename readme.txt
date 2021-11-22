@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.74.0
+Stable tag: 3.74.1
 Requires PHP: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.74.1 - 2021-11-22 =
+* Improved: differentiate inactive forms in Widgets;
+* Fixed: duplicate entries when exporting subscribers in some cases;
+* Fixed: WooCommerce subscription segment doesn't handle when a user changes subscription;
+* Fixed: CSS in form iframe not working when using on different domain;
+* Fixed: potential issue when handling DateTimes.
 
 = 3.74.0 - 2021-11-17 =
 * Added: a filter to change reCAPTCHA type;
