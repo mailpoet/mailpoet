@@ -151,12 +151,6 @@ class SubscriberEntity {
   private $woocommerceSyncedAt;
 
   /**
-   * @ORM\Column(type="boolean")
-   * @var bool
-   */
-  private $isWoocommerceSynced = false;
-
-  /**
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\SubscriberSegmentEntity", mappedBy="subscriber", orphanRemoval=true)
    * @var Collection<int, SubscriberSegmentEntity>
    */
@@ -470,14 +464,6 @@ class SubscriberEntity {
 
   public function getWoocommerceSyncedAt(): ?DateTimeInterface {
     return $this->woocommerceSyncedAt;
-  }
-
-  public function getIsWoocommerceSynced(): bool {
-    return $this->isWoocommerceSynced;
-  }
-
-  public function setIsWoocommerceSynced(bool $isWoocommerceSynced): void {
-    $this->isWoocommerceSynced = $isWoocommerceSynced;
   }
 
   /** @ORM\PreFlush */
