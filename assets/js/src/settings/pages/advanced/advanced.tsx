@@ -2,6 +2,7 @@ import React from 'react';
 import { SaveButton } from 'settings/components';
 import TaskScheduler from './task_scheduler';
 import Roles from './roles';
+import { EngagementTracking } from './engagement_tracking';
 import Tracking from './tracking';
 import Transactional from './transactional';
 import InactiveSubscribers from './inactive_subscribers';
@@ -19,6 +20,7 @@ export default function Advanced() {
       <BounceAddress />
       <TaskScheduler />
       <Roles />
+      <EngagementTracking />
       <Tracking />
       <Transactional />
       <RecalculateSubscriberScore />
