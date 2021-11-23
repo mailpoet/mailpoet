@@ -5,6 +5,7 @@ import {
   GroupFilterValue,
   Segment,
   StateType,
+  StaticSegment,
   SubscriberCount,
   WindowCustomFields,
   WindowEditableRoles,
@@ -44,6 +45,9 @@ export const getCustomFieldsList = (state: StateType): WindowCustomFields => (
 );
 export const getSegment = (state: StateType): Segment => (
   state.segment
+);
+export const getStaticSegmentsList = (state: StateType): StaticSegment[] => (
+  state.staticSegmentsList
 );
 export const getSubscriberCount = (state: StateType): SubscriberCount => (
   state.subscriberCount

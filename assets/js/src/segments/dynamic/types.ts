@@ -68,6 +68,7 @@ export interface WordpressRoleFormItem extends FormItem {
   custom_field_id?: string;
   custom_field_type?: string;
   date_type?: string;
+  segments?: number[];
 }
 
 export interface WooCommerceFormItem extends FormItem {
@@ -156,6 +157,13 @@ export type WindowCustomFields = {
   updated_at: string;
 }[];
 
+export type StaticSegment = {
+  id: number;
+  name: string;
+  type: string;
+  description: string;
+};
+
 export interface SegmentFormDataWindow extends Window {
   wordpress_editable_roles_list: WindowEditableRoles;
   mailpoet_products: WindowProducts;
@@ -166,6 +174,7 @@ export interface SegmentFormDataWindow extends Window {
   mailpoet_custom_fields: WindowCustomFields;
   mailpoet_can_use_woocommerce_subscriptions: boolean;
   mailpoet_woocommerce_currency_symbol: string;
+  mailpoet_static_segments_list: StaticSegment[];
 }
 
 export interface StateType {
@@ -182,6 +191,7 @@ export interface StateType {
   subscriberCount: SubscriberCount,
   errors: string[],
   allAvailableFilters: GroupFilterValue[],
+  staticSegmentsList: StaticSegment[],
 }
 
 export enum Actions {
