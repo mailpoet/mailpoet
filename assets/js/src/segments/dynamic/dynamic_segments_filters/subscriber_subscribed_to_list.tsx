@@ -15,9 +15,15 @@ import {
 
 export function validateSubscribedToList(formItems: WordpressRoleFormItem): boolean {
   return (
-    (formItems.operator !== AnyValueTypes.ANY)
-    && (formItems.operator !== AnyValueTypes.ALL)
-    && (formItems.operator !== AnyValueTypes.NONE)
+    (
+      (formItems.operator === AnyValueTypes.ANY)
+      || (formItems.operator === AnyValueTypes.ALL)
+      || (formItems.operator === AnyValueTypes.NONE)
+    )
+    && (
+      (Array.isArray(formItems.segments))
+      && (formItems.segments.length > 0)
+    )
   );
 }
 
