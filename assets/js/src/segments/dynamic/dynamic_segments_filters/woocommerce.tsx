@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import MailPoet from 'mailpoet';
-import { find } from 'lodash/fp';
+import { find, filter } from 'lodash/fp';
 import ReactSelect from 'common/form/react_select/react_select';
 import Select from 'common/form/select/select';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -43,7 +43,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (formItems.action === WooCommerceActionTypes.PURCHASED_CATEGORY && !formItems.category_id) {
     return false;
   }
-  if (formItems.action === WooCommerceActionTypes.PURCHASED_PRODUCT && !formItems.product_id) {
+  const purchasedProductIsInvalid = formItems.product_ids === undefined
+    || formItems.product_ids.length === 0;
+  if (formItems.action === WooCommerceActionTypes.PURCHASED_PRODUCT && purchasedProductIsInvalid) {
     return false;
   }
   if (formItems.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY && !formItems.country_code) {
@@ -125,21 +127,32 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
 
   if (segment.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
     optionFields = (
-      <div>
-        <ReactSelect
-          dimension="small"
-          key="select-segment-product"
-          isFullWidth
-          placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
-          options={productOptions}
-          value={find(['value', segment.product_id], productOptions)}
-          onChange={(option: SelectOption): void => updateSegmentFilter(
-            { product_id: option.value },
-            filterIndex
-          )}
-          automationId="select-segment-product"
-        />
-      </div>
+      <>
+        <Grid.CenteredRow>
+          <ReactSelect
+            isMulti
+            dimension="small"
+            key="select-segment-products"
+            isFullWidth
+            placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
+            options={productOptions}
+            value={filter(
+              (productOption) => {
+                if (segment.product_ids === undefined || segment.product_ids.length === 0) {
+                  return undefined;
+                }
+                return segment.product_ids.indexOf(productOption.value) !== -1;
+              },
+              productOptions
+            )}
+            onChange={(options: SelectOption[]): void => updateSegmentFilter(
+              { product_ids: (options || []).map((x: SelectOption) => x.value) },
+              filterIndex
+            )}
+            automationId="select-segment-products"
+          />
+        </Grid.CenteredRow>
+      </>
     );
   } else if (segment.action === WooCommerceActionTypes.PURCHASED_CATEGORY) {
     optionFields = (
