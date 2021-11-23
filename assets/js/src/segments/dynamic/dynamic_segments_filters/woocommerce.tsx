@@ -8,6 +8,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { Grid } from 'common/grid';
 import Input from 'common/form/input/input';
 import {
+  AnyValueTypes,
   SegmentTypes,
   SelectOption,
   WindowProductCategories,
@@ -44,7 +45,8 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
     return false;
   }
   const purchasedProductIsInvalid = formItems.product_ids === undefined
-    || formItems.product_ids.length === 0;
+    || formItems.product_ids.length === 0
+    || !formItems.operator;
   if (formItems.action === WooCommerceActionTypes.PURCHASED_PRODUCT && purchasedProductIsInvalid) {
     return false;
   }
@@ -123,11 +125,33 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
     ) {
       updateSegmentFilter({ total_spent_type: '>' }, filterIndex);
     }
+    if (
+      segment.action === WooCommerceActionTypes.PURCHASED_PRODUCT
+      && segment.operator !== AnyValueTypes.ALL
+      && segment.operator !== AnyValueTypes.ANY
+      && segment.operator !== AnyValueTypes.NONE
+    ) {
+      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+    }
   }, [updateSegmentFilter, segment, filterIndex]);
 
   if (segment.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
     optionFields = (
       <>
+        <Grid.CenteredRow>
+          <Select
+            key="select-operator"
+            value={segment.operator}
+            onChange={(e): void => updateSegmentFilter(
+              { operator: e.target.value },
+              filterIndex
+            )}
+          >
+            <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+            <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+            <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+          </Select>
+        </Grid.CenteredRow>
         <Grid.CenteredRow>
           <ReactSelect
             isMulti
