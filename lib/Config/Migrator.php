@@ -232,7 +232,6 @@ class Migrator {
       'engagement_score_updated_at timestamp NULL,',
       'last_engagement_at timestamp NULL,',
       'woocommerce_synced_at timestamp NULL,',
-      'is_woocommerce_synced tinyint(1) NOT NULL DEFAULT 0,',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email),',
       'UNIQUE KEY unsubscribe_token (unsubscribe_token),',
@@ -241,7 +240,6 @@ class Migrator {
       'KEY status_deleted_at (status,deleted_at),',
       'KEY last_subscribed_at (last_subscribed_at),',
       'KEY engagement_score_updated_at (engagement_score_updated_at),',
-      'KEY is_woocommerce_synced (is_woocommerce_synced),',
       'KEY link_token (link_token)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
