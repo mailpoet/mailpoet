@@ -23,6 +23,7 @@ const STORE = 'mailpoet-dynamic-segments-form';
 export const createStore = (): void => {
   const defaultState: StateType = {
     products: window.mailpoet_products,
+    staticSegmentsList: window.mailpoet_static_segments_list,
     subscriptionProducts: window.mailpoet_subscription_products,
     productCategories: window.mailpoet_product_categories,
     newslettersList: window.mailpoet_newsletters_list,

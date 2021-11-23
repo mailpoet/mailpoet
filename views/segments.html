@@ -22,6 +22,7 @@
     var mailpoet_mss_key_invalid = <%= mss_key_invalid ? 'true' : 'false' %>;
     var mailpoet_subscribers_count = <%= subscriber_count %>;
     var mailpoet_custom_fields = <%= json_encode(custom_fields) %>;
+    var mailpoet_static_segments_list = <%= json_encode(static_segments_list) %>;
     var mailpoet_has_premium_support = <%= has_premium_support ? 'true' : 'false' %>;
     var wordpress_editable_roles_list = <%= json_encode(wordpress_editable_roles_list)  %>;
     var mailpoet_newsletters_list = <%= json_encode(newsletters_list)  %>;
@@ -166,7 +167,6 @@
     'inTheLast': _x('in the last', 'Meaning: "Subscriber subscribed in the last 3 days"'),
     'notInTheLast': _x('not in the last', 'Meaning: "Subscriber subscribed not in the last 3 days"'),
 
-
     'emailActionNotOpened': _x('not opened', 'Dynamic segment creation: when newsletter was not opened'),
     'emailActionClicked': _x('clicked', 'Dynamic segment creation: when a newsletter link was clicked'),
     'emailActionClickedAnyEmail': _x('clicked any email', 'Dynamic segment creation: when a newsletter link in any email was clicked'),
@@ -185,6 +185,7 @@
     'segmentsActiveSubscription': __('has an active subscription'),
     'woocommerceSubscriptions': _x('WooCommerce Subscriptions', 'Dynamic segment creation: User selects this to use any WooCommerce Subscriptions filters'),
     'selectWooSubscription': __('Search subscriptions'),
+    'searchLists': __('Search lists'),
 
     'anyOf': __('any of'),
     'allOf': __('all of'),

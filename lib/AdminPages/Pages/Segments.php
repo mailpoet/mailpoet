@@ -8,9 +8,11 @@ use MailPoet\Cache\TransientCache;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Newsletter;
 use MailPoet\Segments\SegmentDependencyValidator;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -18,6 +20,7 @@ use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 
 class Segments {
   /** @var PageRenderer */
@@ -56,6 +59,9 @@ class Segments {
   /** @var TransientCache */
   private $transientCache;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -68,6 +74,7 @@ class Segments {
     CustomFieldsRepository $customFieldsRepository,
     CustomFieldsResponseBuilder $customFieldsResponseBuilder,
     SegmentDependencyValidator $segmentDependencyValidator,
+    SegmentsRepository $segmentsRepository,
     TransientCache $transientCache
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -82,6 +89,7 @@ class Segments {
     $this->customFieldsRepository = $customFieldsRepository;
     $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
     $this->transientCache = $transientCache;
+    $this->segmentsRepository = $segmentsRepository;
   }
 
   public function render() {
@@ -111,6 +119,22 @@ class Segments {
       ->whereNull('deleted_at')
       ->where('type', Newsletter::TYPE_STANDARD)
       ->orderByExpr('ISNULL(sent_at) DESC, sent_at DESC')->findArray();
+
+    $data['static_segments_list'] = [];
+    $criteria = new Criteria();
+    $criteria->where(Criteria::expr()->isNull('deletedAt'));
+    $criteria->andWhere(Criteria::expr()->neq('type', SegmentEntity::TYPE_DYNAMIC));
+    $criteria->orderBy(['name' => 'ASC']);
+    $segments = $this->segmentsRepository->matching($criteria);
+    foreach ($segments as $segment) {
+      $data['static_segments_list'][] = [
+        'id' => $segment->getId(),
+        'name' => $segment->getName(),
+        'type' => $segment->getType(),
+        'description' => $segment->getDescription(),
+      ];
+    }
+
 
     $data['product_categories'] = $this->wpPostListLoader->getWooCommerceCategories();
 
