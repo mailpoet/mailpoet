@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Cron\Workers;
 
@@ -37,20 +37,21 @@ class WooCommerceSync extends SimpleWorker {
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
-    $lastProcessedOrderId = $task->getMeta()['last_processed_order_id'] ?? 0;
+    $meta = $task->getMeta();
     $highestOrderId = $this->getHighestOrderId();
 
-    $lastProcessedOrderId = $this->woocommerceSegment->synchronizeCustomers($lastProcessedOrderId, $highestOrderId);
-
-    $meta = $task->getMeta() ?? [];
-    $meta['last_processed_order_id'] = $lastProcessedOrderId;
-    $task->setMeta($meta);
-    $this->scheduledTasksRepository->persist($task);
-    $this->scheduledTasksRepository->flush();
-
-    if ($lastProcessedOrderId !== $highestOrderId) {
-      return false;
+    if (!isset($meta['last_processed_order_id'])) {
+      $meta['last_processed_order_id'] = 0;
     }
+
+    do {
+      $this->cronHelper->enforceExecutionLimit($timer);
+      $meta['last_processed_order_id'] = $this->woocommerceSegment->synchronizeCustomers($meta['last_processed_order_id'], $highestOrderId);
+      $task->setMeta($meta);
+      $this->scheduledTasksRepository->persist($task);
+      $this->scheduledTasksRepository->flush();
+    } while ($meta['last_processed_order_id'] !== $highestOrderId);
+
     return true;
   }
 
