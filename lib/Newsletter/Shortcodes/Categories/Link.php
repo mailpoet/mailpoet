@@ -82,6 +82,10 @@ class Link implements CategoryInterface {
         );
         return self::processUrl($shortcodeDetails['action'], $url, $queue, $wpUserPreview);
 
+      case 'subscription_re_engage_url':
+        $url = $subscriptionUrlFactory->getReEngagementUrl($wpUserPreview ? null : $subscriber);
+        return self::processUrl($shortcodeDetails['action'], $url, $queue, $wpUserPreview);
+
       default:
         $shortcode = self::getFullShortcode($shortcodeDetails['action']);
         $url = $this->wp->applyFilters(
@@ -135,6 +139,9 @@ class Link implements CategoryInterface {
           $queueModel,
           false
         );
+        break;
+      case 'subscription_re_engage_url':
+        $url = $subscriptionUrlFactory->getReEngagementUrl($subscriber);
         break;
       default:
         $shortcode = self::getFullShortcode($shortcodeAction);
