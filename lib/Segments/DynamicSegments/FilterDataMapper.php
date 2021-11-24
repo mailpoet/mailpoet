@@ -8,6 +8,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
@@ -75,6 +76,14 @@ class FilterDataMapper {
       return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
         'value' => $data['value'],
         'operator' => $data['operator'] ?? SubscriberScore::HIGHER_THAN,
+        'connect' => $data['connect'],
+      ]);
+    }
+    if ($data['action'] === SubscriberSegment::TYPE) {
+      if (empty($data['segments'])) throw new InvalidFilterException('Missing segments', InvalidFilterException::MISSING_VALUE);
+      return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
+        'segments' => $data['segments'],
+        'operator' => $data['operator'] ?? DynamicSegmentFilterData::OPERATOR_ANY,
         'connect' => $data['connect'],
       ]);
     }
