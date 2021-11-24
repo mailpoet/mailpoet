@@ -114,6 +114,7 @@ class Reporter {
       'Bounce email address' => !empty($bounceAddress),
       'Newsletter task scheduler (cron)' => $isCronTriggerMethodWP ? 'visitors' : 'script',
       'Open and click tracking' => $this->trackingConfig->isEmailTrackingEnabled(),
+      'Tracking level' => $this->settings->get('tracking.level', TrackingConfig::LEVEL_FULL),
       'Premium key valid' => $this->servicesChecker->isPremiumKeyValid(),
       'New subscriber notifications' => NewSubscriberNotificationMailer::isDisabled($this->settings->get(NewSubscriberNotificationMailer::SETTINGS_KEY)),
       'Number of standard newsletters sent in last 3 months' => $newsletters['sent_newsletters_3_months'],
