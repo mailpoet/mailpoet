@@ -9,19 +9,22 @@ use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\Connection;
 
 class WooCommerceSyncTest extends \MailPoetTest {
   public $worker;
   public $woocommerceHelper;
   public $woocommerceSegment;
+  public $connection;
   /** @var ScheduledTaskFactory */
   private $scheduledTaskFactory;
 
   public function _before() {
     $this->woocommerceSegment = $this->createMock(WooCommerceSegment::class);
     $this->woocommerceHelper = $this->createMock(WooCommerceHelper::class);
+    $this->connection = $this->createMock(Connection::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
-    $this->worker = new WooCommerceSync($this->woocommerceSegment, $this->woocommerceHelper);
+    $this->worker = new WooCommerceSync($this->woocommerceSegment, $this->woocommerceHelper, $this->connection);
   }
 
   public function testItWillNotRunIfWooCommerceIsDisabled() {
