@@ -16,11 +16,13 @@ class TrackingConfig {
     $this->settings = $settings;
   }
 
-  public function isEmailTrackingEnabled(): bool {
-    return in_array($this->settings->get('tracking.level', self::LEVEL_FULL), [self::LEVEL_PARTIAL, self::LEVEL_FULL], true);
+  public function isEmailTrackingEnabled(string $level = null): bool {
+    $level = $level ?? $this->settings->get('tracking.level', self::LEVEL_FULL);
+    return in_array($level, [self::LEVEL_PARTIAL, self::LEVEL_FULL], true);
   }
 
-  public function isCookieTrackingEnabled(): bool {
-    return $this->settings->get('tracking.level', self::LEVEL_FULL) === self::LEVEL_FULL;
+  public function isCookieTrackingEnabled(string $level = null): bool {
+    $level = $level ?? $this->settings->get('tracking.level', self::LEVEL_FULL);
+    return $level === self::LEVEL_FULL;
   }
 }

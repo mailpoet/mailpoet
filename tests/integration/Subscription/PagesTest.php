@@ -18,6 +18,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
@@ -163,7 +164,7 @@ class PagesTest extends \MailPoetTest {
   public function testItTrackUnsubscribeWhenTrackingIsEnabled() {
     $unsubscribesMock = $this->make(Unsubscribes::class, ['track' => Stub\Expected::once()]);
     $this->testData['queueId'] = 1;
-    SettingsController::getInstance()->set('tracking.enabled', 1);
+    SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $pages = $this->getPages(null, $unsubscribesMock)->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
   }
@@ -171,7 +172,7 @@ class PagesTest extends \MailPoetTest {
   public function testItDontTrackUnsubscribeWhenTrackingIsDisabled() {
     $unsubscribesMock = $this->make(Unsubscribes::class, ['track' => Stub\Expected::never()]);
     $this->testData['queueId'] = 1;
-    SettingsController::getInstance()->set('tracking.enabled', 0);
+    SettingsController::getInstance()->set('tracking.level', TrackingConfig::LEVEL_BASIC);
     $pages = $this->getPages(null, $unsubscribesMock)->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
   }
@@ -213,7 +214,8 @@ class PagesTest extends \MailPoetTest {
       $container->get(Renderer::class),
       $unsubscribesMock ?? $container->get(Unsubscribes::class),
       $container->get(ManageSubscriptionFormRenderer::class),
-      $this->subscribersRepository
+      $this->subscribersRepository,
+      $container->get(TrackingConfig::class)
     );
   }
 }

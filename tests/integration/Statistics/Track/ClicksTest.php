@@ -18,6 +18,7 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\Track\Clicks;
@@ -109,7 +110,8 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
-      $this->diContainer->get(SubscribersRepository::class)
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class)
     );
   }
 
@@ -124,6 +126,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'abort' => Expected::exactly(2),
     ], $this);
@@ -149,6 +152,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -168,6 +172,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -189,6 +194,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -214,6 +220,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -245,6 +252,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -286,6 +294,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -327,6 +336,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -361,6 +371,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -397,6 +408,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => Expected::exactly(1),
     ], $this);
@@ -413,6 +425,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -443,6 +456,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'abort' => Expected::exactly(1),
     ], $this);
@@ -515,6 +529,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $subscribersRepository,
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -549,6 +564,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $subscribersRepository,
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -571,6 +587,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
@@ -593,6 +610,7 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
       $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);

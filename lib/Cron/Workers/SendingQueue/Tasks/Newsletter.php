@@ -15,7 +15,7 @@ use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
-use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Emoji;
@@ -58,8 +58,8 @@ class Newsletter {
     GATracking $gaTracking = null,
     Emoji $emoji = null
   ) {
-    $settings = SettingsController::getInstance();
-    $this->trackingEnabled = (boolean)$settings->get('tracking.enabled');
+    $trackingConfig = ContainerWrapper::getInstance()->get(TrackingConfig::class);
+    $this->trackingEnabled = $trackingConfig->isEmailTrackingEnabled();
     if ($wp === null) {
       $wp = new WPFunctions;
     }

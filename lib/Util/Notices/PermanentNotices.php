@@ -4,6 +4,7 @@ namespace MailPoet\Util\Notices;
 
 use MailPoet\Config\Menu;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\WP\Functions as WPFunctions;
 
 class PermanentNotices {
@@ -39,16 +40,18 @@ class PermanentNotices {
   private $emailWithInvalidListNotice;
 
   public function __construct(
-    WPFunctions $wp
+    WPFunctions $wp,
+    TrackingConfig $trackingConfig,
+    SettingsController $settings
   ) {
     $this->wp = $wp;
     $this->phpVersionWarnings = new PHPVersionWarnings();
     $this->afterMigrationNotice = new AfterMigrationNotice();
-    $this->unauthorizedEmailsNotice = new UnauthorizedEmailNotice($wp, SettingsController::getInstance());
-    $this->unauthorizedEmailsInNewslettersNotice = new UnauthorizedEmailInNewslettersNotice(SettingsController::getInstance(), $wp);
-    $this->inactiveSubscribersNotice = new InactiveSubscribersNotice(SettingsController::getInstance(), $wp);
+    $this->unauthorizedEmailsNotice = new UnauthorizedEmailNotice($wp, $settings);
+    $this->unauthorizedEmailsInNewslettersNotice = new UnauthorizedEmailInNewslettersNotice($settings, $wp);
+    $this->inactiveSubscribersNotice = new InactiveSubscribersNotice($settings, $wp);
     $this->blackFridayNotice = new BlackFridayNotice();
-    $this->headersAlreadySentNotice = new HeadersAlreadySentNotice(SettingsController::getInstance(), $wp);
+    $this->headersAlreadySentNotice = new HeadersAlreadySentNotice($settings, $trackingConfig, $wp);
     $this->deprecatedShortcodeNotice = new DeprecatedShortcodeNotice($wp);
     $this->emailWithInvalidListNotice = new EmailWithInvalidSegmentNotice($wp);
   }

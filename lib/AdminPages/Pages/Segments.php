@@ -14,7 +14,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\Bridge;
-use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
@@ -44,9 +44,6 @@ class Segments {
   /** @var WPPostListLoader */
   private $wpPostListLoader;
 
-  /** @var SettingsController */
-  private $settings;
-
   /** @var SegmentDependencyValidator */
   private $segmentDependencyValidator;
 
@@ -62,6 +59,9 @@ class Segments {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var TrackingConfig */
+  private $trackingConfig;
+
   public function __construct(
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
@@ -70,11 +70,11 @@ class Segments {
     WooCommerceHelper $woocommerceHelper,
     WPPostListLoader $wpPostListLoader,
     SubscribersFeature $subscribersFeature,
-    SettingsController $settings,
     CustomFieldsRepository $customFieldsRepository,
     CustomFieldsResponseBuilder $customFieldsResponseBuilder,
     SegmentDependencyValidator $segmentDependencyValidator,
     SegmentsRepository $segmentsRepository,
+    TrackingConfig $trackingConfig,
     TransientCache $transientCache
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -84,12 +84,12 @@ class Segments {
     $this->wp = $wp;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wpPostListLoader = $wpPostListLoader;
-    $this->settings = $settings;
     $this->segmentDependencyValidator = $segmentDependencyValidator;
     $this->customFieldsRepository = $customFieldsRepository;
     $this->customFieldsResponseBuilder = $customFieldsResponseBuilder;
     $this->transientCache = $transientCache;
     $this->segmentsRepository = $segmentsRepository;
+    $this->trackingConfig = $trackingConfig;
   }
 
   public function render() {
@@ -153,7 +153,7 @@ class Segments {
     );
     $wooCurrencySymbol = $this->woocommerceHelper->isWooCommerceActive() ? $this->woocommerceHelper->getWoocommerceCurrencySymbol() : '';
     $data['woocommerce_currency_symbol'] = html_entity_decode($wooCurrencySymbol);
-    $data['tracking_enabled'] = $this->settings->get('tracking.enabled');
+    $data['tracking_enabled'] = $this->trackingConfig->isEmailTrackingEnabled();
     $subscribersCacheCreatedAt = $this->transientCache->getOldestCreatedAt(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY);
     $subscribersCacheCreatedAt = $subscribersCacheCreatedAt ?: Carbon::now();
     $data['subscribers_counts_cache_created_at'] = $subscribersCacheCreatedAt->format('Y-m-d\TH:i:sO');

@@ -5,7 +5,6 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 use Codeception\Stub;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronWorkerRunner;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
@@ -16,6 +15,7 @@ use MailPoet\Models\StatisticsOpens;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -53,9 +53,10 @@ class AutomatedEmailsTest extends \MailPoetTest {
       $this->mailer,
       $this->renderer,
       $this->settings,
-      ContainerWrapper::getInstance()->get(NewslettersRepository::class),
-      ContainerWrapper::getInstance()->get(NewsletterStatisticsRepository::class),
-      new MetaInfo
+      $this->diContainer->get(NewslettersRepository::class),
+      $this->diContainer->get(NewsletterStatisticsRepository::class),
+      new MetaInfo,
+      $this->diContainer->get(TrackingConfig::class)
     );
     $this->cronWorkerRunner = Stub::copy($this->diContainer->get(CronWorkerRunner::class), [
       'timer' => microtime(true), // reset timer to avoid timeout during full test suite run
@@ -65,7 +66,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
       'automated' => true,
       'address' => 'email@example.com',
     ]);
-    $this->settings->set('tracking.enabled', true);
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
   }
 
   public function testItDoesntWorkIfDisabled() {
@@ -85,7 +86,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   public function testItDoesntWorkIfTrackingIsDisabled() {
-    $this->settings->set('tracking.enabled', false);
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
     expect($this->statsNotifications->checkProcessingRequirements())->equals(false);
   }
 

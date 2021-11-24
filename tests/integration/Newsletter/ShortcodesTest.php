@@ -15,6 +15,7 @@ use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Security;
@@ -61,7 +62,7 @@ class ShortcodesTest extends \MailPoetTest {
     $this->shortcodesObject->setNewsletter($this->newsletter);
     $this->shortcodesObject->setSubscriber($this->subscriber);
     $this->shortcodesObject->setWpUserPreview(false);
-    $this->settings->set('tracking.enabled', false);
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
     $this->subscriptionUrlFactory = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, $this->linkTokens);
     $this->entityManager->flush();
   }
@@ -320,7 +321,7 @@ class ShortcodesTest extends \MailPoetTest {
       $shortcodesObject->process([$shortcode]);
     expect($result['0'])->regExp('/^http.*?action=confirm_unsubscribe/');
     // Returns shortcodes when tracking enabled
-    $this->settings->set('tracking.enabled', true);
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $initialShortcodes = [
       '[link:subscription_unsubscribe_url]',
       '[link:subscription_instant_unsubscribe_url]',
@@ -387,7 +388,7 @@ class ShortcodesTest extends \MailPoetTest {
 
     $result = $shortcodesObject->process([$shortcode]);
     expect($result[0])->equals('success');
-    $this->settings->set('tracking.enabled', true);
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     // tracking function only works during sending, so queue object must not be false
     $shortcodesObject->setQueue($this->_createQueue());
     $result = $shortcodesObject->process([$shortcode], 'x');

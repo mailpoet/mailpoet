@@ -6,6 +6,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -31,14 +32,19 @@ class Scheduler {
   /** @var StatsNotificationsRepository */
   private $repository;
 
+  /** @var TrackingConfig */
+  private $trackingConfig;
+
   public function __construct(
     SettingsController $settings,
     EntityManager $entityManager,
-    StatsNotificationsRepository $repository
+    StatsNotificationsRepository $repository,
+    TrackingConfig $trackingConfig
   ) {
     $this->settings = $settings;
     $this->entityManager = $entityManager;
     $this->repository = $repository;
+    $this->trackingConfig = $trackingConfig;
   }
 
   public function schedule(NewsletterEntity $newsletter) {
@@ -85,7 +91,7 @@ class Scheduler {
     if (empty(trim($settings['address']))) {
       return true;
     }
-    if (!(bool)$this->settings->get('tracking.enabled')) {
+    if (!$this->trackingConfig->isEmailTrackingEnabled()) {
       return true;
     }
     return !(bool)$settings['enabled'];

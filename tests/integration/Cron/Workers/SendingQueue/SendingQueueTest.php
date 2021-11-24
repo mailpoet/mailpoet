@@ -45,6 +45,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
@@ -337,7 +338,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItPassesExtraParametersToMailerWhenTrackingIsDisabled() {
-    $this->settings->set('tracking.enabled', false);
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
     $directUnsubscribeURL = $this->getDirectUnsubscribeURL();
     $sendingQueueWorker = $this->getSendingQueueWorker(
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
@@ -363,7 +364,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItPassesExtraParametersToMailerWhenTrackingIsEnabled() {
-    $this->settings->set('tracking.enabled', true);
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $trackedUnsubscribeURL = $this->getTrackedUnsubscribeURL();
     $sendingQueueWorker = $this->getSendingQueueWorker(
       Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),

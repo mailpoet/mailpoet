@@ -7,7 +7,7 @@ use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
-use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -26,16 +26,21 @@ class Links {
   /** @var NewsletterLinkRepository */
   private $newsletterLinkRepository;
 
+  /** @var TrackingConfig */
+  private $trackingConfig;
+
   public function __construct(
     LinkTokens $linkTokens,
     NewsletterLinks $newsletterLinks,
     SubscribersRepository $subscribersRepository,
-    NewsletterLinkRepository $newsletterLinkRepository
+    NewsletterLinkRepository $newsletterLinkRepository,
+    TrackingConfig $trackingConfig
   ) {
     $this->linkTokens = $linkTokens;
     $this->newsletterLinks = $newsletterLinks;
     $this->subscribersRepository = $subscribersRepository;
     $this->newsletterLinkRepository = $newsletterLinkRepository;
+    $this->trackingConfig = $trackingConfig;
   }
 
   public function process($renderedNewsletter, $newsletter, $queue) {
@@ -64,8 +69,7 @@ class Links {
 
   public function getUnsubscribeUrl($queue, $subscriberId) {
     $subscriber = $this->subscribersRepository->findOneById($subscriberId);
-    $settings = SettingsController::getInstance();
-    if ((boolean)$settings->get('tracking.enabled') && $subscriber) {
+    if ($this->trackingConfig->isEmailTrackingEnabled() && $subscriber) {
       $linkHash = $this->newsletterLinkRepository->findOneBy(
         [
           'queue' => $queue->id,

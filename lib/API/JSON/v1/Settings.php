@@ -19,6 +19,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\WooCommerce\TransactionalEmails;
@@ -70,6 +71,9 @@ class Settings extends APIEndpoint {
   /**  @var NewslettersRepository */
   private $newsletterRepository;
 
+  /** @var TrackingConfig */
+  private $trackingConfig;
+
   public function __construct(
     SettingsController $settings,
     Bridge $bridge,
@@ -83,7 +87,8 @@ class Settings extends APIEndpoint {
     FormMessageController $messageController,
     ServicesChecker $servicesChecker,
     SegmentsRepository $segmentsRepository,
-    SubscribersCountsController $subscribersCountsController
+    SubscribersCountsController $subscribersCountsController,
+    TrackingConfig $trackingConfig
   ) {
     $this->settings = $settings;
     $this->bridge = $bridge;
@@ -98,6 +103,7 @@ class Settings extends APIEndpoint {
     $this->messageController = $messageController;
     $this->segmentsRepository = $segmentsRepository;
     $this->subscribersCountsController = $subscribersCountsController;
+    $this->trackingConfig = $trackingConfig;
   }
 
   public function get() {
@@ -287,7 +293,7 @@ class Settings extends APIEndpoint {
    * @throws \Exception
    */
   public function updateReEngagementEmailStatus($newTracking): array {
-    if (!empty($newTracking['enabled']) && $newTracking['enabled'] === "1" ) {
+    if (!empty($newTracking['level']) && $this->trackingConfig->isEmailTrackingEnabled($newTracking['level'])) {
       return $this->reactivateReEngagementEmails();
     }
     try {
