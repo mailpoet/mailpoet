@@ -71,7 +71,7 @@ class SettingsController {
           'body' => WPFunctions::get()->__("Hello,\n\nWelcome to our newsletter!\n\nPlease confirm your subscription to our list by clicking the link below: \n\n[activation_link]I confirm my subscription![/activation_link]\n\nThank you,\n\nThe Team", 'mailpoet'),
         ],
         'tracking' => [
-          'enabled' => true,
+          'level' => TrackingConfig::LEVEL_FULL,
         ],
         'analytics' => [
           'enabled' => false,
