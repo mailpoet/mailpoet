@@ -460,7 +460,10 @@ class WooCommerce {
     // Insert WC customer emails to a temporary table and ensure matching collations
     // between MailPoet and WooCommerce emails for left join to use an index
     $tmpTableName = Env::$dbPrefix . 'tmp_wc_emails';
-    $collation = $this->mailpoetEmailCollation ? "COLLATE $this->mailpoetEmailCollation" : '';
+    $collation = '';
+    if ($this->needsCollationChange()) {
+      $collation = "COLLATE $this->mailpoetEmailCollation";
+    }
     $this->connection->executeQuery("
       CREATE TEMPORARY TABLE {$tmpTableName}
         (`email` varchar(150) NOT NULL, UNIQUE(`email`)) {$collation}
