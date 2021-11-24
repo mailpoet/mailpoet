@@ -70,6 +70,15 @@ class Subscriber {
   }
 
   /**
+   * @param int $score
+   * @return $this
+   */
+  public function withEngagementScore($score) {
+    $this->data['engagement_score'] = $score;
+    return $this;
+  }
+
+  /**
    * @param bool $isWooCustomer
    * @return $this
    */
@@ -98,6 +107,7 @@ class Subscriber {
     $subscriber->setStatus($this->data['status']);
     $subscriber->setEmail($this->data['email']);
     if (isset($this->data['count_confirmations'])) $subscriber->setConfirmationsCount($this->data['count_confirmations']);
+    if (isset($this->data['engagement_score'])) $subscriber->setEngagementScore($this->data['engagement_score']);
     if (isset($this->data['last_name'])) $subscriber->setLastName($this->data['last_name']);
     if (isset($this->data['first_name'])) $subscriber->setFirstName($this->data['first_name']);
     if (isset($this->data['is_woocommerce_user'])) $subscriber->setIsWoocommerceUser($this->data['is_woocommerce_user']);
