@@ -17,6 +17,10 @@ class DynamicSegmentFilterData {
   public const CONNECT_TYPE_AND = 'and';
   public const CONNECT_TYPE_OR = 'or';
 
+  const OPERATOR_ANY = 'any';
+  const OPERATOR_ALL = 'all';
+  const OPERATOR_NONE = 'none';
+
   /**
    * @ORM\Column(type="serialized_array")
    * @var array|null
