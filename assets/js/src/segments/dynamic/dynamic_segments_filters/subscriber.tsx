@@ -8,6 +8,7 @@ import {
   SubscriberActionTypes,
 } from '../types';
 import { WordpressRoleFields } from './subscriber_wordpress_role';
+import { SubscriberScoreFields, validateSubscriberScore } from './subscriber_score';
 import { SubscribedDateFields, SubscribedDateOperator } from './subscriber_subscribed_date';
 import { MailPoetCustomFields, validateMailPoetCustomField } from './subscriber_mailpoet_custom_field';
 
@@ -17,6 +18,9 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   }
   if (formItems.action === SubscriberActionTypes.MAILPOET_CUSTOM_FIELD) {
     return validateMailPoetCustomField(formItems);
+  }
+  if (formItems.action === SubscriberActionTypes.SUBSCRIBER_SCORE) {
+    return validateSubscriberScore(formItems);
   }
   if (!formItems.operator || !formItems.value) {
     return false;
@@ -40,12 +44,14 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
 
 export const SubscriberSegmentOptions = [
   { value: SubscriberActionTypes.MAILPOET_CUSTOM_FIELD, label: MailPoet.I18n.t('mailpoetCustomField'), group: SegmentTypes.WordPressRole },
+  { value: SubscriberActionTypes.SUBSCRIBER_SCORE, label: MailPoet.I18n.t('subscriberScore'), group: SegmentTypes.WordPressRole },
   { value: SubscriberActionTypes.SUBSCRIBED_DATE, label: MailPoet.I18n.t('subscribedDate'), group: SegmentTypes.WordPressRole },
   { value: SubscriberActionTypes.WORDPRESS_ROLE, label: MailPoet.I18n.t('segmentsSubscriber'), group: SegmentTypes.WordPressRole },
 ];
 
 const componentsMap = {
   [SubscriberActionTypes.WORDPRESS_ROLE]: WordpressRoleFields,
+  [SubscriberActionTypes.SUBSCRIBER_SCORE]: SubscriberScoreFields,
   [SubscriberActionTypes.SUBSCRIBED_DATE]: SubscribedDateFields,
   [SubscriberActionTypes.MAILPOET_CUSTOM_FIELD]: MailPoetCustomFields,
 };

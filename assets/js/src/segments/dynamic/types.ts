@@ -21,6 +21,7 @@ export enum SubscriberActionTypes {
   MAILPOET_CUSTOM_FIELD = 'mailpoetCustomField',
   WORDPRESS_ROLE = 'wordpressRole',
   SUBSCRIBED_DATE = 'subscribedDate',
+  SUBSCRIBER_SCORE = 'subscriberScore',
 }
 
 export enum SegmentConnectTypes {
