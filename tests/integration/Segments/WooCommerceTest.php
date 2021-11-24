@@ -26,9 +26,6 @@ class WooCommerceTest extends \MailPoetTest {
 
   private $userEmails = [];
 
-  /** @var SegmentEntity */
-  private $wooCommerceSegment;
-
   /** @var WooCommerceSegment */
   private $wooCommerce;
 
