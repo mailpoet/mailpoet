@@ -296,6 +296,12 @@ class ShortcodesTest extends \MailPoetTest {
     expect($linkData['newsletter_hash'])->equals($this->newsletter->getHash());
     expect($linkData['subscriber_token'])->equals($this->subscriber->getLinkToken());
     expect($linkData['subscriber_id'])->equals($this->subscriber->getId());
+
+    $result = $shortcodesObject->process(['[link:subscription_re_engage_url]']);
+    expect($result['0'])->regExp('/^http.*?endpoint=subscription&action=re_engagement/');
+    $linkData = $this->getLinkData($result['0']);
+    expect($linkData['email'])->equals($this->subscriber->getEmail());
+    expect($linkData['token'])->equals($this->subscriber->getLinkToken());
   }
 
   private function getLinkData(string $link): array {
