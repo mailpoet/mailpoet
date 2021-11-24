@@ -15,6 +15,7 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Router\Router;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter;
@@ -161,10 +162,10 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
         return $params;
       }),
     ]);
-    $this->settings->set('tracking.enabled', false);
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
     $viewInBrowser = new ViewInBrowserRenderer(
       $emoji,
-      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Renderer::class),
       $this->diContainer->get(Links::class)
@@ -179,7 +180,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
   }
 
   public function testItConvertsShortcodes() {
-    $this->settings->set('tracking.enabled', false);
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
     $renderedBody = $this->viewInBrowserRenderer->render(
       $preview = false,
       $this->newsletter,
@@ -191,7 +192,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
   }
 
   public function testItRewritesLinksToRouterEndpointWhenTrackingIsEnabled() {
-    $this->settings->set('tracking.enabled', true);
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $queue = $this->sendingQueueRepository->findOneById($this->sendingTask->queue()->id);
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $queue->setNewsletterRenderedBody($this->queueRenderedNewsletterWithTracking);

@@ -21,6 +21,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -52,6 +53,9 @@ class Reporter {
   /** @var SubscribersFeature */
   private $subscribersFeature;
 
+  /** @var TrackingConfig */
+  private $trackingConfig;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
@@ -60,7 +64,8 @@ class Reporter {
     SettingsController $settings,
     WooCommerceHelper $woocommerceHelper,
     WPFunctions $wp,
-    SubscribersFeature $subscribersFeature
+    SubscribersFeature $subscribersFeature,
+    TrackingConfig $trackingConfig
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
@@ -70,6 +75,7 @@ class Reporter {
     $this->woocommerceHelper = $woocommerceHelper;
     $this->wp = $wp;
     $this->subscribersFeature = $subscribersFeature;
+    $this->trackingConfig = $trackingConfig;
   }
 
   public function getData() {
@@ -107,7 +113,7 @@ class Reporter {
       'Sign-up confirmation: Confirmation page > MailPoet page' => (boolean)Pages::isMailpoetPage(intval($this->settings->get('subscription.pages.confirmation'))),
       'Bounce email address' => !empty($bounceAddress),
       'Newsletter task scheduler (cron)' => $isCronTriggerMethodWP ? 'visitors' : 'script',
-      'Open and click tracking' => (boolean)$this->settings->get('tracking.enabled', false),
+      'Open and click tracking' => $this->trackingConfig->isEmailTrackingEnabled(),
       'Premium key valid' => $this->servicesChecker->isPremiumKeyValid(),
       'New subscriber notifications' => NewSubscriberNotificationMailer::isDisabled($this->settings->get(NewSubscriberNotificationMailer::SETTINGS_KEY)),
       'Number of standard newsletters sent in last 3 months' => $newsletters['sent_newsletters_3_months'],

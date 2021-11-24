@@ -9,6 +9,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
@@ -66,6 +67,9 @@ class Pages {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var TrackingConfig */
+  private $trackingConfig;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -78,7 +82,8 @@ class Pages {
     TemplateRenderer $templateRenderer,
     Unsubscribes $unsubscribesTracker,
     ManageSubscriptionFormRenderer $manageSubscriptionFormRenderer,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    TrackingConfig $trackingConfig
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -92,6 +97,7 @@ class Pages {
     $this->unsubscribesTracker = $unsubscribesTracker;
     $this->manageSubscriptionFormRenderer = $manageSubscriptionFormRenderer;
     $this->subscribersRepository = $subscribersRepository;
+    $this->trackingConfig = $trackingConfig;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -194,7 +200,7 @@ class Pages {
       && ($this->subscriber !== null)
       && ($this->subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED)
     ) {
-      if ((bool)$this->settings->get('tracking.enabled') && isset($this->data['queueId'])) {
+      if ($this->trackingConfig->isEmailTrackingEnabled() && isset($this->data['queueId'])) {
         $this->unsubscribesTracker->track(
           (int)$this->subscriber->id,
           StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER,

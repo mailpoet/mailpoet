@@ -6,6 +6,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -14,25 +15,30 @@ class SchedulerTest extends \MailPoetUnitTest {
   /** @var Scheduler */
   private $statsNotifications;
 
-  /** @var SettingsController|MockObject */
+  /** @var SettingsController& MockObject */
   private $settings;
 
-  /** @var EntityManager|MockObject */
+  /** @var EntityManager & MockObject */
   private $entityManager;
 
-  /** @var StatsNotificationsRepository|MockObject */
+  /** @var StatsNotificationsRepository & MockObject */
   private $repository;
+
+  /** @var TrackingConfig & MockObject */
+  private $trackingConfig;
 
   public function _before() {
     parent::_before();
     $this->settings = $this->createMock(SettingsController::class);
+    $this->trackingConfig = $this->createMock(TrackingConfig::class);
     $this->entityManager = $this->createMock(EntityManager::class);
     $this->entityManager->method('flush');
     $this->repository = $this->createMock(StatsNotificationsRepository::class);
     $this->statsNotifications = new Scheduler(
       $this->settings,
       $this->entityManager,
-      $this->repository
+      $this->repository,
+      $this->trackingConfig
     );
   }
 
@@ -41,8 +47,10 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->method('get')
       ->will($this->returnValueMap([
         [Worker::SETTINGS_KEY, null, ['enabled' => true, 'address' => 'email@example.com']],
-        ['tracking.enabled', null, true],
       ]));
+    $this->trackingConfig
+      ->method('isEmailTrackingEnabled')
+      ->will($this->returnValue(true));
 
     $newsletterId = 5;
     $newsletter = new NewsletterEntity();
@@ -81,8 +89,10 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->method('get')
       ->will($this->returnValueMap([
         [Worker::SETTINGS_KEY, null, ['enabled' => true, 'address' => 'email@example.com']],
-        ['tracking.enabled', null, true],
       ]));
+    $this->trackingConfig
+      ->method('isEmailTrackingEnabled')
+      ->will($this->returnValue(true));
 
     $newsletterId = 4;
     $newsletter = new NewsletterEntity();
@@ -121,8 +131,10 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->method('get')
       ->will($this->returnValueMap([
         [Worker::SETTINGS_KEY, null, ['enabled' => true, 'address' => 'email@example.com']],
-        ['tracking.enabled', null, false],
       ]));
+    $this->trackingConfig
+      ->method('isEmailTrackingEnabled')
+      ->will($this->returnValue(false));
 
     $this->entityManager
       ->expects($this->never())
@@ -141,8 +153,10 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->method('get')
       ->will($this->returnValueMap([
         [Worker::SETTINGS_KEY, null, ['enabled' => false, 'address' => 'email@example.com']],
-        ['tracking.enabled', null, true],
       ]));
+    $this->trackingConfig
+      ->method('isEmailTrackingEnabled')
+      ->will($this->returnValue(true));
 
     $this->entityManager
       ->expects($this->never())
@@ -161,8 +175,10 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->method('get')
       ->will($this->returnValueMap([
         [Worker::SETTINGS_KEY, null, []],
-        ['tracking.enabled', null, true],
       ]));
+    $this->trackingConfig
+      ->method('isEmailTrackingEnabled')
+      ->will($this->returnValue(true));
 
     $this->entityManager
       ->expects($this->never())
@@ -182,8 +198,10 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->method('get')
       ->will($this->returnValueMap([
         [Worker::SETTINGS_KEY, null, ['enabled' => true]],
-        ['tracking.enabled', null, true],
       ]));
+    $this->trackingConfig
+      ->method('isEmailTrackingEnabled')
+      ->will($this->returnValue(true));
 
     $this->entityManager
       ->expects($this->never())
@@ -202,8 +220,10 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->method('get')
       ->will($this->returnValueMap([
         [Worker::SETTINGS_KEY, null, ['enabled' => true, 'address' => '']],
-        ['tracking.enabled', null, true],
       ]));
+    $this->trackingConfig
+      ->method('isEmailTrackingEnabled')
+      ->will($this->returnValue(true));
 
     $this->entityManager
       ->expects($this->never())
@@ -221,8 +241,10 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->method('get')
       ->will($this->returnValueMap([
         [Worker::SETTINGS_KEY, null, ['enabled' => true, 'address' => 'email@example.com']],
-        ['tracking.enabled', null, true],
       ]));
+    $this->trackingConfig
+      ->method('isEmailTrackingEnabled')
+      ->will($this->returnValue(true));
 
     $newsletterId = 10;
     $newsletter = new NewsletterEntity();
@@ -246,11 +268,13 @@ class SchedulerTest extends \MailPoetUnitTest {
       ->method('get')
       ->will($this->returnValueMap([
         [Worker::SETTINGS_KEY, null, ['enabled' => true, 'address' => 'email@example.com']],
-        ['tracking.enabled', null, true],
       ]));
     $this->entityManager
       ->expects($this->never())
       ->method('persist');
+    $this->trackingConfig
+      ->method('isEmailTrackingEnabled')
+      ->will($this->returnValue(true));
 
     $newsletterId = 11;
     $newsletter = new NewsletterEntity();

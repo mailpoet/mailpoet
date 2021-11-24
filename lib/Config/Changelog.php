@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Util\Url;
 use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -23,18 +24,23 @@ class Changelog {
   /** @var MP2Migrator */
   private $mp2Migrator;
 
+  /** @var TrackingConfig */
+  private $trackingConfig;
+
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     Helper $wooCommerceHelper,
     Url $urlHelper,
-    MP2Migrator $mp2Migrator
+    MP2Migrator $mp2Migrator,
+    TrackingConfig $trackingConfig
   ) {
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->settings = $settings;
     $this->wp = $wp;
     $this->urlHelper = $urlHelper;
     $this->mp2Migrator = $mp2Migrator;
+    $this->trackingConfig = $trackingConfig;
   }
 
   public function init() {
@@ -112,7 +118,7 @@ class Changelog {
     if (
       !in_array($_GET['page'], ['mailpoet-woocommerce-setup', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
       && ($this->settings->get('woocommerce.accept_cookie_revenue_tracking.set') === null)
-      && $this->settings->get('tracking.enabled')
+      && $this->trackingConfig->isEmailTrackingEnabled()
       && $this->wooCommerceHelper->isWooCommerceActive()
       && $this->wp->currentUserCan('administrator')
     ) {

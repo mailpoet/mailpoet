@@ -23,6 +23,7 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\WooCommerce\TransactionalEmails;
@@ -65,7 +66,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false]),
       $this->diContainer->get(SegmentsRepository::class),
-      $this->diContainer->get(SubscribersCountsController::class)
+      $this->diContainer->get(SubscribersCountsController::class),
+      $this->diContainer->get(TrackingConfig::class)
     );
   }
 
@@ -106,7 +108,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false]),
       $this->diContainer->get(SegmentsRepository::class),
-      $this->diContainer->get(SubscribersCountsController::class)
+      $this->diContainer->get(SubscribersCountsController::class),
+      $this->diContainer->get(TrackingConfig::class)
     );
 
     $response = $this->endpoint->set(/* missing data */);
@@ -138,7 +141,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false]),
       $this->diContainer->get(SegmentsRepository::class),
-      $this->diContainer->get(SubscribersCountsController::class)
+      $this->diContainer->get(SubscribersCountsController::class),
+      $this->diContainer->get(TrackingConfig::class)
     );
 
     MailerLog::pauseSending(MailerLog::getMailerLog());
@@ -165,7 +169,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class, ['isMailPoetAPIKeyPendingApproval' => false]),
       $this->diContainer->get(SegmentsRepository::class),
-      $this->diContainer->get(SubscribersCountsController::class)
+      $this->diContainer->get(SubscribersCountsController::class),
+      $this->diContainer->get(TrackingConfig::class)
     );
 
     $response = $this->endpoint->set([
@@ -194,7 +199,8 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(FormMessageController::class),
       $this->make(ServicesChecker::class),
       $this->diContainer->get(SegmentsRepository::class),
-      $this->diContainer->get(SubscribersCountsController::class)
+      $this->diContainer->get(SubscribersCountsController::class),
+      $this->diContainer->get(TrackingConfig::class)
     );
 
     $this->settings->set('sender.address', '');
@@ -291,8 +297,8 @@ class SettingsTest extends \MailPoetTest {
 
   public function testItDeactivatesReEngagementEmailsIfTrackingDisabled(): void {
     $this->createNewsletter(NewsletterEntity::TYPE_RE_ENGAGEMENT, NewsletterEntity::STATUS_ACTIVE);
-    $this->settings->set('tracking', ['enabled' => '1']);
-    $response = $this->endpoint->set(['tracking' => ['enabled' => '0']]);
+    $this->settings->set('tracking', ['level' => TrackingConfig::LEVEL_PARTIAL]);
+    $response = $this->endpoint->set(['tracking' => ['level' => TrackingConfig::LEVEL_BASIC]]);
     expect($response->meta['showNotice'])->equals(true);
     expect($response->meta['action'])->equals('deactivate');
     expect($this->newsletterRepository->findActiveByTypes([NewsletterEntity::TYPE_RE_ENGAGEMENT]))->equals([]);
@@ -300,18 +306,18 @@ class SettingsTest extends \MailPoetTest {
 
   public function testItFlagsNoticeToReactivateReEngagementEmailsIfTrackingEnabled(): void {
     $this->createNewsletter(NewsletterEntity::TYPE_RE_ENGAGEMENT);
-    $this->settings->set('tracking', ['enabled' => '0']);
-    $response = $this->endpoint->set(['tracking' => ['enabled' => '1']]);
+    $this->settings->set('tracking', ['level' => TrackingConfig::LEVEL_BASIC]);
+    $response = $this->endpoint->set(['tracking' => ['level' => TrackingConfig::LEVEL_PARTIAL]]);
     expect($response->meta['showNotice'])->equals(true);
     expect($response->meta['action'])->equals('reactivate');
   }
 
   public function testNoNoticeWhenTrackingChangesIfNoReEngagementEmails(): void {
     $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_ACTIVE);
-    $this->settings->set('tracking', ['enabled' => '0']);
-    $response = $this->endpoint->set(['tracking' => ['enabled' => '1']]);
+    $this->settings->set('tracking', ['level' => TrackingConfig::LEVEL_BASIC]);
+    $response = $this->endpoint->set(['tracking' => ['level' => TrackingConfig::LEVEL_PARTIAL]]);
     expect($response->meta['showNotice'])->equals(false);
-    $response = $this->endpoint->set(['tracking' => ['enabled' => '0']]);
+    $response = $this->endpoint->set(['tracking' => ['level' => TrackingConfig::LEVEL_BASIC]]);
     expect($response->meta['showNotice'])->equals(false);
   }
 

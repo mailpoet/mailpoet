@@ -67,12 +67,12 @@ class Settings {
   }
 
   public function withTrackingDisabled() {
-    $this->settings->set('tracking.enabled', false);
+    $this->settings->set('tracking.level', 'basic');
     return $this;
   }
 
   public function withTrackingEnabled() {
-    $this->settings->set('tracking.enabled', true);
+    $this->settings->set('tracking.level', 'partial');
     return $this;
   }
 
@@ -142,13 +142,13 @@ class Settings {
   }
 
   public function withCookieRevenueTracking() {
-    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "1");
+    $this->settings->set('tracking.level', 'full');
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.set', "1");
     return $this;
   }
 
   public function withCookieRevenueTrackingDisabled() {
-    $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "");
+    $this->settings->set('tracking.level', 'partial');
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.set', "1");
     return $this;
   }

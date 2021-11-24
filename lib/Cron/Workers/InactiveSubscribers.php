@@ -5,6 +5,7 @@ namespace MailPoet\Cron\Workers;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\InactiveSubscribersController;
 
 class InactiveSubscribers extends SimpleWorker {
@@ -18,18 +19,22 @@ class InactiveSubscribers extends SimpleWorker {
   /** @var SettingsController */
   private $settings;
 
+  /** @var TrackingConfig */
+  private $trackingConfig;
+
   public function __construct(
     InactiveSubscribersController $inactiveSubscribersController,
-    SettingsController $settings
+    SettingsController $settings,
+    TrackingConfig $trackingConfig
   ) {
     $this->inactiveSubscribersController = $inactiveSubscribersController;
     $this->settings = $settings;
+    $this->trackingConfig = $trackingConfig;
     parent::__construct();
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
-    $trackingEnabled = (bool)$this->settings->get('tracking.enabled');
-    if (!$trackingEnabled) {
+    if (!$this->trackingConfig->isEmailTrackingEnabled()) {
       $this->schedule();
       return true;
     }

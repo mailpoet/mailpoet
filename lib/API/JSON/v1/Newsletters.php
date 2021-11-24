@@ -23,6 +23,7 @@ use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\Security;
@@ -75,6 +76,9 @@ class Newsletters extends APIEndpoint {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
+  /** @var TrackingConfig */
+  private $trackingConfig;
+
   public function __construct(
     Listing\Handler $listingHandler,
     WPFunctions $wp,
@@ -88,7 +92,8 @@ class Newsletters extends APIEndpoint {
     SubscribersFeature $subscribersFeature,
     SendPreviewController $sendPreviewController,
     NewsletterSaveController $newsletterSaveController,
-    NewsletterUrl $newsletterUrl
+    NewsletterUrl $newsletterUrl,
+    TrackingConfig $trackingConfig
   ) {
     $this->listingHandler = $listingHandler;
     $this->wp = $wp;
@@ -103,6 +108,7 @@ class Newsletters extends APIEndpoint {
     $this->sendPreviewController = $sendPreviewController;
     $this->newsletterSaveController = $newsletterSaveController;
     $this->newsletterUrl = $newsletterUrl;
+    $this->trackingConfig = $trackingConfig;
   }
 
   public function get($data = []) {
@@ -185,8 +191,7 @@ class Newsletters extends APIEndpoint {
       }
     }
 
-    $tracking = $this->settings->get('tracking');
-    $tracking_enabled = !empty($tracking['enabled']) && $tracking['enabled'] === "1";
+    $tracking_enabled = $this->trackingConfig->isEmailTrackingEnabled();
     if (!$tracking_enabled && $newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT && $status === NewsletterEntity::STATUS_ACTIVE) {
       return $this->errorResponse([
         APIError::FORBIDDEN => __(

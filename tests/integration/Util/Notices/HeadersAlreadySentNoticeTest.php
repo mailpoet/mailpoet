@@ -4,6 +4,7 @@ namespace MailPoet\Util\Notices;
 
 use Codeception\Util\Stub;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\WP\Functions as WPFunctions;
 
 class HeadersAlreadySentNoticeTest extends \MailPoetTest {
@@ -27,7 +28,7 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
   public function testItPrintsWarningWhenHeadersAreSent() {
     $headersAlreadySentNotice = Stub::construct(
       HeadersAlreadySentNotice::class,
-      [$this->settings, $this->wp],
+      [$this->settings, $this->diContainer->get(TrackingConfig::class), $this->wp],
       ['headersSent' => true]
     );
     $notice = $headersAlreadySentNotice->init(true);
@@ -38,7 +39,7 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
   public function testItPrintsNoWarningWhenHeadersAreNotSent() {
     $headersAlreadySentNotice = Stub::construct(
       HeadersAlreadySentNotice::class,
-      [$this->settings, $this->wp],
+      [$this->settings, $this->diContainer->get(TrackingConfig::class), $this->wp],
       ['headersSent' => false]
     );
     $notice = $headersAlreadySentNotice->init(true);
@@ -50,7 +51,7 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
     echo "  \n \t  \r\n  ";
     $headersAlreadySentNotice = Stub::construct(
       HeadersAlreadySentNotice::class,
-      [$this->settings, $this->wp],
+      [$this->settings, $this->diContainer->get(TrackingConfig::class), $this->wp],
       ['headersSent' => false]
     );
     $notice = $headersAlreadySentNotice->init(true);
@@ -61,7 +62,7 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
   public function testItPrintsNoWarningWhenDisabled() {
     $headersAlreadySentNotice = Stub::construct(
       HeadersAlreadySentNotice::class,
-      [$this->settings, $this->wp],
+      [$this->settings, $this->diContainer->get(TrackingConfig::class), $this->wp],
       ['headersSent' => true]
     );
     $warning = $headersAlreadySentNotice->init(false);
@@ -71,7 +72,7 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
   public function testItPrintsNoWarningWhenDismissed() {
     $headersAlreadySentNotice = Stub::construct(
       HeadersAlreadySentNotice::class,
-      [$this->settings, $this->wp],
+      [$this->settings, $this->diContainer->get(TrackingConfig::class), $this->wp],
       ['headersSent' => true]
     );
     $headersAlreadySentNotice->disable();
