@@ -7,6 +7,7 @@ use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
@@ -66,6 +67,14 @@ class FilterDataMapper {
       return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
         'value' => $data['value'],
         'operator' => $data['operator'] ?? SubscriberSubscribedDate::BEFORE,
+        'connect' => $data['connect'],
+      ]);
+    }
+    if ($data['action'] === SubscriberScore::TYPE) {
+      if (!isset($data['value'])) throw new InvalidFilterException('Missing engagement score value', InvalidFilterException::MISSING_VALUE);
+      return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
+        'value' => $data['value'],
+        'operator' => $data['operator'] ?? SubscriberScore::HIGHER_THAN,
         'connect' => $data['connect'],
       ]);
     }
