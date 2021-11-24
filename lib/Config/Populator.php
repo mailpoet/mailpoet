@@ -31,6 +31,7 @@ use MailPoet\Segments\WP;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Settings\UserFlagsRepository;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
@@ -190,6 +191,7 @@ class Populator {
     $this->scheduleSubscriberLastEngagementDetection();
     $this->moveNewsletterTemplatesThumbnailData();
     $this->scheduleNewsletterTemplateThumbnails();
+    $this->updateToUnifiedTrackingSettings();
   }
 
   private function createMailPoetPage() {
@@ -927,5 +929,21 @@ class Populator {
       SET thumbnail_data = thumbnail, thumbnail = NULL
       WHERE thumbnail LIKE 'data:image%';"
     );
+  }
+
+  private function updateToUnifiedTrackingSettings() {
+    if (version_compare($this->settings->get('db_version', '3.74.2'), '3.74.1', '>')) {
+      return;
+    }
+    $emailTracking = $this->settings->get('tracking.enabled', true);
+    $wooTrackingCookie = $this->settings->get('woocommerce.accept_cookie_revenue_tracking.enabled');
+    if ($wooTrackingCookie === null) { // No setting for WooCommerce Cookie Tracking - WooCommerce was not active
+      $trackingLevel = $emailTracking ? TrackingConfig::LEVEL_FULL : TrackingConfig::LEVEL_BASIC;
+    } elseif ($wooTrackingCookie) { // WooCommerce Cookie Tracking enabled
+      $trackingLevel = TrackingConfig::LEVEL_FULL;
+    } else { // WooCommerce Tracking Cookie Disabled
+      $trackingLevel = $emailTracking ? TrackingConfig::LEVEL_PARTIAL : TrackingConfig::LEVEL_BASIC;
+    }
+    $this->settings->set('tracking.level', $trackingLevel);
   }
 }
