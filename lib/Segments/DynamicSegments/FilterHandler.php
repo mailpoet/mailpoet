@@ -47,10 +47,16 @@ class FilterHandler {
         $this->filterFactory->getFilterForFilterEntity($filter)->apply($subscribersIdsQuery, $filter);
       }
       $filterSelects[] = $subscribersIdsQuery->getSQL();
-      $queryBuilder->setParameters(array_merge(
-        $subscribersIdsQuery->getParameters(),
-        $queryBuilder->getParameters()
-      ));
+      $queryBuilder->setParameters(
+        array_merge(
+          $subscribersIdsQuery->getParameters(),
+          $queryBuilder->getParameters()
+        ),
+        array_merge(
+          $subscribersIdsQuery->getParameterTypes(),
+          $queryBuilder->getParameterTypes()
+        )
+      );
     }
     $this->joinSubqueries($queryBuilder, $segment, $filterSelects);
     return $queryBuilder;
