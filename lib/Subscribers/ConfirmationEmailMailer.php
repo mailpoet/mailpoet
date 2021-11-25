@@ -121,7 +121,7 @@ class ConfirmationEmailMailer {
     // send email
     try {
       $extraParams = [
-        'meta' => $this->mailerMetaInfo->getConfirmationMetaInfo($subscriber),
+        'meta' => $this->mailerMetaInfo->getConfirmationMetaInfo($subscriberEntity),
       ];
       $result = $this->mailer->send($email, $subscriber, $extraParams);
       if ($result['response'] === false) {
