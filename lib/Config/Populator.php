@@ -37,6 +37,7 @@ use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Util\Helpers;
+use MailPoet\Util\Notices\ChangedTrackingNotice;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -941,6 +942,11 @@ class Populator {
       $trackingLevel = $emailTracking ? TrackingConfig::LEVEL_FULL : TrackingConfig::LEVEL_BASIC;
     } elseif ($wooTrackingCookie) { // WooCommerce Cookie Tracking enabled
       $trackingLevel = TrackingConfig::LEVEL_FULL;
+      // Cookie was enabled but tracking disabled and we are switching to full.
+      // So we activate an admin notice to let the user know that we activated tracking
+      if (!$emailTracking) {
+        $this->wp->setTransient(ChangedTrackingNotice::OPTION_NAME, true);
+      }
     } else { // WooCommerce Tracking Cookie Disabled
       $trackingLevel = $emailTracking ? TrackingConfig::LEVEL_PARTIAL : TrackingConfig::LEVEL_BASIC;
     }
