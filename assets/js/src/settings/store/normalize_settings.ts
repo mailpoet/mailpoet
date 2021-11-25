@@ -87,7 +87,7 @@ export default function normalizeSettings(data: Record<string, unknown>): Settin
     cron_trigger: asObject({
       method: asEnum(['WordPress', 'MailPoet', 'Linux Cron'], 'WordPress'),
     }),
-    tracking: asObject({ enabled: enabledRadio, level: asEnum(['full', 'partial', 'basic'], 'full') }),
+    tracking: asObject({ level: asEnum(['full', 'partial', 'basic'], 'full') }),
     send_transactional_emails: disabledRadio,
     deactivate_subscriber_after_inactive_days: asEnum(['', '90', '180', '365'], '180'),
     analytics: asObject({ enabled: disabledRadio }),
@@ -151,7 +151,6 @@ export default function normalizeSettings(data: Record<string, unknown>): Settin
         message: text,
       }),
       accept_cookie_revenue_tracking: asObject({
-        enabled: disabledRadio,
         set: enabledRadio,
       }),
     }),
