@@ -21,7 +21,7 @@ import _ from 'underscore';
 
 const mailpoetRoles = window.mailpoet_roles || {};
 const mailpoetSegments = window.mailpoet_segments || {};
-const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
+const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
 const messages = {
   onNoItemsFound: (group, search) => MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),

@@ -25,4 +25,12 @@ class TrackingConfig {
     $level = $level ?? $this->settings->get('tracking.level', self::LEVEL_FULL);
     return $level === self::LEVEL_FULL;
   }
+
+  public function getConfig(): array {
+    return [
+      'level' => $this->settings->get('tracking.level', self::LEVEL_FULL),
+      'emailTrackingEnabled' => $this->isEmailTrackingEnabled(),
+      'cookieTrackingEnabled' => $this->isCookieTrackingEnabled(),
+    ];
+  }
 }

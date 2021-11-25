@@ -103,7 +103,7 @@ class Subscribers {
     $data['subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
     $data['has_premium_support'] = $this->subscribersFeature->hasPremiumSupport();
     $data['link_premium'] = $this->wp->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-premium');
-    $data['tracking_enabled'] = $this->trackingConfig->isEmailTrackingEnabled();
+    $data['tracking_config'] = $this->trackingConfig->getConfig();
 
     $subscribersCacheCreatedAt = $this->transientCache->getOldestCreatedAt(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY);
     $subscribersCacheCreatedAt = $subscribersCacheCreatedAt ?: Carbon::now();
