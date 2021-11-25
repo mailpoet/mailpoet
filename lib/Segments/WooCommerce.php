@@ -18,8 +18,6 @@ use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class WooCommerce {
-  public const BATCH_SIZE = 10000;
-
   /** @var SettingsController */
   private $settings;
 
@@ -169,13 +167,13 @@ class WooCommerce {
     }
   }
 
-  public function synchronizeCustomers(int $lastProcessedOrderId = 0, ?int $highestOrderId = null): int {
+  public function synchronizeCustomers(int $lastProcessedOrderId = 0, ?int $highestOrderId = null, int $batchSize = 1000): int {
 
     $this->wpSegment->synchronizeUsers(); // synchronize registered users
 
     $this->markRegisteredCustomers();
 
-    $processedOrders = $this->insertSubscribersFromOrders($lastProcessedOrderId);
+    $processedOrders = $this->insertSubscribersFromOrders($lastProcessedOrderId, $batchSize);
     $this->updateNames($processedOrders);
 
     $lastProcessedOrderId = end($processedOrders);
@@ -261,13 +259,13 @@ class WooCommerce {
   /**
    * @return array<string, int>
    */
-  private function insertSubscribersFromOrders(int $lastProcessedOrderId = 0): array {
+  private function insertSubscribersFromOrders(int $lastProcessedOrderId, int $batchSize): array {
     global $wpdb;
     $validator = new ModelValidator();
 
     $parameters = [
       'lowestOrderId' => $lastProcessedOrderId,
-      'highestOrderId' => $lastProcessedOrderId + self::BATCH_SIZE,
+      'highestOrderId' => $lastProcessedOrderId + $batchSize,
     ];
     $parametersType = [
       'lowestOrderId' => \PDO::PARAM_INT,
