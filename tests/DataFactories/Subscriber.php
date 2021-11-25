@@ -60,6 +60,11 @@ class Subscriber {
     return $this;
   }
 
+  public function withSource(string $source): self {
+    $this->data['source'] = $source;
+    return $this;
+  }
+
   /**
    * @param int $count
    * @return $this
@@ -111,6 +116,9 @@ class Subscriber {
     if (isset($this->data['last_name'])) $subscriber->setLastName($this->data['last_name']);
     if (isset($this->data['first_name'])) $subscriber->setFirstName($this->data['first_name']);
     if (isset($this->data['is_woocommerce_user'])) $subscriber->setIsWoocommerceUser($this->data['is_woocommerce_user']);
+    if (isset($this->data['source'])) {
+      $subscriber->setSource($this->data['source']);
+    }
     $entityManager->persist($subscriber);
 
     foreach ($this->segments as $segment) {
