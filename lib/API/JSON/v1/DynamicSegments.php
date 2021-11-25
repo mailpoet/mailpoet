@@ -150,6 +150,8 @@ class DynamicSegments extends APIEndpoint {
         return WPFunctions::get()->__('Please select a type for the comparison, an amount and a number of days.', 'mailpoet');
       case InvalidFilterException::MISSING_FILTER:
         return WPFunctions::get()->__('Please add at least one condition for filtering.', 'mailpoet');
+      case InvalidFilterException::MISSING_OPERATOR:
+        return WPFunctions::get()->__('Please select a type for the comparison.', 'mailpoet');
       default:
         return WPFunctions::get()->__('An error occurred while saving data.', 'mailpoet');
     }
