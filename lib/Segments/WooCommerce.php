@@ -147,13 +147,12 @@ class WooCommerce {
       $status = SubscriberEntity::STATUS_SUBSCRIBED;
     }
 
-    $processedOrders = $this->insertSubscribersFromOrders(null, $orderId, $status);
-    $insertedEmails = array_keys($processedOrders);
+    $email = $this->insertSubscriberFromOrder($orderId, $status);
 
-    if (empty($insertedEmails[0])) {
+    if (empty($email)) {
       return false;
     }
-    $subscriber = $this->subscribersRepository->findOneBy(['email' => $insertedEmails[0]]);
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email]);
 
     if ($subscriber) {
       $firstName = $wcOrder->get_billing_first_name(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -239,34 +238,48 @@ class WooCommerce {
     ", ['capabilities' => $wpdb->prefix . 'capabilities', 'source' => Source::WOOCOMMERCE_USER]);
   }
 
+  private function insertSubscriberFromOrder(int $orderId, string $status): ?string {
+    global $wpdb;
+    $validator = new ModelValidator();
+
+    $email = $this->connection->executeQuery("
+      SELECT wppm.meta_value AS email
+      FROM `{$wpdb->posts}` wpp
+      JOIN `{$wpdb->postmeta}` wppm ON wpp.ID = wppm.post_id AND wppm.meta_key = '_billing_email' AND wppm.meta_value != ''
+      WHERE wpp.post_type = 'shop_order'
+      AND wpp.ID = :orderId
+    ", ['orderId' => $orderId])->fetchOne();
+
+    if (!$email || !$validator->validateEmail($email)) {
+      return null;
+    }
+
+    $this->insertSubscribers([$email], $status);
+    return $email;
+  }
+
   /**
    * @return array<string, int>
    */
-  private function insertSubscribersFromOrders($lastProcessedOrderId = null, $orderId = null, $status = SubscriberEntity::STATUS_SUBSCRIBED): array {
+  private function insertSubscribersFromOrders(int $lastProcessedOrderId = 0): array {
     global $wpdb;
     $validator = new ModelValidator();
-    $orderId = !is_null($orderId) ? (int)$orderId : null;
 
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $parameters = [];
-    $parametersType = [];
-    if ($orderId) {
-      $parameters['orderId'] = $orderId;
-    }
-    if ($lastProcessedOrderId !== null) {
-      $parameters['lowestOrderId'] = $lastProcessedOrderId;
-      $parameters['highestOrderId'] = $lastProcessedOrderId + self::BATCH_SIZE;
-      $parametersType['lowestOrderId'] = \PDO::PARAM_INT;
-      $parametersType['highestOrderId'] = \PDO::PARAM_INT;
-    }
+    $parameters = [
+      'lowestOrderId' => $lastProcessedOrderId,
+      'highestOrderId' => $lastProcessedOrderId + self::BATCH_SIZE,
+    ];
+    $parametersType = [
+      'lowestOrderId' => \PDO::PARAM_INT,
+      'highestOrderId' => \PDO::PARAM_INT,
+    ];
 
     $result = $this->connection->executeQuery("
       SELECT wpp.id AS order_id, wppm.meta_value AS email
       FROM `{$wpdb->posts}` wpp
       JOIN `{$wpdb->postmeta}` wppm ON wpp.ID = wppm.post_id AND wppm.meta_key = '_billing_email' AND wppm.meta_value != ''
       WHERE wpp.post_type = 'shop_order'
-      " . ($orderId ? ' AND wpp.ID = :orderId' : '') . "
-      " . ($lastProcessedOrderId !== null ? ' AND (wpp.ID > :lowestOrderId AND wpp.ID <= :highestOrderId)' : '') . "
+      AND (wpp.ID > :lowestOrderId AND wpp.ID <= :highestOrderId)
       ORDER BY wpp.id
     ", $parameters, $parametersType)->fetchAllAssociative();
 
@@ -279,22 +292,29 @@ class WooCommerce {
       $processedOrders[(string)$item['email']] = (int)$item['order_id'];
     }
 
-    $subscribersValues = [];
-    $now = (Carbon::createFromTimestamp($this->wp->currentTime('timestamp')))->format('Y-m-d H:i:s');
-    $source = Source::WOOCOMMERCE_USER;
-    foreach ($processedOrders as $email => $orderId) {
-      $subscribersValues[] = "(1, '{$email}', '{$status}', '{$now}', '{$now}', '{$source}')";
-    }
-
-    if (count($subscribersValues) > 0) {
-      $this->connection->executeQuery('
-        INSERT IGNORE INTO ' . $subscribersTable . ' (`is_woocommerce_user`, `email`, `status`, `created_at`, `last_subscribed_at`, `source`) VALUES
-        ' . implode(',', $subscribersValues) . '
-        ON DUPLICATE KEY UPDATE is_woocommerce_user = 1
-      ');
+    if (count($processedOrders)) {
+      $this->insertSubscribers(array_keys($processedOrders));
     }
 
     return $processedOrders;
+  }
+
+  private function insertSubscribers(array $emails, string $status = SubscriberEntity::STATUS_SUBSCRIBED): int {
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $subscribersValues = [];
+    $now = (Carbon::createFromTimestamp($this->wp->currentTime('timestamp')))->format('Y-m-d H:i:s');
+    $source = Source::WOOCOMMERCE_USER;
+    foreach ($emails as $email) {
+      $subscribersValues[] = "(1, '{$email}', '{$status}', '{$now}', '{$now}', '{$source}')";
+    }
+
+    $this->connection->executeQuery('
+      INSERT IGNORE INTO ' . $subscribersTable . ' (`is_woocommerce_user`, `email`, `status`, `created_at`, `last_subscribed_at`, `source`) VALUES
+      ' . implode(',', $subscribersValues) . '
+      ON DUPLICATE KEY UPDATE is_woocommerce_user = 1
+    ');
+
+    return count($emails);
   }
 
   /**
