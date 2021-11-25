@@ -48,7 +48,6 @@ export type Settings = {
     method: 'WordPress' | 'MailPoet' | 'Linux Cron';
   };
   tracking: {
-    enabled: '' | '1';
     level: 'full' | 'basic' | 'partial';
   };
   '3rd_party_libs': {
@@ -111,7 +110,6 @@ export type Settings = {
       message: string;
     };
     accept_cookie_revenue_tracking: {
-      enabled: '1' | '';
       set: '1' | '';
     };
   };

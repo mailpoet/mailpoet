@@ -136,7 +136,7 @@ class AdvancedSettingsCest {
   public function checkInactiveSubscribersAndEmails(\AcceptanceTester $i) {
     $i->wantTo('Check that inactive subscribers has default value');
     $inactiveSubscribersDefault = '[data-automation-id="inactive-subscribers-default"]';
-    $trackingEnabled = '[data-automation-id="tracking-enabled-radio"]';
+    $trackingEnabled = '[data-automation-id="tracking-partial-radio"]';
     $i->login();
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
@@ -146,13 +146,11 @@ class AdvancedSettingsCest {
     $i->seeCheckboxIsChecked($inactiveSubscribersDefault . ' input');
 
     $i->wantTo('See that inactive subscribers and re-engagement emails are disabled when tracking is disabled');
-    $trackingDisabled = '[data-automation-id="tracking-disabled-radio"]';
+    $trackingDisabled = '[data-automation-id="tracking-basic-radio"]';
     $inactiveSubscribersDisabled = '[data-automation-id="inactive-subscribers-disabled"]';
     $inactiveSubscribersEnabled = '[data-automation-id="inactive-subscribers-enabled"]';
-    $reEngagementEmailsDisabledNotice = 're-engagement emails are disabled when tracking is disabled';
     $i->click($trackingDisabled);
     $i->waitForElement($inactiveSubscribersDisabled);
     $i->dontSee($inactiveSubscribersEnabled);
-    $i->see($reEngagementEmailsDisabledNotice);
   }
 }

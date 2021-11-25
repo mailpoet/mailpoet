@@ -30,13 +30,13 @@ class NewslettersListingCest {
     $i->amOnMailpoetPage('Emails');
 
     // Standard newsletters is the default tab
-    $i->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_' . $standardNewsletter->id . '"]');
+    $i->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_' . $standardNewsletter->getId() . '"]');
 
     $i->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $i->waitForText('Welcome email', 5, '[data-automation-id="listing_item_' . $welcomeEmail->id . '"]');
+    $i->waitForText('Welcome email', 5, '[data-automation-id="listing_item_' . $welcomeEmail->getId() . '"]');
 
     $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
-    $i->waitForText('Post notification', 5, '[data-automation-id="listing_item_' . $postNotificationEmail->id . '"]');
+    $i->waitForText('Post notification', 5, '[data-automation-id="listing_item_' . $postNotificationEmail->getId() . '"]');
     $i->seeNoJSErrors();
   }
 
@@ -50,7 +50,7 @@ class NewslettersListingCest {
     // column is hidden when tracking is not enabled
     $i->amOnMailpoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->click('[data-automation-id="tracking-disabled-radio"]');
+    $i->click('[data-automation-id="tracking-basic-radio"]');
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
 
@@ -61,7 +61,7 @@ class NewslettersListingCest {
     // column is visible when tracking is enabled
     $i->amOnMailpoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->click('[data-automation-id="tracking-enabled-radio"]');
+    $i->click('[data-automation-id="tracking-partial-radio"]');
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
 

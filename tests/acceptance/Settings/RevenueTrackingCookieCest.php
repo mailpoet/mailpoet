@@ -30,9 +30,9 @@ class RevenueTrackingCookieCest {
     $i->login();
     // enable the settings
     $i->amOnMailPoetPage('Settings');
-    $i->click('[data-automation-id="woocommerce_settings_tab"]');
-    $i->dontSeeCheckboxIsChecked('[data-automation-id="accept_cookie_revenue_tracking"] input');
-    $i->click('[data-automation-id="accept_cookie_revenue_tracking"]');
+    $i->click('[data-automation-id="settings-advanced-tab"]');
+    $i->dontSeeCheckboxIsChecked('[data-automation-id="tracking-full-radio"] input');
+    $i->click('[data-automation-id="tracking-full-radio"]');
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
 
@@ -69,9 +69,9 @@ class RevenueTrackingCookieCest {
     $i->login();
     // dis the settings
     $i->amOnMailPoetPage('Settings');
-    $i->click('[data-automation-id="woocommerce_settings_tab"]');
-    $i->seeCheckboxIsChecked('[data-automation-id="accept_cookie_revenue_tracking"] input');
-    $i->click('[data-automation-id="accept_cookie_revenue_tracking"]');
+    $i->click('[data-automation-id="settings-advanced-tab"]');
+    $i->seeCheckboxIsChecked('[data-automation-id="tracking-full-radio"] input');
+    $i->click('[data-automation-id="tracking-basic-radio"]');
     $i->click('[data-automation-id="settings-submit-button"]');
     $i->waitForText('Settings saved');
     // send any newsletter with a link
