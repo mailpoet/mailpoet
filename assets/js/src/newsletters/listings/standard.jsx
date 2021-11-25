@@ -17,7 +17,7 @@ import {
 import NewsletterTypes from 'newsletters/types';
 import { GlobalContext } from 'context/index.jsx';
 
-const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
+const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
 const messages = {
   onNoItemsFound: (group, search) => MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),

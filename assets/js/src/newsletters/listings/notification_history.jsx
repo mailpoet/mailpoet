@@ -14,7 +14,7 @@ import {
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
 
-const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
+const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
 const columns = [
   {

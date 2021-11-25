@@ -142,7 +142,7 @@ class Newsletters {
     $data['mailpoet_main_page'] = $this->wp->adminUrl('admin.php?page=' . Menu::MAIN_PAGE_SLUG);
     $data['show_congratulate_after_first_newsletter'] = isset($data['settings']['show_congratulate_after_first_newsletter']) ? $data['settings']['show_congratulate_after_first_newsletter'] : 'false';
 
-    $data['tracking_enabled'] = $this->trackingConfig->isEmailTrackingEnabled();
+    $data['tracking_config'] = $this->trackingConfig->getConfig();
     $data['premium_plugin_active'] = License::getLicense();
     $data['is_woocommerce_active'] = $this->woocommerceHelper->isWooCommerceActive();
     $data['is_mailpoet_update_available'] = array_key_exists(Env::$pluginPath, $this->wp->getPluginUpdates());

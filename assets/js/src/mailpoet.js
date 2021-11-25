@@ -26,6 +26,7 @@ var MailPoet = {
   subscribersCountsCacheCreatedAt: window.mailpoet_subscribers_counts_cache_created_at,
   getShortcodeLinks: () => (window.mailpoet_shortcode_links ? window.mailpoet_shortcode_links : []),
   settings: window.mailpoet_settings,
+  trackingConfig: window.mailpoet_tracking_config || {},
 };
 
 // Expose MailPoet globally

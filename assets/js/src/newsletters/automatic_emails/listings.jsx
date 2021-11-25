@@ -14,7 +14,7 @@ import _ from 'underscore';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 
-const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
+const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
 
 const messages = {

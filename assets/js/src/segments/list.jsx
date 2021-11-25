@@ -10,7 +10,7 @@ import { ListingsEngagementScore } from '../subscribers/listings_engagement_scor
 const isWPUsersSegment = (segment) => segment.type === 'wp_users';
 const isWooCommerceCustomersSegment = (segment) => segment.type === 'woocommerce_users';
 const isSpecialSegment = (segmt) => isWPUsersSegment(segmt) || isWooCommerceCustomersSegment(segmt);
-const mailpoetTrackingEnabled = (!!(window.mailpoet_tracking_enabled));
+const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
 const columns = [
   {
