@@ -188,6 +188,28 @@ class WooCommerceTest extends \MailPoetTest {
     expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_USER);
   }
 
+  public function testItSynchronizesCustomersInBatches() {
+    $user1 = $this->insertGuestCustomer();
+    $user2 = $this->insertGuestCustomer();
+    $user3 = $this->insertGuestCustomer();
+    $orderIds = [
+      $user1['order_id'],
+      $user2['order_id'],
+      $user3['order_id'],
+    ];
+    $lowestOrderId = min($orderIds);
+    $highestOrderId = max($orderIds);
+    $lastOrderId = $this->wooCommerce->synchronizeCustomers($lowestOrderId - 1, $highestOrderId, 1);
+    $subscribersCount = $this->getSubscribersCount();
+    expect($subscribersCount)->equals(1);
+    $lastOrderId = $this->wooCommerce->synchronizeCustomers($lastOrderId, $highestOrderId, 1);
+    $subscribersCount = $this->getSubscribersCount();
+    expect($subscribersCount)->equals(2);
+    $this->wooCommerce->synchronizeCustomers($lastOrderId, $highestOrderId, 1);
+    $subscribersCount = $this->getSubscribersCount();
+    expect($subscribersCount)->equals(3);
+  }
+
   public function testItSynchronizesNewCustomers() {
     $this->insertRegisteredCustomer();
     $this->insertGuestCustomer();

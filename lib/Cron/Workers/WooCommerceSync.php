@@ -11,6 +11,7 @@ class WooCommerceSync extends SimpleWorker {
   const TASK_TYPE = 'woocommerce_sync';
   const SUPPORT_MULTIPLE_INSTANCES = false;
   const AUTOMATIC_SCHEDULING = false;
+  const BATCH_SIZE = 1000;
 
   /** @var WooCommerceSegment */
   private $woocommerceSegment;
@@ -46,7 +47,11 @@ class WooCommerceSync extends SimpleWorker {
 
     do {
       $this->cronHelper->enforceExecutionLimit($timer);
-      $meta['last_processed_order_id'] = $this->woocommerceSegment->synchronizeCustomers($meta['last_processed_order_id'], $highestOrderId);
+      $meta['last_processed_order_id'] = $this->woocommerceSegment->synchronizeCustomers(
+        $meta['last_processed_order_id'],
+        $highestOrderId,
+        self::BATCH_SIZE
+      );
       $task->setMeta($meta);
       $this->scheduledTasksRepository->persist($task);
       $this->scheduledTasksRepository->flush();
