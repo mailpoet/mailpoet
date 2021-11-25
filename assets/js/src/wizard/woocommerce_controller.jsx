@@ -32,12 +32,14 @@ const WooCommerceController = ({ isWizardStep = false }) => {
 
   const submit = (importType, allowed) => {
     setLoading(true);
+    const trackingLevelForDisabledCookies = MailPoet.settings.tracking?.level === 'basic' ? 'basic' : 'partial';
+    const newTrackingLevel = allowed ? 'full' : trackingLevelForDisabledCookies;
     const settings = {
       // importType
       woocommerce_import_screen_displayed: 1,
       'mailpoet_subscribe_old_woocommerce_customers.enabled': importType === 'subscribed' ? 1 : 0,
-      // allowed
-      'woocommerce.accept_cookie_revenue_tracking.enabled': allowed ? 1 : 0,
+      // cookies allowed
+      'tracking.level': newTrackingLevel,
       'woocommerce.accept_cookie_revenue_tracking.set': 1,
     };
     updateSettings(settings).then(scheduleImport).then(finishWizard);
