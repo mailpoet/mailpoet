@@ -61,7 +61,7 @@
       var mailpoet_subscribers_count = <%= subscriber_count %>;
       var mailpoet_newsletters_count = <%= newsletters_count %>;
       var mailpoet_send_transactional_emails = <%= json_encode(settings.send_transactional_emails == '1') %>;
-      var settings = <%= json_encode(settings) %>;
+      var mailpoet_settings = <%= json_encode(settings) %>;
 
       <% if not(premium_plugin_active) %>
         var mailpoet_free_premium_subscribers_limit = <%= free_premium_subscribers_limit %>;

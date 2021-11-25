@@ -25,7 +25,7 @@ var MailPoet = {
   wpWeekStartsOn: window.mailpoet_wp_week_starts_on,
   subscribersCountsCacheCreatedAt: window.mailpoet_subscribers_counts_cache_created_at,
   getShortcodeLinks: () => (window.mailpoet_shortcode_links ? window.mailpoet_shortcode_links : []),
-  settings: window.settings,
+  settings: window.mailpoet_settings,
 };
 
 // Expose MailPoet globally
