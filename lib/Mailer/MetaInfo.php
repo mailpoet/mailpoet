@@ -27,8 +27,8 @@ class MetaInfo {
     );
   }
 
-  public function getConfirmationMetaInfo(Subscriber $subscriber) {
-    return $this->makeMetaInfo('confirmation', $subscriber->status, $subscriber->source);
+  public function getConfirmationMetaInfo(SubscriberEntity $subscriber) {
+    return $this->makeMetaInfo('confirmation', $subscriber->getStatus(), $subscriber->getSource());
   }
 
   public function getNewSubscriberNotificationMetaInfo() {

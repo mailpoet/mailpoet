@@ -6,6 +6,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class MetaInfoTest extends \MailPoetTest {
   /** @var MetaInfo */
@@ -59,11 +60,9 @@ class MetaInfoTest extends \MailPoetTest {
   }
 
   public function testItGetsMetaInfoForConfirmationEmails() {
-    $subscriber = Subscriber::create();
-    $subscriber->hydrate([
-      'status' => 'unconfirmed',
-      'source' => 'form',
-    ]);
+    $subscriberFactory = new SubscriberFactory();
+    $subscriber = $subscriberFactory->withStatus('unconfirmed')->withSource('form')->create();
+
     expect($this->meta->getConfirmationMetaInfo($subscriber))->equals([
       'email_type' => 'confirmation',
       'subscriber_status' => 'unconfirmed',
