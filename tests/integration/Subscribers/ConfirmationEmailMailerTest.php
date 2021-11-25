@@ -15,8 +15,8 @@ use MailPoetVendor\Idiorm\ORM;
 
 class ConfirmationEmailMailerTest extends \MailPoetTest {
   public function testItSendsConfirmationEmail() {
-    $subcriptionUrlFacroryMock = $this->createMock(SubscriptionUrlFactory::class);
-    $subcriptionUrlFacroryMock->method('getConfirmationUrl')->willReturn('http://example.com');
+    $subcriptionUrlFactoryMock = $this->createMock(SubscriptionUrlFactory::class);
+    $subcriptionUrlFactoryMock->method('getConfirmationUrl')->willReturn('http://example.com');
 
     $settings = $this->diContainer->get(SettingsController::class);
     $settings->set(
@@ -53,7 +53,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $subcriptionUrlFacroryMock
+      $subcriptionUrlFactoryMock
     );
 
 
