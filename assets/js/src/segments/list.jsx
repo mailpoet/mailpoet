@@ -190,10 +190,12 @@ const itemActions = [
           type: item.type,
         },
       }).done(() => {
+        let message = MailPoet.I18n.t('listSynchronized').replace('%1$s', item.name);
+        if (item.type === 'woocommerce_users') {
+          message = MailPoet.I18n.t('listSynchronizationWasScheduled').replace('%1$s', item.name);
+        }
         MailPoet.Modal.loading(false);
-        MailPoet.Notice.success(
-          (MailPoet.I18n.t('listSynchronized')).replace('%1$s', item.name)
-        );
+        MailPoet.Notice.success(message);
         refresh();
       }).fail((response) => {
         MailPoet.Modal.loading(false);
