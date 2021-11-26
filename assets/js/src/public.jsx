@@ -291,6 +291,8 @@ jQuery(($) => {
               response.meta !== undefined
               && response.meta.redirect_url !== undefined
             ) {
+              // close form before redirect due to setting cookie
+              closeForm(formDiv);
               // go to page
               window.location.href = response.meta.redirect_url;
             } else {
