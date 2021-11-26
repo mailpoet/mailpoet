@@ -128,6 +128,11 @@ class ManageSegmentsCest {
     $i->waitForNoticeAndClose('1 segment was moved to the trash.');
     $i->waitForElementClickable('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
+
+    // this test is flakey without the second click. Something switches back to "All" for some reason.
+    $i->waitForElementClickable('[data-automation-id="filters_trash"]');
+    $i->click('[data-automation-id="filters_trash"]');
+
     $i->waitForText($segmentEditedTitle);
     $i->seeNoJSErrors();
 
