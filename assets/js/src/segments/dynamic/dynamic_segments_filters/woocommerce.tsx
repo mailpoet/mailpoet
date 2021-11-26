@@ -146,6 +146,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
               { operator: e.target.value },
               filterIndex
             )}
+            automationId="select-operator"
           >
             <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
             <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
