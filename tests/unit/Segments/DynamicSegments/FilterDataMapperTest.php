@@ -200,7 +200,8 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceProduct::ACTION_PRODUCT,
-      'product_id' => '10',
+      'product_ids' => ['10', '11'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'some_mess' => 'mess',
     ]]];
     $filters = $this->mapper->map($data);
@@ -212,7 +213,8 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
     expect($filter->getAction())->equals(WooCommerceProduct::ACTION_PRODUCT);
     expect($filter->getData())->equals([
-      'product_id' => '10',
+      'product_ids' => ['10', '11'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
   }
