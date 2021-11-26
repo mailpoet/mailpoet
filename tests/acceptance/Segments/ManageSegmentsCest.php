@@ -387,10 +387,12 @@ class ManageSegmentsCest {
     $productFactory = new WooCommerceProduct($i);
     $productFactory->withName('Product 1')->create();
     $productFactory->withName('Product 2')->create();
-    $productSelectElement = '[data-automation-id="select-segment-product"]';
+    $productFactory->withName('Product 3')->create();
+    $productSelectElement = '[data-automation-id="select-segment-products"]';
+    $operatorSelectElement = '[data-automation-id="select-operator"]';
     $actionSelectElement = '[data-automation-id="select-segment-action"]';
 
-    $i->wantTo('Create a new WooCommerce purchased product segment');
+    $i->wantTo('Create a new WooCommerce purchased products segment');
     $segmentTitle = 'Segment Woo Product Test';
     $segmentDesc = 'Segment description';
     $i->login();
@@ -398,9 +400,11 @@ class ManageSegmentsCest {
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
-    $i->selectOptionInReactSelect('purchased this product', $actionSelectElement);
+    $i->selectOptionInReactSelect('purchased products', $actionSelectElement);
+    $i->selectOption($operatorSelectElement, 'all of');
     $i->waitForElement($productSelectElement);
     $i->selectOptionInReactSelect('Product 2', $productSelectElement);
+    $i->selectOptionInReactSelect('Product 3', $productSelectElement);
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
@@ -411,15 +415,19 @@ class ManageSegmentsCest {
     $i->waitForElement($productSelectElement);
     $i->seeInField(['name' => 'name'], $segmentTitle);
     $i->seeInField(['name' => 'description'], $segmentDesc);
-    $i->see('purchased this product', $actionSelectElement);
+    $i->see('purchased products', $actionSelectElement);
+    $i->seeOptionIsSelected($operatorSelectElement, 'all of');
     $i->see('Product 2', $productSelectElement);
+    $i->see('Product 3', $productSelectElement);
 
     $i->wantTo('Edit segment and save');
     $editedTitle = 'Segment Woo Product Test Edited';
     $editedDesc = 'Segment description Edited';
     $i->fillField(['name' => 'name'], $editedTitle);
     $i->fillField(['name' => 'description'], $editedDesc);
+    $i->selectOption($operatorSelectElement, 'none of');
     $i->selectOptionInReactSelect('Product 1', $productSelectElement);
+    $i->click('[aria-label="Remove Product 3"]');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
     $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
@@ -430,8 +438,11 @@ class ManageSegmentsCest {
     $i->waitForElement($productSelectElement);
     $i->seeInField(['name' => 'name'], $editedTitle);
     $i->seeInField(['name' => 'description'], $editedDesc);
-    $i->see('purchased this product', $actionSelectElement);
+    $i->see('purchased products', $actionSelectElement);
+    $i->seeOptionIsSelected($operatorSelectElement, 'none of');
     $i->see('Product 1', $productSelectElement);
+    $i->see('Product 2', $productSelectElement);
+    $i->dontSee('Product 3', $productSelectElement);
   }
 
   public function createAndEditWooCommerceNumberOfOrdersSegment(\AcceptanceTester $i) {
