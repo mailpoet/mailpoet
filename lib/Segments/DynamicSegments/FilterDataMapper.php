@@ -82,7 +82,9 @@ class FilterDataMapper {
     if ($data['action'] === SubscriberSegment::TYPE) {
       if (empty($data['segments'])) throw new InvalidFilterException('Missing segments', InvalidFilterException::MISSING_VALUE);
       return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
-        'segments' => $data['segments'],
+        'segments' => array_map(function ($segmentId) {
+          return intval($segmentId);
+        }, $data['segments']),
         'operator' => $data['operator'] ?? DynamicSegmentFilterData::OPERATOR_ANY,
         'connect' => $data['connect'],
       ]);
