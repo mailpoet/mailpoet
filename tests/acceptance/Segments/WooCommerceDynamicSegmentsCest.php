@@ -80,6 +80,8 @@ class WooCommerceDynamicSegmentsCest {
     $i->wantTo('Check if customer who registers is added to WooCommerce dynamic segments');
     $customerEmail = 'customer_1@example.com';
     $i->orderProduct($this->productInCategory, $customerEmail);
+    $guestEmail = 'guest_1@example.com';
+    $i->orderProduct($this->productInCategory, $guestEmail, false);
 
     $i->login();
     $i->wantTo('Check subscriber is in category segment');
@@ -87,7 +89,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText(self::CATEGORY_SEGMENT);
     $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->getId()}']";
-    $i->see('1', $categorySegmentRow . " [data-colname='Number of subscribers']");
+    $i->see('2', $categorySegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::CATEGORY_SEGMENT, 'View Subscribers');
     $i->waitForText($customerEmail);
 
@@ -96,9 +98,10 @@ class WooCommerceDynamicSegmentsCest {
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText(self::PRODUCT_SEGMENT);
     $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
-    $i->see('1', $productSegmentRow . " [data-colname='Number of subscribers']");
+    $i->see('2', $productSegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::PRODUCT_SEGMENT, 'View Subscribers');
     $i->waitForText($customerEmail);
+    $i->waitForText($guestEmail);
   }
 
   public function addCustomerOnlyToCategorySegment(\AcceptanceTester $i) {
@@ -106,6 +109,8 @@ class WooCommerceDynamicSegmentsCest {
     $customerEmail = 'customer_2@example.com';
     $differentProductWithCategory = $this->productFactory->withCategoryIds([$this->productCategoryId])->create();
     $i->orderProduct($differentProductWithCategory, $customerEmail);
+    $guestEmail = 'guest_2@example.com';
+    $i->orderProduct($differentProductWithCategory, $guestEmail, false);
 
     $i->login();
     $i->wantTo('Check subscriber is in category segment');
@@ -113,9 +118,10 @@ class WooCommerceDynamicSegmentsCest {
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText(self::CATEGORY_SEGMENT);
     $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->getId()}']";
-    $i->see('1', $categorySegmentRow . " [data-colname='Number of subscribers']");
+    $i->see('2', $categorySegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::CATEGORY_SEGMENT, 'View Subscribers');
     $i->waitForText($customerEmail);
+    $i->waitForText($guestEmail);
 
     $i->wantTo('Check subscriber is in product segment');
     $i->amOnMailpoetPage('Lists');
@@ -130,6 +136,8 @@ class WooCommerceDynamicSegmentsCest {
     $customer1Email = 'customer_2@example.com';
     $product1 = $this->productFactory->create();
     $i->orderProduct($product1, $customer1Email);
+    $guestEmail = 'guest_3@example.com';
+    $i->orderProduct($product1, $guestEmail);
 
     $i->login();
     $i->wantTo('Check there is one subscriber in the number of orders segments (the segment was configured to match customers that placed one order in the last day)');
@@ -137,9 +145,10 @@ class WooCommerceDynamicSegmentsCest {
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText(self::NUMBER_OF_ORDERS_SEGMENT);
     $numberOfOrdersSegmentRow = "[data-automation-id='listing_item_{$this->numberOfOrdersSegment->getId()}']";
-    $i->see('1', $numberOfOrdersSegmentRow . " [data-colname='Number of subscribers']");
+    $i->see('2', $numberOfOrdersSegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::NUMBER_OF_ORDERS_SEGMENT, 'View Subscribers');
     $i->waitForText($customer1Email);
+    $i->waitForText($guestEmail);
   }
 
   public function checkThatCustomersAreAddedToTotalSpentSegment(\AcceptanceTester $i) {
@@ -147,6 +156,8 @@ class WooCommerceDynamicSegmentsCest {
     $customerEmail = 'customer_2@example.com';
     $product = $this->productFactory->create();
     $i->orderProduct($product, $customerEmail);
+    $guestEmail = 'guest_2@example.com';
+    $i->orderProduct($product, $guestEmail);
 
     $i->login();
     $i->wantTo('Check that there is one subscriber in the total spent segment');
@@ -154,9 +165,10 @@ class WooCommerceDynamicSegmentsCest {
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText(self::TOTAL_SPENT_SEGMENT);
     $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->totalSpentSegment->getId()}']";
-    $i->see('1', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
+    $i->see('2', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::TOTAL_SPENT_SEGMENT, 'View Subscribers');
     $i->waitForText($customerEmail);
+    $i->waitForText($guestEmail);
   }
 
   public function checkThatCustomersAreAddedToCustomerInCountrySegment(\AcceptanceTester $i) {
@@ -164,6 +176,8 @@ class WooCommerceDynamicSegmentsCest {
     $customerEmail = 'customer_france@example.com';
     $product = $this->productFactory->create();
     $i->orderProduct($product, $customerEmail);
+    $guestEmail = 'guest_france@example.com';
+    $i->orderProduct($product, $guestEmail, false);
 
     $i->login();
     $i->wantTo('Check that there is one subscriber in customer country segment');
@@ -171,9 +185,10 @@ class WooCommerceDynamicSegmentsCest {
     $i->click('[data-automation-id="dynamic-segments-tab"]');
     $i->waitForText(self::CUSTOMER_IN_COUNTRY);
     $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->customerCountrySegment->getId()}']";
-    $i->see('1', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
+    $i->see('2', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
     $i->clickItemRowActionByItemName(self::CUSTOMER_IN_COUNTRY, 'View Subscribers');
     $i->waitForText($customerEmail);
+    $i->waitForText($guestEmail);
   }
 
   public function displayMessageWhenPluginIsDeactivated(\AcceptanceTester $i) {
