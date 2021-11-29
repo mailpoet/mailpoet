@@ -210,12 +210,15 @@ class WooCommerceDynamicSegmentsCest {
     $i->see($message, $numberOfOrdersSegmentRow . " [data-colname='Missing plugin message']");
     $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->totalSpentSegment->getId()}']";
     $i->see($message, $totalSpentSegmentRow . " [data-colname='Missing plugin message']");
+    $customerCountrySegmentRow = "[data-automation-id='listing_item_{$this->customerCountrySegment->getId()}']";
+    $i->see($message, $customerCountrySegmentRow . " [data-colname='Missing plugin message']");
 
     $i->wantTo('Check that Edit links are not clickable');
     $i->assertAttributeContains($categorySegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
     $i->assertAttributeContains($productSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
     $i->assertAttributeContains($numberOfOrdersSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
     $i->assertAttributeContains($totalSpentSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
+    $i->assertAttributeContains($customerCountrySegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
     $i->seeNoJSErrors();
   }
 }
