@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import MailPoet from 'mailpoet';
 import Button from 'common/button/button';
+import ReactStringReplace from 'react-string-replace';
 import Notice from '../notices/notice';
 
 type Props = {
@@ -29,9 +30,17 @@ export function SubscribersCacheMessage({ cacheCalculation }: Props): JSX.Elemen
 
   return (
     <div className="mailpoet-subscribers-cache-notice">
-      {MailPoet.I18n.t('subscribersCountWereCalculated')}
-      &nbsp;
-      <abbr title={cacheCalculation}>{`${String(minutes)} ${String(MailPoet.I18n.t('subscribersMinutesAgo'))}`}</abbr>
+
+      {ReactStringReplace(
+        MailPoet.I18n.t('subscribersCountWereCalculatedWithMinutesAgo'),
+        /<abbr>(.*?)<\/abbr>/,
+        (match) => (
+          <abbr title={cacheCalculation}>
+            {match.replace(/(\{\$mins\}|\$mins)/, String(minutes))}
+          </abbr>
+        )
+      )}
+
       <Button
         className="mailpoet-subscribers-cache-notice-button"
         type="button"
