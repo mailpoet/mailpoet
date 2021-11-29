@@ -29,7 +29,7 @@ export const WooCommerceOptions = [
   { value: WooCommerceActionTypes.CUSTOMER_IN_COUNTRY, label: MailPoet.I18n.t('wooCustomerInCountry'), group: SegmentTypes.WooCommerce },
   { value: WooCommerceActionTypes.NUMBER_OF_ORDERS, label: MailPoet.I18n.t('wooNumberOfOrders'), group: SegmentTypes.WooCommerce },
   { value: WooCommerceActionTypes.PURCHASED_CATEGORY, label: MailPoet.I18n.t('wooPurchasedCategory'), group: SegmentTypes.WooCommerce },
-  { value: WooCommerceActionTypes.PURCHASED_PRODUCT, label: MailPoet.I18n.t('wooPurchasedProducts'), group: SegmentTypes.WooCommerce },
+  { value: WooCommerceActionTypes.PURCHASED_PRODUCT, label: MailPoet.I18n.t('wooPurchasedProduct'), group: SegmentTypes.WooCommerce },
   { value: WooCommerceActionTypes.TOTAL_SPENT, label: MailPoet.I18n.t('wooTotalSpent'), group: SegmentTypes.WooCommerce },
 ];
 
