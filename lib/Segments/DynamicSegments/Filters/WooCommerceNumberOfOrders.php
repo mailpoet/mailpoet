@@ -4,6 +4,7 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Util\DBCollationChecker;
 use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -15,10 +16,15 @@ class WooCommerceNumberOfOrders implements Filter {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var DBCollationChecker */
+  private $collationChecker;
+
   public function __construct(
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    DBCollationChecker $collationChecker
   ) {
     $this->entityManager = $entityManager;
+    $this->collationChecker = $collationChecker;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
@@ -29,6 +35,12 @@ class WooCommerceNumberOfOrders implements Filter {
     $count = $filterData->getParam('number_of_orders_count');
     $days = $filterData->getParam('number_of_orders_days');
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
+    $collation = $this->collationChecker->getCollateIfNeeded(
+      $subscribersTable,
+      'email',
+      $wpdb->postmeta,
+      'meta_value'
+    );
 
     $date = Carbon::now()->subDays($days);
 
@@ -36,7 +48,7 @@ class WooCommerceNumberOfOrders implements Filter {
       $subscribersTable,
       $wpdb->postmeta,
       'postmeta',
-      "postmeta.meta_key = '_customer_user' AND $subscribersTable.wp_user_id=postmeta.meta_value"
+      "postmeta.meta_key = '_billing_email' AND $subscribersTable.email = postmeta.meta_value $collation AND $subscribersTable.is_woocommerce_user = 1"
     )->leftJoin(
       'postmeta',
       $wpdb->posts,

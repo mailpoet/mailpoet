@@ -4,6 +4,7 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Util\DBCollationChecker;
 use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -14,10 +15,15 @@ class WooCommerceCountry implements Filter {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var DBCollationChecker */
+  private $collationChecker;
+
   public function __construct(
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    DBCollationChecker $collationChecker
   ) {
     $this->entityManager = $entityManager;
+    $this->collationChecker = $collationChecker;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
@@ -26,11 +32,18 @@ class WooCommerceCountry implements Filter {
     $countryCode = (string)$filterData->getParam('country_code');
     $countryFilterParam = 'countryCode' . $filter->getId() ?? Security::generateRandomString();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $collation = $this->collationChecker->getCollateIfNeeded(
+      $subscribersTable,
+      'email',
+      $wpdb->postmeta,
+      'meta_value'
+    );
+
     return $queryBuilder->innerJoin(
       $subscribersTable,
       $wpdb->postmeta,
       'postmeta',
-      "postmeta.meta_key = '_customer_user' AND $subscribersTable.wp_user_id=postmeta.meta_value"
+      "postmeta.meta_key = '_billing_email' AND $subscribersTable.email = postmeta.meta_value $collation AND $subscribersTable.is_woocommerce_user = 1"
     )->innerJoin(
       'postmeta',
       $wpdb->posts,
