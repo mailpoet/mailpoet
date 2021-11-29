@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
@@ -7,9 +7,10 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoetVendor\Doctrine\DBAL\ForwardCompatibility\DriverStatement;
 
 class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
-
+  /** @var WooCommerceNumberOfOrders */
   private $numberOfOrders;
 
   private $orders;
@@ -18,20 +19,27 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $this->numberOfOrders = $this->diContainer->get(WooCommerceNumberOfOrders::class);
     $this->cleanUp();
 
-    $userId1 = $this->tester->createWordPressUser('customer1@example.com', 'customer');
-    $userId2 = $this->tester->createWordPressUser('customer2@example.com', 'customer');
-    $userId3 = $this->tester->createWordPressUser('customer3@example.com', 'customer');
+    $this->tester->createWordPressUser('customer1@example.com', 'customer');
+    $this->tester->createWordPressUser('customer2@example.com', 'customer');
+    $this->tester->createWordPressUser('customer3@example.com', 'customer');
+    $this->setIsWoocommerceUser([
+      'customer1@example.com',
+      'customer2@example.com',
+      'customer3@example.com',
+    ]);
 
-    $this->orders[] = $this->createOrder(['user_id' => $userId1, 'post_date' => Carbon::now()->subDays(3)->toDateTimeString()]);
-    $this->orders[] = $this->createOrder(['user_id' => $userId2]);
-    $this->orders[] = $this->createOrder(['user_id' => $userId2]);
-    $this->orders[] = $this->createOrder(['user_id' => $userId3]);
+    $this->orders[] = $this->createOrder(['email' => 'customer1@example.com', 'post_date' => Carbon::now()->subDays(3)->toDateTimeString()]);
+    $this->orders[] = $this->createOrder(['email' => 'customer2@example.com']);
+    $this->orders[] = $this->createOrder(['email' => 'customer2@example.com']);
+    $this->orders[] = $this->createOrder(['email' => 'customer3@example.com']);
   }
 
   public function testItGetsCustomersThatPlacedTwoOrdersInTheLastDay() {
     $segmentFilter = $this->getSegmentFilter('=', 2, 1);
     $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $statement = $queryBuilder->execute();
+    assert($statement instanceof DriverStatement);
+    $result = $statement->fetchAll();
     $this->assertSame(1, count($result));
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -41,7 +49,9 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   public function testItGetsCustomersThatPlacedZeroOrdersInTheLastDay() {
     $segmentFilter = $this->getSegmentFilter('=', 0, 1);
     $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $statement = $queryBuilder->execute();
+    assert($statement instanceof DriverStatement);
+    $result = $statement->fetchAll();
     $this->assertSame(1, count($result));
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -51,7 +61,9 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   public function testItGestCustomersThatPlacedAtLeastOneOrderInTheLastWeek() {
     $segmentFilter = $this->getSegmentFilter('>', 0, 7);
     $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $statement = $queryBuilder->execute();
+    assert($statement instanceof DriverStatement);
+    $result = $statement->fetchAll();
     $this->assertSame(3, count($result));
   }
 
@@ -85,7 +97,7 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
       'post_status' => 'wc-completed',
       'post_date' => $data['post_date'] ?? '',
       'meta_input' => [
-        '_customer_user' => $data['user_id'] ?? '',
+        '_billing_email' => $data['email'],
       ],
     ];
 
@@ -108,6 +120,17 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
       foreach ($this->orders as $orderId) {
         wp_delete_post($orderId);
       }
+    }
+  }
+
+  private function setIsWoocommerceUser(array $emails): void {
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    foreach ($emails as $email) {
+      $this->entityManager->getConnection()->update(
+        $subscriberTable,
+        ['is_woocommerce_user' => '1'],
+        ['email' => $email]
+      );
     }
   }
 }

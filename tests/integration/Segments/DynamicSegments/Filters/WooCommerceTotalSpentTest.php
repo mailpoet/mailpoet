@@ -31,18 +31,23 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->cleanUp();
 
-    $userId1 = $this->tester->createWordPressUser('customer1@example.com', 'customer');
-    $userId2 = $this->tester->createWordPressUser('customer2@example.com', 'customer');
-    $userId3 = $this->tester->createWordPressUser('customer3@example.com', 'customer');
+    $this->tester->createWordPressUser('customer1@example.com', 'customer');
+    $this->tester->createWordPressUser('customer2@example.com', 'customer');
+    $this->tester->createWordPressUser('customer3@example.com', 'customer');
+    $this->setIsWoocommerceUser([
+      'customer1@example.com',
+      'customer2@example.com',
+      'customer3@example.com',
+    ]);
 
     $this->orders[] = $this->createOrder([
-      'user_id' => $userId1,
+      'email' => 'customer1@example.com',
       'post_date' => Carbon::now()->subDays(3)->toDateTimeString(),
       'order_total' => 10,
     ]);
-    $this->orders[] = $this->createOrder(['user_id' => $userId1, 'order_total' => 5]);
-    $this->orders[] = $this->createOrder(['user_id' => $userId2, 'order_total' => 15]);
-    $this->orders[] = $this->createOrder(['user_id' => $userId3, 'order_total' => 25]);
+    $this->orders[] = $this->createOrder(['email' => 'customer1@example.com', 'order_total' => 5]);
+    $this->orders[] = $this->createOrder(['email' => 'customer2@example.com', 'order_total' => 15]);
+    $this->orders[] = $this->createOrder(['email' => 'customer3@example.com', 'order_total' => 25]);
   }
 
   public function testItGetsCustomersThatSpentMoreThanTwentyInTheLastDay(): void {
@@ -107,7 +112,7 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
       'post_status' => 'wc-completed',
       'post_date' => $data['post_date'] ?? '',
       'meta_input' => [
-        '_customer_user' => $data['user_id'] ?? '',
+        '_billing_email' => $data['email'] ?? '',
         '_order_total' => $data['order_total'] ?? '1',
       ],
     ]);
@@ -127,6 +132,17 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
 
     foreach ($this->orders ?? [] as $orderId) {
       $this->wp->wpDeletePost($orderId);
+    }
+  }
+
+  private function setIsWoocommerceUser(array $emails): void {
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    foreach ($emails as $email) {
+      $this->entityManager->getConnection()->update(
+        $subscriberTable,
+        ['is_woocommerce_user' => '1'],
+        ['email' => $email]
+      );
     }
   }
 }
