@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { compose, get, filter } from 'lodash/fp';
+import { map, filter } from 'lodash/fp';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';
@@ -55,7 +55,7 @@ export const SubscribedToList: React.FunctionComponent<Props> = ({ filterIndex }
     }
   }, [updateSegmentFilter, segment, filterIndex]);
   const options = staticSegmentsList.map((currentValue) => ({
-    value: currentValue.id.toString(),
+    value: currentValue.id,
     label: currentValue.name,
   }));
 
@@ -82,7 +82,7 @@ export const SubscribedToList: React.FunctionComponent<Props> = ({ filterIndex }
           filter(
             (option) => {
               if (!segment.segments) return undefined;
-              const segmentId = Number(option.value);
+              const segmentId = option.value;
               return segment.segments.indexOf(segmentId) !== -1;
             },
             options
@@ -90,7 +90,7 @@ export const SubscribedToList: React.FunctionComponent<Props> = ({ filterIndex }
         }
         onChange={(options: SelectOption[]): void => {
           updateSegmentFilter(
-            { segments: options.map(compose([Number, get('value')])) },
+            { segments: map('value', options) },
             filterIndex
           );
         }}
