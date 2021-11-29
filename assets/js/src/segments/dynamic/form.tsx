@@ -135,20 +135,22 @@ export const Form: React.FunctionComponent<Props> = ({
                     {MinusIcon}
                   </a>
                 )}
-                <Select
-                  dimension="small"
-                  placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
-                  options={segmentFilters}
-                  value={filterRow.filterValue}
-                  onChange={(newValue: FilterValue): void => {
-                    updateSegmentFilter({
-                      segmentType: newValue.group,
-                      action: newValue.value,
-                    }, index);
-                  }}
-                  automationId="select-segment-action"
-                  isFullWidth
-                />
+                <Grid.CenteredRow>
+                  <Select
+                    dimension="small"
+                    placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
+                    options={segmentFilters}
+                    value={filterRow.filterValue}
+                    onChange={(newValue: FilterValue): void => {
+                      updateSegmentFilter({
+                        segmentType: newValue.group,
+                        action: newValue.value,
+                      }, index);
+                    }}
+                    automationId="select-segment-action"
+                    isFullWidth
+                  />
+                </Grid.CenteredRow>
                 {filterRow.index !== undefined && (
                   <FormFilterFields filterIndex={filterRow.index} />
                 )}

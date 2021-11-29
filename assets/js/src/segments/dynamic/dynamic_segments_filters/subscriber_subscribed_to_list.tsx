@@ -4,6 +4,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';
 import Select from 'common/form/select/select';
+import { Grid } from 'common/grid';
 import ReactSelect from 'common/form/react_select/react_select';
 
 import {
@@ -61,40 +62,45 @@ export const SubscribedToList: React.FunctionComponent<Props> = ({ filterIndex }
 
   return (
     <>
-      <Select
-        key="select"
-        value={segment.operator}
-        onChange={(e) => {
-          updateSegmentFilterFromEvent('operator', filterIndex, e);
-        }}
-      >
-        <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-        <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-        <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
-      </Select>
-      <ReactSelect
-        dimension="small"
-        isFullWidth
-        isMulti
-        placeholder={MailPoet.I18n.t('searchLists')}
-        options={options}
-        value={
-          filter(
-            (option) => {
-              if (!segment.segments) return undefined;
-              const segmentId = option.value;
-              return segment.segments.indexOf(segmentId) !== -1;
-            },
-            options
-          )
-        }
-        onChange={(options: SelectOption[]): void => {
-          updateSegmentFilter(
-            { segments: map('value', options) },
-            filterIndex
-          );
-        }}
-      />
+      <Grid.CenteredRow>
+        <Select
+          key="select"
+          isFullWidth
+          value={segment.operator}
+          onChange={(e) => {
+            updateSegmentFilterFromEvent('operator', filterIndex, e);
+          }}
+        >
+          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+          <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+        </Select>
+      </Grid.CenteredRow>
+      <Grid.CenteredRow>
+        <ReactSelect
+          dimension="small"
+          isFullWidth
+          isMulti
+          placeholder={MailPoet.I18n.t('searchLists')}
+          options={options}
+          value={
+            filter(
+              (option) => {
+                if (!segment.segments) return undefined;
+                const segmentId = option.value;
+                return segment.segments.indexOf(segmentId) !== -1;
+              },
+              options
+            )
+          }
+          onChange={(options: SelectOption[]): void => {
+            updateSegmentFilter(
+              { segments: map('value', options) },
+              filterIndex
+            );
+          }}
+        />
+      </Grid.CenteredRow>
     </>
   );
 };
