@@ -933,7 +933,7 @@ class Populator {
   }
 
   private function updateToUnifiedTrackingSettings() {
-    if (version_compare($this->settings->get('db_version', '3.74.2'), '3.74.1', '>')) {
+    if (version_compare($this->settings->get('db_version', '3.74.3'), '3.74.2', '>')) {
       return;
     }
     $emailTracking = $this->settings->get('tracking.enabled', true);
