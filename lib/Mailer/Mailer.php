@@ -3,6 +3,7 @@
 namespace MailPoet\Mailer;
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Methods\AmazonSES;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
@@ -13,6 +14,7 @@ use MailPoet\Mailer\Methods\MailPoet;
 use MailPoet\Mailer\Methods\PHPMail;
 use MailPoet\Mailer\Methods\SendGrid;
 use MailPoet\Mailer\Methods\SMTP;
+use MailPoet\Models\Subscriber;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -60,6 +62,11 @@ class Mailer {
   }
 
   public function send($newsletter, $subscriber, $extraParams = []) {
+    // This if adds support for code that calls this method to use SubscriberEntity while the Mailer class is still using the old model.
+    // Once we add support for SubscriberEntity in the Mailer class, this if can be removed.
+    if ($subscriber instanceof SubscriberEntity) {
+      $subscriber = Subscriber::findOne($subscriber->getId());
+    }
     if (!$this->mailerInstance) {
       $this->init();
     }

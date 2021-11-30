@@ -5,6 +5,7 @@ namespace MailPoet\Test\Mailer;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class MailerTest extends \MailPoetTest {
   public $newsletter;
@@ -198,6 +199,20 @@ class MailerTest extends \MailPoetTest {
     $mailer = new Mailer();
     $mailer->init($this->mailer, $this->sender, $this->replyTo);
     $result = $mailer->send($this->newsletter, $this->subscriber);
+    expect($result['response'])->true();
+  }
+
+  public function testItCanSendWhenSubscriberEntityIsPassed() {
+    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') {
+      $this->markTestSkipped();
+    }
+
+    $subscriberFactory = new SubscriberFactory();
+    $subscriber = $subscriberFactory->withFirstName('Recipient')->create();
+    $this->sender['address'] = 'staff@mailpoet.com';
+    $mailer = new Mailer();
+    $mailer->init($this->mailer, $this->sender, $this->replyTo);
+    $result = $mailer->send($this->newsletter, $subscriber);
     expect($result['response'])->true();
   }
 
