@@ -559,6 +559,86 @@ workflows:
             - static_analysis_php8
             - qa_js
             - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_9
+          group_arg: -g acceptance_group_9
+          requires:
+            - unit_tests
+            - static_analysis_php7
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_10
+          group_arg: -g acceptance_group_10
+          requires:
+            - unit_tests
+            - static_analysis_php7
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_11
+          group_arg: -g acceptance_group_11
+          requires:
+            - unit_tests
+            - static_analysis_php7
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_12
+          group_arg: -g acceptance_group_12
+          requires:
+            - unit_tests
+            - static_analysis_php7
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_13
+          group_arg: -g acceptance_group_13
+          requires:
+            - unit_tests
+            - static_analysis_php7
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_14
+          group_arg: -g acceptance_group_14
+          requires:
+            - unit_tests
+            - static_analysis_php7
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_15
+          group_arg: -g acceptance_group_15
+          requires:
+            - unit_tests
+            - static_analysis_php7
+            - static_analysis_php8
+            - qa_js
+            - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_16
+          group_arg: -g acceptance_group_16
+          requires:
+            - unit_tests
+            - static_analysis_php7
+            - static_analysis_php8
+            - qa_js
+            - qa_php
       - js_tests:
           <<: *slack-fail-post-step
           requires:
@@ -611,6 +691,46 @@ workflows:
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite_8
           group_arg: -g acceptance_group_8
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          <<: *multisite_acceptance_config
+          name: acceptance_tests_multisite_9
+          group_arg: -g acceptance_group_9
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          <<: *multisite_acceptance_config
+          name: acceptance_tests_multisite_10
+          group_arg: -g acceptance_group_10
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          <<: *multisite_acceptance_config
+          name: acceptance_tests_multisite_11
+          group_arg: -g acceptance_group_11
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          <<: *multisite_acceptance_config
+          name: acceptance_tests_multisite_12
+          group_arg: -g acceptance_group_12
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          <<: *multisite_acceptance_config
+          name: acceptance_tests_multisite_13
+          group_arg: -g acceptance_group_13
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          <<: *multisite_acceptance_config
+          name: acceptance_tests_multisite_14
+          group_arg: -g acceptance_group_14
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          <<: *multisite_acceptance_config
+          name: acceptance_tests_multisite_15
+          group_arg: -g acceptance_group_15
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          <<: *multisite_acceptance_config
+          name: acceptance_tests_multisite_16
+          group_arg: -g acceptance_group_16
       - integration_tests:
           <<: *slack-fail-post-step
           <<: *only_master_and_release
@@ -635,6 +755,14 @@ workflows:
             - acceptance_tests_6
             - acceptance_tests_7
             - acceptance_tests_8
+            - acceptance_tests_9
+            - acceptance_tests_10
+            - acceptance_tests_11
+            - acceptance_tests_12
+            - acceptance_tests_13
+            - acceptance_tests_14
+            - acceptance_tests_15
+            - acceptance_tests_16
             - js_tests
             - integration_tests
 

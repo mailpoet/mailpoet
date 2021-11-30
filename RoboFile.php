@@ -654,7 +654,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testAcceptanceGroupTests() {
-    return $this->taskSplitTestFilesByGroups(8)
+    return $this->taskSplitTestFilesByGroups(16)
       ->projectRoot('.')
       ->testsFrom('tests/acceptance')
       ->groupsTo('tests/acceptance/_groups/group_')
