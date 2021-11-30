@@ -735,8 +735,8 @@ class Migrator {
 
   private function migratePurchasedProductDynamicFilters(): bool {
     global $wpdb;
-    // skip the migration if the DB version is higher than 3.74.2 or is not set (a new install)
-    if (version_compare($this->settings->get('db_version', '3.74.2'), '3.74.1', '>')) {
+    // skip the migration if the DB version is higher than 3.74.3 or is not set (a new install)
+    if (version_compare($this->settings->get('db_version', '3.74.3'), '3.74.2', '>')) {
       return false;
     }
 
