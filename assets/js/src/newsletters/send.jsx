@@ -66,7 +66,7 @@ function validateNewsletter(newsletter) {
     return MailPoet.I18n.t('emailAlreadySent');
   }
 
-  if (newsletter.type === 're_engagement' && !window.mailpoet_tracking_enabled) {
+  if (newsletter.type === 're_engagement' && !MailPoet.trackingConfig.emailTrackingEnabled) {
     return (
       <span style={{ pointerEvents: 'all' }}>
         {ReactStringReplace(
