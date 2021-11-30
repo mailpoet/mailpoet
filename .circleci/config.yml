@@ -317,6 +317,10 @@ jobs:
       - run:
           name: "Set up virtual host"
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
+      - run:
+          name: "Pull acceptance test docker images"
+          # Pull docker images with 3 retries
+          command: i='0';while ! docker-compose -f tests/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
       - when:
           condition: << parameters.woo_core_version >>
           steps:
