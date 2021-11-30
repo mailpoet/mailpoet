@@ -776,4 +776,12 @@ class Functions {
   public function restUrl(string $path = '', string $scheme = 'rest'): string {
     return rest_url($path, $scheme);
   }
+
+  public function wpGetInstalledTranslations(string $type): array {
+    return wp_get_installed_translations($type);
+  }
+
+  public function getAvailableLanguages(?string $dir = null): array {
+    return get_available_languages($dir);
+  }
 }
