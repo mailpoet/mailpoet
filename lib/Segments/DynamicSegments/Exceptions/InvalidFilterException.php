@@ -19,4 +19,5 @@ class InvalidFilterException extends InvalidStateException {
   const INVALID_DATE_VALUE = 12;
   const MISSING_COUNTRY = 13;
   const MISSING_FILTER = 14;
+  const MISSING_OPERATOR = 15;
 };

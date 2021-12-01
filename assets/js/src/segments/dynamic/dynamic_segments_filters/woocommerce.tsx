@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import MailPoet from 'mailpoet';
-import { find } from 'lodash/fp';
+import { find, filter } from 'lodash/fp';
 import ReactSelect from 'common/form/react_select/react_select';
 import Select from 'common/form/select/select';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -8,6 +8,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { Grid } from 'common/grid';
 import Input from 'common/form/input/input';
 import {
+  AnyValueTypes,
   SegmentTypes,
   SelectOption,
   WindowProductCategories,
@@ -43,7 +44,10 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (formItems.action === WooCommerceActionTypes.PURCHASED_CATEGORY && !formItems.category_id) {
     return false;
   }
-  if (formItems.action === WooCommerceActionTypes.PURCHASED_PRODUCT && !formItems.product_id) {
+  const purchasedProductIsInvalid = formItems.product_ids === undefined
+    || formItems.product_ids.length === 0
+    || !formItems.operator;
+  if (formItems.action === WooCommerceActionTypes.PURCHASED_PRODUCT && purchasedProductIsInvalid) {
     return false;
   }
   if (formItems.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY && !formItems.country_code) {
@@ -121,25 +125,59 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
     ) {
       updateSegmentFilter({ total_spent_type: '>' }, filterIndex);
     }
+    if (
+      segment.action === WooCommerceActionTypes.PURCHASED_PRODUCT
+      && segment.operator !== AnyValueTypes.ALL
+      && segment.operator !== AnyValueTypes.ANY
+      && segment.operator !== AnyValueTypes.NONE
+    ) {
+      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+    }
   }, [updateSegmentFilter, segment, filterIndex]);
 
   if (segment.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
     optionFields = (
-      <div>
-        <ReactSelect
-          dimension="small"
-          key="select-segment-product"
-          isFullWidth
-          placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
-          options={productOptions}
-          value={find(['value', segment.product_id], productOptions)}
-          onChange={(option: SelectOption): void => updateSegmentFilter(
-            { product_id: option.value },
-            filterIndex
-          )}
-          automationId="select-segment-product"
-        />
-      </div>
+      <>
+        <Grid.CenteredRow>
+          <Select
+            key="select-operator"
+            value={segment.operator}
+            onChange={(e): void => updateSegmentFilter(
+              { operator: e.target.value },
+              filterIndex
+            )}
+            automationId="select-operator"
+          >
+            <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+            <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+            <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+          </Select>
+        </Grid.CenteredRow>
+        <Grid.CenteredRow>
+          <ReactSelect
+            isMulti
+            dimension="small"
+            key="select-segment-products"
+            isFullWidth
+            placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
+            options={productOptions}
+            value={filter(
+              (productOption) => {
+                if (segment.product_ids === undefined || segment.product_ids.length === 0) {
+                  return undefined;
+                }
+                return segment.product_ids.indexOf(productOption.value) !== -1;
+              },
+              productOptions
+            )}
+            onChange={(options: SelectOption[]): void => updateSegmentFilter(
+              { product_ids: (options || []).map((x: SelectOption) => x.value) },
+              filterIndex
+            )}
+            automationId="select-segment-products"
+          />
+        </Grid.CenteredRow>
+      </>
     );
   } else if (segment.action === WooCommerceActionTypes.PURCHASED_CATEGORY) {
     optionFields = (

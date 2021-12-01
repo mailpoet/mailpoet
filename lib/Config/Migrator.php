@@ -7,6 +7,7 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 
@@ -73,6 +74,7 @@ class Migrator {
     $this->fixScheduledTasksSubscribersTimestampColumns();
     $this->removeDeprecatedStatisticsIndexes();
     $this->migrateSerializedFilterDataToNewColumns();
+    $this->migratePurchasedProductDynamicFilters();
     return $output;
   }
 
@@ -725,6 +727,46 @@ class Migrator {
       $wpdb->update($dynamicSegmentFiltersTable, [
         'action' => $filterData['action'] ?? null,
         'filter_type' => $filterData['segmentType'] ?? null,
+      ], ['id' => $dynamicSegmentFilter['id']]);
+    }
+
+    return true;
+  }
+
+  private function migratePurchasedProductDynamicFilters(): bool {
+    global $wpdb;
+    // skip the migration if the DB version is higher than 3.74.3 or is not set (a new install)
+    if (version_compare($this->settings->get('db_version', '3.74.3'), '3.74.2', '>')) {
+      return false;
+    }
+
+    $dynamicSegmentFiltersTable = "{$this->prefix}dynamic_segment_filters";
+    $filterType = DynamicSegmentFilterData::TYPE_WOOCOMMERCE;
+    $action = WooCommerceProduct::ACTION_PRODUCT;
+    $dynamicSegmentFilters = $wpdb->get_results("
+      SELECT `id`, `filter_data`, `filter_type`, `action`
+      FROM {$dynamicSegmentFiltersTable}
+      WHERE `filter_type` = '{$filterType}'
+        AND `action` = '{$action}'
+    ", ARRAY_A);
+
+    foreach ($dynamicSegmentFilters as $dynamicSegmentFilter) {
+      $filterData = unserialize($dynamicSegmentFilter['filter_data']);
+      if (!isset($filterData['product_ids'])) {
+        $filterData['product_ids'] = [];
+      }
+
+      if (isset($filterData['product_id']) && !in_array($filterData['product_id'], $filterData['product_ids'])) {
+        $filterData['product_ids'][] = $filterData['product_id'];
+        unset($filterData['product_id']);
+      }
+
+      if (!isset($filterData['operator'])) {
+        $filterData['operator'] = DynamicSegmentFilterData::OPERATOR_ANY;
+      }
+
+      $wpdb->update($dynamicSegmentFiltersTable, [
+        'filter_data' => serialize($filterData),
       ], ['id' => $dynamicSegmentFilter['id']]);
     }
 

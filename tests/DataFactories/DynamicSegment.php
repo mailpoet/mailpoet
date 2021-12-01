@@ -3,6 +3,7 @@
 namespace MailPoet\Test\DataFactories;
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\SegmentSaveController;
@@ -29,7 +30,8 @@ class DynamicSegment extends Segment {
   public function withWooCommerceProductFilter($productId) {
     $this->filterData['segmentType'] = 'woocommerce';
     $this->filterData['action'] = 'purchasedProduct';
-    $this->filterData['product_id'] = $productId;
+    $this->filterData['operator'] = DynamicSegmentFilterData::OPERATOR_ANY;
+    $this->filterData['product_ids'] = [$productId];
     return $this;
   }
 
