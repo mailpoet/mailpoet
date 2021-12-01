@@ -7,7 +7,7 @@
  * @package pQuery
  */
 
-namespace pQuery;
+namespace MailPoetVendor\pQuery;
 
 /**
  * Converts a XML document to an array

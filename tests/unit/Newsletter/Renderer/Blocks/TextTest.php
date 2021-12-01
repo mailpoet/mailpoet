@@ -35,7 +35,7 @@ class TextTest extends \MailPoetUnitTest {
     $this->block['text'] = '<p>Text</p>';
     $output = (new Text)->render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
-    assert($table instanceof \pQuery);
+    assert($table instanceof pQuery);
     $paragraphTable = $table[0]->toString();
     $expectedResult = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
         <tr>
@@ -53,7 +53,7 @@ class TextTest extends \MailPoetUnitTest {
     ';
     $output = (new Text)->render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
-    assert($table instanceof \pQuery);
+    assert($table instanceof pQuery);
     $paragraphTable = $table[0]->toString();
     $expectedResult = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
         <tr>
@@ -79,7 +79,7 @@ class TextTest extends \MailPoetUnitTest {
     ';
     $output = (new Text)->render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
-    assert($table instanceof \pQuery);
+    assert($table instanceof pQuery);
     $paragraphTable = $table[0]->toString();
     $expectedResult = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
         <tr>
@@ -89,7 +89,7 @@ class TextTest extends \MailPoetUnitTest {
         </tr></table>';
     expect($paragraphTable)->equals($expectedResult);
     $heading = $this->parser->parseStr($output)->query('h1');
-    assert($heading instanceof \pQuery);
+    assert($heading instanceof pQuery);
     $heading = $heading[0]->toString();
     $expectedResult = '<h1 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Second</h1>';
     expect($heading)->equals($expectedResult);
@@ -99,7 +99,7 @@ class TextTest extends \MailPoetUnitTest {
     $this->block['text'] = '<ul><li>Item 1</li><li>Item 2</li></ul>';
     $output = (new Text)->render($this->block);
     $ul = $this->parser->parseStr($output)->query('ul');
-    assert($ul instanceof \pQuery);
+    assert($ul instanceof pQuery);
     $list = $ul[0]->toString();
     $expectedResult = '<ul class="mailpoet_paragraph" style="padding-top:0;padding-bottom:0;margin-top:10px;text-align:left;margin-bottom:10px;"><li class="mailpoet_paragraph" style="text-align:left;margin-bottom:10px;">Item 1</li><li class="mailpoet_paragraph" style="text-align:left;margin-bottom:10px;">Item 2</li></ul>';
     expect($list)->equals($expectedResult);
@@ -109,7 +109,7 @@ class TextTest extends \MailPoetUnitTest {
     $this->block['text'] = '<blockquote><p>Quote</p></blockquote>';
     $output = (new Text)->render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
-    assert($table instanceof \pQuery);
+    assert($table instanceof pQuery);
     $blockquoteTable = $table[0]->toString();
     $expectedResult = '<table class="mailpoet_blockquote" width="100%" spacing="0" border="0" cellpadding="0">
         <tbody>

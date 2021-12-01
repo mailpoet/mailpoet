@@ -1,6 +1,6 @@
 <?php
 
-namespace pQuery;
+namespace MailPoetVendor\pQuery;
 
 interface IQuery extends \Countable {
    /// Methods ///
