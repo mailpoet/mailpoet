@@ -3,6 +3,8 @@
 namespace MailPoet\Subscribers;
 
 use Html2Text\Html2Text;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Subscriber;
@@ -58,19 +60,19 @@ class ConfirmationEmailMailer {
    * is not sent multiple times within a single request
    * e.g. if sending confirmation emails from hooks
    */
-  public function sendConfirmationEmailOnce(Subscriber $subscriber): bool {
-    if (isset($this->sentEmails[$subscriber->id])) {
+  public function sendConfirmationEmailOnce(SubscriberEntity $subscriber): bool {
+    if (isset($this->sentEmails[$subscriber->getId()])) {
       return true;
     }
     return $this->sendConfirmationEmail($subscriber);
   }
 
-  public function sendConfirmationEmail(Subscriber $subscriber) {
+  public function sendConfirmationEmail(SubscriberEntity $subscriber) {
     $signupConfirmation = $this->settings->get('signup_confirmation');
     if ((bool)$signupConfirmation['enabled'] === false) {
       return false;
     }
-    if (!$this->wp->isUserLoggedIn() && $subscriber->countConfirmations >= self::MAX_CONFIRMATION_EMAILS) {
+    if (!$this->wp->isUserLoggedIn() && $subscriber->getConfirmationsCount() >= self::MAX_CONFIRMATION_EMAILS) {
       return false;
     }
 
@@ -80,9 +82,9 @@ class ConfirmationEmailMailer {
       return false;
     }
 
-    $segments = $subscriber->segments()->findMany();
-    $segmentNames = array_map(function($segment) {
-      return $segment->name;
+    $segments = $subscriber->getSegments()->toArray();
+    $segmentNames = array_map(function(SegmentEntity $segment) {
+      return $segment->getName();
     }, $segments);
 
     $body = nl2br($signupConfirmation['body']);
@@ -95,10 +97,9 @@ class ConfirmationEmailMailer {
     );
 
     // replace activation link
-    $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
     $body = Helpers::replaceLinkTags(
       $body,
-      $this->subscriptionUrlFactory->getConfirmationUrl($subscriberEntity),
+      $this->subscriptionUrlFactory->getConfirmationUrl($subscriber),
       ['target' => '_blank'],
       'activation_link'
     );
@@ -118,25 +119,28 @@ class ConfirmationEmailMailer {
       ],
     ];
 
+    $subscriberModel = Subscriber::findOne($subscriber->getId());
+
     // send email
     try {
       $extraParams = [
-        'meta' => $this->mailerMetaInfo->getConfirmationMetaInfo($subscriberEntity),
+        'meta' => $this->mailerMetaInfo->getConfirmationMetaInfo($subscriber),
       ];
       $result = $this->mailer->send($email, $subscriber, $extraParams);
       if ($result['response'] === false) {
-        $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
+        $subscriberModel->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
         return false;
       };
 
       if (!$this->wp->isUserLoggedIn()) {
-        $subscriber->countConfirmations++;
-        $subscriber->save();
+        $subscriber->setConfirmationsCount($subscriber->getConfirmationsCount() + 1);
+        $this->subscribersRepository->persist($subscriber);
+        $this->subscribersRepository->flush();
       }
-      $this->sentEmails[$subscriber->id] = true;
+      $this->sentEmails[$subscriber->getId()] = true;
       return true;
     } catch (\Exception $e) {
-      $subscriber->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
+      $subscriberModel->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
       return false;
     }
   }

@@ -12,6 +12,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Registration;
 use MailPoet\WooCommerce\Helper;
 use MailPoet\WooCommerce\Subscription;
@@ -420,7 +421,12 @@ class WPTest extends \MailPoetTest {
       ],
       $this
     );
-    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class), $this->diContainer->get(Helper::class));
+    $wpSegment = new WP(
+      $wp,
+      $this->diContainer->get(WelcomeScheduler::class),
+      $this->diContainer->get(Helper::class),
+      $this->diContainer->get(SubscribersRepository::class)
+    );
     $wpSegment->synchronizeUser($id);
     $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
     $deletedAt = Carbon::createFromFormat('Y-m-d H:i:s', $subscriber->deletedAt);
@@ -438,7 +444,12 @@ class WPTest extends \MailPoetTest {
       ],
       $this
     );
-    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class), $this->diContainer->get(Helper::class));
+    $wpSegment = new WP(
+      $wp,
+      $this->diContainer->get(WelcomeScheduler::class),
+      $this->diContainer->get(Helper::class),
+      $this->diContainer->get(SubscribersRepository::class)
+    );
     $_POST[Subscription::CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME] = 1;
     $wpSegment->synchronizeUser($id);
     $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
@@ -463,7 +474,12 @@ class WPTest extends \MailPoetTest {
       ],
       $this
     );
-    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class), $this->diContainer->get(Helper::class));
+    $wpSegment = new WP(
+      $wp,
+      $this->diContainer->get(WelcomeScheduler::class),
+      $this->diContainer->get(Helper::class),
+      $this->diContainer->get(SubscribersRepository::class)
+    );
     $wpSegment->synchronizeUser($id);
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
     expect($wpSubscriber->countConfirmations)->equals(0);
@@ -491,7 +507,12 @@ class WPTest extends \MailPoetTest {
       ],
       $this
     );
-    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class), $this->diContainer->get(Helper::class));
+    $wpSegment = new WP(
+      $wp,
+      $this->diContainer->get(WelcomeScheduler::class),
+      $this->diContainer->get(Helper::class),
+      $this->diContainer->get(SubscribersRepository::class)
+    );
     $wpSegment->synchronizeUser($id);
     $subscriber1 = Subscriber::where("wp_user_id", $id)->findOne();
     expect($subscriber1->status)->equals(SubscriberEntity::STATUS_SUBSCRIBED);
@@ -521,7 +542,12 @@ class WPTest extends \MailPoetTest {
       ],
       $this
     );
-    $wpSegment = new WP($wp, $this->diContainer->get(WelcomeScheduler::class), $wooHelper);
+    $wpSegment = new WP(
+      $wp,
+      $this->diContainer->get(WelcomeScheduler::class),
+      $wooHelper,
+      $this->diContainer->get(SubscribersRepository::class)
+    );
     $wpSegment->synchronizeUser($id);
     $subscriber1 = Subscriber::where("wp_user_id", $id)->findOne();
     expect($subscriber1->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);

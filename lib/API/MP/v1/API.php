@@ -2,6 +2,7 @@
 
 namespace MailPoet\API\MP\v1;
 
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -11,6 +12,7 @@ use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\Source;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
@@ -35,13 +37,17 @@ class API {
   /** @var CustomFields */
   private $customFields;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationMailer,
     ConfirmationEmailMailer $confirmationEmailMailer,
     RequiredCustomFieldValidator $requiredCustomFieldValidator,
     WelcomeScheduler $welcomeScheduler,
     CustomFields $customFields,
-    SettingsController $settings
+    SettingsController $settings,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->newSubscriberNotificationMailer = $newSubscriberNotificationMailer;
     $this->confirmationEmailMailer = $confirmationEmailMailer;
@@ -49,6 +55,7 @@ class API {
     $this->welcomeScheduler = $welcomeScheduler;
     $this->settings = $settings;
     $this->customFields = $customFields;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function getSubscriberFields() {
@@ -324,7 +331,10 @@ class API {
   }
 
   protected function _sendConfirmationEmail(Subscriber $subscriber) {
-    return $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
+    $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
+    if ($subscriberEntity instanceof SubscriberEntity) {
+      return $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriberEntity);
+    }
   }
 
   protected function _scheduleWelcomeNotification(Subscriber $subscriber, array $segments) {
