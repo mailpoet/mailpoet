@@ -7,7 +7,7 @@
  * @package pQuery
  */
 
-namespace pQuery;
+namespace MailPoetVendor\pQuery;
 
 /**
  * Indents text
@@ -216,7 +216,7 @@ class HtmlFormatter {
 				}
 
 				if (trim($text)) {
-					$text = \JSMinPlus::minify($text);
+					$text = JSMinPlus::minify($text);
 					if ($wrap_comment) {
 						$text = "<!--\n".$text."\n//-->";
 					}

@@ -7,8 +7,8 @@
  * @package pQuery
  */
 
-use pQuery\Html5Parser;
-use pQuery\HtmlFormatter;
+use MailPoetVendor\pQuery\Html5Parser;
+use MailPoetVendor\pQuery\HtmlFormatter;
 
 /**
  * Returns HTML DOM from string

@@ -7,7 +7,7 @@
  * @package pQuery
  */
 
-namespace pQuery;
+namespace MailPoetVendor\pQuery;
 
 /**
  * Parses a HTML document
@@ -488,7 +488,7 @@ class HtmlParser extends HtmlParserBase {
 	 * @internal If string, then it will create a new instance as root
 	 * @var DomNode
 	 */
-	var $root = 'pQuery\\DomNode';
+	var $root = 'MailPoetVendor\\pQuery\\DomNode';
 
 	/**
 	 * Current parsing hierarchy

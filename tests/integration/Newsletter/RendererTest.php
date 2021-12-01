@@ -18,6 +18,7 @@ use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\License;
+use MailPoet\Util\pQuery\pQuery;
 use PHPUnit\Framework\MockObject\MockObject;
 use WP_Error;
 
@@ -60,7 +61,7 @@ class RendererTest extends \MailPoetTest {
       $this->license
     );
     $this->columnRenderer = new ColumnRenderer();
-    $this->dOMParser = new \pQuery();
+    $this->dOMParser = new pQuery();
   }
 
   public function testItRendersCompleteNewsletter() {

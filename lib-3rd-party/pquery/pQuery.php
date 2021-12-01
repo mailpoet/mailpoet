@@ -7,12 +7,13 @@
  * @package pQuery
  */
 
-use pQuery\IQuery;
+namespace MailPoetVendor\pQuery;
+
 
 /**
  * A jQuery-like object for php.
  */
-class pQuery implements ArrayAccess, IteratorAggregate, IQuery {
+class pQuery implements \ArrayAccess, \IteratorAggregate, IQuery {
     /// Properties ///
 
     /**
@@ -78,15 +79,15 @@ class pQuery implements ArrayAccess, IteratorAggregate, IQuery {
      *
      * @return int Returns the count of matched elements.
      */
-    public function count() {
+    public function count(): int {
         return count($this->nodes);
     }
 
     /**
      * Format/beautify a DOM.
      *
-     * @param pQuery\DomNode $dom The dom to format.
-     * @param array $options Extra formatting options. See {@link pQuery\HtmlFormatter::$options}.
+     * @param DomNode $dom The dom to format.
+     * @param array $options Extra formatting options. See {@link HtmlFormatter::$options}.
      * @return bool Returns `true` on sucess and `false` on failure.
      */
 //    public static function format($dom, $options = array()) {
@@ -94,8 +95,8 @@ class pQuery implements ArrayAccess, IteratorAggregate, IQuery {
 //        return $formatter->format($dom);
 //    }
 
-    public function getIterator() {
-        return new ArrayIterator($this->nodes);
+    public function getIterator(): \ArrayIterator {
+        return new \ArrayIterator($this->nodes);
     }
 
     public function hasClass($classname) {
@@ -118,15 +119,16 @@ class pQuery implements ArrayAccess, IteratorAggregate, IQuery {
         return $this;
     }
 
-    public function offsetExists($offset) {
+    public function offsetExists($offset): bool {
         return isset($this->nodes[$offset]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset) {
         return isset($this->nodes[$offset]) ? $this->nodes[$offset] : null;
     }
 
-    public function offsetSet($offset, $value) {
+    public function offsetSet($offset, $value): void {
 
         if (is_null($offset) || !isset($this->nodes[$offset])) {
             throw new \BadMethodCallException("You are not allowed to add new nodes to the pQuery object.");
@@ -135,7 +137,7 @@ class pQuery implements ArrayAccess, IteratorAggregate, IQuery {
         }
     }
 
-    public function offsetUnset($offset) {
+    public function offsetUnset($offset): void {
         if (isset($this->nodes[$offset])) {
             $this->nodes[$offset]->remove();
             unset($this->nodes[$offset]);
@@ -147,7 +149,7 @@ class pQuery implements ArrayAccess, IteratorAggregate, IQuery {
      *
      * @param string $path The path to the url.
      * @param resource $context A context suitable to be passed into {@link file_get_contents}
-     * @return pQuery\DomNode Returns the root dom node for the html file.
+     * @return DomNode Returns the root dom node for the html file.
      */
     public static function parseFile($path, $context = null) {
         $html_str = file_get_contents($path, false, $context);
@@ -158,10 +160,10 @@ class pQuery implements ArrayAccess, IteratorAggregate, IQuery {
      * Query a string of html.
      *
      * @param string $html
-     * @return pQuery\DomNode Returns the root dom node for the html string.
+     * @return DomNode Returns the root dom node for the html string.
      */
     public static function parseStr($html) {
-        $parser = new pQuery\Html5Parser($html);
+        $parser = new Html5Parser($html);
         return $parser->root;
     }
 

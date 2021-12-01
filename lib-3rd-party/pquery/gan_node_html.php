@@ -7,7 +7,7 @@
  * @package pQuery
  */
 
-namespace pQuery;
+namespace MailPoetVendor\pQuery;
 
 /**
  * Holds (x)html/xml tag information like tag name, attributes,
@@ -65,14 +65,14 @@ class DomNode implements IQuery {
 	 * @var string
 	 * @see select()
 	 */
-	var $selectClass = 'pQuery\\HtmlSelector';
+	var $selectClass = 'MailPoetVendor\\pQuery\\HtmlSelector';
 	/**
 	 * Name of the parser class
 	 * @var string
 	 * @see setOuterText()
 	 * @see setInnerText()
 	 */
-	var $parserClass = 'pQuery\\Html5Parser';
+	var $parserClass = 'MailPoetVendor\\pQuery\\Html5Parser';
 
 	/**
 	 * Name of the class used for {@link addChild()}
@@ -83,37 +83,37 @@ class DomNode implements IQuery {
 	 * Name of the class used for {@link addText()}
 	 * @var string
 	 */
-	var $childClass_Text = 'pQuery\\TextNode';
+	var $childClass_Text = 'MailPoetVendor\\pQuery\\TextNode';
 	/**
 	 * Name of the class used for {@link addComment()}
 	 * @var string
 	 */
-	var $childClass_Comment = 'pQuery\\CommentNode';
+	var $childClass_Comment = 'MailPoetVendor\\pQuery\\CommentNode';
 	/**
 	 * Name of the class used for {@link addContional()}
 	 * @var string
 	 */
-	var $childClass_Conditional = 'pQuery\\ConditionalTagNode';
+	var $childClass_Conditional = 'MailPoetVendor\\pQuery\\ConditionalTagNode';
 	/**
 	 * Name of the class used for {@link addCDATA()}
 	 * @var string
 	 */
-	var $childClass_CDATA = 'pQuery\\CdataNode';
+	var $childClass_CDATA = 'MailPoetVendor\\pQuery\\CdataNode';
 	/**
 	 * Name of the class used for {@link addDoctype()}
 	 * @var string
 	 */
-	var $childClass_Doctype = 'pQuery\\DoctypeNode';
+	var $childClass_Doctype = 'MailPoetVendor\\pQuery\\DoctypeNode';
 	/**
 	 * Name of the class used for {@link addXML()}
 	 * @var string
 	 */
-	var $childClass_XML = 'pQuery\\XmlNode';
+	var $childClass_XML = 'MailPoetVendor\\pQuery\\XmlNode';
 	/**
 	 * Name of the class used for {@link addASP()}
 	 * @var string
 	 */
-	var $childClass_ASP = 'pQuery\\AspEmbeddedNode';
+	var $childClass_ASP = 'MailPoetVendor\\pQuery\\AspEmbeddedNode';
 
 	/**
 	 * Parent node, null if none
@@ -311,7 +311,7 @@ class DomNode implements IQuery {
 	/**
 	 * Class magic invoke method, performs {@link query()}.
      * @param string $query The css query to run on the nodes.
-	 * @return \pQuery
+	 * @return pQuery
 	 */
 	function __invoke($query = '*') {
 		return $this->query($query);
@@ -1922,7 +1922,7 @@ class DomNode implements IQuery {
      */
     public function query($query = '*') {
         $select = $this->select($query);
-        $result = new \pQuery((array)$select);
+        $result = new pQuery((array)$select);
         return $result;
     }
 
@@ -2352,7 +2352,7 @@ class DomNode implements IQuery {
       return $this;
    }
 
-   public function count() {
+   public function count(): int {
        return 1;
    }
 

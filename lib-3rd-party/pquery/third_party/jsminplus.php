@@ -1,5 +1,7 @@
 <?php
 
+namespace MailPoetVendor\pQuery;
+
 /**
  * JSMinPlus version 1.4
  *

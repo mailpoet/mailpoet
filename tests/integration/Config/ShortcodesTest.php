@@ -12,6 +12,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -51,7 +52,7 @@ class ShortcodesTest extends \MailPoetTest {
     // result contains a link pointing to the "view in browser" router endpoint
     $result = $shortcodes->getArchive($params = false);
     WordPress::releaseFunction('apply_filters');
-    $dom = \pQuery::parseStr($result);
+    $dom = pQuery::parseStr($result);
     $link = $dom->query('a');
     /** @var string $link */
     $link = $link->attr('href');

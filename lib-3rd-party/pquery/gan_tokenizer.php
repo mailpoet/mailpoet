@@ -7,7 +7,7 @@
  * @package pQuery
  */
 
-namespace pQuery;
+namespace MailPoetVendor\pQuery;
 
 /**
  * Converts a document into tokens
