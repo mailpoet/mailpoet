@@ -89,7 +89,7 @@ class TranslationUpdater {
       return [];
     }
     $response = json_decode($this->wpFunctions->wpRemoteRetrieveBody($rawResponse), true);
-    if (array_key_exists('success', $response) && false === $response['success']) {
+    if (!is_array($response) || (array_key_exists('success', $response) && $response['success'] === false)) {
       return [];
     }
 
