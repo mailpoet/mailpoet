@@ -197,8 +197,8 @@ class Subscribers extends APIEndpoint {
 
   public function sendConfirmationEmail($data = []) {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
-    $subscriber = Subscriber::findOne($id);
-    if ($subscriber instanceof Subscriber) {
+    $subscriber = $this->subscribersRepository->findOneById($id);
+    if ($subscriber instanceof SubscriberEntity) {
       if ($this->confirmationEmailMailer->sendConfirmationEmail($subscriber)) {
         return $this->successResponse();
       }

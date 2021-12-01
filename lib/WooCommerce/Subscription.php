@@ -215,10 +215,18 @@ class Subscription {
   }
 
   private function requireSubscriptionConfirmation(Subscriber $subscriber) {
-    $subscriber->status = Subscriber::STATUS_UNCONFIRMED;
+    // we need to save the subscriber here since handleSubscriberOptin() sets the source but doesn't save the model.
+    // when we migrate this class to use Doctrine we can probably remove this call to save() as the call to persist() below should be enough.
     $subscriber->save();
+    $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
 
-    $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
+    if ($subscriberEntity instanceof SubscriberEntity) {
+      $subscriberEntity->setStatus(Subscriber::STATUS_UNCONFIRMED);
+      $this->subscribersRepository->persist($subscriberEntity);
+      $this->subscribersRepository->flush();
+
+      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriberEntity);
+    }
   }
 
   private function updateSubscriberStatus(Subscriber $subscriber) {

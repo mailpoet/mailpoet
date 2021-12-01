@@ -17,6 +17,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\RequiredCustomFieldValidator;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -40,7 +41,8 @@ class APITest extends \MailPoetTest {
       $this->diContainer->get(RequiredCustomFieldValidator::class),
       Stub::makeEmpty(WelcomeScheduler::class),
       $this->diContainer->get(CustomFields::class),
-      SettingsController::getInstance()
+      SettingsController::getInstance(),
+      $this->diContainer->get(SubscribersRepository::class)
     );
   }
 
@@ -228,7 +230,8 @@ class APITest extends \MailPoetTest {
       $this->makeEmpty(RequiredCustomFieldValidator::class),
       Stub::makeEmpty(WelcomeScheduler::class),
       $this->diContainer->get(CustomFields::class),
-      SettingsController::getInstance()
+      SettingsController::getInstance(),
+      $this->diContainer->get(SubscribersRepository::class)
     );
     $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false, 'skip_subscriber_notification' => true]);
 
@@ -241,7 +244,8 @@ class APITest extends \MailPoetTest {
       $this->makeEmpty(RequiredCustomFieldValidator::class),
       Stub::makeEmpty(WelcomeScheduler::class),
       $this->diContainer->get(CustomFields::class),
-      SettingsController::getInstance()
+      SettingsController::getInstance(),
+      $this->diContainer->get(SubscribersRepository::class)
     );
     $API->subscribeToLists($subscriber->email, $segments, ['send_confirmation_email' => false, 'skip_subscriber_notification' => false]);
   }
@@ -468,6 +472,7 @@ class APITest extends \MailPoetTest {
         'confirmationEmailMailer' => Stub::makeEmpty(ConfirmationEmailMailer::class),
         '_scheduleWelcomeNotification' => Expected::once(),
         'settings' => $settings,
+        'subscribersRepository' => Stub::makeEmpty(SubscribersRepository::class),
       ],
       $this
     );
@@ -500,7 +505,8 @@ class APITest extends \MailPoetTest {
       $this->diContainer->get(RequiredCustomFieldValidator::class),
       $welcomeScheduler,
       $this->diContainer->get(CustomFields::class),
-      Stub::makeEmpty(SettingsController::class)
+      Stub::makeEmpty(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class)
     );
     $subscriber = [
       'email' => 'test@example.com',
