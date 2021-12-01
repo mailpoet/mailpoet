@@ -75,7 +75,6 @@ anchors:
     multisite: 1
     requires:
       - unit_tests
-      - static_analysis_php7
       - static_analysis_php8
     <<: *only_master_and_release
 
@@ -485,7 +484,6 @@ workflows:
           group_arg: -g acceptance_group_1
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -495,7 +493,6 @@ workflows:
           group_arg: -g acceptance_group_2
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -505,7 +502,6 @@ workflows:
           group_arg: -g acceptance_group_3
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -515,7 +511,6 @@ workflows:
           group_arg: -g acceptance_group_4
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -525,7 +520,6 @@ workflows:
           group_arg: -g acceptance_group_5
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -535,7 +529,6 @@ workflows:
           group_arg: -g acceptance_group_6
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -545,7 +538,6 @@ workflows:
           group_arg: -g acceptance_group_7
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -555,7 +547,6 @@ workflows:
           group_arg: -g acceptance_group_8
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -565,7 +556,6 @@ workflows:
           group_arg: -g acceptance_group_9
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -575,7 +565,6 @@ workflows:
           group_arg: -g acceptance_group_10
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -585,7 +574,6 @@ workflows:
           group_arg: -g acceptance_group_11
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -595,7 +583,6 @@ workflows:
           group_arg: -g acceptance_group_12
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -605,7 +592,6 @@ workflows:
           group_arg: -g acceptance_group_13
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -615,7 +601,6 @@ workflows:
           group_arg: -g acceptance_group_14
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -625,7 +610,6 @@ workflows:
           group_arg: -g acceptance_group_15
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -635,7 +619,6 @@ workflows:
           group_arg: -g acceptance_group_16
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
@@ -647,7 +630,6 @@ workflows:
           <<: *slack-fail-post-step
           requires:
             - unit_tests
-            - static_analysis_php7
             - static_analysis_php8
             - qa_js
             - qa_php
