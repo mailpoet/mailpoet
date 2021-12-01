@@ -8,8 +8,7 @@
   "require": {
     "php": ">=7.1",
     "mtdowling/cron-expression": "^1.1",
-    "soundasleep/html2text": "dev-master",
-    "tburry/pquery": "^1.1.1"
+    "soundasleep/html2text": "dev-master"
   },
   "require-dev": {
     "ext-gd": "*",
