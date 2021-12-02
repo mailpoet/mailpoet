@@ -106,6 +106,7 @@ class FilterDataMapper {
     if (empty($data['wordpressRole'])) throw new InvalidFilterException('Missing role', InvalidFilterException::MISSING_ROLE);
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, $data['action'], [
       'wordpressRole' => $data['wordpressRole'],
+      'operator' => $data['operator'] ?? DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => $data['connect'],
     ]);
   }

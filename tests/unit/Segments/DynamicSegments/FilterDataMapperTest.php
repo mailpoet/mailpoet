@@ -99,7 +99,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
   public function testItMapsUserRoleFilter() {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-      'wordpressRole' => 'editor',
+      'wordpressRole' => ['editor'],
       'some_mess' => 'mess',
     ]]];
     $filters = $this->mapper->map($data);
@@ -111,7 +111,8 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getAction())->equals('userRole');
     expect($filter->getData())->equals([
-      'wordpressRole' => 'editor',
+      'wordpressRole' => ['editor'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
   }
