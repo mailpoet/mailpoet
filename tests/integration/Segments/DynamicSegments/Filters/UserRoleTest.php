@@ -12,6 +12,7 @@ class UserRoleTest extends \MailPoetTest {
   private $userRole;
 
   public function _before() {
+    global $wpdb;
     $this->userRole = $this->diContainer->get(UserRole::class);
     $this->cleanup();
     // Insert WP users and subscribers are created automatically
@@ -19,6 +20,14 @@ class UserRoleTest extends \MailPoetTest {
     $this->tester->createWordPressUser('user-role-test2@example.com', 'administrator');
     $this->tester->createWordPressUser('user-role-test3@example.com', 'editor');
     $this->tester->createWordPressUser('user-role-test4@example.com', 'author');
+    $userId = $this->tester->createWordPressUser('user-role-test5@example.com', 'subscriber');
+    // some plugins allow setting 2 different roles for a single user, lets emulate that behaviour:
+    $this->connection->executeStatement(
+      'UPDATE ' . $wpdb->usermeta
+      . " SET meta_value='" . serialize(['subscriber' => true, 'merchant' => true]) . "'"
+      . " WHERE meta_key='{$wpdb->prefix}capabilities' AND user_id = " . $userId
+    );
+    $this->tester->createWordPressUser('user-role-test6@example.com', 'subscriber');
   }
 
   public function testItAppliesFilter() {
@@ -51,7 +60,7 @@ class UserRoleTest extends \MailPoetTest {
   }
 
   public function testItAppliesFilterNone() {
-    $segmentFilter = $this->getSegmentFilter(['administrator', 'author'], DynamicSegmentFilterData::OPERATOR_NONE);
+    $segmentFilter = $this->getSegmentFilter(['administrator', 'author', 'subscriber'], DynamicSegmentFilterData::OPERATOR_NONE);
     $queryBuilder = $this->userRole->apply($this->getQueryBuilder(), $segmentFilter);
     $result = $queryBuilder->execute()->fetchAll();
     expect(count($result))->equals(2);
@@ -61,6 +70,16 @@ class UserRoleTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber1->getEmail())->equals('user-role-test1@example.com');
     expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
+  }
+
+  public function testItAppliesFilterAll() {
+    $segmentFilter = $this->getSegmentFilter(['subscriber', 'merchant'], DynamicSegmentFilterData::OPERATOR_ALL);
+    $queryBuilder = $this->userRole->apply($this->getQueryBuilder(), $segmentFilter);
+    $result = $queryBuilder->execute()->fetchAll();
+    expect(count($result))->equals(1);
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    expect($subscriber1->getEmail())->equals('user-role-test5@example.com');
   }
 
   public function testItDoesntGetSubString() {
@@ -112,7 +131,14 @@ class UserRoleTest extends \MailPoetTest {
   }
 
   private function cleanWpUsers() {
-    $emails = ['user-role-test1@example.com', 'user-role-test2@example.com', 'user-role-test3@example.com', 'user-role-test4@example.com'];
+    $emails = [
+      'user-role-test1@example.com',
+      'user-role-test2@example.com',
+      'user-role-test3@example.com',
+      'user-role-test4@example.com',
+      'user-role-test5@example.com',
+      'user-role-test6@example.com',
+    ];
     foreach ($emails as $email) {
       $this->tester->deleteWordPressUser($email);
     }
