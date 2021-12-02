@@ -7,7 +7,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
-use MailPoet\Models\Subscriber;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -59,6 +58,7 @@ class ConfirmationEmailMailer {
    * Use this method if you want to make sure the confirmation email
    * is not sent multiple times within a single request
    * e.g. if sending confirmation emails from hooks
+   * @throws \Exception if unable to send the email.
    */
   public function sendConfirmationEmailOnce(SubscriberEntity $subscriber): bool {
     if (isset($this->sentEmails[$subscriber->getId()])) {
@@ -67,6 +67,9 @@ class ConfirmationEmailMailer {
     return $this->sendConfirmationEmail($subscriber);
   }
 
+  /**
+   * @throws \Exception if unable to send the email.
+   */
   public function sendConfirmationEmail(SubscriberEntity $subscriber) {
     $signupConfirmation = $this->settings->get('signup_confirmation');
     if ((bool)$signupConfirmation['enabled'] === false) {
@@ -119,29 +122,27 @@ class ConfirmationEmailMailer {
       ],
     ];
 
-    $subscriberModel = Subscriber::findOne($subscriber->getId());
-
     // send email
+    $extraParams = [
+      'meta' => $this->mailerMetaInfo->getConfirmationMetaInfo($subscriber),
+    ];
     try {
-      $extraParams = [
-        'meta' => $this->mailerMetaInfo->getConfirmationMetaInfo($subscriber),
-      ];
       $result = $this->mailer->send($email, $subscriber, $extraParams);
-      if ($result['response'] === false) {
-        $subscriberModel->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
-        return false;
-      };
-
-      if (!$this->wp->isUserLoggedIn()) {
-        $subscriber->setConfirmationsCount($subscriber->getConfirmationsCount() + 1);
-        $this->subscribersRepository->persist($subscriber);
-        $this->subscribersRepository->flush();
-      }
-      $this->sentEmails[$subscriber->getId()] = true;
-      return true;
     } catch (\Exception $e) {
-      $subscriberModel->setError(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
-      return false;
+      throw new \Exception(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
     }
+
+    if ($result['response'] === false) {
+      throw new \Exception(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
+    };
+
+    if (!$this->wp->isUserLoggedIn()) {
+      $subscriber->setConfirmationsCount($subscriber->getConfirmationsCount() + 1);
+      $this->subscribersRepository->persist($subscriber);
+      $this->subscribersRepository->flush();
+    }
+    $this->sentEmails[$subscriber->getId()] = true;
+
+    return true;
   }
 }

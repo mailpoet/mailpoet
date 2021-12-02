@@ -199,12 +199,19 @@ class Subscribers extends APIEndpoint {
     $id = (isset($data['id']) ? (int)$data['id'] : false);
     $subscriber = $this->subscribersRepository->findOneById($id);
     if ($subscriber instanceof SubscriberEntity) {
-      if ($this->confirmationEmailMailer->sendConfirmationEmail($subscriber)) {
-        return $this->successResponse();
+      try {
+        if ($this->confirmationEmailMailer->sendConfirmationEmail($subscriber)) {
+          return $this->successResponse();
+        } else {
+          return $this->errorResponse([
+            APIError::UNKNOWN => __('There was a problem with your sending method. Please check if your sending method is properly configured.', 'mailpoet'),
+          ]);
+        }
+      } catch (\Exception $e) {
+        return $this->errorResponse([
+          APIError::UNKNOWN => __('There was a problem with your sending method. Please check if your sending method is properly configured.', 'mailpoet'),
+        ]);
       }
-      return $this->errorResponse([
-        APIError::UNKNOWN => __('There was a problem with your sending method. Please check if your sending method is properly configured.', 'mailpoet'),
-      ]);
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => WPFunctions::get()->__('This subscriber does not exist.', 'mailpoet'),

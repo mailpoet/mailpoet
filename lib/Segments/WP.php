@@ -151,7 +151,11 @@ class WP {
         $confirmationEmailMailer = ContainerWrapper::getInstance()->get(ConfirmationEmailMailer::class);
         $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
         if ($subscriberEntity instanceof SubscriberEntity) {
-          $confirmationEmailMailer->sendConfirmationEmailOnce($subscriberEntity);
+          try {
+            $confirmationEmailMailer->sendConfirmationEmailOnce($subscriberEntity);
+          } catch (\Exception $e) {
+            // ignore errors
+          }
         }
       }
 
