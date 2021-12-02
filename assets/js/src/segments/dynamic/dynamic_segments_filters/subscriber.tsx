@@ -15,7 +15,7 @@ import { SubscribedToList, validateSubscribedToList } from './subscriber_subscri
 
 export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if ((!formItems.action) || (formItems.action === SubscriberActionTypes.WORDPRESS_ROLE)) {
-    return !!formItems.wordpressRole;
+    return Array.isArray(formItems.wordpressRole) && (formItems.wordpressRole.length > 0);
   }
   if (formItems.action === SubscriberActionTypes.MAILPOET_CUSTOM_FIELD) {
     return validateMailPoetCustomField(formItems);
