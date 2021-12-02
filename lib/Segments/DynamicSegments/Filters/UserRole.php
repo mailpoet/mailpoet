@@ -50,7 +50,6 @@ class UserRole implements Filter {
     return $qb;
   }
 
-
   /**
    * @param string[] $roles
    * @param string $operator
@@ -66,7 +65,7 @@ class UserRole implements Filter {
         $sqlParts[] = '(wpusermeta.meta_value LIKE :role' . $key . $parameterSuffix . ')';
       }
     }
-    if ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
+    if (($operator === DynamicSegmentFilterData::OPERATOR_NONE) || ($operator === DynamicSegmentFilterData::OPERATOR_ALL)) {
       return join(' AND ', $sqlParts);
     }
     return join(' OR ', $sqlParts);
