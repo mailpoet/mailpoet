@@ -50,6 +50,19 @@ class UserRoleTest extends \MailPoetTest {
     expect($subscriber3->getEmail())->equals('user-role-test4@example.com');
   }
 
+  public function testItAppliesFilterNone() {
+    $segmentFilter = $this->getSegmentFilter(['administrator', 'author'], DynamicSegmentFilterData::OPERATOR_NONE);
+    $queryBuilder = $this->userRole->apply($this->getQueryBuilder(), $segmentFilter);
+    $result = $queryBuilder->execute()->fetchAll();
+    expect(count($result))->equals(2);
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
+    expect($subscriber1->getEmail())->equals('user-role-test1@example.com');
+    expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
+  }
+
   public function testItDoesntGetSubString() {
     $segmentFilter = $this->getSegmentFilter('edit');
     $queryBuilder = $this->userRole->apply($this->getQueryBuilder(), $segmentFilter);
@@ -69,12 +82,17 @@ class UserRoleTest extends \MailPoetTest {
 
   /**
    * @param string[]|string $role
+   * @param string $operator
    * @return DynamicSegmentFilterEntity
    */
-  private function getSegmentFilter($role): DynamicSegmentFilterEntity {
-    $data = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, [
+  private function getSegmentFilter($role, $operator = null): DynamicSegmentFilterEntity {
+    $filterData = [
       'wordpressRole' => $role,
-    ]);
+    ];
+    if ($operator) {
+      $filterData['operator'] = $operator;
+    }
+    $data = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, $filterData);
     $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
     $this->entityManager->persist($segment);
     $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $data);
