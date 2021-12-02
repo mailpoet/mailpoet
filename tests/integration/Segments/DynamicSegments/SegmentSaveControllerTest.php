@@ -40,6 +40,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     expect($filter->getFilterData()->getAction())->equals(UserRole::TYPE);
     expect($filter->getFilterData()->getData())->equals([
       'wordpressRole' => 'editor',
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
   }
@@ -52,12 +53,12 @@ class SegmentSaveControllerTest extends \MailPoetTest {
       'filters' => [
         [
           'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-          'wordpressRole' => 'administrator',
+          'wordpressRole' => ['administrator'],
           'action' => UserRole::TYPE,
         ],
         [
           'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-          'wordpressRole' => 'editor',
+          'wordpressRole' => ['editor'],
           'action' => UserRole::TYPE,
         ],
       ],
@@ -73,7 +74,8 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     expect($filter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getFilterData()->getAction())->equals(UserRole::TYPE);
     expect($filter->getFilterData()->getData())->equals([
-      'wordpressRole' => 'administrator',
+      'wordpressRole' => ['administrator'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
     ]);
     $filter = $segment->getDynamicFilters()->next();
@@ -81,15 +83,16 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     expect($filter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getFilterData()->getAction())->equals(UserRole::TYPE);
     expect($filter->getFilterData()->getData())->equals([
-      'wordpressRole' => 'editor',
+      'wordpressRole' => ['editor'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
     ]);
   }
 
   public function testItCanRemoveRedundantFilter() {
     $segment = $this->createSegment('Test Segment');
-    $this->addDynamicFilter($segment, 'editor');
-    $this->addDynamicFilter($segment, 'administrator');
+    $this->addDynamicFilter($segment, ['editor']);
+    $this->addDynamicFilter($segment, ['administrator']);
     $segmentData = [
       'id' => $segment->getId(),
       'name' => 'Test Segment Edited',
@@ -97,8 +100,9 @@ class SegmentSaveControllerTest extends \MailPoetTest {
       'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
       'filters' => [[
         'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-        'wordpressRole' => 'subscriber',
+        'wordpressRole' => ['subscriber'],
         'action' => UserRole::TYPE,
+        'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
         'connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
       ]],
     ];
@@ -113,7 +117,8 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     expect($filter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     expect($filter->getFilterData()->getAction())->equals(UserRole::TYPE);
     expect($filter->getFilterData()->getData())->equals([
-      'wordpressRole' => 'subscriber',
+      'wordpressRole' => ['subscriber'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
     ]);
   }
@@ -158,7 +163,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     return $segment;
   }
 
-  private function addDynamicFilter(SegmentEntity $segment, string $wordpressRole): DynamicSegmentFilterEntity {
+  private function addDynamicFilter(SegmentEntity $segment, array $wordpressRole): DynamicSegmentFilterEntity {
     $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, [
       'wordpressRole' => $wordpressRole,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,

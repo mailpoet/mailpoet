@@ -37,7 +37,7 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     expect($response['filters'])->array();
     expect($response['filters'])->count(1);
     expect($response['filters'][0]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
-    expect($response['filters'][0]['wordpressRole'])->equals('editor');
+    expect($response['filters'][0]['wordpressRole'])->equals(['editor']);
     expect($response['filters'][0]['action'])->equals(UserRole::TYPE);
   }
 
@@ -64,11 +64,11 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     expect($response['filters'])->array();
     expect($response['filters'])->count(2);
     expect($response['filters'][0]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
-    expect($response['filters'][0]['wordpressRole'])->equals('editor');
+    expect($response['filters'][0]['wordpressRole'])->equals(['editor']);
     expect($response['filters'][0]['action'])->equals(UserRole::TYPE);
     expect($response['filters'][0]['connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
     expect($response['filters'][1]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
-    expect($response['filters'][1]['wordpressRole'])->equals('administrator');
+    expect($response['filters'][1]['wordpressRole'])->equals(['administrator']);
     expect($response['filters'][1]['action'])->equals(UserRole::TYPE);
     expect($response['filters'][1]['connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
   }

@@ -51,6 +51,10 @@ class DynamicSegmentsResponseBuilder {
       $filter['id'] = $dynamicFilter->getId();
       $filter['segmentType'] = $dynamicFilter->getFilterData()->getFilterType(); // We need to add filterType with key segmentType due to BC
       $filter['action'] = $dynamicFilter->getFilterData()->getAction();
+      if (isset($filter['wordpressRole']) && !is_array($filter['wordpressRole'])) {
+        // new filters are always array, they support multiple values, the old didn't convert old filters to new format
+        $filter['wordpressRole'] = [$filter['wordpressRole']];
+      }
       $filters[] = $filter;
     }
     $data['filters'] = $filters;
