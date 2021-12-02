@@ -95,7 +95,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     expect($this->subscriber->getConfirmationsCount())->equals(1);
   }
 
-  public function testItReturnsFalseWhenConfirmationEmailCannotBeSent() {
+  public function testItThrowsExceptionWhenConfirmationEmailCannotBeSent() {
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' =>
         Stub\Expected::once(function () {
@@ -111,7 +111,27 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $this->diContainer->get(SubscriptionUrlFactory::class)
     );
 
-    $this->assertFalse($sender->sendConfirmationEmail($this->subscriber));
+    $this->expectException(\Exception::class);
+    $this->expectExceptionMessage(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
+    $sender->sendConfirmationEmail($this->subscriber);
+  }
+
+  public function testSendConfirmationEmailThrowsWhenSendReturnsFalse() {
+    $mailer = Stub::makeEmpty(Mailer::class, [
+      'send' => ['response' => false],
+    ], $this);
+
+    $sender = new ConfirmationEmailMailer(
+      $mailer,
+      $this->diContainer->get(WPFunctions::class),
+      $this->diContainer->get(SettingsController::class),
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(SubscriptionUrlFactory::class)
+    );
+
+    $this->expectException(\Exception::class);
+    $this->expectExceptionMessage(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
+    $sender->sendConfirmationEmail($this->subscriber);
   }
 
   public function testItDoesntSendWhenMSSIsActiveAndConfirmationEmailIsNotAuthorized() {

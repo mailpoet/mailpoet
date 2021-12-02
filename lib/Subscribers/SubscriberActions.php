@@ -103,7 +103,12 @@ class SubscriberActions {
     // link subscriber to segments
     $segments = $this->segmentsRepository->findBy(['id' => $segmentIds]);
     $this->subscriberSegmentRepository->subscribeToSegments($subscriber, $segments);
-    $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
+
+    try {
+      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
+    } catch (\Exception $e) {
+      // ignore errors
+    }
 
     $subscriberModel = Subscriber::findOne($subscriber->getId());
 

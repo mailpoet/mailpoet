@@ -576,9 +576,8 @@ class APITest extends \MailPoetTest {
     $confirmationMailer = $this->createMock(ConfirmationEmailMailer::class);
     $confirmationMailer->expects($this->once())
       ->method('sendConfirmationEmailOnce')
-      ->willReturnCallback(function (Subscriber $subscriber) {
-        $subscriber->setError('Big Error');
-        return false;
+      ->willReturnCallback(function () {
+        throw new \Exception('Big Error');
       });
 
     $API = Stub::copy($this->getApi(), [

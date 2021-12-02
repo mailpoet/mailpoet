@@ -148,11 +148,13 @@ class API {
 
     // send confirmation email
     if ($sendConfirmationEmail) {
-      $result = $this->_sendConfirmationEmail($subscriber);
-      if (!$result && $subscriber->getErrors()) {
+      try {
+        $this->_sendConfirmationEmail($subscriber);
+      } catch (\Exception $e) {
         throw new APIException(
-          __(sprintf('Subscriber added to lists, but confirmation email failed to send: %s', strtolower(implode(', ', $subscriber->getErrors()))), 'mailpoet'),
-        APIException::CONFIRMATION_FAILED_TO_SEND);
+          __(sprintf('Subscriber added to lists, but confirmation email failed to send: %s', strtolower($e->getMessage())), 'mailpoet'),
+          APIException::CONFIRMATION_FAILED_TO_SEND
+        );
       }
     }
 

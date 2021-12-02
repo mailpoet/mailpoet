@@ -225,7 +225,11 @@ class Subscription {
       $this->subscribersRepository->persist($subscriberEntity);
       $this->subscribersRepository->flush();
 
-      $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriberEntity);
+      try {
+        $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriberEntity);
+      } catch (\Exception $e) {
+        // ignore errors
+      }
     }
   }
 
