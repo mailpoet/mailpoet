@@ -129,4 +129,16 @@ class DateTest extends \MailPoetUnitTest {
     $selectedYear = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 2);
     expect($selectedYear->textContent)->equals('2009');
   }
+
+  public function testItShouldRenderErrorContainerWithFormId() {
+    $this->baseMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
+    $this->baseMock->expects($this->any())->method('getInputValidation')->willReturn(' validation="1" ');
+
+    $html = $this->date->render($this->block, [], 44);
+
+    $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_1_44']");
+    expect($errorContainer)->notEmpty();
+    expect($errorContainer->nodeName)->equals('span');
+  }
 }

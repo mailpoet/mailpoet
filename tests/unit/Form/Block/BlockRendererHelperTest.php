@@ -108,6 +108,28 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     expect($validation)->equals('data-parsley-0="custom"');
   }
 
+  public function testItShouldRenderInputValidationsWithFormId(): void {
+    $block = $this->block;
+    $block['type'] = 'radio';
+    $validation = $this->rendererHelper->getInputValidation($block, [], 1);
+    expect($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1_1" data-parsley-required-message="Please select at least one option."');
+
+    $block = $this->block;
+    $block['type'] = 'checkbox';
+    $validation = $this->rendererHelper->getInputValidation($block, [], 2);
+    expect($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1_2" data-parsley-required-message="Please select at least one option."');
+
+    $block = $this->block;
+    $block['type'] = 'date';
+    $validation = $this->rendererHelper->getInputValidation($block, [], 3);
+    expect($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1_3"');
+
+    $block = $this->block;
+    $block['id'] = 'segments';
+    $validation = $this->rendererHelper->getInputValidation($block, [], 4);
+    expect($validation)->equals('data-parsley-required="true" data-parsley-group="segments" data-parsley-errors-container=".mailpoet_error_segments_4" data-parsley-required-message="Please select a list."');
+  }
+
   public function testItShouldObfuscateFieldNameIfNeeded() {
     $block = $this->block;
     $fieldName = $this->rendererHelper->getFieldName($block);

@@ -63,7 +63,7 @@ class SegmentTest extends \MailPoetUnitTest {
     $this->htmlParser = new HtmlParser();
   }
 
-  public function testItShouldRenderSegmets() {
+  public function testItShouldRenderSegments() {
     $this->rendererHelperMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
     $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
     $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Segments');
@@ -86,6 +86,22 @@ class SegmentTest extends \MailPoetUnitTest {
     expect($this->htmlParser->getAttribute($checkbox1Input, 'name')->value)->equals('data[Segments][]');
     expect($this->htmlParser->getAttribute($checkbox2Input, 'name')->value)->equals('data[Segments][]');
     expect($this->htmlParser->getAttribute($checkbox1Input, 'checked')->value)->equals('checked');
+  }
+
+  public function testItShouldRenderErrorContainerWithFormId(): void {
+    $this->rendererHelperMock->expects($this->once())->method('renderLabel')->willReturn('<label></label>');
+    $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
+    $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Segments');
+    $this->segmentsRepositoryMock->expects($this->once())->method('findBy')->willReturn([
+      $this->createSegmentMock(1, 'List 1'),
+      $this->createSegmentMock(2, 'List 2'),
+    ]);
+
+    $html = $this->segment->render($this->block, [], 1);
+
+    $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_segment_1']");
+    expect($errorContainer)->notEmpty();
+    expect($errorContainer->nodeName)->equals('span');
   }
 
   /**
