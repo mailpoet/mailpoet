@@ -13,11 +13,12 @@ class UserRoleTest extends \MailPoetTest {
 
   public function _before() {
     $this->userRole = $this->diContainer->get(UserRole::class);
-    $this->cleanWpUsers();
+    $this->cleanup();
     // Insert WP users and subscribers are created automatically
     $this->tester->createWordPressUser('user-role-test1@example.com', 'editor');
     $this->tester->createWordPressUser('user-role-test2@example.com', 'administrator');
     $this->tester->createWordPressUser('user-role-test3@example.com', 'editor');
+    $this->tester->createWordPressUser('user-role-test4@example.com', 'author');
   }
 
   public function testItAppliesFilter() {
@@ -62,6 +63,11 @@ class UserRoleTest extends \MailPoetTest {
   }
 
   public function _after() {
+    parent::_after();
+    $this->cleanup();
+  }
+
+  private function cleanup() {
     $this->cleanWpUsers();
     $this->truncateEntity(SubscriberEntity::class);
   }
