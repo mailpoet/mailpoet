@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a736768274d32a1dbad34e9a59f8565d",
+    "content-hash": "2a5eed36bfee494261687548663ed745",
     "packages": [
         {
             "name": "mtdowling/cron-expression",
@@ -4882,51 +4882,6 @@
                 "source": "https://github.com/reactphp/promise/tree/v2.8.0"
             },
             "time": "2020-05-12T15:16:56+00:00"
-        },
-        {
-            "name": "redcomponent/teststatistics",
-            "version": "v2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/redCOMPONENT-COM/teststatistics.git",
-                "reference": "a7fd0b21b85e87a911951f9f0f65cf16857a0245"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/redCOMPONENT-COM/teststatistics/zipball/a7fd0b21b85e87a911951f9f0f65cf16857a0245",
-                "reference": "a7fd0b21b85e87a911951f9f0f65cf16857a0245",
-                "shasum": ""
-            },
-            "require-dev": {
-                "codeception/codeception": "@dev"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Codeception\\Extension\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL2"
-            ],
-            "authors": [
-                {
-                    "name": "Javier Gómez",
-                    "email": "javier@redcomponent.com",
-                    "homepage": "https://github.com/redCOMPONENT-COM/teststatistics"
-                }
-            ],
-            "description": "Codeception Extension to measure the performance of your tests",
-            "homepage": "https://github.com/redCOMPONENT-COM/teststatistics",
-            "keywords": [
-                "TDD",
-                "acceptance testing",
-                "functional testing",
-                "performance",
-                "unit testing"
-            ],
-            "time": "2016-04-27T10:28:11+00:00"
         },
         {
             "name": "rmccue/requests",
