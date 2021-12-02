@@ -27,9 +27,9 @@ class UserRoleTest extends \MailPoetTest {
     $result = $queryBuilder->execute()->fetchAll();
     expect(count($result))->equals(2);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber1->getEmail())->equals('user-role-test1@example.com');
     expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
   }
@@ -40,11 +40,11 @@ class UserRoleTest extends \MailPoetTest {
     $result = $queryBuilder->execute()->fetchAll();
     expect(count($result))->equals(3);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    assert($subscriber2 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     $subscriber3 = $this->entityManager->find(SubscriberEntity::class, $result[2]['id']);
-    assert($subscriber3 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
     expect($subscriber1->getEmail())->equals('user-role-test1@example.com');
     expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
     expect($subscriber3->getEmail())->equals('user-role-test4@example.com');
