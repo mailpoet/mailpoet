@@ -33,14 +33,14 @@ class Date {
     $this->wp = $wp;
   }
 
-  public function render(array $block, array $formSettings): string {
+  public function render(array $block, array $formSettings, ?int $formId = null): string {
     $html = '';
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
-    $html .= $this->renderDateSelect($block, $formSettings);
+    $html .= $this->renderDateSelect($formId, $block, $formSettings);
     return $this->wrapper->render($block, $html);
   }
 
-  private function renderDateSelect(array $block = [], $formSettings = []): string {
+  private function renderDateSelect(?int $formId, array $block = [], $formSettings = []): string {
     $html = '';
 
     $fieldName = 'data[' . $this->rendererHelper->getFieldName($block) . ']';
@@ -65,7 +65,7 @@ class Date {
         $html .= ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a day', 'mailpoet'),
-        ]);
+        ], $formId);
         $html .= 'name="' . $fieldName . '[day]" placeholder="' . __('Day', 'mailpoet') . '">';
         $html .= $this->getDays($block);
         $html .= '</select>';
@@ -74,7 +74,7 @@ class Date {
         $html .= ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a month', 'mailpoet'),
-        ]);
+        ], $formId);
         $html .= 'name="' . $fieldName . '[month]" placeholder="' . __('Month', 'mailpoet') . '">';
         $html .= $this->getMonths($block);
         $html .= '</select>';
@@ -83,14 +83,14 @@ class Date {
         $html .= ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
           'required-message' => __('Please select a year', 'mailpoet'),
-        ]);
+        ], $formId);
         $html .= 'name="' . $fieldName . '[year]" placeholder="' . __('Year', 'mailpoet') . '">';
         $html .= $this->getYears($block);
         $html .= '</select>';
       }
     }
 
-    $html .= '<span class="mailpoet_error_' . $this->wp->escAttr($block['id']) . '"></span>';
+    $html .= '<span class="mailpoet_error_' . $this->wp->escAttr($block['id']) . ($formId ? '_' . $formId : '') . '"></span>';
 
     return $html;
   }

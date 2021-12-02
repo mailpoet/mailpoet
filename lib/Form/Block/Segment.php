@@ -32,11 +32,11 @@ class Segment {
     $this->segmentsRepository = $segmentsRepository;
   }
 
-  public function render(array $block, array $formSettings): string {
+  public function render(array $block, array $formSettings, ?int $formId = null): string {
     $html = '';
 
     $fieldName = 'data[' . $this->rendererHelper->getFieldName($block) . ']';
-    $fieldValidation = $this->rendererHelper->getInputValidation($block);
+    $fieldValidation = $this->rendererHelper->getInputValidation($block, [], $formId);
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
@@ -67,7 +67,7 @@ class Segment {
       $html .= '</label>';
     }
 
-    $html .= '<span class="mailpoet_error_' . $block['id'] . '"></span>';
+    $html .= '<span class="mailpoet_error_' . $block['id'] . ($formId ? '_' . $formId : '') . '"></span>';
 
     return $this->wrapper->render($block, $html);
   }

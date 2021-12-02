@@ -44,7 +44,7 @@ class Renderer {
 
   public function renderHTML(FormEntity $form = null): string {
     if (($form instanceof FormEntity) && !empty($form->getBody()) && is_array($form->getSettings())) {
-      return $this->renderBlocks($form->getBody(), $form->getSettings() ?? []);
+      return $this->renderBlocks($form->getBody(), $form->getSettings() ?? [], $form->getId());
     }
     return '';
   }
@@ -57,7 +57,13 @@ class Renderer {
     }
   }
 
-  public function renderBlocks(array $blocks = [], array $formSettings = [], bool $honeypotEnabled = true, bool $captchaEnabled = true): string {
+  public function renderBlocks(
+    array $blocks = [],
+    array $formSettings = [],
+    ?int $formId = null,
+    bool $honeypotEnabled = true,
+    bool $captchaEnabled = true
+  ): string {
     // add honeypot for spambots
     $html = ($honeypotEnabled) ? $this->renderHoneypot() : '';
     foreach ($blocks as $key => $block) {
@@ -69,9 +75,9 @@ class Renderer {
       }
       if (in_array($block['type'], [FormEntity::COLUMN_BLOCK_TYPE, FormEntity::COLUMNS_BLOCK_TYPE])) {
         $blocks = $block['body'] ?? [];
-        $html .= $this->blocksRenderer->renderContainerBlock($block, $this->renderBlocks($blocks, $formSettings, false)) . PHP_EOL;
+        $html .= $this->blocksRenderer->renderContainerBlock($block, $this->renderBlocks($blocks, $formSettings, $formId, false)) . PHP_EOL;
       } else {
-        $html .= $this->blocksRenderer->renderBlock($block, $formSettings) . PHP_EOL;
+        $html .= $this->blocksRenderer->renderBlock($block, $formSettings, $formId) . PHP_EOL;
       }
     }
     return $html;

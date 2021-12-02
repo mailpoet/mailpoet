@@ -26,7 +26,7 @@ class BlockRendererHelper {
     $this->wp = $wp;
   }
 
-  public function getInputValidation(array $block, array $extraRules = []): string {
+  public function getInputValidation(array $block, array $extraRules = [], ?int $formId = null): string {
     $rules = [];
     $blockId = $this->wp->escAttr($block['id']);
 
@@ -51,7 +51,7 @@ class BlockRendererHelper {
       $rules['required'] = true;
       $rules['mincheck'] = 1;
       $rules['group'] = $blockId;
-      $rules['errors-container'] = '.mailpoet_error_' . $blockId;
+      $rules['errors-container'] = '.mailpoet_error_' . $blockId . ($formId ? '_' . $formId : '');
       $rules['required-message'] = __('Please select a list.', 'mailpoet');
     }
 
@@ -71,13 +71,13 @@ class BlockRendererHelper {
 
     if (in_array($block['type'], ['radio', 'checkbox'])) {
       $rules['group'] = 'custom_field_' . $blockId;
-      $rules['errors-container'] = '.mailpoet_error_' . $blockId;
+      $rules['errors-container'] = '.mailpoet_error_' . $blockId . ($formId ? '_' . $formId : '');
       $rules['required-message'] = __('Please select at least one option.', 'mailpoet');
     }
 
     if ($block['type'] === 'date') {
       $rules['group'] = 'custom_field_' . $blockId;
-      $rules['errors-container'] = '.mailpoet_error_' . $blockId;
+      $rules['errors-container'] = '.mailpoet_error_' . $blockId . ($formId ? '_' . $formId : '');
     }
 
     $validation = [];
