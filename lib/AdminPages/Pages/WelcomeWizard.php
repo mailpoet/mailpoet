@@ -58,6 +58,7 @@ class WelcomeWizard {
       'current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
       'subscriber_count' => $this->subscribersFeature->getSubscribersCount(),
       'has_mss_key_specified' => Bridge::isMSSKeySpecified(),
+      'settings' => $this->settings->getAll(),
     ];
     $data['mailpoet_feature_flags'] = $this->featuresController->getAllFlags();
     $this->pageRenderer->displayPage('welcome_wizard.html', $data);
