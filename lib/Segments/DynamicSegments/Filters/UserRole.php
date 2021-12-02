@@ -60,7 +60,14 @@ class UserRole implements Filter {
   private function createCondition(array $roles, string $operator, $parameterSuffix): string {
     $sqlParts = [];
     foreach ($roles as $key => $role) {
-      $sqlParts[] = '(wpusermeta.meta_value LIKE :role' . $key . $parameterSuffix . ')';
+      if ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
+        $sqlParts[] = '(wpusermeta.meta_value NOT LIKE :role' . $key . $parameterSuffix . ')';
+      } else {
+        $sqlParts[] = '(wpusermeta.meta_value LIKE :role' . $key . $parameterSuffix . ')';
+      }
+    }
+    if ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
+      return join(' AND ', $sqlParts);
     }
     return join(' OR ', $sqlParts);
   }
