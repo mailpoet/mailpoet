@@ -62,7 +62,7 @@ export interface FormItem {
 }
 
 export interface WordpressRoleFormItem extends FormItem {
-  wordpressRole?: string;
+  wordpressRole?: string[];
   operator?: string;
   value?: string;
   custom_field_id?: string;

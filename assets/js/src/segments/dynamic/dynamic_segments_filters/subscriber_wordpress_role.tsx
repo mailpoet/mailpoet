@@ -1,9 +1,10 @@
 import React from 'react';
-import { find } from 'lodash/fp';
+import { filter, map } from 'lodash/fp';
 import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import Select from 'common/form/react_select/react_select';
+import ReactSelect from 'common/form/react_select/react_select';
+import { Grid } from 'common/grid';
 
 import {
   WordpressRoleFormItem,
@@ -33,25 +34,32 @@ export const WordpressRoleFields: React.FunctionComponent<Props> = ({ filterInde
   }));
 
   return (
-    <div>
-      <Select
-        isFullWidth
-        placeholder={MailPoet.I18n.t('selectUserRolePlaceholder')}
-        options={options}
-        value={
-          find(
-            (option) => {
-              if (!segment.wordpressRole) return undefined;
-              return segment.wordpressRole.toLowerCase() === option.value.toLowerCase();
-            },
-            options
-          )
-        }
-        onChange={(option: SelectOption): void => {
-          updateSegmentFilter({ wordpressRole: option.value }, filterIndex);
-        }}
-        automationId="segment-wordpress-role"
-      />
-    </div>
+    <>
+      <Grid.CenteredRow>
+        <ReactSelect
+          dimension="small"
+          isFullWidth
+          isMulti
+          automationId="segment-wordpress-role"
+          placeholder={MailPoet.I18n.t('selectUserRolePlaceholder')}
+          options={options}
+          value={
+            filter(
+              (option) => {
+                if (!segment.wordpressRole) return undefined;
+                return segment.wordpressRole.indexOf(option.value) !== -1;
+              },
+              options
+            )
+          }
+          onChange={(options: SelectOption[]): void => {
+            updateSegmentFilter(
+              { wordpressRole: map('value', options) },
+              filterIndex
+            );
+          }}
+        />
+      </Grid.CenteredRow>
+    </>
   );
 };
