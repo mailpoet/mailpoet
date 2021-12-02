@@ -619,6 +619,7 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->see('WordPress user role', "{$filterRowOne} {$actionSelectElement}");
+    $i->waitForText('Admin', 10, "{$filterRowOne} {$roleSelectElement}");
     $i->see('Admin', "{$filterRowOne} {$roleSelectElement}");
     $i->see('WordPress user role', "{$filterRowTwo} {$actionSelectElement}");
     $i->see('Editor', "{$filterRowTwo} {$roleSelectElement}");

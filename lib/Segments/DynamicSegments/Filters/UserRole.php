@@ -39,7 +39,7 @@ class UserRole implements Filter {
     }
 
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $parameterSuffix = (string)$filter->getId() ?? Security::generateRandomString();
+    $parameterSuffix = ((string)$filter->getId()) . Security::generateRandomString();
     $condition = $this->createCondition($role, $operator, $parameterSuffix);
     $qb = $queryBuilder->join($subscribersTable, $wpdb->users, 'wpusers', "$subscribersTable.wp_user_id = wpusers.id")
       ->join('wpusers', $wpdb->usermeta, 'wpusermeta', 'wpusers.id = wpusermeta.user_id')
