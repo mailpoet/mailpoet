@@ -106,7 +106,7 @@ class ManageSubscriptionFormRenderer {
       'email' => $subscriber->email,
       'token' => $this->linkTokens->getToken($subscriberEntity),
       'editEmailInfo' => __('Need to change your email address? Unsubscribe here, then simply sign up again.', 'mailpoet'),
-      'formHtml' => $this->formRenderer->renderBlocks($form, [], $honeypot = false, $captcha = false),
+      'formHtml' => $this->formRenderer->renderBlocks($form, [], null, $honeypot = false, $captcha = false),
       'formState' => $formState,
     ];
 

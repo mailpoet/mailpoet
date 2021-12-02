@@ -97,7 +97,7 @@ class RendererTest extends \MailPoetUnitTest {
       ->method('get')
       ->with('captcha.type')
       ->willReturn(Captcha::TYPE_DISABLED);
-    $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'), [], false);
+    $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'), [], null, false);
     $hpLabel = $this->htmlParser->findByXpath($html, "//label[@class='mailpoet_hp_email_label']");
     expect($hpLabel->length)->equals(0);
     $recaptcha = $this->htmlParser->findByXpath($html, "//div[@class='mailpoet_recaptcha']");

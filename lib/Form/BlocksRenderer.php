@@ -99,7 +99,7 @@ class BlocksRenderer {
     $this->paragraph = $paragraph;
   }
 
-  public function renderBlock(array $block, array $formSettings): string {
+  public function renderBlock(array $block, array $formSettings, ?int $formId): string {
     $html = '';
     switch ($block['type']) {
       case FormEntity::HTML_BLOCK_TYPE:
@@ -123,19 +123,19 @@ class BlocksRenderer {
         break;
 
       case FormEntity::CHECKBOX_BLOCK_TYPE:
-        $html .= $this->checkbox->render($block, $formSettings);
+        $html .= $this->checkbox->render($block, $formSettings, $formId);
         break;
 
       case FormEntity::RADIO_BLOCK_TYPE:
-        $html .= $this->radio->render($block, $formSettings);
+        $html .= $this->radio->render($block, $formSettings, $formId);
         break;
 
       case FormEntity::SEGMENT_SELECTION_BLOCK_TYPE:
-        $html .= $this->segment->render($block, $formSettings);
+        $html .= $this->segment->render($block, $formSettings, $formId);
         break;
 
       case FormEntity::DATE_BLOCK_TYPE:
-        $html .= $this->date->render($block, $formSettings);
+        $html .= $this->date->render($block, $formSettings, $formId);
         break;
 
       case FormEntity::SELECT_BLOCK_TYPE:
