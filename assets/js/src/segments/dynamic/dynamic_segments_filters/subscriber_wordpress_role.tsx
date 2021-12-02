@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { filter, map } from 'lodash/fp';
 import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import ReactSelect from 'common/form/react_select/react_select';
+import Select from 'common/form/select/select';
 import { Grid } from 'common/grid';
 
 import {
   WordpressRoleFormItem,
   SelectOption,
   WindowEditableRoles,
+  AnyValueTypes,
+  SubscriberActionTypes,
 } from '../types';
 
 type Props = {
@@ -22,7 +25,18 @@ export const WordpressRoleFields: React.FunctionComponent<Props> = ({ filterInde
     [filterIndex]
   );
 
-  const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
+
+  useEffect(() => {
+    if (
+      (segment.action === SubscriberActionTypes.WORDPRESS_ROLE)
+      && (segment.operator !== AnyValueTypes.ANY)
+      && (segment.operator !== AnyValueTypes.ALL)
+      && (segment.operator !== AnyValueTypes.NONE)
+    ) {
+      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+    }
+  }, [updateSegmentFilter, segment, filterIndex]);
 
   const wordpressRoles: WindowEditableRoles = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getWordpressRoles(),
@@ -35,6 +49,20 @@ export const WordpressRoleFields: React.FunctionComponent<Props> = ({ filterInde
 
   return (
     <>
+      <Grid.CenteredRow>
+        <Select
+          key="select"
+          isFullWidth
+          value={segment.operator}
+          onChange={(e) => {
+            updateSegmentFilterFromEvent('operator', filterIndex, e);
+          }}
+        >
+          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+          <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+        </Select>
+      </Grid.CenteredRow>
       <Grid.CenteredRow>
         <ReactSelect
           dimension="small"
