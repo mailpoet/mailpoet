@@ -34,6 +34,22 @@ class UserRoleTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
   }
 
+  public function testItAppliesFilterAny() {
+    $segmentFilter = $this->getSegmentFilter(['editor', 'author']);
+    $queryBuilder = $this->userRole->apply($this->getQueryBuilder(), $segmentFilter);
+    $result = $queryBuilder->execute()->fetchAll();
+    expect(count($result))->equals(3);
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    assert($subscriber1 instanceof SubscriberEntity);
+    $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
+    assert($subscriber2 instanceof SubscriberEntity);
+    $subscriber3 = $this->entityManager->find(SubscriberEntity::class, $result[2]['id']);
+    assert($subscriber3 instanceof SubscriberEntity);
+    expect($subscriber1->getEmail())->equals('user-role-test1@example.com');
+    expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
+    expect($subscriber3->getEmail())->equals('user-role-test4@example.com');
+  }
+
   public function testItDoesntGetSubString() {
     $segmentFilter = $this->getSegmentFilter('edit');
     $queryBuilder = $this->userRole->apply($this->getQueryBuilder(), $segmentFilter);
@@ -46,11 +62,16 @@ class UserRoleTest extends \MailPoetTest {
     return $this->entityManager
       ->getConnection()
       ->createQueryBuilder()
+      ->orderBy('email')
       ->select("$subscribersTable.id")
       ->from($subscribersTable);
   }
 
-  private function getSegmentFilter(string $role): DynamicSegmentFilterEntity {
+  /**
+   * @param string[]|string $role
+   * @return DynamicSegmentFilterEntity
+   */
+  private function getSegmentFilter($role): DynamicSegmentFilterEntity {
     $data = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, [
       'wordpressRole' => $role,
     ]);
@@ -73,7 +94,7 @@ class UserRoleTest extends \MailPoetTest {
   }
 
   private function cleanWpUsers() {
-    $emails = ['user-role-test1@example.com', 'user-role-test2@example.com', 'user-role-test3@example.com'];
+    $emails = ['user-role-test1@example.com', 'user-role-test2@example.com', 'user-role-test3@example.com', 'user-role-test4@example.com'];
     foreach ($emails as $email) {
       $this->tester->deleteWordPressUser($email);
     }

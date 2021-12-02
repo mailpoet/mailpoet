@@ -39,11 +39,29 @@ class UserRole implements Filter {
     }
 
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
-    return $queryBuilder->join($subscribersTable, $wpdb->users, 'wpusers', "$subscribersTable.wp_user_id = wpusers.id")
+    $parameterSuffix = (string)$filter->getId() ?? Security::generateRandomString();
+    $condition = $this->createCondition($role, $operator, $parameterSuffix);
+    $qb = $queryBuilder->join($subscribersTable, $wpdb->users, 'wpusers', "$subscribersTable.wp_user_id = wpusers.id")
       ->join('wpusers', $wpdb->usermeta, 'wpusermeta', 'wpusers.id = wpusermeta.user_id')
-      ->andWhere("wpusermeta.meta_key = '{$wpdb->prefix}capabilities' AND wpusermeta.meta_value LIKE :role" . $parameterSuffix)
-      ->setParameter(':role' . $parameterSuffix, '%"' . $role[0] . '"%');
+      ->andWhere("wpusermeta.meta_key = '{$wpdb->prefix}capabilities' AND (" . $condition . ')');
+    foreach ($role as $key => $userRole) {
+      $qb->setParameter(':role' . $key . $parameterSuffix, '%"' . $userRole . '"%');
+    }
+    return $qb;
   }
 
+
+  /**
+   * @param string[] $roles
+   * @param string $operator
+   * @param string $parameterSuffix
+   * @return string
+   */
+  private function createCondition(array $roles, string $operator, $parameterSuffix): string {
+    $sqlParts = [];
+    foreach ($roles as $key => $role) {
+      $sqlParts[] = '(wpusermeta.meta_value LIKE :role' . $key . $parameterSuffix . ')';
+    }
+    return join(' OR ', $sqlParts);
+  }
 }
