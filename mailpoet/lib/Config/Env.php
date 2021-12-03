@@ -56,7 +56,7 @@ class Env {
     self::$tempPath = $wpUploadDir['basedir'] . '/' . self::$pluginName;
     self::$cachePath = WPFunctions::get()->applyFilters('mailpoet_template_cache_path', self::$tempPath . '/cache');
     self::$tempUrl = $wpUploadDir['baseurl'] . '/' . self::$pluginName;
-    self::$languagesPath = self::$path . '/lang';
+    self::$languagesPath = self::$path . '/../../languages/plugins/';
     self::$libPath = self::$path . '/lib';
     self::$pluginPrefix = WPFunctions::get()->applyFilters('mailpoet_db_prefix', 'mailpoet_');
     self::initDbParameters($dbHost, $dbUser, $dbPassword, $dbName);
