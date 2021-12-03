@@ -13,10 +13,7 @@
     </properties>
   </rule>
   <rule ref="PSR2.Files.EndFileNewline"/>
-  <rule ref="Generic.Files.InlineHTML">
-    <exclude-pattern>lib/Form/Widget.php</exclude-pattern>
-    <exclude-pattern>lib/PostEditorBlocks/SubscriptionFormBlock.php</exclude-pattern>
-  </rule>
+  <rule ref="Generic.Files.InlineHTML"/>
 
   <!-- Namespaces -->
   <rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
