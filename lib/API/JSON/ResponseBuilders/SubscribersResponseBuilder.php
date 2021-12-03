@@ -69,12 +69,12 @@ class SubscribersResponseBuilder {
     ];
   }
 
-  public function build(SubscriberEntity $subscriberEntity, bool $isMPAPI = false): array {
+  public function build(SubscriberEntity $subscriberEntity): array {
     $data = [
       'id' => (string)$subscriberEntity->getId(),
       'wp_user_id' => $subscriberEntity->getWpUserId(),
       'is_woocommerce_user' => $subscriberEntity->getIsWoocommerceUser(),
-      'subscriptions' => $this->buildSubscriptions($subscriberEntity, $isMPAPI),
+      'subscriptions' => $this->buildSubscriptions($subscriberEntity),
       'unsubscribes' => $this->buildUnsubscribes($subscriberEntity),
       'status' => $subscriberEntity->getStatus(),
       'last_name' => $subscriberEntity->getLastName(),
@@ -97,27 +97,20 @@ class SubscribersResponseBuilder {
     return $this->buildCustomFields($subscriberEntity, $data);
   }
 
-  private function buildSubscriptions(SubscriberEntity $subscriberEntity, bool $isMPAPI = false): array {
+  private function buildSubscriptions(SubscriberEntity $subscriberEntity): array {
     $result = [];
     $subscriptions = $this->subscriberSegmentRepository->findBy(['subscriber' => $subscriberEntity]);
     foreach ($subscriptions as $subscription) {
       $segment = $subscription->getSegment();
       if ($segment instanceof SegmentEntity) {
-        $extraData = [];
-        if ( $isMPAPI ) {
-          $extraData = [
-            'id' => $subscription->getId(),
-            'subscriber_id' => (string)$subscriberEntity->getId(),
-            'created_at' => $subscription->getCreatedAt()->format(self::DATE_FORMAT),
-          ];
-        }
-        $result[] = array_merge(
-          $extraData,
-          [
+        $result[] = [
+          'id' => $subscription->getId(),
+          'subscriber_id' => (string)$subscriberEntity->getId(),
+          'created_at' => $subscription->getCreatedAt()->format(self::DATE_FORMAT),
           'segment_id' => (string)$segment->getId(),
           'status' => $subscription->getStatus(),
           'updated_at' => $subscription->getUpdatedAt()->format(self::DATE_FORMAT),
-          ]);
+        ];
       }
     }
     return $result;
