@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="MailPoet">
-  <config name="installed_paths" value="tasks/code_sniffer/vendor/squizlabs/php_codesniffer,tasks/code_sniffer/vendor/phpcompatibility/php-compatibility,tasks/code_sniffer/vendor/slevomat/coding-standard"/>
+  <config name="installed_paths" value="../../squizlabs/php_codesniffer,../../phpcompatibility/php-compatibility,../../slevomat/coding-standard"/>
   <description>MailPoet specific rule set</description>
   <exclude-pattern>*/phpstan/woocommerce.php</exclude-pattern>
   <config name="testVersion" value="7.2-"/>
