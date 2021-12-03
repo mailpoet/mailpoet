@@ -155,6 +155,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     'wp_registered_widgets',
     'wp_registered_widget_controls',
     'wp_registered_widget_updates',
+    '_wp_registered_theme_features',
     'pagenow',
     'post_type',
     'allowedposttags',
