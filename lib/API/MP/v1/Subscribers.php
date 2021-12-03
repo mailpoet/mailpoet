@@ -161,7 +161,7 @@ class Subscribers {
     }
 
     $this->subscribersRepository->refresh($subscriber);
-    return $this->subscribersResponseBuilder->build($subscriber, true );
+    return $this->subscribersResponseBuilder->build($subscriber);
   }
 
   /**
