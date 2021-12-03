@@ -116,13 +116,6 @@ class RoboFile extends \Robo\Tasks {
       )->run();
   }
 
-  public function translationsPack() {
-    return $this->collectionBuilder()
-      ->addCode([$this, 'translationsInit'])
-      ->taskExec('./tasks/pack_translations.sh')
-      ->run();
-  }
-
   public function translationsPush() {
     return $this->collectionBuilder()
       ->addCode([$this, 'translationsInit'])
