@@ -111,18 +111,6 @@ class RoboFile extends \Robo\Tasks {
       )->run();
   }
 
-  public function translationsPack() {
-    $tokenEnvName = 'WP_TRANSIFEX_API_TOKEN';
-    $token = getenv($tokenEnvName);
-    if (!$token) {
-      throw new \Exception("Please provide '$tokenEnvName' environment variable");
-    }
-    return $this->collectionBuilder()
-      ->taskExec('./tasks/pack_translations.sh')
-      ->env('TX_TOKEN', $token)
-      ->run();
-  }
-
   public function translationsPush() {
     $tokenEnvName = 'WP_TRANSIFEX_API_TOKEN';
     $token = getenv($tokenEnvName);
