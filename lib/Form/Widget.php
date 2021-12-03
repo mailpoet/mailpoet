@@ -12,6 +12,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 
+// phpcs:disable Generic.Files.InlineHTML
 class Widget extends \WP_Widget {
   private $renderer;
   private $wp;
