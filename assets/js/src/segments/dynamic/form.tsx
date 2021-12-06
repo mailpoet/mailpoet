@@ -9,7 +9,6 @@ import Input from 'common/form/input/input';
 import Select from 'common/form/react_select/react_select';
 import Textarea from 'common/form/textarea/textarea';
 import { Grid } from 'common/grid';
-import { FilterSeparator } from './filter_separator';
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';
 import { isFormValid } from './validator';
@@ -33,6 +32,9 @@ interface Props {
 }
 
 const FiltersBefore = Hooks.applyFilters('mailpoet_dynamic_segments_form_filters_before', (): React.FunctionComponent => null);
+const FilterAfter = Hooks.applyFilters('mailpoet_dynamic_filters_filter_after', (): JSX.Element => (
+  <div className="mailpoet-gap" />
+));
 
 export const Form: React.FunctionComponent<Props> = ({
   segmentId,
@@ -157,7 +159,7 @@ export const Form: React.FunctionComponent<Props> = ({
                   <FormFilterFields filterIndex={filterRow.index} />
                 )}
               </Grid.ThreeColumns>
-              <FilterSeparator index={index} />
+              <FilterAfter index={index} />
             </React.Fragment>
           ))}
           <Button
