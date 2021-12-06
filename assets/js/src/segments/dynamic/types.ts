@@ -72,7 +72,7 @@ export interface WordpressRoleFormItem extends FormItem {
 }
 
 export interface WooCommerceFormItem extends FormItem {
-  category_id?: string;
+  category_ids?: string[];
   product_ids?: string[];
   operator?: string;
   number_of_orders_type?: string;

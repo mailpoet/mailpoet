@@ -18,7 +18,10 @@ class SegmentDependencyValidatorTest extends \MailPoetTest {
     $dynamicSegment = $this->createSegment(
       DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       WooCommerceCategory::ACTION_CATEGORY,
-      ['category_id' => 1]
+      [
+        'category_ids' => ['1'],
+        'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      ]
     );
     // Plugin is not active
     $validator = $this->createValidator(false);
