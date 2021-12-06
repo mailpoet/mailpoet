@@ -158,7 +158,8 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceCategory::ACTION_CATEGORY,
-      'category_id' => '1',
+      'category_ids' => ['1', '3'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'some_mess' => 'mess',
     ]]];
     $filters = $this->mapper->map($data);
@@ -170,7 +171,8 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
     expect($filter->getAction())->equals(WooCommerceCategory::ACTION_CATEGORY);
     expect($filter->getData())->equals([
-      'category_id' => '1',
+      'category_ids' => ['1', '3'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
   }
@@ -181,7 +183,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->expectExceptionCode(InvalidFilterException::MISSING_ACTION);
     $this->mapper->map(['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
-      'category_id' => '10',
+      'category_ids' => ['10'],
     ]]]);
   }
 
@@ -193,6 +195,18 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceCategory::ACTION_CATEGORY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]]]);
+  }
+
+  public function testItChecksWooCommerceCategoryOperator() {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing operator');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_OPERATOR);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceCategory::ACTION_CATEGORY,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+      'category_ids' => ['10'],
     ]]]);
   }
 

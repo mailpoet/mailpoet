@@ -38,7 +38,8 @@ class DynamicSegment extends Segment {
   public function withWooCommerceCategoryFilter($categoryId) {
     $this->filterData['segmentType'] = 'woocommerce';
     $this->filterData['action'] = 'purchasedCategory';
-    $this->filterData['category_id'] = $categoryId;
+    $this->filterData['operator'] = DynamicSegmentFilterData::OPERATOR_ANY;
+    $this->filterData['category_ids'] = [$categoryId];
     return $this;
   }
 

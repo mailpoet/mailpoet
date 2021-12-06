@@ -33,6 +33,9 @@ export const WooCommerceOptions = [
   { value: WooCommerceActionTypes.TOTAL_SPENT, label: MailPoet.I18n.t('wooTotalSpent'), group: SegmentTypes.WooCommerce },
 ];
 
+const actionTypesWithDefaultTypeAny: Array<string> = [
+  WooCommerceActionTypes.PURCHASED_PRODUCT, WooCommerceActionTypes.PURCHASED_CATEGORY];
+
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (!(
     Object
@@ -41,7 +44,11 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   ) {
     return false;
   }
-  if (formItems.action === WooCommerceActionTypes.PURCHASED_CATEGORY && !formItems.category_id) {
+  const purchasedCategoryIsInvalid = formItems.category_ids === undefined
+    || formItems.category_ids.length === 0
+    || !formItems.operator;
+  if (formItems.action === WooCommerceActionTypes.PURCHASED_CATEGORY
+    && purchasedCategoryIsInvalid) {
     return false;
   }
   const purchasedProductIsInvalid = formItems.product_ids === undefined
@@ -126,7 +133,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
       updateSegmentFilter({ total_spent_type: '>' }, filterIndex);
     }
     if (
-      segment.action === WooCommerceActionTypes.PURCHASED_PRODUCT
+      actionTypesWithDefaultTypeAny.includes(segment.action)
       && segment.operator !== AnyValueTypes.ALL
       && segment.operator !== AnyValueTypes.ANY
       && segment.operator !== AnyValueTypes.NONE
@@ -163,6 +170,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
             options={productOptions}
             value={filter(
               (productOption) => {
+                // backward compatibility
                 if (segment.product_ids === undefined || segment.product_ids.length === 0) {
                   return undefined;
                 }
@@ -181,21 +189,47 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
     );
   } else if (segment.action === WooCommerceActionTypes.PURCHASED_CATEGORY) {
     optionFields = (
-      <div>
-        <ReactSelect
-          dimension="small"
-          key="select-segment-category"
-          isFullWidth
-          placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
-          options={categoryOptions}
-          value={find(['value', segment.category_id], categoryOptions)}
-          onChange={(option: SelectOption): void => updateSegmentFilter(
-            { category_id: option.value },
-            filterIndex
-          )}
-          automationId="select-segment-category"
-        />
-      </div>
+      <>
+        <Grid.CenteredRow>
+          <Select
+            key="select-operator"
+            value={segment.operator}
+            onChange={(e): void => updateSegmentFilter(
+              { operator: e.target.value },
+              filterIndex
+            )}
+            automationId="select-operator"
+          >
+            <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+            <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+            <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+          </Select>
+        </Grid.CenteredRow>
+        <Grid.CenteredRow>
+          <ReactSelect
+            isMulti
+            dimension="small"
+            key="select-segment-category"
+            isFullWidth
+            placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
+            options={categoryOptions}
+            value={filter(
+              (categoryOption) => {
+                if (segment.category_ids === undefined || segment.category_ids.length === 0) {
+                  return undefined;
+                }
+                return segment.category_ids.indexOf(categoryOption.value) !== -1;
+              },
+              categoryOptions
+            )}
+            onChange={(options: SelectOption[]): void => updateSegmentFilter(
+              { category_ids: (options || []).map((x: SelectOption) => x.value) },
+              filterIndex
+            )}
+            automationId="select-segment-category"
+          />
+        </Grid.CenteredRow>
+      </>
     );
   } else if (segment.action === WooCommerceActionTypes.NUMBER_OF_ORDERS) {
     optionFields = (

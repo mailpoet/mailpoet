@@ -168,8 +168,10 @@ class FilterDataMapper {
     $filterType = DynamicSegmentFilterData::TYPE_WOOCOMMERCE;
     $action = $data['action'];
     if ($data['action'] === WooCommerceCategory::ACTION_CATEGORY) {
-      if (!isset($data['category_id'])) throw new InvalidFilterException('Missing category', InvalidFilterException::MISSING_CATEGORY_ID);
-      $filterData['category_id'] = $data['category_id'];
+      if (!isset($data['category_ids'])) throw new InvalidFilterException('Missing category', InvalidFilterException::MISSING_CATEGORY_ID);
+      if (!isset($data['operator'])) throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
+      $filterData['operator'] = $data['operator'];
+      $filterData['category_ids'] = $data['category_ids'];
     } elseif ($data['action'] === WooCommerceProduct::ACTION_PRODUCT) {
       if (!isset($data['product_ids'])) throw new InvalidFilterException('Missing product', InvalidFilterException::MISSING_PRODUCT_ID);
       if (!isset($data['operator'])) throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);

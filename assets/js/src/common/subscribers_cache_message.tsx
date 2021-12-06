@@ -34,9 +34,9 @@ export function SubscribersCacheMessage({ cacheCalculation }: Props): JSX.Elemen
       {ReactStringReplace(
         MailPoet.I18n.t('subscribersCountWereCalculatedWithMinutesAgo'),
         /<abbr>(.*?)<\/abbr>/,
-        (match) => (
-          <abbr title={cacheCalculation}>
-            {match.replace(/(\{\$mins\}|\$mins)/, String(minutes))}
+        (match, i) => (
+          <abbr key={i} title={cacheCalculation}>
+            {match.replace(/(\{\$mins\}|\$mins)/i, String(minutes))}
           </abbr>
         )
       )}

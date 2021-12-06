@@ -7,6 +7,7 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
@@ -75,6 +76,7 @@ class Migrator {
     $this->removeDeprecatedStatisticsIndexes();
     $this->migrateSerializedFilterDataToNewColumns();
     $this->migratePurchasedProductDynamicFilters();
+    $this->migratePurchasedInCategoryDynamicFilters();
     return $output;
   }
 
@@ -759,6 +761,46 @@ class Migrator {
       if (isset($filterData['product_id']) && !in_array($filterData['product_id'], $filterData['product_ids'])) {
         $filterData['product_ids'][] = $filterData['product_id'];
         unset($filterData['product_id']);
+      }
+
+      if (!isset($filterData['operator'])) {
+        $filterData['operator'] = DynamicSegmentFilterData::OPERATOR_ANY;
+      }
+
+      $wpdb->update($dynamicSegmentFiltersTable, [
+        'filter_data' => serialize($filterData),
+      ], ['id' => $dynamicSegmentFilter['id']]);
+    }
+
+    return true;
+  }
+
+  private function migratePurchasedInCategoryDynamicFilters(): bool {
+    global $wpdb;
+    // skip the migration if the DB version is higher than 3.74.3 or is not set (a new install)
+    if (version_compare($this->settings->get('db_version', '3.74.3'), '3.74.2', '>')) {
+      return false;
+    }
+
+    $dynamicSegmentFiltersTable = "{$this->prefix}dynamic_segment_filters";
+    $filterType = DynamicSegmentFilterData::TYPE_WOOCOMMERCE;
+    $action = WooCommerceCategory::ACTION_CATEGORY;
+    $dynamicSegmentFilters = $wpdb->get_results("
+      SELECT `id`, `filter_data`, `filter_type`, `action`
+      FROM {$dynamicSegmentFiltersTable}
+      WHERE `filter_type` = '{$filterType}'
+        AND `action` = '{$action}'
+    ", ARRAY_A);
+
+    foreach ($dynamicSegmentFilters as $dynamicSegmentFilter) {
+      $filterData = unserialize($dynamicSegmentFilter['filter_data']);
+      if (!isset($filterData['category_ids'])) {
+        $filterData['category_ids'] = [];
+      }
+
+      if (isset($filterData['category_id']) && !in_array($filterData['category_id'], $filterData['category_ids'])) {
+        $filterData['category_ids'][] = $filterData['category_id'];
+        unset($filterData['category_id']);
       }
 
       if (!isset($filterData['operator'])) {
