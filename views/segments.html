@@ -236,8 +236,6 @@
     'tooltipAverage': __('20% or fewer'),
     'engagementScoreDescription': __('Average percent of emails subscribers read in the last year'),
     'addCondition': __('Add a condition'),
-    'allConditions': _x('<strong>All</strong> of the following conditions', 'Dynamic segment creation: The user can select join between condition when he has more than one'),
-    'anyConditions': _x('<strong>Any</strong> of the following conditions', 'Dynamic segment creation: The user can select join between condition when he has more than one'),
     'filterConnectAnd': _x('and', 'Dynamic segment creation: The user can see logical operator between condition when has more than one'),
     'filterConnectOr': _x('or', 'Dynamic segment creation: The user can see logical operator between condition when has more than one'),
 
@@ -245,4 +243,8 @@
     'recalculateNow': __('Recalculate now'),
     'privacyProtectionNotice': __('Due to email privacy protections, some opens may not be tracked. Consider using a different engagement metric.'),
   }) %>
+<% endblock %>
+
+<% block after_translations %>
+<%= do_action('mailpoet_segments_translations_after') %>
 <% endblock %>

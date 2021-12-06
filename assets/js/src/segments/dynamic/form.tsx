@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelect, useDispatch } from '@wordpress/data';
 
+import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
 import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
@@ -8,7 +9,6 @@ import Input from 'common/form/input/input';
 import Select from 'common/form/react_select/react_select';
 import Textarea from 'common/form/textarea/textarea';
 import { Grid } from 'common/grid';
-import { ConditionType } from './condition_type';
 import { FilterSeparator } from './filter_separator';
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';
@@ -31,6 +31,8 @@ import {
 interface Props {
   segmentId?: number;
 }
+
+const FiltersBefore = Hooks.applyFilters('mailpoet_dynamic_segments_form_filters_before', (): React.FunctionComponent => null);
 
 export const Form: React.FunctionComponent<Props> = ({
   segmentId,
@@ -114,7 +116,7 @@ export const Form: React.FunctionComponent<Props> = ({
               {MailPoet.I18n.t('formPageTitle')}
             </label>
           </Heading>
-          <ConditionType />
+          <FiltersBefore />
           {Array.isArray(filterRows) && filterRows.map((filterRow, index) => (
             <React.Fragment key={filterRow.index}>
               <Grid.ThreeColumns automationId={`filter-row-${index}`}>
