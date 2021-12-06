@@ -70,12 +70,12 @@ export const EventOptions = ({
     };
 
     if (eventOptions.endpoint === 'product_categories') {
-      fieldProps.field.name = 'category_id';
+      fieldProps.field.name = 'category_ids';
       fieldProps.item = { action: 'purchasedCategory' };
     }
 
     if (eventOptions.endpoint === 'products') {
-      fieldProps.field.name = 'product_id';
+      fieldProps.field.name = 'product_ids';
       fieldProps.item = { action: 'purchasedProduct' };
     }
 
