@@ -46,50 +46,6 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     ]);
   }
 
-  public function testItCanSaveASegmentWithTwoFilters() {
-    $segmentData = [
-      'name' => 'Test Segment',
-      'description' => 'Description',
-      'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
-      'filters' => [
-        [
-          'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-          'wordpressRole' => ['administrator'],
-          'action' => UserRole::TYPE,
-        ],
-        [
-          'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-          'wordpressRole' => ['editor'],
-          'action' => UserRole::TYPE,
-        ],
-      ],
-    ];
-
-    $segment = $this->saveController->save($segmentData);
-    expect($segment->getName())->equals('Test Segment');
-    expect($segment->getDescription())->equals('Description');
-    expect($segment->getDynamicFilters()->count())->equals(2);
-    expect($segment->getType())->equals(SegmentEntity::TYPE_DYNAMIC);
-    $filter = $segment->getDynamicFilters()->first();
-    assert($filter instanceof DynamicSegmentFilterEntity);
-    expect($filter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
-    expect($filter->getFilterData()->getAction())->equals(UserRole::TYPE);
-    expect($filter->getFilterData()->getData())->equals([
-      'wordpressRole' => ['administrator'],
-      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
-      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
-    ]);
-    $filter = $segment->getDynamicFilters()->next();
-    assert($filter instanceof DynamicSegmentFilterEntity);
-    expect($filter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
-    expect($filter->getFilterData()->getAction())->equals(UserRole::TYPE);
-    expect($filter->getFilterData()->getData())->equals([
-      'wordpressRole' => ['editor'],
-      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
-      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
-    ]);
-  }
-
   public function testItCanRemoveRedundantFilter() {
     $segment = $this->createSegment('Test Segment');
     $this->addDynamicFilter($segment, ['editor']);
