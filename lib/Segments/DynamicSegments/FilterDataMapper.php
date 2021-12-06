@@ -16,8 +16,21 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
+use MailPoet\WP\Functions as WPFunctions;
 
 class FilterDataMapper {
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(
+    WPFunctions $wp = null
+  ) {
+    if (!$wp) {
+      $wp = WPFunctions::get();
+    }
+    $this->wp = $wp;
+  }
+
   /**
    * @param array $data
    * @return DynamicSegmentFilterData[]
@@ -27,11 +40,16 @@ class FilterDataMapper {
     if (!isset($data['filters']) || count($data['filters'] ?? []) < 1) {
       throw new InvalidFilterException('Filters are missing', InvalidFilterException::MISSING_FILTER);
     }
-    foreach ($data['filters'] as $filter) {
+    $processFilter = function ($filter, $data) {
       $filter['connect'] = $data['filters_connect'] ?? DynamicSegmentFilterData::CONNECT_TYPE_AND;
-      $filters[] = $this->createFilter($filter);
+      return $this->createFilter($filter);
+    };
+    $wpFilterName = 'mailpoet_dynamic_segments_filters_map';
+    if ($this->wp->hasFilter($wpFilterName)) {
+      return $this->wp->applyFilters($wpFilterName, $data, $processFilter);
     }
-    return $filters;
+    $filter = reset($data['filters']);
+    return [$processFilter($filter, $data)];
   }
 
   private function createFilter(array $filterData): DynamicSegmentFilterData {

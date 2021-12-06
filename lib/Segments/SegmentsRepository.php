@@ -27,14 +27,19 @@ class SegmentsRepository extends Repository {
   /** @var FormsRepository */
   private $formsRepository;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     EntityManager $entityManager,
     NewsletterSegmentRepository $newsletterSegmentRepository,
-    FormsRepository $formsRepository
+    FormsRepository $formsRepository,
+    WPFunctions $wp
   ) {
     parent::__construct($entityManager);
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->formsRepository = $formsRepository;
+    $this->wp = $wp;
   }
 
   protected function getEntityClassName() {
@@ -122,7 +127,8 @@ class SegmentsRepository extends Repository {
         $this->entityManager->remove($filterEntity);
       }
     }
-    foreach ($filtersData as $key => $filterData) {
+
+    $createOrUpdateFilter = function ($filterData, $key) use ($segment) {
       if ($filterData instanceof DynamicSegmentFilterData) {
         $filterEntity = $segment->getDynamicFilters()->get($key);
         if (!$filterEntity instanceof DynamicSegmentFilterEntity) {
@@ -133,7 +139,17 @@ class SegmentsRepository extends Repository {
           $filterEntity->setFilterData($filterData);
         }
       }
+    };
+
+    $wpActionName = 'mailpoet_dynamic_segments_filters_save';
+    if ($this->wp->hasAction($wpActionName)) {
+      $this->wp->doAction($wpActionName, $createOrUpdateFilter, $filtersData);
+    } else {
+      $filterData = reset($filtersData);
+      $key = key($filtersData);
+      $createOrUpdateFilter($filterData, $key);
     }
+
     $this->flush();
     return $segment;
   }
