@@ -6,6 +6,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SegmentDependencyValidatorTest extends \MailPoetTest {
@@ -41,11 +42,19 @@ class SegmentDependencyValidatorTest extends \MailPoetTest {
     return $segment;
   }
 
-  private function createValidator(bool $isPluginActive): SegmentDependencyValidator {
+  private function createValidator(
+    bool $isPluginActive,
+    bool $hasValidPremiumKey = true,
+    bool $subscribersLimitReached = false
+  ): SegmentDependencyValidator {
     $wp = $this->make(WPFunctions::class, [
       'isPluginActive' => $isPluginActive,
     ]);
-    return new SegmentDependencyValidator($wp);
+    $subscribersFeature = $this->make(SubscribersFeature::class, [
+      'hasValidPremiumKey' => $hasValidPremiumKey,
+      'check' => $subscribersLimitReached,
+    ]);
+    return new SegmentDependencyValidator($subscribersFeature, $wp);
   }
 
   private function cleanup(): void {

@@ -10,11 +10,8 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
-use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 
@@ -68,92 +65,6 @@ class FilterHandlerTest extends \MailPoetTest {
     assert($subscriber2 instanceof SubscriberEntity);
     expect($subscriber1->getEmail())->equals('user-role-test1@example.com');
     expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
-  }
-
-  public function testItAppliesTwoFiltersWithoutSpecifyingConnection() {
-    $wp = $this->diContainer->get(Functions::class);
-    $segment = $this->getSegment('editor');
-    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberSubscribedDate::TYPE, [
-      'operator' => SubscriberSubscribedDate::IN_THE_LAST,
-      'value' => 30,
-    ]);
-    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filterData);
-    $this->entityManager->persist($dynamicSegmentFilter);
-    $segment->addDynamicFilter($dynamicSegmentFilter);
-    $this->entityManager->flush();
-    $statement = $this->filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
-    assert($statement instanceof Statement);
-    $result = $statement->fetchAll();
-    expect($result)->count(2);
-  }
-
-  public function testItAppliesTwoFiltersWithOr() {
-    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
-    $this->entityManager->persist($segment);
-    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, [
-      'wordpressRole' => 'administrator',
-      'connect' => 'or',
-    ]);
-    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filterData);
-    $this->entityManager->persist($dynamicSegmentFilter);
-    $segment->addDynamicFilter($dynamicSegmentFilter);
-    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, [
-      'wordpressRole' => 'editor',
-      'connect' => 'or',
-    ]);
-    $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $filterData);
-    $this->entityManager->persist($dynamicSegmentFilter);
-    $segment->addDynamicFilter($dynamicSegmentFilter);
-    $this->entityManager->flush();
-    $statement = $this->filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
-    assert($statement instanceof Statement);
-    $result = $statement->fetchAll();
-    expect($result)->count(3);
-  }
-
-  public function testItAppliesTwoFiltersWithAnd() {
-    $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
-    $this->entityManager->persist($segment);
-    // filter user is an editor
-    $editorData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE, [
-      'wordpressRole' => 'editor',
-      'connect' => 'and',
-    ]);
-    $filterEditor = new DynamicSegmentFilterEntity($segment, $editorData);
-    $this->entityManager->persist($filterEditor);
-    $segment->addDynamicFilter($filterEditor);
-    // filter user opened an email
-    $newsletter = new NewsletterEntity();
-    $task = new ScheduledTaskEntity();
-    $this->entityManager->persist($task);
-    $queue = new SendingQueueEntity();
-    $queue->setNewsletter($newsletter);
-    $queue->setTask($task);
-    $this->entityManager->persist($queue);
-    $newsletter->getQueues()->add($queue);
-    $newsletter->setSubject('newsletter 1');
-    $newsletter->setStatus('sent');
-    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
-    $this->entityManager->persist($newsletter);
-    $open = new StatisticsOpenEntity($newsletter, $queue, $this->subscriber1);
-    $this->entityManager->persist($open);
-    $open = new StatisticsOpenEntity($newsletter, $queue, $this->subscriber2);
-    $this->entityManager->persist($open);
-    $this->entityManager->flush();
-
-    $openedData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_OPENED, [
-      'newsletter_id' => $newsletter->getId(),
-      'connect' => 'and',
-    ]);
-    $filterOpened = new DynamicSegmentFilterEntity($segment, $openedData);
-    $this->entityManager->persist($filterOpened);
-    $segment->addDynamicFilter($filterOpened);
-    $this->entityManager->flush();
-
-    $statement = $this->filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
-    assert($statement instanceof Statement);
-    $result = $statement->fetchAll();
-    expect($result)->count(1);
   }
 
   private function getSegment(string $role): SegmentEntity {

@@ -12,6 +12,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
+use MailPoet\WP\Functions as WPFunctions;
 
 class FilterDataMapperTest extends \MailPoetUnitTest {
   /** @var FilterDataMapper */
@@ -19,7 +20,10 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->mapper = new FilterDataMapper();
+    $wp = $this->makeEmpty(WPFunctions::class, [
+      'hasFilter' => false,
+    ]);
+    $this->mapper = new FilterDataMapper($wp);
   }
 
   public function testItChecksFiltersArePresent() {
