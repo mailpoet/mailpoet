@@ -79,7 +79,7 @@ class Subscribers {
     return $this->hasValidMssKey() && $this->settings->get(self::MSS_SUPPORT_SETTING_KEY) === 'premium';
   }
 
-  private function hasValidPremiumKey() {
+  public function hasValidPremiumKey() {
     $state = $this->settings->get(self::PREMIUM_KEY_STATE);
     return $state === Bridge::KEY_VALID || $state === Bridge::KEY_EXPIRING;
   }

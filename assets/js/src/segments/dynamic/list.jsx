@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import MailPoet from 'mailpoet';
+import ReactStringReplace from 'react-string-replace';
 import Listing from 'listing/listing.jsx';
 import PropTypes from 'prop-types';
 
@@ -144,7 +145,24 @@ function renderItem(item, actions) {
       { item.is_plugin_missing
         ? (
           <td colSpan="2" className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('missingPluginMessageColumn')}>
-            { item.missing_plugin_message }
+            { item.missing_plugin_message
+              && item.missing_plugin_message.message && item.missing_plugin_message.link
+              ? (
+                <>
+                  { ReactStringReplace(
+                    item.missing_plugin_message.message,
+                    /\[link](.*?)\[\/link]/g,
+                    (match) => (
+                      <a className="mailpoet-listing-link-important" key="missingPluginMessageLink" href={item.missing_plugin_message.link} target="_blank" rel="noopener noreferrer">{match}</a>
+                    )
+                  ) }
+                </>
+              )
+              : (
+                <>
+                  { item.missing_plugin_message }
+                </>
+              )}
           </td>
         )
         : (
