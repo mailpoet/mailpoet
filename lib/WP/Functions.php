@@ -317,6 +317,10 @@ class Functions {
     return get_user_by($field, $value);
   }
 
+  public function hasAction($tag, $functionToCheck = false) {
+    return has_action($tag, $functionToCheck);
+  }
+
   public function hasFilter($tag, $functionToCheck = false) {
     return has_filter($tag, $functionToCheck);
   }
