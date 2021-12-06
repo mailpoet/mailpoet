@@ -170,7 +170,6 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
             options={productOptions}
             value={filter(
               (productOption) => {
-                // backward compatibility
                 if (segment.product_ids === undefined || segment.product_ids.length === 0) {
                   return undefined;
                 }
