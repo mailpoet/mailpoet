@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import Hooks from 'wp-js-hooks';
@@ -15,14 +15,13 @@ import { isFormValid } from './validator';
 import plusIcon from '../../common/button/icon/plus';
 import APIErrorsNotice from '../../notices/api_errors_notice';
 import { PrivacyProtectionNotice } from './privacy_protection_notice';
+import DynamicSegmentsPremiumBanner from './premium_banner';
 
 import {
   FilterRow,
   FilterValue,
   GroupFilterValue,
   Segment,
-  SegmentTypes,
-  SubscriberActionTypes,
   SubscriberCount,
 } from './types';
 
@@ -65,6 +64,13 @@ export const Form: React.FunctionComponent<Props> = ({
   );
 
   const { updateSegment, updateSegmentFilter, handleSave } = useDispatch('mailpoet-dynamic-segments-form');
+
+  const [premiumBannerVisible, setPremiumBannerVisible] = useState(false);
+  const showPremiumBanner = (e): void => {
+    e.preventDefault();
+    setPremiumBannerVisible(true);
+  };
+  const addConditionAction = Hooks.applyFilters('mailpoet_dynamic_segments_form_add_condition_action', showPremiumBanner);
 
   return (
     <form className="mailpoet_form">
@@ -150,21 +156,16 @@ export const Form: React.FunctionComponent<Props> = ({
             type="button"
             variant="tertiary"
             iconStart={plusIcon}
-            onClick={(e): void => {
-              e.preventDefault();
-              const filters = segment.filters;
-              filters.push({
-                segmentType: SegmentTypes.WordPressRole,
-                action: SubscriberActionTypes.WORDPRESS_ROLE,
-              });
-              updateSegment({
-                filters,
-              });
-            }}
+            onClick={(e): void => addConditionAction(e, segment, updateSegment)}
           >
             {MailPoet.I18n.t('addCondition')}
           </Button>
         </div>
+        {premiumBannerVisible && (
+          <div className="mailpoet-grid-span-two-columns">
+            <DynamicSegmentsPremiumBanner />
+          </div>
+        )}
         <div className="mailpoet-segments-counter-section">
           <SubscribersCounter />
           <PrivacyProtectionNotice />
