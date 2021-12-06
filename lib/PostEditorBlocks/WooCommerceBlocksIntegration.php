@@ -83,6 +83,9 @@ class WooCommerceBlocksIntegration {
   }
 
   public function extendRestApi() {
+    if (!$this->settings->get('woocommerce.optin_on_checkout.enabled', false)) {
+      return;
+    }
     $extend = Package::container()->get(ExtendRestApi::class);
     $extend->register_endpoint_data(
       [
