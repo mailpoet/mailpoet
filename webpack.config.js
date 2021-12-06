@@ -117,6 +117,16 @@ const baseConfig = {
         },
       },
       {
+        include: path.resolve(__dirname, 'assets/js/src/wp-data-hooks.js'),
+        loader: 'expose-loader',
+        options: {
+          exposes: {
+            globalName: `${globalPrefix}.WordPressData`,
+            override: true,
+          },
+        },
+      },
+      {
         include: path.resolve(__dirname, 'assets/js/src/hooks.js'),
         loader: 'expose-loader',
         options: {
@@ -157,6 +167,18 @@ const baseConfig = {
             loader: 'expose-loader',
             options: {
               exposes: `${globalPrefix}.Common`,
+            },
+          },
+          'babel-loader',
+        ],
+      },
+      {
+        include: path.resolve(__dirname, 'assets/js/src/segments/dynamic/types.ts'),
+        use: [
+          {
+            loader: 'expose-loader',
+            options: {
+              exposes: `${globalPrefix}.DynamicSegmentsTypes`,
             },
           },
           'babel-loader',
@@ -244,6 +266,8 @@ const adminConfig = {
       'help-tooltip.jsx',
       'listing/listing.jsx',
       'common/index.ts',
+      'wp-data-hooks.js',
+      'segments/dynamic/types.ts',
     ],
     admin: 'webpack_admin_index.jsx',
     newsletter_editor: 'newsletter_editor/webpack_index.jsx',
