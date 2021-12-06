@@ -12,7 +12,6 @@ import { Grid } from 'common/grid';
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';
 import { isFormValid } from './validator';
-import { MinusIcon } from '../../common/button/icon/minus';
 import plusIcon from '../../common/button/icon/plus';
 import APIErrorsNotice from '../../notices/api_errors_notice';
 import { PrivacyProtectionNotice } from './privacy_protection_notice';
@@ -32,6 +31,7 @@ interface Props {
 }
 
 const FiltersBefore = Hooks.applyFilters('mailpoet_dynamic_segments_form_filters_before', (): React.FunctionComponent => null);
+const FilterBefore = Hooks.applyFilters('mailpoet_dynamic_filters_filter_before', (): React.FunctionComponent => null);
 const FilterAfter = Hooks.applyFilters('mailpoet_dynamic_filters_filter_after', (): JSX.Element => (
   <div className="mailpoet-gap" />
 ));
@@ -122,23 +122,7 @@ export const Form: React.FunctionComponent<Props> = ({
           {Array.isArray(filterRows) && filterRows.map((filterRow, index) => (
             <React.Fragment key={filterRow.index}>
               <Grid.ThreeColumns automationId={`filter-row-${index}`}>
-                {filterRows.length > 1 && (
-                  <a
-                    href={undefined}
-                    className="mailpoet-form-segment-delete"
-                    data-automation-id="delete-filter-row"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const filters = segment.filters;
-                      filters.splice(index, 1);
-                      updateSegment({
-                        filters,
-                      });
-                    }}
-                  >
-                    {MinusIcon}
-                  </a>
-                )}
+                <FilterBefore filterRows={filterRows} index={index} />
                 <Grid.CenteredRow>
                   <Select
                     dimension="small"
