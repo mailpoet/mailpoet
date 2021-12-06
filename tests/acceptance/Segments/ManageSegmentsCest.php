@@ -582,23 +582,10 @@ class ManageSegmentsCest {
     $i->seeInField($totalSpentDaysElement, '20');
   }
 
-  public function createAndEditDynamicSegmentWithMoreFilters(\AcceptanceTester $i) {
-    $wpEditorEmail = 'test-editor3' . rand(1, 100000) . '@example.com';
-    $wpEditorEmail2 = 'test-editor4-' . rand(1, 100000) . '@example.com';
-    $wpAuthorEmail = 'test-author2-' . rand(1, 100000) . '@example.com';
-
-    $userFactory = new User();
-    $userFactory->createUser('Test Editor 3', 'editor', $wpEditorEmail);
-    $userFactory->createUser('Test Editor 4', 'editor', $wpEditorEmail2);
-    $userFactory->createUser('Test Author 2', 'author', $wpAuthorEmail);
-
-    $i->activateWooCommerce();
+  public function tryCreatingDynamicSegmentWithMoreFilters(\AcceptanceTester $i) {
     $filterRowOne = '[data-automation-id="filter-row-0"]';
-    $filterRowTwo = '[data-automation-id="filter-row-1"]';
     $actionSelectElement = '[data-automation-id="select-segment-action"]';
     $roleSelectElement = '[data-automation-id="segment-wordpress-role"]';
-    $conditionOrElement = '[data-automation-id="dynamic-segment-condition-type-or"]';
-    $deleteElement = '[data-automation-id="delete-filter-row"]';
 
     $i->wantTo('Create a new Dynamic Segment with 2 Filters');
     $segmentTitle = 'Segment Two Filters';
@@ -611,48 +598,7 @@ class ManageSegmentsCest {
     $i->selectOptionInReactSelect('WordPress user role', "{$filterRowOne} {$actionSelectElement}");
     $i->selectOptionInReactSelect('Admin', "{$filterRowOne} {$roleSelectElement}");
     $i->click('Add a condition');
-    $i->selectOptionInReactSelect('WordPress user role', "{$filterRowTwo} {$actionSelectElement}");
-    $i->selectOptionInReactSelect('Editor', "{$filterRowTwo} {$roleSelectElement}");
-    $i->click($conditionOrElement);
-    $i->waitForText('This segment has 3 subscribers.');
-    $i->click('Save');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->seeNoJSErrors();
-
-    $i->wantTo('Open edit form and check that all values were saved correctly');
-    $i->waitForText($segmentTitle);
-    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
-    $i->waitForElement($actionSelectElement);
-    $i->fillField(['name' => 'name'], $segmentTitle);
-    $i->fillField(['name' => 'description'], $segmentDesc);
-    $i->see('WordPress user role', "{$filterRowOne} {$actionSelectElement}");
-    $i->waitForText('Admin', 10, "{$filterRowOne} {$roleSelectElement}");
-    $i->see('Admin', "{$filterRowOne} {$roleSelectElement}");
-    $i->see('WordPress user role', "{$filterRowTwo} {$actionSelectElement}");
-    $i->see('Editor', "{$filterRowTwo} {$roleSelectElement}");
-    $i->seeNoJSErrors();
-
-    $i->wantTo('Edit segment and save');
-    $editedTitle = 'Segment Two Filters Edited';
-    $editedDesc = 'Segment description Edited';
-    $i->fillField(['name' => 'name'], $editedTitle);
-    $i->fillField(['name' => 'description'], $editedDesc);
-    $i->click("{$filterRowOne} {$deleteElement}");
-    $i->selectOptionInReactSelect('clicked any email', "{$filterRowOne} {$actionSelectElement}");
-    $i->dontSeeElement($filterRowTwo);
-    $i->dontSeeElement($conditionOrElement);
-    $i->waitForText('This segment has 0 subscribers.');
-    $i->click('Save');
-    $i->waitForElement('[data-automation-id="dynamic-segments-tab"]');
-    $i->waitForText($segmentTitle);
-    $i->seeNoJSErrors();
-
-    $i->wantTo('Open edit form and check that all values were saved correctly');
-    $i->clickItemRowActionByItemName($editedTitle, 'Edit');
-    $i->waitForText('This segment has 0 subscribers.');
-    $i->seeInField(['name' => 'name'], $editedTitle);
-    $i->seeInField(['name' => 'description'], $editedDesc);
-    $i->see('clicked any email', "{$filterRowOne} {$actionSelectElement}");
+    $i->see('This is a Premium feature');
     $i->seeNoJSErrors();
   }
 }

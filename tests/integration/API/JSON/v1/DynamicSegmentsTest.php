@@ -94,30 +94,6 @@ class DynamicSegmentsTest extends \MailPoetTest {
     expect($response->errors[0]['message'])->equals('Please specify a name.');
   }
 
-  public function testSaverSavesMultipleFilters() {
-    $response = $this->endpoint->save([
-      'name' => 'Test dynamic',
-      'description' => 'description dynamic',
-      'filters_connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
-      'filters' => [
-        [
-          'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-          'wordpressRole' => 'editor',
-          'action' => UserRole::TYPE,
-        ],
-        [
-          'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
-          'wordpressRole' => 'administrator',
-          'action' => UserRole::TYPE,
-        ],
-      ],
-    ]);
-    expect($response)->isInstanceOf('\MailPoet\API\JSON\SuccessResponse');
-    expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->data['name'])->equals('Test dynamic');
-    expect($response->data['filters'])->count(2);
-  }
-
   public function testItCanTrashASegment() {
     $dynamicSegment = $this->createDynamicSegmentEntity('Trash test', 'description');
 
