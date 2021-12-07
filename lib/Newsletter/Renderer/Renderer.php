@@ -10,9 +10,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\RuntimeException;
-use MailPoet\Services\Bridge;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -32,12 +30,6 @@ class Renderer {
   /** @var \MailPoetVendor\CSS */
   private $cSSInliner;
 
-  /** @var Bridge */
-  private $bridge;
-
-  /** @var License */
-  private $license;
-
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
@@ -49,17 +41,13 @@ class Renderer {
     Columns\Renderer $columnsRenderer,
     Preprocessor $preprocessor,
     \MailPoetVendor\CSS $cSSInliner,
-    Bridge $bridge,
     NewslettersRepository $newslettersRepository,
-    ServicesChecker $servicesChecker,
-    License $license
+    ServicesChecker $servicesChecker
   ) {
     $this->blocksRenderer = $blocksRenderer;
     $this->columnsRenderer = $columnsRenderer;
     $this->preprocessor = $preprocessor;
     $this->cSSInliner = $cSSInliner;
-    $this->bridge = $bridge;
-    $this->license = $license;
     $this->newslettersRepository = $newslettersRepository;
     $this->servicesChecker = $servicesChecker;
   }
