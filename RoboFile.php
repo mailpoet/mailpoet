@@ -111,7 +111,7 @@ class RoboFile extends \Robo\Tasks {
 
   public function translationsBuild() {
     return $this->_exec(
-      'php tasks/makepot/node_modules/grunt-wp-i18n/vendor/wp-i18n-tools/grunt-makepot.php wp-plugin . lang/mailpoet.pot mailpoet .mp_svn,assets,lang,node_modules,plugin_repository,tasks,tests,vendor'
+      'php tasks/makepot/grunt-makepot.php wp-plugin . lang/mailpoet.pot mailpoet .mp_svn,assets,lang,node_modules,plugin_repository,tasks,tests,vendor'
     );
   }
 
