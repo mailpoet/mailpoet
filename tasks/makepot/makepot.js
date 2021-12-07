@@ -17,6 +17,14 @@ module.exports = function (grunt) {
         return;
     }
 
+    // get file name from options
+    var pot_file_name = grunt.option('pot_file_name');
+
+    if (pot_file_name === undefined) {
+        grunt.fail.fatal("Missing --pot_file_name argument");
+        return;
+    }
+
     // configuration.
     grunt.initConfig({
         makepot: {
@@ -35,7 +43,7 @@ module.exports = function (grunt) {
                         'vendor/.*'
                     ],
                     mainFile: 'index.php', // Main project file.
-                    potFilename: 'mailpoet.pot', // Name of the POT file.
+                    potFilename: pot_file_name, // Name of the POT file.
                     potHeaders: {
                         poedit: true, // Includes common Poedit headers.
                         'x-poedit-keywordslist': true // Include a list of all possible gettext functions.
