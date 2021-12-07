@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Config\Env;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Models\Newsletter;
@@ -40,6 +41,9 @@ class Renderer {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+    /** @var ServicesChecker */
+    private $servicesChecker;
+
   public function __construct(
     Blocks\Renderer $blocksRenderer,
     Columns\Renderer $columnsRenderer,
@@ -47,6 +51,7 @@ class Renderer {
     \MailPoetVendor\CSS $cSSInliner,
     Bridge $bridge,
     NewslettersRepository $newslettersRepository,
+    ServicesChecker $servicesChecker,
     License $license
   ) {
     $this->blocksRenderer = $blocksRenderer;
@@ -56,6 +61,7 @@ class Renderer {
     $this->bridge = $bridge;
     $this->license = $license;
     $this->newslettersRepository = $newslettersRepository;
+    $this->servicesChecker = $servicesChecker;
   }
 
   /**
@@ -97,9 +103,7 @@ class Renderer {
       : [];
 
     if (
-      !$this->license->hasLicense()
-      && !$this->bridge->isMailpoetSendingServiceEnabled()
-      && !$preview
+      !$this->servicesChecker->isUserActivelyPaying() && !$preview
     ) {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
     }
@@ -264,7 +268,7 @@ class Renderer {
               'link' => 'http://www.mailpoet.com',
               'src' => Env::$assetsUrl . '/img/mailpoet_logo_newsletter.png',
               'fullWidth' => false,
-              'alt' => 'MailPoet',
+              'alt' => 'Email Marketing Powered by MailPoet',
               'width' => '108px',
               'height' => '65px',
               'styles' => [
