@@ -66,8 +66,7 @@ export const Form: React.FunctionComponent<Props> = ({
   const { updateSegment, updateSegmentFilter, handleSave } = useDispatch('mailpoet-dynamic-segments-form');
 
   const [premiumBannerVisible, setPremiumBannerVisible] = useState(false);
-  const showPremiumBanner = (e): void => {
-    e.preventDefault();
+  const showPremiumBanner = (): void => {
     setPremiumBannerVisible(true);
   };
   const addConditionAction = Hooks.applyFilters('mailpoet_dynamic_segments_form_add_condition_action', showPremiumBanner);
@@ -156,7 +155,10 @@ export const Form: React.FunctionComponent<Props> = ({
             type="button"
             variant="tertiary"
             iconStart={plusIcon}
-            onClick={(e): void => addConditionAction(e, segment, updateSegment)}
+            onClick={(e): void => {
+              e.preventDefault();
+              addConditionAction(segment, updateSegment);
+            }}
           >
             {MailPoet.I18n.t('addCondition')}
           </Button>
