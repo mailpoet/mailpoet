@@ -520,7 +520,6 @@ class RendererTest extends \MailPoetTest {
         '/fillcolor="#666666/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
     )->equals(1);
-    codecept_debug($DOM('tr > td > div > table > tr > td', 0)->html());
   }
 
   public function testItUsesFullFontFamilyNameInElementStyles() {
