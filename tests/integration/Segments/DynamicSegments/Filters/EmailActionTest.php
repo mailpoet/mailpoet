@@ -156,6 +156,23 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber4->getEmail())->equals('opened_not_clicked4@example.com');
   }
 
+  public function testGetOpenedOperatorAll() {
+    $segmentFilter = $this->getSegmentFilter(
+      EmailAction::ACTION_OPENED,
+      [
+        'newsletters' => [(int)$this->newsletter2->getId(), (int)$this->newsletter3->getId()],
+        'operator' => DynamicSegmentFilterData::OPERATOR_ALL,
+      ]
+    );
+    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAll();
+    expect(count($result))->equals(1);
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    expect($subscriber1->getEmail())->equals('opened_not_clicked4@example.com');
+  }
+
   public function testGetClickedWithoutLink() {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
