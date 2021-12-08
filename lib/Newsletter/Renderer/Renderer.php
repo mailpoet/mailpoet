@@ -33,8 +33,8 @@ class Renderer {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
-    /** @var ServicesChecker */
-    private $servicesChecker;
+  /** @var ServicesChecker */
+  private $servicesChecker;
 
   public function __construct(
     Blocks\Renderer $blocksRenderer,
