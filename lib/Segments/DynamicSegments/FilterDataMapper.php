@@ -129,10 +129,13 @@ class FilterDataMapper {
           'connect' => $data['connect'],
         ]);
     }
-    if (empty($data['newsletter_id'])) throw new InvalidFilterException('Missing newsletter id', InvalidFilterException::MISSING_NEWSLETTER_ID);
+    if (empty($data['newsletters']) || !is_array($data['newsletters'])) throw new InvalidFilterException('Missing newsletter', InvalidFilterException::MISSING_NEWSLETTER_ID);
     $filterData = [
-      'newsletter_id' => $data['newsletter_id'],
+      'newsletters' => array_map(function ($segmentId) {
+        return intval($segmentId);
+      }, $data['newsletters']),
       'connect' => $data['connect'],
+      'operator' => $data['operator'] ?? DynamicSegmentFilterData::OPERATOR_ANY,
     ];
     $filterType = DynamicSegmentFilterData::TYPE_EMAIL;
     $action = $data['action'];

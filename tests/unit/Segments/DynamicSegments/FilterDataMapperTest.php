@@ -5,6 +5,7 @@ namespace MailPoet\Segments\DynamicSegments;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
+use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
@@ -47,7 +48,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $data = ['filters' => [[
         'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
         'action' => EmailAction::ACTION_OPENED,
-        'newsletter_id' => 1,
+        'newsletters' => [1],
       ]],
       'some_mess' => 'mess',
     ];
@@ -60,7 +61,8 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
     expect($filter->getAction())->equals(EmailAction::ACTION_OPENED);
     expect($filter->getData())->equals([
-      'newsletter_id' => 1,
+      'newsletters' => [1],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
   }
@@ -71,13 +73,13 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->expectExceptionCode(InvalidFilterException::MISSING_ACTION);
     $this->mapper->map(['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
-      'newsletter_id' => 1,
+      'newsletters' => [1],
     ]]]);
   }
 
   public function testItChecksFilterEmailNewsletter() {
     $this->expectException(InvalidFilterException::class);
-    $this->expectExceptionMessage('Missing newsletter id');
+    $this->expectExceptionMessage('Missing newsletter');
     $this->expectExceptionCode(InvalidFilterException::MISSING_NEWSLETTER_ID);
     $this->mapper->map(['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
@@ -256,7 +258,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
   public function testItMapsLinkClicksAny() {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
-      'action' => EmailAction::ACTION_CLICKED_ANY,
+      'action' => EmailActionClickAny::TYPE,
       'uselessParam' => 1,
     ]]];
     $filters = $this->mapper->map($data);
@@ -266,7 +268,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     assert($filter instanceof DynamicSegmentFilterData);
     expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
-    expect($filter->getAction())->equals(EmailAction::ACTION_CLICKED_ANY);
+    expect($filter->getAction())->equals(EmailActionClickAny::TYPE);
     expect($filter->getData())->equals([
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
