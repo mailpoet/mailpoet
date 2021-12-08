@@ -77,8 +77,9 @@ class EmailActionTest extends \MailPoetTest {
 
     $this->subscriberOpenedClicked = $this->createSubscriber('opened_clicked@example.com');
     $this->subscriberOpenedNotClicked = $this->createSubscriber('opened_not_clicked@example.com');
-    $subscriberOpenedNotClicked2 = $this->createSubscriber('opened_clicked2@example.com');
-    $subscriberOpenedNotClicked3 = $this->createSubscriber('opened_clicked3@example.com');
+    $subscriberOpenedNotClicked2 = $this->createSubscriber('opened_not_clicked2@example.com');
+    $subscriberOpenedNotClicked3 = $this->createSubscriber('opened_not_clicked3@example.com');
+    $subscriberOpenedNotClicked4 = $this->createSubscriber('opened_not_clicked4@example.com');
     $this->subscriberNotOpened = $this->createSubscriber('not_opened@example.com');
     $this->subscriberNotSent = $this->createSubscriber('not_sent@example.com');
 
@@ -86,12 +87,16 @@ class EmailActionTest extends \MailPoetTest {
     $this->createStatsNewsletter($this->subscriberOpenedNotClicked, $this->newsletter);
     $this->createStatsNewsletter($this->subscriberNotOpened, $this->newsletter);
     $this->createStatsNewsletter($subscriberOpenedNotClicked2, $this->newsletter2);
+    $this->createStatsNewsletter($subscriberOpenedNotClicked4, $this->newsletter2);
     $this->createStatsNewsletter($subscriberOpenedNotClicked3, $this->newsletter3);
+    $this->createStatsNewsletter($subscriberOpenedNotClicked4, $this->newsletter3);
 
     $this->createStatisticsOpens($this->subscriberOpenedClicked, $this->newsletter);
     $this->createStatisticsOpens($this->subscriberOpenedNotClicked, $this->newsletter);
     $this->createStatisticsOpens($subscriberOpenedNotClicked2, $this->newsletter2);
+    $this->createStatisticsOpens($subscriberOpenedNotClicked4, $this->newsletter2);
     $this->createStatisticsOpens($subscriberOpenedNotClicked3, $this->newsletter3);
+    $this->createStatisticsOpens($subscriberOpenedNotClicked4, $this->newsletter3);
 
     $this->addClickedToLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked);
   }
@@ -123,6 +128,32 @@ class EmailActionTest extends \MailPoetTest {
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmail())->equals('not_opened@example.com');
+  }
+
+  public function testGetOpenedOperatorAny() {
+    $segmentFilter = $this->getSegmentFilter(
+      EmailAction::ACTION_OPENED,
+      [
+        'newsletters' => [(int)$this->newsletter->getId(), (int)$this->newsletter2->getId()],
+        'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      ]
+    );
+    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAll();
+    expect(count($result))->equals(4);
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
+    $subscriber3 = $this->entityManager->find(SubscriberEntity::class, $result[2]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
+    $subscriber4 = $this->entityManager->find(SubscriberEntity::class, $result[3]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber4);
+    expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
+    expect($subscriber2->getEmail())->equals('opened_not_clicked@example.com');
+    expect($subscriber3->getEmail())->equals('opened_not_clicked2@example.com');
+    expect($subscriber4->getEmail())->equals('opened_not_clicked4@example.com');
   }
 
   public function testGetClickedWithoutLink() {

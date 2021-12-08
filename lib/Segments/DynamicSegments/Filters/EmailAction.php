@@ -9,6 +9,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Util\Security;
+use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -47,7 +48,12 @@ class EmailAction implements Filter {
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
     $action = $filterData->getAction();
-    $newsletterId = (int)$filterData->getParam('newsletter_id');
+    $newsletterId = $filterData->getParam('newsletter_id');
+    if ($newsletterId) {
+      $newsletters = [(int)$newsletterId];
+    } else {
+      $newsletters = $filterData->getParam('newsletters');
+    }
     $linkId = $filterData->getParam('link_id') ? (int)$filterData->getParam('link_id') : null;
     $parameterSuffix = (string)($filter->getId() ?? Security::generateRandomString());
 
@@ -74,6 +80,13 @@ class EmailAction implements Filter {
         $this->createNotStatsJoinCondition($filter, $action, $linkId, $parameterSuffix)
       )->setParameter('newsletter' . $parameterSuffix, $newsletterId);
       $where .= ' AND stats.id IS NULL';
+    } elseif ($action === EmailAction::ACTION_OPENED) {
+      $queryBuilder = $queryBuilder->innerJoin(
+        $subscribersTable,
+        $statsTable,
+        'stats',
+        "stats.subscriber_id = $subscribersTable.id AND stats.newsletter_id IN (:newsletters" . $parameterSuffix . ')'
+      )->setParameter('newsletters' . $parameterSuffix, $newsletters, Connection::PARAM_INT_ARRAY);
     } else {
       $queryBuilder = $queryBuilder->innerJoin(
         $subscribersTable,
