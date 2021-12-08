@@ -5,6 +5,7 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Util\DBCollationChecker;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\Connection;
@@ -19,19 +20,23 @@ class WooCommerceCategory implements Filter {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var DBCollationChecker */
+  private $collationChecker;
+
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
     EntityManager $entityManager,
+    DBCollationChecker $collationChecker,
     WPFunctions $wp
   ) {
     $this->entityManager = $entityManager;
+    $this->collationChecker = $collationChecker;
     $this->wp = $wp;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
-    global $wpdb;
     $filterData = $filter->getFilterData();
 
     $operator = $filterData->getOperator();
@@ -43,82 +48,87 @@ class WooCommerceCategory implements Filter {
     $parameterSuffix = $filter->getId() ?: Security::generateRandomString();
     $parameterSuffix = (string)$parameterSuffix;
 
-    $completedOrder = "postmeta.post_id NOT IN ( SELECT id FROM {$wpdb->posts} AS p WHERE p.post_status IN ('wc-cancelled', 'wc-failed'))";
-
     if ($operator === DynamicSegmentFilterData::OPERATOR_ANY) {
-      $this->applyPostmetaJoin($queryBuilder, $subscribersTable);
-      $this->applyOrderItemsJoin($queryBuilder);
-      $this->applyOrderItemmetaJoin($queryBuilder);
+      $this->applyCustomerJoin($queryBuilder, $subscribersTable);
+      $this->applyOrderStatsJoin($queryBuilder);
+      $this->applyProductJoin($queryBuilder);
       $this->applyTermRelationshipsJoin($queryBuilder);
       $this->applyTermTaxonomyJoin($queryBuilder, $parameterSuffix);
 
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
-      $this->applyPostmetaJoin($queryBuilder, $subscribersTable);
-      $this->applyOrderItemsJoin($queryBuilder);
-      $this->applyOrderItemmetaJoin($queryBuilder);
+      $this->applyCustomerJoin($queryBuilder, $subscribersTable);
+      $this->applyOrderStatsJoin($queryBuilder);
+      $this->applyProductJoin($queryBuilder);
       $this->applyTermRelationshipsJoin($queryBuilder);
       $this->applyTermTaxonomyJoin($queryBuilder, $parameterSuffix)
-      ->groupBy("{$subscribersTable}.id, items.order_id")
-      ->having('COUNT(items.order_id) = :count_' . $parameterSuffix)
-      ->setParameter('count_' . $parameterSuffix, count($categoryIds));
+        ->groupBy("{$subscribersTable}.id, orderStats.order_id")
+        ->having('COUNT(orderStats.order_id) = :count_' . $parameterSuffix)
+        ->setParameter('count_' . $parameterSuffix, count($categoryIds));
 
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
-      $this->applyPostmetaJoin($queryBuilder, $subscribersTable);
-      $this->applyOrderItemsJoin($queryBuilder);
+      $this->applyCustomerJoin($queryBuilder, $subscribersTable);
+      $this->applyOrderStatsJoin($queryBuilder);
       // subQuery with subscriber ids that bought products
       $subQuery = $this->createQueryBuilder($subscribersTable);
       $subQuery->select("DISTINCT $subscribersTable.id");
-      $subQuery = $this->applyPostmetaJoin($subQuery, $subscribersTable);
-      $subQuery = $this->applyOrderItemsJoin($subQuery);
-      $subQuery = $this->applyOrderItemmetaJoin($subQuery);
+      $subQuery = $this->applyCustomerJoin($subQuery, $subscribersTable);
+      $subQuery = $this->applyOrderStatsJoin($subQuery);
+      $subQuery = $this->applyProductJoin($subQuery);
       $subQuery = $this->applyTermRelationshipsJoin($subQuery);
       $subQuery = $this->applyTermTaxonomyJoin($subQuery, $parameterSuffix)
-      ->andWhere($completedOrder);
+        ->andWhere("orderStats.status NOT IN ('wc-cancelled', 'wc-failed')");
       // application subQuery for negation
       $queryBuilder->where("{$subscribersTable}.id NOT IN ({$subQuery->getSQL()})");
     }
 
     return $queryBuilder
-      ->andWhere($completedOrder)
+      ->andWhere("orderStats.status NOT IN ('wc-cancelled', 'wc-failed')")
       ->setParameter("category_{$parameterSuffix}", $categoryIdswithChildrenIds, Connection::PARAM_STR_ARRAY);
   }
 
-  private function applyPostmetaJoin(QueryBuilder $queryBuilder, string $subscribersTable): QueryBuilder {
+  private function applyCustomerJoin(QueryBuilder $queryBuilder, string $subscribersTable): QueryBuilder {
     global $wpdb;
+    $collation = $this->collationChecker->getCollateIfNeeded(
+      $subscribersTable,
+      'email',
+      $wpdb->prefix . 'wc_customer_lookup',
+      'email'
+    );
     return $queryBuilder->innerJoin(
       $subscribersTable,
-      $wpdb->postmeta,
-      'postmeta',
-      "postmeta.meta_key = '_customer_user' AND $subscribersTable.wp_user_id=postmeta.meta_value"
+      $wpdb->prefix . 'wc_customer_lookup',
+      'customer',
+      "$subscribersTable.email = customer.email $collation"
     );
   }
 
-  private function applyOrderItemsJoin(QueryBuilder $queryBuilder): QueryBuilder {
+  private function applyOrderStatsJoin(QueryBuilder $queryBuilder): QueryBuilder {
     global $wpdb;
-    return $queryBuilder->join('postmeta',
-      $wpdb->prefix . 'woocommerce_order_items',
-      'items',
-      'postmeta.post_id = items.order_id'
+    return $queryBuilder->join(
+      'customer',
+      $wpdb->prefix . 'wc_order_stats',
+      'orderStats',
+      'customer.customer_id = orderStats.customer_id'
     );
   }
 
-  private function applyOrderItemmetaJoin(QueryBuilder $queryBuilder): QueryBuilder {
+  private function applyProductJoin(QueryBuilder $queryBuilder): QueryBuilder {
     global $wpdb;
     return $queryBuilder->innerJoin(
-      'items',
-      $wpdb->prefix . 'woocommerce_order_itemmeta',
-      'itemmeta',
-      "itemmeta.order_item_id = items.order_item_id AND itemmeta.meta_key = '_product_id'"
+      'orderStats',
+      $wpdb->prefix . 'wc_order_product_lookup',
+      'product',
+      'orderStats.order_id = product.order_id'
     );
   }
 
   private function applyTermRelationshipsJoin(QueryBuilder $queryBuilder): QueryBuilder {
     global $wpdb;
     return $queryBuilder->join(
-      'itemmeta',
+      'product',
       $wpdb->term_relationships, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'term_relationships',
-      'itemmeta.meta_value = term_relationships.object_id'
+      'product.product_id = term_relationships.object_id'
     );
   }
 
