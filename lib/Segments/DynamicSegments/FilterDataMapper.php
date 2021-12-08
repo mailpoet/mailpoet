@@ -5,6 +5,7 @@ namespace MailPoet\Segments\DynamicSegments;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
+use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
@@ -123,7 +124,7 @@ class FilterDataMapper {
     ) {
       return $this->createEmailOpensAbsoluteCount($data);
     }
-    if ($data['action'] === EmailAction::ACTION_CLICKED_ANY) {
+    if ($data['action'] === EmailActionClickAny::TYPE) {
         return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $data['action'], [
           'connect' => $data['connect'],
         ]);
