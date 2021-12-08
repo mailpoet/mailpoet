@@ -113,6 +113,15 @@ class Handler {
     return $model->filter('filterBy', $data['filter']);
   }
 
+  /**
+   * Polyfill for deprecated FILTER_SANITIZE_STRING which was used to sanitize
+   * $data['sort_by'].
+   */
+  private function filterString(string $string): string {
+    $str = (string)preg_replace('/\x00|<[^>]*>?/', '', $string);
+    return str_replace(["'", '"'], ['&#39;', '&#34;'], $str);
+  }
+
   private function processData(array $data) {
     // check if sort order was specified or default to "asc"
     $sortOrder = (!empty($data['sort_order'])) ? $data['sort_order'] : 'asc';
@@ -121,7 +130,7 @@ class Handler {
 
     // sanitize sort by
     $sortBy = (!empty($data['sort_by']))
-      ? filter_var($data['sort_by'], FILTER_SANITIZE_STRING)
+      ? $this->filterString($data['sort_by'])
       : '';
 
     if (empty($sortBy)) {
