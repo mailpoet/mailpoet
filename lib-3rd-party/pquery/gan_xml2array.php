@@ -97,5 +97,3 @@ class XML2ArrayParser extends HtmlParserBase {
 		return ((parent::parse_all()) ? $this->root : false);
 	}
 }
-
-?>

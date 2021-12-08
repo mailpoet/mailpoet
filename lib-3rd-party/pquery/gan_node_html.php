@@ -2851,5 +2851,3 @@ class AspEmbeddedNode extends EmbeddedNode {
 	#function AspEmbeddedNode($parent, $tag = '', $text = '', $attributes = array()) {return $this->__construct($parent, $tag, $text, $attributes);}
 	#php4e
 }
-
-?>

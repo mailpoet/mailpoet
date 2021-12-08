@@ -97,5 +97,3 @@ if (!defined('GANON_NO_INCLUDES')) {
 	include_once('gan_formatter.php');
 }
 #!
-
-?>
