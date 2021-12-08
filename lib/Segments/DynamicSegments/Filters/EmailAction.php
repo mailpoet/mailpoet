@@ -48,14 +48,24 @@ class EmailAction implements Filter {
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
+    $operator = $filterData->getParam('operator');
     $action = $filterData->getAction();
+
+    if ($action === self::ACTION_NOT_OPENED) {
+      // for backward compatibility with old segments
+      $action = self::ACTION_OPENED;
+      $operator = DynamicSegmentFilterData::OPERATOR_NONE;
+    }
+
     $newsletterId = $filterData->getParam('newsletter_id');
     if ($newsletterId) {
+      // for backward compatibility with old segments
       $newsletters = [(int)$newsletterId];
     } else {
       $newsletters = $filterData->getParam('newsletters');
     }
-    $operator = $filterData->getParam('operator');
+
+
     $linkId = $filterData->getParam('link_id') ? (int)$filterData->getParam('link_id') : null;
     $parameterSuffix = (string)($filter->getId() ?? Security::generateRandomString());
 
@@ -69,7 +79,8 @@ class EmailAction implements Filter {
 
     $where = '1';
 
-    if (($action === self::ACTION_NOT_CLICKED) || ($action === self::ACTION_NOT_OPENED)) {
+    if (($action === self::ACTION_NOT_CLICKED)) {
+      // TODO remove this if branch in MAILPOET-3951 and merge it with the next one for ACTION_OPENED
       $queryBuilder = $queryBuilder->innerJoin(
         $subscribersTable,
         $statsSentTable,
@@ -79,8 +90,21 @@ class EmailAction implements Filter {
         'statssent',
         $statsTable,
         'stats',
-        $this->createNotStatsJoinCondition($filter, $action, $linkId, $parameterSuffix)
+        $this->createNotStatsJoinCondition($action, $parameterSuffix, $linkId)
       )->setParameter('newsletter' . $parameterSuffix, $newsletterId);
+      $where .= ' AND stats.id IS NULL';
+    } elseif (($action === EmailAction::ACTION_OPENED) && ($operator === DynamicSegmentFilterData::OPERATOR_NONE)) {
+      $queryBuilder = $queryBuilder->innerJoin(
+        $subscribersTable,
+        $statsSentTable,
+        'statssent',
+        "$subscribersTable.id = statssent.subscriber_id AND statssent.newsletter_id IN (:newsletters" . $parameterSuffix . ')'
+      )->leftJoin(
+        'statssent',
+        $statsTable,
+        'stats',
+        "statssent.subscriber_id = stats.subscriber_id AND stats.newsletter_id = (:newsletters" . $parameterSuffix . ')'
+      )->setParameter('newsletters' . $parameterSuffix, $newsletters, Connection::PARAM_INT_ARRAY);
       $where .= ' AND stats.id IS NULL';
     } elseif ($action === EmailAction::ACTION_OPENED) {
       $queryBuilder = $queryBuilder->innerJoin(
@@ -96,6 +120,7 @@ class EmailAction implements Filter {
       }
 
     } else {
+      // TODO remove this branch in MAILPOET-3951
       $queryBuilder = $queryBuilder->innerJoin(
         $subscribersTable,
         $statsTable,
@@ -103,7 +128,7 @@ class EmailAction implements Filter {
         "stats.subscriber_id = $subscribersTable.id AND stats.newsletter_id = :newsletter" . $parameterSuffix
       )->setParameter('newsletter' . $parameterSuffix, $newsletterId);
     }
-    if ($action === EmailAction::ACTION_OPENED) {
+    if (($action === EmailAction::ACTION_OPENED) && ($operator !== DynamicSegmentFilterData::OPERATOR_NONE)) {
       $queryBuilder->andWhere('stats.user_agent_type = :userAgentType')
         ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     }
@@ -122,7 +147,7 @@ class EmailAction implements Filter {
     return $queryBuilder;
   }
 
-  private function createNotStatsJoinCondition(DynamicSegmentFilterEntity $filter, string $action, int $linkId = null, string $parameterSuffix): string {
+  private function createNotStatsJoinCondition(string $action, string $parameterSuffix, int $linkId = null): string {
     $clause = "statssent.subscriber_id = stats.subscriber_id AND stats.newsletter_id = :newsletter" . $parameterSuffix;
     if ($action === EmailAction::ACTION_NOT_CLICKED && $linkId) {
       $clause .= ' AND stats.link_id = :link' . $parameterSuffix;
