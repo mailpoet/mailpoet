@@ -3,7 +3,6 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
-use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
@@ -18,7 +17,6 @@ class EmailAction implements Filter {
   const ACTION_MACHINE_OPENED = 'machineOpened';
   const ACTION_NOT_OPENED = 'notOpened';
   const ACTION_CLICKED = 'clicked';
-  const ACTION_CLICKED_ANY = 'clickedAny';
   const ACTION_NOT_CLICKED = 'notClicked';
 
   const ALLOWED_ACTIONS = [
@@ -27,7 +25,7 @@ class EmailAction implements Filter {
     self::ACTION_NOT_OPENED,
     self::ACTION_CLICKED,
     self::ACTION_NOT_CLICKED,
-    self::ACTION_CLICKED_ANY,
+    EmailActionClickAny::TYPE,
     EmailOpensAbsoluteCountAction::TYPE,
     EmailOpensAbsoluteCountAction::MACHINE_TYPE,
   ];
@@ -35,7 +33,6 @@ class EmailAction implements Filter {
   const CLICK_ACTIONS = [
     self::ACTION_CLICKED,
     self::ACTION_NOT_CLICKED,
-    self::ACTION_CLICKED_ANY,
   ];
 
   /** @var EntityManager */
@@ -56,7 +53,6 @@ class EmailAction implements Filter {
 
     $statsSentTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
-    $newsletterLinksTable = $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
     if (in_array($action, self::CLICK_ACTIONS, true)) {
       $statsTable = $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
     } else {
@@ -78,24 +74,6 @@ class EmailAction implements Filter {
         $this->createNotStatsJoinCondition($filter, $action, $linkId, $parameterSuffix)
       )->setParameter('newsletter' . $parameterSuffix, $newsletterId);
       $where .= ' AND stats.id IS NULL';
-    } else if ($action === self::ACTION_CLICKED_ANY) {
-      $excludedLinks = [
-        '[link:subscription_unsubscribe_url]',
-        '[link:subscription_instant_unsubscribe_url]',
-        '[link:newsletter_view_in_browser_url]',
-        '[link:subscription_manage_url]',
-      ];
-      $queryBuilder = $queryBuilder->innerJoin(
-        $subscribersTable,
-        $statsTable,
-        'stats',
-        "stats.subscriber_id = $subscribersTable.id"
-      )->innerJoin(
-        'stats',
-        $newsletterLinksTable,
-        'newsletterLinks',
-        "stats.link_id = newsletterLinks.id AND newsletterLinks.URL NOT IN ('" . join("', '", $excludedLinks) . "')"
-      );
     } else {
       $queryBuilder = $queryBuilder->innerJoin(
         $subscribersTable,
