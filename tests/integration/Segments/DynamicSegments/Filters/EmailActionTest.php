@@ -128,25 +128,6 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('not_opened@example.com');
   }
 
-  public function testGetClickedAnyLink() {
-    $subscriberClickedExcludedLinks = $this->createSubscriber('opened_clicked_excluded@example.com');
-    $this->createStatsNewsletter($subscriberClickedExcludedLinks);
-    $this->createStatisticsOpens($subscriberClickedExcludedLinks);
-    $this->addClickedToLink('[link:subscription_unsubscribe_url]', $this->newsletter, $subscriberClickedExcludedLinks);
-    $this->addClickedToLink('[link:subscription_instant_unsubscribe_url]', $this->newsletter, $subscriberClickedExcludedLinks);
-    $this->addClickedToLink('[link:newsletter_view_in_browser_url]', $this->newsletter, $subscriberClickedExcludedLinks);
-    $this->addClickedToLink('[link:subscription_manage_url]', $this->newsletter, $subscriberClickedExcludedLinks);
-
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED_ANY);
-    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
-    expect(count($result))->equals(1);
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
-  }
-
   public function testGetNotClickedWithWrongLink() {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, (int)$this->newsletter->getId(), 2);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();

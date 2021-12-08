@@ -8,6 +8,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentFilterRepository;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
+use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
@@ -151,7 +152,7 @@ class Reporter {
       'Segment > # of opens' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailOpensAbsoluteCountAction::TYPE),
       'Segment > # of orders' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS),
       'Segment > clicked' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_CLICKED),
-      'Segment > clicked any email' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_CLICKED_ANY),
+      'Segment > clicked any email' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailActionClickAny::TYPE),
       'Segment > not clicked' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_NOT_CLICKED),
       'Segment > not opened' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_NOT_OPENED),
       'Segment > opened' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_OPENED),
