@@ -835,5 +835,3 @@ class Html5Parser extends HtmlParser {
 		return parent::parse_hierarchy($self_close);
 	}
 }
-
-?>

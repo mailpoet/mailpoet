@@ -377,5 +377,3 @@ class HtmlFormatter {
 		return $this->format_html($node);
 	}
 }
-
-?>

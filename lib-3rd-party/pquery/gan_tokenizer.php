@@ -562,5 +562,3 @@ class TokenizerBase {
 		return true;
 	}
 }
-
-?>
