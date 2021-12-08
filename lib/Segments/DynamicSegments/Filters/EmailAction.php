@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
@@ -54,6 +55,7 @@ class EmailAction implements Filter {
     } else {
       $newsletters = $filterData->getParam('newsletters');
     }
+    $operator = $filterData->getParam('operator');
     $linkId = $filterData->getParam('link_id') ? (int)$filterData->getParam('link_id') : null;
     $parameterSuffix = (string)($filter->getId() ?? Security::generateRandomString());
 
@@ -87,6 +89,12 @@ class EmailAction implements Filter {
         'stats',
         "stats.subscriber_id = $subscribersTable.id AND stats.newsletter_id IN (:newsletters" . $parameterSuffix . ')'
       )->setParameter('newsletters' . $parameterSuffix, $newsletters, Connection::PARAM_INT_ARRAY);
+
+      if ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
+        $queryBuilder->groupBy('subscriber_id');
+        $queryBuilder->having('COUNT(1) = ' . count($newsletters));
+      }
+
     } else {
       $queryBuilder = $queryBuilder->innerJoin(
         $subscribersTable,
