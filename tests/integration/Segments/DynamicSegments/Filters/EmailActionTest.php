@@ -97,7 +97,9 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   public function testGetOpened() {
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_OPENED, (int)$this->newsletter->getId());
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_OPENED, [
+      'newsletter_id' => (int)$this->newsletter->getId(),
+    ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
@@ -111,7 +113,9 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   public function testNotOpened() {
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_OPENED, (int)$this->newsletter->getId());
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_OPENED, [
+      'newsletter_id' => (int)$this->newsletter->getId(),
+    ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
@@ -122,7 +126,9 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   public function testGetClickedWithoutLink() {
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, (int)$this->newsletter->getId());
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$this->newsletter->getId(),
+    ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
@@ -133,7 +139,10 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   public function testGetClickedWithLink() {
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, (int)$this->newsletter->getId(), 1);
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$this->newsletter->getId(),
+      'link_id' => 1,
+    ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
@@ -144,7 +153,10 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   public function testGetClickedWrongLink() {
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, (int)$this->newsletter->getId(), 2);
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$this->newsletter->getId(),
+      'link_id' => 2,
+    ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
@@ -152,7 +164,10 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   public function testGetNotClickedWithLink() {
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, (int)$this->newsletter->getId(), 1);
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, [
+      'newsletter_id' => (int)$this->newsletter->getId(),
+      'link_id' => 1,
+    ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
@@ -166,7 +181,10 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   public function testGetNotClickedWithWrongLink() {
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, (int)$this->newsletter->getId(), 2);
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, [
+      'newsletter_id' => (int)$this->newsletter->getId(),
+      'link_id' => 2,
+    ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
@@ -183,7 +201,7 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   public function testGetNotClickedWithoutLink() {
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, (int)$this->newsletter->getId());
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, ['newsletter_id' => (int)$this->newsletter->getId()]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
@@ -206,7 +224,7 @@ class EmailActionTest extends \MailPoetTest {
     $open->setUserAgent($userAgent);
     $this->entityManager->flush();
 
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_OPENED, (int)$this->newsletter->getId());
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_OPENED, ['newsletter_id' => (int)$this->newsletter->getId()]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->rowCount();
@@ -223,7 +241,7 @@ class EmailActionTest extends \MailPoetTest {
     $open->setUserAgent($userAgent);
     $this->entityManager->flush();
 
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_MACHINE_OPENED, (int)$this->newsletter->getId());
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_MACHINE_OPENED, ['newsletter_id' => (int)$this->newsletter->getId()]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->rowCount();
@@ -239,21 +257,7 @@ class EmailActionTest extends \MailPoetTest {
       ->from($subscribersTable);
   }
 
-  /**
-   * @param string $action
-   * @param int|int[] $newsletterId
-   * @param int|null $linkId
-   * @param string|null $operator
-   * @return DynamicSegmentFilterEntity
-   */
-  private function getSegmentFilter(string $action, $newsletterId = null, int $linkId = null, string $operator = null): DynamicSegmentFilterEntity {
-    $data = [
-      'newsletter_id' => $newsletterId,
-      'link_id' => $linkId,
-    ];
-    if ($operator) {
-      $data['operator'] = $operator;
-    }
+  private function getSegmentFilter(string $action, array $data): DynamicSegmentFilterEntity {
     $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, $data);
     $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
     $this->entityManager->persist($segment);
