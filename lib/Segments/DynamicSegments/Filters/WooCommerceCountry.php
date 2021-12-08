@@ -5,6 +5,7 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Util\DBCollationChecker;
 use MailPoet\Util\Security;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -15,10 +16,15 @@ class WooCommerceCountry implements Filter {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var DBCollationChecker */
+  private $collationChecker;
+
   public function __construct(
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    DBCollationChecker $collationChecker
   ) {
     $this->entityManager = $entityManager;
+    $this->collationChecker = $collationChecker;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
@@ -34,21 +40,24 @@ class WooCommerceCountry implements Filter {
     }
     $countryFilterParam = 'countryCode' . $filter->getId() ?? Security::generateRandomString();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $collation = $this->collationChecker->getCollateIfNeeded(
+      $subscribersTable,
+      'email',
+      $wpdb->prefix . 'wc_customer_lookup',
+      'email'
+    );
     return $queryBuilder->innerJoin(
       $subscribersTable,
-      $wpdb->postmeta,
-      'postmeta',
-      "postmeta.meta_key = '_customer_user' AND $subscribersTable.wp_user_id=postmeta.meta_value"
+      $wpdb->prefix . 'wc_customer_lookup',
+      'customer',
+      "$subscribersTable.email = customer.email $collation"
     )->innerJoin(
-      'postmeta',
-      $wpdb->posts,
-      'posts',
-      "postmeta.post_id = posts.id AND posts.post_status NOT IN ('wc-cancelled', 'wc-failed')"
-    )->innerJoin(
-      'postmeta',
-      $wpdb->postmeta,
-      'postmetaCountry',
-      "postmeta.post_id = postmetaCountry.post_id AND postmetaCountry.meta_key = '_billing_country' AND postmetaCountry.meta_value = :$countryFilterParam"
-    )->setParameter($countryFilterParam, $countryCode[0]);
+      'customer',
+      $wpdb->prefix . 'wc_order_stats',
+      'orderStats',
+      'customer.customer_id = orderStats.customer_id'
+    )->where("customer.country = :$countryFilterParam")
+      ->andWhere('orderStats.status NOT IN ("wc-cancelled", "wc-failed")')
+      ->setParameter($countryFilterParam, $countryCode[0]);
   }
 }
