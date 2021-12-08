@@ -22,6 +22,11 @@ class EmailActionTest extends \MailPoetTest {
 
   /** @var NewsletterEntity */
   private $newsletter;
+  /** @var NewsletterEntity */
+  private $newsletter2;
+  /** @var NewsletterEntity */
+  private $newsletter3;
+
   public $subscriberOpenedNotClicked;
   public $subscriberNotSent;
   public $subscriberNotOpened;
@@ -31,30 +36,62 @@ class EmailActionTest extends \MailPoetTest {
     $this->cleanData();
     $this->emailAction = $this->diContainer->get(EmailAction::class);
     $this->newsletter = new NewsletterEntity();
+    $this->newsletter2 = new NewsletterEntity();
+    $this->newsletter3 = new NewsletterEntity();
     $task = new ScheduledTaskEntity();
     $this->entityManager->persist($task);
+    $task2 = new ScheduledTaskEntity();
+    $this->entityManager->persist($task2);
+    $task3 = new ScheduledTaskEntity();
+    $this->entityManager->persist($task3);
+
     $queue = new SendingQueueEntity();
     $queue->setNewsletter($this->newsletter);
     $queue->setTask($task);
     $this->entityManager->persist($queue);
+    $queue2 = new SendingQueueEntity();
+    $queue2->setNewsletter($this->newsletter2);
+    $queue2->setTask($task2);
+    $this->entityManager->persist($queue2);
+    $queue3 = new SendingQueueEntity();
+    $queue3->setNewsletter($this->newsletter);
+    $queue3->setTask($task3);
+    $this->entityManager->persist($queue3);
+
     $this->newsletter->getQueues()->add($queue);
     $this->newsletter->setSubject('newsletter 1');
     $this->newsletter->setStatus('sent');
     $this->newsletter->setType(NewsletterEntity::TYPE_STANDARD);
     $this->entityManager->persist($this->newsletter);
+    $this->newsletter2->getQueues()->add($queue2);
+    $this->newsletter2->setSubject('newsletter 2');
+    $this->newsletter2->setStatus('sent');
+    $this->newsletter2->setType(NewsletterEntity::TYPE_STANDARD);
+    $this->entityManager->persist($this->newsletter2);
+    $this->newsletter3->getQueues()->add($queue3);
+    $this->newsletter3->setSubject('newsletter 3');
+    $this->newsletter3->setStatus('sent');
+    $this->newsletter3->setType(NewsletterEntity::TYPE_STANDARD);
+    $this->entityManager->persist($this->newsletter3);
     $this->entityManager->flush();
 
     $this->subscriberOpenedClicked = $this->createSubscriber('opened_clicked@example.com');
     $this->subscriberOpenedNotClicked = $this->createSubscriber('opened_not_clicked@example.com');
+    $subscriberOpenedNotClicked2 = $this->createSubscriber('opened_clicked2@example.com');
+    $subscriberOpenedNotClicked3 = $this->createSubscriber('opened_clicked3@example.com');
     $this->subscriberNotOpened = $this->createSubscriber('not_opened@example.com');
     $this->subscriberNotSent = $this->createSubscriber('not_sent@example.com');
 
-    $this->createStatsNewsletter($this->subscriberOpenedClicked);
-    $this->createStatsNewsletter($this->subscriberOpenedNotClicked);
-    $this->createStatsNewsletter($this->subscriberNotOpened);
+    $this->createStatsNewsletter($this->subscriberOpenedClicked, $this->newsletter);
+    $this->createStatsNewsletter($this->subscriberOpenedNotClicked, $this->newsletter);
+    $this->createStatsNewsletter($this->subscriberNotOpened, $this->newsletter);
+    $this->createStatsNewsletter($subscriberOpenedNotClicked2, $this->newsletter2);
+    $this->createStatsNewsletter($subscriberOpenedNotClicked3, $this->newsletter3);
 
-    $this->createStatisticsOpens($this->subscriberOpenedClicked);
-    $this->createStatisticsOpens($this->subscriberOpenedNotClicked);
+    $this->createStatisticsOpens($this->subscriberOpenedClicked, $this->newsletter);
+    $this->createStatisticsOpens($this->subscriberOpenedNotClicked, $this->newsletter);
+    $this->createStatisticsOpens($subscriberOpenedNotClicked2, $this->newsletter2);
+    $this->createStatisticsOpens($subscriberOpenedNotClicked3, $this->newsletter3);
 
     $this->addClickedToLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked);
   }
@@ -161,8 +198,8 @@ class EmailActionTest extends \MailPoetTest {
 
   public function testOpensNotIncludeMachineOpens() {
     $subscriberOpenedMachine = $this->createSubscriber('opened_machine@example.com');
-    $this->createStatsNewsletter($subscriberOpenedMachine);
-    $open = $this->createStatisticsOpens($subscriberOpenedMachine);
+    $this->createStatsNewsletter($subscriberOpenedMachine, $this->newsletter);
+    $open = $this->createStatisticsOpens($subscriberOpenedMachine, $this->newsletter);
     $open->setUserAgentType(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
     $userAgent = new UserAgentEntity(UserAgentEntity::MACHINE_USER_AGENTS[0]);
     $this->entityManager->persist($userAgent);
@@ -178,8 +215,8 @@ class EmailActionTest extends \MailPoetTest {
 
   public function testMachineOpens() {
     $subscriberOpenedMachine = $this->createSubscriber('opened_machine@example.com');
-    $this->createStatsNewsletter($subscriberOpenedMachine);
-    $open = $this->createStatisticsOpens($subscriberOpenedMachine);
+    $this->createStatsNewsletter($subscriberOpenedMachine, $this->newsletter);
+    $open = $this->createStatisticsOpens($subscriberOpenedMachine, $this->newsletter);
     $open->setUserAgentType(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
     $userAgent = new UserAgentEntity(UserAgentEntity::MACHINE_USER_AGENTS[0]);
     $this->entityManager->persist($userAgent);
@@ -202,11 +239,22 @@ class EmailActionTest extends \MailPoetTest {
       ->from($subscribersTable);
   }
 
-  private function getSegmentFilter(string $action, int $newsletterId = null, int $linkId = null): DynamicSegmentFilterEntity {
-    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, [
+  /**
+   * @param string $action
+   * @param int|int[] $newsletterId
+   * @param int|null $linkId
+   * @param string|null $operator
+   * @return DynamicSegmentFilterEntity
+   */
+  private function getSegmentFilter(string $action, $newsletterId = null, int $linkId = null, string $operator = null): DynamicSegmentFilterEntity {
+    $data = [
       'newsletter_id' => $newsletterId,
       'link_id' => $linkId,
-    ]);
+    ];
+    if ($operator) {
+      $data['operator'] = $operator;
+    }
+    $segmentFilterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, $data);
     $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
     $this->entityManager->persist($segment);
     $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $segmentFilterData);
@@ -226,19 +274,19 @@ class EmailActionTest extends \MailPoetTest {
     return $subscriber;
   }
 
-  private function createStatsNewsletter(SubscriberEntity $subscriber) {
+  private function createStatsNewsletter(SubscriberEntity $subscriber, NewsletterEntity $newsletter) {
     $queue = $this->newsletter->getLatestQueue();
     assert($queue instanceof SendingQueueEntity);
-    $stats = new StatisticsNewsletterEntity($this->newsletter, $queue, $subscriber);
+    $stats = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber);
     $this->entityManager->persist($stats);
     $this->entityManager->flush();
     return $stats;
   }
 
-  private function createStatisticsOpens(SubscriberEntity $subscriber) {
-    $queue = $this->newsletter->getLatestQueue();
+  private function createStatisticsOpens(SubscriberEntity $subscriber, NewsletterEntity $newsletter) {
+    $queue = $newsletter->getLatestQueue();
     assert($queue instanceof SendingQueueEntity);
-    $open = new StatisticsOpenEntity($this->newsletter, $queue, $subscriber);
+    $open = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
     $this->entityManager->persist($open);
     $this->entityManager->flush();
     return $open;
