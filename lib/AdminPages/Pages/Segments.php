@@ -101,6 +101,7 @@ class Segments {
     $data['subscribers_limit'] = $this->subscribersFeature->getSubscribersLimit();
     $data['subscribers_limit_reached'] = $this->subscribersFeature->check();
     $data['has_valid_api_key'] = $this->subscribersFeature->hasValidApiKey();
+    $data['has_valid_premium_key'] = $this->subscribersFeature->hasValidPremiumKey();
     $data['subscriber_count'] = $this->subscribersFeature->getSubscribersCount();
     $data['has_premium_support'] = $this->subscribersFeature->hasPremiumSupport();
     $data['link_premium'] = $this->wp->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-premium');

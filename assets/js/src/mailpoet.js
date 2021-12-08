@@ -15,6 +15,7 @@ var MailPoet = {
   subscribersCount: window.mailpoet_subscribers_count,
   hasPremiumSupport: window.mailpoet_has_premium_support,
   hasValidApiKey: window.mailpoet_has_valid_api_key,
+  hasValidPremiumKey: window.mailpoet_has_valid_premium_key,
   hasInvalidMssApiKey: window.mailpoet_mss_key_invalid,
   mtaMethod: window.mailpoet_mta_method,
   listingPerPage: window.mailpoet_listing_per_page,
