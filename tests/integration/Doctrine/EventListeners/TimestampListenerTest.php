@@ -20,16 +20,18 @@ class TimestampListenerTest extends EventListenersBaseTest {
   /** @var string */
   private $tableName;
 
+  /** @var TimestampListener */
+  private $timestampListener;
+
   public function _before() {
     $timestamp = time();
     $this->now = Carbon::createFromTimestamp($timestamp);
     $this->wp = $this->make(WPFunctions::class, [
       'currentTime' => $timestamp,
     ]);
-
-    $newTimestampListener = new TimestampListener($this->wp);
+    $this->timestampListener = new TimestampListener($this->wp);
     $originalListener = $this->diContainer->get(TimestampListener::class);
-    $this->replaceListeners($originalListener, $newTimestampListener);
+    $this->replaceListeners($originalListener, $this->timestampListener);
 
     $this->tableName = $this->entityManager->getClassMetadata(TimestampEntity::class)->getTableName();
     $this->connection->executeStatement("DROP TABLE IF EXISTS $this->tableName");
@@ -95,6 +97,8 @@ class TimestampListenerTest extends EventListenersBaseTest {
 
   public function _after() {
     parent::_after();
+    $originalListener = $this->diContainer->get(TimestampListener::class);
+    $this->replaceListeners($this->timestampListener, $originalListener);
     $this->connection->executeStatement("DROP TABLE IF EXISTS $this->tableName");
   }
 }
