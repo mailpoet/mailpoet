@@ -8,33 +8,6 @@ use MailPoetVendor\Paris\ORMWrapper;
 class Handler {
   const DEFAULT_LIMIT_PER_PAGE = 20;
 
-  public function getSelection($modelClass, array $data) {
-    $data = $this->processData($data);
-    $tableName = $modelClass::$_table;
-    $model = Model::factory($modelClass);
-    $callback = [$modelClass, 'listingQuery'];
-
-    if (method_exists($modelClass, 'listingQuery') && is_callable($callback)) {
-      $customQuery = call_user_func_array(
-        $callback,
-        [$data]
-      );
-      if (!empty($data['selection'])) {
-        $customQuery->whereIn($tableName . '.id', $data['selection']);
-      }
-      return $customQuery;
-    } else {
-      $model = $this->setFilter($model, $data);
-      $this->setGroup($model, $data);
-      $this->setSearch($model, $data);
-
-      if (!empty($data['selection'])) {
-        $model->whereIn($tableName . '.id', $data['selection']);
-      }
-      return $model;
-    }
-  }
-
   public function get($modelClass, array $data) {
     $data = $this->processData($data);
     $tableName = $modelClass::$_table;

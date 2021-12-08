@@ -220,8 +220,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Helpscout
     $container->autowire(\MailPoet\Helpscout\Beacon::class)->setPublic(true);
     // Listing
-    $container->autowire(\MailPoet\Listing\BulkActionController::class)->setPublic(true);
-    $container->autowire(\MailPoet\Listing\BulkActionFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\Handler::class)->setPublic(true);
     $container->autowire(\MailPoet\Listing\PageLimit::class)->setPublic(true);
     // Logging
