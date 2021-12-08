@@ -4,6 +4,7 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Util\DBCollationChecker;
 use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -15,10 +16,15 @@ class WooCommerceTotalSpent implements Filter {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var DBCollationChecker */
+  private $collationChecker;
+
   public function __construct(
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    DBCollationChecker $collationChecker
   ) {
     $this->entityManager = $entityManager;
+    $this->collationChecker = $collationChecker;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
@@ -31,36 +37,35 @@ class WooCommerceTotalSpent implements Filter {
 
     $date = Carbon::now()->subDays($days);
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
+    $collation = $this->collationChecker->getCollateIfNeeded(
+      $subscribersTable,
+      'email',
+      $wpdb->prefix . 'wc_customer_lookup',
+      'email'
+    );
 
     $queryBuilder->innerJoin(
       $subscribersTable,
-      $wpdb->postmeta,
-      'postmeta',
-      "postmeta.meta_key = '_customer_user' AND $subscribersTable.wp_user_id=postmeta.meta_value"
+      $wpdb->prefix . 'wc_customer_lookup',
+      'customer',
+      "$subscribersTable.email = customer.email $collation"
     )->leftJoin(
-      'postmeta',
-      $wpdb->posts,
-      'posts',
-      'posts.ID = postmeta.post_id AND posts.post_date >= :date' . $parameterSuffix . ' AND postmeta.post_id NOT IN ( SELECT id FROM ' . $wpdb->posts . ' as p WHERE p.post_status IN ("wc-cancelled", "wc-failed"))'
-    )->leftJoin(
-      'posts',
-      $wpdb->postmeta,
-      'order_total',
-      "posts.ID = order_total.post_id AND order_total.meta_key = '_order_total'"
-    )->setParameter(
-      'date' . $parameterSuffix, $date->toDateTimeString()
-    )->groupBy(
-      'inner_subscriber_id'
-    );
+      'customer',
+      $wpdb->prefix . 'wc_order_stats',
+      'orderStats',
+      'customer.customer_id = orderStats.customer_id AND orderStats.date_created >= :date' . $parameterSuffix
+    )->andWhere('orderStats.status NOT IN ("wc-cancelled", "wc-failed")')
+      ->setParameter('date' . $parameterSuffix, $date->toDateTimeString())
+      ->groupBy('inner_subscriber_id');
 
     if ($type === '=') {
-      $queryBuilder->having('SUM(order_total.meta_value) = :amount' . $parameterSuffix);
+      $queryBuilder->having('SUM(orderStats.total_sales) = :amount' . $parameterSuffix);
     } elseif ($type === '!=') {
-      $queryBuilder->having('SUM(order_total.meta_value) != :amount' . $parameterSuffix);
+      $queryBuilder->having('SUM(orderStats.total_sales) != :amount' . $parameterSuffix);
     } elseif ($type === '>') {
-      $queryBuilder->having('SUM(order_total.meta_value) > :amount' . $parameterSuffix);
+      $queryBuilder->having('SUM(orderStats.total_sales) > :amount' . $parameterSuffix);
     } elseif ($type === '<') {
-      $queryBuilder->having('SUM(order_total.meta_value) < :amount' . $parameterSuffix);
+      $queryBuilder->having('SUM(orderStats.total_sales) < :amount' . $parameterSuffix);
     }
 
     $queryBuilder->setParameter('amount' . $parameterSuffix, $amount);
