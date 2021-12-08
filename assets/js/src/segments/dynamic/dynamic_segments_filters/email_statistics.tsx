@@ -4,8 +4,11 @@ import { find } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import APIErrorsNotice from 'notices/api_errors_notice';
-import Select from 'common/form/react_select/react_select';
+import ReactSelect from 'common/form/react_select/react_select';
+import Select from 'common/form/select/select';
+import { Grid } from 'common/grid';
 import {
+  AnyValueTypes,
   EmailActionTypes,
   EmailFormItem,
   SelectOption,
@@ -30,7 +33,7 @@ export const EmailStatisticsFields: React.FunctionComponent<Props> = ({ filterIn
     [filterIndex]
   );
 
-  const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
 
   const newslettersList: WindowNewslettersList = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getNewslettersList(),
@@ -81,15 +84,51 @@ export const EmailStatisticsFields: React.FunctionComponent<Props> = ({ filterIn
 
   useEffect(() => {
     loadLinksCB();
-  }, [loadLinksCB, segment.action, segment.newsletter_id]);
+    if (
+      (segment.action === EmailActionTypes.OPENED)
+      && (
+        (segment.operator !== AnyValueTypes.ANY)
+        && (segment.operator !== AnyValueTypes.ALL)
+        && (segment.operator !== AnyValueTypes.NONE)
+      )
+    ) {
+      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+    }
+  }, [
+    loadLinksCB,
+    segment.action,
+    segment.newsletter_id,
+    segment.operator,
+    filterIndex,
+    updateSegmentFilter,
+  ]);
 
   return (
     <>
       {(errors.length > 0 && (
         <APIErrorsNotice errors={errors} />
       ))}
-      <div>
-        <Select
+      {
+        ((segment.action === EmailActionTypes.OPENED))
+        && (
+          <Grid.CenteredRow>
+            <Select
+              key="select"
+              isFullWidth
+              value={segment.operator}
+              onChange={(e) => {
+                updateSegmentFilterFromEvent('operator', filterIndex, e);
+              }}
+            >
+              <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+              <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+              <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+            </Select>
+          </Grid.CenteredRow>
+        )
+      }
+      <Grid.CenteredRow>
+        <ReactSelect
           dimension="small"
           isFullWidth
           placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
@@ -100,13 +139,13 @@ export const EmailStatisticsFields: React.FunctionComponent<Props> = ({ filterIn
           }}
           automationId="segment-email"
         />
-      </div>
+      </Grid.CenteredRow>
       {(loadingLinks && (MailPoet.I18n.t('loadingDynamicSegmentItems')))}
       {
         (!!links.length && shouldDisplayLinks(segment.action, segment.newsletter_id))
         && (
           <div>
-            <Select
+            <ReactSelect
               dimension="small"
               isFullWidth
               placeholder={MailPoet.I18n.t('selectLinkPlaceholder')}
