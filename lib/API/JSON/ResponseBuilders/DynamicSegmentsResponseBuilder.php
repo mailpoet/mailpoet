@@ -2,6 +2,7 @@
 
 namespace MailPoet\API\JSON\ResponseBuilders;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\SegmentDependencyValidator;
@@ -54,6 +55,11 @@ class DynamicSegmentsResponseBuilder {
       if (isset($filter['wordpressRole']) && !is_array($filter['wordpressRole'])) {
         // new filters are always array, they support multiple values, the old didn't convert old filters to new format
         $filter['wordpressRole'] = [$filter['wordpressRole']];
+      }
+      if (($filter['segmentType'] === DynamicSegmentFilterData::TYPE_EMAIL) && isset($filter['newsletter_id']) && !isset($filter['newsletters'])) {
+        // compatibility with older filters
+        $filter['newsletters'] = [intval($filter['newsletter_id'])];
+        unset($filter['newsletter_id']);
       }
       $filters[] = $filter;
     }
