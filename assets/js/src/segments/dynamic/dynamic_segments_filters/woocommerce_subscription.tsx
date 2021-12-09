@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MailPoet from 'mailpoet';
-import { find } from 'lodash/fp';
+import { filter } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import Select from 'common/form/react_select/react_select';
+import ReactSelect from 'common/form/react_select/react_select';
+import Select from 'common/form/select/select';
+import { Grid } from 'common/grid';
 
 import {
+  AnyValueTypes,
   SegmentTypes,
   SelectOption,
   WindowSubscriptionProducts,
@@ -21,11 +24,12 @@ export const WooCommerceSubscriptionOptions = [
 ];
 
 export function validateWooCommerceSubscription(
-  formItems: WooCommerceSubscriptionFormItem
+  formItem: WooCommerceSubscriptionFormItem
 ): boolean {
+  const isIncomplete = !formItem.product_ids || !formItem.product_ids.length || !formItem.operator;
   if (
-    formItems.action === WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS
-    && !formItems.product_id
+    formItem.action === WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS
+    && isIncomplete
   ) {
     return false;
   }
@@ -42,7 +46,7 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = ({ 
     [filterIndex]
   );
 
-  const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
 
   const subscriptionProducts: WindowSubscriptionProducts = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSubscriptionProducts(),
@@ -53,19 +57,57 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = ({ 
     label: product.name,
   }));
 
+  useEffect(() => {
+    if (
+      (segment.action === WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS)
+      && (segment.operator !== AnyValueTypes.ANY)
+    ) {
+      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+    }
+    // Temporary BC fix
+    if (segment.product_id && !segment.product_ids) {
+      updateSegmentFilter({ product_ids: [segment.product_id] }, filterIndex);
+    }
+  }, [updateSegmentFilter, segment, filterIndex]);
+
   return (
-    <div>
-      <Select
-        dimension="small"
-        isFullWidth
-        placeholder={MailPoet.I18n.t('selectWooSubscription')}
-        automationId="segment-woo-subscription-action"
-        options={productOptions}
-        value={find(['value', segment.product_id], productOptions)}
-        onChange={(option: SelectOption): void => {
-          updateSegmentFilter({ product_id: option.value }, filterIndex);
-        }}
-      />
-    </div>
+    <>
+      <Grid.CenteredRow>
+        <Select
+          key="select-operator"
+          value={segment.operator}
+          onChange={(e) => updateSegmentFilterFromEvent(
+            'operator',
+            filterIndex,
+            e
+          )}
+          automationId="select-operator"
+        >
+          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+        </Select>
+      </Grid.CenteredRow>
+      <Grid.CenteredRow>
+        <ReactSelect
+          isMulti
+          dimension="small"
+          key="select-segment-category"
+          isFullWidth
+          placeholder={MailPoet.I18n.t('selectWooSubscription')}
+          options={productOptions}
+          value={filter(
+            (option) => {
+              if (!segment.product_ids) return false;
+              return segment.product_ids.indexOf(option.value) !== -1;
+            },
+            productOptions
+          )}
+          onChange={(options: SelectOption[]): void => updateSegmentFilter(
+            { product_ids: (options || []).map((x: SelectOption) => x.value) },
+            filterIndex
+          )}
+          automationId="select-segment-products"
+        />
+      </Grid.CenteredRow>
+    </>
   );
 };

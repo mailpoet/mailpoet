@@ -223,8 +223,10 @@ class FilterDataMapper {
     $filterType = DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION;
     $action = $data['action'];
     if ($data['action'] === WooCommerceSubscription::ACTION_HAS_ACTIVE) {
-      if (!isset($data['product_id'])) throw new InvalidFilterException('Missing product', InvalidFilterException::MISSING_PRODUCT_ID);
-      $filterData['product_id'] = $data['product_id'];
+      if (!isset($data['product_ids']) || !is_array($data['product_ids'])) throw new InvalidFilterException('Missing product', InvalidFilterException::MISSING_PRODUCT_ID);
+      if (!isset($data['operator'])) throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
+      $filterData['operator'] = $data['operator'];
+      $filterData['product_ids'] = $data['product_ids'];
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }
