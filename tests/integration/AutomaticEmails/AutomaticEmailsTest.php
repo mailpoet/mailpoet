@@ -9,8 +9,8 @@ class AutomaticEmailsTest extends \MailPoetTest {
   public $AM;
 
   public function _before() {
-    $this->AM = new AutomaticEmails();
     $this->wp = new WPFunctions();
+    $this->AM = new AutomaticEmails($this->wp);
   }
 
   public function testItCanUnregisterAutomaticEmails() {

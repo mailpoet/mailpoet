@@ -17,7 +17,7 @@ class WooCommerceTest extends \MailPoetTest {
     $WC->init();
 
     // event is registered
-    $AM = new AutomaticEmails();
+    $AM = new AutomaticEmails(new WPFunctions());
     $result = $AM->getAutomaticEmailEventBySlug(WooCommerce::SLUG, AbandonedCart::SLUG);
     expect($result)->notEmpty();
   }
@@ -28,7 +28,7 @@ class WooCommerceTest extends \MailPoetTest {
     $WC->init();
 
     // event is registered
-    $AM = new AutomaticEmails();
+    $AM = new AutomaticEmails(new WPFunctions());
     $result = $AM->getAutomaticEmailEventBySlug(WooCommerce::SLUG, FirstPurchase::SLUG);
     expect($result)->notEmpty();
 
@@ -44,7 +44,7 @@ class WooCommerceTest extends \MailPoetTest {
     $WC->init();
 
     // event is registered
-    $AM = new AutomaticEmails();
+    $AM = new AutomaticEmails(new WPFunctions());
     $result = $AM->getAutomaticEmailEventBySlug(WooCommerce::SLUG, PurchasedInCategory::SLUG);
     expect($result)->notEmpty();
   }
@@ -55,7 +55,7 @@ class WooCommerceTest extends \MailPoetTest {
     $WC->init();
 
     // event is registered
-    $AM = new AutomaticEmails();
+    $AM = new AutomaticEmails(new WPFunctions());
     $result = $AM->getAutomaticEmailEventBySlug(WooCommerce::SLUG, PurchasedProduct::SLUG);
     expect($result)->notEmpty();
 
@@ -69,7 +69,7 @@ class WooCommerceTest extends \MailPoetTest {
     $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => false]);
     $WC->__construct();
     $WC->init();
-    $AM = new AutomaticEmails();
+    $AM = new AutomaticEmails(new WPFunctions());
     $result = $AM->getAutomaticEmailBySlug('woocommerce');
     foreach ($result['events'] as $event) {
       expect($event['actionButtonTitle'])->equals('WooCommerce is required');
@@ -79,7 +79,7 @@ class WooCommerceTest extends \MailPoetTest {
     $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => true]);
     $WC->__construct();
     $WC->init();
-    $AM = new AutomaticEmails();
+    $AM = new AutomaticEmails(new WPFunctions());
     $result = $AM->getAutomaticEmailBySlug('woocommerce');
     foreach ($result['events'] as $event) {
       expect($event)->hasNotKey('actionButtonTitle');
