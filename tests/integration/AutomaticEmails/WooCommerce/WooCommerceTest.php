@@ -12,12 +12,16 @@ use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WooCommerceTest extends \MailPoetTest {
+  /** @var WooCommerceEventFactory */
+  private $wooCommerceEventFactory;
+
   /** @var AutomaticEmailFactory */
   private $automaticEmailFactory;
 
   public function _before() {
+    $this->wooCommerceEventFactory = $this->diContainer->get(WooCommerceEventFactory::class);
     $this->automaticEmailFactory = $this->makeEmpty(AutomaticEmailFactory::class, [
-      'createWooCommerceEmail' => new WooCommerce(new WPFunctions(), new Helper()),
+      'createWooCommerceEmail' => new WooCommerce(new WPFunctions(), new Helper(), $this->wooCommerceEventFactory),
     ]);
   }
 
@@ -103,7 +107,7 @@ class WooCommerceTest extends \MailPoetTest {
 
   private function createWooCommerceEmailMock(bool $isWoocommerceEnabled = true): WooCommerce {
     $mock = $this->make(WooCommerce::class, ['isWoocommerceEnabled' => $isWoocommerceEnabled]);
-    $mock->__construct(new WPFunctions(), new Helper());
+    $mock->__construct(new WPFunctions(), new Helper(), $this->wooCommerceEventFactory);
     return $mock;
   }
 }
