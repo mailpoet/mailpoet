@@ -90,6 +90,7 @@ export interface WooCommerceSubscriptionFormItem extends FormItem {
 
 export interface EmailFormItem extends FormItem {
   newsletter_id?: string;
+  newsletters: number[]
   link_id?: string;
   operator?: string;
   opens?: string;
