@@ -414,7 +414,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceCountry::ACTION_CUSTOMER_COUNTRY,
-      'country_code' => 'UK',
+      'country_code' => ['UK'],
       'nonsense' => 1,
     ]]];
     $filters = $this->mapper->map($data);
@@ -426,7 +426,8 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
     expect($filter->getAction())->equals(WooCommerceCountry::ACTION_CUSTOMER_COUNTRY);
     expect($filter->getData())->equals([
-      'country_code' => 'UK',
+      'country_code' => ['UK'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
   }
