@@ -60,7 +60,7 @@ class DynamicSegment extends Segment {
     return $this;
   }
 
-  public function withWooCommerceCustomerCountryFilter(string $countryCode = 'FR') {
+  public function withWooCommerceCustomerCountryFilter(array $countryCode = ['FR']) {
     $this->filterData['segmentType'] = 'woocommerce';
     $this->filterData['action'] = 'customerInCountry';
     $this->filterData['country_code'] = $countryCode;
