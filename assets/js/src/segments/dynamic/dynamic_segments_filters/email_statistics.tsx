@@ -44,7 +44,8 @@ export const EmailStatisticsFields: React.FunctionComponent<Props> = ({ filterIn
   const newsletterOptions = newslettersList?.map((newsletter) => {
     const sentAt = (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet');
     return {
-      label: `${newsletter.subject} (${sentAt})`,
+      label: newsletter.subject,
+      tag: sentAt,
       value: newsletter.id,
     };
   });
