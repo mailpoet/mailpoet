@@ -66,10 +66,6 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = ({ 
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
-    // Temporary BC fix
-    if (segment.product_id && !segment.product_ids) {
-      updateSegmentFilter({ product_ids: [segment.product_id] }, filterIndex);
-    }
   }, [updateSegmentFilter, segment, filterIndex]);
 
   return (
