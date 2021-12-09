@@ -43,8 +43,8 @@ class WooCommerceProduct implements Filter {
       $this->applyOrderItemmetaJoin($queryBuilder);
       $queryBuilder->where("itemmeta.meta_value IN (:products_{$parameterSuffix})")
         ->groupBy("{$subscribersTable}.id, items.order_id")
-        ->having('COUNT(items.order_id) = :count')
-        ->setParameter('count', count($productIds));
+        ->having('COUNT(items.order_id) = :count' . $parameterSuffix)
+        ->setParameter('count' . $parameterSuffix, count($productIds));
 
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
       $this->applyPostmetaJoin($queryBuilder);
