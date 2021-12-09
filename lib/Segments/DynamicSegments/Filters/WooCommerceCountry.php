@@ -38,7 +38,9 @@ class WooCommerceCountry implements Filter {
     if (!$operator) {
       $operator = DynamicSegmentFilterData::OPERATOR_ANY;
     }
-    $countryFilterParam = 'countryCode' . $filter->getId() ?? Security::generateRandomString();
+
+    $countryFilterParam = ((string)$filter->getId()) . Security::generateRandomString();
+    $condition = $this->createCondition($countryCode, $operator, $countryFilterParam);
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $collation = $this->collationChecker->getCollateIfNeeded(
       $subscribersTable,
@@ -46,7 +48,7 @@ class WooCommerceCountry implements Filter {
       $wpdb->prefix . 'wc_customer_lookup',
       'email'
     );
-    return $queryBuilder->innerJoin(
+    $qb = $queryBuilder->innerJoin(
       $subscribersTable,
       $wpdb->prefix . 'wc_customer_lookup',
       'customer',
@@ -56,8 +58,28 @@ class WooCommerceCountry implements Filter {
       $wpdb->prefix . 'wc_order_stats',
       'orderStats',
       'customer.customer_id = orderStats.customer_id'
-    )->where("customer.country = :$countryFilterParam")
-      ->andWhere('orderStats.status NOT IN ("wc-cancelled", "wc-failed")')
-      ->setParameter($countryFilterParam, $countryCode[0]);
+    )->where($condition)
+      ->andWhere('orderStats.status NOT IN ("wc-cancelled", "wc-failed")');
+
+    foreach ($countryCode as $key => $userCountryCode) {
+      $qb->setParameter(':countryCode' . $key . $countryFilterParam, '%' . $userCountryCode . '%');
+    }
+
+    return $qb;
+  }
+
+  private function createCondition(array $countryCodes, string $operator, string $countryFilterParam): string {
+    $sqlParts = [];
+    foreach ($countryCodes as $key => $userCountryCode) {
+      if ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
+        $sqlParts[] = '(customer.country NOT LIKE :countryCode' . $key . $countryFilterParam . ')';
+      } else {
+        $sqlParts[] = '(customer.country LIKE :countryCode' . $key . $countryFilterParam . ')';
+      }
+    }
+    if ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
+      return join(' AND ', $sqlParts);
+    }
+    return join(' OR ', $sqlParts);
   }
 }
