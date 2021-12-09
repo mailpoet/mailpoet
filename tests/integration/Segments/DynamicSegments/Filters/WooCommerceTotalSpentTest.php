@@ -45,6 +45,50 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $this->orders[] = $this->createOrder(['user_id' => $userId3, 'order_total' => 25]);
   }
 
+  public function testItGetsCustomersThatSpentFifteenInTheLastDay(): void {
+    $segmentFilter = $this->getSegmentFilter('=', 15, 1);
+    $queryBuilder = $this->totalSpent->apply($this->createQueryBuilder(), $segmentFilter);
+    $statement = $queryBuilder->execute();
+    $result = $statement instanceof Statement ? $statement->fetchAll() : [];
+    expect($result)->count(1);
+    $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
+    assert($subscriber1 instanceof SubscriberEntity);
+    expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
+    expect($subscriber1->getEmail())->equals('customer2@example.com');
+  }
+
+  public function testItGetsCustomersThatSpentFifteenInTheLastWeek(): void {
+    $segmentFilter = $this->getSegmentFilter('=', 15, 7);
+    $queryBuilder = $this->totalSpent->apply($this->createQueryBuilder(), $segmentFilter);
+    $statement = $queryBuilder->execute();
+    $result = $statement instanceof Statement ? $statement->fetchAll() : [];
+    expect($result)->count(2);
+    $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
+    assert($subscriber1 instanceof SubscriberEntity);
+    expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
+    expect($subscriber1->getEmail())->equals('customer1@example.com');
+    $subscriber2 = $this->subscribersRepository->findOneById($result[1]['inner_subscriber_id']);
+    assert($subscriber2 instanceof SubscriberEntity);
+    expect($subscriber2)->isInstanceOf(SubscriberEntity::class);
+    expect($subscriber2->getEmail())->equals('customer2@example.com');
+  }
+
+  public function testItGetsCustomersThatDidNotSpendFifteenInTheLastDay(): void {
+    $segmentFilter = $this->getSegmentFilter('!=', 15, 1);
+    $queryBuilder = $this->totalSpent->apply($this->createQueryBuilder(), $segmentFilter);
+    $statement = $queryBuilder->execute();
+    $result = $statement instanceof Statement ? $statement->fetchAll() : [];
+    expect($result)->count(2);
+    $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
+    assert($subscriber1 instanceof SubscriberEntity);
+    expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
+    expect($subscriber1->getEmail())->equals('customer1@example.com');
+    $subscriber2 = $this->subscribersRepository->findOneById($result[1]['inner_subscriber_id']);
+    assert($subscriber2 instanceof SubscriberEntity);
+    expect($subscriber2)->isInstanceOf(SubscriberEntity::class);
+    expect($subscriber2->getEmail())->equals('customer3@example.com');
+  }
+
   public function testItGetsCustomersThatSpentMoreThanTwentyInTheLastDay(): void {
     $segmentFilter = $this->getSegmentFilter('>', 20, 1);
     $queryBuilder = $this->totalSpent->apply($this->createQueryBuilder(), $segmentFilter);

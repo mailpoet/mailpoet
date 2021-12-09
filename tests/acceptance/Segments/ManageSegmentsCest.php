@@ -511,7 +511,7 @@ class ManageSegmentsCest {
     $i->seeInField(['name' => 'name'], $editedTitle);
     $i->seeInField(['name' => 'description'], $editedDesc);
     $i->see('# of orders', $actionSelectElement);
-    $i->see('equal', $numberOfOrdersTypeElement);
+    $i->see('equals', $numberOfOrdersTypeElement);
     $i->seeInField($numberOfOrdersCountElement, '4');
     $i->seeInField($numberOfOrdersDaysElement, '20');
   }
