@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Util\Security;
@@ -22,15 +23,56 @@ class WooCommerceSubscription implements Filter {
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
-    global $wpdb;
     $filterData = $filter->getFilterData();
     $productIds = $filterData->getParam('product_ids');
     // Temporary BC fix
     if (!$productIds) {
       $productIds = [(int)$filterData->getParam('product_id')];
     }
-    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $operator = $filterData->getParam('operator');
     $parameterSuffix = $filter->getId() ?: Security::generateRandomString();
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+
+    // ALL OF
+    if ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
+      $this->applyPostmetaAndPostJoin($queryBuilder);
+      $this->applyOrderItemsJoin($queryBuilder);
+      $this->applyOrderItemmetaJoin($queryBuilder);
+      return $queryBuilder
+        ->andWhere("itemmeta.meta_value IN (:products" . $parameterSuffix . ")")
+        ->groupBy("$subscribersTable.id")
+        ->having("COUNT($subscribersTable.id) = :count$parameterSuffix")
+        ->setParameter('products' . $parameterSuffix, $productIds, Connection::PARAM_STR_ARRAY)
+        ->setParameter('count' . $parameterSuffix, count($productIds));
+    }
+
+    // NONE OF
+    if ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
+      $subQueryBuilder = $this->entityManager->getConnection()
+        ->createQueryBuilder()
+        ->from($subscribersTable)
+        ->select("DISTINCT $subscribersTable.id");
+      $this->applyPostmetaAndPostJoin($subQueryBuilder);
+      $this->applyOrderItemsJoin($subQueryBuilder);
+      $this->applyOrderItemmetaJoin($subQueryBuilder);
+      $subQueryBuilder
+        ->andWhere("itemmeta.meta_value IN (:products" . $parameterSuffix . ")");
+      return $queryBuilder->where("{$subscribersTable}.id NOT IN ({$subQueryBuilder->getSQL()})")
+        ->setParameter('products' . $parameterSuffix, $productIds, Connection::PARAM_STR_ARRAY);
+    }
+
+    // ANY
+    $this->applyPostmetaAndPostJoin($queryBuilder);
+    $this->applyOrderItemsJoin($queryBuilder);
+    $this->applyOrderItemmetaJoin($queryBuilder);
+    return $queryBuilder
+      ->andWhere("itemmeta.meta_value IN (:products" . $parameterSuffix . ")")
+      ->setParameter('products' . $parameterSuffix, $productIds, Connection::PARAM_STR_ARRAY);
+  }
+
+  private function applyPostmetaAndPostJoin(QueryBuilder $queryBuilder): QueryBuilder {
+    global $wpdb;
+    $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $queryBuilder->innerJoin(
       $subscribersTable,
       $wpdb->postmeta,
@@ -39,18 +81,28 @@ class WooCommerceSubscription implements Filter {
     )->innerJoin(
       'postmeta',
       $wpdb->posts,
-        'posts',
-        'postmeta.post_id = posts.id AND posts.post_type = "shop_subscription" AND posts.post_status = "wc-active"'
-    )->innerJoin(
+      'posts',
+      'postmeta.post_id = posts.id AND posts.post_type = "shop_subscription" AND posts.post_status = "wc-active"'
+    );
+  }
+
+  private function applyOrderItemsJoin(QueryBuilder $queryBuilder): QueryBuilder {
+    global $wpdb;
+    return $queryBuilder->innerJoin(
       'postmeta',
       $wpdb->prefix . 'woocommerce_order_items',
       'items',
       'postmeta.post_id = items.order_id AND order_item_type = "line_item"'
-    )->innerJoin(
+    );
+  }
+
+  private function applyOrderItemmetaJoin(QueryBuilder $queryBuilder): QueryBuilder {
+    global $wpdb;
+    return $queryBuilder->innerJoin(
       'items',
       $wpdb->prefix . 'woocommerce_order_itemmeta',
       'itemmeta',
-      "itemmeta.order_item_id=items.order_item_id AND itemmeta.meta_key='_product_id' AND itemmeta.meta_value IN (:products" . $parameterSuffix . ")"
-    )->setParameter('products' . $parameterSuffix, $productIds, Connection::PARAM_STR_ARRAY);
+      "itemmeta.order_item_id=items.order_item_id AND itemmeta.meta_key='_product_id'"
+    );
   }
 }
