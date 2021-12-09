@@ -19,8 +19,6 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 
 class Initializer {
-  public $automaticEmails;
-
   /** @var AccessControl */
   private $accessControl;
 
