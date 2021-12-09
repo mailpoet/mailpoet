@@ -29,12 +29,18 @@ class AbandonedCart {
   /** @var AutomaticEmailScheduler */
   private $scheduler;
 
-  public function __construct() {
-    $this->wp = WPFunctions::get();
-    $this->wooCommerceHelper = new WooCommerceHelper();
-    $this->cookies = new Cookies();
-    $this->pageVisitTracker = new AbandonedCartPageVisitTracker($this->wp, $this->wooCommerceHelper, $this->cookies);
-    $this->scheduler = new AutomaticEmailScheduler();
+  public function __construct(
+    WPFunctions $wp,
+    WooCommerceHelper $wooCommerceHelper,
+    Cookies $cookies,
+    AbandonedCartPageVisitTracker $pageVisitTracker,
+    AutomaticEmailScheduler $scheduler
+  ) {
+    $this->wp = $wp;
+    $this->wooCommerceHelper = $wooCommerceHelper;
+    $this->cookies = $cookies;
+    $this->pageVisitTracker = $pageVisitTracker;
+    $this->scheduler = $scheduler;
   }
 
   public function getEventDetails() {
