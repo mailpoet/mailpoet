@@ -74,6 +74,25 @@ const initializeEditor = (config) => {
               );
             }
           });
+      } else if (newsletter.type === 'automatic' && newsletter.status === 'active') {
+        MailPoet.Ajax.post({
+          api_version: window.mailpoet_api_version,
+          endpoint: 'newsletters',
+          action: 'setStatus',
+          data: {
+            id: newsletter.id,
+            status: 'draft',
+          },
+        }).done((setStatusResponse) => {
+          if (setStatusResponse.data.status === 'draft') {
+            MailPoet.Notice.success(MailPoet.I18n.t('emailWasDeactivated'));
+          }
+        }).fail((pauseFailResponse) => {
+          MailPoet.Notice.error(
+            pauseFailResponse.errors.map((error) => error.message),
+            { scroll: true, static: true }
+          );
+        });
       }
     })
     .fail((response) => {
