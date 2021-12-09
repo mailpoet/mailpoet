@@ -4,6 +4,7 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\AutomaticEmails\AutomaticEmails as AutomaticEmailsController;
 use MailPoet\Config\AccessControl;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -12,10 +13,18 @@ class AutomaticEmails extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_SEGMENTS,
   ];
 
+  /** @var AutomaticEmailsController */
+  private $automaticEmails;
+
+  /** @var WPFunctions */
   private $wp;
 
-  public function __construct() {
-    $this->wp = new WPFunctions;
+  public function __construct(
+    AutomaticEmailsController $automaticEmails,
+    WPFunctions $wp
+  ) {
+    $this->automaticEmails = $automaticEmails;
+    $this->wp = $wp;
   }
 
   public function getEventOptions($data) {
@@ -32,8 +41,7 @@ class AutomaticEmails extends APIEndpoint {
       );
     }
 
-    $automaticEmails = new \MailPoet\AutomaticEmails\AutomaticEmails();
-    $event = $automaticEmails->getAutomaticEmailEventBySlug($emailSlug, $eventSlug);
+    $event = $this->automaticEmails->getAutomaticEmailEventBySlug($emailSlug, $eventSlug);
     $eventFilter = (!empty($event['options']['remoteQueryFilter'])) ? $event['options']['remoteQueryFilter'] : null;
 
     return ($eventFilter === $filter && WPFunctions::get()->hasFilter($eventFilter)) ?
@@ -57,9 +65,8 @@ class AutomaticEmails extends APIEndpoint {
       );
     }
 
-    $automaticEmails = new \MailPoet\AutomaticEmails\AutomaticEmails();
-    $automaticEmail = $automaticEmails->getAutomaticEmailBySlug($emailSlug);
-    $event = $automaticEmails->getAutomaticEmailEventBySlug($emailSlug, $eventSlug);
+    $automaticEmail = $this->automaticEmails->getAutomaticEmailBySlug($emailSlug);
+    $event = $this->automaticEmails->getAutomaticEmailEventBySlug($emailSlug, $eventSlug);
 
     if (!$event) {
       return $this->errorResponse(
