@@ -76,6 +76,9 @@ class Initializer {
   /** @var Localizer */
   private $localizer;
 
+  /** @var AutomaticEmails */
+  private $automaticEmails;
+
   /** @var AssetsLoader */
   private $assetsLoader;
 
@@ -100,6 +103,7 @@ class Initializer {
     WooCommerceBlocksIntegration $woocommerceBlocksIntegration,
     WooCommerceHelper $wcHelper,
     Localizer $localizer,
+    AutomaticEmails $automaticEmails,
     AssetsLoader $assetsLoader
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -120,6 +124,7 @@ class Initializer {
     $this->postEditorBlock = $postEditorBlock;
     $this->woocommerceBlocksIntegration = $woocommerceBlocksIntegration;
     $this->localizer = $localizer;
+    $this->automaticEmails = $automaticEmails;
     $this->assetsLoader = $assetsLoader;
   }
 
@@ -367,9 +372,8 @@ class Initializer {
   }
 
   public function setupAutomaticEmails() {
-    $automaticEmails = new AutomaticEmails();
-    $automaticEmails->init();
-    $automaticEmails->getAutomaticEmails();
+    $this->automaticEmails->init();
+    $this->automaticEmails->getAutomaticEmails();
   }
 
   public function multisiteDropTables($tables) {
