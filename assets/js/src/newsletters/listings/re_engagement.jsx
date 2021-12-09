@@ -14,6 +14,7 @@ import {
   addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
+  confirmEdit,
 } from 'newsletters/listings/utils.jsx';
 import NewsletterTypes from 'newsletters/types';
 
@@ -140,13 +141,8 @@ let newsletterActions = [
   {
     name: 'edit',
     className: 'mailpoet-hide-on-mobile',
-    link: function link(newsletter) {
-      return (
-        <a href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}>
-          {MailPoet.I18n.t('edit')}
-        </a>
-      );
-    },
+    label: MailPoet.I18n.t('edit'),
+    onClick: confirmEdit,
   },
   {
     name: 'trash',

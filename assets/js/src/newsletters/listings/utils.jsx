@@ -5,6 +5,7 @@ import ReactStringReplace from 'react-string-replace';
 import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
+import confirmAlert from 'common/confirm_alert.jsx';
 
 export const trackStatsCTAClicked = () => {
   MailPoet.trackEvent('User has clicked a CTA to view detailed stats');
@@ -80,4 +81,21 @@ export const checkCronStatus = (state) => {
     ),
     jQuery('[data-id="mailpoet_cron_error"]')[0]
   );
+};
+
+export const newsletterTypesWithActivation = ['automatic', 'welcome', 'notification', 're_engagement'];
+
+export const confirmEdit = (newsletter) => {
+  const redirectToEditing = () => {
+    window.location.href = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
+  };
+
+  if (newsletterTypesWithActivation.includes(newsletter.type) && newsletter.status === 'active') {
+    confirmAlert({
+      message: MailPoet.I18n.t('confirmAutomaticNewsletterEdit'),
+      onConfirm: redirectToEditing,
+    });
+  } else {
+    redirectToEditing();
+  }
 };
