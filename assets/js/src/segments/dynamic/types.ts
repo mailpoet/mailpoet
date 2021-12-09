@@ -84,7 +84,6 @@ export interface WooCommerceFormItem extends FormItem {
 }
 
 export interface WooCommerceSubscriptionFormItem extends FormItem {
-  product_id?: string;
   product_ids?: string[];
   operator?: AnyValueTypes;
 }

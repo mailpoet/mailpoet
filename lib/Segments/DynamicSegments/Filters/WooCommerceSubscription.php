@@ -25,10 +25,6 @@ class WooCommerceSubscription implements Filter {
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
     $productIds = $filterData->getParam('product_ids');
-    // Temporary BC fix
-    if (!$productIds) {
-      $productIds = [(int)$filterData->getParam('product_id')];
-    }
     $operator = $filterData->getParam('operator');
     $parameterSuffix = $filter->getId() ?: Security::generateRandomString();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
