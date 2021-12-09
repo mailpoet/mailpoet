@@ -209,7 +209,8 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
             }}
             automationId="select-number-of-orders-type"
           >
-            <option value="=">{MailPoet.I18n.t('equal')}</option>
+            <option value="=">{MailPoet.I18n.t('equals')}</option>
+            <option value="!=">{MailPoet.I18n.t('notEquals')}</option>
             <option value=">">{MailPoet.I18n.t('moreThan')}</option>
             <option value="<">{MailPoet.I18n.t('lessThan')}</option>
           </Select>
@@ -253,6 +254,8 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
             }}
             automationId="select-total-spent-type"
           >
+            <option value="=">{MailPoet.I18n.t('equals')}</option>
+            <option value="!=">{MailPoet.I18n.t('notEquals')}</option>
             <option value=">">{MailPoet.I18n.t('moreThan')}</option>
             <option value="<">{MailPoet.I18n.t('lessThan')}</option>
           </Select>
