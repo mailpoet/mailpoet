@@ -3,6 +3,7 @@
 namespace MailPoet\AutomaticEmails\WooCommerce;
 
 use Codeception\Util\Stub;
+use MailPoet\AutomaticEmails\AutomaticEmailFactory;
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
@@ -11,13 +12,22 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WooCommerceTest extends \MailPoetTest {
+  /** @var AutomaticEmailFactory */
+  private $automaticEmailFactory;
+
+  public function _before() {
+    $this->automaticEmailFactory = $this->makeEmpty(AutomaticEmailFactory::class, [
+      'createWooCommerceEmail' => new WooCommerce(),
+    ]);
+  }
+
   public function testItRegistersAbandonedCartEvent() {
     $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => true]);
     $WC->__construct();
     $WC->init();
 
     // event is registered
-    $AM = new AutomaticEmails(new WPFunctions());
+    $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailEventBySlug(WooCommerce::SLUG, AbandonedCart::SLUG);
     expect($result)->notEmpty();
   }
@@ -28,7 +38,7 @@ class WooCommerceTest extends \MailPoetTest {
     $WC->init();
 
     // event is registered
-    $AM = new AutomaticEmails(new WPFunctions());
+    $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailEventBySlug(WooCommerce::SLUG, FirstPurchase::SLUG);
     expect($result)->notEmpty();
 
@@ -44,7 +54,7 @@ class WooCommerceTest extends \MailPoetTest {
     $WC->init();
 
     // event is registered
-    $AM = new AutomaticEmails(new WPFunctions());
+    $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailEventBySlug(WooCommerce::SLUG, PurchasedInCategory::SLUG);
     expect($result)->notEmpty();
   }
@@ -55,7 +65,7 @@ class WooCommerceTest extends \MailPoetTest {
     $WC->init();
 
     // event is registered
-    $AM = new AutomaticEmails(new WPFunctions());
+    $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailEventBySlug(WooCommerce::SLUG, PurchasedProduct::SLUG);
     expect($result)->notEmpty();
 
@@ -69,7 +79,7 @@ class WooCommerceTest extends \MailPoetTest {
     $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => false]);
     $WC->__construct();
     $WC->init();
-    $AM = new AutomaticEmails(new WPFunctions());
+    $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailBySlug('woocommerce');
     foreach ($result['events'] as $event) {
       expect($event['actionButtonTitle'])->equals('WooCommerce is required');
@@ -79,7 +89,7 @@ class WooCommerceTest extends \MailPoetTest {
     $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => true]);
     $WC->__construct();
     $WC->init();
-    $AM = new AutomaticEmails(new WPFunctions());
+    $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailBySlug('woocommerce');
     foreach ($result['events'] as $event) {
       expect($event)->hasNotKey('actionButtonTitle');
