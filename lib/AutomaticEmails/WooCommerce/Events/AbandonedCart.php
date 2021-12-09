@@ -12,7 +12,6 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class AbandonedCart {
   const SLUG = 'woocommerce_abandoned_shopping_cart';
-  const LAST_VISIT_TIMESTAMP_OPTION_NAME = 'mailpoet_last_visit_timestamp';
   const TASK_META_NAME = 'cart_product_ids';
 
   /** @var WPFunctions */
