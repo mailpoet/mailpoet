@@ -14,18 +14,26 @@ class WooCommerce {
   /** @var WooCommerceHelper */
   private $woocommerceHelper;
 
+  /** @var string[] */
   public $availableEvents = [
     'AbandonedCart',
     'FirstPurchase',
     'PurchasedInCategory',
     'PurchasedProduct',
   ];
+
+  /** @var bool */
   private $woocommerceEnabled;
+
+  /** @var WPFunctions */
   private $wp;
 
-  public function __construct() {
-    $this->wp = new WPFunctions;
-    $this->woocommerceHelper = new WooCommerceHelper();
+  public function __construct(
+    WPFunctions $wp,
+    WooCommerceHelper $woocommerceHelper
+  ) {
+    $this->wp = $wp;
+    $this->woocommerceHelper = $woocommerceHelper;
     $this->woocommerceEnabled = $this->isWoocommerceEnabled();
   }
 
