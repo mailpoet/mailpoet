@@ -61,6 +61,8 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = ({ 
     if (
       (segment.action === WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS)
       && (segment.operator !== AnyValueTypes.ANY)
+      && (segment.operator !== AnyValueTypes.ALL)
+      && (segment.operator !== AnyValueTypes.NONE)
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
@@ -84,6 +86,8 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = ({ 
           automationId="select-operator"
         >
           <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+          <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
         </Select>
       </Grid.CenteredRow>
       <Grid.CenteredRow>
