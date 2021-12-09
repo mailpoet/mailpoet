@@ -3,6 +3,7 @@ import MailPoet from 'mailpoet';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ListingHeadingSteps from 'newsletters/listings/heading_steps';
+import { newsletterTypesWithActivation } from 'newsletters/listings/utils';
 import fetchAutomaticEmailShortcodes from 'newsletters/automatic_emails/fetch_editor_shortcodes.jsx';
 import displayTutorial from './tutorial.jsx';
 
@@ -74,7 +75,7 @@ const initializeEditor = (config) => {
               );
             }
           });
-      } else if (newsletter.type === 'automatic' && newsletter.status === 'active') {
+      } else if (newsletterTypesWithActivation.includes(newsletter.type) && newsletter.status === 'active') {
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'newsletters',

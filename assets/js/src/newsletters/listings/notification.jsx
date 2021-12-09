@@ -12,6 +12,7 @@ import Listing from 'listing/listing.jsx';
 import {
   checkCronStatus,
   checkMailerStatus,
+  confirmEdit,
 } from 'newsletters/listings/utils.jsx';
 import NewsletterTypes from 'newsletters/types';
 
@@ -123,13 +124,8 @@ const newsletterActions = [
   {
     name: 'edit',
     className: 'mailpoet-hide-on-mobile',
-    link: function link(newsletter) {
-      return (
-        <a href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}>
-          {MailPoet.I18n.t('edit')}
-        </a>
-      );
-    },
+    label: MailPoet.I18n.t('edit'),
+    onClick: confirmEdit,
   },
   {
     name: 'duplicate',
