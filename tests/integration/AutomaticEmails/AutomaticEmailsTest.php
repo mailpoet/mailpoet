@@ -2,15 +2,22 @@
 
 namespace MailPoet\AutomaticEmails;
 
+use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomaticEmailsTest extends \MailPoetTest {
   public $wp;
   public $AM;
 
+  /** @var AutomaticEmailFactory */
+  private $automaticEmailFactory;
+
   public function _before() {
     $this->wp = new WPFunctions();
-    $this->AM = new AutomaticEmails($this->wp);
+    $this->automaticEmailFactory = $this->makeEmpty(AutomaticEmailFactory::class, [
+      'createWooCommerceEmail' => new WooCommerce(),
+    ]);
+    $this->AM = new AutomaticEmails($this->wp, $this->automaticEmailFactory);
   }
 
   public function testItCanUnregisterAutomaticEmails() {
@@ -35,14 +42,6 @@ class AutomaticEmailsTest extends \MailPoetTest {
     $this->AM->unregisterAutomaticEmails();
     $result = $this->AM->getAutomaticEmails();
     expect($result)->null();
-  }
-
-  public function testItReturnsNullWhenThereAreNoRegisteredAutomaticEmails() {
-    $AM = $this->AM;
-    $AM->unregisterAutomaticEmails();
-    $AM->availableGroups = [];
-    $AM->init();
-    expect($AM->getAutomaticEmails())->null();
   }
 
   public function testItGetsAutomaticEmails() {
