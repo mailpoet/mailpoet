@@ -29,6 +29,11 @@ class WooCommerceSubscriptionsSegmentCest {
       ->withType(WooCommerceProduct::TYPE_SUBSCRIPTION)
       ->withPrice(10)
       ->create();
+    $subscriptionProduct2 = $productFactory
+      ->withName('Subscription 2')
+      ->withType(WooCommerceProduct::TYPE_SUBSCRIPTION)
+      ->withPrice(10)
+      ->create();
     $productFactory
       ->withName('Subscription Variable')
       ->withType(WooCommerceProduct::TYPE_VARIABLE_SUBSCRIPTION)
@@ -38,11 +43,16 @@ class WooCommerceSubscriptionsSegmentCest {
     $userFactory = new User();
     $subscriber1 = $userFactory->createUser('Sub Scriber1', 'subscriber', 'subscriber1@example.com');
     $subscriber2 = $userFactory->createUser('Sub Scriber2', 'subscriber', 'subscriber2@example.com');
+    $userFactory->createUser('Sub Scriber3', 'subscriber', 'subscriber3@example.com');
+    $userFactory->createUser('Sub Scriber4', 'subscriber', 'subscriber4@example.com');
+
     $subscriptionFactory = new WooCommerceSubscription();
     $subscriptionFactory->createSubscription($subscriber1->ID, $subscriptionProduct1['id']);
     $subscriptionFactory->createSubscription($subscriber2->ID, $subscriptionProduct1['id']);
+    $subscriptionFactory->createSubscription($subscriber2->ID, $subscriptionProduct2['id']);
 
     $segmentActionSelectElement = '[data-automation-id="select-segment-action"]';
+    $operatorSelectElement = '[data-automation-id="select-operator"]';
     $segmentTitle = 'Woo Active Subscriptions';
     $i->wantTo('Create dynamic segment for subscriptions');
     $i->login();
@@ -52,8 +62,22 @@ class WooCommerceSubscriptionsSegmentCest {
     $i->fillField(['name' => 'description'], 'Desc ' . $segmentTitle);
     $i->selectOptionInReactSelect('has an active subscription', $segmentActionSelectElement);
     $i->selectOptionInReactSelect('Subscription 1', '[data-automation-id="select-segment-products"]');
+    $i->selectOptionInReactSelect('Subscription 2', '[data-automation-id="select-segment-products"]');
+    $i->waitForText('This segment has');
+
+    // Check for none of
+    $i->selectOption($operatorSelectElement, 'none of');
+    $i->waitForText('Calculating segment size…');
+    $i->waitForText('This segment has 3 subscribers.'); // subscriber3@example.com, subscriber4@example.com, and admin user
+    // Check for all of
+    $i->selectOption($operatorSelectElement, 'all of');
+    $i->waitForText('Calculating segment size…');
+    $i->waitForText('This segment has 1 subscribers.'); // subscriber2@example.com
+    // Check for any of
+    $i->selectOption($operatorSelectElement, 'any of'); // subscriber2@example.com and subscriber1@example.com
     $i->waitForText('Calculating segment size…');
     $i->waitForText('This segment has 2 subscribers.');
+
     $i->seeNoJSErrors();
     $i->click('Save');
     $i->wantTo('Check that segment contains correct subscribers');
