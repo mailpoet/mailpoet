@@ -135,6 +135,13 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
+    if (
+      segment.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY
+      && segment.operator !== AnyValueTypes.ANY
+      && segment.operator !== AnyValueTypes.NONE
+    ) {
+      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+    }
   }, [updateSegmentFilter, segment, filterIndex]);
 
   if (segment.action === WooCommerceActionTypes.PURCHASED_PRODUCT) {
@@ -290,6 +297,20 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
   } else if (segment.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY) {
     optionFields = (
       <>
+        <Grid.CenteredRow>
+          <Select
+            key="select-operator-country"
+            value={segment.operator}
+            onChange={(e): void => updateSegmentFilter(
+              { operator: e.target.value },
+              filterIndex
+            )}
+            automationId="select-operator-country"
+          >
+            <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+            <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+          </Select>
+        </Grid.CenteredRow>
         <Grid.CenteredRow>
           <ReactSelect
             dimension="small"
