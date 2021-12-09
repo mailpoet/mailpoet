@@ -179,6 +179,7 @@ class FilterDataMapper {
     } elseif ($data['action'] === WooCommerceCountry::ACTION_CUSTOMER_COUNTRY) {
       if (!isset($data['country_code'])) throw new InvalidFilterException('Missing country', InvalidFilterException::MISSING_COUNTRY);
       $filterData['country_code'] = $data['country_code'];
+      $filterData['operator'] = $data['operator'] ?? DynamicSegmentFilterData::OPERATOR_ANY;
     } elseif ($data['action'] === WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS) {
       if (!isset($data['number_of_orders_type'])
         || !isset($data['number_of_orders_count']) || $data['number_of_orders_count'] < 0
