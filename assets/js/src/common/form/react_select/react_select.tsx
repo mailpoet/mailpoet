@@ -21,7 +21,7 @@ type LabelRenderer = {
 const LabelRenderer = (data: LabelRenderer) => (
   <div className="mailpoet-form-react-select-option">
     {data.tag && <span className="mailpoet-form-react-select-tag">{data.tag}</span>}
-    <span className="mailpoet-form-react-select-text"><span>{data.label}</span></span>
+    <span>{data.label}</span>
     {data.count !== undefined && <span className="mailpoet-form-react-select-count">{data.count}</span>}
   </div>
 );

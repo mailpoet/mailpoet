@@ -133,23 +133,8 @@
   background: $color-tertiary-light !important;
 }
 
-.mailpoet-form-react-select-option {
-  align-items: center;
-  box-sizing: border-box;
-  display: flex;
-  max-width: 100%;
-  position: relative;
-}
-
-.mailpoet-form-react-select-text {
-  min-width: 0; // required for ellipsis to work
-
-  span {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+.mailpoet-form-react-select-option > span {
+  vertical-align: middle;
 }
 
 .mailpoet-form-react-select-tag {
