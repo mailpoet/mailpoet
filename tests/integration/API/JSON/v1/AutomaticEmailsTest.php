@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\AutomaticEmails\AutomaticEmailFactory;
 use MailPoet\AutomaticEmails\AutomaticEmails as AutomaticEmailsController;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
+use MailPoet\AutomaticEmails\WooCommerce\WooCommerceEventFactory;
 use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -17,8 +18,9 @@ class AutomaticEmailsTest extends \MailPoetTest {
   public function _before() {
     $this->wp = new WPFunctions;
 
+    $wooCommerceEventFactory = $this->diContainer->get(WooCommerceEventFactory::class);
     $automaticEmailFactory = $this->makeEmpty(AutomaticEmailFactory::class, [
-      'createWooCommerceEmail' => new WooCommerce($this->wp, new Helper()),
+      'createWooCommerceEmail' => new WooCommerce($this->wp, new Helper(), $wooCommerceEventFactory),
     ]);
     $this->api = new AutomaticEmails(new AutomaticEmailsController($this->wp, $automaticEmailFactory), $this->wp);
   }
