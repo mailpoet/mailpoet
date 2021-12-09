@@ -13,6 +13,8 @@ class SubscriberSubscribedDate implements Filter {
 
   const BEFORE = 'before';
   const AFTER = 'after';
+  const ON = 'on';
+  const NOT_ON = 'notOn';
   const IN_THE_LAST = 'inTheLast';
   const NOT_IN_THE_LAST = 'notInTheLast';
 
@@ -22,11 +24,18 @@ class SubscriberSubscribedDate implements Filter {
     $operator = $filterData->getParam('operator');
     $parameterSuffix = $filter->getId() ?: Security::generateRandomString();
     $parameter = 'date' . $parameterSuffix;
+    $date = $this->getDate($operator, $value);
 
     if ($operator === self::BEFORE) {
       $queryBuilder->andWhere("last_subscribed_at < :$parameter");
     } elseif ($operator === self::AFTER) {
       $queryBuilder->andWhere("last_subscribed_at >= :$parameter");
+    } elseif ($operator === self::ON) {
+      $queryBuilder->andWhere("DATE(last_subscribed_at) = :$parameter");
+      $date = $date->toDateString();
+    } elseif ($operator === self::NOT_ON) {
+      $queryBuilder->andWhere("DATE(last_subscribed_at) != :$parameter");
+      $date = $date->toDateString();
     } elseif ($operator === self::IN_THE_LAST) {
       $queryBuilder->andWhere("last_subscribed_at >= :$parameter");
     } elseif ($operator === self::NOT_IN_THE_LAST) {
@@ -34,18 +43,30 @@ class SubscriberSubscribedDate implements Filter {
     } else {
       throw new InvalidFilterException('Incorrect value for operator', InvalidFilterException::MISSING_VALUE);
     }
-    $queryBuilder->setParameter($parameter, $this->getDate($operator, $value));
+    $queryBuilder->setParameter($parameter, $date);
 
     return $queryBuilder;
   }
 
-  private function getDate(string $operator, string $value): \DateTimeInterface {
-    if (($operator === self::BEFORE) || ($operator === self::AFTER)) {
+  private function getDate(string $operator, string $value): CarbonImmutable {
+    $dateFields = [self::BEFORE, self::AFTER, self::ON, self::NOT_ON];
+
+    if (in_array($operator, $dateFields)) {
       $carbon = CarbonImmutable::createFromFormat('Y-m-d', $value);
-      if (!$carbon instanceof CarbonImmutable) throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);
-      if ($operator === self::BEFORE) return $carbon->startOfDay();
-      if ($operator === self::AFTER) return $carbon->endOfDay();
+      if (!$carbon instanceof CarbonImmutable) {
+        throw new InvalidFilterException('Invalid date value', InvalidFilterException::INVALID_DATE_VALUE);
+      }
+      if ($operator === self::BEFORE) {
+        return $carbon->startOfDay();
+      }
+      if ($operator === self::AFTER) {
+        return $carbon->endOfDay();
+      }
+      if ($operator === self::ON || $operator === self::NOT_ON) {
+        return $carbon;
+      }
     }
+
     $carbon = CarbonImmutable::now();
     return $carbon->subDays(intval($value) - 1)->startOfDay();
   }

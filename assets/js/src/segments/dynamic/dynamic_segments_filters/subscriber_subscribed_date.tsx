@@ -15,6 +15,8 @@ import {
 export enum SubscribedDateOperator {
   BEFORE = 'before',
   AFTER = 'after',
+  ON = 'on',
+  NOT_ON = 'notOn',
   IN_THE_LAST = 'inTheLast',
   NOT_IN_THE_LAST = 'notInTheLast',
 }
@@ -22,6 +24,8 @@ export enum SubscribedDateOperator {
 const availableOperators = [
   SubscribedDateOperator.BEFORE,
   SubscribedDateOperator.AFTER,
+  SubscribedDateOperator.ON,
+  SubscribedDateOperator.NOT_ON,
   SubscribedDateOperator.IN_THE_LAST,
   SubscribedDateOperator.NOT_IN_THE_LAST,
 ];
@@ -62,6 +66,8 @@ export const SubscribedDateFields: React.FunctionComponent<Props> = ({ filterInd
       (
         segment.operator === SubscribedDateOperator.BEFORE
         || segment.operator === SubscribedDateOperator.AFTER
+        || segment.operator === SubscribedDateOperator.ON
+        || segment.operator === SubscribedDateOperator.NOT_ON
       )
       && ((parseDate(segment.value) === undefined) || !new RegExp(/^\d+-\d+-\d+$/).test(segment.value))
     ) {
@@ -90,12 +96,16 @@ export const SubscribedDateFields: React.FunctionComponent<Props> = ({ filterInd
         >
           <option value={SubscribedDateOperator.BEFORE}>{MailPoet.I18n.t('before')}</option>
           <option value={SubscribedDateOperator.AFTER}>{MailPoet.I18n.t('after')}</option>
+          <option value={SubscribedDateOperator.ON}>{MailPoet.I18n.t('on')}</option>
+          <option value={SubscribedDateOperator.NOT_ON}>{MailPoet.I18n.t('notOn')}</option>
           <option value={SubscribedDateOperator.IN_THE_LAST}>{MailPoet.I18n.t('inTheLast')}</option>
           <option value={SubscribedDateOperator.NOT_IN_THE_LAST}>{MailPoet.I18n.t('notInTheLast')}</option>
         </Select>
         {(
           segment.operator === SubscribedDateOperator.BEFORE
           || segment.operator === SubscribedDateOperator.AFTER
+          || segment.operator === SubscribedDateOperator.ON
+          || segment.operator === SubscribedDateOperator.NOT_ON
         ) && (
           <Datepicker
             dateFormat="MMMM d, yyyy"
