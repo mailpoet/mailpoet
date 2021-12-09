@@ -28,10 +28,13 @@ class WooCommerceCountryTest extends \MailPoetTest {
     $userId1 = $this->tester->createWordPressUser('customer1@example.com', 'customer');
     $userId2 = $this->tester->createWordPressUser('customer2@example.com', 'customer');
     $userId3 = $this->tester->createWordPressUser('customer3@example.com', 'customer');
+    $userId4 = $this->tester->createWordPressUser('customer4@example.com', 'customer');
 
     $this->createCustomerLookupData(['user_id' => $userId1, 'email' => 'customer1@example.com', 'country' => 'CZ']);
     $this->createCustomerLookupData(['user_id' => $userId2, 'email' => 'customer2@example.com', 'country' => 'US']);
     $this->createCustomerLookupData(['user_id' => $userId3, 'email' => 'customer3@example.com', 'country' => 'US']);
+    $this->createCustomerLookupData(['user_id' => $userId4, 'email' => 'customer4@example.com', 'country' => 'ES']);
+
   }
 
   public function testItAppliesFilter(): void {
@@ -42,9 +45,40 @@ class WooCommerceCountryTest extends \MailPoetTest {
     $result = $statement->fetchAll();
     expect(count($result))->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
-    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1)->isInstanceOf(SubscriberEntity::class);
     expect($subscriber1->getEmail())->equals('customer1@example.com');
+  }
+
+  public function testItAppliesFilterAny(): void {
+    $segmentFilter = $this->getSegmentFilter(['CZ','US']);
+    $queryBuilder = $this->wooCommerceCountry->apply($this->getQueryBuilder(), $segmentFilter);
+    $statement = $queryBuilder->execute();
+    assert($statement instanceof DriverStatement);
+    $result = $statement->fetchAll();
+    expect(count($result))->equals(3);
+    $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
+    assert($subscriber1 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    expect($subscriber1->getEmail())->equals('customer1@example.com');
+    $subscriber2 = $this->subscribersRepository->findOneById($result[1]['inner_subscriber_id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
+    expect($subscriber2)->isInstanceOf(SubscriberEntity::class);
+    expect($subscriber2->getEmail())->equals('customer2@example.com');
+    $subscriber3 = $this->subscribersRepository->findOneById($result[2]['inner_subscriber_id']);
+    assert($subscriber3 instanceof SubscriberEntity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
+    expect($subscriber3->getEmail())->equals('customer3@example.com');
+  }
+
+  public function testItAppliesFilterNone() {
+    $segmentFilter = $this->getSegmentFilter(['CZ','US'], DynamicSegmentFilterData::OPERATOR_NONE);
+    $queryBuilder = $this->wooCommerceCountry->apply($this->getQueryBuilder(), $segmentFilter);
+    $result = $queryBuilder->execute()->fetchAll();
+    expect(count($result))->equals(1);
+    $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    expect($subscriber1->getEmail())->equals('customer4@example.com');
   }
 
   private function getQueryBuilder(): QueryBuilder {
@@ -56,10 +90,23 @@ class WooCommerceCountryTest extends \MailPoetTest {
       ->from($subscribersTable);
   }
 
-  private function getSegmentFilter(string $country): DynamicSegmentFilterEntity {
-    $data = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceCountry::ACTION_CUSTOMER_COUNTRY, [
+  /**
+   * @param string[]|string $country
+   * @param string $operator
+   * @return DynamicSegmentFilterEntity
+   */
+  private function getSegmentFilter($country, $operator = null): DynamicSegmentFilterEntity {
+    $filterData = [
       'country_code' => $country,
-    ]);
+    ];
+    if ($operator) {
+      $filterData['operator'] = $operator;
+    }
+    $data = new DynamicSegmentFilterData(
+      DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      WooCommerceCountry::ACTION_CUSTOMER_COUNTRY,
+      $filterData
+    );
     $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
     $this->entityManager->persist($segment);
     $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $data);
@@ -112,7 +159,7 @@ class WooCommerceCountryTest extends \MailPoetTest {
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
 
-    $emails = ['customer1@example.com', 'customer2@example.com', 'customer3@example.com'];
+    $emails = ['customer1@example.com', 'customer2@example.com', 'customer3@example.com', 'customer4@example.com'];
     foreach ($emails as $email) {
       $this->tester->deleteWordPressUser($email);
     }
