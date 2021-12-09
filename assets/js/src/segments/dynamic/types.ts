@@ -81,7 +81,7 @@ export interface WooCommerceFormItem extends FormItem {
   total_spent_type?: string;
   total_spent_amount?: number;
   total_spent_days?: number;
-  country_code?: string;
+  country_code?: string[];
 }
 
 export interface WooCommerceSubscriptionFormItem extends FormItem {

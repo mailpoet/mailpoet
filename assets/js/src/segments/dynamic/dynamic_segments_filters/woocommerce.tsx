@@ -50,7 +50,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (formItems.action === WooCommerceActionTypes.PURCHASED_PRODUCT && purchasedProductIsInvalid) {
     return false;
   }
-  if (formItems.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY && !formItems.country_code) {
+  const countryCodeIsInvalid = formItems.country_code === undefined
+    || formItems.country_code.length === 0;
+  if (formItems.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY && countryCodeIsInvalid) {
     return false;
   }
   const numberOfOrdersIsInvalid = !formItems.number_of_orders_count
@@ -287,21 +289,32 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
     );
   } else if (segment.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY) {
     optionFields = (
-      <div>
-        <ReactSelect
-          dimension="small"
-          key="select-segment-country"
-          isFullWidth
-          placeholder={MailPoet.I18n.t('selectWooCountry')}
-          options={countryOptions}
-          value={find(['value', segment.country_code], countryOptions)}
-          onChange={(option: SelectOption): void => updateSegmentFilter(
-            { country_code: option.value },
-            filterIndex
-          )}
-          automationId="select-segment-country"
-        />
-      </div>
+      <>
+        <Grid.CenteredRow>
+          <ReactSelect
+            dimension="small"
+            key="select-segment-country"
+            isFullWidth
+            isMulti
+            placeholder={MailPoet.I18n.t('selectWooCountry')}
+            options={countryOptions}
+            value={
+              filter(
+                (option) => {
+                  if (!segment.country_code) return undefined;
+                  return segment.country_code.indexOf(option.value) !== -1;
+                },
+                countryOptions
+              )
+            }
+            onChange={(options: SelectOption[]): void => updateSegmentFilter(
+              { country_code: (options || []).map((x: SelectOption) => x.value) },
+              filterIndex
+            )}
+            automationId="select-segment-country"
+          />
+        </Grid.CenteredRow>
+      </>
     );
   }
 
