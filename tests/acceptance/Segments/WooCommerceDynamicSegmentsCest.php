@@ -72,7 +72,7 @@ class WooCommerceDynamicSegmentsCest {
       ->create();
     $this->customerCountrySegment = $segmentFactory
       ->withName(self::CUSTOMER_IN_COUNTRY)
-      ->withWooCommerceCustomerCountryFilter('FR')
+      ->withWooCommerceCustomerCountryFilter(['FR'])
       ->create();
   }
 
@@ -164,6 +164,8 @@ class WooCommerceDynamicSegmentsCest {
     $customerEmail = 'customer_france@example.com';
     $product = $this->productFactory->create();
     $i->orderProduct($product, $customerEmail);
+    $i->cli(['wc', 'tool', 'run', 'regenerate_product_lookup_tables', '--user=1']);
+    $i->wait(1);
 
     $i->login();
     $i->wantTo('Check that there is one subscriber in customer country segment');
