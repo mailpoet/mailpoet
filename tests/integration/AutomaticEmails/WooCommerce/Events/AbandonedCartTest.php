@@ -77,7 +77,16 @@ class AbandonedCartTest extends \MailPoetTest {
   }
 
   public function testItGetsEventDetails() {
-    $event = new AbandonedCart();
+    $wp = new WPFunctions();
+    $wcHelper = new WooCommerceHelper();
+    $cookies = new Cookies();
+    $event = new AbandonedCart(
+      $wp,
+      $wcHelper,
+      $cookies,
+      new AbandonedCartPageVisitTracker($wp, $wcHelper, $cookies),
+      new AutomaticEmailScheduler($wp)
+    );
     $result = $event->getEventDetails();
     expect($result)->notEmpty();
     expect($result['slug'])->equals(AbandonedCart::SLUG);
