@@ -2,6 +2,7 @@ import React from 'react';
 import ReactStringReplace from 'react-string-replace';
 
 import Listing from 'listing/listing.jsx';
+import confirmAlert from 'common/confirm_alert.jsx';
 import Tags from 'common/tag/tags';
 import Toggle from 'common/form/toggle/toggle';
 import { ScheduledIcon } from 'common/listings/newsletter_status';
@@ -100,6 +101,21 @@ const bulkActions = [
   },
 ];
 
+const confirmEdit = (newsletter) => {
+  const redirectToEditing = () => {
+    window.location.href = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
+  };
+
+  if (newsletter.type === 'automatic' && newsletter.status === 'active') {
+    confirmAlert({
+      message: MailPoet.I18n.t('confirmAutomaticNewsletterEdit'),
+      onConfirm: redirectToEditing,
+    });
+  } else {
+    redirectToEditing();
+  }
+};
+
 let newsletterActions = [
   {
     name: 'view',
@@ -114,13 +130,8 @@ let newsletterActions = [
   {
     name: 'edit',
     className: 'mailpoet-hide-on-mobile',
-    link: function link(newsletter) {
-      return (
-        <a href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}>
-          {MailPoet.I18n.t('edit')}
-        </a>
-      );
-    },
+    label: MailPoet.I18n.t('edit'),
+    onClick: confirmEdit,
   },
   {
     name: 'duplicate',
