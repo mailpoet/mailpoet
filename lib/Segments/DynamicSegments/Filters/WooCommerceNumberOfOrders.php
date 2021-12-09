@@ -50,6 +50,8 @@ class WooCommerceNumberOfOrders implements Filter {
 
     if ($type === '=') {
       $queryBuilder->having('COUNT(posts.ID) = :count' . $parameterSuffix);
+    } elseif ($type === '!=') {
+      $queryBuilder->having('COUNT(posts.ID) != :count' . $parameterSuffix);
     } elseif ($type === '>') {
       $queryBuilder->having('COUNT(posts.ID) > :count' . $parameterSuffix);
     } elseif ($type === '<') {

@@ -53,7 +53,11 @@ class WooCommerceTotalSpent implements Filter {
       'inner_subscriber_id'
     );
 
-    if ($type === '>') {
+    if ($type === '=') {
+      $queryBuilder->having('SUM(order_total.meta_value) = :amount' . $parameterSuffix);
+    } elseif ($type === '!=') {
+      $queryBuilder->having('SUM(order_total.meta_value) != :amount' . $parameterSuffix);
+    } elseif ($type === '>') {
       $queryBuilder->having('SUM(order_total.meta_value) > :amount' . $parameterSuffix);
     } elseif ($type === '<') {
       $queryBuilder->having('SUM(order_total.meta_value) < :amount' . $parameterSuffix);
