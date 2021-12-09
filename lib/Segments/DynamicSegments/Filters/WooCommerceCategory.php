@@ -59,8 +59,8 @@ class WooCommerceCategory implements Filter {
       $this->applyTermRelationshipsJoin($queryBuilder);
       $this->applyTermTaxonomyJoin($queryBuilder, $parameterSuffix)
       ->groupBy("{$subscribersTable}.id, items.order_id")
-      ->having('COUNT(items.order_id) = :count')
-      ->setParameter('count', count($categoryIds));
+      ->having('COUNT(items.order_id) = :count_' . $parameterSuffix)
+      ->setParameter('count_' . $parameterSuffix, count($categoryIds));
 
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
       $this->applyPostmetaJoin($queryBuilder, $subscribersTable);
