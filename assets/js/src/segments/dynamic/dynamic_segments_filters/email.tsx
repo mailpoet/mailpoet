@@ -38,7 +38,11 @@ export function validateEmail(formItems: EmailFormItem): boolean {
     (formItems.action !== EmailActionTypes.OPENS_ABSOLUTE_COUNT)
     && (formItems.action !== EmailActionTypes.MACHINE_OPENS_ABSOLUTE_COUNT)
   ) {
-    return !!formItems.newsletter_id;
+    return (!!formItems.newsletter_id) // old segments this can be removed after MAILPOET-3951
+      || (
+        Array.isArray(formItems.newsletters)
+        && formItems.newsletters.length > 0
+      );
   }
 
   return (

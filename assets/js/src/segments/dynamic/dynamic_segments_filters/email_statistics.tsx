@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import MailPoet from 'mailpoet';
-import { find } from 'lodash/fp';
+import { filter, find, map } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import APIErrorsNotice from 'notices/api_errors_notice';
@@ -49,7 +49,7 @@ export const EmailStatisticsFields: React.FunctionComponent<Props> = ({ filterIn
     return {
       label: newsletter.subject,
       tag: sentAt,
-      value: newsletter.id,
+      value: Number(newsletter.id),
     };
   });
 
@@ -127,19 +127,57 @@ export const EmailStatisticsFields: React.FunctionComponent<Props> = ({ filterIn
           </Grid.CenteredRow>
         )
       }
-      <Grid.CenteredRow>
-        <ReactSelect
-          dimension="small"
-          isFullWidth
-          placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
-          options={newsletterOptions}
-          value={find(['value', segment.newsletter_id], newsletterOptions)}
-          onChange={(option: SelectOption): void => {
-            updateSegmentFilter({ newsletter_id: option.value }, filterIndex);
-          }}
-          automationId="segment-email"
-        />
-      </Grid.CenteredRow>
+      {
+        // this condition is temporary,
+        // when MAILPOET-3951 is implemented this select will be in all segments
+        ((segment.action === EmailActionTypes.OPENED))
+        && (
+          <Grid.CenteredRow>
+            <ReactSelect
+              dimension="small"
+              isFullWidth
+              isMulti
+              placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
+              options={newsletterOptions}
+              automationId="segment-email"
+              value={
+                filter(
+                  (option) => {
+                    if (!segment.newsletters) return undefined;
+                    const newsletterId = option.value;
+                    return segment.newsletters.indexOf(newsletterId) !== -1;
+                  },
+                  newsletterOptions
+                )
+              }
+              onChange={(options: SelectOption[]): void => {
+                updateSegmentFilter(
+                  { newsletters: map('value', options) },
+                  filterIndex
+                );
+              }}
+            />
+          </Grid.CenteredRow>
+        )
+      }
+      {
+        ((segment.action !== EmailActionTypes.OPENED))
+        && (
+          <Grid.CenteredRow>
+            <ReactSelect
+              dimension="small"
+              isFullWidth
+              placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
+              options={newsletterOptions}
+              value={find(['value', segment.newsletter_id], newsletterOptions)}
+              onChange={(option: SelectOption): void => {
+                updateSegmentFilter({ newsletter_id: option.value }, filterIndex);
+              }}
+              automationId="segment-email"
+            />
+          </Grid.CenteredRow>
+        )
+      }
       {(loadingLinks && (MailPoet.I18n.t('loadingDynamicSegmentItems')))}
       {
         (!!links.length && shouldDisplayLinks(segment.action, segment.newsletter_id))
