@@ -15,7 +15,6 @@ const PrivacyProtectionNotice: React.FunctionComponent = () => {
     EmailActionTypes.OPENS_ABSOLUTE_COUNT,
     EmailActionTypes.MACHINE_OPENED,
     EmailActionTypes.MACHINE_OPENS_ABSOLUTE_COUNT,
-    EmailActionTypes.NOT_OPENED,
   ];
 
   let containsOpensFilter = false;
