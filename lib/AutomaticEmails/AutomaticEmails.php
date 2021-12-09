@@ -8,6 +8,7 @@ use MailPoet\WP\Notice;
 class AutomaticEmails {
   const FILTER_PREFIX = 'mailpoet_automatic_email_';
 
+  /** @var WPFunctions */
   private $wp;
 
   /** @var array|null */
@@ -17,8 +18,10 @@ class AutomaticEmails {
     'WooCommerce',
   ];
 
-  public function __construct() {
-    $this->wp = new WPFunctions;
+  public function __construct(
+    WPFunctions $wp
+  ) {
+    $this->wp = $wp;
   }
 
   public function init() {
