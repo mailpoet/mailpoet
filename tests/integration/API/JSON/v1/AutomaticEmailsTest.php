@@ -2,7 +2,10 @@
 
 namespace MailPoet\API\JSON\v1;
 
+use MailPoet\AutomaticEmails\AutomaticEmailFactory;
 use MailPoet\AutomaticEmails\AutomaticEmails as AutomaticEmailsController;
+use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
+use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomaticEmailsTest extends \MailPoetTest {
@@ -13,7 +16,11 @@ class AutomaticEmailsTest extends \MailPoetTest {
 
   public function _before() {
     $this->wp = new WPFunctions;
-    $this->api = new AutomaticEmails(new AutomaticEmailsController($this->wp), $this->wp);
+
+    $automaticEmailFactory = $this->makeEmpty(AutomaticEmailFactory::class, [
+      'createWooCommerceEmail' => new WooCommerce($this->wp, new Helper()),
+    ]);
+    $this->api = new AutomaticEmails(new AutomaticEmailsController($this->wp, $automaticEmailFactory), $this->wp);
   }
 
   public function testItRequiresProperlyFormattedRequestWhenGettingEventOptions() {
