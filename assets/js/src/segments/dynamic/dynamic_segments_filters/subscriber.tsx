@@ -32,6 +32,8 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if (
     formItems.operator === SubscribedDateOperator.BEFORE
     || formItems.operator === SubscribedDateOperator.AFTER
+    || formItems.operator === SubscribedDateOperator.ON
+    || formItems.operator === SubscribedDateOperator.NOT_ON
   ) {
     const re = new RegExp(/^\d+-\d+-\d+$/);
     return re.test(formItems.value);
