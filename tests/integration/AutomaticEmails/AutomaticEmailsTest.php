@@ -3,6 +3,7 @@
 namespace MailPoet\AutomaticEmails;
 
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
+use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomaticEmailsTest extends \MailPoetTest {
@@ -15,7 +16,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
   public function _before() {
     $this->wp = new WPFunctions();
     $this->automaticEmailFactory = $this->makeEmpty(AutomaticEmailFactory::class, [
-      'createWooCommerceEmail' => new WooCommerce(),
+      'createWooCommerceEmail' => new WooCommerce($this->wp, new Helper()),
     ]);
     $this->AM = new AutomaticEmails($this->wp, $this->automaticEmailFactory);
   }

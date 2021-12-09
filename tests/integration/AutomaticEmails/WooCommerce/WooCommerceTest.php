@@ -2,13 +2,13 @@
 
 namespace MailPoet\AutomaticEmails\WooCommerce;
 
-use Codeception\Util\Stub;
 use MailPoet\AutomaticEmails\AutomaticEmailFactory;
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
+use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class WooCommerceTest extends \MailPoetTest {
@@ -17,13 +17,12 @@ class WooCommerceTest extends \MailPoetTest {
 
   public function _before() {
     $this->automaticEmailFactory = $this->makeEmpty(AutomaticEmailFactory::class, [
-      'createWooCommerceEmail' => new WooCommerce(),
+      'createWooCommerceEmail' => new WooCommerce(new WPFunctions(), new Helper()),
     ]);
   }
 
   public function testItRegistersAbandonedCartEvent() {
-    $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => true]);
-    $WC->__construct();
+    $WC = $this->createWooCommerceEmailMock();
     $WC->init();
 
     // event is registered
@@ -33,8 +32,7 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function testItRegistersFirstPuchaseEvent() {
-    $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => true]);
-    $WC->__construct();
+    $WC = $this->createWooCommerceEmailMock();
     $WC->init();
 
     // event is registered
@@ -49,8 +47,7 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function testItRegistersPurchasedInCategoryEvent() {
-    $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => true]);
-    $WC->__construct();
+    $WC = $this->createWooCommerceEmailMock();
     $WC->init();
 
     // event is registered
@@ -60,8 +57,7 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function testItRegistersPurchasedProductEvent() {
-    $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => true]);
-    $WC->__construct();
+    $WC = $this->createWooCommerceEmailMock();
     $WC->init();
 
     // event is registered
@@ -76,9 +72,9 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   public function testItReplacesEventActionButtonWithLinkToWCPluginRepoWhenWCIsDisabled() {
-    $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => false]);
-    $WC->__construct();
+    $WC = $this->createWooCommerceEmailMock(false);
     $WC->init();
+
     $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailBySlug('woocommerce');
     foreach ($result['events'] as $event) {
@@ -86,9 +82,9 @@ class WooCommerceTest extends \MailPoetTest {
       expect($event['actionButtonLink'])->equals('https://wordpress.org/plugins/woocommerce/');
     }
 
-    $WC = Stub::make(new WooCommerce(), ['isWoocommerceEnabled' => true]);
-    $WC->__construct();
+    $WC = $this->createWooCommerceEmailMock();
     $WC->init();
+
     $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailBySlug('woocommerce');
     foreach ($result['events'] as $event) {
@@ -103,5 +99,11 @@ class WooCommerceTest extends \MailPoetTest {
     $wp->removeAllFilters('woocommerce_payment_complete');
     $wp->removeAllFilters('woocommerce_product_purchased_get_products');
     $wp->removeAllFilters('mailpoet_automatic_email_woocommerce');
+  }
+
+  private function createWooCommerceEmailMock(bool $isWoocommerceEnabled = true): WooCommerce {
+    $mock = $this->make(WooCommerce::class, ['isWoocommerceEnabled' => $isWoocommerceEnabled]);
+    $mock->__construct(new WPFunctions(), new Helper());
+    return $mock;
   }
 }
