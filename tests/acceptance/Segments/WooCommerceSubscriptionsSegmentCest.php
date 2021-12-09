@@ -51,7 +51,7 @@ class WooCommerceSubscriptionsSegmentCest {
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], 'Desc ' . $segmentTitle);
     $i->selectOptionInReactSelect('has an active subscription', $segmentActionSelectElement);
-    $i->selectOptionInReactSelect('Subscription 1', '[data-automation-id="segment-woo-subscription-action"]');
+    $i->selectOptionInReactSelect('Subscription 1', '[data-automation-id="select-segment-products"]');
     $i->waitForText('Calculating segment size…');
     $i->waitForText('This segment has 2 subscribers.');
     $i->seeNoJSErrors();

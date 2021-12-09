@@ -373,7 +373,8 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION,
       'action' => WooCommerceSubscription::ACTION_HAS_ACTIVE,
-      'product_id' => '10',
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'product_ids' => ['10'],
       'some_mess' => 'mess',
     ]]];
     $filters = $this->mapper->map($data);
@@ -385,7 +386,8 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION);
     expect($filter->getAction())->equals(WooCommerceSubscription::ACTION_HAS_ACTIVE);
     expect($filter->getData())->equals([
-      'product_id' => '10',
+      'product_ids' => ['10'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
   }
@@ -396,12 +398,25 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->expectExceptionCode(InvalidFilterException::MISSING_ACTION);
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION,
-      'product_id' => '10',
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'product_ids' => ['10'],
     ]]];
     $this->mapper->map($data);
   }
 
-  public function testItChecksWooCommerceSubscriptionProductId() {
+  public function testItChecksWooCommerceSubscriptionProductIds() {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing product');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_PRODUCT_ID);
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION,
+      'action' => WooCommerceSubscription::ACTION_HAS_ACTIVE,
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+    ]]];
+    $this->mapper->map($data);
+  }
+
+  public function testItChecksWooCommerceSubscriptionMissingOperator() {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing product');
     $this->expectExceptionCode(InvalidFilterException::MISSING_PRODUCT_ID);
