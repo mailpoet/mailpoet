@@ -74,7 +74,9 @@ class WooCommerceCountryTest extends \MailPoetTest {
   public function testItAppliesFilterNone() {
     $segmentFilter = $this->getSegmentFilter(['CZ','US'], DynamicSegmentFilterData::OPERATOR_NONE);
     $queryBuilder = $this->wooCommerceCountry->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $statement = $queryBuilder->execute();
+    assert($statement instanceof DriverStatement);
+    $result = $statement->fetchAll();
     expect(count($result))->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
