@@ -144,6 +144,37 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('opened-old-opens@example.com');
   }
 
+  public function testGetOpenedEquals() {
+    $segmentFilter = $this->getSegmentFilter(1, 'equals', 3);
+    $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)
+      ->orderBy('email')
+      ->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAll();
+
+    $this->assertCount(1, $result);
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertSame('opened-old-opens@example.com', $subscriber1->getEmail());
+  }
+
+  public function testGetOpenedNotEquals() {
+    $segmentFilter = $this->getSegmentFilter(2, 'not_equals', 3);
+    $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)
+      ->orderBy('email')
+      ->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAll();
+
+    $this->assertCount(2, $result);
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertSame('opened-3-newsletters@example.com', $subscriber1->getEmail());
+    $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
+    $this->assertSame('opened-old-opens@example.com', $subscriber2->getEmail());
+  }
+
   private function getQueryBuilder() {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager

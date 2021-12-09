@@ -40,7 +40,11 @@ class EmailOpensAbsoluteCountAction implements Filter {
     );
     $queryBuilder->setParameter('newer' . $parameterSuffix, CarbonImmutable::now()->subDays($days)->startOfDay());
     $queryBuilder->groupBy("$subscribersTable.id");
-    if ($operator === 'less') {
+    if ($operator === 'equals') {
+      $queryBuilder->having("count(opens.id) = :opens" . $parameterSuffix);
+    } else if ($operator === 'not_equals') {
+      $queryBuilder->having("count(opens.id) != :opens" . $parameterSuffix);
+    } else if ($operator === 'less') {
       $queryBuilder->having("count(opens.id) < :opens" . $parameterSuffix);
     } else {
       $queryBuilder->having("count(opens.id) > :opens" . $parameterSuffix);

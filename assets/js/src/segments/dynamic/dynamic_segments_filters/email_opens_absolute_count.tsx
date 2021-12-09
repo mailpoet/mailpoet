@@ -55,6 +55,8 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({ 
                 >
                   <option value="more">{MailPoet.I18n.t('moreThan')}</option>
                   <option value="less">{MailPoet.I18n.t('lessThan')}</option>
+                  <option value="equals">{MailPoet.I18n.t('equals')}</option>
+                  <option value="not_equals">{MailPoet.I18n.t('notEquals')}</option>
                 </Select>
               );
             }
