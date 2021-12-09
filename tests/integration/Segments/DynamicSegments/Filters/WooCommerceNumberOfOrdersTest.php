@@ -48,7 +48,20 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $this->assertSame('customer1@example.com', $subscriber1->getEmail());
   }
 
-  public function testItGestCustomersThatPlacedAtLeastOneOrderInTheLastWeek() {
+  public function testItGetsCustomersThatDidNotPlaceTwoOrdersInTheLastWeek() {
+    $segmentFilter = $this->getSegmentFilter('!=', 2, 7);
+    $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
+    $result = $queryBuilder->execute()->fetchAll();
+    $this->assertSame(2, count($result));
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertSame('customer1@example.com', $subscriber1->getEmail());
+    $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['inner_subscriber_id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
+    $this->assertSame('customer3@example.com', $subscriber2->getEmail());
+  }
+
+  public function testItGetsCustomersThatPlacedAtLeastOneOrderInTheLastWeek() {
     $segmentFilter = $this->getSegmentFilter('>', 0, 7);
     $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
     $result = $queryBuilder->execute()->fetchAll();
