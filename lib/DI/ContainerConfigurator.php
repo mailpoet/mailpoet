@@ -246,6 +246,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Router\Endpoints\Track::class)->setPublic(true);
     $container->autowire(\MailPoet\Statistics\Track\Clicks::class);
     $container->autowire(\MailPoet\Statistics\Track\Opens::class)->setPublic(true);
+    $container->autowire(\MailPoet\Statistics\Track\SubscriberCookie::class)->setPublic(true);
     $container->autowire(\MailPoet\Statistics\Track\WooCommercePurchases::class);
     $container->autowire(\MailPoet\Statistics\Track\Unsubscribes::class)->setPublic(true);
     $container->autowire(\MailPoet\Statistics\StatisticsFormsRepository::class)->setPublic(true);
