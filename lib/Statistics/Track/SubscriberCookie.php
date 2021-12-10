@@ -2,6 +2,7 @@
 
 namespace MailPoet\Statistics\Track;
 
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Util\Cookies;
 
 class SubscriberCookie {
@@ -12,13 +13,22 @@ class SubscriberCookie {
   /** @var Cookies */
   private $cookies;
 
+  /** @var TrackingConfig */
+  private $trackingConfig;
+
   public function __construct(
-    Cookies $cookies
+    Cookies $cookies,
+    TrackingConfig $trackingConfig
   ) {
     $this->cookies = $cookies;
+    $this->trackingConfig = $trackingConfig;
   }
 
   public function getSubscriberId(): ?int {
+    if (!$this->trackingConfig->isCookieTrackingEnabled()) {
+      return null;
+    }
+
     $subscriberId = $this->getSubscriberIdFromCookie(self::COOKIE_NAME);
     if ($subscriberId) {
       return $subscriberId;
@@ -34,6 +44,10 @@ class SubscriberCookie {
   }
 
   public function setSubscriberId(int $subscriberId): void {
+    if (!$this->trackingConfig->isCookieTrackingEnabled()) {
+      return;
+    }
+
     $this->cookies->set(
       self::COOKIE_NAME,
       ['subscriber_id' => $subscriberId],

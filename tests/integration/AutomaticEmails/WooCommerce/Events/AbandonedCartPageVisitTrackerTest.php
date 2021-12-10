@@ -3,6 +3,8 @@
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use Codeception\Stub;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -43,8 +45,13 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
       'WC' => $wooCommerceMock,
     ]);
 
+    $settings = $this->diContainer->get(SettingsController::class);
     $this->sessionStore = [];
-    $this->pageVisitTracker = new AbandonedCartPageVisitTracker($this->wp, $wooCommerceHelperMock, new SubscriberCookie(new Cookies()));
+    $this->pageVisitTracker = new AbandonedCartPageVisitTracker(
+      $this->wp,
+      $wooCommerceHelperMock,
+      new SubscriberCookie(new Cookies(), new TrackingConfig($settings))
+    );
   }
 
   public function testItSetsTimestampWhenTrackingStarted() {
@@ -103,8 +110,9 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
     $cookiesMock->expects($this->once())->method('set')->with('mailpoet_subscriber', ['subscriber_id' => '123']);
     $cookiesMock->expects($this->once())->method('delete')->with('mailpoet_abandoned_cart_tracking');
 
+    $settings = $this->diContainer->get(SettingsController::class);
     $pageVisitTracker = Stub::copy($this->pageVisitTracker, [
-      'subscriberCookie' => new SubscriberCookie($cookiesMock),
+      'subscriberCookie' => new SubscriberCookie($cookiesMock, new TrackingConfig($settings)),
     ]);
 
     $hourAgoTimestamp = $this->currentTime->getTimestamp() - 60 * 60;
