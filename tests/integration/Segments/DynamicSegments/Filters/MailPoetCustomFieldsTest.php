@@ -78,6 +78,84 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
   }
 
+  public function testItFiltersSubscribersTextNotEquals() {
+    $subscriber = $this->subscribers[1];
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, 'something else'));
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, 'some value'));
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+      'operator' => 'not_equals',
+      'value' => 'some value',
+    ]));
+    $this->entityManager->flush();
+
+    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
+      ->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAll();
+
+    expect(count($result))->equals(1);
+    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
+    expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
+  }
+
+  public function testItFiltersSubscribersTextMoreThan() {
+    $subscriber = $this->subscribers[1];
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, '3'));
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '1'));
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+      'operator' => 'more_than',
+      'value' => '2',
+    ]));
+    $this->entityManager->flush();
+
+    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
+      ->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAll();
+
+    expect(count($result))->equals(1);
+    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
+    expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
+  }
+
+  public function testItFiltersSubscribersTextLessThan() {
+    $subscriber = $this->subscribers[1];
+    $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, '1'));
+    $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '3'));
+    $this->entityManager->persist($customField);
+    $this->entityManager->flush();
+    $segmentFilter = $this->getSegmentFilter(new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_TEXT,
+      'operator' => 'less_than',
+      'value' => '2',
+    ]));
+    $this->entityManager->flush();
+
+    $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
+      ->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAll();
+
+    expect(count($result))->equals(1);
+    $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
+    expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
+  }
+
   public function testItFiltersRadio() {
     $subscriber = $this->subscribers[1];
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_RADIO);

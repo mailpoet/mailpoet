@@ -48,7 +48,10 @@ export const Text: React.FunctionComponent<Props> = ({ filterIndex }) => {
           }}
         >
           <option value="equals">{MailPoet.I18n.t('equals')}</option>
+          <option value="not_equals">{MailPoet.I18n.t('notEquals')}</option>
           <option value="contains">{MailPoet.I18n.t('contains')}</option>
+          <option value="more_than">{MailPoet.I18n.t('moreThan')}</option>
+          <option value="less_than">{MailPoet.I18n.t('lessThan')}</option>
         </Select>
         <Input
           key="input"
