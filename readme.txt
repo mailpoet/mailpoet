@@ -45,7 +45,7 @@ Trusted by 300,000 WordPress websites since 2011.
 
 = See it in action =
 
-[Test the demo](http://demo.mailpoet.com/) or [see the 2 min. video](https://vimeo.com/223581490)
+[See the 2 min. video](https://vimeo.com/223581490)
 [vimeo https://vimeo.com/223581490]
 
 = Before you install =
