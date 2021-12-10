@@ -10,7 +10,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\UserAgentsRepository;
@@ -22,9 +21,6 @@ class Clicks {
 
   const REVENUE_TRACKING_COOKIE_NAME = 'mailpoet_revenue_tracking';
   const REVENUE_TRACKING_COOKIE_EXPIRY = 60 * 60 * 24 * 14;
-
-  /** @var SettingsController */
-  private $settingsController;
 
   /** @var Cookies */
   private $cookies;
@@ -54,7 +50,6 @@ class Clicks {
   private $trackingConfig;
 
   public function __construct(
-    SettingsController $settingsController,
     Cookies $cookies,
     SubscriberCookie $subscriberCookie,
     Shortcodes $shortcodes,
@@ -65,7 +60,6 @@ class Clicks {
     SubscribersRepository $subscribersRepository,
     TrackingConfig $trackingConfig
   ) {
-    $this->settingsController = $settingsController;
     $this->cookies = $cookies;
     $this->subscriberCookie = $subscriberCookie;
     $this->shortcodes = $shortcodes;

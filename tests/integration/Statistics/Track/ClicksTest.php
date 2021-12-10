@@ -17,7 +17,6 @@ use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsOpens;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\StatisticsOpensRepository;
@@ -50,9 +49,6 @@ class ClicksTest extends \MailPoetTest {
 
   /** @var Clicks */
   private $clicks;
-
-  /** @var SettingsController */
-  private $settingsController;
 
   public function _before() {
     parent::_before();
@@ -99,12 +95,8 @@ class ClicksTest extends \MailPoetTest {
     assert($queue instanceof SendingQueue);
     $queue = SendingTask::createFromQueue($queue);
     $queue->updateProcessedSubscribers([$subscriber->getId()]);
-    // instantiate class
-    $this->settingsController = Stub::makeEmpty(SettingsController::class, [
-      'get' => false,
-    ], $this);
+
     $this->clicks = new Clicks(
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -120,7 +112,6 @@ class ClicksTest extends \MailPoetTest {
   public function testItAbortsWhenTrackDataIsEmptyOrMissingLink() {
     // abort function should be called twice:
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -147,7 +138,6 @@ class ClicksTest extends \MailPoetTest {
     $this->entityManager->flush();
     $data->preview = true;
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -168,7 +158,6 @@ class ClicksTest extends \MailPoetTest {
   public function testItTracksClickAndOpenEvent() {
     $data = $this->trackData;
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -191,7 +180,6 @@ class ClicksTest extends \MailPoetTest {
     $data = $this->trackData;
     $data->userAgent = 'User Agent';
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -218,7 +206,6 @@ class ClicksTest extends \MailPoetTest {
     $data = $this->trackData;
     $data->userAgent = 'User Agent';
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -251,7 +238,6 @@ class ClicksTest extends \MailPoetTest {
   public function testItDoesNotOverrideHumanUserAgentWithMachine(): void {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -294,7 +280,6 @@ class ClicksTest extends \MailPoetTest {
   public function testItOverridesMachineUserAgentWithHuman(): void {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -337,7 +322,6 @@ class ClicksTest extends \MailPoetTest {
   public function testItDoesNotOverrideUnknownUserAgentWithMachine(): void {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -373,7 +357,6 @@ class ClicksTest extends \MailPoetTest {
   public function testItOverridesUnknownUserAgentWithHuman(): void {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -411,7 +394,6 @@ class ClicksTest extends \MailPoetTest {
 
   public function testItRedirectsToUrlAfterTracking() {
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -429,7 +411,6 @@ class ClicksTest extends \MailPoetTest {
 
   public function testItIncrementsClickEventCount() {
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -461,7 +442,6 @@ class ClicksTest extends \MailPoetTest {
 
   public function testItFailsToConvertsInvalidShortcodeToUrl() {
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -535,7 +515,6 @@ class ClicksTest extends \MailPoetTest {
       $subscribersRepository
     );
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -571,7 +550,6 @@ class ClicksTest extends \MailPoetTest {
       $subscribersRepository
     );
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -595,7 +573,6 @@ class ClicksTest extends \MailPoetTest {
     $data = $this->trackData;
     $data->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
@@ -619,7 +596,6 @@ class ClicksTest extends \MailPoetTest {
     $data = $this->trackData;
     $data->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $clicks = Stub::construct($this->clicks, [
-      $this->settingsController,
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
