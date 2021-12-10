@@ -103,7 +103,7 @@ class EmailAction implements Filter {
         'statssent',
         $statsTable,
         'stats',
-        "statssent.subscriber_id = stats.subscriber_id AND stats.newsletter_id = (:newsletters" . $parameterSuffix . ')'
+        "statssent.subscriber_id = stats.subscriber_id AND stats.newsletter_id IN (:newsletters" . $parameterSuffix . ')'
       )->setParameter('newsletters' . $parameterSuffix, $newsletters, Connection::PARAM_INT_ARRAY);
       $where .= ' AND stats.id IS NULL';
     } elseif ($action === EmailAction::ACTION_OPENED) {
