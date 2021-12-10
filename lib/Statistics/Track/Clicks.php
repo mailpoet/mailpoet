@@ -107,7 +107,12 @@ class Clicks {
       }
       $this->statisticsClicksRepository->flush();
       $this->sendRevenueCookie($statisticsClicks);
-      $this->sendSubscriberCookie($subscriber);
+
+      $subscriberId = $subscriber->getId();
+      if ($subscriberId) {
+        $this->subscriberCookie->setSubscriberId($subscriberId);
+      }
+
       // track open event
       $this->opens->track($data, $displayImage = false);
       // Update engagement date
@@ -130,12 +135,6 @@ class Clicks {
           'path' => '/',
         ]
       );
-    }
-  }
-
-  private function sendSubscriberCookie($subscriber) {
-    if ($this->trackingConfig->isCookieTrackingEnabled()) {
-      $this->subscriberCookie->setSubscriberId($subscriber->getId());
     }
   }
 
