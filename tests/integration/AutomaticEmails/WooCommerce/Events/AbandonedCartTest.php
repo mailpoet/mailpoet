@@ -144,7 +144,7 @@ class AbandonedCartTest extends \MailPoetTest {
       ])
     );
 
-    $_COOKIE['mailpoet_abandoned_cart_tracking'] = json_encode([
+    $_COOKIE['mailpoet_subscriber'] = json_encode([
       'subscriber_id' => $subscriber->id,
     ]);
 

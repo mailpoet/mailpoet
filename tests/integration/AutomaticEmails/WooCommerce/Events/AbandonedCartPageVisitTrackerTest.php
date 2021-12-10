@@ -2,6 +2,7 @@
 
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
+use Codeception\Stub;
 use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -78,11 +79,37 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
     $this->wp->method('wpGetCurrentUser')->willReturn(
       $this->makeEmpty(WP_User::class, ['exists' => false])
     );
-    $_COOKIE['mailpoet_abandoned_cart_tracking'] = json_encode(['subscriber_id' => '123']);
+    $_COOKIE['mailpoet_subscriber'] = json_encode(['subscriber_id' => '123']);
 
     $hourAgoTimestamp = $this->currentTime->getTimestamp() - 60 * 60;
     $this->sessionStore['mailpoet_last_visit_timestamp'] = $hourAgoTimestamp;
     $this->pageVisitTracker->trackVisit();
+    expect($this->sessionStore['mailpoet_last_visit_timestamp'])->same($this->currentTime->getTimestamp());
+  }
+
+  public function testItTracksByLegacyCookie() {
+    $this->wp->method('isAdmin')->willReturn(false);
+    $this->wp->method('wpGetCurrentUser')->willReturn(
+      $this->makeEmpty(WP_User::class, ['exists' => false])
+    );
+
+    $cookiesMock = $this->createMock(Cookies::class);
+    $cookiesMock->method('get')->willReturnCallback(function (string $name) {
+      if ($name === 'mailpoet_abandoned_cart_tracking') {
+        return ['subscriber_id' => '123'];
+      }
+      return null;
+    });
+    $cookiesMock->expects($this->once())->method('set')->with('mailpoet_subscriber', ['subscriber_id' => '123']);
+    $cookiesMock->expects($this->once())->method('delete')->with('mailpoet_abandoned_cart_tracking');
+
+    $pageVisitTracker = Stub::copy($this->pageVisitTracker, [
+      'subscriberCookie' => new SubscriberCookie($cookiesMock),
+    ]);
+
+    $hourAgoTimestamp = $this->currentTime->getTimestamp() - 60 * 60;
+    $this->sessionStore['mailpoet_last_visit_timestamp'] = $hourAgoTimestamp;
+    $pageVisitTracker->trackVisit();
     expect($this->sessionStore['mailpoet_last_visit_timestamp'])->same($this->currentTime->getTimestamp());
   }
 
