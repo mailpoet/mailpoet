@@ -60,7 +60,7 @@ class WooCommerceSubscriptionsSegmentCest {
     $i->click('[data-automation-id="new-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], 'Desc ' . $segmentTitle);
-    $i->selectOptionInReactSelect('has an active subscription', $segmentActionSelectElement);
+    $i->selectOptionInReactSelect('has active subscription', $segmentActionSelectElement);
     $i->selectOptionInReactSelect('Subscription 1', '[data-automation-id="select-segment-products"]');
     $i->selectOptionInReactSelect('Subscription 2', '[data-automation-id="select-segment-products"]');
     $i->waitForText('This segment has');
@@ -98,7 +98,7 @@ class WooCommerceSubscriptionsSegmentCest {
     $i->wantTo('Check that admin can‘t add new subscriptions segment when WooCommerce Subscriptions is not active');
     $i->click('[data-automation-id="new-segment"]');
     $i->waitForElement($segmentActionSelectElement);
-    $i->fillField("$segmentActionSelectElement input", 'has an active subscription');
+    $i->fillField("$segmentActionSelectElement input", 'has active subscription');
     $i->canSee('No options', $segmentActionSelectElement);
   }
 }
