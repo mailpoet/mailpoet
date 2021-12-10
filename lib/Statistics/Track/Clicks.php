@@ -23,14 +23,14 @@ class Clicks {
   const REVENUE_TRACKING_COOKIE_NAME = 'mailpoet_revenue_tracking';
   const REVENUE_TRACKING_COOKIE_EXPIRY = 60 * 60 * 24 * 14;
 
-  const ABANDONED_CART_COOKIE_NAME = 'mailpoet_abandoned_cart_tracking';
-  const ABANDONED_CART_COOKIE_EXPIRY = 10 * 365 * 24 * 60 * 60; // 10 years (~ no expiry)
-
   /** @var SettingsController */
   private $settingsController;
 
   /** @var Cookies */
   private $cookies;
+
+  /** @var SubscriberCookie */
+  private $subscriberCookie;
 
   /** @var Shortcodes */
   private $shortcodes;
@@ -56,6 +56,7 @@ class Clicks {
   public function __construct(
     SettingsController $settingsController,
     Cookies $cookies,
+    SubscriberCookie $subscriberCookie,
     Shortcodes $shortcodes,
     Opens $opens,
     StatisticsClicksRepository $statisticsClicksRepository,
@@ -66,6 +67,7 @@ class Clicks {
   ) {
     $this->settingsController = $settingsController;
     $this->cookies = $cookies;
+    $this->subscriberCookie = $subscriberCookie;
     $this->shortcodes = $shortcodes;
     $this->linkShortcodeCategory = $linkShortcodeCategory;
     $this->opens = $opens;
@@ -111,7 +113,7 @@ class Clicks {
       }
       $this->statisticsClicksRepository->flush();
       $this->sendRevenueCookie($statisticsClicks);
-      $this->sendAbandonedCartCookie($subscriber);
+      $this->sendSubscriberCookie($subscriber);
       // track open event
       $this->opens->track($data, $displayImage = false);
       // Update engagement date
@@ -137,18 +139,9 @@ class Clicks {
     }
   }
 
-  private function sendAbandonedCartCookie($subscriber) {
+  private function sendSubscriberCookie($subscriber) {
     if ($this->trackingConfig->isCookieTrackingEnabled()) {
-      $this->cookies->set(
-        self::ABANDONED_CART_COOKIE_NAME,
-        [
-          'subscriber_id' => $subscriber->getId(),
-        ],
-        [
-          'expires' => time() + self::ABANDONED_CART_COOKIE_EXPIRY,
-          'path' => '/',
-        ]
-      );
+      $this->subscriberCookie->setSubscriberId($subscriber->getId());
     }
   }
 

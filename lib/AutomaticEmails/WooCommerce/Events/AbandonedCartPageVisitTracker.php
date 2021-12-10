@@ -2,8 +2,7 @@
 
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
-use MailPoet\Statistics\Track\Clicks;
-use MailPoet\Util\Cookies;
+use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -17,17 +16,17 @@ class AbandonedCartPageVisitTracker {
   /** @var WooCommerceHelper */
   private $wooCommerceHelper;
 
-  /** @var Cookies */
-  private $cookies;
+  /** @var SubscriberCookie */
+  private $subscriberCookie;
 
   public function __construct(
     WPFunctions $wp,
     WooCommerceHelper $wooCommerceHelper,
-    Cookies $cookies
+    SubscriberCookie $subscriberCookie
   ) {
     $this->wp = $wp;
     $this->wooCommerceHelper = $wooCommerceHelper;
-    $this->cookies = $cookies;
+    $this->subscriberCookie = $subscriberCookie;
   }
 
   public function startTracking() {
@@ -81,6 +80,6 @@ class AbandonedCartPageVisitTracker {
 
     // when we have logged-in user or a tracking cookie we consider it a page visit
     // (we can't exclude AJAX since some shops may be AJAX-only)
-    return $this->wp->wpGetCurrentUser()->exists() || $this->cookies->get(Clicks::ABANDONED_CART_COOKIE_NAME);
+    return $this->wp->wpGetCurrentUser()->exists() || $this->subscriberCookie->getSubscriberId();
   }
 }

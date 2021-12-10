@@ -11,6 +11,7 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
+use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -80,11 +81,12 @@ class AbandonedCartTest extends \MailPoetTest {
     $wp = new WPFunctions();
     $wcHelper = new WooCommerceHelper();
     $cookies = new Cookies();
+    $subscriberCookie = new SubscriberCookie($cookies);
     $event = new AbandonedCart(
       $wp,
       $wcHelper,
-      $cookies,
-      new AbandonedCartPageVisitTracker($wp, $wcHelper, $cookies),
+      $subscriberCookie,
+      new AbandonedCartPageVisitTracker($wp, $wcHelper, $subscriberCookie),
       new AutomaticEmailScheduler($wp)
     );
     $result = $event->getEventDetails();
@@ -276,7 +278,7 @@ class AbandonedCartTest extends \MailPoetTest {
     return $this->make(AbandonedCart::class, [
       'wp' => $this->wp,
       'wooCommerceHelper' => $this->wooCommerceHelperMock,
-      'cookies' => new Cookies(),
+      'subscriberCookie' => new SubscriberCookie(new Cookies()),
       'pageVisitTracker' => $this->pageVisitTrackerMock,
       'scheduler' => new AutomaticEmailScheduler(),
     ]);

@@ -5,8 +5,7 @@ namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce as WooCommerceEmail;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
-use MailPoet\Statistics\Track\Clicks;
-use MailPoet\Util\Cookies;
+use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -20,8 +19,8 @@ class AbandonedCart {
   /** @var WooCommerceHelper */
   private $wooCommerceHelper;
 
-  /** @var Cookies */
-  private $cookies;
+  /** @var SubscriberCookie */
+  private $subscriberCookie;
 
   /** @var AbandonedCartPageVisitTracker */
   private $pageVisitTracker;
@@ -32,13 +31,13 @@ class AbandonedCart {
   public function __construct(
     WPFunctions $wp,
     WooCommerceHelper $wooCommerceHelper,
-    Cookies $cookies,
+    SubscriberCookie $subscriberCookie,
     AbandonedCartPageVisitTracker $pageVisitTracker,
     AutomaticEmailScheduler $scheduler
   ) {
     $this->wp = $wp;
     $this->wooCommerceHelper = $wooCommerceHelper;
-    $this->cookies = $cookies;
+    $this->subscriberCookie = $subscriberCookie;
     $this->pageVisitTracker = $pageVisitTracker;
     $this->scheduler = $scheduler;
   }
@@ -192,9 +191,9 @@ class AbandonedCart {
     }
 
     // if user not logged in, try to find subscriber by cookie
-    $cookieData = $this->cookies->get(Clicks::ABANDONED_CART_COOKIE_NAME);
-    if ($cookieData && isset($cookieData['subscriber_id'])) {
-      return Subscriber::findOne($cookieData['subscriber_id']) ?: null;
+    $subscriberId = $this->subscriberCookie->getSubscriberId();
+    if ($subscriberId) {
+      return Subscriber::findOne($subscriberId) ?: null;
     }
     return null;
   }

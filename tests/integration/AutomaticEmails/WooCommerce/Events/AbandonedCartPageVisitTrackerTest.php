@@ -2,6 +2,7 @@
 
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
+use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -42,7 +43,7 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
     ]);
 
     $this->sessionStore = [];
-    $this->pageVisitTracker = new AbandonedCartPageVisitTracker($this->wp, $wooCommerceHelperMock, new Cookies());
+    $this->pageVisitTracker = new AbandonedCartPageVisitTracker($this->wp, $wooCommerceHelperMock, new SubscriberCookie(new Cookies()));
   }
 
   public function testItSetsTimestampWhenTrackingStarted() {
@@ -77,7 +78,7 @@ class AbandonedCartPageVisitTrackerTest extends \MailPoetTest {
     $this->wp->method('wpGetCurrentUser')->willReturn(
       $this->makeEmpty(WP_User::class, ['exists' => false])
     );
-    $_COOKIE['mailpoet_abandoned_cart_tracking'] = true;
+    $_COOKIE['mailpoet_abandoned_cart_tracking'] = json_encode(['subscriber_id' => '123']);
 
     $hourAgoTimestamp = $this->currentTime->getTimestamp() - 60 * 60;
     $this->sessionStore['mailpoet_last_visit_timestamp'] = $hourAgoTimestamp;
