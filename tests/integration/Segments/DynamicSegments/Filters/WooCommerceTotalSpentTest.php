@@ -1,14 +1,15 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
-use Carbon\Carbon;
+use Helper\Database;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
@@ -29,20 +30,17 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $this->totalSpent = $this->diContainer->get(WooCommerceTotalSpent::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->wp = $this->diContainer->get(WPFunctions::class);
+    Database::loadSQL('createWCLookupTables');
     $this->cleanUp();
 
-    $userId1 = $this->tester->createWordPressUser('customer1@example.com', 'customer');
-    $userId2 = $this->tester->createWordPressUser('customer2@example.com', 'customer');
-    $userId3 = $this->tester->createWordPressUser('customer3@example.com', 'customer');
+    $customerId1 = $this->createCustomer('customer1@example.com', 'customer');
+    $customerId2 = $this->createCustomer('customer2@example.com', 'customer');
+    $customerId3 = $this->createCustomer('customer3@example.com', 'customer');
 
-    $this->orders[] = $this->createOrder([
-      'user_id' => $userId1,
-      'post_date' => Carbon::now()->subDays(3)->toDateTimeString(),
-      'order_total' => 10,
-    ]);
-    $this->orders[] = $this->createOrder(['user_id' => $userId1, 'order_total' => 5]);
-    $this->orders[] = $this->createOrder(['user_id' => $userId2, 'order_total' => 15]);
-    $this->orders[] = $this->createOrder(['user_id' => $userId3, 'order_total' => 25]);
+    $this->orders[] = $this->createOrder($customerId1, Carbon::now()->subDays(3), 10);
+    $this->orders[] = $this->createOrder($customerId1, Carbon::now(), 5);
+    $this->orders[] = $this->createOrder($customerId2, Carbon::now(), 15);
+    $this->orders[] = $this->createOrder($customerId3, Carbon::now(), 25);
   }
 
   public function testItGetsCustomersThatSpentFifteenInTheLastDay(): void {
@@ -145,16 +143,30 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     return $dynamicSegmentFilter;
   }
 
-  private function createOrder($data): int {
-    return (int)$this->wp->wpInsertPost([
+  private function createCustomer(string $email, string $role): int {
+    global $wpdb;
+    $userId = $this->tester->createWordPressUser($email, $role);
+    $this->connection->executeQuery("
+      INSERT INTO {$wpdb->prefix}wc_customer_lookup (customer_id, user_id, first_name, last_name, email)
+      VALUES ({$userId}, {$userId}, 'First Name', 'Last Name', '{$email}')
+    ");
+    return $userId;
+  }
+
+  private function createOrder(int $customerId, Carbon $createdAt, int $orderTotal): int {
+    global $wpdb;
+    $orderId = (int)$this->wp->wpInsertPost([
       'post_type' => 'shop_order',
       'post_status' => 'wc-completed',
-      'post_date' => $data['post_date'] ?? '',
-      'meta_input' => [
-        '_customer_user' => $data['user_id'] ?? '',
-        '_order_total' => $data['order_total'] ?? '1',
-      ],
+      'post_date' => $createdAt->toDateTimeString(),
     ]);
+
+    assert(is_integer($orderId));
+    $this->connection->executeQuery("
+      INSERT INTO {$wpdb->prefix}wc_order_stats (order_id, customer_id, status, date_created, date_created_gmt, total_sales)
+      VALUES ({$orderId}, {$customerId}, 'wc-completed', '{$createdAt->toDateTimeString()}', '{$createdAt->toDateTimeString()}', $orderTotal)
+    ");
+    return $orderId;
   }
 
   public function _after(): void {
@@ -162,6 +174,7 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
   }
 
   private function cleanUp(): void {
+    global $wpdb;
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $emails = ['customer1@example.com', 'customer2@example.com', 'customer3@example.com'];
@@ -172,5 +185,7 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     foreach ($this->orders ?? [] as $orderId) {
       $this->wp->wpDeletePost($orderId);
     }
+    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
+    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
   }
 }

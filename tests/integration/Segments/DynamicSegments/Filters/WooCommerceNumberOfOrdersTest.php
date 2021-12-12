@@ -1,12 +1,13 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
-use Carbon\Carbon;
+use Helper\Database;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoetVendor\Carbon\Carbon;
 
 class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
 
@@ -16,16 +17,17 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
 
   public function _before() {
     $this->numberOfOrders = $this->diContainer->get(WooCommerceNumberOfOrders::class);
+    Database::loadSQL('createWCLookupTables');
     $this->cleanUp();
 
-    $userId1 = $this->tester->createWordPressUser('customer1@example.com', 'customer');
-    $userId2 = $this->tester->createWordPressUser('customer2@example.com', 'customer');
-    $userId3 = $this->tester->createWordPressUser('customer3@example.com', 'customer');
+    $customerId1 = $this->createCustomer('customer1@example.com', 'customer');
+    $customerId2 = $this->createCustomer('customer2@example.com', 'customer');
+    $customerId3 = $this->createCustomer('customer3@example.com', 'customer');
 
-    $this->orders[] = $this->createOrder(['user_id' => $userId1, 'post_date' => Carbon::now()->subDays(3)->toDateTimeString()]);
-    $this->orders[] = $this->createOrder(['user_id' => $userId2]);
-    $this->orders[] = $this->createOrder(['user_id' => $userId2]);
-    $this->orders[] = $this->createOrder(['user_id' => $userId3]);
+    $this->orders[] = $this->createOrder($customerId1, Carbon::now()->subDays(3));
+    $this->orders[] = $this->createOrder($customerId2, Carbon::now());
+    $this->orders[] = $this->createOrder($customerId2, Carbon::now());
+    $this->orders[] = $this->createOrder($customerId3, Carbon::now());
   }
 
   public function testItGetsCustomersThatPlacedTwoOrdersInTheLastDay() {
@@ -92,17 +94,31 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     return $dynamicSegmentFilter;
   }
 
-  private function createOrder($data) {
+  private function createCustomer(string $email, string $role): int {
+    global $wpdb;
+    $userId = $this->tester->createWordPressUser($email, $role);
+    $this->connection->executeQuery("
+      INSERT INTO {$wpdb->prefix}wc_customer_lookup (customer_id, user_id, first_name, last_name, email)
+      VALUES ({$userId}, {$userId}, 'First Name', 'Last Name', '{$email}')
+    ");
+    return $userId;
+  }
+
+  private function createOrder(int $customerId, Carbon $createdAt): int {
+    global $wpdb;
     $orderData = [
       'post_type' => 'shop_order',
       'post_status' => 'wc-completed',
-      'post_date' => $data['post_date'] ?? '',
-      'meta_input' => [
-        '_customer_user' => $data['user_id'] ?? '',
-      ],
+      'post_date' => $createdAt->toDateTimeString(),
     ];
 
-    return wp_insert_post($orderData);
+    $orderId = wp_insert_post($orderData);
+    assert(is_integer($orderId));
+    $this->connection->executeQuery("
+      INSERT INTO {$wpdb->prefix}wc_order_stats (order_id, customer_id, status, date_created, date_created_gmt)
+      VALUES ({$orderId}, {$customerId}, 'wc-completed', '{$createdAt->toDateTimeString()}', '{$createdAt->toDateTimeString()}')
+    ");
+    return $orderId;
   }
 
   public function _after() {
@@ -110,6 +126,7 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   }
 
   private function cleanUp() {
+    global $wpdb;
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $emails = ['customer1@example.com', 'customer2@example.com', 'customer3@example.com'];
@@ -122,5 +139,7 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
         wp_delete_post($orderId);
       }
     }
+    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
+    $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
   }
 }
