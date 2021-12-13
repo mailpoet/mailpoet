@@ -227,7 +227,7 @@ jobs:
     parameters:
       php_version:
         type: integer
-        default: 70100
+        default: 70200
     steps:
     - attach_workspace:
         at: /home/circleci/mailpoet
@@ -457,7 +457,7 @@ workflows:
       - static_analysis:
           <<: *slack-fail-post-step
           name: static_analysis_php7
-          php_version: 70100
+          php_version: 70200
           requires:
             - build
       - static_analysis:
