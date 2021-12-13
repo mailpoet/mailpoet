@@ -82,7 +82,7 @@ executors:
   wpcli_php_oldest:
     <<: *default_job_config
     docker:
-    - image: mailpoet/wordpress:7.1_20201009.1
+    - image: mailpoet/wordpress:7.2_20211213.1
 
   wpcli_php_latest:
     <<: *default_job_config
@@ -92,7 +92,7 @@ executors:
   wpcli_php_mysql_oldest:
     <<: *default_job_config
     docker:
-    - image: mailpoet/wordpress:7.1_20201009.1
+    - image: mailpoet/wordpress:7.2_20211213.1
     - image: circleci/mysql:5.5-ram
 
   wpcli_php_mysql_latest:
@@ -773,7 +773,7 @@ workflows:
           woo_subscriptions_version: 3.0.10
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
-          wordpress_image_version: wp-5.3_php7.1_20210129.1
+          wordpress_image_version: wp-5.3_php7.2_20211213.1
           requires:
             - build
       - unit_tests:
