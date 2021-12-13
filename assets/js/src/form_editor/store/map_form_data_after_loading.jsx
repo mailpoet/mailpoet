@@ -89,7 +89,7 @@ export default function mapFormDataAfterLoading(data) {
             : defaults.slideInForm.formDelay,
           position: data.settings.form_placement?.slide_in?.position
             ?? defaults.slideInForm.position,
-          animation: data.settings.form_placement?.slide_in?.position
+          animation: data.settings.form_placement?.slide_in?.animation
             ?? defaults.slideInForm.animation,
           styles: {
             ...defaults.slideInForm.styles,
