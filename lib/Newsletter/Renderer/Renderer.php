@@ -3,15 +3,14 @@
 namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Config\Env;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\RuntimeException;
-use MailPoet\Services\Bridge;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -31,31 +30,26 @@ class Renderer {
   /** @var \MailPoetVendor\CSS */
   private $cSSInliner;
 
-  /** @var Bridge */
-  private $bridge;
-
-  /** @var License */
-  private $license;
-
   /** @var NewslettersRepository */
   private $newslettersRepository;
+
+  /** @var ServicesChecker */
+  private $servicesChecker;
 
   public function __construct(
     Blocks\Renderer $blocksRenderer,
     Columns\Renderer $columnsRenderer,
     Preprocessor $preprocessor,
     \MailPoetVendor\CSS $cSSInliner,
-    Bridge $bridge,
     NewslettersRepository $newslettersRepository,
-    License $license
+    ServicesChecker $servicesChecker
   ) {
     $this->blocksRenderer = $blocksRenderer;
     $this->columnsRenderer = $columnsRenderer;
     $this->preprocessor = $preprocessor;
     $this->cSSInliner = $cSSInliner;
-    $this->bridge = $bridge;
-    $this->license = $license;
     $this->newslettersRepository = $newslettersRepository;
+    $this->servicesChecker = $servicesChecker;
   }
 
   /**
@@ -97,9 +91,7 @@ class Renderer {
       : [];
 
     if (
-      !$this->license->hasLicense()
-      && !$this->bridge->isMailpoetSendingServiceEnabled()
-      && !$preview
+      !$this->servicesChecker->isUserActivelyPaying() && !$preview
     ) {
       $content = $this->addMailpoetLogoContentBlock($content, $styles);
     }
@@ -264,7 +256,7 @@ class Renderer {
               'link' => 'http://www.mailpoet.com',
               'src' => Env::$assetsUrl . '/img/mailpoet_logo_newsletter.png',
               'fullWidth' => false,
-              'alt' => 'MailPoet',
+              'alt' => 'Email Marketing Powered by MailPoet',
               'width' => '108px',
               'height' => '65px',
               'styles' => [

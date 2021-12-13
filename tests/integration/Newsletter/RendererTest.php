@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Newsletter;
 
 use Codeception\Util\Fixtures;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Button;
@@ -16,8 +17,6 @@ use MailPoet\Newsletter\Renderer\Blocks\Text;
 use MailPoet\Newsletter\Renderer\Columns\Renderer as ColumnRenderer;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer;
-use MailPoet\Services\Bridge;
-use MailPoet\Util\License\License;
 use MailPoet\Util\pQuery\pQuery;
 use PHPUnit\Framework\MockObject\MockObject;
 use WP_Error;
@@ -32,11 +31,9 @@ class RendererTest extends \MailPoetTest {
   /** @var NewsletterEntity */
   public $newsletter;
 
-  /** @var License & MockObject */
-  private $license;
+  /** @var ServicesChecker & MockObject */
+  private $servicesChecker;
 
-  /** @var Bridge & MockObject */
-  private $bridge;
   const COLUMN_BASE_WIDTH = 660;
 
   public function _before() {
@@ -49,16 +46,14 @@ class RendererTest extends \MailPoetTest {
     $this->newsletter->setPreheader('Some preheader');
     $this->newsletter->setType('standard');
     $this->newsletter->setStatus('active');
-    $this->license = $this->createMock(License::class);
-    $this->bridge = $this->createMock(Bridge::class);
+    $this->servicesChecker = $this->createMock(ServicesChecker::class);
     $this->renderer = new Renderer(
       $this->diContainer->get(\MailPoet\Newsletter\Renderer\Blocks\Renderer::class),
       $this->diContainer->get(ColumnRenderer::class),
       $this->diContainer->get(Preprocessor::class),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
-      $this->bridge,
       $this->diContainer->get(NewslettersRepository::class),
-      $this->license
+      $this->servicesChecker
     );
     $this->columnRenderer = new ColumnRenderer();
     $this->dOMParser = new pQuery();
@@ -589,18 +584,8 @@ class RendererTest extends \MailPoetTest {
     expect($preheader)->equals($this->newsletter->getPreheader());
   }
 
-  public function testItDoesNotAddMailpoetLogoWhenPremiumIsActive() {
-    $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(false);
-    $this->license->method('hasLicense')->willReturn(true);
-
-    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
-    $template = $this->renderer->render($this->newsletter);
-    expect($template['html'])->stringNotContainsString('mailpoet_logo_newsletter.png');
-  }
-
-  public function testItDoesNotAddMailpoetLogoWhenMSSIsActive() {
-    $this->license->method('hasLicense')->willReturn(false);
-    $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(true);
+  public function testItDoesNotAddMailpoetLogoWhenUserIsPaying() {
+    $this->servicesChecker->method('isUserActivelyPaying')->willReturn(true);
 
     $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $template = $this->renderer->render($this->newsletter);
@@ -608,8 +593,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItDoesNotAddMailpoetLogoWhenPreviewIsEnabled() {
-    $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(false);
-    $this->license->method('hasLicense')->willReturn(false);
+    $this->servicesChecker->method('isUserActivelyPaying')->willReturn(false);
 
     $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
     $template = $this->renderer->renderAsPreview($this->newsletter);
@@ -617,9 +601,8 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItAddsMailpoetLogo() {
+    $this->servicesChecker->method('isUserActivelyPaying')->willReturn(false);
     $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
-    $this->bridge->method('isMailpoetSendingServiceEnabled')->willReturn(false);
-    $this->license->method('hasLicense')->willReturn(false);
 
     $template = $this->renderer->render($this->newsletter);
     expect($template['html'])->stringContainsString('mailpoet_logo_newsletter.png');

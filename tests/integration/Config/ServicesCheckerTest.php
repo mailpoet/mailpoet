@@ -221,6 +221,57 @@ class ServicesCheckerTest extends \MailPoetTest {
     expect($this->servicesChecker->getAnyValidKey())->null();
   }
 
+  public function testItReturnsTrueIfUserIsActivelyPaying() {
+    $this->settings->set(
+      Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_VALID,
+        'data' => ['support_tier' => 'premium'],
+      ]
+    );
+
+    $result = $this->servicesChecker->isUserActivelyPaying();
+    expect($result)->true();
+  }
+
+  public function testItReturnsFalseIfUserIsNotActivelyPaying() {
+    $this->settings->set(
+      Bridge::PREMIUM_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_VALID,
+        'data' => ['support_tier' => 'free'],
+      ]
+    );
+    $result = $this->servicesChecker->isUserActivelyPaying();
+    expect($result)->false();
+  }
+
+  public function testItReturnsFalseIfUserIsNotActivelyPayingButUsingMss() {
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_VALID,
+        'data' => ['support_tier' => 'free'],
+      ]
+    );
+
+    $result = $this->servicesChecker->isUserActivelyPaying();
+    expect($result)->false();
+  }
+
+  public function testItReturnsTrueIfUserIsActivelyPayingAndUsingMss() {
+    $this->settings->set(
+      Bridge::API_KEY_STATE_SETTING_NAME,
+      [
+        'state' => Bridge::KEY_VALID,
+        'data' => ['support_tier' => 'premium'],
+      ]
+    );
+
+    $result = $this->servicesChecker->isUserActivelyPaying();
+    expect($result)->true();
+  }
+
   private function setMailPoetSendingMethod() {
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,

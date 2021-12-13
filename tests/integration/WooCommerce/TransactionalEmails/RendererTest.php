@@ -3,13 +3,12 @@
 namespace MailPoet\WooCommerce\TransactionalEmails;
 
 use Codeception\Stub;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
-use MailPoet\Services\Bridge;
-use MailPoet\Util\License\License;
 use MailPoetVendor\csstidy;
 
 class RendererTest extends \MailPoetTest {
@@ -105,9 +104,8 @@ class RendererTest extends \MailPoetTest {
         $wooPreprocessor
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
-      $this->diContainer->get(Bridge::class),
       $this->diContainer->get(NewslettersRepository::class),
-      $this->diContainer->get(License::class)
+      $this->diContainer->get(ServicesChecker::class)
     );
   }
 }
