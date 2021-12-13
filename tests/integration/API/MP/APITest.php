@@ -14,7 +14,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
@@ -356,10 +355,7 @@ class APITest extends \MailPoetTest {
     $confirmationMailer = $this->createMock(ConfirmationEmailMailer::class);
     $confirmationMailer->expects($this->once())
       ->method('sendConfirmationEmailOnce')
-      ->willReturnCallback(function (Subscriber $subscriber) {
-        $subscriber->setError('Big Error');
-        return false;
-      });
+      ->willThrowException(new \Exception('Something went wrong with your subscription. Please contact the website owner.'));
 
     $subscribers = Stub::copy($this->getSubscribers(), [
       'confirmationEmailMailer' => $confirmationMailer,
@@ -372,7 +368,7 @@ class APITest extends \MailPoetTest {
       'email' => 'test@example.com',
     ];
     $this->expectException('\Exception');
-    $this->expectExceptionMessage('Subscriber added to lists, but confirmation email failed to send: big error');
+    $this->expectExceptionMessage('Subscriber added to lists, but confirmation email failed to send: something went wrong with your subscription. please contact the website owner.');
     $API->addSubscriber($subscriber, [$segment->getId()], ['send_confirmation_email' => true]);
   }
 
