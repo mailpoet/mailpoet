@@ -128,10 +128,10 @@ class MailPoetCustomFields implements Filter {
       $queryBuilder->andWhere("subscribers_custom_field.value != $valueParam");
       $queryBuilder->setParameter($valueParam, $value);
     } elseif ($operator === 'more_than') {
-      $queryBuilder->andWhere("subscribers_custom_field.value >= $valueParam");
+      $queryBuilder->andWhere("subscribers_custom_field.value > $valueParam");
       $queryBuilder->setParameter($valueParam, $value);
     } elseif ($operator === 'less_than') {
-      $queryBuilder->andWhere("subscribers_custom_field.value <= $valueParam");
+      $queryBuilder->andWhere("subscribers_custom_field.value < $valueParam");
       $queryBuilder->setParameter($valueParam, $value);
     } else {
       $queryBuilder->andWhere("subscribers_custom_field.value LIKE $valueParam");
