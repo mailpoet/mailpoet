@@ -132,6 +132,19 @@ class ServicesChecker {
     return $mssActive && $mssKeyValid && $mssKeyPendingApproval;
   }
 
+  public function isUserActivelyPaying(): bool {
+    $isPremiumKeyValid = $this->isPremiumKeyValid(false);
+
+    $mssActive = Bridge::isMPSendingServiceEnabled();
+    $isMssKeyValid = $this->isMailPoetAPIKeyValid(false);
+
+    if (!$mssActive || ($isPremiumKeyValid && !$isMssKeyValid)) {
+      return $this->subscribersFeature->hasPremiumSupport();
+    } else {
+      return $this->subscribersFeature->hasMssPremiumSupport();
+    }
+  }
+
   /**
    * Returns MSS or Premium valid key.
    */
