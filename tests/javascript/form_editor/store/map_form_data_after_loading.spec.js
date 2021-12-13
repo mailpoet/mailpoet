@@ -24,6 +24,9 @@ const data = {
       fixed_bar: {
         animation: 'slideright',
       },
+      slide_in: {
+        animation: 'flip',
+      },
       popup: {},
     },
   },
@@ -154,6 +157,7 @@ describe('Form Data Load Mapper', () => {
     it('Maps animation', () => {
       expect(map(data).settings.formPlacement.fixedBar).to.have.property('animation').that.eq('slideright');
       expect(map(data).settings.formPlacement.popup).to.have.property('animation').that.eq('slideup');// default
+      expect(map(data).settings.formPlacement.slideIn).to.have.property('animation').that.eq('flip');
       expect(map(data).settings.formPlacement.belowPosts).to.not.have.property('animation');
     });
 
