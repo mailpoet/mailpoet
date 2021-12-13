@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use IteratorAggregate;
 use PDO;
 use PDOStatement;
+use Serializable;
 
 /**
      *
@@ -2220,23 +2221,22 @@ use PDOStatement;
         // ---  ArrayAccess  --- //
         // --------------------- //
 
-        public function offsetExists($key): bool {
+        public function offsetExists($key) {
             return array_key_exists($key, $this->_data);
         }
 
-        #[\ReturnTypeWillChange] // Need to use annotation since mixed was added in 8.0
         public function offsetGet($key) {
             return $this->get($key);
         }
 
-        public function offsetSet($key, $value): void {
+        public function offsetSet($key, $value) {
             if(is_null($key)) {
                 throw new InvalidArgumentException('You must specify a key/array index.');
             }
             $this->set($key, $value);
         }
 
-        public function offsetUnset($key): void {
+        public function offsetUnset($key) {
             unset($this->_data[$key]);
             unset($this->_dirty_fields[$key]);
         }
@@ -2414,7 +2414,7 @@ use PDOStatement;
      * @method null setResults(array $results)
      * @method array getResults()
      */
-    class IdiormResultSet implements Countable, IteratorAggregate, ArrayAccess {
+    class IdiormResultSet implements Countable, IteratorAggregate, ArrayAccess, Serializable {
         /**
          * The current result set as an array
          * @var array
@@ -2457,7 +2457,7 @@ use PDOStatement;
          * Get the number of records in the result set
          * @return int
          */
-        public function count(): int {
+        public function count() {
             return count($this->_results);
         }
 
@@ -2466,7 +2466,7 @@ use PDOStatement;
          * over the result set.
          * @return \ArrayIterator
          */
-        public function getIterator(): \Traversable {
+        public function getIterator() {
             return new ArrayIterator($this->_results);
         }
 
@@ -2475,7 +2475,7 @@ use PDOStatement;
          * @param int|string $offset
          * @return bool
          */
-        public function offsetExists($offset): bool {
+        public function offsetExists($offset) {
             return isset($this->_results[$offset]);
         }
 
@@ -2484,7 +2484,6 @@ use PDOStatement;
          * @param int|string $offset
          * @return mixed
          */
-        #[\ReturnTypeWillChange] // Can't use mixed return typehint since it was added in 8.0
         public function offsetGet($offset) {
             return $this->_results[$offset];
         }
@@ -2494,7 +2493,7 @@ use PDOStatement;
          * @param int|string $offset
          * @param mixed $value
          */
-        public function offsetSet($offset, $value): void {
+        public function offsetSet($offset, $value) {
             $this->_results[$offset] = $value;
         }
 
@@ -2502,7 +2501,7 @@ use PDOStatement;
          * ArrayAccess
          * @param int|string $offset
          */
-        public function offsetUnset($offset): void {
+        public function offsetUnset($offset) {
             unset($this->_results[$offset]);
         }
 
@@ -2514,10 +2513,6 @@ use PDOStatement;
             return serialize($this->_results);
         }
 
-        public function __serialize() {
-          return $this->serialize();
-        }
-
         /**
          * Serializable
          * @param string $serialized
@@ -2525,10 +2520,6 @@ use PDOStatement;
          */
         public function unserialize($serialized) {
             return unserialize($serialized);
-        }
-
-        public function __unserialize($serialized) {
-          return $this->unserialize($serialized);
         }
 
         /**

@@ -16,7 +16,7 @@ parameters:
   ignoreErrors:
     - '#Function members_register_.+ not found#'
     - '#Call to an undefined method MailPoetVendor\\Idiorm\\IdiormResultSet::set\(\)#'
-    - '#Argument of an invalid type MailPoetVendor\\pQuery\\IQuery supplied for foreach, only iterables are supported#'
+    - '#Argument of an invalid type pQuery\\IQuery supplied for foreach, only iterables are supported#'
     - '/(with|has) no (return )?typehint specified/' # exclude level 6 errors
     - # Primary keys ScheduledTaskSubscriberEntity of are foreign keys and foreign keys may be null because of missing related record
       message: '#Property MailPoet\\Entities\\[a-zA-Z]+::\$[a-z]+ type mapping mismatch: property can contain MailPoet\\Entities\\[a-zA-Z]+\|null but database expects MailPoet\\Entities\\[a-zA-Z]+.#'

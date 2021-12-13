@@ -8,6 +8,33 @@ use MailPoetVendor\Paris\ORMWrapper;
 class Handler {
   const DEFAULT_LIMIT_PER_PAGE = 20;
 
+  public function getSelection($modelClass, array $data) {
+    $data = $this->processData($data);
+    $tableName = $modelClass::$_table;
+    $model = Model::factory($modelClass);
+    $callback = [$modelClass, 'listingQuery'];
+
+    if (method_exists($modelClass, 'listingQuery') && is_callable($callback)) {
+      $customQuery = call_user_func_array(
+        $callback,
+        [$data]
+      );
+      if (!empty($data['selection'])) {
+        $customQuery->whereIn($tableName . '.id', $data['selection']);
+      }
+      return $customQuery;
+    } else {
+      $model = $this->setFilter($model, $data);
+      $this->setGroup($model, $data);
+      $this->setSearch($model, $data);
+
+      if (!empty($data['selection'])) {
+        $model->whereIn($tableName . '.id', $data['selection']);
+      }
+      return $model;
+    }
+  }
+
   public function get($modelClass, array $data) {
     $data = $this->processData($data);
     $tableName = $modelClass::$_table;
@@ -113,15 +140,6 @@ class Handler {
     return $model->filter('filterBy', $data['filter']);
   }
 
-  /**
-   * Polyfill for deprecated FILTER_SANITIZE_STRING which was used to sanitize
-   * $data['sort_by'].
-   */
-  private function filterString(string $string): string {
-    $str = (string)preg_replace('/\x00|<[^>]*>?/', '', $string);
-    return str_replace(["'", '"'], ['&#39;', '&#34;'], $str);
-  }
-
   private function processData(array $data) {
     // check if sort order was specified or default to "asc"
     $sortOrder = (!empty($data['sort_order'])) ? $data['sort_order'] : 'asc';
@@ -130,7 +148,7 @@ class Handler {
 
     // sanitize sort by
     $sortBy = (!empty($data['sort_by']))
-      ? $this->filterString($data['sort_by'])
+      ? filter_var($data['sort_by'], FILTER_SANITIZE_STRING)
       : '';
 
     if (empty($sortBy)) {

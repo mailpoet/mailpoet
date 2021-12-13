@@ -23,7 +23,6 @@ class PopulatorTest extends \MailPoetTest {
 
   public function testItMigratesTrackingSettings() {
     $wp = $this->diContainer->get(Functions::class);
-    $wp->deleteTransient(ChangedTrackingNotice::OPTION_NAME);
     // WooCommerce disabled and Tracking enabled
     $this->settings->set('db_version', '3.74.1');
     $this->settings->set('tracking', ['enabled' => true]);

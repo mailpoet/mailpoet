@@ -3,11 +3,10 @@
 namespace MailPoet\Test\Util;
 
 use MailPoet\Util\DOM as DOMUtil;
-use MailPoet\Util\pQuery\DomNode;
-use MailPoet\Util\pQuery\pQuery;
+use pQuery;
 
 class DOMTest extends \MailPoetUnitTest {
-  /** @var DomNode */
+  /** @var pQuery\DomNode */
   private $root;
 
   public function _before() {
