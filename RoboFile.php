@@ -112,7 +112,8 @@ class RoboFile extends \Robo\Tasks {
   public function translationsBuild() {
     return $this->_exec('./node_modules/.bin/grunt makepot' .
       ' --gruntfile=' . __DIR__ . '/tasks/makepot/makepot.js' .
-      ' --base_path=' . __DIR__
+      ' --base_path=' . __DIR__ .
+      ' --pot_file_name=mailpoet.pot'
     );
   }
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "44e6370ee3bd0f45a6ba712d32f54ef9",
+    "content-hash": "2a5eed36bfee494261687548663ed745",
     "packages": [
         {
             "name": "mtdowling/cron-expression",
@@ -103,58 +103,6 @@
                 "source": "https://github.com/mailpoet/html2text/tree/master"
             },
             "time": "2019-04-24T12:03:33+00:00"
-        },
-        {
-            "name": "tburry/pquery",
-            "version": "v1.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/tburry/pquery.git",
-                "reference": "872339ffd38d261c4417ea1855428b1b4ff9abf1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/tburry/pquery/zipball/872339ffd38d261c4417ea1855428b1b4ff9abf1",
-                "reference": "872339ffd38d261c4417ea1855428b1b4ff9abf1",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "htmlawed/htmlawed": "dev-master"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "IQuery.php",
-                    "gan_formatter.php",
-                    "gan_node_html.php",
-                    "gan_parser_html.php",
-                    "gan_selector_html.php",
-                    "gan_tokenizer.php",
-                    "gan_xml2array.php",
-                    "pQuery.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-2.1"
-            ],
-            "authors": [
-                {
-                    "name": "Todd Burry",
-                    "email": "todd@vanillaforums.com",
-                    "role": "developer"
-                }
-            ],
-            "description": "A jQuery like html dom parser written in php.",
-            "keywords": [
-                "dom",
-                "ganon",
-                "php"
-            ],
-            "time": "2016-01-14T20:55:00+00:00"
         }
     ],
     "packages-dev": [
@@ -4934,51 +4882,6 @@
                 "source": "https://github.com/reactphp/promise/tree/v2.8.0"
             },
             "time": "2020-05-12T15:16:56+00:00"
-        },
-        {
-            "name": "redcomponent/teststatistics",
-            "version": "v2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/redCOMPONENT-COM/teststatistics.git",
-                "reference": "a7fd0b21b85e87a911951f9f0f65cf16857a0245"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/redCOMPONENT-COM/teststatistics/zipball/a7fd0b21b85e87a911951f9f0f65cf16857a0245",
-                "reference": "a7fd0b21b85e87a911951f9f0f65cf16857a0245",
-                "shasum": ""
-            },
-            "require-dev": {
-                "codeception/codeception": "@dev"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Codeception\\Extension\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL2"
-            ],
-            "authors": [
-                {
-                    "name": "Javier Gómez",
-                    "email": "javier@redcomponent.com",
-                    "homepage": "https://github.com/redCOMPONENT-COM/teststatistics"
-                }
-            ],
-            "description": "Codeception Extension to measure the performance of your tests",
-            "homepage": "https://github.com/redCOMPONENT-COM/teststatistics",
-            "keywords": [
-                "TDD",
-                "acceptance testing",
-                "functional testing",
-                "performance",
-                "unit testing"
-            ],
-            "time": "2016-04-27T10:28:11+00:00"
         },
         {
             "name": "rmccue/requests",

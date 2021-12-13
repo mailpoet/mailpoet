@@ -232,9 +232,9 @@ class Links {
     $subscriberId, $subscriberLinkToken, $queueId, $linkHash, $preview
   ) {
     return [
-      $subscriberId,
+      (string)$subscriberId,
       $subscriberLinkToken,
-      $queueId,
+      (string)$queueId,
       $linkHash,
       $preview,
     ];

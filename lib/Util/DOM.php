@@ -2,7 +2,7 @@
 
 namespace MailPoet\Util;
 
-use pQuery\DomNode;
+use MailPoet\Util\pQuery\DomNode;
 
 class DOM {
   /**

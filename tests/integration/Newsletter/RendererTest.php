@@ -17,6 +17,7 @@ use MailPoet\Newsletter\Renderer\Blocks\Text;
 use MailPoet\Newsletter\Renderer\Columns\Renderer as ColumnRenderer;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer;
+use MailPoet\Util\pQuery\pQuery;
 use PHPUnit\Framework\MockObject\MockObject;
 use WP_Error;
 
@@ -55,7 +56,7 @@ class RendererTest extends \MailPoetTest {
       $this->servicesChecker
     );
     $this->columnRenderer = new ColumnRenderer();
-    $this->dOMParser = new \pQuery();
+    $this->dOMParser = new pQuery();
   }
 
   public function testItRendersCompleteNewsletter() {
@@ -514,7 +515,6 @@ class RendererTest extends \MailPoetTest {
         '/fillcolor="#666666/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
     )->equals(1);
-    codecept_debug($DOM('tr > td > div > table > tr > td', 0)->html());
   }
 
   public function testItUsesFullFontFamilyNameInElementStyles() {

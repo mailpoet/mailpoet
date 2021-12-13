@@ -128,11 +128,11 @@ class Date {
     if (!empty($block['params']['value'])) {
       $date = CarbonImmutable::createFromFormat('Y-m-d H:i:s', $block['params']['value']);
       if ($date instanceof CarbonImmutable) {
-        $defaults['selected'] = (int)strftime('%m', $date->getTimestamp());
+        $defaults['selected'] = (int)date('m', $date->getTimestamp());
       }
     } elseif (!empty($block['params']['is_default_today'])) {
       // is default today
-      $defaults['selected'] = (int)strftime('%m');
+      $defaults['selected'] = (int)date('m');
     }
     // merge block with defaults
     $block = array_merge($defaults, $block);
@@ -157,18 +157,18 @@ class Date {
   private function getYears(array $block = []): string {
     $defaults = [
       'selected' => null,
-      'from' => (int)strftime('%Y') - 100,
-      'to' => (int)strftime('%Y'),
+      'from' => (int)date('Y') - 100,
+      'to' => (int)date('Y'),
     ];
 
     if (!empty($block['params']['value'])) {
       $date = CarbonImmutable::createFromFormat('Y-m-d H:i:s', $block['params']['value']);
       if ($date instanceof CarbonImmutable) {
-        $defaults['selected'] = (int)strftime('%Y', $date->getTimestamp());
+        $defaults['selected'] = (int)date('Y', $date->getTimestamp());
       }
     } elseif (!empty($block['params']['is_default_today'])) {
       // is default today
-      $defaults['selected'] = (int)strftime('%Y');
+      $defaults['selected'] = (int)date('Y');
     }
 
     // merge block with defaults
@@ -195,11 +195,11 @@ class Date {
     if (!empty($block['params']['value'])) {
       $date = CarbonImmutable::createFromFormat('Y-m-d H:i:s', $block['params']['value']);
       if ($date instanceof CarbonImmutable) {
-        $defaults['selected'] = (int)strftime('%d', $date->getTimestamp());
+        $defaults['selected'] = (int)date('d', $date->getTimestamp());
       }
     } elseif (!empty($block['params']['is_default_today'])) {
       // is default today
-      $defaults['selected'] = (int)strftime('%d');
+      $defaults['selected'] = (int)date('d');
     }
 
     // merge block with defaults
