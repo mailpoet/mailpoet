@@ -17,10 +17,6 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     delete_transient('dismissed-php-version-outdated-notice');
   }
 
-  public function testPHP56IsOutdated() {
-    expect($this->phpVersionWarning->isOutdatedPHPVersion('5.6.3'))->true();
-  }
-
   public function testPHP70IsOutdated() {
     expect($this->phpVersionWarning->isOutdatedPHPVersion('7.0.8'))->true();
   }
@@ -29,14 +25,16 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     expect($this->phpVersionWarning->isOutdatedPHPVersion('7.1.8'))->true();
   }
 
+  public function testPHP72IsOutdated() {
+    expect($this->phpVersionWarning->isOutdatedPHPVersion('7.2'))->true();
+  }
+
   public function testPHP73IsNotOutdated() {
     expect($this->phpVersionWarning->isOutdatedPHPVersion('7.3'))->false();
   }
 
-  public function testItPrintsWarningFor70() {
-    $warning = $this->phpVersionWarning->init('7.0.0', true);
-    expect($warning->getMessage())->stringContainsString('Your website is running on PHP 7.0.0');
-    expect($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
+  public function testPHP74IsNotOutdated() {
+    expect($this->phpVersionWarning->isOutdatedPHPVersion('7.4'))->false();
   }
 
   public function testItPrintsWarningFor71() {
@@ -45,8 +43,14 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     expect($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
   }
 
-  public function testItPrintsNoWarningFor72() {
-    $warning = $this->phpVersionWarning->init('7.2', true);
+  public function testItPrintsWarningFor72() {
+    $warning = $this->phpVersionWarning->init('7.2.0', true);
+    expect($warning->getMessage())->stringContainsString('Your website is running on PHP 7.2.0');
+    expect($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
+  }
+
+  public function testItPrintsNoWarningFor73() {
+    $warning = $this->phpVersionWarning->init('7.3', true);
     expect($warning)->null();
   }
 
