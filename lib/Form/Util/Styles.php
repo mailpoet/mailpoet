@@ -13,7 +13,8 @@ class Styles {
     $formattedStyles = [];
     foreach ($styles->getAllDeclarationBlocks() as $styleDeclaration) {
       $selectors = array_map(function($selector) use ($prefix) {
-        return sprintf('%s %s', $prefix, $selector->__toString());
+        $stringSelector = is_string($selector) ? $selector : $selector->__toString();
+        return sprintf('%s %s', $prefix, $stringSelector);
       }, $styleDeclaration->getSelectors());
       $selectors = implode(', ', $selectors);
       $rules = array_map(function($rule) {
