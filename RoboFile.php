@@ -483,16 +483,10 @@ class RoboFile extends \Robo\Tasks {
       // temp dir
       ->taskExec('mkdir -p ' . __DIR__ . '/temp')
       ->taskExec('rm -rf ' . __DIR__ . '/temp/phpstan')
-      // lib
       ->taskExec($task)
-      ->arg("$dir/lib")
-      ->dir(__DIR__ . '/tasks/phpstan')
-
-      // tests
-      ->taskExec($task)
-      ->rawArg('--configuration=phpstan-tests.neon')
       ->rawArg(
         implode(' ', [
+          "$dir/lib",
           "$dir/tests/_support",
           "$dir/tests/DataFactories",
           "$dir/tests/acceptance",
@@ -501,7 +495,6 @@ class RoboFile extends \Robo\Tasks {
         ])
       )
       ->dir(__DIR__ . '/tasks/phpstan')
-
       ->run();
   }
 
