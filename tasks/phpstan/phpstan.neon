@@ -6,9 +6,22 @@ parameters:
     - bootstrap.php
     - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
     - vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
+    - ../../vendor/codeception/codeception/autoload.php
+    - ../../vendor/codeception/verify/src/Codeception/function.php
+    - ../../vendor/codeception/verify/src/Codeception/Verify/Verify.php
+    - ../../tests/_support/_generated/AcceptanceTesterActions.php
+    - ../../tests/_support/_generated/IntegrationTesterActions.php
+    - ../../tests/_support/_generated/UnitTesterActions.php
+  scanDirectories:
+    - ../../tests/_support
+    - ../../tests/acceptance
+    - ../../tests/integration
+    - ../../tests/unit
   scanFiles:
     - PremiumContainerConfigurator.php
     - ../../vendor-prefixed/twig/twig/src/Extension/CoreExtension.php # phpstan can't find \MailPoetVendor\twig_include function
+    - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+    - custom-stubs.php
   inferPrivatePropertyTypeFromConstructor: true
   parallel:
     processTimeout: 300.0
@@ -22,6 +35,9 @@ parameters:
       message: '#Property MailPoet\\Entities\\[a-zA-Z]+::\$[a-z]+ type mapping mismatch: property can contain MailPoet\\Entities\\[a-zA-Z]+\|null but database expects MailPoet\\Entities\\[a-zA-Z]+.#'
       path: ../../lib/Entities/ScheduledTaskSubscriberEntity.php
       count: 2
+    - '/Parameter #1 \$cssOrXPath of method AcceptanceTester::moveMouseOver\(\) expects string\|null, array<string, string> given./'
+    - '/Function expect invoked with 1 parameter, 0 required\./'
+    - '/Call to method getName\(\) on an unknown class _generated\\([a-zA-Z])*Cookie/' # codeception generate incorrect return type in ../../tests/_support/_generated
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED
@@ -31,11 +47,14 @@ parameters:
   # exclude level 6 errors
   checkMissingIterableValueType: false
 
-  # analysis of templates is extremely slow, let's skip them for now
   excludes_analyse:
-    - ../../lib/Config/PopulatorData/Templates
+    - ../../lib/Config/PopulatorData/Templates # analysis of templates is extremely slow, let's skip them for now
+    - ../../tests/_support/_generated
+    - ../../tests/unit/Entities/SubscriberEntityTest.php
 includes:
+  - extensions/CodeceptionExtension/extension.neon
   - vendor/phpstan/phpstan-doctrine/extension.neon
+  - vendor/phpstan/phpstan-phpunit/extension.neon
   - vendor/phpstan/phpstan-doctrine/rules.neon
   - vendor/szepeviktor/phpstan-wordpress/extension.neon
-  - php-version-dependent-config-libs.php # PHP version detection + configuraton dependent on PHP version
+  - php-version-dependent-config.php # PHP version detection + configuraton dependent on PHP version
