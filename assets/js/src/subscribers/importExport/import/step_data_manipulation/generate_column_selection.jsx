@@ -25,7 +25,8 @@ export default () => {
       // `name` is the label displayed to users
       const matchedChildren = data.children.filter((child) => {
         const label = child.name.toLowerCase();
-        return label.includes(searchTerm);
+        const words = label.split(' ');
+        return words.some((word) => word.startsWith(searchTerm));
       });
       if (matchedChildren.length === 0) {
         // Returning null prevent the entire optgroup from being displayed
