@@ -327,7 +327,12 @@ jQuery(($) => {
     $('.mailpoet_captcha_update').on('click', updateCaptcha);
 
     // Manage subscription form
-    $('.mailpoet-manage-subscription').on('submit', () => {
+    $('.mailpoet-manage-subscription').on('submit', (event) => {
+      if (!$(event.target).parsley().isValid()) {
+        event.preventDefault();
+        $(event.target).parsley().validate();
+        return;
+      }
       $('.mailpoet-manage-subscription .mailpoet-submit-success').hide();
     });
   })();
