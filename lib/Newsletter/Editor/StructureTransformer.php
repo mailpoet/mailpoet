@@ -3,8 +3,8 @@
 namespace MailPoet\Newsletter\Editor;
 
 use MailPoet\Util\DOM as DOMUtil;
-use MailPoet\Util\pQuery\DomNode;
 use MailPoet\Util\pQuery\pQuery;
+use MailPoetVendor\pQuery\DomNode;
 
 class StructureTransformer {
   public function transform($content, $imageFullWidth) {
