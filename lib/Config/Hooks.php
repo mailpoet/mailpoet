@@ -7,6 +7,7 @@ use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Segments\WP;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Manage;
@@ -44,6 +45,9 @@ class Hooks {
   /** @var WP */
   private $wpSegment;
 
+  /** @var SubscriberHandler */
+  private $subscriberHandler;
+
   /** @var HooksWooCommerce */
   private $hooksWooCommerce;
 
@@ -58,6 +62,7 @@ class Hooks {
     WordpressMailerReplacer $wordpressMailerReplacer,
     DisplayFormInWPContent $displayFormInWPContent,
     HooksWooCommerce $hooksWooCommerce,
+    SubscriberHandler $subscriberHandler,
     WP $wpSegment
   ) {
     $this->subscriptionForm = $subscriptionForm;
@@ -70,6 +75,7 @@ class Hooks {
     $this->wordpressMailerReplacer = $wordpressMailerReplacer;
     $this->displayFormInWPContent = $displayFormInWPContent;
     $this->wpSegment = $wpSegment;
+    $this->subscriberHandler = $subscriberHandler;
     $this->hooksWooCommerce = $hooksWooCommerce;
   }
 
@@ -268,6 +274,14 @@ class Hooks {
     $this->wp->addAction(
       'remove_user_from_blog',
       [$this->wpSegment, 'synchronizeUser'],
+      1
+    );
+
+    // login
+    $this->wp->addAction(
+      'wp_login',
+      [$this->subscriberHandler, 'identifyByLogin'],
+      10,
       1
     );
   }
