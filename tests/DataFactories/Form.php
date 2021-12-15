@@ -89,9 +89,11 @@ class Form {
    * @return $this
    */
   private function addFormBlock(array $block) {
-    $body = unserialize($this->data['body']);
-    $body = array_merge([$block], $body);
-    $this->data['body'] = serialize($body);
+    if (is_string($this->data['body'])) {
+      $body = unserialize($this->data['body']);
+      $body = array_merge([$block], $body);
+      $this->data['body'] = serialize($body);
+    }
     return $this;
   }
 
@@ -109,6 +111,9 @@ class Form {
    */
   public function withSegments(array $segments) {
     $ids = [];
+    if (!is_array($this->data['settings'])) {
+      $this->data['settings'] = [];
+    }
     foreach ($segments as $segment) {
       $ids[] = $segment->getId();
     }
@@ -120,6 +125,9 @@ class Form {
    * @return $this
    */
   public function withDisplayBelowPosts() {
+    if (!is_array($this->data['settings'])) {
+      $this->data['settings'] = [];
+    }
     $this->data['settings']['form_placement'] = [
       'below_posts' => [
         'enabled' => '1',
@@ -138,6 +146,9 @@ class Form {
    * @return $this
    */
   public function withSuccessMessage(string $message) {
+    if (!is_array($this->data['settings'])) {
+      $this->data['settings'] = [];
+    }
     $this->data['settings']['on_success'] = 'message';
     $this->data['settings']['success_message'] = $message;
     return $this;
@@ -145,11 +156,19 @@ class Form {
 
   public function create(): FormEntity {
     $form = new FormEntity($this->data['name']);
-    $form->setSettings($this->data['settings']);
-    if (isset($this->data['deleted_at'])) {
+
+    if (is_array($this->data['settings']) || is_null($this->data['settings'])) {
+      $form->setSettings($this->data['settings']);
+    }
+
+    if (isset($this->data['deleted_at']) && ($this->data['deleted_at'] instanceof \DateTimeInterface || is_null($this->data['deleted_at']))) {
       $form->setDeletedAt($this->data['deleted_at']);
     }
-    $form->setBody(unserialize($this->data['body']));
+
+    if (is_string($this->data['body'])) {
+      $form->setBody(unserialize($this->data['body']));
+    }
+    
     $this->formsRepository->persist($form);
     $this->formsRepository->flush();
     return $form;
