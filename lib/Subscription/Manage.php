@@ -173,7 +173,13 @@ class Manage {
   private function filterOutEmptyMandatoryFields(array $subscriberData) {
     $mandatory = $this->getMandatory();
     foreach ($mandatory as $name) {
-      if (strlen(trim($subscriberData[$name])) === 0) {
+      if (!isset($subscriberData[$name])) {
+        continue;
+      }
+      if (is_array($subscriberData[$name]) && count(array_filter($subscriberData[$name])) === 0) {
+        unset($subscriberData[$name]);
+      }
+      if (is_string($subscriberData[$name]) && strlen(trim($subscriberData[$name])) === 0) {
         unset($subscriberData[$name]);
       }
     }
