@@ -126,6 +126,19 @@ export default () => {
       const selectElement = selectEvent.currentTarget;
       const selectedOptionId = selectEvent.params.data.id;
       jQuery(selectElement).data('column-id', selectedOptionId);
+    })
+    // Temporary fix for search inputs not getting focus when clicked due to jQuery 3.6.0
+    // see: https://github.com/select2/select2/issues/5993 and feel free to remove if the bug
+    // has been fixed and our select2/jQuery libraries have been updated.
+    .on('select2:open', () => {
+      const inputs = document.querySelectorAll('.select2-search__field[aria-controls]');
+      if (inputs.length === 0) {
+        return;
+      }
+      // Allow focus to transfer from already-open select to another one that was just clicked
+      // on, when there are temporarily two in the DOM
+      const mostRecentlyOpenedInput = inputs[inputs.length - 1];
+      mostRecentlyOpenedInput.focus();
     });
   jQuery.map(
     jQuery('.mailpoet_subscribers_column_data_match'), (element) => {
