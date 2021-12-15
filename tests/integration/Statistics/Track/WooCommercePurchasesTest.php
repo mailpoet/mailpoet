@@ -13,6 +13,7 @@ use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
+use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Cookies;
@@ -65,7 +66,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
@@ -84,7 +86,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
@@ -122,7 +125,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
@@ -164,7 +168,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
 
@@ -175,7 +180,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
 
@@ -193,7 +199,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
 
@@ -213,7 +220,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     $woocommercePurchases->trackPurchase($orderMock->get_id());
@@ -229,7 +237,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
 
@@ -248,7 +257,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     expect(count($this->statisticsWooCommercePurchasesRepository->findBy([])))->equals(0);
@@ -263,7 +273,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     expect(count($this->statisticsWooCommercePurchasesRepository->findBy([])))->equals(0);
@@ -278,7 +289,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     expect(count($this->statisticsWooCommercePurchasesRepository->findBy([])))->equals(0);
@@ -295,7 +307,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
@@ -324,7 +337,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
@@ -356,7 +370,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
@@ -393,7 +408,8 @@ class WooCommercePurchasesTest extends \MailPoetTest {
       $this->diContainer->get(StatisticsWooCommercePurchasesRepository::class),
       $this->diContainer->get(StatisticsClicksRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->cookies
+      $this->cookies,
+      $this->diContainer->get(SubscriberHandler::class)
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
