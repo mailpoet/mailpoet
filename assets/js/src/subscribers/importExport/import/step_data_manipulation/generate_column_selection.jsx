@@ -2,6 +2,36 @@ import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 
 export default () => {
+  // A custom matcher is required because we are using optgroups instead of single values.
+  // See https://select2.org/searching
+  const columnSearchMatcher = (params, data) => {
+    if (data.children === undefined) {
+      return null;
+    }
+    const searchTerm = (params.term ?? '').trim().toLowerCase();
+    if (searchTerm === '') {
+      return data;
+    }
+    // "children" are objects representing the individual options within an optgroup
+    // `name` is the label displayed to users
+    const matchedChildren = data.children.filter((child) => {
+      const label = child.name.toLowerCase();
+      return label.includes(searchTerm);
+    });
+    if (matchedChildren.length === 0) {
+      // Returning null prevent the entire optgroup from being displayed
+      return null;
+    }
+    // We can't change the original `data` object because select2 continues use it as the basis for
+    // future searches. In other words, if we simply modified `data`, it could prevent options
+    // that were previously filtered out from reappearing if the search term changes or gets
+    // cleared out.
+    const modifiedData = jQuery.extend(true, {}, data);
+    modifiedData.children = matchedChildren;
+
+    return modifiedData;
+  };
+
   jQuery('select.mailpoet_subscribers_column_data_match')
     .select2({
       data: window.mailpoetColumnsSelect2,
@@ -12,6 +42,7 @@ export default () => {
       templateSelection(item) {
         return item.name;
       },
+      matcher: columnSearchMatcher,
     })
     .on('select2:selecting', (selectEvent) => {
       const selectElement = selectEvent.currentTarget;
@@ -65,6 +96,7 @@ export default () => {
                     templateSelection(item) {
                       return item.name;
                     },
+                    matcher: columnSearchMatcher,
                   });
               });
             jQuery(selectElement).data('column-id', newColumnData.id);
