@@ -2,48 +2,47 @@ import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 
 export default () => {
-  // A custom matcher is required because we are using optgroups instead of single values.
-  // See https://select2.org/searching
-  const columnSearchMatcher = (params, data) => {
-    if (data.children === undefined) {
-      return null;
-    }
-    const searchTerm = (params.term ?? '').trim().toLowerCase();
-    if (searchTerm === '') {
-      return data;
-    }
-    // "children" are objects representing the individual options within an optgroup
-    // `name` is the label displayed to users
-    const matchedChildren = data.children.filter((child) => {
-      const label = child.name.toLowerCase();
-      return label.includes(searchTerm);
-    });
-    if (matchedChildren.length === 0) {
-      // Returning null prevent the entire optgroup from being displayed
-      return null;
-    }
-    // We can't change the original `data` object because select2 continues use it as the basis for
-    // future searches. In other words, if we simply modified `data`, it could prevent options
-    // that were previously filtered out from reappearing if the search term changes or gets
-    // cleared out.
-    const modifiedData = jQuery.extend(true, {}, data);
-    modifiedData.children = matchedChildren;
+  const select2Config = {
+    data: window.mailpoetColumnsSelect2,
+    width: '15em',
+    templateResult(item) {
+      return item.name;
+    },
+    templateSelection(item) {
+      return item.name;
+    },
+    // A custom matcher is required because we are using optgroups instead of single values.
+    // See https://select2.org/searching
+    matcher: (params, data) => {
+      if (data.children === undefined) {
+        return null;
+      }
+      const searchTerm = (params.term ?? '').trim().toLowerCase();
+      if (searchTerm === '') {
+        return data;
+      }
+      // "children" are objects representing the individual options within an optgroup
+      // `name` is the label displayed to users
+      const matchedChildren = data.children.filter((child) => {
+        const label = child.name.toLowerCase();
+        return label.includes(searchTerm);
+      });
+      if (matchedChildren.length === 0) {
+        // Returning null prevent the entire optgroup from being displayed
+        return null;
+      }
+      // We can't change the original `data` object because select2 continues use it as the
+      // basis for future searches. In other words, if we simply modified `data`, it could
+      // prevent options that were previously filtered out from reappearing if the search term
+      // changes or gets cleared out.
+      const modifiedData = jQuery.extend(true, {}, data);
+      modifiedData.children = matchedChildren;
 
-    return modifiedData;
+      return modifiedData;
+    },
   };
-
   jQuery('select.mailpoet_subscribers_column_data_match')
-    .select2({
-      data: window.mailpoetColumnsSelect2,
-      width: '15em',
-      templateResult(item) {
-        return item.name;
-      },
-      templateSelection(item) {
-        return item.name;
-      },
-      matcher: columnSearchMatcher,
-    })
+    .select2(select2Config)
     .on('select2:selecting', (selectEvent) => {
       const selectElement = selectEvent.currentTarget;
       const selectedOptionId = selectEvent.params.args.data.id;
@@ -87,17 +86,7 @@ export default () => {
                 jQuery(selectElement)
                   .html('')
                   .select2('destroy')
-                  .select2({
-                    data: window.mailpoetColumnsSelect2,
-                    width: '15em',
-                    templateResult(item) {
-                      return item.name;
-                    },
-                    templateSelection(item) {
-                      return item.name;
-                    },
-                    matcher: columnSearchMatcher,
-                  });
+                  .select2(select2Config);
               });
             jQuery(selectElement).data('column-id', newColumnData.id);
             // close popup
