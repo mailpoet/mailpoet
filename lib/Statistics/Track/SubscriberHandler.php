@@ -5,6 +5,7 @@ namespace MailPoet\Statistics\Track;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriberHandler {
   /** @var SubscriberCookie */
@@ -16,14 +17,30 @@ class SubscriberHandler {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     SubscriberCookie $subscriberCookie,
     SubscribersRepository $subscribersRepository,
-    TrackingConfig $trackingConfig
+    TrackingConfig $trackingConfig,
+    WPFunctions $wp
   ) {
     $this->subscriberCookie = $subscriberCookie;
     $this->subscribersRepository = $subscribersRepository;
     $this->trackingConfig = $trackingConfig;
+    $this->wp = $wp;
+  }
+
+  public function identifyByLogin(string $login): void {
+    if (!$this->trackingConfig->isCookieTrackingEnabled()) {
+      return;
+    }
+
+    $wpUser = $this->wp->getUserBy('login', $login);
+    if ($wpUser) {
+      $this->identifyByEmail($wpUser->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }
   }
 
   public function identifyByEmail(string $email): void {

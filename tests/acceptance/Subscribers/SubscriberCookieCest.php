@@ -4,6 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 use AcceptanceTester;
 use MailPoet\Test\DataFactories\Settings;
+use MailPoet\Test\DataFactories\User;
 use PHPUnit\Framework\Assert;
 
 class SubscriberCookieCest {
@@ -35,6 +36,25 @@ class SubscriberCookieCest {
     }
 
     // subscriber cookie should be set right after signup
+    $this->checkSubscriberCookie($i, $email);
+  }
+
+  public function setSubscriberCookieOnLogin(AcceptanceTester $i) {
+    $i->wantTo('Set subscriber cookie on login');
+
+    $email = 'test-user@example.com';
+    (new User())->createUser('test-user', 'subscriber', $email);
+
+    // login
+    $i->cantSeeCookie(self::SUBSCRIBER_COOKIE_NAME);
+    $i->amOnPage('/wp-login.php');
+    $i->wait(1); // username is not filled properly without this line
+    $i->fillField('Username', 'test-user');
+    $i->fillField('Password', 'test-user-password');
+    $i->click('Log In');
+    $i->waitForText('Dashboard');
+
+    // subscriber cookie should be set right after login
     $this->checkSubscriberCookie($i, $email);
   }
 
