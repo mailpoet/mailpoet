@@ -3,6 +3,7 @@
 namespace MailPoet\Subscription;
 
 use MailPoet\Settings\SettingsController;
+use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Subscribers\SubscriberActions;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -17,14 +18,19 @@ class Registration {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var SubscriberHandler */
+  private $subscriberHandler;
+
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
-    SubscriberActions $subscriberActions
+    SubscriberActions $subscriberActions,
+    SubscriberHandler $subscriberHandler
   ) {
     $this->settings = $settings;
     $this->subscriberActions = $subscriberActions;
     $this->wp = $wp;
+    $this->subscriberHandler = $subscriberHandler;
   }
 
   public function extendForm() {
@@ -100,5 +106,8 @@ class Registration {
       ],
       $segmentIds
     );
+
+    // start subscriber tracking (by email, we don't have WP user ID yet)
+    $this->subscriberHandler->identifyByEmail($email);
   }
 }
