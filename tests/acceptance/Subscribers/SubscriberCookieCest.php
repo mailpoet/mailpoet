@@ -5,6 +5,7 @@ namespace MailPoet\Test\Acceptance;
 use AcceptanceTester;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\User;
+use MailPoet\Test\DataFactories\WooCommerceProduct;
 use PHPUnit\Framework\Assert;
 
 class SubscriberCookieCest {
@@ -55,6 +56,21 @@ class SubscriberCookieCest {
     $i->waitForText('Dashboard');
 
     // subscriber cookie should be set right after login
+    $this->checkSubscriberCookie($i, $email);
+  }
+
+  public function setSubscriberCookieOnWooCommerceCheckout(AcceptanceTester $i) {
+    $i->wantTo('Set subscriber cookie on WooCommerce checkout');
+
+    $i->activateWooCommerce();
+    $product = (new WooCommerceProduct($i))->create();
+
+    // order checkout
+    $i->cantSeeCookie(self::SUBSCRIBER_COOKIE_NAME);
+    $email = 'test-user@example.com';
+    $i->orderProductWithoutRegistration($product, $email);
+
+    // subscriber cookie should be set after order checkout
     $this->checkSubscriberCookie($i, $email);
   }
 

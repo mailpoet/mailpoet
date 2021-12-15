@@ -30,18 +30,23 @@ class WooCommercePurchases {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var SubscriberHandler */
+  private $subscriberHandler;
+
   public function __construct(
     Helper $woocommerceHelper,
     StatisticsWooCommercePurchasesRepository $statisticsWooCommercePurchasesRepository,
     StatisticsClicksRepository $statisticsClicksRepository,
     SubscribersRepository $subscribersRepository,
-    Cookies $cookies
+    Cookies $cookies,
+    SubscriberHandler $subscriberHandler
   ) {
     $this->woocommerceHelper = $woocommerceHelper;
     $this->cookies = $cookies;
     $this->statisticsWooCommercePurchasesRepository = $statisticsWooCommercePurchasesRepository;
     $this->statisticsClicksRepository = $statisticsClicksRepository;
     $this->subscribersRepository = $subscribersRepository;
+    $this->subscriberHandler = $subscriberHandler;
   }
 
   public function trackPurchase($id, $useCookies = true) {
@@ -71,6 +76,9 @@ class WooCommercePurchases {
       if (!$newsletter instanceof NewsletterEntity) continue;
       $processedNewsletterIdsMap[$newsletter->getId()] = true;
     }
+
+    // try to find a subscriber by order email and start tracking
+    $this->subscriberHandler->identifyByEmail($order->get_billing_email());
 
     if (!$useCookies) {
       return;
