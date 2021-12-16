@@ -3,7 +3,7 @@
   "name": "mailpoet/marketing-optin-block",
   "version": "0.1.0",
   "title": "MailPoet Marketing Opt-in",
-  "category": "woocommerce",
+  "category": "mailpoet",
   "textdomain": "mailpoet",
   "supports": {
     "align": false,
