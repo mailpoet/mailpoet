@@ -19,6 +19,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
@@ -214,6 +215,7 @@ class PagesTest extends \MailPoetTest {
       $container->get(Renderer::class),
       $unsubscribesMock ?? $container->get(Unsubscribes::class),
       $container->get(ManageSubscriptionFormRenderer::class),
+      $container->get(SubscriberHandler::class),
       $this->subscribersRepository,
       $container->get(TrackingConfig::class)
     );
