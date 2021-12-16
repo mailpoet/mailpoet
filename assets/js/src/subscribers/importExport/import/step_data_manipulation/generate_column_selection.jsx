@@ -5,42 +5,6 @@ export default () => {
   const select2Config = {
     data: window.mailpoetColumnsSelect2,
     width: '15em',
-    templateResult(item) {
-      return item.name;
-    },
-    templateSelection(item) {
-      return item.name;
-    },
-    // A custom matcher is required because we are using optgroups instead of single values.
-    // See https://select2.org/searching
-    matcher: (params, data) => {
-      if (data.children === undefined) {
-        return null;
-      }
-      const searchTerm = (params.term ?? '').trim().toLowerCase();
-      if (searchTerm === '') {
-        return data;
-      }
-      // "children" are objects representing the individual options within an optgroup
-      // `name` is the label displayed to users
-      const matchedChildren = data.children.filter((child) => {
-        const label = child.name.toLowerCase();
-        const words = label.split(' ');
-        return words.some((word) => word.startsWith(searchTerm));
-      });
-      if (matchedChildren.length === 0) {
-        // Returning null prevent the entire optgroup from being displayed
-        return null;
-      }
-      // We can't change the original `data` object because select2 continues use it as the
-      // basis for future searches. In other words, if we simply modified `data`, it could
-      // prevent options that were previously filtered out from reappearing if the search term
-      // changes or gets cleared out.
-      const modifiedData = jQuery.extend(true, {}, data);
-      modifiedData.children = matchedChildren;
-
-      return modifiedData;
-    },
   };
   jQuery('select.mailpoet_subscribers_column_data_match')
     .select2(select2Config)
@@ -69,6 +33,7 @@ export default () => {
             const newColumnData = {
               id: response.data.id,
               name: response.data.name,
+              text: response.data.name, // Required for select2 default functionality
               type: response.data.type,
               params: response.data.params,
               custom: true,
