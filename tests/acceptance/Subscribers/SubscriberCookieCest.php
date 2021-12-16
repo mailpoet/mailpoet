@@ -3,7 +3,11 @@
 namespace MailPoet\Test\Acceptance;
 
 use AcceptanceTester;
+use Codeception\Util\Locator;
+use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
+use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\User;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 use PHPUnit\Framework\Assert;
@@ -71,6 +75,45 @@ class SubscriberCookieCest {
     $i->orderProductWithoutRegistration($product, $email);
 
     // subscriber cookie should be set after order checkout
+    $this->checkSubscriberCookie($i, $email);
+  }
+
+  public function setSubscriberCookieOnLinkClick(AcceptanceTester $i) {
+    (new Settings())->withCronTriggerMethod('WordPress');
+
+    $subject = 'Testing newsletter';
+    $newsletter = (new Newsletter())
+      ->withSubject($subject)
+      ->loadBodyFrom('newsletterWithText.json')
+      ->create();
+
+    $list = (new Segment())->withName('Test list')->create();
+
+    $email = 'test-user@example.com';
+    (new Subscriber())
+      ->withEmail($email)
+      ->withSegments([$list])
+      ->create();
+
+    // send newsletter
+    $i->login();
+    $i->amEditingNewsletter($newsletter->getId());
+    $i->click('Next');
+    $i->waitForElement('[data-automation-id="newsletter_send_form"]');
+    $i->selectOptionInSelect2('Test list');
+    $i->click('Send');
+    $i->waitForEmailSendingOrSent();
+
+    // click on a preview link
+    $i->resetCookie(self::SUBSCRIBER_COOKIE_NAME);
+    $i->cantSeeCookie(self::SUBSCRIBER_COOKIE_NAME);
+    $i->checkEmailWasReceived($subject);
+    $i->click(Locator::contains('span.subject', $subject));
+    $i->switchToIframe('#preview-html');
+    $i->click('View this in your browser');
+    $i->switchToNextTab();
+
+    // subscriber cookie should be set after link click
     $this->checkSubscriberCookie($i, $email);
   }
 
