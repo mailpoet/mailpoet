@@ -14,7 +14,13 @@ export function validateText(item: WordpressRoleFormItem): boolean {
   return (
     (typeof item.value === 'string')
     && (item.value.length > 0)
-    && ((item.operator === 'equals') || (item.operator === 'contains'))
+    && (
+      (item.operator === 'equals')
+      || (item.operator === 'contains')
+      || (item.operator === 'not_equals')
+      || (item.operator === 'more_than')
+      || (item.operator === 'less_than')
+    )
   );
 }
 
