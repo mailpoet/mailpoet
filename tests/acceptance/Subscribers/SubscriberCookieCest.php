@@ -63,8 +63,8 @@ class SubscriberCookieCest {
     $this->checkSubscriberCookie($i, $email);
   }
 
-  public function setSubscriberCookieOnWooCommerceCheckout(AcceptanceTester $i) {
-    $i->wantTo('Set subscriber cookie on WooCommerce checkout');
+  public function setSubscriberCookieOnWooCheckoutAndSubscriptionConfirmation(AcceptanceTester $i) {
+    $i->wantTo('Set subscriber cookie on WooCommerce checkout and subscription confirmation');
 
     $i->activateWooCommerce();
     $product = (new WooCommerceProduct($i))->create();
@@ -75,6 +75,18 @@ class SubscriberCookieCest {
     $i->orderProductWithoutRegistration($product, $email);
 
     // subscriber cookie should be set after order checkout
+    $this->checkSubscriberCookie($i, $email);
+
+    // click on subscription confirmation link
+    $i->resetCookie(self::SUBSCRIBER_COOKIE_NAME);
+    $i->cantSeeCookie(self::SUBSCRIBER_COOKIE_NAME);
+    $i->checkEmailWasReceived('Confirm your subscription to MP Dev');
+    $i->click(Locator::contains('span.subject', 'Confirm your subscription to MP Dev'));
+    $i->switchToIframe('#preview-html');
+    $i->click('I confirm my subscription!');
+    $i->switchToNextTab();
+
+    // subscriber cookie should be set after subscription confirmation
     $this->checkSubscriberCookie($i, $email);
   }
 
