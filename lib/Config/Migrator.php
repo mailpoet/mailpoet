@@ -820,8 +820,8 @@ class Migrator {
 
   private function migrateWooSubscriptionsDynamicFilters(): bool {
     global $wpdb;
-    // skip the migration if the DB version is higher than 3.74.3 or is not set (a new installation)
-    if (version_compare($this->settings->get('db_version', '3.74.4'), '3.74.3', '>')) {
+    // skip the migration if the DB version is higher than 3.75.1 or is not set (a new installation)
+    if (version_compare($this->settings->get('db_version', '3.75.2'), '3.75.1', '>')) {
       return false;
     }
 
