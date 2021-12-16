@@ -59,7 +59,13 @@ class WooCommerceBlocksIntegration {
       '__experimental_woocommerce_blocks_add_data_attributes_to_block',
       [$this, 'addDataAttributesToBlock']
     );
-    $this->wp->registerBlockType(Env::$assetsPath . '/dist/js/marketing_optin_block');
+    $block = $this->wp->registerBlockType(Env::$assetsPath . '/dist/js/marketing_optin_block');
+    // We need to force the script to load in the footer. register_block_type always adds the script to the header.
+    if ($block instanceof \WP_Block_Type && $block->editor_script) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $wpScripts = $this->wp->getWpScripts();
+      $wpScripts->add_data($block->editor_script, 'group', 1); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }
+
     $this->extendRestApi();
   }
 
