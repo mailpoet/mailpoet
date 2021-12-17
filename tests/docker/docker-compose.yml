@@ -15,6 +15,10 @@ services:
     entrypoint: /docker-entrypoint.sh
     environment:
       WP_ROOT: /wp-core
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_TABLE_PREFIX: mp_
 
   mailhog:
     image: mailhog/mailhog:v1.0.0
@@ -29,7 +33,7 @@ services:
       - mailhog-data:/mailhog-data
 
   wordpress:
-    image: mailpoet/wordpress:${WORDPRESS_IMAGE_VERSION:-wp-5.6_php8.0_20210125.1}
+    image: mailpoet/wordpress:${WORDPRESS_IMAGE_VERSION:-wp-5.8_php8.0_20211216.1}
     depends_on:
       - chrome
       - mailhog
