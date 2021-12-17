@@ -16,6 +16,10 @@ if ((boolean)getenv('MULTISITE') === true) {
 }
 require_once($wpLoadFile);
 
+// Ensure that the plugin is activated
+require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+activate_plugin('mailpoet/mailpoet.php');
+
 $console = new \Codeception\Lib\Console\Output([]);
 $console->writeln('Loading WP core... (' . $wpLoadFile . ')');
 
