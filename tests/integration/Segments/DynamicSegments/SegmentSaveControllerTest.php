@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments;
 
+use MailPoet\ConflictException;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -135,8 +136,8 @@ class SegmentSaveControllerTest extends \MailPoetTest {
         'action' => UserRole::TYPE,
       ]],
     ];
-    $this->expectException(\InvalidArgumentException::class);
-    $this->expectExceptionMessage("Segment with name: 'Test name' already exists.");
+    $this->expectException(ConflictException::class);
+    $this->expectExceptionMessage("Could not create new segment with name [Test name] because a segment with that name already exists.");
     $this->saveController->save($segmentData);
   }
 

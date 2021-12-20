@@ -2,10 +2,12 @@
 
 namespace MailPoet\Segments;
 
-use InvalidArgumentException;
+use MailPoet\ConflictException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\NotFoundException;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use MailPoetVendor\Doctrine\ORM\ORMException;
 
 class SegmentSaveController {
   /** @var SegmentsRepository */
@@ -22,21 +24,27 @@ class SegmentSaveController {
     $this->entityManager = $entityManager;
   }
 
+  /**
+   * @throws ConflictException
+   * @throws NotFoundException
+   * @throws ORMException
+   */
   public function save(array $data = []): SegmentEntity {
     $id = isset($data['id']) ? (int)$data['id'] : null;
     $name = $data['name'] ?? '';
     $description = $data['description'] ?? '';
 
-    $this->checkSegmentUniqueName($name, $id);
-
     return $this->segmentsRepository->createOrUpdate($name, $description, SegmentEntity::TYPE_DEFAULT, [], $id);
   }
 
+  /**
+   * @throws ConflictException
+   */
   public function duplicate(SegmentEntity $segmentEntity): SegmentEntity {
     $duplicate = clone $segmentEntity;
     $duplicate->setName(sprintf(__('Copy of %s', 'mailpoet'), $segmentEntity->getName()));
 
-    $this->checkSegmentUniqueName($duplicate->getName(), $duplicate->getId());
+    $this->segmentsRepository->verifyNameIsUnique($duplicate->getName(), $duplicate->getId());
 
     $this->entityManager->transactional(function (EntityManager $entityManager) use ($duplicate, $segmentEntity) {
       $entityManager->persist($duplicate);
@@ -57,11 +65,5 @@ class SegmentSaveController {
     });
 
     return $duplicate;
-  }
-
-  private function checkSegmentUniqueName(string $name, ?int $id): void {
-    if (!$this->segmentsRepository->isNameUnique($name, $id)) {
-      throw new InvalidArgumentException("Segment with name: '{$name}' already exists.");
-    }
   }
 }

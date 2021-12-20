@@ -2,9 +2,11 @@
 
 namespace MailPoet\Segments\DynamicSegments;
 
-use InvalidArgumentException;
+use MailPoet\ConflictException;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\NotFoundException;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoetVendor\Doctrine\ORM\ORMException;
 
 class SegmentSaveController {
   /** @var SegmentsRepository */
@@ -21,20 +23,18 @@ class SegmentSaveController {
     $this->filterDataMapper = $filterDataMapper;
   }
 
+  /**
+   * @throws ConflictException
+   * @throws NotFoundException
+   * @throws Exceptions\InvalidFilterException
+   * @throws ORMException
+   */
   public function save(array $data = []): SegmentEntity {
     $id = isset($data['id']) ? (int)$data['id'] : null;
     $name = $data['name'] ?? '';
     $description = $data['description'] ?? '';
     $filtersData = $this->filterDataMapper->map($data);
 
-    $this->checkSegmentUniqueName($name, $id);
-
     return $this->segmentsRepository->createOrUpdate($name, $description, SegmentEntity::TYPE_DYNAMIC, $filtersData, $id);
-  }
-
-  private function checkSegmentUniqueName(string $name, ?int $id): void {
-    if (!$this->segmentsRepository->isNameUnique($name, $id)) {
-      throw new InvalidArgumentException("Segment with name: '{$name}' already exists.");
-    }
   }
 }
