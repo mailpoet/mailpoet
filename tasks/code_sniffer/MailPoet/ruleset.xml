@@ -88,6 +88,28 @@
       <property name="spacingAfterLast" value="0" /> <!-- no spaces after last method -->
     </properties>
   </rule>
+  <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing"> <!-- 1 space between assignment in function declarations -->
+    <properties>
+      <property name="equalsSpacing" value="1" />
+    </properties>
+  </rule>
+  <rule ref="SlevomatCodingStandard.Whitespaces.DuplicateSpaces"> <!-- Checks duplicate spaces anywhere -->
+    <properties>
+      <property name="ignoreSpacesInAnnotation" value="1" /> <!-- to allow multiple spaces to align annotations -->
+      <property name="ignoreSpacesInComment" value="1" /> <!-- to allow multiple spaces to align content of the comment -->
+      <property name="ignoreSpacesBeforeAssignment" value="1" /> <!-- to allow multiple spaces to align assignments -->
+    </properties>
+  </rule>
+  <rule ref="PSR12.ControlStructures.ControlStructureSpacing"> <!-- No space after opening brackets and before closing brackets -->
+    <properties>
+      <property name="indent" value="2" />
+    </properties>
+  </rule>
+  <rule ref="Generic.Formatting.SpaceAfterNot"> <!-- No space after NOT operator -->
+    <properties>
+      <property name="spacing" value="0" />
+    </properties>
+  </rule>
 
   <!-- Typehints -->
   <rule ref="Generic.PHP.LowerCaseType"/> <!-- Force PHP 7 param and return types to be lowercased -->
