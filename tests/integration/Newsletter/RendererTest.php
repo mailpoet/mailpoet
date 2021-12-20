@@ -663,7 +663,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function makeAttachment($upload, $parentPostId = 0) {
-    if ( ! function_exists( 'wp_crop_image' ) ) {
+    if (!function_exists( 'wp_crop_image' )) {
       include( ABSPATH . 'wp-admin/includes/image.php' );
     }
 

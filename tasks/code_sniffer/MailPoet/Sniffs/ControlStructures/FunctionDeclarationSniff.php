@@ -54,7 +54,8 @@ class FunctionDeclarationSniff implements Sniff {
   public function process(File $phpcsFile, $stackPtr) {
     $tokens = $phpcsFile->getTokens();
 
-    if (isset($tokens[$stackPtr]['parenthesis_opener']) === false
+    if (
+      isset($tokens[$stackPtr]['parenthesis_opener']) === false
       || isset($tokens[$stackPtr]['parenthesis_closer']) === false
       || $tokens[$stackPtr]['parenthesis_opener'] === null
       || $tokens[$stackPtr]['parenthesis_closer'] === null
@@ -156,7 +157,8 @@ class FunctionDeclarationSniff implements Sniff {
         $prev = $phpcsFile->findPrevious(T_WHITESPACE, ($opener - 1), $closeBracket, true);
         $next = $phpcsFile->findNext(T_WHITESPACE, ($opener + 1), null, true);
 
-        if ($tokens[$prev]['line'] < $tokens[$opener]['line']
+        if (
+          $tokens[$prev]['line'] < $tokens[$opener]['line']
           && $tokens[$next]['line'] > $tokens[$opener]['line']
         ) {
           // Clear the whole line.
@@ -242,7 +244,8 @@ class FunctionDeclarationSniff implements Sniff {
       true
     );
 
-    if ($tokens[$closeBracket]['line'] !== $tokens[$tokens[$closeBracket]['parenthesis_opener']]['line']
+    if (
+      $tokens[$closeBracket]['line'] !== $tokens[$tokens[$closeBracket]['parenthesis_opener']]['line']
       && $tokens[$prev]['line'] === $tokens[$closeBracket]['line']
     ) {
       $error = 'The closing parenthesis of a multi-line ' . $type . ' declaration must be on a new line';
@@ -268,7 +271,8 @@ class FunctionDeclarationSniff implements Sniff {
           true
         );
 
-        if ($tokens[$closeBracket]['line'] !== $tokens[$tokens[$closeBracket]['parenthesis_opener']]['line']
+        if (
+          $tokens[$closeBracket]['line'] !== $tokens[$tokens[$closeBracket]['parenthesis_opener']]['line']
           && $tokens[$prev]['line'] === $tokens[$closeBracket]['line']
         ) {
           $error = 'The closing parenthesis of a multi-line use declaration must be on a new line';
@@ -285,7 +289,8 @@ class FunctionDeclarationSniff implements Sniff {
     $lastLine = $tokens[$openBracket]['line'];
     for ($i = ($openBracket + 1); $i < $closeBracket; $i++) {
       if ($tokens[$i]['line'] !== $lastLine) {
-        if ($i === $tokens[$stackPtr]['parenthesis_closer']
+        if (
+          $i === $tokens[$stackPtr]['parenthesis_closer']
           || ($tokens[$i]['code'] === T_WHITESPACE
             && (($i + 1) === $closeBracket
               || ($i + 1) === $tokens[$stackPtr]['parenthesis_closer']))

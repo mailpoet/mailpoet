@@ -104,8 +104,9 @@ class Import {
     ];
     // 1. data should contain all required fields
     // 2. column names should only contain alphanumeric & underscore characters
-    if (count(array_intersect_key(array_flip($requiredDataFields), $data)) !== count($requiredDataFields) ||
-       preg_grep('/[^a-zA-Z0-9_]/', array_keys($data['columns']))
+    if (
+      count(array_intersect_key(array_flip($requiredDataFields), $data)) !== count($requiredDataFields) ||
+      preg_grep('/[^a-zA-Z0-9_]/', array_keys($data['columns']))
     ) {
       throw new \Exception(__('Missing or invalid import data.', 'mailpoet'));
     }
@@ -268,7 +269,7 @@ class Import {
 
     // We attempt converting with both date formats
     foreach ($data as $index => $date) {
-      if (empty($date) ) {
+      if (empty($date)) {
         $dateTimeDates[$index] = $date;
         $customFormatDates[$index] = $date;
         continue;

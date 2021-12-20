@@ -67,7 +67,8 @@ class Renderer {
     // add honeypot for spambots
     $html = ($honeypotEnabled) ? $this->renderHoneypot() : '';
     foreach ($blocks as $key => $block) {
-      if ($captchaEnabled
+      if (
+        $captchaEnabled
         && $block['type'] === FormEntity::SUBMIT_BLOCK_TYPE
         && $this->settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA
       ) {

@@ -309,7 +309,7 @@ class ImportTest extends \MailPoetTest {
         'subscribed_ip' => '127.0.0.1',
         'confirmed_at' => '2020-12-31 16:32:48',
         'confirmed_ip' => '127.1.1.1',
-      ],  [
+      ], [
         'first_name' => 'Steve',
         'last_name' => 'Sorrow',
         'email' => 'sTeve.sorrow@exaMple.com',

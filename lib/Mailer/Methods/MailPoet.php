@@ -74,7 +74,8 @@ class MailPoet {
   public function processSendError($result, $subscriber, $newsletter) {
     if (!empty($result['code']) && $result['code'] === API::RESPONSE_CODE_KEY_INVALID) {
       Bridge::invalidateKey();
-    } elseif (!empty($result['code'])
+    } elseif (
+      !empty($result['code'])
       && $result['code'] === API::RESPONSE_CODE_CAN_NOT_SEND
       && $result['message'] === MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED
     ) {

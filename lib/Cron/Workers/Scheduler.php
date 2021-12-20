@@ -221,7 +221,8 @@ class Scheduler {
       $queue->delete();
       return false;
     }
-    if ($newsletter->role !== WelcomeScheduler::WORDPRESS_ALL_ROLES
+    if (
+      $newsletter->role !== WelcomeScheduler::WORDPRESS_ALL_ROLES
       && !in_array($newsletter->role, ((array)$wpUser)['roles'])
     ) {
       $queue->delete();

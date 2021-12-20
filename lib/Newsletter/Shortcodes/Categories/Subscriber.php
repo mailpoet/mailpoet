@@ -56,7 +56,8 @@ class Subscriber implements CategoryInterface {
       case 'count':
         return (string)$this->subscribersRepository->getTotalSubscribers();
       default:
-        if (preg_match('/cf_(\d+)/', $shortcodeDetails['action'], $customField) &&
+        if (
+          preg_match('/cf_(\d+)/', $shortcodeDetails['action'], $customField) &&
           !empty($subscriber->getId())
         ) {
           $customField = $this->subscriberCustomFieldRepository->findOneBy([

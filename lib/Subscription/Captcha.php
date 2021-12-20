@@ -55,7 +55,8 @@ class Captcha {
     // Check limits per recipient if enabled
     if ($subscriberEmail) {
       $subscriber = Subscriber::where('email', $subscriberEmail)->findOne();
-      if ($subscriber instanceof Subscriber
+      if (
+        $subscriber instanceof Subscriber
         && $subscriber->countConfirmations >= $subscriptionCaptchaRecipientLimit
       ) {
         return true;

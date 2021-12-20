@@ -60,7 +60,8 @@ class Image {
       $element['height'] = (int)ceil($element['height'] / $ratio);
     }
     // resize image if the image is padded and wider than padded column width
-    if ($element['fullWidth'] === false &&
+    if (
+      $element['fullWidth'] === false &&
       $element['width'] > ($columnBaseWidth - $paddedWidth)
     ) {
       $ratio = $element['width'] / ($columnBaseWidth - $paddedWidth);

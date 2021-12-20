@@ -94,7 +94,7 @@ class DefaultsExtension extends Extension {
     delete_transient('_wc_activation_redirect');
 
     // mark all WC cron actions complete
-    $tableName = ! empty($wpdb->actionscheduler_actions) ? $wpdb->actionscheduler_actions : $wpdb->prefix . 'actionscheduler_actions';// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $tableName = !empty($wpdb->actionscheduler_actions) ? $wpdb->actionscheduler_actions : $wpdb->prefix . 'actionscheduler_actions';// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $sql = "UPDATE {$tableName} SET status = 'complete'";
     $wpdb->query($sql);
   }

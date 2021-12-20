@@ -65,7 +65,8 @@ Env::init(
 
 $requirements = new RequirementsChecker();
 $requirementsCheckResults = $requirements->checkAllRequirements();
-if (!$requirementsCheckResults[RequirementsChecker::TEST_PDO_EXTENSION] ||
+if (
+  !$requirementsCheckResults[RequirementsChecker::TEST_PDO_EXTENSION] ||
   !$requirementsCheckResults[RequirementsChecker::TEST_VENDOR_SOURCE]
 ) {
   return;

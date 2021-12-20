@@ -304,7 +304,7 @@ class Populator {
         'enabled' => empty($settingsDbVersion), // enable on new installs only
         'message' => $currentLabelText,
       ]);
-    } elseif (isset($woocommerceOptinOnCheckout['message']) && $woocommerceOptinOnCheckout['message'] === $legacyLabelText ) {
+    } elseif (isset($woocommerceOptinOnCheckout['message']) && $woocommerceOptinOnCheckout['message'] === $legacyLabelText) {
       $this->settings->set('woocommerce.optin_on_checkout.message', $currentLabelText);
     }
     // reset mailer log

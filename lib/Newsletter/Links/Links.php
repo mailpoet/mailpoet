@@ -184,9 +184,10 @@ class Links {
   }
 
   public function ensureInstantUnsubscribeLink(array $processedLinks) {
-    if (in_array(
-      NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
-      array_column($processedLinks, 'link'))
+    if (
+      in_array(
+        NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
+        array_column($processedLinks, 'link'))
     ) {
       return $processedLinks;
     }
@@ -211,7 +212,8 @@ class Links {
 
       // convert either only link shortcodes or all hashes links if "convert all"
       // option is specified
-      if (($newsletterLink instanceof NewsletterLinkEntity) &&
+      if (
+        ($newsletterLink instanceof NewsletterLinkEntity) &&
         (preg_match('/\[link:/', $newsletterLink->getUrl()) || $convertAll)
       ) {
         $content = str_replace($link, $newsletterLink->getUrl(), $content);

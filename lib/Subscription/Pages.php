@@ -205,7 +205,8 @@ class Pages {
   }
 
   public function unsubscribe() {
-    if (!$this->isPreview()
+    if (
+      !$this->isPreview()
       && ($this->subscriber !== null)
       && ($this->subscriber->status !== Subscriber::STATUS_UNSUBSCRIBED)
     ) {

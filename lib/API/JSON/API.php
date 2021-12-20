@@ -175,7 +175,8 @@ class API {
 
   public function processRoute() {
     try {
-      if (empty($this->requestEndpointClass) ||
+      if (
+        empty($this->requestEndpointClass) ||
         !$this->container->has($this->requestEndpointClass)
       ) {
         throw new \Exception(__('Invalid API endpoint.', 'mailpoet'));

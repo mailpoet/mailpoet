@@ -51,8 +51,10 @@ class Date {
     $dateFormat = $dateFormats[$block['params']['date_type']][0];
 
     // set date format if specified
-    if (isset($block['params']['date_format'])
-    && strlen(trim($block['params']['date_format'])) > 0) {
+    if (
+      isset($block['params']['date_format'])
+      && strlen(trim($block['params']['date_format'])) > 0
+    ) {
       $dateFormat = $block['params']['date_format'];
     }
 

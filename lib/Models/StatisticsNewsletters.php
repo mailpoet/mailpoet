@@ -11,9 +11,10 @@ class StatisticsNewsletters extends Model {
   public static function createMultiple(array $data) {
     $values = [];
     foreach ($data as $value) {
-      if (!empty($value['newsletter_id']) &&
-         !empty($value['subscriber_id']) &&
-         !empty($value['queue_id'])
+      if (
+        !empty($value['newsletter_id']) &&
+        !empty($value['subscriber_id']) &&
+        !empty($value['queue_id'])
       ) {
         $values[] = $value['newsletter_id'];
         $values[] = $value['subscriber_id'];

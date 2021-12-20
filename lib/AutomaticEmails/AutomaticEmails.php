@@ -45,7 +45,8 @@ class AutomaticEmails {
     foreach ($registeredGroups as $group) {
       $automaticEmail = $this->wp->applyFilters($group, []);
 
-      if (!$this->validateAutomaticEmailDataFields($automaticEmail) ||
+      if (
+        !$this->validateAutomaticEmailDataFields($automaticEmail) ||
         !$this->validateAutomaticEmailEventsDataFields($automaticEmail['events'])
       ) {
         continue;

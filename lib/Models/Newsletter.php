@@ -163,13 +163,15 @@ class Newsletter extends Model {
         return $this;
       }
     }
-    if (in_array($status, [
-      self::STATUS_DRAFT,
-      self::STATUS_SCHEDULED,
-      self::STATUS_SENDING,
-      self::STATUS_SENT,
-      self::STATUS_ACTIVE,
-    ])) {
+    if (
+      in_array($status, [
+        self::STATUS_DRAFT,
+        self::STATUS_SCHEDULED,
+        self::STATUS_SENDING,
+        self::STATUS_SENT,
+        self::STATUS_ACTIVE,
+      ])
+    ) {
       $this->set('status', $status);
       $this->save();
     }
@@ -404,26 +406,30 @@ class Newsletter extends Model {
   }
 
   public static function filterStatus($orm, $status = false) {
-    if (in_array($status, [
+    if (
+      in_array($status, [
       self::STATUS_DRAFT,
       self::STATUS_SCHEDULED,
       self::STATUS_SENDING,
       self::STATUS_SENT,
       self::STATUS_ACTIVE,
-    ])) {
+      ])
+    ) {
       $orm->where('status', $status);
     }
     return $orm;
   }
 
   public static function filterType($orm, $type = false, $group = false) {
-    if (in_array($type, [
+    if (
+      in_array($type, [
       self::TYPE_STANDARD,
       self::TYPE_WELCOME,
       self::TYPE_AUTOMATIC,
       self::TYPE_NOTIFICATION,
       self::TYPE_NOTIFICATION_HISTORY,
-    ])) {
+      ])
+    ) {
       if ($type === self::TYPE_AUTOMATIC && $group) {
         $orm = $orm->join(
           NewsletterOptionField::$_table,
