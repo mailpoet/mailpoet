@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments;
 
+use MailPoet\ConflictException;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\NewsletterEntity;
@@ -105,6 +106,14 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->segmentsRepository->flush();
     $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();
     expect($count)->equals(2);
+  }
+
+  public function testItChecksForDuplicateNameWhenCreatingNewSegment() {
+    $this->createDefaultSegment('Existing Segment');
+    $this->segmentsRepository->flush();
+    $this->expectException(ConflictException::class);
+    $this->expectExceptionMessage("Could not create new segment with name [Existing Segment] because a segment with that name already exists.");
+    $this->segmentsRepository->createOrUpdate('Existing Segment');
   }
 
   private function createDefaultSegment(string $name): SegmentEntity {
