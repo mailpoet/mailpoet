@@ -62,7 +62,7 @@ class Styles {
       $mobileBackgrounds[] = trim($formSettings['gradient']);
     }
 
-    if (!empty($formSettings['backgroundColor']) ) {
+    if (!empty($formSettings['backgroundColor'])) {
       $backgrounds[] = trim($formSettings['backgroundColor']);
       $mobileBackgrounds[] = trim($formSettings['backgroundColor']);
     }
@@ -86,10 +86,12 @@ class Styles {
     // Form element styles
     $formStyles = [];
     if (isset($formSettings['form_padding'])) {
-      if (in_array(
-        $displayType,
-        [FormEntity::DISPLAY_TYPE_POPUP, FormEntity::DISPLAY_TYPE_FIXED_BAR, FormEntity::DISPLAY_TYPE_SLIDE_IN]
-      )) {
+      if (
+        in_array(
+          $displayType,
+          [FormEntity::DISPLAY_TYPE_POPUP, FormEntity::DISPLAY_TYPE_FIXED_BAR, FormEntity::DISPLAY_TYPE_SLIDE_IN]
+        )
+      ) {
         $padding = $formSettings['form_padding'];
         $media .= " @media (min-width: 500px) {{$selector} {padding: {$padding}px;}} ";
       } else {
@@ -217,10 +219,12 @@ class Styles {
     } else {
       $wrapperStyles[] = 'background-image: none;';
     }
-    if (in_array(
-      $displayType,
-      [FormEntity::DISPLAY_TYPE_POPUP, FormEntity::DISPLAY_TYPE_FIXED_BAR, FormEntity::DISPLAY_TYPE_SLIDE_IN]
-    )) {
+    if (
+      in_array(
+        $displayType,
+        [FormEntity::DISPLAY_TYPE_POPUP, FormEntity::DISPLAY_TYPE_FIXED_BAR, FormEntity::DISPLAY_TYPE_SLIDE_IN]
+      )
+    ) {
       $wrapperStyles = array_merge($wrapperStyles, [
         'animation: none;',
         'border: none;',

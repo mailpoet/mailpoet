@@ -250,7 +250,7 @@ class SegmentsTest extends \MailPoetTest {
     expect($subsribers)->count(0);
   }
 
-  private function createForm(string $formName, array $settings ) {
+  private function createForm(string $formName, array $settings) {
     $form = new FormEntity($formName);
     $form->setSettings($settings);
     $this->entityManager->persist($form);

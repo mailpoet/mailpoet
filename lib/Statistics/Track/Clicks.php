@@ -98,9 +98,10 @@ class Clicks {
         $queue,
         $userAgent
       );
-      if ($userAgent instanceof UserAgentEntity &&
-          ($userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN
-          || $statisticsClicks->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_MACHINE)
+      if (
+        $userAgent instanceof UserAgentEntity &&
+        ($userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN
+        || $statisticsClicks->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_MACHINE)
       ) {
         $statisticsClicks->setUserAgent($userAgent);
         $statisticsClicks->setUserAgentType($userAgent->getUserAgentType());

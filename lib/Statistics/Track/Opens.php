@@ -54,7 +54,8 @@ class Opens {
       if ($oldStatistics) {
         if (!empty($data->userAgent)) {
           $userAgent = $this->userAgentsRepository->findOrCreate($data->userAgent);
-          if ($userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN
+          if (
+            $userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_HUMAN
             || $oldStatistics->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_MACHINE
           ) {
             $oldStatistics->setUserAgent($userAgent);

@@ -147,7 +147,8 @@ class Newsletter {
       $renderedNewsletter = $this->gaTracking->applyGATracking($renderedNewsletter, $newsletter);
     }
     // check if this is a post notification and if it contains at least 1 ALC post
-    if ($newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY &&
+    if (
+      $newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY &&
       $this->postsTask->getAlcPostsCount($renderedNewsletter, $newsletter) === 0
     ) {
       // delete notification history record since it will never be sent
@@ -232,7 +233,8 @@ class Newsletter {
 
   public function markNewsletterAsSent($newsletter, $queue) {
     // if it's a standard or notification history newsletter, update its status
-    if ($newsletter->type === NewsletterModel::TYPE_STANDARD ||
+    if (
+      $newsletter->type === NewsletterModel::TYPE_STANDARD ||
        $newsletter->type === NewsletterModel::TYPE_NOTIFICATION_HISTORY
     ) {
       $newsletter->status = NewsletterModel::STATUS_SENT;

@@ -339,7 +339,7 @@ class PostNotificationTest extends \MailPoetTest {
   }
 
   private function createNewsletterOptions(NewsletterEntity $newsletter, array $options) {
-    foreach ($options as $name => $value) {    
+    foreach ($options as $name => $value) { 
       $newsletterOptionField = $this->newsletterOptionFieldsRepository->findOneBy([
         'name' => $name,
       ]);

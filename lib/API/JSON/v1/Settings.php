@@ -139,7 +139,7 @@ class Settings extends APIEndpoint {
 
       // Tracking and re-engagement Emails
       $meta['showNotice'] = false;
-      if ($oldSettings['tracking'] !== $this->settings->get('tracking') ) {
+      if ($oldSettings['tracking'] !== $this->settings->get('tracking')) {
         try {
           $meta = $this->updateReEngagementEmailStatus($this->settings->get('tracking'));
         } catch (\Exception $e) {

@@ -123,7 +123,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->entityManager->clear();
     $tasks = $this->scheduledTaskRepository->findBy(['type' => WooCommercePastOrders::TASK_TYPE]);
     expect($tasks)->count(1);
-    expect($tasks[0]->getStatus())->equals(null);  // null means 'running'
+    expect($tasks[0]->getStatus())->equals(null); // null means 'running'
   }
 
   public function testItContinuesFromLastId() {

@@ -129,7 +129,8 @@ class Renderer {
   }
 
   private function getBgColorAttribute($styles, $image) {
-    if (($image === null || $image['src'] === null)
+    if (
+      ($image === null || $image['src'] === null)
       && isset($styles['backgroundColor'])
       && $styles['backgroundColor'] !== 'transparent'
     ) {

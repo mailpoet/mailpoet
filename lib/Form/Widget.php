@@ -153,7 +153,7 @@ class Widget extends \WP_Widget {
           $formName .= $form->getStatus() === FormEntity::STATUS_DISABLED ? ' (' . __('inactive', 'mailpoet') . ')' : '';
           ?>
         <option value="<?php echo $form->getId(); ?>" <?php echo $isSelected; ?>><?php echo $formName; ?></option>
-        <?php }  ?>
+        <?php } ?>
       </select>
     </p>
     <p>
@@ -201,7 +201,8 @@ class Widget extends \WP_Widget {
     if ($form->getStatus() !== FormEntity::STATUS_ENABLED) return '';
 
     $formType = 'widget';
-    if (isset($instance['form_type']) && in_array(
+    if (
+      isset($instance['form_type']) && in_array(
         $instance['form_type'],
         [
           'html',
@@ -209,7 +210,8 @@ class Widget extends \WP_Widget {
           'iframe',
           'shortcode',
         ]
-      )) {
+      )
+    ) {
       $formType = $instance['form_type'];
     }
 

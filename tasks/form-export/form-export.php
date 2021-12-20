@@ -177,7 +177,7 @@ function mailpoetReplaceAssetUrl(string $url): array {
 /**
  * @see https://stackoverflow.com/questions/24316347/how-to-format-var-export-to-php5-4-array-syntax
  */
-function mailpoetVarExport($var, $indent="    "): string {
+function mailpoetVarExport($var, $indent = "    "): string {
   switch (gettype($var)) {
     case 'string':
       return '\'' . addcslashes($var, "\\\$'\r\n\t\v\f") . '\'';

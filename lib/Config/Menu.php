@@ -499,7 +499,8 @@ class Menu {
       return false;
     }
     // Check if page already exists
-    if (get_plugin_page_hook($_REQUEST['page'], '')
+    if (
+      get_plugin_page_hook($_REQUEST['page'], '')
       || WPFunctions::get()->getPluginPageHook($_REQUEST['page'], self::MAIN_PAGE_SLUG)
     ) {
       return false;

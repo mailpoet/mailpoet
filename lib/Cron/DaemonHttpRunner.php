@@ -64,7 +64,8 @@ class DaemonHttpRunner {
       if (!$this->settingsDaemonData) {
         $error = WPFunctions::get()->__('Daemon does not exist.', 'mailpoet');
       } else {
-        if (!isset($requestData['token']) ||
+        if (
+          !isset($requestData['token']) ||
           $requestData['token'] !== $this->settingsDaemonData['token']
         ) {
           $error = 'Invalid or missing token.';
@@ -81,7 +82,8 @@ class DaemonHttpRunner {
     $this->daemon->run($this->settingsDaemonData);
     // If we're using the WordPress trigger, check the conditions to stop cron if necessary
     $enableCronSelfDeactivation = WPFunctions::get()->applyFilters('mailpoet_cron_enable_self_deactivation', false);
-    if ($enableCronSelfDeactivation
+    if (
+      $enableCronSelfDeactivation
       && $this->isCronTriggerMethodWordPress()
       && !$this->checkWPTriggerExecutionRequirements()
     ) {

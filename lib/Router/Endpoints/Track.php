@@ -80,7 +80,8 @@ class Track {
 
   public function _processTrackData($data) {
     $data = (object)$this->links->transformUrlDataObject($data);
-    if (empty($data->queue_id) || // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if (
+      empty($data->queue_id) || // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       empty($data->subscriber_id) || // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       empty($data->subscriber_token) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     ) {

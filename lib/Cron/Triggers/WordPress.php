@@ -338,7 +338,7 @@ class WordPress {
     $type = $options['type'];
     foreach ($options['scheduled_in'] as $scheduledIn) {
       foreach ($options['status'] as $status) {
-        if (! empty($this->tasksCounts[$type][$scheduledIn][$status])) {
+        if (!empty($this->tasksCounts[$type][$scheduledIn][$status])) {
           $count += $this->tasksCounts[$type][$scheduledIn][$status];
         }
       }

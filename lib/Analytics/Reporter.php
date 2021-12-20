@@ -80,7 +80,7 @@ class Reporter {
   }
 
   public function getData() {
-    global $wpdb, $wp_version, $woocommerce;  // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    global $wpdb, $wp_version, $woocommerce; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $mta = $this->settings->get('mta', []);
     $newsletters = $this->newslettersRepository->getAnalytics();
     $isCronTriggerMethodWP = $this->settings->get('cron_trigger.method') === CronTrigger::METHOD_WORDPRESS;

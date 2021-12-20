@@ -160,7 +160,8 @@ class Export {
         // sorted by segment name (due to slow queries when using ORDER BY and LIMIT),
         // we need to keep track of processed segments so that we do not create header
         // multiple times when switching from one segment to another and back.
-        if ((!count($processedSegments) || $lastSegment !== $currentSegment) &&
+        if (
+          (!count($processedSegments) || $lastSegment !== $currentSegment) &&
           (!in_array($lastSegment, $processedSegments) || !in_array($currentSegment, $processedSegments))
         ) {
           $this->writeXLSX(
@@ -173,7 +174,8 @@ class Export {
         $lastSegment = ucwords($subscriber['segment_name']);
         // detect RTL language and set Excel to properly display the sheet
         $rTLRegex = '/\p{Arabic}|\p{Hebrew}/u';
-        if (!$xLSXWriter->rtl && (
+        if (
+          !$xLSXWriter->rtl && (
             preg_grep($rTLRegex, $subscriber) ||
             preg_grep($rTLRegex, $this->formattedSubscriberFieldsWithList))
         ) {

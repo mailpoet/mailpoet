@@ -119,8 +119,10 @@ class BlockRendererHelper {
     if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
       $automationId = 'data-automation-id="form_' . $block['id'] . '_label" ';
     }
-    if (isset($block['params']['label'])
-      && strlen(trim($block['params']['label'])) > 0) {
+    if (
+      isset($block['params']['label'])
+      && strlen(trim($block['params']['label'])) > 0
+    ) {
       $html .= '<label '
         . 'class="mailpoet_' . $block['type'] . '_label" '
         . $this->renderFontStyle($formSettings, $block['styles'] ?? [])

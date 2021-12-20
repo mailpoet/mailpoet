@@ -92,7 +92,8 @@ class WP {
     }
 
     // we want to mark a new subscriber as unsubscribed when the checkbox on Woo checkout is unchecked
-    if (isset($_POST[WooCommerceSubscription::CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME])
+    if (
+      isset($_POST[WooCommerceSubscription::CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME])
       && !isset($_POST[WooCommerceSubscription::CHECKOUT_OPTIN_INPUT_NAME])
     ) {
       $status = SubscriberEntity::STATUS_UNSUBSCRIBED;

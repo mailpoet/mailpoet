@@ -129,7 +129,7 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
-  public function testUnit(array $opts=['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
+  public function testUnit(array $opts = ['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
     $command = 'vendor/bin/codecept run unit';
 
     if ($opts['file']) {
@@ -147,7 +147,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  public function testIntegration(array $opts=['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
+  public function testIntegration(array $opts = ['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
     if (getenv('MAILPOET_DEV_SITE')) {
       $run = $this->confirm("You are about to run tests on the development site. Your DB data will be erased. \nDo you want to proceed?", false);
       if (!$run) {
@@ -175,11 +175,11 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  public function testMultisiteIntegration($opts=['file' => null, 'xml' => false, 'multisite' => true]) {
+  public function testMultisiteIntegration($opts = ['file' => null, 'xml' => false, 'multisite' => true]) {
     return $this->testIntegration($opts);
   }
 
-  public function testCoverage($opts=['file' => null, 'xml' => false]) {
+  public function testCoverage($opts = ['file' => null, 'xml' => false]) {
     $command = join(' ', [
       'vendor/bin/codecept run -s acceptance',
       (($opts['file']) ? $opts['file'] : ''),
@@ -230,15 +230,15 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  public function testDebugUnit($opts=['file' => null, 'xml' => false, 'debug' => true]) {
+  public function testDebugUnit($opts = ['file' => null, 'xml' => false, 'debug' => true]) {
     return $this->testUnit($opts);
   }
 
-  public function testDebugIntegration($opts=['file' => null, 'xml' => false, 'debug' => true]) {
+  public function testDebugIntegration($opts = ['file' => null, 'xml' => false, 'debug' => true]) {
     return $this->testIntegration($opts);
   }
 
-  public function testAcceptance($opts=['file' => null, 'skip-deps' => false, 'timeout' => null]) {
+  public function testAcceptance($opts = ['file' => null, 'skip-deps' => false, 'timeout' => null]) {
     return $this->taskExec(
       'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
       ($opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
@@ -248,7 +248,7 @@ class RoboFile extends \Robo\Tasks {
     )->dir(__DIR__ . '/tests/docker')->run();
   }
 
-  public function testAcceptanceMultisite($opts=['file' => null, 'skip-deps' => false, 'timeout' => null]) {
+  public function testAcceptanceMultisite($opts = ['file' => null, 'skip-deps' => false, 'timeout' => null]) {
     return $this->taskExec(
       'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
       ($opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
@@ -463,7 +463,7 @@ class RoboFile extends \Robo\Tasks {
     }
   }
 
-  public function qaPhpstan(array $opts=['php-version' => null]) {
+  public function qaPhpstan(array $opts = ['php-version' => null]) {
     $dir = __DIR__;
     $task = implode(' ', [
       'php -d memory_limit=-1',

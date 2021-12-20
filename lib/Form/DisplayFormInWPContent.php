@@ -179,7 +179,8 @@ class DisplayFormInWPContent {
     $settings = $form->getSettings();
     // check the structure just to be sure
 
-    if (!is_array($settings)
+    if (
+      !is_array($settings)
       || !isset($settings['form_placement'][$formType])
       || !is_array($settings['form_placement'][$formType])
     ) return false;

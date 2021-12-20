@@ -213,7 +213,8 @@ class FilterDataMapper {
       $filterData['country_code'] = $data['country_code'];
       $filterData['operator'] = $data['operator'] ?? DynamicSegmentFilterData::OPERATOR_ANY;
     } elseif ($data['action'] === WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS) {
-      if (!isset($data['number_of_orders_type'])
+      if (
+        !isset($data['number_of_orders_type'])
         || !isset($data['number_of_orders_count']) || $data['number_of_orders_count'] < 0
         || !isset($data['number_of_orders_days']) || $data['number_of_orders_days'] < 1
       ) {
@@ -223,7 +224,8 @@ class FilterDataMapper {
       $filterData['number_of_orders_count'] = $data['number_of_orders_count'];
       $filterData['number_of_orders_days'] = $data['number_of_orders_days'];
     } elseif ($data['action'] === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
-      if (!isset($data['total_spent_type'])
+      if (
+        !isset($data['total_spent_type'])
         || !isset($data['total_spent_amount']) || $data['total_spent_amount'] < 0
         || !isset($data['total_spent_days']) || $data['total_spent_days'] < 1
       ) {
