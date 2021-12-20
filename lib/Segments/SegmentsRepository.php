@@ -3,6 +3,7 @@
 namespace MailPoet\Segments;
 
 use DateTime;
+use MailPoet\ConflictException;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
@@ -94,6 +95,8 @@ class SegmentsRepository extends Repository {
 
   /**
    * @param DynamicSegmentFilterData[] $filtersData
+   * @throws ConflictException
+   * @throws NotFoundException
    */
   public function createOrUpdate(
     string $name,
@@ -110,6 +113,9 @@ class SegmentsRepository extends Repository {
       $segment->setName($name);
       $segment->setDescription($description);
     } else {
+      if (!$this->isNameUnique($name, $id)) {
+        throw new ConflictException("Could not create new segment with name [{$name}] because a segment with that name already exists.");
+      }
       $segment = new SegmentEntity($name, $type, $description);
       $this->persist($segment);
     }
