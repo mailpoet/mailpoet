@@ -16,6 +16,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use MailPoetVendor\Doctrine\ORM\ORMException;
 
 /**
  * @extends Repository<SegmentEntity>
@@ -94,9 +95,19 @@ class SegmentsRepository extends Repository {
   }
 
   /**
+   * @throws ConflictException
+   */
+  public function verifyNameIsUnique(string $name, ?int $id): void {
+    if (!$this->isNameUnique($name, $id)) {
+      throw new ConflictException("Could not create new segment with name [{$name}] because a segment with that name already exists.");
+    }
+  }
+
+  /**
    * @param DynamicSegmentFilterData[] $filtersData
    * @throws ConflictException
    * @throws NotFoundException
+   * @throws ORMException
    */
   public function createOrUpdate(
     string $name,
@@ -113,9 +124,7 @@ class SegmentsRepository extends Repository {
       $segment->setName($name);
       $segment->setDescription($description);
     } else {
-      if (!$this->isNameUnique($name, $id)) {
-        throw new ConflictException("Could not create new segment with name [{$name}] because a segment with that name already exists.");
-      }
+      $this->verifyNameIsUnique($name, $id);
       $segment = new SegmentEntity($name, $type, $description);
       $this->persist($segment);
     }
