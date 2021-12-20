@@ -2,12 +2,12 @@
 
 namespace MailPoet\API\JSON\v1;
 
-use InvalidArgumentException;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\DynamicSegmentsResponseBuilder;
 use MailPoet\Config\AccessControl;
+use MailPoet\ConflictException;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\Handler;
@@ -112,7 +112,7 @@ class DynamicSegments extends APIEndpoint {
       return $this->errorResponse([
         Error::BAD_REQUEST => $this->getErrorString($e),
       ], [], Response::STATUS_BAD_REQUEST);
-    } catch (InvalidArgumentException $e) {
+    } catch (ConflictException $e) {
       return $this->badRequest([
         Error::BAD_REQUEST => __('Another record already exists. Please specify a different "name".', 'mailpoet'),
       ]);

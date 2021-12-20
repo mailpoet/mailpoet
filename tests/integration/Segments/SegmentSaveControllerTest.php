@@ -2,9 +2,11 @@
 
 namespace MailPoet\Segments;
 
+use MailPoet\ConflictException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 
 class SegmentSaveControllerTest extends \MailPoetTest {
@@ -52,14 +54,31 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     expect($subscriberDuplicate1->getStatus())->equals($subscriberSegment1->getStatus());
     expect($subscriberDuplicate2->getStatus())->equals($subscriberSegment2->getStatus());
   }
-  
+
+  public function testItCheckDuplicateSegment() {
+    $name = 'Test name';
+    $this->createSegment($name);
+    $segmentData = [
+      'name' => $name,
+      'description' => 'Description',
+      'filters' => [[
+        'segmentType' => SegmentEntity::TYPE_DEFAULT,
+        'wordpressRole' => 'editor',
+        'action' => UserRole::TYPE,
+      ]],
+    ];
+    $this->expectException(ConflictException::class);
+    $this->expectExceptionMessage("Could not create new segment with name [Test name] because a segment with that name already exists.");
+    $this->saveController->save($segmentData);
+  }
+
   private function createSegment(string $name): SegmentEntity {
     $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, 'description');
     $this->entityManager->persist($segment);
     $this->entityManager->flush();
     return $segment;
   }
-  
+
   private function createSubscriber(string $email): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);

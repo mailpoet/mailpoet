@@ -108,6 +108,27 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     expect($count)->equals(2);
   }
 
+  public function testItCanCheckForUniqueNames() {
+    $this->createDefaultSegment('Test');
+    $this->segmentsRepository->flush();
+    expect($this->segmentsRepository->isNameUnique('Test', null))->false();
+    expect($this->segmentsRepository->isNameUnique('Unique Name', null))->true();
+  }
+
+  public function testItCanForcefullyVerifyUniquenessOfName() {
+    $this->createDefaultSegment('Test');
+    $this->segmentsRepository->flush();
+    try {
+      $this->segmentsRepository->verifyNameIsUnique('Unique', null);
+      $this->addToAssertionCount(1);
+    } catch (ConflictException $exception) {
+      $this->fail();
+    }
+    $this->expectException(ConflictException::class);
+    $this->expectExceptionMessage('Could not create new segment with name [Test] because a segment with that name already exists.');
+    $this->segmentsRepository->verifyNameIsUnique('Test', null);
+  }
+
   public function testItChecksForDuplicateNameWhenCreatingNewSegment() {
     $this->createDefaultSegment('Existing Segment');
     $this->segmentsRepository->flush();
