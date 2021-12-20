@@ -1,0 +1,1927 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot access property \\$permissions on mixed\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/API.php
+
+		-
+			message: "#^Cannot call method isMethodAllowed\\(\\) on mixed\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/API.php
+
+		-
+			message: "#^Parameter \\#1 \\$object_or_class of function method_exists expects object\\|string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/API.php
+
+		-
+			message: "#^Property MailPoet\\\\API\\\\JSON\\\\ResponseBuilders\\\\DynamicSegmentsResponseBuilder\\:\\:\\$segmentSubscriberRepository is never read, only written\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/ResponseBuilders/DynamicSegmentsResponseBuilder.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/ResponseBuilders/NewslettersResponseBuilder.php
+
+		-
+			message: "#^Cannot access offset 0 on mixed\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/ResponseBuilders/NewslettersResponseBuilder.php
+
+		-
+			message: "#^Cannot access offset 1 on mixed\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/ResponseBuilders/NewslettersResponseBuilder.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/ResponseBuilders/NewslettersResponseBuilder.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_column expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/ResponseBuilders/NewslettersResponseBuilder.php
+
+		-
+			message: "#^Parameter \\#4 \\$data of class MailPoet\\\\Subscribers\\\\ImportExport\\\\Export\\\\Export constructor expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/v1/ImportExport.php
+
+		-
+			message: "#^Parameter \\#6 \\$data of class MailPoet\\\\Subscribers\\\\ImportExport\\\\Import\\\\Import constructor expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/v1/ImportExport.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Newsletter\\\\ApiDataSanitizer\\:\\:sanitizeBody\\(\\) expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/v1/NewsletterTemplates.php
+
+		-
+			message: "#^Cannot access offset 'preview_url' on mixed\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/v1/Newsletters.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\NewsletterEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/v1/Newsletters.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of method MailPoet\\\\Newsletter\\\\NewsletterSaveController\\:\\:save\\(\\) expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/v1/Newsletters.php
+
+		-
+			message: "#^Property MailPoet\\\\API\\\\JSON\\\\v1\\\\Segments\\:\\:\\$wooCommerceSync is never read, only written\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/v1/Segments.php
+
+		-
+			message: "#^Parameter \\#2 \\$code of class MailPoet\\\\API\\\\MP\\\\v1\\\\APIException constructor expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/API/MP/v1/API.php
+
+		-
+			message: "#^Method MailPoet\\\\Analytics\\\\Analytics\\:\\:generateAnalytics\\(\\) should return array\\|null but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Analytics/Analytics.php
+
+		-
+			message: "#^Cannot access offset 'events' on mixed\\.$#"
+			count: 3
+			path: ../../lib/AutomaticEmails/AutomaticEmails.php
+
+		-
+			message: "#^Cannot access offset 'slug' on mixed\\.$#"
+			count: 1
+			path: ../../lib/AutomaticEmails/AutomaticEmails.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_column expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/AutomaticEmails/AutomaticEmails.php
+
+		-
+			message: "#^Parameter \\#1 \\$automaticEmail of method MailPoet\\\\AutomaticEmails\\\\AutomaticEmails\\:\\:validateAutomaticEmailDataFields\\(\\) expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/AutomaticEmails/AutomaticEmails.php
+
+		-
+			message: "#^Parameter \\#1 \\$automaticEmailEvents of method MailPoet\\\\AutomaticEmails\\\\AutomaticEmails\\:\\:validateAutomaticEmailEventsDataFields\\(\\) expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/AutomaticEmails/AutomaticEmails.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../lib/AutomaticEmails/WooCommerce/Events/FirstPurchase.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedInCategory.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../lib/AutomaticEmails/WooCommerce/Events/PurchasedProduct.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: ../../lib/Cache/TransientCache.php
+
+		-
+			message: "#^Cannot call method getWrappedConnection\\(\\) on mixed\\.$#"
+			count: 1
+			path: ../../lib/Config/DatabaseInitializer.php
+
+		-
+			message: "#^Cannot use array destructuring on array\\|true\\.$#"
+			count: 1
+			path: ../../lib/Config/Env.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../lib/Config/Hooks.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'analytics' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'body' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'bounce_email' on mixed\\.$#"
+			count: 3
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'commentform' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'commentform_linkname' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'commentform_lists' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'confirm_dbleoptin' on mixed\\.$#"
+			count: 4
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'confirm_email_id' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'confirmation_page' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'emails_notified' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'field' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'from_email' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'from_name' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'installed_time' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'lists' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'lists_selected_by' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'manage…' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'name' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'on_success' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'params' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'position' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'registerform' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'registerform_lists' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'registerform…' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'replyto_email' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'replyto_name' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'sending_emails_each' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'sending_emails…' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'sending_method' on mixed\\.$#"
+			count: 4
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'settings' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'smtp_auth' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'smtp_host' on mixed\\.$#"
+			count: 4
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'smtp_login' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'smtp_password' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'smtp_port' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'smtp_secure' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'subscriptions_page' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'success_message' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'type' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access offset 'unsubscribe_page' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^If condition is always false\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Parameter \\#1 \\$emailId of method MailPoet\\\\Config\\\\MP2Migrator\\:\\:getEmail\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Parameter \\#1 \\$emailsNumber of method MailPoet\\\\Config\\\\MP2Migrator\\:\\:mapFrequencyEmails\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Parameter \\#1 \\$intervalStr of method MailPoet\\\\Config\\\\MP2Migrator\\:\\:mapFrequencyInterval\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Parameter \\#1 \\$mp2ListIds of method MailPoet\\\\Config\\\\MP2Migrator\\:\\:getMappedSegmentIds\\(\\) expects array, mixed given\\.$#"
+			count: 4
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Parameter \\#1 \\$mp2Type of method MailPoet\\\\Config\\\\MP2Migrator\\:\\:mapCustomFieldType\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Parameter \\#1 \\$name of method MailPoet\\\\Config\\\\MP2Migrator\\:\\:mapCustomFieldParams\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Parameter \\#2 \\$intervalStr of method MailPoet\\\\Config\\\\MP2Migrator\\:\\:mapFrequencyEmails\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Parameter \\#2 \\$params of method MailPoet\\\\Config\\\\MP2Migrator\\:\\:mapCustomFieldParams\\(\\) expects array, mixed given\\.$#"
+			count: 2
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Variable \\$result in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Variable \\$segment in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Variable \\$subscriber in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: ../../lib/Config/MP2Migrator.php
+
+		-
+			message: "#^Cannot access an offset on mixed\\.$#"
+			count: 1
+			path: ../../lib/Config/Migrator.php
+
+		-
+			message: "#^Cannot access offset 'action' on mixed\\.$#"
+			count: 3
+			path: ../../lib/Config/Migrator.php
+
+		-
+			message: "#^Cannot access offset 'operator' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/Migrator.php
+
+		-
+			message: "#^Cannot access offset 'product_id' on mixed\\.$#"
+			count: 4
+			path: ../../lib/Config/Migrator.php
+
+		-
+			message: "#^Cannot access offset 'product_ids' on mixed\\.$#"
+			count: 3
+			path: ../../lib/Config/Migrator.php
+
+		-
+			message: "#^Cannot access offset 'segmentType' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Config/Migrator.php
+
+		-
+			message: "#^Parameter \\#2 \\$haystack of function in_array expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Config/Migrator.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:get\\(\\)\\.$#"
+			count: 1
+			path: ../../lib/Config/Populator.php
+
+		-
+			message: "#^Parameter \\#2 \\$args of method MailPoet\\\\WP\\\\Functions\\:\\:wpRemotePost\\(\\) expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Cron/CronHelper.php
+
+		-
+			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Cron/CronHelper.php
+
+		-
+			message: "#^Expression in empty\\(\\) is not falsy\\.$#"
+			count: 2
+			path: ../../lib/Cron/CronWorkerRunner.php
+
+		-
+			message: "#^Parameter \\#2 \\$string of function explode expects string, class\\-string\\|false given\\.$#"
+			count: 1
+			path: ../../lib/Cron/Daemon.php
+
+		-
+			message: "#^Cannot access offset 0 on mixed\\.$#"
+			count: 2
+			path: ../../lib/Cron/Workers/Beamer.php
+
+		-
+			message: "#^Cannot access offset 'processed' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Cron/Workers/SendingQueue/Migration.php
+
+		-
+			message: "#^Cannot access offset 'to_process' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Cron/Workers/SendingQueue/Migration.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_slice expects array, mixed given\\.$#"
+			count: 2
+			path: ../../lib/Cron/Workers/SendingQueue/Migration.php
+
+		-
+			message: "#^Method MailPoet\\\\Cron\\\\Workers\\\\SendingQueue\\\\SendingThrottlingHandler\\:\\:getMaxBatchSize\\(\\) should return int but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Cron/Workers/SendingQueue/SendingThrottlingHandler.php
+
+		-
+			message: "#^Method MailPoet\\\\Cron\\\\Workers\\\\StatsNotifications\\\\StatsNotificationsRepository\\:\\:findOneByNewsletterId\\(\\) should return MailPoet\\\\Entities\\\\StatsNotificationEntity\\|null but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Cron/Workers/StatsNotifications/StatsNotificationsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Cron\\\\Workers\\\\StatsNotifications\\\\StatsNotificationsRepository\\:\\:findScheduled\\(\\) should return array\\<MailPoet\\\\Entities\\\\StatsNotificationEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Cron/Workers/StatsNotifications/StatsNotificationsRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Cron/Workers/SubscribersLastEngagement.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Cron/Workers/WooCommerceSync.php
+
+		-
+			message: "#^Cannot call method get\\(\\) on mixed\\.$#"
+			count: 1
+			path: ../../lib/DI/ContainerConfigurator.php
+
+		-
+			message: "#^Method MailPoet\\\\DI\\\\ContainerWrapper\\:\\:get\\(\\) should return T but returns object&T\\.$#"
+			count: 2
+			path: ../../lib/DI/ContainerWrapper.php
+
+		-
+			message: "#^Cannot access offset 0 on mixed\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/ArrayCache.php
+
+		-
+			message: "#^Cannot access offset 1 on mixed\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/ArrayCache.php
+
+		-
+			message: "#^Cannot use array destructuring on array\\<int, mixed\\>\\|MailPoetVendor\\\\Doctrine\\\\ORM\\\\PersistentCollection\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/EventListeners/LastSubscribedAtListener.php
+
+		-
+			message: "#^Dead catch \\- ReflectionException is never thrown in the try block\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/MetadataCache.php
+
+		-
+			message: "#^Parameter \\#2 \\$isHit of class MailPoet\\\\Doctrine\\\\PSRCacheItem constructor expects bool, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/PSRArrayCache.php
+
+		-
+			message: "#^Parameter \\#2 \\$code of class MailPoet\\\\Doctrine\\\\PSRCacheInvalidArgumentException constructor expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/PSRMetadataCache.php
+
+		-
+			message: "#^Cannot access offset 'name' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Doctrine/TablePrefixMetadataFactory.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/Types/BigIntType.php
+
+		-
+			message: "#^Parameter \\#1 \\$date of static method MailPoetVendor\\\\Carbon\\\\Carbon\\:\\:instance\\(\\) expects DateTimeInterface, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/Types/DateTimeTzToStringType.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of function is_serialized expects string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/Types/JsonOrSerializedType.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of function unserialize expects string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/Types/JsonOrSerializedType.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/Types/JsonType.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of function unserialize expects string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/Types/SerializedArrayType.php
+
+		-
+			message: "#^Variable \\$filterData on left side of \\?\\? is never defined\\.$#"
+			count: 1
+			path: ../../lib/Entities/DynamicSegmentFilterData.php
+
+		-
+			message: "#^Method MailPoet\\\\Entities\\\\SegmentEntity\\:\\:getFiltersConnectOperator\\(\\) should return string but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Entities/SegmentEntity.php
+
+		-
+			message: "#^Variable \\$classes in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: ../../lib/Form/Block/Paragraph.php
+
+		-
+			message: "#^Method MailPoet\\\\Form\\\\DisplayFormInWPContent\\:\\:shouldDisplay\\(\\) should return bool but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Form/DisplayFormInWPContent.php
+
+		-
+			message: "#^Parameter \\#1 \\$postTypes of method MailPoet\\\\WP\\\\Functions\\:\\:isSingular\\(\\) expects array\\|string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Form/DisplayFormInWPContent.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Form/FormsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Form\\\\FormsRepository\\:\\:bulkDelete\\(\\) should return int but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Form/FormsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Form\\\\FormsRepository\\:\\:bulkRestore\\(\\) should return int but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Form/FormsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Form\\\\FormsRepository\\:\\:bulkTrash\\(\\) should return int but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Form/FormsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Form\\\\FormsRepository\\:\\:findAllNotDeleted\\(\\) should return array\\<MailPoet\\\\Entities\\\\FormEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Form/FormsRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 2
+			path: ../../lib/Form/Listing/FormListingRepository.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: ../../lib/Form/Renderer.php
+
+		-
+			message: "#^Cannot call method count\\(\\) on mixed\\.$#"
+			count: 1
+			path: ../../lib/Listing/Handler.php
+
+		-
+			message: "#^Cannot call method offset\\(\\) on mixed\\.$#"
+			count: 1
+			path: ../../lib/Listing/Handler.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Listing/ListingRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Listing\\\\ListingRepository\\:\\:getData\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Listing/ListingRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Logging\\\\LogRepository\\:\\:getLogs\\(\\) should return array\\<MailPoet\\\\Entities\\\\LogEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Logging/LogRepository.php
+
+		-
+			message: "#^Variable \\$mailer in empty\\(\\) is never defined\\.$#"
+			count: 1
+			path: ../../lib/Mailer/MailerLog.php
+
+		-
+			message: "#^Parameter \\#1 \\$timeout of method MailPoetVendor\\\\Swift_Transport_EsmtpTransport\\:\\:setTimeout\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Mailer/Methods/SMTP.php
+
+		-
+			message: "#^Parameter \\#1 \\$transport of class MailPoetVendor\\\\Swift_Mailer constructor expects MailPoetVendor\\\\Swift_Transport, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Mailer/Methods/SMTP.php
+
+		-
+			message: "#^Parameter \\#2 \\$code of class PHPMailer\\\\PHPMailer\\\\Exception constructor expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Mailer/WordPress/WordPressMailer.php
+
+		-
+			message: "#^Method MailPoet\\\\Models\\\\DynamicSegmentFilter\\:\\:__get\\(\\) should return string\\|null but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Models/DynamicSegmentFilter.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of function implode expects array\\<string\\>, array\\<array\\<int, mixed\\>\\|string\\> given\\.$#"
+			count: 1
+			path: ../../lib/Models/Subscriber.php
+
+		-
+			message: "#^Parameter \\#3 \\$priority of method MailPoet\\\\WP\\\\Functions\\:\\:addAction\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/AutomatedLatestContent.php
+
+		-
+			message: "#^Parameter \\#3 \\$priority of method MailPoet\\\\WP\\\\Functions\\:\\:removeAction\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/AutomatedLatestContent.php
+
+		-
+			message: "#^Variable \\$terms in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/AutomatedLatestContent.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/AutomaticEmailsRepository.php
+
+		-
+			message: "#^Cannot call method getMeta\\(\\) on mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/AutomaticEmailsRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/AutomaticEmailsRepository.php
+
+		-
+			message: "#^Property MailPoet\\\\Newsletter\\\\Editor\\\\PostTransformer\\:\\:\\$withLayout is never read, only written\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Editor/PostTransformer.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strip_tags expects string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Editor/PostTransformerContentsExtractor.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 2
+			path: ../../lib/Newsletter/Listing/NewsletterListingRepository.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Listing/NewsletterListingRepository.php
+
+		-
+			message: "#^Cannot access offset 'name' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Listing/NewsletterListingRepository.php
+
+		-
+			message: "#^Cannot access offset 'newsletterCount' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Newsletter/Listing/NewsletterListingRepository.php
+
+		-
+			message: "#^Cannot access offset 'status' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Listing/NewsletterListingRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 3
+			path: ../../lib/Newsletter/Listing/NewsletterListingRepository.php
+
+		-
+			message: "#^Parameter \\#2 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Listing/NewsletterListingRepository.php
+
+		-
+			message: "#^Parameter \\#3 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Listing/NewsletterListingRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\NewsletterEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/NewsletterSaveController.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Newsletter\\\\ApiDataSanitizer\\:\\:sanitizeBody\\(\\) expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/NewsletterSaveController.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+			message: "#^Cannot access offset 'cnt' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+			message: "#^Cannot access offset 'event' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+			message: "#^Cannot access offset 'type' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 4
+			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\NewslettersRepository\\:\\:findActiveByTypes\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\NewslettersRepository\\:\\:findDraftByTypes\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\NewslettersRepository\\:\\:findSendigNotificationHistoryWithPausedTask\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\NewslettersRepository\\:\\:getArchives\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Options\\\\NewsletterOptionsRepository\\:\\:findAutomaticEmailsForSegments\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterOptionEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Options/NewsletterOptionsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Options\\\\NewsletterOptionsRepository\\:\\:findWelcomeNotificationsForSegments\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterOptionEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Options/NewsletterOptionsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Renderer\\\\Renderer\\:\\:postProcessTemplate\\(\\) should return string but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Renderer/Renderer.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Segment/NewsletterSegmentRepository.php
+
+		-
+			message: "#^Cannot access offset 'segment_id' on mixed\\.$#"
+			count: 3
+			path: ../../lib/Newsletter/Segment/NewsletterSegmentRepository.php
+
+		-
+			message: "#^Cannot access offset 'subject' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Newsletter/Segment/NewsletterSegmentRepository.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 3
+			path: ../../lib/Newsletter/Segment/NewsletterSegmentRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Sending\\\\ScheduledTasksRepository\\:\\:findByNewsletterAndStatus\\(\\) should return array\\<MailPoet\\\\Entities\\\\ScheduledTaskEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Sending/ScheduledTasksRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Sending\\\\ScheduledTasksRepository\\:\\:findByNewsletterAndSubscriberId\\(\\) should return array\\<MailPoet\\\\Entities\\\\ScheduledTaskEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Sending/ScheduledTasksRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Sending\\\\ScheduledTasksRepository\\:\\:findByScheduledAndRunningForNewsletter\\(\\) should return array\\<MailPoet\\\\Entities\\\\ScheduledTaskEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Sending/ScheduledTasksRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Sending\\\\ScheduledTasksRepository\\:\\:findPreviousTask\\(\\) should return MailPoet\\\\Entities\\\\ScheduledTaskEntity\\|null but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Sending/ScheduledTasksRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Sending\\\\ScheduledTasksRepository\\:\\:findScheduledOrRunningTask\\(\\) should return MailPoet\\\\Entities\\\\ScheduledTaskEntity\\|null but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Sending/ScheduledTasksRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Sending\\\\ScheduledTasksRepository\\:\\:findScheduledTask\\(\\) should return MailPoet\\\\Entities\\\\ScheduledTaskEntity\\|null but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Sending/ScheduledTasksRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Sending\\\\SendingQueuesRepository\\:\\:findAllForSubscriberSentBetween\\(\\) should return array\\<MailPoet\\\\Entities\\\\SendingQueueEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Sending/SendingQueuesRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Sending\\\\SendingQueuesRepository\\:\\:findOneByNewsletterAndTaskStatus\\(\\) should return MailPoet\\\\Entities\\\\SendingQueueEntity\\|null but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Sending/SendingQueuesRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Shortcodes\\\\Categories\\\\Link\\:\\:processShortcodeAction\\(\\) should return string\\|null but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Shortcodes/Categories/Link.php
+
+		-
+			message: "#^Property MailPoet\\\\Newsletter\\\\Shortcodes\\\\Categories\\\\Link\\:\\:\\$settings is never read, only written\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Shortcodes/Categories/Link.php
+
+		-
+			message: "#^Parameter \\#3 \\$priority of method MailPoet\\\\WP\\\\Functions\\:\\:addAction\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Shortcodes/Categories/Newsletter.php
+
+		-
+			message: "#^Parameter \\#3 \\$priority of method MailPoet\\\\WP\\\\Functions\\:\\:removeAction\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Shortcodes/Categories/Newsletter.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 3
+			path: ../../lib/Newsletter/Statistics/NewsletterStatisticsRepository.php
+
+		-
+			message: "#^Cannot access offset 'cnt' on mixed\\.$#"
+			count: 4
+			path: ../../lib/Newsletter/Statistics/NewsletterStatisticsRepository.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 3
+			path: ../../lib/Newsletter/Statistics/NewsletterStatisticsRepository.php
+
+		-
+			message: "#^Cannot access offset 'total' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Statistics/NewsletterStatisticsRepository.php
+
+		-
+			message: "#^Cannot cast mixed to float\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Statistics/NewsletterStatisticsRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 7
+			path: ../../lib/Newsletter/Statistics/NewsletterStatisticsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Newsletter\\\\Statistics\\\\NewsletterStatisticsRepository\\:\\:getStatisticsMachineOpenCount\\(\\) should return int but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/Statistics/NewsletterStatisticsRepository.php
+
+		-
+			message: "#^Else branch is unreachable because previous condition is always true\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/ViewInBrowser/ViewInBrowserRenderer.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/NewsletterTemplates/NewsletterTemplatesRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\NewsletterTemplates\\\\NewsletterTemplatesRepository\\:\\:findAllForListing\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterTemplateEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/NewsletterTemplates/NewsletterTemplatesRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_column expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/NewsletterTemplates/NewsletterTemplatesRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\NewsletterTemplateEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../lib/NewsletterTemplates/NewsletterTemplatesRepository.php
+
+		-
+			message: "#^Variable \\$thumbnailUrl on left side of \\?\\? always exists and is not nullable\\.$#"
+			count: 1
+			path: ../../lib/NewsletterTemplates/ThumbnailSaver.php
+
+		-
+			message: "#^Cannot access property \\$allowedActions on mixed\\.$#"
+			count: 1
+			path: ../../lib/Router/Router.php
+
+		-
+			message: "#^Cannot access property \\$permissions on mixed\\.$#"
+			count: 1
+			path: ../../lib/Router/Router.php
+
+		-
+			message: "#^Parameter \\#1 \\$object_or_class of function method_exists expects object\\|string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Router/Router.php
+
+		-
+			message: "#^Method MailPoet\\\\Segments\\\\DynamicSegments\\\\DynamicSegmentFilterRepository\\:\\:findOnyByFilterTypeAndAction\\(\\) should return MailPoet\\\\Entities\\\\DynamicSegmentFilterEntity\\|null but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/DynamicSegmentFilterRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 2
+			path: ../../lib/Segments/DynamicSegments/Filters/EmailAction.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of method MailPoetVendor\\\\Carbon\\\\CarbonImmutable\\:\\:subDays\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/EmailOpensAbsoluteCountAction.php
+
+		-
+			message: "#^Parameter \\#1 \\$search of static method MailPoet\\\\Util\\\\Helpers\\:\\:escapeSearch\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/MailPoetCustomFields.php
+
+		-
+			message: "#^Parameter \\#2 \\$operator of method MailPoet\\\\Segments\\\\DynamicSegments\\\\Filters\\\\MailPoetCustomFields\\:\\:applyForDateEqual\\(\\) expects string\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/MailPoetCustomFields.php
+
+		-
+			message: "#^Parameter \\#2 \\$operator of method MailPoet\\\\Segments\\\\DynamicSegments\\\\Filters\\\\MailPoetCustomFields\\:\\:applyForDateYear\\(\\) expects string\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/MailPoetCustomFields.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/SubscriberScore.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function count expects array\\|Countable, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/SubscriberSegment.php
+
+		-
+			message: "#^Parameter \\#2 \\$value of method MailPoet\\\\Segments\\\\DynamicSegments\\\\Filters\\\\SubscriberSubscribedDate\\:\\:getDate\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/SubscriberSubscribedDate.php
+
+		-
+			message: "#^Parameter \\#2 \\$operator of method MailPoet\\\\Segments\\\\DynamicSegments\\\\Filters\\\\UserRole\\:\\:createCondition\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/UserRole.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceCategory.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceCountry.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceCountry.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of method MailPoetVendor\\\\Carbon\\\\Carbon\\:\\:subDays\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceNumberOfOrders.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function count expects array\\|Countable, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceProduct.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceSubscription.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of method MailPoetVendor\\\\Carbon\\\\Carbon\\:\\:subDays\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceTotalSpent.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 2
+			path: ../../lib/Segments/SegmentListingRepository.php
+
+		-
+			message: "#^Cannot access offset 'all' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentSubscribersRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 3
+			path: ../../lib/Segments/SegmentSubscribersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Segments\\\\SegmentSubscribersRepository\\:\\:getSubscribersGlobalStatusStatisticsCount\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentSubscribersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Segments\\\\SegmentSubscribersRepository\\:\\:getSubscribersStatisticsCount\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentSubscribersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Segments\\\\SegmentSubscribersRepository\\:\\:getSubscribersWithoutSegmentStatisticsCount\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentSubscribersRepository.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method MailPoetVendor\\\\Doctrine\\\\DBAL\\\\Query\\\\Expression\\\\ExpressionBuilder\\:\\:notIn\\(\\) expects array\\<string\\>\\|string, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentSubscribersRepository.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentsRepository.php
+
+		-
+			message: "#^Cannot access offset 'cnt' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentsRepository.php
+
+		-
+			message: "#^Cannot access offset 'type' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentsRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 2
+			path: ../../lib/Segments/SegmentsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Segments\\\\SegmentsRepository\\:\\:findByUpdatedScoreNotInLastDay\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Segments\\\\SegmentsRepository\\:\\:updateDeletedAt\\(\\) should return int but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentsRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function count expects array\\|Countable, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentsRepository.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 3
+			path: ../../lib/Segments/SegmentsSimpleListRepository.php
+
+		-
+			message: "#^Cannot access offset 'subscribers' on mixed\\.$#"
+			count: 3
+			path: ../../lib/Segments/SegmentsSimpleListRepository.php
+
+		-
+			message: "#^Cannot access offset 'type' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentsSimpleListRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentsSimpleListRepository.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentsSimpleListRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Segments\\\\SegmentsSimpleListRepository\\:\\:getList\\(\\) should return array\\<array\\{id\\: string, name\\: string, type\\: string, subscribers\\: int\\}\\> but returns array\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentsSimpleListRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$segmentId of method MailPoet\\\\Subscribers\\\\SubscribersCountsController\\:\\:getSegmentStatisticsCountById\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/SegmentsSimpleListRepository.php
+
+		-
+			message: "#^Parameter \\#3 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Segments/WP.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Segments/WooCommerce.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: ../../lib/Segments/WooCommerce.php
+
+		-
+			message: "#^Method MailPoet\\\\Segments\\\\WooCommerce\\:\\:insertSubscriberFromOrder\\(\\) should return string\\|null but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Segments/WooCommerce.php
+
+		-
+			message: "#^Parameter \\#1 \\$handle of function curl_errno expects CurlHandle, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Services/Bridge/API.php
+
+		-
+			message: "#^Parameter \\#1 \\$handle of function curl_error expects CurlHandle, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Services/Bridge/API.php
+
+		-
+			message: "#^Parameter \\#1 \\$handle of function curl_getinfo expects CurlHandle, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Services/Bridge/API.php
+
+		-
+			message: "#^Unsafe access to private property MailPoet\\\\Settings\\\\Hosts\\:\\:\\$smtp through static\\:\\:\\.$#"
+			count: 1
+			path: ../../lib/Settings/Hosts.php
+
+		-
+			message: "#^Unsafe access to private property MailPoet\\\\Settings\\\\Hosts\\:\\:\\$web through static\\:\\:\\.$#"
+			count: 1
+			path: ../../lib/Settings/Hosts.php
+
+		-
+			message: "#^Method MailPoet\\\\Statistics\\\\StatisticsClicksRepository\\:\\:findLatestPerNewsletterBySubscriber\\(\\) should return array\\<MailPoet\\\\Entities\\\\StatisticsClickEntity\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Statistics/StatisticsClicksRepository.php
+
+		-
+			message: "#^Cannot cast mixed to float\\.$#"
+			count: 1
+			path: ../../lib/Statistics/StatisticsOpensRepository.php
+
+		-
+			message: "#^Property MailPoet\\\\Statistics\\\\Track\\\\Clicks\\:\\:\\$settingsController is never read, only written\\.$#"
+			count: 1
+			path: ../../lib/Statistics/Track/Clicks.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\ImportExport\\\\Import\\\\MailChimp\\:\\:getApiData\\(\\) should return array\\|null but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/ImportExport/Import/MailChimp.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 2
+			path: ../../lib/Subscribers/ImportExport/ImportExportRepository.php
+
+		-
+			message: "#^Part \\$customField\\['id'\\] \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/ImportExport/ImportExportRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 2
+			path: ../../lib/Subscribers/InactiveSubscribersController.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 3
+			path: ../../lib/Subscribers/Statistics/SubscriberStatisticsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\Statistics\\\\SubscriberStatisticsRepository\\:\\:getTotalSentCount\\(\\) should return int but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/Statistics/SubscriberStatisticsRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_column expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/Statistics/SubscriberStatisticsRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function count expects array\\|Countable, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/Statistics/SubscriberStatisticsRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscriberIPsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\SubscriberIPsRepository\\:\\:findOneByIPAndCreatedAtAfterTimeInSeconds\\(\\) should return MailPoet\\\\Entities\\\\SubscriberIPEntity\\|null but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscriberIPsRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\SubscriberIPsRepository\\:\\:getCountByIPAndCreatedAtAfterTimeInSeconds\\(\\) should return int but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscriberIPsRepository.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 2
+			path: ../../lib/Subscribers/SubscriberListingRepository.php
+
+		-
+			message: "#^Cannot access offset 'status' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscriberListingRepository.php
+
+		-
+			message: "#^Cannot access offset 'subscribersCount' on mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscriberListingRepository.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscriberListingRepository.php
+
+		-
+			message: "#^Cannot call method getName\\(\\) on mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscriberListingRepository.php
+
+		-
+			message: "#^Cannot call method isStatic\\(\\) on mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscriberListingRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 3
+			path: ../../lib/Subscribers/SubscriberListingRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$segment of method MailPoet\\\\Subscribers\\\\SubscribersCountsController\\:\\:getSegmentGlobalStatusStatisticsCount\\(\\) expects MailPoet\\\\Entities\\\\SegmentEntity, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscriberListingRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$segment of method MailPoet\\\\Subscribers\\\\SubscribersCountsController\\:\\:getSegmentStatisticsCount\\(\\) expects MailPoet\\\\Entities\\\\SegmentEntity, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscriberListingRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\SubscriberSegmentRepository\\:\\:getNonDefaultSubscribedSegments\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscriberSegmentRepository.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscribersRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscribersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\SubscribersRepository\\:\\:bulkDelete\\(\\) should return int but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscribersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\SubscribersRepository\\:\\:findBySegment\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscribersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\SubscribersRepository\\:\\:findByUpdatedScoreNotInLastMonth\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscribersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\SubscribersRepository\\:\\:findExclusiveSubscribersBySegment\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscribersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\SubscribersRepository\\:\\:findIdAndEmailByEmails\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscribersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\SubscribersRepository\\:\\:findIdsOfDeletedByEmails\\(\\) should return array\\<int\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscribersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\SubscribersRepository\\:\\:findWpUserIdAndEmailByEmails\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscribersRepository.php
+
+		-
+			message: "#^Method MailPoet\\\\Subscribers\\\\SubscribersRepository\\:\\:getUndeletedSubscribersEmailsByIds\\(\\) should return array\\<string\\> but returns array\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscribersRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function count expects array\\|Countable, mixed given\\.$#"
+			count: 2
+			path: ../../lib/Subscribers/SubscribersRepository.php
+
+		-
+			message: "#^Parameter \\#2 \\$subscriber of class MailPoet\\\\Entities\\\\SubscriberSegmentEntity constructor expects MailPoet\\\\Entities\\\\SubscriberEntity, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Subscribers/SubscribersRepository.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../lib/Subscription/Captcha.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_intersect expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Subscription/Captcha.php
+
+		-
+			message: "#^Parameter \\#1 \\$blocks of method MailPoet\\\\Form\\\\Renderer\\:\\:renderBlocks\\(\\) expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Subscription/ManageSubscriptionFormRenderer.php
+
+		-
+			message: "#^Property MailPoet\\\\Subscription\\\\Pages\\:\\:\\$settings is never read, only written\\.$#"
+			count: 1
+			path: ../../lib/Subscription/Pages.php
+
+		-
+			message: "#^Parameter mixed of print cannot be converted to string\\.$#"
+			count: 1
+			path: ../../lib/Subscription/Registration.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 2
+			path: ../../lib/Subscription/Throttling.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_intersect expects array, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Subscription/Throttling.php
+
+		-
+			message: "#^Parameter \\#1 \\$seconds of method MailPoet\\\\Subscribers\\\\SubscriberIPsRepository\\:\\:deleteCreatedAtBeforeTimeInSeconds\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Subscription/Throttling.php
+
+		-
+			message: "#^Cannot call method getDefinitions\\(\\) on mixed\\.$#"
+			count: 1
+			path: ../../lib/Tracy/DIPanel/DIPanel.php
+
+		-
+			message: "#^Parameter \\#1 \\$class of class ReflectionProperty constructor expects object\\|string, class\\-string\\|false given\\.$#"
+			count: 1
+			path: ../../lib/Tracy/DIPanel/DIPanel.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of function get_class expects object, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Tracy/DIPanel/DIPanel.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method ReflectionProperty\\:\\:getValue\\(\\) expects object\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../lib/Tracy/DIPanel/DIPanel.php
+
+		-
+			message: "#^Parameter \\#3 \\$priority of method MailPoet\\\\WP\\\\Functions\\:\\:addAction\\(\\) expects int, mixed given\\.$#"
+			count: 4
+			path: ../../lib/Util/ConflictResolver.php
+
+		-
+			message: "#^Parameter \\#2 \\$string of function explode expects string, mixed given\\.$#"
+			count: 2
+			path: ../../lib/Util/DBCollationChecker.php
+
+		-
+			message: "#^Part \\$sourceCollation \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
+			count: 1
+			path: ../../lib/Util/DBCollationChecker.php
+
+		-
+			message: "#^While loop condition is always true\\.$#"
+			count: 1
+			path: ../../lib/Util/DOM.php
+
+		-
+			message: "#^Method MailPoet\\\\Util\\\\ProgressBar\\:\\:readProgress\\(\\) should return array\\|false but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Util/ProgressBar.php
+
+		-
+			message: "#^PHPDoc type MailPoet\\\\Util\\\\pQuery\\\\DomNode\\|string of property MailPoet\\\\Util\\\\pQuery\\\\Html5Parser\\:\\:\\$root is not covariant with PHPDoc type MailPoetVendor\\\\pQuery\\\\DomNode of overridden property MailPoetVendor\\\\pQuery\\\\HtmlParser\\:\\:\\$root\\.$#"
+			count: 1
+			path: ../../lib/Util/pQuery/Html5Parser.php
+
+		-
+			message: "#^Method MailPoet\\\\WP\\\\Emoji\\:\\:sanitizeEmojisInFormBody\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/WP/Emoji.php
+
+		-
+			message: "#^Method MailPoet\\\\WP\\\\Functions\\:\\:addAction\\(\\) should return bool but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/WP/Functions.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: ../../lib/WooCommerce/Helper.php
+
+		-
+			message: "#^Parameter \\#1 \\(mixed\\) of echo cannot be converted to string\\.$#"
+			count: 1
+			path: ../../lib/WooCommerce/Subscription.php
+
+		-
+			message: "#^PHPDoc type MailPoet\\\\Segments\\\\DynamicSegments\\\\SegmentSaveController of property MailPoet\\\\Test\\\\DataFactories\\\\DynamicSegment\\:\\:\\$saveController is not covariant with PHPDoc type MailPoet\\\\Segments\\\\SegmentSaveController of overridden property MailPoet\\\\Test\\\\DataFactories\\\\Segment\\:\\:\\$saveController\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/DynamicSegment.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\FormEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/Form.php
+
+		-
+			message: "#^Parameter \\#2 \\.\\.\\.\\$arrays of function array_merge expects array, mixed given\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/Form.php
+
+		-
+			message: "#^Parameter \\#2 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/Settings.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/WooCommerceCustomer.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/WooCommerceCustomer.php
+
+		-
+			message: "#^Parameter \\#1 \\$id of method MailPoet\\\\Test\\\\DataFactories\\\\WooCommerceCustomer\\:\\:delete\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/WooCommerceCustomer.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/WooCommerceOrder.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 2
+			path: ../../tests/DataFactories/WooCommerceOrder.php
+
+		-
+			message: "#^Parameter \\#1 \\$id of method MailPoet\\\\Test\\\\DataFactories\\\\WooCommerceOrder\\:\\:delete\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/WooCommerceOrder.php
+
+		-
+			message: "#^Part \\$order\\['id'\\] \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/WooCommerceOrder.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/WooCommerceProduct.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/WooCommerceProduct.php
+
+		-
+			message: "#^Parameter \\#1 \\$id of method MailPoet\\\\Test\\\\DataFactories\\\\WooCommerceProduct\\:\\:delete\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../tests/DataFactories/WooCommerceProduct.php
+
+		-
+			message: "#^Cannot access offset 'guid' on mixed\\.$#"
+			count: 1
+			path: ../../tests/_support/AcceptanceTester.php
+
+		-
+			message: "#^Method AcceptanceTester\\:\\:createPost\\(\\) should return string but returns mixed\\.$#"
+			count: 1
+			path: ../../tests/_support/AcceptanceTester.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function mb_strlen expects string, mixed given\\.$#"
+			count: 1
+			path: ../../tests/_support/AcceptanceTester.php
+
+		-
+			message: "#^Parameter \\#2 \\$haystack of function in_array expects array, mixed given\\.$#"
+			count: 1
+			path: ../../tests/_support/AcceptanceTester.php
+
+		-
+			message: "#^Part \\$optionsContainer \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
+			count: 1
+			path: ../../tests/_support/AcceptanceTester.php
+
+		-
+			message: "#^Method MailPoet\\\\Test\\\\Acceptance\\\\EditorCreateCustomFieldCest\\:\\:checkCustomCheckboxInForm\\(\\) has parameter \\$i with no type specified\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Forms/EditorCreateCustomFieldCest.php
+
+		-
+			message: "#^Method MailPoet\\\\Test\\\\Acceptance\\\\EditorCreateCustomFieldCest\\:\\:checkCustomDateInForm\\(\\) has parameter \\$i with no type specified\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Forms/EditorCreateCustomFieldCest.php
+
+		-
+			message: "#^Method MailPoet\\\\Test\\\\Acceptance\\\\EditorCreateCustomFieldCest\\:\\:checkCustomRadioButtonsInForm\\(\\) has parameter \\$i with no type specified\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Forms/EditorCreateCustomFieldCest.php
+
+		-
+			message: "#^Method MailPoet\\\\Test\\\\Acceptance\\\\EditorCreateCustomFieldCest\\:\\:checkCustomSelectInForm\\(\\) has parameter \\$i with no type specified\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Forms/EditorCreateCustomFieldCest.php
+
+		-
+			message: "#^Method MailPoet\\\\Test\\\\Acceptance\\\\EditorCreateCustomFieldCest\\:\\:checkCustomTextAreaInForm\\(\\) has parameter \\$i with no type specified\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Forms/EditorCreateCustomFieldCest.php
+
+		-
+			message: "#^Method MailPoet\\\\Test\\\\Acceptance\\\\EditorCreateCustomFieldCest\\:\\:checkCustomTextInputInForm\\(\\) has parameter \\$i with no type specified\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Forms/EditorCreateCustomFieldCest.php
+
+		-
+			message: "#^Method MailPoet\\\\Test\\\\Acceptance\\\\EditorCreateCustomFieldCest\\:\\:openFormInEditor\\(\\) has parameter \\$i with no type specified\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Forms/EditorCreateCustomFieldCest.php
+
+		-
+			message: "#^Method MailPoet\\\\Test\\\\Acceptance\\\\EditorCreateCustomFieldCest\\:\\:saveCustomFieldBlock\\(\\) has parameter \\$i with no type specified\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Forms/EditorCreateCustomFieldCest.php
+
+		-
+			message: "#^Cannot access offset 'guid' on mixed\\.$#"
+			count: 2
+			path: ../../tests/acceptance/Forms/EditorPlaceFormOnSpecifiedPageCest.php
+
+		-
+			message: "#^Parameter \\#2 \\$string of function explode expects string, mixed given\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Newsletters/EditorProductsCest.php
+
+		-
+			message: "#^Method MailPoet\\\\Test\\\\Acceptance\\\\SendingStatusCest\\:\\:checkSubscriber\\(\\) has parameter \\$i with no type specified\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Newsletters/SendingStatusCest.php
+
+		-
+			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, mixed given\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Segments/CreateSubscriberScoreSegmentCest.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Settings/ReinstallFromScratchCest.php
+
+		-
+			message: "#^Cannot access offset 'transactional_email…' on mixed\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Settings/WooCommerceEmailCustomizationCest.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of function unserialize expects string, mixed given\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Settings/WooCommerceEmailCustomizationCest.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function trim expects string, mixed given\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Subscribers/ManageSubscriptionLinkCest.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\NewsletterEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../tests/integration/API/JSON/v1/SendingQueueTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$needle of method Codeception\\\\Verify\\\\Verify\\:\\:stringContainsString\\(\\) expects string, mixed given\\.$#"
+			count: 4
+			path: ../../tests/integration/API/JSON/v1/ServicesTest.php
+
+		-
+			message: "#^Cannot access offset 'label' on mixed\\.$#"
+			count: 1
+			path: ../../tests/integration/Config/MP2MigratorTest.php
+
+		-
+			message: "#^Cannot access offset 'name' on mixed\\.$#"
+			count: 1
+			path: ../../tests/integration/Config/MP2MigratorTest.php
+
+		-
+			message: "#^Cannot access offset 'on_success' on mixed\\.$#"
+			count: 1
+			path: ../../tests/integration/Config/MP2MigratorTest.php
+
+		-
+			message: "#^Cannot access offset 'required' on mixed\\.$#"
+			count: 1
+			path: ../../tests/integration/Config/MP2MigratorTest.php
+
+		-
+			message: "#^Cannot access offset 'segments' on mixed\\.$#"
+			count: 1
+			path: ../../tests/integration/Config/MP2MigratorTest.php
+
+		-
+			message: "#^Cannot access offset 'success_message' on mixed\\.$#"
+			count: 1
+			path: ../../tests/integration/Config/MP2MigratorTest.php
+
+		-
+			message: "#^Cannot access offset 'type' on mixed\\.$#"
+			count: 1
+			path: ../../tests/integration/Config/MP2MigratorTest.php
+
+		-
+			message: "#^Cannot access offset 'validate' on mixed\\.$#"
+			count: 1
+			path: ../../tests/integration/Config/MP2MigratorTest.php
+
+		-
+			message: "#^Cannot access offset 0 on mixed\\.$#"
+			count: 3
+			path: ../../tests/integration/Config/MP2MigratorTest.php
+
+		-
+			message: "#^Cannot access offset 999 on mixed\\.$#"
+			count: 1
+			path: ../../tests/integration/Config/MP2MigratorTest.php
+
+		-
+			message: "#^Property MailPoet\\\\Test\\\\Doctrine\\\\EventListeners\\\\TimestampEntity\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: ../../tests/integration/Doctrine/EventListeners/TimestampEntity.php
+
+		-
+			message: "#^Property MailPoet\\\\Test\\\\Doctrine\\\\EventListeners\\\\ValidatedEntity\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: ../../tests/integration/Doctrine/EventListeners/ValidatedEntity.php
+
+		-
+			message: "#^Dead catch \\- MailPoet\\\\Doctrine\\\\Validator\\\\ValidationException is never thrown in the try block\\.$#"
+			count: 2
+			path: ../../tests/integration/Doctrine/EventListeners/ValidationTest.php
+
+		-
+			message: "#^Property MailPoet\\\\Test\\\\Doctrine\\\\Types\\\\JsonEntity\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: ../../tests/integration/Doctrine/Types/JsonEntity.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of function join expects array\\<string\\>, mixed given\\.$#"
+			count: 1
+			path: ../../tests/integration/Helpscout/BeaconTest.php
+
+		-
+			message: "#^Parameter \\#2 \\$pieces of function join expects array, mixed given\\.$#"
+			count: 1
+			path: ../../tests/integration/Helpscout/BeaconTest.php
+
+		-
+			message: "#^Cannot access offset 'List\\-Unsubscribe' on mixed\\.$#"
+			count: 1
+			path: ../../tests/integration/Mailer/Methods/SendGridTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\NewsletterEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../tests/integration/Newsletter/Preview/SendPreviewControllerTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\NewsletterEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
+			count: 8
+			path: ../../tests/integration/Newsletter/RendererTest.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 2
+			path: ../../tests/integration/Segments/DynamicSegments/FilterHandlerTest.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 13
+			path: ../../tests/integration/Segments/DynamicSegments/Filters/EmailActionTest.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 7
+			path: ../../tests/integration/Segments/DynamicSegments/Filters/EmailOpensAbsoluteCountActionTest.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 12
+			path: ../../tests/integration/Segments/DynamicSegments/Filters/MailPoetCustomFieldsTest.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 14
+			path: ../../tests/integration/Segments/DynamicSegments/Filters/SubscriberScoreTest.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 5
+			path: ../../tests/integration/Segments/DynamicSegments/Filters/SubscriberSegmentTest.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 7
+			path: ../../tests/integration/Segments/DynamicSegments/Filters/SubscriberSubscribedDateTest.php
+
+		-
+			message: "#^Cannot access offset 'inner_subscriber_id' on mixed\\.$#"
+			count: 2
+			path: ../../tests/integration/Segments/DynamicSegments/Filters/WooCommerceTotalSpentTest.php
+
+		-
+			message: "#^Property MailPoet\\\\Segments\\\\DynamicSegments\\\\Filters\\\\WooCommerceTotalSpentTest\\:\\:\\$orders \\(array\\<int\\>\\) on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: ../../tests/integration/Segments/DynamicSegments/Filters/WooCommerceTotalSpentTest.php
+
+		-
+			message: "#^Method MailPoet\\\\Test\\\\Segments\\\\WPTest\\:\\:getSubscribersCount\\(\\) has parameter \\$a with no type specified\\.$#"
+			count: 1
+			path: ../../tests/integration/Segments/WPTest.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../tests/integration/Segments/WooCommerceTest.php
+
+		-
+			message: "#^Cannot call method getSegments\\(\\) on mixed\\.$#"
+			count: 1
+			path: ../../tests/integration/Segments/WooCommerceTest.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../tests/integration/Segments/WooCommerceTest.php
+
+		-
+			message: "#^Cannot access offset 'key1' on mixed\\.$#"
+			count: 3
+			path: ../../tests/integration/Settings/SettingsControllerTest.php
+
+		-
+			message: "#^Cannot access offset 'key2' on mixed\\.$#"
+			count: 3
+			path: ../../tests/integration/Settings/SettingsControllerTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$jsonData of method MailPoet\\\\Subscribers\\\\ImportExport\\\\Export\\\\ExportTest\\:\\:createExport\\(\\) expects array, mixed given\\.$#"
+			count: 1
+			path: ../../tests/integration/Subscribers/ImportExport/Export/ExportTest.php
+
+		-
+			message: "#^Property MailPoet\\\\Subscribers\\\\ImportExport\\\\Export\\\\ExportTest\\:\\:\\$jSONData \\(array\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../tests/integration/Subscribers/ImportExport/Export/ExportTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function count expects array\\|Countable, mixed given\\.$#"
+			count: 5
+			path: ../../tests/integration/Subscribers/ImportExport/ImportExportFactoryTest.php
+
+		-
+			message: "#^Part \\$table \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
+			count: 1
+			path: ../../tests/integration/_bootstrap.php
+
