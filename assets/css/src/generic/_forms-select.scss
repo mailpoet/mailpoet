@@ -46,13 +46,14 @@
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
+  min-height: $form-control-height - 2px !important;
 }
 
 .mailpoet-form-react-select__value-container {
   padding:
-    math.div($form-control-spacing, 2)
+    2px
     $form-control-icon-small + 2 * $form-control-spacing
-    math.div($form-control-spacing, 2)
+    2px
     $form-control-spacing * 2 !important;
 }
 
@@ -134,7 +135,7 @@
 }
 
 .mailpoet-form-react-select-option > span {
-  vertical-align: middle;
+  vertical-align: top;
 }
 
 .mailpoet-form-react-select-tag {
