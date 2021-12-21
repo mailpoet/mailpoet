@@ -157,28 +157,35 @@ class Subscription {
     $checkoutOptinEnabled = (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME);
     $checkoutOptin = !empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME]);
 
-    return $this->handleSubscriberOptin($subscriber, $checkoutOptinEnabled && $checkoutOptin);
+    return $this->handleSubscriberOptin($subscriber, $checkoutOptinEnabled, $checkoutOptin);
   }
 
   /**
    * Subscribe or unsubscribe a subscriber.
    *
    * @param Subscriber $subscriber Subscriber object
-   * @param bool $optin Opting in or (opting out or opt-in disabled).
+   * @param bool $checkoutOptinEnabled
+   * @param bool $checkoutOptin
    */
-  public function handleSubscriberOptin(Subscriber $subscriber, $optin = true) {
+  public function handleSubscriberOptin(Subscriber $subscriber, bool $checkoutOptinEnabled, bool $checkoutOptin): bool {
     $wcSegment = Segment::getWooCommerceSegment();
     $moreSegmentsToSubscribe = (array)$this->settings->get(self::OPTIN_SEGMENTS_SETTING_NAME, []);
     $signupConfirmation = $this->settings->get('signup_confirmation');
-    $checkoutOptinEnabled = (bool)$this->settings->get(self::OPTIN_ENABLED_SETTING_NAME);
 
-    if (!$optin) {
+    if (!$checkoutOptin) {
       // Opt-in is disabled or checkbox is unchecked
       SubscriberSegment::unsubscribeFromSegments(
         $subscriber,
         [$wcSegment->id]
       );
-      // Update global status only in case the op-tin is enabled
+      // Unsubscribe from configured segment only when opt-in is enabled
+      if ($checkoutOptinEnabled && $moreSegmentsToSubscribe) {
+        SubscriberSegment::unsubscribeFromSegments(
+          $subscriber,
+          $moreSegmentsToSubscribe
+        );
+      }
+      // Update global status only in case the opt-in is enabled
       if ($checkoutOptinEnabled) {
         $this->updateSubscriberStatus($subscriber);
       }
