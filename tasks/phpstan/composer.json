@@ -15,7 +15,15 @@
         "sort-packages": true
     },
     "scripts": {
-        "post-install-cmd": "php prefix-phpstan-doctrine.php",
-        "post-update-cmd": "php prefix-phpstan-doctrine.php"
+        "post-install-cmd": [
+            "php prefix-phpstan-doctrine.php",
+            "@fixWPStubsForPHP81"
+
+        ],
+        "post-update-cmd": [
+            "php prefix-phpstan-doctrine.php",
+            "@fixWPStubsForPHP81"
+        ],
+        "fixWPStubsForPHP81": "sed -i -e 's#function readonly#function __readonly#' vendor/php-stubs/wordpress-stubs/wordpress-stubs.php"
     }
 }
