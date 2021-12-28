@@ -77,6 +77,13 @@ class Changelog {
     $this->checkRevenueTrackingPermissionPage();
   }
 
+  public function shouldShowWelcomeWizard() {
+    if ($this->wp->applyFilters('mailpoet_skip_welcome_wizard', false)) {
+      return false;
+    }
+    return $this->settings->get('version') === null;
+  }
+
   public function isMp2MigrationInProgress() {
     return $this->mp2Migrator->isMigrationStartedAndNotCompleted();
   }
@@ -101,8 +108,7 @@ class Changelog {
   }
 
   private function checkWelcomeWizard() {
-    $skipWizard = $this->wp->applyFilters('mailpoet_skip_welcome_wizard', false);
-    if (!$skipWizard) {
+    if ($this->shouldShowWelcomeWizard()) {
       $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-welcome-wizard'));
     }
   }
