@@ -151,7 +151,7 @@ const DateFullDate = ({ onChange, item, filterIndex }: ComponentProps) => {
         <option value="after">{MailPoet.I18n.t('after')}</option>
       </Select>
       <Datepicker
-        dateFormat="MMMM d, yyyy"
+        dateFormat="MMM d, yyyy"
         onChange={(value): void => onChange(
           assign(item, { value: convertDateToString(value) }),
           filterIndex

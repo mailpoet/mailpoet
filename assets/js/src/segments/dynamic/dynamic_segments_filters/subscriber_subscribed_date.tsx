@@ -108,7 +108,7 @@ export const SubscribedDateFields: React.FunctionComponent<Props> = ({ filterInd
           || segment.operator === SubscribedDateOperator.NOT_ON
         ) && (
           <Datepicker
-            dateFormat="MMMM d, yyyy"
+            dateFormat="MMM d, yyyy"
             onChange={(value): void => {
               updateSegmentFilter({ value: convertDateToString(value) }, filterIndex);
             }}
