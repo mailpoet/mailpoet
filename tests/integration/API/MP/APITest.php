@@ -8,6 +8,7 @@ use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\MP\v1\API;
 use MailPoet\API\MP\v1\CustomFields;
 use MailPoet\API\MP\v1\Subscribers;
+use MailPoet\Config\Changelog;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -67,7 +68,8 @@ class APITest extends \MailPoetTest {
     return new API(
       $this->diContainer->get(RequiredCustomFieldValidator::class),
       $this->diContainer->get(CustomFields::class),
-      $subscriberActions
+      $subscriberActions,
+      $this->diContainer->get(Changelog::class)
     );
   }
 

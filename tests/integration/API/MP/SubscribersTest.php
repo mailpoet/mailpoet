@@ -8,6 +8,7 @@ use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\MP\v1\API;
 use MailPoet\API\MP\v1\CustomFields;
 use MailPoet\API\MP\v1\Subscribers;
+use MailPoet\Config\Changelog;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
@@ -57,7 +58,8 @@ class SubscribersTest extends \MailPoetTest {
     return new API(
       $this->makeEmpty(RequiredCustomFieldValidator::class),
       $this->diContainer->get(CustomFields::class),
-      $subscriberActions
+      $subscriberActions,
+      $this->diContainer->get(Changelog::class)
     );
   }
 
