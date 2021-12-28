@@ -75,9 +75,9 @@ With our WooCommerce emails, you can:
 The Premium version adds the following features:
 
 * For each newsletter, see which subscribers opened it and which links got the most clicks
-* Removes the small MailPoet logo in the footer of your emails
-* Same day support (Monday to Friday)
-* Send to over 1,000 subscribers with your own sending method (host, SendGrid, Amazon SES)
+* Removes the small MailPoet logo in the footer of your emails - _only in paid plans_
+* Same day support (Monday to Friday) - _only in paid plans_
+* Send to over 1,000 subscribers with your own sending method (host, SendGrid, Amazon SES) - _only in selected paid plans_
 
 = MailPoet Sending Service =
 **MailPoet Sending Service is free for your first 1,000 subscribers (pay as you go afterwards). [Read More](https://www.mailpoet.com/free-plan/)**
