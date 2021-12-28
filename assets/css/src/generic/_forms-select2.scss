@@ -149,7 +149,7 @@
   .select2-results__option {
     align-items: center;
     display: flex;
-    padding: 12px (2 * $form-control-spacing);
+    padding: 12px $form-control-spacing-horizontal;
 
     &[aria-selected=true] {
       background-color: $color-secondary-light;

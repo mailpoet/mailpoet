@@ -54,7 +54,7 @@
     2px
     $form-control-icon-small + 2 * $form-control-spacing
     2px
-    $form-control-spacing * 2 !important;
+    $form-control-spacing-horizontal !important;
 }
 
 .mailpoet-form-react-select__single-value {
@@ -127,7 +127,7 @@
   cursor: pointer;
   font-size: 14px !important;
   line-height: 18px !important;
-  padding: $form-control-spacing 2 * $form-control-spacing !important;
+  padding: $form-control-spacing $form-control-spacing-horizontal !important;
 }
 
 .mailpoet-form-react-select__option--is-focused {
