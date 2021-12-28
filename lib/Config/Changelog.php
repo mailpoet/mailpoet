@@ -94,6 +94,13 @@ class Changelog {
       && $this->wp->currentUserCan('administrator');
   }
 
+  public function shouldShowRevenueTrackingPermissionPage() {
+    return ($this->settings->get('woocommerce.accept_cookie_revenue_tracking.set') === null)
+      && $this->trackingConfig->isEmailTrackingEnabled()
+      && $this->wooCommerceHelper->isWooCommerceActive()
+      && $this->wp->currentUserCan('administrator');
+  }
+
   public function isMp2MigrationInProgress() {
     return $this->mp2Migrator->isMigrationStartedAndNotCompleted();
   }
@@ -135,10 +142,7 @@ class Changelog {
   private function checkRevenueTrackingPermissionPage() {
     if (
       !in_array($_GET['page'], ['mailpoet-woocommerce-setup', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
-      && ($this->settings->get('woocommerce.accept_cookie_revenue_tracking.set') === null)
-      && $this->trackingConfig->isEmailTrackingEnabled()
-      && $this->wooCommerceHelper->isWooCommerceActive()
-      && $this->wp->currentUserCan('administrator')
+      && $this->shouldShowRevenueTrackingPermissionPage()
     ) {
       $this->urlHelper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-setup'));
     }
