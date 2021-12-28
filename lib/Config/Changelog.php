@@ -68,7 +68,7 @@ class Changelog {
 
   public function check() {
     $version = $this->settings->get('version');
-    $this->checkMp2Migration($version);
+    $this->checkMp2Migration();
     if ($version === null) {
       $this->setupNewInstallation();
       $this->checkWelcomeWizard();
@@ -77,14 +77,22 @@ class Changelog {
     $this->checkRevenueTrackingPermissionPage();
   }
 
-  private function checkMp2Migration($version) {
-    if (!in_array($_GET['page'], ['mailpoet-migration', 'mailpoet-settings']) && $this->mp2Migrator->isMigrationStartedAndNotCompleted()) {
+  public function isMp2MigrationInProgress() {
+    return $this->mp2Migrator->isMigrationStartedAndNotCompleted();
+  }
+
+  public function shouldShowMp2Migration() {
+    return $this->settings->get('version') === null && $this->mp2Migrator->isMigrationNeeded();
+  }
+
+  private function checkMp2Migration() {
+    if (!in_array($_GET['page'], ['mailpoet-migration', 'mailpoet-settings']) && $this->isMp2MigrationInProgress()) {
       // Force the redirection if the migration has started but is not completed
-      return $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-migration'));
+      $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-migration'));
     }
 
-    if ($version === null && $this->mp2Migrator->isMigrationNeeded()) {
-       $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-migration'));
+    if ($this->shouldShowMp2Migration()) {
+      $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-migration'));
     }
   }
 
