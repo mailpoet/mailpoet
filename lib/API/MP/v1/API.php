@@ -2,6 +2,7 @@
 
 namespace MailPoet\API\MP\v1;
 
+use MailPoet\Config\Changelog;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -21,14 +22,19 @@ class API {
   /** @var Subscribers */
   private $subscribers;
 
+  /** @var Changelog */
+  private $changelog;
+
   public function __construct(
     RequiredCustomFieldValidator $requiredCustomFieldValidator,
     CustomFields $customFields,
-    Subscribers $subscribers
+    Subscribers $subscribers,
+    Changelog $changelog
   ) {
     $this->requiredCustomFieldValidator = $requiredCustomFieldValidator;
     $this->customFields = $customFields;
     $this->subscribers = $subscribers;
+    $this->changelog = $changelog;
   }
 
   public function getSubscriberFields() {
@@ -222,5 +228,15 @@ class API {
       throw new APIException(__('This subscriber does not exist.', 'mailpoet'), APIException::SUBSCRIBER_NOT_EXISTS);
     }
     return $subscriber->withCustomFields()->withSubscriptions()->asArray();
+  }
+
+  public function isSetupComplete() {
+    return !(
+      $this->changelog->shouldShowWelcomeWizard()
+      || $this->changelog->shouldShowWooCommerceListImportPage()
+      || $this->changelog->shouldShowRevenueTrackingPermissionPage()
+      || $this->changelog->isMp2MigrationInProgress()
+      || $this->changelog->shouldShowMp2Migration()
+    );
   }
 }
