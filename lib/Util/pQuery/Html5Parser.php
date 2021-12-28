@@ -2,9 +2,9 @@
 
 namespace MailPoet\Util\pQuery;
 
-use MailPoetVendor\pQuery\HtmlParser;
+use MailPoetVendor\pQuery\Html5Parser as pQueryHtml5Parser;
 
-class Html5Parser extends HtmlParser {
+class Html5Parser extends pQueryHtml5Parser {
   /** @var string|DomNode */
   public $root = DomNode::class;
 }
