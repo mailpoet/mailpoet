@@ -102,7 +102,6 @@ export const SubscribedDateFields: React.FunctionComponent<Props> = ({ filterInd
             onChange={(value): void => {
               updateSegmentFilter({ value: convertDateToString(value) }, filterIndex);
             }}
-            maxDate={new Date()}
             selected={segment.value ? parseDate(segment.value) : undefined}
           />
         )}
