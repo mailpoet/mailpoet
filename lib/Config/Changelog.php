@@ -84,6 +84,16 @@ class Changelog {
     return $this->settings->get('version') === null;
   }
 
+  public function shouldShowWooCommerceListImportPage() {
+    if ($this->wp->applyFilters('mailpoet_skip_woocommerce_import_page', false)) {
+      return false;
+    }
+    return !$this->settings->get('woocommerce_import_screen_displayed')
+      && $this->wooCommerceHelper->isWooCommerceActive()
+      && $this->wooCommerceHelper->getOrdersCountCreatedBefore($this->settings->get('installed_at')) > 0
+      && $this->wp->currentUserCan('administrator');
+  }
+
   public function isMp2MigrationInProgress() {
     return $this->mp2Migrator->isMigrationStartedAndNotCompleted();
   }
@@ -114,15 +124,9 @@ class Changelog {
   }
 
   private function checkWooCommerceListImportPage() {
-    if ($this->wp->applyFilters('mailpoet_skip_woocommerce_import_page', false)) {
-      return;
-    }
     if (
       !in_array($_GET['page'], ['mailpoet-woocommerce-setup', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
-      && !$this->settings->get('woocommerce_import_screen_displayed')
-      && $this->wooCommerceHelper->isWooCommerceActive()
-      && $this->wooCommerceHelper->getOrdersCountCreatedBefore($this->settings->get('installed_at')) > 0
-      && $this->wp->currentUserCan('administrator')
+      && $this->shouldShowWooCommerceListImportPage()
     ) {
       $this->urlHelper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-setup'));
     }
