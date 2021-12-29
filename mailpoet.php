@@ -8,6 +8,8 @@
  * Author: MailPoet
  * Author URI: http://www.mailpoet.com
  * Requires at least: 5.3
+ * Text Domain: mailpoet
+ * Domain Path: /lang
  *
  * @package WordPress
  * @author MailPoet
