@@ -511,6 +511,10 @@ class Functions {
     return register_block_type($name, $args);
   }
 
+  public function registerBlockTypeFromMetadata($name, $args = []) {
+    return register_block_type_from_metadata($name, $args);
+  }
+
   public function wpGetAttachmentImageSrc($attachmentId, $size = 'thumbnail', $icon = false) {
     return wp_get_attachment_image_src($attachmentId, $size, $icon);
   }
