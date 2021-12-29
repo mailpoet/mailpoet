@@ -10,6 +10,9 @@ else
   ./do translations:pack
 fi
 
+echo '[BUILD] Generating translations .pot file'
+./do translations:build
+
 plugin_name='mailpoet'
 
 # Remove previous build.
