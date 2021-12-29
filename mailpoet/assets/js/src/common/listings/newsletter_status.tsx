@@ -2,9 +2,10 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 import {
-  isFuture, isPast, differenceInMinutes,
+  addDays, differenceInMinutes, isFuture, isPast,
 } from 'date-fns';
 import t from 'common/functions/t';
+import Tooltip from '../tooltip/tooltip';
 
 type NewsletterStatusProps = {
   scheduledFor?: Date;
@@ -29,15 +30,38 @@ const NewsletterStatus = ({
   let percentage = 0;
   let label = (<>{t('notSentYet')}</>);
   if (scheduled) {
+    const scheduledDate = MailPoet.Date.short(scheduledFor);
+    const scheduledTime = MailPoet.Date.time(scheduledFor);
+    const now = new Date();
+    const tomorrow = addDays(now, 1);
+    const isScheduledForToday = MailPoet.Date.short(now) === scheduledDate;
+    const isScheduledForTomorrow = MailPoet.Date.short(tomorrow) === scheduledDate;
+    if (isScheduledForToday || isScheduledForTomorrow) {
+      const randomId = Math.random().toString(36).substring(2, 15);
+      const dateWord = isScheduledForToday ? t('today') : t('tomorrow');
+      label = (
+        <>
+          <span data-tip data-for={randomId}>
+            {dateWord}
+          </span>
+          <Tooltip place="right" id={randomId}>
+            {scheduledDate}
+          </Tooltip>
+          <br />
+          {scheduledTime}
+        </>
+      );
+    } else {
+      label = (
+        <>
+          {scheduledDate}
+          <br />
+          {scheduledTime}
+        </>
+      );
+    }
     const minutesIn12Hours = 720;
-    const minutesLeft = differenceInMinutes(scheduledFor, new Date());
-    label = (
-      <>
-        {MailPoet.Date.short(scheduledFor)}
-        <br />
-        {MailPoet.Date.time(scheduledFor)}
-      </>
-    );
+    const minutesLeft = differenceInMinutes(scheduledFor, now);
     if (minutesLeft < minutesIn12Hours) {
       percentage = 100 * (minutesLeft / minutesIn12Hours);
     } else {
