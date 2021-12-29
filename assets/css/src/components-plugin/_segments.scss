@@ -5,9 +5,14 @@
   grid-column: span 2;
 }
 
-.mailpoet-segments-segments-section .mailpoet-grid-three-columns {
+.mailpoet-segments-grid {
+  grid-template-columns: 200px 1fr 1fr;
   padding-right: $grid-gap-large;
   position: relative;
+
+  @include respond-to(small-screen) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .mailpoet-segments-description-section .mailpoet-form-textarea textarea {

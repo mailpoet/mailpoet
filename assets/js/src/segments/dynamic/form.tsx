@@ -126,7 +126,7 @@ export const Form: React.FunctionComponent<Props> = ({
           <FiltersBefore />
           {Array.isArray(filterRows) && filterRows.map((filterRow, index) => (
             <React.Fragment key={filterRow.index}>
-              <Grid.ThreeColumns automationId={`filter-row-${index}`}>
+              <Grid.ThreeColumns className="mailpoet-segments-grid" automationId={`filter-row-${index}`}>
                 <FilterBefore filterRows={filterRows} index={index} />
                 <Grid.CenteredRow>
                   <Select
