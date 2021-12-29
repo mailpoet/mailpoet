@@ -34,7 +34,7 @@ class MarketingOptinBlock implements IntegrationInterface {
    * Register block scripts and assets.
    */
   public function initialize() {
-    $script_asset_path = Env::$assetsUrl . '/dist/js/marketing_optin_block/marketing-optin-block-frontend.asset.php';
+    $script_asset_path = Env::$assetsPath . '/dist/js/marketing_optin_block/marketing-optin-block-frontend.asset.php';
     $script_asset = file_exists($script_asset_path)
       ? require $script_asset_path
       : [
