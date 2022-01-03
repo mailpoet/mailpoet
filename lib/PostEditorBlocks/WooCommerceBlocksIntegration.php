@@ -75,7 +75,7 @@ class WooCommerceBlocksIntegration {
   public function registerCheckoutFrontendBlocks($integration_registry) {
     $integration_registry->register(new MarketingOptinBlock(
       [
-      'defaultText'  => $this->settings->get('woocommerce.optin_on_checkout.message', ''),
+      'defaultText' => $this->settings->get('woocommerce.optin_on_checkout.message', ''),
       'optinEnabled' => $this->settings->get('woocommerce.optin_on_checkout.enabled', false),
       'defaultStatus' => $this->woocommerceSubscription->isCurrentUserSubscribed(),
       ],
@@ -95,13 +95,13 @@ class WooCommerceBlocksIntegration {
     $extend = Package::container()->get(ExtendRestApi::class);
     $extend->register_endpoint_data(
       [
-        'endpoint'        => CheckoutSchema::IDENTIFIER,
-        'namespace'       => 'mailpoet',
+        'endpoint' => CheckoutSchema::IDENTIFIER,
+        'namespace' => 'mailpoet',
         'schema_callback' => function () {
           return [
             'optin' => [
               'description' => __('Subscribe to marketing opt-in.', 'mailpoet'),
-              'type'        => 'boolean',
+              'type' => 'boolean',
             ],
           ];
         },

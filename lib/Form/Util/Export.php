@@ -9,9 +9,9 @@ use MailPoet\WP\Functions as WPFunctions;
 class Export {
   public static function getAll() {
     return [
-      'html'      => static::get('html'),
-      'php'       => static::get('php'),
-      'iframe'    => static::get('iframe'),
+      'html' => static::get('html'),
+      'php' => static::get('php'),
+      'iframe' => static::get('iframe'),
       'shortcode' => static::get('shortcode'),
     ];
   }
