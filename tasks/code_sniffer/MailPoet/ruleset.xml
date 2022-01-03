@@ -97,7 +97,6 @@
     <properties>
       <property name="ignoreSpacesInAnnotation" value="1" /> <!-- to allow multiple spaces to align annotations -->
       <property name="ignoreSpacesInComment" value="1" /> <!-- to allow multiple spaces to align content of the comment -->
-      <property name="ignoreSpacesBeforeAssignment" value="1" /> <!-- to allow multiple spaces to align assignments -->
     </properties>
   </rule>
   <rule ref="PSR12.ControlStructures.ControlStructureSpacing"> <!-- No space after opening brackets and before closing brackets -->
