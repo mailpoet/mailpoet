@@ -35,11 +35,11 @@ class MarketingOptinBlock implements IntegrationInterface {
    */
   public function initialize() {
     $script_asset_path = Env::$assetsUrl . '/dist/js/marketing_optin_block/marketing-optin-block-frontend.asset.php';
-    $script_asset      = file_exists($script_asset_path)
+    $script_asset = file_exists($script_asset_path)
       ? require $script_asset_path
       : [
         'dependencies' => [],
-        'version'      => Env::$version,
+        'version' => Env::$version,
       ];
     $this->wp->wpRegisterScript(
       'mailpoet-marketing-optin-block-frontend',

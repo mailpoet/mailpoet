@@ -240,8 +240,8 @@ class FormEditor {
     $data = [
       'form' => $form->toArray(),
       'form_exports' => [
-          'php'       => Export::get('php'),
-          'iframe'    => Export::get('iframe'),
+          'php' => Export::get('php'),
+          'iframe' => Export::get('iframe'),
           'shortcode' => Export::get('shortcode'),
       ],
       'segments' => $this->segmentsListRepository->getListWithSubscribedSubscribersCounts([SegmentEntity::TYPE_DEFAULT]),

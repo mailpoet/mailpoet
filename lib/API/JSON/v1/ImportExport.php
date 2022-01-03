@@ -107,11 +107,11 @@ class ImportExport extends APIEndpoint {
       return $this->successResponse($response);
     } catch (ValidationException $exception) {
       return $this->badRequest([
-        APIError::BAD_REQUEST  => __('Please specify a name.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('Please specify a name.', 'mailpoet'),
       ]);
     } catch (InvalidArgumentException $exception) {
       return $this->badRequest([
-        APIError::BAD_REQUEST  => __('Another record already exists. Please specify a different "name".', 'mailpoet'),
+        APIError::BAD_REQUEST => __('Another record already exists. Please specify a different "name".', 'mailpoet'),
       ]);
     }
   }

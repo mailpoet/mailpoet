@@ -29,11 +29,11 @@ class StatisticsExtension extends Extension {
 
   // we are listening for events
   public static $events = [
-    Events::TEST_BEFORE  => 'beforeTest',
-    Events::TEST_END     => 'afterTest',
-    Events::SUITE_AFTER  => 'afterSuite',
-    Events::STEP_BEFORE  => 'beforeStep',
-    Events::STEP_AFTER   => 'afterStep',
+    Events::TEST_BEFORE => 'beforeTest',
+    Events::TEST_END => 'afterTest',
+    Events::SUITE_AFTER => 'afterSuite',
+    Events::STEP_BEFORE => 'beforeStep',
+    Events::STEP_AFTER => 'afterStep',
   ];
 
   public function _initialize() {
@@ -75,7 +75,7 @@ class StatisticsExtension extends Extension {
     // stack overflow: http://stackoverflow.com/questions/16825240/how-to-convert-microtime-to-hhmmssuu
     $seconds_input = $e->getTime();
     $seconds = (int)($milliseconds = (int)($seconds_input * 1000)) / 1000;
-    $time    = ((int)$seconds % 60);
+    $time = ((int)$seconds % 60);
     $test->time = $time;
     self::$testTimes[] = $test;
   }

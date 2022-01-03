@@ -162,7 +162,7 @@ class Newsletters extends APIEndpoint {
 
     if (!$status) {
       return $this->badRequest([
-        APIError::BAD_REQUEST  => __('You need to specify a status.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('You need to specify a status.', 'mailpoet'),
       ]);
     }
 

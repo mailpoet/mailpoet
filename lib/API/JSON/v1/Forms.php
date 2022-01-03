@@ -99,7 +99,7 @@ class Forms extends APIEndpoint {
 
     if (!$status) {
       return $this->badRequest([
-        APIError::BAD_REQUEST  => __('You need to specify a status.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('You need to specify a status.', 'mailpoet'),
       ]);
     }
 
@@ -114,7 +114,7 @@ class Forms extends APIEndpoint {
 
     if (!in_array($status, [FormEntity::STATUS_ENABLED, FormEntity::STATUS_DISABLED])) {
       return $this->badRequest([
-        APIError::BAD_REQUEST  =>
+        APIError::BAD_REQUEST =>
           sprintf(
             __('Invalid status. Allowed values are (%1$s), you specified %2$s', 'mailpoet'),
             join(', ', [FormEntity::STATUS_ENABLED, FormEntity::STATUS_DISABLED]),

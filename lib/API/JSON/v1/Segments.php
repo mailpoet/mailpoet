@@ -123,11 +123,11 @@ class Segments extends APIEndpoint {
       $segment = $this->segmentSavecontroller->save($data);
     } catch (ValidationException $exception) {
       return $this->badRequest([
-        APIError::BAD_REQUEST  => __('Please specify a name.', 'mailpoet'),
+        APIError::BAD_REQUEST => __('Please specify a name.', 'mailpoet'),
       ]);
     } catch (ConflictException $exception) {
       return $this->badRequest([
-        APIError::BAD_REQUEST  => __('Another record already exists. Please specify a different "name".', 'mailpoet'),
+        APIError::BAD_REQUEST => __('Another record already exists. Please specify a different "name".', 'mailpoet'),
       ]);
     }
     $response = $this->segmentsResponseBuilder->build($segment);

@@ -76,7 +76,7 @@ class Services extends APIEndpoint {
 
     if (!$key) {
       return $this->badRequest([
-        APIError::BAD_REQUEST  => $this->wp->__('Please specify a key.', 'mailpoet'),
+        APIError::BAD_REQUEST => $this->wp->__('Please specify a key.', 'mailpoet'),
       ]);
     }
 
@@ -148,7 +148,7 @@ class Services extends APIEndpoint {
 
     if (!$key) {
       return $this->badRequest([
-        APIError::BAD_REQUEST  => $this->wp->__('Please specify a key.', 'mailpoet'),
+        APIError::BAD_REQUEST => $this->wp->__('Please specify a key.', 'mailpoet'),
       ]);
     }
 
