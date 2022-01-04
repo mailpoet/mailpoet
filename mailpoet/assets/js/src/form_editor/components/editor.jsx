@@ -14,6 +14,7 @@ import {
   BlockTools,
   WritingFlow,
   ObserveTyping,
+  SETTINGS_DEFAULTS,
 } from '@wordpress/block-editor';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import classnames from 'classnames';
@@ -83,12 +84,25 @@ export default () => {
     enableCustomLineHeight: true,
     disableCustomFontSizes: false,
     enableCustomUnits: true,
-    disableCustomGradients: false,
-    disableCustomColors: false,
     __experimentalFetchLinkSuggestions: fetchLinkSuggestions,
     __experimentalBlockPatterns: [], // we don't want patterns in our inserter
     __experimentalBlockPatternCategories: [],
     __experimentalSetIsInserterOpened: toggleInserter,
+    __experimentalFeatures: {
+      color: {
+        custom: true,
+        text: true,
+        background: true,
+        customGradient: true,
+        defaultPalette: true,
+        palette: {
+          default: SETTINGS_DEFAULTS.colors,
+        },
+        gradients: {
+          default: SETTINGS_DEFAULTS.gradients,
+        },
+      },
+    },
   };
 
   return (
