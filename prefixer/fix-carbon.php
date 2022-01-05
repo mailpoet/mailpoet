@@ -19,6 +19,43 @@ return [
 LANGUGES;
 file_put_contents(__DIR__ . '/../vendor-prefixed/nesbot/carbon/src/Carbon/List/languages.php', $langList);
 
+// @mixin annotation causes an error in Doctrine Annotations
+$replacements = [
+  [
+    'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/Carbon.php',
+    'find' => [
+      '@mixin DeprecatedProperties',
+    ],
+    'replace' => [
+      '',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/CarbonImmutable.php',
+    'find' => [
+      '@mixin DeprecatedProperties',
+    ],
+    'replace' => [
+      '',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/nesbot/carbon/src/Carbon/Traits/Date.php',
+    'find' => [
+      '@mixin DeprecatedProperties',
+    ],
+    'replace' => [
+      '',
+    ],
+  ],
+];
+
+foreach ($replacements as $singleFile) {
+  $data = file_get_contents($singleFile['file']);
+  $data = str_replace($singleFile['find'], $singleFile['replace'], $data);
+  file_put_contents($singleFile['file'], $data);
+}
+
 // cleanup file types by extension
 exec('find ' . __DIR__ . "/../vendor-prefixed/nesbot/carbon -type f -name '*.xml' -delete");
 exec('find ' . __DIR__ . "/../vendor-prefixed/nesbot/carbon -type f -name '*.neon' -delete");
