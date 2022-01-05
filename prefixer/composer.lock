@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7cfba38b64a5fb3b9d26b7726a8767b4",
+    "content-hash": "e12f91f2e688c54b40daa46658ff356d",
     "packages": [
         {
             "name": "cerdic/css-tidy",
@@ -2914,16 +2914,16 @@
         },
         {
             "name": "symfony/validator",
-            "version": "v4.4.31",
+            "version": "v4.4.36",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/validator.git",
-                "reference": "9420a2e8874263a684588283e40252209d80e1a5"
+                "reference": "dba84cf8f0f26bdf76057235b3cdc881c476a282"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/validator/zipball/9420a2e8874263a684588283e40252209d80e1a5",
-                "reference": "9420a2e8874263a684588283e40252209d80e1a5",
+                "url": "https://api.github.com/repos/symfony/validator/zipball/dba84cf8f0f26bdf76057235b3cdc881c476a282",
+                "reference": "dba84cf8f0f26bdf76057235b3cdc881c476a282",
                 "shasum": ""
             },
             "require": {
@@ -2934,7 +2934,7 @@
                 "symfony/translation-contracts": "^1.1|^2"
             },
             "conflict": {
-                "doctrine/lexer": "<1.0.2",
+                "doctrine/lexer": "<1.1",
                 "phpunit/phpunit": "<4.8.35|<5.4.3,>=5.0",
                 "symfony/dependency-injection": "<3.4",
                 "symfony/http-kernel": "<4.4",
@@ -3000,7 +3000,7 @@
             "description": "Provides tools to validate values",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/validator/tree/v4.4.31"
+                "source": "https://github.com/symfony/validator/tree/v4.4.36"
             },
             "funding": [
                 {
@@ -3016,7 +3016,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-09-20T16:52:24+00:00"
+            "time": "2021-12-20T09:31:34+00:00"
         },
         {
             "name": "twig/twig",
