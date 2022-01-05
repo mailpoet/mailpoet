@@ -39,7 +39,7 @@ class SMTPMapper {
 
   public function getErrorFromLog($log, $subscriber) {
     // extract error message from log
-    preg_match('/!! (.*?)>>/ism', $log, $message);
+    preg_match('/!! (.*?)>>/ism', (string)$log, $message);
     if (!empty($message[1])) {
       $message = $message[1];
       // remove line breaks from the message due to how logger's dump() method works

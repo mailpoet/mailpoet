@@ -113,7 +113,7 @@ class Export {
       throw new \Exception(__('Failed opening file for export.', 'mailpoet'));
     }
     $formatCSV = function($row) {
-      return '"' . str_replace('"', '\"', $row) . '"';
+      return '"' . str_replace('"', '\"', (string)$row) . '"';
     };
     // add UTF-8 BOM (3 bytes, hex EF BB BF) at the start of the file for
     // Excel to automatically recognize the encoding

@@ -104,13 +104,13 @@ class StylesHelper {
       $textAlignment = isset($block['styles']['block']['textAlign']) ?
         strtolower($block['styles']['block']['textAlign']) :
         '';
-      if (preg_match('/center|right|justify/i', $textAlignment)) {
+      if (preg_match('/center|right|justify/i', (string)$textAlignment)) {
         return $block;
       }
       $block['styles']['block']['textAlign'] = 'left';
       return $block;
     }
-    return (preg_match('/text-align.*?[center|justify|right]/i', $block)) ?
+    return (preg_match('/text-align.*?[center|justify|right]/i', (string)$block)) ?
       $block :
       $block . 'text-align:left;';
   }

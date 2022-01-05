@@ -1453,7 +1453,7 @@ class DomNode implements IQuery {
 	 * @return bool
 	 */
 	function hasClass($className) {
-		return ($className && preg_match('`\b'.preg_quote($className).'\b`si', $this->class));
+		return ($className && preg_match('`\b'.preg_quote($className).'\b`si', (string)$this->class));
 	}
 
 	/**
@@ -1466,11 +1466,11 @@ class DomNode implements IQuery {
 		}
 		$class = $this->class;
 		foreach ($className as $c) {
-			if (!(preg_match('`\b'.preg_quote($c).'\b`si', $class) > 0)) {
+			if (!(preg_match('`\b'.preg_quote($c).'\b`si', (string)$class) > 0)) {
 				$class .= ' '.$c;
 			}
 		}
-		 $this->class = trim($class);
+		 $this->class = trim((string)$class);
 	}
 
 	/**

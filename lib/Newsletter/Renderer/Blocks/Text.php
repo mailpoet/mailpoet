@@ -101,7 +101,7 @@ class Text {
         $paragraph->remove();
         continue;
       }
-      $style = $paragraph->style;
+      $style = (string)$paragraph->style;
       if (!preg_match('/text-align/i', $style)) {
         $style = 'text-align: left;' . $style;
       }
