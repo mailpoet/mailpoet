@@ -192,10 +192,7 @@ export const formBodyToBlocksFactory = (
 
       if (['heading', 'paragraph'].includes(item.type)) {
         mapped.attributes.style = {
-          color: {
-            text: undefined,
-            background: undefined,
-          },
+          color: {},
           typography: {
             fontSize: undefined,
             lineHeight: undefined,
@@ -218,21 +215,19 @@ export const formBodyToBlocksFactory = (
       if (item.params && has(item.params, 'text_color')) {
         const textColorSlug = mapColorSlug(colorDefinitions, item.params.text_color);
         mapped.attributes.textColor = textColorSlug;
-        if (['heading', 'paragraph'].includes(item.type)) {
-          mapped.attributes.style.color.text = !textColorSlug ? item.params.text_color : undefined;
-        } else {
-          mapped.attributes.customTextColor = !textColorSlug ? item.params.text_color : undefined;
+        if (['heading', 'paragraph'].includes(item.type) && !textColorSlug) {
+          mapped.attributes.style.color.text = item.params.text_color;
+        } else if (!textColorSlug) {
+          mapped.attributes.customTextColor = item.params.text_color;
         }
       }
       if (item.params && has(item.params, 'background_color')) {
         const slug = mapColorSlug(colorDefinitions, item.params.background_color);
         mapped.attributes.backgroundColor = slug;
-        if (['heading', 'paragraph'].includes(item.type)) {
-          mapped.attributes.style.color.background = !slug
-            ? item.params.background_color : undefined;
-        } else {
-          mapped.attributes.customBackgroundColor = !slug
-            ? item.params.background_color : undefined;
+        if (['heading', 'paragraph'].includes(item.type) && !slug) {
+          mapped.attributes.style.color.background = item.params.background_color;
+        } else if (!slug) {
+          mapped.attributes.customBackgroundColor = item.params.background_color;
         }
       }
       if (item.params && has(item.params, 'font_size')) {
