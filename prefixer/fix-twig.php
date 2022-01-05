@@ -72,6 +72,9 @@ $replacements = [
       '\'twig_source\'',
       '\'twig_test_empty\'',
       '\'twig_test_iterable\'',
+      '\'twig_sprintf\'',
+      '\'twig_striptags\'',
+      '\'twig_nl2br\'',
     ],
     'replace' => [
       '\'\\\\MailPoetVendor\\\\twig_date_format_filter\'',
@@ -111,6 +114,9 @@ $replacements = [
       '\'\\\\MailPoetVendor\\\\twig_source\'',
       '\'\\\\MailPoetVendor\\\\twig_test_empty\'',
       '\'\\\\MailPoetVendor\\\\twig_test_iterable\'',
+      '\'\\\\MailPoetVendor\\\\twig_sprintf\'',
+      '\'\\\\MailPoetVendor\\\\twig_striptags\'',
+      '\'\\\\MailPoetVendor\\\\twig_nl2br\'',
     ],
   ],
   [
@@ -220,6 +226,46 @@ $replacements = [
       '"use MailPoetVendor\\\\Twig\\\\Extension\\\\SandboxExtension;',
     ],
   ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/FunctionExpression.php',
+    'find' => [
+      '\'twig_constant_is_defined(',
+    ],
+    'replace' => [
+      '\'\\\\MailPoetVendor\\\\twig_constant_is_defined(',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Node/IncludeNode.php',
+    'find' => [
+      '\'twig_array_merge(',
+      '\'twig_to_array(',
+    ],
+    'replace' => [
+      '\'\\\\MailPoetVendor\\\\twig_array_merge(',
+      '\'\\\\MailPoetVendor\\\\twig_to_array(',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Node/WithNode.php',
+    'find' => [
+      '(!twig_test_iterable(',
+      '= twig_to_array(',
+    ],
+    'replace' => [
+      '(!\\\\MailPoetVendor\\\\twig_test_iterable(',
+      '= \\\\MailPoetVendor\\\\twig_to_array(',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/MethodCallExpression.php',
+    'find' => [
+      '\'twig_call_macro(',
+    ],
+    'replace' => [
+      '\'\\\\MailPoetVendor\\\\twig_call_macro(',
+    ],
+  ],
 ];
 
 foreach ($replacements as $singleFile) {
@@ -230,6 +276,5 @@ foreach ($replacements as $singleFile) {
 
 // Remove unwanted class aliases in lib/Twig
 exec("rm -rf ../vendor-prefixed/twig/twig/lib/Twig");
-exec("rm ../vendor-prefixed/twig/twig/drupal_test.sh");
 exec("rm ../vendor-prefixed/twig/twig/README.rst");
 exec("rm -rf ../vendor-prefixed/twig/twig/src/Test");
