@@ -200,6 +200,12 @@ export const nestedColumns = {
   params: {
     vertical_alignment: 'center',
     is_stacked_on_mobile: '0',
+    padding: {
+      top: '1em',
+      right: '2em',
+      bottom: '3em',
+      left: '4em',
+    },
   },
   body: [
     {

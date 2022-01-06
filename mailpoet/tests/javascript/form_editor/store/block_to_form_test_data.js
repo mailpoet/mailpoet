@@ -241,6 +241,16 @@ export const nestedColumns = {
   attributes: {
     verticalAlignment: 'center',
     isStackedOnMobile: false,
+    style: {
+      spacing: {
+        padding: {
+          top: '1em',
+          right: '2em',
+          bottom: '3em',
+          left: '4em',
+        },
+      },
+    },
   },
   innerBlocks: [
     {

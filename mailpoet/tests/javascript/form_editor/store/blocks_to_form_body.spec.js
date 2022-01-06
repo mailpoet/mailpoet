@@ -568,6 +568,12 @@ describe('Blocks to Form Body', () => {
     expect(columns.type).to.be.equal('columns');
     expect(columns.params.vertical_alignment).to.be.equal('center');
     expect(columns.params.is_stacked_on_mobile).to.be.equal('0');
+    expect(columns.params.padding).to.be.deep.equal({
+      top: '1em',
+      right: '2em',
+      bottom: '3em',
+      left: '4em',
+    });
     const column1 = columns.body[0];
     const column2 = columns.body[1];
     expect(column1.type).to.be.equal('column');

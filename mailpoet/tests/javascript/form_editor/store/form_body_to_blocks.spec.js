@@ -490,6 +490,12 @@ describe('Form Body To Blocks', () => {
     expect(blocks[1].name).to.be.equal('core/columns');
     expect(blocks[1].attributes.verticalAlignment).to.be.equal('center');
     expect(blocks[1].attributes.isStackedOnMobile).to.be.equal(false);
+    expect(blocks[1].attributes.style.spacing.padding).to.be.deep.equal({
+      top: '1em',
+      right: '2em',
+      bottom: '3em',
+      left: '4em',
+    });
     // First level
     const column1 = blocks[1].innerBlocks[0];
     expect(column1.name).to.be.equal('core/column');

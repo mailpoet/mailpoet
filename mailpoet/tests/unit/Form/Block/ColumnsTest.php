@@ -107,4 +107,13 @@ class ColumnsTest extends \MailPoetUnitTest {
     $class = $this->htmlParser->getAttribute($columns, 'class');
     expect($class->textContent)->stringContainsString('mailpoet_column_with_background');
   }
+
+  public function testItShouldRenderPadding() {
+    $block = $this->block;
+    $block['params']['padding'] = ['top' => '1em', 'right' => '2em', 'bottom' => '3em', 'left' => '4em'];
+    $html = $this->columns->render($block, 'content');
+    $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $style = $this->htmlParser->getAttribute($columns, 'style');
+    expect($style->textContent)->stringContainsString('padding:1em 2em 3em 4em;');
+  }
 }

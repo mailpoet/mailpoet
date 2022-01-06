@@ -220,6 +220,7 @@ const blocksToFormBodyFactory = (
               is_stacked_on_mobile: (block.attributes.isStackedOnMobile
                 || block.attributes.isStackedOnMobile === undefined) ? '1' : '0',
               class_name: block.attributes.className || null,
+              padding: block.attributes.style?.spacing?.padding || null,
               text_color: mapColorSlugToValue(
                 colorDefinitions,
                 block.attributes.textColor,
