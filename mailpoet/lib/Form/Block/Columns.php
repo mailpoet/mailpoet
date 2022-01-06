@@ -29,6 +29,9 @@ class Columns {
     if (isset($params['gradient'])) {
       $styles[] = "background:{$params['gradient']};";
     }
+    if (!empty($params['padding']) && is_array($params['padding'])) {
+      $styles[] = "padding:{$params['padding']['top']} {$params['padding']['right']} {$params['padding']['bottom']} {$params['padding']['left']};";
+    }
     if (count($styles)) {
       return ' style="' . $this->wp->escAttr(implode('', $styles)) . '"';
     }
