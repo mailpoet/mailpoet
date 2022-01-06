@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\Image;
+use MailPoet\Form\FormHtmlSanitizer;
 use MailPoet\Test\Form\HtmlParser;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -16,6 +17,9 @@ class ImageTest extends \MailPoetUnitTest {
   /** @var MockObject & WPFunctions */
   private $wpMock;
 
+  /** @var MockObject & FormHtmlSanitizer */
+  private $htmlSanitizerMock;
+
   /** @var array  */
   private $block = [
     'type' => 'image',
@@ -26,7 +30,7 @@ class ImageTest extends \MailPoetUnitTest {
       'url' => 'http://example.com/image.jpg',
       'alt' => 'Alt text',
       'title' => 'Title',
-      'caption' => 'Caption',
+      'caption' => '<strong>Caption</strong>',
       'link_destination' => 'none',
       'link' => null,
       'href' => null,
@@ -48,7 +52,9 @@ class ImageTest extends \MailPoetUnitTest {
     $this->wpMock = $this->createMock(WPFunctions::class);
     $this->wpMock->method('escAttr')->will($this->returnArgument(0));
     $this->wpMock->method('escHtml')->will($this->returnArgument(0));
-    $this->image = new Image($this->wpMock);
+    $this->htmlSanitizerMock = $this->createMock(FormHtmlSanitizer::class);
+    $this->htmlSanitizerMock->method('sanitize')->will($this->returnArgument(0));
+    $this->image = new Image($this->wpMock, $this->htmlSanitizerMock);
     $this->htmlParser = new HtmlParser();
 
   }
@@ -85,7 +91,8 @@ class ImageTest extends \MailPoetUnitTest {
     expect($style->value)->stringContainsString('height: 200px');
 
     $caption = $this->htmlParser->getChildElement($figure, 'figcaption');
-    expect($caption->textContent)->equals('Caption');
+    $captionContent = $this->htmlParser->getChildElement($caption, 'strong');
+    expect($captionContent->textContent)->equals('Caption');
   }
 
   public function testItShouldRenderImageBlockWithLink() {
