@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3c752a64868c01d09a620f2093192742",
+    "content-hash": "10f1b479179f9e58166ee854e4447cce",
     "packages": [
         {
             "name": "mtdowling/cron-expression",
@@ -3315,16 +3315,16 @@
         },
         {
             "name": "lucatume/wp-browser",
-            "version": "3.0.15",
+            "version": "3.0.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucatume/wp-browser.git",
-                "reference": "389f7055e2f25618b955721fc27f63df777f620e"
+                "reference": "eff4b188a7f651ab857cbb452d49235eedbc55f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lucatume/wp-browser/zipball/389f7055e2f25618b955721fc27f63df777f620e",
-                "reference": "389f7055e2f25618b955721fc27f63df777f620e",
+                "url": "https://api.github.com/repos/lucatume/wp-browser/zipball/eff4b188a7f651ab857cbb452d49235eedbc55f1",
+                "reference": "eff4b188a7f651ab857cbb452d49235eedbc55f1",
                 "shasum": ""
             },
             "require": {
@@ -3341,6 +3341,15 @@
                 "vria/nodiacritic": "^0.1.2",
                 "wp-cli/wp-cli": ">=2.0 <3.0.0",
                 "zordius/lightncandy": "^1.2"
+            },
+            "conflict": {
+                "codeception/module-asserts": ">=2.0",
+                "codeception/module-cli": ">=2.0",
+                "codeception/module-db": ">=2.0",
+                "codeception/module-filesystem": ">=2.0",
+                "codeception/module-phpbrowser": ">=2.0",
+                "codeception/module-webdriver": ">=2.0",
+                "codeception/util-universalframework": ">=2.0"
             },
             "require-dev": {
                 "erusev/parsedown": "^1.7",
@@ -3396,7 +3405,7 @@
             ],
             "support": {
                 "issues": "https://github.com/lucatume/wp-browser/issues",
-                "source": "https://github.com/lucatume/wp-browser/tree/3.0.15"
+                "source": "https://github.com/lucatume/wp-browser/tree/3.0.18"
             },
             "funding": [
                 {
@@ -3404,7 +3413,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-12-10T09:27:07+00:00"
+            "time": "2022-01-05T09:25:36+00:00"
         },
         {
             "name": "mck89/peast",
