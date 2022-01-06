@@ -2,16 +2,22 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\Form\FormHtmlSanitizer;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Image {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var FormHtmlSanitizer */
+  private $htmlSanitizer;
+
   public function __construct(
-    WPFunctions $wp
+    WPFunctions $wp,
+    FormHtmlSanitizer $htmlSanitizer
   ) {
     $this->wp = $wp;
+    $this->htmlSanitizer = $htmlSanitizer;
   }
 
   public function render(array $block): string {
@@ -57,7 +63,7 @@ class Image {
     if ($params['href']) {
       $img = $this->wrapToLink($params, $img);
     }
-    $caption = $params['caption'] ? "<figcaption>{$this->wp->escHtml($params['caption'])}</figcaption>" : '';
+    $caption = $params['caption'] ? "<figcaption>{$this->htmlSanitizer->sanitize($params['caption'])}</figcaption>" : '';
     $figure = '<figure class="' . $this->wp->escAttr(implode(' ', $figureClasses)) . '">' . $img . $caption . '</figure>';
     // Main wrapper
     $divClasses = ['mailpoet_form_image'];
