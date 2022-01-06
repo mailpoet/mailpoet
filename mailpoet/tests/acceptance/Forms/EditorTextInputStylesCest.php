@@ -24,13 +24,13 @@ class EditorTextInputStylesCest {
     $i->addFromBlockInEditor('First name');
 
     $i->wantTo('Apply some styles to first name');
+    $i->click('.mailpoet-automation-label-within-input-toggle input'); // Toggle label to be rendered outside the input
     $i->click('.mailpoet-automation-input-styles-panel');
     $i->waitForElement('[data-automation-id="input_styles_settings"]');
     $i->click('.mailpoet-automation-inherit-theme-toggle input'); // Display custom settings
     $i->click('.mailpoet-automation-styles-bold-toggle input'); // Toggle bold on
     $i->clearFormField('.mailpoet-automation-styles-border-size input[type="number"]');
     $i->fillField('.mailpoet-automation-styles-border-size input[type="number"]', 10); // Set border size
-    $i->click('.mailpoet-automation-label-within-input-toggle input'); // Toggle lable to be rendered outside the input
 
     $i->wantTo('Check element has styles');
     $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
