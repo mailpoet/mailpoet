@@ -33,8 +33,8 @@ class EditorTextInputStylesCest {
     $i->fillField('.mailpoet-automation-styles-border-size input[type="number"]', 10); // Set border size
 
     $i->wantTo('Check element has styles');
-    $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
-    $i->assertAttributeContains('[data-automation-id="editor_first_name_label"]', 'style', 'font-weight: bold;');
+    $i->assertCssProperty('[data-automation-id="editor_first_name_input"]', 'border-width', '10px');
+    $i->assertCssProperty('[data-automation-id="editor_first_name_label"]', 'font-weight', '700');
 
     $i->wantTo('Apply to all');
     $i->click('[data-automation-id="styles_apply_to_all"]');
@@ -50,24 +50,24 @@ class EditorTextInputStylesCest {
     $i->see('Paragraph ipsum dolor');
 
     $i->wantTo('Check email block has styles too and save the form');
-    $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
+    $i->assertCssProperty('[data-automation-id="editor_first_name_input"]', 'border-width', '10px');
     $i->saveFormInEditor();
 
     $i->wantTo('Reload page and check data were saved');
     $i->reloadPage();
     $i->waitForElement('[data-automation-id="form_title_input"]');
-    $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
-    $i->assertAttributeContains('[data-automation-id="editor_first_name_label"]', 'style', 'font-weight: bold;');
-    $i->assertAttributeContains('[data-automation-id="editor_first_name_input"]', 'style', 'border-width: 10px;');
+    $i->assertCssProperty('[data-automation-id="editor_first_name_input"]', 'border-width', '10px');
+    $i->assertCssProperty('[data-automation-id="editor_first_name_label"]', 'font-weight', '700');
+    $i->assertCssProperty('[data-automation-id="editor_email_input"]', 'border-width', '10px');
     $i->see('Heading Lorem');
     $i->see('Paragraph ipsum dolor');
 
     $i->wantTo('Check styles are applied on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
-    $i->assertAttributeContains('[data-automation-id="form_first_name"]', 'style', 'border-width: 10px;');
-    $i->assertAttributeContains('[data-automation-id="form_first_name_label"]', 'style', 'font-weight: bold;');
-    $i->assertAttributeContains('[data-automation-id="form_email"]', 'style', 'border-width: 10px;');
+    $i->assertCssProperty('[data-automation-id="form_first_name"]', 'border-width', '10px');
+    $i->assertCssProperty('[data-automation-id="form_first_name_label"]', 'font-weight', '700');
+    $i->assertCssProperty('[data-automation-id="form_email"]', 'border-width', '10px');
     $i->see('Heading Lorem');
     $i->see('Paragraph ipsum dolor');
   }
