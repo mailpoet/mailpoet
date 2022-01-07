@@ -177,7 +177,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
   /** @var EntityManager */
   protected $entityManager;
 
-  public function setUp() {
+  public function setUp(): void {
     $this->diContainer = ContainerWrapper::getInstance(WP_DEBUG);
     $this->connection = $this->diContainer->get(Connection::class);
     $this->entityManager = $this->diContainer->get(EntityManager::class);
@@ -189,7 +189,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     parent::setUp();
   }
 
-  public function tearDown() {
+  public function tearDown(): void {
     $this->entityManager->clear();
     parent::tearDown();
   }

@@ -177,8 +177,8 @@ class AutomatedEmailsTest extends \MailPoetTest {
       ->method('render')
       ->with(
         $this->anything(),
-        $this->callback(function($context){
-          return strpos($context['linkSettings'], 'mailpoet-settings');
+        $this->callback(function($context): bool {
+          return (bool)strpos($context['linkSettings'], 'mailpoet-settings');
         }));
 
     $this->cronWorkerRunner->run($this->statsNotifications);

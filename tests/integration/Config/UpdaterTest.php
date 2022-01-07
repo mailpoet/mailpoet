@@ -7,9 +7,13 @@ use Codeception\Stub\Expected;
 use MailPoet\Config\Updater;
 
 class UpdaterTest extends \MailPoetTest {
+  /** @var Updater */
   public $updater;
+  /** @var string */
   public $version;
+  /** @var string */
   public $slug;
+  /** @var string */
   public $pluginName;
 
   public function _before() {

@@ -9,7 +9,9 @@ use MailPoet\Config\Installer;
 use MailPoet\WP\Functions as WPFunctions;
 
 class InstallerTest extends \MailPoetTest {
+  /** @var Installer */
   public $installer;
+  /** @var string */
   public $slug;
 
   public function _before() {

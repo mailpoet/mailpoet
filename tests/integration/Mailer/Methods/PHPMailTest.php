@@ -12,6 +12,7 @@ class PHPMailTest extends \MailPoetTest {
   public $extraParams;
   public $newsletter;
   public $subscriber;
+  /** @var PHPMail */
   public $mailer;
   public $returnPath;
   public $replyTo;

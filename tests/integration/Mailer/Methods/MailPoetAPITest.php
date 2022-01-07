@@ -16,6 +16,7 @@ class MailPoetAPITest extends \MailPoetTest {
   public $metaInfo;
   public $newsletter;
   public $subscriber;
+  /** @var MailPoet */
   public $mailer;
   public $replyTo;
   public $sender;
@@ -159,7 +160,6 @@ class MailPoetAPITest extends \MailPoetTest {
 
   public function testItWillNotSendIfApiKeyIsMarkedInvalid() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
-    $this->mailer->apiKey = 'someapi';
     $this->mailer->servicesChecker = Stub::make(
       new ServicesChecker(),
       ['isMailPoetAPIKeyValid' => false],

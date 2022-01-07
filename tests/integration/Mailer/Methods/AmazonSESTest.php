@@ -12,6 +12,7 @@ class AmazonSESTest extends \MailPoetTest {
   public $extraParams;
   public $newsletter;
   public $subscriber;
+  /** @var AmazonSES */
   public $mailer;
   public $returnPath;
   public $replyTo;

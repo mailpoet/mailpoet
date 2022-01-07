@@ -13,6 +13,7 @@ class SMTPTest extends \MailPoetTest {
   public $extraParams;
   public $newsletter;
   public $subscriber;
+  /** @var SMTP */
   public $mailer;
   public $returnPath;
   public $replyTo;
