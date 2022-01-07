@@ -25,6 +25,7 @@ require_once('APITestNamespacedEndpointStubV1.php');
 require_once('APITestNamespacedEndpointStubV2.php');
 
 class APITest extends \MailPoetTest {
+  /** @var JSONAPI */
   public $api;
   public $wpUserId;
   /** @var Container */
@@ -54,7 +55,7 @@ class APITest extends \MailPoetTest {
     $this->container->compile();
     $this->errorHandler = $this->container->get(ErrorHandler::class);
     $this->settings = $this->container->get(SettingsController::class);
-    $this->api = new \MailPoet\API\JSON\API(
+    $this->api = new JSONAPI(
       $this->container,
       $this->container->get(AccessControl::class),
       $this->errorHandler,

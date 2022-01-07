@@ -61,7 +61,7 @@ class APITest extends \MailPoetTest {
     );
   }
 
-  private function getApi($subscriberActions = null) {
+  private function getApi($subscriberActions = null): API {
     if (!$subscriberActions) {
       $subscriberActions = $this->getSubscribers();
     }

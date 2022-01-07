@@ -12,6 +12,7 @@ class SendGridTest extends \MailPoetTest {
   public $extraParams;
   public $newsletter;
   public $subscriber;
+  /** @var SendGrid */
   public $mailer;
   public $replyTo;
   public $sender;

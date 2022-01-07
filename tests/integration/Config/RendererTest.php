@@ -9,6 +9,7 @@ use MailPoet\Config\Renderer;
 use MailPoetVendor\Twig\Environment as TwigEnvironment;
 
 class RendererTest extends \MailPoetTest {
+  /** @var Renderer */
   public $renderer;
 
   public function _before() {

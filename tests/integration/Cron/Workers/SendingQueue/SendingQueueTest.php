@@ -1042,7 +1042,7 @@ class SendingQueueTest extends \MailPoetTest {
     return $queue;
   }
 
-  private function getSendingQueueWorker($newsletterRepositoryMock = null, $mailerMock = null) {
+  private function getSendingQueueWorker($newsletterRepositoryMock = null, $mailerMock = null): SendingQueueWorker {
     return new SendingQueueWorker(
       $this->sendingErrorHandler,
       $this->sendingThrottlingHandler,

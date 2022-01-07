@@ -214,7 +214,7 @@ class BridgeTest extends \MailPoetTest {
     $response = ['state' => Bridge::KEY_VALID];
     /** @var Bridge&MockObject $bridge */
     $bridge = Stub::makeEmptyExcept(
-      $this->bridge,
+      Bridge::class,
       'onSettingsSave',
       [
         'checkMSSKey' => $response,

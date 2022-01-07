@@ -15,6 +15,7 @@ use MailPoetVendor\Carbon\Carbon;
 require_once('KeyCheckWorkerMockImplementation.php');
 
 class KeyCheckWorkerTest extends \MailPoetTest {
+  /** @var MockKeyCheckWorker */
   public $worker;
 
   /** @var ScheduledTaskFactory */
