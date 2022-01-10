@@ -176,7 +176,13 @@ class WooCommerce {
     $processedOrders = $this->insertSubscribersFromOrders($lastProcessedOrderId, $batchSize);
     $this->updateNames($processedOrders);
 
-    $lastProcessedOrderId = end($processedOrders);
+    // When a batch of posts doesn't contain any shop order with customer email,
+    // it returns the highest order id used in subscribers sync to prevent infinite loop
+    if (!$processedOrders) {
+      $lastProcessedOrderId = $lastProcessedOrderId + $batchSize;
+    } else {
+      $lastProcessedOrderId = end($processedOrders);
+    }
     if (!$highestOrderId || $lastProcessedOrderId === $highestOrderId) {
       $this->insertUsersToSegment();
       $this->unsubscribeUsersFromSegment();
