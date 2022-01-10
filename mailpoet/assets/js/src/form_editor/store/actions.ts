@@ -182,11 +182,15 @@ export function changeActiveSidebar(
 
 export function* changePreviewSettings(settings) {
   const formData = select('mailpoet-form-editor').getFormData();
-  yield {
-    type: 'STORE_LOCALLY',
-    key: `mailpoet_form_preview_settings${formData.id}`,
-    value: settings,
-  };
+  // We don't need or want to save preview settings for unsaved forms. These stored settings
+  // are only ever used when reloading previously-edited forms.
+  if (formData.id !== null) {
+    yield {
+      type: 'STORE_LOCALLY',
+      key: `mailpoet_form_preview_settings${formData.id}`,
+      value: settings,
+    };
+  }
   yield {
     type: 'CHANGE_PREVIEW_SETTINGS',
     settings,

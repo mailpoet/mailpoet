@@ -36,10 +36,13 @@ export default () => {
   formData.settings.segments = formData.settings.segments ? formData.settings.segments : [];
 
   let previewSettings = null;
-  try {
-    previewSettings = JSON.parse(window.localStorage.getItem(`mailpoet_form_preview_settings${formData.id}`));
-  } catch (e) {
-    // We just keep it null
+  // We don't want to try to load saved settings for forms that are brand new
+  if (formData.id !== null) {
+    try {
+      previewSettings = JSON.parse(window.localStorage.getItem(`mailpoet_form_preview_settings${formData.id}`));
+    } catch (e) {
+      // We just keep it null
+    }
   }
 
   let fullscreenStatus = null;
