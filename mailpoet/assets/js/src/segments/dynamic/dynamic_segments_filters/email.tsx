@@ -8,7 +8,8 @@ import {
   SegmentTypes, WordpressRoleFormItem,
 } from '../types';
 
-import { EmailStatisticsFields } from './email_statistics';
+import { EmailOpenStatisticsFields } from './email_statistics_opens';
+import { EmailClickStatisticsFields } from './email_statistics_clicks';
 import { EmailOpensAbsoluteCountFields } from './email_opens_absolute_count';
 
 export const EmailSegmentOptions = [
@@ -37,7 +38,8 @@ export function validateEmail(formItems: EmailFormItem): boolean {
     (formItems.action !== EmailActionTypes.OPENS_ABSOLUTE_COUNT)
     && (formItems.action !== EmailActionTypes.MACHINE_OPENS_ABSOLUTE_COUNT)
   ) {
-    return (!!formItems.newsletter_id) // old segments this can be removed after MAILPOET-3951
+    return (!!formItems.newsletter_id) // EmailActionTypes.CLICKED
+      // EmailActionTypes.OPENED, EmailActionTypes.MACHINE_OPENED
       || (
         Array.isArray(formItems.newsletters)
         && formItems.newsletters.length > 0
@@ -54,10 +56,10 @@ export function validateEmail(formItems: EmailFormItem): boolean {
 const componentsMap = {
   [EmailActionTypes.OPENS_ABSOLUTE_COUNT]: EmailOpensAbsoluteCountFields,
   [EmailActionTypes.MACHINE_OPENS_ABSOLUTE_COUNT]: EmailOpensAbsoluteCountFields,
-  [EmailActionTypes.CLICKED]: EmailStatisticsFields,
-  [EmailActionTypes.NOT_CLICKED]: EmailStatisticsFields,
-  [EmailActionTypes.OPENED]: EmailStatisticsFields,
-  [EmailActionTypes.MACHINE_OPENED]: EmailStatisticsFields,
+  [EmailActionTypes.CLICKED]: EmailClickStatisticsFields,
+  [EmailActionTypes.NOT_CLICKED]: EmailClickStatisticsFields,
+  [EmailActionTypes.OPENED]: EmailOpenStatisticsFields,
+  [EmailActionTypes.MACHINE_OPENED]: EmailOpenStatisticsFields,
   [EmailActionTypes.CLICKED_ANY]: null,
 };
 
