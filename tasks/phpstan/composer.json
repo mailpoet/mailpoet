@@ -17,13 +17,12 @@
     "scripts": {
         "post-install-cmd": [
             "php prefix-phpstan-doctrine.php",
-            "@fixWPStubsForPHP81"
+            "php fix-WPStubs-for-PHP-8_1.php"
 
         ],
         "post-update-cmd": [
             "php prefix-phpstan-doctrine.php",
-            "@fixWPStubsForPHP81"
-        ],
-        "fixWPStubsForPHP81": "sed -i -e 's#function readonly#function __readonly#' vendor/php-stubs/wordpress-stubs/wordpress-stubs.php"
+            "php fix-WPStubs-for-PHP-8_1.php"
+        ]
     }
 }
