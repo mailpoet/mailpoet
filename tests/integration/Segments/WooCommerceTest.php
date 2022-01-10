@@ -199,7 +199,12 @@ class WooCommerceTest extends \MailPoetTest {
     ];
     $lowestOrderId = min($orderIds);
     $highestOrderId = max($orderIds);
-    $lastOrderId = $this->wooCommerce->synchronizeCustomers($lowestOrderId - 1, $highestOrderId, 1);
+    // Check if empty batch run returns the highest order ID to an avoid infinite loop
+    $lastOrderId = $this->wooCommerce->synchronizeCustomers($lowestOrderId - 2, $highestOrderId, 1);
+    $subscribersCount = $this->getSubscribersCount();
+    expect($subscribersCount)->equals(0);
+    // Check regular subscriber sync
+    $lastOrderId = $this->wooCommerce->synchronizeCustomers($lastOrderId, $highestOrderId, 1);
     $subscribersCount = $this->getSubscribersCount();
     expect($subscribersCount)->equals(1);
     $lastOrderId = $this->wooCommerce->synchronizeCustomers($lastOrderId, $highestOrderId, 1);
