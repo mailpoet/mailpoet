@@ -66,8 +66,6 @@ class WooCommerceCategory implements Filter {
         ->setParameter('count_' . $parameterSuffix, count($categoryIds));
 
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
-      $this->applyCustomerJoin($queryBuilder, $subscribersTable);
-      $this->applyOrderStatsJoin($queryBuilder);
       // subQuery with subscriber ids that bought products
       $subQuery = $this->createQueryBuilder($subscribersTable);
       $subQuery->select("DISTINCT $subscribersTable.id");
@@ -75,14 +73,12 @@ class WooCommerceCategory implements Filter {
       $subQuery = $this->applyOrderStatsJoin($subQuery);
       $subQuery = $this->applyProductJoin($subQuery);
       $subQuery = $this->applyTermRelationshipsJoin($subQuery);
-      $subQuery = $this->applyTermTaxonomyJoin($subQuery, $parameterSuffix)
-        ->andWhere("orderStats.status NOT IN ('wc-cancelled', 'wc-failed')");
+      $subQuery = $this->applyTermTaxonomyJoin($subQuery, $parameterSuffix);
       // application subQuery for negation
       $queryBuilder->where("{$subscribersTable}.id NOT IN ({$subQuery->getSQL()})");
     }
 
     return $queryBuilder
-      ->andWhere("orderStats.status NOT IN ('wc-cancelled', 'wc-failed')")
       ->setParameter("category_{$parameterSuffix}", $categoryIdswithChildrenIds, Connection::PARAM_STR_ARRAY);
   }
 
@@ -104,12 +100,14 @@ class WooCommerceCategory implements Filter {
 
   private function applyOrderStatsJoin(QueryBuilder $queryBuilder): QueryBuilder {
     global $wpdb;
-    return $queryBuilder->join(
-      'customer',
-      $wpdb->prefix . 'wc_order_stats',
-      'orderStats',
-      'customer.customer_id = orderStats.customer_id'
-    );
+    return $queryBuilder
+      ->join(
+        'customer',
+        $wpdb->prefix . 'wc_order_stats',
+        'orderStats',
+        'customer.customer_id = orderStats.customer_id'
+      )
+      ->andWhere("orderStats.status NOT IN ('wc-cancelled', 'wc-failed')");
   }
 
   private function applyProductJoin(QueryBuilder $queryBuilder): QueryBuilder {
