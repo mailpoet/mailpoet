@@ -51,8 +51,6 @@ class WooCommerceProduct implements Filter {
         ->setParameter('count' . $parameterSuffix, count($productIds));
 
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
-      $this->applyCustomerJoin($queryBuilder);
-      $this->applyOrderJoin($queryBuilder);
       // subQuery with subscriber ids that bought products
       $subQuery = $this->createQueryBuilder($subscribersTable);
       $subQuery->select("DISTINCT $subscribersTable.id");
