@@ -72,7 +72,8 @@ class SegmentDependencyValidator {
    */
   public function getMissingPluginsByAllFilters(Collection $dynamicFilters): array {
     $missingPluginNames = [];
-    if (count($dynamicFilters) > 1
+    if (
+      count($dynamicFilters) > 1
       && (!$this->wp->isPluginActive(self::MAILPOET_PREMIUM_PLUGIN['id'])
         || !$this->subscribersFeature->hasValidPremiumKey()
         || $this->subscribersFeature->check())
@@ -110,7 +111,8 @@ class SegmentDependencyValidator {
   }
 
   public function getCustomErrorMessage($missingPlugin) {
-    if ($missingPlugin === self::MAILPOET_PREMIUM_PLUGIN['name']
+    if (
+      $missingPlugin === self::MAILPOET_PREMIUM_PLUGIN['name']
       && $this->wp->isPluginActive(self::MAILPOET_PREMIUM_PLUGIN['id'])
       && (!$this->subscribersFeature->hasValidPremiumKey() || $this->subscribersFeature->check())
     ) {
