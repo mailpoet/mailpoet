@@ -26,7 +26,7 @@ class BatchIterator implements \Iterator, \Countable {
     $this->batchSize = (int)$batchSize;
   }
 
-  public function rewind() {
+  public function rewind(): void {
     $this->lastProcessedId = 0;
   }
 
@@ -44,15 +44,15 @@ class BatchIterator implements \Iterator, \Countable {
     return null;
   }
 
-  public function next() {
+  public function next(): void {
     $this->lastProcessedId = $this->batchLastId;
   }
 
-  public function valid() {
+  public function valid(): bool {
     return $this->count() > 0;
   }
 
-  public function count() {
+  public function count(): int {
     return $this->getSubscribers()->count();
   }
 

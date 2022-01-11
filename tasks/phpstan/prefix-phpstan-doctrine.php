@@ -13,7 +13,7 @@ foreach ($files as $file) {
 
     // when string 'Doctrine' is prefixed by a whitespace, ', ", or ( plus zero or more \, and suffixed by
     // one or more \, prefix it with 'MailPoetDoctrine' + the number of trailing \ in the original string
-    $data = preg_replace('/([\'"\s(]\\\\*)(Doctrine)(\\\\+)/', '$1MailPoetVendor$3$2$3', $data);
+    $data = preg_replace('/([\'"\s(?]\\\\*)(Doctrine)(\\\\+)/', '$1MailPoetVendor$3$2$3', $data);
     file_put_contents($file, $data);
   }
 }
