@@ -26,18 +26,18 @@ class SubscriberCookieCest {
     $i->amOnPage('/wp-login.php?action=register');
     $i->waitForElement(['css' => '.registration-form-mailpoet']);
     if (!getenv('MULTISITE')) {
-      $i->fillField(['name' => 'user_login'], 'test-user');
+      $i->fillField(['name' => 'user_login'], 'testuser');
       $i->fillField(['name' => 'user_email'], $email);
       $i->checkOption('#mailpoet_subscribe_on_register');
       $i->click('#wp-submit');
       $i->waitForText('Registration complete. Please check your email');
     } else {
-      $i->fillField(['name' => 'user_name'], 'mu-test-user');
+      $i->fillField(['name' => 'user_name'], 'mutestuser');
       $i->fillField(['name' => 'user_email'], $email);
       $i->scrollTo(['css' => '#mailpoet_subscribe_on_register']);
       $i->checkOption('#mailpoet_subscribe_on_register');
       $i->click('Next');
-      $i->waitForText('mu-test-user is your new username');
+      $i->waitForText('mutestuser is your new username');
     }
 
     // subscriber cookie should be set right after signup
