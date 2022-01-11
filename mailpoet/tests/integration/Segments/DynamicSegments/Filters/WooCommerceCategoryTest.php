@@ -2,6 +2,8 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
+require_once(ABSPATH . 'wp-admin/includes/taxonomy.php');
+
 use Helper\Database;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
@@ -12,9 +14,9 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
-class WooCommerceProductTest extends \MailPoetTest {
-  /** @var WooCommerceProduct */
-  private $wooCommerceProduct;
+class WooCommerceCategoryTest extends \MailPoetTest {
+  /** @var WooCommerceCategory */
+  private $wooCommerceCategory;
 
   /** @var SubscribersRepository */
   private $subscribersRepository;
@@ -25,8 +27,11 @@ class WooCommerceProductTest extends \MailPoetTest {
   /** @var int[] */
   private $orderIds;
 
+  /** @var int[] */
+  private $categoryIds;
+
   public function _before() {
-    $this->wooCommerceProduct = $this->diContainer->get(WooCommerceProduct::class);
+    $this->wooCommerceCategory = $this->diContainer->get(WooCommerceCategory::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
 
     Database::loadSQL('createWCLookupTables');
@@ -38,8 +43,11 @@ class WooCommerceProductTest extends \MailPoetTest {
     $this->createSubscriber('a1@example.com');
     $this->createSubscriber('a2@example.com');
 
-    $this->productIds[] = $this->createProduct('testProduct1');
-    $this->productIds[] = $this->createProduct('testProduct2');
+    $this->categoryIds[] = $this->createCategory('productCat1');
+    $this->categoryIds[] = $this->createCategory('productCat2');
+
+    $this->productIds[] = $this->createProduct('testProduct1', [$this->categoryIds[0]]);
+    $this->productIds[] = $this->createProduct('testProduct2', [$this->categoryIds[1]]);
 
     $this->orderIds[] = $this->createOrder($customerId1, Carbon::now());
     $this->addToOrder(1, $this->orderIds[0], $this->productIds[0], $customerId1);
@@ -47,10 +55,10 @@ class WooCommerceProductTest extends \MailPoetTest {
     $this->addToOrder(2, $this->orderIds[1], $this->productIds[1], $customerId2);
   }
 
-  public function testItGetsSubscribersThatPurchasedAnyProducts() {
+  public function testItGetsSubscribersThatPurchasedProductsInAnyCategory() {
     $expectedEmails = ['customer1@example.com', 'customer2@example.com'];
-    $segmentFilter = $this->getSegmentFilter($this->productIds, DynamicSegmentFilterData::OPERATOR_ANY);
-    $queryBuilder = $this->wooCommerceProduct->apply($this->getQueryBuilder(), $segmentFilter);
+    $segmentFilter = $this->getSegmentFilter($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ANY);
+    $queryBuilder = $this->wooCommerceCategory->apply($this->getQueryBuilder(), $segmentFilter);
     $statement = $queryBuilder->execute();
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     $this->assertSame(2, count($result));
@@ -61,8 +69,8 @@ class WooCommerceProductTest extends \MailPoetTest {
 
   public function testItGetsSubscribersThatDidNotPurchasedProducts() {
     $expectedEmails = ['a1@example.com','a2@example.com', 'customer2@example.com'];
-    $segmentFilter = $this->getSegmentFilter([$this->productIds[0]], DynamicSegmentFilterData::OPERATOR_NONE);
-    $queryBuilder = $this->wooCommerceProduct->apply($this->getQueryBuilder(), $segmentFilter);
+    $segmentFilter = $this->getSegmentFilter([$this->categoryIds[0]], DynamicSegmentFilterData::OPERATOR_NONE);
+    $queryBuilder = $this->wooCommerceCategory->apply($this->getQueryBuilder(), $segmentFilter);
     $statement = $queryBuilder->execute();
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     $this->assertSame(3, count($result));
@@ -72,15 +80,15 @@ class WooCommerceProductTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersThatPurchasedAllProducts() {
-    $segmentFilter = $this->getSegmentFilter($this->productIds, DynamicSegmentFilterData::OPERATOR_ALL);
-    $queryBuilder = $this->wooCommerceProduct->apply($this->getQueryBuilder(), $segmentFilter);
+    $segmentFilter = $this->getSegmentFilter($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ALL);
+    $queryBuilder = $this->wooCommerceCategory->apply($this->getQueryBuilder(), $segmentFilter);
     $statement = $queryBuilder->execute();
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     $this->assertSame(0, count($result));
 
     $expectedEmails = ['customer1@example.com'];
-    $segmentFilter = $this->getSegmentFilter([$this->productIds[0]], DynamicSegmentFilterData::OPERATOR_ALL);
-    $queryBuilder = $this->wooCommerceProduct->apply($this->getQueryBuilder(), $segmentFilter);
+    $segmentFilter = $this->getSegmentFilter([$this->categoryIds[0]], DynamicSegmentFilterData::OPERATOR_ALL);
+    $queryBuilder = $this->wooCommerceCategory->apply($this->getQueryBuilder(), $segmentFilter);
     $statement = $queryBuilder->execute();
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
     $this->assertSame(1, count($result));
@@ -102,15 +110,15 @@ class WooCommerceProductTest extends \MailPoetTest {
       ->from($subscribersTable);
   }
 
-  private function getSegmentFilter(array $productIds, string $operator): DynamicSegmentFilterEntity {
+  private function getSegmentFilter(array $categoryIds, string $operator): DynamicSegmentFilterEntity {
     $filterData = [
-      'product_ids' => $productIds,
+      'category_ids' => $categoryIds,
       'operator' => $operator,
     ];
 
     $data = new DynamicSegmentFilterData(
       DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
-      WooCommerceProduct::ACTION_PRODUCT,
+      WooCommerceCategory::ACTION_CATEGORY,
       $filterData
     );
     $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
@@ -148,13 +156,21 @@ class WooCommerceProductTest extends \MailPoetTest {
     return $orderId;
   }
 
-  private function createProduct(string $name) {
+  private function createProduct(string $name, array $terms) {
     $productData = [
       'post_type' => 'product',
       'post_status' => 'publish',
       'post_title' => $name,
     ];
-    return wp_insert_post($productData);
+    $productId = wp_insert_post($productData);
+    if (is_int($productId)) {
+      wp_set_object_terms($productId, $terms, 'category');
+    }
+    return $productId;
+  }
+
+  private function createCategory(string $name) {
+    return wp_create_category($name);
   }
 
   private function addToOrder(int $orderItemId, int $orderId, int $productId, int $customerId) {
@@ -195,6 +211,12 @@ class WooCommerceProductTest extends \MailPoetTest {
     if (!empty($this->products)) {
       foreach ($this->products as $productId) {
         wp_delete_post($productId);
+      }
+    }
+
+    if (!empty($this->categoryIds)) {
+      foreach ($this->categoryIds as $categoryId) {
+        wp_delete_category($categoryId);
       }
     }
 
