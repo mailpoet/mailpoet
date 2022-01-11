@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.75.1
+Stable tag: 3.76.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,29 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.76.0 - 2022-01-11 =
+* Improved: more options for "MailPoet custom field" segment;
+* Improved: more options for "WooCommerce" segments;
+* Improved: select boxes have the same height;
+* Improved: dropped support for PHP 7.1, MailPoet now requires at least PHP 7.2;
+* Improved: more options for "has an active subscription" segment;
+* Improved: more options for "WordPress user role" segment;
+* Improved: more options for "purchased in this category" segment;
+* Improved: more options for "is in country" segment;
+* Improved: more options for "opened" segment;
+* Improved: subscriber cookies are now set on clicks, login, signup, and order checkout;
+* Improved: show full email subject when creating segment based on email;
+* Improved: include guest users in WooCommerce segments;
+* Improved: add link to our knowledge base when segment creation fails;
+* Changed: automatic emails are deactivated when editing;
+* Changed: segments with multiple conditions require the premium plugin;
+* Fixed: cron issues with excessive number of queries in WooCommerce subsriber sync;
+* Fixed: unclosed paragraph tags do not break rendering anymore. Thanks Helene!
+* Fixed: incorrect result for a segment with multiple "purchased product" conditions;
+* Fixed: column search field when importing subscribers not working;
+* Fixed: form messages displayed in wrong place when using multiple forms on the page;
+* Fixed: show correct animation in form editor for slide-in form.
 
 = 3.75.1 - 2021-12-15 =
 * Fixed: Issues with rendering full posts in newsletters.
