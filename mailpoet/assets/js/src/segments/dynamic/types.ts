@@ -92,6 +92,7 @@ export interface EmailFormItem extends FormItem {
   newsletter_id?: string;
   newsletters: number[]
   link_id?: string;
+  link_ids?: string[];
   operator?: string;
   opens?: string;
   days?: string;

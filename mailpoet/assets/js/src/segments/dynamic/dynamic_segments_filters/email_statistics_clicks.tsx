@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import MailPoet from 'mailpoet';
-import { find } from 'lodash/fp';
+import { find, filter } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import APIErrorsNotice from 'notices/api_errors_notice';
 import ReactSelect from 'common/form/react_select/react_select';
 import { Grid } from 'common/grid';
+import Select from 'common/form/select/select';
 import {
+  AnyValueTypes,
   EmailFormItem,
   SelectOption,
   WindowNewslettersList,
@@ -24,7 +26,7 @@ export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ fil
     [filterIndex]
   );
 
-  const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
 
   const newslettersList: WindowNewslettersList = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getNewslettersList(),
@@ -80,6 +82,17 @@ export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ fil
     segment.newsletter_id,
   ]);
 
+  useEffect(() => {
+    if ((segment.operator !== AnyValueTypes.ANY)
+    ) {
+      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+    }
+    // Temporary BC fix
+    if (segment.link_id && !segment.link_ids) {
+      updateSegmentFilter({ link_ids: [Number(segment.link_id)] }, filterIndex);
+    }
+  }, [segment.link_ids, segment.link_id, segment.operator, filterIndex, updateSegmentFilter]);
+
   return (
     <>
       {(errors.length > 0 && (
@@ -102,18 +115,38 @@ export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ fil
       {
         (!!links.length && shouldDisplayLinks(segment.newsletter_id))
         && (
-          <div>
+          <Grid.CenteredRow>
+            <Select
+              isMinWidth
+              key="select-operator"
+              value={segment.operator}
+              onChange={(e) => updateSegmentFilterFromEvent(
+                'operator',
+                filterIndex,
+                e
+              )}
+              automationId="select-operator"
+            >
+              <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+            </Select>
             <ReactSelect
+              isMulti
               dimension="small"
               isFullWidth
               placeholder={MailPoet.I18n.t('selectLinkPlaceholder')}
               options={links}
-              value={find(['value', Number(segment.link_id)], links)}
-              onChange={(option: SelectOption): void => {
-                updateSegmentFilter({ link_id: option.value }, filterIndex);
+              value={filter(
+                (option) => {
+                  if (!segment.link_ids) return false;
+                  return segment.link_ids.indexOf(option.value) !== -1;
+                },
+                links
+              )}
+              onChange={(options: SelectOption[]): void => {
+                updateSegmentFilter({ link_ids: (options || []).map((x) => x.value) }, filterIndex);
               }}
             />
-          </div>
+          </Grid.CenteredRow>
         )
       }
     </>

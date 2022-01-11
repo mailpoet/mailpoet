@@ -190,7 +190,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('not_opened@example.com');
   }
 
-  public function testGetClickedWithoutLink() {
+  public function testGetClickedWithoutLinks() {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
     ]);
@@ -203,10 +203,10 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
   }
 
-  public function testGetClickedWithLink() {
+  public function testGetClickedWithLinks() {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
-      'link_id' => 1,
+      'link_ids' => [1],
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
@@ -220,7 +220,7 @@ class EmailActionTest extends \MailPoetTest {
   public function testGetClickedWrongLink() {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
-      'link_id' => 2,
+      'link_ids' => [2],
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
@@ -231,7 +231,7 @@ class EmailActionTest extends \MailPoetTest {
   public function testGetNotClickedWithLink() {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
-      'link_id' => 1,
+      'link_ids' => [1],
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
@@ -248,7 +248,7 @@ class EmailActionTest extends \MailPoetTest {
   public function testGetNotClickedWithWrongLink() {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
-      'link_id' => 2,
+      'link_ids' => [2],
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);

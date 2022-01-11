@@ -71,6 +71,67 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
+  public function testItMapsEmailFilterForClicksWithoutLink() {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailAction::ACTION_CLICKED,
+      'newsletter_id' => 1,
+    ]],
+    ];
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    assert($filter instanceof DynamicSegmentFilterData);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
+    expect($filter->getAction())->equals(EmailAction::ACTION_CLICKED);
+    expect($filter->getData())->equals([
+      'newsletter_id' => 1,
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function testItMapsEmailFilterForClicksWithLinks() {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailAction::ACTION_CLICKED,
+      'newsletter_id' => 1,
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'link_ids' => [2,3],
+    ]],
+    ];
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    assert($filter instanceof DynamicSegmentFilterData);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
+    expect($filter->getAction())->equals(EmailAction::ACTION_CLICKED);
+    expect($filter->getData())->equals([
+      'newsletter_id' => 1,
+      'link_ids' => [2, 3],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
+    ]);
+  }
+
+  public function testItChecksOperatorForEmailFilterForClicksWithLinks() {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => EmailAction::ACTION_CLICKED,
+      'newsletter_id' => 1,
+      'link_ids' => [2,3],
+    ]],
+    ];
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing operator');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_OPERATOR);
+    $this->mapper->map($data);
+  }
+
   public function testItChecksFilterEmailAction() {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing action');
