@@ -165,8 +165,10 @@ class FilterDataMapper {
 
     $filterType = DynamicSegmentFilterData::TYPE_EMAIL;
     $action = $data['action'];
-    if (isset($data['link_id'])) {
-      $filterData['link_id'] = $data['link_id'];
+    if (isset($data['link_ids']) && is_array($data['link_ids'])) {
+      $filterData['link_ids'] = array_map('intval', $data['link_ids']);
+      if (!isset($data['operator'])) throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
+      $filterData['operator'] = $data['operator'];
     }
     return new DynamicSegmentFilterData($filterType, $action, $filterData);
   }

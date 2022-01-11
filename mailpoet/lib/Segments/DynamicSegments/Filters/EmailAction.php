@@ -65,8 +65,10 @@ class EmailAction implements Filter {
       $newsletters = $filterData->getParam('newsletters');
     }
 
-
+    // Temporary backward compatibility for segments saved with link_id
     $linkId = $filterData->getParam('link_id') ? (int)$filterData->getParam('link_id') : null;
+    $linkIds = $filterData->getParam('link_ids') ?? $linkId;
+
     $parameterSuffix = (string)($filter->getId() ?? Security::generateRandomString());
 
     $statsSentTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
@@ -90,7 +92,7 @@ class EmailAction implements Filter {
         'statssent',
         $statsTable,
         'stats',
-        $this->createNotStatsJoinCondition($action, $parameterSuffix, $linkId)
+        $this->createNotStatsJoinCondition($action, $parameterSuffix, $linkIds)
       )->setParameter('newsletter' . $parameterSuffix, $newsletterId);
       $where .= ' AND stats.id IS NULL';
     } elseif (($action === EmailAction::ACTION_OPENED) && ($operator === DynamicSegmentFilterData::OPERATOR_NONE)) {
@@ -136,21 +138,21 @@ class EmailAction implements Filter {
       $queryBuilder->andWhere('(stats.user_agent_type = :userAgentType)')
         ->setParameter('userAgentType', UserAgentEntity::USER_AGENT_TYPE_MACHINE);
     }
-    if ($action === EmailAction::ACTION_CLICKED && $linkId) {
-      $where .= ' AND stats.link_id = :link' . $parameterSuffix;
+    if ($action === EmailAction::ACTION_CLICKED && $linkIds) {
+      $where .= ' AND stats.link_id IN (:links' . $parameterSuffix . ')';
     }
     $queryBuilder = $queryBuilder->andWhere($where);
-    if (in_array($action, [EmailAction::ACTION_CLICKED, EmailAction::ACTION_NOT_CLICKED]) && $linkId) {
+    if (in_array($action, [EmailAction::ACTION_CLICKED, EmailAction::ACTION_NOT_CLICKED]) && $linkIds) {
       $queryBuilder = $queryBuilder
-        ->setParameter('link' . $parameterSuffix, $linkId);
+        ->setParameter('links' . $parameterSuffix, $linkIds, Connection::PARAM_STR_ARRAY);
     }
     return $queryBuilder;
   }
 
-  private function createNotStatsJoinCondition(string $action, string $parameterSuffix, int $linkId = null): string {
+  private function createNotStatsJoinCondition(string $action, string $parameterSuffix, array $linkIds = null): string {
     $clause = "statssent.subscriber_id = stats.subscriber_id AND stats.newsletter_id = :newsletter" . $parameterSuffix;
-    if ($action === EmailAction::ACTION_NOT_CLICKED && $linkId) {
-      $clause .= ' AND stats.link_id = :link' . $parameterSuffix;
+    if ($action === EmailAction::ACTION_NOT_CLICKED && $linkIds) {
+      $clause .= ' AND stats.link_id IN (:links' . $parameterSuffix . ')';
     }
     return $clause;
   }
