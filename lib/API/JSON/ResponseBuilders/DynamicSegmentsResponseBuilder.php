@@ -63,10 +63,14 @@ class DynamicSegmentsResponseBuilder {
       }
       if (($filter['segmentType'] === DynamicSegmentFilterData::TYPE_EMAIL)) {
         // compatibility with older filters
-        if (isset($filter['newsletter_id']) && !isset($filter['newsletters'])) {
-          // make sure the newsletters are an array
-          $filter['newsletters'] = [intval($filter['newsletter_id'])];
-          unset($filter['newsletter_id']);
+        if ((($filter['action'] === EmailAction::ACTION_OPENED) || ($filter['action'] === EmailAction::ACTION_NOT_OPENED))) {
+          if (isset($filter['newsletter_id']) && !isset($filter['newsletters'])) {
+            // make sure the newsletters are an array
+            $filter['newsletters'] = [intval($filter['newsletter_id'])];
+            unset($filter['newsletter_id']);
+          }
+        } else {
+          $filter['newsletter_id'] = intval($filter['newsletter_id']);
         }
         if ($filter['action'] === EmailAction::ACTION_NOT_OPENED) {
           // convert not opened
