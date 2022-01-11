@@ -76,6 +76,11 @@ parameters:
 			path: ../../lib/API/JSON/v1/Newsletters.php
 
 		-
+			message: "#^Dead catch \\- MailPoet\\\\Doctrine\\\\Validator\\\\ValidationException is never thrown in the try block\\.$#"
+			count: 1
+			path: ../../lib/API/JSON/v1/Segments.php
+
+		-
 			message: "#^Property MailPoet\\\\API\\\\JSON\\\\v1\\\\Segments\\:\\:\\$wooCommerceSync is never read, only written\\.$#"
 			count: 1
 			path: ../../lib/API/JSON/v1/Segments.php
@@ -422,7 +427,7 @@ parameters:
 
 		-
 			message: "#^Cannot access an offset on mixed\\.$#"
-			count: 1
+			count: 3
 			path: ../../lib/Config/Migrator.php
 
 		-
@@ -431,18 +436,28 @@ parameters:
 			path: ../../lib/Config/Migrator.php
 
 		-
-			message: "#^Cannot access offset 'operator' on mixed\\.$#"
-			count: 2
-			path: ../../lib/Config/Migrator.php
-
-		-
-			message: "#^Cannot access offset 'product_id' on mixed\\.$#"
+			message: "#^Cannot access offset 'category_id' on mixed\\.$#"
 			count: 4
 			path: ../../lib/Config/Migrator.php
 
 		-
-			message: "#^Cannot access offset 'product_ids' on mixed\\.$#"
+			message: "#^Cannot access offset 'category_ids' on mixed\\.$#"
 			count: 3
+			path: ../../lib/Config/Migrator.php
+
+		-
+			message: "#^Cannot access offset 'operator' on mixed\\.$#"
+			count: 6
+			path: ../../lib/Config/Migrator.php
+
+		-
+			message: "#^Cannot access offset 'product_id' on mixed\\.$#"
+			count: 8
+			path: ../../lib/Config/Migrator.php
+
+		-
+			message: "#^Cannot access offset 'product_ids' on mixed\\.$#"
+			count: 6
 			path: ../../lib/Config/Migrator.php
 
 		-
@@ -452,7 +467,7 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$haystack of function in_array expects array, mixed given\\.$#"
-			count: 1
+			count: 3
 			path: ../../lib/Config/Migrator.php
 
 		-
@@ -1031,8 +1046,18 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/DynamicSegmentFilterRepository.php
 
 		-
+			message: "#^Method MailPoet\\\\Segments\\\\DynamicSegments\\\\FilterDataMapper\\:\\:map\\(\\) should return array\\<MailPoet\\\\Entities\\\\DynamicSegmentFilterData\\> but returns mixed\\.$#"
+			count: 1
+			path: ../../lib/Segments/DynamicSegments/FilterDataMapper.php
+
+		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 2
+			path: ../../lib/Segments/DynamicSegments/Filters/EmailAction.php
+
+		-
+			message: "#^Parameter \\#1 \\$var of function count expects array\\|Countable, mixed given\\.$#"
+			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/EmailAction.php
 
 		-
@@ -1076,17 +1101,12 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/Filters/UserRole.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 1
-			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceCategory.php
-
-		-
 			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceCountry.php
 
 		-
-			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			message: "#^Parameter \\#2 \\$operator of method MailPoet\\\\Segments\\\\DynamicSegments\\\\Filters\\\\WooCommerceCountry\\:\\:createCondition\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceCountry.php
 
@@ -1101,7 +1121,7 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceProduct.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
+			message: "#^Parameter \\#1 \\$var of function count expects array\\|Countable, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceSubscription.php
 
@@ -1269,11 +1289,6 @@ parameters:
 			message: "#^Cannot cast mixed to float\\.$#"
 			count: 1
 			path: ../../lib/Statistics/StatisticsOpensRepository.php
-
-		-
-			message: "#^Property MailPoet\\\\Statistics\\\\Track\\\\Clicks\\:\\:\\$settingsController is never read, only written\\.$#"
-			count: 1
-			path: ../../lib/Statistics/Track/Clicks.php
 
 		-
 			message: "#^Method MailPoet\\\\Subscribers\\\\ImportExport\\\\Import\\\\MailChimp\\:\\:getApiData\\(\\) should return array\\|null but returns mixed\\.$#"
@@ -1721,6 +1736,11 @@ parameters:
 			path: ../../tests/acceptance/Subscribers/ManageSubscriptionLinkCest.php
 
 		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../tests/acceptance/Subscribers/SubscriberCookieCest.php
+
+		-
 			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\NewsletterEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
 			count: 1
 			path: ../../tests/integration/API/JSON/v1/SendingQueueTest.php
@@ -1831,8 +1851,23 @@ parameters:
 			path: ../../tests/integration/Segments/DynamicSegments/FilterHandlerTest.php
 
 		-
+			message: "#^Property MailPoet\\\\Segments\\\\DynamicSegments\\\\FilterHandlerTest\\:\\:\\$subscriber1 is never read, only written\\.$#"
+			count: 1
+			path: ../../tests/integration/Segments/DynamicSegments/FilterHandlerTest.php
+
+		-
+			message: "#^Property MailPoet\\\\Segments\\\\DynamicSegments\\\\FilterHandlerTest\\:\\:\\$subscriber2 is never read, only written\\.$#"
+			count: 1
+			path: ../../tests/integration/Segments/DynamicSegments/FilterHandlerTest.php
+
+		-
 			message: "#^Cannot access offset 'id' on mixed\\.$#"
-			count: 13
+			count: 1
+			path: ../../tests/integration/Segments/DynamicSegments/Filters/EmailActionClickAnyTest.php
+
+		-
+			message: "#^Cannot access offset 'id' on mixed\\.$#"
+			count: 18
 			path: ../../tests/integration/Segments/DynamicSegments/Filters/EmailActionTest.php
 
 		-
@@ -1842,7 +1877,7 @@ parameters:
 
 		-
 			message: "#^Cannot access offset 'id' on mixed\\.$#"
-			count: 12
+			count: 15
 			path: ../../tests/integration/Segments/DynamicSegments/Filters/MailPoetCustomFieldsTest.php
 
 		-
@@ -1862,7 +1897,12 @@ parameters:
 
 		-
 			message: "#^Cannot access offset 'inner_subscriber_id' on mixed\\.$#"
-			count: 2
+			count: 5
+			path: ../../tests/integration/Segments/DynamicSegments/Filters/WooCommerceCountryTest.php
+
+		-
+			message: "#^Cannot access offset 'inner_subscriber_id' on mixed\\.$#"
+			count: 7
 			path: ../../tests/integration/Segments/DynamicSegments/Filters/WooCommerceTotalSpentTest.php
 
 		-
