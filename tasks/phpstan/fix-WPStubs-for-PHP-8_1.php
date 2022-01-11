@@ -11,7 +11,7 @@ $data = file_get_contents($file);
 
 $search_term = 'function readonly';
 
-if (! str_contains($data, $search_term)) {
+if (! strpos($data, $search_term)) {
   return;
 }
 
