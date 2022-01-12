@@ -19,7 +19,7 @@ class AddSendingKeyCest {
     $i->login();
     $i->amOnMailPoetPage('Settings');
     $i->click($keyActivationTab);
-    $i->fillField('premium[premium_key]', $mailPoetSendingKey);
+    $i->fillField(['name' => 'premium[premium_key]'], $mailPoetSendingKey);
     $i->click('Verify');
 
     // validate key, activate MSS, install & activate Premium plugin
