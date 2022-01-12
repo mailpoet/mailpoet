@@ -926,8 +926,8 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function downloadWooCommerceZip($tag = null) {
-    $this->createGithubClient('woocommerce/woocommerce')
-      ->downloadReleaseZip('woocommerce.zip', __DIR__ . '/tests/plugins/', $tag);
+    $this->createWpOrgDownloader('woocommerce')
+    ->downloadPluginZip('woocommerce.zip', __DIR__ . '/tests/plugins/', $tag);
   }
 
   public function generateData($generatorName = null, $threads = 1) {
@@ -1065,6 +1065,11 @@ class RoboFile extends \Robo\Tasks {
       getenv('WP_GITHUB_USERNAME') ?: null,
       getenv('WP_GITHUB_TOKEN') ?: null
     );
+  }
+
+  private function createWpOrgDownloader($pluginSlug) {
+    require_once __DIR__ . '/tasks/WPOrgPluginDownloader.php';
+    return new \MailPoetTasks\WPOrgPluginDownloader($pluginSlug);
   }
 
   private function createDoctrineEntityManager() {
