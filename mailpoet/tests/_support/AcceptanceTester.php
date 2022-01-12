@@ -156,40 +156,6 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   /**
-   * Wrapper around fillField, emit change event
-   *
-   * useful for emiting change events in react input components
-   *
-   * @param string $element - selectable by document.querySelector
-   * @param string $value
-   */
-  public function fillFieldWithOnChangeEvent($element, $value) {
-    $i = $this;
-    $i->waitForElement($element);
-    $i->executeJS("(() => {
-      const node = document.querySelector(arguments[0]);
-      const inputValue = arguments[1];
-
-      const descriptor = Object.getOwnPropertyDescriptor(node, 'value');
-
-      node.value = inputValue + '#';
-
-      if (descriptor && descriptor.configurable) {
-        delete node.value;
-      }
-      node.value = inputValue;
-
-      const e = document.createEvent('HTMLEvents');
-      e.initEvent('change', true, false);
-      node.dispatchEvent(e);
-
-      if (descriptor) {
-        Object.defineProperty(node, 'value', descriptor);
-      }
-    })()", [$element, $value]);
-  }
-
-  /**
    * Navigate to the editor for a newsletter.
    *
    * @param int|null $id
