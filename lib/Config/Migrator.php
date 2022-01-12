@@ -781,7 +781,7 @@ class Migrator {
   private function migratePurchasedInCategoryDynamicFilters(): bool {
     global $wpdb;
     // skip the migration if the DB version is higher than 3.75.1 or is not set (a new install)
-    if (version_compare($this->settings->get('db_version', '3.75.1'), '3.75.0', '>')) {
+    if (version_compare($this->settings->get('db_version', '3.76.0'), '3.75.1', '>')) {
       return false;
     }
 
@@ -821,7 +821,7 @@ class Migrator {
   private function migrateWooSubscriptionsDynamicFilters(): bool {
     global $wpdb;
     // skip the migration if the DB version is higher than 3.75.1 or is not set (a new installation)
-    if (version_compare($this->settings->get('db_version', '3.75.2'), '3.75.1', '>')) {
+    if (version_compare($this->settings->get('db_version', '3.76.0'), '3.75.1', '>')) {
       return false;
     }
 
