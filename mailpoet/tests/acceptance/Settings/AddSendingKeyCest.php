@@ -21,7 +21,7 @@ class AddSendingKeyCest {
     $i->click($keyActivationTab);
 
     $selector = '[name="premium[premium_key]"]';
-    $i->fillFieldWithOnChangeEvent($selector, (string)$mailPoetSendingKey);
+    $i->fillFieldWithOnChangeEvent($selector, $mailPoetSendingKey);
     $i->click('Verify');
 
     // validate key, activate MSS, install & activate Premium plugin

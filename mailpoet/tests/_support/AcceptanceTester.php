@@ -163,7 +163,7 @@ class AcceptanceTester extends \Codeception\Actor {
    * @param string $element - selectable by document.querySelector
    * @param string $value
    */
-  public function fillFieldWithOnChangeEvent(string $element, string $value = '') {
+  public function fillFieldWithOnChangeEvent($element, $value) {
     $i = $this;
     $i->waitForElement($element);
     $i->executeJS("(() => {
