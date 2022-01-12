@@ -170,7 +170,7 @@ jobs:
       - run:
           name: Download additional WP Plugins for tests
           command: |
-            ./do download:woo-commerce-zip 5.2.2
+            ./do download:woo-commerce-zip 6.0.0
             ./do download:woo-commerce-subscriptions-zip 3.0.14
       - run:
           name: Dump tests ENV variables for acceptance tests
