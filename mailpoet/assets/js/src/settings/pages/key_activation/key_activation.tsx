@@ -136,10 +136,10 @@ export default function KeyActivation() {
       />
       <Inputs>
         <Input
-          type="password"
+          type="text"
           id="mailpoet_premium_key"
           name="premium[premium_key]"
-          value={state.key ? 'premium_key' : ''}
+          value={state.key || ''}
           onChange={(event) => setState({
             mssStatus: null,
             premiumStatus: null,
