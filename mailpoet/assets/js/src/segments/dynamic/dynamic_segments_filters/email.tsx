@@ -19,7 +19,6 @@ export const EmailSegmentOptions = [
   { value: EmailActionTypes.MACHINE_OPENED, label: MailPoet.I18n.t('emailActionMachineOpened'), group: SegmentTypes.Email },
   { value: EmailActionTypes.CLICKED, label: MailPoet.I18n.t('emailActionClicked'), group: SegmentTypes.Email },
   { value: EmailActionTypes.CLICKED_ANY, label: MailPoet.I18n.t('emailActionClickedAnyEmail'), group: SegmentTypes.Email },
-  { value: EmailActionTypes.NOT_CLICKED, label: MailPoet.I18n.t('emailActionNotClicked'), group: SegmentTypes.Email },
 ];
 
 export function validateEmail(formItems: EmailFormItem): boolean {

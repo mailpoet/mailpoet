@@ -77,6 +77,11 @@ class DynamicSegmentsResponseBuilder {
           $filter['action'] = EmailAction::ACTION_OPENED;
           $filter['operator'] = DynamicSegmentFilterData::OPERATOR_NONE;
         }
+        if ($filter['action'] === EmailAction::ACTION_NOT_CLICKED) {
+          // convert not clicked
+          $filter['action'] = EmailAction::ACTION_CLICKED;
+          $filter['operator'] = DynamicSegmentFilterData::OPERATOR_NONE;
+        }
       }
       $filters[] = $filter;
     }
