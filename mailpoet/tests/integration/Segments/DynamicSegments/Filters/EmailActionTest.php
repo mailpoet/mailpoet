@@ -97,8 +97,6 @@ class EmailActionTest extends \MailPoetTest {
     $this->createStatisticsOpens($subscriberOpenedNotClicked4, $this->newsletter2);
     $this->createStatisticsOpens($subscriberOpenedNotClicked3, $this->newsletter3);
     $this->createStatisticsOpens($subscriberOpenedNotClicked4, $this->newsletter3);
-
-    $this->addClickedToLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked);
   }
 
   public function testGetOpened() {
@@ -190,7 +188,8 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('not_opened@example.com');
   }
 
-  public function testGetClickedWithoutLinks() {
+  public function testGetClickedWithoutSavedLinks() {
+    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
     ]);
@@ -203,15 +202,41 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
   }
 
-  public function testGetClickedWithLinks() {
+  public function testGetClickedWithAnyOfLinks() {
+    // 2 Links each clicked by a different subscriber
+    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
+    $subscriberClickedOther = $this->createSubscriber('second_click@example.com');
+    $this->createClickedLink('http://example2.com', $this->newsletter, $subscriberClickedOther); // id 2
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
-      'link_ids' => [1],
+      'link_ids' => [1, 2],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+    ]);
+    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAllAssociative();
+    expect(count($result))->equals(2);
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
+  }
+
+  public function testGetClickedWithAllOfLinks() {
+    // 2 Links both clicked by $this->subscriberOpenedClicked and second one clicked only by other subscriber
+    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
+    $link2 = $this->createClickedLink('http://example2.com', $this->newsletter, $this->subscriberOpenedClicked); // id 2
+    $subscriberClickedOther = $this->createSubscriber('second_click@example.com');
+    $this->addClickToLink($link2, $subscriberClickedOther);
+
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$this->newsletter->getId(),
+      'link_ids' => [1, 2],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ALL,
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
-    expect(count($result))->equals(1);
+    expect(count($result))->equals(1); // Only $this->subscriberOpenedClicked clicked all
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
@@ -221,6 +246,7 @@ class EmailActionTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
       'link_ids' => [2],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
@@ -228,7 +254,27 @@ class EmailActionTest extends \MailPoetTest {
     expect(count($result))->equals(0);
   }
 
+  public function testGetClickedWithNoneOfLinks() {
+    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$this->newsletter->getId(),
+      'link_ids' => [1, 2],
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+    ]);
+    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->fetchAllAssociative();
+    expect(count($result))->equals(2);
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
+    expect($subscriber1->getEmail())->equals('opened_not_clicked@example.com');
+    expect($subscriber2->getEmail())->equals('not_opened@example.com');
+  }
+
   public function testGetNotClickedWithLink() {
+    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
       'link_ids' => [1],
@@ -266,6 +312,7 @@ class EmailActionTest extends \MailPoetTest {
   }
 
   public function testGetNotClickedWithoutLink() {
+    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, ['newsletter_id' => (int)$this->newsletter->getId()]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
@@ -354,7 +401,7 @@ class EmailActionTest extends \MailPoetTest {
     return $this->entityManager
       ->getConnection()
       ->createQueryBuilder()
-      ->select("$subscribersTable.id")
+      ->select("DISTINCT $subscribersTable.id")
       ->from($subscribersTable);
   }
 
@@ -397,7 +444,7 @@ class EmailActionTest extends \MailPoetTest {
     return $open;
   }
 
-  private function addClickedToLink(string $link, NewsletterEntity $newsletter, SubscriberEntity $subscriber) {
+  private function createClickedLink(string $link, NewsletterEntity $newsletter, SubscriberEntity $subscriber): NewsletterLinkEntity {
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $link = new NewsletterLinkEntity($this->newsletter, $queue, $link, uniqid());
@@ -412,6 +459,24 @@ class EmailActionTest extends \MailPoetTest {
     );
     $this->entityManager->persist($click);
     $this->entityManager->flush();
+    return $link;
+  }
+
+  private function addClickToLink(NewsletterLinkEntity $link, SubscriberEntity $subscriberEntity) {
+    $newsletter = $link->getNewsletter();
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $queue = $link->getQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $click = new StatisticsClickEntity(
+      $newsletter,
+      $queue,
+      $subscriberEntity,
+      $link,
+      1
+    );
+    $this->entityManager->persist($click);
+    $this->entityManager->flush();
+    return $click;
   }
 
   public function _after() {
