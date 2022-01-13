@@ -4,6 +4,7 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
@@ -99,9 +100,22 @@ class EmailAction implements Filter {
 
     if ($action === EmailAction::ACTION_CLICKED && $operator !== DynamicSegmentFilterData::OPERATOR_NONE && $linkIds) {
       $where .= ' AND stats.link_id IN (:links' . $parameterSuffix . ')';
-      if ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
-        $queryBuilder->groupBy('subscriber_id');
+    }
+    if ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
+      $queryBuilder->groupBy('subscriber_id');
+      if ($linkIds) {
         $queryBuilder->having('COUNT(1) = ' . count($linkIds));
+      } else {
+        // Case when a user selects all of, but doesn't specify links == all of all links.
+        $linksTable = $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
+        $linksQueryBuilder = $this->entityManager->getConnection()->createQueryBuilder();
+        $linkCount = $linksQueryBuilder->select('count(id)')
+          ->from($linksTable)
+          ->where('newsletter_id = :newsletter_id')
+          ->setParameter('newsletter_id', $newsletterId)
+          ->execute()
+          ->fetchOne();
+        $queryBuilder->having('COUNT(1) = ' . $linkCount);
       }
     }
     $queryBuilder = $queryBuilder->andWhere($where);

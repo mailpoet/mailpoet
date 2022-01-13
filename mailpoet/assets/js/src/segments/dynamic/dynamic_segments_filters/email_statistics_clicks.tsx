@@ -108,37 +108,41 @@ export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ fil
           options={newsletterOptions}
           value={find(['value', segment.newsletter_id], newsletterOptions)}
           onChange={(option: SelectOption): void => {
-            updateSegmentFilter({ newsletter_id: option.value }, filterIndex);
+            updateSegmentFilter({ newsletter_id: option.value, link_ids: [] }, filterIndex);
           }}
           automationId="segment-email"
         />
       </Grid.CenteredRow>
-      {(loadingLinks && (MailPoet.I18n.t('loadingDynamicSegmentItems')))}
-      {
-        (!!links.length && shouldDisplayLinks(segment.newsletter_id))
-        && (
-          <Grid.CenteredRow>
-            <Select
-              isMinWidth
-              key="select-operator"
-              value={segment.operator}
-              onChange={(e) => updateSegmentFilterFromEvent(
-                'operator',
-                filterIndex,
-                e
-              )}
-              automationId="select-operator"
-            >
-              <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-              <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-              <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
-            </Select>
+      <Grid.CenteredRow>
+        <Select
+          isMinWidth
+          key="select-operator"
+          value={segment.operator}
+          onChange={(e) => updateSegmentFilterFromEvent(
+            'operator',
+            filterIndex,
+            e
+          )}
+          automationId="select-operator"
+        >
+          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+          <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+        </Select>
+        {(loadingLinks && (
+          <span>
+            {MailPoet.I18n.t('loadingDynamicSegmentItems')}
+          </span>
+        ))}
+        {
+          (!loadingLinks && shouldDisplayLinks(segment.newsletter_id))
+          && (
             <ReactSelect
               isMulti
               dimension="small"
               isFullWidth
-              placeholder={MailPoet.I18n.t('selectLinkPlaceholder')}
-              options={links}
+              placeholder={MailPoet.I18n.t('allLinksPlaceholder')}
+              options={links.length ? links : [{ value: 0, label: MailPoet.I18n.t('noLinksHint'), isDisabled: true }]}
               value={filter(
                 (option) => {
                   if (!segment.link_ids) return false;
@@ -150,9 +154,9 @@ export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ fil
                 updateSegmentFilter({ link_ids: (options || []).map((x) => x.value) }, filterIndex);
               }}
             />
-          </Grid.CenteredRow>
-        )
-      }
+          )
+        }
+      </Grid.CenteredRow>
     </>
   );
 };
