@@ -208,7 +208,10 @@ class MailerTest extends \MailPoetTest {
     }
 
     $subscriberFactory = new SubscriberFactory();
-    $subscriber = $subscriberFactory->withFirstName('Recipient')->create();
+    $subscriber = $subscriberFactory
+      ->withEmail('mailpoet-phoenix-test@mailinator.com')
+      ->withFirstName('Recipient')
+      ->create();
     $this->sender['address'] = 'staff@mailpoet.com';
     $mailer = new Mailer();
     $mailer->init($this->mailer, $this->sender, $this->replyTo);
