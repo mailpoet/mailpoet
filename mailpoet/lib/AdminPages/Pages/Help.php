@@ -37,7 +37,7 @@ class Help {
   }
 
   public function render() {
-    $systemInfoData = $this->helpscoutBeacon->getData();
+    $systemInfoData = $this->helpscoutBeacon->getData(true);
     $cronPingResponse = $this->cronHelper->pingDaemon();
     $systemStatusData = [
       'cron' => [
