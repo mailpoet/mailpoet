@@ -84,6 +84,8 @@ export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ fil
 
   useEffect(() => {
     if ((segment.operator !== AnyValueTypes.ANY)
+      && (segment.operator !== AnyValueTypes.ALL)
+      && (segment.operator !== AnyValueTypes.NONE)
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
@@ -128,6 +130,8 @@ export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ fil
               automationId="select-operator"
             >
               <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+              <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+              <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
             </Select>
             <ReactSelect
               isMulti
