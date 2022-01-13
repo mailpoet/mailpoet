@@ -30,7 +30,7 @@ class Beacon {
     $this->subscribersFeature = $subscribersFeature;
   }
 
-  public function getData() {
+  public function getData($maskApiKey = false) {
     global $wpdb;
     $dbVersion = $wpdb->get_var('SELECT @@VERSION');
     $mta = $this->settings->get('mta');
@@ -38,6 +38,11 @@ class Beacon {
     $currentUser = WPFunctions::get()->wpGetCurrentUser();
     $sender = $this->settings->get('sender', ['address' => null]);
     $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME) ?: $this->settings->get(Bridge::API_KEY_SETTING_NAME);
+
+    if ($maskApiKey) {
+      $premiumKey = $this->maskApiKey($premiumKey);
+    }
+
     $cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $cronPingUrl = $cronHelper->getCronUrl(
       CronDaemon::ACTION_PING
@@ -78,5 +83,13 @@ class Beacon {
       'Total number of subscribers' => $this->subscribersFeature->getSubscribersCount(),
       'Plugin installed at' => $this->settings->get('installed_at'),
     ];
+  }
+
+  protected function maskApiKey($key) {
+    // the length of this particular key is an even number.
+    // for odd lengths this method will change the total number of characters (which shouldn't be a problem in this context).
+    $halfKeyLength = (int)(strlen($key) / 2);
+
+    return substr($key, 0, $halfKeyLength) . str_repeat('*', $halfKeyLength);
   }
 }

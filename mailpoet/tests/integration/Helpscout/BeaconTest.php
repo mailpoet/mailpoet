@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Helpscout;
 
+use MailPoet\Entities\SettingEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Helpscout\Beacon;
 use MailPoet\Models\Subscriber;
@@ -162,7 +163,16 @@ class BeaconTest extends \MailPoetTest {
     );
   }
 
+  public function testItMasksPremiumKey() {
+    $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, 'f5c08f56464665c99fb462fa584398b5');
+    $expectedResult = 'f5c08f56464665c9****************';
+    $beaconData = $this->diContainer->get(Beacon::class)->getData(true);
+
+    $this->assertSame($expectedResult, $beaconData['MailPoet Premium/MSS key']);
+  }
+
   private function cleanup() {
     $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SettingEntity::class);
   }
 }
