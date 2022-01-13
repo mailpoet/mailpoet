@@ -5,9 +5,9 @@ namespace MailPoet\Test\Helpscout;
 use MailPoet\Entities\SettingEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Helpscout\Beacon;
-use MailPoet\Models\Subscriber;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 class BeaconTest extends \MailPoetTest {
@@ -18,22 +18,22 @@ class BeaconTest extends \MailPoetTest {
     parent::_before();
     $this->cleanup();
     // create 4 users (1 confirmed, 1 subscribed, 1 unsubscribed, 1 bounced)
-    Subscriber::createOrUpdate([
-      'email' => 'user1@mailpoet.com',
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-    ]);
-    Subscriber::createOrUpdate([
-      'email' => 'user2@mailpoet.com',
-      'status' => Subscriber::STATUS_UNCONFIRMED,
-    ]);
-    Subscriber::createOrUpdate([
-      'email' => 'user3@mailpoet.com',
-      'status' => Subscriber::STATUS_UNSUBSCRIBED,
-    ]);
-    Subscriber::createOrUpdate([
-      'email' => 'user4@mailpoet.com',
-      'status' => Subscriber::STATUS_BOUNCED,
-    ]);
+    $subscriberFactory = new SubscriberFactory();
+    $subscriberFactory
+      ->withEmail('user1@mailpoet.com')
+      ->create();
+    $subscriberFactory
+      ->withEmail('user2@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->create();
+    $subscriberFactory
+      ->withEmail('user3@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $subscriberFactory
+      ->withEmail('user4@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_BOUNCED)
+      ->create();
 
     $this->beaconData = $this->diContainer->get(Beacon::class)->getData();
     $this->settings = SettingsController::getInstance();
