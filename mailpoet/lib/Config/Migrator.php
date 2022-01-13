@@ -6,6 +6,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
+use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
@@ -79,6 +80,7 @@ class Migrator {
     $this->migratePurchasedProductDynamicFilters();
     $this->migrateWooSubscriptionsDynamicFilters();
     $this->migratePurchasedInCategoryDynamicFilters();
+    $this->migrateEmailActionsFilters();
     return $output;
   }
 
@@ -852,6 +854,80 @@ class Migrator {
 
       $wpdb->update($dynamicSegmentFiltersTable, [
         'filter_data' => serialize($filterData),
+      ], ['id' => $dynamicSegmentFilter['id']]);
+    }
+    return true;
+  }
+
+  private function migrateEmailActionsFilters(): bool {
+    global $wpdb;
+    // skip the migration if the DB version is higher than 3.76.0 or is not set (a new installation)
+    if (version_compare($this->settings->get('db_version', '3.76.1'), '3.76.0', '>')) {
+      return false;
+    }
+
+    $dynamicSegmentFiltersTable = "{$this->prefix}dynamic_segment_filters";
+    $filterType = DynamicSegmentFilterData::TYPE_EMAIL;
+    $dynamicSegmentFilters = $wpdb->get_results("
+      SELECT `id`, `filter_data`, `filter_type`, `action`
+      FROM {$dynamicSegmentFiltersTable}
+      WHERE `filter_type` = '{$filterType}'
+    ", ARRAY_A);
+
+    foreach ($dynamicSegmentFilters as $dynamicSegmentFilter) {
+      if (!is_array($dynamicSegmentFilter)) {
+        continue;
+      }
+      $filterData = unserialize($dynamicSegmentFilter['filter_data']);
+      if (!is_array($filterData)) {
+        continue;
+      }
+      $action = $dynamicSegmentFilter['action'];
+
+      // Not clicked filter is no longer used and was replaced by clicked with none of operator
+      if ($action === EmailAction::ACTION_NOT_CLICKED) {
+        $action = EmailAction::ACTION_CLICKED;
+        $filterData['operator'] = DynamicSegmentFilterData::OPERATOR_NONE;
+      }
+
+      // Clicked link filter is refactored to work with multiple link ids
+      if ($action === EmailAction::ACTION_CLICKED) {
+        if (!isset($filterData['link_ids'])) {
+          $filterData['link_ids'] = [];
+        }
+
+        if (isset($filterData['link_id']) && !in_array($filterData['link_id'], $filterData['link_ids'])) {
+          $filterData['link_ids'][] = (int)$filterData['link_id'];
+          unset($filterData['link_id']);
+        }
+      }
+
+      // Not opened filter is no longer used and was replaced by opened with none of operand
+      if ($action === EmailAction::ACTION_NOT_OPENED) {
+        $action = EmailAction::ACTION_OPENED;
+        $filterData['operator'] = DynamicSegmentFilterData::OPERATOR_NONE;
+      }
+
+      // Opened and Machine opened filters are refactored to work with multiple newsletters
+      if (($action === EmailAction::ACTION_OPENED) || ($action === EmailAction::ACTION_MACHINE_OPENED)) {
+        if (!isset($filterData['newsletters'])) {
+          $filterData['newsletters'] = [];
+        }
+
+        if (isset($filterData['newsletter_id']) && !in_array($filterData['newsletter_id'], $filterData['newsletters'])) {
+          $filterData['newsletters'][] = (int)$filterData['newsletter_id'];
+          unset($filterData['newsletter_id']);
+        }
+      }
+
+      // Ensure default operator
+      if (!isset($filterData['operator'])) {
+        $filterData['operator'] = DynamicSegmentFilterData::OPERATOR_ANY;
+      }
+
+      $wpdb->update($dynamicSegmentFiltersTable, [
+        'filter_data' => serialize($filterData),
+        'action' => $action,
       ], ['id' => $dynamicSegmentFilter['id']]);
     }
     return true;
