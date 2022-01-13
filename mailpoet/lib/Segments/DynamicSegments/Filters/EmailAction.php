@@ -107,7 +107,7 @@ class EmailAction implements Filter {
   }
 
   private function applyForOpenedActions(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData, string $parameterSuffix) {
-    $operator = $filterData->getParam('operator');
+    $operator = $filterData->getParam('operator') ?? DynamicSegmentFilterData::OPERATOR_ANY;
     $action = $filterData->getAction();
 
     if ($action === self::ACTION_NOT_OPENED) {
@@ -130,7 +130,7 @@ class EmailAction implements Filter {
 
     $where = '1';
 
-    if (($action === EmailAction::ACTION_OPENED) && ($operator === DynamicSegmentFilterData::OPERATOR_NONE)) {
+    if ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
       $queryBuilder = $queryBuilder->innerJoin(
         $subscribersTable,
         $statsSentTable,
@@ -143,7 +143,7 @@ class EmailAction implements Filter {
         "statssent.subscriber_id = stats.subscriber_id AND stats.newsletter_id IN (:newsletters" . $parameterSuffix . ')'
       )->setParameter('newsletters' . $parameterSuffix, $newsletters, Connection::PARAM_INT_ARRAY);
       $where .= ' AND stats.id IS NULL';
-    } elseif ($action === EmailAction::ACTION_OPENED) {
+    } else {
       $queryBuilder = $queryBuilder->innerJoin(
         $subscribersTable,
         $statsTable,
@@ -155,13 +155,6 @@ class EmailAction implements Filter {
         $queryBuilder->groupBy('subscriber_id');
         $queryBuilder->having('COUNT(1) = ' . count($newsletters));
       }
-    } else { // Machine opens
-      $queryBuilder = $queryBuilder->innerJoin(
-        $subscribersTable,
-        $statsTable,
-        'stats',
-        "stats.subscriber_id = $subscribersTable.id AND stats.newsletter_id = :newsletter" . $parameterSuffix
-      )->setParameter('newsletter' . $parameterSuffix, $newsletterId);
     }
     if (($action === EmailAction::ACTION_OPENED) && ($operator !== DynamicSegmentFilterData::OPERATOR_NONE)) {
       $queryBuilder->andWhere('stats.user_agent_type = :userAgentType')

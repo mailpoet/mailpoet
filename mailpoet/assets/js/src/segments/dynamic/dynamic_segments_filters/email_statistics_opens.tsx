@@ -8,6 +8,7 @@ import Select from 'common/form/select/select';
 import { Grid } from 'common/grid';
 import {
   AnyValueTypes,
+  EmailActionTypes,
   EmailFormItem,
   SelectOption,
   WindowNewslettersList,
@@ -42,12 +43,14 @@ export const EmailOpenStatisticsFields: React.FunctionComponent<Props> = ({ filt
   useEffect(() => {
     if ((segment.operator !== AnyValueTypes.ANY)
         && (segment.operator !== AnyValueTypes.ALL)
-        && (segment.operator !== AnyValueTypes.NONE)
+        && ((segment.operator !== AnyValueTypes.NONE)
+          || (segment.action === EmailActionTypes.MACHINE_OPENED)
+        )
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
   }, [
-    segment.newsletter_id,
+    segment.action,
     segment.operator,
     filterIndex,
     updateSegmentFilter,
@@ -66,7 +69,7 @@ export const EmailOpenStatisticsFields: React.FunctionComponent<Props> = ({ filt
         >
           <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
           <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-          <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+          {segment.action === EmailActionTypes.OPENED ? <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option> : null}
         </Select>
       </Grid.CenteredRow>
       <Grid.CenteredRow>

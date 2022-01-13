@@ -63,7 +63,7 @@ class DynamicSegmentsResponseBuilder {
       }
       if (($filter['segmentType'] === DynamicSegmentFilterData::TYPE_EMAIL)) {
         // compatibility with older filters
-        if ((($filter['action'] === EmailAction::ACTION_OPENED) || ($filter['action'] === EmailAction::ACTION_NOT_OPENED))) {
+        if ((($filter['action'] === EmailAction::ACTION_OPENED) || ($filter['action'] === EmailAction::ACTION_NOT_OPENED) || ($filter['action'] === EmailAction::ACTION_MACHINE_OPENED))) {
           if (isset($filter['newsletter_id']) && !isset($filter['newsletters'])) {
             // make sure the newsletters are an array
             $filter['newsletters'] = [intval($filter['newsletter_id'])];
