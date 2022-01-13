@@ -50,7 +50,7 @@ class WPOrgPluginDownloader {
     }
 
     $recentVersion = $pluginInfo['version'];
-    if (! array_key_exists($tag, $pluginInfo['versions'])) {
+    if (!array_key_exists($tag, $pluginInfo['versions'])) {
       throw new \Exception("Plugin zip for version $tag not found. Most recent version is $recentVersion");
     }
 
