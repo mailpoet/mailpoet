@@ -1872,11 +1872,6 @@ parameters:
 
 		-
 			message: "#^Cannot access offset 'id' on mixed\\.$#"
-			count: 18
-			path: ../../tests/integration/Segments/DynamicSegments/Filters/EmailActionTest.php
-
-		-
-			message: "#^Cannot access offset 'id' on mixed\\.$#"
 			count: 9
 			path: ../../tests/integration/Segments/DynamicSegments/Filters/EmailOpensAbsoluteCountActionTest.php
 
