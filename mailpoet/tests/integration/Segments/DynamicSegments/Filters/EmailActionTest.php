@@ -289,14 +289,14 @@ class EmailActionTest extends \MailPoetTest {
     $open->setUserAgent($userAgent);
     $this->entityManager->flush();
 
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_OPENED, ['newsletter_id' => (int)$this->newsletter->getId()]);
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_OPENED, ['newsletters' => [(int)$this->newsletter->getId()]]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->rowCount();
     expect($result)->equals(2);
   }
 
-  public function testMachineOpens() {
+  public function testMachineOpensAny() {
     $subscriberOpenedMachine = $this->createSubscriber('opened_machine@example.com');
     $this->createStatsNewsletter($subscriberOpenedMachine, $this->newsletter);
     $open = $this->createStatisticsOpens($subscriberOpenedMachine, $this->newsletter);
@@ -306,7 +306,43 @@ class EmailActionTest extends \MailPoetTest {
     $open->setUserAgent($userAgent);
     $this->entityManager->flush();
 
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_MACHINE_OPENED, ['newsletter_id' => (int)$this->newsletter->getId()]);
+    $segmentFilter = $this->getSegmentFilter(
+      EmailAction::ACTION_MACHINE_OPENED,
+      ['newsletters' => [
+        (int)$this->newsletter->getId(),
+        (int)$this->newsletter2->getId(),
+      ]]
+    );
+    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    $result = $statement->rowCount();
+    expect($result)->equals(1);
+  }
+
+  public function testMachineOpensAll() {
+    $subscriberOpenedMachine = $this->createSubscriber('opened_machine@example.com');
+    $this->createStatsNewsletter($subscriberOpenedMachine, $this->newsletter);
+    $this->createStatsNewsletter($subscriberOpenedMachine, $this->newsletter2);
+    $open1 = $this->createStatisticsOpens($subscriberOpenedMachine, $this->newsletter);
+    $open1->setUserAgentType(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
+    $open2 = $this->createStatisticsOpens($subscriberOpenedMachine, $this->newsletter2);
+    $open2->setUserAgentType(UserAgentEntity::USER_AGENT_TYPE_MACHINE);
+    $userAgent = new UserAgentEntity(UserAgentEntity::MACHINE_USER_AGENTS[0]);
+    $this->entityManager->persist($userAgent);
+    $open1->setUserAgent($userAgent);
+    $open2->setUserAgent($userAgent);
+    $this->entityManager->flush();
+
+    $segmentFilter = $this->getSegmentFilter(
+      EmailAction::ACTION_MACHINE_OPENED,
+      [
+        'newsletters' => [
+          (int)$this->newsletter->getId(),
+          (int)$this->newsletter2->getId(),
+        ],
+        'operator' => DynamicSegmentFilterData::OPERATOR_ALL,
+      ]
+    );
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->rowCount();
