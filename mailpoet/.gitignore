@@ -1,4 +1,3 @@
-.DS_Store
 TODO
 /vendor
 /vendor-prefixed
@@ -8,14 +7,10 @@ TODO
 tests/_output/*
 tests/_support/_generated/*
 tests/plugins
-node_modules
 .env
-npm-debug.log
 !tasks/**
 /views/cache/**
 temp
-.idea
-.vscode
 mailpoet.zip
 tests/javascript_newsletter_editor/testBundles
 assets/dist
