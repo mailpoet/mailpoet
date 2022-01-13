@@ -22,7 +22,7 @@
     "storybook": "start-storybook -s ./ -p 8083",
     "build-storybook": "build-storybook",
     "postinstall": "./tasks/npm_post_install.sh",
-    "prepare": "husky install"
+    "prepare": "cd .. && husky install"
   },
   "lint-staged": {
     "*.{scss,css}": "npm run stylelint",
