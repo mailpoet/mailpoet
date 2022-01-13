@@ -105,7 +105,7 @@ class EmailActionTest extends \MailPoetTest {
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
+    $result = $statement->fetchAllAssociative();
     expect(count($result))->equals(2);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -121,7 +121,7 @@ class EmailActionTest extends \MailPoetTest {
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
+    $result = $statement->fetchAllAssociative();
     expect(count($result))->equals(1);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -138,7 +138,7 @@ class EmailActionTest extends \MailPoetTest {
     );
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
+    $result = $statement->fetchAllAssociative();
     expect(count($result))->equals(4);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -164,7 +164,7 @@ class EmailActionTest extends \MailPoetTest {
     );
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
+    $result = $statement->fetchAllAssociative();
     expect(count($result))->equals(1);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -181,7 +181,7 @@ class EmailActionTest extends \MailPoetTest {
     );
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
+    $result = $statement->fetchAllAssociative();
     expect(count($result))->equals(1);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -195,7 +195,7 @@ class EmailActionTest extends \MailPoetTest {
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
+    $result = $statement->fetchAllAssociative();
     expect(count($result))->equals(1);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -235,7 +235,7 @@ class EmailActionTest extends \MailPoetTest {
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
+    $result = $statement->fetchAllAssociative();
     expect(count($result))->equals(1); // Only $this->subscriberOpenedClicked clicked all
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -250,7 +250,7 @@ class EmailActionTest extends \MailPoetTest {
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
+    $result = $statement->fetchAllAssociative();
     expect(count($result))->equals(0);
   }
 
@@ -281,7 +281,7 @@ class EmailActionTest extends \MailPoetTest {
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
+    $result = $statement->fetchAllAssociative();
     expect(count($result))->equals(2);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -298,7 +298,7 @@ class EmailActionTest extends \MailPoetTest {
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
+    $result = $statement->fetchAllAssociative();
     expect(count($result))->equals(3);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -316,7 +316,7 @@ class EmailActionTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, ['newsletter_id' => (int)$this->newsletter->getId()]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAll();
+    $result = $statement->fetchAllAssociative();
     expect(count($result))->equals(2);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
