@@ -272,7 +272,7 @@ jobs:
           at: /home/circleci/mailpoet
       - run:
           name: "QA PHP"
-          command: ./do qa:php
+          command: ./do qa:php-max-wporg
   js_tests:
     executor: wpcli_php_latest
     working_directory: /home/circleci/mailpoet/mailpoet

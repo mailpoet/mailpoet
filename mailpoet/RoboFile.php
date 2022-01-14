@@ -347,6 +347,12 @@ class RoboFile extends \Robo\Tasks {
     return $collection->run();
   }
 
+  public function qaPhpMaxWPOrg() {
+    $collection = $this->collectionBuilder();
+    $collection->addCode([$this, 'qaLintBuild']);
+    return $collection->run();
+  }
+
   public function qaFrontendAssets() {
     $collection = $this->collectionBuilder();
     $collection->addCode([$this, 'qaLintJavascript']);
@@ -356,6 +362,46 @@ class RoboFile extends \Robo\Tasks {
 
   public function qaLint() {
     return $this->_exec('./tasks/code_sniffer/vendor/bin/parallel-lint lib/ tests/ mailpoet.php');
+  }
+
+  public function qaLintBuild() {
+    $task = './tasks/code_sniffer/vendor/bin/parallel-lint';
+    $filesToCheckString = implode(' ', [
+      'lib/',
+      'lib-3rd-party/',
+      'vendor/composer',
+      'vendor/mtdowling',
+      'vendor/soundasleep',
+      'vendor-prefixed/',
+      'mailpoet.php',
+    ]);
+    $filesToExcludeString = '--exclude ' . implode(' --exclude ', [
+      'vendor-prefixed/symfony/dependency-injection/Compiler',
+      'vendor-prefixed/symfony/dependency-injection/Config',
+      'vendor-prefixed/symfony/dependency-injection/Dumper',
+      'vendor-prefixed/symfony/dependency-injection/Loader',
+      'vendor-prefixed/symfony/dependency-injection/LazyProxy',
+      'vendor-prefixed/symfony/dependency-injection/Extension',
+      'vendor-prefixed/cerdic/css-tidy/COPYING',
+      'vendor-prefixed/cerdic/css-tidy/NEWS',
+      'vendor-prefixed/cerdic/css-tidy/testing',
+      'vendor/mtdowling/cron-expression/tests',
+      'vendor/phpmailer/phpmailer/test',
+      'vendor-prefixed/psr/log/Psr/Log/Test',
+      'vendor-prefixed/sabberworm/php-css-parser/tests',
+      'vendor/soundasleep/html2text/tests',
+      'vendor-prefixed/swiftmailer/swiftmailer/tests',
+      'vendor-prefixed/symfony/service-contracts/Tests',
+      'vendor-prefixed/symfony/translation/Tests',
+      'vendor-prefixed/symfony/translation-contracts/Tests',
+      'vendor-prefixed/cerdic/css-tidy/css_optimiser.php',
+      'vendor-prefixed/gregwar/captcha/demo',
+    ]);
+
+    return $this
+      ->taskExec($task)
+      ->rawArg(implode(' ', [$filesToExcludeString, $filesToCheckString]))
+      ->run();
   }
 
   public function qaLintJavascript() {
@@ -394,7 +440,7 @@ class RoboFile extends \Robo\Tasks {
       'tests/_output',
       'tests/_support/_generated',
       'vendor',
-      'vendor-prefixed',
+      'vendor-prefixed/gregwar/captcha/demo',
       'views',
     ];
     $stringFilesToCheck = !empty($filesToCheck) ? implode(' ', $filesToCheck) : '.';
