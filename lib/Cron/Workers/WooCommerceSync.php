@@ -41,21 +41,21 @@ class WooCommerceSync extends SimpleWorker {
     $meta = $task->getMeta();
     $highestOrderId = $this->getHighestOrderId();
 
-    if (!isset($meta['last_processed_order_id'])) {
-      $meta['last_processed_order_id'] = 0;
+    if (!isset($meta['last_checked_order_id'])) {
+      $meta['last_checked_order_id'] = 0;
     }
 
     do {
       $this->cronHelper->enforceExecutionLimit($timer);
-      $meta['last_processed_order_id'] = $this->woocommerceSegment->synchronizeCustomers(
-        $meta['last_processed_order_id'],
+      $meta['last_checked_order_id'] = $this->woocommerceSegment->synchronizeCustomers(
+        $meta['last_checked_order_id'],
         $highestOrderId,
         self::BATCH_SIZE
       );
       $task->setMeta($meta);
       $this->scheduledTasksRepository->persist($task);
       $this->scheduledTasksRepository->flush();
-    } while ($meta['last_processed_order_id'] !== $highestOrderId);
+    } while ($meta['last_checked_order_id'] < $highestOrderId);
 
     return true;
   }
