@@ -64,7 +64,7 @@ class MailerTest extends \MailPoetTest {
         getenv('WP_TEST_MAILER_MAILPOET_API') :
         '1234567890',
     ];
-    $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
+    $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
     $this->newsletter = [
       'subject' => 'testing Mailer',
       'body' => [
@@ -209,7 +209,7 @@ class MailerTest extends \MailPoetTest {
 
     $subscriberFactory = new SubscriberFactory();
     $subscriber = $subscriberFactory
-      ->withEmail('mailpoet-phoenix-test@mailinator.com')
+      ->withEmail('blackhole@mailpoet.com')
       ->withFirstName('Recipient')
       ->create();
     $this->sender['address'] = 'staff@mailpoet.com';
