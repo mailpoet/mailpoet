@@ -15,7 +15,6 @@ extensions:
         - Codeception\Extension\RunFailed
         - MailPoet\TestsSupport\StatisticsExtension
 groups:
-    acceptance_group_*: tests/acceptance/_groups/group_*
     circleci_split_group: tests/acceptance/_groups/circleci_split_group
 coverage:
     enabled: true
