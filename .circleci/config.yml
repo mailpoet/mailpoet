@@ -60,7 +60,7 @@ slack-fail-post-step: &slack-fail-post-step
 anchors:
   default_job_config: &default_job_config
     resource_class: small
-    working_directory: /home/circleci/mailpoet
+    working_directory: /home/circleci/mailpoet/mailpoet
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
 
@@ -106,8 +106,10 @@ jobs:
   build:
     executor: wpcli_php_latest
     resource_class: medium+
+    working_directory: /home/circleci/mailpoet/mailpoet
     steps:
-      - checkout
+      - checkout:
+          path: /home/circleci/mailpoet
       - run:
           name: "Compute checksum for prefixer"
           command: find prefixer -type f -not -path 'prefixer/build/*' -not -path 'prefixer/vendor/*' | sort | xargs cat | sha512sum > prefixer-checksum
@@ -179,6 +181,7 @@ jobs:
   build_premium:
     executor: wpcli_php_latest
     resource_class: medium
+    working_directory: /home/circleci/mailpoet/mailpoet
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
@@ -220,6 +223,7 @@ jobs:
   static_analysis:
     executor: wpcli_php_latest
     resource_class: medium
+    working_directory: /home/circleci/mailpoet/mailpoet
     parameters:
       php_version:
         type: integer
@@ -232,6 +236,7 @@ jobs:
         command: ./do qa:phpstan --php-version=<< parameters.php_version >>
   qa_js:
     executor: wpcli_php_latest
+    working_directory: /home/circleci/mailpoet/mailpoet
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
@@ -240,6 +245,7 @@ jobs:
           command: ./do qa:frontend-assets
   qa_php:
     executor: wpcli_php_latest
+    working_directory: /home/circleci/mailpoet/mailpoet
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
@@ -248,6 +254,7 @@ jobs:
           command: ./do qa:php
   qa_php_oldest:
     executor: wpcli_php_oldest
+    working_directory: /home/circleci/mailpoet/mailpoet
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
@@ -256,6 +263,7 @@ jobs:
           command: ./do qa:php
   js_tests:
     executor: wpcli_php_latest
+    working_directory: /home/circleci/mailpoet/mailpoet
     steps:
     - attach_workspace:
        at: /home/circleci/mailpoet
@@ -278,7 +286,7 @@ jobs:
         destination: mocha
   acceptance_tests:
     parallelism: 20
-    working_directory: /home/circleci/mailpoet
+    working_directory: /home/circleci/mailpoet/mailpoet
     machine:
       image: ubuntu-2004:202111-01
     parameters:
@@ -356,6 +364,7 @@ jobs:
       - store_test_results:
           path: tests/_output
   unit_tests:
+    working_directory: /home/circleci/mailpoet/mailpoet
     parameters:
       executor:
         type: string
@@ -372,7 +381,7 @@ jobs:
           command: echo 127.0.0.1 example.com | sudo tee -a /etc/hosts
       - run:
           name: "Set up test environment"
-          command: source ./.circleci/setup.bash && setup php7
+          command: source ../.circleci/setup.bash && setup php7
       - run:
           name: "PHP Unit tests"
           command: |
@@ -392,7 +401,7 @@ jobs:
         default: wpcli_php_mysql_latest
       setup_command:
         type: string
-        default: source ./.circleci/setup.bash && setup php7
+        default: source ../.circleci/setup.bash && setup php7
       run_command:
         type: string
         default: ./do test:integration --xml
@@ -429,22 +438,21 @@ jobs:
       - run:
           name: "Set up environment"
           command: |
-            source ./.circleci/setup.bash && setup php7
+            source ../.circleci/setup.bash && setup php7
             sudo apt-get update
             sudo apt-get install python3-pip gettext
             sudo pip3 install transifex-client
-            mv wordpress ..
-            sed -i 's/^WP_ROOT=.*$/WP_ROOT=\/home\/circleci\/wordpress/g' .env
+            sed -i 's/^WP_ROOT=.*$/WP_ROOT=\/home\/circleci\/mailpoet\/wordpress/g' .env
             echo ${CIRCLE_BUILD_NUM} > release_zip_build_number.txt
       - run:
           name: "Build"
           command: ./build.sh
       - store_artifacts:
-          path: /home/circleci/mailpoet/mailpoet.zip
+          path: /home/circleci/mailpoet/mailpoet/mailpoet.zip
       - persist_to_workspace:
           root: /home/circleci/mailpoet
           paths:
-          - release_zip_build_number.txt
+            - mailpoet/release_zip_build_number.txt
 
 workflows:
   build_and_test:
@@ -507,7 +515,7 @@ workflows:
           <<: *slack-fail-post-step
           <<: *only_master_and_release
           name: integration_tests_multisite
-          setup_command: source ./.circleci/setup.bash && setup php7_multisite
+          setup_command: source ../.circleci/setup.bash && setup php7_multisite
           run_command: ./do test:multisite-integration --xml
           requires:
             - unit_tests
