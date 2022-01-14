@@ -18,24 +18,19 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 class EmailAction implements Filter {
   const ACTION_OPENED = 'opened';
   const ACTION_MACHINE_OPENED = 'machineOpened';
+  /** @deprecated  */
   const ACTION_NOT_OPENED = 'notOpened';
   const ACTION_CLICKED = 'clicked';
+  /** @deprecated  */
   const ACTION_NOT_CLICKED = 'notClicked';
 
   const ALLOWED_ACTIONS = [
     self::ACTION_OPENED,
     self::ACTION_MACHINE_OPENED,
-    self::ACTION_NOT_OPENED,
     self::ACTION_CLICKED,
-    self::ACTION_NOT_CLICKED,
     EmailActionClickAny::TYPE,
     EmailOpensAbsoluteCountAction::TYPE,
     EmailOpensAbsoluteCountAction::MACHINE_TYPE,
-  ];
-
-  const CLICK_ACTIONS = [
-    self::ACTION_CLICKED,
-    self::ACTION_NOT_CLICKED,
   ];
 
   /** @var EntityManager */
