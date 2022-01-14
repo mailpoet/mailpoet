@@ -43,9 +43,13 @@ export const EmailOpenStatisticsFields: React.FunctionComponent<Props> = ({ filt
   useEffect(() => {
     if ((segment.operator !== AnyValueTypes.ANY)
         && (segment.operator !== AnyValueTypes.ALL)
-        && ((segment.operator !== AnyValueTypes.NONE)
-          || (segment.action === EmailActionTypes.MACHINE_OPENED)
-        )
+        && (segment.operator !== AnyValueTypes.NONE)
+    ) {
+      updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
+    }
+    // None is not allowed for Machine Opened
+    if ((segment.action === EmailActionTypes.MACHINE_OPENED)
+      && (segment.operator === AnyValueTypes.NONE)
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
@@ -69,7 +73,7 @@ export const EmailOpenStatisticsFields: React.FunctionComponent<Props> = ({ filt
         >
           <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
           <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-          {segment.action === EmailActionTypes.OPENED ? <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option> : null}
+          {segment.action !== EmailActionTypes.MACHINE_OPENED ? <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option> : null}
         </Select>
       </Grid.CenteredRow>
       <Grid.CenteredRow>
