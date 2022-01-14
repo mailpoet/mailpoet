@@ -101,7 +101,7 @@ class EmailActionTest extends \MailPoetTest {
 
   public function testGetOpened() {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_OPENED, [
-      'newsletter_id' => (int)$this->newsletter->getId(),
+      'newsletters' => [$this->newsletter->getId()],
     ]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
@@ -113,19 +113,6 @@ class EmailActionTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
     expect($subscriber2->getEmail())->equals('opened_not_clicked@example.com');
-  }
-
-  public function testNotOpened() {
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_OPENED, [
-      'newsletter_id' => (int)$this->newsletter->getId(),
-    ]);
-    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAllAssociative();
-    expect(count($result))->equals(1);
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    expect($subscriber1->getEmail())->equals('not_opened@example.com');
   }
 
   public function testGetOpenedOperatorAny() {
@@ -294,47 +281,13 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('not_opened@example.com');
   }
 
-  public function testGetNotClickedWithLink() {
+  public function testGetClickedWithNoneAndNoSavedLinks() {
     $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, [
+    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
-      'link_ids' => [1],
+      'link_ids' => [],
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
     ]);
-    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAllAssociative();
-    expect(count($result))->equals(2);
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber1->getEmail())->equals('opened_not_clicked@example.com');
-    expect($subscriber2->getEmail())->equals('not_opened@example.com');
-  }
-
-  public function testGetNotClickedWithWrongLink() {
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, [
-      'newsletter_id' => (int)$this->newsletter->getId(),
-      'link_ids' => [2],
-    ]);
-    $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
-    $result = $statement->fetchAllAssociative();
-    expect(count($result))->equals(3);
-    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    $subscriber3 = $this->entityManager->find(SubscriberEntity::class, $result[2]['id']);
-    $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
-    expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
-    expect($subscriber2->getEmail())->equals('opened_not_clicked@example.com');
-    expect($subscriber3->getEmail())->equals('not_opened@example.com');
-  }
-
-  public function testGetNotClickedWithoutLink() {
-    $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
-    $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_NOT_CLICKED, ['newsletter_id' => (int)$this->newsletter->getId()]);
     $statement = $this->emailAction->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAllAssociative();

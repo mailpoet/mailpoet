@@ -89,11 +89,7 @@ export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ fil
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
-    // Temporary BC fix
-    if (segment.link_id && !segment.link_ids) {
-      updateSegmentFilter({ link_ids: [Number(segment.link_id)] }, filterIndex);
-    }
-  }, [segment.link_ids, segment.link_id, segment.operator, filterIndex, updateSegmentFilter]);
+  }, [segment.operator, filterIndex, updateSegmentFilter]);
 
   return (
     <>

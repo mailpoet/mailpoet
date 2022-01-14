@@ -1051,11 +1051,6 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/FilterDataMapper.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 2
-			path: ../../lib/Segments/DynamicSegments/Filters/EmailAction.php
-
-		-
 			message: "#^Parameter \\#1 \\$var of function count expects array\\|Countable, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Segments/DynamicSegments/Filters/EmailAction.php
