@@ -5,7 +5,6 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\SegmentDependencyValidator;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Subscribers\SubscribersCountsController;
@@ -61,27 +60,8 @@ class DynamicSegmentsResponseBuilder {
         // new filters are always array, they support multiple values, the old didn't convert old filters to new format
         $filter['wordpressRole'] = [$filter['wordpressRole']];
       }
-      if (($filter['segmentType'] === DynamicSegmentFilterData::TYPE_EMAIL)) {
-        // compatibility with older filters
-        if ((($filter['action'] === EmailAction::ACTION_OPENED) || ($filter['action'] === EmailAction::ACTION_NOT_OPENED) || ($filter['action'] === EmailAction::ACTION_MACHINE_OPENED))) {
-          if (isset($filter['newsletter_id']) && !isset($filter['newsletters'])) {
-            // make sure the newsletters are an array
-            $filter['newsletters'] = [intval($filter['newsletter_id'])];
-            unset($filter['newsletter_id']);
-          }
-        } else {
-          $filter['newsletter_id'] = intval($filter['newsletter_id']);
-        }
-        if ($filter['action'] === EmailAction::ACTION_NOT_OPENED) {
-          // convert not opened
-          $filter['action'] = EmailAction::ACTION_OPENED;
-          $filter['operator'] = DynamicSegmentFilterData::OPERATOR_NONE;
-        }
-        if ($filter['action'] === EmailAction::ACTION_NOT_CLICKED) {
-          // convert not clicked
-          $filter['action'] = EmailAction::ACTION_CLICKED;
-          $filter['operator'] = DynamicSegmentFilterData::OPERATOR_NONE;
-        }
+      if (($filter['segmentType'] === DynamicSegmentFilterData::TYPE_EMAIL) && isset($filter['newsletter_id'])) {
+        $filter['newsletter_id'] = intval($filter['newsletter_id']);
       }
       $filters[] = $filter;
     }

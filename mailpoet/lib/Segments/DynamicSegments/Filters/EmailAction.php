@@ -52,7 +52,7 @@ class EmailAction implements Filter {
     $action = $filterData->getAction();
     $parameterSuffix = (string)($filter->getId() ?? Security::generateRandomString());
 
-    if (in_array($action, self::CLICK_ACTIONS, true)) {
+    if ($action === self::ACTION_CLICKED) {
       return $this->applyForClickedActions($queryBuilder, $filterData, $parameterSuffix);
     } else {
       return $this->applyForOpenedActions($queryBuilder, $filterData, $parameterSuffix);
@@ -63,11 +63,9 @@ class EmailAction implements Filter {
     $operator = $filterData->getParam('operator') ?? DynamicSegmentFilterData::OPERATOR_ANY;
     $action = $filterData->getAction();
     $newsletterId = $filterData->getParam('newsletter_id');
-    // Temporary backward compatibility for segments saved with link_id
-    $linkId = $filterData->getParam('link_id') ? (int)$filterData->getParam('link_id') : null;
     $linkIds = $filterData->getParam('link_ids');
     if (!is_array($linkIds)) {
-      $linkIds = $linkId ? [$linkId] : [];
+      $linkIds = [];
     }
 
     $statsSentTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
@@ -129,20 +127,7 @@ class EmailAction implements Filter {
   private function applyForOpenedActions(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData, string $parameterSuffix) {
     $operator = $filterData->getParam('operator') ?? DynamicSegmentFilterData::OPERATOR_ANY;
     $action = $filterData->getAction();
-
-    if ($action === self::ACTION_NOT_OPENED) {
-      // for backward compatibility with old segments
-      $action = self::ACTION_OPENED;
-      $operator = DynamicSegmentFilterData::OPERATOR_NONE;
-    }
-
-    $newsletterId = $filterData->getParam('newsletter_id');
-    if ($newsletterId) {
-      // for backward compatibility with old segments
-      $newsletters = [(int)$newsletterId];
-    } else {
-      $newsletters = $filterData->getParam('newsletters');
-    }
+    $newsletters = $filterData->getParam('newsletters');
 
     $statsSentTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();

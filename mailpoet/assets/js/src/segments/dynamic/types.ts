@@ -13,7 +13,6 @@ export enum EmailActionTypes {
   MACHINE_OPENED = 'machineOpened',
   CLICKED = 'clicked',
   CLICKED_ANY = 'clickedAny',
-  NOT_CLICKED = 'notClicked',
 }
 
 export enum SubscriberActionTypes {
@@ -90,8 +89,7 @@ export interface WooCommerceSubscriptionFormItem extends FormItem {
 
 export interface EmailFormItem extends FormItem {
   newsletter_id?: string;
-  newsletters: number[]
-  link_id?: string;
+  newsletters?: number[];
   link_ids?: string[];
   operator?: string;
   opens?: string;
