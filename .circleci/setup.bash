@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 
 function setup {
+  local script_dir="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+  local root_dir="$(dirname "$script_dir")"
+
 	local version=$1
-	local wp_cli_wordpress_path="--path=wordpress"
+	local wp_cli_wordpress_path="--path=$root_dir/wordpress"
 	local wp_cli_allow_root="--allow-root"
 
 	# Add a fake sendmail mailer
-	sudo cp ./.circleci/fake-sendmail.php /usr/local/bin/
+	sudo cp "$script_dir/fake-sendmail.php" /usr/local/bin/
 
 	# configure Apache
-	sudo cp ./.circleci/mailpoet_php.ini /usr/local/etc/php/conf.d/
-	sudo cp ./.circleci/apache/mailpoet.loc.conf /etc/apache2/sites-available
+	sudo cp "$script_dir/mailpoet_php.ini" /usr/local/etc/php/conf.d/
+	sudo cp "$script_dir/apache/mailpoet.loc.conf" /etc/apache2/sites-available
 	sudo a2dissite 000-default.conf
 	sudo a2ensite mailpoet.loc
 	sudo a2enmod rewrite
@@ -32,29 +35,29 @@ function setup {
   wp config set DISABLE_WP_CRON true --raw $wp_cli_wordpress_path $wp_cli_allow_root
 
 	# Change default table prefix
-	sed -i "s/\$table_prefix = 'wp_';/\$table_prefix = 'mp_';/" ./wordpress/wp-config.php
+	sed -i "s/\$table_prefix = 'wp_';/\$table_prefix = 'mp_';/" "$root_dir/wordpress/wp-config.php"
 
 	# Install WordPress
     if [[ $version == "php7_multisite" ]]; then
         # Configure multisite environment
     	wp core multisite-install --admin_name=admin --admin_password=admin --admin_email=admin@mailpoet.loc --url=http://mailpoet.loc --title="WordPress MultiSite" $wp_cli_wordpress_path $wp_cli_allow_root
-    	cp ./.circleci/wordpress/.htaccess ./wordpress/
+    	cp "$script_dir/wordpress/.htaccess" "$root_dir/wordpress/"
 
     	# Add a second blog
     	wp site create --slug=php7_multisite $wp_cli_wordpress_path $wp_cli_allow_root
-    	echo "WP_TEST_MULTISITE_SLUG=php7_multisite" >> .env
-    	echo "WP_ROOT_MULTISITE=/home/circleci/mailpoet/wordpress" >> .env
-    	echo "HTTP_HOST=mailpoet.loc" >> .env
+    	echo "WP_TEST_MULTISITE_SLUG=php7_multisite" >> "$root_dir/mailpoet/.env"
+    	echo "WP_ROOT_MULTISITE=/home/circleci/mailpoet/wordpress" >> "$root_dir/mailpoet/.env"
+    	echo "HTTP_HOST=mailpoet.loc" >> "$root_dir/mailpoet/.env"
 
     	# Add a third dummy blog
         wp site create --slug=dummy_multisite $wp_cli_wordpress_path $wp_cli_allow_root
     else
     	wp core install --admin_name=admin --admin_password=admin --admin_email=admin@mailpoet.loc --url=http://mailpoet.loc --title="WordPress Single" $wp_cli_wordpress_path $wp_cli_allow_root
-    	echo "WP_ROOT=/home/circleci/mailpoet/wordpress" >> .env
+    	echo "WP_ROOT=/home/circleci/mailpoet/wordpress" >> "$root_dir/mailpoet/.env"
     fi
 
 	# Softlink plugin to plugin path
-	ln -s ../../.. wordpress/wp-content/plugins/mailpoet
+	ln -s ../../../mailpoet ../wordpress/wp-content/plugins/mailpoet
 
 	# Activate plugin
 	if [[ $version == "php7_multisite" ]]; then
@@ -65,8 +68,8 @@ function setup {
 
   if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
     # Softlink MailPoet Premium to plugin path
-    ln -s ../../../mp3premium wordpress/wp-content/plugins/mailpoet-premium
+    ln -s ../../../mp3premium ../wordpress/wp-content/plugins/mailpoet-premium
     # Activate MailPoet Premium
-    wp plugin activate mailpoet-premium --path=wordpress
+    wp plugin activate mailpoet-premium --path="$root_dir/wordpress"
   fi
 }
