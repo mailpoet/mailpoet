@@ -4,8 +4,6 @@
 class RoboFile extends \Robo\Tasks {
   const ZIP_BUILD_PATH = __DIR__ . '/mailpoet.zip';
 
-  use \MailPoet\Test\SplitTests\SplitTestFilesByGroups;
-
   public function __construct() {
 
     // disable xdebug to avoid slowing down command execution
@@ -643,14 +641,6 @@ class RoboFile extends \Robo\Tasks {
     }
 
     return $result;
-  }
-
-  public function testAcceptanceGroupTests() {
-    return $this->taskSplitTestFilesByGroups(16)
-      ->projectRoot('.')
-      ->testsFrom('tests/acceptance')
-      ->groupsTo('tests/acceptance/_groups/group_')
-      ->run();
   }
 
   public function releasePrepare($version = null) {
