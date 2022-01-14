@@ -41,7 +41,8 @@ class WooCommerceSyncTest extends \MailPoetTest {
 
   public function testItCallsWooCommerceSync() {
     $this->woocommerceSegment->expects($this->once())
-      ->method('synchronizeCustomers');
+      ->method('synchronizeCustomers')
+      ->willReturn(1000);
     $task = $this->scheduledTaskFactory->create(
       WooCommerceSync::TASK_TYPE,
       null,
