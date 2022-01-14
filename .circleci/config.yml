@@ -84,6 +84,11 @@ executors:
     docker:
     - image: mailpoet/wordpress:7.2_20211213.1
 
+  wpcli_php_max_wporg:
+    <<: *default_job_config
+    docker:
+      - image: mailpoet/wordpress:7.4_20210122.1
+
   wpcli_php_latest:
     <<: *default_job_config
     docker:
@@ -255,6 +260,14 @@ jobs:
   qa_php_oldest:
     executor: wpcli_php_oldest
     working_directory: /home/circleci/mailpoet/mailpoet
+    steps:
+      - attach_workspace:
+          at: /home/circleci/mailpoet
+      - run:
+          name: "QA PHP"
+          command: ./do qa:php
+  qa_php_max_wporg:
+    executor: wpcli_php_max_wporg
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
@@ -485,6 +498,10 @@ workflows:
           requires:
             - build
       - qa_php_oldest:
+          <<: *slack-fail-post-step
+          requires:
+            - build
+      - qa_php_max_wporg:
           <<: *slack-fail-post-step
           requires:
             - build
