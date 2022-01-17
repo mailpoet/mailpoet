@@ -84,7 +84,7 @@ services:
       MH_STORAGE: maildir
       MH_MAILDIR_PATH: /output
     volumes:
-      - "./fake_mail_output:/output"
+      - "./dev/data/mailhog:/output"
     ports:
       - "8082:8025"
 

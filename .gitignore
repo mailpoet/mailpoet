@@ -2,6 +2,7 @@
 .env
 .idea
 .vscode
+dev/data
 docker-compose.override.yml
 fake_mail_output
 node_modules
