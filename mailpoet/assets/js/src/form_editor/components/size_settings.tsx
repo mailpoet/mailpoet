@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RangeControl, RadioControl } from '@wordpress/components';
+import { RangeControl, RadioControl, BaseControl } from '@wordpress/components';
 
 export type SizeDefinition = {
   value: number|undefined;
@@ -37,7 +37,7 @@ export const SizeSettings: React.FunctionComponent<Props> = ({
 
   return (
     <div className="mailpoet-size-settings-control">
-      <h3 className="mailpoet-styles-settings-heading">{label}</h3>
+      <BaseControl.VisualLabel>{label}</BaseControl.VisualLabel>
       <RadioControl
         selected={localValue.unit || 'pixel'}
         options={[

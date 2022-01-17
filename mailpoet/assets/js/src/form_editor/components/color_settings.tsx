@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  ColorIndicator,
   ColorPalette,
+  BaseControl,
 } from '@wordpress/components';
 import { useSetting } from '@wordpress/block-editor';
 
@@ -19,18 +19,11 @@ const ColorSettings: React.FunctionComponent<Props> = ({
   const settingsColors = useSetting('color.palette');
   return (
     <div>
-      <h3 className="mailpoet-styles-settings-heading">
+      <BaseControl.VisualLabel>
         {name}
-        {
-          value !== undefined
-          && (
-            <ColorIndicator
-              colorValue={value}
-            />
-          )
-        }
-      </h3>
+      </BaseControl.VisualLabel>
       <ColorPalette
+        label={name}
         value={value}
         onChange={onChange}
         colors={settingsColors}
