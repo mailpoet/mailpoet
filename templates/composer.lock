@@ -1,0 +1,66 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "a607345ee7a66b12b9ee1d37141baa67",
+    "packages": [
+        {
+            "name": "tarsana/functional",
+            "version": "2.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tarsana/functional.git",
+                "reference": "77ab9cbe8e44865edb686c07cc0848d8a950ed19"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tarsana/functional/zipball/77ab9cbe8e44865edb686c07cc0848d8a950ed19",
+                "reference": "77ab9cbe8e44865edb686c07cc0848d8a950ed19",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Tarsana\\Functional\\": "src/Classes/",
+                    "Tarsana\\UnitTests\\Functional\\": "tests/"
+                },
+                "files": [
+                    "src/Internal/_functions.php",
+                    "src/Internal/_stream.php",
+                    "src/functions.php",
+                    "src/operators.php",
+                    "src/common.php",
+                    "src/object.php",
+                    "src/string.php",
+                    "src/list.php",
+                    "src/math.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Amine Ben hammou",
+                    "email": "webneat@gmail.com"
+                }
+            ],
+            "description": "functional programming library for PHP",
+            "time": "2018-07-21T01:02:03+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

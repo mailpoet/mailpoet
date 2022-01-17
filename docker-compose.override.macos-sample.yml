@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  wordpress:
+    volumes:
+      - nfs-wordpress:/var/www/html
+      - nfs-mailpoet:/var/www/html/wp-content/plugins/mailpoet
+      - nfs-mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium
+
+  test_wordpress:
+    volumes:
+      - nfs-mailpoet:/var/www/html/wp-content/plugins/mailpoet
+      - nfs-mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium
+
+volumes:
+  nfs-wordpress:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,nolock
+      device: ":/System/Volumes/Data${PWD}/wordpress"
+  nfs-mailpoet:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,nolock
+      device: ":/System/Volumes/Data${PWD}/mailpoet"
+  nfs-mailpoet-premium:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,nolock
+      device: ":/System/Volumes/Data${PWD}/mailpoet-premium"
