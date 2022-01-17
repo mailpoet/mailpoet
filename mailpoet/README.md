@@ -6,21 +6,21 @@ in [the readme file](../readme.md) in the root of this repository. If
 you'd like to use the plugin code directly, you can follow the instructions
 below.
 
-# Contents
+## Contents
 
 - [Setup](#setup)
 - [Frameworks and libraries](#frameworks-and-libraries)
 - [Workflow Commands](#workflow-commands)
 - [Coding and Testing](#coding-and-testing)
 
-# Setup
+## Setup
 
-## Requirements
+### Requirements
 - PHP >= 7.3 (only for the development environment, to run the plugin PHP >= 7.2 is required)
 - NodeJS
 - WordPress
 
-## Installation
+### Installation
 The instructions below assume you already have a working WordPress development environment:
 
 ```bash
@@ -51,7 +51,7 @@ export NVM_DIR="$HOME/.nvm"
 ```
 Without it, you may experience errors in some git clients.
 
-# Frameworks and libraries
+## Frameworks and libraries
 
 - [Paris ORM](https://github.com/j4mie/paris).
 - [Symfony/dependency-injection](https://github.com/symfony/dependency-injection) ([docs for 3.4](https://symfony.com/doc/3.4/components/dependency_injection.html)).
@@ -68,7 +68,7 @@ Without it, you may experience errors in some git clients.
 - [ESLint](https://eslint.org/) is used to lint JS files.
 - [Webpack](https://webpack.js.org/) is used to bundle assets.
 
-# Workflow Commands
+## Workflow Commands
 
 ```bash
 $ ./do install             # install PHP and JS dependencies
@@ -123,11 +123,11 @@ $ ./do container:dump      # Generates DI container cache.
 $ ./do generate:data [<generatorName>] [<threads>] # Generates random usage data (Note: requires WooCommerce active) e.g. ./do generate:data past_revenues 4
 ```
 
-# Storybook
+## Storybook
 
 We use [Storybook.js](https://storybook.js.org/) to showcase our React components, which can be used throughout the plugin.
 
-## Usage
+### Usage
 
 Currently, we don't have Storybook published publicly, so developers need to run or build it locally.
 
@@ -145,26 +145,26 @@ To build the static version, which can be accessed via browser, run
 
 which will create a `storybook-static` folder with all necessary files. Don't forget to rebuild it when new components are added.
 
-## Building new components
+### Building new components
 
 - All stories should be located in `_stories` folder inside the component folder they belong to.
 - Run `./do storybook:watch` so all changes are automatically reflected in `http://localhost:8083`.
 - Examples are available in `assets/js/src/storybook_demo/_stories` folder.
 
-# Coding and Testing
+## Coding and Testing
 
-## DI
+### DI
 
 We use Symfony/dependency-injection container. Container configuration can be found in `libs/DI/ContainerFactory.php`
 The container is configured and used with minimum sub-dependencies to keep final package size small.
 You can check [the docs](https://symfony.com/doc/3.4/components/dependency_injection.html) to learn more about Symfony Container.
 
-## PHP-Scoper
+### PHP-Scoper
 
 We use PHP-Scoper package to prevent plugin libraries conflicts in PHP. Two plugins may be using different versions of a library. PHP-Scoper prefix dependencies namespaces and they are then moved into `vendor-prefixed` directory.
 Dependencies handled by PHP-Scoper are configured in extra configuration files `prefixer/composer.json` and `prefixer/scoper.inc.php`. Installation and processing is triggered in post scripts of the main `composer.json` file.
 
-## i18n
+### i18n
 
 We use functions `__()`, `_n()` and `_x()` with domain `mailpoet` to translate strings.
 
@@ -201,7 +201,7 @@ First add the string to the translations block in the Twig view:
 
 Then use `MailPoet.I18n.t('key')` to get the translated string on your Javascript code.
 
-## Acceptance testing
+### Acceptance testing
 
 To run the whole acceptance testing suite you need the docker daemon to be running and after that use a command: `./do test:acceptance`.
 If you want to run only a single test use the parameter `--file`:
