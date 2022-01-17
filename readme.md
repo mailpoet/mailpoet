@@ -1,9 +1,12 @@
 # MailPoet
-The **MailPoet** development environment.
+The **MailPoet** plugin monorepo.
+
+To use our Docker-based development environment (recommended), continue with the steps below.
+If you'd like to use the plugin code directly, see details in [the plugin's readme](mailpoet/README.md).
 
 ## 🔌 Initial setup
 1) Run `./do setup` to pull everything and install necessary dependencies.
-2) Add secrets to `.env` files in `mailpoet-dev-env/mailpoet` and `mailpoet-dev-env/mailpoet-premium`. Go to the Secret Store and look for "MailPoet: plugin .env"
+2) Add secrets to `.env` files in `mailpoet` and `mailpoet-premium` directories. Go to the Secret Store and look for "MailPoet: plugin .env"
 3) Run `./do start` to start the stack.
 4) Go to http://localhost:8888 to see the dashboard of the dev environment.
 
@@ -12,9 +15,9 @@ The **MailPoet** development environment.
 In `Languages & Preferences > PHP > Servers` set path mappings:
 
 ```shell
-mailpoet-dev-env/wordpress        -> /var/www/html
-mailpoet-dev-env/mailpoet         -> /var/www/html/wp-content/plugins/mailpoet
-mailpoet-dev-env/mailpoet-premium -> /var/www/html/wp-content/plugins/mailpoet-premium
+wordpress        -> /var/www/html
+mailpoet         -> /var/www/html/wp-content/plugins/mailpoet
+mailpoet-premium -> /var/www/html/wp-content/plugins/mailpoet-premium
 ```
 
 For PHP 8 and XDebug 3 we support **browser debugging extension**.
@@ -63,7 +66,7 @@ You can access this help in your command line running `./do` without parameters.
 [Read the article.](https://mailpoet.atlassian.net/wiki/spaces/MAILPOET/pages/629374977/Adding+new+templates+to+the+plugin)
 
 ## 🚥 Testing with PHP 7.4 or PHP 8.1
-To switch the environment to PHP 7.4/8.1: 
+To switch the environment to PHP 7.4/8.1:
 1) Configure the `wordpress` service in `docker-compose.override.yml` to build from the php74 Dockerfile:
 
    ```yaml

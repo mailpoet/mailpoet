@@ -1,6 +1,10 @@
 # MailPoet
+The **MailPoet** plugin.
 
-MailPoet done the right way.
+To use the official Docker-based development environment, see details
+in [the readme file](../readme.md) in the root of this repository. If
+you'd like to use the plugin code directly, you can follow the instructions
+below.
 
 # Contents
 
@@ -17,22 +21,26 @@ MailPoet done the right way.
 - WordPress
 
 ## Installation
-
-The instructions below assume you already have a working WordPress development environment.
+The instructions below assume you already have a working WordPress development environment:
 
 ```bash
-# go to WP plugins directory
-$ cd path_to_wp_directory/wp-content/plugins
-# clone this repository
-$ git clone https://github.com/mailpoet/mailpoet.git
-$ cd mailpoet
-# create the .env file
-$ cp .env.sample .env
-# change the values on .env file
-# install all dependencies (PHP and JS)
-$ ./do install
-# compile JS and CSS files
-$ ./do compile:all
+# 1. Clone this repository somewhere outside the WordPress installation:
+git clone https://github.com/mailpoet/mailpoet.git
+
+# 2. Go to the plugin directory within cloned the repository:
+cd mailpoet/mailpoet
+
+# 3. Symlink the MailPoet plugin to your WordPress installation:
+ln -s $(pwd) <wordpress>/wp-content/plugins/mailpoet
+
+# 4. Create the .env file:
+cp .env.sample .env
+
+# 5. Install dependencies (PHP and JS):
+./do install
+
+# 6. Compile JS and CSS:
+./do compile:all
 ```
 ####Note for NVM users
 In case you use nvm for node versions management you may need to create or update `~/.huskyrc` with:
