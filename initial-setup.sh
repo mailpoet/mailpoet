@@ -1,6 +1,8 @@
 #!/bin/bash
 
-git clone git@github.com:mailpoet/mailpoet-premium.git
+# try to clone mailpoet-premium, skip on failure (i.e. no access rights)
+git clone git@github.com:mailpoet/mailpoet-premium.git 2>/dev/null \
+  || echo "Skipped cloning 'mailpoet-premium' (check your access rights)"
 
 # Save current UID and GID to .env so we can run images with current user
 # to avoid any potential problems with file permissions (mainly on Linux).
@@ -11,7 +13,7 @@ EOT
 
 # create plugin .env files if they don't exist
 cp -n mailpoet/.env.sample mailpoet/.env
-cp -n mailpoet-premium/.env.sample mailpoet-premium/.env
+[[ -f mailpoet-premium/.env.sample ]] && cp -n mailpoet-premium/.env.sample mailpoet-premium/.env
 
 # create Docker mount endpoints beforehand with current user (Docker would create them as root)
 mkdir -p wordpress/wp-content/plugins/mailpoet
@@ -20,6 +22,7 @@ mkdir -p fake_mail_output
 
 for plugin in "mailpoet" "mailpoet-premium"; do
   docker-compose run --rm wordpress /bin/sh -c "
+    [ -d /var/www/html/wp-content/plugins/$plugin ] &&
     cd /var/www/html/wp-content/plugins/$plugin &&
     ./do install &&
     ./do compile:all
