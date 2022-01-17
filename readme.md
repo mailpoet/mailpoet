@@ -27,7 +27,7 @@ Alternatively, you can add `XDEBUG_TRIGGER: yes` to the `wordpress` service in `
 ## 💾 NFS volume sharing for Mac
 NFS volumes can bring more stability and performance on Docker for Mac. To setup NFS volume sharing run:
 ```shell
-sudo sh mac-nfs-setup.sh
+sudo sh dev/mac-nfs-setup.sh
 ```
 
 Then create a Docker Compose override file with NFS settings and restart containers:

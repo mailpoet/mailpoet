@@ -28,7 +28,7 @@ if [ "$1" = "" -o "$1" = "--help" ]; then
   syntax
 
 elif [ "$1" = "setup" ]; then
-  ./initial-setup.sh
+  ./dev/initial-setup.sh
 
 elif [ "$1" = "start" ]; then
   docker-compose up -d
