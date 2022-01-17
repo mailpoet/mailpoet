@@ -7,14 +7,14 @@ services:
     ports:
       - 8888:80
     volumes:
-      - ./docker/dashboard:/usr/share/nginx/html:ro
+      - ./dev/dashboard:/usr/share/nginx/html:ro
 
   db:
     container_name: mp-db
     image: mysql:5.7
     volumes:
       - my-datavolume:/var/lib/mysql
-      - ./docker/create_test_db.sh:/docker-entrypoint-initdb.d/10-create_test_db.sh
+      - ./dev/database/create_test_db.sh:/docker-entrypoint-initdb.d/10-create_test_db.sh
     environment:
       MYSQL_ROOT_PASSWORD: somewordpress
       MYSQL_DATABASE: wordpress
@@ -26,7 +26,7 @@ services:
     container_name: mp-wp
     build:
       context: .
-      dockerfile: docker/php80/Dockerfile
+      dockerfile: dev/php80/Dockerfile
       args:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
@@ -56,7 +56,7 @@ services:
     container_name: mp-test-wp
     build:
       context: .
-      dockerfile: docker/php80/Dockerfile
+      dockerfile: dev/php80/Dockerfile
       args:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
@@ -96,7 +96,7 @@ services:
     ports:
       - "8081:8080"
     volumes:
-      - "./docker/php.ini:/usr/local/etc/php/conf.d/custom.ini"
+      - "./dev/php.ini:/usr/local/etc/php/conf.d/custom.ini"
 
 volumes:
   my-datavolume:
