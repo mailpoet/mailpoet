@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelect } from '@wordpress/data';
+import { BaseControl } from '@wordpress/components';
 
 import SelectionItem from './form_settings/selection_item';
 
@@ -50,9 +51,9 @@ const CloseButtonsSettings: React.FunctionComponent<Props> = ({
 
   return (
     <div>
-      <h3 className="mailpoet-styles-settings-heading">
+      <BaseControl.VisualLabel>
         {name}
-      </h3>
+      </BaseControl.VisualLabel>
       <div className="close-button-selection-item-list">
         <CloseButton
           label="round_white"

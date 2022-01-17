@@ -1,7 +1,7 @@
 import React from 'react';
 import { MediaUpload } from '@wordpress/block-editor';
 import MailPoet from 'mailpoet';
-import { Button, SelectControl } from '@wordpress/components';
+import { Button, BaseControl, SelectControl } from '@wordpress/components';
 
 type Props = {
   name: string;
@@ -19,9 +19,9 @@ const ImageSettings: React.FunctionComponent<Props> = ({
   onImageDisplayChange,
 }: Props) => (
   <div className="mailpoet-styles-settings-image-url">
-    <h3 className="mailpoet-styles-settings-heading">
+    <BaseControl.VisualLabel>
       {name}
-    </h3>
+    </BaseControl.VisualLabel>
     <div className="mailpoet-styles-settings-image-url-body">
       <input type="text" value={imageUrl ?? ''} onChange={(event): void => onImageUrlChange(event.target.value)} />
       <MediaUpload
