@@ -53,7 +53,7 @@ class AmazonSESTest extends \MailPoetTest {
       $this->returnPath,
       new AmazonSESMapper()
     );
-    $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
+    $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
     $this->newsletter = [
       'subject' => 'testing AmazonSES … © & ěščřžýáíéůėę€żąß∂ 😊👨‍👩‍👧‍👧', // try some special chars
       'body' => [
@@ -122,7 +122,7 @@ class AmazonSESTest extends \MailPoetTest {
     $message = $this->mailer
       ->createMessage($this->newsletter, $this->subscriber, $this->extraParams);
     expect($message->getTo())
-      ->equals(['mailpoet-phoenix-test@mailinator.com' => 'Recipient']);
+      ->equals(['blackhole@mailpoet.com' => 'Recipient']);
     expect($message->getFrom())
       ->equals([$this->sender['from_email'] => $this->sender['from_name']]);
     expect($message->getSender())

@@ -47,7 +47,7 @@ class MailPoetAPITest extends \MailPoetTest {
       new MailPoetMapper(),
       $this->makeEmpty(AuthorizedEmailsController::class)
     );
-    $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
+    $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
     $this->newsletter = [
       'subject' => 'testing MailPoet … © & ěščřžýáíéůėę€żąß∂ 😊👨‍👩‍👧‍👧', // try some special chars
       'body' => [
