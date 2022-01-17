@@ -1,6 +1,10 @@
 version: '3.7'
 
 services:
+  # for M1 Macs
+  db:
+    image: mariadb:10.5.8
+
   wordpress:
     volumes:
       - nfs-wordpress:/var/www/html

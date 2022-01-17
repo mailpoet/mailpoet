@@ -1,6 +1,14 @@
 version: '3.2'
 
 services:
+  # for M1 Macs
+  mysql:
+    image: mariadb:10.5.8
+
+  # for M1 Macs
+  chrome:
+    image: seleniarm/standalone-chromium:4.0.0-20211213
+
   codeception:
     volumes:
       - nfs-mailpoet:/project
