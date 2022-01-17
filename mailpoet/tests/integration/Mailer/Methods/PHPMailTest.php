@@ -37,7 +37,7 @@ class PHPMailTest extends \MailPoetTest {
       $this->returnPath,
       new PHPMailMapper()
     );
-    $this->subscriber = 'Recipient <mailpoet-phoenix-test@mailinator.com>';
+    $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
     $this->newsletter = [
       'subject' => 'testing local method (PHP mail) … © & ěščřžýáíéůėę€żąß∂ 😊👨‍👩‍👧‍👧', // try some special chars
       'body' => [
@@ -75,13 +75,13 @@ class PHPMailTest extends \MailPoetTest {
     expect($mailer->getToAddresses())->equals(
       [
         [
-          'mailpoet-phoenix-test@mailinator.com',
+          'blackhole@mailpoet.com',
           'Recipient',
         ],
       ]
     );
     expect($mailer->getAllRecipientAddresses())
-      ->equals(['mailpoet-phoenix-test@mailinator.com' => true]);
+      ->equals(['blackhole@mailpoet.com' => true]);
     expect($mailer->From)->equals($this->sender['from_email']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($mailer->FromName)->equals($this->sender['from_name']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($mailer->getReplyToAddresses())->equals(
