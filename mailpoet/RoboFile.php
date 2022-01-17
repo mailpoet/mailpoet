@@ -373,6 +373,7 @@ class RoboFile extends \Robo\Tasks {
       '--standard=tasks/code_sniffer/MailPoet',
     ]);
     $foldersToIgnore = [
+      '.mp_svn',
       'assets',
       'doc',
       'generated',
