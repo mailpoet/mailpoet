@@ -1,0 +1,6 @@
+{
+    "name": "mailpoet/templates",
+    "require": {
+        "tarsana/functional": "^2.2"
+    }
+}

@@ -1,0 +1,102 @@
+version: '3.7'
+
+services:
+  dashboard:
+    container_name: mp-dashboard
+    image: nginx:1.21-alpine
+    ports:
+      - 8888:80
+    volumes:
+      - ./docker/dashboard:/usr/share/nginx/html:ro
+
+  db:
+    container_name: mp-db
+    image: mysql:5.7
+    volumes:
+      - my-datavolume:/var/lib/mysql
+      - ./docker/create_test_db.sh:/docker-entrypoint-initdb.d/10-create_test_db.sh
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_TEST_DATABASE: test_wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  wordpress:
+    container_name: mp-wp
+    build:
+      context: .
+      dockerfile: docker/php80/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    ports:
+      - "8002:80"
+    depends_on:
+      - db
+      - smtp
+    user: ${UID:-1000}:${GID:-1000}
+    environment:
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      PHP_IDE_CONFIG: "serverName=Mailpoet"
+      COMPOSER_HOME: "/tmp/.composer"
+      NPM_CONFIG_CACHE: "/tmp/.npm"
+      MAILPOET_DEV_SITE: 1
+    volumes:
+      - "./wordpress:/var/www/html"
+      - "./mailpoet:/var/www/html/wp-content/plugins/mailpoet"
+      - "./mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium"
+      - "./templates:/var/www/templates"
+
+  test_wordpress:
+    container_name: mp-test-wp
+    build:
+      context: .
+      dockerfile: docker/php80/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    ports:
+      - "8003:80"
+    depends_on:
+      - db
+      - smtp
+    user: ${UID:-1000}:${GID:-1000}
+    environment:
+      WORDPRESS_DB_NAME: test_wordpress
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      PHP_IDE_CONFIG: "serverName=Mailpoet"
+    volumes:
+      - "./mailpoet:/var/www/html/wp-content/plugins/mailpoet"
+      - "./mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium"
+
+  smtp:
+    container_name: mp-mailhog
+    image: mailhog/mailhog:v1.0.0
+    user: ${UID:-1000}:${GID:-1000}
+    environment:
+      MH_STORAGE: maildir
+      MH_MAILDIR_PATH: /output
+    volumes:
+      - "./fake_mail_output:/output"
+    ports:
+      - "8082:8025"
+
+  adminer:
+    container_name: mp-adminer
+    image: adminer:latest
+    depends_on:
+      - db
+    ports:
+      - "8081:8080"
+    volumes:
+      - "./docker/php.ini:/usr/local/etc/php/conf.d/custom.ini"
+
+volumes:
+  my-datavolume:
