@@ -1,6 +1,5 @@
 #!/bin/bash
 
-git clone git@github.com:mailpoet/mailpoet.git
 git clone git@github.com:mailpoet/mailpoet-premium.git
 
 # Save current UID and GID to .env so we can run images with current user
