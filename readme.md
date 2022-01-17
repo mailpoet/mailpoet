@@ -41,6 +41,18 @@ docker-compose down -v --remove-orphans
 docker-compose up -d
 ```
 
+# 🐶 Husky
+We use [Husky](https://github.com/typicode/husky) to run automated checks in pre-commit hooks.
+
+In case you're using [NVM](https://github.com/nvm-sh/nvm) for Node version management you may
+need to create or update your `~/.huskyrc` file with:
+```sh
+# This loads nvm.sh and sets the correct PATH before running the hooks:
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+```
+Without it, you may experience errors in some Git clients.
+
 ## 🕹 Commands
 The `./do` script define aliases for most of the commands you will need while working on plugins:
 
