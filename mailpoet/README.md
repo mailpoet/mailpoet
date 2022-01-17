@@ -16,7 +16,7 @@ below.
 # Setup
 
 ## Requirements
-- PHP >= 7.3 (only for the development environment, to run the plugin PHP >= 7.1 is required)
+- PHP >= 7.3 (only for the development environment, to run the plugin PHP >= 7.2 is required)
 - NodeJS
 - WordPress
 
