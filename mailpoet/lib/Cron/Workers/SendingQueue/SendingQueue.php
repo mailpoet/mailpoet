@@ -176,6 +176,7 @@ class SendingQueue {
 
     // get subscribers
     $subscriberBatches = new BatchIterator($queue->taskId, $this->getBatchSize());
+    /** @var int[] $subscribersToProcessIds - it's required for PHPStan */
     foreach ($subscriberBatches as $subscribersToProcessIds) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addInfo(
         'subscriber batch processing',
