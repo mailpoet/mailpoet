@@ -626,7 +626,7 @@ class Migrator {
   private function updateNullInUnsubscribeStats() {
     global $wpdb;
     // perform once for versions below or equal to 3.47.6
-    if (version_compare($this->settings->get('db_version', '3.47.6'), '3.47.6', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.47.6'), '3.47.6', '>')) {
       return false;
     }
     $query = "
@@ -647,7 +647,7 @@ class Migrator {
    */
   private function fixScheduledTasksSubscribersTimestampColumns() {
     // skip the migration if the DB version is higher than 3.63.0 or is not set (a new install)
-    if (version_compare($this->settings->get('db_version', '3.63.1'), '3.63.0', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.63.1'), '3.63.0', '>')) {
       return false;
     }
 
@@ -679,7 +679,7 @@ class Migrator {
   private function removeDeprecatedStatisticsIndexes(): bool {
     global $wpdb;
     // skip the migration if the DB version is higher than 3.67.1 or is not set (a new install)
-    if (version_compare($this->settings->get('db_version', '3.67.1'), '3.67.1', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.67.1'), '3.67.1', '>')) {
       return false;
     }
 
@@ -711,7 +711,7 @@ class Migrator {
   private function migrateSerializedFilterDataToNewColumns(): bool {
     global $wpdb;
     // skip the migration if the DB version is higher than 3.73.1 or is not set (a new install)
-    if (version_compare($this->settings->get('db_version', '3.73.1'), '3.73.0', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.73.1'), '3.73.0', '>')) {
       return false;
     }
 
@@ -741,7 +741,7 @@ class Migrator {
   private function migratePurchasedProductDynamicFilters(): bool {
     global $wpdb;
     // skip the migration if the DB version is higher than 3.74.3 or is not set (a new install)
-    if (version_compare($this->settings->get('db_version', '3.74.3'), '3.74.2', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.74.3'), '3.74.2', '>')) {
       return false;
     }
 
@@ -781,7 +781,7 @@ class Migrator {
   private function migratePurchasedInCategoryDynamicFilters(): bool {
     global $wpdb;
     // skip the migration if the DB version is higher than 3.75.1 or is not set (a new install)
-    if (version_compare($this->settings->get('db_version', '3.76.0'), '3.75.1', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.76.0'), '3.75.1', '>')) {
       return false;
     }
 
@@ -821,7 +821,7 @@ class Migrator {
   private function migrateWooSubscriptionsDynamicFilters(): bool {
     global $wpdb;
     // skip the migration if the DB version is higher than 3.75.1 or is not set (a new installation)
-    if (version_compare($this->settings->get('db_version', '3.76.0'), '3.75.1', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.76.0'), '3.75.1', '>')) {
       return false;
     }
 

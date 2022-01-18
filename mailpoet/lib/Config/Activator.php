@@ -72,7 +72,7 @@ class Activator {
     $this->settings->set('db_version', Env::$version);
 
     // if current db version and plugin version differ, log an update
-    if (version_compare($currentDbVersion, Env::$version) !== 0) {
+    if (version_compare((string)$currentDbVersion, Env::$version) !== 0) {
       $updatesLog = (array)$this->settings->get('updates_log', []);
       $updatesLog[] = [
         'previous_version' => $currentDbVersion,

@@ -97,7 +97,7 @@ class Subscribers {
   }
 
   private function getFreeSubscribersLimit() {
-    $installationTime = strtotime($this->settings->get('installed_at'));
+    $installationTime = strtotime((string)$this->settings->get('installed_at'));
     $oldUser = $installationTime < strtotime(self::NEW_LIMIT_DATE);
     return $oldUser ? self::SUBSCRIBERS_OLD_LIMIT : self::SUBSCRIBERS_NEW_LIMIT;
   }

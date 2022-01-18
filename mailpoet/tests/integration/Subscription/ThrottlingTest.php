@@ -52,7 +52,7 @@ class ThrottlingTest extends \MailPoetTest {
 
   public function testItThrottlesForNotExemptRoleUsers() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-    $wpUsers = get_users();
+    $wpUsers = get_users(['role' => 'administrator']);
     $wpUsers[0]->remove_role('administrator');
     wp_set_current_user($wpUsers[0]->ID);
     expect($this->throttling->throttle())->equals(false);
