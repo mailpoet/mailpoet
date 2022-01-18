@@ -19,6 +19,7 @@ class Segment extends Model {
   public static $_table = MP_SEGMENTS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
   const TYPE_WP_USERS = SegmentEntity::TYPE_WP_USERS;
   const TYPE_WC_USERS = SegmentEntity::TYPE_WC_USERS;
+  const TYPE_WC_MEMBERSHIPS = SegmentEntity::TYPE_WC_MEMBERSHIPS;
   const TYPE_DEFAULT = SegmentEntity::TYPE_DEFAULT;
 
   public function __construct() {

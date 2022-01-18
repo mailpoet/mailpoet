@@ -15,6 +15,7 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
@@ -157,6 +158,7 @@ class Reporter {
       'Segment > not opened' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_NOT_OPENED),
       'Segment > opened' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_OPENED),
       'Segment > machine-opened' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_MACHINE_OPENED),
+      'Segment > is active member of' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE_MEMBERSHIP, WooCommerceMembership::ACTION_MEMBER_OF),
       'Segment > has an active subscription' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION, WooCommerceSubscription::ACTION_HAS_ACTIVE),
       'Segment > is in country' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceCountry::ACTION_CUSTOMER_COUNTRY),
       'Segment > MailPoet custom field' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE),

@@ -22,6 +22,7 @@ class SegmentEntity {
 
   const TYPE_WP_USERS = 'wp_users';
   const TYPE_WC_USERS = 'woocommerce_users';
+  const TYPE_WC_MEMBERSHIPS = 'woocommerce_memberships';
   const TYPE_DEFAULT = 'default';
   const TYPE_DYNAMIC = 'dynamic';
   const TYPE_WITHOUT_LIST = 'without-list';
@@ -136,7 +137,7 @@ class SegmentEntity {
   }
 
   public function isStatic(): bool {
-    return in_array($this->getType(), [self::TYPE_DEFAULT, self::TYPE_WP_USERS, self::TYPE_WC_USERS], true);
+    return in_array($this->getType(), [self::TYPE_DEFAULT, self::TYPE_WP_USERS, self::TYPE_WC_USERS, self::TYPE_WC_MEMBERSHIPS], true);
   }
 
   public function getAverageEngagementScore(): ?float {

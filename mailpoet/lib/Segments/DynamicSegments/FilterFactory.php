@@ -16,6 +16,7 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
@@ -42,6 +43,9 @@ class FilterFactory {
 
   /** @var WooCommerceTotalSpent */
   private $wooCommerceTotalSpent;
+
+  /** @var WooCommerceMembership */
+  private $wooCommerceMembership;
 
   /** @var WooCommerceSubscription */
   private $wooCommerceSubscription;
@@ -75,6 +79,7 @@ class FilterFactory {
     EmailOpensAbsoluteCountAction $emailOpensAbsoluteCount,
     WooCommerceNumberOfOrders $wooCommerceNumberOfOrders,
     WooCommerceTotalSpent $wooCommerceTotalSpent,
+    WooCommerceMembership $wooCommerceMembership,
     WooCommerceSubscription $wooCommerceSubscription,
     SubscriberSubscribedDate $subscriberSubscribedDate,
     SubscriberScore $subscriberScore,
@@ -86,6 +91,7 @@ class FilterFactory {
     $this->wooCommerceCategory = $wooCommerceCategory;
     $this->wooCommerceCountry = $wooCommerceCountry;
     $this->wooCommerceNumberOfOrders = $wooCommerceNumberOfOrders;
+    $this->wooCommerceMembership = $wooCommerceMembership;
     $this->wooCommerceSubscription = $wooCommerceSubscription;
     $this->emailOpensAbsoluteCount = $emailOpensAbsoluteCount;
     $this->wooCommerceTotalSpent = $wooCommerceTotalSpent;
@@ -105,6 +111,8 @@ class FilterFactory {
         return $this->userRole($action);
       case DynamicSegmentFilterData::TYPE_EMAIL:
         return $this->email($action);
+      case DynamicSegmentFilterData::TYPE_WOOCOMMERCE_MEMBERSHIP:
+        return $this->wooCommerceMembership();
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION:
         return $this->wooCommerceSubscription();
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE:
@@ -135,6 +143,10 @@ class FilterFactory {
       return $this->emailActionClickAny;
     }
     return $this->emailAction;
+  }
+
+  private function wooCommerceMembership() {
+    return $this->wooCommerceMembership;
   }
 
   private function wooCommerceSubscription() {

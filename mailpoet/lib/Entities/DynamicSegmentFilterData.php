@@ -13,6 +13,7 @@ class DynamicSegmentFilterData {
   const TYPE_USER_ROLE = 'userRole';
   const TYPE_EMAIL = 'email';
   const TYPE_WOOCOMMERCE = 'woocommerce';
+  const TYPE_WOOCOMMERCE_MEMBERSHIP = 'woocommerceMembership';
   const TYPE_WOOCOMMERCE_SUBSCRIPTION = 'woocommerceSubscription';
 
   public const CONNECT_TYPE_AND = 'and';
