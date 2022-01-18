@@ -13,6 +13,7 @@ use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedDate;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
@@ -61,6 +62,8 @@ class FilterDataMapper {
         return $this->createEmail($filterData);
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE:
         return $this->createWooCommerce($filterData);
+      case DynamicSegmentFilterData::TYPE_WOOCOMMERCE_MEMBERSHIP:
+        return $this->createWooCommerceMembership($filterData);
       case DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION:
         return $this->createWooCommerceSubscription($filterData);
       default:
@@ -234,6 +237,27 @@ class FilterDataMapper {
       $filterData['total_spent_type'] = $data['total_spent_type'];
       $filterData['total_spent_amount'] = $data['total_spent_amount'];
       $filterData['total_spent_days'] = $data['total_spent_days'];
+    } else {
+      throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
+    }
+    return new DynamicSegmentFilterData($filterType, $action, $filterData);
+  }
+
+  /**
+   * @throws InvalidFilterException
+   */
+  private function createWooCommerceMembership(array $data): DynamicSegmentFilterData {
+    if (empty($data['action'])) throw new InvalidFilterException('Missing action', InvalidFilterException::MISSING_ACTION);
+    $filterData = [
+      'connect' => $data['connect'],
+    ];
+    $filterType = DynamicSegmentFilterData::TYPE_WOOCOMMERCE_MEMBERSHIP;
+    $action = $data['action'];
+    if ($data['action'] === WooCommerceMembership::ACTION_MEMBER_OF) {
+      if (!isset($data['plan_ids']) || !is_array($data['plan_ids'])) throw new InvalidFilterException('Missing plan', InvalidFilterException::MISSING_PLAN_ID);
+      if (!isset($data['operator'])) throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
+      $filterData['operator'] = $data['operator'];
+      $filterData['plan_ids'] = $data['plan_ids'];
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }

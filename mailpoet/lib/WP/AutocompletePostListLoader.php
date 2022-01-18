@@ -23,6 +23,14 @@ class AutocompletePostListLoader {
     return $this->formatPosts($products);
   }
 
+  public function getMembershipPlans() {
+    $products = $this->wp->getResultsFromWpDb(
+      "SELECT `ID`, `post_title` FROM {$this->wp->getWPTableName('posts')} WHERE `post_type` = %s AND `post_status` = 'publish' ORDER BY `post_title` ASC;",
+      'wc_membership_plan'
+    );
+    return $this->formatPosts($products);
+  }
+
   public function getSubscriptionProducts() {
     $products = $this->wp->getResultsFromWpDb(
       "SELECT `ID`, `post_title` FROM {$this->wp->getWPTableName('posts')} AS p

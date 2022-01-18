@@ -20,6 +20,11 @@ class SegmentDependencyValidator {
     'name' => 'WooCommerce',
   ];
 
+  private const WOOCOMMERCE_MEMBERSHIPS_PLUGIN = [
+    'id' => 'woocommerce-memberships/woocommerce-memberships.php',
+    'name' => 'WooCommerce Memberships',
+  ];
+
   private const WOOCOMMERCE_SUBSCRIPTIONS_PLUGIN = [
     'id' => 'woocommerce-subscriptions/woocommerce-subscriptions.php',
     'name' => 'WooCommerce Subscriptions',
@@ -27,6 +32,10 @@ class SegmentDependencyValidator {
 
   private const REQUIRED_PLUGINS_BY_TYPE = [
     DynamicSegmentFilterData::TYPE_WOOCOMMERCE => [
+      self::WOOCOMMERCE_PLUGIN,
+    ],
+    DynamicSegmentFilterData::TYPE_WOOCOMMERCE_MEMBERSHIP => [
+      self::WOOCOMMERCE_MEMBERSHIPS_PLUGIN,
       self::WOOCOMMERCE_PLUGIN,
     ],
     DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION => [
