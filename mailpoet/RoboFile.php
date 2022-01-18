@@ -956,6 +956,15 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Release '$version[name]' info was published on Slack.");
   }
 
+  public function downloadWooCommerceMembershipsZip($tag = null) {
+    if (!getenv('WP_GITHUB_USERNAME') && !getenv('WP_GITHUB_TOKEN')) {
+      $this->yell("Skipping download of WooCommerce Memberships", 40, 'red');
+      exit(0); // Exit with 0 since it is a valid state for some environments
+    }
+    $this->createGithubClient('woocommerce/woocommerce-memberships')
+      ->downloadReleaseZip('woocommerce-memberships.zip', __DIR__ . '/tests/plugins/', $tag);
+  }
+
   public function downloadWooCommerceSubscriptionsZip($tag = null) {
     if (!getenv('WP_GITHUB_USERNAME') && !getenv('WP_GITHUB_TOKEN')) {
       $this->yell("Skipping download of WooCommerce Subscriptions", 40, 'red');

@@ -12,6 +12,7 @@ class PluginsExtension extends Extension {
   ];
 
   public function setupInitialPluginsState() {
+    exec('wp plugin deactivate woocommerce-memberships --allow-root');
     exec('wp plugin deactivate woocommerce-subscriptions --allow-root');
     exec('wp plugin deactivate woocommerce --allow-root');
   }
