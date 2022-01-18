@@ -33,16 +33,16 @@ export function validateEmail(formItems: EmailFormItem): boolean {
     return true;
   }
 
+  if (formItems.action === EmailActionTypes.CLICKED) {
+    return !!formItems.newsletter_id;
+  }
+
   if (
     (formItems.action !== EmailActionTypes.OPENS_ABSOLUTE_COUNT)
     && (formItems.action !== EmailActionTypes.MACHINE_OPENS_ABSOLUTE_COUNT)
   ) {
-    return (!!formItems.newsletter_id) // EmailActionTypes.CLICKED
-      // EmailActionTypes.OPENED, EmailActionTypes.MACHINE_OPENED
-      || (
-        Array.isArray(formItems.newsletters)
-        && formItems.newsletters.length > 0
-      );
+    // EmailActionTypes.OPENED, EmailActionTypes.MACHINE_OPENED
+    return (Array.isArray(formItems.newsletters) && formItems.newsletters.length > 0);
   }
 
   return (
