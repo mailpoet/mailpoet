@@ -9,6 +9,7 @@ import {
   SubscriberCount,
   WindowCustomFields,
   WindowEditableRoles,
+  WindowMembershipPlans,
   WindowNewslettersList,
   WindowProductCategories,
   WindowProducts,
@@ -18,6 +19,9 @@ import {
 
 export const getProducts = (state: StateType): WindowProducts => (
   state.products
+);
+export const getMembershipPlans = (state: StateType): WindowMembershipPlans => (
+  state.membershipPlans
 );
 export const getSubscriptionProducts = (state: StateType): WindowSubscriptionProducts => (
   state.subscriptionProducts
