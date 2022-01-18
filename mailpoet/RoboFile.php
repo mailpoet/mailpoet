@@ -375,6 +375,7 @@ class RoboFile extends \Robo\Tasks {
       'vendor-prefixed/',
       'mailpoet.php',
     ]);
+    // The list of files and folders to exclude is coming from build.sh
     $filesToExcludeString = '--exclude ' . implode(' --exclude ', [
       'vendor-prefixed/symfony/dependency-injection/Compiler',
       'vendor-prefixed/symfony/dependency-injection/Config',
@@ -440,7 +441,7 @@ class RoboFile extends \Robo\Tasks {
       'tests/_output',
       'tests/_support/_generated',
       'vendor',
-      'vendor-prefixed/gregwar/captcha/demo',
+      'vendor-prefixed',
       'views',
     ];
     $stringFilesToCheck = !empty($filesToCheck) ? implode(' ', $filesToCheck) : '.';
