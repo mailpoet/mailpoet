@@ -1,79 +1,34 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import PremiumRequired from 'common/premium_required/premium_required';
+import PremiumBannerWithUpgrade from 'common/premium_banner_with_upgrade/premium_banner_with_upgrade';
 import Button from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
 
-type Props = {
-  limitReached: boolean;
-  limitValue: number;
-  subscribersCountTowardsLimit: number;
-  premiumActive: boolean;
-  hasValidApiKey: boolean;
-  hasPremiumSupport: boolean;
-}
-
-const NoAccessInfo: React.FunctionComponent<Props> = ({
-  limitReached,
-  limitValue,
-  subscribersCountTowardsLimit,
-  premiumActive,
-  hasValidApiKey,
-  hasPremiumSupport,
-}: Props) => {
+const NoAccessInfo: React.FunctionComponent = () => {
   const getBannerMessage: React.FunctionComponent = () => {
-    let message = MailPoet.I18n.t('premiumRequired');
-    if (!premiumActive) {
-      return (
-        <p>
-          {ReactStringReplace(
-            message,
-            /\[link](.*?)\[\/link]/g,
-            (match) => (
-              <a key={match} href={MailPoet.premiumLink}>{match}</a>
-            )
-          )}
-        </p>
-      );
-    }
-    // Covers premium with paid plan
-    if (hasPremiumSupport) {
-      message = MailPoet.I18n.t('planLimitReached');
-    } else { // Covers premium without apikey and premium with free plan api key
-      message = MailPoet.I18n.t('freeLimitReached');
-    }
+    const message = MailPoet.I18n.t('premiumRequired');
     return (
       <p>
         {ReactStringReplace(
           message,
-          /(\[subscribersCount]|\[subscribersLimit])/g,
-          (match) => ((match === '[subscribersCount]') ? subscribersCountTowardsLimit : limitValue)
+          /\[link](.*?)\[\/link]/g,
+          (match) => (
+            <a key={match} href={MailPoet.premiumLink}>{match}</a>
+          )
         )}
       </p>
     );
   };
 
   const getCtaButton: React.FunctionComponent = () => (
-    premiumActive && limitReached ? (
-      <Button
-        href={
-          hasValidApiKey
-            ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl()
-            : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(subscribersCountTowardsLimit + 1)
-        }
-      >
-        {MailPoet.I18n.t('premiumBannerCtaUpgrade')}
-      </Button>
-    ) : (
-      <Button
-        href={MailPoet.MailPoetComUrlFactory.getFreePlanUrl({
-          utm_medium: 'stats',
-          utm_campaign: 'signup',
-        })}
-      >
-        {MailPoet.I18n.t('premiumBannerCtaFree')}
-      </Button>
-    )
+    <Button
+      href={MailPoet.MailPoetComUrlFactory.getFreePlanUrl({
+        utm_medium: 'stats',
+        utm_campaign: 'signup',
+      })}
+    >
+      {MailPoet.I18n.t('premiumBannerCtaFree')}
+    </Button>
   );
 
   return (
@@ -90,8 +45,7 @@ const NoAccessInfo: React.FunctionComponent<Props> = ({
         <tr>
           <td colSpan={4}>
             <div className="mailpoet-subscriber-stats-no-access-content">
-              <PremiumRequired
-                title={premiumActive && limitReached ? MailPoet.I18n.t('upgradeRequired') : MailPoet.I18n.t('premiumFeature')}
+              <PremiumBannerWithUpgrade
                 message={getBannerMessage({})}
                 actionButton={getCtaButton({})}
               />
