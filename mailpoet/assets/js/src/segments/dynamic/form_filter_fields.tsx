@@ -9,12 +9,14 @@ import {
 import { EmailFields } from './dynamic_segments_filters/email';
 import { SubscriberFields } from './dynamic_segments_filters/subscriber';
 import { WooCommerceFields } from './dynamic_segments_filters/woocommerce';
+import { WooCommerceMembershipFields } from './dynamic_segments_filters/woocommerce_membership';
 import { WooCommerceSubscriptionFields } from './dynamic_segments_filters/woocommerce_subscription';
 
 const filterFieldsMap = {
   [SegmentTypes.Email]: EmailFields,
   [SegmentTypes.WooCommerce]: WooCommerceFields,
   [SegmentTypes.WordPressRole]: SubscriberFields,
+  [SegmentTypes.WooCommerceMembership]: WooCommerceMembershipFields,
   [SegmentTypes.WooCommerceSubscription]: WooCommerceSubscriptionFields,
 };
 

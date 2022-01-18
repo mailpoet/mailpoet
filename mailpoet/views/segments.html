@@ -30,8 +30,10 @@
     var mailpoet_newsletters_list = <%= json_encode(newsletters_list)  %>;
     var mailpoet_product_categories = <%= json_encode(product_categories)  %>;
     var mailpoet_products = <%= json_encode(products) %>;
+    var mailpoet_membership_plans = <%= json_encode(membership_plans) %>;
     var mailpoet_subscription_products = <%= json_encode(subscription_products) %>;
     var is_woocommerce_active = <%= json_encode(is_woocommerce_active)  %>;
+    var mailpoet_can_use_woocommerce_memberships = <%= json_encode(can_use_woocommerce_memberships)  %>;
     var mailpoet_can_use_woocommerce_subscriptions = <%= json_encode(can_use_woocommerce_subscriptions)  %>;
     var mailpoet_woocommerce_currency_symbol = <%= json_encode(woocommerce_currency_symbol)  %>;
     var mailpoet_woocommerce_countries = <%= json_encode(woocommerce_countries)  %>;
@@ -187,6 +189,9 @@
     'subscribedToList': __('subscribed to list'),
     'segmentsSubscriber': __('WordPress user role'),
     'mailpoetCustomField': __('MailPoet custom field'),
+    'segmentsActiveMembership': __('is member of'),
+    'woocommerceMemberships': _x('WooCommerce Memberships', 'Dynamic segment creation: User selects this to use any WooCommerce Memberships filters'),
+    'selectWooMembership': __('Search membership plans'),
     'segmentsActiveSubscription': __('has active subscription'),
     'woocommerceSubscriptions': _x('WooCommerce Subscriptions', 'Dynamic segment creation: User selects this to use any WooCommerce Subscriptions filters'),
     'selectWooSubscription': __('Search subscriptions'),

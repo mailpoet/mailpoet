@@ -3,6 +3,7 @@ export enum SegmentTypes {
   WordPressRole = 'userRole',
   SubscribedDate = 'subscribedDate',
   WooCommerce = 'woocommerce',
+  WooCommerceMembership = 'woocommerceMembership',
   WooCommerceSubscription = 'woocommerceSubscription'
 }
 
@@ -83,6 +84,11 @@ export interface WooCommerceFormItem extends FormItem {
   country_code?: string[];
 }
 
+export interface WooCommerceMembershipFormItem extends FormItem {
+  plan_ids?: string[];
+  operator?: AnyValueTypes;
+}
+
 export interface WooCommerceSubscriptionFormItem extends FormItem {
   product_ids?: string[];
   operator?: AnyValueTypes;
@@ -129,6 +135,11 @@ export type WindowProducts = {
   name: string;
 }[];
 
+export type WindowMembershipPlans = {
+  id: string;
+  name: string;
+}[];
+
 export type WindowSubscriptionProducts = {
   id: string;
   name: string;
@@ -169,11 +180,13 @@ export type StaticSegment = {
 export interface SegmentFormDataWindow extends Window {
   wordpress_editable_roles_list: WindowEditableRoles;
   mailpoet_products: WindowProducts;
+  mailpoet_membership_plans: WindowMembershipPlans;
   mailpoet_subscription_products: WindowSubscriptionProducts;
   mailpoet_product_categories: WindowProductCategories;
   mailpoet_woocommerce_countries: WindowWooCommerceCountries;
   mailpoet_newsletters_list: WindowNewslettersList;
   mailpoet_custom_fields: WindowCustomFields;
+  mailpoet_can_use_woocommerce_memberships: boolean;
   mailpoet_can_use_woocommerce_subscriptions: boolean;
   mailpoet_woocommerce_currency_symbol: string;
   mailpoet_static_segments_list: StaticSegment[];
@@ -181,10 +194,12 @@ export interface SegmentFormDataWindow extends Window {
 
 export interface StateType {
   products: WindowProducts;
+  membershipPlans: WindowMembershipPlans;
   subscriptionProducts: WindowSubscriptionProducts;
   wordpressRoles: WindowEditableRoles;
   productCategories: WindowProductCategories;
   newslettersList: WindowNewslettersList;
+  canUseWooMemberships: boolean;
   canUseWooSubscriptions: boolean;
   wooCurrencySymbol: string;
   wooCountries: WindowWooCommerceCountries;
