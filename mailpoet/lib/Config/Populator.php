@@ -604,7 +604,7 @@ class Populator {
   private function updateMetaFields() {
     global $wpdb;
     // perform once for versions below or equal to 3.26.0
-    if (version_compare($this->settings->get('db_version', '3.26.1'), '3.26.0', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.26.1'), '3.26.0', '>')) {
       return false;
     }
     $tables = [ScheduledTask::$_table, SendingQueue::$_table];
@@ -644,7 +644,7 @@ class Populator {
   private function updateLastSubscribedAt() {
     global $wpdb;
     // perform once for versions below or equal to 3.42.0
-    if (version_compare($this->settings->get('db_version', '3.42.1'), '3.42.0', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.42.1'), '3.42.0', '>')) {
       return false;
     }
     $query = "UPDATE `%s` SET last_subscribed_at = GREATEST(COALESCE(confirmed_at, 0), COALESCE(created_at, 0)) WHERE status != '%s' AND last_subscribed_at IS NULL;";
@@ -688,7 +688,7 @@ class Populator {
   }
 
   private function enableStatsNotificationsForAutomatedEmails() {
-    if (version_compare($this->settings->get('db_version', '3.31.2'), '3.31.1', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.31.2'), '3.31.1', '>')) {
       return;
     }
     $settings = $this->settings->get(Worker::SETTINGS_KEY);
@@ -697,7 +697,7 @@ class Populator {
   }
 
   private function updateSentUnsubscribeLinksToInstantUnsubscribeLinks() {
-    if (version_compare($this->settings->get('db_version', '3.46.14'), '3.46.13', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.46.14'), '3.46.13', '>')) {
       return;
     }
     $query = "UPDATE `%s` SET `url` = '%s' WHERE `url` = '%s';";
@@ -711,7 +711,7 @@ class Populator {
   }
 
   private function pauseTasksForPausedNewsletters() {
-    if (version_compare($this->settings->get('db_version', '3.60.5'), '3.60.4', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.60.5'), '3.60.4', '>')) {
       return;
     }
 
@@ -739,7 +739,7 @@ class Populator {
   }
 
   private function addPlacementStatusToForms() {
-    if (version_compare($this->settings->get('db_version', '3.49.0'), '3.48.1', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.49.0'), '3.48.1', '>')) {
       return;
     }
     $forms = $this->formsRepository->findAll();
@@ -783,7 +783,7 @@ class Populator {
   }
 
   private function migrateFormPlacement() {
-    if (version_compare($this->settings->get('db_version', '3.50.0'), '3.49.1', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.50.0'), '3.49.1', '>')) {
       return;
     }
     $forms = $this->formsRepository->findAll();
@@ -869,7 +869,7 @@ class Populator {
 
   private function moveGoogleAnalyticsFromPremium() {
     global $wpdb;
-    if (version_compare($this->settings->get('db_version', '3.38.2'), '3.38.1', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.38.2'), '3.38.1', '>')) {
       return;
     }
     $premiumTableName = $wpdb->prefix . 'mailpoet_premium_newsletter_extra_data';
@@ -903,7 +903,7 @@ class Populator {
   }
 
   private function scheduleSubscriberLastEngagementDetection() {
-    if (version_compare($this->settings->get('db_version', '3.72.1'), '3.72.0', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.72.1'), '3.72.0', '>')) {
       return;
     }
     $this->scheduleTask(
@@ -921,7 +921,7 @@ class Populator {
   }
 
   private function moveNewsletterTemplatesThumbnailData() {
-    if (version_compare($this->settings->get('db_version', '3.73.3'), '3.73.2', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.73.3'), '3.73.2', '>')) {
       return;
     }
     $newsletterTemplatesTable = $this->entityManager->getClassMetadata(NewsletterTemplateEntity::class)->getTableName();
@@ -933,7 +933,7 @@ class Populator {
   }
 
   private function updateToUnifiedTrackingSettings() {
-    if (version_compare($this->settings->get('db_version', '3.74.3'), '3.74.2', '>')) {
+    if (version_compare((string)$this->settings->get('db_version', '3.74.3'), '3.74.2', '>')) {
       return;
     }
     $emailTracking = $this->settings->get('tracking.enabled', true);

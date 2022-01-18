@@ -24,7 +24,7 @@ class SubscriptionUrlFactoryTest extends \MailPoetTest {
 
   public function testGetReEngagementUrlReturnsDefaultUrl() {
     $expectedUrl = '/?mailpoet_page=subscriptions&mailpoet_router&endpoint=subscription&action=re_engagement&data=';
-    $this->assertContains($expectedUrl, $this->subscriptionUrlFactory->getReEngagementUrl($this->subscriber));
+    $this->assertStringContainsString($expectedUrl, $this->subscriptionUrlFactory->getReEngagementUrl($this->subscriber));
   }
 
   public function testGetReEngagementUrlReturnsUrlToUserSelectedPage() {
@@ -42,7 +42,7 @@ class SubscriptionUrlFactoryTest extends \MailPoetTest {
       $expectedUrl = '/?page_id=2';
     }
 
-    $this->assertContains($expectedUrl, $this->subscriptionUrlFactory->getReEngagementUrl($this->subscriber));
+    $this->assertStringContainsString($expectedUrl, $this->subscriptionUrlFactory->getReEngagementUrl($this->subscriber));
   }
 
   public function _after() {

@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Subscription;
 
 use Codeception\Util\Fixtures;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberIPEntity;
 use MailPoet\Models\Subscriber;
 use MailPoet\Subscribers\SubscriberIPsRepository;
@@ -84,5 +85,6 @@ class CaptchaTest extends \MailPoetTest {
 
   public function _after() {
     $this->truncateEntity(SubscriberIPEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
   }
 }
