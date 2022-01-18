@@ -81,92 +81,30 @@ if (is_dir((string)getenv('WP_TEST_CACHE_PATH'))) {
 // the action is called in ConflictResolverTest
 remove_filter('admin_print_styles', 'wp_resource_hints', 1);
 
-// Unset filters, which woocommerce hooks onto and causes integration tests
-// to fail, because some WC's functions can't be serialized
-$woocommerceBlacklistFilters = [
-  'init',
-  'after_switch_theme',
-  'after_setup_theme',
-  'switch_blog',
-  'shutdown',
-  'plugins_loaded',
-  'rest_api_init',
-  'admin_menu',
-  'admin_notices',
-  'activated_plugin',
-  'activate_woocommerce-admin/woocommerce-admin.php',
-  'deactivate_woocommerce-admin/woocommerce-admin.php',
-  'deactivated_plugin',
-  'woocommerce_admin_features',
-];
-foreach ($woocommerceBlacklistFilters as $woocommerceBlacklistFilter) {
-  unset($GLOBALS['wp_filter'][$woocommerceBlacklistFilter]);
-};
-
-if (isset($GLOBALS['GLOBALS']['_wp_registered_theme_features']['post-formats']['show_in_rest'])) {
-  unset($GLOBALS['GLOBALS']['_wp_registered_theme_features']['post-formats']['show_in_rest']);
-}
-
 /**
  * @property IntegrationTester $tester
  */
 abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
-  protected $backupGlobals = true;
-  protected $backupGlobalsBlacklist = [
-    'app',
-    'post',
-    'authordata',
-    'currentday',
-    'currentmonth',
-    'page',
-    'pages',
-    'multipage',
-    'more',
-    'numpages',
-    'is_iphone',
-    'is_chrome',
-    'is_safari',
-    'is_NS4',
-    'is_opera',
-    'is_macIE',
-    'is_winIE',
-    'is_gecko',
-    'is_lynx',
-    'is_IE',
-    'is_apache',
-    'is_IIS',
-    'is_iis7',
-    'wp_version',
-    'wp_db_version',
-    'tinymce_version',
-    'manifest_version',
-    'required_php_version',
-    'required_mysql_version',
-    'super_admins',
-    'wp_query',
-    'wp_rewrite',
-    'wp',
-    'wpdb',
-    'wp_locale',
-    'wp_admin_bar',
-    'wp_roles',
-    'wp_meta_boxes',
-    'wp_registered_sidebars',
-    'wp_registered_widgets',
-    'wp_registered_widget_controls',
-    'wp_registered_widget_updates',
-    '_wp_registered_theme_features',
-    'pagenow',
-    'post_type',
-    'allowedposttags',
-    'allowedtags',
-    'menu',
-    'woocommerce',
+  private const BACKUP_GLOBALS_NAMES = [
+    'wp_filter',
+    'wp_actions',
+    'wp_current_filter',
+    '_SESSION',
+    '_ENV',
+    '_POST',
+    '_GET',
+    '_COOKIE',
+    '_FILES',
+    '_REQUEST',
+    '_SERVER',
   ];
+
+  protected $backupGlobals = false;
   protected $backupStaticAttributes = false;
   protected $runTestInSeparateProcess = false;
   protected $preserveGlobalState = false;
-  protected $inIsolation = false;
+
+  protected static $savedGlobals;
 
   /** @var ContainerWrapper */
   protected $diContainer;
@@ -186,11 +124,16 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->entityManager->clear();
     $this->clearSubscribersCountCache();
+    if (!self::$savedGlobals) {
+      $this->backupGlobals();
+    }
     parent::setUp();
   }
 
   public function tearDown(): void {
     $this->entityManager->clear();
+    $this->restoreGlobals();
+    wp_set_current_user(0);
     parent::tearDown();
   }
 
@@ -233,6 +176,28 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $cache = $this->diContainer->get(TransientCache::class);
     $cache->invalidateItems(TransientCache::SUBSCRIBERS_STATISTICS_COUNT_KEY);
     $cache->invalidateItems(TransientCache::SUBSCRIBERS_GLOBAL_STATUS_STATISTICS_COUNT_KEY);
+  }
+
+  protected function backupGlobals(): void {
+    self::$savedGlobals = [];
+    foreach (self::BACKUP_GLOBALS_NAMES as $globalName) {
+      foreach ($GLOBALS[$globalName] ?? [] as $key => $value) {
+        self::$savedGlobals[$globalName][$key] = is_object($value) ? clone $value : $value;
+      }
+    }
+  }
+
+  protected function restoreGlobals(): void {
+    if (empty(self::$savedGlobals)) {
+      return;
+    }
+
+    foreach (self::BACKUP_GLOBALS_NAMES as $globalName) {
+      $GLOBALS[$globalName] = [];
+      foreach (self::$savedGlobals[$globalName] ?? [] as $key => $value) {
+        $GLOBALS[$globalName][$key] = is_object($value) ? clone $value : $value;
+      }
+    }
   }
 }
 
