@@ -25,6 +25,10 @@ class ServicesChecker {
     $this->subscribersFeature = ContainerWrapper::getInstance()->get(SubscribersFeature::class);
   }
 
+  public function isPremiumPluginActive() {
+    return License::getLicense() ? true : false;
+  }
+
   public function isMailPoetAPIKeyValid($displayErrorNotice = true, $forceCheck = false) {
     if (!$forceCheck && !Bridge::isMPSendingServiceEnabled()) {
       return null;

@@ -1,6 +1,6 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
-import PremiumRequired from 'common/premium_required/premium_required';
+import PremiumBannerWithUpgrade from 'common/premium_banner_with_upgrade/premium_banner_with_upgrade';
 import Button from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
 
@@ -34,8 +34,7 @@ const DynamicSegmentsPremiumBanner: React.FunctionComponent = () => {
   );
 
   return (
-    <PremiumRequired
-      title={MailPoet.I18n.t('premiumFeature')}
+    <PremiumBannerWithUpgrade
       message={getBannerMessage({})}
       actionButton={getCtaButton({})}
     />

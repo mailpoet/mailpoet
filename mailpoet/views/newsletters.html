@@ -63,6 +63,10 @@
       var mailpoet_newsletters_count = <%= newsletters_count %>;
       var mailpoet_send_transactional_emails = <%= json_encode(settings.send_transactional_emails == '1') %>;
       var mailpoet_settings = <%= json_encode(settings) %>;
+      var mailpoet_has_premium_support = <%= has_premium_support ? 'true' : 'false' %>;
+      var mailpoet_premium_plugin_installed = <%= json_encode(premium_plugin_installed) %>;
+      var mailpoet_premium_plugin_download_url = <%= json_encode(premium_plugin_download_url) %>;
+      var mailpoet_premium_plugin_activation_url = <%= json_encode(premium_plugin_activation_url) %>;
 
       <% if not(premium_plugin_active) %>
         var mailpoet_free_premium_subscribers_limit = <%= free_premium_subscribers_limit %>;
@@ -218,6 +222,11 @@
     'createFirstEmailTitle': __('Create your first email'),
     'seeVideoGuide': __('See video guide'),
     'premiumFeature': __('This is a Premium feature'),
+    'premiumFeatureDescription':  __('Your current MailPoet plan includes advanced features, but they require the MailPoet Premium plugin to be installed and activated.'),
+    'premiumFeatureButtonDownloadPremium':  __('Download MailPoet Premium plugin'),
+    'premiumFeatureButtonActivatePremium':  __('Activate MailPoet Premium plugin'),
+    'premiumFeatureDescriptionSubscribersLimitReached':  __('Congratulations, you now have [subscribersCount] subscribers! Your plan is limited to [subscribersLimit] subscribers. You need to upgrade now to be able to continue using MailPoet.'),
+    'premiumFeatureButtonUpgradePlan':  __('Upgrade your plan'),
     'learnMore': __('Learn more'),
     'regularNewsletterTypeTitle': __('Newsletter'),
     'regularNewsletterTypeDescription': __('Send a newsletter with images, buttons, dividers, and social bookmarks. Or, just send a basic text email.'),

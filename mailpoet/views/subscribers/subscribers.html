@@ -23,11 +23,15 @@
     var mailpoet_subscribers_limit = <%= subscribers_limit ? subscribers_limit : 'false'  %>;
     var mailpoet_subscribers_limit_reached = <%= subscribers_limit_reached ? 'true' : 'false' %>;
     var mailpoet_has_valid_api_key = <%= has_valid_api_key ? 'true' : 'false' %>;
+    var mailpoet_has_valid_premium_key = <%= has_valid_premium_key ? 'true' : 'false' %>;
     var mailpoet_mss_key_invalid = <%= mss_key_invalid ? 'true' : 'false' %>;
     var mailpoet_subscribers_count = <%= subscriber_count %>;
     var mailpoet_has_premium_support = <%= has_premium_support ? 'true' : 'false' %>;
     var mailpoet_premium_link = <%= json_encode(link_premium) %>;
     var mailpoet_subscribers_counts_cache_created_at = <%= json_encode(subscribers_counts_cache_created_at) %>;
+    var mailpoet_premium_plugin_installed = <%= json_encode(premium_plugin_installed) %>;
+    var mailpoet_premium_plugin_download_url = <%= json_encode(premium_plugin_download_url) %>;
+    var mailpoet_premium_plugin_activation_url = <%= json_encode(premium_plugin_activation_url) %>;
   </script>
 <% endblock %>
 
@@ -145,6 +149,11 @@
     'planLimitReached': __('Congratulations, you now have [subscribersCount] subscribers! Your plan is limited to [subscribersLimit] subscribers. You need to upgrade now to be able to continue using MailPoet.'),
     'premiumBannerCtaFree': __('Sign Up for Free'),
     'premiumBannerCtaUpgrade': __('Upgrade Now'),
+    'premiumFeatureDescription':  __('Your current MailPoet plan includes advanced features, but they require the MailPoet Premium plugin to be installed and activated.'),
+    'premiumFeatureButtonDownloadPremium':  __('Download MailPoet Premium plugin'),
+    'premiumFeatureButtonActivatePremium':  __('Activate MailPoet Premium plugin'),
+    'premiumFeatureDescriptionSubscribersLimitReached':  __('Congratulations, you now have [subscribersCount] subscribers! Your plan is limited to [subscribersLimit] subscribers. You need to upgrade now to be able to continue using MailPoet.'),
+    'premiumFeatureButtonUpgradePlan':  __('Upgrade your plan'),
     'columnAction': _x('Action', 'Table column label for subscriber actions e.g. email open, link clicked'),
     'columnActionOn': _x('Action on', 'Table column label for date when subscriber action happened'),
     'columnCount': _x('Count', 'Table column label for count of subscriber actions'),

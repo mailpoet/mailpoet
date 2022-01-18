@@ -5,6 +5,7 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\Cache\TransientCache;
+use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\DynamicSegmentFilterData;
@@ -93,6 +94,9 @@ class Segments {
   }
 
   public function render() {
+    $installer = new Installer(Installer::PREMIUM_PLUGIN_SLUG);
+    $pluginInformation = $installer->retrievePluginInformation();
+
     $data = [];
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('segments');
 
@@ -106,6 +110,12 @@ class Segments {
     $data['has_premium_support'] = $this->subscribersFeature->hasPremiumSupport();
     $data['link_premium'] = $this->wp->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-premium');
     $data['mss_key_invalid'] = ($this->servicesChecker->isMailPoetAPIKeyValid() === false);
+
+    $data['premium_plugin_active'] = $this->servicesChecker->isPremiumPluginActive();
+    $data['premium_plugin_installed'] = $data['premium_plugin_active'] || Installer::isPluginInstalled(Installer::PREMIUM_PLUGIN_SLUG);
+    $data['premium_plugin_download_url'] = $pluginInformation->download_link ?? null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $data['premium_plugin_activation_url'] = $installer->generatePluginActivationUrl(Installer::PREMIUM_PLUGIN_PATH);
+
     $customFields = $this->customFieldsRepository->findBy([], ['name' => 'asc']);
     $data['custom_fields'] = $this->customFieldsResponseBuilder->buildBatch($customFields);
 

@@ -10,6 +10,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Installer {
   const PREMIUM_PLUGIN_SLUG = 'mailpoet-premium';
+  const PREMIUM_PLUGIN_PATH = 'mailpoet-premium/mailpoet-premium.php';
 
   private $slug;
 
@@ -25,6 +26,14 @@ class Installer {
 
   public function init() {
     WPFunctions::get()->addFilter('plugins_api', [$this, 'getPluginInformation'], 10, 3);
+  }
+
+  public function generatePluginActivationUrl(string $plugin): string {
+    return WPFunctions::get()->adminUrl('plugins.php?' . implode('&', [
+      'action=activate',
+      'plugin=' . urlencode($plugin),
+      '_wpnonce=' . wp_create_nonce('activate-plugin_' . $plugin),
+    ]));
   }
 
   public function getPluginInformation($data, $action = '', $args = null) {

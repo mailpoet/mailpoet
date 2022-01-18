@@ -39,6 +39,10 @@
     var mailpoet_woocommerce_countries = <%= json_encode(woocommerce_countries)  %>;
     var mailpoet_tracking_config = <%= json_encode(tracking_config) %>;
     var mailpoet_subscribers_counts_cache_created_at = <%= json_encode(subscribers_counts_cache_created_at) %>;
+    var mailpoet_premium_active = <%= json_encode(premium_plugin_active) %>;
+    var mailpoet_premium_plugin_installed = <%= json_encode(premium_plugin_installed) %>;
+    var mailpoet_premium_plugin_download_url = <%= json_encode(premium_plugin_download_url) %>;
+    var mailpoet_premium_plugin_activation_url = <%= json_encode(premium_plugin_activation_url) %>;
 
   </script>
 <% endblock %>
@@ -254,6 +258,11 @@
     'premiumFeature': __('This is a Premium feature'),
     'premiumFeatureMultipleConditions': __('Your current MailPoet plan does not support advanced segments with multiple conditions. Upgrade to the MailPoet Premium plan to more precisely target your emails based on how people engage with your business. [link]Learn more.[/link]'),
     'premiumBannerCtaFree': __('Sign Up for Free'),
+    'premiumFeatureDescription':  __('Your current MailPoet plan includes advanced features, but they require the MailPoet Premium plugin to be installed and activated.'),
+    'premiumFeatureButtonDownloadPremium':  __('Download MailPoet Premium plugin'),
+    'premiumFeatureButtonActivatePremium':  __('Activate MailPoet Premium plugin'),
+    'premiumFeatureDescriptionSubscribersLimitReached':  __('Congratulations, you now have [subscribersCount] subscribers! Your plan is limited to [subscribersLimit] subscribers. You need to upgrade now to be able to continue using MailPoet.'),
+    'premiumFeatureButtonUpgradePlan':  __('Upgrade your plan'),
   }) %>
 <% endblock %>
 
