@@ -47,6 +47,7 @@ class AcceptanceTester extends \Codeception\Actor {
   const AUTHORIZED_SENDING_EMAIL = 'staff@mailpoet.com';
   const LISTING_LOADING_SELECTOR = '.mailpoet-listing-loading';
   const WOO_COMMERCE_PLUGIN = 'woocommerce';
+  const WOO_COMMERCE_MEMBERSHIPS_PLUGIN = 'woocommerce-memberships';
   const WOO_COMMERCE_SUBSCRIPTIONS_PLUGIN = 'woocommerce-subscriptions';
 
   /**
@@ -367,6 +368,16 @@ class AcceptanceTester extends \Codeception\Actor {
   public function deactivateWooCommerce() {
     $i = $this;
     $i->cli(['plugin', 'deactivate', self::WOO_COMMERCE_PLUGIN]);
+  }
+
+  public function activateWooCommerceMemberships() {
+    $i = $this;
+    $i->cli(['plugin', 'activate', self::WOO_COMMERCE_MEMBERSHIPS_PLUGIN]);
+  }
+
+  public function deactivateWooCommerceMemberships() {
+    $i = $this;
+    $i->cli(['plugin', 'deactivate', self::WOO_COMMERCE_MEMBERSHIPS_PLUGIN]);
   }
 
   public function activateWooCommerceSubscriptions() {
