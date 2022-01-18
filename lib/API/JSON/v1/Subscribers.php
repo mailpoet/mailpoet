@@ -145,6 +145,10 @@ class Subscribers extends APIEndpoint {
     } catch (ValidationException $validationException) {
       return $this->badRequest([$this->getErrorMessage($validationException)]);
     }
+    /**
+     * Custom hook added when form is submitted successfully. - By Uncanny Automator
+     */
+    do_action('mailpoet_form_submitted', $subscriber, $this);
 
     return $this->successResponse(
       $this->subscribersResponseBuilder->build($subscriber)
