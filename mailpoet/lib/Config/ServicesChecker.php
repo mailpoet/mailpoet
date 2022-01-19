@@ -165,4 +165,12 @@ class ServicesChecker {
     }
     return null;
   }
+
+  public function generateHalfApiKey() {
+    $key = $this->getAnyValidKey();
+
+    $halfKeyLength = (int)(strlen($key) / 2);
+
+    return substr($key, 0, $halfKeyLength);
+  }
 }
