@@ -80,6 +80,17 @@ export default function InactiveSubscribers() {
                 {t('after12months')}
               </label>
             </div>
+            <div className="mailpoet-settings-inputs-row">
+              <Radio
+                id="inactive-subscribers-18-months"
+                value="540"
+                checked={duration === '540'}
+                onCheck={setDuration}
+              />
+              <label htmlFor="inactive-subscribers-18-months">
+                {t('after18months')}
+              </label>
+            </div>
           </div>
         )}
       </Inputs>

@@ -89,7 +89,7 @@ export default function normalizeSettings(data: Record<string, unknown>): Settin
     }),
     tracking: asObject({ level: asEnum(['full', 'partial', 'basic'], 'full') }),
     send_transactional_emails: disabledRadio,
-    deactivate_subscriber_after_inactive_days: asEnum(['', '90', '180', '365'], '180'),
+    deactivate_subscriber_after_inactive_days: asEnum(['', '90', '180', '365', '540'], '365'),
     analytics: asObject({ enabled: disabledRadio }),
     '3rd_party_libs': asObject({ enabled: disabledRadio }),
     captcha: asObject({
