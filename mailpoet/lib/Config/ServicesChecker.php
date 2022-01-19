@@ -167,7 +167,7 @@ class ServicesChecker {
   }
 
   public function generateHalfApiKey() {
-    $key = $this->getAnyValidKey();
+    $key = (string)($this->getAnyValidKey());
 
     $halfKeyLength = (int)(strlen($key) / 2);
 
