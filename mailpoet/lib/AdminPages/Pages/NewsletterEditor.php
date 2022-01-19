@@ -138,7 +138,7 @@ class NewsletterEditor {
       'confirmed_ip' => $subscriber->getConfirmedIp(),
       'confirmed_at' => ($confirmedAt = $subscriber->getConfirmedAt()) ? $confirmedAt->format(self::DATE_FORMAT) : null,
       'last_subscribed_at' => ($lastSubscribedAt = $subscriber->getLastSubscribedAt()) ? $lastSubscribedAt->format(self::DATE_FORMAT) : null,
-      'created_at' => $subscriber->getCreatedAt()->format(self::DATE_FORMAT),
+      'created_at' => ($createdAt = $subscriber->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
       'updated_at' => $subscriber->getUpdatedAt()->format(self::DATE_FORMAT),
       'deleted_at' => ($deletedAt = $subscriber->getDeletedAt()) ? $deletedAt->format(self::DATE_FORMAT) : null,
       'unconfirmed_data' => $subscriber->getUnconfirmedData(),

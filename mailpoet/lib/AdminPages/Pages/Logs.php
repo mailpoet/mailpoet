@@ -42,7 +42,7 @@ class Logs {
         'id' => $log->getId(),
         'name' => $log->getName(),
         'message' => $log->getMessage(),
-        'created_at' => $log->getCreatedAt()->format('Y-m-d H:i:s'),
+        'created_at' => ($createdAt = $log->getCreatedAt()) ? $createdAt->format('Y-m-d H:i:s') : null,
       ];
     }
     $this->pageRenderer->displayPage('logs.html', $data);
