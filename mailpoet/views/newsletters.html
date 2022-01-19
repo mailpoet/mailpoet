@@ -31,6 +31,7 @@
       var mailpoet_mss_key_invalid = <%= mss_key_invalid ? 'true' : 'false' %>;
       var mailpoet_product_categories = <%= json_encode(product_categories)  %>;
       var mailpoet_products = <%= json_encode(products) %>;
+      var mailpoet_plugin_half_key = <%= json_encode(plugin_half_key) %>;
 
       var has_mss_key_specified = <%= json_encode(has_mss_key_specified) %>;
       var mailpoet_account_url = '<%= add_referral_id("https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email|escape('js')) %>';

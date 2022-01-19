@@ -19,6 +19,7 @@ interface BannerWindow extends Window {
   mailpoet_premium_plugin_installed: boolean;
   mailpoet_premium_plugin_download_url: string;
   mailpoet_premium_plugin_activation_url: string;
+  mailpoet_plugin_half_key: string;
 }
 
 declare let window: BannerWindow;
@@ -31,8 +32,9 @@ const hasValidApiKey = window.mailpoet_has_valid_api_key || window.mailpoet_has_
 const downloadUrl = window.mailpoet_premium_plugin_download_url;
 const activationUrl = window.mailpoet_premium_plugin_activation_url;
 const isPremiumPluginInstalled = window.mailpoet_premium_plugin_installed;
+const halfKey = window.mailpoet_plugin_half_key;
 
-const getBannerMessage = (translationKey) => {
+const getBannerMessage = (translationKey: string) => {
   const message = MailPoet.I18n.t(translationKey);
   return (
     <p>
@@ -45,7 +47,7 @@ const getBannerMessage = (translationKey) => {
   );
 };
 
-const getCtaButton = (translationKey, link = null, target = '_blank') => (
+const getCtaButton = (translationKey: string, link: string, target = '_blank') => (
   <Button
     href={link}
     target={target}
@@ -71,7 +73,7 @@ const PremiumBannerWithUpgrade: React.FunctionComponent<Props> = (
     bannerMessage = getBannerMessage('premiumFeatureDescriptionSubscribersLimitReached');
 
     const link = hasValidApiKey
-      ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl()
+      ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl(halfKey)
       : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(subscribersCountTowardsLimit + 1);
 
     ctaButton = getCtaButton('premiumFeatureButtonUpgradePlan', link);
