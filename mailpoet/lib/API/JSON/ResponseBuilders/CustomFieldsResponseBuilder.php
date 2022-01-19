@@ -23,7 +23,7 @@ class CustomFieldsResponseBuilder {
       'name' => $customField->getName(),
       'type' => $customField->getType(),
       'params' => $customField->getParams(),
-      'created_at' => $customField->getCreatedAt()->format('Y-m-d H:i:s'),
+      'created_at' => ($createdAt = $customField->getCreatedAt()) ? $createdAt->format('Y-m-d H:i:s') : null,
       'updated_at' => $customField->getUpdatedAt()->format('Y-m-d H:i:s'),
     ];
   }

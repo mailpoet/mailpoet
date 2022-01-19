@@ -155,12 +155,14 @@ class SubscriberActionsTest extends \MailPoetTest {
     expect($subscriber->getFirstName())->equals('Donald');
     expect($subscriber->getLastName())->equals('Trump');
 
+    $createdAt = $subscriber->getCreatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
     expect($subscriber->getWpUserId())->null();
     expect($subscriber->getIsWoocommerceUser())->equals(0);
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
-    expect($subscriber->getCreatedAt()->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:01');
+    expect($createdAt->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:01');
     expect($subscriber->getUpdatedAt()->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:02');
-    expect($subscriber->getCreatedAt()->getTimestamp())->equals($subscriber->getUpdatedAt()->getTimestamp(), 2);
+    expect($createdAt->getTimestamp())->equals($subscriber->getUpdatedAt()->getTimestamp(), 2);
     expect($subscriber->getDeletedAt())->null();
   }
 
