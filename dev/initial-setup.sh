@@ -18,7 +18,7 @@ cp -n mailpoet/.env.sample mailpoet/.env
 # create Docker mount endpoints beforehand with current user (Docker would create them as root)
 mkdir -p wordpress/wp-content/plugins/mailpoet
 mkdir -p wordpress/wp-content/plugins/mailpoet-premium
-mkdir -p fake_mail_output
+mkdir -p dev/data/mailhog
 
 for plugin in "mailpoet" "mailpoet-premium"; do
   docker-compose run --rm wordpress /bin/sh -c "
