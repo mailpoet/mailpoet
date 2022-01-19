@@ -41,6 +41,9 @@ docker-compose down -v --remove-orphans
 docker-compose up -d
 ```
 
+**NOTE:** If you are on MacOS Catalina or newer, make sure to put the repository
+outside your `Documents` folder, otherwise you may run into [file permission issues](https://objekt.click/2019/11/docker-the-problem-with-macos-catalina/).
+
 # 🐶 Husky
 We use [Husky](https://github.com/typicode/husky) to run automated checks in pre-commit hooks.
 
