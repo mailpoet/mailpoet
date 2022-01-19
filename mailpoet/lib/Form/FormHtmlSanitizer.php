@@ -38,6 +38,10 @@ class FormHtmlSanitizer {
       'data-font' => true,
       'class' => true,
     ],
+    'mark' => [
+      'style' => true,
+      'class' => true,
+    ],
     'strong' => [],
     'sub' => [],
     'sup' => [],
