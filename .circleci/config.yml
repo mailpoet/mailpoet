@@ -181,7 +181,7 @@ jobs:
   build_premium:
     executor: wpcli_php_latest
     resource_class: medium
-    working_directory: /home/circleci/mailpoet/mailpoet
+    working_directory: /home/circleci/mailpoet
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
@@ -191,31 +191,30 @@ jobs:
           command: |
             # Add GitHub to known_hosts because there is no checkout step in this job
             echo "github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" >> ~/.ssh/known_hosts
-            git clone ${MAILPOET_PREMIUM_REPO_URL} mp3premium
+            git clone ${MAILPOET_PREMIUM_REPO_URL} mailpoet-premium
       - restore_cache:
-          key: premium-tools-{{ checksum "mp3premium/tools/install.php" }}
+          key: premium-tools-{{ checksum "mailpoet-premium/tools/install.php" }}
       - restore_cache:
-          key: premium-composer-{{ checksum "mp3premium/composer.json" }}-{{ checksum "mp3premium/composer.lock" }}
+          key: premium-composer-{{ checksum "mailpoet-premium/composer.json" }}-{{ checksum "mailpoet-premium/composer.lock" }}
       - run:
           name: "Set up test environment"
           command: |
             # install Premium dependencies
-            MAILPOET_FREE_PATH=$(pwd)
-            cd mp3premium
+            MAILPOET_FREE_PATH=$(pwd)/mailpoet
+            cd mailpoet-premium
             COMPOSER_DEV_MODE=1 php tools/install.php
             echo "MAILPOET_FREE_PATH=${MAILPOET_FREE_PATH}" > .env
             ./tools/vendor/composer.phar validate --no-check-all --no-check-publish
             ./do install
             ./do compile:all --env production
-            cd ..
       - save_cache:
-          key: premium-tools-{{ checksum "mp3premium/tools/install.php" }}
+          key: premium-tools-{{ checksum "mailpoet-premium/tools/install.php" }}
           paths:
-            - mp3premium/tools/vendor
+            - mailpoet-premium/tools/vendor
       - save_cache:
-          key: premium-composer-{{ checksum "mp3premium/composer.json" }}-{{ checksum "mp3premium/composer.lock" }}
+          key: premium-composer-{{ checksum "mailpoet-premium/composer.json" }}-{{ checksum "mailpoet-premium/composer.lock" }}
           paths:
-            - mp3premium/vendor
+            - mailpoet-premium/vendor
       - persist_to_workspace:
           root: /home/circleci/mailpoet
           paths:
