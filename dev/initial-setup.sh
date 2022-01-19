@@ -8,7 +8,7 @@ git clone git@github.com:mailpoet/mailpoet-premium.git 2>/dev/null \
 # to avoid any potential problems with file permissions (mainly on Linux).
 cat <<EOT > .env
 UID=$(id -u)
-UID=$(id -g)
+GID=$(id -g)
 EOT
 
 # create plugin .env files if they don't exist
