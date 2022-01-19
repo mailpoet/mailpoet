@@ -33,6 +33,7 @@ class BatchIterator implements \Iterator, \Countable {
   /**
    * @return mixed - it's required for PHP8.1 to prevent using ReturnTypeWillChange that cause an error in PHPStan with PHP7
    */
+  #[\ReturnTypeWillChange]
   public function current() {
     $subscribers = $this->getSubscribers()
       ->orderByAsc('subscriber_id')
@@ -46,6 +47,7 @@ class BatchIterator implements \Iterator, \Countable {
   /**
    * @return string|float|int|bool|null - it's required for PHP8.1 to prevent using ReturnTypeWillChange that cause an error in PHPStan with PHP7
    */
+  #[\ReturnTypeWillChange]
   public function key() {
     return null;
   }

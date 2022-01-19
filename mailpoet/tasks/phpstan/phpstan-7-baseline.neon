@@ -1,4 +1,6 @@
 parameters:
+	excludePaths:
+		- ../../lib/Tasks/Subscribers/BatchIterator.php
 	ignoreErrors:
 		-
 			message: "#^Cannot access property \\$permissions on mixed\\.$#"
@@ -1964,4 +1966,3 @@ parameters:
 			message: "#^Part \\$table \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
 			count: 1
 			path: ../../tests/integration/_bootstrap.php
-
