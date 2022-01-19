@@ -54,7 +54,7 @@ export type Settings = {
     enabled: '' | '1';
   };
   send_transactional_emails: '' | '1';
-  deactivate_subscriber_after_inactive_days: '' | '90' | '180' | '365';
+  deactivate_subscriber_after_inactive_days: '' | '90' | '180' | '365' | '540';
   analytics: {
     enabled: '' | '1';
   };
