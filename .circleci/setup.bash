@@ -68,7 +68,7 @@ function setup {
 
   if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
     # Softlink MailPoet Premium to plugin path
-    ln -s ../../../mp3premium ../wordpress/wp-content/plugins/mailpoet-premium
+    ln -s ../../../mailpoet-premium ../wordpress/wp-content/plugins/mailpoet-premium
     # Activate MailPoet Premium
     wp plugin activate mailpoet-premium --path="$root_dir/wordpress"
   fi
