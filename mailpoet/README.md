@@ -2,7 +2,7 @@
 The **MailPoet** plugin.
 
 To use the official Docker-based development environment, see details
-in [the readme file](../readme.md) in the root of this repository. If
+in [the readme file](../README.md) in the root of this repository. If
 you'd like to use the plugin code directly, you can follow the instructions
 below.
 
