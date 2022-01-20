@@ -30,6 +30,19 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
     expect($result)->null();
   }
 
+  public function testItDisplaysWhenInactiveTimeRangeIsTheDefaultValue() {
+    $this->createSubscribers(50);
+
+    $settingsFactory = new Settings();
+    $settingsFactory->withDeactivateSubscriberAfter12Months();
+
+    $notice = new InactiveSubscribersNotice(SettingsController::getInstance(), new WPFunctions());
+    $result = $notice->init(true);
+    expect($result)->stringContainsString('Good news! MailPoet won’t send emails to your 50 inactive subscribers.');
+    expect($result)->stringContainsString('https://kb.mailpoet.com/article/264-inactive-subscribers');
+    expect($result)->stringContainsString('<a href="admin.php?page=mailpoet-settings#advanced" class="button button-primary">Go to the Advanced Settings</a>');
+  }
+
   public function testItDoesntDisplayWhenInactiveTimeRangeChanged() {
     $this->createSubscribers(50);
 

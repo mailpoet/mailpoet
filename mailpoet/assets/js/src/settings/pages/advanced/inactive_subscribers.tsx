@@ -63,7 +63,6 @@ export default function InactiveSubscribers() {
                 value="180"
                 checked={duration === '180'}
                 onCheck={setDuration}
-                automationId="inactive-subscribers-default"
               />
               <label htmlFor="inactive-subscribers-6-months">
                 {t('after6months')}
@@ -75,6 +74,7 @@ export default function InactiveSubscribers() {
                 value="365"
                 checked={duration === '365'}
                 onCheck={setDuration}
+                automationId="inactive-subscribers-default"
               />
               <label htmlFor="inactive-subscribers-12-months">
                 {t('after12months')}
