@@ -63,6 +63,29 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     expect($subscriber->getLastEngagementAt())->greaterThan($oldEngagementTime);
   }
 
+  public function testItFiresActionWhenActivityIsTracked() {
+    $callbackSubscriber = null;
+    $callback = function (SubscriberEntity $subscriberEntity) use (&$callbackSubscriber) {
+      $callbackSubscriber = $subscriberEntity;
+    };
+    $this->tracker->registerCallback('mailpoet_test', $callback);
+    $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_FULL);
+    $this->wp->wpSetCurrentUser(0);
+    $subscriber = $this->createSubscriber();
+    $oldEngagementTime = Carbon::now()->subMinutes(2);
+    $subscriber->setLastEngagementAt($oldEngagementTime);
+    $this->entityManager->flush();
+    $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 180; // 3 minutes ago
+    $this->setPageViewCookieTimestamp($oldPageViewTimestamp);
+    $this->setSubscriberCookieSubscriber($subscriber);
+    $this->pageViewCookie
+      ->expects($this->once())
+      ->method('setPageViewTimestamp');
+    $result = $this->tracker->trackActivity();
+    expect($result)->true();
+    $this->assertInstanceOf(SubscriberEntity::class, $callbackSubscriber);
+  }
+
   public function testItUpdatesPageViewCookieAndSubscriberEngagementForWpUser() {
     $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_FULL);
     $user = (new User())->createUser('name', 'editor', 'editoruser@test.com');

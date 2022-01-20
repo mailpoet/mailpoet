@@ -29,6 +29,9 @@ class SubscriberActivityTracker {
   /** @var ?SubscriberEntity */
   private $activeSubscriber;
 
+  /** @var callable[] */
+  private $callbacks = [];
+
   public function __construct(
     PageViewCookie $pageViewCookie,
     SubscriberCookie $subscriberCookie,
@@ -55,9 +58,20 @@ class SubscriberActivityTracker {
     return true;
   }
 
+  public function registerCallback(string $slug, callable $callback) {
+    $this->callbacks[$slug] = $callback;
+  }
+
+  public function unregisterCallback(string $slug) {
+    unset($this->callbacks[$slug]);
+  }
+
   private function processTracking(SubscriberEntity $subscriber): void {
     $this->subscribersRepository->maybeUpdateLastEngagement($subscriber);
     $this->pageViewCookie->setPageViewTimestamp($this->wp->currentTime('timestamp'));
+    foreach ($this->callbacks as $callback) {
+      $callback($subscriber);
+    }
   }
 
   private function shouldTrack() {
