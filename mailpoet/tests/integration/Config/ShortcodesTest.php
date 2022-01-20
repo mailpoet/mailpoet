@@ -65,6 +65,26 @@ class ShortcodesTest extends \MailPoetTest {
     expect($requestData['newsletter_hash'])->equals($this->newsletter->hash);
   }
 
+  public function testItRendersShortcodeDefaultsInSubject() {
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
+    $this->queue->newsletterRenderedSubject = 'Hello [subscriber:firstname | default:reader]';
+    $this->queue->save();
+    WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
+      $args = func_get_args();
+      $filterName = array_shift($args);
+      switch ($filterName) {
+        case 'mailpoet_archive_date':
+          return $shortcodes->renderArchiveDate($args[0]);
+        case 'mailpoet_archive_subject':
+          return $shortcodes->renderArchiveSubject($args[0], $args[1], $args[2]);
+      }
+      return '';
+    });
+    $result = $shortcodes->getArchive($params = false);
+    WordPress::releaseFunction('apply_filters');
+    expect((string)$result)->stringContainsString('Hello reader');
+  }
+
   public function testItDisplaysManageSubscriptionFormForLoggedinExistingUsers() {
     $wpUser = wp_set_current_user(1);
     expect((new WPFunctions)->isUserLoggedIn())->true();

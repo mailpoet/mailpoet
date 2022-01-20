@@ -8,6 +8,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Widget;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Shortcodes\Shortcodes as NewsletterShortcodes;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -33,12 +34,16 @@ class Shortcodes {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var NewsletterShortcodes */
+  private $shortcodeProcessor;
+
   public function __construct(
     Pages $subscriptionPages,
     WPFunctions $wp,
     SegmentSubscribersRepository $segmentSubscribersRepository,
     SubscribersRepository $subscribersRepository,
     NewsletterUrl $newsletterUrl,
+    NewsletterShortcodes $shortcodeProcessor,
     NewslettersRepository $newslettersRepository
   ) {
     $this->subscriptionPages = $subscriptionPages;
@@ -46,6 +51,7 @@ class Shortcodes {
     $this->segmentSubscribersRepository = $segmentSubscribersRepository;
     $this->subscribersRepository = $subscribersRepository;
     $this->newsletterUrl = $newsletterUrl;
+    $this->shortcodeProcessor = $shortcodeProcessor;
     $this->newslettersRepository = $newslettersRepository;
   }
 
@@ -187,9 +193,12 @@ class Shortcodes {
 
   public function renderArchiveSubject(NewsletterEntity $newsletter, $subscriber, SendingQueueEntity $queue) {
     $previewUrl = $this->newsletterUrl->getViewInBrowserUrl($newsletter, $subscriber, $queue);
+    $this->shortcodeProcessor->setNewsletter($newsletter);
+    $this->shortcodeProcessor->setSubscriber(null);
+    $this->shortcodeProcessor->setQueue($queue);
     return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'
       . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'
-      . esc_attr((string)$queue->getNewsletterRenderedSubject()) .
+      . esc_attr((string)$this->shortcodeProcessor->replace($queue->getNewsletterRenderedSubject())) .
     '</a>';
   }
 }
