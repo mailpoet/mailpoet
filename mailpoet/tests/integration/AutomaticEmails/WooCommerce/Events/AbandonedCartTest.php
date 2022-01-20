@@ -3,6 +3,7 @@
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce as WooCommerceEmail;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
@@ -13,6 +14,7 @@ use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Statistics\Track\SubscriberActivityTracker;
 use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Cookies;
@@ -31,7 +33,7 @@ class AbandonedCartTest extends \MailPoetTest {
   /** @var Carbon */
   private $currentTime;
 
-  /** @var WPFunctions|MockObject */
+  /** @var WPFunctions&MockObject */
   private $wp;
 
   /** @var WooCommerce|MockObject */
@@ -43,14 +45,15 @@ class AbandonedCartTest extends \MailPoetTest {
   /** @var WooCommerceHelper|MockObject */
   private $wooCommerceHelperMock;
 
-  /** @var AbandonedCartPageVisitTracker|MockObject */
-  private $pageVisitTrackerMock;
+  /** @var SubscriberActivityTracker&MockObject */
+  private $subscriberActivityTrackerMock;
 
   public function _before() {
     $this->cleanup();
 
     $this->currentTime = Carbon::createFromTimestamp((new WPFunctions())->currentTime('timestamp'));
     Carbon::setTestNow($this->currentTime);
+    $this->subscriberActivityTrackerMock = $this->createMock(SubscriberActivityTracker::class);
 
     /** @var WPFunctions|MockObject $wp - for phpstan */
     $wp = $this->makeEmpty(WPFunctions::class, [
@@ -74,9 +77,6 @@ class AbandonedCartTest extends \MailPoetTest {
       'WC' => $this->wooCommerceMock,
     ]);
     $this->wooCommerceHelperMock = $wooCommerceHelperMock;
-    /** @var AbandonedCartPageVisitTracker|MockObject $pageVisitTrackerMock - for phpstan */
-    $pageVisitTrackerMock = $this->makeEmpty(AbandonedCartPageVisitTracker::class);
-    $this->pageVisitTrackerMock = $pageVisitTrackerMock;
   }
 
   public function testItGetsEventDetails() {
@@ -89,7 +89,7 @@ class AbandonedCartTest extends \MailPoetTest {
       $wp,
       $wcHelper,
       $subscriberCookie,
-      new AbandonedCartPageVisitTracker($wp, $wcHelper, $subscriberCookie),
+      $this->diContainer->get(SubscriberActivityTracker::class),
       new AutomaticEmailScheduler($wp)
     );
     $result = $event->getEventDetails();
@@ -114,16 +114,12 @@ class AbandonedCartTest extends \MailPoetTest {
     expect($registeredActions)->contains('woocommerce_cart_item_restored');
   }
 
-  public function testItRegistersPageVisitEvent() {
+  public function testItRegistersToSubscriberActivityEvent() {
     $abandonedCartEmail = $this->createAbandonedCartEmail();
-
-    $registeredActions = [];
-    $this->wp->method('addAction')->willReturnCallback(function ($name) use (&$registeredActions) {
-      $registeredActions[] = $name;
-    });
+    $this->subscriberActivityTrackerMock
+      ->expects($this->once())
+      ->method('registerCallback');
     $abandonedCartEmail->init();
-
-    expect($registeredActions)->contains('wp');
   }
 
   public function testItFindsUserByWordPressSession() {
@@ -161,9 +157,6 @@ class AbandonedCartTest extends \MailPoetTest {
   public function testItSchedulesEmailWhenItemAddedToCart() {
     $this->createNewsletter();
     $this->createSubscriberAsCurrentUser();
-
-    // ensure tracking started
-    $this->pageVisitTrackerMock->expects($this->once())->method('startTracking');
 
     $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
     $this->wooCommerceCartMock->method('get_cart')->willReturn([
@@ -211,9 +204,6 @@ class AbandonedCartTest extends \MailPoetTest {
     $scheduledInFuture->addHours(2);
     $this->createSendingTask($newsletter, $subscriber, $scheduledInFuture);
 
-    // ensure tracking cancelled
-    $this->pageVisitTrackerMock->expects($this->once())->method('stopTracking');
-
     $this->wooCommerceCartMock->method('is_empty')->willReturn(true);
     $abandonedCartEmail = $this->createAbandonedCartEmail();
     $abandonedCartEmail->init();
@@ -249,7 +239,7 @@ class AbandonedCartTest extends \MailPoetTest {
     expect($scheduled->scheduledAt)->same($expectedTime->format('Y-m-d H:i:s'));
   }
 
-  public function testItPostponesEmailWhenPageVisited() {
+  public function testItPostponesEmailWhenSubscriberIsActiveOnSite() {
     $newsletter = $this->createNewsletter();
     $subscriber = $this->createSubscriberAsCurrentUser();
 
@@ -257,18 +247,12 @@ class AbandonedCartTest extends \MailPoetTest {
     $scheduledInNearFuture->addMinutes(5);
     $this->createSendingTask($newsletter, $subscriber, $scheduledInNearFuture);
 
-    // ensure last visit timestamp updated & execute tracking callback
-    $this->pageVisitTrackerMock
-      ->expects($this->once())
-      ->method('trackVisit')
-      ->willReturnCallback(function (callable $onTrackCallback) {
-        $onTrackCallback();
-      });
-
     $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
     $abandonedCartEmail = $this->createAbandonedCartEmail();
     $abandonedCartEmail->init();
-    $abandonedCartEmail->trackPageVisit();
+    $subscriberEntity = $this->entityManager->find(SubscriberEntity::class, $subscriber->id);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriberEntity);
+    $abandonedCartEmail->handleSubscriberActivity($subscriberEntity);
 
     $expectedTime = $this->getExpectedScheduledTime();
     $scheduledTasks = ScheduledTask::findMany();
@@ -283,7 +267,7 @@ class AbandonedCartTest extends \MailPoetTest {
       'wp' => $this->wp,
       'wooCommerceHelper' => $this->wooCommerceHelperMock,
       'subscriberCookie' => new SubscriberCookie(new Cookies(), new TrackingConfig($settings)),
-      'pageVisitTracker' => $this->pageVisitTrackerMock,
+      'subscriberActivityTracker' => $this->subscriberActivityTrackerMock,
       'scheduler' => new AutomaticEmailScheduler(),
     ]);
   }
