@@ -2,6 +2,8 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\API\JSON\v1\Settings;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Models\Newsletter;
@@ -81,6 +83,7 @@ class Migrator {
     $this->migrateWooSubscriptionsDynamicFilters();
     $this->migratePurchasedInCategoryDynamicFilters();
     $this->migrateEmailActionsFilters();
+    $this->updateDefaultInactiveSubscriberTimeRange();
     return $output;
   }
 
@@ -930,6 +933,31 @@ class Migrator {
         'action' => $action,
       ], ['id' => $dynamicSegmentFilter['id']]);
     }
+    return true;
+  }
+
+  private function updateDefaultInactiveSubscriberTimeRange(): bool {
+    // only run if the current database version is older than 3.78.0
+    if (version_compare((string)$this->settings->get('db_version', '3.78.0'), '3.78.0', '>=')) {
+      return false;
+    }
+
+    $currentValue = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
+    if ($currentValue === 180) {
+      $this->settings->set('deactivate_subscriber_after_inactive_days', '365');
+
+      /**
+       * Ensure that inactive subscribers are recalculated as soon after the setting change as possible.
+       *
+       * This behavior is normally triggered when the setting is changed through the JSON API, i.e. when a user has
+       * changed the setting themselves through the UI. The `onInactiveSubscribersIntervalChange` method doesn't
+       * depend on any state, and calling it directly means avoiding code duplication.
+       */
+      $diContainer = ContainerWrapper::getInstance();
+      $apiSettings = $diContainer->get(Settings::class);
+      $apiSettings->onInactiveSubscribersIntervalChange();
+    }
+
     return true;
   }
 }
