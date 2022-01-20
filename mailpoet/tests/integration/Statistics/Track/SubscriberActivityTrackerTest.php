@@ -7,6 +7,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoet\Test\DataFactories\User;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -24,9 +25,11 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var int */
+  private $backupUserId;
+
   public function _before() {
     parent::_before();
-    $this->cleanUp();
     $this->pageViewCookie = $this->createMock(PageViewCookie::class);
     $this->subscriberCookie = $this->createMock(SubscriberCookie::class);
     $this->wp = $this->diContainer->get(WPFunctions::class);
@@ -37,10 +40,13 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
       $this->wp,
       $this->diContainer->get(TrackingConfig::class)
     );
+    $this->cleanUp();
+    $this->backupUserId = $this->wp->getCurrentUserId();
   }
 
   public function testItUpdatesPageViewCookieAndSubscriberEngagement() {
     $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_FULL);
+    $this->wp->wpSetCurrentUser(0);
     $subscriber = $this->createSubscriber();
     $oldEngagementTime = Carbon::now()->subMinutes(2);
     $subscriber->setLastEngagementAt($oldEngagementTime);
@@ -57,8 +63,44 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     expect($subscriber->getLastEngagementAt())->greaterThan($oldEngagementTime);
   }
 
-  public function testItDoesntTrackWhenCookieTrackingIsDisabled() {
+  public function testItUpdatesPageViewCookieAndSubscriberEngagementForWpUser() {
+    $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_FULL);
+    $user = (new User())->createUser('name', 'editor', 'editoruser@test.com');
+    $this->wp->wpSetCurrentUser($user->ID);
+    $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 180; // 3 minutes ago
+    $this->setPageViewCookieTimestamp($oldPageViewTimestamp);
+    $this->setSubscriberCookieSubscriber(null);
+    $this->pageViewCookie
+      ->expects($this->once())
+      ->method('setPageViewTimestamp');
+    $result = $this->tracker->trackActivity();
+    expect($result)->true();
+    $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['wpUserId' => $user->ID]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    expect($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
+    expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
+  }
+
+  public function testItUpdatesSubscriberEngagementForWpUserEvenWithDisabledCookieTracking() {
     $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+    $user = (new User())->createUser('name', 'editor', 'editoruser@test.com');
+    $this->wp->wpSetCurrentUser($user->ID);
+    $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['wpUserId' => $user->ID]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriber->setLastEngagementAt(Carbon::now()->subMonth());
+    $this->entityManager->flush();
+    $this->setPageViewCookieTimestamp(null);
+    $this->setSubscriberCookieSubscriber(null);
+    $result = $this->tracker->trackActivity();
+    expect($result)->true();
+    $this->entityManager->refresh($subscriber);
+    expect($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
+    expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
+  }
+
+  public function testItDoesntTrackWhenCookieTrackingIsDisabledAndThereInNoWPUser() {
+    $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+    $this->wp->wpSetCurrentUser(0);
     $result = $this->tracker->trackActivity();
     $subscriber = $this->createSubscriber();
     $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 180; // 3 minutes ago
@@ -90,7 +132,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     return (new Subscriber())->create();
   }
 
-  private function setPageViewCookieTimestamp(int $timestamp) {
+  private function setPageViewCookieTimestamp(?int $timestamp) {
     $this->pageViewCookie
       ->method('getPageViewTimestamp')
       ->willReturn($timestamp);
@@ -103,10 +145,15 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
   }
 
   private function cleanUp() {
+    $user = $this->wp->getUserBy('email', 'editoruser@test.com');
+    if ($user) {
+      wp_delete_user($user->ID);
+    }
     $this->truncateEntity(SubscriberEntity::class);
   }
 
   public function _after() {
     $this->cleanUp();
+    $this->wp->wpSetCurrentUser($this->backupUserId);
   }
 }
