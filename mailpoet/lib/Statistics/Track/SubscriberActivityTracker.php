@@ -75,6 +75,11 @@ class SubscriberActivityTracker {
   }
 
   private function shouldTrack() {
+    // Don't track in admin interface
+    if ($this->wp->isAdmin()) {
+      return false;
+    }
+
     $timestamp = $this->getLatestTimestamp();
     // Cookie tracking is disabled and there is no logged-in subscriber who could be used to determine last activity timestamp
     if ($timestamp === null) {
