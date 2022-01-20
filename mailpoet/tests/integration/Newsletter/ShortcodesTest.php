@@ -189,7 +189,7 @@ class ShortcodesTest extends \MailPoetTest {
     // when subscriber is empty, original value is returned
     $this->shortcodesObject->setSubscriber(null);
     $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
-    expect($result[0])->equals('[subscriber:firstname | default:test]');
+    expect($result[0])->equals('test');
     // when subscriber is an object, proper value is returned
     $this->shortcodesObject->setSubscriber($this->subscriber);
     $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
