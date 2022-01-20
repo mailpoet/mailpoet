@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace MailPoet\Newsletter\Shortcodes\Categories;
 
@@ -11,6 +11,8 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Subscriber implements CategoryInterface {
+
+  const DEFAULT_ALLOWED_ACTIONS = ['firstname', 'lastname', 'displayname'];
 
   /** @var SubscribersRepository */
   private $subscribersRepository;
@@ -34,12 +36,22 @@ class Subscriber implements CategoryInterface {
     string $content = '',
     bool $wpUserPreview = false
   ): ?string {
-    if (!($subscriber instanceof SubscriberEntity)) {
-      return $shortcodeDetails['shortcode'];
-    }
     $defaultValue = ($shortcodeDetails['action_argument'] === 'default') ?
       $shortcodeDetails['action_argument_value'] :
       '';
+
+    if (
+      !($subscriber instanceof SubscriberEntity)
+      && $this->shouldReturnDefault((string)$shortcodeDetails['action'])
+      && !empty($defaultValue)
+    ) {
+      return $defaultValue;
+    }
+
+    if (!($subscriber instanceof SubscriberEntity)) {
+      return $shortcodeDetails['shortcode'];
+    }
+
     switch ($shortcodeDetails['action']) {
       case 'firstname':
         return (!empty($subscriber->getFirstName())) ? htmlspecialchars($subscriber->getFirstName()) : $defaultValue;
@@ -68,5 +80,9 @@ class Subscriber implements CategoryInterface {
         }
         return null;
     }
+  }
+
+  private function shouldReturnDefault(string $action): bool {
+    return in_array($action, self::DEFAULT_ALLOWED_ACTIONS, true);
   }
 }
