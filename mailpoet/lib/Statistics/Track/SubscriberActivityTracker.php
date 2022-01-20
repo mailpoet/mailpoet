@@ -26,6 +26,9 @@ class SubscriberActivityTracker {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var ?SubscriberEntity */
+  private $activeSubscriber;
+
   public function __construct(
     PageViewCookie $pageViewCookie,
     SubscriberCookie $subscriberCookie,
@@ -58,23 +61,41 @@ class SubscriberActivityTracker {
   }
 
   private function shouldTrack() {
-    if (!$this->trackingConfig->isCookieTrackingEnabled()) {
+    $timestamp = $this->getLatestTimestamp();
+    // Cookie tracking is disabled and there is no logged-in subscriber who could be used to determine last activity timestamp
+    if ($timestamp === null) {
       return false;
     }
-    $timestamp = $this->pageViewCookie->getPageViewTimestamp() ?? 0;
     return $timestamp + self::TRACK_INTERVAL < $this->wp->currentTime('timestamp');
   }
 
+  private function getLatestTimestamp(): ?int {
+    if ($this->trackingConfig->isCookieTrackingEnabled()) {
+      return $this->pageViewCookie->getPageViewTimestamp() ?? 0;
+    }
+    // In case the cookie tracking is disabled fallback to last engagement of currently logged subscriber
+    $subscriber = $this->getSubscriber();
+    if (!$subscriber) {
+      return null;
+    }
+    return $subscriber->getLastEngagementAt() ? $subscriber->getLastEngagementAt()->getTimestamp() : 0;
+  }
+
   private function getSubscriber(): ?SubscriberEntity {
+    if ($this->activeSubscriber instanceof SubscriberEntity) {
+      return $this->activeSubscriber;
+    }
     $wpUser = $this->wp->wpGetCurrentUser();
     if ($wpUser->exists()) {
-      return $this->subscribersRepository->findOneBy(['wpUserId' => $wpUser->ID]);
+      $this->activeSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $wpUser->ID]);
+      return $this->activeSubscriber;
     }
 
     $subscriberId = $this->subscriberCookie->getSubscriberId();
     if (!$subscriberId) {
       return null;
     }
-    return $this->subscribersRepository->findOneById($subscriberId);
+    $this->activeSubscriber = $this->subscribersRepository->findOneById($subscriberId);
+    return $this->activeSubscriber;
   }
 }
