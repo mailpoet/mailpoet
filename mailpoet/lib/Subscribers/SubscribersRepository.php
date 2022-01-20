@@ -10,6 +10,7 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
@@ -323,7 +324,7 @@ class SubscribersRepository extends Repository {
     if ($userAgent instanceof UserAgentEntity && $userAgent->getUserAgentType() === UserAgentEntity::USER_AGENT_TYPE_MACHINE) {
       return;
     }
-    $now = Carbon::createFromTimestamp((int)$this->wp->currentTime('timestamp'));
+    $now = CarbonImmutable::createFromTimestamp((int)$this->wp->currentTime('timestamp'));
     // Do not update engagement if was recently updated to avoid unnecessary updates in DB
     if ($subscriberEntity->getLastEngagementAt() && $subscriberEntity->getLastEngagementAt() > $now->subMinute()) {
       return;
