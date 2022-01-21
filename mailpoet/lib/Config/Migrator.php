@@ -861,8 +861,8 @@ class Migrator {
 
   private function migrateEmailActionsFilters(): bool {
     global $wpdb;
-    // skip the migration if the DB version is higher than 3.77.0 or is not set (a new installation)
-    if (version_compare($this->settings->get('db_version', '3.77.1'), '3.77.0', '>')) {
+    // skip the migration if the DB version is higher than 3.77.1 or is not set (a new installation)
+    if (version_compare($this->settings->get('db_version', '3.77.2'), '3.77.1', '>')) {
       return false;
     }
 
