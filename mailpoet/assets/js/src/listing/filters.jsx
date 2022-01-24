@@ -53,6 +53,7 @@ class ListingFilters extends React.Component {
           ref={(c) => { this[`filter-${i}`] = c; }}
           key={`filter-${filter}`}
           name={filter}
+          automationId={`listing_filter_${filter}`}
           onChange={this.handleFilterAction}
         >
           { filters[filter].map((option) => (
