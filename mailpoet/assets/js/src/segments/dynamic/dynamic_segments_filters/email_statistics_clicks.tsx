@@ -137,6 +137,7 @@ export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ fil
               isMulti
               dimension="small"
               isFullWidth
+              automationId="segment-link-select"
               placeholder={MailPoet.I18n.t('allLinksPlaceholder')}
               options={links.length ? links : [{ value: 0, label: MailPoet.I18n.t('noLinksHint'), isDisabled: true }]}
               value={filter(
