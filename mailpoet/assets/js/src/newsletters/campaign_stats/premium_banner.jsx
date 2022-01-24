@@ -36,7 +36,7 @@ const SkipDisplayingDetailedStats = () => {
 };
 
 const PremiumBanner = () => {
-  if (!window.mailpoet_display_detailed_stats) {
+  if (!MailPoet.premiumActive || MailPoet.subscribersLimitReached) {
     return (
       <SkipDisplayingDetailedStats />
     );
