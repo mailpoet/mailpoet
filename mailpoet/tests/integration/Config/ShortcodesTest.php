@@ -17,7 +17,10 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
 class ShortcodesTest extends \MailPoetTest {
+  /** @var SendingTask */
   public $queue;
+
+  /** @var Newsletter */
   public $newsletter;
 
   /** @var Url */
@@ -83,6 +86,39 @@ class ShortcodesTest extends \MailPoetTest {
     $result = $shortcodes->getArchive($params = false);
     WordPress::releaseFunction('apply_filters');
     expect((string)$result)->stringContainsString('Hello reader');
+  }
+
+  public function testItRendersSubscriberDetailsInSubject() {
+    $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
+    $userData = ["ID" => 1, "first_name" => "Foo", "last_name" => "Bar"];
+    $currentUser = new \WP_User((object) $userData, "FooBar");
+    $wpUser = wp_set_current_user($currentUser->ID);
+    expect((new WPFunctions)->isUserLoggedIn())->true();
+    $subscriber = Subscriber::create();
+    $subscriber->hydrate($userData);
+    $subscriber->email = $wpUser->user_email;
+    $subscriber->wpUserId = $currentUser->ID;
+    $subscriber->save();
+    codecept_debug($wpUser->first_name);
+
+    $this->queue->newsletterRenderedSubject = 'Hello [subscriber:firstname | default:d_firstname] [subscriber:lastname | default:d_lastname]';
+    $this->queue->setSubscribers( [$currentUser->ID]);
+    $this->queue->save();
+    WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
+      $args = func_get_args();
+      $filterName = array_shift($args);
+      switch ($filterName) {
+        case 'mailpoet_archive_date':
+          return $shortcodes->renderArchiveDate($args[0]);
+        case 'mailpoet_archive_subject':
+          return $shortcodes->renderArchiveSubject($args[0], $args[1], $args[2]);
+      }
+      return '';
+    });
+    $result = $shortcodes->getArchive($params = false);
+    WordPress::releaseFunction('apply_filters');
+    codecept_debug("Hello {$currentUser->first_name} {$currentUser->last_name}");
+    expect((string)$result)->stringContainsString("Hello {$currentUser->first_name} {$currentUser->last_name}");
   }
 
   public function testItDisplaysManageSubscriptionFormForLoggedinExistingUsers() {

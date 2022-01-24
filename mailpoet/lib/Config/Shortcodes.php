@@ -14,6 +14,7 @@ use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Pages;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Shortcodes {
   /** @var Pages */
@@ -37,6 +38,9 @@ class Shortcodes {
   /** @var NewsletterShortcodes */
   private $shortcodeProcessor;
 
+  /** @var EntityManager */
+  private $entityManager;
+
   public function __construct(
     Pages $subscriptionPages,
     WPFunctions $wp,
@@ -44,7 +48,9 @@ class Shortcodes {
     SubscribersRepository $subscribersRepository,
     NewsletterUrl $newsletterUrl,
     NewsletterShortcodes $shortcodeProcessor,
-    NewslettersRepository $newslettersRepository
+    NewslettersRepository $newslettersRepository,
+    EntityManager $entityManager
+
   ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
@@ -53,6 +59,7 @@ class Shortcodes {
     $this->newsletterUrl = $newsletterUrl;
     $this->shortcodeProcessor = $shortcodeProcessor;
     $this->newslettersRepository = $newslettersRepository;
+    $this->entityManager = $entityManager;
   }
 
   public function init() {
@@ -194,7 +201,14 @@ class Shortcodes {
   public function renderArchiveSubject(NewsletterEntity $newsletter, $subscriber, SendingQueueEntity $queue) {
     $previewUrl = $this->newsletterUrl->getViewInBrowserUrl($newsletter, $subscriber, $queue);
     $this->shortcodeProcessor->setNewsletter($newsletter);
-    $this->shortcodeProcessor->setSubscriber(null);
+
+    if(is_object($subscriber) && !is_a($subscriber, SubscriberEntity::class) && !empty($subscriber->id)) {
+      $subscriberEntity = $this->entityManager->find(SubscriberEntity::class, $subscriber->id);
+      $this->shortcodeProcessor->setSubscriber($subscriberEntity);
+    }else {
+      $this->shortcodeProcessor->setSubscriber(null);
+    }
+
     $this->shortcodeProcessor->setQueue($queue);
     return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'
       . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'
