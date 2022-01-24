@@ -9,30 +9,20 @@ type Props = {
   actionButton: React.ReactNode;
 };
 
-interface BannerWindow extends Window {
-  mailpoet_has_valid_api_key: boolean;
-  mailpoet_has_valid_premium_key: boolean;
-  mailpoet_subscribers_count: number;
-  mailpoet_subscribers_limit: number | boolean;
-  mailpoet_subscribers_limit_reached: boolean;
-  mailpoet_premium_active: boolean;
-  mailpoet_premium_plugin_installed: boolean;
-  mailpoet_premium_plugin_download_url: string;
-  mailpoet_premium_plugin_activation_url: string;
-  mailpoet_plugin_half_key: string;
-}
+const {
+  subscribersLimitReached,
+  subscribersLimit,
+  subscribersCount,
+  premiumActive,
+  hasValidApiKey,
+  hasValidPremiumKey,
+  isPremiumPluginInstalled,
+  premiumPluginDownloadUrl,
+  premiumPluginActivationUrl,
+  pluginPartialKey,
+} = MailPoet;
 
-declare let window: BannerWindow;
-
-const limitReached = window.mailpoet_subscribers_limit_reached;
-const limitValue = window.mailpoet_subscribers_limit;
-const subscribersCountTowardsLimit = window.mailpoet_subscribers_count;
-const premiumActive = window.mailpoet_premium_active;
-const hasValidApiKey = window.mailpoet_has_valid_api_key || window.mailpoet_has_valid_premium_key;
-const downloadUrl = window.mailpoet_premium_plugin_download_url;
-const activationUrl = window.mailpoet_premium_plugin_activation_url;
-const isPremiumPluginInstalled = window.mailpoet_premium_plugin_installed;
-const halfKey = window.mailpoet_plugin_half_key;
+const anyValidKey = hasValidApiKey || hasValidPremiumKey;
 
 const getBannerMessage = (translationKey: string) => {
   const message = MailPoet.I18n.t(translationKey);
@@ -41,7 +31,7 @@ const getBannerMessage = (translationKey: string) => {
       {ReactStringReplace(
         message,
         /(\[subscribersCount]|\[subscribersLimit])/g,
-        (match) => ((match === '[subscribersCount]') ? subscribersCountTowardsLimit : limitValue)
+        (match) => ((match === '[subscribersCount]') ? subscribersCount : subscribersLimit)
       )}
     </p>
   );
@@ -63,18 +53,18 @@ const PremiumBannerWithUpgrade: React.FunctionComponent<Props> = (
   let bannerMessage: React.ReactNode;
   let ctaButton: React.ReactNode;
 
-  if (hasValidApiKey && !premiumActive) {
+  if (anyValidKey && !premiumActive) {
     bannerMessage = getBannerMessage('premiumFeatureDescription');
 
     ctaButton = isPremiumPluginInstalled
-      ? getCtaButton('premiumFeatureButtonActivatePremium', activationUrl, '_self')
-      : getCtaButton('premiumFeatureButtonDownloadPremium', downloadUrl);
-  } else if (limitReached) {
+      ? getCtaButton('premiumFeatureButtonActivatePremium', premiumPluginActivationUrl, '_self')
+      : getCtaButton('premiumFeatureButtonDownloadPremium', premiumPluginDownloadUrl);
+  } else if (subscribersLimitReached) {
     bannerMessage = getBannerMessage('premiumFeatureDescriptionSubscribersLimitReached');
 
-    const link = hasValidApiKey
-      ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl(halfKey)
-      : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(subscribersCountTowardsLimit + 1);
+    const link = anyValidKey
+      ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl(pluginPartialKey)
+      : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(+subscribersCount + 1);
 
     ctaButton = getCtaButton('premiumFeatureButtonUpgradePlan', link);
   } else {

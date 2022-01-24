@@ -32,7 +32,7 @@ class Installer {
     return WPFunctions::get()->adminUrl('plugins.php?' . implode('&', [
       'action=activate',
       'plugin=' . urlencode($plugin),
-      '_wpnonce=' . wp_create_nonce('activate-plugin_' . $plugin),
+      '_wpnonce=' . WPFunctions::get()->wpCreateNonce('activate-plugin_' . $plugin),
     ]));
   }
 

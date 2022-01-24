@@ -29,6 +29,10 @@ var MailPoet = {
   settings: window.mailpoet_settings,
   trackingConfig: window.mailpoet_tracking_config || {},
   Date,
+  isPremiumPluginInstalled: window.mailpoet_premium_plugin_installed,
+  premiumPluginDownloadUrl: window.mailpoet_premium_plugin_download_url,
+  premiumPluginActivationUrl: window.mailpoet_premium_plugin_activation_url,
+  pluginPartialKey: window.mailpoet_plugin_partial_key,
 };
 
 // Expose MailPoet globally

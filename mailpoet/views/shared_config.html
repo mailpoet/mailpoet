@@ -1,0 +1,9 @@
+
+<script type="text/javascript">
+  <% autoescape 'js' %>
+    var mailpoet_premium_plugin_installed = <%= json_encode(premium_plugin_installed) %>;
+    var mailpoet_premium_plugin_download_url = <%= json_encode(premium_plugin_download_url) %>;
+    var mailpoet_premium_plugin_activation_url = <%= json_encode(premium_plugin_activation_url) %>;
+    var mailpoet_plugin_partial_key = <%= json_encode(plugin_partial_key) %>;
+  <% endautoescape %>
+</script>
