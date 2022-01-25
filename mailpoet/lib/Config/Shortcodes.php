@@ -47,7 +47,6 @@ class Shortcodes {
     NewsletterUrl $newsletterUrl,
     NewslettersRepository $newslettersRepository,
     EntityManager $entityManager
-
   ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
@@ -196,10 +195,8 @@ class Shortcodes {
 
   public function renderArchiveSubject(NewsletterEntity $newsletter, $subscriber, SendingQueueEntity $queue) {
     $previewUrl = $this->newsletterUrl->getViewInBrowserUrl($newsletter, $subscriber, $queue);
-
     $shortcodeProcessor = ContainerWrapper::getInstance()->get(NewsletterShortcodes::class);
     $shortcodeProcessor->setNewsletter($newsletter);
-
 
     if (is_object($subscriber) && !is_a($subscriber, SubscriberEntity::class) && !empty($subscriber->id)) {
       $subscriberEntity = $this->entityManager->find(SubscriberEntity::class, $subscriber->id);
@@ -209,7 +206,6 @@ class Shortcodes {
 
     $shortcodeProcessor->setSubscriber($subscriberEntity);
     $shortcodeProcessor->setQueue($queue);
-
     return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'
       . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'
       . esc_attr((string)$shortcodeProcessor->replace($queue->getNewsletterRenderedSubject())) .
