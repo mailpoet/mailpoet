@@ -213,6 +213,6 @@ class Shortcodes {
     return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'
       . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'
       . esc_attr((string)$shortcodeProcessor->replace($queue->getNewsletterRenderedSubject())) .
-    '</a>';
+      '</a>';
   }
 }
