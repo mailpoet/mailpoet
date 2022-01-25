@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.77.1
+Stable tag: 3.78.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,17 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.78.0 - 2022-01-25 =
+* Added: new Amazon SES locations;
+* Improved: Gutenberg updated for form editor;
+* Improved: don't show full API key in MailPoet → Help → System Info;
+* Improved: more options for "machine-opened" segment;
+* Improved: more options for "clicked" segment;
+* Improved: show "Today" or "Tomorrow" on email listing for scheduled emails;
+* Changed: when using "none of" option in purchased product/in category segment, also include all subscribers who never purchased;
+* Fixed: "Call to a member function format() on null" error on subscribers page;
+* Fixed: form preview showing a preview from previously edited form.
 
 = 3.77.1 - 2022-01-20 =
 * Fixed: WooCommerce checkout doesn't work with MailPoet enabled.
