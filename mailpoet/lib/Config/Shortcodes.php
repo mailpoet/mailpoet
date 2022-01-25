@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -35,9 +36,6 @@ class Shortcodes {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
-  /** @var NewsletterShortcodes */
-  private $shortcodeProcessor;
-
   /** @var EntityManager */
   private $entityManager;
 
@@ -47,7 +45,6 @@ class Shortcodes {
     SegmentSubscribersRepository $segmentSubscribersRepository,
     SubscribersRepository $subscribersRepository,
     NewsletterUrl $newsletterUrl,
-    NewsletterShortcodes $shortcodeProcessor,
     NewslettersRepository $newslettersRepository,
     EntityManager $entityManager
 
@@ -57,7 +54,6 @@ class Shortcodes {
     $this->segmentSubscribersRepository = $segmentSubscribersRepository;
     $this->subscribersRepository = $subscribersRepository;
     $this->newsletterUrl = $newsletterUrl;
-    $this->shortcodeProcessor = $shortcodeProcessor;
     $this->newslettersRepository = $newslettersRepository;
     $this->entityManager = $entityManager;
   }
@@ -200,19 +196,23 @@ class Shortcodes {
 
   public function renderArchiveSubject(NewsletterEntity $newsletter, $subscriber, SendingQueueEntity $queue) {
     $previewUrl = $this->newsletterUrl->getViewInBrowserUrl($newsletter, $subscriber, $queue);
-    $this->shortcodeProcessor->setNewsletter($newsletter);
 
-    if(is_object($subscriber) && !is_a($subscriber, SubscriberEntity::class) && !empty($subscriber->id)) {
+    $shortcodeProcessor = ContainerWrapper::getInstance()->get(NewsletterShortcodes::class);
+    $shortcodeProcessor->setNewsletter($newsletter);
+
+
+    if (is_object($subscriber) && !is_a($subscriber, SubscriberEntity::class) && !empty($subscriber->id)) {
       $subscriberEntity = $this->entityManager->find(SubscriberEntity::class, $subscriber->id);
-      $this->shortcodeProcessor->setSubscriber($subscriberEntity);
-    }else {
-      $this->shortcodeProcessor->setSubscriber(null);
+    } else {
+      $subscriberEntity = new SubscriberEntity();
     }
 
-    $this->shortcodeProcessor->setQueue($queue);
+    $shortcodeProcessor->setSubscriber($subscriberEntity);
+    $shortcodeProcessor->setQueue($queue);
+
     return '<a href="' . esc_attr($previewUrl) . '" target="_blank" title="'
       . esc_attr(__('Preview in a new tab', 'mailpoet')) . '">'
-      . esc_attr((string)$this->shortcodeProcessor->replace($queue->getNewsletterRenderedSubject())) .
+      . esc_attr((string)$shortcodeProcessor->replace($queue->getNewsletterRenderedSubject())) .
     '</a>';
   }
 }

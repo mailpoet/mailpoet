@@ -99,7 +99,6 @@ class ShortcodesTest extends \MailPoetTest {
     $subscriber->email = $wpUser->user_email;
     $subscriber->wpUserId = $currentUser->ID;
     $subscriber->save();
-    codecept_debug($wpUser->first_name);
 
     $this->queue->newsletterRenderedSubject = 'Hello [subscriber:firstname | default:d_firstname] [subscriber:lastname | default:d_lastname]';
     $this->queue->setSubscribers( [$currentUser->ID]);
