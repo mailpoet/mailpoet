@@ -2,7 +2,7 @@
 Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
-Tested up to: 5.8
+Tested up to: 5.9
 Stable tag: 3.80.0
 Requires PHP: 7.2
 License: GPLv3
