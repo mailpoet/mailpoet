@@ -58,11 +58,11 @@ class SubscriberActivityTracker {
     return true;
   }
 
-  public function registerCallback(string $slug, callable $callback) {
+  public function registerCallback(string $slug, callable $callback): void {
     $this->callbacks[$slug] = $callback;
   }
 
-  public function unregisterCallback(string $slug) {
+  public function unregisterCallback(string $slug): void {
     unset($this->callbacks[$slug]);
   }
 
@@ -74,7 +74,7 @@ class SubscriberActivityTracker {
     }
   }
 
-  private function shouldTrack() {
+  private function shouldTrack(): bool {
     // Don't track in admin interface
     if ($this->wp->isAdmin()) {
       return false;
