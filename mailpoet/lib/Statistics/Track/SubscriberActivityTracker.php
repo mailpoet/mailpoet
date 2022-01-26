@@ -26,9 +26,6 @@ class SubscriberActivityTracker {
   /** @var TrackingConfig */
   private $trackingConfig;
 
-  /** @var ?SubscriberEntity */
-  private $activeSubscriber;
-
   /** @var callable[] */
   private $callbacks = [];
 
@@ -47,13 +44,35 @@ class SubscriberActivityTracker {
   }
 
   public function trackActivity(): bool {
-    if (!$this->shouldTrack()) {
+    // Don't track in admin interface
+    if ($this->wp->isAdmin()) {
       return false;
     }
-    $subscriber = $this->getSubscriber();
+
+    $subscriber = null;
+    $latestTimestamp = $this->getLatestTimestampFromCookie();
+
+    // If cookie tracking is not allowed try use last activity from subscriber data
+    if ($latestTimestamp === null) {
+      $subscriber = $this->getSubscriber();
+      if (!$subscriber) {
+        return false; // Can't determine timestamp
+      }
+      $latestTimestamp = $this->getLatestTimestampFromSubscriber($subscriber);
+    }
+
+    if ($latestTimestamp + self::TRACK_INTERVAL > $this->wp->currentTime('timestamp')) {
+      return false;
+    }
+
+    if ($subscriber === null) {
+      $subscriber = $this->getSubscriber();
+    }
+
     if (!$subscriber) {
       return false;
     }
+
     $this->processTracking($subscriber);
     return true;
   }
@@ -74,47 +93,27 @@ class SubscriberActivityTracker {
     }
   }
 
-  private function shouldTrack(): bool {
-    // Don't track in admin interface
-    if ($this->wp->isAdmin()) {
-      return false;
-    }
-
-    $timestamp = $this->getLatestTimestamp();
-    // Cookie tracking is disabled and there is no logged-in subscriber who could be used to determine last activity timestamp
-    if ($timestamp === null) {
-      return false;
-    }
-    return $timestamp + self::TRACK_INTERVAL < $this->wp->currentTime('timestamp');
-  }
-
-  private function getLatestTimestamp(): ?int {
+  private function getLatestTimestampFromCookie(): ?int {
     if ($this->trackingConfig->isCookieTrackingEnabled()) {
       return $this->pageViewCookie->getPageViewTimestamp() ?? 0;
     }
-    // In case the cookie tracking is disabled fallback to last engagement of currently logged subscriber
-    $subscriber = $this->getSubscriber();
-    if (!$subscriber) {
-      return null;
-    }
+    return null;
+  }
+
+  private function getLatestTimestampFromSubscriber(SubscriberEntity $subscriber): int {
     return $subscriber->getLastEngagementAt() ? $subscriber->getLastEngagementAt()->getTimestamp() : 0;
   }
 
   private function getSubscriber(): ?SubscriberEntity {
-    if ($this->activeSubscriber instanceof SubscriberEntity) {
-      return $this->activeSubscriber;
-    }
     $wpUser = $this->wp->wpGetCurrentUser();
     if ($wpUser->exists()) {
-      $this->activeSubscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $wpUser->ID]);
-      return $this->activeSubscriber;
+      return $this->subscribersRepository->findOneBy(['wpUserId' => $wpUser->ID]);
     }
 
     $subscriberId = $this->subscriberCookie->getSubscriberId();
     if (!$subscriberId) {
       return null;
     }
-    $this->activeSubscriber = $this->subscribersRepository->findOneById($subscriberId);
-    return $this->activeSubscriber;
+    return $this->subscribersRepository->findOneById($subscriberId);
   }
 }
