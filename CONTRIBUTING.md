@@ -43,3 +43,8 @@
 - Discuss issues on public Slack chats, discuss code in pull requests.
 - Open a small Jira issue only when it has been discussed.
 
+## Migration from IdiORM to Doctrine
+MailPoet used to use [IdiORM](https://github.com/j4mie/idiorm) as its object-relational mapper (ORM), but the project was abandoned a while ago, so we started a migration to [Doctrine](https://www.doctrine-project.org/). This is a significant effort that has been going on for quite some time. Although you will still see parts of the code that use IdioORM, we ask that all new code be added using Doctrine instead.
+
+All IdioORM models live in [mailpoet/lib/Models](https://github.com/mailpoet/mailpoet/tree/master/mailpoet/lib/Models), should be considered deprecated and shouldn't be used by new code. We are moving everything to Doctrine entities and some auxiliary code when needed. You can find Doctrine entities in [mailpoet/lib/Entities](https://github.com/mailpoet/mailpoet/tree/master/mailpoet/lib/Entities).
+
