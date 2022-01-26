@@ -48,6 +48,7 @@ services:
       MAILPOET_DEV_SITE: 1
     volumes:
       - "./wordpress:/var/www/html"
+      - "./eslint-config:/var/www/html/wp-content/plugins/eslint-config"
       - "./mailpoet:/var/www/html/wp-content/plugins/mailpoet"
       - "./mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium"
       - "./templates:/var/www/templates"
@@ -73,6 +74,7 @@ services:
       WORDPRESS_DB_PASSWORD: wordpress
       PHP_IDE_CONFIG: "serverName=Mailpoet"
     volumes:
+      - "./eslint-config:/var/www/html/wp-content/plugins/eslint-config"
       - "./mailpoet:/var/www/html/wp-content/plugins/mailpoet"
       - "./mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium"
 
