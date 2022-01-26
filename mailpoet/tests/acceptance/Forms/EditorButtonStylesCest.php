@@ -34,7 +34,7 @@ class EditorButtonStylesCest {
     $i->wantTo('Check element has styles');
     $i->assertAttributeContains('[data-automation-id="editor_submit_input"]', 'style', 'border-width: 10px;');
     $i->assertAttributeContains('[data-automation-id="editor_submit_input"]', 'style', 'font-weight: bold;');
-    
+
     $i->wantTo('Save form');
     $i->saveFormInEditor();
 
@@ -47,8 +47,8 @@ class EditorButtonStylesCest {
     $i->wantTo('Check styles are applied on frontend page');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
-    $i->assertAttributeContains('[data-automation-id="subscribe-submit-button"]', 'style', 'border-width: 10px;');
-    $i->assertAttributeContains('[data-automation-id="subscribe-submit-button"]', 'style', 'font-weight: bold;');
+    $i->assertCssProperty('[data-automation-id="subscribe-submit-button"]', 'border-width', '10px');
+    $i->assertCssProperty('[data-automation-id="subscribe-submit-button"]', 'font-weight', '700');
     $i->seeInField('[data-automation-id="subscribe-submit-button"]', 'Join Now');
   }
 }

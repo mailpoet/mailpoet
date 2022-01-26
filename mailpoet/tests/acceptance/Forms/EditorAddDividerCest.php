@@ -53,8 +53,10 @@ class EditorAddDividerCest {
     $i->wantTo('Check divider on front end');
     $postUrl = $i->createPost('Title', 'Content');
     $i->amOnUrl($postUrl);
-    $i->assertAttributeContains('[data-automation-id="form_divider"]', 'style', 'height: 10px;');
-    $i->assertAttributeContains('[data-automation-id="form_divider"]', 'style', 'width: 10%;');
-    $i->assertAttributeContains('[data-automation-id="form_divider"]', 'style', 'border-top: 10px dotted black;');
+    $i->assertCssProperty('[data-automation-id="form_divider"]', 'height', '10px');
+    $i->assertAttributeContains('[data-automation-id="form_divider"]', 'style', 'width: 10%');
+    $i->assertCssProperty('[data-automation-id="form_divider"]', 'border-top-width', '10px');
+    $i->assertCssProperty('[data-automation-id="form_divider"]', 'border-top-style', 'dotted');
+    $i->assertCssProperty('[data-automation-id="form_divider"]', 'border-top-color', 'rgba(0, 0, 0, 1)');
   }
 }
