@@ -147,7 +147,7 @@ which will create a `storybook-static` folder with all necessary files. Don't fo
 
 ### DI
 
-We use Symfony/dependency-injection container. Container configuration can be found in `libs/DI/ContainerFactory.php`
+We use Symfony/dependency-injection container. Container configuration can be found in `lib/DI/ContainerFactory.php`
 The container is configured and used with minimum sub-dependencies to keep final package size small.
 You can check [the docs](https://symfony.com/doc/3.4/components/dependency_injection.html) to learn more about Symfony Container.
 
