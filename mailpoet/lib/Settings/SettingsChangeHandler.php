@@ -11,15 +11,18 @@ use MailPoetVendor\Carbon\Carbon;
 
 class SettingsChangeHandler {
 
-  /**
-   * @var ScheduledTasksRepository
-   */
+  /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** @var SettingsController */
+  private $settingsController;
+
   public function __construct(
-    ScheduledTasksRepository $scheduledTasksRepository
+    ScheduledTasksRepository $scheduledTasksRepository,
+    SettingsController $settingsController
   ) {
     $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->settingsController = $settingsController;
   }
 
   public function onSubscribeOldWoocommerceCustomersChange(): void {
@@ -48,6 +51,23 @@ class SettingsChangeHandler {
     $task->setScheduledAt($datetime->subMinute());
     $this->scheduledTasksRepository->persist($task);
     $this->scheduledTasksRepository->flush();
+  }
+
+  public function onMSSActivate($newSettings) {
+    // see mailpoet/assets/js/src/wizard/create_sender_settings.jsx:freeAddress
+    $domain = str_replace('www.', '', $_SERVER['HTTP_HOST']);
+    if (
+      isset($newSettings['sender']['address'])
+      && !empty($newSettings['reply_to']['address'])
+      && ($newSettings['sender']['address'] === ('wordpress@' . $domain))
+    ) {
+      $sender = [
+        'name' => $newSettings['reply_to']['name'] ?? '',
+        'address' => $newSettings['reply_to']['address'],
+      ];
+      $this->settingsController->set('sender', $sender);
+      $this->settingsController->set('reply_to', null);
+    }
   }
 
   private function createScheduledTask(string $type): ScheduledTaskEntity {
