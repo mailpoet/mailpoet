@@ -208,7 +208,7 @@ class Settings extends APIEndpoint {
     $oldSendingMethod = $oldSettings['mta_group'];
     $newSendingMethod = $newSettings['mta_group'];
     if (($oldSendingMethod !== $newSendingMethod) && ($newSendingMethod === 'mailpoet')) {
-      $this->onMSSActivate($newSettings);
+      $this->settingsChangeHandler->onMSSActivate($newSettings);
     }
 
     // Sync WooCommerce Customers list
@@ -224,23 +224,6 @@ class Settings extends APIEndpoint {
 
     if (!empty($newSettings['woocommerce']['use_mailpoet_editor'])) {
       $this->wcTransactionalEmails->init();
-    }
-  }
-
-  private function onMSSActivate($newSettings) {
-    // see mailpoet/assets/js/src/wizard/create_sender_settings.jsx:freeAddress
-    $domain = str_replace('www.', '', $_SERVER['HTTP_HOST']);
-    if (
-      isset($newSettings['sender']['address'])
-      && !empty($newSettings['reply_to']['address'])
-      && ($newSettings['sender']['address'] === ('wordpress@' . $domain))
-    ) {
-      $sender = [
-        'name' => $newSettings['reply_to']['name'] ?? '',
-        'address' => $newSettings['reply_to']['address'],
-      ];
-      $this->settings->set('sender', $sender);
-      $this->settings->set('reply_to', null);
     }
   }
 
