@@ -119,6 +119,17 @@ class SubscriberSubscribeController {
       return $meta;
     }
 
+    /**
+     * Fires before a subscription gets created.
+     * To interrupt the subscription process, you can throw an MailPoet\Exception.
+     * The error message will then be displayed to the user.
+     *
+     * @param array      $data       The subscription data.
+     * @param array      $segmentIds The segment IDs the user gets subscribed to.
+     * @param FormEntity $form       The form the user used to subscribe.
+     */
+    $this->wp->doAction('mailpoet_subscription_before_subscribe', $data, $segmentIds, $form);
+
     $subscriber = $this->subscriberActions->subscribe($data, $segmentIds);
 
     if (!empty($captchaSettings['type']) && $captchaSettings['type'] === Captcha::TYPE_BUILTIN) {
