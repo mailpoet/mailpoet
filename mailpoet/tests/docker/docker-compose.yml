@@ -1,8 +1,8 @@
-version: '3.8'
+version: '3.9'
 
 services:
   codeception:
-    image: mailpoet/wordpress:7.4-cli_20210126.1
+    image : mailpoet/wordpress:8.0-cli_20220126.1
     depends_on:
       - mailhog
       - wordpress
