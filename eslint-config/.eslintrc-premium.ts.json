@@ -37,6 +37,8 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     // Exceptions
+    "camelcase": 0, //use the typescript version
+    "no-shadow": 0, //use the typescript version
     "react/jsx-filename-extension": 0,
     "arrow-parens": ["error", "always"],
     "comma-dangle": ["error", "always-multiline"],
