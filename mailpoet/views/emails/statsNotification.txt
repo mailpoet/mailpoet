@@ -23,7 +23,7 @@
   <%= opened_stats_text(opened) %>
 
 <%= __('click rate') %>: <%= number_format_i18n(clicked) %>%
-  <%= clicked_stats_text(opened) %>
+  <%= clicked_stats_text(clicked) %>
 
 <% if topLinkClicks > 0 %>
 <%= __('Most clicked link') %>
