@@ -945,7 +945,7 @@ class Migrator {
 
     $currentValue = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
     if ($currentValue === 180) {
-      $this->settings->set('deactivate_subscriber_after_inactive_days', '365');
+      $this->settings->set('deactivate_subscriber_after_inactive_days', 365);
 
       /**
        * Ensure that inactive subscribers are recalculated as soon after the setting change as possible.
