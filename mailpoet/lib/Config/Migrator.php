@@ -937,8 +937,9 @@ class Migrator {
   }
 
   private function updateDefaultInactiveSubscriberTimeRange(): bool {
-    // only run if the current database version is older than 3.78.0
-    if (version_compare((string)$this->settings->get('db_version', '3.78.0'), '3.78.0', '>=')) {
+    // Skip if the installed version is newer than the release that preceded this migration, or if it's a fresh install
+    $currentlyInstalledVersion = (string)$this->settings->get('db_version', '3.78.1');
+    if (version_compare($currentlyInstalledVersion, '3.78.0', '>')) {
       return false;
     }
 
