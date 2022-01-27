@@ -7,6 +7,7 @@ use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Setup;
 use MailPoet\Config\Activator;
+use MailPoet\Config\Migrator;
 use MailPoet\Config\Populator;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Referrals\ReferralDetector;
@@ -40,7 +41,8 @@ class SetupTest extends \MailPoetTest {
       $this->entityManager,
       $this->diContainer->get(WP::class)
     );
-    $router = new Setup($wpStub, new Activator($settings, $populator, $wpStub));
+    $migrator = $this->diContainer->get(Migrator::class);
+    $router = new Setup($wpStub, new Activator($settings, $populator, $wpStub, $migrator));
     $response = $router->reset();
     expect($response->status)->equals(APIResponse::STATUS_OK);
 

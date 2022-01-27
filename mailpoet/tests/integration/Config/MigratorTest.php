@@ -16,7 +16,7 @@ class MigratorTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->migrator = new Migrator();
+    $this->migrator = $this->diContainer->get(Migrator::class);
     $this->settings = $this->diContainer->get(SettingsController::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }

@@ -24,10 +24,14 @@ class Migrator {
   public $prefix;
   private $charsetCollate;
   private $models;
+
+  /** @var SettingsController */
   private $settings;
 
-  public function __construct() {
-    $this->settings = SettingsController::getInstance();
+  public function __construct(
+    SettingsController $settings
+  ) {
+    $this->settings = $settings;
     $this->prefix = Env::$dbPrefix;
     $this->charsetCollate = Env::$dbCharsetCollate;
     $this->models = [
