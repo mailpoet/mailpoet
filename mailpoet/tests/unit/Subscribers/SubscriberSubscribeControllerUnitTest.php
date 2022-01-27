@@ -86,7 +86,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $subscriberActions = Stub::makeEmpty(
       SubscriberActions::class,
       [
-        'subscribe' => \Codeception\Stub\Expected::never(),
+        'subscribe' => Expected::never(),
       ]
     );
     $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
@@ -125,13 +125,13 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $statisticsFormsRepository = Stub::makeEmpty(
       StatisticsFormsRepository::class,
       [
-        'subscribe' => \Codeception\Stub\Expected::never(),
+        'subscribe' => Expected::never(),
       ]
     );
     $wp = Stub::make(
       WPFunctions::class,
       [
-        'doAction' => \Codeception\Stub\Expected::never(),
+        'doAction' => Expected::never(),
       ],
       $this
     );
@@ -172,7 +172,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $subscriberActions = Stub::makeEmpty(
       SubscriberActions::class,
       [
-        'subscribe' => \Codeception\Stub\Expected::never(),
+        'subscribe' => Expected::never(),
       ]
     );
     $expectedRedirectLink = 'redirect';
@@ -229,13 +229,13 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $statisticsFormsRepository = Stub::makeEmpty(
       StatisticsFormsRepository::class,
       [
-        'subscribe' => \Codeception\Stub\Expected::never(),
+        'subscribe' => Expected::never(),
       ]
     );
     $wp = Stub::make(
       WPFunctions::class,
       [
-        'doAction' => \Codeception\Stub\Expected::never(),
+        'doAction' => Expected::never(),
       ],
       $this
     );
@@ -371,10 +371,6 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     ]);
   }
 
-  /**
-   * @TODO Make Captcha validation
-   * @TODO Run the test with different valid data sets to cover different captcha types
-   */
   public function testSubscribeSuccess() {
 
     $captchaSessionId = 'captcha_session_id';
