@@ -21,14 +21,15 @@ class MigrateDefaultInactiveSubscriberFrequencyTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->settingsController = $this->diContainer->get(SettingsController::class);
     $this->activator = $this->diContainer->get(Activator::class);
+    $this->settingsController = $this->diContainer->get(SettingsController::class);
+    $this->settingsController->delete('deactivate_subscriber_after_inactive_days');
   }
 
   public function testItDoesNotUpdateValuesOtherThanThePreviousDefault() {
     $nonDefaultOptions = [ '', '90', '365' ];
     foreach ($nonDefaultOptions as $option) {
-      $this->settingsController->set('db_version', '3.77.0');
+      $this->settingsController->set('db_version', '3.78.0');
       $this->settingsController->set('deactivate_subscriber_after_inactive_days', $option);
       $this->activator->activate();
       $this->assertEquals($option, $this->settingsController->get('deactivate_subscriber_after_inactive_days'));
@@ -36,14 +37,14 @@ class MigrateDefaultInactiveSubscriberFrequencyTest extends \MailPoetTest {
   }
 
   public function testItDoesUpdatePreviousDefaultValue() {
-    $this->settingsController->set('db_version', '3.77.0');
+    $this->settingsController->set('db_version', '3.78.0');
     $this->settingsController->set('deactivate_subscriber_after_inactive_days', '180');
     $this->activator->activate();
     $this->assertEquals('365', $this->settingsController->get('deactivate_subscriber_after_inactive_days'));
   }
 
   public function testItDoesNotRunForUnexpectedVersions() {
-    $versions = ['3.78.0', '3.78.1', '3.900.2', '4.8.0'];
+    $versions = ['3.78.1', '3.900.2', '4.8.0'];
     foreach ($versions as $version) {
       $this->settingsController->set('db_version', $version);
       $this->settingsController->set('deactivate_subscriber_after_inactive_days', '180');
@@ -51,6 +52,13 @@ class MigrateDefaultInactiveSubscriberFrequencyTest extends \MailPoetTest {
       $this->activator->activate();
       $this->assertEquals('180', $this->settingsController->get('deactivate_subscriber_after_inactive_days'));
     }
+  }
+
+  public function testItDoesNotRunForNewInstalls() {
+      $this->settingsController->delete('db_version');
+      $this->activator->activate();
+      $setting = $this->settingsController->get('deactivate_subscriber_after_inactive_days', 'not-set');
+      $this->assertEquals('not-set', $setting);
   }
 
   public function testItCreatesInactiveSubscribersTaskIfOneNotAlreadyScheduled() {
@@ -72,7 +80,7 @@ class MigrateDefaultInactiveSubscriberFrequencyTest extends \MailPoetTest {
     $this->assertNull($shouldBeNull);
 
     // Run the migration
-    $this->settingsController->set('db_version', '3.77.0');
+    $this->settingsController->set('db_version', '3.78.0');
     $this->settingsController->set('deactivate_subscriber_after_inactive_days', '180');
     $this->activator->activate();
 
@@ -106,7 +114,7 @@ class MigrateDefaultInactiveSubscriberFrequencyTest extends \MailPoetTest {
     $scheduledTasksRepository->flush();
 
     // Run the migration
-    $this->settingsController->set('db_version', '3.77.0');
+    $this->settingsController->set('db_version', '3.78.0');
     $this->settingsController->set('deactivate_subscriber_after_inactive_days', '180');
     $this->activator->activate();
 
