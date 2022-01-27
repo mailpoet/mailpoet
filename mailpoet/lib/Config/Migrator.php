@@ -2,8 +2,6 @@
 
 namespace MailPoet\Config;
 
-use MailPoet\API\JSON\v1\Settings;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Models\Newsletter;
@@ -13,6 +11,7 @@ use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
+use MailPoet\Settings\SettingsChangeHandler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
 
@@ -28,10 +27,15 @@ class Migrator {
   /** @var SettingsController */
   private $settings;
 
+  /** @var SettingsChangeHandler */
+  private $settingsChangeHandler;
+
   public function __construct(
-    SettingsController $settings
+    SettingsController $settings,
+    SettingsChangeHandler $settingsChangeHandler
   ) {
     $this->settings = $settings;
+    $this->settingsChangeHandler = $settingsChangeHandler;
     $this->prefix = Env::$dbPrefix;
     $this->charsetCollate = Env::$dbCharsetCollate;
     $this->models = [
@@ -950,17 +954,7 @@ class Migrator {
     $currentValue = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
     if ($currentValue === 180) {
       $this->settings->set('deactivate_subscriber_after_inactive_days', 365);
-
-      /**
-       * Ensure that inactive subscribers are recalculated as soon after the setting change as possible.
-       *
-       * This behavior is normally triggered when the setting is changed through the JSON API, i.e. when a user has
-       * changed the setting themselves through the UI. The `onInactiveSubscribersIntervalChange` method doesn't
-       * depend on any state, and calling it directly means avoiding code duplication.
-       */
-      $diContainer = ContainerWrapper::getInstance();
-      $apiSettings = $diContainer->get(Settings::class);
-      $apiSettings->onInactiveSubscribersIntervalChange();
+      $this->settingsChangeHandler->onInactiveSubscribersIntervalChange();
     }
 
     return true;
