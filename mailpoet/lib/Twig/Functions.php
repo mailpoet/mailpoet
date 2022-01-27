@@ -272,11 +272,11 @@ class Functions extends AbstractExtension {
 
   public function clickedStatsColor($clicked) {
     if ($clicked > 3) {
-      return '#2993ab';
+      return '#7ed321';
     } elseif ($clicked > 1) {
-      return '#f0b849';
+      return '#ff9f00';
     } else {
-      return '#d54e21';
+      return '#f559c3';
     }
   }
 
@@ -292,11 +292,11 @@ class Functions extends AbstractExtension {
 
   public function clickedStatsText($clicked) {
     if ($clicked > 3) {
-      return __('EXCELLENT', 'mailpoet');
+      return __('Excellent', 'mailpoet');
     } elseif ($clicked > 1) {
-      return __('GOOD', 'mailpoet');
+      return __('Good', 'mailpoet');
     } else {
-      return __('BAD', 'mailpoet');
+      return __('Average', 'mailpoet');
     }
   }
 
