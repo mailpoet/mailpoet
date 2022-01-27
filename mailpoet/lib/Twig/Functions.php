@@ -271,9 +271,9 @@ class Functions extends AbstractExtension {
   }
 
   public function clickedStatsColor($clicked) {
-    if ($clicked > 3) {
+    if ($clicked > 30) {
       return '#7ed321';
-    } elseif ($clicked > 1) {
+    } elseif ($clicked > 10) {
       return '#ff9f00';
     } else {
       return '#f559c3';
