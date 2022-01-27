@@ -109,7 +109,7 @@
                                          arcsize="15%"
                                          strokeweight="0px"
                                          strokecolor="#0074a2"
-                                         fillcolor="<%= opened_stats_color(newsletter.opened) %>">
+                                         fillcolor="<%= stats_color(newsletter.opened) %>">
                               <w:anchorlock/>
                               <center style="color:#ffffff;
                       font-family:Arial;
@@ -117,7 +117,7 @@
                       font-weight:bold;"><%= opened_stats_text(newsletter.opened) %>
                               </center>
                             </v:roundrect>
-                            <![endif]--><a class="mailpoet_button" href="<%= newsletter.linkStats %>" style="color:#ffffff;text-decoration:none !important;display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-align:center;background-color:<%= opened_stats_color(newsletter.opened) %>;border-color:#0074a2;border-width:0px;border-radius:3px;border-style:solid;width:80px;line-height:20px;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:10px;font-weight:normal">
+                            <![endif]--><a class="mailpoet_button" href="<%= newsletter.linkStats %>" style="color:#ffffff;text-decoration:none !important;display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-align:center;background-color:<%= stats_color(newsletter.opened) %>;border-color:#0074a2;border-width:0px;border-radius:3px;border-style:solid;width:80px;line-height:20px;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:10px;font-weight:normal">
                               <%= opened_stats_text(newsletter.opened) %>
                             </a>
                           </td>
@@ -129,7 +129,7 @@
                 <tr>
                   <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word">
                     <h3 style="margin:0 0 5.4px;color:#333333;font-family:'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal">
-                      <span style="color: <%= opened_stats_color(newsletter.opened) %>;">
+                      <span style="color: <%= stats_color(newsletter.opened) %>;">
                         <strong><%= number_format_i18n(newsletter.opened, 1) %>% </strong>
                         <span style="color: #000000;">
                           <%= __('open rate') %>
@@ -160,7 +160,7 @@
                                          arcsize="15%"
                                          strokeweight="0px"
                                          strokecolor="#0074a2"
-                                         fillcolor="<%= clicked_stats_color(newsletter.clicked) %>">
+                                         fillcolor="<%= stats_color(newsletter.clicked) %>">
                               <w:anchorlock/>
                               <center style="color:#ffffff;
                       font-family:Arial;
@@ -168,7 +168,7 @@
                       font-weight:bold;"><%= clicked_stats_text(newsletter.clicked) %>
                               </center>
                             </v:roundrect>
-                            <![endif]--><a class="mailpoet_button" href="<%= newsletter.linkStats %>" style="color:#ffffff;text-decoration:none !important;display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-align:center;background-color:<%= clicked_stats_color(newsletter.clicked) %>;border-color:#0074a2;border-width:0px;border-radius:3px;border-style:solid;width:80px;line-height:20px;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:10px;font-weight:normal">
+                            <![endif]--><a class="mailpoet_button" href="<%= newsletter.linkStats %>" style="color:#ffffff;text-decoration:none !important;display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-align:center;background-color:<%= stats_color(newsletter.clicked) %>;border-color:#0074a2;border-width:0px;border-radius:3px;border-style:solid;width:80px;line-height:20px;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:10px;font-weight:normal">
                               <%= clicked_stats_text(newsletter.clicked) %>
                             </a>
                           </td>
@@ -180,9 +180,9 @@
                 <tr>
                   <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word">
                     <h3 style="margin:0 0 5.4px;color:#333333;font-family:'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal">
-                      <span style="color: <%= clicked_stats_color(newsletter.clicked) %>;">
+                      <span style="color: <%= stats_color(newsletter.clicked) %>;">
                         <strong>
-                          <span style="color: <%= clicked_stats_color(newsletter.clicked) %>;"><%= number_format_i18n(newsletter.clicked, 1) %>%</span>
+                          <span style="color: <%= stats_color(newsletter.clicked) %>;"><%= number_format_i18n(newsletter.clicked, 1) %>%</span>
                         </strong>
                         <span style="color: #000000;">
                           <%= __('click rate') %>

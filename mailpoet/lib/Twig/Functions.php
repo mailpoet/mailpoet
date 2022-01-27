@@ -135,13 +135,8 @@ class Functions extends AbstractExtension {
         ['is_safe' => ['all']]
       ),
       new TwigFunction(
-        'opened_stats_color',
-        [$this, 'openedStatsColor'],
-        ['is_safe' => ['all']]
-      ),
-      new TwigFunction(
-        'clicked_stats_color',
-        [$this, 'clickedStatsColor'],
+        'stats_color',
+        [$this, 'statsColor'],
         ['is_safe' => ['all']]
       ),
       new TwigFunction(
@@ -260,20 +255,10 @@ class Functions extends AbstractExtension {
     return $this->woocommerceHelper->isWooCommerceActive();
   }
 
-  public function openedStatsColor($opened) {
-    if ($opened > 30) {
-      return '#2993ab';
-    } elseif ($opened > 10) {
-      return '#f0b849';
-    } else {
-      return '#d54e21';
-    }
-  }
-
-  public function clickedStatsColor($clicked) {
-    if ($clicked > 30) {
+  public function statsColor($percentage) {
+    if ($percentage > 30) {
       return '#7ed321';
-    } elseif ($clicked > 10) {
+    } elseif ($percentage > 10) {
       return '#ff9f00';
     } else {
       return '#f559c3';
