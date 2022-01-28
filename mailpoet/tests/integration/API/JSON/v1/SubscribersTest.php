@@ -4,6 +4,7 @@ namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\Error;
+use MailPoet\API\JSON\ErrorResponse;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\JSON\v1\Subscribers;
@@ -787,6 +788,30 @@ class SubscribersTest extends \MailPoetTest {
 
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     expect($response->errors[0]['message'])->equals('You need to wait 1 minutes before subscribing again.');
+  }
+
+  public function testThirdPartiesCanInterruptSubscriptionProcess() {
+
+    $expectedErrorMessage = 'ErrorMessage';
+
+    \MailPoet\WP\add_action(
+      'mailpoet_subscription_before_subscribe',
+      function($data) use ($expectedErrorMessage) {
+            throw new \Mailpoet\UnexpectedValueException($expectedErrorMessage);
+      }
+    );
+
+    $response = $this->endpoint->subscribe([
+      $this->obfuscatedEmail => 'toto@mailpoet.com',
+      'form_id' => $this->form->getId(),
+      $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
+    ]);
+
+    $didSubscribe = Subscriber::where('email', 'toto@mailpoet.com')->findOne();
+    expect($didSubscribe)->equals(false);
+    expect($response)->isInstanceOf(ErrorResponse::class);
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals($expectedErrorMessage);
   }
 
   public function testItSchedulesWelcomeEmailNotificationWhenSubscriberIsAdded() {
