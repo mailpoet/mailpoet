@@ -26,7 +26,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       SubscriberActions::class,
       [
         'subscribe' => Expected::never(),
-      ]
+      ],
+      $this
     );
     $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
     $throttling = Stub::makeEmpty(SubscriptionThrottling::class);
@@ -47,7 +48,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       StatisticsFormsRepository::class,
       [
         'subscribe' => Expected::never(),
-      ]
+      ],
+      $this
     );
 
     $wp = Stub::make(
@@ -87,7 +89,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       SubscriberActions::class,
       [
         'subscribe' => Expected::never(),
-      ]
+      ],
+      $this
     );
     $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
     $throttling = Stub::makeEmpty(
@@ -126,7 +129,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       StatisticsFormsRepository::class,
       [
         'subscribe' => Expected::never(),
-      ]
+      ],
+      $this
     );
     $wp = Stub::make(
       WPFunctions::class,
@@ -164,7 +168,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       SubscriberActions::class,
       [
         'subscribe' => Expected::never(),
-      ]
+      ],
+      $this
     );
     $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
     $throttling = Stub::makeEmpty(SubscriptionThrottling::class);
@@ -197,7 +202,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       StatisticsFormsRepository::class,
       [
         'subscribe' => Expected::never(),
-      ]
+      ],
+      $this
     );
     $wp = Stub::make(
       WPFunctions::class,
@@ -245,7 +251,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       SubscriberActions::class,
       [
         'subscribe' => Expected::never(),
-      ]
+      ],
+      $this
     );
     $expectedRedirectLink = 'redirect';
     $subscriptionUrlFactory = Stub::makeEmpty(
@@ -302,7 +309,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       StatisticsFormsRepository::class,
       [
         'subscribe' => Expected::never(),
-      ]
+      ],
+      $this
     );
     $wp = Stub::make(
       WPFunctions::class,
@@ -351,7 +359,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       SubscriberActions::class,
       [
         'subscribe' => Expected::never(),
-      ]
+      ],
+      $this
     );
     $expectedRedirectLink = 'redirect';
     $subscriptionUrlFactory = Stub::makeEmpty(
@@ -412,7 +421,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       StatisticsFormsRepository::class,
       [
         'subscribe' => Expected::never(),
-      ]
+      ],
+      $this
     );
 
     $wp = Stub::make(
