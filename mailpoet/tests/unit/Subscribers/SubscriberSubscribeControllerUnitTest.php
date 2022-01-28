@@ -157,6 +157,78 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     ]);
   }
 
+  public function testNoSubscriptionWhenActionHookBeforeSubscriptionThrowsError() {
+    $subscriptionCaptcha = Stub::makeEmpty(Captcha::class);
+    $captchaSession = Stub::makeEmpty(CaptchaSession::class);
+    $subscriberActions = Stub::makeEmpty(
+      SubscriberActions::class,
+      [
+        'subscribe' => Expected::never(),
+      ]
+    );
+    $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
+    $throttling = Stub::makeEmpty(SubscriptionThrottling::class);
+    $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class,
+      [
+        'deobfuscateFormPayload' => function($data) { return $data;
+        },
+      ]);
+    $requiredCustomFieldValidator = Stub::makeEmpty(RequiredCustomFieldValidator::class);
+    $settings = Stub::makeEmpty(SettingsController::class);
+    $submitData = [];
+    $segmentIds = [1];
+    $form = Stub::makeEmpty(
+      FormEntity::class,
+      [
+        'getSettingsSegmentIds' => function() use ($segmentIds): array {
+          return $segmentIds;
+        },
+      ]
+    );
+    $formsRepository = Stub::makeEmpty(
+      FormsRepository::class,
+      [
+        'findOneById' => function() use ($form): FormEntity {
+          return $form;
+        },
+      ]
+    );
+    $statisticsFormsRepository = Stub::makeEmpty(
+      StatisticsFormsRepository::class,
+      [
+        'subscribe' => Expected::never(),
+      ]
+    );
+    $wp = Stub::make(
+      WPFunctions::class,
+      [
+        'doAction' => function($hook) {
+          if ($hook === 'mailpoet_subscription_before_subscribe') {
+            throw new \MailPoet\UnexpectedValueException("Value not expected.");
+          }
+        },
+      ],
+      $this
+    );
+
+    $testee = new SubscriberSubscribeController(
+      $subscriptionCaptcha,
+      $captchaSession,
+      $subscriberActions,
+      $subscriptionUrlFactory,
+      $throttling,
+      $fieldNameObfuscator,
+      $requiredCustomFieldValidator,
+      $settings,
+      $formsRepository,
+      $statisticsFormsRepository,
+      $wp
+    );
+
+    $this->expectException(UnexpectedValueException::class);
+    $testee->subscribe(array_merge(['form_id' => 1], $submitData));
+  }
+
   public function testBuiltinCaptchaNotFilledOut() {
 
     $captchaSessionId = 'captcha_session_id';
