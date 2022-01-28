@@ -797,7 +797,7 @@ class SubscribersTest extends \MailPoetTest {
     \MailPoet\WP\add_action(
       'mailpoet_subscription_before_subscribe',
       function($data) use ($expectedErrorMessage) {
-            throw new \Mailpoet\UnexpectedValueException($expectedErrorMessage);
+            throw new UnexpectedValueException($expectedErrorMessage);
       }
     );
 
