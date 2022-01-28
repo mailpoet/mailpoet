@@ -97,6 +97,9 @@ sed -i "s/define( *'WP_DEBUG', false *);/$CONFIG/" /wp-core/wp-config.php
 wp plugin activate woocommerce
 wp plugin activate woocommerce-subscriptions
 
+# activate theme
+wp theme activate twentytwentyone
+
 # print info about installed plugins
 wp plugin get woocommerce
 wp plugin get woocommerce-subscriptions
