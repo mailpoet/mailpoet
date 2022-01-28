@@ -227,8 +227,8 @@ class Populator {
   }
 
   private function createDefaultSettings() {
-    $currentUser = $this->wp->wpGetCurrentUser();
     $settingsDbVersion = $this->settings->fetch('db_version');
+    $currentUser = $this->wp->wpGetCurrentUser();
 
     // set cron trigger option to default method
     if (!$this->settings->fetch(CronTrigger::SETTING_NAME)) {
@@ -238,14 +238,19 @@ class Populator {
     }
 
     // set default sender info based on current user
-    $sender = [
-      'name' => $currentUser->display_name, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      'address' => $currentUser->user_email, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $defaultSender = [
+      'name' => $currentUser->display_name ?: '', // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      'address' => $currentUser->user_email ?: '', // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     ];
+    $savedSender = $this->settings->fetch('sender', []);
 
-    // set default from name & address
-    if (!$this->settings->fetch('sender')) {
-      $this->settings->set('sender', $sender);
+    /**
+     * Set default from name & address
+     * In some cases ( like when the plugin is getting activated other than from WP Admin ) user data may not
+     * still be set at this stage, so setting the defaults for `sender` is postponed
+     */
+    if (empty($savedSender) || empty($savedSender['address'])) {
+      $this->settings->set('sender', $defaultSender);
     }
 
     // enable signup confirmation by default
