@@ -79,6 +79,19 @@ if [[ ! -d "/wp-core/wp-content/plugins/woocommerce-subscriptions" ]]; then
   unzip -q -o "$WOOCOMMERCE_SUBS_ZIP" -d /wp-core/wp-content/plugins/
 fi
 
+# Install WooCommerce Memberships
+if [[ ! -d "/wp-core/wp-content/plugins/woocommerce-memberships" ]]; then
+  WOOCOMMERCE_MEMBERSHIPS_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woocommerce-memberships.zip"
+  if [ ! -f "$WOOCOMMERCE_MEMBERSHIPS_ZIP" ]; then
+    echo "WooCommerce Memberships plugin zip not found. Downloading WooCommerce Memberships plugin latest zip"
+    cd /project
+    ./do download:woo-commerce-memberships-zip latest
+    cd /wp-core/wp-content/plugins
+  fi
+  echo "Unzip Woocommerce Memberships plugin from $WOOCOMMERCE_MEMBERSHIPS_ZIP"
+  unzip -q -o "$WOOCOMMERCE_MEMBERSHIPS_ZIP" -d /wp-core/wp-content/plugins/
+fi
+
 # add configuration
 CONFIG=''
 CONFIG+="define('WP_DEBUG', true);\n"
@@ -96,10 +109,12 @@ sed -i "s/define( *'WP_DEBUG', false *);/$CONFIG/" /wp-core/wp-config.php
 # activate all plugins which source code want to access in tests runtime
 wp plugin activate woocommerce
 wp plugin activate woocommerce-subscriptions
+wp plugin activate woocommerce-memberships
 
 # print info about installed plugins
 wp plugin get woocommerce
 wp plugin get woocommerce-subscriptions
+wp plugin get woocommerce-memberships
 
 # activate MailPoet
 wp plugin activate mailpoet/mailpoet.php
