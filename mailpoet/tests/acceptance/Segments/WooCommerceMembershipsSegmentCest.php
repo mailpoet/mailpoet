@@ -25,7 +25,6 @@ class WooCommerceMembershipsSegmentCest {
     $membershipFactory = new WooCommerceMembership($i);
     $plan1 = $membershipFactory->createPlan('Plan 1');
     $plan2 = $membershipFactory->createPlan('Plan 2');
-    $plan3 = $membershipFactory->createPlan('Plan 3');
 
     $userFactory = new User();
     $subscriber1 = $userFactory->createUser('Sub Scriber1', 'subscriber', 'subscriber1@example.com');
@@ -34,8 +33,8 @@ class WooCommerceMembershipsSegmentCest {
     $userFactory->createUser('Sub Scriber4', 'subscriber', 'subscriber4@example.com');
 
     $membershipFactory->createMember($subscriber1->ID, $plan1['id']);
+    $membershipFactory->createMember($subscriber2->ID, $plan1['id']);
     $membershipFactory->createMember($subscriber2->ID, $plan2['id']);
-    $membershipFactory->createMember($subscriber2->ID, $plan3['id']);
 
     $segmentActionSelectElement = '[data-automation-id="select-segment-action"]';
     $operatorSelectElement = '[data-automation-id="select-operator"]';
