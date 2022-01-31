@@ -32,11 +32,18 @@ class GithubClient {
     if (!$release) {
       throw new \Exception("Release $tag not found");
     }
-    $namesToCheck = [
-      $zip,
-      str_replace('.zip', ".$tag.zip", $zip),
-      str_replace('.zip', "-$tag.zip", $zip),
-    ];
+    $namesToCheck = [$zip];
+    if ($tag) {
+      $namesToCheck[] = str_replace('.zip', ".$tag.zip", $zip);
+      $namesToCheck[] = str_replace('.zip', "-$tag.zip", $zip);
+    }
+    // We use the last version name to find a zip file
+    $lastVersion = $release['tag_name'];
+    if ($lastVersion !== $tag) {
+      $namesToCheck[] = str_replace('.zip', ".$lastVersion.zip", $zip);
+      $namesToCheck[] = str_replace('.zip', "-$lastVersion.zip", $zip);
+    }
+
     $assetDownloadUrl = null;
     $assetDownloadInfo = null;
     foreach ($release['assets'] as $asset) {
