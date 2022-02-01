@@ -14,6 +14,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as TasksLinks;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterPostEntity;
@@ -47,6 +48,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
@@ -433,6 +435,78 @@ class SendingQueueTest extends \MailPoetTest {
       ->where('queue_id', $this->queue->id)
       ->findOne();
     expect($statistics)->notEquals(false);
+  }
+
+  public function testItSendCorrectDataToSubscribersOneByOne() {
+    /**
+     * @var Subscriber[] $subscribers
+     */
+    $subscribers = [
+      Subscriber::create(),
+      Subscriber::create(),
+    ];
+    $subscribers[0]->set('id', 1);
+    $subscribers[1]->set('id', 2);
+    $subscribers[0]->set('status', 'status-1');
+    $subscribers[1]->set('status', 'status-2');
+    $subscribers[0]->set('source', 'source-1');
+    $subscribers[1]->set('source', 'source-2');
+    $subscribers[0]->set('email', '1@localhost.com');
+    $subscribers[1]->set('email', '2@localhost.com');
+    $subscribersRepository = ContainerWrapper::getInstance()->get(SubscribersRepository::class);
+    /**
+     * @var SubscriberEntity $entity
+     */
+    $entity = $subscribersRepository->findOneById(1);
+    $entity->setEmail('1@localhost.com');
+    $subscribersRepository->persist($entity);
+    $entity = $subscribersRepository->findOneById(2);
+    $entity->setEmail('2@localhost.com');
+    $subscribersRepository->persist($entity);
+    $subscriberIds = array_map(function(Subscriber $item): int { return (int)$item->id();
+
+    }, $subscribers);
+    $queue = SendingTask::create();
+    $queue->newsletterRenderedBody = ['html' => '<p>Hello [subscriber:email]</p>', 'text' => 'Hello [subscriber:email]'];
+    $queue->newsletterRenderedSubject = 'News for [subscriber:email]';
+    $queue->setSubscribers($subscriberIds);
+    $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
+
+    $newsletter = $this->newsletter;
+    $timer = 1000000000000000000;
+
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      Stub::makeEmpty(NewslettersRepository::class, ['findOneById' => new NewsletterEntity()]),
+      Stub::make(
+        MailerTask::class,
+        [
+          'prepareSubscriberForSending' => function($subscriber) {
+            return $subscriber->get('email');
+          },
+          'getProcessingMethod' => 'individual',
+          'send' => Expected::exactly(2, function($newsletter, $subscriberEmail, $extraParams) use ($subscribersRepository, $queue) {
+
+            $subscriberId = explode('@', $subscriberEmail);
+            $subscriberId = (int)$subscriberId[0];
+            $subscriber = $subscribersRepository->findOneById($subscriberId);
+            $subscriptionUrlFactory = SubscriptionUrlFactory::getInstance();
+            $unsubscribeUrl = $subscriptionUrlFactory->getUnsubscribeUrl($subscriber, $queue->id);
+            expect($newsletter['subject'])->equals('News for ' . $subscriberEmail);
+            expect($newsletter['body']['html'])->equals('<p>Hello ' . $subscriberEmail . '</p>');
+            expect($newsletter['body']['text'])->equals('Hello ' . $subscriberEmail);
+            expect($extraParams['meta']['email_type'])->equals('newsletter');
+            expect($extraParams['meta']['subscriber_status'])->equals('status-' . $subscriberId);
+            expect($extraParams['meta']['subscriber_source'])->equals('source-' . $subscriberId);
+            expect($extraParams['unsubscribe_url'])->equals($unsubscribeUrl);
+
+            return $this->mailerTaskDummyResponse;
+          }),
+        ],
+        $this
+      )
+    );
+
+    $sendingQueueWorker->processQueue($queue, $newsletter, $subscribers, $timer);
   }
 
   public function testItCanProcessSubscribersInBulk() {
