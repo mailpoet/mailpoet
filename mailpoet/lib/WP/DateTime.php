@@ -80,4 +80,21 @@ class DateTime {
 
     return $steps;
   }
+
+  /**
+   * Modifies current date to the $offset
+   *
+   * @see https://www.php.net/manual/en/class.datetime
+   * @param string $offset
+   * @param string $format
+   * @return \DateTime|false|string|void
+   * @throws \Exception
+   */
+  public function getDateWithOffset(string $offset, string $format = "") {
+    $dateWithOffset = (new \DateTime($this->getCurrentTime()))->modify($offset);
+    if (!empty($format)) {
+      return $dateWithOffset->format($format);
+    }
+    return $dateWithOffset;
+  }
 }
