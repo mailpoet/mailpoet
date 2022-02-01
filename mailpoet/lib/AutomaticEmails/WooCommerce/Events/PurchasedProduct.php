@@ -129,12 +129,10 @@ class PurchasedProduct {
     $orderedProducts = array_values(array_filter($orderedProducts));
 
     $schedulingCondition = function(Newsletter $automaticEmail) use ($orderedProducts, $subscriber) {
-      $meta = $automaticEmail->getMeta();
-      if (empty($meta['option'])) return false;
-
-      $metaProducts = array_column($meta['option'], 'id');
-      $matchedProducts = array_intersect($metaProducts, $orderedProducts);
-      if (empty($matchedProducts)) return false;
+      $matchedProducts = $this->getProductIdsMatchingNewsletterTrigger($automaticEmail, $orderedProducts);
+      if (empty($matchedProducts)) {
+        return false;
+      }
 
       if ($this->repository->wasScheduledForSubscriber($automaticEmail->id, $subscriber->id)) {
         $sentAllProducts = $this->repository->alreadySentAllProducts($automaticEmail->id, $subscriber->id, 'orderedProducts', $matchedProducts);
@@ -156,7 +154,28 @@ class PurchasedProduct {
       self::SLUG,
       $schedulingCondition,
       $subscriber->id,
-      ['orderedProducts' => $orderedProducts]
+      ['orderedProducts' => $orderedProducts],
+      [$this, 'metaModifier']
     );
+  }
+
+  public function metaModifier(Newsletter $newsletter, array $meta): array {
+    $orderedProductIds = $meta['orderedProducts'] ?? null;
+    if (empty($orderedProductIds)) {
+      return $meta;
+    }
+    $meta['orderedProducts'] = $this->getProductIdsMatchingNewsletterTrigger($newsletter, $orderedProductIds);
+
+    return $meta;
+  }
+
+  private function getProductIdsMatchingNewsletterTrigger(Newsletter $automaticEmail, array $orderedProductIds): array {
+    $automaticEmailMeta = $automaticEmail->getMeta();
+    if (empty($automaticEmailMeta['option'])) {
+      return [];
+    }
+    $emailTriggeringProductIds = array_column($automaticEmailMeta['option'], 'id');
+
+    return array_intersect($emailTriggeringProductIds, $orderedProductIds);
   }
 }

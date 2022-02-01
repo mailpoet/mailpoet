@@ -19,12 +19,15 @@ class AutomaticEmailScheduler {
     $this->wp = $wp;
   }
 
-  public function scheduleAutomaticEmail($group, $event, $schedulingCondition = false, $subscriberId = false, $meta = false) {
+  public function scheduleAutomaticEmail($group, $event, $schedulingCondition = false, $subscriberId = false, $meta = false, $metaModifier = null) {
     $newsletters = Scheduler::getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) return false;
     foreach ($newsletters as $newsletter) {
       if ($newsletter->event !== $event) continue;
       if (is_callable($schedulingCondition) && !$schedulingCondition($newsletter)) continue;
+      if (is_callable($metaModifier)) {
+        $meta = $metaModifier($newsletter, $meta);
+      }
       $this->createAutomaticEmailSendingTask($newsletter, $subscriberId, $meta);
     }
   }
