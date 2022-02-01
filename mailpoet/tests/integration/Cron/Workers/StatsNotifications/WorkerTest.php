@@ -216,7 +216,7 @@ class WorkerTest extends \MailPoetTest {
       ->with(
        $this->anything(),
        $this->callback(function($context){
-         return $context['preheader'] === '40.00% opens, 60.00% clicks, 20.00% unsubscribes in a nutshell.';
+         return $context['preheader'] === '60.00% clicks, 40.00% opens, 20.00% unsubscribes in a nutshell.';
        }));
 
     $this->statsNotifications->process();

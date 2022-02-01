@@ -144,9 +144,9 @@ class Worker {
     $context = [
       'subject' => $subject,
       'preheader' => sprintf(_x(
-        '%1$s%% opens, %2$s%% clicks, %3$s%% unsubscribes in a nutshell.', 'newsletter open rate, click rate and unsubscribe rate', 'mailpoet'),
-        number_format($opened, 2),
+        '%1$s%% clicks, %2$s%% opens, %3$s%% unsubscribes in a nutshell.', 'newsletter open rate, click rate and unsubscribe rate', 'mailpoet'),
         number_format($clicked, 2),
+        number_format($opened, 2),
         number_format($unsubscribed, 2)
       ),
       'topLinkClicks' => 0,
