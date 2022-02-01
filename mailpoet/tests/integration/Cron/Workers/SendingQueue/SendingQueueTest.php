@@ -445,8 +445,8 @@ class SendingQueueTest extends \MailPoetTest {
       Subscriber::create(),
       Subscriber::create(),
     ];
-    $subscribers[0]->set('id', 1);
-    $subscribers[1]->set('id', 2);
+    $subscribers[0]->set('id', '1');
+    $subscribers[1]->set('id', '2');
     $subscribers[0]->set('status', 'status-1');
     $subscribers[1]->set('status', 'status-2');
     $subscribers[0]->set('source', 'source-1');
