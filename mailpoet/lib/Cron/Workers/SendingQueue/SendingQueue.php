@@ -295,6 +295,7 @@ class SendingQueue {
         $preparedSubscribersIds = [];
         $unsubscribeUrls = [];
         $statistics = [];
+        $metas = [];
       }
     }
     if ($processingMethod === 'bulk') {
