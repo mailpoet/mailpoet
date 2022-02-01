@@ -54,7 +54,7 @@ class NewsletterStatistics {
   }
 
   public function getBounceCount(): int {
-    return $this->unsubscribeCount;
+    return $this->bounceCount;
   }
 
   public function getTotalSentCount(): int {
