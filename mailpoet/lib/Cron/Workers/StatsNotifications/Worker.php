@@ -138,6 +138,7 @@ class Worker {
     $opened = ($statistics->getOpenCount() * 100) / $statistics->getTotalSentCount();
     $machineOpened = ($statistics->getMachineOpenCount() * 100) / $statistics->getTotalSentCount();
     $unsubscribed = ($statistics->getUnsubscribeCount() * 100) / $statistics->getTotalSentCount();
+    $bounced = ($statistics->getBounceCount() * 100) / $statistics->getTotalSentCount();
     $subject = $sendingQueue->getNewsletterRenderedSubject();
     $subscribersCount = $this->subscribersRepository->getTotalSubscribers();
     $hasValidApiKey = $this->subscribersFeature->hasValidApiKey();
@@ -155,6 +156,8 @@ class Worker {
       'clicked' => $clicked,
       'opened' => $opened,
       'machineOpened' => $machineOpened,
+      'unsubscribed' => $unsubscribed,
+      'bounced' => $bounced,
       'subscribersLimitReached' => $this->subscribersFeature->check(),
       'hasValidApiKey' => $hasValidApiKey,
       'subscribersLimit' => $this->subscribersFeature->getSubscribersLimit(),
