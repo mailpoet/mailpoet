@@ -1,30 +1,36 @@
-import mp from 'mailpoet';
+import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
-import Moment from 'moment';
+import Moment, { MomentInput } from 'moment';
 
-var MailPoet = mp;
+export interface DateOptions {
+  format?: string;
+  offset?: number;
+  parseFormat?: boolean
+}
 
-MailPoet.Date = {
+const MailPoetDate = {
   version: 0.1,
   options: {},
   defaults: {
     offset: 0,
     format: 'F j, Y H:i:s',
   },
-  init: function init(opts) {
-    var options = opts || {};
+  init: function init(opts?: DateOptions): typeof MailPoetDate {
+    const options = opts || {};
 
     // set UTC offset
     if (
       options.offset === undefined
-        && window.mailpoet_date_offset !== undefined
+      && window.mailpoet_date_offset !== undefined
     ) {
-      options.offset = window.mailpoet_date_offset;
+      options.offset = typeof window.mailpoet_date_offset === 'string'
+        ? parseFloat(window.mailpoet_date_offset)
+        : window.mailpoet_date_offset;
     }
     // set dateTime format
     if (
       options.format === undefined
-        && window.mailpoet_datetime_format !== undefined
+      && window.mailpoet_datetime_format !== undefined
     ) {
       options.format = window.mailpoet_datetime_format;
     }
@@ -33,43 +39,41 @@ MailPoet.Date = {
 
     return this;
   },
-  format: function format(date, opts) {
-    var options = opts || {};
-    var momentDate;
+  format: function format(date: MomentInput, opts: DateOptions): string {
+    const options = opts || {};
+    let momentDate;
     this.init(options);
 
     momentDate = Moment(date, this.convertFormat(options.parseFormat));
     if (options.offset === 0) momentDate = momentDate.utc();
     return momentDate.format(this.convertFormat(this.options.format));
   },
-  toDate: function toDate(date, opts) {
-    var options = opts || {};
+  toDate: function toDate(date: MomentInput, opts?: DateOptions): Date {
+    const options = opts || {};
     this.init(options);
 
     return Moment(date, this.convertFormat(options.parseFormat)).toDate();
   },
-  short: function short(date) {
+  short: function short(date: MomentInput): string {
     return this.format(date, {
       format: window.mailpoet_date_format || 'F j, Y',
     });
   },
-  full: function full(date) {
+  full: function full(date: MomentInput): string {
     return this.format(date, {
       format: window.mailpoet_datetime_format || 'F j, Y H:i:s',
     });
   },
-  time: function time(date) {
+  time: function time(date: MomentInput): string {
     return this.format(date, {
       format: window.mailpoet_time_format || 'H:i:s',
     });
   },
-  convertFormat: function convertFormat(format) {
-    var replacements;
-    var convertedFormat;
-    var escapeToken;
-    var index;
-    var token;
-    var formatMappings = {
+  convertFormat: function convertFormat(format: string): string {
+    let escapeToken;
+    let index;
+    let token: string;
+    const formatMappings = {
       date: {
         d: 'DD',
         D: 'ddd',
@@ -138,14 +142,14 @@ MailPoet.Date = {
 
     if (!format || format.length <= 0) return format;
 
-    replacements = formatMappings.date;
-    convertedFormat = [];
+    const replacements = formatMappings.date;
+    const convertedFormat = [];
     escapeToken = false;
 
     for (index = 0, token = ''; format.charAt(index); index += 1) {
       token = format.charAt(index);
       if (escapeToken === true) {
-        convertedFormat.push('[' + token + ']');
+        convertedFormat.push(`[${token}]`);
         escapeToken = false;
       } else if (token === '\\') {
         // Slash escapes the next symbol to be treated as literal
@@ -153,10 +157,14 @@ MailPoet.Date = {
       } else if (replacements[token] !== undefined) {
         convertedFormat.push(replacements[token]);
       } else {
-        convertedFormat.push('[' + token + ']');
+        convertedFormat.push(`[${token}]`);
       }
     }
 
     return convertedFormat.join('');
   },
+  isInFuture: (dateString: string): boolean => new Date(dateString).getTime() > Date.now(),
 };
+
+MailPoet.Date = MailPoetDate;
+export default MailPoetDate;

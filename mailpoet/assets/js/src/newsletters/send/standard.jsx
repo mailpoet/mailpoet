@@ -242,7 +242,9 @@ export default {
     const isScheduled = (
       typeof newsletterOptions.options === 'object'
       && newsletterOptions.options.isScheduled === '1'
+      && MailPoet.Date.isInFuture(newsletterOptions.options.scheduledAt)
     );
+
     const options = {
       value: (isScheduled
         ? MailPoet.I18n.t('schedule')
@@ -250,7 +252,7 @@ export default {
     };
 
     if (newsletterOptions.status === 'sent'
-        || newsletterOptions.status === 'sending') {
+      || newsletterOptions.status === 'sending') {
       options.disabled = 'disabled';
     }
 
