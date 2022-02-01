@@ -10,7 +10,7 @@ import GATrackingField from 'newsletters/send/ga_tracking.jsx';
 import Toggle from 'common/form/toggle/toggle';
 
 const currentTime = window.mailpoet_current_time || '00:00';
-const defaultDateTime = `${window.mailpoet_current_date} 00:00:00`;
+const tomorrowDateTime = `${window.mailpoet_tomorrow_date} 08:00:00`;
 const timeOfDayItems = window.mailpoet_schedule_time_of_day;
 const dateDisplayFormat = window.mailpoet_date_display_format;
 const dateStorageFormat = window.mailpoet_date_storage_format;
@@ -19,7 +19,7 @@ class StandardScheduling extends React.Component {
   getCurrentValue = () => {
     const schedulingOptions = {
       isScheduled: '0',
-      scheduledAt: defaultDateTime,
+      scheduledAt: tomorrowDateTime,
     };
     return _.defaults(
       this.props.item[this.props.field.name] || {},
@@ -76,7 +76,7 @@ class StandardScheduling extends React.Component {
               onChange={this.handleValueChange}
               disabled={this.props.field.disabled}
               dateValidation={this.getDateValidation()}
-              defaultDateTime={defaultDateTime}
+              defaultDateTime={tomorrowDateTime}
               timeOfDayItems={timeOfDayItems}
               dateDisplayFormat={dateDisplayFormat}
               dateStorageFormat={dateStorageFormat}
