@@ -45,3 +45,10 @@ declare module '@woocommerce/blocks-checkout' {
 
   function registerCheckoutBlock(options: CheckoutBlockOptions): void;
 }
+
+interface Window {
+  mailpoet_date_offset?: string;
+  mailpoet_datetime_format?: string;
+  mailpoet_date_format?: string;
+  mailpoet_time_format?: string;
+}
