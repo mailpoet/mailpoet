@@ -140,11 +140,6 @@ class Functions extends AbstractExtension {
         ['is_safe' => ['all']]
       ),
       new TwigFunction(
-        'opened_stats_text',
-        [$this, 'openedStatsText'],
-        ['is_safe' => ['all']]
-      ),
-      new TwigFunction(
         'clicked_stats_text',
         [$this, 'clickedStatsText'],
         ['is_safe' => ['all']]
@@ -267,16 +262,6 @@ class Functions extends AbstractExtension {
       return '#ff9f00';
     } else {
       return '#f559c3';
-    }
-  }
-
-  public function openedStatsText($opened) {
-    if ($opened > 30) {
-      return __('EXCELLENT', 'mailpoet');
-    } elseif ($opened > 10) {
-      return __('GOOD', 'mailpoet');
-    } else {
-      return __('BAD', 'mailpoet');
     }
   }
 
