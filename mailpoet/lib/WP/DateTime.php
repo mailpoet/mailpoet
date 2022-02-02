@@ -39,6 +39,9 @@ class DateTime {
     return $this->wp->currentTime($format);
   }
 
+  /*
+   * @return int|string Integer if `$type` is 'timestamp' or 'U', string otherwise.
+   */
   public function getCurrentDate($format = false) {
     if (empty($format)) $format = $this->getDateFormat();
     return $this->getCurrentTime($format);
@@ -90,8 +93,17 @@ class DateTime {
    * @return \DateTime|false|string|void
    * @throws \Exception
    */
-  public function getDateWithOffset(string $offset, string $format = "") {
-    $dateWithOffset = (new \DateTime($this->getCurrentTime()))->modify($offset);
+
+  /**
+   * Modifies $date to the $offset
+   * @param string|int $date
+   * @param string $offset
+   * @param string $format
+   * @return \DateTime|false|string|void
+   * @throws \Exception
+   */
+  public function getDateWithOffset($date, string $offset, string $format = "") {
+    $dateWithOffset = (new \DateTime($date))->modify($offset);
     if (!empty($format)) {
       return $dateWithOffset->format($format);
     }

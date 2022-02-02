@@ -1,6 +1,6 @@
 import FeaturesController from 'features_controller';
 import MailPoetComUrlFactory from 'mailpoet_com_url_factory';
-
+import { MailPoetDate as Date } from 'date';
 // A placeholder for MailPoet object
 var MailPoet = {
   FeaturesController: FeaturesController(window.mailpoet_feature_flags),
@@ -28,6 +28,7 @@ var MailPoet = {
   getShortcodeLinks: () => (window.mailpoet_shortcode_links ? window.mailpoet_shortcode_links : []),
   settings: window.mailpoet_settings,
   trackingConfig: window.mailpoet_tracking_config || {},
+  Date,
 };
 
 // Expose MailPoet globally
@@ -36,7 +37,6 @@ window.MailPoet = MailPoet;
 export default MailPoet;
 
 require('ajax'); // side effect - extends MailPoet object
-require('date'); // side effect - extends MailPoet object
 require('i18n'); // side effect - extends MailPoet object
 require('modal'); // side effect - extends MailPoet object
 require('notice'); // side effect - extends MailPoet object

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import asNum from '../../../../assets/js/src/form_editor/store/server_value_as_num';
 
-describe.only('Server value as num', () => {
+describe('Server value as num', () => {
   it('Converts string to number', () => {
     expect(asNum('4')).to.equal(4);
     expect(asNum('0')).to.equal(0);
