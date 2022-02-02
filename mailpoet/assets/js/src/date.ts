@@ -1,5 +1,3 @@
-import MailPoet from 'mailpoet';
-import jQuery from 'jquery';
 import Moment, { MomentInput } from 'moment';
 
 export interface DateOptions {
@@ -8,7 +6,7 @@ export interface DateOptions {
   parseFormat?: boolean
 }
 
-const MailPoetDate = {
+export const MailPoetDate = {
   version: 0.1,
   options: {},
   defaults: {
@@ -35,7 +33,10 @@ const MailPoetDate = {
       options.format = window.mailpoet_datetime_format;
     }
     // merge options
-    this.options = jQuery.extend({}, this.defaults, options);
+    this.options = {
+      ...this.defaults,
+      ...options,
+    };
 
     return this;
   },
@@ -165,6 +166,3 @@ const MailPoetDate = {
   },
   isInFuture: (dateString: string): boolean => new Date(dateString).getTime() > Date.now(),
 };
-
-MailPoet.Date = MailPoetDate;
-export default MailPoetDate;
