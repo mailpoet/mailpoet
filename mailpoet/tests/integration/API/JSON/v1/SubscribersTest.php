@@ -504,6 +504,62 @@ class SubscribersTest extends \MailPoetTest {
     );
   }
 
+  public function testItCanFilterSubscribersWithoutSegment() {
+    $subscriber = Subscriber::createOrUpdate(
+      [
+        'email' => 'no-segment@example.com',
+        'status' => Subscriber::STATUS_SUBSCRIBED,
+        'segments' => [],
+        'source' => Source::API,
+      ]
+    );
+    $trashedSubscriber = Subscriber::createOrUpdate(
+      [
+        'email' => 'no-segment-in-trash@example.com',
+        'status' => Subscriber::STATUS_SUBSCRIBED,
+        'segments' => [],
+        'source' => Source::API,
+      ]
+    );
+    $trashedSubscriber->trash()->save();
+
+    $result = $this->endpoint->listing(
+      [
+        'filter' => [
+          'segment' => SubscriberListingRepository::FILTER_WITHOUT_LIST,
+        ],
+        'group' => 'all',
+      ]
+    );
+    $data = $result->getData();
+    $meta = $result->meta;
+
+    self::assertEquals(2, $meta['count'], "Did not find exactly two subscribers without list");
+    self::assertCount(2, $data['data'], "Did not return exactly two subscribers without list");
+    $foundSubscriberIds = array_map(
+      function (array $data): int {
+        return (int)$data['id'];
+      }, $data['data']
+    );
+    self::assertTrue(in_array((int)$this->subscriber1->getId(), $foundSubscriberIds, true), 'Subscriber 1 was not found.');
+    self::assertTrue(in_array((int)$subscriber->id(), $foundSubscriberIds, true), 'New subscriber without list was not found.');
+
+    $result = $this->endpoint->listing(
+      [
+        'filter' => [
+          'segment' => SubscriberListingRepository::FILTER_WITHOUT_LIST,
+        ],
+        'group' => 'trash',
+      ]
+    );
+    $data = $result->getData();
+    $meta = $result->meta;
+
+    self::assertEquals(1, $meta['count'], "Did not find exactly one trashed subscriber without list.");
+    self::assertCount(1, $data['data'], "Did not return exactly one trashed subscriber without list.");
+    self::assertEquals($trashedSubscriber->id(), $data['data'][0]['id'], "Did not return the trashed subscriber without list.");
+  }
+
   public function testItCanBulkDeleteSelectionOfSubscribers() {
     $deletableSubscriber = Subscriber::createOrUpdate([
       'email' => 'to.be.removed@mailpoet.com',
