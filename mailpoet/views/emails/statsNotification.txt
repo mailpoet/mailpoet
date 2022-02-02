@@ -19,11 +19,16 @@
   <%= upgradeNowLink %>
 <% endif %>
 
-<%= __('open rate') %>: <%= number_format_i18n(opened) %>%
-  <%= opened_stats_text(opened) %>
-
-<%= __('click rate') %>: <%= number_format_i18n(clicked) %>%
+<%= stats_number_format_i18n(clicked) %>% <%= __('clicked') %>
   <%= clicked_stats_text(clicked) %>
+
+<%= stats_number_format_i18n(opened) %>% <%= __('opened') %>
+
+<%= stats_number_format_i18n(machineOpened) %>% <%= __('machine-opened') %>
+
+<%= stats_number_format_i18n(unsubscribed) %>% <%= __('unsubscribed') %>
+
+<%= stats_number_format_i18n(bounced) %>% <%= __('bounced') %>
 
 <% if topLinkClicks > 0 %>
 <%= __('Most clicked link') %>
