@@ -143,10 +143,12 @@ class AutomatedEmails extends SimpleWorker {
       $newsletter = $row['newsletter'];
       $clicked = ($statistics->getClickCount() * 100) / $statistics->getTotalSentCount();
       $opened = ($statistics->getOpenCount() * 100) / $statistics->getTotalSentCount();
+      $machineOpened = ($statistics->getMachineOpenCount() * 100) / $statistics->getTotalSentCount();
       $context['newsletters'][] = [
         'linkStats' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-newsletters#/stats/' . $newsletter->getId()),
         'clicked' => $clicked,
         'opened' => $opened,
+        'machineOpened' => $machineOpened,
         'subject' => $newsletter->getSubject(),
       ];
     }
