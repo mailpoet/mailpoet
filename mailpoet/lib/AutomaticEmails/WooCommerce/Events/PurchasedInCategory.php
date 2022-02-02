@@ -5,6 +5,7 @@ namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Models\Newsletter;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\AutomaticEmailsRepository;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
@@ -126,18 +127,17 @@ class PurchasedInCategory {
     }
 
     $schedulingCondition = function($automaticEmail) use ($orderedProductCategories, $subscriber) {
-      $meta = $automaticEmail->getMeta();
+      $matchedCategories = $this->getProductCategoryIdsMatchingNewsletterTrigger($automaticEmail, $orderedProductCategories);
+      if (empty($matchedCategories)) {
+        return false;
+      }
 
-      if (empty($meta['option'])) return false;
       if ($this->repository->wasScheduledForSubscriber($automaticEmail->id, $subscriber->id)) {
-        $sentAllProducts = $this->repository->alreadySentAllProducts($automaticEmail->id, $subscriber->id, 'orderedProductCategories', $orderedProductCategories);
+        $sentAllProducts = $this->repository->alreadySentAllProducts($automaticEmail->id, $subscriber->id, 'orderedProductCategories', $matchedCategories);
         if ($sentAllProducts) return false;
       }
 
-      $metaCategories = array_column($meta['option'], 'id');
-      $matchedCategories = array_intersect($metaCategories, $orderedProductCategories);
-
-      return !empty($matchedCategories);
+      return true;
     };
 
     $this->loggerFactory->getLogger(self::SLUG)->addInfo(
@@ -152,7 +152,28 @@ class PurchasedInCategory {
       self::SLUG,
       $schedulingCondition,
       $subscriber->id,
-      ['orderedProductCategories' => $orderedProductCategories]
+      ['orderedProductCategories' => $orderedProductCategories],
+      [$this, 'metaModifier']
     );
+  }
+
+  public function metaModifier(Newsletter $automaticEmail, array $meta): array {
+    $orderedProductCategoryIds = $meta['orderedProductCategories'] ?? null;
+    if (empty($orderedProductCategoryIds)) {
+      return $meta;
+    }
+    $meta['orderedProductCategories'] = $this->getProductCategoryIdsMatchingNewsletterTrigger($automaticEmail, $orderedProductCategoryIds);
+
+    return $meta;
+  }
+
+  private function getProductCategoryIdsMatchingNewsletterTrigger(Newsletter $automaticEmail, array $orderedCategoryIds): array {
+    $automaticEmailMeta = $automaticEmail->getMeta();
+    if (empty($automaticEmailMeta['option'])) {
+      return [];
+    }
+    $emailTriggeringCategoryIds = array_column($automaticEmailMeta['option'], 'id');
+
+    return array_intersect($emailTriggeringCategoryIds, $orderedCategoryIds);
   }
 }
