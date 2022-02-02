@@ -311,6 +311,9 @@ jobs:
       mysql_image_version:
         type: string
         default: ''
+      codeception_image_version:
+        type: string
+        default: ''
       wordpress_image_version:
         type: string
         default: ''
@@ -323,6 +326,7 @@ jobs:
     environment:
       MYSQL_COMMAND: << parameters.mysql_command >>
       MYSQL_IMAGE_VERSION: << parameters.mysql_image_version >>
+      CODECEPTION_IMAGE_VERSION: << parameters.codeception_image_version >>
       WORDPRESS_IMAGE_VERSION: << parameters.wordpress_image_version >>
     steps:
       - attach_workspace:
@@ -572,6 +576,7 @@ workflows:
           woo_subscriptions_version: 3.0.10
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
+          codeception_image_version: 7.4-cli_20210126.1
           wordpress_image_version: wp-5.3_php7.2_20211213.1
           requires:
             - build
