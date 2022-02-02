@@ -310,7 +310,6 @@ class SegmentSubscribersRepository {
           $queryBuilder->expr()->eq('ssg.status', ':statusSubscribed'),
           $queryBuilder->expr()->notIn('ssg.segment', $deletedSegmentsQueryBuilder->getDQL())
         ))
-      ->andWhere('s.deletedAt IS NULL')
       ->andWhere('ssg.id IS NULL')
       ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
   }
