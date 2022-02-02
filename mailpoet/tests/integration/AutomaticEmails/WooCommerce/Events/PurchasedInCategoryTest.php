@@ -87,7 +87,8 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $this->event->scheduleEmail(3);
     $scheduledTask = Sending::getByNewsletterId($newsletter->id);
     $queue = $scheduledTask->queue();
-    expect($queue->getMeta())->equals(['orderedProductCategories' => ['15', '16']]);
+    // We only want to record the ID for the category that triggered the newsletter
+    expect($queue->getMeta())->equals(['orderedProductCategories' => ['15']]);
     expect($scheduledTask)->notEmpty();
   }
 
