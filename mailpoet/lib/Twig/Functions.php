@@ -150,6 +150,11 @@ class Functions extends AbstractExtension {
         ['is_safe' => ['all']]
       ),
       new TwigFunction(
+        'stats_number_format_i18n',
+        [$this, 'statsNumberFormatI18n'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
         'add_referral_id',
         [$this, 'addReferralId'],
         ['is_safe' => ['all']]
@@ -283,6 +288,25 @@ class Functions extends AbstractExtension {
     } else {
       return __('Average', 'mailpoet');
     }
+  }
+
+  /**
+   * Wrapper around number_format_i18n() to return two decimals digits if the number
+   * is smaller than 0.1 and one decimal digit if the number is equal or greater
+   * than 0.1.
+   *
+   * @param int|float $number
+   *
+   * @return string
+   */
+  public function statsNumberFormatI18n($number) {
+    if ($number < 0.1) {
+      $decimals = 2;
+    } else {
+      $decimals = 1;
+    }
+
+    return number_format_i18n($number, $decimals);
   }
 
   public function addReferralId($url) {
