@@ -6,8 +6,6 @@ services:
     image: mariadb:10.5.8
 
   wordpress:
-    ports:
-      - "8083:8083"
     volumes:
       - nfs-wordpress:/var/www/html
       - nfs-mailpoet:/var/www/html/wp-content/plugins/mailpoet
