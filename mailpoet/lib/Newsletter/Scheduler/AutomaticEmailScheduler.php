@@ -25,6 +25,15 @@ class AutomaticEmailScheduler {
     foreach ($newsletters as $newsletter) {
       if ($newsletter->event !== $event) continue;
       if (is_callable($schedulingCondition) && !$schedulingCondition($newsletter)) continue;
+
+      /**
+       * $meta will be the same for all newsletters by default. If we need to store newsletter-specific meta, the
+       * $metaModifier callback can be used.
+       *
+       * This was introduced because of WooCommerce product purchase automatic emails. We only want to store the
+       * product IDs that specifically triggered a newsletter, but $meta includes ALL the product IDs
+       * or category IDs from an order.
+       */
       if (is_callable($metaModifier)) {
         $meta = $metaModifier($newsletter, $meta);
       }
