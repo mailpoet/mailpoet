@@ -8,7 +8,8 @@
   "require": {
     "php": ">=7.2",
     "mtdowling/cron-expression": "^1.1",
-    "soundasleep/html2text": "dev-master"
+    "soundasleep/html2text": "dev-master",
+    "woocommerce/action-scheduler": "^3.4"
   },
   "require-dev": {
     "ext-gd": "*",
