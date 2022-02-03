@@ -93,6 +93,10 @@ class FunctionsTest extends \MailPoetTest {
     expect($called)->false();
   }
 
+  public function testPluginisNotUninstallablePlugin() {
+    self::assertFalse(is_uninstallable_plugin('mailpoet/mailpoet.php'));
+  }
+
   public function _after() {
     global $content_width; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $content_width = $this->contentWidth; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
