@@ -106,23 +106,6 @@ class PurchasedProductTest extends \MailPoetTest {
     expect($queue2)->count(count($queue1));
   }
 
-  public function testItDoesntCreateASecondSendingTaskWhenAlreadySentWhat() {
-    WPFunctions::get()->removeAllFilters('woocommerce_order_status_completed');
-    $subscriber = $this->createWooSubscriber();
-    $email = $this->createEmailTriggeredByProductIds([1000]);
-    $event = $this->createOrderEvent($subscriber, [1000]);
-    $this->triggerEmailForState('completed', $email, $event);
-    $queues = SendingQueue::where('newsletter_id', $email->id)->findMany();
-    expect($queues)->count(1);
-
-    // Create a second order with the same product and some additional product.
-    // This was a cause for a duplicate email: https://mailpoet.atlassian.net/browse/MAILPOET-3254
-    $event2 = $this->createOrderEvent($subscriber, [1000, 12345]);
-    $sendingTask2 = $this->triggerEmailForState('completed', $email, $event2);
-    $queues = SendingQueue::where('newsletter_id', $email->id)->findMany();
-    expect($queues)->count(1);
-  }
-
   public function testItCreatesASecondSendingTaskAfterTriggerUpdated() {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_completed');
     $subscriber = $this->createWooSubscriber();
