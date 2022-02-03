@@ -130,6 +130,46 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     expect($queue1)->count(count($queue2));
   }
 
+  public function testItSchedulesAgainIfTriggerIsUpdated() {
+    $newsletter = $this->_createNewsletter();
+
+    $customerEmail = 'email@example.com';
+    $order = $this->getOrderMock(['15', '16']);
+    $this->woocommerceHelper = $this->createMock(WCHelper::class);
+    $this->woocommerceHelper
+      ->expects($this->any())
+      ->method('wcGetOrder')
+      ->will($this->returnValue($order));
+    $order
+      ->expects($this->any())
+      ->method('get_billing_email')
+      ->will($this->returnValue($customerEmail));
+
+    $this->_createSubscriber($customerEmail);
+
+    $this->event = new PurchasedInCategory($this->woocommerceHelper);
+    $this->event->scheduleEmail(3);
+    $queue1 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    expect($queue1)->count(1);
+
+    $this->assertInstanceOf(Newsletter::class, $newsletter);
+    $this->updateEmailTriggerIds($newsletter, ['16']);
+    $order = $this->getOrderMock(['16']);
+    $this->woocommerceHelper = $this->createMock(WCHelper::class);
+    $this->woocommerceHelper
+      ->expects($this->any())
+      ->method('wcGetOrder')
+      ->will($this->returnValue($order));
+    $order
+      ->expects($this->any())
+      ->method('get_billing_email')
+      ->will($this->returnValue($customerEmail));
+    $this->event = new PurchasedInCategory($this->woocommerceHelper);
+    $this->event->scheduleEmail(4);
+    $queue2 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    expect($queue2)->count(2);
+  }
+
   private function getOrderMock($categories = ['123']) {
     $productMock = $this->getMockBuilder(\WC_Product::class)
       ->disableOriginalConstructor()
@@ -161,7 +201,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     return $orderMock;
   }
 
-  private function _createNewsletter() {
+  private function _createNewsletter(): Newsletter {
     $newsletter = Newsletter::createOrUpdate(
       [
         'subject' => 'WooCommerce',
@@ -237,5 +277,22 @@ class PurchasedInCategoryTest extends \MailPoetTest {
         $newsletterOption->save();
       }
     }
+  }
+
+  private function updateEmailTriggerIds(Newsletter $newsletter, array $triggerIds) {
+    $metaOptionField = NewsletterOptionField::where('name', 'meta')->findOne();
+    $this->assertInstanceOf(NewsletterOptionField::class, $metaOptionField);
+    $newsletterMetaOption = NewsletterOption::where(['newsletter_id' => $newsletter->id, 'option_field_id' => $metaOptionField->id])->findOne();
+    $this->assertInstanceOf(NewsletterOption::class, $newsletterMetaOption);
+    $optionValue = json_decode($newsletterMetaOption->value, true);
+    $this->assertIsArray($optionValue);
+    $optionValue['option'] = [];
+    foreach ($triggerIds as $triggerId) {
+      $optionValue['option'][] = ['id' => $triggerId];
+    }
+    $newValue = json_encode($optionValue);
+    $this->assertIsString($newValue);
+    $newsletterMetaOption->set('value', $newValue);
+    $newsletterMetaOption->save();
   }
 }
