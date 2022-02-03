@@ -143,7 +143,6 @@ cp $plugin_name-cron.php $plugin_name
 cp $plugin_name.php $plugin_name
 cp mailpoet_initializer.php $plugin_name
 cp readme.txt $plugin_name
-cp uninstall.php $plugin_name
 
 # Prefix all PHP files with "<?php if (!defined('ABSPATH')) exit; ?>"
 echo '[BUILD] Adding ABSPATH ensuring prefix to all PHP files (to avoid path disclosure)'
