@@ -92,6 +92,44 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     expect($scheduledTask)->notEmpty();
   }
 
+  public function testItDoesNotRescheduleDueToFutureOrderWithAdditionalProduct() {
+    $newsletter = $this->_createNewsletter();
+
+    $customerEmail = 'email@example.com';
+    $this->_createSubscriber($customerEmail);
+
+    $order = $this->getOrderMock(['15']);
+    $this->woocommerceHelper = $this->createMock(WCHelper::class);
+    $this->woocommerceHelper
+      ->expects($this->any())
+      ->method('wcGetOrder')
+      ->will($this->returnValue($order));
+    $order
+      ->expects($this->any())
+      ->method('get_billing_email')
+      ->will($this->returnValue($customerEmail));
+
+    $this->event = new PurchasedInCategory($this->woocommerceHelper);
+    $this->event->scheduleEmail(3);
+    $queue1 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    expect($queue1)->notEmpty();
+
+    $order = $this->getOrderMock(['15', '17']);
+    $this->woocommerceHelper = $this->createMock(WCHelper::class);
+    $this->woocommerceHelper
+      ->expects($this->any())
+      ->method('wcGetOrder')
+      ->will($this->returnValue($order));
+    $order
+      ->expects($this->any())
+      ->method('get_billing_email')
+      ->will($this->returnValue($customerEmail));
+    $this->event = new PurchasedInCategory($this->woocommerceHelper);
+    $this->event->scheduleEmail(4);
+    $queue2 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    expect($queue2)->count(count($queue1));
+  }
+
   public function testItSchedulesOnlyOnce() {
     $newsletter = $this->_createNewsletter();
 
