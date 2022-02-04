@@ -110,16 +110,10 @@ class WooCommerceBlocksIntegration {
   }
 
   public function processCheckoutBlockOptin(\WC_Order $order, $request) {
-    $checkoutOptinEnabled = $this->settings->get(WooCommerceSubscription::OPTIN_ENABLED_SETTING_NAME, false);
-    if (!$checkoutOptinEnabled) {
-      return;
-    }
+    $checkoutOptinEnabled = (bool)$this->settings->get(WooCommerceSubscription::OPTIN_ENABLED_SETTING_NAME);
+    $checkoutOptin = isset($request['extensions']['mailpoet']['optin']) ? (bool)$request['extensions']['mailpoet']['optin'] : false;
 
     if (!$order->get_billing_email()) {
-      return;
-    }
-
-    if (!isset($request['extensions']['mailpoet']['optin'])) {
       return;
     }
 
@@ -142,6 +136,6 @@ class WooCommerceBlocksIntegration {
       return null;
     }
 
-    $this->woocommerceSubscription->handleSubscriberOptin($subscriberOldModel, (bool)$checkoutOptinEnabled, (bool)$request['extensions']['mailpoet']['optin']);
+    $this->woocommerceSubscription->handleSubscriberOptin($subscriberOldModel, $checkoutOptinEnabled, $checkoutOptin);
   }
 }
