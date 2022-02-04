@@ -5,7 +5,7 @@
 ## `array addSubscriberField(array $data)`
 
 Using this method you can create custom properties that can be used for storing additional data for each subscriber.
-See [Subscriber Fields for more details](./GetSubscriberFields.md)
+See [Subscriber Fields for more details](GetSubscriberFields.md)
 
 ## Arguments
 

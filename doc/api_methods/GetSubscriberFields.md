@@ -7,7 +7,7 @@
 Each subscriber has a set of default properties (`email`, `first_name`, `last_name`).
 MailPoet enables the extension of these properties by adding custom properties.
 This method returns list of all properties available for a subscriber (default + custom).
-See also [addSubscriberField function.](./AddSubscriberField.md)
+See also [addSubscriberField function.](AddSubscriberField.md)
 
 ## Subscriber Field
 
