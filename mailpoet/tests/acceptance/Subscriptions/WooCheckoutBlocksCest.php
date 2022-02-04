@@ -26,6 +26,9 @@ class WooCheckoutBlocksCest {
   /** @var int */
   private $checkoutPostId;
 
+  /** @var string */
+  private $checkoutPostContent = '';
+
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();
     $i->activateWooCommerceBlocks();
@@ -33,7 +36,16 @@ class WooCheckoutBlocksCest {
     $this->settingsFactory = new Settings();
     $this->settingsFactory->withWooCommerceListImportPageDisplayed(true);
     $this->settingsFactory->withCookieRevenueTrackingDisabled();
-    $this->checkoutPostId = $this->configureBlocksCheckoutPage($i);
+    // Due to test speed, we create a page via UI only for the first time, and then we copy the post content
+    if (!$this->checkoutPostContent) {
+      $checkoutPostId = $this->configureBlocksCheckoutPage($i);
+      $postData = $i->cliToString(['post', 'get', $checkoutPostId, '--format=json']);
+      $postData = json_decode($postData, true);
+      $this->checkoutPostContent = is_array($postData) ? $postData['post_content'] : '';
+      $this->checkoutPostId = $checkoutPostId;
+    } else {
+      $this->checkoutPostId = $this->createCheckoutPage($i, $this->checkoutPostContent);
+    }
   }
 
   public function checkoutOptInDisabled(\AcceptanceTester $i) {
@@ -149,7 +161,7 @@ class WooCheckoutBlocksCest {
   }
 
   private function configureBlocksCheckoutPage(\AcceptanceTester $i): int {
-    $postId = $this->createBlocksCheckoutPage($i);
+    $postId = $this->createCheckoutPage($i);
     $i->wantTo('Create the Checkout Block page');
     $i->login();
     $i->amOnAdminPage("post.php?post={$postId}&action=edit");
@@ -183,14 +195,18 @@ class WooCheckoutBlocksCest {
     }
   }
 
-  private function createBlocksCheckoutPage(\AcceptanceTester $i): int {
-    return $i->havePostInDatabase([
-      'post_author' => 1,
-      'post_type' => 'page',
-      'post_name' => 'wcb-checkout',
-      'post_title' => 'WC Blocks Checkout',
-      'post_content' => '',
-      'post_status' => 'publish',
+  private function createCheckoutPage(\AcceptanceTester $i, string $postContent = ''): int {
+    return (int)$i->cliToString([
+      'post',
+      'create',
+      '--format=json',
+      '--porcelain',
+      '--post_author=1',
+      '--post_status=publish',
+      '--post_type=page',
+      '--post_name=wcb-checkout',
+      '--post_title="WC Blocks Checkout"',
+      '--post_content=\'' . $postContent . '\'',
     ]);
   }
 
