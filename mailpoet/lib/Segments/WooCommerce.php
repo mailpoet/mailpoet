@@ -124,11 +124,14 @@ class WooCommerce {
           $data['last_name'] = $wpUser->last_name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         }
         $subscriber = $this->subscriberSaveController->createOrUpdate($data, $subscriber);
-        // add subscriber to the WooCommerce Customers segment
-        $this->subscriberSegmentRepository->subscribeToSegments(
-          $subscriber,
-          [$wcSegment]
-        );
+        // add subscriber to the WooCommerce Customers segment when relation doesn't exist
+        $subscriberSegment = $this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriber, 'segment' => $wcSegment]);
+        if (!$subscriberSegment) {
+          $this->subscriberSegmentRepository->subscribeToSegments(
+            $subscriber,
+            [$wcSegment]
+          );
+        }
         break;
     }
 
