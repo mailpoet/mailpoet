@@ -34,15 +34,24 @@ class DateTime {
     return $dateFormat;
   }
 
-  public function getCurrentTime($format = false) {
+  /**
+   * @param string $format Type of time to retrieve. Accepts 'mysql', 'timestamp', 'U',
+   * or PHP date format string (e.g. 'Y-m-d').
+   *
+   * @return int|string Integer if `$format` is 'timestamp' or 'U'
+   */
+  public function getCurrentTime(string $format = '') {
     if (empty($format)) $format = $this->getTimeFormat();
     return $this->wp->currentTime($format);
   }
 
-  /*
-   * @return int|string Integer if `$type` is 'timestamp' or 'U', string otherwise.
+  /**
+   * @param string $format Type of time to retrieve. Accepts 'mysql', 'timestamp', 'U',
+   * or PHP date format string (e.g. 'Y-m-d').
+
+   * @return int|string Integer if `$format` is 'timestamp' or 'U'
    */
-  public function getCurrentDate($format = false) {
+  public function getCurrentDate(string $format = '') {
     if (empty($format)) $format = $this->getDateFormat();
     return $this->getCurrentTime($format);
   }
@@ -84,29 +93,7 @@ class DateTime {
     return $steps;
   }
 
-  /**
-   * Modifies current date to the $offset
-   *
-   * @see https://www.php.net/manual/en/class.datetime
-   * @param string $offset
-   * @param string $format
-   * @return \DateTime|false|string|void
-   * @throws \Exception
-   */
-
-  /**
-   * Modifies $date to the $offset
-   * @param string|int $date
-   * @param string $offset
-   * @param string $format
-   * @return \DateTime|false|string|void
-   * @throws \Exception
-   */
-  public function getDateWithOffset($date, string $offset, string $format = "") {
-    $dateWithOffset = (new \DateTime($date))->modify($offset);
-    if (!empty($format)) {
-      return $dateWithOffset->format($format);
-    }
-    return $dateWithOffset;
+  public function getCurrentDateTime(): \DateTime {
+    return new \DateTime("now", wp_timezone());
   }
 }
