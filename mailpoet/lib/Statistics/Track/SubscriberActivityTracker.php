@@ -5,6 +5,7 @@ namespace MailPoet\Statistics\Track;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SubscriberActivityTracker {
@@ -29,17 +30,22 @@ class SubscriberActivityTracker {
   /** @var callable[] */
   private $callbacks = [];
 
+  /** @var WooCommerceHelper */
+  private $wooCommerceHelper;
+
   public function __construct(
     PageViewCookie $pageViewCookie,
     SubscriberCookie $subscriberCookie,
     SubscribersRepository $subscribersRepository,
     WPFunctions $wp,
+    WooCommerceHelper $wooCommerceHelper,
     TrackingConfig $trackingConfig
   ) {
     $this->pageViewCookie = $pageViewCookie;
     $this->subscriberCookie = $subscriberCookie;
     $this->subscribersRepository = $subscribersRepository;
     $this->wp = $wp;
+    $this->wooCommerceHelper = $wooCommerceHelper;
     $this->trackingConfig = $trackingConfig;
   }
 
@@ -111,9 +117,21 @@ class SubscriberActivityTracker {
     }
 
     $subscriberId = $this->subscriberCookie->getSubscriberId();
-    if (!$subscriberId) {
+    if ($subscriberId) {
+      return $this->subscribersRepository->findOneById($subscriberId);
+    }
+
+    if (!$this->wooCommerceHelper->isWooCommerceActive()) {
       return null;
     }
-    return $this->subscribersRepository->findOneById($subscriberId);
+    $wooCommerce = $this->wooCommerceHelper->WC();
+    if (!$wooCommerce || !$wooCommerce->session) {
+      return null;
+    }
+    $customer = $wooCommerce->session->get('customer');
+    if (!is_array($customer) || empty($customer['email'])) {
+      return null;
+    }
+    return $this->subscribersRepository->findOneBy(['email' => $customer['email']]);
   }
 }

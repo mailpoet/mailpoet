@@ -218,6 +218,9 @@ if (!class_exists(WC_Session::class)) {
   class WC_Session {
     public function __unset($name) {
     }
+
+    public function get($key) {
+    }
   }
 }
 
@@ -230,6 +233,8 @@ if (!function_exists('WC')) {
     }
   }
   class WooCommerce { // phpcs:ignore
+    public $session;
+
     public function mailer() {
       return new WC_Mailer;
     }
