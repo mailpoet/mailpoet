@@ -62,6 +62,14 @@ jQuery(($) => {
       form.removeClass('mailpoet_form_tight_container');
     }
   }
+  /**
+   * @param  {object} formDiv jQuery object of MailPoet form div
+   * @return {string} The name of the cookie for the form
+   */
+  function getFormCookieName(formDiv) {
+    const formId = formDiv.find('input[name="data[form_id]"').val();
+    return `popup_form_dismissed_${formId}`;
+  }
 
   function isSameDomain(url) {
     const link = document.createElement('a');
@@ -164,7 +172,9 @@ jQuery(($) => {
   const closeForm = (formDiv) => {
     formDiv.removeClass('active');
     formDiv.prev('.mailpoet_form_popup_overlay').removeClass('active');
-    Cookies.set('popup_form_dismissed', '1', { expires: 365, path: '/' });
+    const formCookieName = getFormCookieName(formDiv);
+    const cookieExpirationTime = formDiv.find('form').data('cookie-expiration-time');
+    Cookies.set(formCookieName, '1', { expires: cookieExpirationTime, path: '/' });
   };
 
   $(document).on('keyup', (e) => {
@@ -195,15 +205,17 @@ jQuery(($) => {
     });
 
     $('div.mailpoet_form_fixed_bar, div.mailpoet_form_slide_in').each((index, element) => {
-      const cookieValue = Cookies.get('popup_form_dismissed');
       const formDiv = $(element);
+      const formCookieName = getFormCookieName(formDiv);
+      const cookieValue = Cookies.get(formCookieName);
       if (cookieValue === '1' && !formDiv.data('is-preview')) return;
       showForm(formDiv);
     });
 
     $('div.mailpoet_form_popup').each((index, element) => {
-      const cookieValue = Cookies.get('popup_form_dismissed');
       const formDiv = $(element);
+      const formCookieName = getFormCookieName(formDiv);
+      const cookieValue = Cookies.get(formCookieName);
       if (cookieValue === '1' && !formDiv.data('is-preview')) return;
       const showOverlay = true;
       showForm(formDiv, showOverlay);

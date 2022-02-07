@@ -160,6 +160,7 @@ class DisplayFormInWPContent {
     $templateData['animation'] = $formSettings['form_placement'][$displayType]['animation'] ?? '';
     $templateData['fontFamily'] = $formSettings['font_family'] ?? '';
     $templateData['enableExitIntent'] = false;
+    $templateData['cookieFormExpirationTime'] = $formSettings['cookie_expiration_time'] ?? 365;
     if (
       isset($formSettings['form_placement'][$displayType]['exit_intent_enabled'])
       && ($formSettings['form_placement'][$displayType]['exit_intent_enabled'] === '1')
