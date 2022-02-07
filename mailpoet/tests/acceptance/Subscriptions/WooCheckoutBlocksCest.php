@@ -36,19 +36,26 @@ class WooCheckoutBlocksCest {
     $this->settingsFactory = new Settings();
     $this->settingsFactory->withWooCommerceListImportPageDisplayed(true);
     $this->settingsFactory->withCookieRevenueTrackingDisabled();
-    // Due to test speed, we create a page via UI only for the first time, and then we copy the post content
-    if (!$this->checkoutPostContent) {
-      $checkoutPostId = $this->configureBlocksCheckoutPage($i);
-      $postData = $i->cliToString(['post', 'get', $checkoutPostId, '--format=json']);
-      $postData = json_decode($postData, true);
-      $this->checkoutPostContent = is_array($postData) ? $postData['post_content'] : '';
-      $this->checkoutPostId = $checkoutPostId;
-    } else {
-      $this->checkoutPostId = $this->createCheckoutPage($i, $this->checkoutPostContent);
+    // We have to check minimal plugin versions before creating the WC checkout page
+    if ($this->checkMinimalPluginVersions($i)) {
+      // Due to test speed, we create a page via UI only for the first time, and then we copy the post content
+      if (!$this->checkoutPostContent) {
+        $checkoutPostId = $this->configureBlocksCheckoutPage($i);
+        $postData = $i->cliToString(['post', 'get', $checkoutPostId, '--format=json']);
+        $postData = json_decode($postData, true);
+        $this->checkoutPostContent = is_array($postData) ? $postData['post_content'] : '';
+        $this->checkoutPostId = $checkoutPostId;
+      } else {
+        $this->checkoutPostId = $this->createCheckoutPage($i, $this->checkoutPostContent);
+      }
     }
   }
 
   public function checkoutOptInDisabled(\AcceptanceTester $i) {
+    if (!$this->checkMinimalPluginVersions($i)) {
+      $i->wantTo('Skip test due to minimal plugin version requirements');
+      return;
+    }
     $this->settingsFactory->withWooCommerceCheckoutOptinDisabled();
     $this->settingsFactory->withConfirmationEmailEnabled();
     $customerEmail = 'woo_customer_noptin@example.com';
@@ -64,6 +71,10 @@ class WooCheckoutBlocksCest {
   }
 
   public function checkoutOptInChecked(\AcceptanceTester $i) {
+    if (!$this->checkMinimalPluginVersions($i)) {
+      $i->wantTo('Skip test due to minimal plugin version requirements');
+      return;
+    }
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $this->settingsFactory->withConfirmationEmailEnabled();
     $customerEmail = 'woo_customer_check@example.com';
@@ -74,6 +85,10 @@ class WooCheckoutBlocksCest {
   }
 
   public function checkoutOptInUnchecked(\AcceptanceTester $i) {
+    if (!$this->checkMinimalPluginVersions($i)) {
+      $i->wantTo('Skip test due to minimal plugin version requirements');
+      return;
+    }
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $this->settingsFactory->withConfirmationEmailEnabled();
     $customerEmail = 'woo_customer_uncheck@example.com';
@@ -84,6 +99,10 @@ class WooCheckoutBlocksCest {
   }
 
   public function checkoutOptInDisabledNoConfirmation(\AcceptanceTester $i) {
+    if (!$this->checkMinimalPluginVersions($i)) {
+      $i->wantTo('Skip test due to minimal plugin version requirements');
+      return;
+    }
     $this->settingsFactory->withWooCommerceCheckoutOptinDisabled();
     $this->settingsFactory->withConfirmationEmailDisabled();
     $customerEmail = 'woo_customer_noptin@example.com';
@@ -94,6 +113,10 @@ class WooCheckoutBlocksCest {
   }
 
   public function checkoutOptInCheckedNoConfirmation(\AcceptanceTester $i) {
+    if (!$this->checkMinimalPluginVersions($i)) {
+      $i->wantTo('Skip test due to minimal plugin version requirements');
+      return;
+    }
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $this->settingsFactory->withConfirmationEmailDisabled();
     $customerEmail = 'woo_customer_check@example.com';
@@ -104,6 +127,10 @@ class WooCheckoutBlocksCest {
   }
 
   public function checkoutOptInUncheckedNoConfirmation(\AcceptanceTester $i) {
+    if (!$this->checkMinimalPluginVersions($i)) {
+      $i->wantTo('Skip test due to minimal plugin version requirements');
+      return;
+    }
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $this->settingsFactory->withConfirmationEmailDisabled();
     $customerEmail = 'woo_customer_uncheck@example.com';
@@ -114,6 +141,10 @@ class WooCheckoutBlocksCest {
   }
 
   public function checkoutOptInDisabledExistingSubscriber(\AcceptanceTester $i) {
+    if (!$this->checkMinimalPluginVersions($i)) {
+      $i->wantTo('Skip test due to minimal plugin version requirements');
+      return;
+    }
     $this->settingsFactory->withWooCommerceCheckoutOptinDisabled();
     $list = (new Segment())->create();
     $customerEmail = 'woo_customer_disabled_exist@example.com';
@@ -130,6 +161,10 @@ class WooCheckoutBlocksCest {
   }
 
   public function checkoutOptInUncheckedExistingSubscriber(\AcceptanceTester $i) {
+    if (!$this->checkMinimalPluginVersions($i)) {
+      $i->wantTo('Skip test due to minimal plugin version requirements');
+      return;
+    }
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $list = (new Segment())->create();
     $customerEmail = 'woo_customer_uncheck_exist@example.com';
@@ -223,5 +258,17 @@ class WooCheckoutBlocksCest {
     $i->waitForElementClickable(Locator::contains('button', 'Place Order'));
     $i->click(Locator::contains('button', 'Place Order'));
     $i->waitForText('Your order has been received');
+  }
+
+  private function checkMinimalPluginVersions(\AcceptanceTester $i): bool {
+    $wooCommerceVersion = $i->getWooCommerceVersion();
+    if (version_compare($wooCommerceVersion, '5.5.0', '<')) {
+      return false;
+    }
+    $wordPressVersion = $i->getWordPressVersion();
+    if (version_compare($wordPressVersion, '5.8', '<')) {
+      return false;
+    }
+    return true;
   }
 }

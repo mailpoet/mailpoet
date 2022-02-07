@@ -388,6 +388,16 @@ class AcceptanceTester extends \Codeception\Actor {
     return in_array($plugin, $i->grabOptionFromDatabase('active_plugins', true));
   }
 
+  public function getWooCommerceVersion(): string {
+    $i = $this;
+    return $i->cliToString(['plugin', 'get', self::WOO_COMMERCE_PLUGIN, '--field=version']);
+  }
+
+  public function getWordPressVersion(): string {
+    $i = $this;
+    return $i->cliToString(['core', 'version']);
+  }
+
   public function orderProductWithoutRegistration(array $product, $userEmail, $doSubscribe = true) {
     $this->orderProduct($product, $userEmail, false, $doSubscribe);
   }
