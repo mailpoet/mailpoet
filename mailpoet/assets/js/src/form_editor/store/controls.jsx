@@ -61,7 +61,7 @@ export default {
       data: requestData,
     }).done((result) => {
       dispatch('mailpoet-form-editor').saveFormDone(result.data.id);
-      Cookies.remove('popup_form_dismissed', { path: '/' });
+      Cookies.remove(`popup_form_dismissed_${result.data.id}`, { path: '/' });
     }).fail((response) => {
       dispatch('mailpoet-form-editor').saveFormFailed(formatApiErrorMessage(response));
     });
