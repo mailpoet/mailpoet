@@ -176,12 +176,9 @@
                 <tr>
                   <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word">
                     <h3 style="margin:0 0 5.4px;color:#333333;font-family:'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal">
-                        <span style="color: <%= stats_color(newsletter.opened) %>;">
-                          <strong><%= stats_number_format_i18n(newsletter.opened) %>% </strong>
-                          <span style="color: #000000;">
-                            <%= __('opened') %>
-                          </span>
-                        </span>
+                      <span>
+                        <strong><%= stats_number_format_i18n(newsletter.opened) %>%</strong> <%= __('opened') %>
+                      </span>
                     </h3>
                   </td>
                 </tr>
@@ -198,14 +195,9 @@
                 <tr>
                   <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word">
                     <h3 style="margin:0 0 5.4px;color:#333333;font-family:'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal">
-                        <span style="color: <%= stats_color(newsletter.machineOpened) %>;">
-                          <strong>
-                            <span style="color: <%= stats_color(newsletter.machineOpened) %>;"><%= stats_number_format_i18n(newsletter.machineOpened) %>%</span>
-                          </strong>
-                          <span style="color: #000000;">
-                            <%= __('machine-opened') %>
-                          </span>
-                        </span>
+                      <span>
+                        <strong><%= stats_number_format_i18n(newsletter.machineOpened) %>%</strong> <%= __('machine-opened') %>
+                      </span>
                     </h3>
                   </td>
                 </tr>
@@ -243,11 +235,8 @@
                 <tr>
                   <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word">
                     <h3 style="margin:0 0 5.4px;color:#333333;font-family:'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal">
-                      <span style="color: <%= stats_color(newsletter.unsubscribed) %>;">
-                        <strong><%= stats_number_format_i18n(newsletter.unsubscribed) %>% </strong>
-                        <span style="color: #000000;">
-                          <%= __('unsubscribed') %>
-                        </span>
+                      <span>
+                        <strong><%= stats_number_format_i18n(newsletter.unsubscribed) %>%</strong> <%= __('unsubscribed') %>
                       </span>
                     </h3>
                   </td>
@@ -265,14 +254,9 @@
                 <tr>
                   <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word">
                     <h3 style="margin:0 0 5.4px;color:#333333;font-family:'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;font-size:18px;line-height:21.6px;margin-bottom:0;text-align:center;padding:0;font-style:normal;font-weight:normal">
-                          <span style="color: <%= stats_color(newsletter.bounced) %>;">
-                            <strong>
-                              <span style="color: <%= stats_color(newsletter.bounced) %>;"><%= stats_number_format_i18n(newsletter.bounced) %>%</span>
-                            </strong>
-                            <span style="color: #000000;">
-                              <%= __('bounced') %>
-                            </span>
-                          </span>
+                      <span>
+                        <strong><%= stats_number_format_i18n(newsletter.bounced) %>%</strong> <%= __('bounced') %>
+                      </span>
                     </h3>
                   </td>
                 </tr>
