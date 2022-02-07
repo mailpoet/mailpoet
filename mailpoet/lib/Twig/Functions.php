@@ -261,9 +261,9 @@ class Functions extends AbstractExtension {
   }
 
   public function statsColor($percentage) {
-    if ($percentage > 30) {
+    if ($percentage > 3) {
       return '#7ed321';
-    } elseif ($percentage > 10) {
+    } elseif ($percentage > 1) {
       return '#ff9f00';
     } else {
       return '#f559c3';
