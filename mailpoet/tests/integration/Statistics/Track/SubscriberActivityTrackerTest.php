@@ -8,6 +8,7 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Test\DataFactories\User;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -38,6 +39,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
       $this->subscriberCookie,
       $this->diContainer->get(SubscribersRepository::class),
       $this->wp,
+      $this->diContainer->get(WooCommerceHelper::class),
       $this->diContainer->get(TrackingConfig::class)
     );
     $this->cleanUp();
@@ -104,6 +106,42 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
   }
 
+  public function testItUpdatesPageViewCookieAndSubscriberEngagementForSubscriberDetectedFromWooSession() {
+    $subscriber = $this->createSubscriber();
+    $customer = ['email' => $subscriber->getEmail()];
+    $sessionMock = $this->createMock(\WC_Session::class);
+    $sessionMock
+      ->expects($this->once())
+      ->method('get')
+      ->willReturn($customer);
+
+    $wooMock = new \stdClass();
+    $wooMock->session = $sessionMock;
+    $wooHelperMock = $this->createMock(WooCommerceHelper::class);
+    $wooHelperMock->method('WC')->willReturn($wooMock);
+    $wooHelperMock->method('isWooCommerceActive')->willReturn(true);
+
+    $tracker = new SubscriberActivityTracker(
+      $this->pageViewCookie,
+      $this->subscriberCookie,
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->wp,
+      $wooHelperMock,
+      $this->diContainer->get(TrackingConfig::class)
+    );
+
+    $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_FULL);
+    $this->setSubscriberCookieSubscriber(null);
+    $this->pageViewCookie
+      ->expects($this->once())
+      ->method('setPageViewTimestamp');
+    $result = $tracker->trackActivity();
+    expect($result)->true();
+    $this->entityManager->refresh($subscriber);
+    expect($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
+    expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
+  }
+
   public function testItUpdatesSubscriberEngagementForWpUserEvenWithDisabledCookieTracking() {
     $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $user = (new User())->createUser('name', 'editor', 'editoruser@test.com');
@@ -142,7 +180,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     expect($result)->false();
   }
 
-  public function testItDoesntTrackWhenSubscriberCookieIsNotSet() {
+  public function testItDoesntTrackWhenCantDetermineSubscriber() {
     $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_FULL);
     $result = $this->tracker->trackActivity();
     $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 180; // 3 minutes  ago
