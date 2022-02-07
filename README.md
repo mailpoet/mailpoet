@@ -27,6 +27,16 @@ To use XDebug inside the **cron**, you need to pass a URL argument `&XDEBUG_TRIG
 [in the cron request](https://github.com/mailpoet/mailpoet/blob/bf7bd6d2d9090ed6ec7b8b575bb7d6b08e663a52/lib/Cron/CronHelper.php#L155-L166).
 Alternatively, you can add `XDEBUG_TRIGGER: yes` to the `wordpress` service in `docker-compose.yml` and restart it (which will run XDebug also for all other requests).
 
+## Xdebug develop mode
+[Xdebug develop mode](https://xdebug.org/docs/develop) is disabled by default because it causes performance issues due to conflicts with the DI container.
+
+It can be enabled when needed using the `XDEBUG_MODE` environment variable. For example, it is possible to enable it by adding the following to `docker-compose.override.yml`:
+
+```
+environment:
+    XDEBUG_MODE: debug, develop
+```
+
 ## 💾 NFS volume sharing for Mac
 NFS volumes can bring more stability and performance on Docker for Mac. To setup NFS volume sharing run:
 ```shell
