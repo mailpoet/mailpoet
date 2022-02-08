@@ -4,11 +4,18 @@ import ReactStringReplace from 'react-string-replace';
 import CronStatus from './cron_status.jsx';
 import QueueStatus from './queue_status.jsx';
 
-function renderStatusMessage(status, error, link, linkBeacon, additionalInfo) {
+function renderStatusMessage(
+  status,
+  successMessage,
+  errorMessage,
+  link,
+  linkBeacon,
+  additionalInfo
+) {
   const noticeType = (status) ? 'success' : 'error';
   let noticeMessage = (status)
-    ? MailPoet.I18n.t('systemStatusConnectionSuccessful')
-    : `${MailPoet.I18n.t('systemStatusConnectionUnsuccessful')} ${error}`;
+    ? successMessage
+    : errorMessage;
 
   if (link) {
     noticeMessage = ReactStringReplace(
@@ -31,7 +38,8 @@ function renderStatusMessage(status, error, link, linkBeacon, additionalInfo) {
 function renderCronSection(data) {
   const status = data.cron.isReachable;
   const url = data.cron.url;
-  const error = MailPoet.I18n.t('systemStatusCronConnectionUnsuccessfulInfo');
+  const error = `${MailPoet.I18n.t('systemStatusConnectionUnsuccessful')} ${MailPoet.I18n.t('systemStatusCronConnectionUnsuccessfulInfo')}`;
+  const success = MailPoet.I18n.t('systemStatusConnectionSuccessful');
   const additionalInfo = !status ? data.cron.pingResponse : null;
 
   return (
@@ -40,20 +48,32 @@ function renderCronSection(data) {
       <p>
         <a className="mailpoet-text-link" href={url} target="_blank" rel="noopener noreferrer">{url}</a>
       </p>
-      {renderStatusMessage(status, error, 'https://kb.mailpoet.com/article/231-sending-does-not-work', '5a0257ac2c7d3a272c0d7ad6', additionalInfo)}
+      {renderStatusMessage(status, success, error, 'https://kb.mailpoet.com/article/231-sending-does-not-work', '5a0257ac2c7d3a272c0d7ad6', additionalInfo)}
     </div>
   );
 }
 
 function renderMSSSection(data) {
-  if (!data.mss.enabled) return undefined;
-
-  const status = data.mss.enabled.isReachable;
-
+  const errorMessage = data.mss.enabled
+    ? `${MailPoet.I18n.t('systemStatusConnectionUnsuccessful')} ${MailPoet.I18n.t('systemStatusMSSConnectionUnsuccessfulInfo')}`
+    : MailPoet.I18n.t('systemStatusMSSConnectionCanNotConnect');
+  const successMessage = data.mss.enabled
+    ? MailPoet.I18n.t('systemStatusConnectionSuccessful')
+    : MailPoet.I18n.t('systemStatusMSSConnectionCanConnect');
   return (
     <div>
       <h4>{MailPoet.I18n.t('systemStatusMSSTitle')}</h4>
-      {renderStatusMessage(status, MailPoet.I18n.t('systemStatusMSSConnectionUnsuccessfulInfo'), false)}
+      {
+
+        renderStatusMessage(
+          data.mss.isReachable,
+          successMessage,
+          errorMessage,
+          'https://kb.mailpoet.com/article/319-known-errors-when-validating-a-mailpoet-key',
+          '5ef1da9d2c7d3a10cba966c5',
+          null
+        )
+      }
     </div>
   );
 }
