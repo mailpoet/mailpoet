@@ -24,21 +24,27 @@ class Help {
   /** @var Beacon */
   private $helpscoutBeacon;
 
+  /** @var Bridge $bridge */
+  private $bridge;
+
   public function __construct(
     PageRenderer $pageRenderer,
     State $tasksState,
     CronHelper $cronHelper,
-    Beacon $helpscoutBeacon
+    Beacon $helpscoutBeacon,
+    Bridge $bridge
   ) {
     $this->pageRenderer = $pageRenderer;
     $this->tasksState = $tasksState;
     $this->cronHelper = $cronHelper;
     $this->helpscoutBeacon = $helpscoutBeacon;
+    $this->bridge = $bridge;
   }
 
   public function render() {
     $systemInfoData = $this->helpscoutBeacon->getData(true);
     $cronPingResponse = $this->cronHelper->pingDaemon();
+
     $systemStatusData = [
       'cron' => [
         'url' => $this->cronHelper->getCronUrl(CronDaemon::ACTION_PING),
@@ -46,9 +52,8 @@ class Help {
         'pingResponse' => $cronPingResponse,
       ],
       'mss' => [
-        'enabled' => (Bridge::isMPSendingServiceEnabled()) ?
-          ['isReachable' => Bridge::pingBridge()] :
-          false,
+        'enabled' => $this->bridge->isMailpoetSendingServiceEnabled(),
+        'isReachable' => $this->bridge->pingBridge(),
       ],
       'cronStatus' => $this->cronHelper->getDaemon(),
       'queueStatus' => MailerLog::getMailerLog(),
