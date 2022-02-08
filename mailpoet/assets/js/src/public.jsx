@@ -169,11 +169,11 @@ jQuery(($) => {
     }
   }
 
-  const closeForm = (formDiv) => {
+  const closeForm = (formDiv, isSubscribed = false) => {
     formDiv.removeClass('active');
     formDiv.prev('.mailpoet_form_popup_overlay').removeClass('active');
     const formCookieName = getFormCookieName(formDiv);
-    const cookieExpirationTime = formDiv.find('form').data('cookie-expiration-time');
+    const cookieExpirationTime = isSubscribed ? 182 : formDiv.find('form').data('cookie-expiration-time');
     Cookies.set(formCookieName, '1', { expires: cookieExpirationTime, path: '/' });
   };
 
@@ -304,7 +304,8 @@ jQuery(($) => {
               && response.meta.redirect_url !== undefined
             ) {
               // close form before redirect due to setting cookie
-              closeForm(formDiv);
+              const isSubscribed = true;
+              closeForm(formDiv, isSubscribed);
               // go to page
               window.location.href = response.meta.redirect_url;
             } else {
