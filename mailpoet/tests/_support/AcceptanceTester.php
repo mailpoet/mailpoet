@@ -115,8 +115,16 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function clickItemRowActionByItemName($itemName, $link) {
     $i = $this;
-    $i->moveMouseOver(['xpath' => '//*[text()="' . $itemName . '"]//ancestor::tr']);
-    $i->click($link, ['xpath' => '//*[text()="' . $itemName . '"]//ancestor::tr']);
+    // Because click after mouseOver sometimes failed, we try the click multiple times
+    for ($x = 1; $x <= 3; $x++) {
+      try {
+        $i->moveMouseOver(['xpath' => '//*[text()="' . $itemName . '"]//ancestor::tr']);
+        $i->click($link, ['xpath' => '//*[text()="' . $itemName . '"]//ancestor::tr']);
+        break;
+      } catch (Exception $exception) {
+        continue;
+      }
+    }
   }
 
   /**
