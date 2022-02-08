@@ -129,7 +129,7 @@ class ManageListsCest {
     $i->waitForElementVisible('[data-automation-id="filters_trash"]');
     $i->click('[data-automation-id="filters_trash"]');
     $i->waitForElementVisible('[data-automation-id="empty_trash"]');
-
+    $i->waitForText($newListTitle);
     $i->click('[data-automation-id="empty_trash"]');
 
     $i->waitForText('1 list was permanently deleted. Note that deleting a list does not delete its subscribers.');
