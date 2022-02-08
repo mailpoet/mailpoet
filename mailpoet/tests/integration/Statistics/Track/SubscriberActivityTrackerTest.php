@@ -88,7 +88,9 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
 
   public function testItUpdatesPageViewCookieAndSubscriberEngagementForWpUser() {
     $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_FULL);
-    $user = (new User())->createUser('name', 'editor', 'editoruser@test.com');
+    $wpUserEmail = 'pageview_track_user@test.com';
+    $this->tester->deleteWordPressUser($wpUserEmail);
+    $user = (new User())->createUser('tracking_enabled', 'editor', $wpUserEmail);
     $this->wp->wpSetCurrentUser($user->ID);
     $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 180; // 3 minutes ago
     $this->setPageViewCookieTimestamp($oldPageViewTimestamp);
@@ -106,7 +108,9 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
 
   public function testItUpdatesSubscriberEngagementForWpUserEvenWithDisabledCookieTracking() {
     $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
-    $user = (new User())->createUser('name', 'editor', 'editoruser@test.com');
+    $wpUserEmail = 'pageview_track_user@test.com';
+    $this->tester->deleteWordPressUser($wpUserEmail);
+    $user = (new User())->createUser('no_tracking', 'editor', $wpUserEmail);
     $this->wp->wpSetCurrentUser($user->ID);
     $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['wpUserId' => $user->ID]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
