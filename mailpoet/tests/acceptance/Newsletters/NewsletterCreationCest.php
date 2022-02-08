@@ -93,7 +93,7 @@ class NewsletterCreationCest {
     $i->selectOptionInSelect2($segmentName);
     $i->click('Send');
     $i->waitForText('Newsletters');
-    $i->see($niceJobText);
+    $i->waitForText($niceJobText);
   }
 
   public function createNewsletterWhenKeyPendingApproval(\AcceptanceTester $i, Scenario $scenario) {
