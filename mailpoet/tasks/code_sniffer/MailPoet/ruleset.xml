@@ -13,7 +13,14 @@
     </properties>
   </rule>
   <rule ref="PSR2.Files.EndFileNewline"/>
-  <rule ref="Generic.Files.InlineHTML"/>
+  <rule ref="Generic.Files.InlineHTML"/> <!-- Enforce strict types for Automation -->
+  <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
+    <properties>
+      <property name="declareOnFirstLine" value="true" />
+      <property name="spacesCountAroundEqualsSign" value="1" />
+    </properties>
+    <include-pattern>lib/Automation</include-pattern>
+  </rule>
 
   <!-- Namespaces -->
   <rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
