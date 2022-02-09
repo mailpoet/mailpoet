@@ -102,8 +102,7 @@ if [[ ! -d "/wp-core/wp-content/plugins/woo-gutenberg-products-block" ]]; then
     cd /wp-core/wp-content/plugins
   fi
   echo "Unzip Woocommerce Blocks plugin from $WOOCOMMERCE_BLOCKS_ZIP"
-  unzip -q -o "$WOOCOMMERCE_BLOCKS_ZIP" -d /wp-core/wp-content/plugins/woo-gutenberg-products-block
-  ls /wp-core/wp-content/plugins/
+  unzip -q -o "$WOOCOMMERCE_BLOCKS_ZIP" -d /wp-core/wp-content/plugins/
 fi
 
 # add configuration
