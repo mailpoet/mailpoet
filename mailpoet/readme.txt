@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.78.0
+Stable tag: 3.79.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.79.0 - 2022-02-09 =
+* Added: new segment for WooCommerce Memberships;
+* Improved: only load MailPoet admin styles on MailPoet pages;
+* Improved: added "18 months" option for inactive subscribers;
+* Improved: consider subscriber's page view as an engagement (to prevent them marking as inactive);
+* Fixed: email bounce count shows unsubscribe count instead;
+* Fixed: wrong name and email default values in MailPoet setup wizard.
 
 = 3.78.0 - 2022-01-25 =
 * Added: new Amazon SES locations;
