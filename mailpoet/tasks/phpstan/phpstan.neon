@@ -30,8 +30,11 @@ parameters:
     - '#Function members_register_.+ not found#'
     - '#Call to an undefined method MailPoetVendor\\Idiorm\\IdiormResultSet::set\(\)#'
     - '#Argument of an invalid type MailPoetVendor\\pQuery\\IQuery supplied for foreach, only iterables are supported#'
-    - '/has no (return )?type specified/' # exclude level 6 errors
-    - '/has parameter (\$[_A-Z]{1}[_a-z]+)? with no type (specified)?/i' # exclude level 6 errors
+
+    # exclude level 6 errors (but keep them for Automation)
+    - '/(Method|Property|Function) (?!MailPoet\\Automation\\).*has no (return )?type specified/'
+    - '/(Method|Function) (?!MailPoet\\Automation\\).*has parameter (\$[_A-Z]{1}[_a-z]+)? with no type (specified)?/i'
+
     - # Primary keys ScheduledTaskSubscriberEntity of are foreign keys and foreign keys may be null because of missing related record
       message: '#Property MailPoet\\Entities\\[a-zA-Z]+::\$[a-z]+ type mapping mismatch: property can contain MailPoet\\Entities\\[a-zA-Z]+\|null but database expects MailPoet\\Entities\\[a-zA-Z]+.#'
       path: ../../lib/Entities/ScheduledTaskSubscriberEntity.php
