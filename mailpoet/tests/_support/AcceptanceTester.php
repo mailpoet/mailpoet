@@ -449,8 +449,10 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function optInForRegistration() {
     $i = $this;
-    $i->scrollTo(['css' => '#createaccount'], 0, -40);
-    $i->click('#createaccount');
+    $isCheckboxVisible = $i->executeJS('return document.getElementById("createaccount")');
+    if ($isCheckboxVisible) {
+      $i->checkOption('#createaccount');
+    }
   }
 
   /**
@@ -458,11 +460,9 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function optInForSubscription() {
     $i = $this;
-    $checked = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin").checked');
-    if (!$checked) {
-      $i->scrollTo(['css' => '[data-automation-id="woo-commerce-subscription-opt-in"]'], 0, -40);
-      $i->waitForElementClickable('[data-automation-id="woo-commerce-subscription-opt-in"]');
-      $i->click('[data-automation-id="woo-commerce-subscription-opt-in"]');
+    $isCheckboxVisible = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin")');
+    if ($isCheckboxVisible) {
+      $i->checkOption('#mailpoet_woocommerce_checkout_optin');
     }
   }
 
@@ -471,11 +471,9 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function optOutOfSubscription() {
     $i = $this;
-    $checked = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin")?.checked');
-    if ($checked) {
-      $i->scrollTo(['css' => '[data-automation-id="woo-commerce-subscription-opt-in"]'], 0, -40);
-      $i->waitForElementClickable('[data-automation-id="woo-commerce-subscription-opt-in"]');
-      $i->click('[data-automation-id="woo-commerce-subscription-opt-in"]');
+    $isCheckboxVisible = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin")');
+    if ($isCheckboxVisible) {
+      $i->uncheckOption('#mailpoet_woocommerce_checkout_optin');
     }
   }
 
