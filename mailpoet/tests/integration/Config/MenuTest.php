@@ -8,6 +8,7 @@ use MailPoet\Config\Menu;
 use MailPoet\Config\Router;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Features\FeaturesController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MenuTest extends \MailPoetTest {
@@ -68,7 +69,8 @@ class MenuTest extends \MailPoetTest {
       $wp,
       new ServicesChecker,
       ContainerWrapper::getInstance(),
-      $this->diContainer->get(Router::class)
+      $this->diContainer->get(Router::class),
+      $this->diContainer->get(FeaturesController::class)
     );
   }
 }
