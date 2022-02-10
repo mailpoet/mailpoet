@@ -1,0 +1,53 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\Automation\API;
+
+use MailPoet\Automation\WordPress;
+use ReflectionClass;
+
+class API {
+  private const PREFIX = 'mailpoet/v1/automation';
+  private const METHODS = ['get', 'post', 'put', 'delete'];
+  private const WP_REST_API_INIT_ACTION = 'rest_api_init';
+
+  /** @var EndpointFactory */
+  private $endpointFactory;
+
+  /** @var WordPress */
+  private $wordPress;
+
+  /** @var array<string, class-string<Endpoint>> */
+  private $routes = [
+  ];
+
+  public function __construct(
+    EndpointFactory $endpointFactory,
+    WordPress $wordPress
+  ) {
+    $this->endpointFactory = $endpointFactory;
+    $this->wordPress = $wordPress;
+  }
+
+  public function initialize(): void {
+    $this->wordPress->addAction(self::WP_REST_API_INIT_ACTION, function () {
+      foreach ($this->routes as $route => $endpoint) {
+        $reflection = new ReflectionClass($endpoint);
+        foreach (self::METHODS as $method) {
+          if ($reflection->hasMethod($method) && $reflection->getMethod($method)->class === $endpoint) {
+            $this->registerRoute($route, $endpoint, $method);
+          }
+        }
+      }
+    });
+  }
+
+  private function registerRoute(string $route, string $endpoint, string $method): void {
+    $this->wordPress->registerRestRoute(self::PREFIX, $route, [
+      'methods' => strtoupper($method),
+      'callback' => function ($wpRequest) use ($endpoint, $method) {
+        $request = new Request($wpRequest);
+        return $this->endpointFactory->createEndpoint($endpoint)->$method($request);
+      },
+    ]);
+  }
+}
