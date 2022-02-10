@@ -11,6 +11,11 @@ export const belowPostForm = {
   },
 };
 
+const delayAndCookieExpiration = {
+  formDelay: 15,
+  formCookieExpiration: 7,
+};
+
 export const popupForm = {
   styles: {
     width: {
@@ -18,7 +23,7 @@ export const popupForm = {
       value: 560,
     },
   },
-  formDelay: 15,
+  ...delayAndCookieExpiration,
   animation: 'slideup',
 };
 
@@ -30,7 +35,7 @@ export const fixedBarForm = {
     },
   },
   position: 'top',
-  formDelay: 15,
+  ...delayAndCookieExpiration,
   animation: 'slideup',
 };
 
@@ -51,7 +56,7 @@ export const slideInForm = {
     },
   },
   position: 'right',
-  formDelay: 15,
+  ...delayAndCookieExpiration,
   animation: 'slideup',
 };
 

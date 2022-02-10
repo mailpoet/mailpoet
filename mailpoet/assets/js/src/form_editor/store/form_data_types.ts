@@ -15,6 +15,7 @@ export type FormSettingsType = {
   borderSize: number;
   errorValidationColor?: string;
   fixedBarFormDelay: number;
+  fixedBarFormCookieExpiration: number;
   fixedBarFormPosition: string;
   fixedBarStyles: PlacementStyles;
   fontFamily?: string;
@@ -30,9 +31,11 @@ export type FormSettingsType = {
   placeSlideInFormOnAllPages: boolean;
   placeSlideInFormOnAllPosts: boolean;
   popupFormDelay: number;
+  popupFormCookieExpiration: number;
   popupStyles: PlacementStyles;
   segments: Array<string>;
   slideInFormDelay: number;
+  slideInFormCookieExpiration: number;
   slideInFormPosition: string;
   slideInStyles: PlacementStyles;
   successValidationColor?: string;

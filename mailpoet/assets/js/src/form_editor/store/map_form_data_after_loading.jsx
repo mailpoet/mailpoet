@@ -14,6 +14,9 @@ export default function mapFormDataAfterLoading(data) {
           delay: data.settings.form_placement?.popup?.delay !== undefined
             ? asNum(data.settings.form_placement?.popup?.delay)
             : defaults.popupForm.formDelay,
+          cookieExpiration: data.settings.form_placement?.popup?.cookieExpiration !== undefined
+            ? asNum(data.settings.form_placement?.popup?.cookieExpiration)
+            : defaults.popupForm.formCookieExpiration,
           animation: data.settings.form_placement?.popup?.animation !== undefined
             ? data.settings.form_placement?.popup?.animation
             : defaults.popupForm.animation,
@@ -38,6 +41,9 @@ export default function mapFormDataAfterLoading(data) {
           delay: data.settings.form_placement?.fixed_bar?.delay !== undefined
             ? asNum(data.settings.form_placement?.fixed_bar?.delay)
             : defaults.fixedBarForm.formDelay,
+          cookieExpiration: data.settings.form_placement?.fixed_bar?.cookieExpiration !== undefined
+            ? asNum(data.settings.form_placement?.fixed_bar?.cookieExpiration)
+            : defaults.fixedBarForm.formCookieExpiration,
           animation: data.settings.form_placement?.fixed_bar?.animation
             ?? defaults.fixedBarForm.animation,
           styles: {
@@ -87,6 +93,9 @@ export default function mapFormDataAfterLoading(data) {
           delay: data.settings.form_placement?.slide_in?.delay !== undefined
             ? asNum(data.settings.form_placement?.slide_in?.delay)
             : defaults.slideInForm.formDelay,
+          cookieExpiration: data.settings.form_placement?.slide_in?.cookieExpiration !== undefined
+            ? asNum(data.settings.form_placement?.slide_in?.cookieExpiration)
+            : defaults.slideInForm.formCookieExpiration,
           position: data.settings.form_placement?.slide_in?.position
             ?? defaults.slideInForm.position,
           animation: data.settings.form_placement?.slide_in?.animation
