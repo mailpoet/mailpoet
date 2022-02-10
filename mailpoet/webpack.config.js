@@ -5,6 +5,7 @@ const WebpackCopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 const wpScriptConfig = require('@wordpress/scripts/config/webpack.config');
 const DependencyExtractionWebpackPlugin = require('@wordpress/dependency-extraction-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const globalPrefix = 'MailPoetLib';
 const PRODUCTION_ENV = process.env.NODE_ENV === 'production';
@@ -65,7 +66,7 @@ const baseConfig = {
       asyncqueue: 'vendor/jquery.asyncqueue.js',
     },
   },
-  plugins: [],
+  plugins: [new ForkTsCheckerWebpackPlugin()],
   module: {
     noParse: /node_modules\/lodash\/lodash\.js/,
     rules: [
