@@ -33,14 +33,6 @@ type State = {
   loading: boolean;
 }
 
-interface PageWindow extends Window {
-  mailpoet_display_detailed_stats: boolean;
-  mailpoet_mss_key_invalid: boolean;
-  mailpoet_subscribers_count: number;
-}
-
-declare let window: PageWindow;
-
 const CampaignStatsPage = ({ match, history, location }: Props) => {
   const [state, setState] = useState<State>({
     item: undefined,

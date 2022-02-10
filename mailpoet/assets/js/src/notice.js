@@ -1,4 +1,4 @@
-import mp from 'mailpoet';
+import { MailPoetI18n as I18n } from './i18n';
 import jQuery from 'jquery'; // eslint-disable-line func-names
 
 /*= ==========================================================================================
@@ -23,8 +23,7 @@ import jQuery from 'jquery'; // eslint-disable-line func-names
           MailPoet.Notice.system('You need to updated ASAP!');
 
   =========================================================================================== */
-var MailPoet = mp;
-MailPoet.Notice = {
+export const MailPoetNotice = {
   version: 1.0,
   // default options
   defaults: {
@@ -216,7 +215,7 @@ MailPoet.Notice = {
     }, options));
   },
   showApiErrorNotice: function showApiErrorNotice(response, options) {
-    var errorMessage = MailPoet.I18n.t('ajaxFailedErrorMessage');
+    var errorMessage = I18n.t('ajaxFailedErrorMessage');
     if (response && response.errors && response.errors.length > 0) {
       errorMessage = response.errors.map(error => error.message);
     }

@@ -1,7 +1,4 @@
-import mp from 'mailpoet';
-
-var MailPoet = mp;
-MailPoet.Num = {
+export const MailPoetNum = {
   toLocaleFixed: function (num, precisionOpts) { // eslint-disable-line func-names
     var precision = precisionOpts || 0;
     var factor = Math.pow(10, precision);

@@ -1,8 +1,18 @@
-import FeaturesController from 'features_controller';
-import MailPoetComUrlFactory from 'mailpoet_com_url_factory';
-import { MailPoetDate as Date } from 'date';
+import FeaturesController from './features_controller';
+import MailPoetComUrlFactory from './mailpoet_com_url_factory';
+import { MailPoetI18n } from './i18n';
+import { MailPoetDate } from './date';
+import { MailPoetAjax } from './ajax';
+import { MailPoetModal } from './modal';
+import { MailPoetNotice } from './notice';
+// side effect - extends MailPoet object in initializeMixpanelWhenLoaded
+import { MailPoetForceTrackEvent, MailPoetTrackEvent } from './analytics_event';
+import { MailPoetNum } from './num';
+import { MailPoetHelpTooltip } from './help-tooltip';
+import { MailPoetIframe } from './iframe';
+
 // A placeholder for MailPoet object
-var MailPoet = {
+export const MailPoet = {
   FeaturesController: FeaturesController(window.mailpoet_feature_flags),
   MailPoetComUrlFactory: MailPoetComUrlFactory(window.mailpoet_referral_id),
   version: window.mailpoet_version,
@@ -25,25 +35,35 @@ var MailPoet = {
   wpSegmentState: window.mailpoet_wp_segment_state,
   wpWeekStartsOn: window.mailpoet_wp_week_starts_on,
   subscribersCountsCacheCreatedAt: window.mailpoet_subscribers_counts_cache_created_at,
-  getShortcodeLinks: () => (window.mailpoet_shortcode_links ? window.mailpoet_shortcode_links : []),
+  getShortcodeLinks: (): string[] => (window.mailpoet_shortcode_links
+    ? window.mailpoet_shortcode_links
+    : []
+  ),
   settings: window.mailpoet_settings,
   trackingConfig: window.mailpoet_tracking_config || {},
-  Date,
+  I18n: MailPoetI18n,
+  Date: MailPoetDate,
+  Ajax: MailPoetAjax,
+  Modal: MailPoetModal,
+  Notice: MailPoetNotice,
+  trackEvent: MailPoetTrackEvent,
+  forceTrackEvent: MailPoetForceTrackEvent,
+  Num: MailPoetNum,
+  helpTooltip: MailPoetHelpTooltip,
+  Iframe: MailPoetIframe,
   isPremiumPluginInstalled: window.mailpoet_premium_plugin_installed,
   premiumPluginDownloadUrl: window.mailpoet_premium_plugin_download_url,
   premiumPluginActivationUrl: window.mailpoet_premium_plugin_activation_url,
   pluginPartialKey: window.mailpoet_plugin_partial_key,
-};
+} as const;
+
+declare global {
+  interface Window {
+    MailPoet: typeof MailPoet;
+  }
+}
 
 // Expose MailPoet globally
 window.MailPoet = MailPoet;
 
 export default MailPoet;
-
-require('ajax'); // side effect - extends MailPoet object
-require('i18n'); // side effect - extends MailPoet object
-require('modal'); // side effect - extends MailPoet object
-require('notice'); // side effect - extends MailPoet object
-require('num'); // side effect - extends MailPoet object
-require('analytics_event'); // side effect - extends MailPoet object
-require('help-tooltip'); // side effect - extends MailPoet object

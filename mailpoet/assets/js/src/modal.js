@@ -1,8 +1,6 @@
 /* eslint-disable func-names */
-import mp from 'mailpoet';
 import jQuery from 'jquery';
 
-var MailPoet = mp;
 var closeModalImage = '<svg viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">'
         + '<path d="M21.454 1.546L1.546 21.454M1.546 1.546L21.454 21.454" stroke-width="3" stroke-linecap="round" />'
       + '</svg>';
@@ -26,7 +24,7 @@ var closeModalImage = '<svg viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/sv
       MailPoet.Modal.loading(bool);
     ************************************************************************** */
 
-MailPoet.Modal = {
+export const MailPoetModal = {
   version: 0.9,
 
   // flags
