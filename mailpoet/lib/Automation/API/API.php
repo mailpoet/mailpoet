@@ -58,8 +58,13 @@ class API {
   }
 
   private function convertToErrorResponse(Throwable $e): ErrorResponse {
-    return $e instanceof Exception
+    $response = $e instanceof Exception
       ? new ErrorResponse($e->getStatusCode(), $e->getMessage(), $e->getErrorCode())
       : new ErrorResponse(500, 'An unknown error occurred.', 'mailpoet_automation_unknown_error');
+
+    if ($response->get_status() >= 500) {
+      error_log((string)$e); // phpcs:ignore Squiz.PHP.DiscouragedFunctions
+    }
+    return $response;
   }
 }
