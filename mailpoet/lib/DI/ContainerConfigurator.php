@@ -105,6 +105,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Automation\API\EndpointFactory::class)
       ->setPublic(true)
       ->setArgument('$container', new Reference(ContainerWrapper::class));
+    $container->autowire(\MailPoet\Automation\API\Endpoints\WorkflowsEndpoint::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\Automation::class)->setPublic(true);
     $container->autowire(\MailPoet\Automation\WordPress::class)->setPublic(true);
     // Config
