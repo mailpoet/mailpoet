@@ -270,6 +270,7 @@ const adminConfig = {
       'segments/dynamic/types.ts',
     ],
     admin: 'webpack_admin_index.jsx',
+    automation: 'automation/automation.tsx',
     newsletter_editor: 'newsletter_editor/webpack_index.jsx',
     form_editor: 'form_editor/form_editor.jsx',
     settings: 'settings/index.tsx',
