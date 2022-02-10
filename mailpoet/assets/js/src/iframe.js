@@ -1,7 +1,4 @@
-import mp from 'mailpoet';
-
-var MailPoet = mp;
-MailPoet.Iframe = {
+export const MailPoetIframe = {
   marginY: 20,
   autoSize: function autoSize(iframe) {
     if (!iframe) return;
@@ -20,5 +17,3 @@ MailPoet.Iframe = {
     ) + 'px';
   },
 };
-
-export default MailPoet;

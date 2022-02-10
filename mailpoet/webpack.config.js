@@ -138,7 +138,7 @@ const baseConfig = {
         },
       },
       {
-        test: /listing.jsx/i,
+        include: path.resolve(__dirname, 'assets/js/src/listing/index.ts'),
         use: [
           {
             loader: 'expose-loader',
@@ -265,7 +265,7 @@ const adminConfig = {
       'classnames',
       'lodash',
       'help-tooltip.jsx',
-      'listing/listing.jsx',
+      'listing/index.ts',
       'common/index.ts',
       'wp-data-hooks.js',
       'segments/dynamic/types.ts',

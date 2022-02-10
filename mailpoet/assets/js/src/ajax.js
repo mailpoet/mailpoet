@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoetI18n } from './i18n';
 import jQuery from 'jquery';
 import _ from 'underscore';
 
@@ -27,7 +27,7 @@ jQuery(document).on('heartbeat-tick.mailpoet-ajax', (event, data) => {
   }
 });
 
-MailPoet.Ajax = {
+export const MailPoetAjax = {
   version: 0.5,
   options: {},
   defaults: {
@@ -104,9 +104,9 @@ MailPoet.Ajax = {
     }).then(deferred.resolve, (failedXhr, textStatus) => {
       let errorData;
       if (textStatus === 'timeout') {
-        errorData = buildErrorResponse(MailPoet.I18n.t('ajaxTimeoutErrorMessage').replace('%d', timeout.toString()));
+        errorData = buildErrorResponse(MailPoetI18n.t('ajaxTimeoutErrorMessage').replace('%d', timeout.toString()));
       } else {
-        errorData = requestFailed(MailPoet.I18n.t('ajaxFailedErrorMessage'), failedXhr);
+        errorData = requestFailed(MailPoetI18n.t('ajaxFailedErrorMessage'), failedXhr);
       }
       deferred.reject(errorData);
     });

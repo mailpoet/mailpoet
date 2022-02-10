@@ -47,8 +47,38 @@ declare module '@woocommerce/blocks-checkout' {
 }
 
 interface Window {
-  mailpoet_date_offset?: string;
-  mailpoet_datetime_format?: string;
-  mailpoet_date_format?: string;
-  mailpoet_time_format?: string;
+  mailpoet_feature_flags: string;
+  mailpoet_referral_id: string;
+  mailpoet_version: string;
+  mailpoet_premium_version: string;
+  mailpoet_premium_link: string;
+  mailpoet_woocommerce_active: boolean;
+  mailpoet_premium_active: boolean;
+  mailpoet_subscribers_limit: number;
+  mailpoet_subscribers_limit_reached: boolean;
+  mailpoet_subscribers_count: number;
+  mailpoet_has_premium_support: boolean;
+  mailpoet_has_valid_api_key: boolean;
+  mailpoet_has_valid_premium_key: string;
+  mailpoet_mss_key_invalid: boolean;
+  mailpoet_mta_method: string;
+  mailpoet_date_offset: string;
+  mailpoet_time_format: string;
+  mailpoet_date_format: string;
+  mailpoet_listing_per_page: string;
+  mailpoet_3rd_party_libs_enabled: string;
+  mailpoet_datetime_format: string;
+  mailpoet_api_version: string;
+  mailpoet_email_regex: RegExp;
+  mailpoet_wp_segment_state: string;
+  mailpoet_wp_week_starts_on: number;
+  mailpoet_subscribers_counts_cache_created_at: string;
+  mailpoet_shortcode_links: string[];
+  mailpoet_settings: any;
+  mailpoet_tracking_config: string;
+  mailpoet_display_detailed_stats?: string;
+  mailpoet_premium_plugin_installed: boolean;
+  mailpoet_premium_plugin_download_url: string;
+  mailpoet_premium_plugin_activation_url: string;
+  mailpoet_plugin_partial_key: string;
 }

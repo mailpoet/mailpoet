@@ -7,7 +7,6 @@
  *   even if it has been disabled.
  *
  */
-import MailPoet from 'mailpoet';
 import _ from 'underscore';
 
 /**
@@ -38,12 +37,12 @@ function track(name, data = []) {
 }
 
 function exportMixpanel() {
-  MailPoet.forceTrackEvent = track;
+  window.MailPoet.forceTrackEvent = track;
 
-  if (window.mailpoet_analytics_enabled && MailPoet.libs3rdPartyEnabled) {
-    MailPoet.trackEvent = track;
+  if (window.mailpoet_analytics_enabled && window.MailPoet.libs3rdPartyEnabled) {
+    window.MailPoet.trackEvent = track;
   } else {
-    MailPoet.trackEvent = function emptyFunction() {};
+    window.MailPoet.trackEvent = function emptyFunction() {};
   }
 }
 
@@ -72,7 +71,7 @@ function initializeMixpanelWhenLoaded() {
   }
 }
 
-MailPoet.trackEvent = _.partial(cacheEvent, false);
-MailPoet.forceTrackEvent = _.partial(cacheEvent, true);
+export const MailPoetTrackEvent = _.partial(cacheEvent, false);
+export const MailPoetForceTrackEvent = _.partial(cacheEvent, true);
 
 initializeMixpanelWhenLoaded();

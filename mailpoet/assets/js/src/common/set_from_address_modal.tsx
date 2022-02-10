@@ -6,14 +6,12 @@ import Modal from 'common/modal/modal';
 import { GlobalContext } from 'context';
 import { noop } from 'lodash';
 
-const mailPoetApiVersion = MailPoet.apiVersion as string;
-
 /**
  * @param {string|null} address
  * @returns {Promise}
  */
 const handleSave = (address: string | null) => MailPoet.Ajax.post({
-  api_version: mailPoetApiVersion,
+  api_version: MailPoet.apiVersion,
   endpoint: 'settings',
   action: 'setAuthorizedFromAddress',
   data: {

@@ -165,4 +165,4 @@ export const MailPoetDate = {
     return convertedFormat.join('');
   },
   isInFuture: (dateString: string): boolean => new Date(dateString).getTime() > Date.now(),
-};
+} as const;
