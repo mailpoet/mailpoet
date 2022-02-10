@@ -6,6 +6,7 @@ import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 import AnimationSettings from './animation_settings';
 import PlacementSettings from './placement_settings';
+import CookieSettings from './cookie_settings';
 
 const delayValues = [0, 2, 5, 10, 15, 30, 45, 60, 120, 180, 240];
 
@@ -54,6 +55,7 @@ const PopUpSettings: React.FunctionComponent = () => {
               label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', delayValue),
             }))}
           />
+          <CookieSettings settingsPlacementKey="popup" />
           <div>
             <p><b>{MailPoet.I18n.t('exitIntentTitle')}</b></p>
             <p>{MailPoet.I18n.t('exitIntentDescription')}</p>

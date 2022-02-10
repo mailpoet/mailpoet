@@ -8,6 +8,7 @@ export default function mapFormDataBeforeSaving(data) {
           enabled: data.settings.formPlacement?.popup?.enabled === true ? '1' : '',
           exit_intent_enabled: data.settings.formPlacement?.popup?.exitIntentEnabled ? '1' : '',
           delay: data.settings.formPlacement?.popup?.delay,
+          cookieExpiration: data.settings.formPlacement?.popup?.cookieExpiration,
           styles: data.settings.formPlacement?.popup?.styles,
           animation: data.settings.formPlacement?.popup?.animation,
           categories: data.settings.formPlacement?.popup?.categories ?? [],
@@ -24,6 +25,7 @@ export default function mapFormDataBeforeSaving(data) {
         fixed_bar: {
           enabled: data.settings.formPlacement?.fixedBar?.enabled === true ? '1' : '',
           delay: data.settings.formPlacement?.fixedBar?.delay,
+          cookieExpiration: data.settings.formPlacement?.fixedBar?.cookieExpiration,
           styles: data.settings.formPlacement?.fixedBar?.styles,
           position: data.settings.formPlacement?.fixedBar?.position,
           animation: data.settings.formPlacement?.fixedBar?.animation,
@@ -55,6 +57,7 @@ export default function mapFormDataBeforeSaving(data) {
         slide_in: {
           enabled: data.settings.formPlacement?.slideIn?.enabled === true ? '1' : '',
           delay: data.settings.formPlacement?.slideIn?.delay,
+          cookieExpiration: data.settings.formPlacement?.slideIn?.cookieExpiration,
           position: data.settings.formPlacement?.slideIn?.position,
           animation: data.settings.formPlacement?.slideIn?.animation,
           styles: data.settings.formPlacement?.slideIn?.styles,
