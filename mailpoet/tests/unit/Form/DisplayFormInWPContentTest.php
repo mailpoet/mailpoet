@@ -4,6 +4,9 @@ namespace MailPoet\Form;
 
 use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Entities\FormEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Subscribers\SubscriberSubscribeController;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -27,6 +30,12 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
   /** @var DisplayFormInWPContent */
   private $hook;
 
+  /** @var SubscribersRepository & MockObject */
+  private $subscribersRepository;
+
+  /** @var SubscriberSubscribeController & MockObject */
+  private $subscriberSubscribeController;
+
   public function _before() {
     parent::_before();
     if (!defined('ARRAY_A')) define('ARRAY_A', 'ARRAY_A');
@@ -42,7 +51,17 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->renderer = $this->createMock(Renderer::class);
     $this->renderer->expects($this->any())->method('renderStyles')->willReturn('<style></style>');
     $this->renderer->expects($this->any())->method('renderHTML')->willReturn('<form></form>');
-    $this->hook = new DisplayFormInWPContent($this->wp, $this->repository, $this->renderer, $this->assetsController, $this->templateRenderer);
+    $this->subscribersRepository = $this->createMock( SubscribersRepository::class);
+    $this->subscriberSubscribeController = $this->createMock(SubscriberSubscribeController::class);
+    $this->hook = new DisplayFormInWPContent(
+      $this->wp,
+      $this->repository,
+      $this->renderer,
+      $this->assetsController,
+      $this->templateRenderer,
+      $this->subscriberSubscribeController,
+      $this->subscribersRepository
+    );
   }
 
   public function testAppendsRenderedFormAfterPostContent() {
@@ -361,6 +380,62 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
     $result = $this->hook->display('content');
     expect($result)->notEquals('content');
+    expect($result)->endsWith($formHtml);
+  }
+
+  public function testDoesNotAppendPopupFormIfLoggedInAndSubscribed() {
+    $formHtml = '<form id="test-form"></form>';
+    $subscriber = new SubscriberEntity();
+    $this->subscribersRepository->expects($this->once())->method('getCurrentWPUser')->willReturn($subscriber);
+    $this->subscriberSubscribeController->expects($this->once())->method('isSubscribedToAnyFormSegments')->willReturn(true);
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->assetsController->expects($this->never())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->never())->method('render')->willReturn($formHtml);
+    $this->wp
+      ->expects($this->never())
+      ->method('setTransient');
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'below_posts' => ['enabled' => '', 'pages' => ['all' => ''], 'posts' => ['all' => '']],
+        'popup' => ['enabled' => '1', 'pages' => ['all' => '1'], 'posts' => ['all' => '']],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    $result = $this->hook->display('content');
+    expect($result)->equals('content');
+  }
+
+  public function testAppendsPopupFormIfLoggedInAndNotSubscribed() {
+    $formHtml = '<form id="test-form"></form>';
+    $subscriber = new SubscriberEntity();
+    $this->subscribersRepository->expects($this->any())->method('getCurrentWPUser')->willReturn($subscriber);
+    $this->subscriberSubscribeController->expects($this->any())->method('isSubscribedToAnyFormSegments')->willReturn(false);
+    $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
+    $this->wp->expects($this->any())->method('isPage')->willReturn(true);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $this->wp
+      ->expects($this->never())
+      ->method('setTransient');
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'below_posts' => ['enabled' => '', 'pages' => ['all' => ''], 'posts' => ['all' => '']],
+        'popup' => ['enabled' => '1', 'pages' => ['all' => '1'], 'posts' => ['all' => '']],
+      ],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    $result = $this->hook->display('content');
     expect($result)->endsWith($formHtml);
   }
 

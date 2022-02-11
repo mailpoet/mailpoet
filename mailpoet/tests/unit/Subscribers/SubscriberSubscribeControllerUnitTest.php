@@ -9,11 +9,13 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Util\FieldNameObfuscator;
+use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsFormsRepository;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Subscription\Throttling;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions as WPFunctions;
@@ -29,6 +31,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ],
       $this
     );
+    $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
     $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
     $throttling = Stub::makeEmpty(SubscriptionThrottling::class);
     $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class);
@@ -63,6 +66,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $subscriptionCaptcha,
       $captchaSession,
       $subscriberActions,
+      $subscribersFinder,
       $subscriptionUrlFactory,
       $throttling,
       $fieldNameObfuscator,
@@ -92,6 +96,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ],
       $this
     );
+    $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
     $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
     $throttling = Stub::makeEmpty(
       SubscriptionThrottling::class,
@@ -144,6 +149,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $subscriptionCaptcha,
       $captchaSession,
       $subscriberActions,
+      $subscribersFinder,
       $subscriptionUrlFactory,
       $throttling,
       $fieldNameObfuscator,
@@ -171,6 +177,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ],
       $this
     );
+    $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
     $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
     $throttling = Stub::makeEmpty(SubscriptionThrottling::class);
     $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class,
@@ -221,6 +228,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $subscriptionCaptcha,
       $captchaSession,
       $subscriberActions,
+      $subscribersFinder,
       $subscriptionUrlFactory,
       $throttling,
       $fieldNameObfuscator,
@@ -254,6 +262,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ],
       $this
     );
+    $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
     $expectedRedirectLink = 'redirect';
     $subscriptionUrlFactory = Stub::makeEmpty(
       SubscriptionUrlFactory::class,
@@ -324,6 +333,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $subscriptionCaptcha,
       $captchaSession,
       $subscriberActions,
+      $subscribersFinder,
       $subscriptionUrlFactory,
       $throttling,
       $fieldNameObfuscator,
@@ -362,6 +372,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ],
       $this
     );
+    $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
     $expectedRedirectLink = 'redirect';
     $subscriptionUrlFactory = Stub::makeEmpty(
       SubscriptionUrlFactory::class,
@@ -436,6 +447,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $subscriptionCaptcha,
       $captchaSession,
       $subscriberActions,
+      $subscribersFinder,
       $subscriptionUrlFactory,
       $throttling,
       $fieldNameObfuscator,
@@ -451,6 +463,108 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       'refresh_captcha' => true,
       'error' => 'The characters entered do not match with the previous CAPTCHA.',
     ]);
+  }
+
+  public function testItShouldReturnTrueIfSubscribedToAnySegmentsInForm() {
+    $blockSegmentIds = [15,16];
+    $segmentIds = [17];
+    $formSegments = [15,16,17];
+    $subscriberId = 1;
+
+    $form = Stub::makeEmpty(
+      FormEntity::class,
+      [
+        'getSettingsSegmentIds' => function() use ($segmentIds): array {
+          return $segmentIds;
+        },
+        'getSegmentBlocksSegmentIds' => function() use ($blockSegmentIds) {
+          return $blockSegmentIds;
+        },
+      ]
+    );
+
+    $subscriber = Stub::makeEmpty(
+      SubscriberEntity::class,
+      [
+        'getId' => function() use($subscriberId): int {
+          return $subscriberId;
+        },
+      ]
+    );
+
+    $subscribersFinder = $this->createMock(SubscribersFinder::class);
+    $subscribersFinder->expects($this->once())->method('findSubscribersInSegments')
+      ->with([$subscriberId], $formSegments)
+      ->willReturn([15]);
+
+    $testee = new SubscriberSubscribeController(
+      Stub::makeEmpty(Captcha::class),
+      Stub::makeEmpty(CaptchaSession::class),
+      Stub::makeEmpty(SubscriberActions::class),
+      $subscribersFinder,
+      Stub::makeEmpty(SubscriptionUrlFactory::class),
+      Stub::makeEmpty(Throttling::class),
+      Stub::makeEmpty(FieldNameObfuscator::class),
+      Stub::makeEmpty(RequiredCustomFieldValidator::class),
+      Stub::makeEmpty(SettingsController::class),
+      Stub::makeEmpty(FormsRepository::class),
+      Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(WPFunctions::class)
+    );
+
+    $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
+    expect($result)->equals(true);
+  }
+
+  public function testItShouldReturnFalseIfNotSubscribedToAnySegmentsInForm() {
+    $blockSegmentIds = [];
+    $segmentIds = [17];
+    $formSegments = [17];
+    $subscriberId = 1;
+
+    $form = Stub::makeEmpty(
+      FormEntity::class,
+      [
+        'getSettingsSegmentIds' => function() use ($segmentIds): array {
+          return $segmentIds;
+        },
+        'getSegmentBlocksSegmentIds' => function() use ($blockSegmentIds) {
+          return $blockSegmentIds;
+        },
+      ]
+    );
+
+    $subscriber = Stub::makeEmpty(
+      SubscriberEntity::class,
+      [
+        'getId' => function() use($subscriberId): int {
+          return $subscriberId;
+        },
+      ]
+    );
+
+    $subscribersFinder = $this->createMock(SubscribersFinder::class);
+    $subscribersFinder->expects($this->once())->method('findSubscribersInSegments')
+      ->with([$subscriberId], $formSegments)
+      ->willReturn([]);
+
+    $testee = new SubscriberSubscribeController(
+      Stub::makeEmpty(Captcha::class),
+      Stub::makeEmpty(CaptchaSession::class),
+      Stub::makeEmpty(SubscriberActions::class),
+      $subscribersFinder,
+      Stub::makeEmpty(SubscriptionUrlFactory::class),
+      Stub::makeEmpty(SubscriptionThrottling::class),
+      Stub::makeEmpty(FieldNameObfuscator::class),
+      Stub::makeEmpty(RequiredCustomFieldValidator::class),
+      Stub::makeEmpty(SettingsController::class),
+      Stub::makeEmpty(FormsRepository::class),
+      Stub::makeEmpty(StatisticsFormsRepository::class),
+      Stub::makeEmpty(WPFunctions::class)
+    );
+
+    $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
+    expect($result)->equals(false);
   }
 
   public function testSubscribeSuccess() {
@@ -509,6 +623,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       ],
       $this
     );
+    $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
     $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class,
       [
         'subscribe' => function($receivedSubscriber, $receivedForm) use ($subscriber, $form) {
@@ -560,6 +675,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       $subscriptionCaptcha,
       $captchaSession,
       $subscriberActions,
+      $subscribersFinder,
       $subscriptionUrlFactory,
       $throttling,
       $fieldNameObfuscator,
