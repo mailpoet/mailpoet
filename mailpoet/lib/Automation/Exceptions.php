@@ -6,12 +6,19 @@ use MailPoet\Automation\Exceptions\InvalidStateException;
 use MailPoet\Automation\Exceptions\UnexpectedValueException;
 
 class Exceptions {
+  private const MIGRATION_FAILED = 'mailpoet_automation_migration_failed';
   private const API_NO_JSON_BODY = 'mailpoet_automation_api_no_json_body';
 
   public function __construct() {
     throw new InvalidStateException(
       "This is a static factory class. Use it via 'Exception::someError()' factories."
     );
+  }
+
+  public static function migrationFailed(string $error): InvalidStateException {
+    return InvalidStateException::create()
+      ->withErrorCode(self::MIGRATION_FAILED)
+      ->withMessage(sprintf('Migration failed: %s', $error));
   }
 
   public static function apiNoJsonBody(): UnexpectedValueException {
