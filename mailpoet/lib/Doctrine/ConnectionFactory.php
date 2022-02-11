@@ -79,6 +79,10 @@ class ConnectionFactory {
 
     return [
       PDO::MYSQL_ATTR_INIT_COMMAND => 'SET ' . implode(', ', $driverOptions),
+      // In PHP 8.1 was changed MySQL behavior that numbers are returned as native PHP types instead of strings. https://www.php.net/manual/en/migration81.incompatible.php
+      // We force the previous state due to the backward compatibility of the Idiorm.
+      // This can be removed when we drop Idiorm.
+      PDO::ATTR_STRINGIFY_FETCHES => true,
     ];
   }
 
