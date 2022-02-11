@@ -54,6 +54,7 @@
     "no-use-before-define": 0, //use the typescript version
     "camelcase": 0, //use the typescript version
     "no-shadow": 0, //use the typescript version
+    "no-void": 0, // can conflict with @typescript-eslint/no-floating-promises
     "@typescript-eslint/naming-convention": [
       "error",
       { "selector": "classProperty", "format": [] },
