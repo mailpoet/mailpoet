@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\API;
 
+use MailPoet\Automation\API\Endpoints\SystemDatabaseEndpoint;
 use MailPoet\Automation\API\Endpoints\WorkflowsEndpoint;
 use MailPoet\Automation\Exceptions\Exception;
 use MailPoet\Automation\WordPress;
@@ -21,6 +22,7 @@ class API {
 
   /** @var array<string, class-string<Endpoint>> */
   private $routes = [
+    'system/database' => SystemDatabaseEndpoint::class,
     'workflows' => WorkflowsEndpoint::class,
   ];
 
