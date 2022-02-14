@@ -63,12 +63,39 @@ jQuery(($) => {
     }
   }
   /**
-   * @param  {object} formDiv jQuery object of MailPoet form div
+   * @param  {object} form jQuery object of MailPoet form
    * @return {string} The name of the cookie for the form
    */
-  function getFormCookieName(formDiv) {
-    const formId = formDiv.find('input[name="data[form_id]"').val();
+  function getFormCookieName(form) {
+    const formId = form.find('input[name="data[form_id]"').val();
     return `popup_form_dismissed_${formId}`;
+  }
+
+  /**
+   * Sets the cookie for the form after successful subscription
+   * Uses fixed cookie expiration time of 182 days
+   *
+   * @param  {object} form jQuery object of MailPoet form
+   */
+  function setFormCookieAfterSubscription(form) {
+    const formDiv = form.parent('.mailpoet_form');
+    if (formDiv.data('is-preview')) return;
+    const formCookieName = getFormCookieName(form);
+    Cookies.set(formCookieName, '1', { expires: 182, path: '/' });
+  }
+
+  /**
+   * Sets the cookie for the form after dismissing the form
+   * Uses cookie expiration time defined on the form
+   *
+   * @param  {object} formDiv jQuery object of MailPoet form div
+   */
+  function setFormCookieOnClose(formDiv) {
+    if (formDiv.data('is-preview')) return;
+    const formCookieName = getFormCookieName(formDiv);
+    if (Cookies.get(formCookieName) === '1') return;
+    const cookieExpirationTime = formDiv.find('form').data('cookie-expiration-time');
+    Cookies.set(formCookieName, '1', { ...(cookieExpirationTime && { expires: cookieExpirationTime }), path: '/' });
   }
 
   function isSameDomain(url) {
@@ -122,6 +149,7 @@ jQuery(($) => {
   }
 
   function displaySuccessMessage(form) {
+    setFormCookieAfterSubscription(form);
     // hide all form elements instead of .mailpoet_message
     form.children().not('.mailpoet_message').css('visibility', 'hidden');
     // add class that form was successfully send
@@ -169,12 +197,10 @@ jQuery(($) => {
     }
   }
 
-  const closeForm = (formDiv, afterSubscription = false) => {
+  const closeForm = (formDiv) => {
     formDiv.removeClass('active');
     formDiv.prev('.mailpoet_form_popup_overlay').removeClass('active');
-    const formCookieName = getFormCookieName(formDiv);
-    const cookieExpirationTime = afterSubscription ? 182 : formDiv.find('form').data('cookie-expiration-time');
-    Cookies.set(formCookieName, '1', { ...(cookieExpirationTime && { expires: cookieExpirationTime }), path: '/' });
+    setFormCookieOnClose(formDiv);
   };
 
   $(document).on('keyup', (e) => {
@@ -303,9 +329,7 @@ jQuery(($) => {
               response.meta !== undefined
               && response.meta.redirect_url !== undefined
             ) {
-              // close form before redirect due to setting cookie
-              const afterSubscription = true;
-              closeForm(formDiv, afterSubscription);
+              setFormCookieAfterSubscription(form);
               // go to page
               window.location.href = response.meta.redirect_url;
             } else {
