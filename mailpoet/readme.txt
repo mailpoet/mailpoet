@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 3.79.0
+Stable tag: 3.80.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,21 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.80.0 - 2022-02-15 =
+* Added: offer to upgrade subscription and download or activate the premium plugin where needed;
+* Added: mailpoet_subscription_before_subscribe hook;
+* Added: a check that MailPoet can communicate with MailPoet Sending Service;
+* Updated: npm dependencies;
+* Improved: translations are no longer included in the plugin, but are downloaded after activation or update;
+* Improved: update confirmation message when deleting MailPoet so it doesn't say that MailPoet data are deleted (as they are not);
+* Improved: stats email now includes unsubscribed and bounced;
+* Improved: default newsletter schedule time is set to tomorrow 8am;
+* Changed: docs location;
+* Changed: only mark purchased product/category sent when the automatic email is activated;
+* Fixed: filtering "Subscribers without a list" in Trash redirects to All Subscribers;
+* Fixed: shortcode default value is not rendered in archives;
+* Fixed: Incorrect use of $metas[0] index in individual newsletter processing.
 
 = 3.79.0 - 2022-02-09 =
 * Added: new segment for WooCommerce Memberships;
