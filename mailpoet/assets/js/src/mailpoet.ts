@@ -59,7 +59,7 @@ export const MailPoet = {
 
 declare global {
   interface Window {
-    MailPoet: typeof MailPoet;
+    MailPoet: Partial<typeof MailPoet>;
   }
 }
 
