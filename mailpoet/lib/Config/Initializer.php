@@ -80,9 +80,6 @@ class Initializer {
   /** @var AutomaticEmails */
   private $automaticEmails;
 
-  /** @var WPFunctions */
-  private $wpFunctions;
-
   /** @var AssetsLoader */
   private $assetsLoader;
 
@@ -112,7 +109,6 @@ class Initializer {
     Localizer $localizer,
     AutomaticEmails $automaticEmails,
     SubscriberActivityTracker $subscriberActivityTracker,
-    WPFunctions $wpFunctions,
     AssetsLoader $assetsLoader
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -135,7 +131,6 @@ class Initializer {
     $this->localizer = $localizer;
     $this->automaticEmails = $automaticEmails;
     $this->subscriberActivityTracker = $subscriberActivityTracker;
-    $this->wpFunctions = $wpFunctions;
     $this->assetsLoader = $assetsLoader;
   }
 
@@ -147,7 +142,7 @@ class Initializer {
       $this->databaseInitializer->initializeConnection();
     } catch (\Exception $e) {
       return WPNotice::displayError(Helpers::replaceLinkTags(
-        __('Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.', 'mailpoet'),
+        WPFunctions::get()->__('Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.', 'mailpoet'),
         'https://kb.mailpoet.com/article/200-solving-database-connection-issues',
         [
           'target' => '_blank',
@@ -157,7 +152,7 @@ class Initializer {
     }
 
     // activation function
-    $this->wpFunctions->registerActivationHook(
+    WPFunctions::get()->registerActivationHook(
       Env::$file,
       [
         $this,
@@ -165,37 +160,37 @@ class Initializer {
       ]
     );
 
-    $this->wpFunctions->addAction('activated_plugin', [
+    WPFunctions::get()->addAction('activated_plugin', [
       new PluginActivatedHook(new DeferredAdminNotices),
       'action',
     ], 10, 2);
 
-    $this->wpFunctions->addAction('init', [
+    WPFunctions::get()->addAction('init', [
       $this,
       'preInitialize',
     ], 0);
 
-    $this->wpFunctions->addAction('init', [
+    WPFunctions::get()->addAction('init', [
       $this,
       'initialize',
     ]);
 
-    $this->wpFunctions->addAction('admin_init', [
+    WPFunctions::get()->addAction('admin_init', [
       $this,
       'setupPrivacyPolicy',
     ]);
 
-    $this->wpFunctions->addAction('wp_loaded', [
+    WPFunctions::get()->addAction('wp_loaded', [
       $this,
       'postInitialize',
     ]);
 
-    $this->wpFunctions->addAction('admin_init', [
+    WPFunctions::get()->addAction('admin_init', [
       new DeferredAdminNotices,
       'printAndClean',
     ]);
 
-    $this->wpFunctions->addFilter('wpmu_drop_tables', [
+    WPFunctions::get()->addFilter('wpmu_drop_tables', [
       $this,
       'multisiteDropTables',
     ]);
@@ -226,7 +221,7 @@ class Initializer {
   }
 
   public function setupWidget() {
-    $this->wpFunctions->registerWidget('\MailPoet\Form\Widget');
+    WPFunctions::get()->registerWidget('\MailPoet\Form\Widget');
   }
 
   public function initialize() {
@@ -254,7 +249,7 @@ class Initializer {
       $this->subscriberActivityTracker->trackActivity();
       $this->postEditorBlock->init();
 
-      $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
+      WPFunctions::get()->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
       return $this->handleRunningMigration($e);
     } catch (\Exception $e) {
@@ -312,7 +307,7 @@ class Initializer {
   }
 
   public function setupImages() {
-    $this->wpFunctions->addImageSize('mailpoet_newsletter_max', Env::NEWSLETTER_CONTENT_WIDTH);
+    WPFunctions::get()->addImageSize('mailpoet_newsletter_max', Env::NEWSLETTER_CONTENT_WIDTH);
   }
 
   public function setupCronTrigger() {
@@ -339,8 +334,8 @@ class Initializer {
   }
 
   public function setupUserLocale() {
-    if (get_user_locale() === $this->wpFunctions->getLocale()) return;
-    $this->wpFunctions->unloadTextdomain(Env::$pluginName);
+    if (get_user_locale() === WPFunctions::get()->getLocale()) return;
+    WPFunctions::get()->unloadTextdomain(Env::$pluginName);
     $this->localizer->init();
   }
 
