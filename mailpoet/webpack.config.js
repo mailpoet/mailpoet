@@ -66,7 +66,7 @@ const baseConfig = {
       asyncqueue: 'vendor/jquery.asyncqueue.js',
     },
   },
-  plugins: [new ForkTsCheckerWebpackPlugin()],
+  plugins: PRODUCTION_ENV ? [] : [new ForkTsCheckerWebpackPlugin()],
   module: {
     noParse: /node_modules\/lodash\/lodash\.js/,
     rules: [
