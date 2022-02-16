@@ -2,24 +2,22 @@
 
 namespace MailPoet\Automation\API;
 
+use MailPoet\Automation\Exceptions;
+
 abstract class Endpoint {
   public function get(Request $request): Response {
-    return $this->methodNotAllowed();
+    throw Exceptions::apiMethodNotAllowed();
   }
 
   public function post(Request $request): Response {
-    return $this->methodNotAllowed();
+    throw Exceptions::apiMethodNotAllowed();
   }
 
   public function put(Request $request): Response {
-    return $this->methodNotAllowed();
+    throw Exceptions::apiMethodNotAllowed();
   }
 
   public function delete(Request $request): Response {
-    return $this->methodNotAllowed();
-  }
-
-  private function methodNotAllowed(): ErrorResponse {
-    return new ErrorResponse(405, 'Method not allowed', 'mailpoet_automation_method_not_allowed');
+    throw Exceptions::apiMethodNotAllowed();
   }
 }
