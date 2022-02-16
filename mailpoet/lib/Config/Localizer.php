@@ -7,6 +7,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class Localizer {
   public function init() {
     $this->loadGlobalText();
+    $this->loadPluginText();
   }
 
   public function loadGlobalText() {
@@ -17,6 +18,14 @@ class Localizer {
       $this->locale()
     );
     WPFunctions::get()->loadTextdomain(Env::$pluginName, $languagePath);
+  }
+
+  public function loadPluginText() {
+    WPFunctions::get()->loadPluginTextdomain(
+      Env::$pluginName,
+      false,
+      dirname(plugin_basename(Env::$file)) . '/lang/'
+    );
   }
 
   public function locale() {
