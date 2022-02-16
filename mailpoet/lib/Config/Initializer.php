@@ -285,27 +285,14 @@ class Initializer {
   }
 
   public function setupUpdater() {
-    $premiumSlug = Installer::PREMIUM_PLUGIN_SLUG;
-    $premiumPluginFile = Installer::getPluginFile($premiumSlug);
-    $premiumVersion = defined('MAILPOET_PREMIUM_VERSION') ? MAILPOET_PREMIUM_VERSION : null;
-    $freeSlug = Env::$pluginName;
-    $freeVersion = MAILPOET_VERSION;
-
-    $translationUpdater = new TranslationUpdater(
-      $this->wpFunctions,
-      $freeSlug,
-      $freeVersion,
-      $premiumSlug,
-      $premiumVersion
-    );
-    $translationUpdater->init();
-
-    if (empty($premiumPluginFile) || !$premiumVersion) {
+    $slug = Installer::PREMIUM_PLUGIN_SLUG;
+    $pluginFile = Installer::getPluginFile($slug);
+    if (empty($pluginFile) || !defined('MAILPOET_PREMIUM_VERSION')) {
       return false;
     }
     $updater = new Updater(
-      $premiumPluginFile,
-      $premiumSlug,
+      $pluginFile,
+      $slug,
       MAILPOET_PREMIUM_VERSION
     );
     $updater->init();
