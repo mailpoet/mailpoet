@@ -318,8 +318,8 @@ const publicConfig = {
 
     // replace MailPoet definition with a smaller version for public
     new webpack.NormalModuleReplacementPlugin(
-      /mailpoet\.js/,
-      './mailpoet_public.js'
+      /mailpoet\.ts/,
+      './mailpoet_public.ts'
     ),
   ],
   externals: {
