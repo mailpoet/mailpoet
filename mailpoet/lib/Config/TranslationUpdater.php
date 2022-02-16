@@ -77,12 +77,10 @@ class TranslationUpdater {
       $requestBody['plugins'][$this->premiumSlug] = ['version' => $this->premiumVersion];
     }
 
-    // Three seconds, plus one extra second for every 10 plugins.
-    $timeout = 3 + (int)(count($locales) / 10);
     $rawResponse = $this->wpFunctions->wpRemotePost(self::API_UPDATES_BASE_URI, [
       'body' => json_encode($requestBody),
       'headers' => ['Content-Type: application/json'],
-      'timeout' => $timeout,
+      'timeout' => 30,
     ]);
 
     // Don't continue when API request failed.
