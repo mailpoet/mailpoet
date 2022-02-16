@@ -767,12 +767,4 @@ class Functions {
   public function getWpScripts() {
     return wp_scripts();
   }
-
-  public function wpGetInstalledTranslations(string $type): array {
-    return wp_get_installed_translations($type);
-  }
-
-  public function getAvailableLanguages(?string $dir = null): array {
-    return get_available_languages($dir);
-  }
 }
