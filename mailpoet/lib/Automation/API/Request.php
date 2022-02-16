@@ -36,7 +36,13 @@ class Request {
   }
 
   public function getBody(): array {
-    return $this->wpRequest->get_json_params() ?? [];
+    $json = $this->wpRequest->get_json_params();
+
+    /* @phpstan-ignore-next-line hotfix for missing 'null' in WP annotation */
+    if ($json === null) {
+      throw Exceptions::apiNoJsonBody();
+    }
+    return $json;
   }
 
   public function getRawBody(): string {
