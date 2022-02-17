@@ -767,4 +767,13 @@ class Functions {
   public function getWpScripts() {
     return wp_scripts();
   }
+
+  /** @param string[]|null $protocols */
+  public function escUrlRaw(string $url, array $protocols = null): string {
+    return esc_url_raw($url, $protocols);
+  }
+
+  public function restUrl(string $path = '', string $scheme = 'rest'): string {
+    return rest_url($path, $scheme);
+  }
 }
