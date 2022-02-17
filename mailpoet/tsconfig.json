@@ -25,6 +25,7 @@
     "allowJs": true,                        /* Allow javascript files to be compiled. */
     "checkJs": false,                        /* Report errors in .js files. */
     "resolveJsonModule": true,              /* Allow importing json files */
+    "skipLibCheck": true,                   /* Skip type checking all .d.ts files. See more: https://www.typescriptlang.org/tsconfig#skipLibCheck */
 
     // "incremental": true,                   /* Enable incremental compilation */
     // "lib": [],                             /* Specify library files to be included in the compilation. */
