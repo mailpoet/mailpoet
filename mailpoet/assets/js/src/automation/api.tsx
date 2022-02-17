@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+import { api } from './config';
 
-const API_URL = '/wp-json/mailpoet/v1/automation';
+const API_URL = `${api.root}/mailpoet/v1/automation`;
 
 export const request = (path: string, init?: RequestInit): ReturnType<typeof fetch> => (
   fetch(`${API_URL}/${path}`, init)
@@ -34,7 +35,14 @@ export const useMutation = <T extends Data>(path: string, init?: RequestInit): R
 
   const mutation = useCallback(async () => {
     setState((prevState) => ({ ...prevState, loading: true }));
-    const response = await request(path, init);
+    const response = await request(
+      path,
+      {
+        ...init,
+        headers: { ...(init?.headers ?? {}), 'X-WP-Nonce': api.nonce },
+      }
+    );
+
     try {
       const data = await response.json();
       const error = response.ok ? null : { ...response, data };

@@ -17,5 +17,8 @@
 <% endblock %>
 
 <% block after_javascript %>
+  <script type="text/javascript">
+    var mailpoet_automation_api = <%= json_encode(api) %>;
+  </script>
   <%= javascript('automation.js')%>
 <% endblock %>

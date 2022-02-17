@@ -58,6 +58,9 @@ class API {
           return $this->convertToErrorResponse($e);
         }
       },
+      'permission_callback' => function () {
+        return $this->wordPress->currentUserCan('administrator');
+      },
     ]);
   }
 
