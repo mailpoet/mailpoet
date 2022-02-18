@@ -151,7 +151,7 @@ class Shortcodes {
         '';
       $shortcodeDetails['action_argument_value'] = !empty($shortcodeDetails['argument_value']) ?
         $shortcodeDetails['argument_value'] :
-        false;
+        '';
       $shortcodeDetails['arguments'] = !empty($shortcodeDetails['arguments']) ?
         $shortcodeDetails['arguments'] : [];
 
