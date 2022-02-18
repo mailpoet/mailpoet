@@ -372,6 +372,15 @@ class ShortcodesTest extends \MailPoetTest {
     }
   }
 
+  public function testItCanProcessShortcodeWithEmptyDefault() {
+    $shortcode = '[subscriber:lastname | default:]';
+    $shortcodesObject = $this->shortcodesObject;
+    $subscriberWithoutLastname = new SubscriberEntity();
+    $shortcodesObject->setSubscriber($subscriberWithoutLastname);
+    $result = $shortcodesObject->process([$shortcode]);
+    expect($result[0])->equals('');
+  }
+
   public function testItCanProcessCustomLinkShortcodes() {
     $shortcodesObject = $this->shortcodesObject;
     $shortcodesObject->setWpUserPreview(false);
