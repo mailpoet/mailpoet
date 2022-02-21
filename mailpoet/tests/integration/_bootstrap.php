@@ -40,7 +40,6 @@ $models = [
   'Subscriber',
   'SubscriberCustomField',
   'SubscriberSegment',
-  'SubscriberIP',
   'StatisticsOpens',
   'StatisticsClicks',
   'StatisticsNewsletters',
