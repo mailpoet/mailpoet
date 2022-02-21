@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.9
-Stable tag: 3.81.0
+Stable tag: 3.81.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -183,6 +183,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.81.1 - 2022-02-21 =
+* Improved: monthly stats email now includes unsubscribed and bounced;
+* Improved: use WooCommerce Session to identify subscribers' engagement;
+* Improved: tested on WordPress 5.9;
+* Fixed: error when using empty default value in shortcode.
 
 = 3.81.0 - 2022-02-16 =
 * Fixed: translations downloading issue.
