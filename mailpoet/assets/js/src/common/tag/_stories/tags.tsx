@@ -12,14 +12,16 @@ const segments = [
   { name: 'Unconfirmed' },
 ];
 
-export const Segments = () => (
-  <>
-    <Heading level={1}>Segments</Heading>
-    <Tags segments={segments} dimension="large" />
-    <div className="mailpoet-gap" />
-    <Tags segments={segments}>
-      <span>Prefix: </span>
-    </Tags>
+export function Segments() {
+  return (
+    <>
+      <Heading level={1}>Segments</Heading>
+      <Tags segments={segments} dimension="large" />
+      <div className="mailpoet-gap" />
+      <Tags segments={segments}>
+        <span>Prefix: </span>
+      </Tags>
 
-  </>
-);
+    </>
+  );
+}

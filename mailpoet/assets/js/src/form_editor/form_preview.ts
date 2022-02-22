@@ -21,12 +21,12 @@ jQuery(($) => {
         return;
       }
       // Allow message processing only when send from editor's origin
-      const editorUrl = new URL($previewForm.data('editor-url'));
+      const editorUrl = new URL($previewForm.data('editor-url') as string);
       if (editorUrl.origin !== event.origin) {
         return;
       }
 
-      const formType = event.data.formType;
+      const formType = event.data.formType as string;
       const placementName = camelCase(formType);
       // Get width settings based on type
       const width = event.data.formSettings?.formPlacement?.[placementName]?.styles?.width;

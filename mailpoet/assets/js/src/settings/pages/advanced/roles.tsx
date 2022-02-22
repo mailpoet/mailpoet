@@ -18,7 +18,8 @@ export default function Roles() {
         <p>
           {isMembersPluginActive
             ? <a className="mailpoet-link" href="?page=roles">{t('manageUsingMembers')}</a>
-            : ReactStringReplace(t('installMembers'),
+            : ReactStringReplace(
+              t('installMembers'),
               /\[link\](.*?)\[\/link\]/,
               (text) => (
                 <a
@@ -30,7 +31,8 @@ export default function Roles() {
                 >
                   {text}
                 </a>
-              ))}
+              )
+            )}
         </p>
       </Inputs>
     </>

@@ -42,7 +42,7 @@ export const customFieldTypes = [
   },
 ];
 
-const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
+function AddCustomFieldForm({ dateSettings, onSubmit }) {
   const [fieldType, setFieldType] = useState('text');
   const [fieldName, setFieldName] = useState(null);
   const [fieldSettings, setFieldSettings] = useState({});
@@ -130,7 +130,7 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
       </Button>
     </div>
   );
-};
+}
 
 AddCustomFieldForm.propTypes = {
   dateSettings: PropTypes.shape({

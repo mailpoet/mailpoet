@@ -6,8 +6,10 @@ type Props = {
   className?: string;
 };
 
-export const CenteredRow = ({ children, className }: Props): React.ReactElement => (
-  <div className={classnames(className, 'mailpoet-centered-row')}>
-    {children}
-  </div>
-);
+export function CenteredRow({ children, className }: Props): React.ReactElement {
+  return (
+    <div className={classnames(className, 'mailpoet-centered-row')}>
+      {children}
+    </div>
+  );
+}

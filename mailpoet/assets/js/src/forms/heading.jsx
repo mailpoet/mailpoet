@@ -11,7 +11,7 @@ export const onAddNewForm = () => {
   }, 200); // leave some time for the event to track
 };
 
-export const FormsHeading = () => {
+export function FormsHeading() {
   const [loading, setLoading] = useState(false);
   return (
     <TopBarWithBeamer>
@@ -29,4 +29,4 @@ export const FormsHeading = () => {
       </Button>
     </TopBarWithBeamer>
   );
-};
+}

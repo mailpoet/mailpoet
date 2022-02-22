@@ -22,9 +22,9 @@ SingleWarning.propTypes = {
   subscribers: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-const Warnings = ({
+function Warnings({
   stepMethodSelectionData,
-}) => {
+}) {
   const { invalid, duplicate, role } = stepMethodSelectionData;
 
   const [detailsShown, setDetailsShown] = useState(false);
@@ -102,7 +102,7 @@ const Warnings = ({
     );
   }
   return null;
-};
+}
 
 Warnings.propTypes = {
   stepMethodSelectionData: PropTypes.shape({

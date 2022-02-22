@@ -6,7 +6,7 @@ import { useSelect } from '@wordpress/data';
 import ParagraphEdit from '../paragraph_edit.jsx';
 import Settings from './settings.jsx';
 
-const SegmentSelectEdit = ({ attributes, setAttributes }) => {
+function SegmentSelectEdit({ attributes, setAttributes }) {
   const segments = useSelect((sel) => sel('mailpoet-form-editor').getAllAvailableSegments(), []);
   const valuesWithNames = useMemo(() => attributes.values.map((value) => {
     const valueWithName = { ...value };
@@ -57,7 +57,7 @@ const SegmentSelectEdit = ({ attributes, setAttributes }) => {
       {renderValues()}
     </ParagraphEdit>
   );
-};
+}
 
 SegmentSelectEdit.propTypes = {
   attributes: PropTypes.shape({

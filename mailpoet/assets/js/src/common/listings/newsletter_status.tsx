@@ -15,20 +15,20 @@ type NewsletterStatusProps = {
   status?: string;
 }
 
-const NewsletterStatus = ({
+function NewsletterStatus({
   scheduledFor,
   processed,
   total,
   isPaused,
   status,
-}: NewsletterStatusProps) => {
+}: NewsletterStatusProps) {
   const unknown = !scheduledFor && !processed && !total;
   const scheduled = scheduledFor && isFuture(scheduledFor);
   const inProgress = (!scheduledFor || isPast(scheduledFor)) && processed < total;
   const sent = (!scheduledFor || isPast(scheduledFor)) && processed >= total;
   const sentWithoutQueue = status === 'sent' && total === undefined;
   let percentage = 0;
-  let label = (<>{t('notSentYet')}</>);
+  let label : string|JSX.Element = t('notSentYet');
   if (scheduled) {
     const scheduledDate = MailPoet.Date.short(scheduledFor);
     const scheduledTime = MailPoet.Date.time(scheduledFor);
@@ -68,17 +68,17 @@ const NewsletterStatus = ({
       percentage = 100;
     }
   } else if (inProgress) {
-    label = (<>{`${MailPoet.Num.toLocaleFixed(processed)} / ${MailPoet.Num.toLocaleFixed(total)}`}</>);
+    label = `${MailPoet.Num.toLocaleFixed(processed)} / ${MailPoet.Num.toLocaleFixed(total)}`;
     percentage = 100 * (processed / total);
   } else if (sent) {
-    label = (<>{`${MailPoet.Num.toLocaleFixed(total)} / ${MailPoet.Num.toLocaleFixed(total)}`}</>);
+    label = `${MailPoet.Num.toLocaleFixed(total)} / ${MailPoet.Num.toLocaleFixed(total)}`;
     percentage = 100;
   } else if (sentWithoutQueue) {
-    label = (<>{t('sent')}</>);
+    label = t('sent');
     percentage = 100;
   }
   if (isPaused && !sent && !sentWithoutQueue) {
-    label = (<>{t('paused')}</>);
+    label = t('paused');
   }
   return (
     <div className={classNames({
@@ -94,13 +94,13 @@ const NewsletterStatus = ({
       <div className="mailpoet-listing-status-label">{label}</div>
     </div>
   );
-};
+}
 
 type CircularProgressProps = {
   percentage: number;
 }
 
-const CircularProgress = ({ percentage }: CircularProgressProps) => {
+function CircularProgress({ percentage }: CircularProgressProps) {
   const perimeter = 16 * Math.PI;
   const filled = perimeter * (percentage / 100);
   const empty = perimeter - filled;
@@ -118,12 +118,14 @@ const CircularProgress = ({ percentage }: CircularProgressProps) => {
       />
     </svg>
   );
-};
+}
 
-export const ScheduledIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-    <path className="mailpoet-listing-status-scheduled-icon" strokeLinecap="round" d="M12 7L12 12 15 15" />
-  </svg>
-);
+export function ScheduledIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <path className="mailpoet-listing-status-scheduled-icon" strokeLinecap="round" d="M12 7L12 12 15 15" />
+    </svg>
+  );
+}
 
 export default NewsletterStatus;

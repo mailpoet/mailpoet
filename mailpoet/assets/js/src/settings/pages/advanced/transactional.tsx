@@ -10,7 +10,7 @@ export default function Transactional() {
   const [provider] = useSetting('smtp_provider');
   const isMssActive = useSelector('isMssActive')();
   const [enabled, setEnabled] = useSetting('send_transactional_emails');
-  let methodLabel;
+  let methodLabel = '';
   if (isMssActive) methodLabel = 'MailPoet Sending Service';
   else if (provider === 'manual') methodLabel = 'SMTP';
   else if (provider === 'SendGrid') methodLabel = 'SendGrid';
@@ -49,7 +49,8 @@ export default function Transactional() {
           {t('transactionalCurrentMethod').replace('%1$s', methodLabel)}
           <br />
           <span className="mailpoet-note">
-            {ReactStringReplace(t('transactionalMssNote'),
+            {ReactStringReplace(
+              t('transactionalMssNote'),
               /\[link\](.*?)\[\/link\]/,
               (text) => (
                 <a
@@ -62,7 +63,8 @@ export default function Transactional() {
                 >
                   {text}
                 </a>
-              ))}
+              )
+            )}
           </span>
         </label>
         <div className="mailpoet-settings-inputs-row">

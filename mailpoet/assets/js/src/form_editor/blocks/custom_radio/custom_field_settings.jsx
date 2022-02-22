@@ -10,7 +10,7 @@ import { reduce, isEmpty, isEqualWith } from 'lodash';
 import SettingsPreview from './settings_preview.jsx';
 import CustomFieldDelete from '../custom_field_delete.jsx';
 
-const CustomFieldSettings = ({
+function CustomFieldSettings({
   label,
   mandatory,
   values,
@@ -20,7 +20,7 @@ const CustomFieldSettings = ({
   onCustomFieldDelete,
   onChange,
   useDragAndDrop,
-}) => {
+}) {
   const [localLabel, setLocalLabel] = useState(label);
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localValues, setLocalValues] = useState(JSON.parse(JSON.stringify(values)));
@@ -116,7 +116,7 @@ const CustomFieldSettings = ({
       ) : null}
     </div>
   );
-};
+}
 
 CustomFieldSettings.propTypes = {
   label: PropTypes.string,

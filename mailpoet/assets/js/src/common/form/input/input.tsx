@@ -11,7 +11,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   tooltip?: string;
 };
 
-const Input = ({
+function Input({
   className,
   customLabel,
   dimension,
@@ -20,9 +20,10 @@ const Input = ({
   iconEnd,
   tooltip,
   ...attributes
-}: Props) => (
-  <div
-    className={
+}: Props) {
+  return (
+    <div
+      className={
       classnames(
         className,
         'mailpoet-form-input',
@@ -33,11 +34,11 @@ const Input = ({
         }
       )
     }
-  >
-    {iconStart}
-    <input {...attributes} />
-    {customLabel && <div className="mailpoet-form-input-label">{customLabel}</div>}
-    {tooltip && (
+    >
+      {iconStart}
+      <input {...attributes} />
+      {customLabel && <div className="mailpoet-form-input-label">{customLabel}</div>}
+      {tooltip && (
       <>
         <span className="mailpoet-form-tooltip-holder">
           <span className="mailpoet-form-tooltip-icon" data-tip data-for={attributes.name} />
@@ -46,9 +47,10 @@ const Input = ({
           {tooltip}
         </Tooltip>
       </>
-    )}
-    {iconEnd}
-  </div>
-);
+      )}
+      {iconEnd}
+    </div>
+  );
+}
 
 export default Input;

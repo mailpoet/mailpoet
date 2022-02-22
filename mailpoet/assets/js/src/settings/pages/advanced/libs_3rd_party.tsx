@@ -5,7 +5,7 @@ import Radio from 'common/form/radio/radio';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
-export const Libs3rdParty = () => {
+export function Libs3rdParty() {
   const [enabled, setEnabled] = useSetting('3rd_party_libs', 'enabled');
   const [, setAnalyticsEnabled] = useSetting('analytics', 'enabled');
 
@@ -56,4 +56,4 @@ export const Libs3rdParty = () => {
       </Inputs>
     </>
   );
-};
+}

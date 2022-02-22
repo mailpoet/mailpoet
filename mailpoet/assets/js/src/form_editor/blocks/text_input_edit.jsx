@@ -6,14 +6,14 @@ import formatLabel from './label_formatter.jsx';
 import { inputStylesPropTypes } from './input_styles_settings.jsx';
 import convertAlignmentToMargin from './convert_alignment_to_margin';
 
-const TextInputEdit = ({
+function TextInputEdit({
   label,
   labelWithinInput,
   name,
   mandatory,
   styles,
   className,
-}) => {
+}) {
   const settings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -104,7 +104,7 @@ const TextInputEdit = ({
       {getTextInput(labelWithinInput ? formatLabel({ label, mandatory }) : '')}
     </ParagraphEdit>
   );
-};
+}
 
 TextInputEdit.propTypes = {
   label: PropTypes.string.isRequired,

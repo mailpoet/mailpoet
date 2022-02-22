@@ -4,8 +4,8 @@ type Props = {
   title: string;
 };
 
-const Badge = ({ title }: Props) => (
-  <span className="mailpoet-badge">{title}</span>
-);
+function Badge({ title }: Props) {
+  return <span className="mailpoet-badge">{title}</span>;
+}
 
 export default Badge;

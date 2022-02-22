@@ -3,33 +3,35 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import Button from 'common/button/button';
 
-const PreviousNextStepButtons = ({
+function PreviousNextStepButtons({
   hidePrevious,
   isLastStep,
   canGoNext,
   onPreviousAction,
   onNextAction,
-}) => (
-  <div className="mailpoet-settings-save">
-    {!hidePrevious && (
-      <Button type="button" variant="secondary" onClick={onPreviousAction}>
-        {MailPoet.I18n.t('previousStep')}
+}) {
+  return (
+    <div className="mailpoet-settings-save">
+      {!hidePrevious && (
+        <Button type="button" variant="secondary" onClick={onPreviousAction}>
+          {MailPoet.I18n.t('previousStep')}
+        </Button>
+      )}
+      <Button
+        type="button"
+        automationId="import-next-step"
+        isDisabled={!canGoNext}
+        onClick={() => {
+          if (canGoNext) {
+            onNextAction();
+          }
+        }}
+      >
+        {MailPoet.I18n.t(isLastStep ? 'import' : 'nextStep')}
       </Button>
-    )}
-    <Button
-      type="button"
-      automationId="import-next-step"
-      isDisabled={!canGoNext}
-      onClick={() => {
-        if (canGoNext) {
-          onNextAction();
-        }
-      }}
-    >
-      {MailPoet.I18n.t(isLastStep ? 'import' : 'nextStep')}
-    </Button>
-  </div>
-);
+    </div>
+  );
+}
 
 PreviousNextStepButtons.propTypes = {
   canGoNext: PropTypes.bool,

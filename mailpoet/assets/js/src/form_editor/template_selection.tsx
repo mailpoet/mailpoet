@@ -5,14 +5,16 @@ import Notices from 'notices/notices.jsx';
 import Selection from './templates/selection';
 import initStore from './templates/store/store';
 
-const App = () => (
-  <GlobalContext.Provider value={useGlobalContextValue(window)}>
-    <>
-      <Notices />
-      <Selection />
-    </>
-  </GlobalContext.Provider>
-);
+function App() {
+  return (
+    <GlobalContext.Provider value={useGlobalContextValue(window)}>
+      <>
+        <Notices />
+        <Selection />
+      </>
+    </GlobalContext.Provider>
+  );
+}
 
 const appElement = document.querySelector('#mailpoet_form_edit_templates');
 if (appElement) {

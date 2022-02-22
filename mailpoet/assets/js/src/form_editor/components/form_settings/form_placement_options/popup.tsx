@@ -5,7 +5,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import FormPlacementOption from './form_placement_option';
 import Icon from './icons/popup_icon';
 
-const Popup: React.FunctionComponent = () => {
+function Popup() : JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -21,6 +21,6 @@ const Popup: React.FunctionComponent = () => {
       canBeActive
     />
   );
-};
+}
 
 export default Popup;

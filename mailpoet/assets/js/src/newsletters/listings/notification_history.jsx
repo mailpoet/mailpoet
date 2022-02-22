@@ -160,40 +160,42 @@ const renderItem = (newsletter, actions, meta) => {
   );
 };
 
-const NewsletterListNotificationHistory = (props) => (
-  <>
-    <Link
-      className="mailpoet-button button button-secondary button-small"
-      to="/notification"
-    >
-      {MailPoet.I18n.t('backToPostNotifications')}
-    </Link>
+function NewsletterListNotificationHistory(props) {
+  return (
+    <>
+      <Link
+        className="mailpoet-button button button-secondary button-small"
+        to="/notification"
+      >
+        {MailPoet.I18n.t('backToPostNotifications')}
+      </Link>
 
-    <Listing
-      limit={window.mailpoet_listing_per_page}
-      location={props.location}
-      params={{
-        ...props.match.params,
-        parentId: props.parentId,
-      }}
-      endpoint="newsletters"
-      type="notification_history"
-      base_url="notification/history/:parentId"
-      onRenderItem={renderItem}
-      columns={columns}
-      messages={messages}
-      item_actions={newsletterActions}
-      bulk_actions={bulkActions}
-      auto_refresh
-      sort_by="sent_at"
-      sort_order="desc"
-      afterGetItems={(state) => {
-        checkMailerStatus(state);
-        checkCronStatus(state);
-      }}
-    />
-  </>
-);
+      <Listing
+        limit={window.mailpoet_listing_per_page}
+        location={props.location}
+        params={{
+          ...props.match.params,
+          parentId: props.parentId,
+        }}
+        endpoint="newsletters"
+        type="notification_history"
+        base_url="notification/history/:parentId"
+        onRenderItem={renderItem}
+        columns={columns}
+        messages={messages}
+        item_actions={newsletterActions}
+        bulk_actions={bulkActions}
+        auto_refresh
+        sort_by="sent_at"
+        sort_order="desc"
+        afterGetItems={(state) => {
+          checkMailerStatus(state);
+          checkCronStatus(state);
+        }}
+      />
+    </>
+  );
+}
 
 NewsletterListNotificationHistory.propTypes = {
   parentId: PropTypes.string.isRequired,

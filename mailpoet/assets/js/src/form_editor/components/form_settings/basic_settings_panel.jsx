@@ -16,7 +16,7 @@ import { isEqual } from 'lodash';
 import Selection from './selection.jsx';
 import FormTitle from '../form_title';
 
-const BasicSettingsPanel = ({ onToggle, isOpened }) => {
+function BasicSettingsPanel({ onToggle, isOpened }) {
   const settings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -145,7 +145,7 @@ const BasicSettingsPanel = ({ onToggle, isOpened }) => {
       </PanelBody>
     </Panel>
   );
-};
+}
 
 BasicSettingsPanel.propTypes = {
   onToggle: PropTypes.func.isRequired,

@@ -10,9 +10,9 @@ type Props = {
   newsletter: NewsletterType;
 }
 
-export const NewsletterStatsInfo = ({
+export function NewsletterStatsInfo({
   newsletter,
-}: Props) => {
+}: Props) {
   const newsletterDate = newsletter.queue.scheduled_at || newsletter.queue.created_at;
   return (
     <Grid.ThreeColumns className="mailpoet-stats-info">
@@ -69,4 +69,4 @@ export const NewsletterStatsInfo = ({
       </div>
     </Grid.ThreeColumns>
   );
-};
+}

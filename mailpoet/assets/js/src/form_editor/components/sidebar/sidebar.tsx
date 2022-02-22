@@ -3,7 +3,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import DefaultSidebar from './default_sidebar';
 import PlacementSettingsSidebar from './placement_settings_sidebar';
 
-export default (): JSX.Element => {
+export default function Sidebar(): JSX.Element {
   const { toggleSidebar, changeActiveSidebar } = useDispatch('mailpoet-form-editor');
 
   const activeSidebar = useSelect(
@@ -33,4 +33,4 @@ export default (): JSX.Element => {
       {activeSidebar === 'placement_settings' && <PlacementSettingsSidebar onClose={closePlacementSettings} />}
     </div>
   );
-};
+}

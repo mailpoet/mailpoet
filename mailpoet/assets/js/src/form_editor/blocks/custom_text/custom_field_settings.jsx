@@ -9,7 +9,7 @@ import MailPoet from 'mailpoet';
 
 import CustomFieldDelete from '../custom_field_delete.jsx';
 
-const CustomFieldSettings = ({
+function CustomFieldSettings({
   label,
   mandatory,
   validate,
@@ -19,7 +19,7 @@ const CustomFieldSettings = ({
   onCustomFieldDelete,
   onChange,
   fieldType,
-}) => {
+}) {
   const [localLabel, setLocalLabel] = useState(label);
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localValidate, setLocalValidate] = useState(validate);
@@ -97,7 +97,7 @@ const CustomFieldSettings = ({
       ) : null }
     </>
   );
-};
+}
 
 CustomFieldSettings.propTypes = {
   label: PropTypes.string,

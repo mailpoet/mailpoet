@@ -5,11 +5,13 @@ import { GlobalContext, useGlobalContextValue } from 'context';
 import { initStore } from './store';
 import Settings from './settings';
 
-const Entry = () => (
-  <GlobalContext.Provider value={useGlobalContextValue(window)}>
-    <Settings />
-  </GlobalContext.Provider>
-);
+function Entry() {
+  return (
+    <GlobalContext.Provider value={useGlobalContextValue(window)}>
+      <Settings />
+    </GlobalContext.Provider>
+  );
+}
 
 const container = document.getElementById('settings_container');
 if (container) {

@@ -35,14 +35,14 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
     || formItems.operator === SubscribedDateOperator.ON
     || formItems.operator === SubscribedDateOperator.NOT_ON
   ) {
-    const re = new RegExp(/^\d+-\d+-\d+$/);
+    const re = /^\d+-\d+-\d+$/;
     return re.test(formItems.value);
   }
   if (
     formItems.operator === SubscribedDateOperator.IN_THE_LAST
     || formItems.operator === SubscribedDateOperator.NOT_IN_THE_LAST
   ) {
-    const re = new RegExp(/^\d+$/);
+    const re = /^\d+$/;
     return re.test(formItems.value) && (Number(formItems.value) > 0);
   }
   return false;
@@ -68,7 +68,7 @@ type Props = {
   filterIndex: number;
 }
 
-export const SubscriberFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function SubscriberFields({ filterIndex } : Props):JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -86,4 +86,4 @@ export const SubscriberFields: React.FunctionComponent<Props> = ({ filterIndex }
   return (
     <Component filterIndex={filterIndex} />
   );
-};
+}

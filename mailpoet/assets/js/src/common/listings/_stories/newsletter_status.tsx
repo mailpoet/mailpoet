@@ -13,7 +13,7 @@ export default {
   component: NewsletterStatus,
 };
 
-export const NewsletterStatuses = () => {
+export function NewsletterStatuses() {
   const now = new Date();
   const inOneHour = addHours(now, 1);
   const inSixHours = addHours(now, 6);
@@ -56,4 +56,4 @@ export const NewsletterStatuses = () => {
       <NewsletterStatus status="sent" />
     </>
   );
-};
+}

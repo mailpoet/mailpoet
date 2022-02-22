@@ -30,7 +30,7 @@ type Props = {
   filterIndex: number;
 }
 
-export const RadioSelect: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function RadioSelect({ filterIndex }:Props) : JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -53,20 +53,18 @@ export const RadioSelect: React.FunctionComponent<Props> = ({ filterIndex }) => 
   }));
 
   return (
-    <>
-      <ReactSelect
-        dimension="small"
-        isFullWidth
-        placeholder={MailPoet.I18n.t('selectValue')}
-        options={options}
-        value={
+    <ReactSelect
+      dimension="small"
+      isFullWidth
+      placeholder={MailPoet.I18n.t('selectValue')}
+      options={options}
+      value={
           segment.value ? { value: segment.value, label: segment.value } : null
         }
-        onChange={(option: SelectOption): void => {
-          updateSegmentFilter({ value: option.value, operator: 'equals' }, filterIndex);
-        }}
-        automationId="segment-wordpress-role"
-      />
-    </>
+      onChange={(option: SelectOption): void => {
+        updateSegmentFilter({ value: option.value, operator: 'equals' }, filterIndex);
+      }}
+      automationId="segment-wordpress-role"
+    />
   );
-};
+}

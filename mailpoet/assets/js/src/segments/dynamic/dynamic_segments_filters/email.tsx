@@ -65,7 +65,7 @@ type Props = {
   filterIndex: number;
 }
 
-export const EmailFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function EmailFields({ filterIndex }:Props):JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -78,4 +78,4 @@ export const EmailFields: React.FunctionComponent<Props> = ({ filterIndex }) => 
   return (
     <Component filterIndex={filterIndex} />
   );
-};
+}

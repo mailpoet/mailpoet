@@ -22,7 +22,7 @@ class TimeSelect extends React.Component { // eslint-disable-line react/prefer-s
         disabled={this.props.disabled}
         onChange={this.props.onChange}
         isMinWidth
-        {...this.props.validation} // eslint-disable-line react/jsx-props-no-spreading
+        {...this.props.validation}
       >
         {options}
       </Select>

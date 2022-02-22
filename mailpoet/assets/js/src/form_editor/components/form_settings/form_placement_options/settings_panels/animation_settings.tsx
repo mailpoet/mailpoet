@@ -8,7 +8,7 @@ type Props = {
   settingsPlacementKey: string;
 }
 
-const AnimationSettings: React.FunctionComponent<Props> = ({ settingsPlacementKey }: Props) => {
+function AnimationSettings({ settingsPlacementKey }: Props) : JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -33,6 +33,6 @@ const AnimationSettings: React.FunctionComponent<Props> = ({ settingsPlacementKe
       onChange={compose([changeFormSettings, assocPath(`formPlacement.${settingsPlacementKey}.animation`, __, formSettings)])}
     />
   );
-};
+}
 
 export default AnimationSettings;

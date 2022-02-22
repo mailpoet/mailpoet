@@ -7,12 +7,12 @@ import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
 const kbLink = 'https://kb.mailpoet.com/article/126-importing-subscribers-with-csv-files';
 
-const MethodUpload = ({
+function MethodUpload({
   onValueChange,
   canFinish,
   onFinish,
   onPrevious,
-}) => {
+}) {
   const onChange = (e) => {
     const ext = e.target.value.match(/[^.]+$/);
     MailPoet.Notice.hide();
@@ -65,7 +65,7 @@ const MethodUpload = ({
       />
     </>
   );
-};
+}
 
 MethodUpload.propTypes = {
   canFinish: PropTypes.bool.isRequired,

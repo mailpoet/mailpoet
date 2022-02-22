@@ -3,7 +3,7 @@ import React from 'react';
 import MailPoet from 'mailpoet';
 import parseDate from 'date-fns/parse';
 
-const TasksListDataRow = (props) => {
+function TasksListDataRow(props) {
   let scheduled = props.task.scheduled_at;
   if (scheduled) {
     scheduled = parseDate(scheduled, 'yyyy-MM-dd HH:mm:ss', new Date());
@@ -45,7 +45,7 @@ const TasksListDataRow = (props) => {
       </td>
     </tr>
   );
-};
+}
 
 TasksListDataRow.propTypes = {
   show_scheduled_at: PropTypes.bool,

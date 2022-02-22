@@ -13,10 +13,10 @@ import PropTypes from 'prop-types';
 
 import ColorSettings from 'form_editor/components/color_settings';
 
-const InputStylesSettings = ({
+function InputStylesSettings({
   styles,
   onChange,
-}) => {
+}) {
   const localStylesRef = useRef(styles);
   const localStyles = localStylesRef.current;
 
@@ -111,7 +111,7 @@ const InputStylesSettings = ({
       </PanelBody>
     </Panel>
   );
-};
+}
 
 export const inputStylesPropTypes = PropTypes.shape({
   fullWidth: PropTypes.bool.isRequired,

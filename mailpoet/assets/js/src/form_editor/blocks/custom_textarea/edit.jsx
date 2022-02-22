@@ -16,12 +16,12 @@ import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
 import convertAlignmentToMargin from '../convert_alignment_to_margin';
 
-const CustomTextAreaEdit = ({
+function CustomTextAreaEdit({
   name,
   attributes,
   setAttributes,
   clientId,
-}) => {
+}) {
   const id = `${name.replace(/[^a-zA-Z]/g, '')}_${Math.random().toString(36).substring(2, 15)}`;
   const settings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
@@ -201,7 +201,7 @@ const CustomTextAreaEdit = ({
       )}
     </ParagraphEdit>
   );
-};
+}
 
 CustomTextAreaEdit.propTypes = {
   attributes: PropTypes.shape({

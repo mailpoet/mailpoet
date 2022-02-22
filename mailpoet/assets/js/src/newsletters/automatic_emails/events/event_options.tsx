@@ -28,12 +28,12 @@ function getEventOptionsValues(eventOptions: EventOptions) {
   })) : values;
 }
 
-export const EventOptions = ({
+export function EventOptions({
   eventOptions,
   eventSlug,
   selected,
   onValueChange,
-}: Props) => {
+}: Props) {
   function handleEventOptionChange(e) {
     if (onValueChange) {
       onValueChange({ eventOptionValue: e.target.value });
@@ -96,6 +96,6 @@ export const EventOptions = ({
       <div className="event-option-selection">{displayEventOptions()}</div>
     </div>
   );
-};
+}
 
 export default EventOptions;

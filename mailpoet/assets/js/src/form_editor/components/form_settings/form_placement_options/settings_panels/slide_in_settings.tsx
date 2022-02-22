@@ -9,7 +9,7 @@ import PlacementSettings from './placement_settings';
 
 const delayValues = [0, 2, 5, 10, 15, 30, 45, 60, 120, 180, 240];
 
-const SlideInSettings: React.FunctionComponent = () => {
+function SlideInSettings():JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -66,6 +66,6 @@ const SlideInSettings: React.FunctionComponent = () => {
       )}
     </>
   );
-};
+}
 
 export default SlideInSettings;

@@ -15,7 +15,7 @@ import FormFieldDate from './date.jsx';
 import formatLabel from '../label_formatter.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 
-const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
+function CustomDateEdit({ attributes, setAttributes, clientId }) {
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
@@ -98,7 +98,7 @@ const CustomDateEdit = ({ attributes, setAttributes, clientId }) => {
       </div>
     </ParagraphEdit>
   );
-};
+}
 
 CustomDateEdit.propTypes = {
   attributes: PropTypes.shape({

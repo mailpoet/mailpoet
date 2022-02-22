@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import {
@@ -18,7 +17,7 @@ const container = document.getElementById('import_container');
 
 const subscribersLimitForValidation = 100;
 
-const ImportSubscribers = () => {
+function ImportSubscribers() {
   const [stepMethodSelectionData, setStepMethodSelectionData] = useState(undefined);
   const [stepDataManipulationData, setStepDataManipulationData] = useState({});
   const contextValue = useGlobalContextValue(window);
@@ -88,7 +87,7 @@ const ImportSubscribers = () => {
       </HashRouter>
     </GlobalContext.Provider>
   );
-};
+}
 
 if (container) {
   ReactDOM.render(<ImportSubscribers />, container);

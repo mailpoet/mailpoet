@@ -6,12 +6,15 @@ import normalizeSettings from './normalize_settings';
 
 export default function createReducer(defaultValue: State) {
   let keyActivation: KeyActivationState;
-  return (state: State = defaultValue, action: Action): State => {
+  return (
+    state: State = defaultValue, // eslint-disable-line default-param-last
+    action: Action
+  ): State => {
     switch (action.type) {
       case 'SET_SETTING':
         return setWith(clone(state), ['data', ...action.path], action.value, clone);
       case 'SET_SETTINGS':
-        return { ...state, data: normalizeSettings(action.value) };
+        return { ...state, data: normalizeSettings(action.value as Record<string, unknown>) };
       case 'SET_ERROR_FLAG':
         return { ...state, flags: { ...state.flags, error: !!action.value } };
       case 'SAVE_STARTED':

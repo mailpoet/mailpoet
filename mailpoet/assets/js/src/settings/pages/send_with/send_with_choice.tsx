@@ -68,10 +68,13 @@ export default function SendWithChoice() {
                 {t('or')}
                 &nbsp;
               </span>
-              {ReactStringReplace(t('enterYourKey'), /\[link\](.*?)\[\/link\]/g,
+              {ReactStringReplace(
+                t('enterYourKey'),
+                /\[link\](.*?)\[\/link\]/g,
                 (match, i) => (
                   <Link key={i} to="/premium" className="mailpoet-link">{match}</Link>
-                ))}
+                )
+              )}
             </div>
           )}
           {!isMssKeyValid && isPremiumKeyValid && (

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelect } from '@wordpress/data';
 
-const FormStylingBackground = ({ children }) => {
+function FormStylingBackground({ children }) {
   const {
     fontColor,
     backgroundColor,
@@ -118,7 +118,7 @@ const FormStylingBackground = ({ children }) => {
       {children}
     </div>
   );
-};
+}
 
 FormStylingBackground.propTypes = {
   children: PropTypes.node.isRequired,

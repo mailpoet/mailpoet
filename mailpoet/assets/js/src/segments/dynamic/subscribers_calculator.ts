@@ -21,7 +21,7 @@ let previousFormItem: Filters | undefined;
 
 let previousResult: Result | undefined;
 
-function loadCount(formItem: Segment): Promise<Result | void> {
+function loadCount(formItem: Segment): PromiseLike<Result> {
   // We don't want to use properties like name and description
   const item = {
     filters: formItem.filters,

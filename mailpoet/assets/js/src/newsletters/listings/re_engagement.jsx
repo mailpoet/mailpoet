@@ -251,7 +251,7 @@ class NewsletterListReEngagement extends React.Component {
         </div>
       </span>
     );
-  }
+  };
 
   renderItem = (newsletter, actions) => {
     const rowClasses = classNames(

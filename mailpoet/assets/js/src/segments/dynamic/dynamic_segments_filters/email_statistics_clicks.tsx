@@ -20,7 +20,7 @@ type Props = {
   filterIndex: number;
 }
 
-export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function EmailClickStatisticsFields({ filterIndex }:Props):JSX.Element {
   const segment: EmailFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -49,7 +49,7 @@ export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ fil
   function loadLinks(newsletterId: string): void {
     setErrors([]);
     setLoadingLinks(true);
-    MailPoet.Ajax.post({
+    void MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
       endpoint: 'newsletter_links',
       action: 'get',
@@ -62,10 +62,10 @@ export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ fil
           label: link.url,
         }));
         setLoadingLinks(false);
-        setLinks(loadedLinks);
+        setLinks(loadedLinks as SelectOption[]);
       })
-      .fail((response) => {
-        setErrors(response.errors);
+      .fail((response:ErrorResponse) => {
+        setErrors(response.errors as { message:string }[]);
       });
   }
 
@@ -156,4 +156,4 @@ export const EmailClickStatisticsFields: React.FunctionComponent<Props> = ({ fil
       </Grid.CenteredRow>
     </>
   );
-};
+}

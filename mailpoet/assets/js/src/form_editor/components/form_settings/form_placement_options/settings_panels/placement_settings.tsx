@@ -16,36 +16,30 @@ type Props = {
   settingsPlacementKey: string;
 }
 
-const PlacementSettings: React.FunctionComponent<Props> = ({ settingsPlacementKey }: Props) => {
+function PlacementSettings({ settingsPlacementKey }: Props) : JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
   );
-  const tags = useSelect(
-    (select) => sortBy(
-      'name',
-      select('mailpoet-form-editor').getAllWPTags()
-        .concat(select('mailpoet-form-editor').getAllWooCommerceTags())
-    ), []
-  );
-  const categories = useSelect(
-    (select) => sortBy(
-      'name',
-      select('mailpoet-form-editor').getAllWPCategories()
-        .concat(select('mailpoet-form-editor').getAllWooCommerceCategories())
-    ), []
-  );
+  const tags = useSelect((select) => sortBy(
+    'name',
+    select('mailpoet-form-editor').getAllWPTags()
+      .concat(select('mailpoet-form-editor').getAllWooCommerceTags())
+  ), []);
+  const categories = useSelect((select) => sortBy(
+    'name',
+    select('mailpoet-form-editor').getAllWPCategories()
+      .concat(select('mailpoet-form-editor').getAllWooCommerceCategories())
+  ), []);
   const pages = useSelect(
     (select) => select('mailpoet-form-editor').getAllWPPages(),
     []
   );
-  const posts = useSelect(
-    (select) => sortBy(
-      'name',
-      select('mailpoet-form-editor').getAllWPPosts()
-        .concat(select('mailpoet-form-editor').getAllWooCommerceProducts())
-    ), []
-  );
+  const posts = useSelect((select) => sortBy(
+    'name',
+    select('mailpoet-form-editor').getAllWPPosts()
+      .concat(select('mailpoet-form-editor').getAllWooCommerceProducts())
+  ), []);
   const isPreviewShown = useSelect(
     (select) => select('mailpoet-form-editor').getIsPreviewShown(),
     []
@@ -262,6 +256,6 @@ const PlacementSettings: React.FunctionComponent<Props> = ({ settingsPlacementKe
       </div>
     </>
   );
-};
+}
 
 export default PlacementSettings;

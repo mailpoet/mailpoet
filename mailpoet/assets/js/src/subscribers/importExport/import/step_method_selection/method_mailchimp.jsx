@@ -7,7 +7,7 @@ import Selection from 'form/fields/selection.jsx';
 import ReactStringReplace from 'react-string-replace';
 import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
-const MethodMailChimp = ({ onFinish, onPrevious }) => {
+function MethodMailChimp({ onFinish, onPrevious }) {
   const [key, setKey] = useState('');
   const [mailChimpLoadedLists, setMailChimpLoadedLists] = useState(undefined);
   const [selectedLists, setSelectedLists] = useState([]);
@@ -143,7 +143,7 @@ const MethodMailChimp = ({ onFinish, onPrevious }) => {
       />
     </>
   );
-};
+}
 
 MethodMailChimp.propTypes = {
   onFinish: PropTypes.func,

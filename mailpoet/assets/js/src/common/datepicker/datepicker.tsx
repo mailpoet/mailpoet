@@ -10,15 +10,16 @@ type Props = ReactDatePickerProps & {
   iconEnd?: JSX.Element;
 };
 
-const Datepicker = ({
+function Datepicker({
   dimension,
   isFullWidth,
   iconStart,
   iconEnd,
   ...props
-}: Props) => (
-  <div
-    className={
+}: Props) {
+  return (
+    <div
+      className={
       classnames(
         'mailpoet-datepicker mailpoet-form-input',
         {
@@ -28,15 +29,16 @@ const Datepicker = ({
         }
       )
     }
-  >
-    {iconStart}
-    <ReactDatePicker
-      useWeekdaysShort
-      calendarStartDay={props.calendarStartDay ?? MailPoet.wpWeekStartsOn}
-      {...props} // eslint-disable-line react/jsx-props-no-spreading
-    />
-    {iconEnd}
-  </div>
-);
+    >
+      {iconStart}
+      <ReactDatePicker
+        useWeekdaysShort
+        calendarStartDay={props.calendarStartDay ?? MailPoet.wpWeekStartsOn}
+        {...props}
+      />
+      {iconEnd}
+    </div>
+  );
+}
 
 export default Datepicker;

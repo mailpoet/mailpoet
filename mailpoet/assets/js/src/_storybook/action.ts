@@ -14,6 +14,9 @@ import { action as brokenAction } from '@storybook/addon-actions'; // eslint-dis
 export const action: typeof brokenAction = (actionName) => {
   const beacon = brokenAction(actionName);
   return (eventObj, ...args) => {
-    beacon({ ...eventObj, view: undefined }, ...args);
+    beacon(
+      { ...eventObj, view: undefined },
+      ...args // eslint-disable-line @typescript-eslint/no-unsafe-argument
+    );
   };
 };

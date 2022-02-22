@@ -70,7 +70,10 @@ export const mapGradientSlug = (definitions: GradientDefinition[], value) => {
   return result ? result.slug : undefined;
 };
 
-export const mapFontSizeSlug = (fontSizeDefinitions: FontSizeDefinition[], fontSizeValue) => {
+export const mapFontSizeSlug = (
+  fontSizeDefinitions: FontSizeDefinition[],
+  fontSizeValue:string
+) => {
   let value = 0;
   if (fontSizeValue) {
     value = asNum(fontSizeValue);

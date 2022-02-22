@@ -286,17 +286,21 @@ export const MailPoetModal = {
   loadUrl: function () {
     if (this.options.method === 'get') {
       // make ajax request
-      jQuery.getJSON(this.options.url,
+      jQuery.getJSON(
+        this.options.url,
         function (data) {
           this.options.data = jQuery.extend({}, this.options.data, data);
           // load template using fetched data
           this.loadTemplate();
           // show modal window
           this.showModal();
-        }.bind(this));
+        }.bind(this)
+      );
     } else if (this.options.method === 'post') {
       // make ajax request
-      jQuery.post(this.options.url, JSON.stringify(this.options.params),
+      jQuery.post(
+        this.options.url,
+        JSON.stringify(this.options.params),
         function (data) {
           this.options.data = jQuery.extend({}, this.options.data, data);
           // load template using fetched data
@@ -304,7 +308,8 @@ export const MailPoetModal = {
           // show modal window
           this.showModal();
         }.bind(this),
-        'json');
+        'json'
+      );
     }
 
     return this;

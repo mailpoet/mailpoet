@@ -14,11 +14,11 @@ type Props = {
   onBeamerClick?: () => void;
 };
 
-export const TopBar = ({
+export function TopBar({
   children,
   hasNews,
   onBeamerClick,
-}: Props) => {
+}: Props) {
   const buttonClasses = classNames(
     'mailpoet-top-bar-beamer',
     hasNews ? 'mailpoet-top-bar-beamer-dot' : ''
@@ -76,6 +76,6 @@ export const TopBar = ({
       <ScreenOptionsFix />
     </div>
   );
-};
+}
 
 export const TopBarWithBeamer = withFeatureAnnouncement(TopBar);

@@ -29,13 +29,13 @@ export default {
   component: Modal,
 };
 
-const ModalWrapper = ({
+function ModalWrapper({
   buttonCaption,
   title = 'Modal title',
   isDismissible = true,
   content = shortContent,
   fullScreen = false,
-}) => {
+}) {
   const [showModal, setShowModal] = useState(false);
   return (
     <p>
@@ -58,30 +58,32 @@ const ModalWrapper = ({
       ) }
     </p>
   );
-};
+}
 
-export const Modals = () => (
-  <>
-    <Heading level={3}>Modal with short text</Heading>
-    <ModalWrapper buttonCaption="Show modal with title, with close button" />
-    <ModalWrapper buttonCaption="Show modal with title, without close button" isDismissible={false} />
-    <ModalWrapper buttonCaption="Show modal without title, with close button" title={null} />
-    <ModalWrapper buttonCaption="Show modal without title, without close button" title={null} isDismissible={false} />
+export function Modals() {
+  return (
+    <>
+      <Heading level={3}>Modal with short text</Heading>
+      <ModalWrapper buttonCaption="Show modal with title, with close button" />
+      <ModalWrapper buttonCaption="Show modal with title, without close button" isDismissible={false} />
+      <ModalWrapper buttonCaption="Show modal without title, with close button" title={null} />
+      <ModalWrapper buttonCaption="Show modal without title, without close button" title={null} isDismissible={false} />
 
-    <div className="mailpoet-gap" />
+      <div className="mailpoet-gap" />
 
-    <Heading level={3}>Modal with long text</Heading>
-    <ModalWrapper buttonCaption="Show modal with title, with close button" content={longContent} />
-    <ModalWrapper buttonCaption="Show modal with title, without close button" isDismissible={false} content={longContent} />
-    <ModalWrapper buttonCaption="Show modal without title, with close button" title={null} content={longContent} />
-    <ModalWrapper buttonCaption="Show modal without title, without close button" title={null} isDismissible={false} content={longContent} />
+      <Heading level={3}>Modal with long text</Heading>
+      <ModalWrapper buttonCaption="Show modal with title, with close button" content={longContent} />
+      <ModalWrapper buttonCaption="Show modal with title, without close button" isDismissible={false} content={longContent} />
+      <ModalWrapper buttonCaption="Show modal without title, with close button" title={null} content={longContent} />
+      <ModalWrapper buttonCaption="Show modal without title, without close button" title={null} isDismissible={false} content={longContent} />
 
-    <div className="mailpoet-gap" />
+      <div className="mailpoet-gap" />
 
-    <Heading level={3}>Full-screen modal</Heading>
-    <ModalWrapper buttonCaption="Show modal with title, with close button" content={longContent} fullScreen />
-    <ModalWrapper buttonCaption="Show modal with title, without close button" isDismissible={false} content={longContent} fullScreen />
-    <ModalWrapper buttonCaption="Show modal without title, with close button" title={null} content={longContent} fullScreen />
-    <ModalWrapper buttonCaption="Show modal without title, without close button" title={null} isDismissible={false} content={longContent} fullScreen />
-  </>
-);
+      <Heading level={3}>Full-screen modal</Heading>
+      <ModalWrapper buttonCaption="Show modal with title, with close button" content={longContent} fullScreen />
+      <ModalWrapper buttonCaption="Show modal with title, without close button" isDismissible={false} content={longContent} fullScreen />
+      <ModalWrapper buttonCaption="Show modal without title, with close button" title={null} content={longContent} fullScreen />
+      <ModalWrapper buttonCaption="Show modal without title, without close button" title={null} isDismissible={false} content={longContent} fullScreen />
+    </>
+  );
+}

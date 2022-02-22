@@ -9,7 +9,7 @@ export default {
   component: Steps,
 };
 
-export const StepsWithoutTitles = () => {
+export function StepsWithoutTitles() {
   const [step, setStep] = useState(1);
 
   const nextStep = () => setStep(step + 1);
@@ -45,9 +45,9 @@ export const StepsWithoutTitles = () => {
       </StepsContent>
     </>
   );
-};
+}
 
-export const StepsWithTitles = () => {
+export function StepsWithTitles() {
   const [step, setStep] = useState(1);
 
   const nextStep = () => setStep(step + 1);
@@ -83,4 +83,4 @@ export const StepsWithTitles = () => {
       </StepsContent>
     </>
   );
-};
+}

@@ -24,12 +24,12 @@ type Props = {
   hideLabelFromVision?: boolean;
 }
 
-const FontFamilySettings: React.FunctionComponent<Props> = ({
+function FontFamilySettings({
   onChange,
   value,
   name,
   hideLabelFromVision = false,
-}: Props) => {
+}: Props) : JSX.Element {
   const customFonts = useSelect(
     (select) => select('mailpoet-form-editor').getAllCustomFonts(),
     []
@@ -92,7 +92,7 @@ const FontFamilySettings: React.FunctionComponent<Props> = ({
       options={options}
       onChange={(selected): void => {
         if (selected.selectedItem.selectable) {
-          onChange(selected.selectedItem.value);
+          onChange(selected.selectedItem.value as string);
         }
       }}
       value={selectedValue}
@@ -101,11 +101,11 @@ const FontFamilySettings: React.FunctionComponent<Props> = ({
       hideLabelFromVision={hideLabelFromVision}
     />
   );
-};
+}
 
 export default FontFamilySettings;
 
-export const CustomFontsStyleSheetLink: React.FunctionComponent = () => {
+export function CustomFontsStyleSheetLink(): JSX.Element {
   const customFonts = useSelect(
     (select) => select('mailpoet-form-editor').getAllCustomFonts(),
     []
@@ -123,4 +123,4 @@ export const CustomFontsStyleSheetLink: React.FunctionComponent = () => {
       href={`https://fonts.googleapis.com/css?family=${customFontsUrl}`}
     />
   );
-};
+}

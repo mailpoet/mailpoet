@@ -11,27 +11,29 @@ type CloseButtonProps = {
   iconUrl: string;
 }
 
-const CloseButton: React.FunctionComponent<CloseButtonProps> = ({
+function CloseButton({
   label,
   active,
   onClick,
   iconUrl,
-}: CloseButtonProps) => (
-  <SelectionItem
-    label={label}
-    onClick={onClick}
-    active={active}
-    canBeActive
-    displaySettingsIcon={false}
-    className="close-button-selection-item"
-  >
-    <img
-      src={iconUrl}
-      alt={label.replace('_', ' ')}
-      className="close-button-selection-item-icon"
-    />
-  </SelectionItem>
-);
+}: CloseButtonProps) : JSX.Element {
+  return (
+    <SelectionItem
+      label={label}
+      onClick={onClick}
+      active={active}
+      canBeActive
+      displaySettingsIcon={false}
+      className="close-button-selection-item"
+    >
+      <img
+        src={iconUrl}
+        alt={label.replace('_', ' ')}
+        className="close-button-selection-item-icon"
+      />
+    </SelectionItem>
+  );
+}
 
 type Props = {
   name: string;
@@ -39,11 +41,11 @@ type Props = {
   onChange: (value: string|undefined) => void;
 }
 
-const CloseButtonsSettings: React.FunctionComponent<Props> = ({
+function CloseButtonsSettings({
   name,
   value,
   onChange,
-}: Props) => {
+}: Props) : JSX.Element {
   const closeIconsUrl = useSelect(
     (sel) => sel('mailpoet-form-editor').getCloseIconsUrl(),
     []
@@ -94,7 +96,7 @@ const CloseButtonsSettings: React.FunctionComponent<Props> = ({
       </div>
     </div>
   );
-};
+}
 
 export {
   CloseButtonsSettings,

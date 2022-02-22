@@ -15,7 +15,7 @@ import CustomFieldSettings from '../custom_radio/custom_field_settings.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 import convertAlignmentToMargin from '../convert_alignment_to_margin';
 
-const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
+function CustomSelectEdit({ attributes, setAttributes, clientId }) {
   const settings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -133,7 +133,7 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
       </div>
     </ParagraphEdit>
   );
-};
+}
 
 CustomSelectEdit.propTypes = {
   attributes: PropTypes.shape({

@@ -16,13 +16,13 @@ export type PropTypes = {
   };
 }
 
-export default ({
+export default function Summary({
   totalSent,
   open,
   machineOpen,
   click,
   subscriber,
-}: PropTypes): JSX.Element => {
+}: PropTypes): JSX.Element {
   let openPercent = 0;
   let machineOpenPercent = 0;
   let clickPercent = 0;
@@ -139,4 +139,4 @@ export default ({
       </div>
     </div>
   );
-};
+}

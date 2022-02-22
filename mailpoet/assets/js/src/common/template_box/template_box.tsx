@@ -12,30 +12,32 @@ type Props = {
   className?: string;
 }
 
-const TemplateBox = ({
+function TemplateBox({
   label,
   onSelect,
   children,
   onDelete,
   automationId,
   className,
-}: Props) => (
-  <div className={`mailpoet-template ${className}`} data-automation-id="select_template_box">
-    {children}
-    <div className="mailpoet-template-info">
-      <Heading level={5} title={label}>{label}</Heading>
-      <div>
-        {onDelete && (
+}: Props) {
+  return (
+    <div className={`mailpoet-template ${className}`} data-automation-id="select_template_box">
+      {children}
+      <div className="mailpoet-template-info">
+        <Heading level={5} title={label}>{label}</Heading>
+        <div>
+          {onDelete && (
           <Button variant="destructive" onClick={onDelete}>
             {MailPoet.I18n.t('delete')}
           </Button>
-        )}
-        <Button automationId={automationId} onClick={onSelect}>
-          {MailPoet.I18n.t('select')}
-        </Button>
+          )}
+          <Button automationId={automationId} onClick={onSelect}>
+            {MailPoet.I18n.t('select')}
+          </Button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+}
 
 export default TemplateBox;

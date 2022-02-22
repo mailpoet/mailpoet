@@ -342,7 +342,7 @@ const getSegmentFromId = (segmentId) => {
   return result;
 };
 
-const SubscriberList = ({ match }) => {
+function SubscriberList({ match }) {
   const location = useLocation();
 
   const renderItem = (subscriber, actions) => {
@@ -480,7 +480,7 @@ const SubscriberList = ({ match }) => {
       />
     </div>
   );
-};
+}
 
 SubscriberList.propTypes = {
   match: PropTypes.shape({

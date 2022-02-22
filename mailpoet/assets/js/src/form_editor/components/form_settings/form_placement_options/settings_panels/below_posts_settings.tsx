@@ -6,7 +6,7 @@ import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 import PlacementSettings from './placement_settings';
 
-const BelowPostsSettings: React.FunctionComponent = () => {
+function BelowPostsSettings() : JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -43,6 +43,6 @@ const BelowPostsSettings: React.FunctionComponent = () => {
       )}
     </>
   );
-};
+}
 
 export default BelowPostsSettings;

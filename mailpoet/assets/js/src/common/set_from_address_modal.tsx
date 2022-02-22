@@ -78,8 +78,8 @@ type Props = {
   setAuthorizedAddress?: (address: string) => void;
 };
 
-const SetFromAddressModal = ({ onRequestClose, setAuthorizedAddress }: Props) => {
-  const [address, setAddress] = useState(null);
+function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
+  const [address, setAddress] = useState<string>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = React.useContext<any>(GlobalContext);
 
@@ -141,7 +141,7 @@ const SetFromAddressModal = ({ onRequestClose, setAuthorizedAddress }: Props) =>
             removeUnauthorizedEmailNotices();
             notices.success(getSuccessMessage(), { timeout: false });
           } catch (e) {
-            const error = e.errors && e.errors[0] ? e.errors[0] : null;
+            const error:error|null = e.errors && e.errors[0] ? e.errors[0] : null;
             if (error.error === 'unauthorized') {
               MailPoet.trackEvent('Unauthorized email used', { 'Unauthorized email source': 'modal' });
             }
@@ -152,7 +152,7 @@ const SetFromAddressModal = ({ onRequestClose, setAuthorizedAddress }: Props) =>
       />
     </Modal>
   );
-};
+}
 
 SetFromAddressModal.defaultProps = {
   setAuthorizedAddress: noop,

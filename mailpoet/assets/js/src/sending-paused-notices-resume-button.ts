@@ -22,13 +22,13 @@ const isValidFromAddress = async (fromAddress: string | null) => {
 };
 
 const resumeMailerSending = () => {
-  MailPoet.Ajax.post({
+  void MailPoet.Ajax.post({
     api_version: MailPoet.apiVersion,
     endpoint: 'mailer',
     action: 'resumeSending',
   }).done(() => {
     MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
-  }).fail((response) => {
+  }).fail((response:ErrorResponse) => {
     if (response.errors.length > 0) {
       MailPoet.Notice.error(
         response.errors.map((error) => error.message),
@@ -54,7 +54,7 @@ const resumeSendingIfAuthorized = (fromAddress: string | null) => isValidFromAdd
 // use jQuery since some of the targeted notices are added to the DOM using the old
 // jQuery-based notice implementation which doesn't trigger pure-JS added listeners
 jQuery(($) => {
-  $(document).on('click', '.notice .mailpoet-js-button-resume-sending', (e) => (
-    resumeSendingIfAuthorized(e.target.value)
-  ));
+  $(document).on('click', '.notice .mailpoet-js-button-resume-sending', (e) : void => {
+    void resumeSendingIfAuthorized(e.target.value as string);
+  });
 });

@@ -12,17 +12,26 @@ type Props = {
   location: Location;
 };
 
-const OpenedEmailsStats: React.FunctionComponent<Props> = ({ params, location }: Props) => (
-  <>
-    <Heading level={4}>
-      {MailPoet.I18n.t('openedEmailsHeading')}
-    </Heading>
-    {!MailPoet.premiumActive || MailPoet.subscribersLimitReached ? (
-      <NoAccessInfo />
-    ) : (
-      Hooks.applyFilters('mailpoet_subscribers_opened_emails_stats', params, location)
-    )}
-  </>
-);
-
-export default OpenedEmailsStats;
+export default function OpenedEmailsStats(
+  { params, location }: Props
+) : JSX.Element {
+  return (
+    <>
+      <Heading level={4}>
+        {MailPoet.I18n.t('openedEmailsHeading')}
+      </Heading>
+      {!MailPoet.premiumActive || MailPoet.subscribersLimitReached ? (
+        <NoAccessInfo
+          limitReached={MailPoet.subscribersLimitReached}
+          limitValue={MailPoet.subscribersLimit}
+          subscribersCountTowardsLimit={MailPoet.subscribersCount}
+          premiumActive={MailPoet.premiumActive}
+          hasValidApiKey={MailPoet.hasValidApiKey}
+          hasPremiumSupport={MailPoet.hasPremiumSupport}
+        />
+      ) : (
+        Hooks.applyFilters('mailpoet_subscribers_opened_emails_stats', params, location)
+      )}
+    </>
+  );
+}

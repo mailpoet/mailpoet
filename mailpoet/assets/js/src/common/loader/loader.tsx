@@ -5,7 +5,7 @@ type Props = {
   size?: number;
 };
 
-const Loader = ({ variant, size }: Props) => {
+function Loader({ variant, size }: Props) {
   let color = '#ff5301';
   if (variant === 'light') color = '#ffe0d0';
   if (variant === 'dark') color = '#1d2327';
@@ -52,6 +52,6 @@ const Loader = ({ variant, size }: Props) => {
       </circle>
     </svg>
   );
-};
+}
 
 export default Loader;

@@ -14,7 +14,7 @@ import ParagraphEdit from '../paragraph_edit.jsx';
 import CustomFieldSettings from './custom_field_settings.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 
-const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
+function CustomCheckboxEdit({ attributes, setAttributes, clientId }) {
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
@@ -122,7 +122,7 @@ const CustomCheckboxEdit = ({ attributes, setAttributes, clientId }) => {
       </div>
     </ParagraphEdit>
   );
-};
+}
 
 CustomCheckboxEdit.propTypes = {
   attributes: PropTypes.shape({

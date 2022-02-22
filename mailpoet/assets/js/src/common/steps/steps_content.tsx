@@ -4,8 +4,8 @@ type Props = {
   children: React.ReactNode;
 };
 
-const StepsContent = ({ children }: Props) => (
-  <div className="mailpoet-steps-content">{children}</div>
-);
+function StepsContent({ children }: Props) {
+  return <div className="mailpoet-steps-content">{children}</div>;
+}
 
 export default StepsContent;

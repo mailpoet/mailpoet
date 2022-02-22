@@ -18,7 +18,7 @@ type Props = {
   filterIndex: number;
 }
 
-export const EmailOpenStatisticsFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function EmailOpenStatisticsFields({ filterIndex }:Props) : JSX.Element {
   const segment: EmailFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -104,4 +104,4 @@ export const EmailOpenStatisticsFields: React.FunctionComponent<Props> = ({ filt
       </Grid.CenteredRow>
     </>
   );
-};
+}

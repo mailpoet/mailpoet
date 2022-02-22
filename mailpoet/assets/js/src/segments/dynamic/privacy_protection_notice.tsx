@@ -4,7 +4,7 @@ import { useSelect } from '@wordpress/data';
 
 import { EmailActionTypes, Segment } from './types';
 
-const PrivacyProtectionNotice: React.FunctionComponent = () => {
+function PrivacyProtectionNotice():JSX.Element {
   const segment: Segment = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
     []
@@ -37,6 +37,6 @@ const PrivacyProtectionNotice: React.FunctionComponent = () => {
       </span>
     </div>
   );
-};
+}
 
 export { PrivacyProtectionNotice };

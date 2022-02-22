@@ -10,7 +10,7 @@ import { Button } from 'common';
 import Notice from 'notices/notice';
 import { TemplateData } from './store/types';
 
-export default (): JSX.Element => {
+export default function Selection(): JSX.Element {
   const categories = [
     {
       name: 'popup',
@@ -98,4 +98,4 @@ export default (): JSX.Element => {
       {loading && <Loading />}
     </>
   );
-};
+}

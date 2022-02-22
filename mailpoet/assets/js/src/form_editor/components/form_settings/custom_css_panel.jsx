@@ -8,7 +8,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import PropTypes from 'prop-types';
 import CodeMirror from './codemirror_wrap.jsx';
 
-const CustomCssPanel = ({ onToggle, isOpened }) => {
+function CustomCssPanel({ onToggle, isOpened }) {
   const styles = useSelect(
     (select) => select('mailpoet-form-editor').getFormStyles(),
     []
@@ -23,7 +23,7 @@ const CustomCssPanel = ({ onToggle, isOpened }) => {
       </PanelBody>
     </Panel>
   );
-};
+}
 
 CustomCssPanel.propTypes = {
   onToggle: PropTypes.func.isRequired,

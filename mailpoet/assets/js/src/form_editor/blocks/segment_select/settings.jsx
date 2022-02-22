@@ -15,13 +15,13 @@ import Preview from './settings_preview.jsx';
 
 const findSegment = (segments, segmentId) => segments.find((s) => s.id === segmentId);
 
-const SegmentSelectSettings = ({
+function SegmentSelectSettings({
   label,
   onLabelChanged,
   segmentsAddedIntoSelection,
   addSegmentIntoSelection,
   setNewSelection,
-}) => {
+}) {
   const allSegments = useSelect(
     (select) => select('mailpoet-form-editor').getAllAvailableSegments(),
     []
@@ -95,7 +95,7 @@ const SegmentSelectSettings = ({
       </Panel>
     </InspectorControls>
   );
-};
+}
 
 SegmentSelectSettings.propTypes = {
   label: PropTypes.string.isRequired,

@@ -37,7 +37,7 @@ function asEnum(choices: string[], defaultValue: string) {
 function asObject<T extends Schema>(schema: T) {
   return (value: unknown): SchemaResult<T> => {
     const object = Object.keys(schema).reduce((result, field) => ({
-      [field]: schema[field](value ? value[field] : undefined),
+      [field]: schema[field](value ? value[field] as string : undefined),
       ...result,
     }), {});
     return object as SchemaResult<T>;

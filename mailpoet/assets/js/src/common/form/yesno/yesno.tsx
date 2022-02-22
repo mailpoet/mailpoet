@@ -11,46 +11,48 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   automationId?: string;
 };
 
-const YesNo = ({
+function YesNo({
   onCheck,
   showError,
   checked,
   automationId,
   ...attributes
-}: Props) => (
-  <div
-    className={
+}: Props) {
+  return (
+    <div
+      className={
       classnames({
         'mailpoet-form-yesno': true,
         'mailpoet-form-yesno-error': showError,
         'mailpoet-disabled': attributes.disabled,
       })
     }
-    data-automation-id={automationId}
-  >
-    <label>
-      <input
-        type="radio"
-        checked={checked === true}
-        onChange={() => onCheck(true)}
-        {...attributes}
-      />
-      <span className="mailpoet-form-yesno-control mailpoet-form-yesno-yes">
-        {iconYes}
-      </span>
-    </label>
-    <label>
-      <input
-        type="radio"
-        checked={checked === false}
-        onChange={() => onCheck(false)}
-        {...attributes}
-      />
-      <span className="mailpoet-form-yesno-control mailpoet-form-yesno-no">
-        {iconNo}
-      </span>
-    </label>
-  </div>
-);
+      data-automation-id={automationId}
+    >
+      <label>
+        <input
+          type="radio"
+          checked={checked === true}
+          onChange={() => onCheck(true)}
+          {...attributes}
+        />
+        <span className="mailpoet-form-yesno-control mailpoet-form-yesno-yes">
+          {iconYes}
+        </span>
+      </label>
+      <label>
+        <input
+          type="radio"
+          checked={checked === false}
+          onChange={() => onCheck(false)}
+          {...attributes}
+        />
+        <span className="mailpoet-form-yesno-control mailpoet-form-yesno-no">
+          {iconNo}
+        </span>
+      </label>
+    </div>
+  );
+}
 
 export default YesNo;

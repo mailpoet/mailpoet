@@ -22,9 +22,9 @@ type Props = {
   setAttributes: (attribute) => void;
 };
 
-const DividerEdit: React.FunctionComponent<Props> = (
+function DividerEdit(
   { attributes, setAttributes }: Props
-): JSX.Element => {
+): JSX.Element {
   const attributeDividerHeight = attributes.dividerHeight ?? defaultAttributes.dividerHeight;
   const attributeDividerWidth = attributes.dividerWidth ?? defaultAttributes.dividerWidth;
   const attributeHeight = attributes.height ?? defaultAttributes.height;
@@ -49,7 +49,7 @@ const DividerEdit: React.FunctionComponent<Props> = (
         min={1}
         max={40}
         allowReset
-        onChange={(dividerHeight): void => {
+        onChange={(dividerHeight:number): void => {
           let newHeight = attributeHeight;
           if (dividerHeight !== undefined) {
             newHeight = Math.max(dividerHeight, attributeHeight);
@@ -98,7 +98,7 @@ const DividerEdit: React.FunctionComponent<Props> = (
               min={1}
               max={400}
               allowReset
-              onChange={(height): void => {
+              onChange={(height:number): void => {
                 let newDividerHeightHeight = attributeDividerHeight;
                 if (height !== undefined) {
                   newDividerHeightHeight = Math.min(height, attributeDividerHeight);
@@ -142,5 +142,5 @@ const DividerEdit: React.FunctionComponent<Props> = (
       </div>
     </>
   );
-};
+}
 export default DividerEdit;

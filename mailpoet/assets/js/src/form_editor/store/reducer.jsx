@@ -99,6 +99,7 @@ const undoRedoReducer = (state, action) => {
   return state;
 };
 
+// eslint-disable-next-line default-param-last
 export default (defaultState) => (state = defaultState, action) => {
   const stateAfterUndo = undoRedoReducer(state, action);
   return mainReducer(stateAfterUndo, action);

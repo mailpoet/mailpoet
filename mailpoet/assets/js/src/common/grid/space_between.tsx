@@ -7,13 +7,14 @@ type Props = {
   verticalAlign?: 'center';
 };
 
-export const SpaceBetween = ({
+export function SpaceBetween({
   children,
   className,
   verticalAlign,
-}: Props): React.ReactElement => (
-  <div
-    className={
+}: Props): React.ReactElement {
+  return (
+    <div
+      className={
       classnames(
         className,
         'mailpoet-grid-space-between',
@@ -22,7 +23,8 @@ export const SpaceBetween = ({
         }
       )
     }
-  >
-    {children}
-  </div>
-);
+    >
+      {children}
+    </div>
+  );
+}

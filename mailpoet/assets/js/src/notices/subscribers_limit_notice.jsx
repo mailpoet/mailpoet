@@ -3,7 +3,7 @@ import ReactStringReplace from 'react-string-replace';
 import MailPoet from 'mailpoet';
 import Notice from 'notices/notice.tsx';
 
-const SubscribersLimitNotice = () => {
+function SubscribersLimitNotice() {
   if (!MailPoet.subscribersLimitReached) return null;
   const hasValidApiKey = MailPoet.hasValidApiKey;
   const title = MailPoet.I18n.t('subscribersLimitNoticeTitle')
@@ -68,6 +68,6 @@ const SubscribersLimitNotice = () => {
       </p>
     </Notice>
   );
-};
+}
 
 export default SubscribersLimitNotice;

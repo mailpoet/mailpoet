@@ -4,6 +4,6 @@ type Props = {
   children: ReactNode;
 }
 
-export default ({ children }: Props) => (
-  <div className="mailpoet-settings-inputs">{children}</div>
-);
+export default function Inputs({ children }: Props) {
+  return <div className="mailpoet-settings-inputs">{children}</div>;
+}

@@ -14,7 +14,7 @@ import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
 import TextInputEdit from '../text_input_edit.jsx';
 
-const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
+function CustomTextEdit({ attributes, setAttributes, clientId }) {
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
@@ -92,7 +92,7 @@ const CustomTextEdit = ({ attributes, setAttributes, clientId }) => {
       />
     </>
   );
-};
+}
 
 CustomTextEdit.propTypes = {
   attributes: PropTypes.shape({

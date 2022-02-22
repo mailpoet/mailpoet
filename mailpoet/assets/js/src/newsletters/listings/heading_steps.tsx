@@ -81,17 +81,17 @@ export interface Props {
   location: Location;
 }
 
-const ListingHeadingSteps = ({
+function ListingHeadingSteps({
   step,
   emailType,
   location,
   automationId,
-}: Props): JSX.Element => {
+}: Props): JSX.Element {
   const stepNumber = step || mapPathToSteps(location);
   if (stepNumber !== null) {
     return stepsListingHeading(stepNumber, emailType, automationId);
   }
   return null;
-};
+}
 
 export default ListingHeadingSteps;

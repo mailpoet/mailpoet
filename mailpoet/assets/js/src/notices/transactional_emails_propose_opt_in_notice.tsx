@@ -10,16 +10,16 @@ type Props = {
   apiVersion: string;
 }
 
-const TransactionalEmailsProposeOptInNotice = ({
+function TransactionalEmailsProposeOptInNotice({
   mailpoetInstalledDaysAgo,
   sendTransactionalEmails,
   mtaMethod,
   noticeDismissed,
   apiVersion,
-}: Props) => {
+}: Props) {
   const [hidden, setHidden] = useState(false);
   const saveNoticeDismissed = () => {
-    MailPoet.Ajax.post({
+    void MailPoet.Ajax.post({
       api_version: apiVersion,
       endpoint: 'UserFlags',
       action: 'set',
@@ -30,7 +30,7 @@ const TransactionalEmailsProposeOptInNotice = ({
   };
   const enable = () => {
     setHidden(true);
-    MailPoet.Ajax.post({
+    void MailPoet.Ajax.post({
       api_version: apiVersion,
       endpoint: 'settings',
       action: 'set',
@@ -72,6 +72,6 @@ const TransactionalEmailsProposeOptInNotice = ({
       </p>
     </Notice>
   );
-};
+}
 
 export default TransactionalEmailsProposeOptInNotice;

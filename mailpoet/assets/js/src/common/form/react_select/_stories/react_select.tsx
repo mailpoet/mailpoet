@@ -9,7 +9,7 @@ export default {
   component: Select,
 };
 
-export const ReactSelect = () => {
+export function ReactSelect() {
   const options = [
     {
       value: 'chocolate',
@@ -113,4 +113,4 @@ export const ReactSelect = () => {
       <br />
     </>
   );
-};
+}

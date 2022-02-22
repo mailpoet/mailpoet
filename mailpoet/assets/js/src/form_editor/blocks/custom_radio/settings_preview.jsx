@@ -7,32 +7,33 @@ import { Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-const PreviewItem = ({
+function PreviewItem({
   value,
   remove,
   onUpdate,
   onCheck,
   index,
-}) => (
-  <div
-    className="mailpoet-form-segments-settings-list"
-    data-automation-id="custom_field_value_settings"
-    key={value.id}
-  >
-    <input
-      type="checkbox"
-      defaultChecked={value.isChecked || false}
-      onChange={(event) => onCheck(value.id, event.target.checked)}
-      key={`check-${value.id}`}
-    />
-    <input
-      type="text"
-      value={value.name}
-      data-automation-id="custom_field_value_settings_value"
-      onChange={(event) => onUpdate(value.id, event.target.value)}
-    />
-    {
-      (index !== 0)
+}) {
+  return (
+    <div
+      className="mailpoet-form-segments-settings-list"
+      data-automation-id="custom_field_value_settings"
+      key={value.id}
+    >
+      <input
+        type="checkbox"
+        defaultChecked={value.isChecked || false}
+        onChange={(event) => onCheck(value.id, event.target.checked)}
+        key={`check-${value.id}`}
+      />
+      <input
+        type="text"
+        value={value.name}
+        data-automation-id="custom_field_value_settings_value"
+        onChange={(event) => onUpdate(value.id, event.target.value)}
+      />
+      {
+        (index !== 0)
       && (
         <Dashicon
           icon="no-alt"
@@ -41,9 +42,10 @@ const PreviewItem = ({
           onClick={partial(remove, value.id)}
         />
       )
-    }
-  </div>
-);
+      }
+    </div>
+  );
+}
 
 PreviewItem.propTypes = {
   value: PropTypes.shape({
@@ -57,12 +59,12 @@ PreviewItem.propTypes = {
   remove: PropTypes.func.isRequired,
 };
 
-const Preview = ({
+function Preview({
   values,
   update,
   remove,
   onReorder,
-}) => {
+}) {
   const [valuesWhileMoved, setValues] = useState(values);
 
   useEffect(() => {
@@ -104,7 +106,6 @@ const Preview = ({
     onReorder(newValues);
   };
 
-  /* eslint-disable react/jsx-props-no-spreading */
   const renderItems = () => (valuesWhileMoved.map((value, index) => (
     <Draggable key={value.id} draggableId={value.id} index={index}>
       {(provided) => (
@@ -143,7 +144,7 @@ const Preview = ({
       </DragDropContext>
     </div>
   );
-};
+}
 
 Preview.propTypes = {
   values: PropTypes.arrayOf(PropTypes.shape({

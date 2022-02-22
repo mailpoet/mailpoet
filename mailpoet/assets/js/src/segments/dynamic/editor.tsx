@@ -10,7 +10,7 @@ import { Form } from './form';
 
 import { createStore } from './store/store';
 
-const Editor: React.FunctionComponent = () => {
+function Editor() : JSX.Element {
   const match = useRouteMatch<{id: string}>();
 
   createStore();
@@ -34,6 +34,6 @@ const Editor: React.FunctionComponent = () => {
       <Form segmentId={Number(match.params.id)} />
     </>
   );
-};
+}
 
 export default Editor;

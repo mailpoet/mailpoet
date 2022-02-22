@@ -59,7 +59,7 @@ export const getBadgeType = (statName, rate) => {
   return stat.badgeTypes[len - 1];
 };
 
-export const StatsBadge = (props: StatsBadgeProps) => {
+export function StatsBadge(props: StatsBadgeProps) {
   const badges = {
     excellent: {
       name: MailPoet.I18n.t('excellentBadgeName'),
@@ -129,7 +129,7 @@ export const StatsBadge = (props: StatsBadgeProps) => {
   );
 
   return content;
-};
+}
 
 StatsBadge.defaultProps = {
   isInverted: true,

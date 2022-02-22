@@ -6,9 +6,11 @@ export default {
   component: Background,
 };
 
-export const Backgrounds = () => (
-  <>
-    <Background color="#f00" />
-    <h1>Red background</h1>
-  </>
-);
+export function Backgrounds() {
+  return (
+    <>
+      <Background color="#f00" />
+      <h1>Red background</h1>
+    </>
+  );
+}

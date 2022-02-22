@@ -42,17 +42,17 @@ type Props = {
   };
 }
 
-const Edit: React.FunctionComponent<Props> = ({
+function Edit({
   value,
   onChange,
   activeAttributes,
-}: Props) => {
+}: Props) : JSX.Element {
   const selectedBlock = useSelect(
     (sel) => sel('core/block-editor').getSelectedBlock(),
     []
   );
 
-  if (!supportedBlocks.includes(selectedBlock.name)) {
+  if (!supportedBlocks.includes(selectedBlock.name as string)) {
     return null;
   }
 
@@ -78,7 +78,7 @@ const Edit: React.FunctionComponent<Props> = ({
       </div>
     </BlockFormatControls>
   );
-};
+}
 
 const settings = {
   name,

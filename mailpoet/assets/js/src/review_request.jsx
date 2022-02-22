@@ -2,7 +2,7 @@ import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const ReviewRequest = (props) => {
+function ReviewRequest(props) {
   const days = props.installedDaysAgo;
   const usingForPhrase = days > 30
     ? MailPoet.I18n.t('reviewRequestUsingForMonths').replace('[months]', Math.round(days / 30))
@@ -24,7 +24,7 @@ const ReviewRequest = (props) => {
       </p>
     </div>
   );
-};
+}
 
 ReviewRequest.propTypes = {
   installedDaysAgo: PropTypes.number.isRequired,

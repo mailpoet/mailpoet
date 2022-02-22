@@ -24,7 +24,7 @@ const NewsletterPropType = PropTypes.shape({
   ]),
 });
 
-const QueueSending = ({ newsletter }) => {
+function QueueSending({ newsletter }) {
   const [paused, setPaused] = React.useState(newsletter.queue.status === 'paused');
   const [errors, setErrors] = React.useState([]);
 
@@ -63,12 +63,12 @@ const QueueSending = ({ newsletter }) => {
       {!paused && <Button dimension="small" onClick={pauseSending}>{MailPoet.I18n.t('pause')}</Button>}
     </>
   );
-};
+}
 QueueSending.propTypes = {
   newsletter: NewsletterPropType.isRequired,
 };
 
-const QueueStatus = ({ newsletter, mailerLog }) => {
+function QueueStatus({ newsletter, mailerLog }) {
   let newsletterDate = newsletter.sent_at || newsletter.queue.scheduled_at;
   if (newsletterDate) {
     newsletterDate = parseDate(newsletterDate, 'yyyy-MM-dd HH:mm:ss', new Date());
@@ -105,7 +105,7 @@ const QueueStatus = ({ newsletter, mailerLog }) => {
       {!isNewsletterSending && renderDraftOrScheduledNewsletter}
     </>
   );
-};
+}
 QueueStatus.propTypes = {
   newsletter: NewsletterPropType.isRequired,
   mailerLog: PropTypes.shape({

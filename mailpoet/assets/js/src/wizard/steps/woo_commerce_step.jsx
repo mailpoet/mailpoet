@@ -7,7 +7,7 @@ import Button from '../../common/button/button';
 import Heading from '../../common/typography/heading/heading';
 import YesNo from '../../common/form/yesno/yesno';
 
-const WizardWooCommerceStep = (props) => {
+function WizardWooCommerceStep(props) {
   const [allowed, setAllowed] = useState(null);
   const [importType, setImportType] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -120,7 +120,7 @@ const WizardWooCommerceStep = (props) => {
       </form>
     </>
   );
-};
+}
 
 WizardWooCommerceStep.propTypes = {
   submitForm: PropTypes.func.isRequired,

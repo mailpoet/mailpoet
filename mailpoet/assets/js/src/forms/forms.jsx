@@ -5,14 +5,16 @@ import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
 import FormList from './list.jsx';
 
-const App = () => (
-  <GlobalContext.Provider value={useGlobalContextValue(window)}>
-    <HashRouter>
-      <Notices />
-      <Route path="*" component={FormList} />
-    </HashRouter>
-  </GlobalContext.Provider>
-);
+function App() {
+  return (
+    <GlobalContext.Provider value={useGlobalContextValue(window)}>
+      <HashRouter>
+        <Notices />
+        <Route path="*" component={FormList} />
+      </HashRouter>
+    </GlobalContext.Provider>
+  );
+}
 
 const container = document.getElementById('forms_container');
 

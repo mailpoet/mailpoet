@@ -148,20 +148,16 @@ function renderItem(item, actions) {
             { item.missing_plugin_message
               && item.missing_plugin_message.message && item.missing_plugin_message.link
               ? (
-                <>
-                  { ReactStringReplace(
-                    item.missing_plugin_message.message,
-                    /\[link](.*?)\[\/link]/g,
-                    (match) => (
-                      <a className="mailpoet-listing-link-important" key="missingPluginMessageLink" href={item.missing_plugin_message.link} target="_blank" rel="noopener noreferrer">{match}</a>
-                    )
-                  ) }
-                </>
+                ReactStringReplace(
+                  item.missing_plugin_message.message,
+                  /\[link](.*?)\[\/link]/g,
+                  (match) => (
+                    <a className="mailpoet-listing-link-important" key="missingPluginMessageLink" href={item.missing_plugin_message.link} target="_blank" rel="noopener noreferrer">{match}</a>
+                  )
+                )
               )
               : (
-                <>
-                  { item.missing_plugin_message }
-                </>
+                item.missing_plugin_message
               )}
           </td>
         )

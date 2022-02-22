@@ -4,8 +4,8 @@ import MailPoet from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import plusIcon from 'common/button/icon/plus';
 
-const ListingHeading = () => (
-  <>
+function ListingHeading() {
+  return (
     <TopBarWithBeamer>
       <Link
         id="mailpoet-new-email"
@@ -18,7 +18,7 @@ const ListingHeading = () => (
         <span>{MailPoet.I18n.t('new')}</span>
       </Link>
     </TopBarWithBeamer>
-  </>
-);
+  );
+}
 
 export default ListingHeading;

@@ -15,7 +15,7 @@ type Props = {
   automationId?: string;
 }
 
-const SelectionItem: React.FunctionComponent<Props> = ({
+function SelectionItem({
   label,
   active,
   canBeActive,
@@ -24,7 +24,7 @@ const SelectionItem: React.FunctionComponent<Props> = ({
   className,
   automationId,
   displaySettingsIcon,
-}: Props) => {
+}: Props) : JSX.Element {
   const [hover, setHover] = useState(false);
   return (
     <div
@@ -89,7 +89,7 @@ const SelectionItem: React.FunctionComponent<Props> = ({
       }
     </div>
   );
-};
+}
 
 SelectionItem.defaultProps = {
   canBeActive: true,

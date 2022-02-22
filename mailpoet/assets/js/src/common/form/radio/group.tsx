@@ -15,13 +15,13 @@ type Props = {
   onChange?: (value: RadioValueType) => void;
 };
 
-const RadioGroup = ({
+function RadioGroup({
   name,
   options,
   defaultValue,
   isFullWidth,
   onChange,
-}: Props) => {
+}: Props) {
   const [currentValue, setCurrentValue] = useState(defaultValue);
 
   const handleChange = (value: RadioValueType) => {
@@ -42,7 +42,7 @@ const RadioGroup = ({
             value={value}
             onCheck={() => handleChange(value)}
             isFullWidth={isFullWidth}
-            {...attributes} // eslint-disable-line react/jsx-props-no-spreading
+            {...attributes}
           >
             {label}
           </Radio>
@@ -50,6 +50,6 @@ const RadioGroup = ({
       })}
     </div>
   );
-};
+}
 
 export default RadioGroup;

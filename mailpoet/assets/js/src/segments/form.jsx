@@ -32,26 +32,28 @@ const messages = {
   },
 };
 
-const SegmentForm = (props) => (
-  <div>
-    <Background color="#fff" />
-    <HideScreenOptions />
+function SegmentForm(props) {
+  return (
+    <div>
+      <Background color="#fff" />
+      <HideScreenOptions />
 
-    <Heading level={1} className="mailpoet-title">
-      <span>{MailPoet.I18n.t('segment')}</span>
-      <Link className="mailpoet-button button button-secondary button-small" to="/">{MailPoet.I18n.t('backToList')}</Link>
-    </Heading>
+      <Heading level={1} className="mailpoet-title">
+        <span>{MailPoet.I18n.t('segment')}</span>
+        <Link className="mailpoet-button button button-secondary button-small" to="/">{MailPoet.I18n.t('backToList')}</Link>
+      </Heading>
 
-    <SubscribersLimitNotice />
+      <SubscribersLimitNotice />
 
-    <Form
-      endpoint="segments"
-      fields={fields}
-      params={props.match.params}
-      messages={messages}
-    />
-  </div>
-);
+      <Form
+        endpoint="segments"
+        fields={fields}
+        params={props.match.params}
+        messages={messages}
+      />
+    </div>
+  );
+}
 
 SegmentForm.propTypes = {
   match: PropTypes.shape({

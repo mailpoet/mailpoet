@@ -30,7 +30,7 @@ export default function makeDefaultState(window: any): State {
   const segments = window.mailpoet_segments;
   const hosts = window.mailpoet_hosts;
   const save = { inProgress: false, error: null };
-  const data = normalizeSettings(window.mailpoet_settings);
+  const data = normalizeSettings(window.mailpoet_settings as Record<string, unknown>);
   const flags = {
     error: false,
     newUser: !!window.mailpoet_is_new_user,

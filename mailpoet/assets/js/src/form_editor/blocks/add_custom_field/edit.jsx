@@ -11,7 +11,7 @@ import MailPoet from 'mailpoet';
 import icon from './icon.jsx';
 import AddCustomFieldForm from './add_custom_field_form.jsx';
 
-const AddCustomField = ({ clientId }) => {
+function AddCustomField({ clientId }) {
   const { createCustomField } = useDispatch('mailpoet-form-editor');
 
   const dateSettings = useSelect(
@@ -42,7 +42,7 @@ const AddCustomField = ({ clientId }) => {
       ) : (<Spinner />)}
     </Placeholder>
   );
-};
+}
 
 AddCustomField.propTypes = {
   clientId: PropTypes.string.isRequired,

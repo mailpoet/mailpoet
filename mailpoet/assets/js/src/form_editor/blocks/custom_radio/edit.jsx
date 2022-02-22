@@ -14,7 +14,7 @@ import CustomFieldSettings from './custom_field_settings.jsx';
 import formatLabel from '../label_formatter.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 
-const CustomRadioEdit = ({ attributes, setAttributes, clientId }) => {
+function CustomRadioEdit({ attributes, setAttributes, clientId }) {
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
     []
@@ -94,7 +94,7 @@ const CustomRadioEdit = ({ attributes, setAttributes, clientId }) => {
       ))}
     </ParagraphEdit>
   );
-};
+}
 
 CustomRadioEdit.propTypes = {
   attributes: PropTypes.shape({

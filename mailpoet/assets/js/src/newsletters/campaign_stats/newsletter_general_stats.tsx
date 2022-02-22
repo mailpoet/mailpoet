@@ -17,15 +17,15 @@ const minNewslettersSent = 20;
 const minNewslettersOpened = 5;
 
 // When percentage value is lower then 0.1 we want to display value with two decimal places
-const formatWithOptimalPrecision = (value) => {
+const formatWithOptimalPrecision = (value:number) => {
   const precision = value < 0.1 ? 2 : 1;
   return MailPoet.Num.toLocaleFixed(value, precision);
 };
 
-export const NewsletterGeneralStats = ({
+export function NewsletterGeneralStats({
   newsletter,
   isWoocommerceActive,
-}: Props) => {
+}: Props) {
   const totalSent = newsletter.total_sent || 0;
 
   let percentageClicked = 0;
@@ -180,4 +180,4 @@ export const NewsletterGeneralStats = ({
       </p>
     </div>
   );
-};
+}

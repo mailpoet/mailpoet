@@ -6,8 +6,10 @@ type Props = {
   className?: string;
 };
 
-export const TwoColumns = ({ children, className }: Props): React.ReactElement => (
-  <div className={classnames(className, 'mailpoet-grid-two-columns')}>
-    {children}
-  </div>
-);
+export function TwoColumns({ children, className }: Props): React.ReactElement {
+  return (
+    <div className={classnames(className, 'mailpoet-grid-two-columns')}>
+      {children}
+    </div>
+  );
+}

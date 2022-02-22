@@ -15,7 +15,7 @@ import { mapColorSlugToValue } from 'form_editor/store/mapping/from_blocks/style
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 
-const CustomHtmlEdit = ({ attributes, setAttributes, clientId }) => {
+function CustomHtmlEdit({ attributes, setAttributes, clientId }) {
   const colorDefinitions = useSetting('color.palette');
   const {
     fontColor,
@@ -105,7 +105,7 @@ const CustomHtmlEdit = ({ attributes, setAttributes, clientId }) => {
       </div>
     </ParagraphEdit>
   );
-};
+}
 
 CustomHtmlEdit.propTypes = {
   attributes: PropTypes.shape({

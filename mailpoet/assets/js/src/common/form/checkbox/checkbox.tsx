@@ -8,31 +8,33 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   automationId?: string;
 };
 
-const Checkbox = ({
+function Checkbox({
   children,
   isFullWidth,
   onCheck,
   automationId,
   ...attributes
-}: Props) => (
-  <label
-    className={
+}: Props) {
+  return (
+    <label
+      className={
       classnames({
         'mailpoet-form-checkbox': true,
         'mailpoet-disabled': attributes.disabled,
         'mailpoet-full-width': isFullWidth,
       })
     }
-    data-automation-id={automationId}
-  >
-    <input
-      type="checkbox"
-      onChange={(e) => onCheck(e.target.checked, e)}
-      {...attributes}
-    />
-    <span className="mailpoet-form-checkbox-control" />
-    {children}
-  </label>
-);
+      data-automation-id={automationId}
+    >
+      <input
+        type="checkbox"
+        onChange={(e) => onCheck(e.target.checked, e)}
+        {...attributes}
+      />
+      <span className="mailpoet-form-checkbox-control" />
+      {children}
+    </label>
+  );
+}
 
 export default Checkbox;

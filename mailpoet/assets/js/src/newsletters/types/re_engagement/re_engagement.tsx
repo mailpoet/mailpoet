@@ -44,7 +44,7 @@ export function NewsletterTypeReEngagement(): JSX.Element {
   function handleNext() {
     setErrors([]);
     setLoading(true);
-    MailPoet.Ajax.post({
+    void MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
       endpoint: 'newsletters',
       action: 'create',
@@ -54,11 +54,11 @@ export function NewsletterTypeReEngagement(): JSX.Element {
         options,
       },
     }).done((response) => {
-      showTemplateSelection(response.data.id);
+      showTemplateSelection(response.data.id as string);
     }).fail((response) => {
       setLoading(false);
       if (response.errors) {
-        setErrors(response.errors);
+        setErrors(response.errors as { message:string }[]);
       }
     });
   }

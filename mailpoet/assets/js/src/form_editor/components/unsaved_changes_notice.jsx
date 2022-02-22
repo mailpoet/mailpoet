@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import MailPoet from 'mailpoet';
 import { useSelect } from '@wordpress/data';
 
@@ -22,7 +22,7 @@ function UnsavedChangesNotice() {
     return () => window.removeEventListener('beforeunload', onUnload);
   });
 
-  return (<></>);
+  return null;
 }
 
 export default UnsavedChangesNotice;

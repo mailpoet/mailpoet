@@ -10,17 +10,18 @@ type Props = {
   data?: string;
 }
 
-const Tag = ({
+function Tag({
   children,
   variant,
   dimension,
   isInverted,
   className,
   ...dataAttributes
-}: Props) => (
-  <div
-    {...dataAttributes}
-    className={
+}: Props) {
+  return (
+    <div
+      {...dataAttributes}
+      className={
       classnames(
         className,
         'mailpoet-tag',
@@ -31,9 +32,10 @@ const Tag = ({
         }
       )
     }
-  >
-    {children}
-  </div>
-);
+    >
+      {children}
+    </div>
+  );
+}
 
 export default Tag;

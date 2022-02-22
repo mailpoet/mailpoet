@@ -45,7 +45,7 @@ export function* saveSettings() {
     fromAddressModalCanBeShown: false,
   });
   yield setSettings(res.data);
-  yield setReEngagement(res.meta);
+  yield setReEngagement(res.meta as ReEngagement);
   yield { type: 'TRACK_UNAUTHORIZED_EMAIL', meta: res.meta };
   return { type: 'SAVE_DONE' };
 }

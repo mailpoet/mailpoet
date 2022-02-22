@@ -12,7 +12,7 @@ import MailPoet from 'mailpoet';
 import TextInputEdit from '../text_input_edit.jsx';
 import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
 
-const LastNameEdit = ({ attributes, setAttributes }) => {
+function LastNameEdit({ attributes, setAttributes }) {
   const inspectorControls = (
     <InspectorControls>
       <Panel>
@@ -55,7 +55,7 @@ const LastNameEdit = ({ attributes, setAttributes }) => {
       />
     </>
   );
-};
+}
 
 LastNameEdit.propTypes = {
   attributes: PropTypes.shape({

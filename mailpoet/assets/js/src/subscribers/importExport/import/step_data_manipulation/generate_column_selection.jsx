@@ -106,10 +106,8 @@ export default () => {
       const mostRecentlyOpenedInput = inputs[inputs.length - 1];
       mostRecentlyOpenedInput.focus();
     });
-  jQuery.map(
-    jQuery('.mailpoet_subscribers_column_data_match'), (element) => {
-      const columnId = jQuery(element).data('column-id');
-      jQuery(element).val(columnId).trigger('change');
-    }
-  );
+  jQuery.map(jQuery('.mailpoet_subscribers_column_data_match'), (element) => {
+    const columnId = jQuery(element).data('column-id');
+    jQuery(element).val(columnId).trigger('change');
+  });
 };

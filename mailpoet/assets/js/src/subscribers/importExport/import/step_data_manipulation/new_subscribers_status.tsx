@@ -9,10 +9,10 @@ interface Props {
   setNewSubscribersStatus: (string) => void;
 }
 
-export const NewSubscribersStatus: React.FunctionComponent<Props> = ({
+export function NewSubscribersStatus({
   newSubscribersStatus,
   setNewSubscribersStatus,
-}) => {
+}:Props) :JSX.Element {
   const handleChange = useCallback((event): void => {
     setNewSubscribersStatus(event.target.value);
   }, [setNewSubscribersStatus]);
@@ -38,4 +38,4 @@ export const NewSubscribersStatus: React.FunctionComponent<Props> = ({
       </div>
     </>
   );
-};
+}

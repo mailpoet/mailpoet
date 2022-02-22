@@ -9,13 +9,13 @@ const kbLink = 'https://kb.mailpoet.com/article/126-importing-subscribers-with-c
 
 const placeholder = 'Email, First Name, Last Name\njohn@doe.com, John, Doe\nmary@smith.com, Mary, Smith\njohnny@walker.com, Johnny, Walker';
 
-const MethodPaste = ({
+function MethodPaste({
   onValueChange,
   canFinish,
   onFinish,
   data,
   onPrevious,
-}) => {
+}) {
   const onChange = (e) => {
     onValueChange(e.target.value);
   };
@@ -62,7 +62,7 @@ const MethodPaste = ({
       />
     </>
   );
-};
+}
 
 MethodPaste.propTypes = {
   onFinish: PropTypes.func,

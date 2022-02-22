@@ -32,7 +32,7 @@ type Props = {
   filterIndex: number;
 }
 
-export const SubscribedToList: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function SubscribedToList({ filterIndex }:Props) : JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -103,4 +103,4 @@ export const SubscribedToList: React.FunctionComponent<Props> = ({ filterIndex }
       </Grid.CenteredRow>
     </>
   );
-};
+}

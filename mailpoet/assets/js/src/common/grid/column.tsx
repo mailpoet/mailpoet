@@ -8,14 +8,15 @@ type Props = {
   dimension?: 'small';
 };
 
-export const Column = ({
+export function Column({
   children,
   align,
   className,
   dimension,
-}: Props): React.ReactElement => (
-  <div
-    className={
+}: Props): React.ReactElement {
+  return (
+    <div
+      className={
       classnames(
         className,
         'mailpoet-grid-column',
@@ -25,7 +26,8 @@ export const Column = ({
         }
       )
     }
-  >
-    {children}
-  </div>
-);
+    >
+      {children}
+    </div>
+  );
+}

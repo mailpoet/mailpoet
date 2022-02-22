@@ -17,7 +17,7 @@ type Log = {
 
 export type Logs = Log[];
 
-function isCtrl(event: MouseEvent): boolean {
+function isCtrl(event: {ctrlKey ?:boolean, metaKey ?:boolean, altKey ?:boolean}): boolean {
   return (event.ctrlKey || event.metaKey) && !event.altKey; // shiftKey allowed
 }
 
@@ -26,23 +26,23 @@ type MessageProps = {
   editing: boolean;
 };
 
-const Message: React.FunctionComponent<MessageProps> = ({ message, editing }: MessageProps) => {
+function Message({ message, editing }: MessageProps):JSX.Element {
   if (!editing) {
     return (<>{`${message.substr(0, 150)}…`}</>);
   }
   return (
     <textarea value={message} className="mailpoet-logs-full-message" readOnly />
   );
-};
+}
 
 type LogProps = {
   log: Log;
 }
 
-const Log: React.FunctionComponent<LogProps> = ({ log }: LogProps) => {
+function Log({ log }: LogProps) : JSX.Element {
   const [editing, setEditing] = useState(false);
 
-  function messageClick(event): void {
+  function messageClick(event: {ctrlKey ?:boolean, metaKey ?:boolean, altKey ?:boolean}): void {
     if (!isCtrl(event)) return;
     if (editing) return;
     setEditing(true);
@@ -57,7 +57,7 @@ const Log: React.FunctionComponent<LogProps> = ({ log }: LogProps) => {
       <td role="gridcell">{MailPoet.Date.full(log.created_at)}</td>
     </tr>
   );
-};
+}
 
 export type FilterType = {
   from?: string;
@@ -77,7 +77,7 @@ type ListProps = {
   onFilter: (FilterType) => void;
 }
 
-export const List: React.FunctionComponent<ListProps> = ({
+export function List({
   logs,
   onFilter,
   originalFrom,
@@ -85,14 +85,14 @@ export const List: React.FunctionComponent<ListProps> = ({
   originalSearch,
   originalOffset,
   originalLimit,
-}: ListProps) => {
+}: ListProps) : JSX.Element {
   const [from, setFrom] = useState(originalFrom ?? undefined);
   const [to, setTo] = useState(originalTo ?? undefined);
   const [offset, setOffset] = useState(originalOffset ?? '');
   const [limit, setLimit] = useState(originalLimit ?? '');
   const [search, setSearch] = useState(originalSearch || '');
 
-  const dateChanged = curry((setter, value): void => {
+  const dateChanged = curry((setter:(value:string) => void, value: string): void => {
     if (value === null) {
       setter(undefined);
       return;
@@ -207,4 +207,4 @@ export const List: React.FunctionComponent<ListProps> = ({
       </table>
     </div>
   );
-};
+}

@@ -45,7 +45,7 @@ export const withFeatureAnnouncement = <P extends Record<string, unknown>>(
 
   function updateLastAnnouncementSeenValue() {
     const data = { last_announcement_seen: Math.floor(Date.now() / 1000) };
-    MailPoet.Ajax.post({
+    void MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
       endpoint: 'user_flags',
       action: 'set',
@@ -94,13 +94,15 @@ export const withFeatureAnnouncement = <P extends Record<string, unknown>>(
     showBeamer();
   };
 
-  return ({
+  return function withFeatureAnnouncementRenderer({
     ...props
-  }: Omit<P, 'hasNews'|'onBeamerClick'>) => (
-    <Component
-      {...props as P}
-      onBeamerClick={(e) => showBeamer(e)}
-      hasNews={showDot}
-    />
-  );
+  }: Omit<P, 'hasNews'|'onBeamerClick'>) {
+    return (
+      <Component
+        {...props as P}
+        onBeamerClick={(e) => showBeamer(e)}
+        hasNews={showDot}
+      />
+    );
+  };
 };
