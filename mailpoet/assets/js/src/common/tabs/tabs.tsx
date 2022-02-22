@@ -46,12 +46,12 @@ type Props = {
   children: React.ReactNode;
 };
 
-const Tabs = ({
+function Tabs({
   activeKey,
   onSwitch = noop,
   automationId = null,
   children,
-}: Props) => {
+}: Props) {
   const [activeTab, setActiveTab] = useState(activeKey);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -105,7 +105,7 @@ const Tabs = ({
       <div className="mailpoet-tab-content">{activeChild}</div>
     </div>
   );
-};
+}
 
 export default Tabs;
 export type { Props };

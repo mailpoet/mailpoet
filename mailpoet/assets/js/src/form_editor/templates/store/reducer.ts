@@ -18,7 +18,7 @@ export const selectCategory = (state: StateType, action: CategoryActionType): St
 });
 
 export default (defaultState: StateType) => (
-  state: StateType = defaultState,
+  state: StateType = defaultState, // eslint-disable-line default-param-last
   action: ActionType
 ): StateType => {
   switch (action.type) {

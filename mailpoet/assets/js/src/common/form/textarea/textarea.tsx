@@ -10,7 +10,7 @@ type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   isCode?: boolean;
 };
 
-const Textarea = ({
+function Textarea({
   className,
   customLabel,
   dimension,
@@ -18,9 +18,10 @@ const Textarea = ({
   tooltip,
   isCode,
   ...attributes
-}: Props) => (
-  <div
-    className={
+}: Props) {
+  return (
+    <div
+      className={
       classnames(
         className,
         'mailpoet-form-textarea',
@@ -31,10 +32,10 @@ const Textarea = ({
         }
       )
     }
-  >
-    <textarea className={classnames({ code: isCode })} {...attributes} />
-    {customLabel && <div className="mailpoet-form-input-label">{customLabel}</div>}
-    {tooltip && (
+    >
+      <textarea className={classnames({ code: isCode })} {...attributes} />
+      {customLabel && <div className="mailpoet-form-input-label">{customLabel}</div>}
+      {tooltip && (
       <>
         <span className="mailpoet-form-tooltip-holder">
           <span className="mailpoet-form-tooltip-icon" data-tip data-for={attributes.name} />
@@ -43,8 +44,9 @@ const Textarea = ({
           {tooltip}
         </Tooltip>
       </>
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
+}
 
 export default Textarea;

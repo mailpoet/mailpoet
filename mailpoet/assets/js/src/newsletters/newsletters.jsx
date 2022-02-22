@@ -124,7 +124,6 @@ const getAutomaticEmailsRoutes = () => {
               email,
               name: event.slug,
             };
-            // eslint-disable-next-line react/jsx-props-no-spreading
             return (<EventsConditions {...componentProps} />);
           },
         });
@@ -138,7 +137,6 @@ const getAutomaticEmailsRoutes = () => {
           ...props,
           email,
         };
-        // eslint-disable-next-line react/jsx-props-no-spreading
         return (<AutomaticEmailEventsList {...componentProps} />);
       },
     });
@@ -146,12 +144,14 @@ const getAutomaticEmailsRoutes = () => {
   return routes;
 };
 
-const NewNewsletter = ({ history }) => (
-  <NewsletterTypes
-    history={history}
-    hideClosingButton={window.mailpoet_newsletters_count === 0}
-  />
-);
+function NewNewsletter({ history }) {
+  return (
+    <NewsletterTypes
+      history={history}
+      hideClosingButton={window.mailpoet_newsletters_count === 0}
+    />
+  );
+}
 
 NewNewsletter.propTypes = {
   history: PropTypes.shape({
@@ -219,40 +219,42 @@ const routes = [
   },
 ];
 
-const App = () => (
-  <GlobalContext.Provider value={useGlobalContextValue(window)}>
-    <HashRouter>
-      <Notices />
+function App() {
+  return (
+    <GlobalContext.Provider value={useGlobalContextValue(window)}>
+      <HashRouter>
+        <Notices />
 
-      <SubscribersLimitNotice />
-      <TransactionalEmailsProposeOptInNotice
-        mailpoetInstalledDaysAgo={window.mailpoet_installed_days_ago}
-        sendTransactionalEmails={window.mailpoet_send_transactional_emails}
-        mtaMethod={window.mailpoet_mta_method}
-        apiVersion={window.mailpoet_api_version}
-        noticeDismissed={window.mailpoet_transactional_emails_opt_in_notice_dismissed}
-      />
-      <InvalidMssKeyNotice
-        mssKeyInvalid={window.mailpoet_mss_key_invalid}
-        subscribersCount={window.mailpoet_subscribers_count}
-      />
+        <SubscribersLimitNotice />
+        <TransactionalEmailsProposeOptInNotice
+          mailpoetInstalledDaysAgo={window.mailpoet_installed_days_ago}
+          sendTransactionalEmails={window.mailpoet_send_transactional_emails}
+          mtaMethod={window.mailpoet_mta_method}
+          apiVersion={window.mailpoet_api_version}
+          noticeDismissed={window.mailpoet_transactional_emails_opt_in_notice_dismissed}
+        />
+        <InvalidMssKeyNotice
+          mssKeyInvalid={window.mailpoet_mss_key_invalid}
+          subscribersCount={window.mailpoet_subscribers_count}
+        />
 
-      <Switch>
-        <Route exact path="/" render={() => <Redirect to={window.mailpoet_newsletters_count === 0 ? '/new' : '/standard'} />} />
-        {routes.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            component={route.component}
-            name={route.name || null}
-            data={route.data || null}
-            render={route.render}
-          />
-        ))}
-      </Switch>
-    </HashRouter>
-  </GlobalContext.Provider>
-);
+        <Switch>
+          <Route exact path="/" render={() => <Redirect to={window.mailpoet_newsletters_count === 0 ? '/new' : '/standard'} />} />
+          {routes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              component={route.component}
+              name={route.name || null}
+              data={route.data || null}
+              render={route.render}
+            />
+          ))}
+        </Switch>
+      </HashRouter>
+    </GlobalContext.Provider>
+  );
+}
 
 const container = document.getElementById('newsletters_container');
 if (container) {

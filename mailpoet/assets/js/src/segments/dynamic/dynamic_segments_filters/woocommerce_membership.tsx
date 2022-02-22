@@ -40,7 +40,7 @@ type Props = {
   filterIndex: number;
 }
 
-export const WooCommerceMembershipFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function WooCommerceMembershipFields({ filterIndex }:Props):JSX.Element {
   const segment: WooCommerceMembershipFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -110,4 +110,4 @@ export const WooCommerceMembershipFields: React.FunctionComponent<Props> = ({ fi
       </Grid.CenteredRow>
     </>
   );
-};
+}

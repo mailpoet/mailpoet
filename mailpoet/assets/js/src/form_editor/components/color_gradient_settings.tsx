@@ -10,13 +10,13 @@ type Props = {
   onGradientChange: (value: string|undefined) => void;
 }
 
-const ColorGradientSettings: React.FunctionComponent<Props> = ({
+function ColorGradientSettings({
   name,
   colorValue,
   gradientValue,
   onColorChange,
   onGradientChange,
-}: Props) => {
+}: Props) : JSX.Element {
   const settingsColors = useSetting('color.palette');
   const settingsGradients = useSetting('color.gradients');
   return (
@@ -33,6 +33,6 @@ const ColorGradientSettings: React.FunctionComponent<Props> = ({
       />
     </div>
   );
-};
+}
 
 export default ColorGradientSettings;

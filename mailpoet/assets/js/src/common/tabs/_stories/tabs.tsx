@@ -18,37 +18,39 @@ export default {
   component: Tabs,
 };
 
-export const WithoutIcons = () => (
-  <div style={wrapperStyles}>
-    <Heading level={3}>Tabs</Heading>
-    <Tabs activeKey="first" onSwitch={action('onSwitchTabs')}>
-      <Tab key="first" title="First">First tab content</Tab>
-      <Tab key="second" title="Second">Second tab content</Tab>
-      <Tab key="third" title="Third">Third tab content</Tab>
-    </Tabs>
+export function WithoutIcons() {
+  return (
+    <div style={wrapperStyles}>
+      <Heading level={3}>Tabs</Heading>
+      <Tabs activeKey="first" onSwitch={action('onSwitchTabs')}>
+        <Tab key="first" title="First">First tab content</Tab>
+        <Tab key="second" title="Second">Second tab content</Tab>
+        <Tab key="third" title="Third">Third tab content</Tab>
+      </Tabs>
 
-    <div className="mailpoet-gap" />
+      <div className="mailpoet-gap" />
 
-    <Heading level={3}>Nested tabs</Heading>
-    <Tabs activeKey="first" onSwitch={action('onSwitchNestedTabsRoot')}>
-      <Tab key="first" title="First">
-        <Tabs activeKey="first" onSwitch={action('onSwitchNestedTabsChild')}>
-          <Tab key="first" title="First">First tab content</Tab>
-          <Tab key="second" title="Second">Second tab content</Tab>
-          <Tab key="third" title="Third">Third tab content</Tab>
-        </Tabs>
-      </Tab>
-      <Tab key="second" title="Second">Second tab content</Tab>
-      <Tab key="third" title="Third">Third tab content</Tab>
-    </Tabs>
+      <Heading level={3}>Nested tabs</Heading>
+      <Tabs activeKey="first" onSwitch={action('onSwitchNestedTabsRoot')}>
+        <Tab key="first" title="First">
+          <Tabs activeKey="first" onSwitch={action('onSwitchNestedTabsChild')}>
+            <Tab key="first" title="First">First tab content</Tab>
+            <Tab key="second" title="Second">Second tab content</Tab>
+            <Tab key="third" title="Third">Third tab content</Tab>
+          </Tabs>
+        </Tab>
+        <Tab key="second" title="Second">Second tab content</Tab>
+        <Tab key="third" title="Third">Third tab content</Tab>
+      </Tabs>
 
-    <div className="mailpoet-gap" />
+      <div className="mailpoet-gap" />
 
-    <Heading level={3}>Routed tabs (work Back/Forward browser buttons)</Heading>
-    <RoutedTabs activeKey="" onSwitch={action('onSwitchRoutedTabs')}>
-      <Tab key="" title="First">First tab content</Tab>
-      <Tab key="second" title="Second">Second tab content</Tab>
-      <Tab key="third" title="Third">Third tab content</Tab>
-    </RoutedTabs>
-  </div>
-);
+      <Heading level={3}>Routed tabs (work Back/Forward browser buttons)</Heading>
+      <RoutedTabs activeKey="" onSwitch={action('onSwitchRoutedTabs')}>
+        <Tab key="" title="First">First tab content</Tab>
+        <Tab key="second" title="Second">Second tab content</Tab>
+        <Tab key="third" title="Third">Third tab content</Tab>
+      </RoutedTabs>
+    </div>
+  );
+}

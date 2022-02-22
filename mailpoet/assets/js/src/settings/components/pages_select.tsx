@@ -12,7 +12,7 @@ type Props = {
   preview: 'manage' | 'unsubscribe' | 'confirm' | 'confirm_unsubscribe' | 're_engagement';
 }
 
-export default (props: Props) => {
+export default function PageSelect(props: Props) {
   const pages = useSelector('getPages')();
   let selectedPage = pages.find((x) => x.id === parseInt(props.value, 10));
   if (!selectedPage) selectedPage = pages[0];
@@ -45,4 +45,4 @@ export default (props: Props) => {
       </a>
     </div>
   );
-};
+}

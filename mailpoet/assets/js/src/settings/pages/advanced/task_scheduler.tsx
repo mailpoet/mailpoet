@@ -54,7 +54,8 @@ export default function TaskScheduler() {
             automationId="mailpoet_cron_radio"
           />
           <label htmlFor="cron_trigger-method-mailpoet">
-            {ReactStringReplace(t('mailpoetScript'),
+            {ReactStringReplace(
+              t('mailpoetScript'),
               /\[link\](.*?)\[\/link\]/,
               (text) => (
                 <a
@@ -67,7 +68,8 @@ export default function TaskScheduler() {
                 >
                   {text}
                 </a>
-              ))}
+              )
+            )}
           </label>
         </div>
         <div className="mailpoet-settings-inputs-row">

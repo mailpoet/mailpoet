@@ -15,7 +15,7 @@ import { getStepsCount, redirectToNextStep, mapStepNumberToStepName } from './st
 import Steps from '../common/steps/steps';
 import StepsContent from '../common/steps/steps_content';
 
-const WelcomeWizardStepsController = (props) => {
+function WelcomeWizardStepsController(props) {
   const stepsCount = getStepsCount();
   const step = parseInt(props.match.params.step, 10);
 
@@ -158,7 +158,7 @@ const WelcomeWizardStepsController = (props) => {
       </StepsContent>
     </>
   );
-};
+}
 
 WelcomeWizardStepsController.propTypes = {
   match: PropTypes.shape({

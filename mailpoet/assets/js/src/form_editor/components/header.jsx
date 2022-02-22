@@ -17,7 +17,7 @@ import FeatureToggle from './feature_toggle';
 import HistoryUndo from './history_undo';
 import HistoryRedo from './history_redo';
 
-const Header = ({ isInserterOpened, setIsInserterOpened }) => {
+function Header({ isInserterOpened, setIsInserterOpened }) {
   const sidebarOpened = useSelect(
     (select) => select('mailpoet-form-editor').getSidebarOpened(),
     []
@@ -126,7 +126,7 @@ const Header = ({ isInserterOpened, setIsInserterOpened }) => {
       </div>
     </div>
   );
-};
+}
 
 Header.propTypes = {
   isInserterOpened: PropTypes.bool.isRequired,

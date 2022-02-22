@@ -6,7 +6,7 @@ import ReactStringReplace from 'react-string-replace';
 const userHostDomain = window.location.hostname.replace('www.', '');
 const suggestedEmailAddress = `contact@${userHostDomain}`;
 
-const SenderEmailAddressWarning = ({ emailAddress, mssActive }) => {
+function SenderEmailAddressWarning({ emailAddress, mssActive }) {
   if (mssActive) return null;
   const emailAddressDomain = emailAddress.split('@').pop().toLowerCase();
   if (window.mailpoet_free_domains.indexOf(emailAddressDomain) > -1) {
@@ -43,7 +43,7 @@ const SenderEmailAddressWarning = ({ emailAddress, mssActive }) => {
     );
   }
   return null;
-};
+}
 
 SenderEmailAddressWarning.propTypes = {
   emailAddress: PropTypes.string.isRequired,

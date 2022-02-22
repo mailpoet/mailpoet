@@ -248,7 +248,7 @@ ListingPages.defaultProps = {
   disabled?: boolean
 } */
 
-const Arrow = ({ direction, disabled }/* : ArrowProps */) => {
+function Arrow({ direction, disabled }) {
   const arrowLeftPath = 'M8 10V2c0-.552-.448-1-1-1-.216 0-.427.07-.6.2l-5.333 4c-.442.331-.532.958-.2 1.4.057.076.124.143.2.2l5.333 4c.442.331 1.069.242 1.4-.2.13-.173.2-.384.2-.6z';
   const arrowRightPath = 'M0 10V2c0-.552.448-1 1-1 .216 0 .427.07.6.2l5.333 4c.442.331.532.958.2 1.4-.057.076-.124.143-.2.2l-5.333 4c-.442.331-1.069.242-1.4-.2-.13-.173-.2-.384-.2-.6z';
   return (
@@ -264,7 +264,7 @@ const Arrow = ({ direction, disabled }/* : ArrowProps */) => {
       />
     </svg>
   );
-};
+}
 
 Arrow.propTypes = {
   direction: PropTypes.oneOf(['left', 'right']),

@@ -110,7 +110,7 @@ const fields = [
       return segment.name;
     },
     getCount: function getCount(segment) {
-      return parseInt(segment.subscribers, 10).toLocaleString();
+      return parseInt(segment.subscribers as string, 10).toLocaleString();
     },
     transformChangedValue: function transformChangedValue(segmentIds) {
       const allSegments = this.getItems();

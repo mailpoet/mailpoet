@@ -38,14 +38,16 @@ export default (
     batchSize
   );
 
-  _.each(jQuery('select.mailpoet_subscribers_column_data_match'),
+  _.each(
+    jQuery('select.mailpoet_subscribers_column_data_match'),
     (column, columnIndex) => {
       const columnId = jQuery(column).data('column-id');
       if (columnId === 'ignore') {
         return;
       }
       columns[columnId] = { index: columnIndex };
-    });
+    }
+  );
 
   _.each(clickSubscribers, () => {
     queue.add((addQueue) => {

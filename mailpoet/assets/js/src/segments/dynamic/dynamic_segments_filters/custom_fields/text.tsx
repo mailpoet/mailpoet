@@ -28,7 +28,7 @@ type Props = {
   filterIndex: number;
 }
 
-export const Text: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function Text({ filterIndex }:Props):JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -43,32 +43,30 @@ export const Text: React.FunctionComponent<Props> = ({ filterIndex }) => {
   }, [updateSegmentFilter, segment, filterIndex]);
 
   return (
-    <>
-      <Grid.CenteredRow>
-        <Select
-          key="select"
-          automationId="text-custom-field-operator"
-          value={segment.operator}
-          onChange={(e) => {
-            updateSegmentFilterFromEvent('operator', filterIndex, e);
-          }}
-        >
-          <option value="equals">{MailPoet.I18n.t('equals')}</option>
-          <option value="not_equals">{MailPoet.I18n.t('notEquals')}</option>
-          <option value="contains">{MailPoet.I18n.t('contains')}</option>
-          <option value="more_than">{MailPoet.I18n.t('moreThan')}</option>
-          <option value="less_than">{MailPoet.I18n.t('lessThan')}</option>
-        </Select>
-        <Input
-          key="input"
-          data-automation-id="text-custom-field-value"
-          value={segment.value || ''}
-          onChange={(e) => {
-            updateSegmentFilterFromEvent('value', filterIndex, e);
-          }}
-          placeholder={MailPoet.I18n.t('value')}
-        />
-      </Grid.CenteredRow>
-    </>
+    <Grid.CenteredRow>
+      <Select
+        key="select"
+        automationId="text-custom-field-operator"
+        value={segment.operator}
+        onChange={(e) => {
+          updateSegmentFilterFromEvent('operator', filterIndex, e);
+        }}
+      >
+        <option value="equals">{MailPoet.I18n.t('equals')}</option>
+        <option value="not_equals">{MailPoet.I18n.t('notEquals')}</option>
+        <option value="contains">{MailPoet.I18n.t('contains')}</option>
+        <option value="more_than">{MailPoet.I18n.t('moreThan')}</option>
+        <option value="less_than">{MailPoet.I18n.t('lessThan')}</option>
+      </Select>
+      <Input
+        key="input"
+        data-automation-id="text-custom-field-value"
+        value={segment.value || ''}
+        onChange={(e) => {
+          updateSegmentFilterFromEvent('value', filterIndex, e);
+        }}
+        placeholder={MailPoet.I18n.t('value')}
+      />
+    </Grid.CenteredRow>
   );
-};
+}

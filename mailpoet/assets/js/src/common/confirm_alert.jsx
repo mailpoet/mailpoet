@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
-const ConfirmAlert = (props) => {
+function ConfirmAlert(props) {
   MailPoet.Modal.popup({
     title: props.title,
     template: ReactDOMServer.renderToString(
@@ -31,7 +31,7 @@ const ConfirmAlert = (props) => {
     },
   });
   return null;
-};
+}
 
 ConfirmAlert.propTypes = {
   title: PropTypes.string,

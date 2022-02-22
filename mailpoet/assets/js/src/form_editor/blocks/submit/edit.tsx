@@ -22,7 +22,7 @@ type Props = {
   setAttributes: (attribute) => void;
 };
 
-const SubmitEdit: React.FunctionComponent<Props> = ({ attributes, setAttributes }): JSX.Element => {
+function SubmitEdit({ attributes, setAttributes }: Props): JSX.Element {
   const settings: FormSettingsType = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -100,6 +100,6 @@ const SubmitEdit: React.FunctionComponent<Props> = ({ attributes, setAttributes 
       />
     </ParagraphEdit>
   );
-};
+}
 
 export default SubmitEdit;

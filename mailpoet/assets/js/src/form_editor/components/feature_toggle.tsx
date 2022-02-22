@@ -10,21 +10,23 @@ type Props = {
   onToggle: () => void;
 }
 
-const FeatureToggle: React.FunctionComponent<Props> = ({
+function FeatureToggle({
   isActive,
   label,
   info,
   onToggle,
-}: Props) => (
-  <MenuItem
-    icon={isActive && check}
-    isSelected={isActive}
-    onClick={onToggle}
-    role="menuitemcheckbox"
-    info={info}
-  >
-    {label}
-  </MenuItem>
-);
+}: Props) : JSX.Element {
+  return (
+    <MenuItem
+      icon={isActive && check}
+      isSelected={isActive}
+      onClick={onToggle}
+      role="menuitemcheckbox"
+      info={info}
+    >
+      {label}
+    </MenuItem>
+  );
+}
 
 export default FeatureToggle;

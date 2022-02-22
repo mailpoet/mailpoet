@@ -5,16 +5,16 @@ type Props = {
   isOrdered?: boolean;
 };
 
-const List = ({
+function List({
   children,
   isOrdered,
-}: Props) => {
+}: Props) {
   const Element = isOrdered ? 'ol' : 'ul';
   return (
     <Element className={`mailpoet-${Element}`}>
       {children}
     </Element>
   );
-};
+}
 
 export default List;

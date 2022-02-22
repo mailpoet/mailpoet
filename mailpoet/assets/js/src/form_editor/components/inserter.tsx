@@ -12,9 +12,9 @@ type Props = {
   setIsInserterOpened: (boolean) => void;
 }
 
-const Inserter: React.FunctionComponent<Props> = ({
+function Inserter({
   setIsInserterOpened,
-}: Props) => {
+}: Props) : JSX.Element {
   const insertPoint = useSelect(
     (sel) => sel('mailpoet-form-editor').getInserterPanelInsertPoint(),
     []
@@ -37,6 +37,6 @@ const Inserter: React.FunctionComponent<Props> = ({
       </div>
     </div>
   );
-};
+}
 
 export default Inserter;

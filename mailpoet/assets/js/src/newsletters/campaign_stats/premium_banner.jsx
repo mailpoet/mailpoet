@@ -1,9 +1,9 @@
 import React from 'react';
 import MailPoet from 'mailpoet';
 import Button from 'common/button/button';
-import PremiumBannerWithUpgrade from 'common/premium_banner_with_upgrade/premium_banner_with_upgrade';
+import PremiumRequired from 'common/premium_required/premium_required';
 
-const SkipDisplayingDetailedStats = () => {
+function SkipDisplayingDetailedStats() {
   const ctaButton = (
     <Button
       href={MailPoet.MailPoetComUrlFactory.getFreePlanUrl({ utm_medium: 'stats', utm_campaign: 'signup' })}
@@ -27,21 +27,50 @@ const SkipDisplayingDetailedStats = () => {
 
   return (
     <div className="mailpoet-stats-premium-required">
-      <PremiumBannerWithUpgrade
+      <PremiumRequired
+        title={MailPoet.I18n.t('premiumFeature')}
         message={description}
         actionButton={ctaButton}
       />
     </div>
   );
-};
+}
 
-const PremiumBanner = () => {
-  if (!MailPoet.premiumActive || MailPoet.subscribersLimitReached) {
+function PremiumBanner() {
+  if (!window.mailpoet_display_detailed_stats) {
     return (
       <SkipDisplayingDetailedStats />
     );
   }
+  if (window.mailpoet_subscribers_limit_reached) {
+    const hasValidApiKey = window.mailpoet_has_valid_api_key;
+    const title = MailPoet.I18n.t('upgradeRequired');
+    const youReachedTheLimit = MailPoet.I18n.t(hasValidApiKey ? 'newsletterYourPlanLimit' : 'newsletterFreeVersionLimit')
+      .replace('[subscribersLimit]', window.mailpoet_subscribers_limit)
+      .replace('[subscribersCount]', window.mailpoet_subscribers_count);
+    const upgradeLink = hasValidApiKey
+      ? 'https://account.mailpoet.com/upgrade'
+      : `https://account.mailpoet.com/?s=${window.mailpoet_subscribers_count + 1}`;
+
+    return (
+      <div className="mailpoet-stats-premium-required">
+        <PremiumRequired
+          title={title}
+          message={(<p>{youReachedTheLimit}</p>)}
+          actionButton={(
+            <Button
+              target="_blank"
+              rel="noopener noreferrer"
+              href={upgradeLink}
+            >
+              {MailPoet.I18n.t('upgradeNow')}
+            </Button>
+          )}
+        />
+      </div>
+    );
+  }
   return null;
-};
+}
 
 export default PremiumBanner;

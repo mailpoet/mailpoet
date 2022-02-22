@@ -19,7 +19,7 @@ import { CloseButtonsSettings } from 'form_editor/components/close_button_settin
 import { formStyles as defaultFormStyles } from 'form_editor/store/defaults';
 import FontFamilySettings from '../font_family_settings';
 
-const StylesSettingsPanel = ({ onToggle, isOpened }) => {
+function StylesSettingsPanel({ onToggle, isOpened }) {
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
   const settings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
@@ -140,7 +140,7 @@ const StylesSettingsPanel = ({ onToggle, isOpened }) => {
       </PanelBody>
     </Panel>
   );
-};
+}
 
 StylesSettingsPanel.propTypes = {
   onToggle: PropTypes.func.isRequired,

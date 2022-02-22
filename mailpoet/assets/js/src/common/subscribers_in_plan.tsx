@@ -8,10 +8,10 @@ type Props = {
   subscribersInPlanLimit: number | false;
 };
 
-const SubscribersInPlan = ({
+function SubscribersInPlan({
   subscribersInPlan,
   subscribersInPlanLimit,
-}: Props) => {
+}: Props) {
   if (subscribersInPlan === false) {
     return null;
   }
@@ -37,6 +37,6 @@ const SubscribersInPlan = ({
       <span className="mailpoet-subscribers-in-plan-spacer">{' '}</span>
     </div>
   );
-};
+}
 
 export default SubscribersInPlan;

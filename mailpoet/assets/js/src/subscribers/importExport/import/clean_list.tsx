@@ -6,19 +6,21 @@ type Props = {
   onProceed?: () => void;
 }
 
-export default ({ onProceed }: Props): JSX.Element => (
-  <div className="mailpoet-clean-list-step-container">
-    <p>{MailPoet.I18n.t('cleanListText1')}</p>
-    <p>{MailPoet.I18n.t('cleanListText2')}</p>
-    <p>
-      {onProceed && (
+export default function CleanList({ onProceed }: Props): JSX.Element {
+  return (
+    <div className="mailpoet-clean-list-step-container">
+      <p>{MailPoet.I18n.t('cleanListText1')}</p>
+      <p>{MailPoet.I18n.t('cleanListText2')}</p>
+      <p>
+        {onProceed && (
         <Button onClick={onProceed} variant="tertiary">
           {MailPoet.I18n.t('listCleaningGotIt')}
         </Button>
-      )}
-      <Button target="_blank" href="https://kb.mailpoet.com/article/287-list-cleaning-services">
-        {MailPoet.I18n.t('tryListCleaning')}
-      </Button>
-    </p>
-  </div>
-);
+        )}
+        <Button target="_blank" href="https://kb.mailpoet.com/article/287-list-cleaning-services">
+          {MailPoet.I18n.t('tryListCleaning')}
+        </Button>
+      </p>
+    </div>
+  );
+}

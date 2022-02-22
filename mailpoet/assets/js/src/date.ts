@@ -3,10 +3,24 @@ import Moment, { MomentInput } from 'moment';
 export interface DateOptions {
   format?: string;
   offset?: number;
-  parseFormat?: boolean
 }
 
-export const MailPoetDate = {
+export const MailPoetDate : {
+  version:number,
+  options: object,
+  defaults: {
+    offset: number,
+    format: string,
+  },
+  init: (opts?: DateOptions) => typeof MailPoetDate,
+  format: (date: MomentInput, opts?: DateOptions) => string,
+  toDate: (date: MomentInput, opts?: DateOptions) => Date,
+  short: (date: MomentInput) => string,
+  full: (date: MomentInput) => string,
+  time: (date: MomentInput) => string,
+  convertFormat: (format: string) => string,
+  isInFuture: (dateString: string) => boolean
+} = {
   version: 0.1,
   options: {},
   defaults: {
@@ -40,12 +54,12 @@ export const MailPoetDate = {
 
     return this;
   },
-  format: function format(date: MomentInput, opts: DateOptions): string {
+  format: function format(date: MomentInput, opts?: DateOptions): string {
     const options = opts || {};
     let momentDate;
     this.init(options);
 
-    momentDate = Moment(date, this.convertFormat(options.parseFormat));
+    momentDate = Moment(date);
     if (options.offset === 0) momentDate = momentDate.utc();
     return momentDate.format(this.convertFormat(this.options.format));
   },
@@ -53,7 +67,7 @@ export const MailPoetDate = {
     const options = opts || {};
     this.init(options);
 
-    return Moment(date, this.convertFormat(options.parseFormat)).toDate();
+    return Moment(date).toDate();
   },
   short: function short(date: MomentInput): string {
     return this.format(date, {
@@ -72,7 +86,7 @@ export const MailPoetDate = {
   },
   convertFormat: function convertFormat(format: string): string {
     let escapeToken;
-    let index;
+    let index: number;
     let token: string;
     const formatMappings = {
       date: {

@@ -4,7 +4,7 @@ import PremiumBannerWithUpgrade from 'common/premium_banner_with_upgrade/premium
 import Button from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
 
-const DynamicSegmentsPremiumBanner: React.FunctionComponent = () => {
+function DynamicSegmentsPremiumBanner() : JSX.Element {
   const getBannerMessage: React.FunctionComponent = () => {
     const message = MailPoet.I18n.t('premiumFeatureMultipleConditions');
     return (
@@ -39,6 +39,6 @@ const DynamicSegmentsPremiumBanner: React.FunctionComponent = () => {
       actionButton={getCtaButton({})}
     />
   );
-};
+}
 
 export default DynamicSegmentsPremiumBanner;

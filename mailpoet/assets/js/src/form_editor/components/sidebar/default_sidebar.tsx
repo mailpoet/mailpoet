@@ -11,7 +11,7 @@ type Props = {
   onClose: () => void;
 };
 
-export default ({ onClose }: Props): JSX.Element => {
+export default function DefaultSidebar({ onClose }: Props): JSX.Element {
   const activeTab = useSelect(
     (select) => select('mailpoet-form-editor').getDefaultSidebarActiveTab(),
     []
@@ -61,4 +61,4 @@ export default ({ onClose }: Props): JSX.Element => {
       {activeTab === 'form' ? <FormSettings /> : <BlockSettings />}
     </>
   );
-};
+}

@@ -40,7 +40,7 @@ import Fullscreen from './fullscreen';
  * To find out more about how block editor components are used visit
  * https://developer.wordpress.org/block-editor/packages/packages-block-editor/
  */
-export default () => {
+export default function Editor() {
   const sidebarOpened = useSelect(
     (sel) => sel('mailpoet-form-editor').getSidebarOpened(),
     []
@@ -167,4 +167,4 @@ export default () => {
       <Tutorial />
     </>
   );
-};
+}

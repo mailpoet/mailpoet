@@ -11,7 +11,7 @@ import Notices from 'notices/notices.jsx';
 import WelcomeWizardStepsController from './welcome_wizard_controller.jsx';
 import WooCommerceController from './woocommerce_controller.jsx';
 
-const App = () => {
+function App() {
   let basePath = '/steps/1';
   if (window.location.search.includes('woocommerce-setup')) {
     basePath = '/woocommerce';
@@ -29,7 +29,7 @@ const App = () => {
       </HashRouter>
     </GlobalContext.Provider>
   );
-};
+}
 
 const container = document.getElementById('mailpoet-wizard-container');
 

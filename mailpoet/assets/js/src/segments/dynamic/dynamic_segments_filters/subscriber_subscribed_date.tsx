@@ -50,7 +50,7 @@ type Props = {
   filterIndex: number;
 }
 
-export const SubscribedDateFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function SubscribedDateFields({ filterIndex }: Props) : JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -69,7 +69,7 @@ export const SubscribedDateFields: React.FunctionComponent<Props> = ({ filterInd
         || segment.operator === SubscribedDateOperator.ON
         || segment.operator === SubscribedDateOperator.NOT_ON
       )
-      && ((parseDate(segment.value) === undefined) || !new RegExp(/^\d+-\d+-\d+$/).test(segment.value))
+      && ((parseDate(segment.value) === undefined) || !/^\d+-\d+-\d+$/.test(segment.value))
     ) {
       updateSegmentFilter({ value: convertDateToString(new Date()) }, filterIndex);
     }
@@ -78,64 +78,62 @@ export const SubscribedDateFields: React.FunctionComponent<Props> = ({ filterInd
         segment.operator === SubscribedDateOperator.IN_THE_LAST
         || segment.operator === SubscribedDateOperator.NOT_IN_THE_LAST
       )
-      && ((typeof segment.value === 'string') && !new RegExp(/^\d*$/).exec(segment.value))
+      && ((typeof segment.value === 'string') && !/^\d*$/.exec(segment.value))
     ) {
       updateSegmentFilter({ value: '' }, filterIndex);
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
   return (
-    <>
-      <Grid.CenteredRow>
-        <Select
-          key="select"
-          value={segment.operator}
-          onChange={(e) => {
-            updateSegmentFilterFromEvent('operator', filterIndex, e);
-          }}
-        >
-          <option value={SubscribedDateOperator.BEFORE}>{MailPoet.I18n.t('before')}</option>
-          <option value={SubscribedDateOperator.AFTER}>{MailPoet.I18n.t('after')}</option>
-          <option value={SubscribedDateOperator.ON}>{MailPoet.I18n.t('on')}</option>
-          <option value={SubscribedDateOperator.NOT_ON}>{MailPoet.I18n.t('notOn')}</option>
-          <option value={SubscribedDateOperator.IN_THE_LAST}>{MailPoet.I18n.t('inTheLast')}</option>
-          <option value={SubscribedDateOperator.NOT_IN_THE_LAST}>{MailPoet.I18n.t('notInTheLast')}</option>
-        </Select>
-        {(
-          segment.operator === SubscribedDateOperator.BEFORE
+    <Grid.CenteredRow>
+      <Select
+        key="select"
+        value={segment.operator}
+        onChange={(e) => {
+          updateSegmentFilterFromEvent('operator', filterIndex, e);
+        }}
+      >
+        <option value={SubscribedDateOperator.BEFORE}>{MailPoet.I18n.t('before')}</option>
+        <option value={SubscribedDateOperator.AFTER}>{MailPoet.I18n.t('after')}</option>
+        <option value={SubscribedDateOperator.ON}>{MailPoet.I18n.t('on')}</option>
+        <option value={SubscribedDateOperator.NOT_ON}>{MailPoet.I18n.t('notOn')}</option>
+        <option value={SubscribedDateOperator.IN_THE_LAST}>{MailPoet.I18n.t('inTheLast')}</option>
+        <option value={SubscribedDateOperator.NOT_IN_THE_LAST}>{MailPoet.I18n.t('notInTheLast')}</option>
+      </Select>
+      {(
+        segment.operator === SubscribedDateOperator.BEFORE
           || segment.operator === SubscribedDateOperator.AFTER
           || segment.operator === SubscribedDateOperator.ON
           || segment.operator === SubscribedDateOperator.NOT_ON
-        ) && (
-          <Datepicker
-            dateFormat="MMM d, yyyy"
-            onChange={(value): void => {
-              updateSegmentFilter({ value: convertDateToString(value) }, filterIndex);
-            }}
-            selected={segment.value ? parseDate(segment.value) : undefined}
-          />
-        )}
-        {(
-          segment.operator === SubscribedDateOperator.IN_THE_LAST
+      ) && (
+      <Datepicker
+        dateFormat="MMM d, yyyy"
+        onChange={(value): void => {
+          updateSegmentFilter({ value: convertDateToString(value) }, filterIndex);
+        }}
+        selected={segment.value ? parseDate(segment.value) : undefined}
+      />
+      )}
+      {(
+        segment.operator === SubscribedDateOperator.IN_THE_LAST
           || segment.operator === SubscribedDateOperator.NOT_IN_THE_LAST
-        ) && (
-          <>
-            <Input
-              key="input"
-              type="number"
-              value={segment.value}
-              onChange={(e) => {
-                updateSegmentFilterFromEvent('value', filterIndex, e);
-              }}
-              min="1"
-              placeholder={MailPoet.I18n.t('daysPlaceholder')}
-            />
-            <span>
-              {MailPoet.I18n.t('daysPlaceholder')}
-            </span>
-          </>
-        )}
-      </Grid.CenteredRow>
-    </>
+      ) && (
+      <>
+        <Input
+          key="input"
+          type="number"
+          value={segment.value}
+          onChange={(e) => {
+            updateSegmentFilterFromEvent('value', filterIndex, e);
+          }}
+          min="1"
+          placeholder={MailPoet.I18n.t('daysPlaceholder')}
+        />
+        <span>
+          {MailPoet.I18n.t('daysPlaceholder')}
+        </span>
+      </>
+      )}
+    </Grid.CenteredRow>
   );
-};
+}

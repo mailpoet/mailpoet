@@ -2,13 +2,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import MailPoet from 'mailpoet';
 
-const PrintBoolean = (props) => (
-  <span>
-    {(props.children === true && props.truthy)
+function PrintBoolean(props) {
+  return (
+    <span>
+      {(props.children === true && props.truthy)
       || (props.children === false && props.falsy)
       || (props.unknown)}
-  </span>
-);
+    </span>
+  );
+}
 
 PrintBoolean.propTypes = {
   truthy: PropTypes.string,

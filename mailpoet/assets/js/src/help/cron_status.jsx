@@ -4,7 +4,7 @@ import React from 'react';
 import KeyValueTable from 'common/key_value_table.jsx';
 import PrintBoolean from 'common/print_boolean.jsx';
 
-const CronStatus = (props) => {
+function CronStatus(props) {
   const status = props.status_data;
   const activeStatusMapping = {
     active: MailPoet.I18n.t('running'),
@@ -64,7 +64,7 @@ const CronStatus = (props) => {
       />
     </div>
   );
-};
+}
 
 CronStatus.propTypes = {
   status_data: PropTypes.shape({

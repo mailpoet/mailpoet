@@ -19,7 +19,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
 }
 
-const Button = ({
+function Button({
   children,
   dimension,
   variant,
@@ -35,7 +35,7 @@ const Button = ({
   target,
   automationId,
   className,
-}: Props) => {
+}: Props) {
   const Element = href ? 'a' : 'button';
   return (
     <Element
@@ -69,6 +69,6 @@ const Button = ({
       {iconEnd}
     </Element>
   );
-};
+}
 
 export default Button;

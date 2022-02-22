@@ -29,7 +29,7 @@ export type StatsType = {
   };
 }
 
-export const SubscriberStats: React.FunctionComponent = () => {
+export function SubscriberStats() : JSX.Element {
   const match = useRouteMatch<{id: string}>();
   const location = useLocation();
   const [stats, setStats] = useState<StatsType|null>(null);
@@ -38,7 +38,7 @@ export const SubscriberStats: React.FunctionComponent = () => {
   const showError = contextValue.notices.error;
 
   useEffect(() => {
-    MailPoet.Ajax.post({
+    void MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
       endpoint: 'subscriberStats',
       action: 'get',
@@ -46,7 +46,7 @@ export const SubscriberStats: React.FunctionComponent = () => {
         subscriber_id: match.params.id,
       },
     }).done((response) => {
-      setStats(response.data);
+      setStats(response.data as StatsType);
       setLoading(false);
     }).fail((response) => {
       setLoading(false);
@@ -95,4 +95,4 @@ export const SubscriberStats: React.FunctionComponent = () => {
       <OpenedEmailsStats params={match.params} location={location} />
     </div>
   );
-};
+}

@@ -5,8 +5,8 @@ import MailPoet from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import plusIcon from 'common/button/icon/plus';
 
-const SubscribersHeading = ({ location }) => (
-  <>
+function SubscribersHeading({ location }) {
+  return (
     <TopBarWithBeamer>
       <Link
         className="mailpoet-button button-secondary"
@@ -35,8 +35,8 @@ const SubscribersHeading = ({ location }) => (
         {MailPoet.I18n.t('export')}
       </a>
     </TopBarWithBeamer>
-  </>
-);
+  );
+}
 
 SubscribersHeading.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types

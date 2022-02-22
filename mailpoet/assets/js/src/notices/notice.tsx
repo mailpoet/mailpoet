@@ -13,7 +13,7 @@ type Props = {
   timeout?: number | false;
 };
 
-const Notice = ({
+function Notice({
   onClose,
   onDisplay,
   renderInPlace,
@@ -22,10 +22,10 @@ const Notice = ({
   children,
   closable,
   type,
-}: Props) => {
+}: Props) {
   const [hidden, setHidden] = React.useState(false);
   const elementRef = React.useRef(null);
-  const timeoutRef = React.useRef(null);
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>(null);
 
   const close = React.useCallback(() => {
     if (onClose) onClose();
@@ -70,7 +70,7 @@ const Notice = ({
     content,
     document.getElementById('mailpoet_notices')
   );
-};
+}
 Notice.defaultProps = {
   timeout: 10000,
   scroll: false,

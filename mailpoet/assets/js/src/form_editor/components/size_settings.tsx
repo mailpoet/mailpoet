@@ -18,7 +18,7 @@ type Props = {
   onChange: (value: SizeDefinition) => void;
 }
 
-export const SizeSettings: React.FunctionComponent<Props> = ({
+export function SizeSettings({
   label,
   minPercents = 0,
   maxPercents = 100,
@@ -28,7 +28,7 @@ export const SizeSettings: React.FunctionComponent<Props> = ({
   defaultPercentValue = 50,
   defaultPixelValue = 200,
   onChange,
-}: Props) => {
+}: Props): JSX.Element {
   const [localValue, setLocalValue] = useState(value ?? { unit: 'pixel', value: undefined });
 
   useEffect(() => {
@@ -68,4 +68,4 @@ export const SizeSettings: React.FunctionComponent<Props> = ({
       />
     </div>
   );
-};
+}

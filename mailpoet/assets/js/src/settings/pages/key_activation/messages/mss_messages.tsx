@@ -3,32 +3,38 @@ import MailPoet from 'mailpoet';
 import { useSelector } from 'settings/store/hooks';
 import { MssStatus } from 'settings/store/types';
 
-const ActiveMessage = () => (
-  <div className="mailpoet_success_item mailpoet_success mailpoet_mss_key_valid">
-    {MailPoet.I18n.t('premiumTabMssActiveMessage')}
-  </div>
-);
+function ActiveMessage() {
+  return (
+    <div className="mailpoet_success_item mailpoet_success mailpoet_mss_key_valid">
+      {MailPoet.I18n.t('premiumTabMssActiveMessage')}
+    </div>
+  );
+}
 
 type NotValidMessageProps = { message?: string }
-const NotValidMessage = ({ message }: NotValidMessageProps) => (
-  <div className="mailpoet_error">
-    {message || MailPoet.I18n.t('premiumTabMssKeyNotValidMessage')}
-  </div>
-);
+function NotValidMessage({ message }: NotValidMessageProps) {
+  return (
+    <div className="mailpoet_error">
+      {message || MailPoet.I18n.t('premiumTabMssKeyNotValidMessage')}
+    </div>
+  );
+}
 NotValidMessage.defaultProps = {
   message: '',
 };
 
 type MssNotActiveMessageProps = { activationCallback: () => void }
-const MssNotActiveMessage = ({ activationCallback }: MssNotActiveMessageProps) => (
-  <div className="mailpoet_error">
-    {MailPoet.I18n.t('premiumTabMssNotActiveMessage')}
-    {' '}
-    <button type="button" className="mailpoet-button button button-primary button-small" onClick={activationCallback}>
-      {MailPoet.I18n.t('premiumTabMssActivateMessage')}
-    </button>
-  </div>
-);
+function MssNotActiveMessage({ activationCallback }: MssNotActiveMessageProps) {
+  return (
+    <div className="mailpoet_error">
+      {MailPoet.I18n.t('premiumTabMssNotActiveMessage')}
+      {' '}
+      <button type="button" className="mailpoet-button button button-primary button-small" onClick={activationCallback}>
+        {MailPoet.I18n.t('premiumTabMssActivateMessage')}
+      </button>
+    </div>
+  );
+}
 
 type Props = {
   keyMessage?: string;

@@ -5,7 +5,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import Icon from './icons/slide_in_icon';
 import FormPlacementOption from './form_placement_option';
 
-const SlideIn: React.FunctionComponent = () => {
+function SlideIn():JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -21,6 +21,6 @@ const SlideIn: React.FunctionComponent = () => {
       canBeActive
     />
   );
-};
+}
 
 export default SlideIn;

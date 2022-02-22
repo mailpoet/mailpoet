@@ -7,8 +7,9 @@ import StylesSettingsPanel from './styles_settings_panel';
 import FormPlacementPanel from './form_placement_panel';
 import CustomCssPanel from './custom_css_panel';
 
-export default (): JSX.Element => {
-  const { toggleSidebarPanel } = useDispatch('mailpoet-form-editor');
+export default function FormSettings(): JSX.Element {
+  const dispatchResult = useDispatch('mailpoet-form-editor');
+  const toggleSidebarPanel:(t1: string, ...ts: []) => void = dispatchResult.toggleSidebarPanel;
   const openedPanels = useSelect(
     (select) => select('mailpoet-form-editor').getSidebarOpenedPanels(),
     []
@@ -34,4 +35,4 @@ export default (): JSX.Element => {
       />
     </>
   );
-};
+}

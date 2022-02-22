@@ -13,14 +13,14 @@ type Props = Category & {
   active?: boolean;
 };
 
-const CategoriesItem = ({
+function CategoriesItem({
   onSelect,
   name,
   label,
   count,
   automationId,
   active,
-}: Props) => {
+}: Props) {
   const classes = classNames(
     'mailpoet-categories-item',
     { active: !!active }
@@ -47,6 +47,6 @@ const CategoriesItem = ({
       )}
     </a>
   );
-};
+}
 
 export default CategoriesItem;

@@ -3,7 +3,7 @@ import codemirror from 'codemirror';
 import 'codemirror/mode/css/css'; // Side effect
 import PropTypes from 'prop-types';
 
-const CodemirrorWrap = ({ options, value, onChange }) => {
+function CodemirrorWrap({ options, value, onChange }) {
   const textArea = useRef(null);
   const editor = useRef(null);
 
@@ -39,7 +39,7 @@ const CodemirrorWrap = ({ options, value, onChange }) => {
       />
     </div>
   );
-};
+}
 
 CodemirrorWrap.propTypes = {
   value: PropTypes.string.isRequired,

@@ -45,7 +45,7 @@ class EventsConditions extends React.Component {
       event: currentEvent,
       eventSlug: currentEvent.slug,
       eventOptionValue: currentEventOptionValue,
-      segment: (currentEvent.sendToLists) ? this.constructor.getFirstSegment() : null,
+      segment: (currentEvent.sendToLists) ? this.getFirstSegment() : null,
       afterTimeType: currentEvent.defaultAfterTimeType || defaultAfterTimeType,
       afterTimeNumber: null,
     };
@@ -60,7 +60,7 @@ class EventsConditions extends React.Component {
 
       // keep the existing segment (if set) or set it to the first segment in the list
       newState.segment = (newState.event.sendToLists)
-        ? segment || this.constructor.getFirstSegment() : null;
+        ? segment || this.getFirstSegment() : null;
 
       // if the new event doesn't have options, reset the currently selected option value
       const eventOptions = this.constructor.getEventOptions(newState.event);
@@ -144,13 +144,13 @@ class EventsConditions extends React.Component {
       return jQuery('#newsletter_scheduling').parsley().isValid();
     }
     return true;
-  }
+  };
 
   validate = () => {
     if (jQuery('#newsletter_scheduling').parsley()) {
       jQuery('#newsletter_scheduling').parsley().validate();
     }
-  }
+  };
 
   resetValidationErrors = () => {
     if (jQuery('#newsletter_scheduling').parsley()) {

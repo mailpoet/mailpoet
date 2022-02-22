@@ -54,13 +54,13 @@ export function validateSubscriberScore(formItems: WordpressRoleFormItem): boole
   return false;
 }
 
-function replaceSubscriberScoreSentence(fn): JSX.Element[] {
+function replaceSubscriberScoreSentence(fn:(value) => JSX.Element): JSX.Element[] {
   return MailPoet.I18n.t('subscriberScoreSentence')
     .split(/({condition})|({score})|(\b%\b)/gim)
     .map(fn);
 }
 
-export const SubscriberScoreFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function SubscriberScoreFields({ filterIndex }:Props) : JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -92,63 +92,61 @@ export const SubscriberScoreFields: React.FunctionComponent<Props> = ({ filterIn
   }, [updateSegmentFilter, segment, filterIndex]);
 
   return (
-    <>
-      <Grid.CenteredRow>
-        {replaceSubscriberScoreSentence(
-          (match) => {
-            if (match === '{condition}') {
-              return (
-                <Select
-                  key="select"
-                  value={segment.operator}
-                  automationId="segment-subscriber-score-operator"
-                  onChange={(e) => {
-                    updateSegmentFilterFromEvent('operator', filterIndex, e);
-                  }}
-                >
-                  <option value={SubscriberScoreOperator.HIGHER_THAN}>{MailPoet.I18n.t('higherThan')}</option>
-                  <option value={SubscriberScoreOperator.LOWER_THAN}>{MailPoet.I18n.t('lowerThan')}</option>
-                  <option value={SubscriberScoreOperator.EQUALS}>{MailPoet.I18n.t('equals')}</option>
-                  <option value={SubscriberScoreOperator.NOT_EQUALS}>{MailPoet.I18n.t('notEquals')}</option>
-                  <option value={SubscriberScoreOperator.UNKNOWN}>{MailPoet.I18n.t('unknown')}</option>
-                  <option value={SubscriberScoreOperator.NOT_UNKNOWN}>{MailPoet.I18n.t('notUnknown')}</option>
-                </Select>
-              );
-            }
-            if (match === '{score}') {
-              return (
-                segment.operator === SubscriberScoreOperator.HIGHER_THAN
+    <Grid.CenteredRow>
+      {replaceSubscriberScoreSentence(
+        (match) => {
+          if (match === '{condition}') {
+            return (
+              <Select
+                key="select"
+                value={segment.operator}
+                automationId="segment-subscriber-score-operator"
+                onChange={(e) => {
+                  updateSegmentFilterFromEvent('operator', filterIndex, e);
+                }}
+              >
+                <option value={SubscriberScoreOperator.HIGHER_THAN}>{MailPoet.I18n.t('higherThan')}</option>
+                <option value={SubscriberScoreOperator.LOWER_THAN}>{MailPoet.I18n.t('lowerThan')}</option>
+                <option value={SubscriberScoreOperator.EQUALS}>{MailPoet.I18n.t('equals')}</option>
+                <option value={SubscriberScoreOperator.NOT_EQUALS}>{MailPoet.I18n.t('notEquals')}</option>
+                <option value={SubscriberScoreOperator.UNKNOWN}>{MailPoet.I18n.t('unknown')}</option>
+                <option value={SubscriberScoreOperator.NOT_UNKNOWN}>{MailPoet.I18n.t('notUnknown')}</option>
+              </Select>
+            );
+          }
+          if (match === '{score}') {
+            return (
+              segment.operator === SubscriberScoreOperator.HIGHER_THAN
                 || segment.operator === SubscriberScoreOperator.LOWER_THAN
                 || segment.operator === SubscriberScoreOperator.EQUALS
                 || segment.operator === SubscriberScoreOperator.NOT_EQUALS
-              ) && (
-                <Input
-                  key="input"
-                  type="number"
-                  value={segment.value || ''}
-                  data-automation-id="segment-subscriber-score-value"
-                  onChange={(e) => {
-                    updateSegmentFilterFromEvent('value', filterIndex, e);
-                  }}
-                  min="0"
-                  placeholder={MailPoet.I18n.t('subscriberScorePlaceholder')}
-                />
-              );
-            }
-            if ((typeof match === 'string') && match.trim().length > 0) {
-              return (
-                segment.operator !== SubscriberScoreOperator.UNKNOWN
-                && segment.operator !== SubscriberScoreOperator.NOT_UNKNOWN
-              ) && (
-                <div key="score">
-                  {match}
-                </div>
-              );
-            }
-            return null;
+            ) && (
+            <Input
+              key="input"
+              type="number"
+              value={segment.value || ''}
+              data-automation-id="segment-subscriber-score-value"
+              onChange={(e) => {
+                updateSegmentFilterFromEvent('value', filterIndex, e);
+              }}
+              min="0"
+              placeholder={MailPoet.I18n.t('subscriberScorePlaceholder')}
+            />
+            );
           }
-        )}
-      </Grid.CenteredRow>
-    </>
+          if ((typeof match === 'string') && match.trim().length > 0) {
+            return (
+              segment.operator !== SubscriberScoreOperator.UNKNOWN
+                && segment.operator !== SubscriberScoreOperator.NOT_UNKNOWN
+            ) && (
+            <div key="score">
+              {match}
+            </div>
+            );
+          }
+          return null;
+        }
+      )}
+    </Grid.CenteredRow>
   );
-};
+}

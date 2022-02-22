@@ -7,8 +7,8 @@ export default {
   component: PremiumRequired,
 };
 
-export const PremiumsRequired = () => (
-  <>
+export function PremiumsRequired() {
+  return (
     <div>
       <PremiumRequired
         title="This is a Premium Feature"
@@ -26,5 +26,5 @@ export const PremiumsRequired = () => (
         actionButton={(<Button href="#">Sign Up</Button>)}
       />
     </div>
-  </>
-);
+  );
+}

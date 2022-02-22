@@ -6,8 +6,8 @@ export default {
   title: 'Top Bar/No Children',
 };
 
-export const TopBarWithoutChildren = () => (
-  <>
+export function TopBarWithoutChildren() {
+  return (
     <div style={{
       backgroundColor: '#bbb',
       width: '100%',
@@ -22,11 +22,11 @@ export const TopBarWithoutChildren = () => (
         onBeamerClick={action('beamer click')}
       />
     </div>
-  </>
-);
+  );
+}
 
-export const TopBarWithoutChildrenWithNews = () => (
-  <>
+export function TopBarWithoutChildrenWithNews() {
+  return (
     <div style={{
       backgroundColor: '#bbb',
       width: '100%',
@@ -41,5 +41,5 @@ export const TopBarWithoutChildrenWithNews = () => (
         onBeamerClick={action('beamer click')}
       />
     </div>
-  </>
-);
+  );
+}

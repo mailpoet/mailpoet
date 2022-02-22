@@ -5,7 +5,7 @@ type Setter = (value: string) => void
 type Event = ChangeEvent<any>
 
 export function onChange(setter: Setter) {
-  return (e: Event) => setter(e.target.value);
+  return (e: Event) => setter(e.target.value as string);
 }
 
 export function onToggle(setter: Setter, falseValue = '0') {

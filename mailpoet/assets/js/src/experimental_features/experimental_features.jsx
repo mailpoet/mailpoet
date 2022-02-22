@@ -4,7 +4,7 @@ import MailPoet from 'mailpoet';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
 
-const ExperimentalFeatures = () => {
+function ExperimentalFeatures() {
   const [flags, setFlags] = useState(null);
   const contextValue = useGlobalContextValue(window);
   const showError = contextValue.notices.error;
@@ -87,7 +87,7 @@ const ExperimentalFeatures = () => {
       </>
     </GlobalContext.Provider>
   );
-};
+}
 
 const experimentalFeaturesContainer = document.getElementById('experimental_features_container');
 if (experimentalFeaturesContainer) {

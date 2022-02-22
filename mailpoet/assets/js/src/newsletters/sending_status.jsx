@@ -26,7 +26,7 @@ const messages = {
   onNoItemsFound: () => MailPoet.I18n.t('noSendingTaskFound'),
 };
 
-const SendingStatus = (props) => {
+function SendingStatus(props) {
   const [newsletter, setNewsletter] = React.useState({
     id: props.match.params.id,
     subject: '',
@@ -59,7 +59,7 @@ const SendingStatus = (props) => {
       <SendingStatusListing location={props.location} params={props.match.params} />
     </>
   );
-};
+}
 SendingStatus.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string,
@@ -76,6 +76,12 @@ const compareProps = (prev, next) => (
   && prev.params.id === next.params.id
 );
 
+const onRenderItem = (item) => (
+  <div>
+    <ListingItem {...item} />
+  </div>
+);
+
 const SendingStatusListing = React.memo(({ location, params }) => (
   <Listing
     limit={window.mailpoet_listing_per_page}
@@ -83,14 +89,7 @@ const SendingStatusListing = React.memo(({ location, params }) => (
     params={params}
     endpoint="sending_task_subscribers"
     base_url="sending-status/:id"
-    onRenderItem={
-      (item) => (
-        <div>
-          { /* eslint-disable-next-line react/jsx-props-no-spreading */ }
-          <ListingItem {...item} />
-        </div>
-      )
-    }
+    onRenderItem={onRenderItem}
     getListingItemKey={(item) => `${item.taskId}-${item.subscriberId}`}
     columns={columns}
     messages={messages}
@@ -112,10 +111,10 @@ SendingStatusListing.propTypes = {
   }).isRequired,
 };
 
-const StatsLink = ({ newsletter }) => {
+function StatsLink({ newsletter }) {
   if (!newsletter.id || !newsletter.subject || !newsletter.sent) return null;
   return <p><Link to={`/stats/${newsletter.id}`}>{ newsletter.subject }</Link></p>;
-};
+}
 StatsLink.propTypes = {
   newsletter: PropTypes.shape({
     id: PropTypes.string,
@@ -131,9 +130,9 @@ StatsLink.defaultProps = {
   },
 };
 
-const ListingItem = ({
+function ListingItem({
   error, failed, taskId, processed, email, subscriberId, lastName, firstName,
-}) => {
+}) {
   const resend = () => {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -194,7 +193,7 @@ const ListingItem = ({
       </td>
     </>
   );
-};
+}
 ListingItem.propTypes = {
   error: PropTypes.string,
   email: PropTypes.string.isRequired,

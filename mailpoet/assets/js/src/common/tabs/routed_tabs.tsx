@@ -12,10 +12,10 @@ import { noop } from 'lodash';
 
 import Tabs, { Props as TabProps } from './tabs';
 
-const RouterAwareTabs = (props: TabProps & {
+function RouterAwareTabs(props: TabProps & {
   keyPathMap: { [key: string]: string };
   routerPrefix?: string;
-}) => {
+}) {
   const match = useRouteMatch();
   const history = useHistory();
 
@@ -38,21 +38,21 @@ const RouterAwareTabs = (props: TabProps & {
       {props.children}
     </Tabs>
   );
-};
+}
 
 type Props = TabProps & {
   routerType?: 'hash' | 'browser' | 'switch-only';
   routerPrefix?: string;
 };
 
-const RoutedTabs = ({
+function RoutedTabs({
   routerType = 'hash',
   routerPrefix = '/',
   activeKey,
   onSwitch = noop,
   automationId = null,
   children,
-}: Props) => {
+}: Props) {
   const keyPathMap: { [key: string]: string } = {};
   React.Children.map(children, (child: React.ReactElement) => {
     if (child) {
@@ -68,26 +68,24 @@ const RoutedTabs = ({
   //  1. We use a single route with an array of all tab URLs (all render the same component).
   //  2. Using 'render' (not 'component') ensures it is reused even when wrapped in a callback.
   const routedTabs = (
-    <>
-      <Switch>
-        <Route
-          exact
-          path={Object.values(keyPathMap)}
-          render={() => (
-            <RouterAwareTabs
-              activeKey={activeKey}
-              onSwitch={onSwitch}
-              automationId={automationId}
-              keyPathMap={keyPathMap}
-              routerPrefix={routerPrefix}
-            >
-              {children}
-            </RouterAwareTabs>
-          )}
-        />
-        <Redirect to={`${routerPrefix}${activeKey}`} />
-      </Switch>
-    </>
+    <Switch>
+      <Route
+        exact
+        path={Object.values(keyPathMap)}
+        render={() => (
+          <RouterAwareTabs
+            activeKey={activeKey}
+            onSwitch={onSwitch}
+            automationId={automationId}
+            keyPathMap={keyPathMap}
+            routerPrefix={routerPrefix}
+          >
+            {children}
+          </RouterAwareTabs>
+        )}
+      />
+      <Redirect to={`${routerPrefix}${activeKey}`} />
+    </Switch>
   );
 
   if (routerType === 'switch-only') {
@@ -97,6 +95,6 @@ const RoutedTabs = ({
   return routerType === 'browser'
     ? <BrowserRouter>{routedTabs}</BrowserRouter>
     : <HashRouter>{routedTabs}</HashRouter>;
-};
+}
 
 export default RoutedTabs;

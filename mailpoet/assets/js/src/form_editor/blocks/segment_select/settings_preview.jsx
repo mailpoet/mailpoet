@@ -7,29 +7,31 @@ import { CheckboxControl, Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-const PreviewItem = ({
+function PreviewItem({
   segment,
   removeSegment,
   onCheck,
-}) => (
-  <div
-    className="mailpoet-form-segments-settings-list"
-    key={segment.id}
-  >
-    <CheckboxControl
-      label={segment.name}
-      defaultChecked={!!segment.isChecked}
-      onChange={partial(onCheck, segment.id)}
-      key={`check-${segment.id}`}
-    />
-    <Dashicon
-      icon="no-alt"
-      color="#900"
-      className="mailpoet-form-segments-segment-remove"
-      onClick={partial(removeSegment, segment.id)}
-    />
-  </div>
-);
+}) {
+  return (
+    <div
+      className="mailpoet-form-segments-settings-list"
+      key={segment.id}
+    >
+      <CheckboxControl
+        label={segment.name}
+        defaultChecked={!!segment.isChecked}
+        onChange={partial(onCheck, segment.id)}
+        key={`check-${segment.id}`}
+      />
+      <Dashicon
+        icon="no-alt"
+        color="#900"
+        className="mailpoet-form-segments-segment-remove"
+        onClick={partial(removeSegment, segment.id)}
+      />
+    </div>
+  );
+}
 
 PreviewItem.propTypes = {
   segment: PropTypes.shape({
@@ -41,12 +43,12 @@ PreviewItem.propTypes = {
   removeSegment: PropTypes.func.isRequired,
 };
 
-const Preview = ({
+function Preview({
   segments,
   updateSegment,
   removeSegment,
   onSegmentsReorder,
-}) => {
+}) {
   const [segmentsWhileMoved, setSegments] = useState(segments);
 
   useEffect(() => {
@@ -73,7 +75,6 @@ const Preview = ({
     onSegmentsReorder(newValues);
   };
 
-  /* eslint-disable react/jsx-props-no-spreading */
   const renderItems = () => (segmentsWhileMoved.map((segment, index) => (
     <Draggable key={segment.id} draggableId={segment.id} index={index}>
       {(provided) => (
@@ -108,7 +109,7 @@ const Preview = ({
       </Droppable>
     </DragDropContext>
   );
-};
+}
 
 Preview.propTypes = {
   segments: PropTypes.arrayOf(PropTypes.shape({

@@ -7,10 +7,10 @@ interface Props {
   engagementScore?: number;
 }
 
-export const ListingsEngagementScore: React.FunctionComponent<Props> = ({
+export function ListingsEngagementScore({
   id,
   engagementScore,
-}) => {
+}:Props) : JSX.Element {
   const badges = {
     unknown: {
       name: MailPoet.I18n.t('unknownBadgeName'),
@@ -116,4 +116,4 @@ export const ListingsEngagementScore: React.FunctionComponent<Props> = ({
       </div>
     </div>
   );
-};
+}

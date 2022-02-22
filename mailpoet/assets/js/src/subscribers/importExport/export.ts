@@ -85,7 +85,7 @@ jQuery(document).ready(() => {
           'select',
           'deselect',
         ];
-        let allOptions;
+        let allOptions : string[];
         if (_.contains(fieldsToExclude, selectedOptionId)) {
           selectEvent.preventDefault();
           if (selectedOptionId === 'deselect') {
@@ -93,8 +93,9 @@ jQuery(document).ready(() => {
           } else {
             allOptions = [];
             _.each(container.find('option'), (field) => {
-              if (!_.contains(fieldsToExclude, field.value)) {
-                allOptions.push(field.value);
+              const value : string = field.value;
+              if (!_.contains(fieldsToExclude, value)) {
+                allOptions.push(value);
               }
             });
             jQuery(selectEvent.target).val(allOptions).trigger('change');
@@ -145,7 +146,7 @@ jQuery(document).ready(() => {
     }
     MailPoet.Modal.loading(true);
     const exportFormat = jQuery(':radio[name="option_format"]:checked').val();
-    MailPoet.Ajax.post({
+    void MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
       endpoint: 'ImportExport',
       action: 'processExport',
@@ -158,7 +159,7 @@ jQuery(document).ready(() => {
       MailPoet.Modal.loading(false);
     }).done((response) => {
       const resultMessage = MailPoet.I18n.t('exportMessage')
-        .replace('%1$s', `<strong>${parseInt(response.data.totalExported, 10).toLocaleString()}</strong>`)
+        .replace('%1$s', `<strong>${parseInt(response.data.totalExported as string, 10).toLocaleString()}</strong>`)
         .replace('[link]', `<a href="${response.data.exportFileURL}" target="_blank" >`)
         .replace('[/link]', '</a>');
       jQuery('#export_result_notice').html(`<p>${resultMessage}</p>`).show();
@@ -167,7 +168,7 @@ jQuery(document).ready(() => {
         'Total exported': response.data.totalExported,
         'File Format': exportFormat,
       });
-    }).fail((response) => {
+    }).fail((response:ErrorResponse) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(response.errors.map((error) => error.message), { scroll: true });
       }

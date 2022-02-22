@@ -7,7 +7,7 @@ export default {
   component: Categories,
 };
 
-export const CategoriesWithCount = () => {
+export function CategoriesWithCount() {
   const categories = [
     { name: 'all', label: 'All', count: 35 },
     { name: 'draft', label: 'Draft' },
@@ -23,9 +23,9 @@ export const CategoriesWithCount = () => {
       <Categories onSelect={noop} categories={categories} active={categories[4].name} />
     </>
   );
-};
+}
 
-export const CategoriesWithoutCount = () => {
+export function CategoriesWithoutCount() {
   const categories = [
     { name: 'newsletters', label: 'Newsletters' },
     { name: 'welcome', label: 'Welcome Emails' },
@@ -41,4 +41,4 @@ export const CategoriesWithoutCount = () => {
       <Categories onSelect={noop} categories={categories} active={categories[4].name} />
     </>
   );
-};
+}

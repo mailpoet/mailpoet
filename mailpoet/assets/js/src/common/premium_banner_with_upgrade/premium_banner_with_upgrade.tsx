@@ -47,9 +47,9 @@ const getCtaButton = (translationKey: string, link: string, target = '_blank') =
   </Button>
 );
 
-const PremiumBannerWithUpgrade: React.FunctionComponent<Props> = (
+function PremiumBannerWithUpgrade(
   { message, actionButton }: Props
-) => {
+) : JSX.Element {
   let bannerMessage: React.ReactNode;
   let ctaButton: React.ReactNode;
 
@@ -80,6 +80,6 @@ const PremiumBannerWithUpgrade: React.FunctionComponent<Props> = (
       actionButton={ctaButton}
     />
   );
-};
+}
 
 export default PremiumBannerWithUpgrade;

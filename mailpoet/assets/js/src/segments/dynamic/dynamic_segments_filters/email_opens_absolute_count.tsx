@@ -10,13 +10,13 @@ import {
   EmailFormItem,
 } from '../types';
 
-function replaceElementsInDaysSentence(fn): JSX.Element[] {
+function replaceElementsInDaysSentence(fn:(value) => JSX.Element): JSX.Element[] {
   return MailPoet.I18n.t('emailActionOpensDaysSentence')
     .split(/({days})/gim)
     .map(fn);
 }
 
-function replaceEmailActionOpensSentence(fn): JSX.Element[] {
+function replaceEmailActionOpensSentence(fn:(value) => JSX.Element): JSX.Element[] {
   return MailPoet.I18n.t('emailActionOpensSentence')
     .split(/({condition})|({opens})|(\b[a-zA-Z]+\b)/gim)
     .map(fn);
@@ -26,7 +26,7 @@ type Props = {
   filterIndex: number;
 }
 
-export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function EmailOpensAbsoluteCountFields({ filterIndex }:Props):JSX.Element {
   const segment: EmailFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -117,4 +117,4 @@ export const EmailOpensAbsoluteCountFields: React.FunctionComponent<Props> = ({ 
       </Grid.CenteredRow>
     </>
   );
-};
+}

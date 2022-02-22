@@ -21,12 +21,12 @@ type Props = {
   formFontFamily?: string;
 }
 
-const StylesSettings: React.FunctionComponent<Props> = ({
+function StylesSettings({
   styles,
   onChange,
   formInputPadding,
   formFontFamily,
-}: Props): JSX.Element => {
+}: Props): JSX.Element {
   const localStylesRef = useRef(styles);
   const localStyles = localStylesRef.current;
 
@@ -140,6 +140,6 @@ const StylesSettings: React.FunctionComponent<Props> = ({
       </PanelBody>
     </Panel>
   );
-};
+}
 
 export default StylesSettings;

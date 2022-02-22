@@ -3,12 +3,12 @@ import MailPoet from 'mailpoet';
 import html2canvas from 'html2canvas';
 
 /**
- * Generates a thumbnail from a DOM element.
+ * Generates a thumbnail from a HTML element.
  *
- * @param  {DOMElement}      element
+ * @param  {HTMLElement}      element
  * @return {Promise<String>} DataURL of the generated image.
  */
-export const fromDom = async (element) => {
+export const fromDom = async (element:HTMLElement) => {
   const canvas = await html2canvas(element, {
     logging: false,
     scale: 1, // Use a constant scale to prevent generating large images on Retina displays
@@ -69,12 +69,18 @@ export const fromNewsletter = (data) => new Promise((resolve, reject) => {
   if (!_.isUndefined(json.body)) {
     json.body = JSON.stringify(json.body);
   }
-  MailPoet.Ajax.post({
+  void MailPoet.Ajax.post({
     api_version: MailPoet.apiVersion,
     endpoint: 'newsletters',
     action: 'showPreview',
     data: json,
-  }).done((response) => fromUrl(response.meta.preview_url)
-    .then(resolve)
-    .catch(reject)).fail((response) => reject(response.errors));
+  }).done(
+    (response) => {
+      void fromUrl(response.meta.preview_url)
+        .then(resolve)
+        .catch(reject);
+    }
+  ).fail(
+    (response) => reject(response.errors)
+  );
 });

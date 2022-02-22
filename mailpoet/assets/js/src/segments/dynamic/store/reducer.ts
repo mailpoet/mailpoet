@@ -49,7 +49,7 @@ function updateSubscriberCount(state: StateType, action: SetSubscriberCountActio
 }
 
 export const createReducer = (defaultState: StateType) => (
-  state: StateType = defaultState,
+  state: StateType = defaultState, // eslint-disable-line default-param-last
   action: ActionType
 ): StateType => {
   switch (action.type) {

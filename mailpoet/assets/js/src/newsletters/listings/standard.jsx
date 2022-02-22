@@ -151,9 +151,7 @@ let newsletterActions = [
         },
       }).done((response) => {
         MailPoet.Notice.success(
-          (MailPoet.I18n.t('newsletterDuplicated')).replace(
-            '%1$s', response.data.subject
-          )
+          (MailPoet.I18n.t('newsletterDuplicated')).replace('%1$s', response.data.subject)
         );
         refresh();
       }).fail((response) => {

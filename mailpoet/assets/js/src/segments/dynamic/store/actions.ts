@@ -91,7 +91,7 @@ export function* pageLoaded(segmentId?: number): Generator<{
   if (!success || res.is_plugin_missing) {
     window.location.href = 'admin.php?page=mailpoet-segments#/segments';
   }
-  yield setSegment(res);
+  yield setSegment(res as AnyFormItem);
   MailPoet.Modal.loading(false);
 }
 
@@ -130,6 +130,6 @@ export function* handleSave(segmentId?: number): Generator<{
       messages.onCreate(segment);
     }
   } else {
-    yield setErrors(error);
+    yield setErrors(error as string[]);
   }
 }

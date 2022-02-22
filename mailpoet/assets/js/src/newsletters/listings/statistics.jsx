@@ -35,7 +35,7 @@ const wrapInLink = (content, params, id, totalSent) => {
   );
 };
 
-const Statistics = ({ newsletter, isSent, currentTime }) => {
+function Statistics({ newsletter, isSent, currentTime }) {
   let sent = isSent;
   if (sent === undefined) {
     // condition for standard and post notification listings
@@ -159,7 +159,7 @@ const Statistics = ({ newsletter, isSent, currentTime }) => {
       {afterContent}
     </>
   );
-};
+}
 
 const StatisticsPropType = PropTypes.shape({
   clicked: PropTypes.number,

@@ -27,7 +27,7 @@ interface ComponentProps {
   filterIndex: number;
 }
 
-const DateMonth = ({ onChange, item, filterIndex }: ComponentProps) => {
+function DateMonth({ onChange, item, filterIndex }: ComponentProps) {
   useEffect(() => {
     if ((item.value === undefined) || item.value === '') {
       onChange(
@@ -59,9 +59,9 @@ const DateMonth = ({ onChange, item, filterIndex }: ComponentProps) => {
       <option value="2017-12-01 00:00:00">{MailPoet.I18n.t('december')}</option>
     </Select>
   );
-};
+}
 
-const DateYear = ({ onChange, item, filterIndex }: ComponentProps) => {
+function DateYear({ onChange, item, filterIndex }: ComponentProps) {
   const currentYear = getYear(new Date());
   useEffect(() => {
     if ((item.value === undefined) || item.value === '') {
@@ -106,7 +106,7 @@ const DateYear = ({ onChange, item, filterIndex }: ComponentProps) => {
       </Select>
     </Grid.CenteredRow>
   );
-};
+}
 
 const convertDateToString = (value: Date|[Date, Date]): string | undefined => {
   if (value === null) {
@@ -124,7 +124,7 @@ const parseDate = (value: string): Date | undefined => {
   return date;
 };
 
-const DateFullDate = ({ onChange, item, filterIndex }: ComponentProps) => {
+function DateFullDate({ onChange, item, filterIndex }: ComponentProps) {
   useEffect(() => {
     if ((item.value === undefined) || item.value === '') {
       onChange(
@@ -160,9 +160,9 @@ const DateFullDate = ({ onChange, item, filterIndex }: ComponentProps) => {
       />
     </Grid.CenteredRow>
   );
-};
+}
 
-const DateMonthYear = ({ onChange, item, filterIndex }: ComponentProps) => {
+function DateMonthYear({ onChange, item, filterIndex }: ComponentProps) {
   useEffect(() => {
     if ((item.value === undefined) || item.value === '') {
       onChange(
@@ -199,7 +199,7 @@ const DateMonthYear = ({ onChange, item, filterIndex }: ComponentProps) => {
       />
     </Grid.CenteredRow>
   );
-};
+}
 
 export function validateDate(item: WordpressRoleFormItem): boolean {
   if ((item.date_type !== 'month')
@@ -230,9 +230,9 @@ const componentsMap = {
   year_month_day: DateFullDate,
 };
 
-export const CustomFieldDate: React.FunctionComponent<Props> = (
-  { customField, filterIndex }
-) => {
+export function CustomFieldDate(
+  { customField, filterIndex } : Props
+) : JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -249,12 +249,10 @@ export const CustomFieldDate: React.FunctionComponent<Props> = (
   const Component = componentsMap[customField.params.date_type];
   if (!Component) return null;
   return (
-    <>
-      <Component
-        item={segment}
-        onChange={updateSegmentFilter}
-        filterIndex={filterIndex}
-      />
-    </>
+    <Component
+      item={segment}
+      onChange={updateSegmentFilter}
+      filterIndex={filterIndex}
+    />
   );
-};
+}

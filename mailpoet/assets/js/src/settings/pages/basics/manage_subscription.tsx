@@ -17,7 +17,8 @@ export default function ManageSubscription() {
           <>
             {t('manageSubDescription1')}
             {' '}
-            {ReactStringReplace(t('manageSubDescription2'),
+            {ReactStringReplace(
+              t('manageSubDescription2'),
               /\[link\](.*?)\[\/link\]/,
               (text) => (
                 <a
@@ -30,7 +31,8 @@ export default function ManageSubscription() {
                 >
                   {text}
                 </a>
-              ))}
+              )
+            )}
           </>
         )}
         htmlFor="subscription-manage-page"

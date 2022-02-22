@@ -74,9 +74,9 @@ const useNpsPoll = () => {
   return null;
 };
 
-const withNpsPoll = (Component) => (props) => {
+const withNpsPoll = (Component) => function useNpsPollWithComponent(props) {
   useNpsPoll();
-  return <Component {...props} />;// eslint-disable-line react/jsx-props-no-spreading
+  return <Component {...props} />;
 };
 
 export default withNpsPoll;

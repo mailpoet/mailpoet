@@ -8,31 +8,33 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   automationId?: string;
 };
 
-const Radio = ({
+function Radio({
   children,
   isFullWidth,
   onCheck,
   automationId,
   ...attributes
-}: Props) => (
-  <label
-    className={
+}: Props) {
+  return (
+    <label
+      className={
       classnames({
         'mailpoet-form-radio': true,
         'mailpoet-disabled': attributes.disabled,
         'mailpoet-full-width': isFullWidth,
       })
     }
-    data-automation-id={automationId}
-  >
-    <input
-      type="radio"
-      onChange={(e) => onCheck(e.target.value, e)}
-      {...attributes}
-    />
-    <span className="mailpoet-form-radio-control" />
-    {children}
-  </label>
-);
+      data-automation-id={automationId}
+    >
+      <input
+        type="radio"
+        onChange={(e) => onCheck(e.target.value, e)}
+        {...attributes}
+      />
+      <span className="mailpoet-form-radio-control" />
+      {children}
+    </label>
+  );
+}
 
 export default Radio;

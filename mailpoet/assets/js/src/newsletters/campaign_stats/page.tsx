@@ -33,7 +33,7 @@ type State = {
   loading: boolean;
 }
 
-const CampaignStatsPage = ({ match, history, location }: Props) => {
+function CampaignStatsPage({ match, history, location }: Props) {
   const [state, setState] = useState<State>({
     item: undefined,
     loading: true,
@@ -43,7 +43,7 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
     setState({ loading: true, item: state.item });
     MailPoet.Modal.loading(true);
 
-    MailPoet.Ajax.post({
+    void MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
       endpoint: window.mailpoet_display_detailed_stats ? 'stats' : 'newsletters',
       action: window.mailpoet_display_detailed_stats ? 'get' : 'getWithStats',
@@ -57,7 +57,7 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
         loading: false,
         item: response.data,
       });
-    }).fail((response) => {
+    }).fail((response:ErrorResponse) => {
       MailPoet.Notice.error(
         response.errors.map((error) => error.message),
         { scroll: true }
@@ -128,6 +128,6 @@ const CampaignStatsPage = ({ match, history, location }: Props) => {
       </div>
     </>
   );
-};
+}
 
 export default withRouter(CampaignStatsPage);

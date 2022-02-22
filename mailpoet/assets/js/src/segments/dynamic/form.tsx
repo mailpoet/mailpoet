@@ -35,9 +35,9 @@ const FilterAfter = Hooks.applyFilters('mailpoet_dynamic_filters_filter_after', 
   <div className="mailpoet-gap" />
 ));
 
-export const Form: React.FunctionComponent<Props> = ({
+export function Form({
   segmentId,
-}) => {
+}:Props) :JSX.Element {
   const segment: Segment = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
     []
@@ -187,4 +187,4 @@ export const Form: React.FunctionComponent<Props> = ({
       </div>
     </form>
   );
-};
+}

@@ -16,13 +16,13 @@ export function SubscribersCacheMessage({ cacheCalculation }: Props): JSX.Elemen
 
   const handleRecalculate = () => {
     setLoading(true);
-    MailPoet.Ajax.post({
+    void MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
       endpoint: 'settings',
       action: 'recalculateSubscribersCountsCache',
     }).done(() => {
       window.location.reload();
-    }).fail((response) => {
+    }).fail((response:ErrorResponse) => {
       setErrors(response.errors.map((error) => error.message));
       setLoading(false);
     });

@@ -3,9 +3,7 @@ import { assign, has } from 'lodash/fp';
 
 import { AnyFormItem } from '../types';
 
-function convertSavedData(data: {
-  [key: string]: string | number;
-}): AnyFormItem {
+function convertSavedData(data: Record<string, string | number>): AnyFormItem {
   let converted: AnyFormItem = JSON.parse(JSON.stringify(data));
   // for compatibility with older data
   if (has('link_id', data)) converted = assign(converted, { link_id: data.link_id.toString() });
@@ -31,7 +29,7 @@ export async function LOAD_SEGMENT({ segmentId }: { segmentId: number }): Promis
     });
     return {
       success: true,
-      res: convertSavedData(res.data),
+      res: convertSavedData(res.data as Record<string, string | number>),
     };
   } catch (res) {
     const error = res.errors.map((e) => e.message);

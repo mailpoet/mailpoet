@@ -273,27 +273,19 @@ class NewsletterListWelcome extends React.Component {
       if (newsletter.options.afterTimeType !== 'immediate') {
         switch (newsletter.options.afterTimeType) {
           case 'minutes':
-            sendingDelay = MailPoet.I18n.t('sendingDelayMinutes').replace(
-              '%1$d', newsletter.options.afterTimeNumber
-            );
+            sendingDelay = MailPoet.I18n.t('sendingDelayMinutes').replace('%1$d', newsletter.options.afterTimeNumber);
             break;
 
           case 'hours':
-            sendingDelay = MailPoet.I18n.t('sendingDelayHours').replace(
-              '%1$d', newsletter.options.afterTimeNumber
-            );
+            sendingDelay = MailPoet.I18n.t('sendingDelayHours').replace('%1$d', newsletter.options.afterTimeNumber);
             break;
 
           case 'days':
-            sendingDelay = MailPoet.I18n.t('sendingDelayDays').replace(
-              '%1$d', newsletter.options.afterTimeNumber
-            );
+            sendingDelay = MailPoet.I18n.t('sendingDelayDays').replace('%1$d', newsletter.options.afterTimeNumber);
             break;
 
           case 'weeks':
-            sendingDelay = MailPoet.I18n.t('sendingDelayWeeks').replace(
-              '%1$d', newsletter.options.afterTimeNumber
-            );
+            sendingDelay = MailPoet.I18n.t('sendingDelayWeeks').replace('%1$d', newsletter.options.afterTimeNumber);
             break;
 
           default:

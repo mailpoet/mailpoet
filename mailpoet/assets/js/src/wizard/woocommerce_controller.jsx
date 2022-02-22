@@ -5,7 +5,7 @@ import StepsContent from 'common/steps/steps_content.tsx';
 import WooCommerceStep from './steps/woo_commerce_step.jsx';
 import WelcomeWizardStepLayout from './layout/step_layout.jsx';
 
-const WooCommerceController = ({ isWizardStep = false }) => {
+function WooCommerceController({ isWizardStep = false }) {
   const [loading, setLoading] = useState(false);
 
   const handleApiError = (response) => {
@@ -62,7 +62,7 @@ const WooCommerceController = ({ isWizardStep = false }) => {
   }
 
   return result;
-};
+}
 
 WooCommerceController.propTypes = {
   isWizardStep: PropTypes.bool,

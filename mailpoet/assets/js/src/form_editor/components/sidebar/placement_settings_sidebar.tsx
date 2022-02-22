@@ -9,7 +9,7 @@ type Props = {
   onClose: () => void;
 }
 
-export default ({ onClose }: Props): JSX.Element => {
+export default function PlaceMentSettingsSidebar({ onClose }: Props): JSX.Element {
   const previewSettings = useSelect(
     (select) => select('mailpoet-form-editor').getPreviewSettings(),
     []
@@ -32,4 +32,4 @@ export default ({ onClose }: Props): JSX.Element => {
       </Panel>
     </>
   );
-};
+}

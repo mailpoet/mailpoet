@@ -11,7 +11,7 @@ type Props = {
   segmentsSelector?: 'getDefaultSegments' | 'getSegments';
 }
 
-export default (props: Props) => {
+export default function SegmentsSelect(props: Props) {
   const selector = props.segmentsSelector ? props.segmentsSelector : 'getDefaultSegments';
   const segments = useSelector(selector)().map((segment) => ({
     value: segment.id,
@@ -28,9 +28,9 @@ export default (props: Props) => {
       id={props.id}
       placeholder={props.placeholder}
       options={segments}
-      onChange={(selectedValues: any) => {
-        props.setValue((selectedValues || []).map((x: any) => x.value));
+      onChange={(selectedValues: {value:string}[]) => {
+        props.setValue((selectedValues || []).map((x) => x.value));
       }}
     />
   );
-};
+}

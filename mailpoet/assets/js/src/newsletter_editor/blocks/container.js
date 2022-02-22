@@ -207,8 +207,10 @@ Module.ContainerBlockView = base.BlockView.extend({
     if (typeof columnLayout === 'string') {
       classIrregular = 'mailpoet_irregular_width_contents_container column_layout_' + columnLayout;
     }
-    this.$('> .mailpoet_container').attr('class',
-      'mailpoet_container mailpoet_container_' + this.model.get('orientation') + ' ' + classIrregular);
+    this.$('> .mailpoet_container').attr(
+      'class',
+      'mailpoet_container mailpoet_container_' + this.model.get('orientation') + ' ' + classIrregular
+    );
   },
   addHighlight: function addHighlight() {
     if (this.renderOptions.depth !== 1 || this.$el.hasClass('mailpoet_container_layer_active')) {

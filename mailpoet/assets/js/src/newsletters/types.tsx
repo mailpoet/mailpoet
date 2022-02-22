@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ComponentType, useState } from 'react';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
@@ -28,12 +28,12 @@ interface NewsletterTypesWindow extends Window {
 
 declare let window: NewsletterTypesWindow;
 
-const NewsletterTypes: React.FunctionComponent<Props> = ({
+function NewsletterTypes({
   filter,
   history,
   hideClosingButton = false,
   hideScreenOptions = true,
-}: Props) => {
+}: Props) : JSX.Element {
   const [isCreating, setIsCreating] = useState(false);
 
   const setupNewsletter = (type): void => {
@@ -168,7 +168,7 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
     MailPoet.trackEvent('Emails > Type selected', {
       'Email type': type,
     });
-    MailPoet.Ajax.post({
+    void MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
       endpoint: 'newsletters',
       action: 'create',
@@ -320,7 +320,7 @@ const NewsletterTypes: React.FunctionComponent<Props> = ({
       <link rel="prefetch" href={templatesGETUrl} as="fetch" />
     </>
   );
-};
+}
 
 NewsletterTypes.defaultProps = {
   filter: null,
@@ -328,4 +328,4 @@ NewsletterTypes.defaultProps = {
   hideClosingButton: false,
 };
 
-export default withRouter(NewsletterTypes);
+export default withRouter(NewsletterTypes as ComponentType<RouteComponentProps>);

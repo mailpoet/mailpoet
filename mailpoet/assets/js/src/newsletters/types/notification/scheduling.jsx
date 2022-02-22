@@ -57,7 +57,7 @@ class NotificationScheduling extends React.Component {
       changes.monthDay = '1';
     }
     this.handleValueChanges(changes);
-  }
+  };
 
   handleTimeOfDayChange = (event) => this.handleValueChanges({ timeOfDay: event.target.value });
 

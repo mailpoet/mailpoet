@@ -5,7 +5,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import FormPlacementOption from './form_placement_option';
 import Icon from './icons/fixed_bar_icon';
 
-const FixedBar: React.FunctionComponent = () => {
+function FixedBar():JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     []
@@ -21,6 +21,6 @@ const FixedBar: React.FunctionComponent = () => {
       canBeActive
     />
   );
-};
+}
 
 export default FixedBar;

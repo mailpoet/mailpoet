@@ -213,7 +213,7 @@ function afterFormContent(values) {
   );
 }
 
-const SubscriberForm = ({ match }) => {
+function SubscriberForm({ match }) {
   const location = useLocation();
   const history = useHistory();
   const backUrl = location.state?.backUrl || '/';
@@ -241,7 +241,7 @@ const SubscriberForm = ({ match }) => {
       />
     </div>
   );
-};
+}
 
 SubscriberForm.propTypes = {
   match: PropTypes.shape({

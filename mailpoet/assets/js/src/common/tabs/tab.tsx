@@ -10,12 +10,12 @@ type Props = {
   children: React.ReactNode;
 };
 
-const Tab = ({
+function Tab({
   children,
-}: Props) => (
-  <>
-    {children}
-  </>
-);
+}: Props) {
+  return (
+    <>{children}</>
+  );
+}
 
 export default Tab;

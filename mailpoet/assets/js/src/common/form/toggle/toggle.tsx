@@ -7,15 +7,16 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   automationId?: string;
 };
 
-const Toggle = ({
+function Toggle({
   dimension,
   onCheck,
   automationId,
   className,
   ...attributes
-}: Props) => (
-  <label
-    className={
+}: Props) {
+  return (
+    <label
+      className={
       classnames({
         [className]: className,
         'mailpoet-form-toggle': true,
@@ -23,15 +24,16 @@ const Toggle = ({
         'mailpoet-disabled': attributes.disabled,
       })
     }
-    data-automation-id={automationId}
-  >
-    <input
-      type="checkbox"
-      onChange={(e) => onCheck(e.target.checked, e)}
-      {...attributes}
-    />
-    <span className="mailpoet-form-toggle-control" />
-  </label>
-);
+      data-automation-id={automationId}
+    >
+      <input
+        type="checkbox"
+        onChange={(e) => onCheck(e.target.checked, e)}
+        {...attributes}
+      />
+      <span className="mailpoet-form-toggle-control" />
+    </label>
+  );
+}
 
 export default Toggle;

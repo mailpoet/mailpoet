@@ -4,7 +4,7 @@ import MailPoet from 'mailpoet';
 import TaskListDataRow from './tasks_list_data_row.jsx';
 import TaskListLabelsRow from './tasks_list_labels_row.jsx';
 
-const TasksList = (props) => {
+function TasksList(props) {
   const colsCount = props.show_scheduled_at ? 6 : 5;
 
   return (
@@ -28,7 +28,7 @@ const TasksList = (props) => {
       <tfoot><TaskListLabelsRow show_scheduled_at={props.show_scheduled_at} /></tfoot>
     </table>
   );
-};
+}
 
 TasksList.propTypes = {
   show_scheduled_at: PropTypes.bool,

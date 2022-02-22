@@ -10,7 +10,7 @@ type Props = {
   onRequestClose?: () => void;
 };
 
-const App = ({ onRequestClose }: Props) => {
+function App({ onRequestClose }: Props) {
   const [showModal, setShowModal] = useState(false);
 
   // use jQuery since some of the targeted notices are added to the DOM using the old
@@ -34,7 +34,7 @@ const App = ({ onRequestClose }: Props) => {
       )}
     </GlobalContext.Provider>
   );
-};
+}
 
 App.defaultProps = {
   onRequestClose: noop,

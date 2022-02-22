@@ -40,7 +40,7 @@ type Props = {
   filterIndex: number;
 }
 
-export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function WooCommerceSubscriptionFields({ filterIndex }:Props) : JSX.Element {
   const segment: WooCommerceSubscriptionFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -110,4 +110,4 @@ export const WooCommerceSubscriptionFields: React.FunctionComponent<Props> = ({ 
       </Grid.CenteredRow>
     </>
   );
-};
+}

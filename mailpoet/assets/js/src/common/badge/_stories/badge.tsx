@@ -6,13 +6,15 @@ export default {
   component: Badge,
 };
 
-export const Badges = () => (
-  <>
-    <p>
-      <Badge title="Must-Have" />
-    </p>
-    <p>
-      <Badge title="Premium" />
-    </p>
-  </>
-);
+export function Badges() {
+  return (
+    <>
+      <p>
+        <Badge title="Must-Have" />
+      </p>
+      <p>
+        <Badge title="Premium" />
+      </p>
+    </>
+  );
+}

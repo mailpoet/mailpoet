@@ -9,29 +9,31 @@ type Props = {
   onClick: () => void;
 }
 
-const FormPlacementOption: React.FunctionComponent<Props> = ({
+function FormPlacementOption({
   label,
   icon,
   active,
   canBeActive,
   onClick,
-}: Props) => (
-  <SelectionItem
-    label={label}
-    onClick={onClick}
-    active={active}
-    canBeActive={canBeActive}
-    className="form-placement-option"
-    automationId={`form-placement-option-${label}`}
-  >
-    <div className="form-placement-option-icon">
-      {icon}
-    </div>
-    <div className="form-placement-option-label">
-      <p>{label}</p>
-    </div>
-  </SelectionItem>
-);
+}: Props) : JSX.Element {
+  return (
+    <SelectionItem
+      label={label}
+      onClick={onClick}
+      active={active}
+      canBeActive={canBeActive}
+      className="form-placement-option"
+      automationId={`form-placement-option-${label}`}
+    >
+      <div className="form-placement-option-icon">
+        {icon}
+      </div>
+      <div className="form-placement-option-label">
+        <p>{label}</p>
+      </div>
+    </SelectionItem>
+  );
+}
 
 FormPlacementOption.defaultProps = {
   canBeActive: true,

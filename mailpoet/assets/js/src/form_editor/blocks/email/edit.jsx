@@ -12,7 +12,7 @@ import MailPoet from 'mailpoet';
 import TextInputEdit from '../text_input_edit.jsx';
 import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
 
-const EmailEdit = ({ attributes, setAttributes }) => {
+function EmailEdit({ attributes, setAttributes }) {
   const inspectorControls = (
     <InspectorControls>
       <Panel>
@@ -50,7 +50,7 @@ const EmailEdit = ({ attributes, setAttributes }) => {
       />
     </>
   );
-};
+}
 
 EmailEdit.propTypes = {
   attributes: PropTypes.shape({

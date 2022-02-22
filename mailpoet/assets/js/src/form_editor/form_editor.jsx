@@ -11,14 +11,16 @@ import initTranslations from './translations';
 import initRichText from './rich_text/init.ts';
 import './template_selection';
 
-const App = () => (
-  <GlobalContext.Provider value={useGlobalContextValue(window)}>
-    <>
-      <Notices />
-      <Editor />
-    </>
-  </GlobalContext.Provider>
-);
+function App() {
+  return (
+    <GlobalContext.Provider value={useGlobalContextValue(window)}>
+      <>
+        <Notices />
+        <Editor />
+      </>
+    </GlobalContext.Provider>
+  );
+}
 
 window.addEventListener('DOMContentLoaded', () => {
   const appElement = document.querySelector('#mailpoet_form_edit');

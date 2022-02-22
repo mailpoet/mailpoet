@@ -16,7 +16,7 @@ type Props = {
   filterIndex: number;
 }
 
-export const Checkbox: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export function Checkbox({ filterIndex }:Props) : JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex]
@@ -31,15 +31,13 @@ export const Checkbox: React.FunctionComponent<Props> = ({ filterIndex }) => {
   }, [updateSegmentFilter, segment, filterIndex]);
 
   return (
-    <>
-      <Select
-        key="select"
-        value={segment.value}
-        onChange={(e) => updateSegmentFilterFromEvent('value', filterIndex, e)}
-      >
-        <option value="1">{MailPoet.I18n.t('checked')}</option>
-        <option value="0">{MailPoet.I18n.t('unchecked')}</option>
-      </Select>
-    </>
+    <Select
+      key="select"
+      value={segment.value}
+      onChange={(e) => updateSegmentFilterFromEvent('value', filterIndex, e)}
+    >
+      <option value="1">{MailPoet.I18n.t('checked')}</option>
+      <option value="0">{MailPoet.I18n.t('unchecked')}</option>
+    </Select>
   );
-};
+}

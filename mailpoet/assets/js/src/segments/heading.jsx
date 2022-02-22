@@ -8,34 +8,36 @@ import SubscribersLimitNotice from 'notices/subscribers_limit_notice';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
 
-const ListHeading = () => (
-  <>
-    <TopBarWithBeamer>
-      <Link className="mailpoet-button button-secondary" to="/new">
-        {plusIcon}
-        <span>{MailPoet.I18n.t('new')}</span>
-      </Link>
-      <Link className="mailpoet-button button-secondary" to="/new-segment" data-automation-id="new-segment">
-        {plusIcon}
-        <span>{MailPoet.I18n.t('newSegment')}</span>
-      </Link>
-    </TopBarWithBeamer>
+function ListHeading() {
+  return (
+    <>
+      <TopBarWithBeamer>
+        <Link className="mailpoet-button button-secondary" to="/new">
+          {plusIcon}
+          <span>{MailPoet.I18n.t('new')}</span>
+        </Link>
+        <Link className="mailpoet-button button-secondary" to="/new-segment" data-automation-id="new-segment">
+          {plusIcon}
+          <span>{MailPoet.I18n.t('newSegment')}</span>
+        </Link>
+      </TopBarWithBeamer>
 
-    <SubscribersInPlan
-      subscribersInPlan={MailPoet.subscribersCount}
-      subscribersInPlanLimit={MailPoet.subscribersLimit}
-    />
+      <SubscribersInPlan
+        subscribersInPlan={MailPoet.subscribersCount}
+        subscribersInPlanLimit={MailPoet.subscribersLimit}
+      />
 
-    <SubscribersCacheMessage
-      cacheCalculation={window.mailpoet_subscribers_counts_cache_created_at}
-    />
+      <SubscribersCacheMessage
+        cacheCalculation={window.mailpoet_subscribers_counts_cache_created_at}
+      />
 
-    <SubscribersLimitNotice />
-    <InvalidMssKeyNotice
-      mssKeyInvalid={MailPoet.hasInvalidMssApiKey}
-      subscribersCount={MailPoet.subscribersCount}
-    />
-  </>
-);
+      <SubscribersLimitNotice />
+      <InvalidMssKeyNotice
+        mssKeyInvalid={MailPoet.hasInvalidMssApiKey}
+        subscribersCount={MailPoet.subscribersCount}
+      />
+    </>
+  );
+}
 
 export default ListHeading;

@@ -10,7 +10,7 @@ import {
   SubscriberCount,
 } from './types';
 
-const SubscribersCounter: React.FunctionComponent = () => {
+function SubscribersCounter() : JSX.Element {
   const segment: Segment = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
     []
@@ -103,6 +103,6 @@ const SubscribersCounter: React.FunctionComponent = () => {
       </span>
     </div>
   );
-};
+}
 
 export { SubscribersCounter };

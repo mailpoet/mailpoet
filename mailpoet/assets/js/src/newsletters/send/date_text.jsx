@@ -126,7 +126,7 @@ class DateText extends React.Component {
         minDate={this.getDate(window.mailpoet_current_date)}
         maxDate={this.props.maxDate}
         locale="mailpoet"
-        {...this.props.validation} // eslint-disable-line react/jsx-props-no-spreading
+        {...this.props.validation}
       />
     );
   }

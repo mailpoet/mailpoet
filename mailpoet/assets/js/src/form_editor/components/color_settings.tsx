@@ -11,11 +11,11 @@ type Props = {
   onChange: (value: string|undefined) => void;
 }
 
-const ColorSettings: React.FunctionComponent<Props> = ({
+function ColorSettings({
   name,
   value,
   onChange,
-}: Props) => {
+}: Props) : JSX.Element {
   const settingsColors = useSetting('color.palette');
   return (
     <div>
@@ -31,6 +31,6 @@ const ColorSettings: React.FunctionComponent<Props> = ({
       />
     </div>
   );
-};
+}
 
 export default ColorSettings;

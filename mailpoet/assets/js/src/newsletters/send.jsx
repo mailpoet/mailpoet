@@ -152,7 +152,7 @@ class NewsletterSend extends React.Component {
     const addresses = await this.loadAuthorizedEmailAddresses();
     const fromAddress = this.state.item.sender_address;
     return addresses.indexOf(fromAddress) !== -1;
-  }
+  };
 
   showInvalidFromAddressError = () => {
     const fromAddress = this.state.item.sender_address;
@@ -562,7 +562,7 @@ class NewsletterSend extends React.Component {
                   <Button
                     type="button"
                     onClick={this.handleSend}
-                    {...sendButtonOptions} // eslint-disable-line react/jsx-props-no-spreading
+                    {...sendButtonOptions}
                     isDisabled={sendingDisabled}
                     automationId="email-submit"
                   >

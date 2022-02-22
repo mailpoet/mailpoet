@@ -5,7 +5,7 @@ import Modal from 'common/modal/modal';
 import Heading from 'common/typography/heading/heading';
 import MailPoet from 'mailpoet';
 
-export const Tutorial: React.FunctionComponent = () => {
+export function Tutorial():JSX.Element {
   const url = useSelect(
     (select) => select('mailpoet-form-editor').getTutorialUrl(),
     []
@@ -41,4 +41,4 @@ export const Tutorial: React.FunctionComponent = () => {
       </div>
     </Modal>
   );
-};
+}

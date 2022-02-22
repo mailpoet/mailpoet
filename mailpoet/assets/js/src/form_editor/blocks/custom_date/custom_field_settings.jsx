@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import CustomFieldDelete from '../custom_field_delete.jsx';
 
-const CustomFieldSettings = ({
+function CustomFieldSettings({
   label,
   mandatory,
   dateType,
@@ -20,7 +20,7 @@ const CustomFieldSettings = ({
   isDeleting,
   onCustomFieldDelete,
   onChange,
-}) => {
+}) {
   const [localLabel, setLocalLabel] = useState(label);
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localDefaultToday, setLocalDefaultToday] = useState(defaultToday);
@@ -122,7 +122,7 @@ const CustomFieldSettings = ({
       ) : null}
     </div>
   );
-};
+}
 
 CustomFieldSettings.propTypes = {
   mandatory: PropTypes.bool,

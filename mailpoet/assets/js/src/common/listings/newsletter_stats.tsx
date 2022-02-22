@@ -13,14 +13,14 @@ type NewsletterStatsProps = {
   wrapContentInLink?: (content: React.ReactNode, idPrefix: string) => JSX.Element;
 }
 
-const NewsletterStats = ({
+function NewsletterStats({
   opened,
   clicked,
   revenues,
   hideBadges,
   newsletterId,
   wrapContentInLink,
-}: NewsletterStatsProps) => {
+}: NewsletterStatsProps) {
   // format to 1 decimal place
   const openedDisplay = MailPoet.Num.toLocaleFixed(opened, 1);
   const clickedDisplay = MailPoet.Num.toLocaleFixed(clicked, 1);
@@ -48,7 +48,7 @@ const NewsletterStats = ({
     </div>
   );
 
-  let revenueStats = null;
+  let revenueStats:React.ReactNode = null;
   if (revenues) {
     const revenuesTooltipId = `revenues-${newsletterId || '0'}`;
     revenueStats = (
@@ -78,6 +78,6 @@ const NewsletterStats = ({
       {revenueStats}
     </div>
   );
-};
+}
 
 export default NewsletterStats;

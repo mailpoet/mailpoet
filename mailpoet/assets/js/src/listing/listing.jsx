@@ -17,7 +17,6 @@ import { GlobalContext } from 'context/index.jsx';
 class Listing extends React.Component {
   constructor(props) {
     super(props);
-    this.formRef = React.createRef();
     this.state = this.getEmptyState();
   }
 
@@ -596,7 +595,6 @@ class Listing extends React.Component {
 
     return (
       <>
-        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         { this.state.meta.mta_method && <MailerError {...this.state.meta} /> }
         <div className={listingClassName}>
           <div className="mailpoet-listing-header">

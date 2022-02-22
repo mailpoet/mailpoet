@@ -15,18 +15,18 @@ type Props = {
   onChange?: (values: CheckboxValueType[]) => void;
 };
 
-const CheckboxGroup = ({
+function CheckboxGroup({
   name,
   options,
   defaultValue,
   isFullWidth,
   onChange,
-}: Props) => {
+}: Props) {
   const [values, setValues] = useState(defaultValue || []);
 
   const handleChange = (value: CheckboxValueType, isChecked: boolean) => {
     const index = values.indexOf(value);
-    let newValues;
+    let newValues:CheckboxValueType[] = [];
     if (isChecked && index === -1) {
       newValues = values.concat([value]);
     }
@@ -51,7 +51,7 @@ const CheckboxGroup = ({
             value={value}
             onCheck={(isChecked) => handleChange(value, isChecked)}
             isFullWidth={isFullWidth}
-            {...attributes} // eslint-disable-line react/jsx-props-no-spreading
+            {...attributes}
           >
             {label}
           </Checkbox>
@@ -59,6 +59,6 @@ const CheckboxGroup = ({
       })}
     </div>
   );
-};
+}
 
 export default CheckboxGroup;

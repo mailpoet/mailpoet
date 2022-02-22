@@ -8,17 +8,15 @@ import { getSetting } from '@woocommerce/settings';
 
 const { optinEnabled, defaultText, defaultStatus } = getSetting('mailpoet_data');
 
-const Block = (
-  {
-    text,
-    checkoutExtensionData,
-  }: {
+function Block({
+  text,
+  checkoutExtensionData,
+}: {
     text: string,
     checkoutExtensionData: {
       setExtensionData: (namespace: string, key: string, value: unknown) => void
     }
-  }
-): JSX.Element => {
+  }): JSX.Element {
   const [checked, setChecked] = useState(defaultStatus);
   const { setExtensionData } = checkoutExtensionData || {};
   useEffect(() => {
@@ -36,6 +34,6 @@ const Block = (
       <RawHTML>{ text || defaultText }</RawHTML>
     </CheckboxControl>
   );
-};
+}
 
 export default Block;

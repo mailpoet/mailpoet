@@ -7,7 +7,7 @@ type Props = {
   active: string;
 };
 
-const Categories = ({ onSelect, categories, active }: Props) => {
+function Categories({ onSelect, categories, active }: Props) {
   const cats = categories.map((category) => (
     <CategoriesItem
       {...category}
@@ -22,6 +22,6 @@ const Categories = ({ onSelect, categories, active }: Props) => {
       { cats }
     </div>
   );
-};
+}
 
 export default Categories;

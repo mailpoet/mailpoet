@@ -28,7 +28,7 @@ const showReEngagementNotice = (action, showError, showSuccess) => {
   }
 };
 
-export default () => {
+export default function SaveButton() {
   const [clicked, setClicked] = React.useState(false);
   const isSaving = useSelector('isSaving')();
   const hasError = useSelector('hasErrorFlag')();
@@ -67,4 +67,4 @@ export default () => {
       </Button>
     </div>
   );
-};
+}

@@ -9,10 +9,10 @@ type Props = {
   onChange: (value: string|undefined) => void;
 }
 
-const FontSizeSettings: React.FunctionComponent<Props> = ({
+function FontSizeSettings({
   value,
   onChange,
-}: Props) => {
+}: Props) : JSX.Element {
   const fontSizes = useSetting('typography.fontSizes');
   return (
     <FontSizePicker
@@ -21,6 +21,6 @@ const FontSizeSettings: React.FunctionComponent<Props> = ({
       fontSizes={fontSizes}
     />
   );
-};
+}
 
 export default FontSizeSettings;

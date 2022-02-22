@@ -5,6 +5,15 @@ declare module 'wp-js-hooks' {
   function applyFilters(name: string, ...args: any[]): any;
 }
 
+type ErrorResponse = {
+  errors:{
+    message:string
+  }[]
+}
+interface JQuery{
+  parsley: () => any;
+}
+
 /* Type definitions for components used from external libraries */
 declare module '@woocommerce/blocks-checkout' {
   type CheckboxControlProps = {
@@ -76,7 +85,7 @@ interface Window {
   mailpoet_shortcode_links: string[];
   mailpoet_settings: any;
   mailpoet_tracking_config: string;
-  mailpoet_display_detailed_stats?: string;
+  mailpoet_display_detailed_stats: boolean;
   mailpoet_premium_plugin_installed: boolean;
   mailpoet_premium_plugin_download_url: string;
   mailpoet_premium_plugin_activation_url: string;

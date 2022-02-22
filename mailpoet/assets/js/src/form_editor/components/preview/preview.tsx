@@ -12,7 +12,7 @@ import Preview from 'common/preview/preview.jsx';
 import Modal from 'common/modal/modal';
 import PlacementSettingsPanel from 'form_editor/components/form_settings/form_placement_options/settings_panel';
 
-const FormPreview: React.FunctionComponent = () => {
+function FormPreview() : JSX.Element {
   const iframeElement = useRef(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const { hidePreview, changePreviewSettings } = useDispatch('mailpoet-form-editor');
@@ -92,7 +92,7 @@ const FormPreview: React.FunctionComponent = () => {
   };
   let iframeSrc = `${previewPageUrl}&data=${btoa(JSON.stringify(urlData))}`;
   // Add anchor to scroll to certain types of form
-  if (['below_post'].includes(previewSettings.formType)) {
+  if (['below_post'].includes(previewSettings.formType as string)) {
     iframeSrc += `#mailpoet_form_preview_${formId}`;
   }
   return (
@@ -154,6 +154,6 @@ const FormPreview: React.FunctionComponent = () => {
       )}
     </Modal>
   );
-};
+}
 
 export default FormPreview;

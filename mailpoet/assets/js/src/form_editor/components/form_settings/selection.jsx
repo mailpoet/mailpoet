@@ -296,7 +296,7 @@ class Selection extends React.Component {
         data-placeholder={this.props.field.placeholder}
         multiple={this.props.field.multiple}
         defaultValue={selectedValues}
-        {...this.props.field.validation}// eslint-disable-line react/jsx-props-no-spreading
+        {...this.props.field.validation}
       >
         { this.insertEmptyOption() }
         { options }

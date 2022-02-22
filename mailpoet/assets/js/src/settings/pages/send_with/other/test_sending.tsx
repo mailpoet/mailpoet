@@ -50,7 +50,9 @@ export default function TestSending() {
           className="mailpoet_tooltip_icon"
           tooltip={(
             <span style={{ pointerEvents: 'all' }}>
-              {ReactStringReplace(t('testEmailTooltip'), /\[link\](.*?)\[\/link\]/g,
+              {ReactStringReplace(
+                t('testEmailTooltip'),
+                /\[link\](.*?)\[\/link\]/g,
                 (match, i) => (
                   <a
                     className="mailpoet-link"
@@ -62,7 +64,8 @@ export default function TestSending() {
                   >
                     {match}
                   </a>
-                ))}
+                )
+              )}
             </span>
           )}
         />

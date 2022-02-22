@@ -8,6 +8,6 @@ export default () => {
     ({
       id,
       ...props
-    }) => <Notice key={id} {...props} />// eslint-disable-line react/jsx-props-no-spreading
+    }) => <Notice key={id} {...props} />
   );
 };

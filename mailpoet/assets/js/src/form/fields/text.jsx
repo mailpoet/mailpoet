@@ -52,7 +52,7 @@ class FormFieldText extends React.Component { // eslint-disable-line react/prefe
         onChange={this.props.onValueChange}
         customLabel={this.props.field.customLabel}
         tooltip={this.props.field.tooltip}
-        {...this.props.field.validation}// eslint-disable-line react/jsx-props-no-spreading
+        {...this.props.field.validation}
       />
     );
   }

@@ -7,7 +7,7 @@ import Heading from 'common/typography/heading/heading';
 import List from 'common/typography/list/list';
 import YesNo from 'common/form/yesno/yesno';
 
-const WelcomeWizardUsageTrackingStep = ({ loading, submitForm }) => {
+function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
   const [state, setState] = useState({
     tracking: undefined,
     libs3rdParty: undefined,
@@ -123,7 +123,7 @@ const WelcomeWizardUsageTrackingStep = ({ loading, submitForm }) => {
       </form>
     </>
   );
-};
+}
 
 WelcomeWizardUsageTrackingStep.propTypes = {
   loading: PropTypes.bool.isRequired,
