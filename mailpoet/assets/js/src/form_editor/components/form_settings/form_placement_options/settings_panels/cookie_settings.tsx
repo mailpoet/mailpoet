@@ -8,7 +8,7 @@ type Props = {
   settingsPlacementKey: string;
 }
 
-const CookieSettings: React.FunctionComponent<Props> = ({ settingsPlacementKey }: Props) => {
+function CookieSettings({ settingsPlacementKey }: Props): JSX.Element {
   const cookieExpirationValues = [3, 7, 14, 30, 60, 90];
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
@@ -25,11 +25,11 @@ const CookieSettings: React.FunctionComponent<Props> = ({ settingsPlacementKey }
         { value: 1, label: MailPoet.I18n.t('formPlacementCookieExpirationDay') },
         ...cookieExpirationValues.map((cookieExpirationValue) => ({
           value: cookieExpirationValue,
-          label: MailPoet.I18n.t('formPlacementCookieExpirationDays').replace('%1s', cookieExpirationValue),
+          label: MailPoet.I18n.t('formPlacementCookieExpirationDays').replace('%1s', cookieExpirationValue.toString()),
         }))]}
       onChange={compose([changeFormSettings, assocPath(`formPlacement.${settingsPlacementKey}.cookieExpiration`, __, formSettings)])}
     />
   );
-};
+}
 
 export default CookieSettings;
