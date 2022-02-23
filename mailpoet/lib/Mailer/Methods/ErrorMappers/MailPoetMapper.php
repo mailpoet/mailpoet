@@ -23,7 +23,7 @@ class MailPoetMapper {
     return new MailerError(
       MailerError::OPERATION_SEND,
       MailerError::LEVEL_HARD,
-      WPFunctions::get()->__('MailPoet API key is invalid!', 'mailpoet')
+      __('MailPoet API key is invalid!', 'mailpoet')
     );
   }
 
@@ -36,11 +36,11 @@ class MailPoetMapper {
 
     switch ($resultCode) {
       case API::RESPONSE_CODE_NOT_ARRAY:
-        $message = WPFunctions::get()->__('JSON input is not an array', 'mailpoet');
+        $message = __('JSON input is not an array', 'mailpoet');
         break;
       case API::RESPONSE_CODE_PAYLOAD_ERROR:
         $resultParsed = json_decode($result['message'], true);
-        $message = WPFunctions::get()->__('Error while sending.', 'mailpoet');
+        $message = __('Error while sending.', 'mailpoet');
         if (!is_array($resultParsed)) {
           $message .= ' ' . $result['message'];
           break;
@@ -53,7 +53,7 @@ class MailPoetMapper {
         }
         break;
       case API::RESPONSE_CODE_TEMPORARY_UNAVAILABLE:
-        $message = WPFunctions::get()->__('Email service is temporarily not available, please try again in a few minutes.', 'mailpoet');
+        $message = __('Email service is temporarily not available, please try again in a few minutes.', 'mailpoet');
         $retryInterval = self::TEMPORARY_UNAVAILABLE_RETRY_INTERVAL;
         break;
       case API::RESPONSE_CODE_CAN_NOT_SEND:
@@ -79,7 +79,7 @@ class MailPoetMapper {
     $errors = [];
     foreach ($resultParsed as $resultError) {
       if (!is_array($resultError) || !isset($resultError['index']) || !isset($subscribers[$resultError['index']])) {
-        throw new InvalidArgumentException( WPFunctions::get()->__('Invalid MSS response format.', 'mailpoet'));
+        throw new InvalidArgumentException(__('Invalid MSS response format.', 'mailpoet'));
       }
       $subscriberErrors = [];
       if (isset($resultError['errors']) && is_array($resultError['errors'])) {
@@ -94,7 +94,7 @@ class MailPoetMapper {
   }
 
   private function getUnauthorizedEmailMessage($sender) {
-    $email = $sender ? $sender['from_email'] : WPFunctions::get()->__('Unknown address');
+    $email = $sender ? $sender['from_email'] : __('Unknown address', 'mailpoet');
     $validationError = ['invalid_sender_address' => $email];
     $notice = new UnauthorizedEmailNotice(WPFunctions::get(), null);
     $message = $notice->getMessage($validationError);
