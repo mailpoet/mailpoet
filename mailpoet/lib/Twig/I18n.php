@@ -54,7 +54,7 @@ class I18n extends AbstractExtension {
     $output[] = '<script type="text/javascript">';
     foreach ($translations as $key => $translation) {
       $output[] =
-        'MailPoet.I18n.add("' . $key . '", "' . str_replace('"', '\"', $translation) . '");';
+        'MailPoet.I18n.add("' . $key . '", "' . str_replace(['"', "\n", "\r"], ['\"', " ", ""], $translation) . '");';
     }
     $output[] = '</script>';
     return join("\n", $output);
