@@ -92,7 +92,7 @@ class Mailer {
           $this->mailerConfig['mailpoet_api_key'],
           $this->sender,
           $this->replyTo,
-          new MailPoetMapper(),
+          ContainerWrapper::getInstance()->get(MailPoetMapper::class),
           ContainerWrapper::getInstance()->get(AuthorizedEmailsController::class)
         );
         break;
