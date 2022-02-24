@@ -67,7 +67,7 @@ jQuery(($) => {
    * @return {string} The name of the cookie for the form
    */
   function getFormCookieName(form) {
-    const formId = form.find('input[name="data[form_id]"').val();
+    const formId = form.find('input[name="data[form_id]"]').val();
     return `popup_form_dismissed_${formId}`;
   }
 
