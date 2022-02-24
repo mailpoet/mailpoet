@@ -35,6 +35,7 @@ import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import TransactionalEmailsProposeOptInNotice from 'notices/transactional_emails_propose_opt_in_notice';
 import PropTypes from 'prop-types';
+import EmailVolumeLimitNotice from 'notices/email_volume_limit_notice';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
@@ -226,6 +227,7 @@ function App() {
         <Notices />
 
         <SubscribersLimitNotice />
+        <EmailVolumeLimitNotice />
         <TransactionalEmailsProposeOptInNotice
           mailpoetInstalledDaysAgo={window.mailpoet_installed_days_ago}
           sendTransactionalEmails={window.mailpoet_send_transactional_emails}
