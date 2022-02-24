@@ -37,6 +37,7 @@ class MailPoetCustomFieldSegmentCest {
     $i->waitForElementVisible('[data-automation-id="text-custom-field-operator"]');
     $i->selectOption('[data-automation-id="text-custom-field-operator"]', 'contains');
     $i->fillField('[data-automation-id="text-custom-field-value"]', 'value1');
+    $i->waitForText('This segment has 1 subscribers.');
     $i->click('Save');
 
     $i->wantTo('Edit the segment');

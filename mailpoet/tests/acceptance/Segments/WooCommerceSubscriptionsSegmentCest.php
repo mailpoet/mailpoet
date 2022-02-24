@@ -67,15 +67,12 @@ class WooCommerceSubscriptionsSegmentCest {
 
     // Check for none of
     $i->selectOption($operatorSelectElement, 'none of');
-    $i->waitForText('Calculating segment size…');
     $i->waitForText('This segment has 3 subscribers.'); // subscriber3@example.com, subscriber4@example.com, and admin user
     // Check for all of
     $i->selectOption($operatorSelectElement, 'all of');
-    $i->waitForText('Calculating segment size…');
     $i->waitForText('This segment has 1 subscribers.'); // subscriber2@example.com
     // Check for any of
     $i->selectOption($operatorSelectElement, 'any of'); // subscriber2@example.com and subscriber1@example.com
-    $i->waitForText('Calculating segment size…');
     $i->waitForText('This segment has 2 subscribers.');
 
     $i->seeNoJSErrors();

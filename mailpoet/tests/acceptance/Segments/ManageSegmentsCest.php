@@ -284,7 +284,6 @@ class ManageSegmentsCest {
     $i->fillField(['name' => 'description'], $segmentDesc);
     $i->selectOptionInReactSelect('WordPress user role', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect('Editor', '[data-automation-id="segment-wordpress-role"]');
-    $i->waitForText('Calculating segment size…');
     $i->waitForText('This segment has 2 subscribers.');
     $i->seeNoJSErrors();
     $i->click('Save');

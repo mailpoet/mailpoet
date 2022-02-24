@@ -48,6 +48,7 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->waitForElementVisible('[data-automation-id="segment-number-of-opens"]');
     $i->fillField('[data-automation-id="segment-number-of-opens"]', 2);
     $i->fillField('[data-automation-id="segment-number-of-days"]', 3);
+    $i->waitForText('This segment has 2 subscribers');
     $i->click('Save');
 
     $i->wantTo('Edit the segment');
