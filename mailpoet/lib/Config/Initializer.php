@@ -159,7 +159,7 @@ class Initializer {
   }
 
   public function init() {
-    // load translations
+    // load translations and setup translations update/download
     $this->setupLocalizer();
 
     try {
@@ -318,17 +318,6 @@ class Initializer {
     $premiumSlug = Installer::PREMIUM_PLUGIN_SLUG;
     $premiumPluginFile = Installer::getPluginFile($premiumSlug);
     $premiumVersion = defined('MAILPOET_PREMIUM_VERSION') ? MAILPOET_PREMIUM_VERSION : null;
-    $freeSlug = Env::$pluginName;
-    $freeVersion = MAILPOET_VERSION;
-
-    $translationUpdater = new TranslationUpdater(
-      $this->wpFunctions,
-      $freeSlug,
-      $freeVersion,
-      $premiumSlug,
-      $premiumVersion
-    );
-    $translationUpdater->init();
 
     if (empty($premiumPluginFile) || !$premiumVersion) {
       return false;
@@ -342,7 +331,7 @@ class Initializer {
   }
 
   public function setupLocalizer() {
-    $this->localizer->init();
+    $this->localizer->init($this->wpFunctions);
   }
 
   public function setupCapabilities() {
@@ -384,7 +373,7 @@ class Initializer {
   public function setupUserLocale() {
     if (get_user_locale() === $this->wpFunctions->getLocale()) return;
     $this->wpFunctions->unloadTextdomain(Env::$pluginName);
-    $this->localizer->init();
+    $this->localizer->init($this->wpFunctions);
   }
 
   public function setupPages() {

@@ -5,8 +5,25 @@ namespace MailPoet\Config;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Localizer {
-  public function init() {
+  public function init(WPFunctions $wpFunctions) {
     $this->loadGlobalText();
+    $this->setupTranslationsUpdater($wpFunctions);
+  }
+
+  private function setupTranslationsUpdater(WPFunctions $wpFunctions) {
+    $premiumSlug = Installer::PREMIUM_PLUGIN_SLUG;
+    $premiumVersion = defined('MAILPOET_PREMIUM_VERSION') ? MAILPOET_PREMIUM_VERSION : null;
+    $freeSlug = Env::$pluginName;
+    $freeVersion = MAILPOET_VERSION;
+
+    $translationUpdater = new TranslationUpdater(
+      $wpFunctions,
+      $freeSlug,
+      $freeVersion,
+      $premiumSlug,
+      $premiumVersion
+    );
+    $translationUpdater->init();
   }
 
   public function loadGlobalText() {
