@@ -78,7 +78,7 @@ class WooCommerceSubscription implements Filter {
       'postmeta',
       $wpdb->posts,
       'posts',
-      'postmeta.post_id = posts.id AND posts.post_type = "shop_subscription" AND posts.post_status = "wc-active"'
+      'postmeta.post_id = posts.id AND posts.post_type = "shop_subscription" AND posts.post_status IN("wc-active", "wc-pending-cancel")'
     );
   }
 
