@@ -157,7 +157,23 @@ class Database extends \Codeception\Module {
 			category_id BIGINT UNSIGNED NOT NULL,
 			PRIMARY KEY (category_tree_id,category_id)
 		) $collate;
-		";
+    CREATE TABLE `{$wpdb->prefix}woocommerce_order_items` (
+    `order_item_id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+      `order_item_name` text NOT NULL,
+      `order_item_type` varchar(200) NOT NULL DEFAULT '',
+      `order_id` bigint UNSIGNED NOT NULL,
+      PRIMARY KEY (`order_item_id`),
+      KEY `order_id` (`order_id`)
+    ) $collate;
+    CREATE TABLE `{$wpdb->prefix}woocommerce_order_itemmeta` (
+      meta_id bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+      order_item_id bigint UNSIGNED NOT NULL,
+      meta_key varchar(255) DEFAULT NULL,
+      meta_value longtext,
+      PRIMARY KEY (meta_id),
+      KEY order_item_id (order_item_id),
+      KEY meta_key (meta_key(32))
+    ) $collate";
   }
 
   /**
