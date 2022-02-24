@@ -44,7 +44,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->settings['api_key'],
       $this->sender,
       $this->replyTo,
-      new MailPoetMapper(),
+      $this->diContainer->get(MailPoetMapper::class),
       $this->makeEmpty(AuthorizedEmailsController::class)
     );
     $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
@@ -85,7 +85,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->settings['api_key'],
       $this->sender,
       $replyTo,
-      new MailPoetMapper(),
+      $this->diContainer->get(MailPoetMapper::class),
       $this->makeEmpty(AuthorizedEmailsController::class)
     );
     $body = $mailer->getBody($this->newsletter, $this->subscriber);
@@ -274,7 +274,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->settings['api_key'],
       $this->sender,
       $this->replyTo,
-      new MailPoetMapper(),
+      $this->diContainer->get(MailPoetMapper::class),
       $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()])
     );
     $mailer->api = $this->makeEmpty(
@@ -295,7 +295,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->mailer,
       [
         'blacklist' => $blacklist,
-        'errorMapper' => new MailPoetMapper(),
+        'errorMapper' => $this->diContainer->get(MailPoetMapper::class),
         'servicesChecker' => Stub::make(
           new ServicesChecker(),
           ['isMailPoetAPIKeyValid' => true],
@@ -321,7 +321,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->mailer,
       [
         'blacklist' => $blacklist,
-        'errorMapper' => new MailPoetMapper(),
+        'errorMapper' => $this->diContainer->get(MailPoetMapper::class),
         'servicesChecker' => Stub::make(
           new ServicesChecker(),
           ['isMailPoetAPIKeyValid' => true],
