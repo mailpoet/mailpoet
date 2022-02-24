@@ -46,6 +46,9 @@ class SendingServiceKeyCheck extends KeyCheckWorker {
   }
 
   public function checkKey() {
+    // for phpstan because we set bridge property in the init function
+    if (!$this->bridge) return;
+
     $wasPendingApproval = $this->servicesChecker->isMailPoetAPIKeyPendingApproval();
 
     $mssKey = $this->settings->get(Mailer::MAILER_CONFIG_SETTING_NAME)['mailpoet_api_key'];

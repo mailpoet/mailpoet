@@ -25,6 +25,9 @@ class PremiumKeyCheck extends KeyCheckWorker {
   }
 
   public function checkKey() {
+    // for phpstan because we set bridge property in the init function
+    if (!$this->bridge) return;
+
     $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
     $result = $this->bridge->checkPremiumKey($premiumKey);
     $this->bridge->storePremiumKeyAndState($premiumKey, $result);
