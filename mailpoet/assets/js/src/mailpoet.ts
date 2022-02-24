@@ -55,6 +55,8 @@ export const MailPoet = {
   premiumPluginDownloadUrl: window.mailpoet_premium_plugin_download_url,
   premiumPluginActivationUrl: window.mailpoet_premium_plugin_activation_url,
   pluginPartialKey: window.mailpoet_plugin_partial_key,
+  emailVolumeLimit: window.mailpoet_email_volume_limit,
+  emailVolumeLimitReached: window.mailpoet_email_volume_limit_reached,
 } as const;
 
 declare global {
