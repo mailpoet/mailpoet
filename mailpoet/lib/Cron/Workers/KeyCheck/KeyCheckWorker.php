@@ -10,6 +10,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 abstract class KeyCheckWorker extends SimpleWorker {
+  /** @var Bridge|null */
   public $bridge;
 
   /** @var CronWorkerScheduler */
