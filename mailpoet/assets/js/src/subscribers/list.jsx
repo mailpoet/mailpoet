@@ -13,6 +13,7 @@ import Modal from 'common/modal/modal.tsx';
 import Selection from 'form/fields/selection.jsx';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
+import EmailVolumeLimitNotice from 'notices/email_volume_limit_notice';
 import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
 import SubscribersInPlan from 'common/subscribers_in_plan';
 
@@ -455,6 +456,7 @@ function SubscriberList({ match }) {
       />
 
       <SubscribersLimitNotice />
+      <EmailVolumeLimitNotice />
       <InvalidMssKeyNotice
         mssKeyInvalid={window.mailpoet_mss_key_invalid}
         subscribersCount={window.mailpoet_subscribers_count}

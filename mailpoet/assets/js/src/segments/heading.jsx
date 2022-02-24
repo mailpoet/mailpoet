@@ -5,6 +5,7 @@ import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import plusIcon from 'common/button/icon/plus';
 import SubscribersInPlan from 'common/subscribers_in_plan';
 import SubscribersLimitNotice from 'notices/subscribers_limit_notice';
+import EmailVolumeLimitNotice from 'notices/email_volume_limit_notice';
 import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
 import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
 
@@ -32,6 +33,7 @@ function ListHeading() {
       />
 
       <SubscribersLimitNotice />
+      <EmailVolumeLimitNotice />
       <InvalidMssKeyNotice
         mssKeyInvalid={MailPoet.hasInvalidMssApiKey}
         subscribersCount={MailPoet.subscribersCount}
