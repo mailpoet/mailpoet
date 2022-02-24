@@ -165,6 +165,66 @@ class TranslationUpdaterTest extends \MailPoetTest {
     expect($result->translations)->isEmpty();
   }
 
+  public function testItDoesNotOverrideNewerVersionInCaseItWasInstalledFromDotOrg(): void {
+    $wpFunctions = Stub::construct(
+      $this->wp,
+      [],
+      [
+        'wpRemotePost' => function() {
+          return [
+            'response' => [
+              'code' => 200,
+            ],
+            'body' => json_encode([
+              'success' => true,
+              'data' => $this->getResponseData(),
+            ]),
+          ];
+        },
+        'getAvailableLanguages' => function() {
+          return ['fr_FR'];
+        },
+        'wpGetInstalledTranslations' => function() {
+          return [
+            $this->freeSlug => [
+              'fr_FR' => [
+                'PO-Revision-Date' => '2021-10-15 05:18:35',
+                'Project-Id-Version' => 'MailPoet - Stable (latest release)',
+              ],
+            ],
+            $this->premiumSlug => [
+              'fr_FR' => ['PO-Revision-Date' => '2021-10-15 05:18:35'],
+            ],
+          ];
+        },
+      ],
+      $this
+    );
+
+    $updateTransient = new \stdClass;
+    $updateTransient->translations = [];
+    $updater = Stub::construct(
+      $this->updater,
+      [
+        $wpFunctions,
+        $this->freeSlug,
+        $this->freeVersion,
+        $this->premiumSlug,
+        $this->premiumVersion,
+      ]
+    );
+    $result = $updater->checkForTranslations($updateTransient);
+    expect($result->translations)->notEmpty();
+    $freeTranslation = $result->translations[0];
+    expect($freeTranslation['type'])->equals('plugin');
+    expect($freeTranslation['slug'])->equals($this->freeSlug);
+    expect($freeTranslation['language'])->equals('fr_FR');
+    expect($freeTranslation['version'])->equals($this->freeVersion);
+    // We add 1 second to .org so that .com translation are saved as newer.
+    expect($freeTranslation['updated'])->equals('2021-10-15 05:18:36');
+    expect($freeTranslation['package'])->equals('https:\/\/translate.files.wordpress.com\/2021\/08\/mailpoet-free-0_1-fr_fr.zip');
+  }
+
   public function testItDoesNotOverrideOtherPluginTranslations(): void {
     $wpFunctions = Stub::construct(
       $this->wp,

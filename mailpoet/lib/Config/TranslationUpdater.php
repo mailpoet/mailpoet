@@ -3,7 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Carbon\CarbonImmutable;
 
 class TranslationUpdater {
   const API_UPDATES_BASE_URI = 'https://translate.wordpress.com/api/translations-updates/mailpoet/';
@@ -102,8 +102,16 @@ class TranslationUpdater {
       foreach ($languagePacks as $languagePack) {
         // Check revision date if translation is already installed.
         if (array_key_exists($pluginName, $installedTranslations) && array_key_exists($languagePack['wp_locale'], $installedTranslations[$pluginName])) {
-          $installedTranslationRevisionTime = new Carbon($installedTranslations[$pluginName][$languagePack['wp_locale']]['PO-Revision-Date']);
-          $newTranslationRevisionTime = new Carbon($languagePack['last_modified']);
+          $installedFromWpOrg = strpos($installedTranslations[$pluginName][$languagePack['wp_locale']]['Project-Id-Version'] ?? '', 'Stable (latest release)') !== false;
+          $installedTranslationRevisionTime = new CarbonImmutable($installedTranslations[$pluginName][$languagePack['wp_locale']]['PO-Revision-Date']);
+          $newTranslationRevisionTime = new CarbonImmutable($languagePack['last_modified']);
+
+          // In case installed translation pack comes from WP.org make sure that the one coming from WP.com has newer date
+          if ($installedFromWpOrg && $newTranslationRevisionTime <= $installedTranslationRevisionTime) {
+            $languagePack['last_modified'] = $installedTranslationRevisionTime->addSecond()->toDateTimeString();
+            $newTranslationRevisionTime = new CarbonImmutable($languagePack['last_modified']);
+          }
+
           // Skip if translation language pack is not newer than what is installed already.
           if ($newTranslationRevisionTime <= $installedTranslationRevisionTime) {
             continue;
