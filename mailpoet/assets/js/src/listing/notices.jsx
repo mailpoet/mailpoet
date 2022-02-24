@@ -29,6 +29,10 @@ function MailerError(props) {
   if (props.mta_log.error.operation === 'send' && props.mta_method === 'MailPoet' && MailPoet.hasInvalidMssApiKey) {
     return null;
   }
+  // do not display Email Volume Limit reached error twice
+  if (props.mta_method === 'MailPoet' && props.mta_log.error.operation === 'email_limit_reached') {
+    return null;
+  }
   if (props.mta_log.error.operation === 'migration') {
     return (
       <div className="mailpoet_notice notice notice-warning">
