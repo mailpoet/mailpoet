@@ -667,13 +667,11 @@ class RendererTest extends \MailPoetTest {
       include( ABSPATH . 'wp-admin/includes/image.php' );
     }
 
-    $type = '';
     if (!empty($upload['type'])) {
       $type = $upload['type'];
     } else {
       $mime = wp_check_filetype($upload['file']);
-      if ($mime)
-        $type = $mime['type'];
+      $type = $mime['type'];
     }
 
     $attachment = [
