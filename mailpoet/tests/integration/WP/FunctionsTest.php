@@ -22,13 +22,11 @@ class FunctionsTest extends \MailPoetTest {
   }
 
   public function makeAttachment($upload, $parentPostId = 0) {
-    $type = '';
     if (!empty($upload['type'])) {
         $type = $upload['type'];
     } else {
         $mime = wp_check_filetype($upload['file']);
-        if ($mime)
-            $type = $mime['type'];
+        $type = $mime['type'];
     }
 
     $attachment = [
