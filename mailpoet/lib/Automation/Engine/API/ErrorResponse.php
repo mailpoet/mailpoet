@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\API;
+namespace MailPoet\Automation\Engine\API;
 
 class ErrorResponse extends Response {
   public function __construct(

@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\API;
+namespace MailPoet\Automation\Engine\API;
 
-use MailPoet\Automation\Exceptions;
+use MailPoet\Automation\Engine\Exceptions;
 use WP_REST_Request;
 
 class Request {

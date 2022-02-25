@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation;
+namespace MailPoet\Automation\Engine;
 
-use MailPoet\Automation\API\API;
+use MailPoet\Automation\Engine\API\API;
 
-class Automation {
+class Engine {
   /** @var API */
   private $api;
 
@@ -16,7 +16,7 @@ class Automation {
 
   public function initialize(): void {
     // register Action Scheduler (when behind feature flag, do it only on initialization)
-    require_once __DIR__ . '/../../vendor/woocommerce/action-scheduler/action-scheduler.php';
+    require_once __DIR__ . '/../../../vendor/woocommerce/action-scheduler/action-scheduler.php';
 
     $this->api->initialize();
   }

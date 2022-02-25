@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Exceptions;
+namespace MailPoet\Automation\Engine\Exceptions;
 
 /**
  * USE: When the main resource we're interested in doesn't exist.

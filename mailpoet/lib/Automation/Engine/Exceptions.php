@@ -1,9 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation;
+namespace MailPoet\Automation\Engine;
 
-use MailPoet\Automation\Exceptions\InvalidStateException;
-use MailPoet\Automation\Exceptions\UnexpectedValueException;
+use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
+use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 
 class Exceptions {
   private const MIGRATION_FAILED = 'mailpoet_automation_migration_failed';

@@ -4,7 +4,7 @@ namespace MailPoet\Config;
 
 use MailPoet\API\JSON\API;
 use MailPoet\AutomaticEmails\AutomaticEmails;
-use MailPoet\Automation\Automation;
+use MailPoet\Automation\Engine\Engine;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Features\FeaturesController;
 use MailPoet\InvalidStateException;
@@ -88,8 +88,8 @@ class Initializer {
   /** @var SubscriberActivityTracker */
   private $subscriberActivityTracker;
 
-  /** @var Automation */
-  private $automation;
+  /** @var Engine */
+  private $automationEngine;
 
   /** @var FeaturesController */
   private $featuresController;
@@ -118,7 +118,7 @@ class Initializer {
     AutomaticEmails $automaticEmails,
     SubscriberActivityTracker $subscriberActivityTracker,
     AssetsLoader $assetsLoader,
-    Automation $automation,
+    Engine $automationEngine,
     FeaturesController $featuresController
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -142,7 +142,7 @@ class Initializer {
     $this->automaticEmails = $automaticEmails;
     $this->subscriberActivityTracker = $subscriberActivityTracker;
     $this->assetsLoader = $assetsLoader;
-    $this->automation = $automation;
+    $this->automationEngine = $automationEngine;
     $this->featuresController = $featuresController;
   }
 
@@ -164,7 +164,7 @@ class Initializer {
     }
 
     if ($this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
-      $this->automation->initialize();
+      $this->automationEngine->initialize();
     }
 
     // activation function

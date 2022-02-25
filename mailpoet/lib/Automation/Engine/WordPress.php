@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation;
+namespace MailPoet\Automation\Engine;
 
 class WordPress {
   public function addAction(string $hookName, callable $callback, int $priority = 10, int $acceptedArgs = 1): bool {

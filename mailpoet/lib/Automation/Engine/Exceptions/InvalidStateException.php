@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Exceptions;
+namespace MailPoet\Automation\Engine\Exceptions;
 
 /**
  * USE: An application state that should not occur. Can be subclassed for feature-specific exceptions.
