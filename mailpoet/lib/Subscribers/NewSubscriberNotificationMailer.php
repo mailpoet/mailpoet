@@ -89,7 +89,7 @@ class NewSubscriberNotificationMailer {
       'subscriber_email' => $subscriber->get('email'),
       'segments_names' => $segmentNames,
       'link_settings' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-settings'),
-      'link_premium' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-premium'),
+      'link_premium' => WPFunctions::get()->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-upgrade'),
     ];
     return [
       'subject' => sprintf(__('New subscriber to %s', 'mailpoet'), $segmentNames),
