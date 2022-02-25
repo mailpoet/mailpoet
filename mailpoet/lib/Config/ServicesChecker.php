@@ -102,7 +102,7 @@ class ServicesChecker {
         );
         $error = Helpers::replaceLinkTags(
           $error,
-          'admin.php?page=mailpoet-premium',
+          'admin.php?page=mailpoet-upgrade',
           [],
           'link2'
         );

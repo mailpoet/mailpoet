@@ -6,7 +6,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
-class Premium {
+class Upgrade {
   /** @var PageRenderer */
   private $pageRenderer;
 
@@ -31,6 +31,6 @@ class Premium {
       'current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
       'subscriber_count' => $this->subscribersFeature->getSubscribersCount(),
     ];
-    $this->pageRenderer->displayPage('premium.html', $data);
+    $this->pageRenderer->displayPage('upgrade.html', $data);
   }
 }

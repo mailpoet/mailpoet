@@ -18,7 +18,7 @@ function SkipDisplayingDetailedStats() {
     <p>
       {MailPoet.I18n.t('premiumBannerDescription')}
       {' '}
-      <a href="admin.php?page=mailpoet-premium">
+      <a href="admin.php?page=mailpoet-upgrade">
         {MailPoet.I18n.t('learnMore')}
       </a>
       .

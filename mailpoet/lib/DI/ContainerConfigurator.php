@@ -39,7 +39,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AdminPages\Pages\NewsletterEditor::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\Newsletters::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\MP2Migration::class)->setPublic(true);
-    $container->autowire(\MailPoet\AdminPages\Pages\Premium::class)->setPublic(true);
+    $container->autowire(\MailPoet\AdminPages\Pages\Upgrade::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\Segments::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\Settings::class)->setPublic(true);
     $container->autowire(\MailPoet\AdminPages\Pages\Subscribers::class)->setPublic(true);

@@ -11,12 +11,12 @@ use MailPoet\AdminPages\Pages\Logs;
 use MailPoet\AdminPages\Pages\MP2Migration;
 use MailPoet\AdminPages\Pages\NewsletterEditor;
 use MailPoet\AdminPages\Pages\Newsletters;
-use MailPoet\AdminPages\Pages\Premium;
 use MailPoet\AdminPages\Pages\Segments;
 use MailPoet\AdminPages\Pages\Settings;
 use MailPoet\AdminPages\Pages\Subscribers;
 use MailPoet\AdminPages\Pages\SubscribersExport;
 use MailPoet\AdminPages\Pages\SubscribersImport;
+use MailPoet\AdminPages\Pages\Upgrade;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
@@ -325,17 +325,17 @@ class Menu {
       ]
     );
 
-    // Premium page
+    // Upgrade page
     // Only show this page in menu if the Premium plugin is not activated
     $this->wp->addSubmenuPage(
       License::getLicense() ? true : self::MAIN_PAGE_SLUG,
-      $this->setPageTitle(__('Premium', 'mailpoet')),
-      $this->wp->__('Premium', 'mailpoet'),
+      $this->setPageTitle(__('Upgrade', 'mailpoet')),
+      $this->wp->__('Upgrade', 'mailpoet'),
       AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
-      'mailpoet-premium',
+      'mailpoet-upgrade',
       [
         $this,
-        'premium',
+        'upgrade',
       ]
     );
 
@@ -428,8 +428,8 @@ class Menu {
     $this->container->get(WooCommerceSetup::class)->render();
   }
 
-  public function premium() {
-    $this->container->get(Premium::class)->render();
+  public function upgrade() {
+    $this->container->get(Upgrade::class)->render();
   }
 
   public function settings() {
