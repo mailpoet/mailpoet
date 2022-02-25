@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Migrations;
+namespace MailPoet\Automation\Engine\Migrations;
 
-use MailPoet\Automation\Exceptions;
+use MailPoet\Automation\Engine\Exceptions;
 use wpdb;
 
 class Migrator {

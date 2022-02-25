@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\API;
+namespace MailPoet\Automation\Engine\API;
 
-use MailPoet\Automation\Exceptions;
+use MailPoet\Automation\Engine\Exceptions;
 
 abstract class Endpoint {
   public function get(Request $request): Response {

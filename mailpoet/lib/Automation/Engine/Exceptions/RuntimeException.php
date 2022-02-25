@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Exceptions;
+namespace MailPoet\Automation\Engine\Exceptions;
 
 /**
  * USE: Generic runtime error. When possible, use a more specific exception instead.

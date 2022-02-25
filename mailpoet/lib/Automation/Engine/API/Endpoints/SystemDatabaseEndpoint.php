@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\API\Endpoints;
+namespace MailPoet\Automation\Engine\API\Endpoints;
 
-use MailPoet\Automation\API\Endpoint;
-use MailPoet\Automation\API\Request;
-use MailPoet\Automation\API\Response;
-use MailPoet\Automation\Migrations\Migrator;
+use MailPoet\Automation\Engine\API\Endpoint;
+use MailPoet\Automation\Engine\API\Request;
+use MailPoet\Automation\Engine\API\Response;
+use MailPoet\Automation\Engine\Migrations\Migrator;
 use MailPoet\Features\FeatureFlagsController;
 use MailPoet\Features\FeaturesController;
 

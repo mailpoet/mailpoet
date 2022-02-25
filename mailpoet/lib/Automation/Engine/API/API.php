@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\API;
+namespace MailPoet\Automation\Engine\API;
 
-use MailPoet\Automation\API\Endpoints\SystemDatabaseEndpoint;
-use MailPoet\Automation\API\Endpoints\WorkflowsEndpoint;
-use MailPoet\Automation\Exceptions\Exception;
-use MailPoet\Automation\WordPress;
+use MailPoet\Automation\Engine\API\Endpoints\SystemDatabaseEndpoint;
+use MailPoet\Automation\Engine\API\Endpoints\WorkflowsEndpoint;
+use MailPoet\Automation\Engine\Exceptions\Exception;
+use MailPoet\Automation\Engine\WordPress;
 use ReflectionClass;
 use Throwable;
 
