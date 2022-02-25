@@ -8,7 +8,7 @@ class WordPress {
   }
 
   public function currentUserCan(string $capability, array ...$args): bool {
-    return current_user_can($capability, $args);
+    return current_user_can($capability, ...$args);
   }
 
   public function registerRestRoute(string $namespace, string $route, array $args = [], bool $override = false): bool {
