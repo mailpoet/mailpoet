@@ -211,6 +211,11 @@ class Services extends APIEndpoint {
     $this->mssWorker->checkKey();
     $this->premiumWorker->init();
     $this->premiumWorker->checkKey();
+    // continue sending when it is paused
+    $mailerLog = MailerLog::getMailerLog();
+    if (isset($mailerLog['status']) && $mailerLog['status'] === MailerLog::STATUS_PAUSED) {
+      MailerLog::resumeSending();
+    }
     return $this->successResponse();
   }
 
