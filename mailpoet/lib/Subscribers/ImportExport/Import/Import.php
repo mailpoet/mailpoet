@@ -532,6 +532,7 @@ class Import {
     ];
     $customFieldCount = count($subscribersCustomFieldsIds);
     $customFieldBatchSize = (int)(round(self::DB_QUERY_CHUNK_SIZE / $customFieldCount) * $customFieldCount);
+    $customFieldBatchSize = ($customFieldBatchSize > 0) ? $customFieldBatchSize : 1;
     foreach (array_chunk($subscribersCustomFieldsData, $customFieldBatchSize) as $subscribersCustomFieldsDataChunk) {
       $this->importExportRepository->insertMultiple(
         SubscriberCustomFieldEntity::class,
