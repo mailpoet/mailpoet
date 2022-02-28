@@ -59,6 +59,7 @@ class SendingQueueTest extends \MailPoetTest {
   public $sendingQueueWorker;
   public $cronHelper;
   public $newsletterLink;
+  /* @var SendingTask */
   public $queue;
   public $newsletterSegment;
   public $newsletter;
@@ -703,6 +704,44 @@ class SendingQueueTest extends \MailPoetTest {
       ->equals([]);
     expect($updatedQueue->countTotal)->equals(0);
     expect($updatedQueue->countProcessed)->equals(0);
+    expect($updatedQueue->countToProcess)->equals(0);
+  }
+
+  public function testItPreventsSendingNewsletterToRecipientWhoIsUnsubscribed() {
+    $subscriberFactory = new \MailPoet\Test\DataFactories\Subscriber();
+    $unsubscribedSubscriber = $subscriberFactory
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $this->queue->setSubscribers([
+      $this->subscriber->getId(), // subscriber that should be processed
+      $unsubscribedSubscriber->getId(), // subscriber that should be skipped
+    ]);
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      null,
+      Stub::make(
+        new MailerTask(),
+        [
+          'send' => Expected::exactly(1, function() {
+            return $this->mailerTaskDummyResponse;
+          }),
+        ],
+        $this
+      )
+    );
+    $sendingQueueWorker->process();
+
+    // queue status is set to completed
+    /** @var SendingQueue $updatedQueue */
+    $updatedQueue = SendingQueue::findOne($this->queue->id);
+    $updatedQueue = SendingTask::createFromQueue($updatedQueue);
+
+    // Unprocessable subscribers were removed
+    expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))
+      ->equals([
+          $this->subscriber->getId(), // subscriber that should be processed
+      ]);
+    expect($updatedQueue->countTotal)->equals(1);
+    expect($updatedQueue->countProcessed)->equals(1);
     expect($updatedQueue->countToProcess)->equals(0);
   }
 
