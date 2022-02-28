@@ -11,7 +11,7 @@ function EmailVolumeLimitNotice(): JSX.Element {
     .replace('[emailVolumeLimit]', MailPoet.emailVolumeLimit);
   const youReachedEmailVolumeLimit = MailPoet.I18n.t('youReachedEmailVolumeLimit')
     .replace('[emailVolumeLimit]', MailPoet.emailVolumeLimit);
-  const upgradeLink = `https://account.mailpoet.com/orders/upgrade/${MailPoet.pluginPartialKey}`;
+  const upgradeLink = MailPoet.MailPoetComUrlFactory.getUpgradeUrl(MailPoet.pluginPartialKey);
   const refreshSubscribers = async () => {
     await MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
