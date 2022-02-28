@@ -17,6 +17,7 @@ class Form {
   /** @var FormsRepository  */
   private $formsRepository;
 
+  /** @var array  */
   private $data;
 
   public function __construct() {
@@ -168,7 +169,7 @@ class Form {
     if (is_string($this->data['body'])) {
       $form->setBody(unserialize($this->data['body']));
     }
-    
+
     $this->formsRepository->persist($form);
     $this->formsRepository->flush();
     return $form;
