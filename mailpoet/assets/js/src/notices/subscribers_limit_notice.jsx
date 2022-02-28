@@ -11,8 +11,8 @@ function SubscribersLimitNotice() {
   const youReachedTheLimit = MailPoet.I18n.t(hasValidApiKey ? 'yourPlanLimit' : 'freeVersionLimit')
     .replace('[subscribersLimit]', MailPoet.subscribersLimit);
   const upgradeLink = hasValidApiKey
-    ? `https://account.mailpoet.com/orders/upgrade/${MailPoet.pluginPartialKey}`
-    : `https://account.mailpoet.com/?s=${MailPoet.subscribersCount + 1}`;
+    ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl(MailPoet.pluginPartialKey)
+    : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(MailPoet.subscribersCount + 1);
   const refreshSubscribers = async () => {
     await MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
