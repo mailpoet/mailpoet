@@ -12,17 +12,17 @@ Send beautiful newsletters from WordPress. Collect subscribers with signup forms
 
 == Description ==
 
-With MailPoet, your website visitors can sign up as newsletter subscribers and build your mailing list, all without leaving your WordPress admin.
+Use MailPoet to create, send, manage, and grow your email marketing campaigns – all without leaving your WordPress dashboard.
 
-Our newsletter builder integrates perfectly with WordPress so any website owner can create beautiful emails from scratch or by using our responsive templates that display flawlessly across all devices.
+Our newsletter builder integrates perfectly with WordPress so any website owner can create beautiful emails from scratch, or by using our responsive templates that display flawlessly across all devices.
 
-Schedule your newsletters, send them right away or set it up to send new blog post notifications automatically in just a few clicks.
+Schedule your newsletters, send them right away, or set up new blog post notifications to send automatically, in just a few clicks.
 
-Trusted by 300,000 WordPress websites since 2011.
+Trusted by 500,000 WordPress websites since 2011.
 
-**New!** Our Premium is now free for sites with 1,000 subscribers or fewer.
+**With a free plan for up to 1,000 subscribers, and scaling paid plans with enhanced functionality available, MailPoet is an email marketing solution suitable for both beginners and proficient email marketers.**
 
-[Visit our website to see the templates or try the demo](https://www.mailpoet.com/)
+[Visit our website for more information on plans and pricing](https://www.mailpoet.com/)
 
 = All features =
 
@@ -31,83 +31,91 @@ Trusted by 300,000 WordPress websites since 2011.
 * Build and send newsletters with WordPress
 * Create automatic emails to send new post notifications
 * Send automated welcome emails
-* Increase your sales with our emails for WooCommerce
-* Free WooCommerce email customizer
-* Insightful stats on your audience engagement
+* Behavior and interest-based subscriber segmentation options
+* Pre-built and customizable email and subscription form templates
+* WooCommerce emails: abandoned cart, first purchase, specific product, product category
+* Customize WooCommerce transactional emails
+* Reliable email delivery with MailPoet Sending Service (available for free – plan required)
+* Basic engagement statistics (available for free) and detailed engagement statistics (paid plan required)
+* Multi-condition segmentation (paid plan required)
+* Google Analytics integration (paid plan required)
+* Support via our Knowledge Base and Community Forums (available for free), and Priority Customer Support (paid plan required).
 
 = Why choose MailPoet =
 
 * Easy to use WordPress newsletter builder
-* Beautiful responsive templates
+* Beautiful templates that work perfectly across all devices
 * No configuration needed: works out of the box
-* Small site owners with lists of 1,000 subscribers or fewer get the Premium for free. [Read More.](https://www.mailpoet.com/free-plan/)
+* Manage everything within your WordPress dashboard
+* Higher delivery rates with the MailPoet Sending Service
 * GDPR compliant
+* Free plan for small senders or those just starting out
+* Advanced functionality available to help achieve growth.
 
-= See it in action =
+= WooCommerce emails =
 
-[See the 2 min. video](https://vimeo.com/223581490)
-[vimeo https://vimeo.com/223581490]
+Promote your business, sell more products, and enhance your customer service with MailPoet’s WooCommerce features.
+
+Use the automated email options to:
+
+* Welcome your new customers when they make their first purchase
+* Upsell by sending emails to customers who purchased a specific product or from a specific product category
+* Convert more customers by sending a series of abandoned cart emails.
+
+And with WooCommerce-specific segmentation options, you’ll be able to send targeted emails to your customers based on criteria such as their country, the number of orders they’ve placed, how much they’ve spent, and if they have an active product subscription (powered by WooCommerce Subscriptions) or membership (powered by WooCommerce Memberships).
+
+In addition, you’ll also be able to increase brand recognition by customizing your WooCommerce transactional emails. Create a unified brand experience by changing the layout, colors, and fonts used in your emails, as well as adding any images or additional information to them.
+
+= MailPoet Sending Service =
+
+**The MailPoet Sending Service is free for your first 1,000 subscribers, with scaling plans available thereafter. [Read more.](https://www.mailpoet.com/pricing/)**
+
+Sending emails and newsletters with your host is not a good idea. You might face sending speed limitations and see your emails ending up in the spam box.
+
+To help your sending go without a hitch, we’ve created an advanced email delivery infrastructure built for WordPress. Our technology allows you to:
+
+* Reach inboxes, not spam boxes
+* Send your emails super fast (up to 50,000 emails per hour)
+* Maintain your sender reputation and improve engagement levels with automated bounce and complaint handling. Stop sending to non-deliverable and complaining addresses, automatically
+* Authenticate your emails (with SPF and DKIM) to improve deliverability and avoid spam boxes.
+
+The MailPoet Sending Service is very easy to set up, you just have to enter a key in your WordPress dashboard and you’re all set!
+
+= MailPoet plans and pricing =
+
+MailPoet is available to download for free. Our free download includes all of the features listed above (with the exception of those indicating a plan requirement) under the following criteria:
+
+* Up to 1,000 subscribers
+* MailPoet branding in emails
+* Send emails with your own sending method (host, SendGrid, Amazon SES, etc).
+
+Or if you opt for a MailPoet plan, you’ll get access to the MailPoet Sending Service.
+
+A free Starter plan is available for those who have 1,000 subscribers or less and would like to use the MailPoet Sending Service. And our paid plans offer features and functionality for those with larger lists who are looking to grow their business using email marketing.
+
+Take a look at [our pricing page](http://www.mailpoet.com/pricing) for full details on what’s included in each plan.
 
 = Before you install =
 
 Please note:
 
-* Not optimized for right-to-left (RTL) languages yet
-* Multisite is not supported
-* Review [our minimum requirements](https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3)
-
-= WooCommerce emails =
-
-With the MailPoet email designer, you can easily design the transactional emails sent by WooCommerce, like automatic emails for new account, new order, order processed, etc.
-
-Increase your sales and stay in touch with your customers with our automatic emails for WooCommerce!
-
-With our WooCommerce emails, you can:
-
-* Welcome your new customers when they make their first purchase
-* Upsell by sending emails to customers who purchased a specific product or a specific product category
-* Convert more customers by reaching those who abandoned their cart
-
-= Premium details =
-
-**MailPoet Premium is entirely free and includes quality sending for users with 1,000 subscribers or fewer. [Read more.](https://www.mailpoet.com/free-plan/)**
-
-The Premium version adds the following features:
-
-* For each newsletter, see which subscribers opened it and which links got the most clicks
-* Removes the small MailPoet logo in the footer of your emails - _only in paid plans_
-* Same day support (Monday to Friday) - _only in paid plans_
-* Send to over 1,000 subscribers with your own sending method (host, SendGrid, Amazon SES) - _only in selected paid plans_
-
-= MailPoet Sending Service =
-**MailPoet Sending Service is free for your first 1,000 subscribers (pay as you go afterwards). [Read More](https://www.mailpoet.com/free-plan/)**
-
-Sending emails and newsletter with your host is not a good idea. You might face sending speed limitations and see your emails ending up in the spam box.
-
-To help your sending go without a hitch, we’ve created an advanced email delivery infrastructure built for WordPress. Our technology allows you to:
-
-* Reach Inboxes, not Spam Boxes
-* Send your emails super fast (up to 50,000 emails per hour)
-* Get all your emails automatically signed with SPF & DKIM
-
-The MailPoet Sending Service is very easy to setup, you just have to enter a key in your WordPress admin and you’re all set!
+* Multisite support is limited
+* Review [our minimum requirements](https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3).
 
 = Translations =
 
+**Official translations**
+
 * Arabic
-* British
-* Catalan
 * Chinese
 * Danish
 * Dutch
-* French (FR and CA)
+* French (FR)
 * German
-* Hungarian
 * Italian
 * Japanese
 * Mexican
 * Persian (IR)
-* Polish
 * Portuguese (BR and PT)
 * Russian
 * Serbian
@@ -115,15 +123,27 @@ The MailPoet Sending Service is very easy to setup, you just have to enter a key
 * Swedish
 * Turkish
 
-We welcome experienced translators to translate directly on [our Transifex project](https://www.transifex.com/wysija/mp3/). Please note that any translations submitted via the "Translating WordPress" web site will not work.
+**Community translations**
+
+* Albanian
+* British
+* Catalan
+* French (CA)
+* Greek
+* Hebrew
+* Hungarian
+* Norwegian
+* Persian
+* Polish
+* Romanian
+
+We welcome experienced translators to translate directly on [our Transifex project](https://www.transifex.com/wysija/mp3/). Please note that any translations submitted via the "Translating WordPress" website will not work.
 
 = Security =
 
 [Our repository](https://github.com/mailpoet/mailpoet/) is public on GitHub.
 
-[Security audits are made by LogicalTrust](https://logicaltrust.net/en/), an independent third party.
-
-Have a question for us? Reach us at security@ our domain.
+Have a question for us? Reach us at security@ our domain, or report security issues to our [Bug Bounty program](https://hackerone.com/automattic).
 
 == Frequently Asked Questions ==
 
