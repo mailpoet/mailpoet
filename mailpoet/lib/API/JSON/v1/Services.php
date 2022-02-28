@@ -208,12 +208,16 @@ class Services extends APIEndpoint {
 
   public function recheckKeys() {
     $this->mssWorker->init();
-    $this->mssWorker->checkKey();
+    $mssCheck = $this->mssWorker->checkKey();
     $this->premiumWorker->init();
-    $this->premiumWorker->checkKey();
-    // continue sending when it is paused
+    $premiumCheck = $this->premiumWorker->checkKey();
+    // continue sending when it is paused and states are valid
     $mailerLog = MailerLog::getMailerLog();
-    if (isset($mailerLog['status']) && $mailerLog['status'] === MailerLog::STATUS_PAUSED) {
+    if (
+      (isset($mailerLog['status']) && $mailerLog['status'] === MailerLog::STATUS_PAUSED)
+      && (isset($mssCheck['state']) && $mssCheck['state'] === Bridge::KEY_VALID)
+      && (isset($premiumCheck['state']) && $premiumCheck['state'] === Bridge::PREMIUM_KEY_VALID)
+    ) {
       MailerLog::resumeSending();
     }
     return $this->successResponse();
