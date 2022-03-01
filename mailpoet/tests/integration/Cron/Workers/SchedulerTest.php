@@ -844,7 +844,7 @@ class SchedulerTest extends \MailPoetTest {
         [
           'user_login' => $username,
           'user_email' => $email,
-          'user_pass' => null,
+          'user_pass' => '',
         ]
       );
     }
