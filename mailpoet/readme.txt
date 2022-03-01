@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.9
-Stable tag: 3.82.0
+Stable tag: 3.83.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -203,6 +203,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.83.0 - 2022-03-01 =
+* Added: a notice when email volume limit is reached;
+* Updated: content of the Upgrade page;
+* Changed: removed deprecated code;
+* Changed: each signup form has its own "seen" cookie and custom expiry interval;
+* Fixed: Turkish translations fail to load.
 
 = 3.82.0 - 2022-02-22 =
 * Improved: monthly stats email now includes unsubscribed and bounced;
