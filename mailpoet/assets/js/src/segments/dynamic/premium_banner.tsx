@@ -22,10 +22,11 @@ function DynamicSegmentsPremiumBanner() : JSX.Element {
 
   const getCtaButton: React.FunctionComponent = () => (
     <Button
-      href={MailPoet.MailPoetComUrlFactory.getFreePlanUrl({
-        utm_medium: 'segments',
-        utm_campaign: 'signup',
-      })}
+      href={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
+        MailPoet.subscribersCount,
+        MailPoet.currentWpUserEmail,
+        { utm_medium: 'segments', utm_campaign: 'signup' }
+      )}
       target="_blank"
       rel="noopener noreferrer"
     >
