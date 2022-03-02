@@ -7,6 +7,7 @@ use MailPoet\Config\Renderer;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Form\AssetsController;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -217,7 +218,8 @@ class PagesTest extends \MailPoetTest {
       $container->get(ManageSubscriptionFormRenderer::class),
       $container->get(SubscriberHandler::class),
       $this->subscribersRepository,
-      $container->get(TrackingConfig::class)
+      $container->get(TrackingConfig::class),
+      $container->get(FeaturesController::class)
     );
   }
 }
