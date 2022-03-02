@@ -16,6 +16,7 @@
       var mailpoet_show_congratulate_after_first_newsletter = <%= show_congratulate_after_first_newsletter %>;
       var mailpoet_installed_days_ago = <%= installed_days_ago %>;
       var mailpoet_current_wp_user = <%= json_encode(current_wp_user) %>;
+      var mailpoet_current_wp_user_email = '<%= current_wp_user.user_email|escape('js') %>';
       var mailpoet_current_wp_user_firstname = '<%= current_wp_user_firstname %>';
       var mailpoet_lists = <%= json_encode(lists) %>;
       var mailpoet_roles = <%= json_encode(roles) %>;
