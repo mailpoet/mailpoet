@@ -4,6 +4,8 @@ namespace MailPoet\Subscription;
 
 use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Form\AssetsController;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
@@ -74,6 +76,9 @@ class Pages {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var FeaturesController */
+  private $featuresController;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -88,7 +93,8 @@ class Pages {
     ManageSubscriptionFormRenderer $manageSubscriptionFormRenderer,
     SubscriberHandler $subscriberHandler,
     SubscribersRepository $subscribersRepository,
-    TrackingConfig $trackingConfig
+    TrackingConfig $trackingConfig,
+    FeaturesController $featuresController
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -104,6 +110,7 @@ class Pages {
     $this->subscriberHandler = $subscriberHandler;
     $this->subscribersRepository = $subscribersRepository;
     $this->trackingConfig = $trackingConfig;
+    $this->featuresController = $featuresController;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -191,6 +198,17 @@ class Pages {
           return $segment->get('id');
         }, $subscriberSegments)
       );
+    }
+
+    // when global status changes to subscribed, fire subscribed hook for all subscribed segments
+    if ($this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
+      $subscriber = $this->subscribersRepository->findOneById($this->subscriber->id);
+      $segments = $subscriber ? $subscriber->getSubscriberSegments() : [];
+      foreach ($segments as $subscriberSegment) {
+        if ($subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
+          $this->wp->doAction('mailpoet_segment_subscribed', $subscriberSegment);
+        }
+      }
     }
 
     // Send new subscriber notification only when status changes to subscribed or there are unconfirmed data to avoid spamming

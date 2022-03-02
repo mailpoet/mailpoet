@@ -5,6 +5,7 @@ namespace MailPoet\API\MP\v1;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
@@ -42,6 +43,12 @@ class Subscribers {
   /** @var NewSubscriberNotificationMailer */
   private $newSubscriberNotificationMailer;
 
+  /** @var FeaturesController */
+  private $featuresController;
+
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct (
     ConfirmationEmailMailer $confirmationEmailMailer,
     NewSubscriberNotificationMailer $newSubscriberNotificationMailer,
@@ -50,7 +57,9 @@ class Subscribers {
     SubscriberSegmentRepository $subscriberSegmentRepository,
     SubscribersRepository $subscribersRepository,
     SubscribersResponseBuilder $subscribersResponseBuilder,
-    WelcomeScheduler $welcomeScheduler
+    WelcomeScheduler $welcomeScheduler,
+    FeaturesController $featuresController,
+    WPFunctions $wp
   ) {
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->newSubscriberNotificationMailer = $newSubscriberNotificationMailer;
@@ -60,6 +69,8 @@ class Subscribers {
     $this->subscribersRepository = $subscribersRepository;
     $this->subscribersResponseBuilder = $subscribersResponseBuilder;
     $this->welcomeScheduler = $welcomeScheduler;
+    $this->featuresController = $featuresController;
+    $this->wp = $wp;
   }
 
   /**
@@ -143,6 +154,19 @@ class Subscribers {
           __(sprintf('Failed to save a status of a subscriber : %s', $e->getMessage()), 'mailpoet'),
           APIException::FAILED_TO_SAVE_SUBSCRIBER
         );
+      }
+
+      // when global status changes to subscribed, fire subscribed hook for all subscribed segments
+      if (
+        $this->featuresController->isSupported(FeaturesController::AUTOMATION)
+        && $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
+      ) {
+        $subscriberSegments = $subscriber->getSubscriberSegments();
+        foreach ($subscriberSegments as $subscriberSegment) {
+          if ($subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
+            $this->wp->doAction('mailpoet_segment_subscribed', $subscriberSegment);
+          }
+        }
       }
     }
 

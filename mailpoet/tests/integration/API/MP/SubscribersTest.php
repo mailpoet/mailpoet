@@ -11,6 +11,7 @@ use MailPoet\API\MP\v1\Subscribers;
 use MailPoet\Config\Changelog;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
@@ -20,6 +21,7 @@ use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\WP\Functions as WPFunctions;
 
 class SubscribersTest extends \MailPoetTest {
 
@@ -47,7 +49,9 @@ class SubscribersTest extends \MailPoetTest {
       $this->diContainer->get(SubscriberSegmentRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscribersResponseBuilder::class),
-      Stub::makeEmpty(WelcomeScheduler::class)
+      Stub::makeEmpty(WelcomeScheduler::class),
+      $this->diContainer->get(FeaturesController::class),
+      $this->diContainer->get(WPFunctions::class)
     );
   }
 
@@ -178,6 +182,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersSegmentRepository' => $this->diContainer->get(SubscriberSegmentRepository::class),
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
+        'featuresController' => $this->diContainer->get(FeaturesController::class),
       ]
     );
 

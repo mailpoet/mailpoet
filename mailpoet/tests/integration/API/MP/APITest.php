@@ -13,6 +13,7 @@ use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
@@ -25,6 +26,7 @@ use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
 
 class APITest extends \MailPoetTest {
@@ -57,7 +59,9 @@ class APITest extends \MailPoetTest {
       $this->diContainer->get(SubscriberSegmentRepository::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(SubscribersResponseBuilder::class),
-      Stub::makeEmpty(WelcomeScheduler::class)
+      Stub::makeEmpty(WelcomeScheduler::class),
+      $this->diContainer->get(FeaturesController::class),
+      $this->diContainer->get(WPFunctions::class)
     );
   }
 

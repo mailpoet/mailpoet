@@ -6,12 +6,31 @@ use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Features\FeaturesController;
+use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 
 /**
  * @extends Repository<SubscriberSegmentEntity>
  */
 class SubscriberSegmentRepository extends Repository {
+  /** @var FeaturesController */
+  private $featuresController;
+
+  /** @var WPFunctions */
+  private $wp;
+
+  public function __construct(
+    EntityManager $entityManager,
+    FeaturesController $featuresController,
+    WPFunctions $wp
+  ) {
+    parent::__construct($entityManager);
+    $this->featuresController = $featuresController;
+    $this->wp = $wp;
+  }
+
   protected function getEntityClassName() {
     return SubscriberSegmentEntity::class;
   }
@@ -83,13 +102,27 @@ class SubscriberSegmentRepository extends Repository {
 
   public function createOrUpdate(SubscriberEntity $subscriber, SegmentEntity $segment, string $status): SubscriberSegmentEntity {
     $subscriberSegment = $this->findOneBy(['segment' => $segment, 'subscriber' => $subscriber]);
+
+    $oldStatus = null;
     if ($subscriberSegment instanceof SubscriberSegmentEntity) {
+      $oldStatus = $subscriberSegment->getStatus();
       $subscriberSegment->setStatus($status);
     } else {
       $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, $status);
       $subscriber->getSubscriberSegments()->add($subscriberSegment);
       $this->entityManager->persist($subscriberSegment);
     }
+
+    // fire subscribed hook for new subscriptions
+    if (
+      $this->featuresController->isSupported(FeaturesController::AUTOMATION)
+      && $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
+      && $subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
+      && $oldStatus !== SubscriberEntity::STATUS_SUBSCRIBED
+    ) {
+      $this->wp->doAction('mailpoet_segment_subscribed', $subscriberSegment);
+    }
+
     $this->entityManager->flush();
     return $subscriberSegment;
   }
