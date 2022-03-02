@@ -6,7 +6,11 @@ import PremiumRequired from 'common/premium_required/premium_required';
 function SkipDisplayingDetailedStats() {
   const ctaButton = (
     <Button
-      href={MailPoet.MailPoetComUrlFactory.getFreePlanUrl({ utm_medium: 'stats', utm_campaign: 'signup' })}
+      href={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
+        MailPoet.subscribersCount,
+        MailPoet.currentWpUserEmail,
+        { utm_medium: 'stats', utm_campaign: 'signup' }
+      )}
       target="_blank"
       rel="noopener noreferrer"
     >
