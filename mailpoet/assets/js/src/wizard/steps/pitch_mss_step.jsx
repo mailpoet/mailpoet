@@ -5,13 +5,25 @@ import Button from '../../common/button/button';
 import Heading from '../../common/typography/heading/heading';
 import List from '../../common/typography/list/list';
 
-export function BenefitsList() {
+export function FreeBenefitsList() {
   return (
     <List>
       <li>{MailPoet.I18n.t('welcomeWizardMSSList1')}</li>
       <li>{MailPoet.I18n.t('welcomeWizardMSSList2')}</li>
       <li>{MailPoet.I18n.t('welcomeWizardMSSList4')}</li>
       <li>{MailPoet.I18n.t('welcomeWizardMSSList5')}</li>
+    </List>
+  );
+}
+
+export function NotFreeBenefitsList() {
+  return (
+    <List>
+      <li>{MailPoet.I18n.t('welcomeWizardMSSNotFreeList1')}</li>
+      <li>{MailPoet.I18n.t('welcomeWizardMSSNotFreeList2')}</li>
+      <li>{MailPoet.I18n.t('welcomeWizardMSSNotFreeList3')}</li>
+      <li>{MailPoet.I18n.t('welcomeWizardMSSNotFreeList4')}</li>
+      <li>{MailPoet.I18n.t('welcomeWizardMSSNotFreeList5')}</li>
     </List>
   );
 }
@@ -78,7 +90,7 @@ function FreePlanSubscribers(props) {
         {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}
         :
       </Heading>
-      <BenefitsList />
+      <FreeBenefitsList />
 
       <Controls
         mailpoetAccountUrl={props.mailpoetAccountUrl}
@@ -104,7 +116,7 @@ function NotFreePlanSubscribers(props) {
         {MailPoet.I18n.t('welcomeWizardMSSNotFreeSubtitle')}
         :
       </p>
-      <BenefitsList />
+      <NotFreeBenefitsList />
 
       <Controls
         mailpoetAccountUrl={props.mailpoetAccountUrl}
