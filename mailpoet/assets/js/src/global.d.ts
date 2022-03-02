@@ -92,4 +92,5 @@ interface Window {
   mailpoet_plugin_partial_key: string;
   mailpoet_email_volume_limit: string;
   mailpoet_email_volume_limit_reached: boolean;
+  mailpoet_current_wp_user_email: string;
 }
