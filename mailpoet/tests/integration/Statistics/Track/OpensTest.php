@@ -400,18 +400,25 @@ class OpensTest extends \MailPoetTest {
     expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
   }
 
-  public function testItWontUpdateSubscriberEngagementForMachineAgent() {
+  public function testItUpdatesSubscriberEngagementForMachineAgent() {
+    $now = Carbon::now();
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->expects($this->once())
+      ->method('currentTime')
+      ->willReturn($now->getTimestamp());
     $this->trackData->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      $this->diContainer->get(SubscribersRepository::class),
+      new SubscribersRepository($this->entityManager, $wpMock),
     ], [
       'returnResponse' => null,
     ], $this);
 
     $opens->track($this->trackData);
-    expect($this->subscriber->getLastEngagementAt())->null();
+    $savedEngagementTime = $this->subscriber->getLastEngagementAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
+    expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
   }
 
   public function _after() {
