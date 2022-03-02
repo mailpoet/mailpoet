@@ -3,7 +3,7 @@ import MailPoet from 'mailpoet';
 
 import Heading from 'common/typography/heading/heading';
 import WelcomeWizardStepLayoutBody from '../../../wizard/layout/step_layout_body.jsx';
-import { BenefitsList, Controls } from '../../../wizard/steps/pitch_mss_step.jsx';
+import { FreeBenefitsList, Controls } from '../../../wizard/steps/pitch_mss_step.jsx';
 
 type Props = {
   MSSPitchIllustrationUrl: string;
@@ -48,7 +48,7 @@ function PitchMss(props: Props): JSX.Element {
             {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}
             :
           </Heading>
-          <BenefitsList />
+          <FreeBenefitsList />
           <Controls
             mailpoetAccountUrl={props.mailpoetAccountUrl}
             next={(): void => { props.onFinish(); setIsClosing(true); }}
