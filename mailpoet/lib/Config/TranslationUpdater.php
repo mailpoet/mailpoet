@@ -51,7 +51,9 @@ class TranslationUpdater {
       return $transient;
     }
 
-    $translations = $this->getTranslationUpdates($locales);
+    $languagePacksData = $this->getAvailableTranslations($locales);
+    $translations = $this->selectUpdatesToInstall($languagePacksData);
+
     $transient->translations = array_merge($transient->translations ?? [], $translations);
     return $transient;
   }
@@ -66,7 +68,7 @@ class TranslationUpdater {
     return array_unique($locales);
   }
 
-  private function getTranslationUpdates(array $locales): array {
+  private function getAvailableTranslations(array $locales): array {
     $requestBody = [
       'locales' => $locales,
       'plugins' => [
@@ -95,10 +97,13 @@ class TranslationUpdater {
       return [];
     }
 
-    $translations = [];
+    return $response['data'];
+  }
 
+  private function selectUpdatesToInstall(array $responseData) {
     $installedTranslations = $this->wpFunctions->wpGetInstalledTranslations('plugins');
-    foreach ($response['data'] as $pluginName => $languagePacks) {
+    $translationsToInstall = [];
+    foreach ($responseData as $pluginName => $languagePacks) {
       foreach ($languagePacks as $languagePack) {
         // Check revision date if translation is already installed.
         if (array_key_exists($pluginName, $installedTranslations) && array_key_exists($languagePack['wp_locale'], $installedTranslations[$pluginName])) {
@@ -117,7 +122,7 @@ class TranslationUpdater {
             continue;
           }
         }
-        $translations[] = [
+        $translationsToInstall[] = [
           'type' => 'plugin',
           'slug' => $pluginName,
           'language' => $languagePack['wp_locale'],
@@ -129,6 +134,6 @@ class TranslationUpdater {
       }
     }
 
-    return $translations;
+    return $translationsToInstall;
   }
 }
