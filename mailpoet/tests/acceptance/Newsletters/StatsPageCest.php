@@ -24,8 +24,8 @@ class StatsPageCest {
       // the premium plugin is not active
       $i->see('This is a Premium feature');
 
-      $href = $i->grabAttributeFrom('//a[span[text()="Sign Up for Free"]]', 'href');
-      expect($href)->stringContainsString('https://www.mailpoet.com/free-plan?utm_medium=stats&utm_campaign=signup&utm_source=plugin');
+      $href = $i->grabAttributeFrom('//a[span[text()="Upgrade"]]', 'href');
+      expect($href)->stringContainsString('https://account.mailpoet.com/?s=1&email=test%40test.com&utm_source=plugin&utm_medium=stats&utm_campaign=signup');
       $href = $i->grabAttributeFrom('//a[text()="Learn more"]', 'href');
       expect($href)->endsWith('page=mailpoet-upgrade');
     }
