@@ -568,25 +568,39 @@ class ClicksTest extends \MailPoetTest {
     expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
   }
 
-  public function testItWontUpdateSubscriberEngagementForMachineAgent() {
+  public function testItUpdatesSubscriberEngagementForMachineAgent() {
+    $now = Carbon::now();
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->expects($this->any())
+      ->method('currentTime')
+      ->willReturn($now->getTimestamp());
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
+    $subscribersRepository = new SubscribersRepository($this->entityManager, $wpMock);
+    $statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
+    $opens = new Opens(
+      $statisticsOpensRepository,
+      $this->diContainer->get(UserAgentsRepository::class),
+      $subscribersRepository
+    );
     $clicks = Stub::construct($this->clicks, [
       $this->diContainer->get(Cookies::class),
       $this->diContainer->get(SubscriberCookie::class),
       $this->diContainer->get(Shortcodes::class),
-      $this->diContainer->get(Opens::class),
+      $opens,
       $clicksRepository,
       $this->diContainer->get(UserAgentsRepository::class),
       $this->diContainer->get(LinkShortcodeCategory::class),
-      $this->diContainer->get(SubscribersRepository::class),
+      $subscribersRepository,
       $this->diContainer->get(TrackingConfig::class),
     ], [
       'redirectToUrl' => null,
     ], $this);
     $clicks->track($data);
-    expect($this->subscriber->getLastEngagementAt())->null();
+    $savedEngagementTime = $this->subscriber->getLastEngagementAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
+    expect($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
   }
 
   public function testItWontUpdateSubscriberThatWasRecentlyUpdated() {
