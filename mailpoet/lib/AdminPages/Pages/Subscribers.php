@@ -110,6 +110,7 @@ class Subscribers {
     $data['link_premium'] = $this->wp->getSiteUrl(null, '/wp-admin/admin.php?page=mailpoet-upgrade');
     $data['tracking_config'] = $this->trackingConfig->getConfig();
 
+    $data['current_wp_user_email'] = $this->wp->wpGetCurrentUser()->user_email;
     $data['premium_plugin_installed'] = $data['premium_plugin_active'] || Installer::isPluginInstalled(Installer::PREMIUM_PLUGIN_SLUG);
     $data['premium_plugin_download_url'] = $pluginInformation->download_link ?? null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $data['premium_plugin_activation_url'] = $installer->generatePluginActivationUrl(Installer::PREMIUM_PLUGIN_PATH);

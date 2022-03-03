@@ -66,10 +66,11 @@ export default function NoAccessInfo({
       </Button>
     ) : (
       <Button
-        href={MailPoet.MailPoetComUrlFactory.getFreePlanUrl({
-          utm_medium: 'stats',
-          utm_campaign: 'signup',
-        })}
+        href={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
+          MailPoet.subscribersCount,
+          MailPoet.currentWpUserEmail,
+          { utm_medium: 'stats', utm_campaign: 'signup' }
+        )}
       >
         {MailPoet.I18n.t('premiumBannerCtaFree')}
       </Button>
