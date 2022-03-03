@@ -174,7 +174,7 @@ class CronWorkerRunner {
   }
 
   private function complete(ScheduledTaskEntity $task) {
-    $task->setProcessedAt(new Carbon());
+    $task->setProcessedAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
     $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
     $this->scheduledTasksRepository->persist($task);
     $this->scheduledTasksRepository->flush();
