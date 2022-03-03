@@ -38,7 +38,7 @@ class TranslationUpdater {
   }
 
   public function init(): void {
-    $this->wpFunctions->addFilter('pre_set_site_transient_update_plugins', [$this, 'checkForTranslations']);
+    $this->wpFunctions->addFilter('pre_set_site_transient_update_plugins', [$this, 'checkForTranslations'], 21);
   }
 
   public function checkForTranslations($transient) {
@@ -53,8 +53,9 @@ class TranslationUpdater {
 
     $languagePacksData = $this->getAvailableTranslations($locales);
     $translations = $this->selectUpdatesToInstall($languagePacksData);
-
-    $transient->translations = array_merge($transient->translations ?? [], $translations);
+    // We want to ignore translations from .org in case a translation pack for the same locale is available from .com
+    $dotOrgTranslations = $this->removeDuplicateTranslationsFromOrg($transient->translations ?? [], $languagePacksData[$this->freeSlug] ?? []);
+    $transient->translations = array_merge($dotOrgTranslations ?? [], $translations);
     return $transient;
   }
 
@@ -135,5 +136,18 @@ class TranslationUpdater {
     }
 
     return $translationsToInstall;
+  }
+
+  private function removeDuplicateTranslationsFromOrg(array $translationsDotOrg, array $translationsDotComData) {
+    $localesAvailableFromDotCom = array_unique(array_column($translationsDotComData, 'wp_locale'));
+    return array_filter($translationsDotOrg, function ($translation) use($localesAvailableFromDotCom) {
+      if (
+        $translation['slug'] !== $this->freeSlug
+        || !in_array($translation['language'], $localesAvailableFromDotCom, true)
+      ) {
+        return true;
+      }
+      return false;
+    });
   }
 }
