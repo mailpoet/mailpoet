@@ -17,12 +17,17 @@ class MailerLog {
     if (!$mailerLog) {
       $mailerLog = self::createMailerLog();
     }
+    /**
+     * The old "sent" entry was just the number of emails.
+     * We need to update this entry to the new data structure.
+     */
+    $mailerLog['sent'] = is_numeric($mailerLog['sent']) ? [self::sentEntriesDate(time() - 1) => $mailerLog['sent']] : (array)$mailerLog['sent'];
     return $mailerLog;
   }
 
   public static function createMailerLog() {
     $mailerLog = [
-      'sent' => null,
+      'sent' => [],
       'started' => time(),
       'status' => null,
       'retry_attempt' => null,
@@ -39,6 +44,7 @@ class MailerLog {
   }
 
   public static function updateMailerLog($mailerLog) {
+    $mailerLog = self::removeOutdatedSentInformationFromMailerlog($mailerLog);
     $settings = SettingsController::getInstance();
     $settings->set(self::SETTING_NAME, $mailerLog);
     return $mailerLog;
@@ -137,12 +143,19 @@ class MailerLog {
   public static function incrementSentCount() {
     $mailerLog = self::getMailerLog();
     // do not increment count if sending limit is reached
-    if (self::isSendingLimitReached($mailerLog)) return;
+    if (self::isSendingLimitReached($mailerLog)) {
+      return;
+    }
     // clear previous retry count, errors, etc.
     if ($mailerLog['error']) {
       $mailerLog = self::clearSendingErrorLog($mailerLog);
     }
-    (int)$mailerLog['sent']++;
+
+    $time = self::sentEntriesDate();
+    if (!isset($mailerLog['sent'][$time])) {
+      $mailerLog['sent'][$time] = 0;
+    }
+    $mailerLog['sent'][$time]++;
     return self::updateMailerLog($mailerLog);
   }
 
@@ -159,21 +172,60 @@ class MailerLog {
     // do not enforce sending limit for MailPoet's sending method
     if ($mailerConfig['method'] === Mailer::METHOD_MAILPOET) return false;
     $mailerLog = self::getMailerLog($mailerLog);
-    $elapsedTime = time() - (int)$mailerLog['started'];
 
-    if (empty($mailer['frequency'])) {
+    if (empty($mailerConfig['frequency'])) {
       $defaultSettings = $settings->getAllDefaults();
-      $mailer['frequency'] = $defaultSettings['mta']['frequency'];
+      $mailerConfig['frequency'] = $defaultSettings['mta']['frequency'];
     }
     $frequencyInterval = (int)$mailerConfig['frequency']['interval'] * Mailer::SENDING_LIMIT_INTERVAL_MULTIPLIER;
     $frequencyLimit = (int)$mailerConfig['frequency']['emails'];
+    $sent = self::sentSince($frequencyInterval, $mailerLog);
+    return $sent >= $frequencyLimit;
+  }
 
-    if ($mailerLog['sent'] >= $frequencyLimit) {
-      if ($elapsedTime <= $frequencyInterval) return true;
-      // reset mailer log as enough time has passed since the limit was reached
-      self::resetMailerLog();
-    }
-    return false;
+  public static function sentSince(int $sinceSeconds, array $mailerLog = null): int {
+
+    $sinceDate = date('Y-m-d H:i:s', time() - $sinceSeconds);
+    $mailerLog = self::getMailerLog($mailerLog);
+
+    return (int)array_sum(
+      array_filter(
+        (array)$mailerLog['sent'],
+        function($date) use ($sinceDate): bool {
+          return $sinceDate <= $date;
+        },
+        \ARRAY_FILTER_USE_KEY
+      )
+    );
+  }
+
+  /**
+   * Clears "sent" section of the mailer log from outdated entries.
+   *
+   * @param array|null $mailerLog
+   * @return array
+   */
+  private static function removeOutdatedSentInformationFromMailerlog(array $mailerLog = null): array {
+
+    $settings = SettingsController::getInstance();
+    $mailerConfig = $settings->get(Mailer::MAILER_CONFIG_SETTING_NAME);
+    $frequencyInterval = (int)$mailerConfig['frequency']['interval'] * Mailer::SENDING_LIMIT_INTERVAL_MULTIPLIER;
+    $sinceDate = self::sentEntriesDate(time() - $frequencyInterval);
+    $mailerLog = self::getMailerLog($mailerLog);
+
+    $mailerLog['sent'] = array_filter(
+      (array)$mailerLog['sent'],
+      function($date) use ($sinceDate): bool {
+        return $sinceDate <= $date;
+      },
+      \ARRAY_FILTER_USE_KEY
+    );
+    return $mailerLog;
+  }
+
+  public static function sentEntriesDate(int $timestamp = null): string {
+
+    return date('Y-m-d H:i:s', $timestamp ?? time());
   }
 
   public static function isSendingPaused($mailerLog = false) {
