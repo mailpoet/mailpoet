@@ -225,6 +225,85 @@ class TranslationUpdaterTest extends \MailPoetTest {
     expect($freeTranslation['package'])->equals('https:\/\/translate.files.wordpress.com\/2021\/08\/mailpoet-free-0_1-fr_fr.zip');
   }
 
+  public function testItDoesNotInstallDotOrgTranslationsInCaseThereIsLanguagePackFromDotCom(): void {
+    $wpFunctions = Stub::construct(
+      $this->wp,
+      [],
+      [
+        'wpRemotePost' => function() {
+          return [
+            'response' => [
+              'code' => 200,
+            ],
+            'body' => json_encode([
+              'success' => true,
+              'data' => $this->getResponseData(),
+            ]),
+          ];
+        },
+        'getAvailableLanguages' => function() {
+          return ['fr_FR', 'cs_CZ'];
+        },
+        'wpGetInstalledTranslations' => function() {
+          return [];
+        },
+      ],
+      $this
+    );
+
+    $updateTransient = new \stdClass;
+    $updateTransient->translations = [
+      // To be removed: Available on translate.wordpress.com
+      [
+        'type' => 'plugin',
+        'slug' => 'mailpoet',
+        'language' => 'fr_FR',
+      ],
+      // To be kept: Not available on translate.wordpress.com, so we want to install at least translations from .org
+      [
+        'type' => 'plugin',
+        'slug' => 'mailpoet',
+        'language' => 'cs_CZ',
+      ],
+      // To be kept: We don't want to touch other plugins
+      [
+        'type' => 'plugin',
+        'slug' => 'askimet',
+        'language' => 'fr_FR',
+      ],
+    ];
+    $updater = Stub::construct(
+      $this->updater,
+      [
+        $wpFunctions,
+        $this->freeSlug,
+        $this->freeVersion,
+        $this->premiumSlug,
+        $this->premiumVersion,
+      ]
+    );
+    $result = $updater->checkForTranslations($updateTransient);
+    expect($result->translations)->count(4); // askimet + mailpoet cs_CZ and two packs from .com
+
+    $mailPoetCs = $result->translations[0];
+    expect($mailPoetCs['slug'])->equals('mailpoet');
+    expect($mailPoetCs['language'])->equals('cs_CZ');
+
+    $askimetFr = $result->translations[1];
+    expect($askimetFr['slug'])->equals('askimet');
+    expect($askimetFr['language'])->equals('fr_FR');
+
+    $mailpoetFr = $result->translations[2];
+    expect($mailpoetFr['slug'])->equals('mailpoet');
+    expect($mailpoetFr['language'])->equals('fr_FR');
+    expect($mailpoetFr['package'])->stringContainsString('translate.files.wordpress.com');
+
+    $mailpoetPremiumFr = $result->translations[3];
+    expect($mailpoetPremiumFr['slug'])->equals('mailpoet-premium');
+    expect($mailpoetPremiumFr['language'])->equals('fr_FR');
+    expect($mailpoetPremiumFr['package'])->stringContainsString('translate.files.wordpress.com');
+  }
+
   public function testItDoesNotOverrideOtherPluginTranslations(): void {
     $wpFunctions = Stub::construct(
       $this->wp,
