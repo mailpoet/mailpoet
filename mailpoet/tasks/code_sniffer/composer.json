@@ -11,6 +11,9 @@
     "platform": {
       "php": "7.1.8"
     },
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }
