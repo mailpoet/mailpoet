@@ -57,9 +57,8 @@ class Activator {
     $caps = new Capabilities();
     $caps->setupWPCapabilities();
 
-    // Add MailPoet translation update to the update_plugins site transient via inner hook
-    $updatePluginsTransient = $this->wp->getSiteTransient('update_plugins');
-    $this->wp->setSiteTransient('update_plugins', $updatePluginsTransient);
+    $localizer = new Localizer();
+    $localizer->forceInstallLanguagePacks($this->wp);
   }
 
   public function deactivate() {
