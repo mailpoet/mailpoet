@@ -1,9 +1,9 @@
 <?php
 
 $tools = [
-  'https://github.com/composer/composer/releases/download/2.1.9/composer.phar' => 'composer.phar',
-  'https://github.com/humbug/php-scoper/releases/download/0.15.0/php-scoper.phar' => 'php-scoper.phar',
-  'https://github.com/nette/tracy/releases/download/v2.8.7/tracy.phar' => 'tracy.phar',
+  'https://github.com/composer/composer/releases/download/2.2.7/composer.phar' => 'composer.phar',
+  'https://github.com/humbug/php-scoper/releases/download/0.17.2/php-scoper.phar' => 'php-scoper.phar',
+  'https://github.com/nette/tracy/releases/download/v2.9.1/tracy.phar' => 'tracy.phar',
 ];
 // ensure installation in dev-mode only
 $isDevMode = (bool)getenv('COMPOSER_DEV_MODE');
