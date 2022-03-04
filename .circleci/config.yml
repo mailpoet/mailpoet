@@ -92,7 +92,7 @@ executors:
   wpcli_php_latest:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:8.0_20211028.1
+      - image: mailpoet/wordpress:8.1_20210304.2
 
   wpcli_php_mysql_oldest:
     <<: *default_job_config
@@ -103,7 +103,7 @@ executors:
   wpcli_php_mysql_latest:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:8.0_20211028.1
+      - image: mailpoet/wordpress:8.1_20210304.2
       - image: circleci/mysql:8.0-ram
         command: [--default-authentication-plugin=mysql_native_password]
 
