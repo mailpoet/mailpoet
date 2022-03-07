@@ -25,7 +25,7 @@ function SubscribersCounter() : JSX.Element {
 
   const serializedSegment = JSON.stringify(segment);
   const latestRequestIdRef = useRef(1);
-  const deferredRequestRef = useRef(null);
+  const deferredRequestRef = useRef<Segment>(null);
   const isRequestInFlight = useRef(false);
 
   function load(loadItem: Segment): void {
