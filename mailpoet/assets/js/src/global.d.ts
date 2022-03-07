@@ -93,4 +93,9 @@ interface Window {
   mailpoet_email_volume_limit: string;
   mailpoet_email_volume_limit_reached: boolean;
   mailpoet_current_wp_user_email: string;
+  mailpoet_current_time?: string;
+  mailpoet_tomorrow_date?: string;
+  mailpoet_schedule_time_of_day?: string;
+  mailpoet_date_display_format?: string;
+  mailpoet_date_storage_format?: string;
 }
