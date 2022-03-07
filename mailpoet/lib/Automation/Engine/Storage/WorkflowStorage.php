@@ -28,6 +28,12 @@ class WorkflowStorage {
     return $this->wpdb->insert_id;
   }
 
+  public function getWorkflow(int $id): ?Workflow {
+    $query = strval($this->wpdb->prepare("SELECT * FROM $this->table WHERE id = %d", $id));
+    $data = $this->wpdb->get_row($query, ARRAY_A);
+    return $data ? Workflow::fromArray((array)$data) : null;
+  }
+
   /** @return string[] */
   public function getActiveTriggerKeys(): array {
     $query = strval(
