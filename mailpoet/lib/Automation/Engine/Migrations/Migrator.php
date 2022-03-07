@@ -26,7 +26,7 @@ class Migrator {
         created_at timestamp NOT NULL,
         updated_at timestamp NOT NULL,
         deleted_at timestamp NULL,
-        data longtext,
+        steps longtext,
         PRIMARY KEY (id)
       );
     ");
