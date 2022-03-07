@@ -26,4 +26,10 @@ class WorkflowRunStorage {
     }
     return $this->wpdb->insert_id;
   }
+
+  public function getWorkflowRun(int $id): ?WorkflowRun {
+    $query = strval($this->wpdb->prepare("SELECT * FROM $this->table WHERE id = %d", $id));
+    $data = $this->wpdb->get_row($query, ARRAY_A);
+    return $data ? WorkflowRun::fromArray((array)$data) : null;
+  }
 }

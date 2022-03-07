@@ -3,8 +3,11 @@
 namespace MailPoet\Automation\Engine\Control;
 
 use Exception;
+use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Hooks;
+use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
+use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\WordPress;
 use Throwable;
 
@@ -12,10 +15,20 @@ class StepRunner {
   /** @var WordPress */
   private $wordPress;
 
+  /** @var WorkflowRunStorage */
+  private $workflowRunStorage;
+
+  /** @var WorkflowStorage */
+  private $workflowStorage;
+
   public function __construct(
-    WordPress $wordPress
+    WordPress $wordPress,
+    WorkflowRunStorage $workflowRunStorage,
+    WorkflowStorage $workflowStorage
   ) {
     $this->wordPress = $wordPress;
+    $this->workflowRunStorage = $workflowRunStorage;
+    $this->workflowStorage = $workflowStorage;
   }
 
   public function initialize(): void {
@@ -43,6 +56,24 @@ class StepRunner {
       throw new InvalidStateException();
     }
 
-    // TODO: process step
+    $workflowRunId = $args['workflow_run_id'];
+    $stepId = $args['step_id'];
+
+    $workflowRun = $this->workflowRunStorage->getWorkflowRun($workflowRunId);
+    if (!$workflowRun) {
+      throw Exceptions::workflowRunNotFound($workflowRunId);
+    }
+
+    $workflow = $this->workflowStorage->getWorkflow($workflowRun->getWorkflowId());
+    if (!$workflow) {
+      throw Exceptions::workflowNotFound($workflowRun->getWorkflowId());
+    }
+
+    $step = $workflow->getStep($stepId);
+    if (!$step) {
+      throw Exceptions::workflowStepNotFound($stepId);
+    }
+
+    // TODO: process step based on its type
   }
 }

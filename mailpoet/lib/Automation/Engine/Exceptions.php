@@ -11,6 +11,9 @@ class Exceptions {
   private const DATABASE_ERROR = 'mailpoet_automation_database_error';
   private const API_METHOD_NOT_ALLOWED = 'mailpoet_automation_api_method_not_allowed';
   private const API_NO_JSON_BODY = 'mailpoet_automation_api_no_json_body';
+  private const WORKFLOW_NOT_FOUND = 'mailpoet_automation_workflow_not_found';
+  private const WORKFLOW_RUN_NOT_FOUND = 'mailpoet_automation_workflow_run_not_found';
+  private const WORKFLOW_STEP_NOT_FOUND = 'mailpoet_automation_workflow_step_not_found';
   private const WORKFLOW_TRIGGER_NOT_FOUND = 'mailpoet_automation_workflow_trigger_not_found';
 
   public function __construct() {
@@ -42,6 +45,24 @@ class Exceptions {
     return UnexpectedValueException::create()
       ->withErrorCode(self::API_NO_JSON_BODY)
       ->withMessage(__('No JSON body passed.', 'mailpoet'));
+  }
+
+  public static function workflowNotFound(int $id): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::WORKFLOW_NOT_FOUND)
+      ->withMessage(__(sprintf("Workflow with ID '%s' not found.", $id), 'mailpoet'));
+  }
+
+  public static function workflowRunNotFound(int $id): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::WORKFLOW_RUN_NOT_FOUND)
+      ->withMessage(__(sprintf("Workflow run with ID '%s' not found.", $id), 'mailpoet'));
+  }
+
+  public static function workflowStepNotFound(string $id): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::WORKFLOW_STEP_NOT_FOUND)
+      ->withMessage(__(sprintf("Workflow step with ID '%s' not found.", $id), 'mailpoet'));
   }
 
   public static function workflowTriggerNotFound(int $workflowId, string $key): NotFoundException {
