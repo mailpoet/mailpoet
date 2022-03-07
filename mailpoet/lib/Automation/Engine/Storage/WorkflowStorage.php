@@ -26,4 +26,23 @@ class WorkflowStorage {
     }
     return $this->wpdb->insert_id;
   }
+
+  /** @return string[] */
+  public function getActiveTriggerKeys(): array {
+    $query = strval(
+      $this->wpdb->prepare(
+        "SELECT DISTINCT trigger_keys FROM $this->table WHERE status = %s",
+        Workflow::STATUS_ACTIVE
+      )
+    );
+    $result = $this->wpdb->get_col($query);
+
+    $triggerKeys = [];
+    foreach ($result as $item) {
+      /** @var string[] $keys */
+      $keys = (array)json_decode($item, true);
+      $triggerKeys = array_merge($triggerKeys, $keys);
+    }
+    return array_unique($triggerKeys);
+  }
 }
