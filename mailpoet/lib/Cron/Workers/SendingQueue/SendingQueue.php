@@ -122,7 +122,7 @@ class SendingQueue {
 
       try {
         ScheduledTaskModel::touchAllByIds([$queue->taskId]);
-        $this->processSending($queue, $timer);
+        $this->processSending($queue, (int)$timer);
       } catch (\Exception $e) {
         $this->stopProgress($task);
         throw $e;

@@ -56,7 +56,7 @@ class Subscriber extends Model {
   public static function findOne($id = false) {
     if (is_int($id) || (string)(int)$id === $id) {
       return parent::findOne($id);
-    } else if (strlen(trim($id)) > 0) {
+    } else if (strlen(trim((string)$id)) > 0) {
       return parent::where('email', $id)->findOne();
     }
     return false;
@@ -74,7 +74,7 @@ class Subscriber extends Model {
 
   public function save() {
     // convert email to lowercase format
-    $this->email = strtolower($this->email);
+    $this->email = strtolower((string)$this->email);
     return parent::save();
   }
 

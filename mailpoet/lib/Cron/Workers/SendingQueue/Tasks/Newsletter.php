@@ -173,7 +173,7 @@ class Newsletter {
     );
     // if the rendered subject is empty, use a default subject,
     // having no subject in a newsletter is considered spammy
-    if (empty(trim($sendingTask->newsletterRenderedSubject))) {
+    if (empty(trim((string)$sendingTask->newsletterRenderedSubject))) {
       $sendingTask->newsletterRenderedSubject = WPFunctions::get()->__('No subject', 'mailpoet');
     }
     $renderedNewsletter = $this->emoji->encodeEmojisInBody($renderedNewsletter);
