@@ -82,6 +82,12 @@ class StepRunner {
       throw Exceptions::workflowNotFound($workflowRun->getWorkflowId());
     }
 
+    // complete workflow run
+    if (!$stepId) {
+      $this->workflowRunStorage->updateStatus($workflowRunId, WorkflowRun::STATUS_COMPLETE);
+      return;
+    }
+
     $step = $workflow->getStep($stepId);
     if (!$step) {
       throw Exceptions::workflowStepNotFound($stepId);
@@ -94,18 +100,20 @@ class StepRunner {
       throw new InvalidStateException();
     }
 
-    // enqueue next step / complete workflow
-    $nextStepId = $step->getNextStepId();
-    if ($nextStepId) {
-      $this->actionScheduler->enqueue(Hooks::WORKFLOW_STEP, [
-        [
-          'workflow_run_id' => $workflowRunId,
-          'step_id' => $nextStepId,
-        ],
-      ]);
-    } else {
-      $this->workflowRunStorage->updateStatus($workflowRunId, WorkflowRun::STATUS_COMPLETE);
+    $nextStepArgs = [
+      [
+        'workflow_run_id' => $workflowRunId,
+        'step_id' => $step->getNextStepId(),
+      ],
+    ];
+
+    // next step scheduled by action
+    if ($this->actionScheduler->hasScheduledAction(Hooks::WORKFLOW_STEP, $nextStepArgs)) {
+      return;
     }
+
+    // enqueue next step
+    $this->actionScheduler->enqueue(Hooks::WORKFLOW_STEP, $nextStepArgs);
 
     // TODO: allow long-running steps (that are not done here yet)
   }
