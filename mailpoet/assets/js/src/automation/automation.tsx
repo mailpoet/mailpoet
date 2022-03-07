@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { CreateTestingWorkflowButton } from './testing';
 import { useMutation, useQuery } from './api';
 
 function ApiCheck(): JSX.Element {
@@ -53,6 +54,7 @@ function App(): JSX.Element {
   return (
     <div>
       <ApiCheck />
+      <CreateTestingWorkflowButton />
       <RecreateSchemaButton />
       <DeleteSchemaButton />
     </div>
