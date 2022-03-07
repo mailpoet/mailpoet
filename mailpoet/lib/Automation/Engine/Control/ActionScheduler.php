@@ -12,4 +12,8 @@ class ActionScheduler {
   public function schedule(int $timestamp, string $hook, array $args = []): int {
     return as_schedule_single_action($timestamp, $hook, $args, self::GROUP_ID);
   }
+
+  public function hasScheduledAction(string $hook, array $args = []): bool {
+    return as_has_scheduled_action($hook, $args, self::GROUP_ID);
+  }
 }

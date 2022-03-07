@@ -6,10 +6,14 @@ use MailPoet\Automation\Engine\API\API;
 use MailPoet\Automation\Engine\Control\StepRunner;
 use MailPoet\Automation\Engine\Control\TriggerHandler;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\Automation\Integrations\Core\CoreIntegration;
 
 class Engine {
   /** @var API */
   private $api;
+
+  /** @var CoreIntegration */
+  private $coreIntegration;
 
   /** @var Registry */
   private $registry;
@@ -28,6 +32,7 @@ class Engine {
 
   public function __construct(
     API $api,
+    CoreIntegration $coreIntegration,
     Registry $registry,
     StepRunner $stepRunner,
     TriggerHandler $triggerHandler,
@@ -35,6 +40,7 @@ class Engine {
     WorkflowStorage $workflowStorage
   ) {
     $this->api = $api;
+    $this->coreIntegration = $coreIntegration;
     $this->registry = $registry;
     $this->stepRunner = $stepRunner;
     $this->triggerHandler = $triggerHandler;
@@ -50,6 +56,7 @@ class Engine {
     $this->stepRunner->initialize();
     $this->triggerHandler->initialize();
 
+    $this->coreIntegration->register($this->registry);
     $this->wordPress->doAction(Hooks::INITIALIZE, [$this->registry]);
     $this->registerActiveTriggerHooks();
   }
