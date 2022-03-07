@@ -41,6 +41,7 @@ class Migrator {
         status varchar(255) NOT NULL,
         created_at timestamp NOT NULL,
         updated_at timestamp NOT NULL,
+        subjects longtext,
         PRIMARY KEY (id)
       );
     ");
