@@ -72,4 +72,9 @@ function setup {
     # Activate MailPoet Premium
     wp plugin activate mailpoet-premium --path="$root_dir/wordpress"
   fi
+
+  # Fix WP formatting file for compatibility with PHP8.1
+  sed -i "s|if ( strlen( \$email ) < 6 ) {|if ( strlen( (string) \$email ) < 6 ) {|" ../wordpress/wp-includes/formatting.php
+  sed -i "s|return rtrim( \$string, '/\\\\\\\\' );|return rtrim( (string) \$string, '/\\\\\\\\' );|" ../wordpress/wp-includes/formatting.php
+  sed -i "s|return \$wp_hasher->HashPassword( trim( \$password ) );|return \$wp_hasher->HashPassword( trim( (string) \$password ) );|" ../wordpress/wp-includes/pluggable.php
 }
