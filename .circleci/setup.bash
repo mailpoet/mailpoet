@@ -12,7 +12,7 @@ function setup {
 	sudo cp "$script_dir/fake-sendmail.php" /usr/local/bin/
 
 	# configure Apache
-	sudo cp "$script_dir/mailpoet_php.ini" /usr/local/etc/php/conf.d/
+	sudo cp "$script_dir/mailpoet_php.ini" /etc/php.d/
 	sudo cp "$script_dir/apache/mailpoet.loc.conf" /etc/apache2/sites-available
 	sudo a2dissite 000-default.conf
 	sudo a2ensite mailpoet.loc
