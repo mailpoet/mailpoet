@@ -19,27 +19,31 @@ type State<T> = {
 };
 
 type Result<T> = [
-  () => Promise<void>,
+  (init?: RequestInit) => Promise<void>,
   State<T>,
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Data = Record<string, any>;
 
-export const useMutation = <T extends Data>(path: string, init?: RequestInit): Result<T> => {
+export const useMutation = <T extends Data>(path: string, config?: RequestInit): Result<T> => {
   const [state, setState] = useState<State<T>>({
     data: undefined,
     loading: false,
     error: undefined,
   });
 
-  const mutation = useCallback(async () => {
+  const mutation = useCallback(async (init?: RequestInit) => {
     setState((prevState) => ({ ...prevState, loading: true }));
     const response = await request(
       path,
       {
+        ...config,
         ...init,
-        headers: { ...(init?.headers ?? {}), 'X-WP-Nonce': api.nonce },
+        headers: {
+          ...(init?.headers ?? {}),
+          'x-wp-nonce': api.nonce,
+        },
       }
     );
 
@@ -53,7 +57,7 @@ export const useMutation = <T extends Data>(path: string, init?: RequestInit): R
     } finally {
       setState((prevState) => ({ ...prevState, loading: false }));
     }
-  }, [init, path]);
+  }, [config, path]);
 
   return [mutation, state];
 };
