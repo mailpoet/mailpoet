@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 
 class Exceptions {
   private const MIGRATION_FAILED = 'mailpoet_automation_migration_failed';
+  private const DATABASE_ERROR = 'mailpoet_automation_database_error';
   private const API_METHOD_NOT_ALLOWED = 'mailpoet_automation_api_method_not_allowed';
   private const API_NO_JSON_BODY = 'mailpoet_automation_api_no_json_body';
 
@@ -20,6 +21,12 @@ class Exceptions {
     return InvalidStateException::create()
       ->withErrorCode(self::MIGRATION_FAILED)
       ->withMessage(__(sprintf('Migration failed: %s', $error), 'mailpoet'));
+  }
+
+  public static function databaseError(string $error): InvalidStateException {
+    return InvalidStateException::create()
+      ->withErrorCode(self::DATABASE_ERROR)
+      ->withMessage(__(sprintf('Database error: %s', $error), 'mailpoet'));
   }
 
   public static function apiMethodNotAllowed(): UnexpectedValueException {
