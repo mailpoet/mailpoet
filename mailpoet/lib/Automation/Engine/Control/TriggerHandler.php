@@ -4,9 +4,11 @@ namespace MailPoet\Automation\Engine\Control;
 
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Hooks;
+use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Engine\Workflows\Trigger;
+use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 
 class TriggerHandler {
   /** @var ActionScheduler */
@@ -18,14 +20,19 @@ class TriggerHandler {
   /** @var WorkflowStorage */
   private $workflowStorage;
 
+  /** @var WorkflowRunStorage */
+  private $workflowRunStorage;
+
   public function __construct(
     ActionScheduler $actionScheduler,
     WordPress $wordPress,
-    WorkflowStorage $workflowStorage
+    WorkflowStorage $workflowStorage,
+    WorkflowRunStorage $workflowRunStorage
   ) {
     $this->actionScheduler = $actionScheduler;
     $this->wordPress = $wordPress;
     $this->workflowStorage = $workflowStorage;
+    $this->workflowRunStorage = $workflowRunStorage;
   }
 
   public function initialize(): void {
@@ -40,7 +47,10 @@ class TriggerHandler {
         throw Exceptions::workflowTriggerNotFound($workflow->getId(), $trigger->getKey());
       }
 
-      // TODO: create new workflow run
+      $workflowRun = new WorkflowRun($workflow->getId(), $trigger->getKey());
+      $this->workflowRunStorage->createWorkflowRun($workflowRun);
+
+      // TODO: enqueue next workflow step
     }
   }
 }
