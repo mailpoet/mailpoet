@@ -8,10 +8,20 @@ class Engine {
   /** @var API */
   private $api;
 
+  /** @var Registry */
+  private $registry;
+
+  /** @var WordPress */
+  private $wordPress;
+
   public function __construct(
-    API $api
+    API $api,
+    Registry $registry,
+    WordPress $wordPress
   ) {
     $this->api = $api;
+    $this->registry = $registry;
+    $this->wordPress = $wordPress;
   }
 
   public function initialize(): void {
@@ -19,5 +29,7 @@ class Engine {
     require_once __DIR__ . '/../../../vendor/woocommerce/action-scheduler/action-scheduler.php';
 
     $this->api->initialize();
+
+    $this->wordPress->doAction(Hooks::INITIALIZE, [$this->registry]);
   }
 }
