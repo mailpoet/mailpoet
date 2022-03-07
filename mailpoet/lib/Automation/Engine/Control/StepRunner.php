@@ -10,9 +10,14 @@ use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\WordPress;
+use MailPoet\Automation\Engine\Workflows\Step;
+use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 use Throwable;
 
 class StepRunner {
+  /** @var ActionScheduler */
+  private $actionScheduler;
+
   /** @var ActionStepRunner */
   private $actionStepRunner;
 
@@ -26,11 +31,13 @@ class StepRunner {
   private $workflowStorage;
 
   public function __construct(
+    ActionScheduler $actionScheduler,
     ActionStepRunner $actionStepRunner,
     WordPress $wordPress,
     WorkflowRunStorage $workflowRunStorage,
     WorkflowStorage $workflowStorage
   ) {
+    $this->actionScheduler = $actionScheduler;
     $this->actionStepRunner = $actionStepRunner;
     $this->wordPress = $wordPress;
     $this->workflowRunStorage = $workflowRunStorage;
@@ -87,6 +94,19 @@ class StepRunner {
       throw new InvalidStateException();
     }
 
-    // TODO: enqueue next step / complete workflow
+    // enqueue next step / complete workflow
+    $nextStepId = $step->getNextStepId();
+    if ($nextStepId) {
+      $this->actionScheduler->enqueue(Hooks::WORKFLOW_STEP, [
+        [
+          'workflow_run_id' => $workflowRunId,
+          'step_id' => $nextStepId,
+        ],
+      ]);
+    } else {
+      $this->workflowRunStorage->updateStatus($workflowRunId, WorkflowRun::STATUS_COMPLETE);
+    }
+
+    // TODO: allow long-running steps (that are not done here yet)
   }
 }

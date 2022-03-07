@@ -32,4 +32,12 @@ class WorkflowRunStorage {
     $data = $this->wpdb->get_row($query, ARRAY_A);
     return $data ? WorkflowRun::fromArray((array)$data) : null;
   }
+
+  public function updateStatus(int $id, string $status): void {
+    $query = strval($this->wpdb->prepare("UPDATE $this->table SET status = %s WHERE id = %d", $status, $id));
+    $result = $this->wpdb->query($query);
+    if ($result === false) {
+      throw Exceptions::databaseError($this->wpdb->last_error);
+    }
+  }
 }
