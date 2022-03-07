@@ -41,6 +41,7 @@ export const useMutation = <T extends Data>(path: string, config?: RequestInit):
         ...config,
         ...init,
         headers: {
+          'content-type': 'application/json',
           ...(init?.headers ?? {}),
           'x-wp-nonce': api.nonce,
         },
