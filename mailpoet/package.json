@@ -32,7 +32,8 @@
     "**/newsletter_editor/**/*spec.js": "../eslint-config/node_modules/.bin/eslint -c ../eslint-config/.eslintrc.tests_newsletter_editor.json --max-warnings 0",
     "*.php": [
       "phplint",
-      "./do qa:code-sniffer"
+      "./do qa:code-sniffer",
+      "bash -c './do qa:phpstan'"
     ]
   },
   "dependencies": {
