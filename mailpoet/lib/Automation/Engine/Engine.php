@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine;
 
 use MailPoet\Automation\Engine\API\API;
+use MailPoet\Automation\Engine\Control\StepRunner;
 use MailPoet\Automation\Engine\Control\TriggerHandler;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 
@@ -12,6 +13,9 @@ class Engine {
 
   /** @var Registry */
   private $registry;
+
+  /** @var StepRunner */
+  private $stepRunner;
 
   /** @var TriggerHandler */
   private $triggerHandler;
@@ -25,12 +29,14 @@ class Engine {
   public function __construct(
     API $api,
     Registry $registry,
+    StepRunner $stepRunner,
     TriggerHandler $triggerHandler,
     WordPress $wordPress,
     WorkflowStorage $workflowStorage
   ) {
     $this->api = $api;
     $this->registry = $registry;
+    $this->stepRunner = $stepRunner;
     $this->triggerHandler = $triggerHandler;
     $this->wordPress = $wordPress;
     $this->workflowStorage = $workflowStorage;
@@ -41,6 +47,7 @@ class Engine {
     require_once __DIR__ . '/../../../vendor/woocommerce/action-scheduler/action-scheduler.php';
 
     $this->api->initialize();
+    $this->stepRunner->initialize();
     $this->triggerHandler->initialize();
 
     $this->wordPress->doAction(Hooks::INITIALIZE, [$this->registry]);
