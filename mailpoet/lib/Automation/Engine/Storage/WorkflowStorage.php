@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine\Storage;
 
 use MailPoet\Automation\Engine\Exceptions;
+use MailPoet\Automation\Engine\Workflows\Trigger;
 use MailPoet\Automation\Engine\Workflows\Workflow;
 use wpdb;
 
@@ -44,5 +45,21 @@ class WorkflowStorage {
       $triggerKeys = array_merge($triggerKeys, $keys);
     }
     return array_unique($triggerKeys);
+  }
+
+  /** @return Workflow[] */
+  public function getActiveWorkflowsByTrigger(Trigger $trigger): array {
+    $query = strval(
+      $this->wpdb->prepare(
+        "SELECT * FROM $this->table WHERE status = %s AND trigger_keys LIKE %s",
+        Workflow::STATUS_ACTIVE,
+        '%' . $this->wpdb->esc_like($trigger->getKey()) . '%'
+      )
+    );
+
+    $data = $this->wpdb->get_results($query, ARRAY_A);
+    return array_map(function (array $workflowData) {
+      return Workflow::fromArray($workflowData);
+    }, (array)$data);
   }
 }
