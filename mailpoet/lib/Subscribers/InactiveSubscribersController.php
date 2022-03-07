@@ -14,6 +14,8 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class InactiveSubscribersController {
 
+  const UNOPENED_EMAILS_THRESHOLD = 3;
+
   private $inactiveTaskIdsTableCreated = false;
 
   /** @var SettingsRepository */
@@ -30,9 +32,9 @@ class InactiveSubscribersController {
     $this->entityManager = $entityManager;
   }
 
-  public function markInactiveSubscribers(int $daysToInactive, int $batchSize, ?int $startId = null) {
+  public function markInactiveSubscribers(int $daysToInactive, int $batchSize, ?int $startId = null, ?int $unopenedEmails = self::UNOPENED_EMAILS_THRESHOLD) {
     $thresholdDate = $this->getThresholdDate($daysToInactive);
-    return $this->deactivateSubscribers($thresholdDate, $batchSize, $startId);
+    return $this->deactivateSubscribers($thresholdDate, $batchSize, $startId, $unopenedEmails);
   }
 
   public function markActiveSubscribers(int $daysToInactive, int $batchSize): int {
@@ -59,7 +61,7 @@ class InactiveSubscribersController {
   /**
    * @return int|bool
    */
-  private function deactivateSubscribers(Carbon $thresholdDate, int $batchSize, ?int $startId = null) {
+  private function deactivateSubscribers(Carbon $thresholdDate, int $batchSize, ?int $startId = null, ?int $unopenedEmails = self::UNOPENED_EMAILS_THRESHOLD) {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
@@ -96,26 +98,29 @@ class InactiveSubscribersController {
       $this->inactiveTaskIdsTableCreated = true;
     }
 
-    // Select subscribers who received a recent tracked email but didn't open it
+    // Select subscribers who received at least a number of tracked emails but didn't open any
     $startId = (int)$startId;
     $endId = $startId + $batchSize;
     $inactiveSubscriberIdsTmpTable = 'inactive_subscriber_ids';
     $connection->executeQuery("
       CREATE TEMPORARY TABLE IF NOT EXISTS {$inactiveSubscriberIdsTmpTable}
       (UNIQUE subscriber_id (id))
-      SELECT DISTINCT s.id FROM {$subscribersTable} as s
+      SELECT s.id FROM {$subscribersTable} as s
         JOIN {$scheduledTaskSubscribersTable} as sts USE INDEX (subscriber_id) ON s.id = sts.subscriber_id
         JOIN {$inactiveTaskIdsTable} task_ids ON task_ids.id = sts.task_id
       WHERE s.last_subscribed_at < :thresholdDate
         AND s.status = :status
         AND s.id >= :startId
         AND s.id < :endId
+      GROUP BY s.id
+      HAVING count(s.id) >= :unopenedEmailsThreshold
     ",
       [
         'thresholdDate' => $thresholdDateIso,
         'status' => SubscriberEntity::STATUS_SUBSCRIBED,
         'startId' => $startId,
         'endId' => $endId,
+        'unopenedEmailsThreshold' => $unopenedEmails,
     ]);
 
     $result = $connection->executeQuery("
