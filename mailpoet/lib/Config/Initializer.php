@@ -5,6 +5,8 @@ namespace MailPoet\Config;
 use MailPoet\API\JSON\API;
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Automation\Engine\Engine;
+use MailPoet\Automation\Engine\Hooks as AutomationHooks;
+use MailPoet\Automation\Integrations\MailPoet\MailPoetIntegration;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Features\FeaturesController;
 use MailPoet\InvalidStateException;
@@ -91,6 +93,9 @@ class Initializer {
   /** @var Engine */
   private $automationEngine;
 
+  /** @var MailPoetIntegration */
+  private $automationMailPoetIntegration;
+
   /** @var FeaturesController */
   private $featuresController;
 
@@ -119,6 +124,7 @@ class Initializer {
     SubscriberActivityTracker $subscriberActivityTracker,
     AssetsLoader $assetsLoader,
     Engine $automationEngine,
+    MailPoetIntegration $automationMailPoetIntegration,
     FeaturesController $featuresController
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -143,6 +149,7 @@ class Initializer {
     $this->subscriberActivityTracker = $subscriberActivityTracker;
     $this->assetsLoader = $assetsLoader;
     $this->automationEngine = $automationEngine;
+    $this->automationMailPoetIntegration = $automationMailPoetIntegration;
     $this->featuresController = $featuresController;
   }
 
@@ -206,6 +213,13 @@ class Initializer {
       $this,
       'multisiteDropTables',
     ]);
+
+    if ($this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
+      WPFunctions::get()->addAction(AutomationHooks::INITIALIZE, [
+        $this->automationMailPoetIntegration,
+        'register',
+      ]);
+    }
 
     $this->hooks->initEarlyHooks();
   }
