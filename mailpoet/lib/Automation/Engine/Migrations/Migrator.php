@@ -32,10 +32,23 @@ class Migrator {
         PRIMARY KEY (id)
       );
     ");
+
+    $this->runQuery("
+      CREATE TABLE {$this->prefix}workflow_runs (
+        id int(11) unsigned NOT NULL AUTO_INCREMENT,
+        workflow_id int(11) unsigned NOT NULL,
+        trigger_key int(11) unsigned NOT NULL,
+        status varchar(255) NOT NULL,
+        created_at timestamp NOT NULL,
+        updated_at timestamp NOT NULL,
+        PRIMARY KEY (id)
+      );
+    ");
   }
 
   public function deleteSchema(): void {
     $this->runQuery("DROP TABLE IF EXISTS {$this->prefix}workflows");
+    $this->runQuery("DROP TABLE IF EXISTS {$this->prefix}workflow_runs");
   }
 
   public function hasSchema(): bool {
