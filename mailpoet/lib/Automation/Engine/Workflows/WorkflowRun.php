@@ -28,12 +28,17 @@ class WorkflowRun {
   /** @var DateTimeImmutable */
   private $updatedAt;
 
+  /** @var Subject[] */
+  private $subjects;
+
   public function __construct(
     int $workflowId,
-    string $triggerKey
+    string $triggerKey,
+    array $subjects
   ) {
     $this->workflowId = $workflowId;
     $this->triggerKey = $triggerKey;
+    $this->subjects = $subjects;
 
     $now = new DateTimeImmutable();
     $this->createdAt = $now;
@@ -64,6 +69,11 @@ class WorkflowRun {
     return $this->updatedAt;
   }
 
+  /** @return Subject[] */
+  public function getSubjects(): array {
+    return $this->subjects;
+  }
+
   public function toArray(): array {
     return [
       'workflow_id' => $this->workflowId,
@@ -71,11 +81,17 @@ class WorkflowRun {
       'status' => $this->status,
       'created_at' => $this->createdAt->format(DateTimeImmutable::W3C),
       'updated_at' => $this->updatedAt->format(DateTimeImmutable::W3C),
+      'subjects' => json_encode(
+        array_reduce($this->subjects, function (array $subjects, Subject $subject): array {
+          $subjects[$subject->getKey()] = $subject->pack();
+          return $subjects;
+        }, [])
+      ),
     ];
   }
 
   public static function fromArray(array $data): self {
-    $workflowRun = new WorkflowRun((int)$data['workflow_id'], $data['trigger_key']);
+    $workflowRun = new WorkflowRun((int)$data['workflow_id'], $data['trigger_key'], (array)json_decode($data['subjects'], true));
     $workflowRun->id = (int)$data['id'];
     $workflowRun->status = $data['status'];
     $workflowRun->createdAt = $data['created_at'];
