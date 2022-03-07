@@ -25,7 +25,7 @@ class Migrator {
         name varchar(255) NOT NULL,
         created_at timestamp NOT NULL,
         updated_at timestamp NOT NULL,
-        deleted_at timestamp NOT NULL,
+        deleted_at timestamp NULL,
         data longtext,
         PRIMARY KEY (id)
       );
