@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
+import { Field } from '../../form/types';
 
 // Track once per page load
 const trackCampaignNameTyped = _.once(() => MailPoet.trackEvent('User has typed a GA campaign name'));
@@ -25,10 +26,11 @@ const tip = ReactStringReplace(
   )
 );
 
-export default {
+const field: Field = {
   name: 'ga_campaign',
   label: MailPoet.I18n.t('gaCampaignLine'),
   tip,
   type: 'text',
   onBeforeChange: trackCampaignNameTyped,
 };
+export default field;

@@ -1,4 +1,20 @@
-type NewsLetterType = 'standard';
+export enum NewsletterType {
+  Standard = 'standard',
+  Automatic = 'automatic',
+  Welcome = 'welcome',
+  Notification = 'notification',
+  NotificationHistory = 'notification_history',
+  WCTransactional = 'wc_transactional',
+  ReEngagement = 're_engagement'
+}
+
+export enum NewsletterStatus {
+  Draft = 'draft',
+  Scheduled = 'scheduled',
+  Sending = 'sending',
+  Sent = 'sent',
+  Active = 'active',
+}
 
 export type NewsLetter = {
   body: {
@@ -33,9 +49,9 @@ export type NewsLetter = {
   sender_address: string;
   sender_name: string;
   sent_at: null | string;
-  status: string;
+  status: NewsletterStatus;
   subject: string;
-  type: NewsLetterType;
+  type: NewsletterType;
   unsubscribe_token: string;
   updated_at: string;
 }

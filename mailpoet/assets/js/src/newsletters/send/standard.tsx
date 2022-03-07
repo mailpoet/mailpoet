@@ -4,10 +4,10 @@ import Hooks from 'wp-js-hooks';
 
 import DateTime from 'newsletters/send/date_time.jsx';
 import SenderField from 'newsletters/send/sender_address_field.jsx';
-import GATrackingField from 'newsletters/send/ga_tracking.jsx';
+import GATrackingField from 'newsletters/send/ga_tracking';
 import Toggle from 'common/form/toggle/toggle';
-import { ReactComponentLike } from 'prop-types';
-import { NewsLetter } from '../models';
+import { NewsLetter, NewsletterStatus } from '../models';
+import { Field } from '../../form/types';
 
 const currentTime = window.mailpoet_current_time || '00:00';
 const tomorrowDateTime = `${window.mailpoet_tomorrow_date} 08:00:00`;
@@ -23,13 +23,7 @@ type StandardSchedulingProps = {
       value: string;
     },
   }) => void;
-  field: {
-    name: string;
-    disabled: false
-    label: string;
-    type: 'reactComponent';
-    component: ReactComponentLike;
-  }
+  field: Field
 }
 
 class StandardScheduling extends Component<StandardSchedulingProps> {
@@ -120,7 +114,7 @@ class StandardScheduling extends Component<StandardSchedulingProps> {
   }
 }
 
-let fields = [
+let fields: Array<Field> = [
   {
     name: 'email-header',
     label: null,
@@ -162,16 +156,16 @@ let fields = [
     api_version: window.mailpoet_api_version,
     endpoint: 'segments',
     multiple: true,
-    filter: function filter(segment) {
+    filter: function filter(segment: { deleted_at: string }): boolean {
       return !segment.deleted_at;
     },
-    getLabel: function getLabel(segment) {
+    getLabel: function getLabel(segment: { name: string }): string {
       return segment.name;
     },
     getCount: function getCount(segment: { subscribers: string }): string {
       return parseInt(segment.subscribers, 10).toLocaleString();
     },
-    transformChangedValue: function transformChangedValue(segmentIds: string[]) {
+    transformChangedValue: function transformChangedValue(segmentIds: string[]): unknown[] {
       const allSegments = this.getItems() || [];
       return segmentIds.map((id) => allSegments.find((segment) => segment.id === id));
     },
@@ -257,8 +251,8 @@ export default {
         : MailPoet.I18n.t('send')),
     };
 
-    if (newsletter.status === 'sent'
-      || newsletter.status === 'sending') {
+    if (newsletter.status === NewsletterStatus.Sent
+      || newsletter.status === NewsletterStatus.Sending) {
       options.disabled = 'disabled';
     }
 

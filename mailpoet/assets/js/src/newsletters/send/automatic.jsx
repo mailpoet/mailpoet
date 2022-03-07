@@ -1,6 +1,6 @@
 import MailPoet from 'mailpoet';
 import SendEventConditions from 'newsletters/automatic_emails/send_event_conditions.jsx';
-import GATrackingField from 'newsletters/send/ga_tracking.jsx';
+import GATrackingField from 'newsletters/send/ga_tracking';
 
 const emails = window.mailpoet_woocommerce_automatic_emails || [];
 
