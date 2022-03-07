@@ -10,15 +10,14 @@ class ModelTest extends \MailPoetTest {
   public function testItRethrowsPDOExceptions() {
     $message = 'Error message';
     $model = Stub::make('MailPoet\Models\Model');
-    $pdo = Stub::make(
-      'PDO',
-      [
-        'prepare' => function() use ($message) {
-          throw new \PDOException($message);
-        },
-      ]
-    );
-    ORM::setDb($pdo);
+    $mockPDO = $this
+      ->getMockBuilder('PDOObject') // @phpstan-ignore-line Mocking PDO on PHP8.1 doesn't work with phpunit 8.5.22
+      ->disableOriginalConstructor()
+      ->setMethods(["prepare"])
+      ->getMock();
+    $mockPDO->method('prepare') // @phpstan-ignore-line Mocking PDO on PHP8.1 doesn't work with phpunit 8.5.22
+      ->willThrowException(new \PDOException($message));
+    ORM::setDb($mockPDO);
     try {
       $model::findMany();
       $this->fail('Exception was not thrown');
