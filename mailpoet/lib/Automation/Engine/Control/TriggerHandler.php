@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\WordPress;
+use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Automation\Engine\Workflows\Trigger;
 use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 
@@ -36,10 +37,11 @@ class TriggerHandler {
   }
 
   public function initialize(): void {
-    $this->wordPress->addAction(Hooks::TRIGGER, [$this, 'processTrigger']);
+    $this->wordPress->addAction(Hooks::TRIGGER, [$this, 'processTrigger'], 10, 2);
   }
 
-  public function processTrigger(Trigger $trigger): void {
+  /** @param Subject[] $subjects */
+  public function processTrigger(Trigger $trigger, array $subjects): void {
     $workflows = $this->workflowStorage->getActiveWorkflowsByTrigger($trigger);
     foreach ($workflows as $workflow) {
       $step = $workflow->getTrigger($trigger->getKey());
@@ -47,7 +49,7 @@ class TriggerHandler {
         throw Exceptions::workflowTriggerNotFound($workflow->getId(), $trigger->getKey());
       }
 
-      $workflowRun = new WorkflowRun($workflow->getId(), $trigger->getKey());
+      $workflowRun = new WorkflowRun($workflow->getId(), $trigger->getKey(), $subjects);
       $workflowRunId = $this->workflowRunStorage->createWorkflowRun($workflowRun);
 
       $this->actionScheduler->enqueue(Hooks::WORKFLOW_STEP, [
