@@ -4,4 +4,5 @@ namespace MailPoet\Automation\Engine;
 
 class Hooks {
   public const INITIALIZE = 'mailpoet/automation/initialize';
+  public const TRIGGER = 'mailpoet/automation/trigger';
 }

@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine;
 
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
+use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Exceptions\UnexpectedValueException;
 
 class Exceptions {
@@ -10,6 +11,7 @@ class Exceptions {
   private const DATABASE_ERROR = 'mailpoet_automation_database_error';
   private const API_METHOD_NOT_ALLOWED = 'mailpoet_automation_api_method_not_allowed';
   private const API_NO_JSON_BODY = 'mailpoet_automation_api_no_json_body';
+  private const WORKFLOW_TRIGGER_NOT_FOUND = 'mailpoet_automation_workflow_trigger_not_found';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -40,5 +42,11 @@ class Exceptions {
     return UnexpectedValueException::create()
       ->withErrorCode(self::API_NO_JSON_BODY)
       ->withMessage(__('No JSON body passed.', 'mailpoet'));
+  }
+
+  public static function workflowTriggerNotFound(int $workflowId, string $key): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::WORKFLOW_TRIGGER_NOT_FOUND)
+      ->withMessage(__(sprintf("Workflow trigger with key '%s' not found in workflow ID '%s'.", $key, $workflowId), 'mailpoet'));
   }
 }
