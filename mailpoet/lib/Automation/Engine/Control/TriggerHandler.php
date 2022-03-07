@@ -48,9 +48,14 @@ class TriggerHandler {
       }
 
       $workflowRun = new WorkflowRun($workflow->getId(), $trigger->getKey());
-      $this->workflowRunStorage->createWorkflowRun($workflowRun);
+      $workflowRunId = $this->workflowRunStorage->createWorkflowRun($workflowRun);
 
-      // TODO: enqueue next workflow step
+      $this->actionScheduler->enqueue(Hooks::WORKFLOW_STEP, [
+        [
+          'workflow_run_id' => $workflowRunId,
+          'step_id' => $step->getNextStepId(),
+        ],
+      ]);
     }
   }
 }
