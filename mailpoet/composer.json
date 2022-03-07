@@ -86,7 +86,8 @@
       "./tools/vendor/composer.phar --working-dir=tasks/phpstan install"
     ],
     "pre-autoload-dump": [
-      "php ./tasks/fix-codeception-stub.php"
+      "php ./tasks/fix-codeception-stub.php",
+      "php ./tasks/fix-requests.php"
     ]
   },
   "config": {
