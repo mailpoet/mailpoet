@@ -4,7 +4,7 @@ import _ from 'underscore';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
 import { Button } from 'common';
 import Form from 'form/form.jsx';
-import StandardNewsletterFields from 'newsletters/send/standard.jsx';
+import StandardNewsletterFields from 'newsletters/send/standard';
 import NotificationNewsletterFields from 'newsletters/send/notification.jsx';
 import WelcomeNewsletterFields from 'newsletters/send/welcome.jsx';
 import AutomaticEmailFields from 'newsletters/send/automatic.jsx';

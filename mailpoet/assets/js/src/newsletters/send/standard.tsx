@@ -1,13 +1,13 @@
-import React from 'react';
-import _ from 'underscore';
+import React, { ChangeEvent, Component } from 'react';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
-import PropTypes from 'prop-types';
 
 import DateTime from 'newsletters/send/date_time.jsx';
 import SenderField from 'newsletters/send/sender_address_field.jsx';
 import GATrackingField from 'newsletters/send/ga_tracking.jsx';
 import Toggle from 'common/form/toggle/toggle';
+import { ReactComponentLike } from 'prop-types';
+import { NewsLetter } from '../models';
 
 const currentTime = window.mailpoet_current_time || '00:00';
 const tomorrowDateTime = `${window.mailpoet_tomorrow_date} 08:00:00`;
@@ -15,16 +15,34 @@ const timeOfDayItems = window.mailpoet_schedule_time_of_day;
 const dateDisplayFormat = window.mailpoet_date_display_format;
 const dateStorageFormat = window.mailpoet_date_storage_format;
 
-class StandardScheduling extends React.Component {
+type StandardSchedulingProps = {
+  item?: NewsLetter;
+  onValueChange: (targetWrap: {
+    target: {
+      name: string;
+      value: string;
+    },
+  }) => void;
+  field: {
+    name: string;
+    disabled: false
+    label: string;
+    type: 'reactComponent';
+    component: ReactComponentLike;
+  }
+}
+
+class StandardScheduling extends Component<StandardSchedulingProps> {
   getCurrentValue = () => {
     const schedulingOptions = {
       isScheduled: '0',
       scheduledAt: tomorrowDateTime,
     };
-    return _.defaults(
-      this.props.item[this.props.field.name] || {},
-      schedulingOptions
-    );
+
+    return {
+      ...schedulingOptions,
+      ...(this.props.item?.[this.props.field.name] ?? {}),
+    };
   };
 
   getDateValidation = () => ({
@@ -35,21 +53,21 @@ class StandardScheduling extends React.Component {
 
   isScheduled = () => this.getCurrentValue().isScheduled === '1';
 
-  handleCheckboxChange = (checked, event) => {
-    const changeEvent = event;
+  handleCheckboxChange = (checked, event: ChangeEvent<HTMLInputElement>): void => {
+    const changeEvent = { ...event };
     changeEvent.target.value = event.target.checked ? '1' : '0';
-    return this.handleValueChange(changeEvent);
+    this.handleValueChange(changeEvent);
   };
 
-  handleValueChange = (event) => {
+  handleValueChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const oldValue = this.getCurrentValue();
     const newValue = {};
     newValue[event.target.name] = event.target.value;
 
-    return this.props.onValueChange({
+    this.props.onValueChange({
       target: {
         name: this.props.field.name,
-        value: _.extend({}, oldValue, newValue),
+        value: { ...oldValue, ...newValue },
       },
     });
   };
@@ -102,19 +120,6 @@ class StandardScheduling extends React.Component {
   }
 }
 
-StandardScheduling.propTypes = {
-  item: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  field: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
-  }).isRequired,
-  onValueChange: PropTypes.func.isRequired,
-};
-
-StandardScheduling.defaultProps = {
-  item: {},
-};
-
 let fields = [
   {
     name: 'email-header',
@@ -163,12 +168,12 @@ let fields = [
     getLabel: function getLabel(segment) {
       return segment.name;
     },
-    getCount: function getCount(segment) {
+    getCount: function getCount(segment: { subscribers: string }): string {
       return parseInt(segment.subscribers, 10).toLocaleString();
     },
-    transformChangedValue: function transformChangedValue(segmentIds) {
-      const allSegments = this.getItems();
-      return _.map(segmentIds, (id) => _.find(allSegments, (segment) => segment.id === id));
+    transformChangedValue: function transformChangedValue(segmentIds: string[]) {
+      const allSegments = this.getItems() || [];
+      return segmentIds.map((id) => allSegments.find((segment) => segment.id === id));
     },
     validation: {
       'data-parsley-required': true,
@@ -232,27 +237,28 @@ let fields = [
 
 fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
 
-export default {
-  getFields: function getFields() {
-    return fields;
-  },
-  getSendButtonOptions: function getSendButtonOptions(newsletter) {
-    const newsletterOptions = newsletter || {};
+type SendButtonOptions = {
+  value: string;
+  disabled?: 'disabled';
+};
 
+export default {
+  getFields: (): typeof fields => fields,
+  getSendButtonOptions: (newsletter: Partial<NewsLetter> = {}): SendButtonOptions => {
     const isScheduled = (
-      typeof newsletterOptions.options === 'object'
-      && newsletterOptions.options.isScheduled === '1'
-      && MailPoet.Date.isInFuture(newsletterOptions.options.scheduledAt)
+      typeof newsletter.options === 'object'
+      && newsletter.options?.isScheduled === '1'
+      && MailPoet.Date.isInFuture(newsletter.options.scheduledAt)
     );
 
-    const options = {
+    const options: SendButtonOptions = {
       value: (isScheduled
         ? MailPoet.I18n.t('schedule')
         : MailPoet.I18n.t('send')),
     };
 
-    if (newsletterOptions.status === 'sent'
-      || newsletterOptions.status === 'sending') {
+    if (newsletter.status === 'sent'
+      || newsletter.status === 'sending') {
       options.disabled = 'disabled';
     }
 
