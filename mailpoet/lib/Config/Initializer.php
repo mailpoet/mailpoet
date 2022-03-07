@@ -163,10 +163,6 @@ class Initializer {
       ));
     }
 
-    if ($this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
-      $this->automationEngine->initialize();
-    }
-
     // activation function
     WPFunctions::get()->registerActivationHook(
       Env::$file,
@@ -264,6 +260,10 @@ class Initializer {
       $this->setupWoocommerceBlocksIntegration();
       $this->subscriberActivityTracker->trackActivity();
       $this->postEditorBlock->init();
+
+      if ($this->featuresController->isSupported(FeaturesController::AUTOMATION)) {
+        $this->automationEngine->initialize();
+      }
 
       WPFunctions::get()->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
