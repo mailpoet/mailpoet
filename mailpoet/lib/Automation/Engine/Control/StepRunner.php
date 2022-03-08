@@ -50,11 +50,17 @@ class StepRunner {
 
   /** @param mixed $args */
   public function run($args): void {
+    // TODO: args validation
+    if (!is_array($args)) {
+      throw new InvalidStateException();
+    }
+
     // Action Scheduler catches only Exception instances, not other errors.
     // We need to convert them to exceptions to be processed and logged.
     try {
       $this->runStep($args);
     } catch (Throwable $e) {
+      $this->workflowRunStorage->updateStatus((int)$args['workflow_run_id'], WorkflowRun::STATUS_FAILED);
       if (!$e instanceof Exception) {
         throw new Exception($e->getMessage(), intval($e->getCode()), $e);
       }
@@ -62,13 +68,7 @@ class StepRunner {
     }
   }
 
-  /** @param mixed $args */
-  private function runStep($args): void {
-    // TODO: args validation
-    if (!is_array($args)) {
-      throw new InvalidStateException();
-    }
-
+  private function runStep(array $args): void {
     $workflowRunId = $args['workflow_run_id'];
     $stepId = $args['step_id'];
 
