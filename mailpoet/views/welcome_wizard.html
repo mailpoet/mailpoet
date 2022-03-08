@@ -19,6 +19,8 @@
   var has_mss_key_specified = <%= json_encode(has_mss_key_specified) %>;
   var mailpoet_feature_flags = <%= json_encode(mailpoet_feature_flags) %>;
   var mailpoet_settings = <%= json_encode(settings) %>;
+  var mailpoet_subscribers_count = <%= subscriber_count %>;
+  var mailpoet_current_wp_user_email = '<%= current_wp_user.user_email|escape('js') %>';
 </script>
 
 <div id="mailpoet-wizard-container"></div>

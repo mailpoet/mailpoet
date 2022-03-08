@@ -93,7 +93,12 @@ function FreePlanSubscribers(props) {
       <FreeBenefitsList />
 
       <Controls
-        mailpoetAccountUrl={props.mailpoetAccountUrl}
+        mailpoetAccountUrl={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
+          MailPoet.subscribersCount,
+          MailPoet.currentWpUserEmail,
+          'starter',
+          { utm_medium: 'onboarding', utm_campaign: 'purchase' }
+        )}
         next={props.next}
         nextButtonText={MailPoet.I18n.t('welcomeWizardMSSFreeButton')}
       />
@@ -102,7 +107,6 @@ function FreePlanSubscribers(props) {
 }
 
 FreePlanSubscribers.propTypes = {
-  mailpoetAccountUrl: PropTypes.string.isRequired,
   next: PropTypes.func.isRequired,
 };
 
@@ -142,7 +146,7 @@ function Step(props) {
     )
     : (
       <NotFreePlanSubscribers
-        mailpoetAccountUrl={props.mailpoetAccountUrl}
+        mailpoetAccountUrl={props.purchaseUrl}
         next={props.next}
       />
     )
@@ -154,6 +158,7 @@ Step.propTypes = {
   next: PropTypes.func.isRequired,
   subscribersCount: PropTypes.number.isRequired,
   mailpoetAccountUrl: PropTypes.string.isRequired,
+  purchaseUrl: PropTypes.string.isRequired,
 };
 
 export default Step;
