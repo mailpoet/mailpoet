@@ -36,7 +36,12 @@ function renderSuccess(newsletter, testingPassed) {
       newsletter={newsletter}
       isWoocommerceActive={window.mailpoet_woocommerce_active}
       subscribersCount={window.mailpoet_subscribers_count}
-      mailpoetAccountUrl={window.mailpoet_account_url}
+      purchaseUrl={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
+        MailPoet.subscribersCount,
+        MailPoet.currentWpUserEmail,
+        'starter',
+        { utm_medium: 'first-newsletter-congratulations', utm_campaign: 'purchase' }
+      )}
     />
   );
 }
