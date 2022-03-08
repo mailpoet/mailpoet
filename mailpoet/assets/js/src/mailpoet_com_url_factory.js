@@ -27,10 +27,13 @@ const MailPoetComUrlFactory = referralId => {
       getUrl(baseShopUrl, '/orders/upgrade/' + key, {})
     ),
 
-    getPurchasePlanUrl: (subscribersCount, subscriberEmail, trackingObject) => {
+    getPurchasePlanUrl: (subscribersCount, subscriberEmail, planGroup, trackingObject) => {
       let paramsObject = { s: subscribersCount };
       if (typeof subscriberEmail === 'string') {
         paramsObject.email = subscriberEmail;
+      }
+      if (typeof planGroup === 'string') {
+        paramsObject.g = planGroup;
       }
       if (typeof trackingObject === 'object') {
         paramsObject.utm_source = 'plugin';
