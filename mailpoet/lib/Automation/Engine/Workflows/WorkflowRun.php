@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine\Workflows;
 
 use DateTimeImmutable;
+use MailPoet\Automation\Engine\Utils\Json;
 
 class WorkflowRun {
   public const STATUS_RUNNING = 'running';
@@ -81,7 +82,7 @@ class WorkflowRun {
       'status' => $this->status,
       'created_at' => $this->createdAt->format(DateTimeImmutable::W3C),
       'updated_at' => $this->updatedAt->format(DateTimeImmutable::W3C),
-      'subjects' => json_encode(
+      'subjects' => Json::encode(
         array_reduce($this->subjects, function (array $subjects, Subject $subject): array {
           $subjects[$subject->getKey()] = $subject->pack();
           return $subjects;
@@ -91,7 +92,7 @@ class WorkflowRun {
   }
 
   public static function fromArray(array $data): self {
-    $workflowRun = new WorkflowRun((int)$data['workflow_id'], $data['trigger_key'], (array)json_decode($data['subjects'], true));
+    $workflowRun = new WorkflowRun((int)$data['workflow_id'], $data['trigger_key'], Json::decode($data['subjects']));
     $workflowRun->id = (int)$data['id'];
     $workflowRun->status = $data['status'];
     $workflowRun->createdAt = $data['created_at'];
