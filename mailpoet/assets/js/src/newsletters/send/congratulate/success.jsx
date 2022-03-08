@@ -11,7 +11,7 @@ function Success(props) {
         MSSPitchIllustrationUrl={props.MSSPitchIllustrationUrl}
         onFinish={props.successClicked}
         subscribersCount={props.subscribersCount}
-        mailpoetAccountUrl={props.mailpoetAccountUrl}
+        purchaseUrl={props.purchaseUrl}
         newsletter={props.newsletter}
       />
     );
@@ -34,7 +34,7 @@ Success.propTypes = {
     type: PropTypes.string.isRequired,
   }).isRequired,
   subscribersCount: PropTypes.number.isRequired,
-  mailpoetAccountUrl: PropTypes.string.isRequired,
+  purchaseUrl: PropTypes.string.isRequired,
 };
 
 export default Success;

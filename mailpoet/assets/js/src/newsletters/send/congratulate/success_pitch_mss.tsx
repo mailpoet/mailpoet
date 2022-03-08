@@ -3,13 +3,13 @@ import MailPoet from 'mailpoet';
 
 import Heading from 'common/typography/heading/heading';
 import WelcomeWizardStepLayoutBody from '../../../wizard/layout/step_layout_body.jsx';
-import { FreeBenefitsList, NotFreeBenefitsList, Controls } from '../../../wizard/steps/pitch_mss_step.jsx';
+import { FreeBenefitsList, Controls } from '../../../wizard/steps/pitch_mss_step.jsx';
 
 type Props = {
   MSSPitchIllustrationUrl: string;
   onFinish: () => void;
   subscribersCount: number;
-  mailpoetAccountUrl: string;
+  purchaseUrl: string;
   newsletter: {
     status: string;
     type: string;
@@ -48,13 +48,9 @@ function PitchMss(props: Props): JSX.Element {
             {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}
             :
           </Heading>
-          {
-            props.subscribersCount < 1000
-              ? <FreeBenefitsList />
-              : <NotFreeBenefitsList />
-          }
+          <FreeBenefitsList />
           <Controls
-            mailpoetAccountUrl={props.mailpoetAccountUrl}
+            mailpoetAccountUrl={props.purchaseUrl}
             next={(): void => { props.onFinish(); setIsClosing(true); }}
             nextButtonText={MailPoet.I18n.t('welcomeWizardMSSFreeButton')}
             nextWithSpinner={isClosing}
