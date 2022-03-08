@@ -143,7 +143,7 @@ class BlockRendererHelper {
     $rules = [];
     if (isset($formSettings['fontSize'])) {
       $rules[] = 'font-size: ' . trim($formSettings['fontSize']) . 'px;';
-      $rules[] = 'line-height: ' . trim($formSettings['fontSize']) * 1.2 . 'px";';
+      $rules[] = 'line-height: ' . (float)trim($formSettings['fontSize']) * 1.2 . 'px";';
     }
     if (isset($styles['bold'])) {
       $rules[] = 'font-weight: bold;';

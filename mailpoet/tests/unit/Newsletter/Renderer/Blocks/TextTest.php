@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Editor\PostContentManager;
+use MailPoet\Util\pQuery\DomNode;
 use MailPoet\Util\pQuery\pQuery;
 
 class TextTest extends \MailPoetUnitTest {
@@ -36,7 +37,9 @@ class TextTest extends \MailPoetUnitTest {
     $output = (new Text)->render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
     assert($table instanceof pQuery);
-    $paragraphTable = $table[0]->toString();
+    $tableElement = $table[0];
+    assert($tableElement instanceof DomNode);
+    $paragraphTable = $tableElement->toString();
     $expectedResult = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
         <tr>
           <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;text-align: left;">
@@ -54,7 +57,9 @@ class TextTest extends \MailPoetUnitTest {
     $output = (new Text)->render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
     assert($table instanceof pQuery);
-    $paragraphTable = $table[0]->toString();
+    $tableElement = $table[0];
+    assert($tableElement instanceof DomNode);
+    $paragraphTable = $tableElement->toString();
     $expectedResult = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
         <tr>
           <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;text-align: left;">
@@ -62,7 +67,9 @@ class TextTest extends \MailPoetUnitTest {
           </td>
         </tr></table>';
     expect($paragraphTable)->equals($expectedResult);
-    $paragraphTable = $table[1]->toString();
+    $tableElement = $table[1];
+    assert($tableElement instanceof DomNode);
+    $paragraphTable = $tableElement->toString();
     $expectedResult = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
         <tr>
           <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;text-align: left;">
@@ -80,7 +87,9 @@ class TextTest extends \MailPoetUnitTest {
     $output = (new Text)->render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
     assert($table instanceof pQuery);
-    $paragraphTable = $table[0]->toString();
+    $tableElement = $table[0];
+    assert($tableElement instanceof DomNode);
+    $paragraphTable = $tableElement->toString();
     $expectedResult = '<table style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;" width="100%" cellpadding="0">
         <tr>
           <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;text-align: left;">
@@ -90,7 +99,9 @@ class TextTest extends \MailPoetUnitTest {
     expect($paragraphTable)->equals($expectedResult);
     $heading = $this->parser->parseStr($output)->query('h1');
     assert($heading instanceof pQuery);
-    $heading = $heading[0]->toString();
+    $headingElement = $heading[0];
+    assert($headingElement instanceof DomNode);
+    $heading = $headingElement->toString();
     $expectedResult = '<h1 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Second</h1>';
     expect($heading)->equals($expectedResult);
   }
@@ -100,7 +111,9 @@ class TextTest extends \MailPoetUnitTest {
     $output = (new Text)->render($this->block);
     $ul = $this->parser->parseStr($output)->query('ul');
     assert($ul instanceof pQuery);
-    $list = $ul[0]->toString();
+    $ulElement = $ul[0];
+    assert($ulElement instanceof DomNode);
+    $list = $ulElement->toString();
     $expectedResult = '<ul class="mailpoet_paragraph" style="padding-top:0;padding-bottom:0;margin-top:10px;text-align:left;margin-bottom:10px;"><li class="mailpoet_paragraph" style="text-align:left;margin-bottom:10px;">Item 1</li><li class="mailpoet_paragraph" style="text-align:left;margin-bottom:10px;">Item 2</li></ul>';
     expect($list)->equals($expectedResult);
   }
@@ -110,7 +123,9 @@ class TextTest extends \MailPoetUnitTest {
     $output = (new Text)->render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
     assert($table instanceof pQuery);
-    $blockquoteTable = $table[0]->toString();
+    $tableElement = $table[0];
+    assert($tableElement instanceof DomNode);
+    $blockquoteTable = $tableElement->toString();
     $expectedResult = '<table class="mailpoet_blockquote" width="100%" spacing="0" border="0" cellpadding="0">
         <tbody>
           <tr>

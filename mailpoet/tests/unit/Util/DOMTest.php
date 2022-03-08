@@ -17,7 +17,9 @@ class DOMTest extends \MailPoetUnitTest {
   public function testItDeepSplitsDOMTreeByElement() {
     $a = $this->root->query('a');
     assert($a instanceof pQuery);
-    DOMUtil::splitOn($this->root, $a->offsetGet(0));
+    $aElement = $a->offsetGet(0);
+    assert($aElement instanceof DomNode);
+    DOMUtil::splitOn($this->root, $aElement);
 
     expect($this->root->html())->equals(
       '<p><i>italic</i><em>previous text</em></p>' .
@@ -30,6 +32,7 @@ class DOMTest extends \MailPoetUnitTest {
     $img = $this->root->query('img');
     assert($img instanceof pQuery);
     $image = $img->offsetGet(0);
+    assert($image instanceof DomNode);
 
     $p = $this->root->query('p');
     assert($p instanceof pQuery);
