@@ -16,6 +16,7 @@ class Exceptions {
   private const WORKFLOW_RUN_NOT_FOUND = 'mailpoet_automation_workflow_run_not_found';
   private const WORKFLOW_STEP_NOT_FOUND = 'mailpoet_automation_workflow_step_not_found';
   private const WORKFLOW_TRIGGER_NOT_FOUND = 'mailpoet_automation_workflow_trigger_not_found';
+  private const WORKFLOW_RUN_NOT_RUNNING = 'mailpoet_automation_workflow_run_not_running';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -76,5 +77,11 @@ class Exceptions {
     return NotFoundException::create()
       ->withErrorCode(self::WORKFLOW_TRIGGER_NOT_FOUND)
       ->withMessage(__(sprintf("Workflow trigger with key '%s' not found in workflow ID '%s'.", $key, $workflowId), 'mailpoet'));
+  }
+
+  public static function workflowRunNotRunning(int $id, string $status): InvalidStateException {
+    return InvalidStateException::create()
+      ->withErrorCode(self::WORKFLOW_RUN_NOT_RUNNING)
+      ->withMessage(__(sprintf("Workflow run with ID '%s' is not running. Status: %s", $id, $status), 'mailpoet'));
   }
 }
