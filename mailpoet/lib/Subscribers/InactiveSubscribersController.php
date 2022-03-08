@@ -79,8 +79,6 @@ class InactiveSubscribersController {
       return false;
     }
 
-    // We take into account only emails which have at least one opening tracked
-    // to ensure that tracking was enabled for the particular email
     $inactiveTaskIdsTable = 'inactive_task_ids';
     if (!$this->inactiveTaskIdsTableCreated) {
       $inactiveTaskIdsTableSql = "
@@ -98,7 +96,7 @@ class InactiveSubscribersController {
       $this->inactiveTaskIdsTableCreated = true;
     }
 
-    // Select subscribers who received at least a number of tracked emails but didn't open any
+    // Select subscribers who received at least a number of emails after  threshold date
     $startId = (int)$startId;
     $endId = $startId + $batchSize;
     $inactiveSubscriberIdsTmpTable = 'inactive_subscriber_ids';
