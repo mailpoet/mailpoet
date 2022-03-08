@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.9
-Stable tag: 3.83.0
+Stable tag: 3.84.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -203,6 +203,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.84.0 - 2022-03-08 =
+* Improved: more robust segment subscribers count calculation in segment form;
+* Improved: include "pending cancellation" subscriptions in WC Subscriptions segment;
+* Fixed: scheduled newsletter might be sent to subscribers who are not subscribed.
 
 = 3.83.0 - 2022-03-01 =
 * Added: a notice when email volume limit is reached;
