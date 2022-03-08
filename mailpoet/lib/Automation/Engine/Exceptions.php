@@ -11,6 +11,7 @@ class Exceptions {
   private const DATABASE_ERROR = 'mailpoet_automation_database_error';
   private const API_METHOD_NOT_ALLOWED = 'mailpoet_automation_api_method_not_allowed';
   private const API_NO_JSON_BODY = 'mailpoet_automation_api_no_json_body';
+  private const JSON_NOT_OBJECT = 'mailpoet_automation_json_not_object';
   private const WORKFLOW_NOT_FOUND = 'mailpoet_automation_workflow_not_found';
   private const WORKFLOW_RUN_NOT_FOUND = 'mailpoet_automation_workflow_run_not_found';
   private const WORKFLOW_STEP_NOT_FOUND = 'mailpoet_automation_workflow_step_not_found';
@@ -45,6 +46,12 @@ class Exceptions {
     return UnexpectedValueException::create()
       ->withErrorCode(self::API_NO_JSON_BODY)
       ->withMessage(__('No JSON body passed.', 'mailpoet'));
+  }
+
+  public static function jsonNotObject(string $json): UnexpectedValueException {
+    return UnexpectedValueException::create()
+      ->withErrorCode(self::JSON_NOT_OBJECT)
+      ->withMessage(__(sprintf("JSON string '%s' doesn't encode an object.", $json), 'mailpoet'));
   }
 
   public static function workflowNotFound(int $id): NotFoundException {

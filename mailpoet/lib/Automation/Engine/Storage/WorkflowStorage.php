@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Engine\Storage;
 
 use MailPoet\Automation\Engine\Exceptions;
+use MailPoet\Automation\Engine\Utils\Json;
 use MailPoet\Automation\Engine\Workflows\Trigger;
 use MailPoet\Automation\Engine\Workflows\Workflow;
 use wpdb;
@@ -47,7 +48,7 @@ class WorkflowStorage {
     $triggerKeys = [];
     foreach ($result as $item) {
       /** @var string[] $keys */
-      $keys = (array)json_decode($item, true);
+      $keys = Json::decode($item);
       $triggerKeys = array_merge($triggerKeys, $keys);
     }
     return array_unique($triggerKeys);
