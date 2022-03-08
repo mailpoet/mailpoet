@@ -9,6 +9,7 @@ function SkipDisplayingDetailedStats() {
       href={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
         MailPoet.subscribersCount,
         MailPoet.currentWpUserEmail,
+        'starter',
         { utm_medium: 'stats', utm_campaign: 'signup' }
       )}
       target="_blank"

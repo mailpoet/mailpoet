@@ -147,6 +147,12 @@ function WelcomeWizardStepsController(props) {
                 next={() => redirect(step)}
                 subscribersCount={window.subscribers_count}
                 mailpoetAccountUrl={window.mailpoet_account_url}
+                purchaseUrl={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
+                  MailPoet.subscribersCount,
+                  MailPoet.currentWpUserEmail,
+                  'business',
+                  { utm_medium: 'onboarding', utm_campaign: 'purchase' }
+                )}
               />
             </WelcomeWizardStepLayout>
           ) : null}

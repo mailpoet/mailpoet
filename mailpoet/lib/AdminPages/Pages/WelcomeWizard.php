@@ -61,6 +61,7 @@ class WelcomeWizard {
       'settings' => $this->settings->getAll(),
     ];
     $data['mailpoet_feature_flags'] = $this->featuresController->getAllFlags();
+    $data['current_wp_user_email'] = $this->wp->wpGetCurrentUser()->user_email;
     $this->pageRenderer->displayPage('welcome_wizard.html', $data);
   }
 }
