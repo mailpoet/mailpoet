@@ -19,7 +19,7 @@ export const MailPoetDate : {
   full: (date: MomentInput) => string,
   time: (date: MomentInput) => string,
   convertFormat: (format: string) => string,
-  isInFuture: (dateString: string) => boolean
+  isInFuture: (dateString: string, currentTime: MomentInput) => boolean
 } = {
   version: 0.1,
   options: {},
@@ -178,5 +178,5 @@ export const MailPoetDate : {
 
     return convertedFormat.join('');
   },
-  isInFuture: (dateString: string): boolean => new Date(dateString).getTime() > Date.now(),
+  isInFuture: (dateString: string, currentTime: MomentInput): boolean => Moment(dateString).isAfter(currentTime, 's'),
 } as const;

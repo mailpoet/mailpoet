@@ -139,6 +139,7 @@ class Newsletters {
     $data['tomorrow_date'] = $dateTime->getCurrentDateTime()->modify( "+1 day" )
       ->format( DateTime::DEFAULT_DATE_FORMAT );
     $data['current_time'] = $dateTime->getCurrentTime();
+    $data['current_date_time'] = $dateTime->getCurrentDateTime()->format(DateTime::DEFAULT_DATE_TIME_FORMAT);
     $data['schedule_time_of_day'] = $dateTime->getTimeInterval(
       '00:00:00',
       '+1 hour',
