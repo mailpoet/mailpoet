@@ -69,6 +69,7 @@ export default function NoAccessInfo({
         href={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
           MailPoet.subscribersCount,
           MailPoet.currentWpUserEmail,
+          null,
           { utm_medium: 'stats', utm_campaign: 'signup' }
         )}
       >

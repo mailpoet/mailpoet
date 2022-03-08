@@ -25,6 +25,7 @@ function DynamicSegmentsPremiumBanner() : JSX.Element {
       href={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
         MailPoet.subscribersCount,
         MailPoet.currentWpUserEmail,
+        null,
         { utm_medium: 'segments', utm_campaign: 'signup' }
       )}
       target="_blank"
