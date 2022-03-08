@@ -1,6 +1,7 @@
 import React, { ChangeEvent, Component } from 'react';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
+import Moment from 'moment';
 
 import DateTime from 'newsletters/send/date_time.jsx';
 import SenderField from 'newsletters/send/sender_address_field.jsx';
@@ -239,16 +240,18 @@ type SendButtonOptions = {
 export default {
   getFields: (): typeof fields => fields,
   getSendButtonOptions: (newsletter: Partial<NewsLetter> = {}): SendButtonOptions => {
+    const currentDateTime = Moment(window.mailpoet_current_date_time);
     const isScheduled = (
       typeof newsletter.options === 'object'
       && newsletter.options?.isScheduled === '1'
-      && MailPoet.Date.isInFuture(newsletter.options.scheduledAt)
+      && MailPoet.Date.isInFuture(newsletter.options?.scheduledAt, currentDateTime)
     );
 
     const options: SendButtonOptions = {
       value: (isScheduled
         ? MailPoet.I18n.t('schedule')
-        : MailPoet.I18n.t('send')),
+        : MailPoet.I18n.t('send')
+      ),
     };
 
     if (newsletter.status === NewsletterStatus.Sent

@@ -98,6 +98,14 @@
   },
   "overrides": [
     {
+      "files": ["*.spec.ts"],
+      "rules": {
+        "no-unused-expressions": "off"
+      }
+    }
+  ],
+  "overrides": [
+    {
       "files": ["**/_stories/*.tsx"],
       "rules": {
         "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
