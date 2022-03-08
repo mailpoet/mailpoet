@@ -77,6 +77,10 @@ class StepRunner {
       throw Exceptions::workflowRunNotFound($workflowRunId);
     }
 
+    if ($workflowRun->getStatus() !== WorkflowRun::STATUS_RUNNING) {
+      throw Exceptions::workflowRunNotRunning($workflowRunId, $workflowRun->getStatus());
+    }
+
     $workflow = $this->workflowStorage->getWorkflow($workflowRun->getWorkflowId());
     if (!$workflow) {
       throw Exceptions::workflowNotFound($workflowRun->getWorkflowId());
