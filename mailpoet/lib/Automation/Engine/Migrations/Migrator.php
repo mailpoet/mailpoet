@@ -50,6 +50,20 @@ class Migrator {
   public function deleteSchema(): void {
     $this->runQuery("DROP TABLE IF EXISTS {$this->prefix}workflows");
     $this->runQuery("DROP TABLE IF EXISTS {$this->prefix}workflow_runs");
+
+    // clean Action Scheduler data
+    $this->runQuery("
+      DELETE FROM {$this->wpdb->prefix}actionscheduler_claims WHERE claim_id IN (
+        SELECT claim_id FROM {$this->wpdb->prefix}actionscheduler_actions WHERE hook LIKE '%mailpoet/automation%'
+      )
+    ");
+    $this->runQuery("
+      DELETE FROM {$this->wpdb->prefix}actionscheduler_logs WHERE action_id IN (
+        SELECT action_id FROM {$this->wpdb->prefix}actionscheduler_actions WHERE hook LIKE '%mailpoet/automation%'
+      )
+    ");
+    $this->runQuery("DELETE FROM {$this->wpdb->prefix}actionscheduler_actions WHERE hook LIKE '%mailpoet/automation%'");
+    $this->runQuery("DELETE FROM {$this->wpdb->prefix}actionscheduler_groups WHERE slug = 'mailpoet-automation'");
   }
 
   public function hasSchema(): bool {
