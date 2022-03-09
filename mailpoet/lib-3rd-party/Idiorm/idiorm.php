@@ -547,7 +547,13 @@ use PDOStatement;
                 $bound_query = $query;
             } else {
                 // Escape the parameters
-                $parameters = array_map(array(self::get_db($connection_name), 'quote'), $parameters);
+                $parameters = array_map(function($parameter) use ($connection_name) {
+                  // Escape the parameter only when it is not empty value due to compatibility in PHP8.1
+                  if ($parameter) {
+                    return self::get_db($connection_name)->quote($parameter);
+                  }
+                  return $parameter;
+                }, $parameters);
 
                 if (array_values($parameters) === $parameters) {
                     // ? placeholders
