@@ -28,7 +28,7 @@
     "process": [
       "rm -rf ../vendor-prefixed",
       "mkdir ../vendor-prefixed",
-      "php -d memory_limit=2G ../tools/vendor/php-scoper.phar add-prefix",
+      "php -d memory_limit=2G ../tools/vendor/php-scoper.phar add-prefix --force",
       "mv ./build/* ../vendor-prefixed",
       "php fix-carbon.php",
       "php fix-twig.php",
