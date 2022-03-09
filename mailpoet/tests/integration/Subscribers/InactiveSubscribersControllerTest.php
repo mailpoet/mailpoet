@@ -28,7 +28,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
 
   const INACTIVITY_DAYS_THRESHOLD = 5;
   const PROCESS_BATCH_SIZE = 100;
-  const UNOPENED_EMAILS_THRESHOLD = 1;
+  const UNOPENED_EMAILS_THRESHOLD = InactiveSubscribersController::UNOPENED_EMAILS_THRESHOLD;
 
   public function _before() {
     $this->controller = new InactiveSubscribersController(
@@ -52,19 +52,12 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     parent::_before();
   }
 
-  public function testItDeactivatesOldSubscribersOnlyWhenUnopenedEmailsReachDefaultThreshold(): void {
-    // Create three completed sending tasks
-    [$task] = $this->createCompletedSendingTask(3);
-    [$task2] = $this->createCompletedSendingTask(3);
-    [$task3] = $this->createCompletedSendingTask(3);
-
-
+  public function testItDeactivatesOldSubscribersOnlyWhenUnopenedEmailsReachThreshold(): void {
     $subscriber1 = $this->createSubscriber('s1@email.com', 10);
-    $this->addSubscriberToTask($subscriber1, $task);
-    $this->addSubscriberToTask($subscriber1, $task2);
-    $this->addSubscriberToTask($subscriber1, $task3);
+    $this->createCompletedSendingTasksForSubscriber($subscriber1, self::UNOPENED_EMAILS_THRESHOLD, 3);
+
     $subscriber2 = $this->createSubscriber('s2@email.com', 10);
-    $this->addSubscriberToTask($subscriber2, $task);
+    $this->createCompletedSendingTasksForSubscriber($subscriber2, self::UNOPENED_EMAILS_THRESHOLD - 1, 3);
 
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(1);
@@ -78,15 +71,13 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDeactivatesLimitedAmountOfSubscribers(): void {
-    [$task] = $this->createCompletedSendingTask(3);
-
     $subscriber1 = $this->createSubscriber('s1@email.com', 10);
-    $this->addSubscriberToTask($subscriber1, $task);
+    $this->createCompletedSendingTasksForSubscriber($subscriber1, self::UNOPENED_EMAILS_THRESHOLD, 3);
     $subscriber2 = $this->createSubscriber('s2@email.com', 10);
-    $this->addSubscriberToTask($subscriber2, $task);
+    $this->createCompletedSendingTasksForSubscriber($subscriber2, self::UNOPENED_EMAILS_THRESHOLD, 3);
     $batchSize = 1;
 
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize, $subscriber1->getId(), self::UNOPENED_EMAILS_THRESHOLD);
+    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize, $subscriber1->getId());
     $this->entityManager->clear();
     expect($result)->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
@@ -108,12 +99,10 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDeactivateNewSubscriberWithUnopenedEmail(): void {
-    [$task] = $this->createCompletedSendingTask(3);
-
     $subscriber = $this->createSubscriber('s1@email.com', 3);
-    $this->addSubscriberToTask($subscriber, $task);
+    $this->createCompletedSendingTasksForSubscriber($subscriber, self::UNOPENED_EMAILS_THRESHOLD, 3);
 
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE, null, self::UNOPENED_EMAILS_THRESHOLD);
+    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     assert($subscriber instanceof SubscriberEntity);
@@ -121,15 +110,13 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDeactivateNewlyResubscribedSubscriberWithUnopenedEmail(): void {
-    [$task] = $this->createCompletedSendingTask(3);
-
     $subscriber = $this->createSubscriber('s1@email.com', 10);
     $lastSubscribedAt = (new Carbon())->subDays(2);
     $subscriber->setLastSubscribedAt($lastSubscribedAt);
     $this->entityManager->flush();
-    $this->addSubscriberToTask($subscriber, $task);
+    $this->createCompletedSendingTasksForSubscriber($subscriber, self::UNOPENED_EMAILS_THRESHOLD, 3);
 
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE, null, self::UNOPENED_EMAILS_THRESHOLD);
+    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     assert($subscriber instanceof SubscriberEntity);
@@ -139,7 +126,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   public function testItDoesNotDeactivateSubscriberWithoutSentEmail(): void {
     $this->createCompletedSendingTask(3);
     $subscriber = $this->createSubscriber('s1@email.com', 10);
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE, null, self::UNOPENED_EMAILS_THRESHOLD);
+    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     assert($subscriber instanceof SubscriberEntity);
@@ -151,9 +138,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $subscriber = $this->createSubscriber('s1@email.com', 10);
     $this->addSubscriberToTask($subscriber, $task);
     $this->addEmailOpenedRecord($subscriber, $queue, 2);
-    [$task2] = $this->createCompletedSendingTask(2);
-    $this->addSubscriberToTask($subscriber, $task2);
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE, null, self::UNOPENED_EMAILS_THRESHOLD);
+    $this->createCompletedSendingTasksForSubscriber($subscriber, self::UNOPENED_EMAILS_THRESHOLD, 3);
+    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     assert($subscriber instanceof SubscriberEntity);
@@ -161,10 +147,9 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDeactivateSubscriberWhoReceivedEmailRecently(): void {
-    [$task] = $this->createCompletedSendingTask(0);
     $subscriber = $this->createSubscriber('s1@email.com', 10);
-    $this->addSubscriberToTask($subscriber, $task);
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE, null, self::UNOPENED_EMAILS_THRESHOLD);
+    $this->createCompletedSendingTasksForSubscriber($subscriber, self::UNOPENED_EMAILS_THRESHOLD, 0);
+    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     assert($subscriber instanceof SubscriberEntity);
@@ -172,14 +157,12 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotDeactivatesSubscribersWhenMP2MigrationHappenedWithinInterval(): void {
-    [$task] = $this->createCompletedSendingTask(3);
-
     $this->createSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY, true, (new Carbon())->subDays(3));
 
     $subscriber = $this->createSubscriber('s1@email.com', 10);
-    $this->addSubscriberToTask($subscriber, $task);
+    $this->createCompletedSendingTasksForSubscriber($subscriber, self::UNOPENED_EMAILS_THRESHOLD, 3);
 
-    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE, null, self::UNOPENED_EMAILS_THRESHOLD);
+    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     expect($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     assert($subscriber instanceof SubscriberEntity);
@@ -286,6 +269,13 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $subscriber->setLastSubscribedAt($createdAt);
     $this->entityManager->flush();
     return $subscriber;
+  }
+
+  private function createCompletedSendingTasksForSubscriber(SubscriberEntity $subscriber, int $numTasks = 1, int $processedDaysAgo = 0): void {
+    for ($i = 0; $i < $numTasks; $i++) {
+      [$task] = $this->createCompletedSendingTask($processedDaysAgo);
+      $this->addSubscriberToTask($subscriber, $task);
+    }
   }
 
   private function createCompletedSendingTask(int $processedDaysAgo = 0): array {
