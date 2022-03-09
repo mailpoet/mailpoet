@@ -27,15 +27,17 @@ class MailerLogTest extends \MailPoetTest {
   }
 
   public function testItGetsMailerLogWhenOneDoesNotExist() {
+    $resultExpectedGreaterThan = time() - 1;
     $mailerLog = MailerLog::getMailerLog();
     expect($mailerLog['sent'])->equals([]);
-    expect(strlen($mailerLog['started']))->greaterThan(5);
+    expect($mailerLog['started'])->greaterThan($resultExpectedGreaterThan);
   }
 
   public function testItCreatesMailer() {
+    $resultExpectedGreaterThan = time() - 1;
     $mailerLog = MailerLog::createMailerLog();
     expect($mailerLog['sent'])->equals([]);
-    expect(strlen($mailerLog['started']))->greaterThan(5);
+    expect($mailerLog['started'])->greaterThan($resultExpectedGreaterThan);
   }
 
   public function testItResetsMailerLog() {
@@ -53,10 +55,9 @@ class MailerLogTest extends \MailPoetTest {
 
   public function testItUpdatesMailerLog() {
     $started = time() - 10;
-    $mailerLog = [
-      'sent' => [date('Y-m-d H:i:s', $started) => 1],
-      'started' => $started,
-    ];
+    $mailerLog = MailerLog::getMailerLog();
+    $mailerLog['sent'] = [date('Y-m-d H:i:s', $started) => 1];
+    $mailerLog['started'] = $started;
     MailerLog::updateMailerLog($mailerLog);
     $updatedMailerLog = $this->settings->get(MailerLog::SETTING_NAME);
     expect($updatedMailerLog)->equals($mailerLog);
@@ -128,9 +129,10 @@ class MailerLogTest extends \MailPoetTest {
   }
 
   public function testItChecksWhenSendingIsPaused() {
-    $mailerLog = ['status' => MailerLog::STATUS_PAUSED];
+    $mailerLog = MailerLog::getMailerLog();
+    $mailerLog['status'] = MailerLog::STATUS_PAUSED;
     expect(MailerLog::isSendingPaused($mailerLog))->true();
-    $mailerLog = ['status' => false];
+    $mailerLog['status'] = null;
     expect(MailerLog::isSendingPaused($mailerLog))->false();
   }
 
@@ -155,7 +157,8 @@ class MailerLogTest extends \MailPoetTest {
 
   public function testItResumesSending() {
     // set status to "paused"
-    $mailerLog = ['status' => MailerLog::STATUS_PAUSED];
+    $mailerLog = MailerLog::getMailerLog();
+    $mailerLog['status'] = MailerLog::STATUS_PAUSED;
     MailerLog::updateMailerLog($mailerLog);
     $mailerLog = MailerLog::getMailerLog();
     expect($mailerLog['status'])->equals(MailerLog::STATUS_PAUSED);
@@ -166,11 +169,11 @@ class MailerLogTest extends \MailPoetTest {
   }
 
   public function testItPausesSending() {
-    $mailerLog = [
-      'status' => null,
-      'retry_attempt' => MailerLog::RETRY_ATTEMPTS_LIMIT,
-      'retry_at' => time() + 20,
-    ];
+    $mailerLog = MailerLog::getMailerLog();
+    $mailerLog['status'] = null;
+    $mailerLog['retry_attempt'] = MailerLog::RETRY_ATTEMPTS_LIMIT;
+    $mailerLog['retry_at'] = time() + 20;
+
     // status is set to PAUSED, retry attempt and retry at time are cleared
     MailerLog::pauseSending($mailerLog);
     $mailerLog = MailerLog::getMailerLog();
@@ -337,7 +340,11 @@ class MailerLogTest extends \MailPoetTest {
     $mailerLog = MailerLog::createMailerLog();
     $mailerLog['retry_attempt'] = 1;
     $mailerLog['retry_at'] = 1;
-    $mailerLog['error'] = 1;
+    $mailerLog['error'] = [
+      'operation' => 'operation',
+      'error_code' => 'error_code',
+      'error_message' => 'error_message',
+    ];
     $mailerLog['status'] = 'status';
     $mailerLog = MailerLog::clearSendingErrorLog($mailerLog);
     expect($mailerLog['retry_attempt'])->null();

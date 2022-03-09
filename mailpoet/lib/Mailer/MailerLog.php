@@ -4,13 +4,33 @@ namespace MailPoet\Mailer;
 
 use MailPoet\Settings\SettingsController;
 
+/**
+ * @phpstan-type MailerLogError array{
+ *    "error_code"?: non-empty-string,
+ *    "error_message": string,
+ *    "operation": string
+ *   }
+ * @phpstan-type MailerLogData array{
+ *   "sent": array<string,int>,
+ *   "started": int,
+ *   "status": ?string,
+ *   "retry_attempt": ?int,
+ *   "retry_at": ?int,
+ *   "error": ?MailerLogError
+ * }
+ */
+
 class MailerLog {
   const SETTING_NAME = 'mta_log';
   const STATUS_PAUSED = 'paused';
   const RETRY_ATTEMPTS_LIMIT = 3;
   const RETRY_INTERVAL = 120; // seconds
 
-  public static function getMailerLog($mailerLog = false) {
+  /**
+   * @param MailerLogData|null $mailerLog
+   * @return MailerLogData
+   */
+  public static function getMailerLog(array $mailerLog = null): array {
     if ($mailerLog) return $mailerLog;
     $settings = SettingsController::getInstance();
     $mailerLog = $settings->get(self::SETTING_NAME);
@@ -25,7 +45,10 @@ class MailerLog {
     return $mailerLog;
   }
 
-  public static function createMailerLog() {
+  /**
+   * @return MailerLogData
+   */
+  public static function createMailerLog(): array {
     $mailerLog = [
       'sent' => [],
       'started' => time(),
@@ -39,18 +62,30 @@ class MailerLog {
     return $mailerLog;
   }
 
-  public static function resetMailerLog() {
+  /**
+   * @return MailerLogData
+   */
+  public static function resetMailerLog(): array {
     return self::createMailerLog();
   }
 
-  public static function updateMailerLog($mailerLog) {
+  /**
+   * @param MailerLogData $mailerLog
+   * @return MailerLogData
+   */
+  public static function updateMailerLog(array $mailerLog): array {
     $mailerLog = self::removeOutdatedSentInformationFromMailerlog($mailerLog);
     $settings = SettingsController::getInstance();
     $settings->set(self::SETTING_NAME, $mailerLog);
     return $mailerLog;
   }
 
-  public static function enforceExecutionRequirements($mailerLog = false) {
+  /**
+   * @param MailerLogData|null $mailerLog
+   * @return null
+   * @throws \Exception
+   */
+  public static function enforceExecutionRequirements(array $mailerLog = null) {
     $mailerLog = self::getMailerLog($mailerLog);
     if ($mailerLog['retry_attempt'] === self::RETRY_ATTEMPTS_LIMIT) {
       $mailerLog = self::pauseSending($mailerLog);
@@ -70,16 +105,24 @@ class MailerLog {
     if (self::isSendingLimitReached($mailerLog)) {
       throw new \Exception(__('Sending frequency limit has been reached.', 'mailpoet'));
     }
+    return null;
   }
 
-  public static function pauseSending($mailerLog) {
+  /**
+   * @param MailerLogData $mailerLog
+   * @return MailerLogData
+   */
+  public static function pauseSending($mailerLog): array {
     $mailerLog['status'] = self::STATUS_PAUSED;
     $mailerLog['retry_attempt'] = null;
     $mailerLog['retry_at'] = null;
     return self::updateMailerLog($mailerLog);
   }
 
-  public static function resumeSending() {
+  /**
+   * @return MailerLogData
+   */
+  public static function resumeSending(): array {
     return self::resetMailerLog();
   }
 
@@ -92,7 +135,7 @@ class MailerLog {
    *
    * @throws \Exception
    */
-  public static function processNonBlockingError($operation, $errorMessage, $retryInterval = self::RETRY_INTERVAL) {
+  public static function processNonBlockingError(string $operation, string $errorMessage, int $retryInterval = self::RETRY_INTERVAL) {
     $mailerLog = self::getMailerLog();
     $mailerLog['retry_at'] = time() + $retryInterval;
     $mailerLog = self::setError($mailerLog, $operation, $errorMessage);
@@ -110,7 +153,13 @@ class MailerLog {
    *
    * @throws \Exception
    */
-  public static function processError($operation, $errorMessage, $errorCode = null, $pauseSending = false, $throttledBatchSize = null) {
+  public static function processError(
+    string $operation,
+    string $errorMessage,
+    string $errorCode = null,
+    bool $pauseSending = false,
+    int $throttledBatchSize = null
+  ) {
     $mailerLog = self::getMailerLog();
     if (!isset($throttledBatchSize) || $throttledBatchSize === 1) {
       $mailerLog['retry_attempt']++;
@@ -124,7 +173,19 @@ class MailerLog {
     self::enforceExecutionRequirements();
   }
 
-  public static function setError($mailerLog, $operation, $errorMessage, $errorCode = null) {
+  /**
+   * @param MailerLogData $mailerLog
+   * @param string $operation
+   * @param string $errorMessage
+   * @param string|null $errorCode
+   * @return MailerLogData
+   */
+  public static function setError(
+    array $mailerLog,
+    string $operation,
+    string $errorMessage,
+    string $errorCode = null
+  ): array {
     $mailerLog['error'] = [
       'operation' => $operation,
       'error_message' => $errorMessage,
@@ -135,19 +196,26 @@ class MailerLog {
     return $mailerLog;
   }
 
-  public static function getError($mailerLog = false) {
+  /**
+   * @param MailerLogData|null $mailerLog
+   * @return MailerLogError|null
+   */
+  public static function getError(array $mailerLog = null): ?array {
     $mailerLog = self::getMailerLog($mailerLog);
     return isset($mailerLog['error']) ? $mailerLog['error'] : null;
   }
 
-  public static function incrementSentCount() {
+  /**
+   * @return MailerLogData|null
+   */
+  public static function incrementSentCount(): ?array {
     $mailerLog = self::getMailerLog();
     // do not increment count if sending limit is reached
     if (self::isSendingLimitReached($mailerLog)) {
-      return;
+      return null;
     }
     // clear previous retry count, errors, etc.
-    if ($mailerLog['error']) {
+    if ($mailerLog['error'] !== null) {
       $mailerLog = self::clearSendingErrorLog($mailerLog);
     }
 
@@ -159,14 +227,22 @@ class MailerLog {
     return self::updateMailerLog($mailerLog);
   }
 
-  public static function clearSendingErrorLog($mailerLog) {
+  /**
+   * @param MailerLogData $mailerLog
+   * @return MailerLogData
+   */
+  public static function clearSendingErrorLog(array $mailerLog): array {
     $mailerLog['retry_attempt'] = null;
     $mailerLog['retry_at'] = null;
     $mailerLog['error'] = null;
     return self::updateMailerLog($mailerLog);
   }
 
-  public static function isSendingLimitReached($mailerLog = false) {
+  /**
+   * @param MailerLogData|null $mailerLog
+   * @return bool
+   */
+  public static function isSendingLimitReached(array $mailerLog = null): bool {
     $settings = SettingsController::getInstance();
     $mailerConfig = $settings->get(Mailer::MAILER_CONFIG_SETTING_NAME);
     // do not enforce sending limit for MailPoet's sending method
@@ -183,7 +259,12 @@ class MailerLog {
     return $sent >= $frequencyLimit;
   }
 
-  public static function sentSince(int $sinceSeconds, array $mailerLog = null): int {
+  /**
+   * @param int $sinceSeconds
+   * @param MailerLogData|null $mailerLog
+   * @return int
+   */
+  private static function sentSince(int $sinceSeconds, array $mailerLog = null): int {
 
     $sinceDate = date('Y-m-d H:i:s', time() - $sinceSeconds);
     $mailerLog = self::getMailerLog($mailerLog);
@@ -202,8 +283,8 @@ class MailerLog {
   /**
    * Clears "sent" section of the mailer log from outdated entries.
    *
-   * @param array|null $mailerLog
-   * @return array
+   * @param MailerLogData|null $mailerLog
+   * @return MailerLogData
    */
   private static function removeOutdatedSentInformationFromMailerlog(array $mailerLog = null): array {
 
@@ -223,12 +304,20 @@ class MailerLog {
     return $mailerLog;
   }
 
-  public static function sentEntriesDate(int $timestamp = null): string {
+  /**
+   * @param int|null $timestamp
+   * @return string
+   */
+  private static function sentEntriesDate(int $timestamp = null): string {
 
     return date('Y-m-d H:i:s', $timestamp ?? time());
   }
 
-  public static function isSendingPaused($mailerLog = false) {
+  /**
+   * @param MailerLogData|null $mailerLog
+   * @return bool
+   */
+  public static function isSendingPaused(array $mailerLog = null): bool {
     $mailerLog = self::getMailerLog($mailerLog);
     return $mailerLog['status'] === self::STATUS_PAUSED;
   }

@@ -371,8 +371,12 @@ class NewsletterTest extends \MailPoetTest {
       self::fail('Sending error exception was not thrown.');
     } catch (\Exception $e) {
       $mailerLog = MailerLog::getMailerLog();
-      expect($mailerLog['error']['operation'])->equals('queue_save');
-      expect($mailerLog['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
+
+      expect(is_array($mailerLog['error']));
+      if (is_array($mailerLog['error'])) {
+        expect($mailerLog['error']['operation'])->equals('queue_save');
+        expect($mailerLog['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
+      }
     }
   }
 
@@ -392,8 +396,11 @@ class NewsletterTest extends \MailPoetTest {
       self::fail('Sending error exception was not thrown.');
     } catch (\Exception $e) {
       $mailerLog = MailerLog::getMailerLog();
-      expect($mailerLog['error']['operation'])->equals('queue_save');
-      expect($mailerLog['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
+      expect(is_array($mailerLog['error']));
+      if (is_array($mailerLog['error'])) {
+        expect($mailerLog['error']['operation'])->equals('queue_save');
+        expect($mailerLog['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
+      }
     }
   }
 
@@ -426,8 +433,11 @@ class NewsletterTest extends \MailPoetTest {
       self::fail('Sending error exception was not thrown.');
     } catch (\Exception $e) {
       $mailerLog = MailerLog::getMailerLog();
-      expect($mailerLog['error']['operation'])->equals('queue_save');
-      expect($mailerLog['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
+      expect(is_array($mailerLog['error']));
+      if (is_array($mailerLog['error'])) {
+        expect($mailerLog['error']['operation'])->equals('queue_save');
+        expect($mailerLog['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
+      }
     }
   }
 

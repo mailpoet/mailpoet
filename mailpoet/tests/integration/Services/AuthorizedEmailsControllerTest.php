@@ -123,7 +123,10 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $controller = $this->getController($authorizedEmailsFromApi = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
     $error = MailerLog::getError();
-    expect($error['operation'])->equals(MailerError::OPERATION_SEND);
+    expect(is_array($error));
+    if (is_array($error)) {
+      expect($error['operation'])->equals(MailerError::OPERATION_SEND);
+    }
   }
 
   public function testItDoesNotResetMailerLogItErrorPersists() {
@@ -135,7 +138,10 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $controller = $this->getController($authorizedEmailsFromApi = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
     $error = MailerLog::getError();
-    expect($error['operation'])->equals(MailerError::OPERATION_AUTHORIZATION);
+    expect(is_array($error));
+    if (is_array($error)) {
+      expect($error['operation'])->equals(MailerError::OPERATION_AUTHORIZATION);
+    }
   }
 
   private function checkUnauthorizedInNewsletter($type, $status) {
