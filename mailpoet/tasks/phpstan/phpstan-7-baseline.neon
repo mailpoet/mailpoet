@@ -651,11 +651,6 @@ parameters:
 			path: ../../lib/Listing/ListingRepository.php
 
 		-
-			message: "#^Variable \\$mailer in empty\\(\\) is never defined\\.$#"
-			count: 1
-			path: ../../lib/Mailer/MailerLog.php
-
-		-
 			message: "#^Parameter \\#1 \\$timeout of method MailPoetVendor\\\\Swift_Transport_EsmtpTransport\\:\\:setTimeout\\(\\) expects int, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Mailer/Methods/SMTP.php

@@ -14,7 +14,8 @@ use MailPoet\Settings\SettingsController;
 class MailerTest extends \MailPoetTest {
   public function testItResumesSending() {
     // create mailer log with a "paused" status
-    $mailerLog = ['status' => MailerLog::STATUS_PAUSED];
+    $mailerLog = MailerLog::getMailerLog();
+    $mailerLog['status'] = MailerLog::STATUS_PAUSED;
     MailerLog::updateMailerLog($mailerLog);
     $mailerLog = MailerLog::getMailerLog();
     expect($mailerLog['status'])->equals(MailerLog::STATUS_PAUSED);
