@@ -16,7 +16,7 @@ class InactiveSubscribersController {
 
   const UNOPENED_EMAILS_THRESHOLD = 3;
 
-  private $inactiveTaskIdsTableCreated = false;
+  private $processedTaskIdsTableCreated = false;
 
   /** @var SettingsRepository */
   private $settingsRepository;
@@ -79,24 +79,25 @@ class InactiveSubscribersController {
       return false;
     }
 
-    $inactiveTaskIdsTable = 'inactive_task_ids';
-    if (!$this->inactiveTaskIdsTableCreated) {
-      $inactiveTaskIdsTableSql = "
-        CREATE TEMPORARY TABLE IF NOT EXISTS {$inactiveTaskIdsTable}
+    // Temporary table with processed tasks from threshold date up to yesterday
+    $processedTaskIdsTable = 'inactive_task_ids';
+    if (!$this->processedTaskIdsTableCreated) {
+      $processedTaskIdsTableSql = "
+        CREATE TEMPORARY TABLE IF NOT EXISTS {$processedTaskIdsTable}
         (INDEX task_id_ids (id))
         SELECT DISTINCT task_id as id FROM {$sendingQueuesTable} as sq
           JOIN {$scheduledTasksTable} as st ON sq.task_id = st.id
           WHERE st.processed_at > :thresholdDate
           AND st.processed_at < :dayAgo
       ";
-      $connection->executeQuery($inactiveTaskIdsTableSql, [
+      $connection->executeQuery($processedTaskIdsTableSql, [
         'thresholdDate' => $thresholdDateIso,
         'dayAgo' => $dayAgoIso,
       ]);
-      $this->inactiveTaskIdsTableCreated = true;
+      $this->processedTaskIdsTableCreated = true;
     }
 
-    // Select subscribers who received at least a number of emails after  threshold date
+    // Select subscribers who received at least a number of emails after threshold date and subscribed before that
     $startId = (int)$startId;
     $endId = $startId + $batchSize;
     $inactiveSubscriberIdsTmpTable = 'inactive_subscriber_ids';
@@ -105,7 +106,7 @@ class InactiveSubscribersController {
       (UNIQUE subscriber_id (id))
       SELECT s.id FROM {$subscribersTable} as s
         JOIN {$scheduledTaskSubscribersTable} as sts USE INDEX (subscriber_id) ON s.id = sts.subscriber_id
-        JOIN {$inactiveTaskIdsTable} task_ids ON task_ids.id = sts.task_id
+        JOIN {$processedTaskIdsTable} task_ids ON task_ids.id = sts.task_id
       WHERE s.last_subscribed_at < :thresholdDate
         AND s.status = :status
         AND s.id >= :startId
