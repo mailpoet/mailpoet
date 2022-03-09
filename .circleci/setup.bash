@@ -29,7 +29,8 @@ function setup {
 	wp core download $wp_cli_wordpress_path $wp_cli_allow_root --version=${2:-latest}
 
 	# Generate `wp-config.php` file with debugging enabled
-	echo "define(\"WP_DEBUG\", true);" | wp core config --dbname=wordpress --dbuser=root --dbhost=127.0.0.1 --extra-php $wp_cli_wordpress_path $wp_cli_allow_root
+	wp core config --dbname=wordpress --dbuser=root --dbhost=127.0.0.1 --extra-php $wp_cli_wordpress_path $wp_cli_allow_root
+	wp config set WP_DEBUG true --raw $wp_cli_wordpress_path $wp_cli_allow_root
 
   # Disable WP Cron so that it doesn't interfere with tests
   wp config set DISABLE_WP_CRON true --raw $wp_cli_wordpress_path $wp_cli_allow_root
