@@ -30,4 +30,38 @@ class ScheduleNewsletterCest {
     $i->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
 
   }
+
+  public function scheduleStandardNewsletterButtonCaption(\AcceptanceTester $i) {
+    $i->wantTo('Check the submit button caption on time change');
+    $newsletterTitle = 'Schedule Test Newsletter';
+
+    // step 1 - Prepare post notification data
+    $newsletterFactory = new Newsletter();
+    $newsletter = $newsletterFactory->withSubject($newsletterTitle)
+      ->create();
+    $segmentName = $i->createListWithSubscriber();
+    $currentDateTime = new \DateTime(strval($i->executeJS('return window.mailpoet_current_date_time')));
+    $dayNumber = $currentDateTime->format('d');
+
+    // step 2 - Go to newsletter send page
+    $i->login();
+    $i->amEditingNewsletter($newsletter->getId());
+    $i->click('Next');
+    $i->waitForElement('[data-automation-id="newsletter_send_form"]');
+    $i->selectOptionInSelect2($segmentName);
+    $i->click('[data-automation-id="email-schedule-checkbox"]');
+
+    // step 3 - Pick today's date
+    $i->waitForElement('form input[name=date]');
+    $i->click('form input[name=date]');
+    $i->click(['class' => "react-datepicker__day--0{$dayNumber}"]);
+
+    // `Schedule` caption - change time to 1 hour after now
+    $i->selectOption('form select[name=time]', $currentDateTime->modify("+1 hour")->format('g:00 a'));
+    $i->see("Schedule", "button span");
+
+    // `Send` caption - change time to 1 hour before now
+    $i->selectOption('form select[name=time]', $currentDateTime->modify("-1 hour")->format('g:00 a'));
+    $i->see("Send", "button span");
+  }
 }
