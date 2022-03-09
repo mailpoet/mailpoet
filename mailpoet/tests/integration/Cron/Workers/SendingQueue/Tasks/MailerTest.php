@@ -65,9 +65,9 @@ class MailerTest extends \MailPoetTest {
 
   public function testItUpdatesMailerLogSentCount() {
     $mailerLog = $this->mailerTask->getMailerLog();
-    expect($mailerLog['sent'])->equals(0);
+    expect(array_sum($mailerLog['sent']))->equals(0);
     $mailerLog = $this->mailerTask->updateSentCount();
-    expect($mailerLog['sent'])->equals(1);
+    expect(array_sum($mailerLog['sent']))->equals(1);
   }
 
   public function testItGetsProcessingMethod() {
