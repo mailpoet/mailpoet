@@ -151,6 +151,12 @@ class SubscriberEntity {
   private $woocommerceSyncedAt;
 
   /**
+   * @ORM\Column(type="integer")
+   * @var int
+   */
+  private $emailsCount = 0;
+
+  /**
    * @ORM\OneToMany(targetEntity="MailPoet\Entities\SubscriberSegmentEntity", mappedBy="subscriber", orphanRemoval=true)
    * @var Collection<int, SubscriberSegmentEntity>
    */
@@ -468,6 +474,14 @@ class SubscriberEntity {
 
   public function getWoocommerceSyncedAt(): ?DateTimeInterface {
     return $this->woocommerceSyncedAt;
+  }
+
+  public function getEmailsCount(): int {
+    return $this->emailsCount;
+  }
+
+  public function setEmailsCount(int $emailsCount): void {
+    $this->emailsCount = $emailsCount;
   }
 
   /** @ORM\PreFlush */
