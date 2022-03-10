@@ -260,12 +260,21 @@ class MailerLog {
   }
 
   /**
-   * @param int $sinceSeconds
+   * @param int|null $sinceSeconds
    * @param MailerLogData|null $mailerLog
    * @return int
    */
-  private static function sentSince(int $sinceSeconds, array $mailerLog = null): int {
+  public static function sentSince(int $sinceSeconds = null, array $mailerLog = null): int {
 
+    if ($sinceSeconds === null) {
+      $settings = SettingsController::getInstance();
+      $mailerConfig = $settings->get(Mailer::MAILER_CONFIG_SETTING_NAME);
+      if (empty($mailerConfig['frequency'])) {
+        $defaultSettings = $settings->getAllDefaults();
+        $mailerConfig['frequency'] = $defaultSettings['mta']['frequency'];
+      }
+      $sinceSeconds = (int)$mailerConfig['frequency']['interval'] * Mailer::SENDING_LIMIT_INTERVAL_MULTIPLIER;
+    }
     $sinceDate = date('Y-m-d H:i:s', time() - $sinceSeconds);
     $mailerLog = self::getMailerLog($mailerLog);
 

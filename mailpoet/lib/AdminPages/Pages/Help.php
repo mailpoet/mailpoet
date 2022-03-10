@@ -45,6 +45,8 @@ class Help {
     $systemInfoData = $this->helpscoutBeacon->getData(true);
     $cronPingResponse = $this->cronHelper->pingDaemon();
 
+    $mailerLog = MailerLog::getMailerLog();
+    $mailerLog['sent'] = MailerLog::sentSince();
     $systemStatusData = [
       'cron' => [
         'url' => $this->cronHelper->getCronUrl(CronDaemon::ACTION_PING),
@@ -56,7 +58,7 @@ class Help {
         'isReachable' => $this->bridge->pingBridge(),
       ],
       'cronStatus' => $this->cronHelper->getDaemon(),
-      'queueStatus' => MailerLog::getMailerLog(),
+      'queueStatus' => $mailerLog,
     ];
     $systemStatusData['cronStatus']['accessible'] = $this->cronHelper->isDaemonAccessible();
     $systemStatusData['queueStatus']['tasksStatusCounts'] = $this->tasksState->getCountsPerStatus();
