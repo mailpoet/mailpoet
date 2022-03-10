@@ -67,7 +67,7 @@ class Migrator {
   }
 
   public function hasSchema(): bool {
-    $pattern = str_replace('_', '\\_', $this->prefix) . '%';
+    $pattern = $this->wpdb->esc_like($this->prefix) . '%';
     return $this->runQuery("SHOW TABLES LIKE '$pattern'") > 0;
   }
 
