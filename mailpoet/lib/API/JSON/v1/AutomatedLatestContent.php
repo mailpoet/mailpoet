@@ -3,6 +3,7 @@
 namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
+use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\Config\AccessControl;
 use MailPoet\Newsletter\AutomatedLatestContent as ALC;
 use MailPoet\Newsletter\BlockPostQuery;
@@ -77,29 +78,28 @@ class AutomatedLatestContent extends APIEndpoint {
   }
 
   /**
-   * @param \WP_Post[] $posts
-   * @return \WP_Post[]
+   * Fetches posts for Posts static block
    */
-  private function getPermittedPosts($posts) {
-    return array_filter($posts, function ($post) {
-      return $this->permissionHelper->checkReadPermission($post);
-    });
-  }
-
-  public function getPosts($data = []) {
+  public function getPosts(array $data = []): SuccessResponse {
     return $this->successResponse(
-      $this->getPermittedPosts($this->ALC->getPosts(new BlockPostQuery(['args' => $data])))
+      $this->getPermittedPosts($this->ALC->getPosts(new BlockPostQuery(['args' => $data, 'dynamic' => false])))
     );
   }
 
-  public function getTransformedPosts($data = []) {
+  /**
+   * Fetches products for Abandoned Cart Content dynamic block
+   */
+  public function getTransformedPosts(array $data = []): SuccessResponse {
     $posts = $this->getPermittedPosts($this->ALC->getPosts(new BlockPostQuery(['args' => $data])));
     return $this->successResponse(
       $this->ALC->transformPosts($data, $posts)
     );
   }
 
-  public function getBulkTransformedPosts($data = []) {
+  /**
+   * Fetches different post types for ALC dynamic block
+   */
+  public function getBulkTransformedPosts(array $data = []): SuccessResponse {
     $usedPosts = [];
     $renderedPosts = [];
 
@@ -114,5 +114,15 @@ class AutomatedLatestContent extends APIEndpoint {
     }
 
     return $this->successResponse($renderedPosts);
+  }
+
+  /**
+   * @param \WP_Post[] $posts
+   * @return \WP_Post[]
+   */
+  private function getPermittedPosts($posts) {
+    return array_filter($posts, function ($post) {
+      return $this->permissionHelper->checkReadPermission($post);
+    });
   }
 }
