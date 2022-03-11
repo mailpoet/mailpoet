@@ -88,7 +88,7 @@ class WooCommerceProduct implements Filter {
       'customer',
       $wpdb->prefix . 'wc_order_stats',
       'orderStats',
-      'customer.customer_id = orderStats.customer_id AND orderStats.status NOT IN ("wc-cancelled", "wc-failed")'
+      'customer.customer_id = orderStats.customer_id AND orderStats.status NOT IN ("wc-cancelled", "wc-on-hold", "wc-pending", "wc-failed")'
     );
   }
 
