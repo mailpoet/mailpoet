@@ -53,6 +53,7 @@ class AutomatedLatestContentBlock {
       'postsToExclude' => $postsToExclude,
       'newsletterId' => $newsletterId,
       'newerThanTimestamp' => $newerThanTimestamp,
+      'dynamic' => true,
     ]);
     $aLCPosts = $this->ALC->getPosts($query);
     foreach ($aLCPosts as $post) {
