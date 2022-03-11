@@ -39,6 +39,8 @@ class WooCommerceCategoryTest extends \MailPoetTest {
 
     $customerId1 = $this->createCustomer('customer1@example.com', 'customer');
     $customerId2 = $this->createCustomer('customer2@example.com', 'customer');
+    $customerId3OnHold = $this->createCustomer('customer-on-hold@example.com', 'customer');
+    $customerId4PendingPayment = $this->createCustomer('customer-pending-payment@example.com', 'customer');
 
     $this->createSubscriber('a1@example.com');
     $this->createSubscriber('a2@example.com');
@@ -53,6 +55,10 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->addToOrder(1, $this->orderIds[0], $this->productIds[0], $customerId1);
     $this->orderIds[] = $this->createOrder($customerId2, Carbon::now());
     $this->addToOrder(2, $this->orderIds[1], $this->productIds[1], $customerId2);
+    $this->orderIds[] = $this->createOrder($customerId3OnHold, Carbon::now(), 'wc-on-hold');
+    $this->addToOrder(3, $this->orderIds[2], $this->productIds[1], $customerId3OnHold);
+    $this->orderIds[] = $this->createOrder($customerId4PendingPayment, Carbon::now(), 'wc-pending');
+    $this->addToOrder(4, $this->orderIds[3], $this->productIds[1], $customerId4PendingPayment);
   }
 
   public function testItGetsSubscribersThatPurchasedProductsInAnyCategory() {
@@ -68,12 +74,18 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersThatDidNotPurchasedProducts() {
-    $expectedEmails = ['a1@example.com','a2@example.com', 'customer2@example.com'];
+    $expectedEmails = [
+      'a1@example.com',
+      'a2@example.com',
+      'customer-on-hold@example.com',
+      'customer-pending-payment@example.com',
+      'customer2@example.com',
+    ];
     $segmentFilter = $this->getSegmentFilter([$this->categoryIds[0]], DynamicSegmentFilterData::OPERATOR_NONE);
     $queryBuilder = $this->wooCommerceCategory->apply($this->getQueryBuilder(), $segmentFilter);
     $statement = $queryBuilder->execute();
     $result = $statement instanceof Statement ? $statement->fetchAll() : [];
-    $this->assertSame(3, count($result));
+    $this->assertSame(count($expectedEmails), count($result));
     $emails = array_map([$this, 'getSubscriberEmail'], $result);
     sort($emails, SORT_STRING);
     $this->assertSame($expectedEmails, $emails);
@@ -139,11 +151,11 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     return $userId;
   }
 
-  private function createOrder(int $customerId, Carbon $createdAt): int {
+  private function createOrder(int $customerId, Carbon $createdAt, string $status = 'wc-completed'): int {
     global $wpdb;
     $orderData = [
       'post_type' => 'shop_order',
-      'post_status' => 'wc-completed',
+      'post_status' => $status,
       'post_date' => $createdAt->toDateTimeString(),
     ];
 
@@ -151,7 +163,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     assert(is_integer($orderId));
     $this->connection->executeQuery("
       INSERT INTO {$wpdb->prefix}wc_order_stats (order_id, customer_id, status, date_created, date_created_gmt)
-      VALUES ({$orderId}, {$customerId}, 'wc-completed', '{$createdAt->toDateTimeString()}', '{$createdAt->toDateTimeString()}')
+      VALUES ({$orderId}, {$customerId}, '{$status}', '{$createdAt->toDateTimeString()}', '{$createdAt->toDateTimeString()}')
     ");
     return $orderId;
   }
@@ -176,8 +188,8 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   private function addToOrder(int $orderItemId, int $orderId, int $productId, int $customerId) {
     global $wpdb;
     $this->connection->executeQuery("
-      INSERT INTO {$wpdb->prefix}wc_order_product_lookup (order_item_id, order_id, product_id, customer_id, variation_id, product_qty)
-      VALUES ({$orderItemId}, {$orderId}, {$productId}, {$customerId}, 0, 1)
+      INSERT INTO {$wpdb->prefix}wc_order_product_lookup (order_item_id, order_id, product_id, customer_id, variation_id, product_qty, date_created)
+      VALUES ({$orderItemId}, {$orderId}, {$productId}, {$customerId}, 0, 1, now())
     ");
   }
 
@@ -197,7 +209,12 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     global $wpdb;
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
-    $emails = ['customer1@example.com', 'customer2@example.com', 'customer3@example.com'];
+    $emails = [
+      'customer1@example.com',
+      'customer2@example.com',
+      'customer-on-hold@example.com',
+      'customer-pending-payment@example.com',
+    ];
     foreach ($emails as $email) {
       $this->tester->deleteWordPressUser($email);
     }
