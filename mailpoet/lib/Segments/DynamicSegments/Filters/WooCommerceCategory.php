@@ -107,7 +107,7 @@ class WooCommerceCategory implements Filter {
         'orderStats',
         'customer.customer_id = orderStats.customer_id'
       )
-      ->andWhere("orderStats.status NOT IN ('wc-cancelled', 'wc-failed')");
+      ->andWhere("orderStats.status NOT IN ('wc-cancelled', 'wc-on-hold', 'wc-pending', 'wc-failed')");
   }
 
   private function applyProductJoin(QueryBuilder $queryBuilder): QueryBuilder {
