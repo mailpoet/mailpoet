@@ -33,6 +33,17 @@ class MailerLogTest extends \MailPoetTest {
     expect($mailerLog['started'])->greaterThan($resultExpectedGreaterThan);
   }
 
+  public function testItDoesNotIncrementWhenSendingMethodIsMailpoet() {
+
+    $expectedCount = MailerLog::sentSince();
+    $settings = SettingsController::getInstance();
+    $mailerConfig = $settings->get(Mailer::MAILER_CONFIG_SETTING_NAME);
+    $mailerConfig['method'] = Mailer::METHOD_MAILPOET;
+    $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, $mailerConfig);
+    expect(MailerLog::incrementSentCount())->null();
+    expect(MailerLog::sentSince())->equals($expectedCount);
+  }
+
   public function testItCreatesMailer() {
     $resultExpectedGreaterThan = time() - 1;
     $mailerLog = MailerLog::createMailerLog();

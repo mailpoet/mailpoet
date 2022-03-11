@@ -209,7 +209,14 @@ class MailerLog {
    * @return MailerLogData|null
    */
   public static function incrementSentCount(): ?array {
+    $settings = SettingsController::getInstance();
+    $mailerConfig = $settings->get(Mailer::MAILER_CONFIG_SETTING_NAME);
+    // do not enforce sending limit for MailPoet's sending method
+    if ($mailerConfig['method'] === Mailer::METHOD_MAILPOET) {
+      return null;
+    }
     $mailerLog = self::getMailerLog();
+
     // do not increment count if sending limit is reached
     if (self::isSendingLimitReached($mailerLog)) {
       return null;
