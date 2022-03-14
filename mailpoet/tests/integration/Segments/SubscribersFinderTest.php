@@ -26,6 +26,9 @@ class SubscribersFinderTest extends \MailPoetTest {
   /** @var SubscribersFinder */
   private $subscribersFinder;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   public function _before() {
     parent::_before();
     ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
@@ -64,6 +67,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     SubscriberSegment::resubscribeToAllSegments($this->subscriber2);
     SubscriberSegment::resubscribeToAllSegments($this->subscriber3);
     $this->sending = SendingTask::create();
+    $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscribersFinder = $this->diContainer->get(SubscribersFinder::class);
   }
 
@@ -82,7 +86,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->method('findSubscribersIdsInSegment')
       ->will($this->returnValue([$this->subscriber3->id]));
 
-    $finder = new SubscribersFinder($mock);
+    $finder = new SubscribersFinder($mock, $this->segmentsRepository);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->id], [$this->segment3->id]);
     expect($subscribers)->count(1);
     expect($subscribers)->contains($this->subscriber3->id);
@@ -96,7 +100,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->method('findSubscribersIdsInSegment')
       ->will($this->returnValue([$this->subscriber3->id]));
 
-    $finder = new SubscribersFinder($mock);
+    $finder = new SubscribersFinder($mock, $this->segmentsRepository);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->id], [$this->segment3->id, $this->segment3->id]);
     expect($subscribers)->count(1);
   }
@@ -131,7 +135,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->method('getSubscriberIdsInSegment')
       ->will($this->returnValue([$this->subscriber1->id]));
 
-    $finder = new SubscribersFinder($mock);
+    $finder = new SubscribersFinder($mock, $this->segmentsRepository);
     $subscribersCount = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
@@ -150,7 +154,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->method('getSubscriberIdsInSegment')
       ->will($this->returnValue([$this->subscriber2->id]));
 
-    $finder = new SubscribersFinder($mock);
+    $finder = new SubscribersFinder($mock, $this->segmentsRepository);
     $subscribersCount = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
