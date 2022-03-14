@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import {
   isEmail,
   t,
@@ -16,7 +16,7 @@ export default function NewSubscriberNotifications() {
   const setErrorFlag = useAction('setErrorFlag');
   const hasError = enabled === '1' && email.trim() === '';
   const invalidEmail = email && !isEmail(email);
-  React.useEffect(() => {
+  useEffect(() => {
     setErrorFlag(hasError || invalidEmail);
   }, [hasError, invalidEmail, setErrorFlag]);
 

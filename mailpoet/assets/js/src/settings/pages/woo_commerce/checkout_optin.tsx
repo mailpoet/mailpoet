@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { t, onChange } from 'common/functions';
 import Checkbox from 'common/form/checkbox/checkbox';
 import Input from 'common/form/input/input';
@@ -11,7 +11,7 @@ export default function CheckoutOptin() {
   const [message, setMessage] = useSetting('woocommerce', 'optin_on_checkout', 'message');
   const setErrorFlag = useAction('setErrorFlag');
   const emptyMessage = message.trim() === '';
-  React.useEffect(() => {
+  useEffect(() => {
     setErrorFlag(emptyMessage);
   }, [emptyMessage, setErrorFlag]);
 

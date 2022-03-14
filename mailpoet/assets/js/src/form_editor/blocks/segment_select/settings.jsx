@@ -1,4 +1,3 @@
-import React from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import { InspectorControls } from '@wordpress/block-editor';

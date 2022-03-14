@@ -1,5 +1,5 @@
 import { action } from '_storybook/action';
-import React, { CSSProperties } from 'react';
+import { CSSProperties } from 'react';
 import Heading from '../../typography/heading/heading';
 import RoutedTabs from '../routed_tabs';
 import Tab from '../tab';

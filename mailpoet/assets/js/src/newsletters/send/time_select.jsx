@@ -1,8 +1,8 @@
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Select from 'common/form/select/select.tsx';
 
-class TimeSelect extends React.Component { // eslint-disable-line react/prefer-stateless-function
+class TimeSelect extends Component { // eslint-disable-line react/prefer-stateless-function
   render() {
     const options = Object.keys(this.props.timeOfDayItems).map(
       (value) => (

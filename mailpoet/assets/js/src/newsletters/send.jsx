@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
@@ -88,7 +88,7 @@ function validateNewsletter(newsletter) {
   return undefined;
 }
 
-class NewsletterSend extends React.Component {
+class NewsletterSend extends Component {
   constructor(props) {
     super(props);
     this.state = {

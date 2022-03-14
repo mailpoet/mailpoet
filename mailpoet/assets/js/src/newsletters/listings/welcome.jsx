@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
@@ -155,7 +155,7 @@ let newsletterActions = [
 ];
 newsletterActions = addStatsCTAAction(newsletterActions);
 
-class NewsletterListWelcome extends React.Component {
+class NewsletterListWelcome extends Component {
   constructor(props) {
     super(props);
     this.state = {

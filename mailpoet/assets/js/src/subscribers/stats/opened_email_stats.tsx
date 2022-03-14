@@ -1,5 +1,4 @@
 import Hooks from 'hooks';
-import React from 'react';
 import { Location } from 'history';
 import MailPoet from 'mailpoet';
 import Heading from 'common/typography/heading/heading';

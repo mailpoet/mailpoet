@@ -1,6 +1,5 @@
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import React from 'react';
 import KeyValueTable from 'common/key_value_table.jsx';
 import PrintBoolean from 'common/print_boolean.jsx';
 

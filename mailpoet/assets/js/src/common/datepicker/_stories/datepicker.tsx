@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { action } from '_storybook/action';
 import Datepicker from '../datepicker';
 import Heading from '../../typography/heading/heading';

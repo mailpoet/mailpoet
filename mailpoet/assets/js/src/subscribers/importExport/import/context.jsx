@@ -1,6 +1,6 @@
-import React from 'react';
+import { createContext } from 'react';
 
-const ImportContext = React.createContext({
+const ImportContext = createContext({
   isNewUser: window.mailpoet_is_new_user,
   segments: window.mailpoetSegments,
 });

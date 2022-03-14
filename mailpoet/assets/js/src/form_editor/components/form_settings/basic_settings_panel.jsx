@@ -8,7 +8,6 @@ import {
   SelectControl,
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
-import React from 'react';
 import MailPoet from 'mailpoet';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';

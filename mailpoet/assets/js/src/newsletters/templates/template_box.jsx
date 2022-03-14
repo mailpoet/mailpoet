@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
@@ -13,7 +13,7 @@ import { GlobalContext } from 'context/index.jsx';
  *   beforeDelete, afterDelete, beforeSelect, afterSelect
  * }
  */
-class TemplateBox extends React.Component {
+class TemplateBox extends Component {
   constructor(props) {
     super(props);
     this.onPreview = this.onPreview.bind(this);

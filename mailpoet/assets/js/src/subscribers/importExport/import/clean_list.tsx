@@ -1,4 +1,3 @@
-import React from 'react';
 import Button from 'common/button/button';
 import MailPoet from 'mailpoet';
 

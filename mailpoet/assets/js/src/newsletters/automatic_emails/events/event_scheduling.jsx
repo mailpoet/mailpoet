@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import MailPoet from 'mailpoet';
 import Selection from 'form/fields/selection.jsx';
 import Text from 'form/fields/text.jsx';
@@ -11,7 +11,7 @@ const defaultAfterTimeNumber = 1;
 const defaultAfterTimeNumberForMinutes = 30;
 const defaultAfterTimeNumberInputFieldSize = 3;
 
-class EventScheduling extends React.Component {
+class EventScheduling extends Component {
   constructor(props) {
     super(props);
     const { item, event } = this.props;

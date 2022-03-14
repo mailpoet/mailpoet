@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -25,8 +25,8 @@ const NewsletterPropType = PropTypes.shape({
 });
 
 function QueueSending({ newsletter }) {
-  const [paused, setPaused] = React.useState(newsletter.queue.status === 'paused');
-  const [errors, setErrors] = React.useState([]);
+  const [paused, setPaused] = useState(newsletter.queue.status === 'paused');
+  const [errors, setErrors] = useState([]);
 
   const pauseSending = () => {
     setErrors([]);

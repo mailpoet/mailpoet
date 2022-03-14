@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import React from 'react';
+import { Component } from 'react';
 import MailPoet from 'mailpoet';
 import Select from 'form/fields/select.jsx';
 import Selection from 'form/fields/selection.jsx';
@@ -52,7 +52,7 @@ const afterTimeTypeField = {
   values: timeDelayValues,
 };
 
-class WelcomeScheduling extends React.Component {
+class WelcomeScheduling extends Component {
   getCurrentValue = () => this.props.item[this.props.field.name] || {};
 
   handleValueChange = (name, value) => {

@@ -1,4 +1,3 @@
-import React from 'react';
 import Select from '../select';
 import Heading from '../../../typography/heading/heading';
 import icon from './assets/icon';

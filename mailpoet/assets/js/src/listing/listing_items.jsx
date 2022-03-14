@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
@@ -6,7 +6,7 @@ import ListingBulkActions from 'listing/bulk_actions.jsx';
 import ListingItem from 'listing/listing_item.jsx';
 import { Grid } from 'common/grid';
 
-class ListingItems extends React.Component { // eslint-disable-line react/prefer-stateless-function, max-len
+class ListingItems extends Component { // eslint-disable-line react/prefer-stateless-function, max-len
   render() {
     if (this.props.items.length === 0) {
       let message;

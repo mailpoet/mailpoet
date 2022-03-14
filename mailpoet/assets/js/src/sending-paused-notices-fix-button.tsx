@@ -1,5 +1,5 @@
 import jQuery from 'jquery';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ReactDOM from 'react-dom';
 import SetFromAddressModal from 'common/set_from_address_modal';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';

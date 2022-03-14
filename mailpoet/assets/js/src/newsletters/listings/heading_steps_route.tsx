@@ -1,4 +1,3 @@
-import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import ListingHeadingSteps, { Props } from './heading_steps';
 

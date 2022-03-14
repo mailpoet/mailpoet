@@ -1,4 +1,4 @@
-import React, { TextareaHTMLAttributes } from 'react';
+import { TextareaHTMLAttributes } from 'react';
 import classnames from 'classnames';
 import Tooltip from 'common/tooltip/tooltip';
 

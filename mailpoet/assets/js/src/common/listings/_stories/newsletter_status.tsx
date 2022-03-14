@@ -1,4 +1,3 @@
-import React from 'react';
 import { addHours, subHours } from 'date-fns';
 import MailPoet from 'mailpoet';
 import NewsletterStatus from '../newsletter_status';

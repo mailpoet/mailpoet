@@ -1,4 +1,3 @@
-import React from 'react';
 import { t } from 'common/functions';
 import { Label, Inputs } from 'settings/components';
 

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import MailPoet from 'mailpoet';
 import Button from 'common/button/button';
 import { Grid } from 'common/grid';

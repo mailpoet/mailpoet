@@ -1,4 +1,4 @@
-import React from 'react';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import apiFetch from '@wordpress/api-fetch';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
@@ -34,9 +34,9 @@ window.addEventListener('DOMContentLoaded', () => {
     initRichText();
     initTranslations(window.mailpoet_translations);
     ReactDOM.render(
-      <React.StrictMode>
+      <StrictMode>
         <App />
-      </React.StrictMode>,
+      </StrictMode>,
       appElement
     );
   }

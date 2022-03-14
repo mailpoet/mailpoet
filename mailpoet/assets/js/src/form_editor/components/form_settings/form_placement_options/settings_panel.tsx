@@ -1,5 +1,3 @@
-import React from 'react';
-
 import BelowPostsSettings from './settings_panels/below_posts_settings';
 import PopUpSettings from './settings_panels/popup_settings';
 import OtherSettings from './settings_panels/other_settings';

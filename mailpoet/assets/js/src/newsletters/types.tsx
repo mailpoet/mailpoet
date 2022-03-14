@@ -1,4 +1,4 @@
-import React, { ComponentType, useState } from 'react';
+import { Fragment, ComponentType, useState } from 'react';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import _ from 'underscore';
@@ -141,7 +141,7 @@ function NewsletterTypes({
     return _.map(automaticEmails, (automaticEmail) => {
       const email = automaticEmail;
       return (
-        <React.Fragment key={email.slug}>
+        <Fragment key={email.slug}>
           {!filter && (
             <div className="mailpoet-newsletter-types-separator">
               <div className="mailpoet-newsletter-types-separator-line" />
@@ -158,7 +158,7 @@ function NewsletterTypes({
           />
 
           {email.slug === 'woocommerce' && getAdditionalTypes().map((type) => renderType(type), this)}
-        </React.Fragment>
+        </Fragment>
       );
     });
   };

@@ -1,5 +1,4 @@
 import range from 'lodash/range';
-import React from 'react';
 import classNames from 'classnames';
 import { ContentWrapperFix } from './content_wrapper_fix';
 

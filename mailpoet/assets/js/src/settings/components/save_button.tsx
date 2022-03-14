@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useContext, useEffect } from 'react';
 import MailPoet from 'mailpoet';
 import Button from 'common/button/button';
 import { useAction, useSelector } from 'settings/store/hooks';
@@ -29,7 +29,7 @@ const showReEngagementNotice = (action, showError, showSuccess) => {
 };
 
 export default function SaveButton() {
-  const [clicked, setClicked] = React.useState(false);
+  const [clicked, setClicked] = useState(false);
   const isSaving = useSelector('isSaving')();
   const hasError = useSelector('hasErrorFlag')();
   const error = useSelector('getSavingError')();
@@ -37,10 +37,10 @@ export default function SaveButton() {
   const reEngagementAction = useSelector('getReEngagementAction')();
   const save = useAction('saveSettings');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { notices } = React.useContext<any>(GlobalContext);
+  const { notices } = useContext<any>(GlobalContext);
   const showError = notices.error;
   const showSuccess = notices.success;
-  React.useEffect(() => {
+  useEffect(() => {
     if (clicked && !isSaving) {
       if (error) showError(error.map((err) => <p>{err}</p>), { scroll: true });
       else {

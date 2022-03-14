@@ -1,6 +1,5 @@
 import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
-import React from 'react';
 import ReactDOM from 'react-dom';
 import ListingHeadingSteps from 'newsletters/listings/heading_steps';
 import { newsletterTypesWithActivation } from 'newsletters/listings/utils';

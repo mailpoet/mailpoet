@@ -1,4 +1,3 @@
-import React from 'react';
 import Notice from 'notices/notice';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';

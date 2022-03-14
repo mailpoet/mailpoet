@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import MailPoet from 'mailpoet';
 import ReactDOMServer from 'react-dom/server';
 import satismeter from 'satismeter-loader';

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { useDispatch, useSelect } from '@wordpress/data';
 import { partial } from 'lodash';
 import BasicSettingsPanel from './basic_settings_panel';

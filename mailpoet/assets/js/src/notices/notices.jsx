@@ -1,9 +1,9 @@
-import React from 'react';
+import { useContext } from 'react';
 import { GlobalContext } from 'context/index.jsx';
 import Notice from './notice.tsx';
 
 export default () => {
-  const { notices } = React.useContext(GlobalContext);
+  const { notices } = useContext(GlobalContext);
   return notices.items.map(
     ({
       id,

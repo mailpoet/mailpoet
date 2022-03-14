@@ -1,4 +1,3 @@
-import React from 'react';
 import { find } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 

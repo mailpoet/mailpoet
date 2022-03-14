@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes, useState } from 'react';
+import { InputHTMLAttributes, useState } from 'react';
 import Checkbox from './checkbox';
 
 type CheckboxValueType = string | string[] | number;

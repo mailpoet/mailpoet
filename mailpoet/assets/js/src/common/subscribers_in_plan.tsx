@@ -1,4 +1,3 @@
-import React from 'react';
 import MailPoet from 'mailpoet';
 import HelpTooltip from 'help-tooltip.jsx';
 import ReactStringReplace from 'react-string-replace';

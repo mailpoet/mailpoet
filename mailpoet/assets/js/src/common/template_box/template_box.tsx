@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import MailPoet from 'mailpoet';
 import Heading from 'common/typography/heading/heading';
 import Button from 'common/button/button';

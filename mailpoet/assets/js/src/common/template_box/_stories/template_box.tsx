@@ -1,4 +1,3 @@
-import React from 'react';
 import MailPoet from 'mailpoet';
 import { action } from '@storybook/addon-actions';
 import TemplateBox from '../template_box';

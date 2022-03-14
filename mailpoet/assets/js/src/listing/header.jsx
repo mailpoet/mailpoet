@@ -1,10 +1,10 @@
 import MailPoet from 'mailpoet';
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Checkbox from 'common/form/checkbox/checkbox.tsx';
 import ListingColumn from './listing_column.jsx';
 
-class ListingHeader extends React.Component {
+class ListingHeader extends Component {
   constructor(props) {
     super(props);
     this.handleSelectItems = this.handleSelectItems.bind(this);

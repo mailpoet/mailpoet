@@ -1,4 +1,4 @@
-import React from 'react';
+import { createContext } from 'react';
 import useFeaturesContext from './useFeaturesContext.jsx';
 import useSegmentsContext from './useSegmentsContext.jsx';
 import useUsersContext from './useUsersContext.jsx';
@@ -19,4 +19,4 @@ export function useGlobalContextValue(data) {
   };
 }
 
-export const GlobalContext = React.createContext({});
+export const GlobalContext = createContext({});

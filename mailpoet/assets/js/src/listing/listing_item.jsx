@@ -1,11 +1,11 @@
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import Checkbox from 'common/form/checkbox/checkbox.tsx';
 
-class ListingItem extends React.Component {
+class ListingItem extends Component {
   handleSelectItem = (e) => {
     this.props.onSelectItem(
       parseInt(e.target.value, 10),

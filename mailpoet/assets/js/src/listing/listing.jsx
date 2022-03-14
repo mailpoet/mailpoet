@@ -1,5 +1,5 @@
 import jQuery from 'jquery';
-import React from 'react';
+import { Component } from 'react';
 import _ from 'underscore';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -14,7 +14,7 @@ import MailerError from 'listing/notices.jsx';
 import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context/index.jsx';
 
-class Listing extends React.Component {
+class Listing extends Component {
   constructor(props) {
     super(props);
     this.state = this.getEmptyState();

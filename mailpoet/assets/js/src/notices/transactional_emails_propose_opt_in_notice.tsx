@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Notice from 'notices/notice';
 import MailPoet from 'mailpoet';
 

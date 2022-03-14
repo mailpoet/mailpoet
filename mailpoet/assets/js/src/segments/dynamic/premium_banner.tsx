@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import MailPoet from 'mailpoet';
 import PremiumBannerWithUpgrade from 'common/premium_banner_with_upgrade/premium_banner_with_upgrade';
 import Button from 'common/button/button';

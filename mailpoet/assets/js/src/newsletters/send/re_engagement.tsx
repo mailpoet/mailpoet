@@ -1,4 +1,3 @@
-import React from 'react';
 import { assoc, find, map } from 'lodash/fp';
 
 import MailPoet from 'mailpoet';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';

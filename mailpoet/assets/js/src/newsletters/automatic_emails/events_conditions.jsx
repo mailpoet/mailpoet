@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import Background from 'common/background/background';
 import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
@@ -16,7 +16,7 @@ import jQuery from 'jquery';
 const defaultAfterTimeType = 'immediate';
 const defaultAfterTimeNumber = 1;
 
-class EventsConditions extends React.Component {
+class EventsConditions extends Component {
   static getEventOptions(event) {
     return event.options || null;
   }

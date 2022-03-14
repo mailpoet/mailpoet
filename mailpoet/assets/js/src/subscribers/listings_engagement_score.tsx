@@ -1,4 +1,3 @@
-import React from 'react';
 import Badge from '../common/listings/newsletter_stats/badge';
 import MailPoet from '../mailpoet';
 

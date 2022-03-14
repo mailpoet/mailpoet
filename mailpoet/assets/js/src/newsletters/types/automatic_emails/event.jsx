@@ -1,4 +1,4 @@
-import React from 'react';
+import { PureComponent } from 'react';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
@@ -6,7 +6,7 @@ import Badge from 'common/badge/badge';
 import Button from 'common/button/button';
 import Heading from 'common/typography/heading/heading';
 
-class AutomaticEmailEvent extends React.PureComponent {
+class AutomaticEmailEvent extends PureComponent {
   render() {
     const event = this.props.event;
     const disabled = event.soon;

@@ -1,4 +1,3 @@
-import React from 'react';
 import MailPoet from 'mailpoet';
 import { Link, useLocation } from 'react-router-dom';
 import Heading from 'common/typography/heading/heading';

@@ -1,11 +1,11 @@
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { Grid } from 'common/grid';
 import DateText from 'newsletters/send/date_text.jsx';
 import TimeSelect from 'newsletters/send/time_select.jsx';
 
-class DateTime extends React.Component {
+class DateTime extends Component {
   DATE_TIME_SEPARATOR = ' ';
 
   constructor(props) {

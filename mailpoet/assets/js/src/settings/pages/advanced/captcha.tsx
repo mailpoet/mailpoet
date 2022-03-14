@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 
 import { t, onChange } from 'common/functions';
 import Input from 'common/form/input/input';
@@ -14,7 +14,7 @@ export default function Captcha() {
   const setErrorFlag = useAction('setErrorFlag');
   const missingToken = (type === 'recaptcha' && token.trim() === '');
   const missingSecret = (type === 'recaptcha' && secret.trim() === '');
-  React.useEffect(() => {
+  useEffect(() => {
     setErrorFlag(missingToken || missingSecret);
   }, [missingSecret, missingToken, setErrorFlag]);
 

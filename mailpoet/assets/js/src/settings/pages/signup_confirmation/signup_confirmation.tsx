@@ -1,4 +1,3 @@
-import React from 'react';
 import { SaveButton } from 'settings/components';
 import EnableSignupConfirmation from './enable_signup_confirmation';
 import EmailSubject from './email_subject';

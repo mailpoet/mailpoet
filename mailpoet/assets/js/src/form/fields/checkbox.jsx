@@ -1,8 +1,8 @@
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Checkbox from 'common/form/checkbox/checkbox';
 
-class FormFieldCheckbox extends React.Component {
+class FormFieldCheckbox extends Component {
   constructor(props) {
     super(props);
     this.onValueChange = this.onValueChange.bind(this);

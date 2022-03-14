@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import Loader from 'common/loader/loader';

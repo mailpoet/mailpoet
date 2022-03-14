@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import MailPoet from 'mailpoet';
 import Button from '../../common/button/button';
 import Heading from '../../common/typography/heading/heading';

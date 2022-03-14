@@ -1,14 +1,14 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 import jQuery from 'jquery';
 import _ from 'underscore';
 import 'react-dom';
 import 'select2';
 import PropTypes from 'prop-types';
 
-class Selection extends React.Component {
+class Selection extends Component {
   constructor(props) {
     super(props);
-    this.selectRef = React.createRef();
+    this.selectRef = createRef();
   }
 
   componentDidMount() {

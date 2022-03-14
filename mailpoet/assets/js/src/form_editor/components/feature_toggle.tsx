@@ -1,4 +1,3 @@
-import React from 'react';
 import { MenuItem } from '@wordpress/components';
 
 import { check } from '@wordpress/icons';

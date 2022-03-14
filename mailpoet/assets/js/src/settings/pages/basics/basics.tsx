@@ -1,4 +1,3 @@
-import React from 'react';
 import { SaveButton } from 'settings/components';
 import { t } from 'common/functions';
 import DefaultSender from './default_sender';

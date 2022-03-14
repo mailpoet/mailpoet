@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import Select from '../../common/form/select/select';
@@ -130,7 +130,7 @@ FormFieldDateDay.propTypes = {
   ]).isRequired,
 };
 
-class FormFieldDate extends React.Component {
+class FormFieldDate extends Component {
   constructor(props) {
     super(props);
     this.state = {

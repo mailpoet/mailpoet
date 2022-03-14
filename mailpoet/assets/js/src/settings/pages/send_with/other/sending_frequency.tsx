@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import ReactStringReplace from 'react-string-replace';
 
 import { Label, Inputs } from 'settings/components';
@@ -26,7 +26,7 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
   const [frequency, setFrequency] = useSetting('mailpoet_sending_frequency');
   const [frequencyEmails, setFrequencyEmails] = useSetting('mta', 'frequency', 'emails');
   const [frequencyInterval, setFrequencyInterval] = useSetting('mta', 'frequency', 'interval');
-  React.useEffect(() => {
+  useEffect(() => {
     if (frequency === 'auto') {
       setFrequencyEmails(`${recommendedEmails}`);
       setFrequencyInterval(`${recommendedInterval}`);

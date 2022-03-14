@@ -1,4 +1,3 @@
-import React from 'react';
 import { t } from 'common/functions';
 import Button from 'common/button/button';
 import Checkbox from 'common/form/checkbox/checkbox';

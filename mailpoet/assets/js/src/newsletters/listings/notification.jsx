@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
@@ -160,7 +160,7 @@ const newsletterActions = [
   },
 ];
 
-class NewsletterListNotification extends React.Component {
+class NewsletterListNotification extends Component {
   constructor(props) {
     super(props);
     this.state = {

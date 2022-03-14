@@ -1,4 +1,3 @@
-import React from 'react';
 import { Location } from 'history';
 import MailPoet from 'mailpoet';
 import HideScreenOptions from '../../common/hide_screen_options/hide_screen_options';

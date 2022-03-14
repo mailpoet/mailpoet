@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect, memo } from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -27,13 +27,13 @@ const messages = {
 };
 
 function SendingStatus(props) {
-  const [newsletter, setNewsletter] = React.useState({
+  const [newsletter, setNewsletter] = useState({
     id: props.match.params.id,
     subject: '',
     sent: false,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletters',
@@ -82,7 +82,7 @@ const onRenderItem = (item) => (
   </div>
 );
 
-const SendingStatusListing = React.memo(({ location, params }) => (
+const SendingStatusListing = memo(({ location, params }) => (
   <Listing
     limit={window.mailpoet_listing_per_page}
     location={location}

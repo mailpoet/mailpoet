@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import * as React from 'react';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import Hooks from 'wp-js-hooks';

@@ -1,4 +1,3 @@
-import React from 'react';
 import MailPoet from 'mailpoet';
 import { useSelector } from 'settings/store/hooks';
 import { MssStatus } from 'settings/store/types';

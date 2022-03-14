@@ -1,38 +1,38 @@
-import React from 'react';
+import { useState, useCallback } from 'react';
 
 export default () => {
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     items: [],
     nextId: 1,
   });
 
-  const add = React.useCallback((item) => {
+  const add = useCallback((item) => {
     setState(({ items, nextId }) => ({
       items: [...items, { ...item, id: item.id || nextId }],
       nextId: item.id ? nextId : nextId + 1,
     }));
   }, [setState]);
 
-  const remove = React.useCallback((id) => {
+  const remove = useCallback((id) => {
     setState(({ items, nextId }) => ({
       items: items.filter((x) => x.id !== id),
       nextId,
     }));
   }, [setState]);
 
-  const success = React.useCallback(
+  const success = useCallback(
     (content, props = {}) => add({ ...props, type: 'success', children: content }),
     [add]
   );
-  const info = React.useCallback(
+  const info = useCallback(
     (content, props = {}) => add({ ...props, type: 'info', children: content }),
     [add]
   );
-  const warning = React.useCallback(
+  const warning = useCallback(
     (content, props = {}) => add({ ...props, type: 'warning', children: content }),
     [add]
   );
-  const error = React.useCallback(
+  const error = useCallback(
     (content, props = {}) => add({ ...props, type: 'error', children: content }),
     [add]
   );

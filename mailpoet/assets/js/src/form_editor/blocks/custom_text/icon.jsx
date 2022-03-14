@@ -1,4 +1,3 @@
-import React from 'react';
 import { Path, Rect, SVG } from '@wordpress/components';
 
 export default (

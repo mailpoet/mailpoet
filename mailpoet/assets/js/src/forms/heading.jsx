@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import MailPoet from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
 import Button from 'common/button/button';

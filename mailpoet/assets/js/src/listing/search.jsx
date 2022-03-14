@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
@@ -23,7 +23,7 @@ import icon from './assets/search_icon.tsx';
  *   setSearch(props.search)
  *  }, [props.search]);
  */
-class ListingSearch extends React.Component {
+class ListingSearch extends Component {
   constructor(props) {
     super(props);
     this.state = {

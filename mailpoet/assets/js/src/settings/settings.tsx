@@ -1,4 +1,3 @@
-import React from 'react';
 import MailPoet from 'mailpoet';
 import Notices from 'notices/notices.jsx';
 import Loading from 'common/loading';

@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 
 import MSSUserSuccess from './success_for_mss_users.jsx';

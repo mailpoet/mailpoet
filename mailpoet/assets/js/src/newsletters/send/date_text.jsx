@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import Datepicker from 'common/datepicker/datepicker.tsx';
@@ -82,7 +82,7 @@ locale.options.weekStartsOn = typeof MailPoet.wpWeekStartsOn !== 'undefined'
 
 registerLocale('mailpoet', locale);
 
-class DateText extends React.Component {
+class DateText extends Component {
   onChange = (value, event) => {
     const changeEvent = event;
     // Swap display format to storage format

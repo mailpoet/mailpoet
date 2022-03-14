@@ -1,4 +1,3 @@
-import React from 'react';
 import Input from '../input';
 import Heading from '../../../typography/heading/heading';
 import icon from './assets/icon';

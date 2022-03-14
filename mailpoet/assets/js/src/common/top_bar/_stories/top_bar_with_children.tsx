@@ -1,4 +1,3 @@
-import React from 'react';
 import { action } from '_storybook/action';
 import { TopBar } from '../top_bar';
 import Button from '../../button/button';

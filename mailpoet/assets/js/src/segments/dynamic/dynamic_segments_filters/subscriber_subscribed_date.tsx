@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { isValid, parseISO } from 'date-fns';
 import { useSelect, useDispatch } from '@wordpress/data';
 

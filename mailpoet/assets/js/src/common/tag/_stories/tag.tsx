@@ -1,4 +1,3 @@
-import React from 'react';
 import Heading from 'common/typography/heading/heading';
 import Tag from '../tag';
 

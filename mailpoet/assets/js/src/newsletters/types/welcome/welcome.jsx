@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
@@ -17,7 +17,7 @@ const field = {
   component: WelcomeScheduling,
 };
 
-class NewsletterWelcome extends React.Component {
+class NewsletterWelcome extends Component {
   constructor(props) {
     super(props);
     let availableSegments = window.mailpoet_segments || [];

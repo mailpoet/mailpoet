@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import MailPoet from 'mailpoet';
 import Select from 'common/form/select/select';
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Place } from 'react-tooltip';
 import Tag from '../../tag/tag';
 import Tooltip from '../../tooltip/tooltip';

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import MailPoet from 'mailpoet';
 import { Button } from '@wordpress/components';
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import { withFeatureAnnouncement } from './with_feature_announcement';

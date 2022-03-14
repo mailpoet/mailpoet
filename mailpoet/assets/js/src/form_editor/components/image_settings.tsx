@@ -1,4 +1,3 @@
-import React from 'react';
 import { MediaUpload } from '@wordpress/block-editor';
 import MailPoet from 'mailpoet';
 import { Button, BaseControl, SelectControl } from '@wordpress/components';

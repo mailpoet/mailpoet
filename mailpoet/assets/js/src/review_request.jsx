@@ -1,6 +1,5 @@
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 function ReviewRequest(props) {
   const days = props.installedDaysAgo;

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import { t } from 'common/functions';
 import Input from 'common/form/input/input';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
@@ -10,7 +10,7 @@ type Props = {
 }
 
 export default function Shortcode({ name, title, description }: Props) {
-  const [segments, setSegments] = React.useState([]);
+  const [segments, setSegments] = useState([]);
   const shortcode = `[${name}${segments.length ? ` segments="${segments.join(',')}"` : ''}]`;
   const selectText = (event) => {
     event.target.focus();

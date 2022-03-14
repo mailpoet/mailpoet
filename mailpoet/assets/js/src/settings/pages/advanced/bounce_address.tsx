@@ -1,4 +1,3 @@
-import React from 'react';
 import { t, onChange, setLowercaseValue } from 'common/functions';
 import Input from 'common/form/input/input';
 import { useSetting } from 'settings/store/hooks';
