@@ -97,6 +97,7 @@ class Subscriber {
    * @return $this
    */
   public function withSegments(array $segments) {
+    $this->segments = [];
     foreach ($segments as $segment) {
       $this->segments[$segment->getId()] = $segment;
     }
