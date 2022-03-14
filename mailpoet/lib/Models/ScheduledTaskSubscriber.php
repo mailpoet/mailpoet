@@ -2,6 +2,7 @@
 
 namespace MailPoet\Models;
 
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -13,8 +14,8 @@ use MailPoet\WP\Functions as WPFunctions;
  * @property string $error
  */
 class ScheduledTaskSubscriber extends Model {
-  const STATUS_UNPROCESSED = 0;
-  const STATUS_PROCESSED = 1;
+  const STATUS_UNPROCESSED = ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED;
+  const STATUS_PROCESSED = ScheduledTaskSubscriberEntity::STATUS_PROCESSED;
 
   const FAIL_STATUS_OK = 0;
   const FAIL_STATUS_FAILED = 1;

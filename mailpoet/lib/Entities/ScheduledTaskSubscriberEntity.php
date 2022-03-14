@@ -12,6 +12,9 @@ use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="scheduled_task_subscribers")
  */
 class ScheduledTaskSubscriberEntity {
+  const STATUS_UNPROCESSED = 0;
+  const STATUS_PROCESSED = 1;
+
   use CreatedAtTrait;
   use UpdatedAtTrait;
   use SafeToOneAssociationLoadTrait;
