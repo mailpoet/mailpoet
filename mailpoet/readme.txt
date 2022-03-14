@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.9
-Stable tag: 3.84.0
+Stable tag: 3.84.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -203,6 +203,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.84.1 - 2022-03-14 =
+* Added: more engagement checks before marking subscriber as inactive;
+* Fixed: when scheduling an email, button says "Send" instead of "Schedule".
 
 = 3.84.0 - 2022-03-08 =
 * Improved: more robust segment subscribers count calculation in segment form;
