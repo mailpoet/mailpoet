@@ -87,7 +87,7 @@ class WooCommerceDynamicSegmentsCest {
 
     // run action scheduler to sync customer and order data to lookup tables
     $i->wait(2);
-    $i->cli(['action-scheduler', 'run']);
+    $i->cli(['action-scheduler', 'run', '--force']);
 
     $i->wantTo('Check subscriber is in category segment');
     $i->amOnMailpoetPage('Lists');
@@ -121,7 +121,7 @@ class WooCommerceDynamicSegmentsCest {
 
     // run action scheduler to sync customer and order data to lookup tables
     $i->wait(2);
-    $i->cli(['action-scheduler', 'run']);
+    $i->cli(['action-scheduler', 'run', '--force']);
 
     $i->wantTo('Check subscriber is in category segment');
     $i->amOnMailpoetPage('Lists');
@@ -153,7 +153,7 @@ class WooCommerceDynamicSegmentsCest {
 
     // run action scheduler to sync customer and order data to lookup tables
     $i->wait(2);
-    $i->cli(['action-scheduler', 'run']);
+    $i->cli(['action-scheduler', 'run', '--force']);
 
     $i->wantTo('Check there is one subscriber in the number of orders segments (the segment was configured to match customers that placed one order in the last day)');
     $i->amOnMailpoetPage('Lists');
@@ -178,7 +178,7 @@ class WooCommerceDynamicSegmentsCest {
 
     // run action scheduler to sync customer and order data to lookup tables
     $i->wait(2);
-    $i->cli(['action-scheduler', 'run']);
+    $i->cli(['action-scheduler', 'run', '--force']);
 
     $i->wantTo('Check that there is one subscriber in the total spent segment');
     $i->amOnMailpoetPage('Lists');
@@ -203,7 +203,7 @@ class WooCommerceDynamicSegmentsCest {
 
     // run action scheduler to sync customer and order data to lookup tables
     $i->wait(2);
-    $i->cli(['action-scheduler', 'run']);
+    $i->cli(['action-scheduler', 'run', '--force']);
 
     $i->wantTo('Check that there is one subscriber in customer country segment');
     $i->amOnMailpoetPage('Lists');
