@@ -2,10 +2,10 @@
 
 namespace MailPoet\Segments;
 
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Subscriber;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -94,7 +94,7 @@ class SubscribersFinder {
        AND relation.`segment_id` IN (' . join(',', array_map('intval', $segmentIds)) . ')',
       [
         $task->id,
-        ScheduledTaskSubscriber::STATUS_UNPROCESSED,
+        ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
         Subscriber::STATUS_SUBSCRIBED,
         Subscriber::STATUS_SUBSCRIBED,
       ]
@@ -136,7 +136,7 @@ class SubscribersFinder {
        AND subscribers.`id` IN (' . join(',', array_map('intval', $subscriberIds)) . ')',
       [
         $task->id,
-        ScheduledTaskSubscriber::STATUS_UNPROCESSED,
+        ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
         Subscriber::STATUS_SUBSCRIBED,
       ]
     );
