@@ -15,17 +15,22 @@ class SubscribersFinder {
   /** @var SegmentSubscribersRepository  */
   private $segmentSubscriberRepository;
 
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   public function __construct(
-    SegmentSubscribersRepository $segmentSubscriberRepository
+    SegmentSubscribersRepository $segmentSubscriberRepository,
+    SegmentsRepository $segmentsRepository
   ) {
     $this->segmentSubscriberRepository = $segmentSubscriberRepository;
+    $this->segmentsRepository = $segmentsRepository;
   }
 
   public function findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds) {
     $result = [];
     foreach ($newsletterSegmentsIds as $segmentId) {
-      $segment = Segment::findOne($segmentId);
-      if (!$segment instanceof Segment) {
+      $segment = $this->segmentsRepository->findOneById($segmentId);
+      if (!$segment instanceof SegmentEntity) {
         continue; // skip deleted segments
       }
       $result = array_merge($result, $this->findSubscribersInSegment($segment, $subscribersToProcessIds));
@@ -33,9 +38,9 @@ class SubscribersFinder {
     return $this->unique($result);
   }
 
-  private function findSubscribersInSegment(Segment $segment, $subscribersToProcessIds): array {
+  private function findSubscribersInSegment(SegmentEntity $segment, $subscribersToProcessIds): array {
     try {
-      return $this->segmentSubscriberRepository->findSubscribersIdsInSegment((int)$segment->id, $subscribersToProcessIds);
+      return $this->segmentSubscriberRepository->findSubscribersIdsInSegment((int)$segment->getId(), $subscribersToProcessIds);
     } catch (InvalidStateException $e) {
       return [];
     }
