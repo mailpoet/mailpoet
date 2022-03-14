@@ -1,6 +1,6 @@
 import MailPoet from 'mailpoet';
 import { select } from '@wordpress/data';
-import { STORE_NAME } from '.';
+import { STORE_NAME } from './store_name';
 
 export { default as CALL_API } from 'common/controls/call_api';
 

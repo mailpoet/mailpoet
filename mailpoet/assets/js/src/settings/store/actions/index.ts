@@ -1,4 +1,5 @@
 export * from './settings';
+export * from './key_activation';
 export * from './mss_and_premium';
 export { default as reinstall } from './reinstall';
 export { recalculateSubscribersScore } from './recalculate_subscribers_score';

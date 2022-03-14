@@ -1,16 +1,11 @@
 import { select } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';
-import { STORE_NAME } from 'settings/store';
 
-import {
-  Action, KeyActivationState, MssStatus, PremiumStatus,
-} from 'settings/store/types';
+import { STORE_NAME } from 'settings/store/store_name';
+import { KeyActivationState, MssStatus, PremiumStatus } from 'settings/store/types';
+import { updateKeyActivationState } from './key_activation';
 import { setSettings, setSetting } from './settings';
-
-export function updateKeyActivationState(fields: Partial<KeyActivationState>): Action {
-  return { type: 'UPDATE_KEY_ACTIVATION_STATE', fields };
-}
 
 export function* verifyMssKey(key: string) {
   const { success, error, res } = yield {
