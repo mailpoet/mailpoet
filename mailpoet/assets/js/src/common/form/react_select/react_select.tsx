@@ -11,13 +11,13 @@ export type Props = ReactSelectProps & {
   automationId?: string;
 };
 
-type LabelRenderer = {
+type LabelRendererProps = {
   label: React.ReactNode;
   count?: React.ReactNode;
   tag?: React.ReactNode;
 };
 
-function LabelRenderer(data: LabelRenderer) {
+function LabelRenderer(data: LabelRendererProps) {
   return (
     <div className="mailpoet-form-react-select-option">
       {data.tag && <span className="mailpoet-form-react-select-tag">{data.tag}</span>}
@@ -70,12 +70,12 @@ function SingleValue(props: any) {
       })
     }
     >
-      {LabelRenderer(props.data as LabelRenderer)}
+      {LabelRenderer(props.data as LabelRendererProps)}
     </div>
   );
 }
 
-type MultiValueLabel = {
+type MultiValueLabelProps = {
   data: {
     style: CSSProperties;
     label: React.ReactNode;
@@ -86,7 +86,7 @@ type MultiValueLabel = {
   innerProps: object;
 };
 
-function MultiValueLabel(props: MultiValueLabel) {
+function MultiValueLabel(props: MultiValueLabelProps) {
   return (
     <div
       {...props.innerProps}

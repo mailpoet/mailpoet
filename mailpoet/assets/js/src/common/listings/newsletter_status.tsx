@@ -6,6 +6,38 @@ import {
 import t from 'common/functions/t';
 import Tooltip from '../tooltip/tooltip';
 
+type CircularProgressProps = {
+  percentage: number;
+};
+
+function CircularProgress({ percentage }: CircularProgressProps) {
+  const perimeter = 16 * Math.PI;
+  const filled = perimeter * (percentage / 100);
+  const empty = perimeter - filled;
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8" className="mailpoet-listing-status-percentage-background" />
+      <circle
+        r="8"
+        cx="12"
+        cy="12"
+        fill="none"
+        strokeDashoffset={perimeter / 4}
+        strokeDasharray={`${filled} ${empty}`}
+        className="mailpoet-listing-status-percentage"
+      />
+    </svg>
+  );
+}
+
+export function ScheduledIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <path className="mailpoet-listing-status-scheduled-icon" strokeLinecap="round" d="M12 7L12 12 15 15" />
+    </svg>
+  );
+}
+
 type NewsletterStatusProps = {
   scheduledFor?: Date;
   processed?: number;
@@ -92,38 +124,6 @@ function NewsletterStatus({
       <CircularProgress percentage={percentage} />
       <div className="mailpoet-listing-status-label">{label}</div>
     </div>
-  );
-}
-
-type CircularProgressProps = {
-  percentage: number;
-};
-
-function CircularProgress({ percentage }: CircularProgressProps) {
-  const perimeter = 16 * Math.PI;
-  const filled = perimeter * (percentage / 100);
-  const empty = perimeter - filled;
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="8" className="mailpoet-listing-status-percentage-background" />
-      <circle
-        r="8"
-        cx="12"
-        cy="12"
-        fill="none"
-        strokeDashoffset={perimeter / 4}
-        strokeDasharray={`${filled} ${empty}`}
-        className="mailpoet-listing-status-percentage"
-      />
-    </svg>
-  );
-}
-
-export function ScheduledIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-      <path className="mailpoet-listing-status-scheduled-icon" strokeLinecap="round" d="M12 7L12 12 15 15" />
-    </svg>
   );
 }
 

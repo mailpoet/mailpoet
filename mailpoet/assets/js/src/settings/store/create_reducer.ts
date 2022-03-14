@@ -7,7 +7,7 @@ import normalizeSettings from './normalize_settings';
 export default function createReducer(defaultValue: State) {
   let keyActivation: KeyActivationState;
   return (
-    state: State = defaultValue, // eslint-disable-line default-param-last
+    state: State = defaultValue, // eslint-disable-line @typescript-eslint/default-param-last
     action: Action,
   ): State => {
     switch (action.type) {
