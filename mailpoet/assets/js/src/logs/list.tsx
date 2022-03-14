@@ -8,14 +8,14 @@ import { Button } from '../common';
 import Input from '../common/form/input/input';
 import icon from '../listing/assets/search_icon';
 
-type Log = {
+type LogData = {
   id: number;
   name: string;
   message: string;
   created_at: string;
 };
 
-export type Logs = Log[];
+export type Logs = LogData[];
 
 function isCtrl(event: { ctrlKey ?:boolean, metaKey ?:boolean, altKey ?:boolean }): boolean {
   return (event.ctrlKey || event.metaKey) && !event.altKey; // shiftKey allowed
@@ -36,7 +36,7 @@ function Message({ message, editing }: MessageProps):JSX.Element {
 }
 
 type LogProps = {
-  log: Log;
+  log: LogData;
 };
 
 function Log({ log }: LogProps) : JSX.Element {

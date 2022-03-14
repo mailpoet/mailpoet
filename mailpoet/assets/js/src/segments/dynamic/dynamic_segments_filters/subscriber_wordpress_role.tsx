@@ -80,9 +80,9 @@ export function WordpressRoleFields({ filterIndex }:Props) : JSX.Element {
               options,
             )
           }
-          onChange={(options: SelectOption[]): void => {
+          onChange={(selectOptions: SelectOption[]): void => {
             updateSegmentFilter(
-              { wordpressRole: map('value', options) },
+              { wordpressRole: map('value', selectOptions) },
               filterIndex,
             );
           }}

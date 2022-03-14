@@ -1,7 +1,7 @@
 import Selection from 'form/fields/selection.jsx';
 import _ from 'underscore';
 
-type EventOptions = {
+type EventOptionData = {
   values?: {
     id: string;
     name: string;
@@ -12,13 +12,13 @@ type EventOptions = {
 };
 
 type Props = {
-  eventOptions: EventOptions;
+  eventOptions: EventOptionData;
   eventSlug: string;
   selected: string[];
   onValueChange: (value) => void;
 };
 
-function getEventOptionsValues(eventOptions: EventOptions) {
+function getEventOptionsValues(eventOptions: EventOptionData) {
   const values = (eventOptions && eventOptions.values) ? eventOptions.values : [];
 
   return (values) ? values.map((value) => ({

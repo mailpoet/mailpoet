@@ -93,9 +93,9 @@ export function SubscribedToList({ filterIndex }:Props) : JSX.Element {
               options,
             )
           }
-          onChange={(options: SelectOption[]): void => {
+          onChange={(selectOptions: SelectOption[]): void => {
             updateSegmentFilter(
-              { segments: map('value', options) },
+              { segments: map('value', selectOptions) },
               filterIndex,
             );
           }}
