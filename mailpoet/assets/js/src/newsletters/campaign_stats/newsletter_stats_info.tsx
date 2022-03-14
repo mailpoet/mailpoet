@@ -7,7 +7,7 @@ import { NewsletterType } from './newsletter_type';
 
 type Props = {
   newsletter: NewsletterType;
-}
+};
 
 export function NewsletterStatsInfo({
   newsletter,

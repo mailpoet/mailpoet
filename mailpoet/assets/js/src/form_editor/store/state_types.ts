@@ -1,4 +1,4 @@
 export type BlockInsertionPoint = {
-  rootClientId: string|undefined;
-  insertionIndex: number|undefined;
-}
+  rootClientId: string | undefined;
+  insertionIndex: number | undefined;
+};

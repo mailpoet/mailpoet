@@ -17,7 +17,7 @@ export default function UnsubscribePage() {
               ReactStringReplace(
                 t('unsubscribeDescription1'),
                 '[mailpoet_page]',
-                () => <code key="mp">[mailpoet_page]</code>
+                () => <code key="mp">[mailpoet_page]</code>,
               )
             }
             {' '}
@@ -36,7 +36,7 @@ export default function UnsubscribePage() {
                   >
                     {text}
                   </a>
-                )
+                ),
               )
             }
           </>

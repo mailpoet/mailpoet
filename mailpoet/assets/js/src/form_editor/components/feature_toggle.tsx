@@ -5,9 +5,9 @@ import { check } from '@wordpress/icons';
 type Props = {
   isActive: boolean;
   label: string;
-  info: string|undefined;
+  info: string | undefined;
   onToggle: () => void;
-}
+};
 
 function FeatureToggle({
   isActive,

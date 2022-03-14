@@ -1,8 +1,8 @@
 import { ChangeEvent } from 'react';
 
-type Setter = (value: string) => void
+type Setter = (value: string) => void;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Event = ChangeEvent<any>
+type Event = ChangeEvent<any>;
 
 export function onChange(setter: Setter) {
   return (e: Event) => setter(e.target.value as string);

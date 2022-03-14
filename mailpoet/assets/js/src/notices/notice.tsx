@@ -75,7 +75,7 @@ function Notice({
 
   return ReactDOM.createPortal(
     content,
-    document.getElementById('mailpoet_notices')
+    document.getElementById('mailpoet_notices'),
   );
 }
 Notice.defaultProps = {

@@ -8,7 +8,7 @@ type Props = {
   placeholder?: string;
   setValue: (x: string[]) => void;
   segmentsSelector?: 'getDefaultSegments' | 'getSegments';
-}
+};
 
 export default function SegmentsSelect(props: Props) {
   const selector = props.segmentsSelector ? props.segmentsSelector : 'getDefaultSegments';
@@ -27,7 +27,7 @@ export default function SegmentsSelect(props: Props) {
       id={props.id}
       placeholder={props.placeholder}
       options={segments}
-      onChange={(selectedValues: {value:string}[]) => {
+      onChange={(selectedValues: { value:string }[]) => {
         props.setValue((selectedValues || []).map((x) => x.value));
       }}
     />

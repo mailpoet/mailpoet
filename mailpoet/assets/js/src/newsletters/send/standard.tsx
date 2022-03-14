@@ -25,7 +25,7 @@ type StandardSchedulingProps = {
     },
   }) => void;
   field: Field
-}
+};
 
 class StandardScheduling extends Component<StandardSchedulingProps> {
   getCurrentValue = () => {

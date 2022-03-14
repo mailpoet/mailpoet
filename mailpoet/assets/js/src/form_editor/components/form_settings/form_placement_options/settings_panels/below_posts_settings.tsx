@@ -8,7 +8,7 @@ import PlacementSettings from './placement_settings';
 function BelowPostsSettings() : JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
-    []
+    [],
   );
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 

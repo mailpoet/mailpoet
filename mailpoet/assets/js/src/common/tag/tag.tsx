@@ -8,7 +8,7 @@ type Props = {
   isInverted?: boolean;
   className?: string;
   data?: string;
-}
+};
 
 function Tag({
   children,
@@ -29,7 +29,7 @@ function Tag({
           [`mailpoet-tag-${variant}`]: variant,
           [`mailpoet-tag-${dimension}`]: dimension,
           'mailpoet-tag-inverted': isInverted,
-        }
+        },
       )
     }
     >

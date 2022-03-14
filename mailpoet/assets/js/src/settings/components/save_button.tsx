@@ -22,7 +22,7 @@ const showReEngagementNotice = (action, showError, showSuccess) => {
         >
           {match}
         </a>
-      )
+      ),
     );
     showSuccess(<p>{reEngagementReactivatedNotice}</p>, { scroll: true });
   }

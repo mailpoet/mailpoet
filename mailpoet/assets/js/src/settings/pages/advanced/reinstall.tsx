@@ -12,7 +12,7 @@ export default function Reinstall() {
   const { notices } = useContext<any>(GlobalContext);
   const onClick = async () => {
     if (window.confirm(t('reinstallConfirmation'))) { // eslint-disable-line
-      type Result = { type: 'SAVE_FAILED' | 'SAVE_DONE'; error?: string[] }
+      type Result = { type: 'SAVE_FAILED' | 'SAVE_DONE'; error?: string[] };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const action = (await reinstall()) as any as Result;
       if (action.type === 'SAVE_FAILED') {

@@ -20,7 +20,7 @@ function RouterAwareTabs(props: TabProps & {
   const history = useHistory();
 
   const activeKey = Object.keys(props.keyPathMap).find(
-    (key) => props.keyPathMap[key] === match.path
+    (key) => props.keyPathMap[key] === match.path,
   );
 
   return (

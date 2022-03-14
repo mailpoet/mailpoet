@@ -79,31 +79,31 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: WooCommerceFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
 
   const productCategories: WindowProductCategories = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getProductCategories(),
-    []
+    [],
   );
   const woocommerceCountries: WindowWooCommerceCountries = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getWooCommerceCountries(),
-    []
+    [],
   );
   const products: WindowProducts = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getProducts(),
-    []
+    [],
   );
   const wooCurrencySymbol: string = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getWooCommerceCurrencySymbol(),
-    []
+    [],
   );
   const productOptions = products.map((product) => ({
     value: product.id,
@@ -161,7 +161,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
             value={segment.operator}
             onChange={(e): void => updateSegmentFilter(
               { operator: e.target.value },
-              filterIndex
+              filterIndex,
             )}
             automationId="select-operator"
           >
@@ -185,11 +185,11 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
                 }
                 return segment.product_ids.indexOf(productOption.value) !== -1;
               },
-              productOptions
+              productOptions,
             )}
             onChange={(options: SelectOption[]): void => updateSegmentFilter(
               { product_ids: (options || []).map((x: SelectOption) => x.value) },
-              filterIndex
+              filterIndex,
             )}
             automationId="select-segment-products"
           />
@@ -205,7 +205,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
             value={segment.operator}
             onChange={(e): void => updateSegmentFilter(
               { operator: e.target.value },
-              filterIndex
+              filterIndex,
             )}
             automationId="select-operator"
           >
@@ -229,11 +229,11 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
                 }
                 return segment.category_ids.indexOf(categoryOption.value) !== -1;
               },
-              categoryOptions
+              categoryOptions,
             )}
             onChange={(options: SelectOption[]): void => updateSegmentFilter(
               { category_ids: (options || []).map((x: SelectOption) => x.value) },
-              filterIndex
+              filterIndex,
             )}
             automationId="select-segment-category"
           />
@@ -340,7 +340,7 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
             value={segment.operator}
             onChange={(e): void => updateSegmentFilter(
               { operator: e.target.value },
-              filterIndex
+              filterIndex,
             )}
             automationId="select-operator-country"
           >
@@ -362,12 +362,12 @@ export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex 
                   if (!segment.country_code) return undefined;
                   return segment.country_code.indexOf(option.value) !== -1;
                 },
-                countryOptions
+                countryOptions,
               )
             }
             onChange={(options: SelectOption[]): void => updateSegmentFilter(
               { country_code: (options || []).map((x: SelectOption) => x.value) },
-              filterIndex
+              filterIndex,
             )}
             automationId="select-segment-country"
           />

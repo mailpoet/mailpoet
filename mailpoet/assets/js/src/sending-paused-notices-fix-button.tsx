@@ -53,6 +53,6 @@ if (container) {
       }
     }}
     />,
-    container
+    container,
   );
 }

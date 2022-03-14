@@ -24,7 +24,7 @@ export const WooCommerceSubscriptionOptions = [
 ];
 
 export function validateWooCommerceSubscription(
-  formItem: WooCommerceSubscriptionFormItem
+  formItem: WooCommerceSubscriptionFormItem,
 ): boolean {
   const isIncomplete = !formItem.product_ids || !formItem.product_ids.length || !formItem.operator;
   if (
@@ -38,19 +38,19 @@ export function validateWooCommerceSubscription(
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function WooCommerceSubscriptionFields({ filterIndex }:Props) : JSX.Element {
   const segment: WooCommerceSubscriptionFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
 
   const subscriptionProducts: WindowSubscriptionProducts = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSubscriptionProducts(),
-    []
+    [],
   );
   const productOptions = subscriptionProducts.map((product) => ({
     value: product.id,
@@ -77,7 +77,7 @@ export function WooCommerceSubscriptionFields({ filterIndex }:Props) : JSX.Eleme
           onChange={(e) => updateSegmentFilterFromEvent(
             'operator',
             filterIndex,
-            e
+            e,
           )}
           automationId="select-operator"
         >
@@ -99,11 +99,11 @@ export function WooCommerceSubscriptionFields({ filterIndex }:Props) : JSX.Eleme
               if (!segment.product_ids) return false;
               return segment.product_ids.indexOf(option.value) !== -1;
             },
-            productOptions
+            productOptions,
           )}
           onChange={(options: SelectOption[]): void => updateSegmentFilter(
             { product_ids: (options || []).map((x: SelectOption) => x.value) },
-            filterIndex
+            filterIndex,
           )}
           automationId="select-segment-products"
         />

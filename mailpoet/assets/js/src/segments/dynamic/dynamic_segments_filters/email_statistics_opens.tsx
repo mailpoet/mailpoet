@@ -16,19 +16,19 @@ import {
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function EmailOpenStatisticsFields({ filterIndex }:Props) : JSX.Element {
   const segment: EmailFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
 
   const newslettersList: WindowNewslettersList = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getNewslettersList(),
-    []
+    [],
   );
 
   const newsletterOptions = newslettersList?.map((newsletter) => {
@@ -91,13 +91,13 @@ export function EmailOpenStatisticsFields({ filterIndex }:Props) : JSX.Element {
                 const newsletterId = option.value;
                 return segment.newsletters.indexOf(newsletterId) !== -1;
               },
-              newsletterOptions
+              newsletterOptions,
             )
           }
           onChange={(options: SelectOption[]): void => {
             updateSegmentFilter(
               { newsletters: map('value', options) },
-              filterIndex
+              filterIndex,
             );
           }}
         />

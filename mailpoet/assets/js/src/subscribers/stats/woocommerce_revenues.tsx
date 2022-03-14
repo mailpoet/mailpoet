@@ -2,10 +2,10 @@ export type PropTypes = {
   count: number;
   revenueValue: string;
   averageRevenueValue: string;
-}
+};
 
 export default function WoocommerceRevenues(
-  { revenueValue, count, averageRevenueValue }: PropTypes
+  { revenueValue, count, averageRevenueValue }: PropTypes,
 ): JSX.Element {
   return (
     <div className="mailpoet-tab-content mailpoet-subscriber-stats-summary">

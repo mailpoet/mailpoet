@@ -30,16 +30,16 @@ export function validateSubscribedToList(formItems: WordpressRoleFormItem): bool
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function SubscribedToList({ filterIndex }:Props) : JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
   const staticSegmentsList: StaticSegment[] = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getStaticSegmentsList(),
-    []
+    [],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
@@ -90,13 +90,13 @@ export function SubscribedToList({ filterIndex }:Props) : JSX.Element {
                 const segmentId = option.value;
                 return segment.segments.indexOf(segmentId) !== -1;
               },
-              options
+              options,
             )
           }
           onChange={(options: SelectOption[]): void => {
             updateSegmentFilter(
               { segments: map('value', options) },
-              filterIndex
+              filterIndex,
             );
           }}
         />

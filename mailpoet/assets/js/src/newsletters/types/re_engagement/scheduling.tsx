@@ -71,7 +71,7 @@ export function Scheduling({
                   >
                     {match}
                   </a>
-                )
+                ),
               )
             }
           </p>

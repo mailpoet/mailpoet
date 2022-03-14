@@ -5,7 +5,7 @@ import { Button } from '@wordpress/components';
 type Props = {
   closeSidebar: () => void;
   children: React.ReactNode;
-}
+};
 
 function SidebarHeader({ children, closeSidebar }: Props) : JSX.Element {
   return (

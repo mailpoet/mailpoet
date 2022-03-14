@@ -5,7 +5,7 @@ import { LocationState } from 'subscribers/location_state';
 
 export type PropTypes = {
   email: string;
-}
+};
 
 export default function StatsHeading({ email }: PropTypes): JSX.Element {
   const location = useLocation();

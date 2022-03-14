@@ -9,7 +9,7 @@ import { useShortcut } from '@wordpress/keyboard-shortcuts';
 function HistoryUndo(props: Record<string, unknown>): JSX.Element {
   const hasUndo = useSelect(
     (select) => select('mailpoet-form-editor').hasEditorUndo(),
-    []
+    [],
   );
   const { historyUndo } = useDispatch('mailpoet-form-editor');
   const { registerShortcut } = useDispatch('core/keyboard-shortcuts');

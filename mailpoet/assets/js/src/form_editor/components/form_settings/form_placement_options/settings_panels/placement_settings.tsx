@@ -13,35 +13,35 @@ import Selection from '../../selection';
 
 type Props = {
   settingsPlacementKey: string;
-}
+};
 
 function PlacementSettings({ settingsPlacementKey }: Props) : JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
-    []
+    [],
   );
   const tags = useSelect((select) => sortBy(
     'name',
     select('mailpoet-form-editor').getAllWPTags()
-      .concat(select('mailpoet-form-editor').getAllWooCommerceTags())
+      .concat(select('mailpoet-form-editor').getAllWooCommerceTags()),
   ), []);
   const categories = useSelect((select) => sortBy(
     'name',
     select('mailpoet-form-editor').getAllWPCategories()
-      .concat(select('mailpoet-form-editor').getAllWooCommerceCategories())
+      .concat(select('mailpoet-form-editor').getAllWooCommerceCategories()),
   ), []);
   const pages = useSelect(
     (select) => select('mailpoet-form-editor').getAllWPPages(),
-    []
+    [],
   );
   const posts = useSelect((select) => sortBy(
     'name',
     select('mailpoet-form-editor').getAllWPPosts()
-      .concat(select('mailpoet-form-editor').getAllWooCommerceProducts())
+      .concat(select('mailpoet-form-editor').getAllWooCommerceProducts()),
   ), []);
   const isPreviewShown = useSelect(
     (select) => select('mailpoet-form-editor').getIsPreviewShown(),
-    []
+    [],
   );
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 

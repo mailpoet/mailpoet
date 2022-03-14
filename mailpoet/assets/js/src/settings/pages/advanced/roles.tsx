@@ -30,7 +30,7 @@ export default function Roles() {
                 >
                   {text}
                 </a>
-              )
+              ),
             )}
         </p>
       </Inputs>

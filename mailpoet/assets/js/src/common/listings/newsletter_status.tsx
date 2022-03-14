@@ -12,7 +12,7 @@ type NewsletterStatusProps = {
   total?: number;
   isPaused?: boolean;
   status?: string;
-}
+};
 
 function NewsletterStatus({
   scheduledFor,
@@ -27,7 +27,7 @@ function NewsletterStatus({
   const sent = (!scheduledFor || isPast(scheduledFor)) && processed >= total;
   const sentWithoutQueue = status === 'sent' && total === undefined;
   let percentage = 0;
-  let label : string|JSX.Element = t('notSentYet');
+  let label : string | JSX.Element = t('notSentYet');
   if (scheduled) {
     const scheduledDate = MailPoet.Date.short(scheduledFor);
     const scheduledTime = MailPoet.Date.time(scheduledFor);
@@ -97,7 +97,7 @@ function NewsletterStatus({
 
 type CircularProgressProps = {
   percentage: number;
-}
+};
 
 function CircularProgress({ percentage }: CircularProgressProps) {
   const perimeter = 16 * Math.PI;

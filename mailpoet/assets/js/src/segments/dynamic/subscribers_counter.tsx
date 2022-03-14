@@ -13,12 +13,12 @@ import {
 function SubscribersCounter() : JSX.Element {
   const segment: Segment = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    [],
   );
 
   const subscribersCount: SubscriberCount = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSubscriberCount(),
-    []
+    [],
   );
 
   const { updateSubscriberCount } = useDispatch('mailpoet-dynamic-segments-form');

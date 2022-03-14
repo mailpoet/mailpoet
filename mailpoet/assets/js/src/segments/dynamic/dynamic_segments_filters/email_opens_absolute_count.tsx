@@ -24,12 +24,12 @@ function replaceEmailActionOpensSentence(fn:(value) => JSX.Element): JSX.Element
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function EmailOpensAbsoluteCountFields({ filterIndex }:Props):JSX.Element {
   const segment: EmailFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
@@ -83,7 +83,7 @@ export function EmailOpensAbsoluteCountFields({ filterIndex }:Props):JSX.Element
               );
             }
             return null;
-          }
+          },
         )}
       </Grid.CenteredRow>
       <Grid.CenteredRow>
@@ -112,7 +112,7 @@ export function EmailOpensAbsoluteCountFields({ filterIndex }:Props):JSX.Element
               );
             }
             return null;
-          }
+          },
         )}
       </Grid.CenteredRow>
     </>

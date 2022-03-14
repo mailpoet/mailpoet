@@ -3,11 +3,11 @@ import { useSetting } from '@wordpress/block-editor';
 
 type Props = {
   name: string;
-  colorValue: string|undefined;
-  gradientValue: string|undefined;
-  onColorChange: (value: string|undefined) => void;
-  onGradientChange: (value: string|undefined) => void;
-}
+  colorValue: string | undefined;
+  gradientValue: string | undefined;
+  onColorChange: (value: string | undefined) => void;
+  onGradientChange: (value: string | undefined) => void;
+};
 
 function ColorGradientSettings({
   name,

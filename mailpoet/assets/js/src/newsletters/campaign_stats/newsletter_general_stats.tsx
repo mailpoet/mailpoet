@@ -10,7 +10,7 @@ import { NewsletterType } from './newsletter_type';
 type Props = {
   newsletter: NewsletterType;
   isWoocommerceActive: boolean;
-}
+};
 
 const minNewslettersSent = 20;
 const minNewslettersOpened = 5;
@@ -83,7 +83,7 @@ export function NewsletterGeneralStats({
                 { match }
               </a>
             </span>
-          )
+          ),
         )}
       />
     </div>

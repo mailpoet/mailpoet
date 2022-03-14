@@ -49,7 +49,7 @@ export const createStore = (): void => {
     errors: [],
     allAvailableFilters: getAvailableFilters(
       window.mailpoet_can_use_woocommerce_subscriptions,
-      window.mailpoet_can_use_woocommerce_memberships
+      window.mailpoet_can_use_woocommerce_memberships,
     ),
   };
 

@@ -45,7 +45,7 @@ export const useMutation = <T extends Data>(path: string, config?: RequestInit):
           ...(init?.headers ?? {}),
           'x-wp-nonce': api.nonce,
         },
-      }
+      },
     );
 
     try {

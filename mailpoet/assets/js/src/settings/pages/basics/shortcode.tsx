@@ -7,7 +7,7 @@ type Props = {
   name: 'mailpoet_archive' | 'mailpoet_subscribers_count';
   title: string;
   description: string;
-}
+};
 
 export default function Shortcode({ name, title, description }: Props) {
   const [segments, setSegments] = useState([]);

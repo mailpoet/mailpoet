@@ -47,7 +47,7 @@ export default function makeDefaultState(window: any): State {
     mssStatus = getMssStatus(window.mailpoet_mss_key_valid, data);
     premiumStatus = getPremiumStatus(
       window.mailpoet_premium_key_valid,
-      window.mailpoet_premium_plugin_installed
+      window.mailpoet_premium_plugin_installed,
     );
     isKeyValid = mssStatus !== MssStatus.INVALID || premiumStatus !== PremiumStatus.INVALID;
   }

@@ -177,13 +177,13 @@ export default function normalizeSettings(data: Record<string, unknown>): Settin
 
 type Schema = {
   [key: string]: ReturnType<
-    | typeof asString
-    | typeof asStringArray
-    | typeof asBoolean
-    | typeof asEnum
-    | typeof asObject
+  | typeof asString
+  | typeof asStringArray
+  | typeof asBoolean
+  | typeof asEnum
+  | typeof asObject
   >;
-}
+};
 type SchemaResult<T extends Schema> = {
   [key in keyof T]: ReturnType<T[key]>
-}
+};

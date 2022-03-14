@@ -2,7 +2,7 @@ export type NewsletterType = {
   id: string;
   total_sent: number;
   subject: string;
-  segments: {name: string}[];
+  segments: { name: string }[];
   queue: {
     scheduled_at: string;
     created_at: string;
@@ -13,7 +13,7 @@ export type NewsletterType = {
   reply_to_name?: string;
   ga_campaign?: string;
   preview_url: string;
-  clicked_links: {cnt: string; url: string}[];
+  clicked_links: { cnt: string; url: string }[];
   statistics: {
     clicked: number;
     opened: number;
@@ -26,4 +26,4 @@ export type NewsletterType = {
       count: number;
     };
   };
-}
+};

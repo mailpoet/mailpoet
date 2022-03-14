@@ -25,7 +25,7 @@ type Props = {
 function SubmitEdit({ attributes, setAttributes }: Props): JSX.Element {
   const settings: FormSettingsType = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
-    []
+    [],
   );
 
   const inspectorControls = (

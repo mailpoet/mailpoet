@@ -32,7 +32,7 @@ type OptionData = {
   label: React.ReactNode;
   count?: React.ReactNode;
   tag?: React.ReactNode;
-}
+};
 
 function Option(props: OptionProps<OptionData>) {
   let style = {};
@@ -114,7 +114,7 @@ function ReactSelect({
           [`mailpoet-form-input-${dimension}`]: dimension,
           'mailpoet-disabled': props.disabled,
           'mailpoet-full-width': isFullWidth,
-        }
+        },
       )
     }
       data-automation-id={automationId}

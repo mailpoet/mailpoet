@@ -12,6 +12,6 @@ export default (): void => {
   addFilter(
     'editor.MediaUpload',
     'mailpoet/form-editor/replace-media-upload',
-    replaceMediaUpload
+    replaceMediaUpload,
   );
 };

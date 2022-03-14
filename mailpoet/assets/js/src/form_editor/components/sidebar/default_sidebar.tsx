@@ -14,12 +14,12 @@ type Props = {
 export default function DefaultSidebar({ onClose }: Props): JSX.Element {
   const activeTab = useSelect(
     (select) => select('mailpoet-form-editor').getDefaultSidebarActiveTab(),
-    []
+    [],
   );
 
   const selectedBlockId = useSelect(
     (select) => select('core/block-editor').getSelectedBlockClientId(),
-    []
+    [],
   );
 
   const { switchDefaultSidebarTab } = useDispatch('mailpoet-form-editor');

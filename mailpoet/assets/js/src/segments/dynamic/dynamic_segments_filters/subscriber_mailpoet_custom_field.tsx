@@ -51,23 +51,23 @@ const componentsMap = {
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function MailPoetCustomFields({ filterIndex }:Props):JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
 
   const customFieldsList: WindowCustomFields = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getCustomFieldsList(),
-    []
+    [],
   );
   const selectedCustomField = find(
     { id: Number(segment.custom_field_id) },
-    customFieldsList
+    customFieldsList,
   );
   const options = customFieldsList.map((currentValue) => ({
     value: currentValue.id.toString(),
@@ -91,7 +91,7 @@ export function MailPoetCustomFields({ filterIndex }:Props):JSX.Element {
                 if (!segment.custom_field_id) return undefined;
                 return segment.custom_field_id === option.value;
               },
-              options
+              options,
             )
           }
           onChange={(option: SelectOption): void => {

@@ -17,12 +17,12 @@ import {
 
 type KeyState = {
   is_approved: boolean;
-}
+};
 
 function Messages(
   state:KeyActivationState,
   showPendingApprovalNotice:boolean,
-  activationCallback:()=>Promise<void>
+  activationCallback:()=>Promise<void>,
 ) {
   if (state.code === 503) {
     return (
@@ -160,7 +160,7 @@ export default function KeyActivation() {
         {state.isKeyValid !== null && Messages(
           state,
           showPendingApprovalNotice,
-          activationCallback
+          activationCallback,
         )}
       </Inputs>
       {showFromAddressModal && (

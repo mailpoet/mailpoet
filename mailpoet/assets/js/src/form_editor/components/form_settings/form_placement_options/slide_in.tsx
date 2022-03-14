@@ -7,7 +7,7 @@ import FormPlacementOption from './form_placement_option';
 function SlideIn():JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
-    []
+    [],
   );
   const { showPlacementSettings } = useDispatch('mailpoet-form-editor');
 

@@ -9,7 +9,7 @@ type Props = {
   linkAutomationId?: string;
   setValue: (x: string) => void;
   preview: 'manage' | 'unsubscribe' | 'confirm' | 'confirm_unsubscribe' | 're_engagement';
-}
+};
 
 export default function PageSelect(props: Props) {
   const pages = useSelector('getPages')();

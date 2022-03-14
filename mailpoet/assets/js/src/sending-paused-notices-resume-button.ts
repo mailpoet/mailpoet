@@ -32,7 +32,7 @@ const resumeMailerSending = () => {
     if (response.errors.length > 0) {
       MailPoet.Notice.error(
         response.errors.map((error) => error.message),
-        { scroll: true }
+        { scroll: true },
       );
     }
   });
@@ -43,7 +43,7 @@ const resumeSendingIfAuthorized = (fromAddress: string | null) => isValidFromAdd
     if (!valid) {
       MailPoet.Notice.error(
         MailPoet.I18n.t('mailerSendingNotResumedUnauthorized'),
-        { scroll: true }
+        { scroll: true },
       );
       MailPoet.trackEvent('Unauthorized email used', { 'Unauthorized email source': 'send' });
       return false;

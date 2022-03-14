@@ -33,6 +33,6 @@ if (logsContainer) {
         window.location.href = url.href;
       }}
     />,
-    logsContainer
+    logsContainer,
   );
 }

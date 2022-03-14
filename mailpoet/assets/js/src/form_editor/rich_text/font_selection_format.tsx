@@ -16,13 +16,13 @@ const supportedBlocks = [
 type Attributes = {
   font?: string;
   style?: string;
-}
+};
 
 type Format = {
   attributes?: Attributes;
   type?: string;
   unregisteredAttributes?: Attributes;
-}
+};
 
 type Value = {
   formats: Format[][];
@@ -31,7 +31,7 @@ type Value = {
   activeFormats?: Format[];
   start?: number;
   end?: number;
-}
+};
 
 type Props = {
   value: Value;
@@ -39,7 +39,7 @@ type Props = {
   activeAttributes: {
     font?: string;
   };
-}
+};
 
 function Edit({
   value,
@@ -48,7 +48,7 @@ function Edit({
 }: Props) : JSX.Element {
   const selectedBlock = useSelect(
     (sel) => sel('core/block-editor').getSelectedBlock(),
-    []
+    [],
   );
 
   if (!supportedBlocks.includes(selectedBlock.name as string)) {
@@ -68,7 +68,7 @@ function Edit({
                   style: `font-family: ${font}`,
                   font,
                 },
-              })
+              }),
             );
           }}
           name={MailPoet.I18n.t('formSettingsStylesFontFamily')}

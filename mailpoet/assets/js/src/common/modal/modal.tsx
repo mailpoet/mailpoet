@@ -63,7 +63,7 @@ function Modal({
         </div>
       </ModalFrame>
     </ModalOverlay>,
-    document.getElementById('mailpoet-modal')
+    document.getElementById('mailpoet-modal'),
   );
 }
 

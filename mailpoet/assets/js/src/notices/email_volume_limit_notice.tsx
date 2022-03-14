@@ -25,13 +25,13 @@ function EmailVolumeLimitNotice(): JSX.Element {
   let toContinueUpgradeYourPlanOrWaitUntil = ReactStringReplace(
     MailPoet.I18n.t('toContinueUpgradeYourPlanOrWaitUntil'),
     /\[link](.*?)\[\/link]/g,
-    (match) => (<a target="_blank" rel="noreferrer" href={upgradeLink} key={match}>{match}</a>)
+    (match) => (<a target="_blank" rel="noreferrer" href={upgradeLink} key={match}>{match}</a>),
   );
 
   toContinueUpgradeYourPlanOrWaitUntil = ReactStringReplace(
     toContinueUpgradeYourPlanOrWaitUntil,
     /<b>\[date]<\/b>\./g,
-    () => (ReactHtmlParser(`<b>${MailPoet.Date.short(firstDayOfTheNextMonth)}</b>.`))
+    () => (ReactHtmlParser(`<b>${MailPoet.Date.short(firstDayOfTheNextMonth)}</b>.`)),
   );
 
   return (

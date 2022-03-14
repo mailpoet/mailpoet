@@ -11,7 +11,7 @@ import { Form } from './form';
 import { createStore } from './store/store';
 
 function Editor() : JSX.Element {
-  const match = useRouteMatch<{id: string}>();
+  const match = useRouteMatch<{ id: string }>();
 
   createStore();
 

@@ -8,11 +8,11 @@ import MailPoet from 'mailpoet';
 export function Tutorial():JSX.Element {
   const url = useSelect(
     (select) => select('mailpoet-form-editor').getTutorialUrl(),
-    []
+    [],
   );
   const tutorialSeen = useSelect(
     (select) => select('mailpoet-form-editor').getTutorialSeen(),
-    []
+    [],
   );
   const { tutorialDismissed } = useDispatch('mailpoet-form-editor');
 

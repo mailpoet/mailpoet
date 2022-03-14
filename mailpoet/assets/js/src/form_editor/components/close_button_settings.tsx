@@ -8,7 +8,7 @@ type CloseButtonProps = {
   active: boolean;
   onClick: () => void;
   iconUrl: string;
-}
+};
 
 function CloseButton({
   label,
@@ -36,9 +36,9 @@ function CloseButton({
 
 type Props = {
   name: string;
-  value?: string|undefined;
-  onChange: (value: string|undefined) => void;
-}
+  value?: string | undefined;
+  onChange: (value: string | undefined) => void;
+};
 
 function CloseButtonsSettings({
   name,
@@ -47,7 +47,7 @@ function CloseButtonsSettings({
 }: Props) : JSX.Element {
   const closeIconsUrl = useSelect(
     (sel) => sel('mailpoet-form-editor').getCloseIconsUrl(),
-    []
+    [],
   );
 
   return (

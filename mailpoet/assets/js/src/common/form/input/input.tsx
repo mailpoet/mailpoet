@@ -31,7 +31,7 @@ function Input({
           [`mailpoet-form-input-${dimension}`]: dimension,
           'mailpoet-disabled': attributes.disabled,
           'mailpoet-full-width': isFullWidth,
-        }
+        },
       )
     }
     >

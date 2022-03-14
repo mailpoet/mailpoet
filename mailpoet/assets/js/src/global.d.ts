@@ -9,7 +9,7 @@ type ErrorResponse = {
   errors:{
     message:string
   }[]
-}
+};
 interface JQuery{
   parsley: () => any;
 }
@@ -22,7 +22,7 @@ declare module '@woocommerce/blocks-checkout' {
     id?: string;
     instanceId?: string;
     onChange?: (value: boolean) => void;
-    children?: React.ReactChildren|React.ReactElement;
+    children?: React.ReactChildren | React.ReactElement;
     hasError?: boolean;
     checked?: boolean;
   };

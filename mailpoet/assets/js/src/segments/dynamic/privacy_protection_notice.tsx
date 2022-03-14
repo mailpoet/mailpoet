@@ -6,7 +6,7 @@ import { EmailActionTypes, Segment } from './types';
 function PrivacyProtectionNotice():JSX.Element {
   const segment: Segment = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    [],
   );
 
   const opensActions: string[] = [

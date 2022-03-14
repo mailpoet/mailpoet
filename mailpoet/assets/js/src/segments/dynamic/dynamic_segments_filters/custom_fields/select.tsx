@@ -27,19 +27,19 @@ export function validateRadioSelect(item: WordpressRoleFormItem): boolean {
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function RadioSelect({ filterIndex }:Props) : JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
 
   const customFieldsList: WindowCustomFields = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getCustomFieldsList(),
-    []
+    [],
   );
   const customField = find({ id: Number(segment.custom_field_id) }, customFieldsList);
   if (!customField) return null;

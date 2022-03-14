@@ -19,7 +19,7 @@ export const selectCategory = (state: StateType, action: CategoryActionType): St
 
 export default (defaultState: StateType) => (
   state: StateType = defaultState, // eslint-disable-line default-param-last
-  action: ActionType
+  action: ActionType,
 ): StateType => {
   switch (action.type) {
     case 'SELECT_TEMPLATE_ERROR': return selectTemplateFailed(state);

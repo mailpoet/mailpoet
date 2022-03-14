@@ -6,7 +6,7 @@ type Props = {
   active: boolean;
   canBeActive?: boolean;
   onClick: () => void;
-}
+};
 
 function FormPlacementOption({
   label,

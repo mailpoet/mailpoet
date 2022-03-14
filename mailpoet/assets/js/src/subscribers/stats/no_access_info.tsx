@@ -11,7 +11,7 @@ type Props = {
   premiumActive: boolean;
   hasValidApiKey: boolean;
   hasPremiumSupport: boolean;
-}
+};
 
 export default function NoAccessInfo({
   limitReached,
@@ -31,7 +31,7 @@ export default function NoAccessInfo({
             /\[link](.*?)\[\/link]/g,
             (match) => (
               <a key={match} href={MailPoet.premiumLink}>{match}</a>
-            )
+            ),
           )}
         </p>
       );
@@ -47,7 +47,7 @@ export default function NoAccessInfo({
         {ReactStringReplace(
           message,
           /(\[subscribersCount]|\[subscribersLimit])/g,
-          (match) => ((match === '[subscribersCount]') ? subscribersCountTowardsLimit : limitValue)
+          (match) => ((match === '[subscribersCount]') ? subscribersCountTowardsLimit : limitValue),
         )}
       </p>
     );
@@ -70,7 +70,7 @@ export default function NoAccessInfo({
           MailPoet.subscribersCount,
           MailPoet.currentWpUserEmail,
           null,
-          { utm_medium: 'stats', utm_campaign: 'signup' }
+          { utm_medium: 'stats', utm_campaign: 'signup' },
         )}
       >
         {MailPoet.I18n.t('premiumBannerCtaFree')}

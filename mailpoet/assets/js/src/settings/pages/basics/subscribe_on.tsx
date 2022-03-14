@@ -9,7 +9,7 @@ type Props = {
   title: string;
   description: string;
   event: 'on_comment' | 'on_register';
-}
+};
 
 export default function SubscribeOn({ title, description, event }: Props) {
   const [enabled, setEnabled] = useSetting('subscribe', event, 'enabled');

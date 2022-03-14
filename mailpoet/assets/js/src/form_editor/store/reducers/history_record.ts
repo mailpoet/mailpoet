@@ -7,11 +7,11 @@ type HistoryRecord = {
   blocks: unknown[];
   data: unknown[];
   time: number;
-}
+};
 
 const createRecord = (
   editorHistory: HistoryRecord[],
-  state
+  state,
 ): HistoryRecord => {
   const lastHistoryRecord = editorHistory[editorHistory.length - 1];
   const time = Date.now();

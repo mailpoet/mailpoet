@@ -31,7 +31,7 @@ const getBannerMessage = (translationKey: string) => {
       {ReactStringReplace(
         message,
         /(\[subscribersCount]|\[subscribersLimit])/g,
-        (match) => ((match === '[subscribersCount]') ? subscribersCount : subscribersLimit)
+        (match) => ((match === '[subscribersCount]') ? subscribersCount : subscribersLimit),
       )}
     </p>
   );
@@ -48,7 +48,7 @@ const getCtaButton = (translationKey: string, link: string, target = '_blank') =
 );
 
 function PremiumBannerWithUpgrade(
-  { message, actionButton }: Props
+  { message, actionButton }: Props,
 ) : JSX.Element {
   let bannerMessage: React.ReactNode;
   let ctaButton: React.ReactNode;

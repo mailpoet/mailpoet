@@ -29,7 +29,7 @@ function Textarea({
           [`mailpoet-form-textarea-${dimension}`]: dimension,
           'mailpoet-disabled': attributes.disabled,
           'mailpoet-full-width': isFullWidth,
-        }
+        },
       )
     }
     >

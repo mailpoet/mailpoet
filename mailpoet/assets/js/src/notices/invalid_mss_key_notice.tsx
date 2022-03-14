@@ -5,7 +5,7 @@ import ReactStringReplace from 'react-string-replace';
 type Props = {
   mssKeyInvalid: boolean;
   subscribersCount: number;
-}
+};
 
 function InvalidMssKeyNotice({ mssKeyInvalid, subscribersCount }: Props) {
   if (!mssKeyInvalid) return null;
@@ -17,7 +17,7 @@ function InvalidMssKeyNotice({ mssKeyInvalid, subscribersCount }: Props) {
           ReactStringReplace(
             MailPoet.I18n.t('allSendingPausedBody'),
             /\[link\](.*?)\[\/link\]/g,
-            (match) => <a href="?page=mailpoet-settings#premium" key="check-sending">{ match }</a>
+            (match) => <a href="?page=mailpoet-settings#premium" key="check-sending">{ match }</a>,
           )
         }
       </p>

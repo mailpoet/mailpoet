@@ -3,7 +3,7 @@ import MailPoet from 'mailpoet';
 
 type Props = {
   onProceed?: () => void;
-}
+};
 
 export default function CleanList({ onProceed }: Props): JSX.Element {
   return (

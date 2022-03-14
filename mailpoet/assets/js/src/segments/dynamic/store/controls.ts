@@ -37,7 +37,7 @@ export async function LOAD_SEGMENT({ segmentId }: { segmentId: number }): Promis
   }
 }
 
-export async function SAVE_SEGMENT({ segment }: {segment: AnyFormItem }): Promise<{
+export async function SAVE_SEGMENT({ segment }: { segment: AnyFormItem }): Promise<{
   success: boolean,
   error?: string[],
 }> {

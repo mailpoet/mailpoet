@@ -22,7 +22,7 @@ const handleSave = (address: string | null) => MailPoet.Ajax.post({
 type error = {
   error: string;
   message: string;
-}
+};
 
 const getErrorMessage = (error: error | null, address: string | null): string => {
   if (!error) {
@@ -33,7 +33,7 @@ const getErrorMessage = (error: error | null, address: string | null): string =>
     const fromAddress = encodeURIComponent(address);
     return MailPoet.I18n.t('setFromAddressEmailNotAuthorized').replace(
       /\[link\](.*?)\[\/link\]/g,
-      `<a href="https://account.mailpoet.com/authorization?email=${fromAddress}" target="_blank" rel="noopener noreferrer">$1</a>`
+      `<a href="https://account.mailpoet.com/authorization?email=${fromAddress}" target="_blank" rel="noopener noreferrer">$1</a>`,
     );
   }
 
@@ -53,7 +53,7 @@ const getSuccessMessage = (): JSX.Element => (
         >
           {match}
         </a>
-      )
+      ),
     )}
   </p>
 );
@@ -103,7 +103,7 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
               >
                 {match}
               </a>
-            )
+            ),
           )
         }
       </p>
@@ -141,7 +141,7 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
             removeUnauthorizedEmailNotices();
             notices.success(getSuccessMessage(), { timeout: false });
           } catch (e) {
-            const error:error|null = e.errors && e.errors[0] ? e.errors[0] : null;
+            const error:error | null = e.errors && e.errors[0] ? e.errors[0] : null;
             if (error.error === 'unauthorized') {
               MailPoet.trackEvent('Unauthorized email used', { 'Unauthorized email source': 'modal' });
             }

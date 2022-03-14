@@ -8,7 +8,7 @@ export default function Sidebar(): JSX.Element {
 
   const activeSidebar = useSelect(
     (select) => select('mailpoet-form-editor').getActiveSidebar(),
-    []
+    [],
   );
 
   const closePlacementSettings = (): void => {
@@ -17,7 +17,7 @@ export default function Sidebar(): JSX.Element {
 
   const selectedBlockId = useSelect(
     (select) => select('core/block-editor').getSelectedBlockClientId(),
-    []
+    [],
   );
 
   useEffect(() => {

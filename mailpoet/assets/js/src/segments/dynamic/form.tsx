@@ -41,27 +41,27 @@ export function Form({
 }:Props) :JSX.Element {
   const segment: Segment = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
-    []
+    [],
   );
 
   const segmentFilters: GroupFilterValue[] = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getAvailableFilters(),
-    []
+    [],
   );
 
   const filterRows: FilterRow[] = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').findFiltersValueForSegment(segment),
-    [segment]
+    [segment],
   );
 
   const subscriberCount: SubscriberCount = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSubscriberCount(),
-    []
+    [],
   );
 
   const errors: string[] = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getErrors(),
-    []
+    [],
   );
 
   const { updateSegment, updateSegmentFilter, handleSave } = useDispatch('mailpoet-dynamic-segments-form');

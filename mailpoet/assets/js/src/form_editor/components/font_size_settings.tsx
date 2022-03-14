@@ -4,9 +4,9 @@ import {
 import { useSetting } from '@wordpress/block-editor';
 
 type Props = {
-  value: number|undefined;
-  onChange: (value: string|undefined) => void;
-}
+  value: number | undefined;
+  onChange: (value: string | undefined) => void;
+};
 
 function FontSizeSettings({
   value,

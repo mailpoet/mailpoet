@@ -12,7 +12,7 @@ type Props = {
 };
 
 export default function OpenedEmailsStats(
-  { params, location }: Props
+  { params, location }: Props,
 ) : JSX.Element {
   return (
     <>

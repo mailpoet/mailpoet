@@ -20,7 +20,7 @@ export function SpaceBetween({
         'mailpoet-grid-space-between',
         {
           [`mailpoet-grid-space-between-vertical-${verticalAlign}`]: verticalAlign,
-        }
+        },
       )
     }
     >

@@ -67,7 +67,7 @@ export default function TaskScheduler() {
                 >
                   {text}
                 </a>
-              )
+              ),
             )}
           </label>
         </div>

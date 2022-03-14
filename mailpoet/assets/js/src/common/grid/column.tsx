@@ -23,7 +23,7 @@ export function Column({
         {
           [`mailpoet-grid-column-${dimension}`]: dimension,
           [`mailpoet-grid-column-${align}`]: align,
-        }
+        },
       )
     }
     >
