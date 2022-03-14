@@ -31,8 +31,6 @@
   },
   "rules": {
     "class-methods-use-this": 0,
-    "no-use-before-define": "off", // disable the original rule, use only the typescript rule on the next line
-    "@typescript-eslint/no-use-before-define": ["error"],
     // PropTypes
     "react/prop-types": 0,
     "react/jsx-props-no-spreading": 0,
@@ -40,13 +38,7 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     // Exceptions
-    "camelcase": 0, //use the typescript version
-    "no-shadow": 0, //use the typescript version
     "react/jsx-filename-extension": 0,
-    "arrow-parens": ["error", "always"],
-    "comma-dangle": ["error", "always-multiline"],
-    "no-only-tests/no-only-tests": 2,
-    "no-script-url": 0,
     "@typescript-eslint/no-unsafe-return": 0, // we need to disable it for wordpress select :(
     "@typescript-eslint/no-unsafe-member-access": 0, // we need to disable it for wordpress select :(
     "@typescript-eslint/no-unsafe-call": 0, // this needs to match the one defined for free plugin
