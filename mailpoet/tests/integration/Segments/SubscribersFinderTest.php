@@ -9,10 +9,9 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class SubscribersFinderTest extends \MailPoetTest {
@@ -36,32 +35,20 @@ class SubscribersFinderTest extends \MailPoetTest {
     $this->segment1 = $segmentFactory->withName('Segment 1')->withType(SegmentEntity::TYPE_DEFAULT)->create();
     $this->segment2 = $segmentFactory->withName('Segment 2')->withType(SegmentEntity::TYPE_DEFAULT)->create();
     $this->segment3 = $segmentFactory->withName('Segment 3')->withType(SegmentEntity::TYPE_DYNAMIC)->create();
-    $this->subscriber1 = Subscriber::createOrUpdate([
-      'email' => 'john@mailpoet.com',
-      'first_name' => 'John',
-      'last_name' => 'Doe',
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-    ]);
-    $this->subscriber2 = Subscriber::createOrUpdate([
-      'email' => 'jane@mailpoet.com',
-      'first_name' => 'Jane',
-      'last_name' => 'Doe',
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-      'segments' => [
-        $this->segment1->getId(),
-      ],
-    ]);
-    $this->subscriber3 = Subscriber::createOrUpdate([
-      'email' => 'jake@mailpoet.com',
-      'first_name' => 'Jake',
-      'last_name' => 'Doe',
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-      'segments' => [
-        $this->segment3->getId(),
-      ],
-    ]);
-    SubscriberSegment::resubscribeToAllSegments($this->subscriber2);
-    SubscriberSegment::resubscribeToAllSegments($this->subscriber3);
+
+    $subscriberFactory = new SubscriberFactory();
+    $this->subscriber1 = $subscriberFactory
+      ->withEmail('john@mailpoet.com')
+      ->create();
+    $this->subscriber2 = $subscriberFactory
+      ->withEmail('jane@mailpoet.com')
+      ->withSegments([$this->segment1])
+      ->create();
+    $this->subscriber3 = $subscriberFactory
+      ->withEmail('jake@mailpoet.com')
+      ->withSegments([$this->segment3])
+      ->create();
+
     $this->sending = SendingTask::create();
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscribersFinder = $this->diContainer->get(SubscribersFinder::class);
@@ -69,9 +56,9 @@ class SubscribersFinderTest extends \MailPoetTest {
 
   public function testFindSubscribersInSegmentInSegmentDefaultSegment() {
     $deletedSegmentId = 1000; // non-existent segment
-    $subscribers = $this->subscribersFinder->findSubscribersInSegments([$this->subscriber2->id], [$this->segment1->getId(), $deletedSegmentId]);
+    $subscribers = $this->subscribersFinder->findSubscribersInSegments([$this->subscriber2->getId()], [$this->segment1->getId(), $deletedSegmentId]);
     expect($subscribers)->count(1);
-    expect($subscribers[$this->subscriber2->id])->equals($this->subscriber2->id);
+    expect($subscribers[$this->subscriber2->getId()])->equals($this->subscriber2->getId());
   }
 
   public function testFindSubscribersInSegmentUsingFinder() {
@@ -80,12 +67,12 @@ class SubscribersFinderTest extends \MailPoetTest {
     $mock
       ->expects($this->once())
       ->method('findSubscribersIdsInSegment')
-      ->will($this->returnValue([$this->subscriber3->id]));
+      ->will($this->returnValue([$this->subscriber3->getId()]));
 
     $finder = new SubscribersFinder($mock, $this->segmentsRepository);
-    $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->id], [$this->segment3->getId()]);
+    $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->getId()], [$this->segment3->getId()]);
     expect($subscribers)->count(1);
-    expect($subscribers)->contains($this->subscriber3->id);
+    expect($subscribers)->contains($this->subscriber3->getId());
   }
 
   public function testFindSubscribersInSegmentUsingFinderMakesResultUnique() {
@@ -94,10 +81,10 @@ class SubscribersFinderTest extends \MailPoetTest {
     $mock
       ->expects($this->exactly(2))
       ->method('findSubscribersIdsInSegment')
-      ->will($this->returnValue([$this->subscriber3->id]));
+      ->will($this->returnValue([$this->subscriber3->getId()]));
 
     $finder = new SubscribersFinder($mock, $this->segmentsRepository);
-    $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->id], [$this->segment3->getId(), $this->segment3->getId()]);
+    $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->getId()], [$this->segment3->getId(), $this->segment3->getId()]);
     expect($subscribers)->count(1);
   }
 
@@ -110,7 +97,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ]
     );
     expect($subscribersCount)->equals(1);
-    expect($this->sending->getSubscribers())->equals([$this->subscriber2->id]);
+    expect($this->sending->getSubscribers())->equals([$this->subscriber2->getId()]);
   }
 
   public function testItDoesNotAddSubscribersToTaskFromNoSegment() {
@@ -130,7 +117,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     $mock
       ->expects($this->once())
       ->method('getSubscriberIdsInSegment')
-      ->will($this->returnValue([$this->subscriber1->id]));
+      ->will($this->returnValue([$this->subscriber1->getId()]));
     $this->segment2->setType(SegmentEntity::TYPE_DYNAMIC);
 
     $finder = new SubscribersFinder($mock, $this->segmentsRepository);
@@ -141,7 +128,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ]
     );
     expect($subscribersCount)->equals(1);
-    expect($this->sending->getSubscribers())->equals([$this->subscriber1->id]);
+    expect($this->sending->getSubscribers())->equals([$this->subscriber1->getId()]);
   }
 
   public function testItAddsSubscribersToTaskFromStaticAndDynamicSegments() {
@@ -150,7 +137,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     $mock
       ->expects($this->once())
       ->method('getSubscriberIdsInSegment')
-      ->will($this->returnValue([$this->subscriber2->id]));
+      ->will($this->returnValue([$this->subscriber2->getId()]));
     $this->segment3->setType(SegmentEntity::TYPE_DYNAMIC);
 
     $finder = new SubscribersFinder($mock, $this->segmentsRepository);
@@ -164,7 +151,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     );
 
     expect($subscribersCount)->equals(1);
-    expect($this->sending->getSubscribers())->equals([$this->subscriber2->id]);
+    expect($this->sending->getSubscribers())->equals([$this->subscriber2->getId()]);
   }
 
   public function _after() {
