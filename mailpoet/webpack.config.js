@@ -97,6 +97,13 @@ const baseConfig = {
         },
       },
       {
+        include: require.resolve('react/jsx-runtime'),
+        loader: 'expose-loader',
+        options: {
+          exposes: `${globalPrefix}.ReactJsxRuntime`,
+        },
+      },
+      {
         include: require.resolve('react-dom'),
         loader: 'expose-loader',
         options: {
