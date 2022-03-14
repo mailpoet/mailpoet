@@ -86,6 +86,7 @@
     "@typescript-eslint/no-unsafe-call": 0, // this needs to be off until we have typed assignments :(
     "@typescript-eslint/no-unsafe-assignment": 0, // this needs to be off until we have typed assignments :(
     "import/extensions": 0, // we wouldn't be able to import jQuery without this line
+    "import/no-named-as-default": 0, // we use named default exports at the moment
     "import/prefer-default-export": 0, // we want to stop using default exports and start using named exports
     "react/destructuring-assignment": 0, // that would be too many changes to fix this one
     "prefer-destructuring": 0, // that would be too many changes to fix this one
