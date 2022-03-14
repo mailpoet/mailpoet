@@ -128,7 +128,7 @@ class SendingQueue extends APIEndpoint {
       $queue->status = SendingQueueModel::STATUS_SCHEDULED;
       $queue->scheduledAt = Scheduler::formatDatetimeString($newsletterEntity->getOptionValue('scheduledAt'));
     } else {
-      $segments = $newsletter->segments()->findMany();
+      $segments = $newsletterEntity->getSegmentIds();
       $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($queue->task(), $segments);
       if (!$subscribersCount) {
         return $this->errorResponse([
