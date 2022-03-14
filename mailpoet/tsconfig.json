@@ -12,7 +12,6 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./assets/js/src",
-    "rootDir": ".",
     "allowJs": true,
     "checkJs": false,
     "skipLibCheck": true,
