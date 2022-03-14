@@ -3,15 +3,16 @@
 namespace MailPoet\Segments;
 
 use Codeception\Util\Stub;
+use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Models\DynamicSegmentFilter;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending as SendingTask;
-use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class SubscribersFinderTest extends \MailPoetTest {
@@ -31,12 +32,6 @@ class SubscribersFinderTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . DynamicSegmentFilter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
     $this->segment1 = Segment::createOrUpdate(['name' => 'Segment 1', 'type' => 'default']);
     $this->segment2 = Segment::createOrUpdate(['name' => 'Segment 2', 'type' => 'default']);
     $this->segment3 = Segment::createOrUpdate(['name' => 'Segment 3', 'type' => 'not default']);
@@ -173,5 +168,15 @@ class SubscribersFinderTest extends \MailPoetTest {
     $segment->id = $id;
     $segment->type = $type;
     return $segment;
+  }
+
+  public function _after() {
+    parent::_after();
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(DynamicSegmentFilterEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
   }
 }
