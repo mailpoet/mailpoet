@@ -1,5 +1,5 @@
 import { useSelect } from '@wordpress/data';
-import { STORE_NAME } from '..';
+import { STORE_NAME } from '../store_name';
 import * as selectors from '../selectors';
 import { ExcludeFirstParam } from './types';
 
