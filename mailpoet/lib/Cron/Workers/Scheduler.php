@@ -6,16 +6,18 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 
@@ -37,18 +39,28 @@ class Scheduler {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
   public function __construct(
     SubscribersFinder $subscribersFinder,
     LoggerFactory $loggerFactory,
     CronHelper $cronHelper,
     CronWorkerScheduler $cronWorkerScheduler,
-    ScheduledTasksRepository $scheduledTasksRepository
+    ScheduledTasksRepository $scheduledTasksRepository,
+    NewslettersRepository $newslettersRepository,
+    SegmentsRepository $segmentsRepository
   ) {
     $this->cronHelper = $cronHelper;
     $this->subscribersFinder = $subscribersFinder;
     $this->loggerFactory = $loggerFactory;
     $this->cronWorkerScheduler = $cronWorkerScheduler;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->newslettersRepository = $newslettersRepository;
+    $this->segmentsRepository = $segmentsRepository;
   }
 
   public function process($timer = false) {
@@ -109,19 +121,22 @@ class Scheduler {
       'process post notification in scheduler',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
     );
-    // ensure that segments exist
-    $segments = $newsletter->segments()->findMany();
-    if (empty($segments)) {
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
-        'post notification no segments',
-        ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
-      );
-      return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
+    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+
+    if ($newsletterEntity instanceof NewsletterEntity) {
+      // ensure that segments exist
+      $segments = $newsletterEntity->getSegmentIds();
+      if (empty($segments)) {
+        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+          'post notification no segments',
+          ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
+        );
+        return $this->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
+      }
+
+      // ensure that subscribers are in segments
+      $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($queue->task(), $segments);
     }
-
-    // ensure that subscribers are in segments
-
-    $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($queue->task(), $segments);
 
     if (empty($subscribersCount)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
@@ -151,11 +166,13 @@ class Scheduler {
 
   public function processScheduledAutomaticEmail($newsletter, $queue) {
     if ($newsletter->sendTo === 'segment') {
-      $segment = Segment::findOne($newsletter->segment);
-      $result = $this->subscribersFinder->addSubscribersToTaskFromSegments($queue->task(), [$segment]);
-      if (empty($result)) {
-        $queue->delete();
-        return false;
+      $segment = $this->segmentsRepository->findOneById($newsletter->segment);
+      if ($segment instanceof SegmentEntity) {
+        $result = $this->subscribersFinder->addSubscribersToTaskFromSegments($queue->task(), [(int)$segment->getId()]);
+        if (empty($result)) {
+          $queue->delete();
+          return false;
+        }
       }
     } else {
       $subscribers = $queue->getSubscribers();
@@ -177,8 +194,13 @@ class Scheduler {
   }
 
   public function processScheduledStandardNewsletter($newsletter, SendingTask $task) {
-    $segments = $newsletter->segments()->findMany();
-    $this->subscribersFinder->addSubscribersToTaskFromSegments($task->task(), $segments);
+    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+
+    if ($newsletterEntity instanceof NewsletterEntity) {
+      $segments = $newsletterEntity->getSegmentIds();
+      $this->subscribersFinder->addSubscribersToTaskFromSegments($task->task(), $segments);
+    }
+
     // update current queue
     $task->updateCount();
     $task->status = null;

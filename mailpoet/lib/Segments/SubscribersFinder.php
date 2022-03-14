@@ -6,7 +6,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoetVendor\Idiorm\ORM;
 
@@ -46,35 +45,43 @@ class SubscribersFinder {
     }
   }
 
-  private function isStaticSegment(Segment $segment) {
-    return in_array($segment->type, [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS, Segment::TYPE_WC_USERS], true);
-  }
-
-  public function addSubscribersToTaskFromSegments(ScheduledTask $task, array $segments) {
+  /**
+   * @param ScheduledTask $task
+   * @param array<int>    $segmentIds
+   *
+   * @return float|int
+   */
+  public function addSubscribersToTaskFromSegments(ScheduledTask $task, array $segmentIds) {
     // Prepare subscribers on the DB side for performance reasons
-    $staticSegments = [];
-    $dynamicSegments = [];
-    foreach ($segments as $segment) {
-      if ($this->isStaticSegment($segment)) {
-        $staticSegments[] = $segment;
-      } elseif ($segment->type === SegmentEntity::TYPE_DYNAMIC) {
-        $dynamicSegments[] = $segment;
+    $staticSegmentIds = [];
+    $dynamicSegmentIds = [];
+    foreach ($segmentIds as $segment) {
+      $segment = $this->segmentsRepository->findOneById($segment);
+      if ($segment instanceof SegmentEntity) {
+        if ($segment->isStatic()) {
+          $staticSegmentIds[] = (int)$segment->getId();
+        } elseif ($segment->getType() === SegmentEntity::TYPE_DYNAMIC) {
+          $dynamicSegmentIds[] = (int)$segment->getId();
+        }
       }
     }
     $count = 0;
-    if (!empty($staticSegments)) {
-      $count += $this->addSubscribersToTaskFromStaticSegments($task, $staticSegments);
+    if (!empty($staticSegmentIds)) {
+      $count += $this->addSubscribersToTaskFromStaticSegments($task, $staticSegmentIds);
     }
-    if (!empty($dynamicSegments)) {
-      $count += $this->addSubscribersToTaskFromDynamicSegments($task, $dynamicSegments);
+    if (!empty($dynamicSegmentIds)) {
+      $count += $this->addSubscribersToTaskFromDynamicSegments($task, $dynamicSegmentIds);
     }
     return $count;
   }
 
-  private function addSubscribersToTaskFromStaticSegments(ScheduledTask $task, array $segments) {
-    $segmentIds = array_map(function($segment) {
-      return $segment->id;
-    }, $segments);
+  /**
+   * @param ScheduledTask        $task
+   * @param array<int> $segmentIds
+   *
+   * @return int
+   */
+  private function addSubscribersToTaskFromStaticSegments(ScheduledTask $task, array $segmentIds) {
     Subscriber::rawExecute(
       'INSERT IGNORE INTO ' . MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE . '
        (task_id, subscriber_id, processed)
@@ -95,17 +102,23 @@ class SubscribersFinder {
     return ORM::getLastStatement()->rowCount();
   }
 
-  private function addSubscribersToTaskFromDynamicSegments(ScheduledTask $task, array $segments) {
+  /**
+   * @param ScheduledTask        $task
+   * @param array<int> $segmentIds
+   *
+   * @return int
+   */
+  private function addSubscribersToTaskFromDynamicSegments(ScheduledTask $task, array $segmentIds) {
     $count = 0;
-    foreach ($segments as $segment) {
-      $count += $this->addSubscribersToTaskFromDynamicSegment($task, $segment);
+    foreach ($segmentIds as $segmentId) {
+      $count += $this->addSubscribersToTaskFromDynamicSegment($task, (int)$segmentId);
     }
     return $count;
   }
 
-  private function addSubscribersToTaskFromDynamicSegment(ScheduledTask $task, Segment $segment) {
+  private function addSubscribersToTaskFromDynamicSegment(ScheduledTask $task, int $segmentId) {
     $count = 0;
-    $subscribers = $this->segmentSubscriberRepository->getSubscriberIdsInSegment((int)$segment->id);
+    $subscribers = $this->segmentSubscriberRepository->getSubscriberIdsInSegment($segmentId);
     if ($subscribers) {
       $count += $this->addSubscribersToTaskByIds($task, $subscribers);
     }

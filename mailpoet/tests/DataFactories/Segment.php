@@ -53,6 +53,11 @@ class Segment {
     return $this;
   }
 
+  public function withType($type) {
+    $this->data['type'] = $type;
+    return $this;
+  }
+
   public function create(): SegmentEntity {
     $segment = $this->saveController->save($this->data);
     if (($this->data['deleted_at'] ?? null) instanceof \DateTimeInterface) {
