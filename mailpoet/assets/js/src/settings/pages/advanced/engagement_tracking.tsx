@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { t } from 'common/functions';
 import Radio from 'common/form/radio/radio';
 import { useSetting } from 'settings/store/hooks';

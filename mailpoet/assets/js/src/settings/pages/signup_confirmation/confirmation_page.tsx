@@ -1,4 +1,3 @@
-import React from 'react';
 import { t } from 'common/functions';
 import { Label, Inputs, PagesSelect } from 'settings/components';
 import { useSetting } from 'settings/store/hooks';

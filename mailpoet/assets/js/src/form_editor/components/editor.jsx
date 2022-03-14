@@ -1,4 +1,3 @@
-import React from 'react';
 import '@wordpress/core-data';
 import { useSelect, useDispatch } from '@wordpress/data';
 import {

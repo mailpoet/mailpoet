@@ -1,4 +1,3 @@
-import React from 'react';
 import { action } from '_storybook/action';
 import Radio from '../radio';
 import RadioGroup from '../group';

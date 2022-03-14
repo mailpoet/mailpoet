@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import ReactHtmlParser from 'react-html-parser';
 

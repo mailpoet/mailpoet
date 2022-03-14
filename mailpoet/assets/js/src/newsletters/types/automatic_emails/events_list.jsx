@@ -1,11 +1,11 @@
-import React from 'react';
+import { Component } from 'react';
 import AutomaticEmailEvent from 'newsletters/types/automatic_emails/event.jsx';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 
-class AutomaticEmailEventsList extends React.Component {
+class AutomaticEmailEventsList extends Component {
   constructor(props) {
     super(props);
     this.email = this.props.email;

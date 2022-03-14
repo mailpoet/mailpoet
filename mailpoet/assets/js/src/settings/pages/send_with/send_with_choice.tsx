@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 

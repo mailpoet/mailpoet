@@ -1,11 +1,11 @@
-import React from 'react';
+import { Component } from 'react';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import Button from 'common/button/button.tsx';
 import Select from 'common/form/select/select.tsx';
 
-class ListingFilters extends React.Component {
+class ListingFilters extends Component {
   componentDidUpdate() {
     const selectedFilters = this.props.filter;
     this.getAvailableFilters().forEach(

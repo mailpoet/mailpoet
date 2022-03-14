@@ -1,4 +1,3 @@
-import React from 'react';
 import { memoize } from 'lodash';
 import { NoticeList } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';

@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import MailPoet from 'mailpoet';
 import TaskListDataRow from './tasks_list_data_row.jsx';
 import TaskListLabelsRow from './tasks_list_labels_row.jsx';

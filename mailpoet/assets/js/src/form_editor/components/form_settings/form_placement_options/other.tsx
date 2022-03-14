@@ -1,4 +1,3 @@
-import React from 'react';
 import MailPoet from 'mailpoet';
 import { useDispatch } from '@wordpress/data';
 import Icon from './icons/sidebar_icon';

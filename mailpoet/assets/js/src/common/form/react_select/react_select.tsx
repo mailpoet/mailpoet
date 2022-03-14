@@ -1,6 +1,5 @@
-import React, {
-  CSSProperties,
-} from 'react';
+import { CSSProperties } from 'react';
+import * as React from 'react';
 import classnames from 'classnames';
 import Select, { Props as ReactSelectProps, OptionProps } from 'react-select';
 

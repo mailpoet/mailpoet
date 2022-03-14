@@ -1,4 +1,3 @@
-import React from 'react';
 import List from '../list';
 import Heading from '../../heading/heading';
 

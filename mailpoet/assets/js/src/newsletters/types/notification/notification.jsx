@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import { Component } from 'react';
 import MailPoet from 'mailpoet';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
 import _ from 'underscore';
@@ -17,7 +17,7 @@ const field = {
   component: Scheduling,
 };
 
-class NewsletterNotification extends React.Component {
+class NewsletterNotification extends Component {
   constructor(props) {
     super(props);
     this.state = {

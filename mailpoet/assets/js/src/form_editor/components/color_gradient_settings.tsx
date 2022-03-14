@@ -1,4 +1,3 @@
-import React from 'react';
 import ColorGradientControl from '@wordpress/block-editor/build-module/components/colors-gradients/control';
 import { useSetting } from '@wordpress/block-editor';
 

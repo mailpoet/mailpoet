@@ -1,9 +1,9 @@
-import React from 'react';
+import { Component } from 'react';
 import FormFieldText from 'form/fields/text.jsx';
 import PropTypes from 'prop-types';
 import SenderEmailAddressWarning from 'common/sender_email_address_warning.jsx';
 
-class SenderField extends React.Component {
+class SenderField extends Component {
   constructor(props) {
     super(props);
     this.state = {

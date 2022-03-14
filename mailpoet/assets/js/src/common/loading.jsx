@@ -1,7 +1,7 @@
-import React from 'react';
+import { Component } from 'react';
 import MailPoet from 'mailpoet';
 
-class Loading extends React.Component {
+class Loading extends Component {
   componentDidMount() {
     MailPoet.Modal.loading(true);
   }

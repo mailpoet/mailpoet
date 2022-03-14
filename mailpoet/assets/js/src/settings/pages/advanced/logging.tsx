@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { t, onChange } from 'common/functions';
 import Select from 'common/form/select/select';
 import { useSetting } from 'settings/store/hooks';

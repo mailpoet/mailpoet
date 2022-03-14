@@ -1,5 +1,3 @@
-import React from 'react';
-
 export type PropTypes = {
   count: number;
   revenueValue: string;

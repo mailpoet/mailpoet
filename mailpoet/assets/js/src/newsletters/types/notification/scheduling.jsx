@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Select from 'form/fields/select.jsx';
 import {
@@ -35,7 +35,7 @@ const nthWeekDayField = {
   values: nthWeekDayValues,
 };
 
-class NotificationScheduling extends React.Component {
+class NotificationScheduling extends Component {
   getCurrentValue = () => this.props.item[this.props.field.name] || {};
 
   handleValueChanges = (changes) => {

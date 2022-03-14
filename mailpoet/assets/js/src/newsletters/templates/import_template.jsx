@@ -1,14 +1,14 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 import _ from 'underscore';
 import MailPoet from 'mailpoet';
 import HelpTooltip from 'help-tooltip.jsx';
 import PropTypes from 'prop-types';
 import { GlobalContext } from 'context/index.jsx';
 
-class ImportTemplate extends React.Component {
+class ImportTemplate extends Component {
   constructor(props) {
     super(props);
-    this.fileRef = React.createRef();
+    this.fileRef = createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 

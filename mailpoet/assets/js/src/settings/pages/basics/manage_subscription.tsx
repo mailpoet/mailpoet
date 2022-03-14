@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactStringReplace from 'react-string-replace';
 import { t } from 'common/functions';
 import { useSetting } from 'settings/store/hooks';

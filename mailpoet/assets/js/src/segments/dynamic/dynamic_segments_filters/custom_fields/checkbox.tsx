@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';

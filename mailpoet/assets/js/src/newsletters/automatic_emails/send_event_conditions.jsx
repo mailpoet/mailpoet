@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import Heading from 'common/typography/heading/heading';
 import Selection from 'form/fields/selection.jsx';
 import EventScheduling from 'newsletters/automatic_emails/events/event_scheduling.jsx';
@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 const defaultAfterTimeType = 'immediate';
 const defaultAfterTimeNumber = 1;
 
-class SendEventConditions extends React.Component {
+class SendEventConditions extends Component {
   constructor(props) {
     super(props);
     const { field } = props;

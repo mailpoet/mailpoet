@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   FontSizePicker,
 } from '@wordpress/components';

@@ -1,4 +1,3 @@
-import React from 'react';
 import SelectionItem from '../selection_item';
 
 type Props = {

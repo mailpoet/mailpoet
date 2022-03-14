@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import Modal from 'common/modal/modal';

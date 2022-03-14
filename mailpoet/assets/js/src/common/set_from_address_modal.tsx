@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useContext, useState } from 'react';
 import ReactStringReplace from 'react-string-replace';
 import jQuery from 'jquery';
 import MailPoet from 'mailpoet';
@@ -81,7 +81,7 @@ type Props = {
 function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
   const [address, setAddress] = useState<string>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { notices } = React.useContext<any>(GlobalContext);
+  const { notices } = useContext<any>(GlobalContext);
 
   return (
     <Modal

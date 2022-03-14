@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { Label, Inputs } from 'settings/components';
 import {
   isEmail,
@@ -19,7 +19,7 @@ export default function DefaultSender() {
   const setErrorFlag = useAction('setErrorFlag');
   const invalidSenderEmail = (senderEmail && !isEmail(senderEmail));
   const invalidReplyToEmail = replyToEmail && !isEmail(replyToEmail);
-  React.useEffect(() => {
+  useEffect(() => {
     setErrorFlag(invalidSenderEmail || invalidReplyToEmail);
   }, [invalidReplyToEmail, invalidSenderEmail, setErrorFlag]);
   return (

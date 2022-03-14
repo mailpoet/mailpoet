@@ -1,4 +1,3 @@
-import React from 'react';
 import MailPoet from 'mailpoet';
 import NewsletterStats from '../newsletter_stats';
 import Heading from '../../typography/heading/heading';

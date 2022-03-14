@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSelector } from 'settings/store/hooks';
 import { onChange, t } from 'common/functions';
 import Select from 'common/form/select/select';

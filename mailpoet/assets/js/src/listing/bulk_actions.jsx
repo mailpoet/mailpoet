@@ -1,8 +1,8 @@
-import React from 'react';
+import { Component } from 'react';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
-class ListingBulkActions extends React.Component {
+class ListingBulkActions extends Component {
   constructor(props) {
     super(props);
     this.state = {

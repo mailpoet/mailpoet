@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import MailPoet from 'mailpoet';
 import Button from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';

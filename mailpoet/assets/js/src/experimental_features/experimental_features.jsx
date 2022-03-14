@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';

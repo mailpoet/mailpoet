@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes } from 'react';
+import { InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
 import Tooltip from 'common/tooltip/tooltip';
 

@@ -1,9 +1,9 @@
-import React from 'react';
+import { Component } from 'react';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
 import Select from 'common/form/select/select';
 
-class FormFieldSelect extends React.Component {
+class FormFieldSelect extends Component {
   render() {
     if (this.props.field.values === undefined) {
       return false;

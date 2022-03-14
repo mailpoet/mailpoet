@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import { CreateTestingWorkflowButton } from './testing';
 import { useMutation, useQuery } from './api';

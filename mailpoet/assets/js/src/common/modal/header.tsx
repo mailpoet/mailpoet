@@ -1,5 +1,3 @@
-import React from 'react';
-
 import Heading from '../typography/heading/heading';
 
 type Props = {

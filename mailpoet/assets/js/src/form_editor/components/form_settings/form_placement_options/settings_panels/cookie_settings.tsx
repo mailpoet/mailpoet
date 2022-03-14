@@ -1,4 +1,3 @@
-import React from 'react';
 import MailPoet from 'mailpoet';
 import { assocPath, compose, __ } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';

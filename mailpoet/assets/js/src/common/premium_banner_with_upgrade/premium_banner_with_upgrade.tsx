@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import MailPoet from 'mailpoet';
 import PremiumRequired from 'common/premium_required/premium_required';
 import Button from 'common/button/button';

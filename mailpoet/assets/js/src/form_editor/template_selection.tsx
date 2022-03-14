@@ -1,4 +1,4 @@
-import React from 'react';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
@@ -20,9 +20,9 @@ const appElement = document.querySelector('#mailpoet_form_edit_templates');
 if (appElement) {
   initStore();
   ReactDOM.render(
-    <React.StrictMode>
+    <StrictMode>
       <App />
-    </React.StrictMode>,
+    </StrictMode>,
     appElement
   );
 }

@@ -1,4 +1,3 @@
-import React from 'react';
 import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 import Categories from 'common/categories/categories';

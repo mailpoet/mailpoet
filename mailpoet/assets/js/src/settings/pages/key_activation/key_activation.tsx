@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import MailPoet from 'mailpoet';
 import { useSelector, useAction, useSetting } from 'settings/store/hooks';
 import { GlobalContext } from 'context';

@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import MailPoet from 'mailpoet';
 import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
 import Loading from 'common/loading.jsx';
@@ -61,7 +61,7 @@ templatesCategories.push(
   ]
 );
 
-class NewsletterTemplates extends React.Component {
+class NewsletterTemplates extends Component {
   constructor(props) {
     super(props);
     this.state = {

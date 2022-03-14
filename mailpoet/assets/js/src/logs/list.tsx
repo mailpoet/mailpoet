@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import MailPoet from 'mailpoet';
 import { curry } from 'lodash';
 import { parseISO } from 'date-fns';

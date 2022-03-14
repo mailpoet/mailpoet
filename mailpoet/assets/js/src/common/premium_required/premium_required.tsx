@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import Badge from 'common/badge/badge';
 import Heading from 'common/typography/heading/heading';
 

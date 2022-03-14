@@ -1,4 +1,5 @@
-import React, { SelectHTMLAttributes } from 'react';
+import { SelectHTMLAttributes } from 'react';
+import * as React from 'react';
 import classnames from 'classnames';
 
 type Props = SelectHTMLAttributes<HTMLSelectElement> & {

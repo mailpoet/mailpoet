@@ -1,5 +1,6 @@
 import classnames from 'classnames';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import * as React from 'react';
 import { noop } from 'lodash';
 
 import Tab from './tab';

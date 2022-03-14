@@ -1,4 +1,3 @@
-import React from 'react';
 import PremiumRequired from '../premium_required';
 import Button from '../../button/button';
 

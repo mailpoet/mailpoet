@@ -1,4 +1,3 @@
-import React from 'react';
 import { applyFormat } from '@wordpress/rich-text';
 import MailPoet from 'mailpoet';
 import { BlockFormatControls } from '@wordpress/block-editor';

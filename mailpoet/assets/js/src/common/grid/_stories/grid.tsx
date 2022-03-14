@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import Heading from '../../typography/heading/heading';
 import { Grid } from '..';
 import Input from '../../form/input/input';

@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
@@ -171,7 +171,7 @@ let newsletterActions = [
 ];
 newsletterActions = addStatsCTAAction(newsletterActions);
 
-class NewsletterListStandard extends React.Component {
+class NewsletterListStandard extends Component {
   constructor(props) {
     super(props);
     this.state = {

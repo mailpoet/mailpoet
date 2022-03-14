@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
@@ -165,7 +165,7 @@ const itemActions = [
   },
 ];
 
-class FormList extends React.Component {
+class FormList extends Component {
   updateStatus = (checked, e) => {
     // make the event persist so that we can still override the selected value
     // in the ajax callback

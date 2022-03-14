@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
@@ -230,7 +230,7 @@ const itemActions = [
   },
 ];
 
-class SegmentList extends React.Component {
+class SegmentList extends Component {
   renderItem = (segment, actions) => {
     const rowClasses = classNames(
       'manage-column',

@@ -1,5 +1,4 @@
 import { noop } from 'lodash';
-import React from 'react';
 import Categories from '../categories';
 
 export default {

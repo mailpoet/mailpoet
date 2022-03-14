@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Hooks from 'wp-js-hooks';
 import MailPoet from 'mailpoet';
 import { withRouter } from 'react-router-dom';

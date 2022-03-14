@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';

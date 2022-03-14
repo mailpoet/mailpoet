@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import MailPoet from 'mailpoet';
 import StepsContent from 'common/steps/steps_content.tsx';
 import WooCommerceStep from './steps/woo_commerce_step.jsx';

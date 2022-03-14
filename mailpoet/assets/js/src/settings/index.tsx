@@ -1,4 +1,3 @@
-import React from 'react';
 import 'parsleyjs';
 import ReactDOM from 'react-dom';
 import { GlobalContext, useGlobalContextValue } from 'context';

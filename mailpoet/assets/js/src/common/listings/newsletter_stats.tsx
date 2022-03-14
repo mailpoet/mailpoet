@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import MailPoet from 'mailpoet';
 import { StatsBadge } from './newsletter_stats/stats';
 import Tooltip from '../tooltip/tooltip';

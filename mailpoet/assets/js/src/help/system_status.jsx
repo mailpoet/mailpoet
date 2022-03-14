@@ -1,5 +1,4 @@
 import MailPoet from 'mailpoet';
-import React from 'react';
 import ReactStringReplace from 'react-string-replace';
 import CronStatus from './cron_status.jsx';
 import QueueStatus from './queue_status.jsx';

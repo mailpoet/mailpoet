@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import ReactStringReplace from 'react-string-replace';
 
 import HelpTooltip from 'help-tooltip';
@@ -18,7 +18,7 @@ interface TestSendingWindow extends Window {
 declare let window: TestSendingWindow;
 
 export default function TestSending() {
-  const [email, setEmail] = React.useState<string>(window.mailpoet_current_user_email);
+  const [email, setEmail] = useState<string>(window.mailpoet_current_user_email);
   const [mailer] = useSetting('mta');
   const { state, error } = useSelector('getTestEmailState')();
   const sendTestEmail = useAction('sendTestEmail');

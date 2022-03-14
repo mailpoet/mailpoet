@@ -1,6 +1,5 @@
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 function ConfirmAlert(props) {

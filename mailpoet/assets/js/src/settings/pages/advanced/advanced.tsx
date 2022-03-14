@@ -1,4 +1,3 @@
-import React from 'react';
 import { SaveButton } from 'settings/components';
 import TaskScheduler from './task_scheduler';
 import Roles from './roles';

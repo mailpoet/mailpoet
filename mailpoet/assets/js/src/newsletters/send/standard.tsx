@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Component } from 'react';
+import { ChangeEvent, Component } from 'react';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import Moment from 'moment';

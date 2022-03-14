@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { t, onChange } from 'common/functions';
 import Textarea from 'common/form/textarea/textarea';
 import { Label, Inputs } from 'settings/components';

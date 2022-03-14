@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactStringReplace from 'react-string-replace';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';

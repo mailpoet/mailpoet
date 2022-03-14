@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes, useState } from 'react';
+import { InputHTMLAttributes, useState } from 'react';
 import Radio from './radio';
 
 type RadioValueType = string | string[] | number;

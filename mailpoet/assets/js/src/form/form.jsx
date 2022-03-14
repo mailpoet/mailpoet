@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef, Component } from 'react';
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
 import FormField from 'form/fields/field.jsx';
@@ -7,10 +7,10 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Button } from 'common';
 
-class Form extends React.Component {
+class Form extends Component {
   constructor(props) {
     super(props);
-    this.formRef = React.createRef();
+    this.formRef = createRef();
     this.state = {
       loading: false,
       errors: [],

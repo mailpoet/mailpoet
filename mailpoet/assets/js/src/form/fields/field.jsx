@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import FormFieldText from 'form/fields/text.jsx';
 import FormFieldTextarea from 'form/fields/textarea.jsx';
 import FormFieldSelect from 'form/fields/select.jsx';
@@ -10,7 +10,7 @@ import Heading from 'common/typography/heading/heading';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
 
-class FormField extends React.Component {
+class FormField extends Component {
   renderField = (data) => {
     let description = false;
     if (data.field.description) {

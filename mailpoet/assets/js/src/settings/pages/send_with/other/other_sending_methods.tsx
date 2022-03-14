@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSetting } from 'settings/store/hooks';
 import SendingMethod from './sending_method';
 import SPF from './spf';

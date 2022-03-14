@@ -1,8 +1,8 @@
-import React from 'react';
+import { Component } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-class ListingColumn extends React.Component {
+class ListingColumn extends Component {
   handleSort = () => {
     const sortBy = this.props.column.name;
     const sortOrder = (this.props.column.sorted === 'asc') ? 'desc' : 'asc';

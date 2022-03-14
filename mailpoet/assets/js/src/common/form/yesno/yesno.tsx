@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes } from 'react';
+import { InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
 import iconYes from './icons/yes';
 import iconNo from './icons/no';

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import codemirror from 'codemirror';
 import 'codemirror/mode/css/css'; // Side effect
 import PropTypes from 'prop-types';

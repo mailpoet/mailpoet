@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { partial } from 'underscore';
 import MailPoet from 'mailpoet';
 import WelcomeWizardSenderStep from './steps/sender_step.jsx';

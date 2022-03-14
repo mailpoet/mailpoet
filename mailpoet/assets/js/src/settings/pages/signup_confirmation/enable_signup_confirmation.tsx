@@ -1,4 +1,3 @@
-import React from 'react';
 import { t } from 'common/functions';
 import Radio from 'common/form/radio/radio';
 import { Label, Inputs } from 'settings/components';

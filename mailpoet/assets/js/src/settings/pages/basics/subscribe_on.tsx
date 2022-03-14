@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { t, onChange } from 'common/functions';
 import Checkbox from 'common/form/checkbox/checkbox';
 import Input from 'common/form/input/input';
@@ -15,7 +15,7 @@ export default function SubscribeOn({ title, description, event }: Props) {
   const [enabled, setEnabled] = useSetting('subscribe', event, 'enabled');
   const [label, setLabel] = useSetting('subscribe', event, 'label');
   const [segments, setSegments] = useSetting('subscribe', event, 'segments');
-  React.useEffect(() => {
+  useEffect(() => {
     if (label === '') setLabel(t('yesAddMe'));
   }, [label, setLabel]);
 

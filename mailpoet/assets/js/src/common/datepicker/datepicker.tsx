@@ -1,4 +1,3 @@
-import React from 'react';
 import classnames from 'classnames';
 import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import MailPoet from 'mailpoet';

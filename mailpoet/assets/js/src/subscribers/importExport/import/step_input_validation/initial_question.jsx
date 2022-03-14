@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import Radio from 'common/form/radio/radio';

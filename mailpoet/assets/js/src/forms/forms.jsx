@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import { Route, HashRouter } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';

@@ -1,5 +1,4 @@
 import ReactDOM from 'react-dom';
-import React from 'react';
 
 import { List, Logs, FilterType } from './list';
 

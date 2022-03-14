@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
 import Select from 'common/form/select/select';
@@ -8,7 +8,7 @@ export default function SendingMethod() {
   const [provider, setProvider] = useSetting('smtp_provider');
   const [, setGroup] = useSetting('mta_group');
   const [, setMethod] = useSetting('mta', 'method');
-  React.useEffect(() => {
+  useEffect(() => {
     switch (provider) {
       case 'server':
         setGroup('website');

@@ -1,4 +1,11 @@
-import React, { ReactNode } from 'react';
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  ReactNode,
+} from 'react';
 import ReactDOM from 'react-dom';
 import MailPoet from 'mailpoet';
 
@@ -23,29 +30,29 @@ function Notice({
   closable,
   type,
 }: Props) {
-  const [hidden, setHidden] = React.useState(false);
-  const elementRef = React.useRef(null);
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>(null);
+  const [hidden, setHidden] = useState(false);
+  const elementRef = useRef(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-  const close = React.useCallback(() => {
+  const close = useCallback(() => {
     if (onClose) onClose();
     setHidden(true);
   }, [onClose]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (timeout) {
       timeoutRef.current = setTimeout(close, timeout);
     }
     return () => (timeoutRef.current ? clearTimeout(timeoutRef.current) : null);
   }, [close, timeout]);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (scroll && elementRef.current) {
       elementRef.current.scrollIntoView(false);
     }
   }, [scroll]);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (onDisplay) onDisplay();
   }, [onDisplay]);
 

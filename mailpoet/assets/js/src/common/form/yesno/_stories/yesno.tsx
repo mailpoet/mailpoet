@@ -1,4 +1,3 @@
-import React from 'react';
 import { action } from '_storybook/action';
 import YesNo from '../yesno';
 import Heading from '../../../typography/heading/heading';

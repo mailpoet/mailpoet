@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 

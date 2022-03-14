@@ -1,4 +1,4 @@
-import React from 'react';
+import { useCallback } from 'react';
 import { Settings } from '../types';
 import useSelector from './useSelector';
 import { ValueAndSetter } from './types';
@@ -29,6 +29,6 @@ export function useSetting(...path: string[]): [any, (value: any) => any] {
   return [
     getValue(path),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    React.useCallback((value) => setValue(path, value), path),
+    useCallback((value) => setValue(path, value), path),
   ];
 }

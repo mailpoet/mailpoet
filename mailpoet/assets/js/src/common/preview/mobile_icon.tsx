@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function MobileIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="16px" height="24px" viewBox="0 0 16 24" version="1.1">

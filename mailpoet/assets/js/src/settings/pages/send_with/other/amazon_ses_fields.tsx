@@ -1,4 +1,3 @@
-import React from 'react';
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
 import Input from 'common/form/input/input';

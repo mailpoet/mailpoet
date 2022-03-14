@@ -1,4 +1,3 @@
-import React from 'react';
 import Textarea from '../textarea';
 import Heading from '../../../typography/heading/heading';
 

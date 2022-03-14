@@ -1,4 +1,3 @@
-import React from 'react';
 import MailPoet from 'mailpoet';
 import Heading from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';

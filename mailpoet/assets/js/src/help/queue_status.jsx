@@ -1,6 +1,5 @@
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import React from 'react';
 import KeyValueTable from 'common/key_value_table.jsx';
 import TasksList from './tasks_list/tasks_list.jsx';
 import TasksListDataRow from './tasks_list/tasks_list_data_row.jsx';

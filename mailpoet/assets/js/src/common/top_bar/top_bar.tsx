@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
 import t from 'common/functions/t';

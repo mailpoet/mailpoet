@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSelect } from '@wordpress/data';
 import { Panel, PanelBody } from '@wordpress/components';
 import MailPoet from 'mailpoet';

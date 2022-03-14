@@ -1,9 +1,9 @@
-import React from 'react';
+import { Component } from 'react';
 import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
-class ListingPages extends React.Component {
+class ListingPages extends Component {
   constructor(props) {
     super(props);
     this.state = {

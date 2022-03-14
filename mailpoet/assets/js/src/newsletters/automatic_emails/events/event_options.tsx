@@ -1,4 +1,3 @@
-import React from 'react';
 import Selection from 'form/fields/selection.jsx';
 import _ from 'underscore';
 

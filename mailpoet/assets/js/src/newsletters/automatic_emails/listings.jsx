@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import ReactStringReplace from 'react-string-replace';
 
 import Listing from 'listing/listing.jsx';
@@ -148,7 +148,7 @@ let newsletterActions = [
 
 newsletterActions = addStatsCTAAction(newsletterActions);
 
-class Listings extends React.Component {
+class Listings extends Component {
   constructor(props) {
     super(props);
     this.state = {

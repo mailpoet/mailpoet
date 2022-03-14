@@ -1,4 +1,3 @@
-import React from 'react';
 import moment from 'moment';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
