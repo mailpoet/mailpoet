@@ -13,17 +13,17 @@ function OtherSettings():JSX.Element {
 
   const formExports = useSelect(
     (select) => select('mailpoet-form-editor').getFormExports(),
-    []
+    [],
   );
 
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
-    []
+    [],
   );
 
   const isFormSaved = useSelect(
     (select) => select('mailpoet-form-editor').isFormSaved(),
-    []
+    [],
   );
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 
@@ -32,13 +32,13 @@ function OtherSettings():JSX.Element {
     /\[link](.*?)\[\/link]/g,
     (match) => (
       <a key="addFormWidgetHintLink" href="widgets.php" target="_blank">{match}</a>
-    )
+    ),
   );
 
   const addFormShortcodeHint = ReactStringReplace(
     MailPoet.I18n.t('addFormShortcodeHint'),
     /\[shortcode]/g,
-    (match) => (<code key={match}>{formExports.shortcode}</code>)
+    (match) => (<code key={match}>{formExports.shortcode}</code>),
   );
 
   const exportLinkClicked = curry((type, event) => {
@@ -60,7 +60,7 @@ function OtherSettings():JSX.Element {
         return (<a key="exportPHP" href="#" onClick={exportLinkClicked('php')}>{match}</a>);
       }
       return (<a key="exportIframe" href="#" onClick={exportLinkClicked('iframe')}>{match}</a>);
-    }
+    },
   );
 
   const getCopyTextArea: React.FunctionComponent = () => {

@@ -3,7 +3,7 @@ type PlacementStyles = {
     unit: string;
     value: number;
   };
-}
+};
 
 export type FormSettingsType = {
   alignment: string;
@@ -54,36 +54,36 @@ export type InputBlockStyles = {
   borderColor?: string;
   padding?: number;
   fontFamily?: string;
-}
+};
 
 export type InputBlockStylesServerData = {
-  full_width: boolean|string;
-  bold?: boolean|string;
+  full_width: boolean | string;
+  bold?: boolean | string;
   background_color?: string;
   gradient?: string;
-  border_size?: string|number;
-  font_size?: string|number;
+  border_size?: string | number;
+  font_size?: string | number;
   font_color?: string;
-  border_radius?: string|number;
+  border_radius?: string | number;
   border_color?: string;
-  padding?: string|number;
+  padding?: string | number;
   font_family?: string;
-}
+};
 
 export type ColorDefinition = {
   name: string;
   slug: string;
   color: string;
-}
+};
 
 export type GradientDefinition = {
   name: string;
   slug: string;
   gradient: string;
-}
+};
 
 export type FontSizeDefinition = {
   name: string;
   slug: string;
   size: number;
-}
+};

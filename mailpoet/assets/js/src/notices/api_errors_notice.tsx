@@ -2,7 +2,7 @@ import Notice from 'notices/notice';
 
 type Props = {
   errors: Array<{ message: string }>;
-}
+};
 
 function APIErrorsNotice({ errors }: Props) {
   if (errors.length < 1) return null;

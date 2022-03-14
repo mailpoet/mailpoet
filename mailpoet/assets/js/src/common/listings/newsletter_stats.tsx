@@ -11,7 +11,7 @@ type NewsletterStatsProps = {
   hideBadges?: boolean;
   newsletterId?: number; // used for tooltip IDs
   wrapContentInLink?: (content: React.ReactNode, idPrefix: string) => JSX.Element;
-}
+};
 
 function NewsletterStats({
   opened,

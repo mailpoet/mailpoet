@@ -65,12 +65,12 @@ const componentsMap = {
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function SubscriberFields({ filterIndex } : Props):JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   let Component;

@@ -38,7 +38,7 @@ export function SubscribersCacheMessage({ cacheCalculation }: Props): JSX.Elemen
           <abbr key={i} title={cacheCalculation}>
             {match.replace(/(\{\$mins\}|\$mins)/i, String(minutes))}
           </abbr>
-        )
+        ),
       )}
 
       <Button

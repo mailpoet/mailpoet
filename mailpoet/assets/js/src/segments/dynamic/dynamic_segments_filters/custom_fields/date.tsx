@@ -32,7 +32,7 @@ function DateMonth({ onChange, item, filterIndex }: ComponentProps) {
     if ((item.value === undefined) || item.value === '') {
       onChange(
         assign(item, { value: '2017-01-01 00:00:00' }),
-        filterIndex
+        filterIndex,
       );
     }
   }, [onChange, item, filterIndex]);
@@ -70,7 +70,7 @@ function DateYear({ onChange, item, filterIndex }: ComponentProps) {
           value: `${currentYear}-01-01 00:00:00`,
           operator: 'equals',
         }),
-        filterIndex
+        filterIndex,
       );
     }
   }, [currentYear, onChange, item, filterIndex]);
@@ -108,7 +108,7 @@ function DateYear({ onChange, item, filterIndex }: ComponentProps) {
   );
 }
 
-const convertDateToString = (value: Date|[Date, Date]): string | undefined => {
+const convertDateToString = (value: Date | [Date, Date]): string | undefined => {
   if (value === null) {
     return undefined;
   }
@@ -132,7 +132,7 @@ function DateFullDate({ onChange, item, filterIndex }: ComponentProps) {
           value: `${format(new Date(), 'yyyy-MM-dd')} 00:00:00`,
           operator: 'equals',
         }),
-        filterIndex
+        filterIndex,
       );
     }
   }, [onChange, item, filterIndex]);
@@ -154,7 +154,7 @@ function DateFullDate({ onChange, item, filterIndex }: ComponentProps) {
         dateFormat="MMM d, yyyy"
         onChange={(value): void => onChange(
           assign(item, { value: convertDateToString(value) }),
-          filterIndex
+          filterIndex,
         )}
         selected={item.value ? parseDate(item.value) : undefined}
       />
@@ -170,7 +170,7 @@ function DateMonthYear({ onChange, item, filterIndex }: ComponentProps) {
           value: `${format(new Date(), 'yyyy-MM-dd')} 00:00:00`,
           operator: 'equals',
         }),
-        filterIndex
+        filterIndex,
       );
     }
   }, [onChange, item, filterIndex]);
@@ -191,7 +191,7 @@ function DateMonthYear({ onChange, item, filterIndex }: ComponentProps) {
       <Datepicker
         onChange={(value): void => onChange(
           assign(item, { value: convertDateToString(value) }),
-          filterIndex
+          filterIndex,
         )}
         selected={item.value ? parseDate(item.value) : undefined}
         dateFormat="MM/yyyy"
@@ -231,11 +231,11 @@ const componentsMap = {
 };
 
 export function CustomFieldDate(
-  { customField, filterIndex } : Props
+  { customField, filterIndex } : Props,
 ) : JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');

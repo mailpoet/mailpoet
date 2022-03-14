@@ -61,7 +61,7 @@ export function* verifyPremiumKey(key: string) {
       'User has failed to validate a Premium key',
       {
         'Premium plugin is active': !!MailPoet.premiumVersion,
-      }
+      },
     );
     return updateKeyActivationState({
       premiumStatus: PremiumStatus.INVALID,

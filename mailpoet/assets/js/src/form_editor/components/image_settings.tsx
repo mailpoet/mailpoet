@@ -8,7 +8,7 @@ type Props = {
   onImageUrlChange: (value: string) => void;
   imageDisplay?: string;
   onImageDisplayChange: (value: string) => void;
-}
+};
 
 function ImageSettings({
   name,
@@ -26,7 +26,7 @@ function ImageSettings({
         <input type="text" value={imageUrl ?? ''} onChange={(event): void => onImageUrlChange(event.target.value)} />
         <MediaUpload
           value={imageUrl}
-          onSelect={(image:{url:string}): void => onImageUrlChange(image.url)}
+          onSelect={(image:{ url:string }): void => onImageUrlChange(image.url)}
           allowedTypes={['image']}
           render={({ open }): JSX.Element => (
             <Button

@@ -23,6 +23,6 @@ if (appElement) {
     <StrictMode>
       <App />
     </StrictMode>,
-    appElement
+    appElement,
   );
 }

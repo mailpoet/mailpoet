@@ -6,12 +6,12 @@ import SidebarHeader from './sidebar_header';
 
 type Props = {
   onClose: () => void;
-}
+};
 
 export default function PlaceMentSettingsSidebar({ onClose }: Props): JSX.Element {
   const previewSettings = useSelect(
     (select) => select('mailpoet-form-editor').getPreviewSettings(),
-    []
+    [],
   );
   return (
     <>

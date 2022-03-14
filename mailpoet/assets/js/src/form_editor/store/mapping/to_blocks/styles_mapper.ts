@@ -72,7 +72,7 @@ export const mapGradientSlug = (definitions: GradientDefinition[], value) => {
 
 export const mapFontSizeSlug = (
   fontSizeDefinitions: FontSizeDefinition[],
-  fontSizeValue:string
+  fontSizeValue:string,
 ) => {
   let value = 0;
   if (fontSizeValue) {

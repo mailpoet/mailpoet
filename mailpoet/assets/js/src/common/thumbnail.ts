@@ -79,8 +79,8 @@ export const fromNewsletter = (data) => new Promise((resolve, reject) => {
       void fromUrl(response.meta.preview_url)
         .then(resolve)
         .catch(reject);
-    }
+    },
   ).fail(
-    (response) => reject(response.errors)
+    (response) => reject(response.errors),
   );
 });

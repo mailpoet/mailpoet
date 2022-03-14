@@ -48,7 +48,7 @@ export const mapInputBlockStyles = (styles: InputBlockStyles) => {
 export const mapColorSlugToValue = (
   colorDefinitions: ColorDefinition[],
   colorSlug: string,
-  colorValue: string = null
+  colorValue: string = null,
 ): string => {
   const result = colorDefinitions.find((color) => color.slug === colorSlug);
   return result ? result.color : colorValue;
@@ -57,7 +57,7 @@ export const mapColorSlugToValue = (
 export const mapGradientSlugToValue = (
   colorDefinitions: GradientDefinition[],
   slug: string,
-  value: string = null
+  value: string = null,
 ): string => {
   const result = colorDefinitions.find((color) => color.slug === slug);
   return result ? result.gradient : value;
@@ -66,7 +66,7 @@ export const mapGradientSlugToValue = (
 export const mapFontSizeSlugToValue = (
   fontSizeDefinitions: FontSizeDefinition[],
   sizeSlug: string,
-  sizeValue: number = null
+  sizeValue: number = null,
 ): number => {
   const result = fontSizeDefinitions.find((size) => size.slug === sizeSlug);
   return result ? result.size : sizeValue;

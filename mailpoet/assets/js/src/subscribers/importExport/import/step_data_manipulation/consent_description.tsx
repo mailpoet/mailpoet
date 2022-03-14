@@ -19,7 +19,7 @@ export function ConsentDescription() : JSX.Element {
           >
             {match}
           </a>
-        )
+        ),
       )}
     </p>
   );

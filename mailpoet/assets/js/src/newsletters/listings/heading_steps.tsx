@@ -3,7 +3,7 @@ import MailPoet from 'mailpoet';
 import HideScreenOptions from '../../common/hide_screen_options/hide_screen_options';
 import Steps from '../../common/steps/steps';
 
-export const mapPathToSteps = (location: Location): number|null => {
+export const mapPathToSteps = (location: Location): number | null => {
   const stepsMap = [
     ['/new/.+', 1],
     ['/template/.+', 2],
@@ -52,7 +52,7 @@ const getEmailSendTitle = (emailType: string): string => {
 const stepsListingHeading = (
   step: number,
   emailType: string,
-  automationId: string
+  automationId: string,
 ): JSX.Element => {
   const emailTypeTitle = getEmailTypeTitle(emailType);
   return (

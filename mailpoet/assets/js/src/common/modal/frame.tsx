@@ -17,7 +17,7 @@ function ModalFrame({
       className={classnames(
         'mailpoet-modal-frame',
         { 'mailpoet-modal-full-screen': fullScreen },
-        className
+        className,
       )}
       role="dialog"
       tabIndex={-1}

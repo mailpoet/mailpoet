@@ -14,7 +14,7 @@ function DynamicSegmentsPremiumBanner() : JSX.Element {
           /\[link](.*?)\[\/link]/g,
           (match) => (
             <a key={match} href={MailPoet.premiumLink} target="_blank" rel="noopener noreferrer">{match}</a>
-          )
+          ),
         )}
       </p>
     );
@@ -26,7 +26,7 @@ function DynamicSegmentsPremiumBanner() : JSX.Element {
         MailPoet.subscribersCount,
         MailPoet.currentWpUserEmail,
         null,
-        { utm_medium: 'segments', utm_campaign: 'signup' }
+        { utm_medium: 'segments', utm_campaign: 'signup' },
       )}
       target="_blank"
       rel="noopener noreferrer"

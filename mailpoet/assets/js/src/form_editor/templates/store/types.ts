@@ -6,7 +6,7 @@ export type TemplateType = {
 
 export type TemplateData = {
   [formType: string]: Array<TemplateType>;
-}
+};
 
 export enum CategoryType {
   Popup = 'popup',
@@ -22,11 +22,11 @@ export type StateType = {
   selectTemplateFailed: boolean;
   loading: boolean;
   activeCategory: CategoryType;
-}
+};
 
 export type ActionType = {
   type: string;
-}
+};
 
 export interface CategoryActionType extends ActionType {
   category: CategoryType;

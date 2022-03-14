@@ -3,14 +3,14 @@ import Tag from './tag';
 
 type Segment = {
   name: string;
-}
+};
 
 type Props = {
   children?: React.ReactNode;
   dimension?: 'large';
   segments?: Segment[];
   strings?: string[];
-}
+};
 
 function Tags({
   children,

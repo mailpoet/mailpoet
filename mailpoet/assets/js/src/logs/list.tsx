@@ -13,11 +13,11 @@ type Log = {
   name: string;
   message: string;
   created_at: string;
-}
+};
 
 export type Logs = Log[];
 
-function isCtrl(event: {ctrlKey ?:boolean, metaKey ?:boolean, altKey ?:boolean}): boolean {
+function isCtrl(event: { ctrlKey ?:boolean, metaKey ?:boolean, altKey ?:boolean }): boolean {
   return (event.ctrlKey || event.metaKey) && !event.altKey; // shiftKey allowed
 }
 
@@ -37,12 +37,12 @@ function Message({ message, editing }: MessageProps):JSX.Element {
 
 type LogProps = {
   log: Log;
-}
+};
 
 function Log({ log }: LogProps) : JSX.Element {
   const [editing, setEditing] = useState(false);
 
-  function messageClick(event: {ctrlKey ?:boolean, metaKey ?:boolean, altKey ?:boolean}): void {
+  function messageClick(event: { ctrlKey ?:boolean, metaKey ?:boolean, altKey ?:boolean }): void {
     if (!isCtrl(event)) return;
     if (editing) return;
     setEditing(true);
@@ -65,7 +65,7 @@ export type FilterType = {
   search?: string;
   offset?: string;
   limit?: string;
-}
+};
 
 type ListProps = {
   logs: Logs;
@@ -75,7 +75,7 @@ type ListProps = {
   originalOffset?: string;
   originalLimit?: string;
   onFilter: (FilterType) => void;
-}
+};
 
 export function List({
   logs,

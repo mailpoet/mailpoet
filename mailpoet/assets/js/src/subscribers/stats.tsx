@@ -27,12 +27,12 @@ export type StatsType = {
     formatted: string;
     formatted_average: string;
   };
-}
+};
 
 export function SubscriberStats() : JSX.Element {
-  const match = useRouteMatch<{id: string}>();
+  const match = useRouteMatch<{ id: string }>();
   const location = useLocation();
-  const [stats, setStats] = useState<StatsType|null>(null);
+  const [stats, setStats] = useState<StatsType | null>(null);
   const [loading, setLoading] = useState(true);
   const contextValue = useGlobalContextValue(window);
   const showError = contextValue.notices.error;
@@ -53,7 +53,7 @@ export function SubscriberStats() : JSX.Element {
       if (response.errors.length > 0) {
         showError(
           <>{response.errors.map((error) => <p key={error.message}>{error.message}</p>)}</>,
-          { scroll: true }
+          { scroll: true },
         );
       }
     });

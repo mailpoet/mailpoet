@@ -72,7 +72,7 @@ export default function SendWithChoice() {
                 /\[link\](.*?)\[\/link\]/g,
                 (match, i) => (
                   <Link key={i} to="/premium" className="mailpoet-link">{match}</Link>
-                )
+                ),
               )}
             </div>
           )}

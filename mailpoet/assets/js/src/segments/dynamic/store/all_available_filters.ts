@@ -9,7 +9,7 @@ import { WooCommerceSubscriptionOptions } from '../dynamic_segments_filters/wooc
 
 export function getAvailableFilters(
   canUseWooSubscriptions: boolean,
-  canUseWooMembership: boolean
+  canUseWooMembership: boolean,
 ): GroupFilterValue[] {
   const filters: GroupFilterValue[] = [
     {

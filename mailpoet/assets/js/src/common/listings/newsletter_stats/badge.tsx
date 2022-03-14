@@ -10,7 +10,7 @@ type BadgeProps = {
   tooltipPlace?: Place;
   type?: 'average' | 'good' | 'excellent' | 'unknown';
   isInverted?: boolean;
-}
+};
 
 function Badge({
   name,

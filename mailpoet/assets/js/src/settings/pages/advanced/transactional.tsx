@@ -62,7 +62,7 @@ export default function Transactional() {
                 >
                   {text}
                 </a>
-              )
+              ),
             )}
           </span>
         </label>

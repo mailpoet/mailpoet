@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { RangeControl, RadioControl, BaseControl } from '@wordpress/components';
 
 export type SizeDefinition = {
-  value: number|undefined;
-  unit: 'percent'|'pixel';
+  value: number | undefined;
+  unit: 'percent' | 'pixel';
 };
 
 type Props = {
@@ -12,11 +12,11 @@ type Props = {
   maxPercents?: number;
   minPixels?: number;
   maxPixels?: number;
-  value: SizeDefinition|undefined;
+  value: SizeDefinition | undefined;
   defaultPercentValue?: number;
   defaultPixelValue?: number;
   onChange: (value: SizeDefinition) => void;
-}
+};
 
 export function SizeSettings({
   label,

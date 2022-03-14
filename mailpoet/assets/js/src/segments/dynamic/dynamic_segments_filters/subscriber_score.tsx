@@ -30,7 +30,7 @@ const availableOperators = [
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function validateSubscriberScore(formItems: WordpressRoleFormItem): boolean {
   if (
@@ -63,7 +63,7 @@ function replaceSubscriberScoreSentence(fn:(value) => JSX.Element): JSX.Element[
 export function SubscriberScoreFields({ filterIndex }:Props) : JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
@@ -145,7 +145,7 @@ export function SubscriberScoreFields({ filterIndex }:Props) : JSX.Element {
             );
           }
           return null;
-        }
+        },
       )}
     </Grid.CenteredRow>
   );

@@ -18,11 +18,11 @@ const standardFonts = [
 ];
 
 type Props = {
-  onChange: (value: string|undefined) => void;
+  onChange: (value: string | undefined) => void;
   value?: string;
   name: string;
   hideLabelFromVision?: boolean;
-}
+};
 
 function FontFamilySettings({
   onChange,
@@ -32,7 +32,7 @@ function FontFamilySettings({
 }: Props) : JSX.Element {
   const customFonts = useSelect(
     (select) => select('mailpoet-form-editor').getAllCustomFonts(),
-    []
+    [],
   );
   const disabledStyle = {
     color: 'lightgray',
@@ -108,7 +108,7 @@ export default FontFamilySettings;
 export function CustomFontsStyleSheetLink(): JSX.Element {
   const customFonts = useSelect(
     (select) => select('mailpoet-form-editor').getAllCustomFonts(),
-    []
+    [],
   );
   if (!MailPoet.libs3rdPartyEnabled) {
     return null;

@@ -30,7 +30,7 @@ const Select = React.forwardRef(({
           'mailpoet-disabled': attributes.disabled,
           'mailpoet-full-width': isFullWidth,
           'mailpoet-min-width': isMinWidth,
-        }
+        },
       )
     }
   >

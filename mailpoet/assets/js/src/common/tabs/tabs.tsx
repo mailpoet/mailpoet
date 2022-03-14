@@ -32,7 +32,7 @@ const validateChildren = (children: React.ReactNode): React.ReactElement[] => {
 
 const getActiveChild = (activeTab: string, children: React.ReactElement[]): React.ReactElement => {
   const activeChild = children.find(
-    (child) => React.isValidElement(child) && child.key === activeTab
+    (child) => React.isValidElement(child) && child.key === activeTab,
   );
   if (activeChild) {
     return (activeChild);

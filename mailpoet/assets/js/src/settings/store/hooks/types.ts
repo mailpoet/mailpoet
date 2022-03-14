@@ -4,7 +4,7 @@
  * Tail<[number, string, boolean]> gives [string, boolean]
  */
 export type Tail<T extends any[]> =
-  ((...args: T) => void) extends ((_: any, ...args: infer Others) => void) ? Others : never
+  ((...args: T) => void) extends ((_: any, ...args: infer Others) => void) ? Others : never;
 
 /**
  * Takes a function type and returns a new function
@@ -13,6 +13,6 @@ export type Tail<T extends any[]> =
  *  gives (y: string) => boolean
  */
 export type ExcludeFirstParam<F extends ((...args: any[]) => any)> =
-  (...args: Tail<Parameters<F>>) => ReturnType<F>
+  (...args: Tail<Parameters<F>>) => ReturnType<F>;
 
-export type ValueAndSetter<T> = [T, (value: T) => any]
+export type ValueAndSetter<T> = [T, (value: T) => any];

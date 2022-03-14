@@ -21,7 +21,7 @@ function formatInterval(minutes: string): string {
 type Props = {
   recommendedEmails: number;
   recommendedInterval: number;
-}
+};
 export default function SendingFrequency({ recommendedEmails, recommendedInterval }: Props) {
   const [frequency, setFrequency] = useSetting('mailpoet_sending_frequency');
   const [frequencyEmails, setFrequencyEmails] = useSetting('mta', 'frequency', 'emails');
@@ -34,7 +34,7 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
   }, [frequency, recommendedEmails, recommendedInterval, setFrequencyEmails, setFrequencyInterval]);
 
   const dailyEmails = Math.floor(
-    (MINUTES_PER_DAY * parseInt(frequencyEmails, 10)) / parseInt(frequencyInterval, 10)
+    (MINUTES_PER_DAY * parseInt(frequencyEmails, 10)) / parseInt(frequencyInterval, 10),
   );
   const emailsPerSecond = Math.floor((dailyEmails / SECONDS_PER_DAY) * 10) / 10;
 
@@ -97,7 +97,7 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
           {ReactStringReplace(
             t('thatsXEmailsPerDay').replace('%1$s', dailyEmails.toLocaleString()),
             /<strong>(.*?)<\/strong>/g,
-            (match, i) => <strong key={i}>{match}</strong>
+            (match, i) => <strong key={i}>{match}</strong>,
           )}
         </div>
         {emailsPerSecond > 1 && (
@@ -106,7 +106,7 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
               {ReactStringReplace(
                 t('thatsXEmailsPerSecond').replace('%1$s', emailsPerSecond.toLocaleString()),
                 /<strong>(.*?)<\/strong>/g,
-                (match, i) => <strong key={i}>{match}</strong>
+                (match, i) => <strong key={i}>{match}</strong>,
               )}
             </span>
           </div>
@@ -116,7 +116,7 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
             {ReactStringReplace(
               t('frequencyWarning').replace('%1$s', emailsPerSecond.toLocaleString()),
               /<strong>(.*?)<\/strong>/g,
-              (match, i) => <strong key={i}>{match}</strong>
+              (match, i) => <strong key={i}>{match}</strong>,
             )}
           </div>
         )}

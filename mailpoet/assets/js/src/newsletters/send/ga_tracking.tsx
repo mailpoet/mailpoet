@@ -22,7 +22,7 @@ const tip = ReactStringReplace(
         { match }
       </a>
     </span>
-  )
+  ),
 );
 
 const field: Field = {

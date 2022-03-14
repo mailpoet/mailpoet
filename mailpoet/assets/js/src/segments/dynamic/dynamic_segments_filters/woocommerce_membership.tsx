@@ -24,7 +24,7 @@ export const WooCommerceMembershipOptions = [
 ];
 
 export function validateWooCommerceMembership(
-  formItem: WooCommerceMembershipFormItem
+  formItem: WooCommerceMembershipFormItem,
 ): boolean {
   const isIncomplete = !formItem.plan_ids || !formItem.plan_ids.length || !formItem.operator;
   if (
@@ -38,19 +38,19 @@ export function validateWooCommerceMembership(
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function WooCommerceMembershipFields({ filterIndex }:Props):JSX.Element {
   const segment: WooCommerceMembershipFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
 
   const membershipPlans: WindowMembershipPlans = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getMembershipPlans(),
-    []
+    [],
   );
   const planOptions = membershipPlans.map((plan) => ({
     value: plan.id,
@@ -77,7 +77,7 @@ export function WooCommerceMembershipFields({ filterIndex }:Props):JSX.Element {
           onChange={(e) => updateSegmentFilterFromEvent(
             'operator',
             filterIndex,
-            e
+            e,
           )}
           automationId="select-operator"
         >
@@ -99,11 +99,11 @@ export function WooCommerceMembershipFields({ filterIndex }:Props):JSX.Element {
               if (!segment.plan_ids) return false;
               return segment.plan_ids.indexOf(option.value) !== -1;
             },
-            planOptions
+            planOptions,
           )}
           onChange={(options: SelectOption[]): void => updateSegmentFilter(
             { plan_ids: (options || []).map((x: SelectOption) => x.value) },
-            filterIndex
+            filterIndex,
           )}
           automationId="select-segment-plans"
         />

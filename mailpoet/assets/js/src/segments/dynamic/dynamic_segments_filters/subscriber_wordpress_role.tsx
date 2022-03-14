@@ -17,12 +17,12 @@ import {
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function WordpressRoleFields({ filterIndex }:Props) : JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
@@ -40,7 +40,7 @@ export function WordpressRoleFields({ filterIndex }:Props) : JSX.Element {
 
   const wordpressRoles: WindowEditableRoles = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getWordpressRoles(),
-    []
+    [],
   );
   const options = wordpressRoles.map((currentValue) => ({
     value: currentValue.role_id,
@@ -77,13 +77,13 @@ export function WordpressRoleFields({ filterIndex }:Props) : JSX.Element {
                 if (!segment.wordpressRole) return undefined;
                 return segment.wordpressRole.indexOf(option.value) !== -1;
               },
-              options
+              options,
             )
           }
           onChange={(options: SelectOption[]): void => {
             updateSegmentFilter(
               { wordpressRole: map('value', options) },
-              filterIndex
+              filterIndex,
             );
           }}
         />

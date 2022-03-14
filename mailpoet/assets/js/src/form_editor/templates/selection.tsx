@@ -35,22 +35,22 @@ export default function Selection(): JSX.Element {
 
   const selectedCategory: string = useSelect(
     (select) => select('mailpoet-form-editor-templates').getSelectedCategory(),
-    []
+    [],
   );
 
   const templates: TemplateData = useSelect(
     (select) => select('mailpoet-form-editor-templates').getTemplates(),
-    []
+    [],
   );
 
   const loading: boolean = useSelect(
     (select) => select('mailpoet-form-editor-templates').getLoading(),
-    []
+    [],
   );
 
   const selectTemplateFailed: boolean = useSelect(
     (select) => select('mailpoet-form-editor-templates').getSelectTemplateFailed(),
-    []
+    [],
   );
 
   const { selectTemplate, selectCategory } = useDispatch('mailpoet-form-editor-templates');

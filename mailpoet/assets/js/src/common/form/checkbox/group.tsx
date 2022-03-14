@@ -5,7 +5,7 @@ type CheckboxValueType = string | string[] | number;
 
 type CheckboxProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
-}
+};
 
 type Props = {
   name: string;

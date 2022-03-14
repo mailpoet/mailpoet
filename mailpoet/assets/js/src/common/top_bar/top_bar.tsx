@@ -21,7 +21,7 @@ export function TopBar({
 }: Props) {
   const buttonClasses = classNames(
     'mailpoet-top-bar-beamer',
-    hasNews ? 'mailpoet-top-bar-beamer-dot' : ''
+    hasNews ? 'mailpoet-top-bar-beamer-dot' : '',
   );
   const history = useHistory();
   const onLogoClick = () => history.push('/');

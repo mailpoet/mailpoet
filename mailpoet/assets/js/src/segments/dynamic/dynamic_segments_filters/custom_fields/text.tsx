@@ -26,12 +26,12 @@ export function validateText(item: WordpressRoleFormItem): boolean {
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function Text({ filterIndex }:Props):JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilterFromEvent, updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');

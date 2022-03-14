@@ -4,7 +4,7 @@ export enum SegmentTypes {
   SubscribedDate = 'subscribedDate',
   WooCommerce = 'woocommerce',
   WooCommerceMembership = 'woocommerceMembership',
-  WooCommerceSubscription = 'woocommerceSubscription'
+  WooCommerceSubscription = 'woocommerceSubscription',
 }
 
 export enum EmailActionTypes {
@@ -32,13 +32,13 @@ export enum SegmentConnectTypes {
 export enum AnyValueTypes {
   ANY = 'any',
   ALL = 'all',
-  NONE = 'none'
+  NONE = 'none',
 }
 
 export type GroupFilterValue = {
   label: string;
   options: FilterValue[];
-}
+};
 
 export interface SelectOption {
   value: string;
@@ -108,7 +108,7 @@ export type Segment = {
   description?: string;
   filters_connect?: SegmentConnectTypes;
   filters?: AnyFormItem[];
-}
+};
 
 export type AnyFormItem =
   WordpressRoleFormItem |

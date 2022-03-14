@@ -18,36 +18,36 @@ function FormPreview() : JSX.Element {
   const { hidePreview, changePreviewSettings } = useDispatch('mailpoet-form-editor');
   const isPreview = useSelect(
     (select) => select('mailpoet-form-editor').getIsPreviewShown(),
-    []
+    [],
   );
   const isPreviewReady = useSelect(
     (select) => select('mailpoet-form-editor').getIsPreviewReady(),
-    []
+    [],
   );
 
   const previewSettings = useSelect(
     (select) => select('mailpoet-form-editor').getPreviewSettings(),
-    []
+    [],
   );
 
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
-    []
+    [],
   );
 
   const formId = useSelect(
     (select) => select('mailpoet-form-editor').getFormData().id,
-    []
+    [],
   );
 
   const editorUrl = useSelect(
     (select) => select('mailpoet-form-editor').getEditorUrl(),
-    []
+    [],
   );
 
   const previewPageUrl = useSelect(
     (select) => select('mailpoet-form-editor').getPreviewPageUrl(),
-    []
+    [],
   );
 
   useEffect(() => {

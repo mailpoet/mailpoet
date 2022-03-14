@@ -19,7 +19,7 @@ type Props = {
   onChange: (styles: InputBlockStyles) => void;
   formInputPadding: number;
   formFontFamily?: string;
-}
+};
 
 function StylesSettings({
   styles,

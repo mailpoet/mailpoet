@@ -12,11 +12,11 @@ function Block({
   text,
   checkoutExtensionData,
 }: {
-    text: string,
-    checkoutExtensionData: {
-      setExtensionData: (namespace: string, key: string, value: unknown) => void
-    }
-  }): JSX.Element {
+  text: string,
+  checkoutExtensionData: {
+    setExtensionData: (namespace: string, key: string, value: unknown) => void
+  }
+}): JSX.Element {
   const [checked, setChecked] = useState(defaultStatus);
   const { setExtensionData } = checkoutExtensionData || {};
   useEffect(() => {

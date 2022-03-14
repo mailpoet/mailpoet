@@ -14,7 +14,7 @@ type Props = {
   className?: string;
   children: React.ReactNode;
   automationId?: string;
-}
+};
 
 function SelectionItem({
   label,
@@ -35,7 +35,7 @@ function SelectionItem({
         classnames(
           className,
           'selection-item',
-          { 'selection-item-active': active && canBeActive }
+          { 'selection-item-active': active && canBeActive },
         )
       }
       onMouseEnter={(): void => setHover(true)}
@@ -60,7 +60,7 @@ function SelectionItem({
                   className={
                     classnames(
                       'selection-item-icon',
-                      { 'selection-item-icon-hover': hover }
+                      { 'selection-item-icon-hover': hover },
                     )
                   }
                 >

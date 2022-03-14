@@ -59,7 +59,7 @@ function Button({
             'button-link': variant === 'tertiary',
             'button-link button-link-delete': variant === 'destructive',
             'button-small': dimension === 'small',
-          }
+          },
         )
       }
       data-automation-id={automationId}

@@ -13,7 +13,7 @@ function ActiveMessage() {
 
 type PremiumNotActiveMessageProps = {
   url?: string;
-}
+};
 function PremiumNotActiveMessage(props: PremiumNotActiveMessageProps) {
   return (
     <>
@@ -43,7 +43,7 @@ function PremiumNotInstalledMessage(props: PremiumNotActiveMessageProps) {
   );
 }
 
-type NotValidMessageProps = { message?: string }
+type NotValidMessageProps = { message?: string };
 function NotValidMessage({ message }: NotValidMessageProps) {
   return (
     <div className="mailpoet_error">
@@ -57,7 +57,7 @@ NotValidMessage.defaultProps = {
 
 type Props = {
   keyMessage?: string;
-}
+};
 export default function PremiumMessages(props: Props) {
   const { premiumStatus: status, downloadUrl, activationUrl } = useSelector('getKeyActivationState')();
 

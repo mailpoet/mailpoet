@@ -10,7 +10,7 @@ type Props = {
   onDelete?: () => void;
   automationId?: string;
   className?: string;
-}
+};
 
 function TemplateBox({
   label,

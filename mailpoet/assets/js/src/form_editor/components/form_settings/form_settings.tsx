@@ -10,7 +10,7 @@ export default function FormSettings(): JSX.Element {
   const toggleSidebarPanel:(t1: string, ...ts: []) => void = dispatchResult.toggleSidebarPanel;
   const openedPanels = useSelect(
     (select) => select('mailpoet-form-editor').getSidebarOpenedPanels(),
-    []
+    [],
   );
 
   return (

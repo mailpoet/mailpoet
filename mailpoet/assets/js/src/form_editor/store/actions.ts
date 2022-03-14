@@ -12,7 +12,7 @@ export function toggleSidebar(toggleTo): ToggleAction {
   };
 }
 
-export function toggleInserter(toggleTo: BlockInsertionPoint|boolean): ToggleBlockInserterAction {
+export function toggleInserter(toggleTo: BlockInsertionPoint | boolean): ToggleBlockInserterAction {
   return {
     type: 'TOGGLE_INSERTER_SIDEBAR',
     value: toggleTo,
@@ -168,7 +168,7 @@ export type CHANGE_ACTIVE_SIDEBAR = {
 };
 
 export function changeActiveSidebar(
-  sidebar: 'default' | 'placement_settings'
+  sidebar: 'default' | 'placement_settings',
 ): CHANGE_ACTIVE_SIDEBAR {
   // Ensure no blocks are selected
   if (sidebar === 'placement_settings') {
@@ -219,7 +219,7 @@ export function* showPreview() {
     SETTINGS_DEFAULTS.fontSizes as { name: string; slug: string; size: number; }[],
     SETTINGS_DEFAULTS.colors as { name: string; slug: string; color: string; }[],
     SETTINGS_DEFAULTS.gradients as { name: string; slug: string; gradient: string; }[],
-    customFields
+    customFields,
   );
   const { success, error } = yield {
     type: 'CALL_API',

@@ -30,7 +30,7 @@ export default function ManageSubscription() {
                 >
                   {text}
                 </a>
-              )
+              ),
             )}
           </>
         )}

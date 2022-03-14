@@ -21,12 +21,12 @@ const filterFieldsMap = {
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function FormFilterFields({ filterIndex }:Props) : JSX.Element {
   const filter: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   if (filter === undefined || filterFieldsMap[filter.segmentType] === undefined) return null;

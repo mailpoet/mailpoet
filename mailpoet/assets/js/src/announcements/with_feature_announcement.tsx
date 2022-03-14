@@ -23,8 +23,8 @@ interface FeatureAnnouncementWindow extends Window {
 declare let window: FeatureAnnouncementWindow;
 
 export const withFeatureAnnouncement = <P extends Record<string, unknown>>(
-  Component: React.ComponentType<P>
-): React.FC<Omit<P, 'hasNews'|'onBeamerClick'>> => {
+  Component: React.ComponentType<P>,
+): React.FC<Omit<P, 'hasNews' | 'onBeamerClick'>> => {
   const isBeamerInitialized = () => typeof window.Beamer !== 'undefined';
   let showDot = window.mailpoet_feature_announcement_has_news;
   let beamerCallback;
@@ -36,10 +36,10 @@ export const withFeatureAnnouncement = <P extends Record<string, unknown>>(
     const updateMailPoetNotice = ReactStringReplace(
       MailPoet.I18n.t('updateMailPoetNotice'),
       /\[link\](.*?)\[\/link\]/,
-      (match) => `<a href="update-core.php">${match}</a>`
+      (match) => `<a href="update-core.php">${match}</a>`,
     ).join('');
     jQuery('#beamerOverlay').append(
-      `<p id="mailpoet_update_notice" class="mailpoet_in_beamer_update_notice">${updateMailPoetNotice}</p>`
+      `<p id="mailpoet_update_notice" class="mailpoet_in_beamer_update_notice">${updateMailPoetNotice}</p>`,
     );
   }
 
@@ -96,7 +96,7 @@ export const withFeatureAnnouncement = <P extends Record<string, unknown>>(
 
   return function withFeatureAnnouncementRenderer({
     ...props
-  }: Omit<P, 'hasNews'|'onBeamerClick'>) {
+  }: Omit<P, 'hasNews' | 'onBeamerClick'>) {
     return (
       <Component
         {...props as P}

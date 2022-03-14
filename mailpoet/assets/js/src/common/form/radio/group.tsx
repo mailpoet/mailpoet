@@ -5,7 +5,7 @@ type RadioValueType = string | string[] | number;
 
 type RadioProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
-}
+};
 
 type Props = {
   name: string;

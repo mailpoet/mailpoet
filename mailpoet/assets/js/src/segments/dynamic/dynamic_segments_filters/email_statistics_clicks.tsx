@@ -18,19 +18,19 @@ const shouldDisplayLinks = (itemNewsletterId?: string): boolean => (!!itemNewsle
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function EmailClickStatisticsFields({ filterIndex }:Props):JSX.Element {
   const segment: EmailFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
 
   const newslettersList: WindowNewslettersList = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getNewslettersList(),
-    []
+    [],
   );
 
   const [errors, setErrors] = useState([]);
@@ -117,7 +117,7 @@ export function EmailClickStatisticsFields({ filterIndex }:Props):JSX.Element {
           onChange={(e) => updateSegmentFilterFromEvent(
             'operator',
             filterIndex,
-            e
+            e,
           )}
           automationId="select-operator"
         >
@@ -145,7 +145,7 @@ export function EmailClickStatisticsFields({ filterIndex }:Props):JSX.Element {
                   if (!segment.link_ids) return false;
                   return segment.link_ids.indexOf(option.value) !== -1;
                 },
-                links
+                links,
               )}
               onChange={(options: SelectOption[]): void => {
                 updateSegmentFilter({ link_ids: (options || []).map((x) => x.value) }, filterIndex);

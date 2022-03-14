@@ -7,7 +7,7 @@ import Icon from './icons/fixed_bar_icon';
 function FixedBar():JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
-    []
+    [],
   );
   const { showPlacementSettings } = useDispatch('mailpoet-form-editor');
 

@@ -4,7 +4,7 @@ type Props = {
   title: string;
   description?: ReactNode;
   htmlFor: string;
-}
+};
 
 export default function Label({ title, description, htmlFor }: Props) {
   return (

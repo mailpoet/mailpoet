@@ -6,7 +6,7 @@ import SlideInSettings from './settings_panels/slide_in_settings';
 
 type Props = {
   activePanel: string;
-}
+};
 
 function SettingsPanel({ activePanel }: Props) : JSX.Element {
   return (

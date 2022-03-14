@@ -23,7 +23,7 @@ type Props = {
 };
 
 function DividerEdit(
-  { attributes, setAttributes }: Props
+  { attributes, setAttributes }: Props,
 ): JSX.Element {
   const attributeDividerHeight = attributes.dividerHeight ?? defaultAttributes.dividerHeight;
   const attributeDividerWidth = attributes.dividerWidth ?? defaultAttributes.dividerWidth;

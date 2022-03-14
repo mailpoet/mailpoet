@@ -10,7 +10,7 @@ function ActiveMessage() {
   );
 }
 
-type NotValidMessageProps = { message?: string }
+type NotValidMessageProps = { message?: string };
 function NotValidMessage({ message }: NotValidMessageProps) {
   return (
     <div className="mailpoet_error">
@@ -22,7 +22,7 @@ NotValidMessage.defaultProps = {
   message: '',
 };
 
-type MssNotActiveMessageProps = { activationCallback: () => void }
+type MssNotActiveMessageProps = { activationCallback: () => void };
 function MssNotActiveMessage({ activationCallback }: MssNotActiveMessageProps) {
   return (
     <div className="mailpoet_error">
@@ -38,7 +38,7 @@ function MssNotActiveMessage({ activationCallback }: MssNotActiveMessageProps) {
 type Props = {
   keyMessage?: string;
   activationCallback: () => void;
-}
+};
 export default function MssMessages(props: Props) {
   const { mssStatus } = useSelector('getKeyActivationState')();
   switch (mssStatus) {

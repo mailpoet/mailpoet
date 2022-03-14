@@ -73,7 +73,7 @@ export const getAvailableFilters = (state: StateType): GroupFilterValue[] => (
 );
 export const findFiltersValueForSegment = (
   state: StateType,
-  itemSearch: Segment
+  itemSearch: Segment,
 ): FilterRow[] => {
   const found: FilterRow[] = [];
 

@@ -8,7 +8,7 @@ type StatsBadgeProps = {
   tooltipId?: string;
   tooltipPlace?: Place;
   isInverted?: boolean;
-}
+};
 
 const stats = {
   opened: {

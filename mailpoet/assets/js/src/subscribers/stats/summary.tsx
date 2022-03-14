@@ -13,7 +13,7 @@ export type PropTypes = {
     id: number;
     engagement_score?: number;
   };
-}
+};
 
 export default function Summary({
   totalSent,
@@ -78,7 +78,7 @@ export default function Summary({
                           { match }
                         </a>
                       </span>
-                    )
+                    ),
                   )}
                 />
               </td>

@@ -8,7 +8,7 @@ type Props = {
   noticeDismissed: string;
   mtaMethod: string;
   apiVersion: string;
-}
+};
 
 function TransactionalEmailsProposeOptInNotice({
   mailpoetInstalledDaysAgo,

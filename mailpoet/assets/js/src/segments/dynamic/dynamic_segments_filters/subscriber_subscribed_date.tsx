@@ -30,7 +30,7 @@ const availableOperators = [
   SubscribedDateOperator.NOT_IN_THE_LAST,
 ];
 
-const convertDateToString = (value: Date|[Date, Date]): string | undefined => {
+const convertDateToString = (value: Date | [Date, Date]): string | undefined => {
   if (value === null) {
     return undefined;
   }
@@ -48,12 +48,12 @@ const parseDate = (value: string): Date | undefined => {
 
 type Props = {
   filterIndex: number;
-}
+};
 
 export function SubscribedDateFields({ filterIndex }: Props) : JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
-    [filterIndex]
+    [filterIndex],
   );
 
   const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');

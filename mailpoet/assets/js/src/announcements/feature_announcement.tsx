@@ -5,12 +5,12 @@ import { withFeatureAnnouncement } from './with_feature_announcement';
 type props = {
   hasNews: boolean;
   onBeamerClick: () => void;
-}
+};
 
 function FeatureAnnouncement({ hasNews, onBeamerClick }: props) {
   const buttonClasses = classNames(
     'button mailpoet_feature_announcement_button',
-    hasNews ? 'mailpoet_feature_announcement_dot' : ''
+    hasNews ? 'mailpoet_feature_announcement_dot' : '',
   );
   return (
     <div className="mailpoet_feature_announcement">

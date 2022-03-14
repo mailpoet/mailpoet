@@ -61,7 +61,7 @@ function ModalOverlay({
       className={classnames(
         'mailpoet-modal-screen-overlay',
         isDismissible ? 'mailpoet-modal-is-dismissible' : null,
-        className
+        className,
       )}
       onKeyDown={handleKeyDown}
       onClick={handleFocusOutside}

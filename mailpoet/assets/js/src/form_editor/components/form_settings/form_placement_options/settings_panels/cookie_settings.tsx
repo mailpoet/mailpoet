@@ -5,13 +5,13 @@ import { SelectControl } from '@wordpress/components';
 
 type Props = {
   settingsPlacementKey: string;
-}
+};
 
 function CookieSettings({ settingsPlacementKey }: Props): JSX.Element {
   const cookieExpirationValues = [3, 7, 14, 30, 60, 90];
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
-    []
+    [],
   );
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 

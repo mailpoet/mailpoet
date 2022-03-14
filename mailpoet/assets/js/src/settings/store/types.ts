@@ -136,13 +136,13 @@ export type Settings = {
       'newsletter_id': number | string;
     }>;
   };
-}
+};
 type Segment = {
   id: string;
   name: string;
   subscribers: string;
   type: 'default' | 'wp_users' | 'woocommerce_users' | 'dynamic';
-}
+};
 type Page = {
   id: number;
   title: string;
@@ -151,7 +151,7 @@ type Page = {
     manage: string;
     confirm: string;
   };
-}
+};
 type Hosts = {
   web: {
     [key: string]: {
@@ -173,7 +173,7 @@ type Hosts = {
       interval: number;
     };
   };
-}
+};
 
 export enum PremiumStatus {
   INVALID,
@@ -211,16 +211,16 @@ export type KeyActivationState = {
   premiumInstallationStatus: PremiumInstallationStatus;
   fromAddressModalCanBeShown: boolean;
   inProgress: boolean;
-  congratulatoryMssEmailSentTo: string|null;
+  congratulatoryMssEmailSentTo: string | null;
   code?: number;
   downloadUrl?: string;
   activationUrl?: string;
-}
+};
 
 export type ReEngagement = {
   showNotice: boolean;
   action?: string;
-}
+};
 
 export enum TestEmailState {
   SENDING,
@@ -255,7 +255,7 @@ export type State = {
   keyActivation: KeyActivationState;
   hosts: Hosts;
   reEngagement: ReEngagement;
-}
+};
 
 export type Action =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -270,4 +270,4 @@ export type Action =
   | { type: 'SET_RE_ENGAGEMENT_NOTICE'; value: ReEngagement }
   | { type: 'START_TEST_EMAIL_SENDING' }
   | { type: 'TEST_EMAIL_SUCCESS' }
-  | { type: 'TEST_EMAIL_FAILED'; error: string[] }
+  | { type: 'TEST_EMAIL_FAILED'; error: string[] };

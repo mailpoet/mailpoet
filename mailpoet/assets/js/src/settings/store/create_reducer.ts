@@ -8,7 +8,7 @@ export default function createReducer(defaultValue: State) {
   let keyActivation: KeyActivationState;
   return (
     state: State = defaultValue, // eslint-disable-line default-param-last
-    action: Action
+    action: Action,
   ): State => {
     switch (action.type) {
       case 'SET_SETTING':

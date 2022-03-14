@@ -22,7 +22,7 @@ function CategoriesItem({
 }: Props) {
   const classes = classNames(
     'mailpoet-categories-item',
-    { active: !!active }
+    { active: !!active },
   );
 
   return (

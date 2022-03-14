@@ -5,12 +5,12 @@ import { SelectControl } from '@wordpress/components';
 
 type Props = {
   settingsPlacementKey: string;
-}
+};
 
 function AnimationSettings({ settingsPlacementKey }: Props) : JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
-    []
+    [],
   );
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
 

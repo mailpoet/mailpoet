@@ -97,7 +97,7 @@ export function ListingsEngagementScore({
                 {
                   minimumFractionDigits: 1,
                   maximumFractionDigits: 1,
-                }
+                },
               )
           }
           %

@@ -44,7 +44,7 @@ export function updateSegmentFilter(filter: AnyFormItem, filterIndex: number)
 
 export function updateSegmentFromEvent(
   propertyName: string,
-  event: ChangeEvent<HTMLSelectElement | HTMLInputElement>
+  event: ChangeEvent<HTMLSelectElement | HTMLInputElement>,
 ): SetSegmentActionType {
   return {
     type: Actions.UPDATE_SEGMENT,
@@ -57,7 +57,7 @@ export function updateSegmentFromEvent(
 export function updateSegmentFilterFromEvent(
   propertyName: string,
   filterIndex: number,
-  event: ChangeEvent<HTMLSelectElement | HTMLInputElement>
+  event: ChangeEvent<HTMLSelectElement | HTMLInputElement>,
 ): SetSegmentFilerActionType {
   return {
     type: Actions.UPDATE_SEGMENT_FILTER,

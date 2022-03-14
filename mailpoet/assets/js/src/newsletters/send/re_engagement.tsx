@@ -9,7 +9,7 @@ interface onValueChangeParam {
   target: {
     name: string,
     value: {
-      afterTimeNumber: number|string,
+      afterTimeNumber: number | string,
       afterTimeType: string,
     },
   };
@@ -18,7 +18,7 @@ interface onValueChangeParam {
 interface Props {
   item: {
     options: {
-      afterTimeNumber: number|string,
+      afterTimeNumber: number | string,
       afterTimeType: string,
     }
   };

@@ -22,8 +22,8 @@ export function NewsletterTypeReEngagement(): JSX.Element {
       (
         Math.floor(
           Number(
-            MailPoet.settings.deactivate_subscriber_after_inactive_days
-          ) / 30
+            MailPoet.settings.deactivate_subscriber_after_inactive_days,
+          ) / 30,
         )
       ) - 1
     ).toString();

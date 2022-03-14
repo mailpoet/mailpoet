@@ -5,7 +5,7 @@ export enum NewsletterType {
   Notification = 'notification',
   NotificationHistory = 'notification_history',
   WCTransactional = 'wc_transactional',
-  ReEngagement = 're_engagement'
+  ReEngagement = 're_engagement',
 }
 
 export enum NewsletterStatus {
@@ -54,4 +54,4 @@ export type NewsLetter = {
   type: NewsletterType;
   unsubscribe_token: string;
   updated_at: string;
-}
+};

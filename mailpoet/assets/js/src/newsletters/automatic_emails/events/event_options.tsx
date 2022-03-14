@@ -9,14 +9,14 @@ type EventOptions = {
   multiple: boolean;
   placeholder: string;
   endpoint: string;
-}
+};
 
 type Props = {
   eventOptions: EventOptions;
   eventSlug: string;
   selected: string[];
   onValueChange: (value) => void;
-}
+};
 
 function getEventOptionsValues(eventOptions: EventOptions) {
   const values = (eventOptions && eventOptions.values) ? eventOptions.values : [];
@@ -53,7 +53,7 @@ export function EventOptions({
         placeholder: eventOptions.placeholder || false,
         transformChangedValue: (value, valueTextPair) => _.map(
           valueTextPair,
-          (data) => ({ id: data.id, name: data.text })
+          (data) => ({ id: data.id, name: data.text }),
         ),
         selected: () => selected,
         getLabel: _.property('name'),

@@ -25,7 +25,7 @@ function Datepicker({
           [`mailpoet-form-input-${dimension}`]: dimension,
           'mailpoet-disabled': props.disabled,
           'mailpoet-full-width': isFullWidth,
-        }
+        },
       )
     }
     >
