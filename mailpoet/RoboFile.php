@@ -126,7 +126,7 @@ class RoboFile extends \Robo\Tasks {
   public function translationsPush() {
     return $this->collectionBuilder()
       ->addCode([$this, 'translationsInit'])
-      ->taskExec('tx push -s')
+      ->taskExec('php ' . __DIR__ . '/tools/transifex.php push -s')
       ->run();
   }
 

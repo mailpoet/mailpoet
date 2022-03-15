@@ -1,7 +1,10 @@
 #!/bin/bash -e
 
+BASEDIR=$(dirname "$0")
+TX=$BASEDIR/../tools/transifex.php
+
 echo "Getting translations from Transifex..."
-tx pull -a -f --parallel
+php "$TX" pull -a -f
 
 echo "Generating MO files..."
 for file in `find ./lang/ -name "*.po"` ; do
