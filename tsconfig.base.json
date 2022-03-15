@@ -13,8 +13,8 @@
     "jsx": "react-jsx",
 
     // strict checks
-    "strict": false,
-    "alwaysStrict": false,
+    "strict": true,
+    "alwaysStrict": true,
     "strictBindCallApply": false,
     "strictFunctionTypes": false,
     "strictNullChecks": false,
