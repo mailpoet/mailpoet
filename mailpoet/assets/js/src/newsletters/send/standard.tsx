@@ -48,7 +48,7 @@ class StandardScheduling extends Component<StandardSchedulingProps> {
 
   isScheduled = () => this.getCurrentValue().isScheduled === '1';
 
-  handleCheckboxChange = (checked, event: ChangeEvent<HTMLInputElement>): void => {
+  handleCheckboxChange = (_, event: ChangeEvent<HTMLInputElement>): void => {
     const changeEvent = { ...event };
     changeEvent.target.value = event.target.checked ? '1' : '0';
     this.handleValueChange(changeEvent);
