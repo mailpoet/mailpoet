@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { ReactNode } from 'react';
 import Tag from './tag';
 
 type Segment = {
@@ -6,7 +6,7 @@ type Segment = {
 };
 
 type Props = {
-  children?: React.ReactNode;
+  children?: ReactNode;
   dimension?: 'large';
   segments?: Segment[];
   strings?: string[];

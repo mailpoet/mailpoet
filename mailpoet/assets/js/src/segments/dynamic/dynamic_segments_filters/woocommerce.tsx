@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import * as React from 'react';
+import { FunctionComponent, useEffect } from 'react';
 import MailPoet from 'mailpoet';
 import { filter } from 'lodash/fp';
 import ReactSelect from 'common/form/react_select/react_select';
@@ -81,7 +80,7 @@ type Props = {
   filterIndex: number;
 };
 
-export const WooCommerceFields: React.FunctionComponent<Props> = ({ filterIndex }) => {
+export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => {
   const segment: WooCommerceFormItem = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex],

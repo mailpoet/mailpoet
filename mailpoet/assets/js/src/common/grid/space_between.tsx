@@ -1,8 +1,8 @@
-import * as React from 'react';
+import { ReactElement, ReactNode } from 'react';
 import classnames from 'classnames';
 
 type Props = {
-  children?: React.ReactNode;
+  children?: ReactNode;
   className?: string;
   verticalAlign?: 'center';
 };
@@ -11,7 +11,7 @@ export function SpaceBetween({
   children,
   className,
   verticalAlign,
-}: Props): React.ReactElement {
+}: Props): ReactElement {
   return (
     <div
       className={

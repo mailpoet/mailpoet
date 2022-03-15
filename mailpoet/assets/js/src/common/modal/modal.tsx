@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { noop } from 'lodash';
 
@@ -16,7 +16,7 @@ type Props = {
   fullScreen?: boolean;
   contentClassName?: string;
   overlayClassName?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function Modal({

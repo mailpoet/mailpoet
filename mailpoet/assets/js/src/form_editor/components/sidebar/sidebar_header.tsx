@@ -1,10 +1,10 @@
-import * as React from 'react';
+import { ReactNode } from 'react';
 import MailPoet from 'mailpoet';
 import { Button } from '@wordpress/components';
 
 type Props = {
   closeSidebar: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function SidebarHeader({ children, closeSidebar }: Props) : JSX.Element {

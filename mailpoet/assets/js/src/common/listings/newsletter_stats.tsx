@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { ReactNode } from 'react';
 import MailPoet from 'mailpoet';
 import { StatsBadge } from './newsletter_stats/stats';
 import Tooltip from '../tooltip/tooltip';
@@ -10,7 +10,7 @@ type NewsletterStatsProps = {
   revenues?: string;
   hideBadges?: boolean;
   newsletterId?: number; // used for tooltip IDs
-  wrapContentInLink?: (content: React.ReactNode, idPrefix: string) => JSX.Element;
+  wrapContentInLink?: (content: ReactNode, idPrefix: string) => JSX.Element;
 };
 
 function NewsletterStats({
@@ -48,7 +48,7 @@ function NewsletterStats({
     </div>
   );
 
-  let revenueStats:React.ReactNode = null;
+  let revenueStats: ReactNode = null;
   if (revenues) {
     const revenuesTooltipId = `revenues-${newsletterId || '0'}`;
     revenueStats = (

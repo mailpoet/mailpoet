@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { CSSProperties } from 'react';
 import {
   Panel,
   PanelBody,
@@ -49,7 +49,7 @@ function SubmitEdit({ attributes, setAttributes }: Props): JSX.Element {
     </InspectorControls>
   );
 
-  const styles: React.CSSProperties = !attributes.styles.inheritFromTheme ? {
+  const styles: CSSProperties = !attributes.styles.inheritFromTheme ? {
     fontWeight: attributes.styles.bold ? 'bold' : 'inherit',
     borderRadius: attributes.styles.borderRadius !== undefined ? `${attributes.styles.borderRadius}px` : 0,
     borderWidth: attributes.styles.borderSize !== undefined ? `${attributes.styles.borderSize}px` : '1px',

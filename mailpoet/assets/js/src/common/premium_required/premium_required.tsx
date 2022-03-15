@@ -1,11 +1,11 @@
-import * as React from 'react';
+import { ReactNode } from 'react';
 import Badge from 'common/badge/badge';
 import Heading from 'common/typography/heading/heading';
 
 type Props = {
   title: string;
-  message: React.ReactNode;
-  actionButton: React.ReactNode;
+  message: ReactNode;
+  actionButton: ReactNode;
 };
 
 function PremiumRequired({ title, message, actionButton }: Props) {

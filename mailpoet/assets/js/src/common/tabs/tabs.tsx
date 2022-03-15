@@ -1,14 +1,20 @@
 import classnames from 'classnames';
-import { useEffect, useState } from 'react';
-import * as React from 'react';
+import {
+  Children,
+  isValidElement,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useState,
+} from 'react';
 import { noop } from 'lodash';
 
 import Tab from './tab';
 
-const validateChildren = (children: React.ReactNode): React.ReactElement[] => {
+const validateChildren = (children: ReactNode): ReactElement[] => {
   const keys = {};
-  const validChildren: React.ReactElement[] = [];
-  React.Children.map(children, (child: React.ReactElement) => {
+  const validChildren: ReactElement[] = [];
+  Children.map(children, (child: ReactElement) => {
     if (!child) {
       return;
     }
@@ -30,9 +36,9 @@ const validateChildren = (children: React.ReactNode): React.ReactElement[] => {
   return validChildren;
 };
 
-const getActiveChild = (activeTab: string, children: React.ReactElement[]): React.ReactElement => {
+const getActiveChild = (activeTab: string, children: ReactElement[]): ReactElement => {
   const activeChild = children.find(
-    (child) => React.isValidElement(child) && child.key === activeTab,
+    (child) => isValidElement(child) && child.key === activeTab,
   );
   if (activeChild) {
     return (activeChild);
@@ -44,7 +50,7 @@ type Props = {
   activeKey: string;
   onSwitch?: (tabKey: string) => void;
   automationId?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function Tabs({
@@ -88,7 +94,7 @@ function Tabs({
 
       <div className="mailpoet-tabs-wrapper">
         {
-          validChildren.map((child: React.ReactElement) => (
+          validChildren.map((child: ReactElement) => (
             <button
               key={child.key}
               className={classnames('mailpoet-tab', { 'mailpoet-tab-active': child === activeChild })}

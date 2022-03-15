@@ -1,11 +1,11 @@
-import * as React from 'react';
+import { FunctionComponent } from 'react';
 import MailPoet from 'mailpoet';
 import PremiumBannerWithUpgrade from 'common/premium_banner_with_upgrade/premium_banner_with_upgrade';
 import Button from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
 
 function DynamicSegmentsPremiumBanner() : JSX.Element {
-  const getBannerMessage: React.FunctionComponent = () => {
+  const getBannerMessage: FunctionComponent = () => {
     const message = MailPoet.I18n.t('premiumFeatureMultipleConditions');
     return (
       <p>
@@ -20,7 +20,7 @@ function DynamicSegmentsPremiumBanner() : JSX.Element {
     );
   };
 
-  const getCtaButton: React.FunctionComponent = () => (
+  const getCtaButton: FunctionComponent = () => (
     <Button
       href={MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
         MailPoet.subscribersCount,

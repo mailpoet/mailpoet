@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Children, ReactElement } from 'react';
 import {
   BrowserRouter,
   HashRouter,
@@ -54,7 +54,7 @@ function RoutedTabs({
   children,
 }: Props) {
   const keyPathMap: { [key: string]: string } = {};
-  React.Children.map(children, (child: React.ReactElement) => {
+  Children.map(children, (child: ReactElement) => {
     if (child) {
       keyPathMap[child.key] = `${routerPrefix}${child.props.route || child.key}`;
     }

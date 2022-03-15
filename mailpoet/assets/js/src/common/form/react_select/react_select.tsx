@@ -1,5 +1,4 @@
-import { CSSProperties } from 'react';
-import * as React from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import classnames from 'classnames';
 import Select, { Props as ReactSelectProps, OptionProps } from 'react-select';
 
@@ -12,9 +11,9 @@ export type Props = ReactSelectProps & {
 };
 
 type LabelRendererProps = {
-  label: React.ReactNode;
-  count?: React.ReactNode;
-  tag?: React.ReactNode;
+  label: ReactNode;
+  count?: ReactNode;
+  tag?: ReactNode;
 };
 
 function LabelRenderer(data: LabelRendererProps) {
@@ -29,9 +28,9 @@ function LabelRenderer(data: LabelRendererProps) {
 
 type OptionData = {
   style: CSSProperties;
-  label: React.ReactNode;
-  count?: React.ReactNode;
-  tag?: React.ReactNode;
+  label: ReactNode;
+  count?: ReactNode;
+  tag?: ReactNode;
 };
 
 function Option(props: OptionProps<OptionData>) {
@@ -78,9 +77,9 @@ function SingleValue(props: any) {
 type MultiValueLabelProps = {
   data: {
     style: CSSProperties;
-    label: React.ReactNode;
-    count?: React.ReactNode;
-    tag?: React.ReactNode;
+    label: ReactNode;
+    count?: ReactNode;
+    tag?: ReactNode;
   };
   // eslint-disable-next-line @typescript-eslint/ban-types -- we need to match react-select
   innerProps: object;

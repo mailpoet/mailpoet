@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { ReactNode } from 'react';
 import MailPoet from 'mailpoet';
 import Heading from 'common/typography/heading/heading';
 import Button from 'common/button/button';
@@ -6,7 +6,7 @@ import Button from 'common/button/button';
 type Props = {
   label: string;
   onSelect: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
   onDelete?: () => void;
   automationId?: string;
   className?: string;

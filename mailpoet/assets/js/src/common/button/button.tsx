@@ -1,8 +1,8 @@
-import * as React from 'react';
+import { ButtonHTMLAttributes, MouseEvent, ReactNode } from 'react';
 import classnames from 'classnames';
 
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children?: React.ReactNode;
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children?: ReactNode;
   dimension?: 'small';
   variant?: 'secondary' | 'tertiary' | 'destructive';
   withSpinner?: boolean; // also disables href and onClick (via pointer-events in CSS)
@@ -10,7 +10,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isFullWidth?: boolean;
   iconStart?: JSX.Element;
   iconEnd?: JSX.Element;
-  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+  onClick?: (event: MouseEvent<HTMLElement>) => void;
   href?: string;
   rel?: string;
   type?: 'button' | 'submit' | 'reset';

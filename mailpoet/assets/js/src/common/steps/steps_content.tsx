@@ -1,7 +1,7 @@
-import * as React from 'react';
+import { ReactNode } from 'react';
 
 type Props = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function StepsContent({ children }: Props) {

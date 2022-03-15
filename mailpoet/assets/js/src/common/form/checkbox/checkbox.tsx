@@ -1,10 +1,9 @@
-import { ChangeEvent, InputHTMLAttributes } from 'react';
-import * as React from 'react';
+import { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
 import classnames from 'classnames';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   onCheck: (isChecked: boolean, event: ChangeEvent) => void;
-  children?: React.ReactNode;
+  children?: ReactNode;
   isFullWidth?: boolean;
   automationId?: string;
 };
