@@ -4,6 +4,7 @@ import { STORE_NAME } from './store_name';
 
 export { default as CALL_API } from 'common/controls/call_api';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function TRACK_SETTINGS_SAVED() {
   const settings = select(STORE_NAME).getSettings();
   const data = {
@@ -31,10 +32,12 @@ export function TRACK_SETTINGS_SAVED() {
   MailPoet.trackEvent('User has saved Settings', data);
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function TRACK_REINSTALLED() {
   MailPoet.trackEvent('User has reinstalled MailPoet via Settings');
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function TRACK_TEST_EMAIL_SENT({ success, method }) {
   MailPoet.trackEvent(
     'User has sent a test email from Settings',
@@ -45,6 +48,7 @@ export function TRACK_TEST_EMAIL_SENT({ success, method }) {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export function TRACK_UNAUTHORIZED_EMAIL({ meta }) {
   if (meta !== undefined && meta.invalid_sender_address) {
     MailPoet.trackEvent(

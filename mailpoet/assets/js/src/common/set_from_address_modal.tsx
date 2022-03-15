@@ -19,12 +19,12 @@ const handleSave = (address: string | null) => MailPoet.Ajax.post({
   },
 });
 
-type error = {
+type Error = {
   error: string;
   message: string;
 };
 
-const getErrorMessage = (error: error | null, address: string | null): string => {
+const getErrorMessage = (error: Error | null, address: string | null): string => {
   if (!error) {
     return MailPoet.I18n.t('setFromAddressEmailUnknownError');
   }
@@ -141,7 +141,7 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
             removeUnauthorizedEmailNotices();
             notices.success(getSuccessMessage(), { timeout: false });
           } catch (e) {
-            const error:error | null = e.errors && e.errors[0] ? e.errors[0] : null;
+            const error: Error | null = e.errors && e.errors[0] ? e.errors[0] : null;
             if (error.error === 'unauthorized') {
               MailPoet.trackEvent('Unauthorized email used', { 'Unauthorized email source': 'modal' });
             }

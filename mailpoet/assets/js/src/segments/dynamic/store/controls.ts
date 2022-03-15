@@ -13,6 +13,7 @@ function convertSavedData(data: Record<string, string | number>): AnyFormItem {
   return converted;
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export async function LOAD_SEGMENT({ segmentId }: { segmentId: number }): Promise<{
   success: boolean,
   res?: AnyFormItem,
@@ -37,6 +38,7 @@ export async function LOAD_SEGMENT({ segmentId }: { segmentId: number }): Promis
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export async function SAVE_SEGMENT({ segment }: { segment: AnyFormItem }): Promise<{
   success: boolean,
   error?: string[],

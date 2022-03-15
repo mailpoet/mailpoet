@@ -2,12 +2,12 @@ import classNames from 'classnames';
 import MailPoet from 'mailpoet';
 import { withFeatureAnnouncement } from './with_feature_announcement';
 
-type props = {
+type Props = {
   hasNews: boolean;
   onBeamerClick: () => void;
 };
 
-function FeatureAnnouncement({ hasNews, onBeamerClick }: props) {
+function FeatureAnnouncement({ hasNews, onBeamerClick }: Props) {
   const buttonClasses = classNames(
     'button mailpoet_feature_announcement_button',
     hasNews ? 'mailpoet_feature_announcement_dot' : '',
