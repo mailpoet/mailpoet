@@ -138,10 +138,16 @@ class TranslationUpdaterTest extends \MailPoetTest {
         'wpGetInstalledTranslations' => function() {
           return [
             $this->freeSlug => [
-              'fr_FR' => ['PO-Revision-Date' => '2021-10-15 05:18:35'],
+              'fr_FR' => [
+                'PO-Revision-Date' => '2021-10-15 05:18:35',
+                'Project-Id-Version' => 'MailPoet - MailPoet',
+              ],
             ],
             $this->premiumSlug => [
-              'fr_FR' => ['PO-Revision-Date' => '2021-10-15 05:18:35'],
+              'fr_FR' => [
+                'PO-Revision-Date' => '2021-10-15 05:18:35',
+                'Project-Id-Version' => 'MailPoet - MailPoet Premium',
+              ],
             ],
           ];
         },
@@ -194,6 +200,7 @@ class TranslationUpdaterTest extends \MailPoetTest {
             ],
             $this->premiumSlug => [
               'fr_FR' => ['PO-Revision-Date' => '2021-10-15 05:18:35'],
+              'Project-Id-Version' => 'MailPoet - MailPoet Premium',
             ],
           ];
         },
