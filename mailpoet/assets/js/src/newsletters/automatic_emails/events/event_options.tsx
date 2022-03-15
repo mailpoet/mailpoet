@@ -51,7 +51,7 @@ export function EventOptions({
         values: getEventOptionsValues(eventOptions),
         multiple: eventOptions.multiple || false,
         placeholder: eventOptions.placeholder || false,
-        transformChangedValue: (value, valueTextPair) => _.map(
+        transformChangedValue: (_value, valueTextPair) => _.map(
           valueTextPair,
           (data) => ({ id: data.id, name: data.text }),
         ),
