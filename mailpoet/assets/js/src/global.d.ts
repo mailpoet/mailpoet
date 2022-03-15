@@ -56,6 +56,8 @@ declare module '@woocommerce/blocks-checkout' {
 }
 
 interface Window {
+  ajaxurl: string;
+  mailpoet_token: string;
   mailpoet_feature_flags: string;
   mailpoet_referral_id: string;
   mailpoet_version: string;

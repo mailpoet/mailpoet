@@ -1,4 +1,5 @@
 import MailPoet from 'mailpoet';
+import { isErrorResponse } from '../../ajax';
 
 export default async function callApi({ endpoint, action, data }) {
   try {
@@ -10,7 +11,7 @@ export default async function callApi({ endpoint, action, data }) {
     });
     return { success: true, res };
   } catch (res) {
-    const error = res.errors.map((e) => e.message);
+    const error = isErrorResponse(res) ? res.errors.map((e) => e.message) : null;
     return { success: false, error, res };
   }
 }

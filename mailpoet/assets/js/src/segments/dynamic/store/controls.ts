@@ -2,6 +2,7 @@ import MailPoet from 'mailpoet';
 import { assign, has } from 'lodash/fp';
 
 import { AnyFormItem } from '../types';
+import { isErrorResponse } from '../../../ajax';
 
 function convertSavedData(data: Record<string, string | number>): AnyFormItem {
   let converted: AnyFormItem = JSON.parse(JSON.stringify(data));
@@ -33,7 +34,7 @@ export async function LOAD_SEGMENT({ segmentId }: { segmentId: number }): Promis
       res: convertSavedData(res.data as Record<string, string | number>),
     };
   } catch (res) {
-    const error = res.errors.map((e) => e.message);
+    const error = isErrorResponse(res) ? res.errors.map((e) => e.message) : null;
     return { success: false, error, res };
   }
 }
@@ -54,7 +55,7 @@ export async function SAVE_SEGMENT({ segment }: { segment: AnyFormItem }): Promi
       success: true,
     };
   } catch (res) {
-    const error = res.errors.map((e) => e.message);
+    const error = isErrorResponse(res) ? res.errors.map((e) => e.message) : null;
     return { success: false, error };
   }
 }
