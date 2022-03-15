@@ -164,27 +164,32 @@ class SubscriberListingRepository extends ListingRepository {
     $queryBuilder = clone $this->queryBuilder;
     $this->applyFromClause($queryBuilder);
 
-    // total count
-    $countQueryBuilder = clone $queryBuilder;
-    $countQueryBuilder->select('COUNT(s) AS subscribersCount');
-    $countQueryBuilder->andWhere('s.deletedAt IS NULL');
-    $totalCount = (int)$countQueryBuilder->getQuery()->getSingleScalarResult();
-
-    // trashed count
-    $trashedCountQueryBuilder = clone $queryBuilder;
-    $trashedCountQueryBuilder->select('COUNT(s) AS subscribersCount');
-    $trashedCountQueryBuilder->andWhere('s.deletedAt IS NOT NULL');
-    $trashedCount = (int)$trashedCountQueryBuilder->getQuery()->getSingleScalarResult();
-
-    // count-by-status query
-    $queryBuilder->select('s.status, COUNT(s) AS subscribersCount');
-    $queryBuilder->andWhere('s.deletedAt IS NULL');
-    $queryBuilder->groupBy('s.status');
-
-    $map = [];
-    foreach ($queryBuilder->getQuery()->getResult() as $item) {
-      $map[$item['status']] = (int)$item['subscribersCount'];
+    $groupCounts = [
+      SubscriberEntity::STATUS_SUBSCRIBED => 0,
+      SubscriberEntity::STATUS_UNCONFIRMED => 0,
+      SubscriberEntity::STATUS_UNSUBSCRIBED => 0,
+      SubscriberEntity::STATUS_INACTIVE => 0,
+      SubscriberEntity::STATUS_BOUNCED => 0,
+      'trash' => 0,
+    ];
+    foreach (array_keys($groupCounts) as $group) {
+      $groupDefinition = $group === $definition->getGroup() ? $definition : new ListingDefinition(
+        $group,
+        $definition->getFilters(),
+        $definition->getSearch(),
+        $definition->getParameters(),
+        $definition->getSortBy(),
+        $definition->getSortOrder(),
+        $definition->getOffset(),
+        $definition->getLimit(),
+        $definition->getSelection()
+      );
+      $groupCounts[$group] = $this->getCount($groupDefinition);
     }
+
+    $trashedCount = $groupCounts['trash'];
+    unset($groupCounts['trash']);
+    $totalCount = (int)array_sum($groupCounts);
 
     return [
       [
@@ -195,27 +200,27 @@ class SubscriberListingRepository extends ListingRepository {
       [
         'name' => SubscriberEntity::STATUS_SUBSCRIBED,
         'label' => WPFunctions::get()->__('Subscribed', 'mailpoet'),
-        'count' => $map[SubscriberEntity::STATUS_SUBSCRIBED] ?? 0,
+        'count' => $groupCounts[SubscriberEntity::STATUS_SUBSCRIBED],
       ],
       [
         'name' => SubscriberEntity::STATUS_UNCONFIRMED,
         'label' => WPFunctions::get()->__('Unconfirmed', 'mailpoet'),
-        'count' => $map[SubscriberEntity::STATUS_UNCONFIRMED] ?? 0,
+        'count' => $groupCounts[SubscriberEntity::STATUS_UNCONFIRMED],
       ],
       [
         'name' => SubscriberEntity::STATUS_UNSUBSCRIBED,
         'label' => WPFunctions::get()->__('Unsubscribed', 'mailpoet'),
-        'count' => $map[SubscriberEntity::STATUS_UNSUBSCRIBED] ?? 0,
+        'count' => $groupCounts[SubscriberEntity::STATUS_UNSUBSCRIBED],
       ],
       [
         'name' => SubscriberEntity::STATUS_INACTIVE,
         'label' => WPFunctions::get()->__('Inactive', 'mailpoet'),
-        'count' => $map[SubscriberEntity::STATUS_INACTIVE] ?? 0,
+        'count' => $groupCounts[SubscriberEntity::STATUS_INACTIVE],
       ],
       [
         'name' => SubscriberEntity::STATUS_BOUNCED,
         'label' => WPFunctions::get()->__('Bounced', 'mailpoet'),
-        'count' => $map[SubscriberEntity::STATUS_BOUNCED] ?? 0,
+        'count' => $groupCounts[SubscriberEntity::STATUS_BOUNCED],
       ],
       [
         'name' => 'trash',
