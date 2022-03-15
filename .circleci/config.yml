@@ -480,8 +480,7 @@ jobs:
           command: |
             source ../.circleci/setup.bash && setup php7
             sudo apt-get update
-            sudo apt-get install python3-pip gettext
-            sudo pip3 install transifex-client
+            sudo apt-get install gettext
             sed -i 's/^WP_ROOT=.*$/WP_ROOT=\/home\/circleci\/mailpoet\/wordpress/g' .env
             echo ${CIRCLE_BUILD_NUM} > release_zip_build_number.txt
       - run:

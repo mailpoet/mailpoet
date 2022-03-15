@@ -5,7 +5,7 @@ ARG GID=1000
 
 # additinal extensions
 RUN apt-get update \
-	&& apt-get install -y git zlib1g-dev libzip-dev zip wget gnupg msmtp libpng-dev \
+	&& apt-get install -y git zlib1g-dev libzip-dev zip wget gnupg msmtp libpng-dev gettext subversion \
 	&& \
     # Install NodeJS + NPM
     curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
@@ -14,11 +14,6 @@ RUN apt-get update \
 	# Install WP-CLI
 	curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
 	chmod +x /usr/local/bin/wp && \
-	\
-	# Installing Transifex Client
-	apt-get update && \
-	apt-get install -y python3-pip gettext subversion && \
-	pip3 install transifex-client && \
 	\
 	# Clean up
 	apt-get clean && \

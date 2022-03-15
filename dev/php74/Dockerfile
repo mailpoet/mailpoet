@@ -5,7 +5,7 @@ ARG GID=1000
 
 # additinal extensions
 RUN apt-get update \
-	&& apt-get install -y git zlib1g-dev wget gnupg msmtp \
+	&& apt-get install -y git zlib1g-dev wget gnupg msmtp gettext zip subversion \
 	&& docker-php-ext-install pdo_mysql \
 	&& pecl install xdebug-2.9.8 && \
 	\
@@ -16,11 +16,6 @@ RUN apt-get update \
 	# Install WP-CLI
 	curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
 	chmod +x /usr/local/bin/wp && \
-	\
-	# Installing Transifex Client
-	apt-get update && \
-	apt-get install -y python3-pip gettext zip subversion && \
-	pip install transifex-client && \
 	\
 	# Clean up
 	apt-get clean && \
