@@ -108,6 +108,7 @@ class Reporter {
       'MailPoet Premium version' => (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A',
       'Total number of subscribers' => $this->subscribersFeature->getSubscribersCount(),
       'Sending Method' => isset($mta['method']) ? $mta['method'] : null,
+      "Send all site's emails with" => $this->settings->get('send_transactional_emails') ? 'current sending method' : 'default WordPress sending method',
       'Date of plugin installation' => $this->settings->get('installed_at'),
       'Subscribe in comments' => (boolean)$this->settings->get('subscribe.on_comment.enabled', false),
       'Subscribe in registration form' => (boolean)$this->settings->get('subscribe.on_register.enabled', false),
