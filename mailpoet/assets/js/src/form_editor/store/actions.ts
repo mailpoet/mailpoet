@@ -162,6 +162,7 @@ export function saveFormFailed(message = undefined) {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export type CHANGE_ACTIVE_SIDEBAR = {
   type: 'CHANGE_ACTIVE_SIDEBAR';
   sidebar: 'default' | 'placement_settings';

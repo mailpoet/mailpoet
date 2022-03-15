@@ -5,7 +5,7 @@ import { Scheduling } from '../types/re_engagement/scheduling';
 import GATrackingField from './ga_tracking';
 import SenderField from './sender_address_field';
 
-interface onValueChangeParam {
+interface OnValueChangeParam {
   target: {
     name: string,
     value: {
@@ -22,7 +22,7 @@ interface Props {
       afterTimeType: string,
     }
   };
-  onValueChange: (val: onValueChangeParam) => void;
+  onValueChange: (val: OnValueChangeParam) => void;
 }
 
 function FormReEngagementScheduling(props: Props): JSX.Element {
