@@ -123,6 +123,14 @@ class BeaconTest extends \MailPoetTest {
     expect($this->beaconData['Plugin installed at'])->equals($this->settings->get('installed_at'));
   }
 
+  public function testItReturnsTransactionalEmailSendingMethod() {
+    $this->settings->set('send_transactional_emails', '');
+    $beacon = $this->diContainer->get(Beacon::class);
+    expect($beacon->getData()["Send all site's emails with"])->equals('default WordPress sending method');
+    $this->settings->set('send_transactional_emails', '1');
+    expect($beacon->getData()["Send all site's emails with"])->equals('current sending method');
+  }
+
   public function testItReturnsTotalNumberOfSubscribers() {
     // unsubscribed users are not taken into account
     expect($this->beaconData['Total number of subscribers'])->equals(2);
