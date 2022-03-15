@@ -4,10 +4,13 @@ namespace MailPoet\Segments;
 
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\Subscriber;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class SubscribersFinder {
 
@@ -17,12 +20,17 @@ class SubscribersFinder {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var EntityManager */
+  private $entityManager;
+
   public function __construct(
     SegmentSubscribersRepository $segmentSubscriberRepository,
-    SegmentsRepository $segmentsRepository
+    SegmentsRepository $segmentsRepository,
+    EntityManager $entityManager
   ) {
     $this->segmentSubscriberRepository = $segmentSubscriberRepository;
     $this->segmentsRepository = $segmentsRepository;
+    $this->entityManager = $entityManager;
   }
 
   public function findSubscribersInSegments($subscribersToProcessIds, $newsletterSegmentsIds) {
@@ -76,30 +84,48 @@ class SubscribersFinder {
   }
 
   /**
-   * @param ScheduledTask        $task
+   * @param ScheduledTask $task
    * @param array<int> $segmentIds
    *
    * @return int
    */
   private function addSubscribersToTaskFromStaticSegments(ScheduledTask $task, array $segmentIds) {
-    Subscriber::rawExecute(
-      'INSERT IGNORE INTO ' . MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE . '
+    $processedStatus = ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED;
+    $subscribersStatus = SubscriberEntity::STATUS_SUBSCRIBED;
+    $relationStatus = SubscriberEntity::STATUS_SUBSCRIBED;
+    $scheduledTaskSubscriberTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+
+    $connection = $this->entityManager->getConnection();
+
+    $result = $connection->executeQuery(
+      "INSERT IGNORE INTO $scheduledTaskSubscriberTable
        (task_id, subscriber_id, processed)
        SELECT DISTINCT ? as task_id, subscribers.`id` as subscriber_id, ? as processed
-       FROM ' . MP_SUBSCRIBER_SEGMENT_TABLE . ' relation
-       JOIN ' . MP_SUBSCRIBERS_TABLE . ' subscribers ON subscribers.id = relation.subscriber_id
+       FROM $subscriberSegmentTable relation
+       JOIN $subscriberTable subscribers ON subscribers.id = relation.subscriber_id
        WHERE subscribers.`deleted_at` IS NULL
        AND subscribers.`status` = ?
        AND relation.`status` = ?
-       AND relation.`segment_id` IN (' . join(',', array_map('intval', $segmentIds)) . ')',
+       AND relation.`segment_id` IN (?)",
       [
         $task->id,
-        ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
-        Subscriber::STATUS_SUBSCRIBED,
-        Subscriber::STATUS_SUBSCRIBED,
+        $processedStatus,
+        $subscribersStatus,
+        $relationStatus,
+        $segmentIds,
+      ],
+      [
+        ParameterType::INTEGER,
+        ParameterType::INTEGER,
+        ParameterType::STRING,
+        ParameterType::STRING,
+        Connection::PARAM_INT_ARRAY,
       ]
     );
-    return ORM::getLastStatement()->rowCount();
+
+    return $result->rowCount();
   }
 
   /**
@@ -126,21 +152,34 @@ class SubscribersFinder {
   }
 
   private function addSubscribersToTaskByIds(ScheduledTask $task, array $subscriberIds) {
-    Subscriber::rawExecute(
-      'INSERT IGNORE INTO ' . MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE . '
+    $scheduledTaskSubscriberTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+
+    $connection = $this->entityManager->getConnection();
+
+    $result = $connection->executeQuery(
+      "INSERT IGNORE INTO $scheduledTaskSubscriberTable
        (task_id, subscriber_id, processed)
        SELECT DISTINCT ? as task_id, subscribers.`id` as subscriber_id, ? as processed
-       FROM ' . MP_SUBSCRIBERS_TABLE . ' subscribers
+       FROM $subscriberTable subscribers
        WHERE subscribers.`deleted_at` IS NULL
        AND subscribers.`status` = ?
-       AND subscribers.`id` IN (' . join(',', array_map('intval', $subscriberIds)) . ')',
+       AND subscribers.`id` IN (?)",
       [
         $task->id,
         ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
-        Subscriber::STATUS_SUBSCRIBED,
+        SubscriberEntity::STATUS_SUBSCRIBED,
+        $subscriberIds,
+      ],
+      [
+        ParameterType::INTEGER,
+        ParameterType::INTEGER,
+        ParameterType::STRING,
+        Connection::PARAM_INT_ARRAY,
       ]
     );
-    return ORM::getLastStatement()->rowCount();
+
+    return $result->rowCount();
   }
 
   private function unique(array $subscriberIds) {
