@@ -7,6 +7,7 @@ use MailPoetVendor\Carbon\CarbonImmutable;
 
 class TranslationUpdater {
   const API_UPDATES_BASE_URI = 'https://translate.wordpress.com/api/translations-updates/mailpoet/';
+  const MAILPOET_FREE_DOT_COM_PROJECT_ID = 'MailPoet - MailPoet';
 
   /** @var WPFunctions */
   private $wpFunctions;
@@ -108,7 +109,7 @@ class TranslationUpdater {
       foreach ($languagePacks as $languagePack) {
         // Check revision date if translation is already installed.
         if (array_key_exists($pluginName, $installedTranslations) && array_key_exists($languagePack['wp_locale'], $installedTranslations[$pluginName])) {
-          $installedFromWpOrg = strpos($installedTranslations[$pluginName][$languagePack['wp_locale']]['Project-Id-Version'] ?? '', 'Stable (latest release)') !== false;
+          $installedFromWpOrg = ($pluginName === $this->freeSlug) && ($installedTranslations[$pluginName][$languagePack['wp_locale']]['Project-Id-Version'] !== self::MAILPOET_FREE_DOT_COM_PROJECT_ID);
           $installedTranslationRevisionTime = new CarbonImmutable($installedTranslations[$pluginName][$languagePack['wp_locale']]['PO-Revision-Date']);
           $newTranslationRevisionTime = new CarbonImmutable($languagePack['last_modified']);
 
