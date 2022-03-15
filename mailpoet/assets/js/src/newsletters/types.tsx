@@ -11,6 +11,7 @@ import Heading from 'common/typography/heading/heading';
 import ModalCloseIcon from 'common/modal/close_icon';
 import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 import APIErrorsNotice from '../notices/api_errors_notice';
+import { isErrorResponse } from '../ajax';
 
 interface Props {
   filter?: () => void;
@@ -63,7 +64,7 @@ function NewsletterTypes({
         emailId = response.data.woocommerce.transactional_email_id;
         MailPoet.trackEvent('Emails > WooCommerce email customizer enabled');
       } catch (response) {
-        if (response.errors.length > 0) {
+        if (isErrorResponse(response) && response.errors.length > 0) {
           return (<APIErrorsNotice errors={response.errors} />);
         }
         return null;

@@ -1,8 +1,27 @@
-import { MailPoetI18n } from './i18n';
-import jQuery from 'jquery';
 import _ from 'underscore';
+import jQuery from 'jquery';
+import { MailPoetI18n } from './i18n';
 
-function buildErrorResponse(message) {
+export type Response = {
+  data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  meta?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+};
+
+export type ErrorResponse = {
+  errors: {
+    error?: string;
+    message: string;
+  }[];
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isErrorResponse = (error: any): error is ErrorResponse => (
+  error && typeof error === 'object' && 'errors' in error && Array.isArray(error.errors)
+);
+
+type ResponseType = JQuery.Deferred<Response, ErrorResponse>;
+
+function buildErrorResponse(message): ErrorResponse {
   return {
     errors: [
       {
@@ -21,7 +40,7 @@ function requestFailed(errorMessage, xhr) {
 
 // Renew MailPoet nonce via heartbeats to keep auth
 // for AJAX requests on long-open pages
-jQuery(document).on('heartbeat-tick.mailpoet-ajax', (event, data) => {
+jQuery(document).on('heartbeat-tick.mailpoet-ajax', (_event, data) => {
   if (data.mailpoet_token) {
     window.mailpoet_token = data.mailpoet_token;
   }
@@ -38,10 +57,10 @@ export const MailPoetAjax = {
     token: null,
     data: {},
   },
-  post: function post(options) {
+  post: function post(options): ResponseType {
     return this.request('post', options);
   },
-  get: function get(options) {
+  get: function get(options): ResponseType {
     return this.request('get', options);
   },
   init: function init(options) {
@@ -73,27 +92,24 @@ export const MailPoetAjax = {
       data: this.options.data || {},
     };
   },
-  constructGetUrl: function constructGetUrl(options) {
+  constructGetUrl: function constructGetUrl(options): string {
     this.init(options);
-    return this.options.url + '?' + jQuery.param(this.getParams());
+    return `${this.options.url as string}?${jQuery.param(this.getParams() as object)}`;
   },
-  request: function request(method, options) {
-    var params;
+  request: function request(method, options): ResponseType {
     // set options
     this.init(options);
 
     // set request params
-    params = this.getParams();
+    const params = this.getParams();
 
     // remove null values from the data object
     if (_.isObject(params.data)) {
-      params.data = _.pick(params.data, function isNotNull(value) {
-        return (value !== null);
-      });
+      params.data = _.pick(params.data, (value) => value !== null);
     }
 
     // ajax request
-    const deferred = jQuery.Deferred();
+    const deferred = jQuery.Deferred<Response, ErrorResponse>();
     const timeout = Math.ceil(this.options.timeout / 1000); // convert milliseconds to seconds
     jQuery[method]({
       url: this.options.url,
@@ -101,14 +117,14 @@ export const MailPoetAjax = {
       success: null,
       dataType: 'json',
       timeout: this.options.timeout,
-    }).then(deferred.resolve, (failedXhr, textStatus) => {
-      let errorData;
+    }).then((data: Response) => deferred.resolve(data), (failedXhr, textStatus) => {
+      let errorData: ErrorResponse;
       if (textStatus === 'timeout') {
         errorData = buildErrorResponse(MailPoetI18n.t('ajaxTimeoutErrorMessage').replace('%d', timeout.toString()));
       } else {
         errorData = requestFailed(MailPoetI18n.t('ajaxFailedErrorMessage'), failedXhr);
       }
-      deferred.reject(errorData);
+      void deferred.reject(errorData);
     });
 
     // clear options
@@ -116,4 +132,4 @@ export const MailPoetAjax = {
 
     return deferred;
   },
-};
+} as const;
