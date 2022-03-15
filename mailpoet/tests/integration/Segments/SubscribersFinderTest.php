@@ -69,7 +69,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->method('findSubscribersIdsInSegment')
       ->will($this->returnValue([$this->subscriber3->getId()]));
 
-    $finder = new SubscribersFinder($mock, $this->segmentsRepository);
+    $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->getId()], [$this->segment3->getId()]);
     expect($subscribers)->count(1);
     expect($subscribers)->contains($this->subscriber3->getId());
@@ -83,7 +83,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->method('findSubscribersIdsInSegment')
       ->will($this->returnValue([$this->subscriber3->getId()]));
 
-    $finder = new SubscribersFinder($mock, $this->segmentsRepository);
+    $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->getId()], [$this->segment3->getId(), $this->segment3->getId()]);
     expect($subscribers)->count(1);
   }
@@ -120,7 +120,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->will($this->returnValue([$this->subscriber1->getId()]));
     $this->segment2->setType(SegmentEntity::TYPE_DYNAMIC);
 
-    $finder = new SubscribersFinder($mock, $this->segmentsRepository);
+    $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
     $subscribersCount = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
@@ -140,7 +140,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->will($this->returnValue([$this->subscriber2->getId()]));
     $this->segment3->setType(SegmentEntity::TYPE_DYNAMIC);
 
-    $finder = new SubscribersFinder($mock, $this->segmentsRepository);
+    $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
     $subscribersCount = $finder->addSubscribersToTaskFromSegments(
       $this->sending->task(),
       [
