@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { ReactElement } from 'react';
 import Heading from '../../typography/heading/heading';
 import { Grid } from '..';
 import Input from '../../form/input/input';
@@ -7,7 +7,7 @@ export default {
   title: 'Grid',
 };
 
-export function Layouts(): React.ReactElement {
+export function Layouts(): ReactElement {
   const content = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi libero sapien, tristique sollicitudin lobortis id, viverra id libero.';
 
   return (

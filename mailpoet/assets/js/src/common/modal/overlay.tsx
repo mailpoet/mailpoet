@@ -1,5 +1,11 @@
-import { useEffect, useRef } from 'react';
-import * as React from 'react';
+import {
+  KeyboardEvent,
+  MouseEvent,
+  ReactNode,
+  SyntheticEvent,
+  useEffect,
+  useRef,
+} from 'react';
 import classnames from 'classnames';
 import { noop } from 'lodash';
 
@@ -9,9 +15,9 @@ type Props = {
   isDismissible?: boolean;
   shouldCloseOnEsc?: boolean;
   shouldCloseOnClickOutside?: boolean;
-  onRequestClose?: (event: React.SyntheticEvent) => void;
+  onRequestClose?: (event: SyntheticEvent) => void;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function ModalOverlay({
@@ -29,27 +35,27 @@ function ModalOverlay({
     overlayRef.current.focus();
   }, []);
 
-  function onClose(event: React.SyntheticEvent) {
+  function onClose(event: SyntheticEvent) {
     if (onRequestClose) {
       onRequestClose(event);
     }
   }
 
-  function handleFocusOutside(event: React.MouseEvent) {
+  function handleFocusOutside(event: MouseEvent) {
     // filter only to clicks on overlay
     if (shouldCloseOnClickOutside && overlayRef.current === event.target) {
       onClose(event);
     }
   }
 
-  function handleEscapeKeyDown(event: React.KeyboardEvent) {
+  function handleEscapeKeyDown(event: KeyboardEvent) {
     if (shouldCloseOnEsc) {
       event.stopPropagation();
       onClose(event);
     }
   }
 
-  function handleKeyDown(event: React.KeyboardEvent) {
+  function handleKeyDown(event: KeyboardEvent) {
     if (event.keyCode === ESCAPE) {
       handleEscapeKeyDown(event);
     }

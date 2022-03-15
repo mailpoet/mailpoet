@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { CSSProperties } from 'react';
 import classnames from 'classnames';
 import MailPoet from 'mailpoet';
 import { InspectorControls } from '@wordpress/block-editor';
@@ -77,7 +77,7 @@ function DividerEdit(
     </>
   );
 
-  const dividerStyles = {} as React.CSSProperties;
+  const dividerStyles = {} as CSSProperties;
   if (attributes.type === Types.Divider) {
     dividerStyles.borderTopStyle = attributes.style;
     dividerStyles.borderTopWidth = attributeDividerHeight;

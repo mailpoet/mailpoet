@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import * as React from 'react';
+import { ReactNode, useState } from 'react';
 import classnames from 'classnames';
 
 import SettingsIcon from './form_placement_options/icons/settings_icon';
@@ -12,7 +11,7 @@ type Props = {
   canBeActive?: boolean;
   onClick: () => void;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
   automationId?: string;
 };
 

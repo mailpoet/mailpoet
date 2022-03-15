@@ -1,9 +1,8 @@
-import { HTMLAttributes } from 'react';
-import * as React from 'react';
+import { HTMLAttributes, ReactNode } from 'react';
 import classNames from 'classnames';
 
 type Props = HTMLAttributes<HTMLHeadingElement> & {
-  children: React.ReactNode;
+  children: ReactNode;
   level: 0 | 1 | 2 | 3 | 4 | 5;
 };
 

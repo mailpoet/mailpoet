@@ -1,12 +1,12 @@
-import * as React from 'react';
+import { ReactNode } from 'react';
 import MailPoet from 'mailpoet';
 import PremiumRequired from 'common/premium_required/premium_required';
 import Button from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
 
 type Props = {
-  message: React.ReactNode;
-  actionButton: React.ReactNode;
+  message: ReactNode;
+  actionButton: ReactNode;
 };
 
 const {
@@ -50,8 +50,8 @@ const getCtaButton = (translationKey: string, link: string, target = '_blank') =
 function PremiumBannerWithUpgrade(
   { message, actionButton }: Props,
 ) : JSX.Element {
-  let bannerMessage: React.ReactNode;
-  let ctaButton: React.ReactNode;
+  let bannerMessage: ReactNode;
+  let ctaButton: ReactNode;
 
   if (anyValidKey && !premiumActive) {
     bannerMessage = getBannerMessage('premiumFeatureDescription');

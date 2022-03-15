@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { CSSProperties } from 'react';
 import {
   CustomSelectControl,
 } from '@wordpress/components';
@@ -39,7 +39,7 @@ function FontFamilySettings({
     backgroundColor: 'white',
     cursor: 'default',
   };
-  const getFontStyle = (fontName): React.CSSProperties => ({
+  const getFontStyle = (fontName): CSSProperties => ({
     fontFamily: fontName,
     cursor: 'default',
     marginLeft: 16,

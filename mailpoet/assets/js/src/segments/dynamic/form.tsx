@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import * as React from 'react';
+import { Fragment, FunctionComponent, useState } from 'react';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import Hooks from 'wp-js-hooks';
@@ -30,8 +29,8 @@ interface Props {
   segmentId?: number;
 }
 
-const FiltersBefore = Hooks.applyFilters('mailpoet_dynamic_segments_form_filters_before', (): React.FunctionComponent => null);
-const FilterBefore = Hooks.applyFilters('mailpoet_dynamic_filters_filter_before', (): React.FunctionComponent => null);
+const FiltersBefore = Hooks.applyFilters('mailpoet_dynamic_segments_form_filters_before', (): FunctionComponent => null);
+const FilterBefore = Hooks.applyFilters('mailpoet_dynamic_filters_filter_before', (): FunctionComponent => null);
 const FilterAfter = Hooks.applyFilters('mailpoet_dynamic_filters_filter_after', (): JSX.Element => (
   <div className="mailpoet-gap" />
 ));
@@ -126,7 +125,7 @@ export function Form({
           </Heading>
           <FiltersBefore />
           {Array.isArray(filterRows) && filterRows.map((filterRow, index) => (
-            <React.Fragment key={filterRow.index}>
+            <Fragment key={filterRow.index}>
               <Grid.ThreeColumns className="mailpoet-segments-grid" automationId={`filter-row-${index}`}>
                 <FilterBefore filterRows={filterRows} index={index} />
                 <Grid.CenteredRow>
@@ -150,7 +149,7 @@ export function Form({
                 )}
               </Grid.ThreeColumns>
               <FilterAfter index={index} />
-            </React.Fragment>
+            </Fragment>
           ))}
           <Button
             type="button"

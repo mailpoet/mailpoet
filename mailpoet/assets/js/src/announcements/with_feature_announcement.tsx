@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { ComponentType, FC } from 'react';
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import jQuery from 'jquery';
@@ -23,8 +23,8 @@ interface FeatureAnnouncementWindow extends Window {
 declare let window: FeatureAnnouncementWindow;
 
 export const withFeatureAnnouncement = <P extends Record<string, unknown>>(
-  Component: React.ComponentType<P>,
-): React.FC<Omit<P, 'hasNews' | 'onBeamerClick'>> => {
+  Component: ComponentType<P>,
+): FC<Omit<P, 'hasNews' | 'onBeamerClick'>> => {
   const isBeamerInitialized = () => typeof window.Beamer !== 'undefined';
   let showDot = window.mailpoet_feature_announcement_has_news;
   let beamerCallback;

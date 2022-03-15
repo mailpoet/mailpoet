@@ -1,10 +1,10 @@
-import * as React from 'react';
+import { ReactNode } from 'react';
 import classnames from 'classnames';
 
 type Props = {
   fullScreen?: boolean;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function ModalFrame({

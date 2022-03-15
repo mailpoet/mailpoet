@@ -1,8 +1,8 @@
-import * as React from 'react';
+import { ReactElement, ReactNode } from 'react';
 import classnames from 'classnames';
 
 type Props = {
-  children?: React.ReactNode;
+  children?: ReactNode;
   align?: 'center';
   className?: string;
   dimension?: 'small';
@@ -13,7 +13,7 @@ export function Column({
   align,
   className,
   dimension,
-}: Props): React.ReactElement {
+}: Props): ReactElement {
   return (
     <div
       className={

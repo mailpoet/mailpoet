@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { FunctionComponent } from 'react';
 import MailPoet from 'mailpoet';
 import PremiumRequired from 'common/premium_required/premium_required';
 import Button from 'common/button/button';
@@ -21,7 +21,7 @@ export default function NoAccessInfo({
   hasValidApiKey,
   hasPremiumSupport,
 }: Props) : JSX.Element {
-  const getBannerMessage: React.FunctionComponent = () => {
+  const getBannerMessage: FunctionComponent = () => {
     let message = MailPoet.I18n.t('premiumRequired');
     if (!premiumActive) {
       return (
@@ -53,7 +53,7 @@ export default function NoAccessInfo({
     );
   };
 
-  const getCtaButton: React.FunctionComponent = () => (
+  const getCtaButton: FunctionComponent = () => (
     premiumActive && limitReached ? (
       <Button
         href={

@@ -1,9 +1,13 @@
-import { SelectHTMLAttributes } from 'react';
-import * as React from 'react';
+import {
+  forwardRef,
+  ReactNode,
+  Ref,
+  SelectHTMLAttributes,
+} from 'react';
 import classnames from 'classnames';
 
 type Props = SelectHTMLAttributes<HTMLSelectElement> & {
-  children?: React.ReactNode;
+  children?: ReactNode;
   dimension?: 'small';
   isFullWidth?: boolean;
   isMinWidth?: boolean;
@@ -11,7 +15,7 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
   automationId?: string;
 };
 
-const Select = React.forwardRef(({
+const Select = forwardRef(({
   children,
   dimension,
   isFullWidth,
@@ -19,7 +23,7 @@ const Select = React.forwardRef(({
   iconStart,
   automationId,
   ...attributes
-}: Props, ref?: React.Ref<HTMLSelectElement>) => (
+}: Props, ref?: Ref<HTMLSelectElement>) => (
   <div
     className={
       classnames(

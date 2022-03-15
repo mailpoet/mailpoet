@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { ReactNode } from 'react';
 import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
 import t from 'common/functions/t';
@@ -9,7 +9,7 @@ import { BeamerIcon } from './beamer_icon';
 import { ScreenOptionsFix } from './screen_options_fix';
 
 type Props = {
-  children?: React.ReactNode;
+  children?: ReactNode;
   hasNews?: boolean;
   onBeamerClick?: () => void;
 };
