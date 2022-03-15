@@ -1142,16 +1142,6 @@ parameters:
 
 		-
 			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 2
-			path: ../../lib/Subscribers/SubscriberListingRepository.php
-
-		-
-			message: "#^Cannot access offset 'status' on mixed\\.$#"
-			count: 1
-			path: ../../lib/Subscribers/SubscriberListingRepository.php
-
-		-
-			message: "#^Cannot access offset 'subscribersCount' on mixed\\.$#"
 			count: 1
 			path: ../../lib/Subscribers/SubscriberListingRepository.php
 
@@ -1168,11 +1158,6 @@ parameters:
 		-
 			message: "#^Cannot call method isStatic\\(\\) on mixed\\.$#"
 			count: 1
-			path: ../../lib/Subscribers/SubscriberListingRepository.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 3
 			path: ../../lib/Subscribers/SubscriberListingRepository.php
 
 		-
