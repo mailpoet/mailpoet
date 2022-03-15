@@ -487,8 +487,6 @@ class Listing extends React.Component {
 
     this.setState({
       group,
-      filter: {},
-      search: '',
       page: 1,
     }, () => {
       this.setParams();
