@@ -34,9 +34,6 @@ class APITest extends \MailPoetTest {
   /** @var ErrorHandler */
   private $errorHandler;
 
-  /** @var SettingsController */
-  private $settings;
-
   public function _before() {
     parent::_before();
     // create WP user
@@ -54,12 +51,10 @@ class APITest extends \MailPoetTest {
     $this->container->autowire(APITestNamespacedEndpointStubV2::class)->setPublic(true);
     $this->container->compile();
     $this->errorHandler = $this->container->get(ErrorHandler::class);
-    $this->settings = $this->container->get(SettingsController::class);
     $this->api = new JSONAPI(
       $this->container,
       $this->container->get(AccessControl::class),
       $this->errorHandler,
-      $this->settings,
       new WPFunctions
     );
   }
@@ -237,7 +232,7 @@ class APITest extends \MailPoetTest {
       ['validatePermission' => false]
     );
 
-    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, new WPFunctions);
     $api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $api->processRoute();
@@ -259,7 +254,7 @@ class APITest extends \MailPoetTest {
       ]
     );
 
-    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, new WPFunctions);
     expect($api->validatePermissions(null, $permissions))->false();
 
     $accessControl = Stub::make(
@@ -271,7 +266,7 @@ class APITest extends \MailPoetTest {
         }),
       ]
     );
-    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, new WPFunctions);
     expect($api->validatePermissions(null, $permissions))->true();
   }
 
@@ -293,7 +288,7 @@ class APITest extends \MailPoetTest {
       ]
     );
 
-    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, new WPFunctions);
     expect($api->validatePermissions('test', $permissions))->false();
 
     $accessControl = Stub::make(
@@ -306,7 +301,7 @@ class APITest extends \MailPoetTest {
       ]
     );
 
-    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, new WPFunctions);
+    $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, new WPFunctions);
     expect($api->validatePermissions('test', $permissions))->true();
   }
 

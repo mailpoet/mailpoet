@@ -4,8 +4,6 @@ namespace MailPoet\API\JSON;
 
 use MailPoet\Config\AccessControl;
 use MailPoet\Exception;
-use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha;
 use MailPoet\Tracy\ApiPanel\ApiPanel;
 use MailPoet\Tracy\DIPanel\DIPanel;
 use MailPoet\Util\Helpers;
@@ -40,22 +38,17 @@ class API {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var SettingsController */
-  private $settings;
-
   const CURRENT_VERSION = 'v1';
 
   public function __construct(
     ContainerInterface $container,
     AccessControl $accessControl,
     ErrorHandler $errorHandler,
-    SettingsController $settings,
     WPFunctions $wp
   ) {
     $this->container = $container;
     $this->accessControl = $accessControl;
     $this->errorHandler = $errorHandler;
-    $this->settings = $settings;
     $this->wp = $wp;
     foreach ($this->availableApiVersions as $availableApiVersion) {
       $this->addEndpointNamespace(
@@ -100,19 +93,13 @@ class API {
       $this->setRequestData($_GET, Endpoint::TYPE_GET);
     }
 
-    $ignoreToken = (
-      $this->settings->get('captcha.type') != Captcha::TYPE_DISABLED &&
-      $this->requestEndpoint === 'subscribers' &&
-      $this->requestMethod === 'subscribe'
-    );
-
     $nonceAction = 'mailpoet_token';
     
     if (isset($this->requestData['mailpoet_action']) && $this->requestData['mailpoet_action'] !== '') {
       $nonceAction .= sprintf("_%s", $this->requestData['mailpoet_action']);
     }
 
-    if (!$ignoreToken && $this->checkToken($nonceAction) === false) {
+    if ($this->checkToken($nonceAction) === false) {
       $errorMessage = WPFunctions::get()->__("Sorry, but we couldn't connect to the MailPoet server. Please refresh the web page and try again.", 'mailpoet');
       $errorResponse = $this->createErrorResponse(Error::UNAUTHORIZED, $errorMessage, Response::STATUS_UNAUTHORIZED);
       return $errorResponse->send();
