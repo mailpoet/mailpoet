@@ -8,11 +8,13 @@ use MailPoet\API\JSON\Response;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\Scheduler;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\Bridge;
@@ -39,18 +41,23 @@ class SendingQueue extends APIEndpoint {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
   public function __construct(
     SubscribersFeature $subscribersFeature,
     NewslettersRepository $newsletterRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     Bridge $bridge,
-    SubscribersFinder $subscribersFinder
+    SubscribersFinder $subscribersFinder,
+    ScheduledTasksRepository $scheduledTasksRepository
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
     $this->newsletterRepository = $newsletterRepository;
     $this->bridge = $bridge;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
   }
 
   public function add($data = []) {
@@ -129,8 +136,14 @@ class SendingQueue extends APIEndpoint {
       $queue->scheduledAt = Scheduler::formatDatetimeString($newsletterEntity->getOptionValue('scheduledAt'));
     } else {
       $segments = $newsletterEntity->getSegmentIds();
-      $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($queue->task(), $segments);
-      if (!$subscribersCount) {
+      $taskModel = $queue->task();
+      $taskEntity = $this->scheduledTasksRepository->findOneById($taskModel->id);
+
+      if ($taskEntity instanceof ScheduledTaskEntity) {
+        $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($taskEntity, $segments);
+      }
+
+      if (!isset($subscribersCount) || !$subscribersCount) {
         return $this->errorResponse([
           APIError::UNKNOWN => __('There are no subscribers in that list!', 'mailpoet'),
         ]);

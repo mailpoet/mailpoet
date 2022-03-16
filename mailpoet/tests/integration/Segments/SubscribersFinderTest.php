@@ -9,13 +9,16 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class SubscribersFinderTest extends \MailPoetTest {
-  public $sending;
+  public $scheduledTask;
   public $subscriber3;
   public $subscriber2;
   public $subscriber1;
@@ -28,6 +31,9 @@ class SubscribersFinderTest extends \MailPoetTest {
 
   /** @var SegmentsRepository */
   private $segmentsRepository;
+
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
 
   public function _before() {
     parent::_before();
@@ -49,9 +55,11 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->withSegments([$this->segment3])
       ->create();
 
-    $this->sending = SendingTask::create();
+    $scheduledTaskFactory = new ScheduledTaskFactory();
+    $this->scheduledTask = $scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscribersFinder = $this->diContainer->get(SubscribersFinder::class);
+    $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
   }
 
   public function testFindSubscribersInSegmentInSegmentDefaultSegment() {
@@ -90,20 +98,21 @@ class SubscribersFinderTest extends \MailPoetTest {
 
   public function testItAddsSubscribersToTaskFromStaticSegments() {
     $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments(
-      $this->sending->task(),
+      $this->scheduledTask,
       [
         $this->segment1->getId(),
         $this->segment2->getId(),
       ]
     );
     expect($subscribersCount)->equals(1);
-    expect($this->sending->getSubscribers())->equals([$this->subscriber2->getId()]);
+    $subscribersIds = $this->getScheduledTasksSubscribers($this->scheduledTask->getId());
+    expect($subscribersIds)->equals([$this->subscriber2->getId()]);
   }
 
   public function testItDoesNotAddSubscribersToTaskFromNoSegment() {
     $this->segment3->setType('Invalid type');
     $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments(
-      $this->sending->task(),
+      $this->scheduledTask,
       [
         $this->segment3->getId(),
       ]
@@ -122,13 +131,14 @@ class SubscribersFinderTest extends \MailPoetTest {
 
     $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
     $subscribersCount = $finder->addSubscribersToTaskFromSegments(
-      $this->sending->task(),
+      $this->scheduledTask,
       [
         $this->segment2->getId(),
       ]
     );
     expect($subscribersCount)->equals(1);
-    expect($this->sending->getSubscribers())->equals([$this->subscriber1->getId()]);
+    $subscribersIds = $this->getScheduledTasksSubscribers($this->scheduledTask->getId());
+    expect($subscribersIds)->equals([$this->subscriber1->getId()]);
   }
 
   public function testItAddsSubscribersToTaskFromStaticAndDynamicSegments() {
@@ -142,7 +152,7 @@ class SubscribersFinderTest extends \MailPoetTest {
 
     $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
     $subscribersCount = $finder->addSubscribersToTaskFromSegments(
-      $this->sending->task(),
+      $this->scheduledTask,
       [
         $this->segment1->getId(),
         $this->segment2->getId(),
@@ -151,7 +161,8 @@ class SubscribersFinderTest extends \MailPoetTest {
     );
 
     expect($subscribersCount)->equals(1);
-    expect($this->sending->getSubscribers())->equals([$this->subscriber2->getId()]);
+    $subscribersIds = $this->getScheduledTasksSubscribers($this->scheduledTask->getId());
+    expect($subscribersIds)->equals([$this->subscriber2->getId()]);
   }
 
   public function _after() {
@@ -162,5 +173,18 @@ class SubscribersFinderTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
+  }
+
+  private function getScheduledTasksSubscribers(int $taskId): array {
+    $scheduledTaskSubscribers = $this->scheduledTaskSubscribersRepository->findBy(['task' => $taskId]);
+    $subscribersIds = array_map(function($scheduledTaskSubscriber) {
+      $subscriber = $scheduledTaskSubscriber->getSubscriber();
+
+      if ($subscriber instanceof SubscriberEntity) {
+        return $subscriber->getId();
+      }
+    }, $scheduledTaskSubscribers);
+
+    return $subscribersIds;
   }
 }

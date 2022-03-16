@@ -135,7 +135,11 @@ class Scheduler {
       }
 
       // ensure that subscribers are in segments
-      $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($queue->task(), $segments);
+      $taskModel = $queue->task();
+      $taskEntity = $this->scheduledTasksRepository->findOneById($taskModel->id);
+      if ($taskEntity instanceof ScheduledTaskEntity) {
+        $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($taskEntity, $segments);
+      }
     }
 
     if (empty($subscribersCount)) {
@@ -168,7 +172,13 @@ class Scheduler {
     if ($newsletter->sendTo === 'segment') {
       $segment = $this->segmentsRepository->findOneById($newsletter->segment);
       if ($segment instanceof SegmentEntity) {
-        $result = $this->subscribersFinder->addSubscribersToTaskFromSegments($queue->task(), [(int)$segment->getId()]);
+        $taskModel = $queue->task();
+        $taskEntity = $this->scheduledTasksRepository->findOneById($taskModel->id);
+
+        if ($taskEntity instanceof ScheduledTaskEntity) {
+          $result = $this->subscribersFinder->addSubscribersToTaskFromSegments($taskEntity, [(int)$segment->getId()]);
+        }
+
         if (empty($result)) {
           $queue->delete();
           return false;
@@ -198,7 +208,12 @@ class Scheduler {
 
     if ($newsletterEntity instanceof NewsletterEntity) {
       $segments = $newsletterEntity->getSegmentIds();
-      $this->subscribersFinder->addSubscribersToTaskFromSegments($task->task(), $segments);
+      $taskModel = $task->task();
+      $taskEntity = $this->scheduledTasksRepository->findOneById($taskModel->id);
+
+      if ($taskEntity instanceof ScheduledTaskEntity) {
+        $this->subscribersFinder->addSubscribersToTaskFromSegments($taskEntity, $segments);
+      }
     }
 
     // update current queue
