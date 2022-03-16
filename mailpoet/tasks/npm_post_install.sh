@@ -21,12 +21,3 @@ sed -i -- "s/_focusedField\.focus()/_focusedField\.trigger('focus')/g" node_modu
 sed -i -- "s/  lastKeyIndex = keyPath.length-1;/  var lastKeyIndex = keyPath.length-1;/g" node_modules/backbone.supermodel/build/backbone.supermodel.js
 sed -i -- "s/  key = keyPath\[i\];/  var key = keyPath\[i\];/g" node_modules/backbone.supermodel/build/backbone.supermodel.js
 
-# Remove older versions of react, react-dom installed in @wordpress/components
-# The older version are installed because @wordpress/components has sub-dependency react-dates which needs react 16.
-# The sub-dependency causes that npm install own version of react for @wordpress/components. Any time someone uses import from react
-# in @wordpress/components (like in https://github.com/WordPress/gutenberg/blob/3200d91b9bbfc3e4a5376073bd1c5c1b9e00317b/packages/components/src/color-picker/component.tsx#L5)
-# it causes problems with 2 versions of react.
-# We can remove this fix once @wordpress/components deps won't cause installation of older react version
-# or direct usages of react are eliminated from components (see PR: https://github.com/WordPress/gutenberg/pull/37745)
-rm -rf node_modules/@wordpress/components/node_modules/react
-rm -rf node_modules/@wordpress/components/node_modules/react-dom
