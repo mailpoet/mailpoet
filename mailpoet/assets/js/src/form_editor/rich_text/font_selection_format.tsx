@@ -26,7 +26,7 @@ type Format = {
 
 type Value = {
   formats: Format[][];
-  replacements: string[];
+  replacements: (string | object)[];
   text: string;
   activeFormats?: Format[];
   start?: number;
