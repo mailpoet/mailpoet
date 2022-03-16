@@ -35,7 +35,7 @@ class Security {
    * Generate random lowercase alphanumeric string.
    * 1 lowercase alphanumeric character = 6 bits (because log2(36) = 5.17)
    * So 3 bytes = 4 characters
-   * @param int $length Minimal lenght is 5
+   * @param int $length Minimal length is 5
    * @return string
    */
   public static function generateRandomString($length = 5): string {
