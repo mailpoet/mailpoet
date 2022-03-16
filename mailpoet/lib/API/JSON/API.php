@@ -106,7 +106,13 @@ class API {
       $this->requestMethod === 'subscribe'
     );
 
-    if (!$ignoreToken && $this->checkToken() === false) {
+    $nonceAction = 'mailpoet_token';
+    
+    if (isset($this->requestData['mailpoet_action']) && $this->requestData['mailpoet_action'] !== '') {
+      $nonceAction .= sprintf("_%s", $this->requestData['mailpoet_action']);
+    }
+
+    if (!$ignoreToken && $this->checkToken($nonceAction) === false) {
       $errorMessage = WPFunctions::get()->__("Sorry, but we couldn't connect to the MailPoet server. Please refresh the web page and try again.", 'mailpoet');
       $errorResponse = $this->createErrorResponse(Error::UNAUTHORIZED, $errorMessage, Response::STATUS_UNAUTHORIZED);
       return $errorResponse->send();
@@ -228,8 +234,8 @@ class API {
       $this->accessControl->validatePermission($permissions['global']);
   }
 
-  public function checkToken() {
-    return WPFunctions::get()->wpVerifyNonce($this->requestToken, 'mailpoet_token');
+  public function checkToken($action = 'mailpoet_token') {
+    return WPFunctions::get()->wpVerifyNonce($this->requestToken, $action);
   }
 
   public function setTokenAndAPIVersion() {

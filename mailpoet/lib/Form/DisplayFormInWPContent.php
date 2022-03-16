@@ -187,8 +187,11 @@ class DisplayFormInWPContent {
       $templateData['enableExitIntent'] = true;
     }
 
+    $uniqueFormAction = Security::generateRandomString();
+    $templateData['mailpoetAction'] = $uniqueFormAction;
+    
     // generate security token
-    $templateData['token'] = Security::generateToken();
+    $templateData['token'] = Security::generateToken('mailpoet_token_' . $uniqueFormAction);
 
     // add API version
     $templateData['api_version'] = API::CURRENT_VERSION;

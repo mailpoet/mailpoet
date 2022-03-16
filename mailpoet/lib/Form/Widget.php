@@ -247,8 +247,11 @@ class Widget extends \WP_Widget {
         ((int)$_GET['mailpoet_error'] === $form->getId())
       );
 
+      $uniqueFormAction = Security::generateRandomString();
+      $data['mailpoetAction'] = $uniqueFormAction;
+
       // generate security token
-      $data['token'] = Security::generateToken();
+      $data['token'] = Security::generateToken('mailpoet_token_' . $uniqueFormAction);
 
       // add API version
       $data['api_version'] = API::CURRENT_VERSION;
