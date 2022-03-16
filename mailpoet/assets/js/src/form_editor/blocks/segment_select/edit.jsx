@@ -64,7 +64,7 @@ SegmentSelectEdit.propTypes = {
     label: PropTypes.string.isRequired,
     className: PropTypes.string,
     values: PropTypes.arrayOf(PropTypes.shape({
-      isChecked: PropTypes.boolean,
+      isChecked: PropTypes.bool,
       id: PropTypes.string.isRequired,
     })).isRequired,
   }).isRequired,
