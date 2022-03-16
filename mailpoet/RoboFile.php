@@ -103,11 +103,6 @@ class RoboFile extends \Robo\Tasks {
     return $compilationResult;
   }
 
-  public function translationsInit() {
-    // Define WP_TRANSIFEX_API_TOKEN env. variable
-    return $this->_exec('./tasks/transifex_init.sh');
-  }
-
   public function translationsBuild() {
     $this->collectionBuilder()
       ->taskExec('mkdir -p ' . __DIR__ . '/lang')
@@ -117,16 +112,26 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function translationsPack() {
+    $tokenEnvName = 'WP_TRANSIFEX_API_TOKEN';
+    $token = getenv($tokenEnvName);
+    if (!$token) {
+      throw new \Exception("Please provide '$tokenEnvName' environment variable");
+    }
     return $this->collectionBuilder()
-      ->addCode([$this, 'translationsInit'])
       ->taskExec('./tasks/pack_translations.sh')
+      ->env('TX_TOKEN', $token)
       ->run();
   }
 
   public function translationsPush() {
+    $tokenEnvName = 'WP_TRANSIFEX_API_TOKEN';
+    $token = getenv($tokenEnvName);
+    if (!$token) {
+      throw new \Exception("Please provide '$tokenEnvName' environment variable");
+    }
     return $this->collectionBuilder()
-      ->addCode([$this, 'translationsInit'])
       ->taskExec('php ' . __DIR__ . '/tools/transifex.php push -s')
+      ->env('TX_TOKEN', $token)
       ->run();
   }
 
