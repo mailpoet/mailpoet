@@ -2,12 +2,12 @@
 
 namespace MailPoet\Segments;
 
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
-use MailPoet\Models\ScheduledTask;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -54,12 +54,12 @@ class SubscribersFinder {
   }
 
   /**
-   * @param ScheduledTask $task
+   * @param ScheduledTaskEntity $task
    * @param array<int>    $segmentIds
    *
    * @return float|int
    */
-  public function addSubscribersToTaskFromSegments(ScheduledTask $task, array $segmentIds) {
+  public function addSubscribersToTaskFromSegments(ScheduledTaskEntity $task, array $segmentIds) {
     // Prepare subscribers on the DB side for performance reasons
     $staticSegmentIds = [];
     $dynamicSegmentIds = [];
@@ -84,12 +84,12 @@ class SubscribersFinder {
   }
 
   /**
-   * @param ScheduledTask $task
+   * @param ScheduledTaskEntity $task
    * @param array<int> $segmentIds
    *
    * @return int
    */
-  private function addSubscribersToTaskFromStaticSegments(ScheduledTask $task, array $segmentIds) {
+  private function addSubscribersToTaskFromStaticSegments(ScheduledTaskEntity $task, array $segmentIds) {
     $processedStatus = ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED;
     $subscribersStatus = SubscriberEntity::STATUS_SUBSCRIBED;
     $relationStatus = SubscriberEntity::STATUS_SUBSCRIBED;
@@ -110,7 +110,7 @@ class SubscribersFinder {
        AND relation.`status` = ?
        AND relation.`segment_id` IN (?)",
       [
-        $task->id,
+        $task->getId(),
         $processedStatus,
         $subscribersStatus,
         $relationStatus,
@@ -129,12 +129,12 @@ class SubscribersFinder {
   }
 
   /**
-   * @param ScheduledTask        $task
+   * @param ScheduledTaskEntity $task
    * @param array<int> $segmentIds
    *
    * @return int
    */
-  private function addSubscribersToTaskFromDynamicSegments(ScheduledTask $task, array $segmentIds) {
+  private function addSubscribersToTaskFromDynamicSegments(ScheduledTaskEntity $task, array $segmentIds) {
     $count = 0;
     foreach ($segmentIds as $segmentId) {
       $count += $this->addSubscribersToTaskFromDynamicSegment($task, (int)$segmentId);
@@ -142,7 +142,7 @@ class SubscribersFinder {
     return $count;
   }
 
-  private function addSubscribersToTaskFromDynamicSegment(ScheduledTask $task, int $segmentId) {
+  private function addSubscribersToTaskFromDynamicSegment(ScheduledTaskEntity $task, int $segmentId) {
     $count = 0;
     $subscribers = $this->segmentSubscriberRepository->getSubscriberIdsInSegment($segmentId);
     if ($subscribers) {
@@ -151,7 +151,7 @@ class SubscribersFinder {
     return $count;
   }
 
-  private function addSubscribersToTaskByIds(ScheduledTask $task, array $subscriberIds) {
+  private function addSubscribersToTaskByIds(ScheduledTaskEntity $task, array $subscriberIds) {
     $scheduledTaskSubscriberTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
     $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
 
@@ -166,7 +166,7 @@ class SubscribersFinder {
        AND subscribers.`status` = ?
        AND subscribers.`id` IN (?)",
       [
-        $task->id,
+        $task->getId(),
         ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
         SubscriberEntity::STATUS_SUBSCRIBED,
         $subscriberIds,

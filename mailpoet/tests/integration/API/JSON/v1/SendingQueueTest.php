@@ -79,7 +79,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
       $this->diContainer->get(Bridge::class),
-      $this->diContainer->get(SubscribersFinder::class)
+      $this->diContainer->get(SubscribersFinder::class),
+      $this->diContainer->get(ScheduledTasksRepository::class)
     );
     $res = $sendingQueue->add(['newsletter_id' => $this->newsletter->getId()]);
     expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
@@ -147,7 +148,8 @@ class SendingQueueTest extends \MailPoetTest {
       Stub::make(Bridge::class, [
         'isMailpoetSendingServiceEnabled' => true,
       ]),
-      $this->diContainer->get(SubscribersFinder::class)
+      $this->diContainer->get(SubscribersFinder::class),
+      $this->diContainer->get(ScheduledTasksRepository::class)
     );
     $response = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
     $response = $response->getData();
