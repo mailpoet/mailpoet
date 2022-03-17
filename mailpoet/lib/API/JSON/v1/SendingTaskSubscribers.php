@@ -11,6 +11,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -31,29 +32,38 @@ class SendingTaskSubscribers extends APIEndpoint {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   public function __construct(
     Listing\Handler $listingHandler,
     SettingsController $settings,
     CronHelper $cronHelper,
+    SendingQueuesRepository $sendingQueuesRepository,
     WPFunctions $wp
   ) {
     $this->listingHandler = $listingHandler;
     $this->settings = $settings;
     $this->cronHelper = $cronHelper;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->wp = $wp;
   }
 
   public function listing($data = []) {
     $newsletterId = !empty($data['params']['id']) ? (int)$data['params']['id'] : false;
-    $tasksIds = SendingQueueModel::select('task_id')
-      ->where('newsletter_id', $newsletterId)
-      ->findArray();
+    if (empty($newsletterId)) {
+      return $this->errorResponse([
+        APIError::NOT_FOUND => __('Newsletter not found!', 'mailpoet'),
+      ]);
+    }
+    $tasksIds = $this->sendingQueuesRepository->getTaskIdsByNewsletterId($newsletterId);
+
     if (empty($tasksIds)) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email has not been sent yet.', 'mailpoet'),
       ]);
     }
-    $data['params']['task_ids'] = array_column($tasksIds, 'task_id');
+    $data['params']['task_ids'] = $tasksIds;
     $listingData = $this->listingHandler->get('\MailPoet\Models\ScheduledTaskSubscriber', $data);
 
     $items = [];
