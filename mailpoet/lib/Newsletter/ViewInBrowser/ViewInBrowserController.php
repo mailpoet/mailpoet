@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\ViewInBrowser;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url as NewsletterUrl;
@@ -51,15 +52,9 @@ class ViewInBrowserController {
     $newsletter = $this->getNewsletter($data);
     $subscriber = $this->getSubscriber($data);
 
-    // if this is a preview and subscriber does not exist,
-    // attempt to set subscriber to the current logged-in WP user
-    if (!$subscriber && $isPreview) {
-      $subscriber = $this->subscribersRepository->getCurrentWPUser();
-    }
-
     // if queue and subscriber exist, subscriber must have received the newsletter
     $queue = $this->getQueue($newsletter, $data);
-    if (!$isPreview && $queue && $subscriber && !$this->sendingQueuesRepository->isSubscriberProcessed($queue, $subscriber)) {
+    if (!$isPreview && $queue && $subscriber->getId() && !$this->sendingQueuesRepository->isSubscriberProcessed($queue, $subscriber)) {
       throw new \InvalidArgumentException("Subscriber did not receive the newsletter yet");
     }
 
@@ -86,25 +81,27 @@ class ViewInBrowserController {
     return $newsletter;
   }
 
-  private function getSubscriber(array $data) {
+  private function getSubscriber(array $data): SubscriberEntity {
     // subscriber is optional; if exists, token must validate
-    if (empty($data['subscriber_id'])) {
-      return null;
+    $subscriber = null;
+    if (!empty($data['subscriber_id'])) {
+      $subscriber = $this->subscribersRepository->findOneById($data['subscriber_id']);
     }
-
-    $subscriber = $this->subscribersRepository->findOneById($data['subscriber_id']);
-    if (!$subscriber) {
-      return null;
-    }
-
-    if (empty($data['subscriber_token'])) {
+    if ($subscriber && empty($data['subscriber_token'])) {
       throw new \InvalidArgumentException("Missing 'subscriber_token'");
     }
 
-    if (!$this->linkTokens->verifyToken($subscriber, $data['subscriber_token'])) {
+    if ($subscriber && !$this->linkTokens->verifyToken($subscriber, $data['subscriber_token'])) {
       throw new \InvalidArgumentException("Invalid 'subscriber_token'");
     }
-    return $subscriber;
+
+    // if this is a preview and subscriber does not exist,
+    // attempt to set subscriber to the current logged-in WP user
+    if (!$subscriber && !empty($data['preview'])) {
+      $subscriber = $this->subscribersRepository->getCurrentWPUser();
+    }
+
+    return $subscriber ?? new SubscriberEntity();
   }
 
   private function getQueue(NewsletterEntity $newsletter, array $data): ?SendingQueueEntity {
