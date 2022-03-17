@@ -113,9 +113,14 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
     analytics: asObject({ enabled: disabledRadio }),
     '3rd_party_libs': asObject({ enabled: disabledRadio }),
     captcha: asObject({
-      type: asEnum(['', 'built-in', 'recaptcha'], 'built-in'),
+      type: asEnum(
+        ['', 'built-in', 'recaptcha', 'recaptcha-invisible'],
+        'built-in',
+      ),
       recaptcha_site_token: text,
       recaptcha_secret_token: text,
+      recaptcha_invisible_site_token: text,
+      recaptcha_invisible_secret_token: text,
     }),
     logging: asEnum(['everything', 'errors', 'nothing'], 'errors'),
     mta_group: asEnum(['mailpoet', 'website', 'smtp'], 'website'),

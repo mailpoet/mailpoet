@@ -59,9 +59,11 @@ export type Settings = {
     enabled: '' | '1';
   };
   captcha: {
-    type: 'built-in' | 'recaptcha' | '';
+    type: 'built-in' | 'recaptcha' | 'recaptcha-invisible' | '';
     recaptcha_site_token: string;
     recaptcha_secret_token: string;
+    recaptcha_invisible_site_token: string;
+    recaptcha_invisible_secret_token: string;
   };
   logging: 'everything' | 'errors' | 'nothing';
   mta_group: 'mailpoet' | 'website' | 'smtp';
