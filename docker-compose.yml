@@ -50,6 +50,7 @@ services:
     volumes:
       - "./wordpress:/var/www/html"
       - "./eslint-config:/var/www/html/wp-content/plugins/eslint-config"
+      - "./tsconfig.base.json:/var/www/html/wp-content/plugins/tsconfig.base.json:ro"
       - "./mailpoet:/var/www/html/wp-content/plugins/mailpoet"
       - "./mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium"
       - "./templates:/var/www/templates"
