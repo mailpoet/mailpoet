@@ -48,6 +48,17 @@ class SendingQueuesRepository extends Repository {
       ->getOneOrNullResult();
   }
 
+  public function getTaskIdsByNewsletterId(int $newsletterId): array {
+    $results = $this->entityManager->createQueryBuilder()
+      ->select('IDENTITY(s.task) as task_id')
+      ->from(SendingQueueEntity::class, 's')
+      ->andWhere('s.newsletter = :newsletter')
+      ->setParameter('newsletter', $newsletterId)
+      ->getQuery()
+      ->getArrayResult();
+    return array_map('intval', array_column($results, 'task_id'));
+  }
+
   public function isSubscriberProcessed(SendingQueueEntity $queue, SubscriberEntity $subscriber): bool {
     $task = $queue->getTask();
     if (is_null($task)) return false;
