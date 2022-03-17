@@ -17,12 +17,12 @@ class ScheduledTaskSubscriber extends Model {
   const STATUS_UNPROCESSED = ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED;
   const STATUS_PROCESSED = ScheduledTaskSubscriberEntity::STATUS_PROCESSED;
 
-  const FAIL_STATUS_OK = 0;
-  const FAIL_STATUS_FAILED = 1;
+  const FAIL_STATUS_OK = ScheduledTaskSubscriberEntity::FAIL_STATUS_OK;
+  const FAIL_STATUS_FAILED = ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED;
 
-  const SENDING_STATUS_SENT = 'sent';
-  const SENDING_STATUS_FAILED = 'failed';
-  const SENDING_STATUS_UNPROCESSED = 'unprocessed';
+  const SENDING_STATUS_SENT = ScheduledTaskSubscriberEntity::SENDING_STATUS_SENT;
+  const SENDING_STATUS_FAILED = ScheduledTaskSubscriberEntity::SENDING_STATUS_FAILED;
+  const SENDING_STATUS_UNPROCESSED = ScheduledTaskSubscriberEntity::SENDING_STATUS_UNPROCESSED;
 
   public static $_table = MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
   public static $_id_column = ['task_id', 'subscriber_id']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps,PSR2.Classes.PropertyDeclaration
