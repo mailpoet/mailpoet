@@ -19,6 +19,7 @@ use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\SubscribersCountCacheRecalculation;
+use MailPoet\Cron\Workers\SubscribersEmailCount;
 use MailPoet\Cron\Workers\SubscribersEngagementScore;
 use MailPoet\Cron\Workers\SubscribersLastEngagement;
 use MailPoet\Cron\Workers\SubscribersStatsReport;
@@ -179,6 +180,12 @@ class WordPress {
       'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
       'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
     ]);
+    // subscribers emails count
+    $subscribersEmailsCount = $this->getTasksCount([
+      'type' => SubscribersEmailCount::TASK_TYPE,
+      'scheduled_in' => [self::SCHEDULED_IN_THE_PAST],
+      'status' => ['null', ScheduledTask::STATUS_SCHEDULED],
+    ]);
     // inactive subscribers check
     $inactiveSubscribersTasks = $this->getTasksCount([
       'type' => InactiveSubscribers::TASK_TYPE,
@@ -282,6 +289,7 @@ class WordPress {
       || $subscribersStatsReportActive
       || $statsNotificationsTasks
       || $autoStatsNotificationsTasks
+      || $subscribersEmailsCount
       || $inactiveSubscribersTasks
       || $wooCommerceSyncTasks
       || $authorizedEmailAddressesTasks
