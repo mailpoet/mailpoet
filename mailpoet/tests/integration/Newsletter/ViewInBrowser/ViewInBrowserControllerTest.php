@@ -132,6 +132,23 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, 'Subscriber did not receive the newsletter yet');
   }
 
+  public function testUsesEmptySubscriberWhenNotLoggedIn() {
+
+    $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
+      'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
+        assert($subscriber !== null); // PHPStan
+        expect($subscriber)->notNull();
+        expect($subscriber->getId())->equals(0);
+      }),
+    ]);
+
+    $viewInBrowserController = $this->createController($viewInBrowserRenderer);
+
+    $data = $this->browserPreviewData;
+    unset($data['subscriber_id']);
+    $viewInBrowserController->view($data);
+  }
+
   public function testItSetsSubscriberToLoggedInWPUserWhenPreviewIsEnabled() {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
       'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
