@@ -156,6 +156,19 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
+  public function testItDoesNotDeactivateSubscriberWithLessEmailsCountThanThreshold(): void {
+    $subscriber1 = $this->createSubscriber('s1@email.com', 10, SubscriberEntity::STATUS_SUBSCRIBED, 9);
+    $this->createCompletedSendingTasksForSubscriber($subscriber1, self::UNOPENED_EMAILS_THRESHOLD, 3);
+
+    $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
+    expect($result)->equals(0);
+    $this->entityManager->clear();
+
+    $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
+    assert($subscriber1 instanceof SubscriberEntity);
+    expect($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+  }
+
   public function testItDoesNotDeactivatesSubscribersWhenMP2MigrationHappenedWithinInterval(): void {
     $this->createSetting(MP2Migrator::MIGRATION_COMPLETE_SETTING_KEY, true, (new Carbon())->subDays(3));
 
@@ -257,11 +270,13 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
   private function createSubscriber(
     string $email,
     int $createdDaysAgo = 0,
-    string $status = SubscriberEntity::STATUS_SUBSCRIBED
+    string $status = SubscriberEntity::STATUS_SUBSCRIBED,
+    int $emailsCount = InactiveSubscribersController::LIFETIME_EMAILS_THRESHOLD
   ): SubscriberEntity {
     $createdAt = (new Carbon())->subDays($createdDaysAgo);
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
+    $subscriber->setEmailsCount($emailsCount);
     $subscriber->setStatus($status);
     $subscriber->setCreatedAt($createdAt);
     $this->entityManager->persist($subscriber);
