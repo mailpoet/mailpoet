@@ -132,4 +132,9 @@ class WorkersFactory {
   public function createNewsletterTemplateThumbnailsWorker() {
     return $this->container->get(NewsletterTemplateThumbnails::class);
   }
+
+  /** @return SubscribersEmailCount */
+  public function createSubscribersEmailCountsWorker() {
+    return $this->container->get(SubscribersEmailCount::class);
+  }
 }
