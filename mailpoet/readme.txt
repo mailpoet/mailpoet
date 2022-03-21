@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.9
-Stable tag: 3.84.1
+Stable tag: 3.85.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -203,6 +203,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.85.0 - 2022-03-21 =
+* Improved: add "Send all site's emails with" to Help → System Status;
+* Fixed: sending limit can be exceeded in some cases.
 
 = 3.84.1 - 2022-03-14 =
 * Added: more engagement checks before marking subscriber as inactive;
