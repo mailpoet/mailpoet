@@ -5,14 +5,20 @@ namespace MailPoet\Test\Subscription;
 use Codeception\Stub;
 use MailPoet\Config\Renderer;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\AssetsController;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
@@ -31,7 +37,6 @@ use MailPoet\Subscription\Pages;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class PagesTest extends \MailPoetTest {
   private $testData = [];
@@ -188,14 +193,14 @@ class PagesTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(StatisticsUnsubscribeEntity::class);
   }
 
