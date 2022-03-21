@@ -21,7 +21,6 @@ use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
@@ -58,7 +57,7 @@ class PagesTest extends \MailPoetTest {
     $this->subscriber->setFirstName('John');
     $this->subscriber->setLastName('John');
     $this->subscriber->setEmail('john.doe@example.com');
-    $this->subscriber->setStatus(Subscriber::STATUS_UNCONFIRMED);
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
     $this->subscribersRepository->persist($this->subscriber);
     $this->subscribersRepository->flush();
     $linkTokens = $this->diContainer->get(LinkTokens::class);
@@ -71,17 +70,23 @@ class PagesTest extends \MailPoetTest {
     $pages = $this->getPages($newSubscriberNotificationSender);
     $subscription = $pages->init(false, $this->testData, false, false);
     $subscription->confirm();
-    $confirmedSubscriber = Subscriber::findOne($this->subscriber->getId());
-    expect($confirmedSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect($confirmedSubscriber->lastSubscribedAt)->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
-    expect($confirmedSubscriber->lastSubscribedAt)->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
+
+    // make sure Doctrine gets the information about the subscriber from the database.
+    // this can be removed once Pages is migrated to Doctrine as well
+    $this->entityManager->detach($this->subscriber);
+
+    $confirmedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
+    expect($confirmedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    expect($confirmedSubscriber->getLastSubscribedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
+    expect($confirmedSubscriber->getLastSubscribedAt())->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
   }
 
   public function testItUpdatesSubscriptionOnDuplicateAttemptButDoesntSendNotification() {
     $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::never()]);
     $pages = $this->getPages($newSubscriberNotificationSender);
     $subscriber = $this->subscriber;
-    $subscriber->setStatus(Subscriber::STATUS_SUBSCRIBED);
+    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriber->setFirstName('First name');
     $subscriber->setUnconfirmedData(null);
     $subscriber->setLastSubscribedAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(10));
@@ -92,7 +97,7 @@ class PagesTest extends \MailPoetTest {
     $this->entityManager->clear();
     $confirmedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     assert($confirmedSubscriber instanceof SubscriberEntity);
-    expect($confirmedSubscriber->getStatus())->equals(Subscriber::STATUS_SUBSCRIBED);
+    expect($confirmedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($confirmedSubscriber->getConfirmedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
     expect($confirmedSubscriber->getConfirmedAt())->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
     expect($confirmedSubscriber->getLastSubscribedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
@@ -164,8 +169,14 @@ class PagesTest extends \MailPoetTest {
   public function testItUnsubscribes() {
     $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
-    $updatedSubscriber = Subscriber::findOne($this->subscriber->getId());
-    expect($updatedSubscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+
+    // make sure Doctrine gets the information about the subscriber from the database.
+    // this can be removed once Pages is migrated to Doctrine as well
+    $this->entityManager->detach($this->subscriber);
+
+    $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
+    expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function testItTrackUnsubscribeWhenTrackingIsEnabled() {
@@ -188,8 +199,14 @@ class PagesTest extends \MailPoetTest {
     $this->testData['preview'] = 1;
     $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
-    $updatedSubscriber = Subscriber::findOne($this->subscriber->getId());
-    expect($updatedSubscriber->status)->notEquals(Subscriber::STATUS_UNSUBSCRIBED);
+
+    // make sure Doctrine gets the information about the subscriber from the database.
+    // this can be removed once Pages is migrated to Doctrine as well
+    $this->entityManager->detach($this->subscriber);
+
+    $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
+    expect($updatedSubscriber->getStatus())->notEquals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function _after() {
