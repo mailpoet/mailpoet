@@ -785,11 +785,62 @@ class Functions {
     return rest_url($path, $scheme);
   }
 
+  /**
+   * @param mixed $value
+   * @return true|WP_Error
+   */
+  public function restValidateValueFromSchema($value, array $args, string $param = '') {
+    return rest_validate_value_from_schema($value, $args, $param);
+  }
+
+  /**
+   * @param mixed $value
+   * @return mixed|WP_Error
+   */
+  public function restSanitizeValueFromSchema($value, array $args, string $param = '') {
+    return rest_sanitize_value_from_schema($value, $args, $param);
+  }
+
+  /**
+   * @param mixed $value
+   * @param string $param
+   * @param array $errors
+   * @return WP_Error
+   */
+  public function restGetCombiningOperationError($value, string $param, array $errors): WP_Error {
+    /* @phpstan-ignore-next-line Wrong annotation for first parameter in WP. */
+    return rest_get_combining_operation_error($value, $param, $errors);
+  }
+
+  /**
+   * @param mixed $value
+   * @param array $args
+   * @param string $param
+   * @param bool $stopAfterFirstMatch
+   * @return array|WP_Error
+   */
+  public function restFindOneMatchingSchema($value, array $args, string $param, bool $stopAfterFirstMatch = false) {
+    return rest_find_one_matching_schema($value, $args, $param, $stopAfterFirstMatch);
+  }
+
+  /**
+   * @param string $property
+   * @param array $args
+   * @return array|null
+   */
+  public function restFindMatchingPatternPropertySchema(string $property, array $args): ?array {
+    return rest_find_matching_pattern_property_schema($property, $args);
+  }
+
   public function wpGetInstalledTranslations(string $type): array {
     return wp_get_installed_translations($type);
   }
 
   public function getAvailableLanguages(?string $dir = null): array {
     return get_available_languages($dir);
+  }
+
+  public function isWpError($value): bool {
+    return is_wp_error($value);
   }
 }
