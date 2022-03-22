@@ -19,9 +19,7 @@ use MailPoet\Form\AssetsController;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
@@ -34,6 +32,7 @@ use MailPoet\Subscription\CaptchaRenderer;
 use MailPoet\Subscription\ManageSubscriptionFormRenderer;
 use MailPoet\Subscription\Pages;
 use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -109,21 +108,17 @@ class PagesTest extends \MailPoetTest {
     $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
     $pages = $this->getPages($newSubscriberNotificationSender);
     $subscription = $pages->init($action = false, $this->testData, false, false);
+
     // create segment
-    $segment = Segment::create();
-    $segment->hydrate(['name' => 'List #1']);
-    $segment->save();
-    expect($segment->getErrors())->false();
+    $segmentFactory = new SegmentFactory();
+    $segment = $segmentFactory->withName('List #1')->create();
+
     // create subscriber->segment relation
-    $subscriberSegment = SubscriberSegment::create();
-    $subscriberSegment->hydrate(
-      [
-        'subscriber_id' => $this->subscriber->getId(),
-        'segment_id' => $segment->id,
-      ]
-    );
-    $subscriberSegment->save();
-    expect($subscriberSegment->getErrors())->false();
+    $subscriberSegment = new SubscriberSegmentEntity($segment, $this->subscriber, 'subscribed');
+    $this->entityManager->persist($subscriberSegment);
+    $this->subscriber->getSubscriberSegments()->add($subscriberSegment);
+    $this->entityManager->persist($this->subscriber);
+    $this->entityManager->flush();
 
     // create welcome notification newsletter and relevant scheduling options
     $newsletter = Newsletter::create();
@@ -133,7 +128,7 @@ class PagesTest extends \MailPoetTest {
     expect($newsletter->getErrors())->false();
     $newsletterOptions = [
       'event' => 'segment',
-      'segment' => $segment->id,
+      'segment' => $segment->getId(),
       'afterTimeType' => 'days',
       'afterTimeNumber' => 1,
     ];
