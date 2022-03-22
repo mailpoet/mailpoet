@@ -19,8 +19,9 @@ use MailPoet\Form\AssetsController;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\SendingQueue;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\Track\SubscriberHandler;
@@ -105,6 +106,8 @@ class PagesTest extends \MailPoetTest {
   }
 
   public function testItSendsWelcomeNotificationUponConfirmingSubscription() {
+    $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
     $pages = $this->getPages($newSubscriberNotificationSender);
     $subscription = $pages->init($action = false, $this->testData, false, false);
@@ -149,15 +152,14 @@ class PagesTest extends \MailPoetTest {
 
     // confirm subscription and ensure that welcome email is scheduled
     $subscription->confirm();
-    $scheduledNotifications = SendingQueue::findTaskByNewsletterId($newsletter->id)
-      ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
-      ->findMany();
+    $newsletterEntity = $newslettersRepository->findOneById($newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $scheduledNotifications = $scheduledTasksRepository->findByNewsletterAndStatus($newsletterEntity, SendingQueueEntity::STATUS_SCHEDULED);
     expect(count($scheduledNotifications))->equals(1);
+
     // Does not schedule another on repeated confirmation
     $subscription->confirm();
-    $scheduledNotifications = SendingQueue::findTaskByNewsletterId($newsletter->id)
-      ->where('tasks.status', SendingQueue::STATUS_SCHEDULED)
-      ->findMany();
+    $scheduledNotifications = $scheduledTasksRepository->findByNewsletterAndStatus($newsletterEntity, SendingQueueEntity::STATUS_SCHEDULED);
     expect(count($scheduledNotifications))->equals(1);
   }
 
