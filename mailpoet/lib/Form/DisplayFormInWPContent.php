@@ -191,7 +191,7 @@ class DisplayFormInWPContent {
     $templateData['mailpoetAction'] = $uniqueFormAction;
     
     // generate security token
-    $templateData['token'] = Security::generateToken('mailpoet_token_' . $uniqueFormAction);
+    $templateData['token'] = Security::generateTokenForUniqueAction($uniqueFormAction);
 
     // add API version
     $templateData['api_version'] = API::CURRENT_VERSION;

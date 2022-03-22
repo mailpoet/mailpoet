@@ -251,7 +251,7 @@ class Widget extends \WP_Widget {
       $data['mailpoetAction'] = $uniqueFormAction;
 
       // generate security token
-      $data['token'] = Security::generateToken('mailpoet_token_' . $uniqueFormAction);
+      $data['token'] = Security::generateTokenForUniqueAction($uniqueFormAction);
 
       // add API version
       $data['api_version'] = API::CURRENT_VERSION;

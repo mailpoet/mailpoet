@@ -563,6 +563,10 @@ class Functions {
     return wp_login_url($redirect, $forceReauth);
   }
 
+  public function wpNonceTick() {
+    return wp_nonce_tick();
+  }
+
   public function wpParseArgs($args, $defaults = '') {
     return wp_parse_args($args, $defaults);
   }
