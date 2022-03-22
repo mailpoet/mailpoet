@@ -631,16 +631,6 @@ parameters:
 			path: ../../lib/Form/Renderer.php
 
 		-
-			message: "#^Cannot call method count\\(\\) on mixed\\.$#"
-			count: 1
-			path: ../../lib/Listing/Handler.php
-
-		-
-			message: "#^Cannot call method offset\\(\\) on mixed\\.$#"
-			count: 1
-			path: ../../lib/Listing/Handler.php
-
-		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
 			path: ../../lib/Listing/ListingRepository.php
