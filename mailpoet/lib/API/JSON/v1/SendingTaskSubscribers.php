@@ -4,6 +4,7 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\ResponseBuilders\ScheduledTaskSubscriberResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Listing;
@@ -11,6 +12,7 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersListingRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -35,17 +37,27 @@ class SendingTaskSubscribers extends APIEndpoint {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /** @var ScheduledTaskSubscribersListingRepository */
+  private $taskSubscribersListingRepository;
+
+  /** @var ScheduledTaskSubscriberResponseBuilder */
+  private $scheduledTaskSubscriberResponseBuilder;
+
   public function __construct(
     Listing\Handler $listingHandler,
     SettingsController $settings,
     CronHelper $cronHelper,
     SendingQueuesRepository $sendingQueuesRepository,
+    ScheduledTaskSubscribersListingRepository $taskSubscribersListingRepository,
+    ScheduledTaskSubscriberResponseBuilder $scheduledTaskSubscriberResponseBuilder,
     WPFunctions $wp
   ) {
     $this->listingHandler = $listingHandler;
     $this->settings = $settings;
     $this->cronHelper = $cronHelper;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
+    $this->taskSubscribersListingRepository = $taskSubscribersListingRepository;
+    $this->scheduledTaskSubscriberResponseBuilder = $scheduledTaskSubscriberResponseBuilder;
     $this->wp = $wp;
   }
 
@@ -64,17 +76,16 @@ class SendingTaskSubscribers extends APIEndpoint {
       ]);
     }
     $data['params']['task_ids'] = $tasksIds;
-    $listingData = $this->listingHandler->get('\MailPoet\Models\ScheduledTaskSubscriber', $data);
+    $definition = $this->listingHandler->getListingDefinition($data);
+    $items = $this->taskSubscribersListingRepository->getData($definition);
+    $groups = $this->taskSubscribersListingRepository->getGroups($definition);
+    $filters = $this->taskSubscribersListingRepository->getFilters($definition);
+    $count = $this->taskSubscribersListingRepository->getCount($definition);
 
-    $items = [];
-    foreach ($listingData['items'] as $item) {
-      $items[] = $item->asArray();
-    }
-
-    return $this->successResponse($items, [
-      'count' => $listingData['count'],
-      'filters' => $listingData['filters'],
-      'groups' => $listingData['groups'],
+    return $this->successResponse($this->scheduledTaskSubscriberResponseBuilder->buildForListing($items), [
+      'count' => $count,
+      'filters' => $filters,
+      'groups' => $groups,
       'mta_log' => $this->settings->get('mta_log'),
       'mta_method' => $this->settings->get('mta.method'),
       'cron_accessible' => $this->cronHelper->isDaemonAccessible(),
