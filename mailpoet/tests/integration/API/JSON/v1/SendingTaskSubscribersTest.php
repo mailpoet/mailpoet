@@ -6,76 +6,84 @@ use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SendingTaskSubscribers;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\ScheduledTaskSubscriber as TaskSubscriberFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class SendingTaskSubscribersTest extends \MailPoetTest {
-  public $unprocessedSubscriber;
-  public $failedSubscriber;
-  public $sentSubscriber;
-  public $taskId;
-  public $newsletterId;
-  public $endpoint;
+  /** @var SubscriberEntity */
+  private $unprocessedSubscriber;
+
+  /** @var SubscriberEntity */
+  private $failedSubscriber;
+
+  /** @var ScheduledTaskSubscriberEntity */
+  private $failedSubscriberTask;
+
+  /** @var SubscriberEntity */
+  private $sentSubscriber;
+
+  /** @var ScheduledTaskEntity */
+  private $task;
+
+  /** @var NewsletterEntity */
+  private $newsletter;
+
+  /** @var SendingTaskSubscribers */
+  private $endpoint;
+
+  /** @var SubscriberFactory */
+  private $subscriberFactory;
+
+  /** @var TaskSubscriberFactory */
+  private $taskSubscriberFactory;
 
   public function _before() {
     parent::_before();
     $this->endpoint = ContainerWrapper::getInstance()->get(SendingTaskSubscribers::class);
-    $this->newsletterId = Newsletter::createOrUpdate([
-      'type' => Newsletter::TYPE_STANDARD,
-      'subject' => 'My Standard Newsletter',
-      'body' => Fixtures::get('newsletter_body_template'),
-    ])->id;
-    $this->taskId = ScheduledTask::createOrUpdate([
-      'status' => ScheduledTask::STATUS_SCHEDULED,
-    ])->id;
-    SendingQueue::createOrUpdate([
-      'task_id' => $this->taskId,
-      'newsletter_id' => $this->newsletterId,
-    ]);
-    $this->sentSubscriber = Subscriber::createOrUpdate([
-      'last_name' => 'Test',
-      'first_name' => 'Sent',
-      'email' => 'sent@example.com',
-    ]);
-    ScheduledTaskSubscriber::createOrUpdate([
-      'failed' => 0,
-      'processed' => 1,
-      'task_id' => $this->taskId,
-      'subscriber_id' => $this->sentSubscriber->id,
-    ]);
-    $this->failedSubscriber = Subscriber::createOrUpdate([
-      'last_name' => 'Test',
-      'first_name' => 'Failed',
-      'email' => 'failed@example.com',
-    ]);
-    ScheduledTaskSubscriber::createOrUpdate([
-      'failed' => 1,
-      'processed' => 1,
-      'task_id' => $this->taskId,
-      'error' => 'Something went wrong!',
-      'subscriber_id' => $this->failedSubscriber->id,
-    ]);
-    $this->unprocessedSubscriber = Subscriber::createOrUpdate([
-      'last_name' => 'Test',
-      'first_name' => 'Unprocessed',
-      'email' => 'unprocessed@example.com',
-    ]);
-    ScheduledTaskSubscriber::createOrUpdate([
-      'failed' => 0,
-      'processed' => 0,
-      'task_id' => $this->taskId,
-      'subscriber_id' => $this->unprocessedSubscriber->id,
-    ]);
+    $this->subscriberFactory = new SubscriberFactory();
+    $this->taskSubscriberFactory = new TaskSubscriberFactory();
+
+
+    $this->newsletter = (new NewsletterFactory())->withSubject('My Standard Newsletter')
+      ->withBody(Fixtures::get('newsletter_body_template'))
+      ->withSendingQueue()
+      ->create();
+
+    $queue = $this->newsletter->getLatestQueue();
+    $this->task = $queue->getTask();
+
+    $this->sentSubscriber = $this->subscriberFactory
+      ->withEmail('sent@example.com')
+      ->withFirstName('Sent')
+      ->withLastName('Test')
+      ->create();
+    $this->taskSubscriberFactory->createProcessed($this->task, $this->sentSubscriber);
+
+    $this->failedSubscriber = $this->subscriberFactory
+      ->withEmail('failed@example.com')
+      ->withFirstName('Failed')
+      ->withLastName('Test')
+      ->create();
+    $this->failedSubscriberTask = $this->taskSubscriberFactory->createFailed($this->task, $this->failedSubscriber, 'Something went wrong!');
+
+    $this->unprocessedSubscriber = $this->subscriberFactory
+      ->withEmail('unprocessed@example.com')
+      ->withFirstName('Unprocessed')
+      ->withLastName('Test')
+      ->create();
+    $this->taskSubscriberFactory->createUnprocessed($this->task, $this->unprocessedSubscriber);
   }
 
   public function testListingReturnsErrorIfMissingNewsletter() {
     $res = $this->endpoint->listing([
       'sort_by' => 'created_at',
-      'params' => ['id' => $this->newsletterId + 1],
+      'params' => ['id' => $this->newsletter->getId() + 1],
     ]);
     expect($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($res->errors[0]['message'])
@@ -83,14 +91,10 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
   }
 
   public function testListingReturnsErrorIfNewsletterNotBeingSent() {
-    $newsletter = Newsletter::createOrUpdate([
-      'type' => Newsletter::TYPE_STANDARD,
-      'subject' => 'Draft',
-      'body' => '',
-    ]);
+    $newsletterWithoutTask = ((new NewsletterFactory()))->create();
     $res = $this->endpoint->listing([
       'sort_by' => 'created_at',
-      'params' => ['id' => $newsletter->id],
+      'params' => ['id' => $newsletterWithoutTask->getId()],
     ]);
     expect($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($res->errors[0]['message'])
@@ -102,36 +106,36 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       'error' => null,
       'failed' => 0,
       'processed' => 1,
-      'taskId' => (int)$this->taskId,
-      'email' => $this->sentSubscriber->email,
-      'subscriberId' => (int)$this->sentSubscriber->id,
-      'lastName' => $this->sentSubscriber->last_name,
-      'firstName' => $this->sentSubscriber->first_name,
+      'taskId' => $this->task->getId(),
+      'email' => $this->sentSubscriber->getEmail(),
+      'subscriberId' => $this->sentSubscriber->getId(),
+      'lastName' => $this->sentSubscriber->getLastName(),
+      'firstName' => $this->sentSubscriber->getFirstName(),
     ];
     $unprocessedSubscriberStatus = [
       'error' => null,
       'failed' => 0,
       'processed' => 0,
-      'taskId' => (int)$this->taskId,
-      'email' => $this->unprocessedSubscriber->email,
-      'subscriberId' => (int)$this->unprocessedSubscriber->id,
-      'lastName' => $this->unprocessedSubscriber->last_name,
-      'firstName' => $this->unprocessedSubscriber->first_name,
+      'taskId' => $this->task->getId(),
+      'email' => $this->unprocessedSubscriber->getEmail(),
+      'subscriberId' => $this->unprocessedSubscriber->getId(),
+      'lastName' => $this->unprocessedSubscriber->getLastName(),
+      'firstName' => $this->unprocessedSubscriber->getFirstName(),
     ];
     $failedSubscriberStatus = [
       'error' => 'Something went wrong!',
       'failed' => 1,
       'processed' => 1,
-      'taskId' => (int)$this->taskId,
-      'email' => $this->failedSubscriber->email,
-      'subscriberId' => (int)$this->failedSubscriber->id,
-      'lastName' => $this->failedSubscriber->last_name,
-      'firstName' => $this->failedSubscriber->first_name,
+      'taskId' => $this->task->getId(),
+      'email' => $this->failedSubscriber->getEmail(),
+      'subscriberId' => $this->failedSubscriber->getId(),
+      'lastName' => $this->failedSubscriber->getLastName(),
+      'firstName' => $this->failedSubscriber->getFirstName(),
     ];
 
     $res = $this->endpoint->listing([
-      'sort_by' => 'created_at',
-      'params' => ['id' => $this->newsletterId],
+      'sort_by' => 'subscriber',
+      'params' => ['id' => $this->newsletter->getId()],
     ]);
     expect($res->status)->equals(APIResponse::STATUS_OK);
     expect($res->data)->equals([
@@ -143,7 +147,7 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
     $res = $this->endpoint->listing([
       'group' => 'sent',
       'sort_by' => 'created_at',
-      'params' => ['id' => $this->newsletterId],
+      'params' => ['id' => $this->newsletter->getId()],
     ]);
     expect($res->status)->equals(APIResponse::STATUS_OK);
     expect($res->data)->equals([
@@ -153,7 +157,7 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
     $res = $this->endpoint->listing([
       'group' => 'failed',
       'sort_by' => 'created_at',
-      'params' => ['id' => $this->newsletterId],
+      'params' => ['id' => $this->newsletter->getId()],
     ]);
     expect($res->status)->equals(APIResponse::STATUS_OK);
     expect($res->data)->equals([
@@ -163,7 +167,7 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
     $res = $this->endpoint->listing([
       'group' => 'unprocessed',
       'sort_by' => 'created_at',
-      'params' => ['id' => $this->newsletterId],
+      'params' => ['id' => $this->newsletter->getId()],
     ]);
     expect($res->status)->equals(APIResponse::STATUS_OK);
     expect($res->data)->equals([
@@ -173,16 +177,16 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
 
   public function testResendReturnsErrorIfWrongData() {
     $res = $this->endpoint->resend([
-      'taskId' => $this->taskId + 1,
-      'subscriberId' => $this->sentSubscriber->id,
+      'taskId' => $this->task->getId() + 1,
+      'subscriberId' => $this->sentSubscriber->getId(),
     ]);
     expect($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($res->errors[0]['message'])
       ->equals('Failed sending task not found!');
 
     $res = $this->endpoint->resend([
-      'taskId' => $this->taskId,
-      'subscriberId' => $this->sentSubscriber->id,
+      'taskId' => $this->task->getId(),
+      'subscriberId' => $this->sentSubscriber->getId(),
     ]);
     expect($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($res->errors[0]['message'])
@@ -191,33 +195,28 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
 
   public function testItCanResend() {
     $res = $this->endpoint->resend([
-      'taskId' => $this->taskId,
-      'subscriberId' => $this->failedSubscriber->id,
+      'taskId' => $this->task->getId(),
+      'subscriberId' => $this->failedSubscriber->getId(),
     ]);
     expect($res->status)->equals(APIResponse::STATUS_OK);
 
-    $taskSubscriber = ScheduledTaskSubscriber::where('task_id', $this->taskId)
-      ->where('subscriber_id', $this->failedSubscriber->id)
-      ->findOne();
-    assert($taskSubscriber instanceof ScheduledTaskSubscriber);
-    expect($taskSubscriber->error)->equals('');
-    expect($taskSubscriber->failed)->equals(0);
-    expect($taskSubscriber->processed)->equals(0);
+    $this->entityManager->refresh($this->failedSubscriberTask);
+    expect($this->failedSubscriberTask->getError())->equals(null);
+    expect($this->failedSubscriberTask->getFailed())->equals(0);
+    expect($this->failedSubscriberTask->getProcessed())->equals(0);
 
-    $task = ScheduledTask::findOne($this->taskId);
-    assert($task instanceof ScheduledTask);
-    expect($task->status)->equals(null);
+    $this->entityManager->refresh($this->task);
+    expect($this->task->getStatus())->equals(null);
 
-    $newsletter = Newsletter::findOne($this->newsletterId);
-    assert($newsletter instanceof Newsletter);
-    expect($newsletter->status)->equals(Newsletter::STATUS_SENDING);
+    $this->entityManager->refresh($this->newsletter);
+    expect($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
   }
 }
