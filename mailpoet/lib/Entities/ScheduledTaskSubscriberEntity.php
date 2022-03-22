@@ -123,4 +123,10 @@ class ScheduledTaskSubscriberEntity {
   public function setSubscriber(SubscriberEntity $subscriber) {
     $this->subscriber = $subscriber;
   }
+
+  public function resetToUnprocessed() {
+    $this->setError(null);
+    $this->setProcessed(0);
+    $this->setFailed(0);
+  }
 }

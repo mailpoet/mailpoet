@@ -7,12 +7,10 @@ use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\ResponseBuilders\ScheduledTaskSubscriberResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Listing;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersListingRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -37,6 +35,9 @@ class SendingTaskSubscribers extends APIEndpoint {
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
+
   /** @var ScheduledTaskSubscribersListingRepository */
   private $taskSubscribersListingRepository;
 
@@ -50,6 +51,7 @@ class SendingTaskSubscribers extends APIEndpoint {
     SendingQueuesRepository $sendingQueuesRepository,
     ScheduledTaskSubscribersListingRepository $taskSubscribersListingRepository,
     ScheduledTaskSubscriberResponseBuilder $scheduledTaskSubscriberResponseBuilder,
+    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
     WPFunctions $wp
   ) {
     $this->listingHandler = $listingHandler;
@@ -58,6 +60,7 @@ class SendingTaskSubscribers extends APIEndpoint {
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->taskSubscribersListingRepository = $taskSubscribersListingRepository;
     $this->scheduledTaskSubscriberResponseBuilder = $scheduledTaskSubscriberResponseBuilder;
+    $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
     $this->wp = $wp;
   }
 
@@ -94,41 +97,39 @@ class SendingTaskSubscribers extends APIEndpoint {
   }
 
   public function resend($data = []) {
-    $taskId = !empty($data['taskId']) ? (int)$data['taskId'] : false;
-    $subscriberId = !empty($data['subscriberId']) ? (int)$data['subscriberId'] : false;
-    $taskSubscriber = ScheduledTaskSubscriber::where('task_id', $taskId)
-      ->where('subscriber_id', $subscriberId)
-      ->findOne();
-    $task = ScheduledTask::findOne($taskId);
-    $sendingQueue = SendingQueueModel::where('task_id', $taskId)->findOne();
+    $taskId = !empty($data['taskId']) ? (int)$data['taskId'] : 0;
+    $subscriberId = !empty($data['subscriberId']) ? (int)$data['subscriberId'] : 0;
+
+    $taskSubscriber = $this->scheduledTaskSubscribersRepository->findOneBy([
+      'task' => $taskId,
+      'subscriber' => $subscriberId,
+      'failed' => 1,
+      ]);
+
+    $sendingQueue = $this->sendingQueuesRepository->findOneBy(['task' => $taskId]);
+
     if (
-      !($task instanceof ScheduledTask)
-      || !($taskSubscriber instanceof ScheduledTaskSubscriber)
-      || !($sendingQueue instanceof SendingQueueModel)
-      || $taskSubscriber->failed != 1
+      !$taskSubscriber
+      || !$taskSubscriber->getTask()
+      || !$sendingQueue
     ) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('Failed sending task not found!', 'mailpoet'),
       ]);
     }
-    $newsletter = Newsletter::findOne($sendingQueue->newsletterId);
-    if (!($newsletter instanceof Newsletter)) {
+
+    $newsletter = $sendingQueue->getNewsletter();
+    if (!$newsletter) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('Newsletter not found!', 'mailpoet'),
       ]);
     }
 
-    $taskSubscriber->error = '';
-    $taskSubscriber->failed = 0;
-    $taskSubscriber->processed = 0;
-    $taskSubscriber->save();
-
-    $task->status = null;
-    $task->save();
-
-    $newsletter->status = Newsletter::STATUS_SENDING;
-    $newsletter->save();
-
+    $taskSubscriber->resetToUnprocessed();
+    $taskSubscriber->getTask()->setStatus(null);
+    $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    // Each repository flushes all changes
+    $this->scheduledTaskSubscribersRepository->flush();
     return $this->successResponse([]);
   }
 }
