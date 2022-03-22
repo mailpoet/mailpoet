@@ -15,7 +15,7 @@ use MailPoet\API\JSON\v2\APITestNamespacedEndpointStubV2;
 use MailPoet\Config\AccessControl;
 use MailPoet\DI\ContainerConfigurator;
 use MailPoet\DI\ContainerFactory;
-use MailPoet\Settings\SettingsController;
+use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Symfony\Component\DependencyInjection\Container;
 
@@ -72,9 +72,9 @@ class APITest extends \MailPoetTest {
       $this->api,
       'setupAjax',
       [
+        'requestToken' => Security::generateToken(),
         'wp' => new WPFunctions,
         'processRoute' => Stub::makeEmpty(new SuccessResponse),
-        'settings' => $this->container->get(SettingsController::class),
       ]
     );
     $api->setupAjax();
