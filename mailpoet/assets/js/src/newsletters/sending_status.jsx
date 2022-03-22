@@ -150,8 +150,8 @@ function ListingItem({
     'has-row-actions'
   );
   let status = MailPoet.I18n.t('unprocessed');
-  if (processed === '1') {
-    if (failed === '1') {
+  if (processed) {
+    if (failed) {
       status = (
         <span>
           {MailPoet.I18n.t('failed')}
@@ -197,12 +197,12 @@ function ListingItem({
 ListingItem.propTypes = {
   error: PropTypes.string,
   email: PropTypes.string.isRequired,
-  failed: PropTypes.string.isRequired,
-  taskId: PropTypes.string.isRequired,
+  failed: PropTypes.number.isRequired,
+  taskId: PropTypes.number.isRequired,
   lastName: PropTypes.string.isRequired,
   firstName: PropTypes.string.isRequired,
-  processed: PropTypes.string.isRequired,
-  subscriberId: PropTypes.string.isRequired,
+  processed: PropTypes.number.isRequired,
+  subscriberId: PropTypes.number.isRequired,
 };
 ListingItem.defaultProps = {
   error: '',

@@ -99,22 +99,22 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
 
   public function testItReturnsListing() {
     $sentSubscriberStatus = [
-      'error' => '',
+      'error' => null,
       'failed' => 0,
       'processed' => 1,
-      'taskId' => $this->taskId,
+      'taskId' => (int)$this->taskId,
       'email' => $this->sentSubscriber->email,
-      'subscriberId' => $this->sentSubscriber->id,
+      'subscriberId' => (int)$this->sentSubscriber->id,
       'lastName' => $this->sentSubscriber->last_name,
       'firstName' => $this->sentSubscriber->first_name,
     ];
     $unprocessedSubscriberStatus = [
-      'error' => '',
+      'error' => null,
       'failed' => 0,
       'processed' => 0,
-      'taskId' => $this->taskId,
+      'taskId' => (int)$this->taskId,
       'email' => $this->unprocessedSubscriber->email,
-      'subscriberId' => $this->unprocessedSubscriber->id,
+      'subscriberId' => (int)$this->unprocessedSubscriber->id,
       'lastName' => $this->unprocessedSubscriber->last_name,
       'firstName' => $this->unprocessedSubscriber->first_name,
     ];
@@ -122,9 +122,9 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       'error' => 'Something went wrong!',
       'failed' => 1,
       'processed' => 1,
-      'taskId' => $this->taskId,
+      'taskId' => (int)$this->taskId,
       'email' => $this->failedSubscriber->email,
-      'subscriberId' => $this->failedSubscriber->id,
+      'subscriberId' => (int)$this->failedSubscriber->id,
       'lastName' => $this->failedSubscriber->last_name,
       'firstName' => $this->failedSubscriber->first_name,
     ];
