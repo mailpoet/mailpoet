@@ -12,6 +12,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class Security {
   const HASH_LENGTH = 12;
   const UNSUBSCRIBE_TOKEN_LENGTH = 15;
+  const UNIQUE_ACTION_PREFIX = 'mailpoetUniqueAction_';
 
   /** @var NewslettersRepository */
   private $newslettersRepository;
@@ -29,6 +30,44 @@ class Security {
 
   public static function generateToken($action = 'mailpoet_token') {
     return WPFunctions::get()->wpCreateNonce($action);
+  }
+
+  public static function generateTokenForUniqueAction(string $action) {
+    return self::generateToken(self::UNIQUE_ACTION_PREFIX . $action);
+  }
+
+  public static function getUniqueAction(string $action) {
+    return self::UNIQUE_ACTION_PREFIX . $action;
+  }
+
+  public static function isActionUnique(string $action): bool {
+    return strpos($action, self::UNIQUE_ACTION_PREFIX) === 0;
+  }
+
+  public static function checkTokenForUniqueAction(string $token, string $action): bool {
+    return self::checkToken($token, self::getUniqueAction($action));
+  }
+
+  public static function checkToken(string $token, string $action = 'mailpoet_token'): bool {
+    $isNonceValid = WPFunctions::get()->wpVerifyNonce($token, $action);
+
+    if (!$isNonceValid || !self::isActionUnique($action)) {
+      return $isNonceValid;
+    }
+
+    // Nonces that were generated for a unique action should truly only ever be used once
+    $transientName = 'mailpoetUsedNonce_' . $token;
+    $hasNonceAlreadyBeenUsed = WPFunctions::get()->getTransient($transientName);
+
+    if ($hasNonceAlreadyBeenUsed) {
+      return false;
+    }
+
+    // The default nonce life from WordPress uses DAY_IN_SECONDS (86400)
+    $expiration = WPFunctions::get()->applyFilters('nonce_life', 86400);
+    WPFunctions::get()->setTransient($transientName, true, $expiration);
+
+    return true;
   }
 
   /**
