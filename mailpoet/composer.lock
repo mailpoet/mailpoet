@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba064d8fa14a8bf27ed8177ddfeee502",
+    "content-hash": "e5d12957687aa8d1cc03bdb9e1044287",
     "packages": [
         {
             "name": "mtdowling/cron-expression",
@@ -3356,16 +3356,16 @@
         },
         {
             "name": "lucatume/wp-browser",
-            "version": "3.0.18",
+            "version": "3.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucatume/wp-browser.git",
-                "reference": "eff4b188a7f651ab857cbb452d49235eedbc55f1"
+                "reference": "d797924151167eac745ea57768df0da4f9ed2502"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lucatume/wp-browser/zipball/eff4b188a7f651ab857cbb452d49235eedbc55f1",
-                "reference": "eff4b188a7f651ab857cbb452d49235eedbc55f1",
+                "url": "https://api.github.com/repos/lucatume/wp-browser/zipball/d797924151167eac745ea57768df0da4f9ed2502",
+                "reference": "d797924151167eac745ea57768df0da4f9ed2502",
                 "shasum": ""
             },
             "require": {
@@ -3394,6 +3394,8 @@
             },
             "require-dev": {
                 "erusev/parsedown": "^1.7",
+                "ext-pcntl": "*",
+                "ext-sockets": "*",
                 "gumlet/php-image-resize": "^1.6",
                 "lucatume/codeception-snapshot-assertions": "^0.2",
                 "mikey179/vfsstream": "^1.6",
@@ -3417,14 +3419,15 @@
                 "_hash": "484f861f69198089cab0e642f27e5653"
             },
             "autoload": {
-                "psr-4": {
-                    "Codeception\\": "src/Codeception",
-                    "tad\\": "src/tad"
-                },
                 "files": [
                     "src/tad/WPBrowser/utils.php",
                     "src/tad/WPBrowser/wp-polyfills.php"
-                ]
+                ],
+                "psr-4": {
+                    "tad\\": "src/tad",
+                    "Codeception\\": "src/Codeception",
+                    "lucatume\\WPBrowser\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -3446,7 +3449,7 @@
             ],
             "support": {
                 "issues": "https://github.com/lucatume/wp-browser/issues",
-                "source": "https://github.com/lucatume/wp-browser/tree/3.0.18"
+                "source": "https://github.com/lucatume/wp-browser/tree/3.1.5"
             },
             "funding": [
                 {
@@ -3454,7 +3457,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-01-05T09:25:36+00:00"
+            "time": "2022-03-16T08:39:22+00:00"
         },
         {
             "name": "mck89/peast",
