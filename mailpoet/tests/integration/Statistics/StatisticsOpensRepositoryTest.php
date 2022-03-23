@@ -2,7 +2,6 @@
 
 namespace MailPoet\Statistics;
 
-use Carbon\Carbon;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -15,6 +14,7 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
+use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Carbon\CarbonImmutable;
 
 class StatisticsOpensRepositoryTest extends \MailPoetTest {
