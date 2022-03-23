@@ -9,7 +9,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\AssetsController;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
@@ -18,6 +17,7 @@ use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberSaveController;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
@@ -88,6 +88,9 @@ class Pages {
   /** @var SubscriberSaveController */
   private $subscriberSaveController;
 
+  /** @var SubscriberSegmentRepository */
+  private $subscriberSegmentRepository;
+
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
@@ -105,7 +108,8 @@ class Pages {
     TrackingConfig $trackingConfig,
     FeaturesController $featuresController,
     EntityManager $entityManager,
-    SubscriberSaveController $subscriberSaveController
+    SubscriberSaveController $subscriberSaveController,
+    SubscriberSegmentRepository $subscriberSegmentRepository
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
@@ -124,6 +128,7 @@ class Pages {
     $this->featuresController = $featuresController;
     $this->entityManager = $entityManager;
     $this->subscriberSaveController = $subscriberSaveController;
+    $this->subscriberSegmentRepository = $subscriberSegmentRepository;
   }
 
   public function init($action = false, $data = [], $initShortcodes = false, $initPageFilters = false) {
@@ -252,8 +257,7 @@ class Pages {
       $this->subscribersRepository->persist($this->subscriber);
       $this->subscribersRepository->flush();
 
-      $subscriberModel = Subscriber::findOne($this->subscriber->getId());
-      SubscriberSegment::unsubscribeFromSegments($subscriberModel);
+      $this->subscriberSegmentRepository->unsubscribeFromSegments($this->subscriber);
     }
   }
 
