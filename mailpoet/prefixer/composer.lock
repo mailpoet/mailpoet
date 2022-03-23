@@ -4,28 +4,28 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5703afbaa30acc1ba3d85336f463ef18",
+    "content-hash": "876e14ddd5a5cbcec39016e43e7adfa1",
     "packages": [
         {
             "name": "cerdic/css-tidy",
-            "version": "v1.7.3",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Cerdic/CSSTidy.git",
-                "reference": "919411b2c16ab985f7c61e0d9bb6c35d080f6cf6"
+                "reference": "9efced88f9fc31ecbd52c798b6c01283966c0e48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Cerdic/CSSTidy/zipball/919411b2c16ab985f7c61e0d9bb6c35d080f6cf6",
-                "reference": "919411b2c16ab985f7c61e0d9bb6c35d080f6cf6",
+                "url": "https://api.github.com/repos/Cerdic/CSSTidy/zipball/9efced88f9fc31ecbd52c798b6c01283966c0e48",
+                "reference": "9efced88f9fc31ecbd52c798b6c01283966c0e48",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.4.0 || ^7"
+                "php": "^7.1 || ^8"
             },
             "require-dev": {
                 "pear/text_diff": "^1.2",
-                "simpletest/simpletest": "^1.1"
+                "simpletest/simpletest": "dev-master"
             },
             "bin": [
                 "bin/pcsstidy"
@@ -51,9 +51,9 @@
             "description": "CSSTidy is a CSS minifier",
             "support": {
                 "issues": "https://github.com/Cerdic/CSSTidy/issues",
-                "source": "https://github.com/Cerdic/CSSTidy/tree/v1.7.3"
+                "source": "https://github.com/Cerdic/CSSTidy/tree/v2.0.1"
             },
-            "time": "2020-11-03T13:08:18+00:00"
+            "time": "2022-02-21T15:33:09+00:00"
         },
         {
             "name": "composer/package-versions-deprecated",

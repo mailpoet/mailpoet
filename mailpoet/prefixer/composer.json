@@ -1,7 +1,7 @@
 {
   "require": {
     "php": ">=7.2",
-    "cerdic/css-tidy": "^1.7",
+    "cerdic/css-tidy": "2.0.1",
     "doctrine/common": "3.2.1",
     "doctrine/dbal": "2.13.6",
     "doctrine/orm": "2.10.4",
