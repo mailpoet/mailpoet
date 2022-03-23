@@ -165,7 +165,7 @@ class SubscribersRepository extends Repository {
     }
 
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
-    $count = $this->entityManager->getConnection()->executeStatement("
+    $count = (int)$this->entityManager->getConnection()->executeStatement("
        DELETE ss FROM $subscriberSegmentsTable ss
        WHERE ss.`subscriber_id` IN (:ids)
        AND ss.`segment_id` = :segment_id
@@ -184,7 +184,7 @@ class SubscribersRepository extends Repository {
 
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $segmentsTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
-    $count = $this->entityManager->getConnection()->executeStatement("
+    $count = (int)$this->entityManager->getConnection()->executeStatement("
        DELETE ss FROM $subscriberSegmentsTable ss
        JOIN $segmentsTable s ON s.id = ss.segment_id AND s.`type` = :typeDefault
        WHERE ss.`subscriber_id` IN (:ids)

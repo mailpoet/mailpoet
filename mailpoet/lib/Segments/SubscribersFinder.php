@@ -125,7 +125,7 @@ class SubscribersFinder {
       ]
     );
 
-    return $result->rowCount();
+    return (int)$result->rowCount();
   }
 
   /**
