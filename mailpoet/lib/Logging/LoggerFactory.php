@@ -13,10 +13,10 @@ use MailPoetVendor\Monolog\Processor\WebProcessor;
 /**
  * Usage:
  * $logger = Logger::getLogger('logger name');
- * $logger->addDebug('This is a debug message');
- * $logger->addInfo('This is an info');
- * $logger->addWarning('This is a warning');
- * $logger->addError('This is an error message');
+ * $logger->debug('This is a debug message');
+ * $logger->info('This is an info');
+ * $logger->warning('This is a warning');
+ * $logger->error('This is an error message');
  *
  * By default only errors are saved but can be changed in settings to save everything or nothing
  *

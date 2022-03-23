@@ -189,7 +189,7 @@ class NewslettersRepository extends Repository {
     if (empty($ids)) {
       return 0;
     }
-    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS, $attachProcessors = true)->addInfo(
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS, $attachProcessors = true)->info(
       'trashing newsletters', ['id' => $ids]
     );
     // Fetch children id for trashing

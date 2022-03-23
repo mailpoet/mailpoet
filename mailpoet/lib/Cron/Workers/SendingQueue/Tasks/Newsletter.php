@@ -118,7 +118,7 @@ class Newsletter {
         $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-RENDER', $sendingTask->id)) :
         $newsletter;
     }
-    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->addInfo(
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
       'pre-processing newsletter',
       ['newsletter_id' => $newsletter->id, 'task_id' => $sendingTask->taskId]
     );
@@ -152,7 +152,7 @@ class Newsletter {
       $this->postsTask->getAlcPostsCount($renderedNewsletter, $newsletter) === 0
     ) {
       // delete notification history record since it will never be sent
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
         'no posts in post notification, deleting it',
         ['newsletter_id' => $newsletter->id, 'task_id' => $sendingTask->taskId]
       );

@@ -135,7 +135,7 @@ class HooksWooCommerce {
 
   private function logError(\Throwable $e, $name) {
     $logger = $this->loggerFactory->getLogger($name);
-    $logger->addError($e->getMessage(), [
+    $logger->error($e->getMessage(), [
       'file' => $e->getFile(),
       'line' => $e->getLine(),
     ]);

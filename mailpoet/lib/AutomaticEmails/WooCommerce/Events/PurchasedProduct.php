@@ -87,7 +87,7 @@ class PurchasedProduct {
     $woocommerceProducts = $woocommerceProducts->get_posts();
     /** @var \WP_Post[] $woocommerceProducts */
     if (empty($woocommerceProducts)) {
-      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+      $this->loggerFactory->getLogger(self::SLUG)->info(
         'no products found', ['search_query' => $productSearchQuery]
       );
       return;
@@ -105,7 +105,7 @@ class PurchasedProduct {
   public function scheduleEmailWhenProductIsPurchased($orderId) {
     $orderDetails = $this->helper->wcGetOrder($orderId);
     if (!$orderDetails || !$orderDetails->get_billing_email()) {
-      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+      $this->loggerFactory->getLogger(self::SLUG)->info(
         'Email not scheduled because the order customer was not found',
         ['order_id' => $orderId]
       );
@@ -116,7 +116,7 @@ class PurchasedProduct {
     $subscriber = Subscriber::getWooCommerceSegmentSubscriber($customerEmail);
 
     if (!$subscriber instanceof Subscriber) {
-      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+      $this->loggerFactory->getLogger(self::SLUG)->info(
         'Email not scheduled because the customer was not found as WooCommerce list subscriber',
         ['order_id' => $orderId, 'customer_email' => $customerEmail]
       );
@@ -142,7 +142,7 @@ class PurchasedProduct {
       return true;
     };
 
-    $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+    $this->loggerFactory->getLogger(self::SLUG)->info(
       'Email scheduled', [
         'order_id' => $orderId,
         'customer_email' => $customerEmail,

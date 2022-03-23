@@ -117,17 +117,18 @@ class Scheduler {
   }
 
   public function processPostNotificationNewsletter($newsletter, SendingTask $queue) {
-    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'process post notification in scheduler',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
     );
+
     $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
 
     if ($newsletterEntity instanceof NewsletterEntity) {
       // ensure that segments exist
       $segments = $newsletterEntity->getSegmentIds();
       if (empty($segments)) {
-        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
           'post notification no segments',
           ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
         );
@@ -143,7 +144,7 @@ class Scheduler {
     }
 
     if (empty($subscribersCount)) {
-      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
         'post notification no subscribers',
         ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
       );
@@ -161,7 +162,7 @@ class Scheduler {
     $queue->save();
     // update notification status
     $notificationHistory->setStatus(Newsletter::STATUS_SENDING);
-    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'post notification set status to sending',
       ['newsletter_id' => $newsletter->id, 'task_id' => $queue->taskId]
     );

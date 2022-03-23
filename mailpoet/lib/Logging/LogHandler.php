@@ -46,11 +46,12 @@ class LogHandler extends AbstractProcessingHandler {
     $this->entityManagerFactory = $entityManagerFactory;
   }
 
-  protected function write(array $record) {
+  protected function write(array $record): void {
+    $message = is_string($record['formatted']) ? $record['formatted'] : null;
     $entity = new LogEntity();
     $entity->setName($record['channel']);
-    $entity->setLevel($record['level']);
-    $entity->setMessage($record['formatted']);
+    $entity->setLevel((int)$record['level']);
+    $entity->setMessage($message);
     $entity->setCreatedAt($record['datetime']);
 
     if (!$this->entityManager->isOpen()) {

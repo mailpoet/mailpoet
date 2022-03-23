@@ -6,7 +6,7 @@
     "doctrine/dbal": "2.13.8",
     "doctrine/orm": "2.11.2",
     "gregwar/captcha": "^1.1",
-    "monolog/monolog": "^1.23",
+    "monolog/monolog": "2.4.0",
     "nesbot/carbon": "2.55.2",
     "psr/cache": "^1.0",
     "sabberworm/php-css-parser": "^8.1",
