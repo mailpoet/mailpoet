@@ -152,14 +152,11 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
       'post_title' => $name,
     ];
     $productId = wp_insert_post($productData);
-    if (is_wp_error($productId)) {
-      throw new \RuntimeException("Could not create product '$name': " . $productId->get_error_message());
-    }
     $this->products[] = (int)$productId;
     return (int)$productId;
   }
 
-  private function createSubscription(array $args, int $user, int ...$productIds): ?int {
+  private function createSubscription(array $args, int $user, int ...$productIds): int {
     global $wpdb;
     $defaults = [
       'post_status' => 'wc-active',
@@ -169,9 +166,6 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
 
     $args = wp_parse_args($args, $defaults);
     $orderId = wp_insert_post($args);
-    if (is_wp_error($orderId)) {
-      return null;
-    }
     $orderId = (int)$orderId;
     update_post_meta( $orderId, '_customer_user', $user );
 

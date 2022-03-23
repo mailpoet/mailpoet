@@ -71,7 +71,7 @@ class CronWorkerRunner {
         $this->processTask($worker, $task);
       }
     } catch (\Exception $e) {
-      if ($task && $e->getCode() !== CronHelper::DAEMON_EXECUTION_LIMIT_REACHED) {
+      if (isset($task) && $task && $e->getCode() !== CronHelper::DAEMON_EXECUTION_LIMIT_REACHED) {
         $this->cronWorkerScheduler->rescheduleProgressively($task);
       }
       throw $e;

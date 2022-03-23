@@ -19,7 +19,6 @@ use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Util\pQuery\pQuery;
 use PHPUnit\Framework\MockObject\MockObject;
-use WP_Error;
 
 class RendererTest extends \MailPoetTest {
   public $dOMParser;
@@ -634,9 +633,6 @@ class RendererTest extends \MailPoetTest {
         'post_status' => 'publish',
       ]
     );
-    if ($postId instanceof WP_Error) {
-      $this->fail('Error preparing data for test: failed to create post.');
-    }
 
     $filename = dirname(__DIR__) . '/../../tests/_data/600x400.jpg';
     $contents = file_get_contents($filename);
@@ -646,9 +642,6 @@ class RendererTest extends \MailPoetTest {
 
     $upload = wp_upload_bits(basename($filename), null, $contents);
     $attachmentId = $this->makeAttachment($upload);
-    if ($attachmentId instanceof WP_Error) {
-      $this->fail('Error preparing data for test: failed to create attachment.');
-    }
     set_post_thumbnail($postId, $attachmentId);
 
     $this->newsletter->setBody(json_decode(
@@ -684,9 +677,6 @@ class RendererTest extends \MailPoetTest {
     ];
 
     $id = wp_insert_attachment($attachment, $upload['file'], $parentPostId);
-    if ($id instanceof WP_Error) {
-      return $id;
-    }
     $metadata = wp_generate_attachment_metadata($id, $upload['file']);
     wp_update_attachment_metadata($id, $metadata);
 
