@@ -122,7 +122,6 @@ exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Tools/
 
 // cleanup Doctrine deps
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/inflector');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/lexer/docs');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/annotations/docs');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/collections/docs');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/common/docs');
