@@ -53,7 +53,7 @@ class AutomatedLatestContent {
     $currentUserId = $this->wp->getCurrentUserId();
     $this->wp->wpSetCurrentUser(0);
 
-    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'loading automated latest content',
       ['args' => $args, 'posts_to_exclude' => $postsToExclude, 'newsletter_id' => $newsletterId, 'newer_than_timestamp' => $newerThanTimestamp]
     );
@@ -107,7 +107,7 @@ class AutomatedLatestContent {
     $this->wp->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
     $this->_attachSentPostsFilter($newsletterId);
 
-    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'getting automated latest content',
       ['parameters' => $parameters]
     );
@@ -182,7 +182,7 @@ class AutomatedLatestContent {
         'post_date' => $post->post_date, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       ];
     }
-    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->addInfo(
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'automated latest content loaded posts',
       ['posts' => $postsToLog]
     );

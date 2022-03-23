@@ -98,7 +98,7 @@ class FirstPurchase {
         $result = (!empty($meta['order_date'])) ? WPFunctions::get()->dateI18n(get_option('date_format'), $meta['order_date']) : $defaultValue;
       }
     }
-    $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+    $this->loggerFactory->getLogger(self::SLUG)->info(
       'handleOrderDateShortcode called', [
         'newsletter_id' => ($newsletter instanceof Newsletter) ? $newsletter->id : null,
         'subscriber_id' => ($subscriber instanceof Subscriber) ? $subscriber->id : null,
@@ -121,7 +121,7 @@ class FirstPurchase {
         $result = (!empty($meta['order_amount'])) ? $this->helper->wcPrice($meta['order_amount']) : $defaultValue;
       }
     }
-    $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+    $this->loggerFactory->getLogger(self::SLUG)->info(
       'handleOrderTotalShortcode called', [
         'newsletter_id' => ($newsletter instanceof Newsletter) ? $newsletter->id : null,
         'subscriber_id' => ($subscriber instanceof Subscriber) ? $subscriber->id : null,
@@ -136,7 +136,7 @@ class FirstPurchase {
   public function scheduleEmailWhenOrderIsPlaced($orderId) {
     $orderDetails = $this->helper->wcGetOrder($orderId);
     if (!$orderDetails || !$orderDetails->get_billing_email()) {
-      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+      $this->loggerFactory->getLogger(self::SLUG)->info(
         'Email not scheduled because the order customer was not found',
         ['order_id' => $orderId]
       );
@@ -146,7 +146,7 @@ class FirstPurchase {
     $customerEmail = $orderDetails->get_billing_email();
     $customerOrderCount = $this->getCustomerOrderCount($customerEmail);
     if ($customerOrderCount > 1) {
-      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+      $this->loggerFactory->getLogger(self::SLUG)->info(
         'Email not scheduled because this is not the first order of the customer', [
           'order_id' => $orderId,
           'customer_email' => $customerEmail,
@@ -165,7 +165,7 @@ class FirstPurchase {
     $subscriber = Subscriber::getWooCommerceSegmentSubscriber($customerEmail);
 
     if (!$subscriber instanceof Subscriber) {
-      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+      $this->loggerFactory->getLogger(self::SLUG)->info(
         'Email not scheduled because the customer was not found as WooCommerce list subscriber',
         ['order_id' => $orderId, 'customer_email' => $customerEmail]
       );
@@ -176,7 +176,7 @@ class FirstPurchase {
       return !$this->repository->wasScheduledForSubscriber($newsletter->id, $subscriber->id);
     };
 
-    $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+    $this->loggerFactory->getLogger(self::SLUG)->info(
       'Email scheduled', [
         'order_id' => $orderId,
         'customer_email' => $customerEmail,

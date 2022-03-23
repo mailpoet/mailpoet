@@ -94,7 +94,7 @@ class PurchasedInCategory {
   public function scheduleEmail($orderId) {
     $orderDetails = $this->woocommerceHelper->wcGetOrder($orderId);
     if (!$orderDetails || !$orderDetails->get_billing_email()) {
-      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+      $this->loggerFactory->getLogger(self::SLUG)->info(
         'Email not scheduled because the order customer was not found',
         ['order_id' => $orderId]
       );
@@ -105,7 +105,7 @@ class PurchasedInCategory {
     $subscriber = Subscriber::getWooCommerceSegmentSubscriber($customerEmail);
 
     if (!$subscriber instanceof Subscriber) {
-      $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+      $this->loggerFactory->getLogger(self::SLUG)->info(
         'Email not scheduled because the customer was not found as WooCommerce list subscriber',
         ['order_id' => $orderId, 'customer_email' => $customerEmail]
       );
@@ -140,7 +140,7 @@ class PurchasedInCategory {
       return true;
     };
 
-    $this->loggerFactory->getLogger(self::SLUG)->addInfo(
+    $this->loggerFactory->getLogger(self::SLUG)->info(
       'Email scheduled', [
         'order_id' => $orderId,
         'customer_email' => $customerEmail,
