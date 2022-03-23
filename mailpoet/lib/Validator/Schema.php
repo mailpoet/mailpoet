@@ -33,6 +33,21 @@ abstract class Schema {
     return $this->unsetSchemaProperty('required');
   }
 
+  /** @return static */
+  public function title(string $title) {
+    return $this->updateSchemaProperty('title', $title);
+  }
+
+  /** @return static */
+  public function description(string $description) {
+    return $this->updateSchemaProperty('description', $description);
+  }
+
+  /** @return static */
+  public function default($default) {
+    return $this->updateSchemaProperty('default', $default);
+  }
+
   public function toArray(): array {
     return $this->schema;
   }
