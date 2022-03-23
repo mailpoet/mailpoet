@@ -26,6 +26,7 @@ use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberSaveController;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\CaptchaRenderer;
 use MailPoet\Subscription\ManageSubscriptionFormRenderer;
@@ -128,15 +129,8 @@ class PagesTest extends \MailPoetTest {
     $pages = $this->getPages($newSubscriberNotificationSender);
     $subscription = $pages->init($action = false, $this->testData, false, false);
 
-    // create segment
-    $segmentFactory = new SegmentFactory();
-    $segment = $segmentFactory->withName('List #1')->create();
-
-    // create subscriber->segment relation
-    $subscriberSegment = new SubscriberSegmentEntity($segment, $this->subscriber, 'subscribed');
-    $this->entityManager->persist($subscriberSegment);
-    $this->subscriber->getSubscriberSegments()->add($subscriberSegment);
-    $this->entityManager->persist($this->subscriber);
+    $segment = $this->createSegment();
+    $this->createSubscriberSegment($segment);
 
     // create welcome notification newsletter and relevant scheduling options
     $newsletter = new NewsletterEntity();
@@ -177,12 +171,20 @@ class PagesTest extends \MailPoetTest {
   }
 
   public function testItUnsubscribes() {
+    $segment = $this->createSegment();
+    $this->createSubscriberSegment($segment);
+
     $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
 
     $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
     expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+
+    $subscriberSegments = $updatedSubscriber->getSubscriberSegments();
+    foreach ($subscriberSegments as $subscriberSegment) {
+      $this->assertSame(SubscriberEntity::STATUS_UNSUBSCRIBED, $subscriberSegment->getStatus());
+    }
   }
 
   public function testItTrackUnsubscribeWhenTrackingIsEnabled() {
@@ -245,7 +247,23 @@ class PagesTest extends \MailPoetTest {
       $container->get(TrackingConfig::class),
       $container->get(FeaturesController::class),
       $container->get(EntityManager::class),
-      $container->get(SubscriberSaveController::class)
+      $container->get(SubscriberSaveController::class),
+      $container->get(SubscriberSegmentRepository::class)
     );
+  }
+
+  private function createSegment(): SegmentEntity {
+    $segmentFactory = new SegmentFactory();
+    $segment = $segmentFactory->withName('List #1')->create();
+
+    return $segment;
+  }
+
+  private function createSubscriberSegment(SegmentEntity $segment) {
+    $subscriberSegment = new SubscriberSegmentEntity($segment, $this->subscriber, 'subscribed');
+    $this->entityManager->persist($subscriberSegment);
+    $this->subscriber->getSubscriberSegments()->add($subscriberSegment);
+    $this->entityManager->persist($this->subscriber);
+    $this->entityManager->flush();
   }
 }
