@@ -96,7 +96,7 @@ class ImportExportRepository {
       $rows[] = "(" . implode(', ', $paramNames) . ")";
     }
 
-    return $this->entityManager->getConnection()->executeStatement("
+    return (int)$this->entityManager->getConnection()->executeStatement("
       INSERT IGNORE INTO {$tableName} (`" . implode("`, `", $columns) . "`) VALUES
       " . implode(", \n", $rows) . "
     ", $parameters);
@@ -156,7 +156,7 @@ class ImportExportRepository {
       $updateColumns[] = 'deleted_at = NULL';
     }
 
-    return $this->entityManager->getConnection()->executeStatement("
+    return (int)$this->entityManager->getConnection()->executeStatement("
       UPDATE {$tableName} SET
       " . implode(", \n", $updateColumns) . "
       WHERE
