@@ -16,9 +16,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\AssetsController;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -140,14 +137,14 @@ class PagesTest extends \MailPoetTest {
     $this->entityManager->persist($subscriberSegment);
     $this->subscriber->getSubscriberSegments()->add($subscriberSegment);
     $this->entityManager->persist($this->subscriber);
-    $this->entityManager->flush();
 
     // create welcome notification newsletter and relevant scheduling options
-    $newsletter = Newsletter::create();
-    $newsletter->type = Newsletter::TYPE_WELCOME;
-    $newsletter->status = Newsletter::STATUS_ACTIVE;
-    $newsletter->save();
-    expect($newsletter->getErrors())->false();
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Some subject');
+    $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
+    $this->entityManager->persist($newsletter);
+
     $newsletterOptions = [
       'event' => 'segment',
       'segment' => $segment->getId(),
@@ -155,23 +152,20 @@ class PagesTest extends \MailPoetTest {
       'afterTimeNumber' => 1,
     ];
     foreach ($newsletterOptions as $option => $value) {
-      $newsletterOptionField = NewsletterOptionField::create();
-      $newsletterOptionField->name = $option;
-      $newsletterOptionField->newsletterType = $newsletter->type;
-      $newsletterOptionField->save();
-      expect($newsletterOptionField->getErrors())->false();
+      $newsletterOptionField = new NewsletterOptionFieldEntity();
+      $newsletterOptionField->setName($option);
+      $newsletterOptionField->setNewsletterType($newsletter->getType());
+      $this->entityManager->persist($newsletterOptionField);
 
-      $newsletterOption = NewsletterOption::create();
-      $newsletterOption->optionFieldId = (int)$newsletterOptionField->id;
-      $newsletterOption->newsletterId = $newsletter->id;
-      $newsletterOption->value = (string)$value;
-      $newsletterOption->save();
-      expect($newsletterOption->getErrors())->false();
+      $newsletterOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
+      $newsletterOption->setValue((string)$value);
+      $newsletter->getOptions()->add($newsletterOption);
+      $this->entityManager->persist($newsletterOption);
     }
 
     // confirm subscription and ensure that welcome email is scheduled
     $subscription->confirm();
-    $newsletterEntity = $newslettersRepository->findOneById($newsletter->id);
+    $newsletterEntity = $newslettersRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
     $scheduledNotifications = $scheduledTasksRepository->findByNewsletterAndStatus($newsletterEntity, SendingQueueEntity::STATUS_SCHEDULED);
     expect(count($scheduledNotifications))->equals(1);
