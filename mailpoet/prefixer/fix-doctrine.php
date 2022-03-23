@@ -46,6 +46,7 @@ file_put_contents(__DIR__ . "/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/M
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name '*.xsd' -delete");
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'phpstan.neon' -delete");
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'build.xml' -delete");
+exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'psalm.xml' -delete");
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'build.properties' -delete");
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'UPGRADE_*' -delete");
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'README.markdown' -delete");
@@ -140,13 +141,12 @@ exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Tools/
 
 // cleanup Doctrine deps
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/inflector');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/annotations/docs');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/collections/docs');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/common/docs');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/common/psalm.xml');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/lib/Doctrine/Deprecations/PHPUnit');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/test_fixtures');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/deprecations/phpcs.xml');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/instantiator/docs');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/instantiator/phpbench.json');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/persistence/tests_php74');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/persistence/tests_php81');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/console');
