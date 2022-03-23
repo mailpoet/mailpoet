@@ -2,7 +2,6 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
-use Carbon\Carbon;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
@@ -18,6 +17,7 @@ use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoetVendor\Carbon\Carbon;
 
 class ReEngagementSchedulerTest extends \MailPoetTest {
   /** @var NewsletterOptionFieldEntity */
