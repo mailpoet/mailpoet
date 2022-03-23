@@ -5,6 +5,7 @@ namespace MailPoet\Validator;
 use MailPoet\InvalidStateException;
 
 use function json_encode;
+use function rest_get_allowed_schema_keywords;
 
 abstract class Schema {
   protected $schema = [];
@@ -48,6 +49,14 @@ abstract class Schema {
     return $this->updateSchemaProperty('default', $default);
   }
 
+  /** @return static */
+  public function field(string $name, $value) {
+    if (in_array($name, $this->getReservedKeywords(), true)) {
+      throw new InvalidStateException("Field name '$name' is reserved");
+    }
+    return $this->updateSchemaProperty($name, $value);
+  }
+
   public function toArray(): array {
     return $this->schema;
   }
@@ -73,5 +82,9 @@ abstract class Schema {
     $clone = clone $this;
     unset($clone->schema[$name]);
     return $clone;
+  }
+
+  protected function getReservedKeywords(): array {
+    return rest_get_allowed_schema_keywords();
   }
 }

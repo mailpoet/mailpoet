@@ -2,6 +2,7 @@
 
 namespace MailPoet\Validator;
 
+use MailPoet\InvalidStateException;
 use MailPoetUnitTest;
 
 class SchemaTest extends MailPoetUnitTest {
@@ -57,6 +58,32 @@ class SchemaTest extends MailPoetUnitTest {
     $this->assertSame('{"type":"test","default":null}', $schema->toString());
   }
 
+  public function testField(): void {
+    $schema = $this->getTestingSchema()
+      ->field('bool', true)
+      ->field('int', 123)
+      ->field('float', 5.2)
+      ->field('string', 'abc')
+      ->field('null', null);
+
+    $this->assertSame([
+      'type' => 'test',
+      'bool' => true,
+      'int' => 123,
+      'float' => 5.2,
+      'string' => 'abc',
+      'null' => null,
+    ], $schema->toArray());
+
+    $this->assertSame('{"type":"test","bool":true,"int":123,"float":5.2,"string":"abc","null":null}', $schema->toString());
+  }
+
+  public function testReservedField(): void {
+    $this->expectException(InvalidStateException::class);
+    $this->expectExceptionMessage("Field name 'type' is reserved");
+    $this->getTestingSchema()->field('type', 'invalid');
+  }
+
   public function testMixedProperties(): void {
     $schema = $this->getTestingSchema()
       ->required()
@@ -88,11 +115,43 @@ class SchemaTest extends MailPoetUnitTest {
     $this->assertNotSame($schema->title('Title'), $schema);
     $this->assertNotSame($schema->description('Description'), $schema);
     $this->assertNotSame($schema->default(null), $schema);
+    $this->assertNotSame($schema->field('name', 'value'), $schema);
   }
 
   private function getTestingSchema(): Schema {
     return new class extends Schema {
       protected $schema = ['type' => 'test'];
+
+      protected function getReservedKeywords(): array {
+        // See: rest_get_allowed_schema_keywords()
+        return [
+          'title',
+          'description',
+          'default',
+          'type',
+          'format',
+          'enum',
+          'items',
+          'properties',
+          'additionalProperties',
+          'patternProperties',
+          'minProperties',
+          'maxProperties',
+          'minimum',
+          'maximum',
+          'exclusiveMinimum',
+          'exclusiveMaximum',
+          'multipleOf',
+          'minLength',
+          'maxLength',
+          'pattern',
+          'minItems',
+          'maxItems',
+          'uniqueItems',
+          'anyOf',
+          'oneOf',
+        ];
+      }
     };
   }
 }
