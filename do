@@ -90,5 +90,5 @@ else
     plugin_directory="mailpoet-premium"
     params=("${params[@]:1}")
   fi
-  ssh_and_run $docker_service "cd wp-content/plugins/$plugin_directory && ./do ${params[@]}"
+  ssh_and_run $docker_service "cd wp-content/plugins/$plugin_directory && ./do ${params[*]}"
 fi
