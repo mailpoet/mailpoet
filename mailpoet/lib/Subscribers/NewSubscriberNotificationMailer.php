@@ -3,6 +3,8 @@
 namespace MailPoet\Subscribers;
 
 use MailPoet\Config\Renderer;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Segment;
@@ -35,6 +37,27 @@ class NewSubscriberNotificationMailer {
     $this->renderer = $renderer;
     $this->settings = $settings;
     $this->mailerMetaInfo = new MetaInfo();
+  }
+
+  /**
+   * This method can be removed and code calling it can be updated to call self::send()
+   * once self::send() is migrated to use Doctrine instead of Paris.
+   *
+   * @param SegmentEntity[] $segments
+   */
+  public function sendWithSubscriberAndSegmentEntities(SubscriberEntity $subscriber, array $segments) {
+    $subscriberModel = Subscriber::findOne($subscriber->getId());
+    $segmentModels = [];
+
+    foreach ($segments as $segmentEntity) {
+      $segmentModel = Segment::findOne($segmentEntity->getId());
+
+      if ($segmentModel instanceof Segment) {
+        $segmentModels[] = $segmentModel;
+      }
+    }
+
+    $this->send($subscriberModel, $segmentModels);
   }
 
   /**

@@ -28,6 +28,7 @@ use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
+use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\CaptchaRenderer;
 use MailPoet\Subscription\ManageSubscriptionFormRenderer;
@@ -36,6 +37,7 @@ use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class PagesTest extends \MailPoetTest {
   private $testData = [];
@@ -64,14 +66,10 @@ class PagesTest extends \MailPoetTest {
   }
 
   public function testItConfirmsSubscription() {
-    $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
+    $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['sendWithSubscriberAndSegmentEntities' => Stub\Expected::once()]);
     $pages = $this->getPages($newSubscriberNotificationSender);
     $subscription = $pages->init(false, $this->testData, false, false);
     $subscription->confirm();
-
-    // make sure Doctrine gets the information about the subscriber from the database.
-    // this can be removed once Pages is migrated to Doctrine as well
-    $this->entityManager->detach($this->subscriber);
 
     $confirmedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
@@ -89,7 +87,7 @@ class PagesTest extends \MailPoetTest {
     $this->entityManager->persist($this->subscriber);
     $this->entityManager->flush();
 
-    $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['sendWithSubscriberEntity' => Stub\Expected::once()]);
+    $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['sendWithSubscriberAndSegmentEntities' => Stub\Expected::once()]);
     $pages = $this->getPages($newSubscriberNotificationSender);
     $subscription = $pages->init(false, $this->testData, false, false);
 
@@ -129,7 +127,7 @@ class PagesTest extends \MailPoetTest {
   public function testItSendsWelcomeNotificationUponConfirmingSubscription() {
     $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
-    $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['send' => Stub\Expected::once()]);
+    $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['sendWithSubscriberAndSegmentEntities' => Stub\Expected::once()]);
     $pages = $this->getPages($newSubscriberNotificationSender);
     $subscription = $pages->init($action = false, $this->testData, false, false);
 
@@ -188,10 +186,6 @@ class PagesTest extends \MailPoetTest {
     $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
 
-    // make sure Doctrine gets the information about the subscriber from the database.
-    // this can be removed once Pages is migrated to Doctrine as well
-    $this->entityManager->detach($this->subscriber);
-
     $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
     expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
@@ -217,10 +211,6 @@ class PagesTest extends \MailPoetTest {
     $this->testData['preview'] = 1;
     $pages = $this->getPages()->init($action = 'unsubscribe', $this->testData);
     $pages->unsubscribe();
-
-    // make sure Doctrine gets the information about the subscriber from the database.
-    // this can be removed once Pages is migrated to Doctrine as well
-    $this->entityManager->detach($this->subscriber);
 
     $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
@@ -259,7 +249,9 @@ class PagesTest extends \MailPoetTest {
       $container->get(SubscriberHandler::class),
       $this->subscribersRepository,
       $container->get(TrackingConfig::class),
-      $container->get(FeaturesController::class)
+      $container->get(FeaturesController::class),
+      $container->get(EntityManager::class),
+      $container->get(SubscriberSaveController::class)
     );
   }
 }
