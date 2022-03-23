@@ -425,6 +425,8 @@ class ValidatorTest extends MailPoetTest {
     $schema = Builder::object()
       ->title('User')
       ->description('User schema definition')
+      ->field('name', 'user')
+      ->field('version', 1)
       ->properties([
         'id' => Builder::string()->required()->formatUuid(),
         'created_at' => Builder::string()->required()->formatDateTime(),
@@ -494,6 +496,8 @@ class ValidatorTest extends MailPoetTest {
         'type' => 'object',
         'title' => 'User',
         'description' => 'User schema definition',
+        'name' => 'user',
+        'version' => 1,
         'properties' => [
           'id' => [
             'type' => 'string',
@@ -667,7 +671,7 @@ class ValidatorTest extends MailPoetTest {
 
     $this->assertSame(
       $schema->toString(),
-      '{"type":"object","title":"User","description":"User schema definition","properties":{"id":{"type":"string","required":true,"format":"uuid"},"created_at":{"type":"string","required":true,"format":"date-time"},"username":{"type":"string","required":true,"minLength":2,"maxLength":30,"pattern":"^[a-z0-9]+$"},"password":{"type":"string","required":true,"minLength":8,"maxLength":1024},"email":{"type":"string","required":true,"format":"email"},"ip":{"type":"string","required":true,"format":"ip"},"refresh_interval":{"type":"integer","required":true,"multipleOf":3600},"subscribed":{"type":"boolean","default":false},"profile":{"type":"object","properties":{"url":{"type":"string","required":true,"format":"uri"},"photo_url":{"type":["string","null"],"required":true},"color":{"type":"string","required":true,"format":"hex-color"},"age":{"type":"integer","required":true},"rating":{"type":"integer","required":true,"minimum":0,"maximum":5},"score":{"type":"number","required":true,"minimum":0.0,"exclusiveMinimum":true,"maximum":100.0},"distance":{"type":"number","required":true}}},"preferences":{"type":"array","items":{"type":"object","properties":{"key":{"type":"string","required":true},"value":{"anyOf":[{"type":"string"},{"type":"integer"},{"type":"number"}],"required":true},"meta":{"type":"string"}}},"uniqueItems":true},"properties":{"type":"object","patternProperties":{"^number_":{"anyOf":[{"type":"integer"},{"type":"number"}]},"^string_":{"type":"string"},"^bool_":{"type":"boolean"}}},"linked_accounts":{"type":"array","items":{"oneOf":[{"type":"object","properties":{"apple_id":{"type":"string","required":true}}},{"type":"object","properties":{"facebook_id":{"type":"string","required":true}}},{"type":"object","properties":{"google_id":{"type":"string","required":true}}}]}},"attributes":{"type":"object","additionalProperties":{"anyOf":[{"type":"string"},{"type":"integer"},{"type":"boolean"},{"type":"number"},{"type":"null"}]}}}}'
+      '{"type":"object","title":"User","description":"User schema definition","name":"user","version":1,"properties":{"id":{"type":"string","required":true,"format":"uuid"},"created_at":{"type":"string","required":true,"format":"date-time"},"username":{"type":"string","required":true,"minLength":2,"maxLength":30,"pattern":"^[a-z0-9]+$"},"password":{"type":"string","required":true,"minLength":8,"maxLength":1024},"email":{"type":"string","required":true,"format":"email"},"ip":{"type":"string","required":true,"format":"ip"},"refresh_interval":{"type":"integer","required":true,"multipleOf":3600},"subscribed":{"type":"boolean","default":false},"profile":{"type":"object","properties":{"url":{"type":"string","required":true,"format":"uri"},"photo_url":{"type":["string","null"],"required":true},"color":{"type":"string","required":true,"format":"hex-color"},"age":{"type":"integer","required":true},"rating":{"type":"integer","required":true,"minimum":0,"maximum":5},"score":{"type":"number","required":true,"minimum":0.0,"exclusiveMinimum":true,"maximum":100.0},"distance":{"type":"number","required":true}}},"preferences":{"type":"array","items":{"type":"object","properties":{"key":{"type":"string","required":true},"value":{"anyOf":[{"type":"string"},{"type":"integer"},{"type":"number"}],"required":true},"meta":{"type":"string"}}},"uniqueItems":true},"properties":{"type":"object","patternProperties":{"^number_":{"anyOf":[{"type":"integer"},{"type":"number"}]},"^string_":{"type":"string"},"^bool_":{"type":"boolean"}}},"linked_accounts":{"type":"array","items":{"oneOf":[{"type":"object","properties":{"apple_id":{"type":"string","required":true}}},{"type":"object","properties":{"facebook_id":{"type":"string","required":true}}},{"type":"object","properties":{"google_id":{"type":"string","required":true}}}]}},"attributes":{"type":"object","additionalProperties":{"anyOf":[{"type":"string"},{"type":"integer"},{"type":"boolean"},{"type":"number"},{"type":"null"}]}}}}'
     );
 
     $this->assertValidationPassed(
