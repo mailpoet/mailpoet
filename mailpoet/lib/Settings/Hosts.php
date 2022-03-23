@@ -52,11 +52,6 @@ class Hosts {
   ];
 
   private static $web = [
-    '1and1' => [
-        'name' => '1and1',
-        'emails' => 30,
-        'interval' => 5,
-    ],
     'bluehost' => [
         'name' => 'BlueHost',
         'emails' => 70,
@@ -131,6 +126,11 @@ class Hosts {
         'name' => 'Infomaniak',
         'emails' => 20,
         'interval' => 15,
+    ],
+    '1and1' => [
+      'name' => 'IONOS by 1&1',
+      'emails' => 30,
+      'interval' => 5,
     ],
     'justhost' => [
         'name' => 'JustHost',
