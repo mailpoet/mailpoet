@@ -22,21 +22,25 @@ abstract class Exception extends \Exception {
     parent::__construct($message, $code, $previous);
   }
 
-  public static function create(\Throwable $previous = null): self {
+  /** @return static */
+  public static function create(\Throwable $previous = null) {
     return new static('', 0, $previous);
   }
 
-  public function withMessage(string $message): self {
+  /** @return static */
+  public function withMessage(string $message) {
     $this->message = $message;
     return $this;
   }
 
-  public function withCode(int $code): self {
+  /** @return static */
+  public function withCode(int $code) {
     $this->code = $code;
     return $this;
   }
 
-  public function withErrors(array $errors): self {
+  /** @return static */
+  public function withErrors(array $errors) {
     $this->errors = $errors;
     return $this;
   }
