@@ -2,10 +2,13 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\Subscriber;
+use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ManageSubscriptionFormRendererTest extends \MailPoetTest {
@@ -20,12 +23,16 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
 
   public function testItGeneratesForm() {
     $subscriber = $this->getSubscriber($this->getSegment());
-    $form = $this->formRenderer->renderForm(Subscriber::findOne($subscriber->getId())->withSubscriptions());
+    $form = $this->formRenderer->renderForm(Subscriber::findOne($subscriber->getId())->withSubscriptions()->withCustomFields());
     expect($form)->regExp('/<form class="mailpoet-manage-subscription" method="post" action="[a-z0-9:\/\._]+wp-admin\/admin-post.php" novalidate>/');
     expect($form)->stringContainsString('<input type="hidden" name="data[email]" value="subscriber@test.com" />');
     expect($form)->regExp('/<input type="text" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="First name" value="Fname" data-automation-id="form_first_name" data-parsley-names=\'\[&quot;Please specify a valid name.&quot;,&quot;Addresses in names are not permitted, please add your name instead\.&quot;\]\'\/>/');
     expect($form)->regExp('/<input type="text" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="Last name" value="Lname" data-automation-id="form_last_name" data-parsley-names=\'\[&quot;Please specify a valid name.&quot;,&quot;Addresses in names are not permitted, please add your name instead\.&quot;\]\'\/>/');
     expect($form)->regExp('/<input type="checkbox" class="mailpoet_checkbox" name="data\[[a-zA-Z0-9=_]+\]\[\]" value="1" checked="checked" data-parsley-required="true" data-parsley-group="segments" data-parsley-errors-container="\.mailpoet_error_segments" data-parsley-required-message="Please select a list." \/> Test segment/');
+    expect($form)->regExp('/<input type="checkbox" class="mailpoet_checkbox" name="data\[[a-zA-Z0-9=_]+\]\[\]" value="1" checked="checked" data-parsley-required="true" data-parsley-group="segments" data-parsley-errors-container="\.mailpoet_error_segments" data-parsley-required-message="Please select a list." \/> Test segment/');
+    expect($form)->regExp('/<input type="text" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="custom field 1" value="some value"  \/>/');
+    expect($form)->regExp('/<input type="text" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="custom field 2" value="another value"  \/>/');
+
     expect($form)->stringContainsString('Need to change your email address? Unsubscribe using the form below, then simply sign up again.');
   }
 
@@ -43,7 +50,7 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
         ];
         return $fields;
     });
-    $form = $this->formRenderer->renderForm(Subscriber::findOne($subscriber->getId())->withSubscriptions());
+    $form = $this->formRenderer->renderForm(Subscriber::findOne($subscriber->getId())->withSubscriptions()->withCustomFields());
     expect($form)->regExp('/<input type="text" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="Additional info" value=""  \/>/');
   }
 
@@ -69,10 +76,16 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
 
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
+
+    (new CustomFieldFactory())->withName('custom field 1')->withSubscriber($subscriber->getId(), 'some value')->create();
+    (new CustomFieldFactory())->withName('custom field 2')->withSubscriber($subscriber->getId(), 'another value')->create();
+
     return $subscriber;
   }
 
   private function cleanup() {
+    $this->truncateEntity(CustomFieldEntity::class);
+    $this->truncateEntity(SubscriberCustomFieldEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(SegmentEntity::class);
