@@ -8,7 +8,6 @@ use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\AssetsController;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
@@ -416,18 +415,13 @@ class Pages {
 
   public function getManageContent() {
     if ($this->isPreview()) {
-      $subscriber = Subscriber::create();
-      $subscriber->hydrate([
-        'email' => self::DEMO_EMAIL,
-        'first_name' => 'John',
-        'last_name' => 'Doe',
-        'link_token' => 'bfd0889dbc7f081e171fa0cee7401df2',
-      ]);
+      $subscriber = new SubscriberEntity();
+      $subscriber->setEmail(self::DEMO_EMAIL);
+      $subscriber->setFirstName('John');
+      $subscriber->setLastName('Doe');
+      $subscriber->setLinkToken('bfd0889dbc7f081e171fa0cee7401df2');
     } else if ($this->subscriber !== null) {
-      $subscriberModel = Subscriber::findOne($this->subscriber->getId());
-      $subscriber = $subscriberModel
-      ->withCustomFields()
-      ->withSubscriptions();
+      $subscriber = $this->subscriber;
     } else {
       return $this->wp->__('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
     }
