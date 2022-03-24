@@ -7,7 +7,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Models\Subscriber;
 use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -23,7 +22,7 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
 
   public function testItGeneratesForm() {
     $subscriber = $this->getSubscriber($this->getSegment());
-    $form = $this->formRenderer->renderForm(Subscriber::findOne($subscriber->getId())->withSubscriptions()->withCustomFields());
+    $form = $this->formRenderer->renderForm($subscriber);
     expect($form)->regExp('/<form class="mailpoet-manage-subscription" method="post" action="[a-z0-9:\/\._]+wp-admin\/admin-post.php" novalidate>/');
     expect($form)->stringContainsString('<input type="hidden" name="data[email]" value="subscriber@test.com" />');
     expect($form)->regExp('/<input type="text" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="First name" value="Fname" data-automation-id="form_first_name" data-parsley-names=\'\[&quot;Please specify a valid name.&quot;,&quot;Addresses in names are not permitted, please add your name instead\.&quot;\]\'\/>/');
@@ -50,7 +49,7 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
         ];
         return $fields;
     });
-    $form = $this->formRenderer->renderForm(Subscriber::findOne($subscriber->getId())->withSubscriptions()->withCustomFields());
+    $form = $this->formRenderer->renderForm($subscriber);
     expect($form)->regExp('/<input type="text" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="Additional info" value=""  \/>/');
   }
 

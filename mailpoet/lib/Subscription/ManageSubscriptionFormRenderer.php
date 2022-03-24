@@ -65,7 +65,23 @@ class ManageSubscriptionFormRenderer {
     $this->subscribersRepository = $subscribersRepository;
   }
 
-  public function renderForm(Subscriber $subscriber, string $formState = self::FORM_STATE_NOT_SUBMITTED): string {
+  public function renderForm(SubscriberEntity $subscriberEntity, string $formState = self::FORM_STATE_NOT_SUBMITTED): string {
+    // Once the old Subscriber model is removed from this class, the if below can be removed as well and $subscriberEntity
+    // can be used directly (probably worth renaming it to $subscriber). For now this if is needed, as when previewing the
+    // manage subscription page, a demo object is created in Pages::getManageContent() that is not persisted to the database
+    // so $subscriberEntity->getId() is null and thus it is not possible to use Subscriber::findOne() to get the old model.
+    if ($subscriberEntity->getId()) {
+      $subscriber = Subscriber::findOne($subscriberEntity->getId())->withSubscriptions()->withCustomFields();
+    } else {
+      $subscriber = Subscriber::create();
+      $subscriber->hydrate([
+        'email' => $subscriberEntity->getEmail(),
+        'first_name' => $subscriberEntity->getFirstName(),
+        'last_name' => $subscriberEntity->getLastName(),
+        'link_token' => $subscriberEntity->getLinkToken(),
+      ]);
+    }
+
     $basicFields = $this->getBasicFields($subscriber);
     $customFields = $this->getCustomFields($subscriber);
     $segmentField = $this->getSegmentField($subscriber);
