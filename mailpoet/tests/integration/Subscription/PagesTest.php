@@ -54,9 +54,7 @@ class PagesTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->subscriber = new SubscriberEntity();
-    $this->subscriber->setFirstName('John');
-    $this->subscriber->setLastName('John');
-    $this->subscriber->setEmail('john.doe@example.com');
+    $this->subscriber->setEmail('jane.doe@example.com');
     $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
     $this->subscribersRepository->persist($this->subscriber);
     $this->subscribersRepository->flush();
@@ -80,6 +78,29 @@ class PagesTest extends \MailPoetTest {
     expect($confirmedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($confirmedSubscriber->getLastSubscribedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
     expect($confirmedSubscriber->getLastSubscribedAt())->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
+  }
+
+  public function testItUpdatesUnconfirmedDataWhenConfirmingSubscription() {
+    $firstName = 'Jane';
+    $lastName = 'Doe';
+    $this->subscriber->setUnconfirmedData(
+      (string)json_encode(['first_name' => $firstName, 'last_name' => $lastName, 'email' => 'jane.doe@example.com'])
+    );
+    $this->entityManager->persist($this->subscriber);
+    $this->entityManager->flush();
+
+    $newSubscriberNotificationSender = $this->makeEmpty(NewSubscriberNotificationMailer::class, ['sendWithSubscriberEntity' => Stub\Expected::once()]);
+    $pages = $this->getPages($newSubscriberNotificationSender);
+    $subscription = $pages->init(false, $this->testData, false, false);
+
+    $subscription->confirm();
+
+    $confirmedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
+    $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
+    $this->assertSame(SubscriberEntity::STATUS_SUBSCRIBED, $confirmedSubscriber->getStatus());
+    $this->assertSame($firstName, $confirmedSubscriber->getFirstName());
+    $this->assertSame($lastName, $confirmedSubscriber->getLastName());
+    $this->assertNull($confirmedSubscriber->getUnconfirmedData());
   }
 
   public function testItUpdatesSubscriptionOnDuplicateAttemptButDoesntSendNotification() {
