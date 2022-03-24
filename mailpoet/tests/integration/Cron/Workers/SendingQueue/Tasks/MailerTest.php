@@ -117,7 +117,7 @@ class MailerTest extends \MailPoetTest {
         'mailerInstance' => Stub::make(
           $phpMailClass,
           ['send' => Expected::exactly(1, function() {
-              return true;
+              return ['response' => true];
           })],
           $this
         ),
@@ -130,7 +130,7 @@ class MailerTest extends \MailPoetTest {
     expect($mailerTask->mailer->mailerInstance instanceof $phpMailClass)
       ->true();
     // send method should return true
-    expect($mailerTask->send('Newsletter', 'Subscriber'))->true();
+    expect($mailerTask->send('Newsletter', 'Subscriber'))->equals(['response' => true]);
   }
 
   public function _after() {

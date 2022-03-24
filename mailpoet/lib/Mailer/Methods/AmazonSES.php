@@ -8,7 +8,7 @@ use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Swift_Message;
 
-class AmazonSES {
+class AmazonSES implements MailerMethod {
   public $awsAccessKey;
   public $awsSecretKey;
   public $awsRegion;
@@ -93,7 +93,7 @@ class AmazonSES {
     $this->blacklist = new BlacklistCheck();
   }
 
-  public function send($newsletter, $subscriber, $extraParams = []) {
+  public function send($newsletter, $subscriber, $extraParams = []): array {
     if ($this->blacklist->isBlacklisted($subscriber)) {
       $error = $this->errorMapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);

@@ -11,7 +11,7 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 
-class MailPoet {
+class MailPoet implements MailerMethod {
   public $api;
   public $sender;
   public $replyTo;
@@ -42,7 +42,7 @@ class MailPoet {
     $this->blacklist = new BlacklistCheck();
   }
 
-  public function send($newsletter, $subscriber, $extraParams = []) {
+  public function send($newsletter, $subscriber, $extraParams = []): array {
     if ($this->servicesChecker->isMailPoetAPIKeyValid() === false) {
       return Mailer::formatMailerErrorResult($this->errorMapper->getInvalidApiKeyError());
     }

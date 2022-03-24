@@ -9,7 +9,7 @@ use MailPoet\Mailer\WordPress\PHPMailerLoader;
 
 PHPMailerLoader::load();
 
-class PHPMail {
+class PHPMail implements MailerMethod {
   public $sender;
   public $replyTo;
   public $returnPath;
@@ -37,7 +37,7 @@ class PHPMail {
     $this->blacklist = new BlacklistCheck();
   }
 
-  public function send($newsletter, $subscriber, $extraParams = []) {
+  public function send($newsletter, $subscriber, $extraParams = []): array {
     if ($this->blacklist->isBlacklisted($subscriber)) {
       $error = $this->errorMapper->getBlacklistError($subscriber);
       return Mailer::formatMailerErrorResult($error);
