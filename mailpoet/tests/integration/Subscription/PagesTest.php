@@ -72,8 +72,7 @@ class PagesTest extends \MailPoetTest {
     $confirmedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
     expect($confirmedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($confirmedSubscriber->getLastSubscribedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
-    expect($confirmedSubscriber->getLastSubscribedAt())->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
+    $this->assertTrue(Carbon::parse($confirmedSubscriber->getLastSubscribedAt())->isToday());
   }
 
   public function testItUpdatesUnconfirmedDataWhenConfirmingSubscription() {
