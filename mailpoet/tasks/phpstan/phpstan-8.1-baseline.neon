@@ -1231,11 +1231,6 @@ parameters:
 			path: ../../lib/Subscription/ManageSubscriptionFormRenderer.php
 
 		-
-			message: "#^Property MailPoet\\\\Subscription\\\\Pages\\:\\:\\$settings is never read, only written\\.$#"
-			count: 1
-			path: ../../lib/Subscription/Pages.php
-
-		-
 			message: "#^Parameter mixed of print cannot be converted to string\\.$#"
 			count: 1
 			path: ../../lib/Subscription/Registration.php

@@ -232,7 +232,6 @@ class PagesTest extends \MailPoetTest {
     return new Pages(
       $newSubscriberNotificationsMock ?? $container->get(NewSubscriberNotificationMailer::class),
       $container->get(WPFunctions::class),
-      $container->get(SettingsController::class),
       $container->get(CaptchaRenderer::class),
       $container->get(WelcomeScheduler::class),
       $container->get(LinkTokens::class),

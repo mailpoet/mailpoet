@@ -9,7 +9,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Form\AssetsController;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\Track\SubscriberHandler;
 use MailPoet\Statistics\Track\Unsubscribes;
@@ -38,9 +37,6 @@ class Pages {
 
   /** @var NewSubscriberNotificationMailer */
   private $newSubscriberNotificationSender;
-
-  /** @var SettingsController */
-  private $settings;
 
   /** @var WPFunctions */
   private $wp;
@@ -93,7 +89,6 @@ class Pages {
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
-    SettingsController $settings,
     CaptchaRenderer $captchaRenderer,
     WelcomeScheduler $welcomeScheduler,
     LinkTokens $linkTokens,
@@ -112,7 +107,6 @@ class Pages {
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
-    $this->settings = $settings;
     $this->captchaRenderer = $captchaRenderer;
     $this->welcomeScheduler = $welcomeScheduler;
     $this->linkTokens = $linkTokens;
