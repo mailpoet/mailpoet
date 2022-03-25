@@ -73,11 +73,15 @@ class APITest extends \MailPoetTest {
         expect($api instanceof JSONAPI)->true();
       }
     );
+    $wpStub = Stub::make(new WPFunctions, [
+      'wpVerifyNonce' => asCallable(function() {
+        return true;
+      })]);
     $api = Stub::makeEmptyExcept(
       $this->api,
       'setupAjax',
       [
-        'wp' => new WPFunctions,
+        'wp' => $wpStub,
         'processRoute' => Stub::makeEmpty(new SuccessResponse),
         'settings' => $this->container->get(SettingsController::class),
       ]

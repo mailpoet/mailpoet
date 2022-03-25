@@ -7,7 +7,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\WP\Functions as WPFunctions;
 
 class Security {
   const HASH_LENGTH = 12;
@@ -25,10 +24,6 @@ class Security {
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->subscribersRepository = $subscribersRepository;
-  }
-
-  public static function generateToken($action = 'mailpoet_token') {
-    return WPFunctions::get()->wpCreateNonce($action);
   }
 
   /**

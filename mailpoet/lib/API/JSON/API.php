@@ -9,7 +9,6 @@ use MailPoet\Subscription\Captcha;
 use MailPoet\Tracy\ApiPanel\ApiPanel;
 use MailPoet\Tracy\DIPanel\DIPanel;
 use MailPoet\Util\Helpers;
-use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Psr\Container\ContainerInterface;
 use Throwable;
@@ -106,7 +105,7 @@ class API {
       $this->requestMethod === 'subscribe'
     );
 
-    if (!$ignoreToken && $this->checkToken() === false) {
+    if (!$ignoreToken && $this->wp->wpVerifyNonce($this->requestToken, 'mailpoet_token') === false) {
       $errorMessage = WPFunctions::get()->__("Sorry, but we couldn't connect to the MailPoet server. Please refresh the web page and try again.", 'mailpoet');
       $errorResponse = $this->createErrorResponse(Error::UNAUTHORIZED, $errorMessage, Response::STATUS_UNAUTHORIZED);
       return $errorResponse->send();
@@ -228,23 +227,19 @@ class API {
       $this->accessControl->validatePermission($permissions['global']);
   }
 
-  public function checkToken() {
-    return WPFunctions::get()->wpVerifyNonce($this->requestToken, 'mailpoet_token');
-  }
-
   public function setTokenAndAPIVersion() {
     echo sprintf(
       '<script type="text/javascript">' .
       'var mailpoet_token = "%s";' .
       'var mailpoet_api_version = "%s";' .
       '</script>',
-      esc_js(Security::generateToken()),
+      esc_js($this->wp->wpCreateNonce('mailpoet_token')),
       esc_js(self::CURRENT_VERSION)
     );
   }
 
   public function addTokenToHeartbeatResponse($response) {
-    $response['mailpoet_token'] = Security::generateToken();
+    $response['mailpoet_token'] = $this->wp->wpCreateNonce('mailpoet_token');
     return $response;
   }
 

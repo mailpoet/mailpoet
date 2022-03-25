@@ -14,7 +14,6 @@ use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Subscription\Form;
-use MailPoet\Util\Security;
 use MailPoet\Util\Url as UrlHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
@@ -62,7 +61,7 @@ class FormTest extends \MailPoetTest {
         'form_id' => $this->form->getId(),
         $obfuscatedEmail => $this->testEmail,
       ],
-      'token' => Security::generateToken(),
+      'token' => WPFunctions::get()->wpCreateNonce('mailpoet_token'),
       'api_version' => 'v1',
       'endpoint' => 'subscribers',
       'mailpoet_method' => 'subscribe',
