@@ -7,6 +7,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -75,8 +76,10 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
         }),
     ], $this);
 
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
-      $mailer,
+      $mailerFactory,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
@@ -103,8 +106,10 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
         }),
     ], $this);
 
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
-      $mailer,
+      $mailerFactory,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
@@ -121,8 +126,10 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       'send' => ['response' => false],
     ], $this);
 
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
-      $mailer,
+      $mailerFactory,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
@@ -142,8 +149,10 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $settings = SettingsController::getInstance();
     $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, ['invalid_sender_address' => 'email@email.com']);
     $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
-      $mailer,
+      $mailerFactory,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
@@ -164,8 +173,10 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
         return ['response' => true];
       },
     ], $this);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
-      $mailer,
+      $mailerFactory,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),
@@ -187,8 +198,10 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
         return ['response' => true];
       },
     ], $this);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sender = new ConfirmationEmailMailer(
-      $mailer,
+      $mailerFactory,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(SettingsController::class),
       $this->diContainer->get(SubscribersRepository::class),

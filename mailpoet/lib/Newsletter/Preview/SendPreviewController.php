@@ -4,7 +4,7 @@ namespace MailPoet\Newsletter\Preview;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
@@ -12,8 +12,8 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SendPreviewController {
-  /** @var Mailer */
-  private $mailer;
+  /** @var MailerFactory */
+  private $mailerFactory;
 
   /** @var MetaInfo */
   private $mailerMetaInfo;
@@ -31,14 +31,14 @@ class SendPreviewController {
   private $subscribersRepository;
 
   public function __construct(
-    Mailer $mailer,
+    MailerFactory $mailerFactory,
     MetaInfo $mailerMetaInfo,
     Renderer $renderer,
     WPFunctions $wp,
     SubscribersRepository $subscribersRepository,
     Shortcodes $shortcodes
   ) {
-    $this->mailer = $mailer;
+    $this->mailerFactory = $mailerFactory;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->wp = $wp;
     $this->renderer = $renderer;
@@ -75,7 +75,7 @@ class SendPreviewController {
       'meta' => $this->mailerMetaInfo->getPreviewMetaInfo(),
     ];
 
-    $result = $this->mailer->send($renderedNewsletter, $emailAddress, $extraParams);
+    $result = $this->mailerFactory->getDefaultMailer()->send($renderedNewsletter, $emailAddress, $extraParams);
     if ($result['response'] === false) {
       $error = sprintf(
         __('The email could not be sent: %s', 'mailpoet'),

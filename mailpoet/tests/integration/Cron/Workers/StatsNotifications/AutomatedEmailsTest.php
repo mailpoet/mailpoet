@@ -6,6 +6,7 @@ use Codeception\Stub;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronWorkerRunner;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
@@ -47,10 +48,13 @@ class AutomatedEmailsTest extends \MailPoetTest {
       'processed_at' => null,
     ]);
     $this->mailer = $this->createMock(Mailer::class);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')
+      ->willReturn($this->mailer);
     $this->renderer = $this->createMock(Renderer::class);
     $this->settings = SettingsController::getInstance();
     $this->statsNotifications = new AutomatedEmails(
-      $this->mailer,
+      $mailerFactory,
       $this->renderer,
       $this->settings,
       $this->diContainer->get(NewslettersRepository::class),

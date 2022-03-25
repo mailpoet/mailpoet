@@ -10,6 +10,7 @@ use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
@@ -77,8 +78,11 @@ class WorkerTest extends \MailPoetTest {
     $this->renderer = $this->createMock(Renderer::class);
     $this->settings = SettingsController::getInstance();
     $this->cronHelper = $this->diContainer->get(CronHelper::class);
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')
+      ->willReturn($this->mailer);
     $this->statsNotifications = new Worker(
-      $this->mailer,
+      $mailerFactory,
       $this->renderer,
       $this->settings,
       $this->cronHelper,

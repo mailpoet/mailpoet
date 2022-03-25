@@ -8,6 +8,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
@@ -88,8 +89,10 @@ class SendPreviewControllerTest extends \MailPoetTest {
       ),
     ]);
 
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sendPreviewController = new SendPreviewController(
-      $mailer,
+      $mailerFactory,
       new MetaInfo(),
       $this->diContainer->get(Renderer::class),
       new WPFunctions(),
@@ -117,8 +120,10 @@ class SendPreviewControllerTest extends \MailPoetTest {
     $this->expectException(SendPreviewException::class);
     $this->expectExceptionMessage('The email could not be sent: failed');
 
+    $mailerFactory = $this->createMock(MailerFactory::class);
+    $mailerFactory->method('getDefaultMailer')->willReturn($mailer);
     $sendPreviewController = new SendPreviewController(
-      $mailer,
+      $mailerFactory,
       new MetaInfo(),
       $this->diContainer->get(Renderer::class),
       new WPFunctions(),
