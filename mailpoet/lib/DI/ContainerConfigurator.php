@@ -293,6 +293,7 @@ class ContainerConfigurator implements IContainerConfigurator {
       ->setArgument('$container', new Reference(ContainerWrapper::class));
     // Mailer
     $container->autowire(\MailPoet\Mailer\Mailer::class);
+    $container->autowire(\MailPoet\Mailer\MailerFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Mailer\WordPress\WordpressMailerReplacer::class);
     $container->autowire(\MailPoet\Mailer\Methods\Common\BlacklistCheck::class);
     $container->autowire(\MailPoet\Mailer\MetaInfo::class);
