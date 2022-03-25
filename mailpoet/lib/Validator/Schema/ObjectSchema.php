@@ -35,12 +35,12 @@ class ObjectSchema extends Schema {
    * @param array<string, Schema> $properties
    */
   public function patternProperties(array $properties): self {
-    return $this->updateSchemaProperty('patternProperties', array_map(
-      function (Schema $property) {
-        return $property->toArray();
-      },
-      $properties
-    ));
+    $patternProperties = [];
+    foreach ($properties as $key => $value) {
+      $this->validatePattern($key);
+      $patternProperties[$key] = $value->toArray();
+    }
+    return $this->updateSchemaProperty('patternProperties', $patternProperties);
   }
 
   public function minProperties(int $value): self {

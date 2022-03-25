@@ -23,6 +23,7 @@ class StringSchema extends Schema {
    * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#pattern
    */
   public function pattern(string $pattern): self {
+    $this->validatePattern($pattern);
     return $this->updateSchemaProperty('pattern', $pattern);
   }
 
