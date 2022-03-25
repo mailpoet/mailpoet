@@ -25,6 +25,9 @@ class MailerFactory {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var Mailer */
+  private $defaultMailer;
+
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp
@@ -34,7 +37,10 @@ class MailerFactory {
   }
 
   public function getDefaultMailer(): Mailer {
-    return $this->buildMailer();
+    if ($this->defaultMailer === null) {
+      $this->defaultMailer = $this->buildMailer();
+    }
+    return $this->defaultMailer;
   }
 
   public function buildMailer(array $mailerConfig = null, array $sender = null, array $replyTo = null, string $returnPath = null): Mailer {

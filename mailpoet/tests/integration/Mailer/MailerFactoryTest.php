@@ -11,6 +11,7 @@ use MailPoet\Mailer\Methods\PHPMail;
 use MailPoet\Mailer\Methods\SendGrid;
 use MailPoet\Mailer\Methods\SMTP;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class MailerFactoryTest extends \MailPoetTest {
   /** @var array */
@@ -67,7 +68,7 @@ class MailerFactoryTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = $this->diContainer->get(SettingsController::class);
-    $this->factory = $this->diContainer->get(MailerFactory::class);
+    $this->factory = new MailerFactory($this->settings, $this->diContainer->get(WPFunctions::class));
     $this->settings->set('sender', $this->sender);
     $this->settings->set('reply_to', $this->replyTo);
     $this->settings->set('bounce.address', $this->returnPath);
@@ -102,18 +103,22 @@ class MailerFactoryTest extends \MailPoetTest {
     $mailer = $this->factory->getDefaultMailer();
     $this->assertInstanceOf(PHPMail::class, $mailer->mailerInstance);
 
+    $this->factory = new MailerFactory($this->settings, $this->diContainer->get(WPFunctions::class));
     $this->settings->set('mta', $this->mtaConfigs[Mailer::METHOD_AMAZONSES]);
     $mailer = $this->factory->getDefaultMailer();
     $this->assertInstanceOf(AmazonSES::class, $mailer->mailerInstance);
 
+    $this->factory = new MailerFactory($this->settings, $this->diContainer->get(WPFunctions::class));
     $this->settings->set('mta', $this->mtaConfigs[Mailer::METHOD_MAILPOET]);
     $mailer = $this->factory->getDefaultMailer();
     $this->assertInstanceOf(MailPoet::class, $mailer->mailerInstance);
 
+    $this->factory = new MailerFactory($this->settings, $this->diContainer->get(WPFunctions::class));
     $this->settings->set('mta', $this->mtaConfigs[Mailer::METHOD_SMTP]);
     $mailer = $this->factory->getDefaultMailer();
     $this->assertInstanceOf(SMTP::class, $mailer->mailerInstance);
 
+    $this->factory = new MailerFactory($this->settings, $this->diContainer->get(WPFunctions::class));
     $this->settings->set('mta', $this->mtaConfigs[Mailer::METHOD_SENDGRID]);
     $mailer = $this->factory->getDefaultMailer();
     $this->assertInstanceOf(SendGrid::class, $mailer->mailerInstance);
@@ -175,5 +180,9 @@ class MailerFactoryTest extends \MailPoetTest {
     $this->assertInstanceOf(PHPMail::class, $mailerMethod);
     expect($mailerMethod->sender['from_name'])->equals(sprintf('=?utf-8?B?%s?=', base64_encode('Sender Außergewöhnlichen тест системы')));
     expect($mailerMethod->replyTo['reply_to_name'])->equals(sprintf('=?utf-8?B?%s?=', base64_encode('Reply-To Außergewöhnlichen тест системы')));
+  }
+
+  public function testItCachesDefaultMailerInstance() {
+    expect($this->factory->getDefaultMailer() === $this->factory->getDefaultMailer())->true();
   }
 }
