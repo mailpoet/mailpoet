@@ -2,6 +2,7 @@
 
 namespace MailPoet\Validator\Schema;
 
+use MailPoet\InvalidStateException;
 use MailPoet\Validator\Schema;
 use MailPoetUnitTest;
 
@@ -104,6 +105,11 @@ class ObjectSchemaTest extends MailPoetUnitTest {
       '{"type":"object","patternProperties":{"^number-[0-9]+":{"type":"number"},"^string-[0-9]+":{"type":"string"}}}',
       $object->toString()
     );
+
+    $this->assertInvalidPatternProperty(['\\' => $this->getNumberSchemaMock()], "Invalid regular expression '#\\#u'");
+    $this->assertInvalidPatternProperty(['\\#' => $this->getStringSchemaMock()], "Invalid regular expression '#\\\\##u'");
+    $this->assertInvalidPatternProperty(['[' => $this->getNumberSchemaMock()], "Invalid regular expression '#[#u'");
+    $this->assertInvalidPatternProperty(['[0-9' => $this->getStringSchemaMock()], "Invalid regular expression '#[0-9#u'");
   }
 
   public function testMinProperties(): void {
@@ -173,5 +179,16 @@ class ObjectSchemaTest extends MailPoetUnitTest {
     return new class extends Schema {
       protected $schema = ['type' => 'string'];
     };
+  }
+
+  private function assertInvalidPatternProperty(array $properties, string $message): void {
+    try {
+      (new ObjectSchema())->patternProperties($properties);
+    } catch (InvalidStateException $e) {
+      $this->assertSame($message, $e->getMessage());
+      return;
+    }
+    $class = InvalidStateException::class;
+    $this->fail("Exception '$class' with message '$message' was not thrown.");
   }
 }

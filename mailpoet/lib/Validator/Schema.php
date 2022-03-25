@@ -87,4 +87,12 @@ abstract class Schema {
   protected function getReservedKeywords(): array {
     return rest_get_allowed_schema_keywords();
   }
+
+  protected function validatePattern(string $pattern): void {
+    $escaped = str_replace('#', '\\#', $pattern);
+    $regex = "#$escaped#u";
+    if (@preg_match($regex, '') === false) {
+      throw new InvalidStateException("Invalid regular expression '$regex'");
+    }
+  }
 }
