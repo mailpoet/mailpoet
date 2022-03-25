@@ -5,7 +5,7 @@ namespace MailPoet\Subscribers;
 use Html2Text\Html2Text;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
@@ -18,8 +18,8 @@ class ConfirmationEmailMailer {
 
   const MAX_CONFIRMATION_EMAILS = 3;
 
-  /** @var Mailer */
-  private $mailer;
+  /** @var MailerFactory */
+  private $mailerFactory;
 
   /** @var WPFunctions */
   private $wp;
@@ -40,13 +40,13 @@ class ConfirmationEmailMailer {
   private $sentEmails = [];
 
   public function __construct(
-    Mailer $mailer,
+    MailerFactory $mailerFactory,
     WPFunctions $wp,
     SettingsController $settings,
     SubscribersRepository $subscribersRepository,
     SubscriptionUrlFactory $subscriptionUrlFactory
   ) {
-    $this->mailer = $mailer;
+    $this->mailerFactory = $mailerFactory;
     $this->wp = $wp;
     $this->settings = $settings;
     $this->mailerMetaInfo = new MetaInfo;
@@ -127,7 +127,7 @@ class ConfirmationEmailMailer {
       'meta' => $this->mailerMetaInfo->getConfirmationMetaInfo($subscriber),
     ];
     try {
-      $result = $this->mailer->send($email, $subscriber, $extraParams);
+      $result = $this->mailerFactory->getDefaultMailer()->send($email, $subscriber, $extraParams);
     } catch (\Exception $e) {
       throw new \Exception(__('Something went wrong with your subscription. Please contact the website owner.', 'mailpoet'));
     }
