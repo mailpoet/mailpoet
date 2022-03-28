@@ -5,6 +5,7 @@ namespace MailPoet\Subscription;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Renderer as FormRenderer;
+use MailPoet\Form\Util\Styles;
 use MailPoet\Util\Url as UrlHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -27,13 +28,17 @@ class CaptchaRenderer {
   /** @var FormsRepository */
   private $formsRepository;
 
+  /** @var Styles */
+  private $styles;
+
   public function __construct(
     UrlHelper $urlHelper,
     WPFunctions $wp,
     CaptchaSession $captchaSession,
     SubscriptionUrlFactory $subscriptionUrlFactory,
     FormsRepository $formsRepository,
-    FormRenderer $formRenderer
+    FormRenderer $formRenderer,
+    Styles $styles
   ) {
     $this->urlHelper = $urlHelper;
     $this->wp = $wp;
@@ -41,6 +46,7 @@ class CaptchaRenderer {
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->formRenderer = $formRenderer;
     $this->formsRepository = $formsRepository;
+    $this->styles = $styles;
   }
 
   public function getCaptchaPageTitle() {
@@ -101,6 +107,7 @@ class CaptchaRenderer {
     $formHtml = '<form method="POST" ' .
       'action="' . admin_url('admin-post.php?action=mailpoet_subscription_form') . '" ' .
       'class="mailpoet_form mailpoet_captcha_form" ' .
+      'id="mailpoet_captcha_form" ' .
       'novalidate>';
     $formHtml .= '<input type="hidden" name="data[form_id]" value="' . $formId . '" />';
     $formHtml .= '<input type="hidden" name="data[captcha_session_id]" value="' . htmlspecialchars($this->captchaSession->getId()) . '" />';
@@ -124,6 +131,10 @@ class CaptchaRenderer {
     $formHtml .= '</div>';
     $formHtml .= $this->renderFormMessages($formModel, $showSuccessMessage, $showErrorMessage);
     $formHtml .= '</form>';
+    $formHtml .= '<style>' . $this->styles->renderFormMessageStyles(
+      $formModel,
+      '#mailpoet_captcha_form'
+    ) . '</style>';
     return $formHtml;
   }
 
