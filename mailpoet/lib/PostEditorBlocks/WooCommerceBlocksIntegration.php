@@ -50,7 +50,7 @@ class WooCommerceBlocksIntegration {
       [$this, 'registerCheckoutFrontendBlocks']
     );
     $this->wp->addAction(
-      'woocommerce_blocks_checkout_update_order_from_request',
+      '__experimental_woocommerce_blocks_checkout_update_order_from_request',
       [$this, 'processCheckoutBlockOptin'],
       10,
       2
