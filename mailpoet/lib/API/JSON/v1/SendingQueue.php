@@ -10,6 +10,7 @@ use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -44,13 +45,17 @@ class SendingQueue extends APIEndpoint {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** @var MailerFactory */
+  private $mailerFactory;
+
   public function __construct(
     SubscribersFeature $subscribersFeature,
     NewslettersRepository $newsletterRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     Bridge $bridge,
     SubscribersFinder $subscribersFinder,
-    ScheduledTasksRepository $scheduledTasksRepository
+    ScheduledTasksRepository $scheduledTasksRepository,
+    MailerFactory $mailerFactory
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
@@ -58,6 +63,7 @@ class SendingQueue extends APIEndpoint {
     $this->bridge = $bridge;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->mailerFactory = $mailerFactory;
   }
 
   public function add($data = []) {
@@ -93,10 +99,9 @@ class SendingQueue extends APIEndpoint {
       ]);
     }
 
-    // check that the sending method has been configured properly
+    // check that the sending method has been configured properly by verifying that default mailer can be build
     try {
-      $mailer = new \MailPoet\Mailer\Mailer();
-      $mailer->init();
+      $this->mailerFactory->getDefaultMailer();
     } catch (\Exception $e) {
       return $this->errorResponse([
         $e->getCode() => $e->getMessage(),

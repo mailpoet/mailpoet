@@ -11,6 +11,7 @@ use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
@@ -80,7 +81,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->diContainer->get(SendingQueuesRepository::class),
       $this->diContainer->get(Bridge::class),
       $this->diContainer->get(SubscribersFinder::class),
-      $this->diContainer->get(ScheduledTasksRepository::class)
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(MailerFactory::class)
     );
     $res = $sendingQueue->add(['newsletter_id' => $this->newsletter->getId()]);
     expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
@@ -149,7 +151,8 @@ class SendingQueueTest extends \MailPoetTest {
         'isMailpoetSendingServiceEnabled' => true,
       ]),
       $this->diContainer->get(SubscribersFinder::class),
-      $this->diContainer->get(ScheduledTasksRepository::class)
+      $this->diContainer->get(ScheduledTasksRepository::class),
+      $this->diContainer->get(MailerFactory::class)
     );
     $response = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
     $response = $response->getData();
