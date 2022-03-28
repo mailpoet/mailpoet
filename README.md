@@ -90,20 +90,20 @@ You can access this help in your command line running `./do` without parameters.
 ## ✉️ Adding new templates to the plugin
 [Read the article.](https://mailpoet.atlassian.net/wiki/spaces/MAILPOET/pages/629374977/Adding+new+templates+to+the+plugin)
 
-## 🚥 Testing with PHP 7.4 or PHP 8.1
-To switch the environment to PHP 7.4/8.1:
+## 🚥 Testing with PHP 7.4 or PHP 8.0
+To switch the environment to PHP 7.4/8.0:
 1) Configure the `wordpress` service in `docker-compose.override.yml` to build from the php74 Dockerfile:
 
    ```yaml
    wordpress:
      build:
        context: .
-       dockerfile: docker/php74/Dockerfile # OR docker/php81/Dockerfile
+       dockerfile: docker/php74/Dockerfile # OR docker/php80/Dockerfile
    ```
 3) Run `docker-compose build wordpress`.
 4) Start the stack with `./do start`.
 
-To switch back to PHP 8 remove what was added in 1) and, run `docker-compose build wordpress` for application container and `docker-compose build test_wordpress` for tests container,
+To switch back to PHP 8.1 remove what was added in 1) and, run `docker-compose build wordpress` for application container and `docker-compose build test_wordpress` for tests container,
 and start the stack using `./do start`.
 
 ## ✅ TODO
