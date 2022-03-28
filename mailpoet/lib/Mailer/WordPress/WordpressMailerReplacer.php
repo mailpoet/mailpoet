@@ -44,8 +44,7 @@ class WordpressMailerReplacer {
     }
     if ($sendTransactional) {
       $phpmailer = new WordPressMailer(
-        $this->mailerFactory->getDefaultMailer(),
-        new FallbackMailer($this->settings),
+        $this->mailerFactory,
         $this->mailerMetaInfo,
         $this->subscribersRepository
       );

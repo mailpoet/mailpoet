@@ -4,18 +4,15 @@ namespace MailPoet\Mailer\WordPress;
 
 use Html2Text\Html2Text;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Subscribers\SubscribersRepository;
 
 PHPMailerLoader::load();
 
 class WordPressMailer extends \PHPMailer {
-
-  /** @var Mailer */
-  private $mailer;
-
-  /** @var Mailer */
-  private $fallbackMailer;
+  /** @var MailerFactory */
+  private $mailerFactory;
 
   /** @var MetaInfo */
   private $mailerMetaInfo;
@@ -23,15 +20,17 @@ class WordPressMailer extends \PHPMailer {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  private $fallbackMailerConfig = [
+    'method' => Mailer::METHOD_PHPMAIL,
+  ];
+
   public function __construct(
-    Mailer $mailer,
-    Mailer $fallbackMailer,
+    MailerFactory $mailerFactory,
     MetaInfo $mailerMetaInfo,
     SubscribersRepository $subscribersRepository
   ) {
     parent::__construct(true);
-    $this->mailer = $mailer;
-    $this->fallbackMailer = $fallbackMailer;
+    $this->mailerFactory = $mailerFactory;
     $this->mailerMetaInfo = $mailerMetaInfo;
     $this->subscribersRepository = $subscribersRepository;
   }
@@ -50,15 +49,15 @@ class WordPressMailer extends \PHPMailer {
       'meta' => $this->mailerMetaInfo->getWordPressTransactionalMetaInfo($subscriber),
     ];
 
-    $sendWithMailer = function ($mailer) use ($email, $address, $extraParams) {
+    $sendWithMailer = function ($useFallback) use ($email, $address, $extraParams) {
       // we need to call Mailer::init() for every single WP e-mail to make sure reply-to is set
       $replyTo = $this->getReplyToAddress();
-      $mailer->init(false, false, $replyTo);
-
+      if ($useFallback) {
+        $mailer = $this->mailerFactory->buildMailer($this->fallbackMailerConfig, null, $replyTo);
+      } else {
+        $mailer = $this->mailerFactory->buildMailer(null, null, $replyTo);
+      }
       $result = $mailer->send($email, $address, $extraParams);
-
-      // make sure Mailer::init() is called again to clear the reply-to address that was just set if Mailer is used in another context
-      $mailer->mailerInstance = null;
 
       if (!$result['response']) {
         throw new \Exception($result['error']->getMessage());
@@ -66,10 +65,10 @@ class WordPressMailer extends \PHPMailer {
     };
 
     try {
-      $sendWithMailer($this->mailer);
+      $sendWithMailer($useFallback = false);
     } catch (\Exception $e) {
       try {
-        $sendWithMailer($this->fallbackMailer);
+        $sendWithMailer($useFallback = true);
       } catch (\Exception $fallbackMailerException) {
         // throw exception passing the original (primary mailer) error
         throw new \phpmailerException($e->getMessage(), $e->getCode(), $e);
@@ -112,8 +111,8 @@ class WordPressMailer extends \PHPMailer {
     return $result;
   }
 
-  private function getReplyToAddress() {
-    $replyToAddress = false;
+  private function getReplyToAddress(): ?array {
+    $replyToAddress = null;
     $addresses = $this->getReplyToAddresses();
 
     if (!empty($addresses)) {
