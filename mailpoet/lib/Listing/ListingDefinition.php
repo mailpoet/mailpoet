@@ -32,13 +32,13 @@ class ListingDefinition {
 
   public function __construct(
     string $group = null,
-    array $filters,
+    array $filters = [],
     string $search = null,
-    array $parameters,
-    string $sortBy,
-    string $sortOrder,
-    int $offset,
-    int $limit,
+    array $parameters = [],
+    string $sortBy = 'created_at',
+    string $sortOrder = 'desc',
+    int $offset = 0,
+    int $limit = 20,
     array $selection = []
   ) {
     $this->group = $group;
