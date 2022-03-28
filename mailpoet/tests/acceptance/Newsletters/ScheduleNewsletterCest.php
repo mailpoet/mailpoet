@@ -41,7 +41,6 @@ class ScheduleNewsletterCest {
       ->create();
     $segmentName = $i->createListWithSubscriber();
     $currentDateTime = new \DateTime(strval($i->executeJS('return window.mailpoet_current_date_time')));
-    $dayNumber = $currentDateTime->format('d');
 
     // step 2 - Go to newsletter send page
     $i->login();
@@ -54,7 +53,7 @@ class ScheduleNewsletterCest {
     // step 3 - Pick today's date
     $i->waitForElement('form input[name=date]');
     $i->click('form input[name=date]');
-    $i->click(['class' => "react-datepicker__day--0{$dayNumber}"]);
+    $i->click(['class' => "react-datepicker__day--today"]);
 
     // `Schedule` caption - change time to 1 hour after now
     $i->selectOption('form select[name=time]', $currentDateTime->modify("+1 hour")->format('g:00 a'));
