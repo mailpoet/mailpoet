@@ -5,9 +5,10 @@ namespace MailPoet\Mailer\WordPress;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerError;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
+use PHPUnit\Framework\MockObject\MockObject;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 class WordpressMailerTest extends \MailPoetTest {
@@ -19,13 +20,11 @@ class WordpressMailerTest extends \MailPoetTest {
     $this->subscribersRepository->truncate();
   }
 
-  public function testItdoesNotSendWhenPreSendCheckFails() {
-    $mailer = $this->createMock(Mailer::class);
-    $mailer->expects($this->never())->method('send');
-    $fallbackMailer = $this->createMock(FallbackMailer::class);
-    $fallbackMailer->expects($this->never())->method('send');
+  public function testItDoesNotSendWhenPreSendCheckFails() {
+    $mailerFactoryMock = $this->createMock(MailerFactory::class);
+    $mailerFactoryMock->expects($this->never())->method('buildMailer');
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
     $wpMailer->From = 'email-from@example.com';
     $this->expectException(\phpmailerException::class);
     $wpMailer->send();
@@ -43,10 +42,11 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ]))
       ->willReturn(['response' => true]);
-    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer = $this->createMock(Mailer::class);
     $fallbackMailer->expects($this->never())->method('send');
+    $mailerFactoryMock = $this->createMailerFactoryMock($mailer, $fallbackMailer);
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Subject = 'Subject';
@@ -65,10 +65,11 @@ class WordpressMailerTest extends \MailPoetTest {
         'address' => 'email@example.com',
       ])
       ->willReturn(['response' => true]);
-    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer = $this->createMock(Mailer::class);
     $fallbackMailer->expects($this->never())->method('send');
+    $mailerFactoryMock = $this->createMailerFactoryMock($mailer, $fallbackMailer);
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Subject = 'Subject';
@@ -90,10 +91,11 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ]))
       ->willReturn(['response' => true]);
-    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer = $this->createMock(Mailer::class);
     $fallbackMailer->expects($this->never())->method('send');
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $mailerFactoryMock = $this->createMailerFactoryMock($mailer, $fallbackMailer);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Subject = 'Subject';
@@ -115,10 +117,11 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ]))
       ->willReturn(['response' => true]);
-    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer = $this->createMock(Mailer::class);
     $fallbackMailer->expects($this->never())->method('send');
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $mailerFactoryMock = $this->createMailerFactoryMock($mailer, $fallbackMailer);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Subject = 'Subject';
@@ -135,10 +138,11 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => true]);
-    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer = $this->createMock(Mailer::class);
     $fallbackMailer->expects($this->never())->method('send');
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $mailerFactoryMock = $this->createMailerFactoryMock($mailer, $fallbackMailer);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'body';
@@ -152,13 +156,14 @@ class WordpressMailerTest extends \MailPoetTest {
       ->method('send')
       ->willThrowException(new \Exception());
 
-    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer = $this->createMock(Mailer::class);
     $fallbackMailer
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => true]);
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $mailerFactoryMock = $this->createMailerFactoryMock($mailer, $fallbackMailer);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'body';
@@ -171,13 +176,14 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => false, 'error' => new MailerError('send', MailerError::LEVEL_HARD, 'Error from primary mailer')]);
-    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer = $this->createMock(Mailer::class);
     $fallbackMailer
       ->expects($this->once())
       ->method('send')
       ->willReturn(['response' => false, 'error' => new MailerError('send', MailerError::LEVEL_HARD, 'Error from fallback mailer')]);
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $mailerFactoryMock = $this->createMailerFactoryMock($mailer, $fallbackMailer);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'body';
@@ -198,10 +204,11 @@ class WordpressMailerTest extends \MailPoetTest {
     $mailer
       ->expects($this->never())
       ->method('send');
-    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer = $this->createMock(Mailer::class);
     $fallbackMailer->expects($this->never())->method('send');
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $mailerFactoryMock = $this->createMailerFactoryMock($mailer, $fallbackMailer);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->Body = 'body';
     $wpMailer->From = 'email-from@example.com';
@@ -216,13 +223,14 @@ class WordpressMailerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('send')
       ->willThrowException(new \Exception('Exception from primary mailer'));
-    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer = $this->createMock(Mailer::class);
     $fallbackMailer
       ->expects($this->once())
       ->method('send')
       ->willThrowException(new \Exception('Exception from fallback mailer'));
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $mailerFactoryMock = $this->createMailerFactoryMock($mailer, $fallbackMailer);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'body';
@@ -251,8 +259,9 @@ class WordpressMailerTest extends \MailPoetTest {
         ],
       ])
       ->willReturn(['response' => true]);
-    $fallbackMailer = $this->createMock(FallbackMailer::class);
+    $fallbackMailer = $this->createMock(Mailer::class);
     $fallbackMailer->expects($this->never())->method('send');
+    $mailerFactoryMock = $this->createMailerFactoryMock($mailer, $fallbackMailer);
 
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail('email@example.com');
@@ -261,7 +270,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $this->subscribersRepository->persist($subscriber);
     $this->subscribersRepository->flush();
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->Subject = 'Subject';
     $wpMailer->From = 'email-from@example.com';
@@ -272,96 +281,85 @@ class WordpressMailerTest extends \MailPoetTest {
   /*
    * Test for issue https://mailpoet.atlassian.net/browse/MAILPOET-3707
    */
-  public function testItPreservesWPReplyTo() {
-    list($mailer, $fallbackMailer) = $this->getMailerInstancesForReplyToTests();
+  public function testItUsesWPReplyTo() {
+    $mailerFactory = $this->getMailerFactoryInstanceForReplyToTests();
+    $mailerFactory->expects($this->once())
+      ->method('buildMailer')
+      ->with($this->isNull(), $this->isNull(), $this->equalTo([
+        'address' => 'reply-to@example.com',
+        'name' => 'Reply To',
+      ]));
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->addReplyTo('reply-to@example.com', 'Reply To');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'Body';
     $wpMailer->send();
-
-    $mailer = $this->getPrivateProperty($wpMailer, 'mailer');
-
-    $this->assertEquals('reply-to@example.com', $mailer->replyTo['reply_to_email']);
-    $this->assertEquals('Reply To', $mailer->replyTo['reply_to_name']);
   }
 
   /*
    * Test for issue https://mailpoet.atlassian.net/browse/MAILPOET-3707
    */
-  public function testItSetsSenderAsReplyToWhenReplyToIsNotDefined() {
-    list($mailer, $fallbackMailer) = $this->getMailerInstancesForReplyToTests();
+  public function testItDoesntPassAnyReplyToToMailerFactoryWhenNoReplyToAddressConfigured() {
+    $mailerFactory = $this->getMailerFactoryInstanceForReplyToTests();
+    $mailerFactory->expects($this->once())
+      ->method('buildMailer')
+      ->with($this->isNull(), $this->isNull(), $this->isNull());
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'Body';
     $wpMailer->send();
-
-    $mailer = $this->getPrivateProperty($wpMailer, 'mailer');
-
-    $this->assertEquals('staff@mailinator.com', $mailer->replyTo['reply_to_email']);
-    $this->assertEquals('Sender', $mailer->replyTo['reply_to_name']);
   }
 
   /*
    * Test for issue https://mailpoet.atlassian.net/browse/MAILPOET-3707
    */
   public function testItChangesReplyToEmailOnDifferentCalls() {
-    list($mailer, $fallbackMailer) = $this->getMailerInstancesForReplyToTests();
+    $mailerFactory = $this->getMailerFactoryInstanceForReplyToTests();
+    $mailerFactory->expects($this->at(0))
+      ->method('buildMailer')
+      ->with($this->isNull(), $this->isNull(), $this->equalTo([
+        'address' => 'reply-to@example.com',
+        'name' => 'Reply To',
+      ]));
+    $mailerFactory->expects($this->at(1))
+      ->method('buildMailer')
+      ->with($this->isNull(), $this->isNull(), $this->isNull());
 
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->addReplyTo('reply-to@example.com', 'Reply To');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'Body';
     $wpMailer->send();
 
-    $mailer = $this->getPrivateProperty($wpMailer, 'mailer');
-
-    $this->assertEquals('reply-to@example.com', $mailer->replyTo['reply_to_email']);
-    $this->assertEquals('Reply To', $mailer->replyTo['reply_to_name']);
-
-    $wpMailer = new WordPressMailer($mailer, $fallbackMailer, new MetaInfo, $this->subscribersRepository);
+    $wpMailer = new WordPressMailer($mailerFactory, new MetaInfo, $this->subscribersRepository);
     $wpMailer->addAddress('email@example.com', 'Full Name');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'Body';
     $wpMailer->send();
-
-    $mailer = $this->getPrivateProperty($wpMailer, 'mailer');
-
-    $this->assertEquals('staff@mailinator.com', $mailer->replyTo['reply_to_email']);
-    $this->assertEquals('Sender', $mailer->replyTo['reply_to_name']);
   }
 
-  private function getMailerInstancesForReplyToTests() {
-    $settings = SettingsController::getInstance();
-    $settings->set(
-      'sender',
-      [
-        'name' => 'Sender',
-        'address' => 'staff@mailinator.com',
-      ]
-    );
-
-    $mailer = new Mailer();
-
-    $fallbackMailer = $this->createMock(FallbackMailer::class);
-    $fallbackMailer->expects($this->never())->method('send');
-
-    return [
-      $mailer,
-      $fallbackMailer,
-    ];
+  private function getMailerFactoryInstanceForReplyToTests() {
+    $mailer = $this->createMock(Mailer::class);
+    $mailer->expects($this->any())->method('send')->willReturn(['response' => true]);
+    return $this->createMailerFactoryMock($mailer);
   }
 
-  private function getPrivateProperty($object, $property) {
-    $reflectedClass = new \ReflectionClass($object);
-    $reflection = $reflectedClass->getProperty($property);
-    $reflection->setAccessible(true);
-    return $reflection->getValue($object);
+  /**
+   * @return MailerFactory|MockObject
+   */
+  private function createMailerFactoryMock(Mailer $mailerMock, Mailer $fallbackMailerMock = null) {
+    $mock = $this->createMock(MailerFactory::class);
+    if ($fallbackMailerMock) {
+      $mock->method('buildMailer')->willReturnOnConsecutiveCalls($mailerMock, $fallbackMailerMock);
+    } else {
+      $mock->method('buildMailer')->willReturn($mailerMock);
+    }
+    return $mock;
   }
 
   public function _after() {
