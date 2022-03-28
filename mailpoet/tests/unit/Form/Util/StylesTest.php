@@ -144,12 +144,18 @@ class StylesTest extends \MailPoetUnitTest {
     $form['settings'] = ['error_validation_color' => 'xxx'];
     $styles = $this->styles->renderFormSettingsStyles($this->createForm($form), '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     expect($styles)->stringContainsString('#prefix .mailpoet_validate_error {color: xxx}');
+
+    $styles = $this->styles->renderFormMessageStyles($this->createForm($form), '#prefix');
+    expect($styles)->stringContainsString('#prefix .mailpoet_validate_error {color: xxx}');
   }
 
   public function testItShouldRenderSuccessMessageColor() {
     $form = Fixtures::get('simple_form_body');
     $form['settings'] = ['success_validation_color' => 'xxx'];
     $styles = $this->styles->renderFormSettingsStyles($this->createForm($form), '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
+    expect($styles)->stringContainsString('#prefix .mailpoet_validate_success {color: xxx}');
+
+    $styles = $this->styles->renderFormMessageStyles($this->createForm($form), '#prefix');
     expect($styles)->stringContainsString('#prefix .mailpoet_validate_success {color: xxx}');
   }
 
