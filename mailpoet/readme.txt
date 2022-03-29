@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.9
-Stable tag: 3.85.0
+Stable tag: 3.85.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -203,6 +203,16 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.85.1 - 2022-03-29 =
+* Updated: 1and1 hosting renamed to "IONOS by 1&1";
+* Updated: composer dependencies;
+* Updated: Gutenberg dependencies;
+* Improved: don't count "Pending payment" and "On-hold" orders to purchased segments;
+* Improved: when searching subscribers, update groups counts with found results;
+* Fixed: critical error at checkout with WooCommerce checkout block;
+* Fixed: error preventing sending when line height is set to 0 in email editor;
+* Fixed: shortcode default value not used in Emails opened from a Newsletter Archive page.
 
 = 3.85.0 - 2022-03-21 =
 * Improved: add "Send all site's emails with" to Help → System Status;
