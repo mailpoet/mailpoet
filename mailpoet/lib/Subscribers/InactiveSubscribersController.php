@@ -113,7 +113,7 @@ class InactiveSubscribersController {
         AND s.status = :status
         AND s.id >= :startId
         AND s.id < :endId
-        AND s.emails_count >= {$lifetimeEmailsThreshold}
+        AND s.email_count >= {$lifetimeEmailsThreshold}
       GROUP BY s.id
       HAVING count(s.id) >= :unopenedEmailsThreshold
     ",
