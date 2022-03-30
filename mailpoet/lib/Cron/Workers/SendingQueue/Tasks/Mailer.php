@@ -2,39 +2,45 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
-use MailPoet\Mailer\Mailer as MailerFactory;
+use MailPoet\Mailer\Mailer as MailerInstance;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\Methods\MailPoet;
 
 class Mailer {
-  public $mailer;
+  /** @var MailerFactory */
+  private $mailerFactory;
+
+  /** @var MailerInstance */
+  private $mailer;
 
   public function __construct(
-    $mailer = false
+    MailerFactory $mailerFactory
   ) {
-    $this->mailer = ($mailer) ? $mailer : $this->configureMailer();
+    $this->mailerFactory = $mailerFactory;
+    $this->mailer = $this->configureMailer();
   }
 
   public function configureMailer($newsletter = null) {
     $sender['address'] = (!empty($newsletter->senderAddress)) ?
       $newsletter->senderAddress :
-      false;
+      null;
     $sender['name'] = (!empty($newsletter->senderName)) ?
       $newsletter->senderName :
-      false;
+      null;
     $replyTo['address'] = (!empty($newsletter->replyToAddress)) ?
       $newsletter->replyToAddress :
-      false;
+      null;
     $replyTo['name'] = (!empty($newsletter->replyToName)) ?
       $newsletter->replyToName :
-      false;
+      null;
     if (!$sender['address']) {
-      $sender = false;
+      $sender = null;
     }
     if (!$replyTo['address']) {
-      $replyTo = false;
+      $replyTo = null;
     }
-    $this->mailer = new MailerFactory();
-    $this->mailer->init($method = false, $sender, $replyTo);
+    $this->mailer = $this->mailerFactory->buildMailer(null, $sender, $replyTo);
     return $this->mailer;
   }
 
@@ -47,7 +53,7 @@ class Mailer {
   }
 
   public function getProcessingMethod() {
-    return ($this->mailer->mailerConfig['method'] === MailerFactory::METHOD_MAILPOET) ?
+    return ($this->mailer->mailerInstance instanceof MailPoet) ?
       'bulk' :
       'individual';
   }
