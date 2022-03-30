@@ -6,7 +6,6 @@ use MailPoet\Doctrine\Annotations\AnnotationReaderProvider;
 use MailPoetVendor\Doctrine\Common\Proxy\AbstractProxyFactory;
 use MailPoetVendor\Doctrine\ORM\Configuration;
 use MailPoetVendor\Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use MailPoetVendor\Doctrine\Persistence\Mapping\Driver\PHPDriver;
 use MailPoetVendor\Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 
 class ConfigurationFactory {
@@ -41,17 +40,15 @@ class ConfigurationFactory {
 
     // annotation reader exists only in dev environment, on production cache is pre-generated
     $annotationReader = $this->annotationReaderProvider->getAnnotationReader();
-    if ($annotationReader) {
-      $configuration->setMetadataDriverImpl(new AnnotationDriver($annotationReader, [self::ENTITY_DIR]));
-    } else {
-      // Should never be called but Doctrine requires having driver set
-      $configuration->setMetadataDriverImpl(new PHPDriver([]));
-    }
-
-    // metadata cache (for production cache is pre-generated at build time)
     $isReadOnly = !$annotationReader;
     $metadataStorage = new PSRMetadataCache(self::METADATA_DIR, $isReadOnly);
     $configuration->setMetadataCache($metadataStorage);
+
+    if ($isReadOnly) {
+      $configuration->setMetadataDriverImpl(new CacheOnlyMappingDriver($metadataStorage));
+    } else {
+      $configuration->setMetadataDriverImpl(new AnnotationDriver($annotationReader, [self::ENTITY_DIR]));
+    }
   }
 
   private function configureProxies(Configuration $configuration) {
