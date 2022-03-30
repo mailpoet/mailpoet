@@ -81,14 +81,14 @@ class SendingQueue {
     WPFunctions $wp,
     Links $links,
     ScheduledTasksRepository $scheduledTasksRepository,
-    $mailerTask = false,
+    MailerTask $mailerTask,
     $newsletterTask = false
   ) {
     $this->errorHandler = $errorHandler;
     $this->throttlingHandler = $throttlingHandler;
     $this->statsNotificationsScheduler = $statsNotificationsScheduler;
     $this->subscribersFinder = $subscriberFinder;
-    $this->mailerTask = ($mailerTask) ? $mailerTask : new MailerTask();
+    $this->mailerTask = $mailerTask;
     $this->newsletterTask = ($newsletterTask) ? $newsletterTask : new NewsletterTask();
     $this->segmentsRepository = $segmentsRepository;
     $this->mailerMetaInfo = new MetaInfo;

@@ -118,7 +118,7 @@ class MailerFactory {
       $sender = $this->settings->get('sender', []);
       if (empty($sender['address'])) throw new InvalidStateException(__('Sender name and email are not configured.', 'mailpoet'));
     }
-    $fromName = $this->encodeAddressNamePart($sender['name']);
+    $fromName = $this->encodeAddressNamePart($sender['name'] ?? '');
     return [
       'from_name' => $fromName,
       'from_email' => $sender['address'],
@@ -139,7 +139,7 @@ class MailerFactory {
     if (empty($replyTo['address'])) {
       $replyTo['address'] = $sender['from_email'];
     }
-    $replyToName = $this->encodeAddressNamePart($replyTo['name']);
+    $replyToName = $this->encodeAddressNamePart($replyTo['name'] ?? '');
     return [
       'reply_to_name' => $replyToName,
       'reply_to_email' => $replyTo['address'],
