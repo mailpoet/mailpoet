@@ -60,9 +60,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     assert($subscriber2 instanceof SubscriberEntity);
     assert($subscriber3 instanceof SubscriberEntity);
 
-    expect($subscriber1->getEmailsCount())->equals(80);
-    expect($subscriber2->getEmailsCount())->equals(8);
-    expect($subscriber3->getEmailsCount())->equals(0);
+    expect($subscriber1->getEmailCount())->equals(80);
+    expect($subscriber2->getEmailCount())->equals(8);
+    expect($subscriber3->getEmailCount())->equals(0);
   }
 
   public function testItIncrementsSubscribersEmailCountsWhenDateProvided(): void {
@@ -89,9 +89,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     assert($subscriber2 instanceof SubscriberEntity);
     assert($subscriber3 instanceof SubscriberEntity);
 
-    expect($subscriber1->getEmailsCount())->equals(81);
-    expect($subscriber2->getEmailsCount())->equals(9);
-    expect($subscriber3->getEmailsCount())->equals(1);
+    expect($subscriber1->getEmailCount())->equals(81);
+    expect($subscriber2->getEmailCount())->equals(9);
+    expect($subscriber3->getEmailCount())->equals(1);
 
   }
 
@@ -117,9 +117,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     assert($subscriber2 instanceof SubscriberEntity);
     assert($subscriber3 instanceof SubscriberEntity);
 
-    expect($subscriber1->getEmailsCount())->equals(80);
-    expect($subscriber2->getEmailsCount())->equals(8);
-    expect($subscriber3->getEmailsCount())->equals(1);
+    expect($subscriber1->getEmailCount())->equals(80);
+    expect($subscriber2->getEmailCount())->equals(8);
+    expect($subscriber3->getEmailCount())->equals(1);
   }
 
   public function testItUpdatesOnlySubscribersInBatch() {
@@ -145,13 +145,13 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     assert($subscriber2 instanceof SubscriberEntity);
     assert($subscriber3 instanceof SubscriberEntity);
 
-    expect($subscriber1->getEmailsCount())->equals(80);
-    expect($subscriber2->getEmailsCount())->equals(8);
+    expect($subscriber1->getEmailCount())->equals(80);
+    expect($subscriber2->getEmailCount())->equals(8);
     // Subscriber not in batch should not be updated
-    expect($subscriber3->getEmailsCount())->equals(0);
+    expect($subscriber3->getEmailCount())->equals(0);
   }
 
-  public function testItDoesNotCountIfThereAreNoSubscribersOrTasksToUpdate() {
+  public function testItDoesNotCountIfThereAreNoSubscribersToUpdate() {
     // Subscribers empty table
     [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts(null, 1);
     expect($count)->equals(0);
@@ -159,10 +159,6 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $subscriber1 = $this->createSubscriber('s1@email.com', 100);
     $subscriber2 = $this->createSubscriber('s2@email.com', 20);
     $subscriber3 = $this->createSubscriber('s3@email.com', 10);
-
-    // Tasks empty table
-    [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts(null, 1);
-    expect($count)->equals(0);
 
     $this->createCompletedSendingTasksForSubscriber($subscriber1, 80, 90);
     $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 3);
@@ -180,9 +176,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     assert($subscriber2 instanceof SubscriberEntity);
     assert($subscriber3 instanceof SubscriberEntity);
 
-    expect($subscriber1->getEmailsCount())->equals(0);
-    expect($subscriber2->getEmailsCount())->equals(0);
-    expect($subscriber3->getEmailsCount())->equals(0);
+    expect($subscriber1->getEmailCount())->equals(0);
+    expect($subscriber2->getEmailCount())->equals(0);
+    expect($subscriber3->getEmailCount())->equals(0);
   }
 
   private function createCompletedSendingTasksForSubscriber(SubscriberEntity $subscriber, int $numTasks = 1, int $processedDaysAgo = 0): void {
@@ -233,7 +229,7 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $subscriber->setEmail($email);
     $subscriber->setStatus($status);
     $subscriber->setCreatedAt($createdAt);
-    $subscriber->setEmailsCount($emailCounts);
+    $subscriber->setEmailCount($emailCounts);
     $this->entityManager->persist($subscriber);
     // we need to set lastSubscribeAt after persist due to LastSubscribedAtListener
     $subscriber->setLastSubscribedAt($createdAt);

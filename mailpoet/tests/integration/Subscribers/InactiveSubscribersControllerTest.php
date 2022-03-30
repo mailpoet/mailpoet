@@ -271,12 +271,12 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     string $email,
     int $createdDaysAgo = 0,
     string $status = SubscriberEntity::STATUS_SUBSCRIBED,
-    int $emailsCount = InactiveSubscribersController::LIFETIME_EMAILS_THRESHOLD
+    int $emailCount = InactiveSubscribersController::LIFETIME_EMAILS_THRESHOLD
   ): SubscriberEntity {
     $createdAt = (new Carbon())->subDays($createdDaysAgo);
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
-    $subscriber->setEmailsCount($emailsCount);
+    $subscriber->setEmailCount($emailCount);
     $subscriber->setStatus($status);
     $subscriber->setCreatedAt($createdAt);
     $this->entityManager->persist($subscriber);

@@ -249,7 +249,7 @@ class Migrator {
       'engagement_score_updated_at timestamp NULL,',
       'last_engagement_at timestamp NULL,',
       'woocommerce_synced_at timestamp NULL,',
-      'emails_count int(11) unsigned NOT NULL DEFAULT 0, ',
+      'email_count int(11) unsigned NOT NULL DEFAULT 0, ',
       'PRIMARY KEY  (id),',
       'UNIQUE KEY email (email),',
       'UNIQUE KEY unsubscribe_token (unsubscribe_token),',

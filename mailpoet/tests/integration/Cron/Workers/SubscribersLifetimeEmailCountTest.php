@@ -62,10 +62,10 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     assert($subscriber1 instanceof SubscriberEntity);
-    expect($subscriber1->getEmailsCount())->equals(80);
+    expect($subscriber1->getEmailCount())->equals(80);
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     assert($subscriber2 instanceof SubscriberEntity);
-    expect($subscriber2->getEmailsCount())->equals(8);
+    expect($subscriber2->getEmailCount())->equals(8);
   }
 
   public function testItUpdatesSubscribersEmailCountsAfterFirstRun() {
@@ -88,7 +88,7 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     assert($subscriber1 instanceof SubscriberEntity);
-    expect($subscriber1->getEmailsCount())->equals(81);
+    expect($subscriber1->getEmailCount())->equals(81);
 
   }
 
@@ -116,14 +116,14 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     string $email,
     int $createdDaysAgo = 0,
     string $status = SubscriberEntity::STATUS_SUBSCRIBED,
-    int $emailCounts = 0
+    int $emailCount = 0
   ): SubscriberEntity {
     $createdAt = (new Carbon())->subDays($createdDaysAgo);
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
     $subscriber->setStatus($status);
     $subscriber->setCreatedAt($createdAt);
-    $subscriber->setEmailsCount($emailCounts);
+    $subscriber->setEmailCount($emailCount);
     $this->entityManager->persist($subscriber);
     // we need to set lastSubscribeAt after persist due to LastSubscribedAtListener
     $subscriber->setLastSubscribedAt($createdAt);
