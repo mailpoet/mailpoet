@@ -149,6 +149,11 @@ if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
 fi
 
 cd /wp-core/wp-content/plugins/mailpoet
+# Remove Doctrine Annotations (no need since generated metadata are packed)
+if [[ $CIRCLE_JOB ]]; then
+  rm -rf ./vendor-prefixed/doctrine/annotations
+  ./tools/vendor/composer.phar dump-autoload
+fi
 
 /project/vendor/bin/codecept run acceptance $@
 exitcode=$?
