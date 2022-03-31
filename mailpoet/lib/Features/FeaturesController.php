@@ -13,7 +13,7 @@ class FeaturesController {
     self::AUTOMATION => false,
   ];
 
-  /** @var array */
+  /** @var array|null */
   private $flags;
 
   /** @var FeatureFlagsRepository */
@@ -36,7 +36,7 @@ class FeaturesController {
     } catch (TableNotFoundException $e) {
       return $this->defaults[$feature];
     }
-    return $this->flags[$feature];
+    return ($this->flags ?? [])[$feature];
   }
 
   /** @return bool */
@@ -52,7 +52,11 @@ class FeaturesController {
   /** @return array */
   public function getAllFlags() {
     $this->ensureFlagsLoaded();
-    return $this->flags;
+    return $this->flags ?? [];
+  }
+
+  public function resetCache(): void {
+    $this->flags = null;
   }
 
   private function ensureFlagsLoaded() {

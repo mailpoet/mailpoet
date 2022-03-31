@@ -3,6 +3,7 @@
 use MailPoet\Cache\TransientCache;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -122,7 +123,9 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $this->diContainer = ContainerWrapper::getInstance(WP_DEBUG);
     $this->connection = $this->diContainer->get(Connection::class);
     $this->entityManager = $this->diContainer->get(EntityManager::class);
+    $this->diContainer->get(FeaturesController::class)->resetCache();
     $this->diContainer->get(SettingsController::class)->resetCache();
+
     // Cleanup scheduled tasks from previous tests
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->entityManager->clear();
