@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Mailer;
 
-use MailPoet\Mailer\Mailer;
+use MailPoet\Mailer\MailerFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class MailerTest extends \MailPoetTest {
@@ -14,8 +14,12 @@ class MailerTest extends \MailPoetTest {
   public $sender;
   public $availableMailerMethods;
 
+  /** @var MailerFactory */
+  private $mailerFactory;
+
   public function _before() {
     parent::_before();
+    $this->mailerFactory = $this->diContainer->get(MailerFactory::class);
     $this->sender = [
       'name' => 'Sender',
       'address' => 'staff@mailinator.com',
@@ -42,8 +46,7 @@ class MailerTest extends \MailPoetTest {
   }
 
   public function testItCanTransformSubscriber() {
-    $mailer = new Mailer();
-    $mailer->init($this->mailer, $this->sender, $this->replyTo);
+    $mailer = $this->mailerFactory->buildMailer($this->mailer, $this->sender, $this->replyTo);
     expect($mailer->formatSubscriberNameAndEmailAddress('test@email.com'))
       ->equals('test@email.com');
     expect($mailer->formatSubscriberNameAndEmailAddress(
@@ -81,8 +84,7 @@ class MailerTest extends \MailPoetTest {
   public function testItCanSend() {
     if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
     $this->sender['address'] = 'staff@mailpoet.com';
-    $mailer = new Mailer();
-    $mailer->init($this->mailer, $this->sender, $this->replyTo);
+    $mailer = $this->mailerFactory->buildMailer($this->mailer, $this->sender, $this->replyTo);
     $result = $mailer->send($this->newsletter, $this->subscriber);
     expect($result['response'])->true();
   }
@@ -98,8 +100,7 @@ class MailerTest extends \MailPoetTest {
       ->withFirstName('Recipient')
       ->create();
     $this->sender['address'] = 'staff@mailpoet.com';
-    $mailer = new Mailer();
-    $mailer->init($this->mailer, $this->sender, $this->replyTo);
+    $mailer = $this->mailerFactory->buildMailer($this->mailer, $this->sender, $this->replyTo);
     $result = $mailer->send($this->newsletter, $subscriber);
     expect($result['response'])->true();
   }
