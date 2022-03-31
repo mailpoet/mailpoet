@@ -57,8 +57,8 @@ class Functions {
     return __($text, $domain);
   }
 
-  public function _e($text, $domain = 'default') {
-    return _e($text, $domain);
+  public function _e($text, $domain = 'default') { //phpcs:ignore
+    return _e($text, $domain); //phpcs:ignore
   }
 
   public function _n($single, $plural, $number, $domain = 'default') {
@@ -337,8 +337,8 @@ class Functions {
     return is_admin();
   }
 
-  public function isEmail($email, $deprecated = false) {
-    return is_email($email, $deprecated);
+  public function isEmail($email) {
+    return is_email($email);
   }
 
   public function isMultisite() {
@@ -362,11 +362,11 @@ class Functions {
   }
 
   /**
-   * @param  string|false $deprecated
+   * @param  string $domain
    * @param  string|false $pluginRelPath
    */
-  public function loadPluginTextdomain($domain, $deprecated = false, $pluginRelPath = false) {
-    return load_plugin_textdomain($domain, $deprecated, $pluginRelPath);
+  public function loadPluginTextdomain($domain, $pluginRelPath = false) {
+    return load_plugin_textdomain($domain, "", $pluginRelPath);
   }
 
   public function loadTextdomain($domain, $mofile) {
@@ -742,7 +742,12 @@ class Functions {
   }
 
   public function deprecatedHook(string $hook_name, string $version, string $replacement, string $message) {
-    _deprecated_hook($hook_name, $version, $replacement, $message);
+    _deprecated_hook(
+      esc_html($hook_name),
+      esc_html($version),
+      esc_html($replacement),
+      wp_kses_post($message)
+    );
   }
 
   public function getTheExcerpt($post = null) {

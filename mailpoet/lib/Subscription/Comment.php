@@ -31,7 +31,21 @@ class Comment {
   }
 
   public function extendLoggedOutForm() {
-    echo $this->getSubscriptionField();
+    $allowedHtml = [
+      'p' => [
+        'class' => true,
+      ],
+      'label' => [
+        'for' => true,
+      ],
+      'input' => [
+        'type' => true,
+        'id' => true,
+        'value' => true,
+        'name' => true,
+      ],
+    ];
+    echo wp_kses($this->getSubscriptionField(), $allowedHtml);
   }
 
   private function getSubscriptionField() {
@@ -47,7 +61,7 @@ class Comment {
           id="mailpoet_subscribe_on_comment"
           value="1"
           name="mailpoet[subscribe_on_comment]"
-        />&nbsp;' . esc_attr($label) . '
+        />&nbsp;' . esc_html($label) . '
       </label>
     </p>';
   }

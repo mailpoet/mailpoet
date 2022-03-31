@@ -119,7 +119,8 @@ class DaemonHttpRunner {
   }
 
   public function terminateRequest($message = false) {
-    die($message);
+    echo esc_html($message);
+    die();
   }
 
   public function isCronTriggerMethodWordPress() {

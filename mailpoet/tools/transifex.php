@@ -49,4 +49,4 @@ $args = array_map(function ($arg) {
 
 $result = null;
 passthru(escapeshellcmd("$filePath/tx") . ' ' . implode(' ', $args), $result);
-exit($result);
+exit((int)$result);

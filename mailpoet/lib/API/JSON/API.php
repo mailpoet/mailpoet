@@ -233,14 +233,13 @@ class API {
   }
 
   public function setTokenAndAPIVersion() {
-    $global = '<script type="text/javascript">';
-    $global .= 'var mailpoet_token = "%s";';
-    $global .= 'var mailpoet_api_version = "%s";';
-    $global .= '</script>';
     echo sprintf(
-      $global,
-      Security::generateToken(),
-      self::CURRENT_VERSION
+      '<script type="text/javascript">' .
+      'var mailpoet_token = "%s";' .
+      'var mailpoet_api_version = "%s";' .
+      '</script>',
+      esc_js(Security::generateToken()),
+      esc_js(self::CURRENT_VERSION)
     );
   }
 

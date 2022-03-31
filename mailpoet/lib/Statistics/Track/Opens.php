@@ -84,7 +84,9 @@ class Opens {
     if (!$displayImage) return;
     // return 1x1 pixel transparent gif image
     header('Content-Type: image/gif');
-    echo base64_decode('R0lGODlhAQABAJAAAP8AAAAAACH5BAUQAAAALAAAAAABAAEAAAICBAEAOw==');
+
+    // Output of base64_decode is predetermined and safe in this case
+    echo base64_decode('R0lGODlhAQABAJAAAP8AAAAAACH5BAUQAAAALAAAAAABAAEAAAICBAEAOw=='); // phpcs:ignore
     exit;
   }
 }

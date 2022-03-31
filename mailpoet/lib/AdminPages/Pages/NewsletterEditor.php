@@ -83,7 +83,7 @@ class NewsletterEditor {
     ) {
       $location = 'admin.php?page=mailpoet-settings&enable-customizer-notice#woocommerce';
       if (headers_sent()) {
-        echo '<script>window.location = "' . $location . '";</script>';
+        echo '<script>window.location = "' . esc_js($location) . '";</script>';
       } else {
         header('Location: ' . $location, true, 302);
       }

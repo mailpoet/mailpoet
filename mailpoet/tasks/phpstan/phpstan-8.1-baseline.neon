@@ -1221,7 +1221,12 @@ parameters:
 			path: ../../lib/Subscription/ManageSubscriptionFormRenderer.php
 
 		-
-			message: "#^Parameter mixed of print cannot be converted to string\\.$#"
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: ../../lib/WooCommerce/Subscription.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: ../../lib/Subscription/Registration.php
 
@@ -1309,11 +1314,6 @@ parameters:
 			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
 			count: 1
 			path: ../../lib/WooCommerce/Helper.php
-
-		-
-			message: "#^Parameter \\#1 \\(mixed\\) of echo cannot be converted to string\\.$#"
-			count: 1
-			path: ../../lib/WooCommerce/Subscription.php
 
 		-
 			message: "#^PHPDoc type MailPoet\\\\Segments\\\\DynamicSegments\\\\SegmentSaveController of property MailPoet\\\\Test\\\\DataFactories\\\\DynamicSegment\\:\\:\\$saveController is not covariant with PHPDoc type MailPoet\\\\Segments\\\\SegmentSaveController of overridden property MailPoet\\\\Test\\\\DataFactories\\\\Segment\\:\\:\\$saveController\\.$#"

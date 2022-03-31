@@ -48,6 +48,6 @@ class StatisticsUnsubscribes extends Model {
   }
 
   private static function deprecationError($methodName) {
-    trigger_error('Calling ' . $methodName . ' is deprecated and will be removed. Use MailPoet\Statistics\StatisticsUnsubscribesRepository and respective Doctrine entity instead.', E_USER_DEPRECATED);
+    trigger_error('Calling ' . esc_html($methodName) . ' is deprecated and will be removed. Use MailPoet\Statistics\StatisticsUnsubscribesRepository and respective Doctrine entity instead.', E_USER_DEPRECATED);
   }
 }

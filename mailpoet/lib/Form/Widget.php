@@ -95,7 +95,7 @@ class Widget extends \WP_Widget {
     try {
       echo $this->renderer->render('form/iframe.html', $data);
     } catch (\Exception $e) {
-      echo $e->getMessage();
+      echo esc_html($e->getMessage());
     }
 
     exit();
@@ -137,27 +137,26 @@ class Widget extends \WP_Widget {
       <input
         type="text"
         class="widefat"
-        id="<?php echo $this->get_field_id('title') ?>"
-        name="<?php echo $this->get_field_name('title'); ?>"
-        value="<?php echo WPFunctions::get()->escAttr($title); ?>"
+        id="<?php echo esc_attr($this->get_field_id('title')) ?>"
+        name="<?php echo esc_attr($this->get_field_name('title')); ?>"
+        value="<?php echo esc_attr($title); ?>"
       />
     </p>
     <p>
-      <select class="widefat" id="<?php echo $this->get_field_id('form') ?>" name="<?php echo $this->get_field_name('form'); ?>">
+      <select class="widefat" id="<?php echo esc_attr($this->get_field_id('form')) ?>" name="<?php echo esc_attr($this->get_field_name('form')); ?>">
         <?php
         // Select the first one from the list if none selected
         if ($selectedForm === 0 && !empty($forms)) $selectedForm = $forms[0]->getId();
         foreach ($forms as $form) {
-          $isSelected = ($selectedForm === $form->getId()) ? 'selected="selected"' : '';
           $formName = $form->getName() ? $this->wp->escHtml($form->getName()) : "({$this->wp->_x('no name', 'fallback for forms without a name in a form list')})";
           $formName .= $form->getStatus() === FormEntity::STATUS_DISABLED ? ' (' . __('inactive', 'mailpoet') . ')' : '';
           ?>
-        <option value="<?php echo $form->getId(); ?>" <?php echo $isSelected; ?>><?php echo $formName; ?></option>
+        <option value="<?php echo esc_attr((string)$form->getId()); ?>" <?php echo ($selectedForm === $form->getId()) ? 'selected="selected"' : ''; ?>><?php echo esc_html($formName); ?></option>
         <?php } ?>
       </select>
     </p>
     <p>
-      <a href="<?php echo $formEditUrl; ?>" target="_blank" class="mailpoet_form_new"><?php WPFunctions::get()->_e('Create a new form', 'mailpoet'); ?></a>
+      <a href="<?php echo esc_url($formEditUrl); ?>" target="_blank" class="mailpoet_form_new"><?php echo esc_html(WPFunctions::get()->__('Create a new form', 'mailpoet')); ?></a>
     </p>
     <?php
     return '';

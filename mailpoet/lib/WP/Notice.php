@@ -67,12 +67,21 @@ class Notice {
   public function displayWPNotice() {
     $class = sprintf('notice notice-%s mailpoet_notice_server %s', $this->type, $this->classes);
     $message = nl2br($this->message);
-    $dataNoticeName = !empty($this->dataNoticeName) ? sprintf('data-notice="%s"', $this->dataNoticeName) : '';
 
     if ($this->renderInParagraph) {
-      printf('<div class="%1$s" %3$s><p>%2$s</p></div>', $class, $message, $dataNoticeName);
+      printf(
+        '<div class="%1$s" %3$s><p>%2$s</p></div>',
+        esc_attr($class),
+        wp_kses_post($message),
+        !empty($this->dataNoticeName) ? sprintf('data-notice="%s"', esc_attr($this->dataNoticeName)) : ''
+      );
     } else {
-      printf('<div class="%1$s" %3$s>%2$s</div>', $class, $message, $dataNoticeName);
+      printf(
+        '<div class="%1$s" %3$s>%2$s</div>',
+        esc_attr($class),
+        wp_kses_post($message),
+        !empty($this->dataNoticeName) ? sprintf('data-notice="%s"', esc_attr($this->dataNoticeName)) : ''
+      );
     }
   }
 }
