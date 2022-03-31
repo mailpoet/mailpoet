@@ -47,7 +47,7 @@ class MailerFactory {
     $sender = $this->getSenderNameAndAddress($sender);
     $replyTo = $this->getReplyToNameAndAddress($sender, $replyTo);
     $mailerConfig = $mailerConfig ?? $this->getMailerConfig();
-    $returnPath = $returnPath ?? $this->getReturnPathAddress();
+    $returnPath = $returnPath ?? $this->getReturnPathAddress($sender);
     switch ($mailerConfig['method']) {
       case Mailer::METHOD_AMAZONSES:
         $mailerInstance = new AmazonSES(
@@ -147,9 +147,9 @@ class MailerFactory {
     ];
   }
 
-  private function getReturnPathAddress(): ?string {
+  private function getReturnPathAddress(array $sender): ?string {
     $bounceAddress = $this->settings->get('bounce.address');
-    return $this->wp->isEmail($bounceAddress) ? $bounceAddress : null;
+    return $this->wp->isEmail($bounceAddress) ? $bounceAddress : $sender['from_email'];
   }
 
   private function encodeAddressNamePart($name): string {

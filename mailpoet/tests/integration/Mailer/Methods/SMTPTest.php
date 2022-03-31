@@ -87,22 +87,6 @@ class SMTPTest extends \MailPoetTest {
       ->equals($this->settings['encryption']);
   }
 
-  public function testWhenReturnPathIsNullItIsSetToSenderEmail() {
-    $mailer = new SMTP(
-      $this->settings['host'],
-      $this->settings['port'],
-      $this->settings['authentication'],
-      $this->settings['encryption'],
-      $this->sender,
-      $this->replyTo,
-      $returnPath = false,
-      new SMTPMapper(),
-      $this->settings['login'],
-      $this->settings['password']
-    );
-    expect($mailer->returnPath)->equals($this->sender['from_email']);
-  }
-
   public function testItCanCreateMessage() {
     $message = $this->mailer
       ->createMessage($this->newsletter, $this->subscriber, $this->extraParams);

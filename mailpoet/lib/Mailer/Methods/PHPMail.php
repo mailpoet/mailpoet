@@ -29,9 +29,7 @@ class PHPMail implements MailerMethod {
   ) {
     $this->sender = $sender;
     $this->replyTo = $replyTo;
-    $this->returnPath = ($returnPath) ?
-      $returnPath :
-      $this->sender['from_email'];
+    $this->returnPath = $returnPath;
     $this->mailer = $this->buildMailer();
     $this->errorMapper = $errorMapper;
     $this->blacklist = new BlacklistCheck();

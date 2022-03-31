@@ -83,9 +83,7 @@ class AmazonSES implements MailerMethod {
     $this->url = 'https://' . $this->awsEndpoint;
     $this->sender = $sender;
     $this->replyTo = $replyTo;
-    $this->returnPath = ($returnPath) ?
-      $returnPath :
-      $this->sender['from_email'];
+    $this->returnPath = $returnPath;
     $this->date = gmdate('Ymd\THis\Z');
     $this->dateWithoutTime = gmdate('Ymd');
     $this->errorMapper = $errorMapper;
