@@ -23,5 +23,10 @@
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
     }
+  },
+  "scripts": {
+    "pre-autoload-dump": [
+      "cd vendor/wporg/plugin-directory && rm -f vendor && ln -s ../.. vendor"
+    ]
   }
 }
