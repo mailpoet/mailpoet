@@ -102,9 +102,7 @@ class MailerFactory {
       default:
         throw new InvalidStateException(__('Mailing method does not exist.', 'mailpoet'));
     }
-    $mailer = new Mailer();
-    $mailer->mailerInstance = $mailerInstance;
-    return $mailer;
+    return new Mailer($mailerInstance);
   }
 
   private function getMailerConfig(): array {
