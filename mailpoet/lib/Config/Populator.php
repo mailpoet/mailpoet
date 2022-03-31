@@ -530,17 +530,17 @@ class Populator {
     }
   }
 
-  private function rowExists($table, $columns) {
+  private function rowExists(string $tableName, array $columns): bool {
     global $wpdb;
 
-    $conditions = array_map(function($key) {
-      return $key . '=%s';
+    $conditions = array_map(function($key) use ($columns) {
+      return "$key='{$columns[$key]}'";
     }, array_keys($columns));
 
-    return $wpdb->get_var($wpdb->prepare(
-      "SELECT COUNT(*) FROM $table WHERE " . implode(' AND ', $conditions),
-      array_values($columns)
-    )) > 0;
+    $table = esc_sql($tableName);
+    return $wpdb->get_var(
+      "SELECT COUNT(*) FROM $table WHERE " . implode(' AND ', $conditions)
+    ) > 0;
   }
 
   private function insertRow($table, $row) {
@@ -575,7 +575,6 @@ class Populator {
 
     $conditions = implode(' AND ', $conditions);
 
-    $sql = "DELETE FROM `$table` WHERE $conditions";
     return $wpdb->query(
       $wpdb->prepare(
         "DELETE t1 FROM $table t1, $table t2 WHERE t1.id < t2.id AND $conditions",
@@ -614,8 +613,7 @@ class Populator {
     }
     $tables = [ScheduledTask::$_table, SendingQueue::$_table];
     foreach ($tables as $table) {
-      $query = "UPDATE `%s` SET meta = NULL WHERE meta = 'null'";
-      $wpdb->query(sprintf($query, $table));
+      $wpdb->query("UPDATE `$table` SET meta = NULL WHERE meta = 'null'");
     }
     return true;
   }
@@ -652,12 +650,12 @@ class Populator {
     if (version_compare((string)$this->settings->get('db_version', '3.42.1'), '3.42.0', '>')) {
       return false;
     }
-    $query = "UPDATE `%s` SET last_subscribed_at = GREATEST(COALESCE(confirmed_at, 0), COALESCE(created_at, 0)) WHERE status != '%s' AND last_subscribed_at IS NULL;";
-    $wpdb->query(sprintf(
-      $query,
-      Subscriber::$_table,
+    $table = esc_sql(Subscriber::$_table);
+    $query = $wpdb->prepare(
+      "UPDATE `{$table}` SET last_subscribed_at = GREATEST(COALESCE(confirmed_at, 0), COALESCE(created_at, 0)) WHERE status != %s AND last_subscribed_at IS NULL;",
       Subscriber::STATUS_UNCONFIRMED
-    ));
+    );
+    $wpdb->query($query);
     return true;
   }
 
@@ -886,19 +884,14 @@ class Populator {
       )
     );
     if ($premiumTableExists) {
+      $table = esc_sql(Newsletter::$_table);
       $query = "
         UPDATE
-          `%s` as n
-        JOIN %s as ped ON n.id=ped.newsletter_id
+          `{$table}` as n
+        JOIN `$premiumTableName` as ped ON n.id=ped.newsletter_id
           SET n.ga_campaign = ped.ga_campaign
       ";
-      $wpdb->query(
-        sprintf(
-          $query,
-          Newsletter::$_table,
-          $premiumTableName
-        )
-      );
+      $wpdb->query($query);
     }
     return true;
   }
