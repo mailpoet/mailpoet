@@ -56,9 +56,22 @@ class Registration {
       </label>
     </p>';
 
-    $form = $this->wp->applyFilters('mailpoet_register_form_extend', $form);
-
-    print $form;
+    $form = (string)$this->wp->applyFilters('mailpoet_register_form_extend', $form);
+    $allowedHtml = [
+      'p' => [
+        'class' => true,
+      ],
+      'label' => [
+        'for' => true,
+      ],
+      'input' => [
+        'type' => true,
+        'id' => true,
+        'value' => true,
+        'name' => true,
+      ],
+    ];
+    print wp_kses($form, $allowedHtml);
   }
 
   public function onMultiSiteRegister($result) {

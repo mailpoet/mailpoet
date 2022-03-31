@@ -39,7 +39,7 @@ abstract class Response {
     $response = array_merge($response, $data);
 
     @header('Content-Type: application/json; charset=' . get_option('blog_charset'));
-    echo WPFunctions::get()->wpJsonEncode($response);
+    echo wp_json_encode($response);
     die();
   }
 

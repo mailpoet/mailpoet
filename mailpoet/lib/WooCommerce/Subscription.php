@@ -22,6 +22,30 @@ class Subscription {
   const OPTIN_SEGMENTS_SETTING_NAME = 'woocommerce.optin_on_checkout.segments';
   const OPTIN_MESSAGE_SETTING_NAME = 'woocommerce.optin_on_checkout.message';
 
+  private $allowedHtml = [
+    'input' => [
+      'type' => true,
+      'name' => true,
+      'id' => true,
+      'class' => true,
+      'value' => true,
+      'checked' => true,
+    ],
+    'span' => [
+      'class' => true,
+    ],
+    'label' => [
+      'class' => true,
+      'data-automation-id' => true,
+      'for' => true,
+    ],
+    'p' => [
+      'class' => true,
+      'id' => true,
+      'data-priority' => true,
+    ],
+  ];
+
   /** @var SettingsController */
   private $settings;
 
@@ -63,16 +87,17 @@ class Subscription {
       $checked = true;
     }
     $labelString = $this->settings->get(self::OPTIN_MESSAGE_SETTING_NAME);
-    $template = $this->wp->applyFilters(
+    $template = (string)$this->wp->applyFilters(
       'mailpoet_woocommerce_checkout_optin_template',
       $this->getSubscriptionField($inputName, $checked, $labelString),
       $inputName,
       $checked,
       $labelString
     );
-    echo $template;
+    echo wp_kses($template, $this->allowedHtml);
     if ($template) {
-      echo $this->getSubscriptionPresenceCheckField();
+      $field = $this->getSubscriptionPresenceCheckField();
+      echo wp_kses($field, $this->allowedHtml);
     }
   }
 

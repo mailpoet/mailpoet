@@ -26,6 +26,6 @@ class Form extends Model {
   }
 
   private static function deprecationError($methodName) {
-    trigger_error('Calling ' . $methodName . ' is deprecated and will be removed. Use MailPoet\Statistics\StatisticsFormsRepository and respective Doctrine entities instead.', E_USER_DEPRECATED);
+    trigger_error('Calling ' . esc_html($methodName) . ' is deprecated and will be removed. Use MailPoet\Statistics\StatisticsFormsRepository and respective Doctrine entities instead.', E_USER_DEPRECATED);
   }
 }

@@ -111,7 +111,7 @@ class DIPanel implements IBarPanel {
    * @param string $item
    */
   public function printItem($item) {
-    echo $item;
+    echo esc_html($item);
     if (array_key_exists($item, $this->definitions)) {
       $arguments = $this->definitions[$item]->getArguments();
       if (!empty($arguments)) {
@@ -127,7 +127,7 @@ class DIPanel implements IBarPanel {
             $this->printItem((string)$argument);
             echo '<br>';
           } elseif (is_string($argument)) {
-            echo $argument;
+            echo esc_html($argument);
             echo '<br>';
           }
         }
@@ -149,9 +149,9 @@ class DIPanel implements IBarPanel {
 
     if (count($usedIn)) {
       $label = 'Used in ' . count($usedIn) . ' services';
-      echo '<span class="tracy-toggle tracy-collapsed">' . $label . '...</span>';
+      echo '<span class="tracy-toggle tracy-collapsed">' . esc_html($label) . '...</span>';
       echo '<div class="tracy-collapsed" style="padding-left: 10px">';
-      echo join('<br>', $usedIn);
+      echo wp_kses_post(join('<br>', $usedIn));
       echo '</div>';
     }
   }

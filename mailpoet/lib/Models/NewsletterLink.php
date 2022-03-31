@@ -31,7 +31,7 @@ class NewsletterLink extends Model {
 
   private static function deprecationError($methodName) {
     trigger_error(
-      'Calling ' . $methodName . ' is deprecated and will be removed. Use \MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository and respective Doctrine entities instead.',
+      'Calling ' . esc_html($methodName) . ' is deprecated and will be removed. Use \MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository and respective Doctrine entities instead.',
       E_USER_DEPRECATED
     );
   }
