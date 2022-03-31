@@ -101,6 +101,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     '_FILES',
     '_REQUEST',
     '_SERVER',
+    'HTTP_RAW_POST_DATA',
   ];
 
   protected $backupGlobals = false;
