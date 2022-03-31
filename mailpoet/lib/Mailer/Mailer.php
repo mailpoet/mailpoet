@@ -3,9 +3,11 @@
 namespace MailPoet\Mailer;
 
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Mailer\Methods\MailerMethod;
 use MailPoet\Models\Subscriber;
 
 class Mailer {
+  /** @var MailerMethod */
   public $mailerInstance;
 
   const MAILER_CONFIG_SETTING_NAME = 'mta';
@@ -15,6 +17,12 @@ class Mailer {
   const METHOD_SENDGRID = 'SendGrid';
   const METHOD_PHPMAIL = 'PHPMail';
   const METHOD_SMTP = 'SMTP';
+
+  public function __construct(
+    MailerMethod $mailerInstance
+  ) {
+    $this->mailerInstance = $mailerInstance;
+  }
 
   public function send($newsletter, $subscriber, $extraParams = []) {
     // This if adds support for code that calls this method to use SubscriberEntity while the Mailer class is still using the old model.
