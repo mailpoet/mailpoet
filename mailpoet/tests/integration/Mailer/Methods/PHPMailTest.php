@@ -58,16 +58,6 @@ class PHPMailTest extends \MailPoetTest {
     expect($mailer->Mailer)->equals('mail'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
-  public function testWhenReturnPathIsNullItIsSetToSenderEmail() {
-    $mailer = new PHPMail(
-      $this->sender,
-      $this->replyTo,
-      $returnPath = false,
-      new PHPMailMapper()
-    );
-    expect($mailer->returnPath)->equals($this->sender['from_email']);
-  }
-
   public function testItCanConfigureMailerWithMessage() {
     $mailer = $this->mailer
       ->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extraParams);

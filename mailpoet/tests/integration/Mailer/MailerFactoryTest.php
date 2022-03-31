@@ -153,6 +153,14 @@ class MailerFactoryTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItIgnoresInvalidBounceAddressAndUsesSenderAddressInstead() {
+    $this->settings->set('bounce.address', 'invalid');
+    $mailer = $this->factory->getDefaultMailer();
+    $mailerMethod = $mailer->mailerInstance;
+    $this->assertInstanceOf(PHPMail::class, $mailerMethod);
+    expect($mailerMethod->returnPath)->equals('sender@email.com');
+  }
+
   public function testItUsesSenderAddressInReplyToInCaseReplyToHasOnlyName() {
     $this->settings->set('reply_to', ['name' => 'Reply To']);
     $mailer = $this->factory->getDefaultMailer();

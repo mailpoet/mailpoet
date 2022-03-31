@@ -79,19 +79,6 @@ class AmazonSESTest extends \MailPoetTest {
     expect(preg_match('!^\d{8}$!', $this->mailer->dateWithoutTime))->equals(1);
   }
 
-  public function testWhenReturnPathIsNullItIsSetToSenderEmail() {
-    $mailer = new AmazonSES(
-      $this->settings['region'],
-      $this->settings['access_key'],
-      $this->settings['secret_key'],
-      $this->sender,
-      $this->replyTo,
-      $returnPath = false,
-      new AmazonSESMapper()
-    );
-    expect($mailer->returnPath)->equals($this->sender['from_email']);
-  }
-
   public function testItChecksForValidRegion() {
     try {
       $mailer = new AmazonSES(

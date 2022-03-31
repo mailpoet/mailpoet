@@ -55,9 +55,7 @@ class SMTP implements MailerMethod {
     $this->encryption = $encryption;
     $this->sender = $sender;
     $this->replyTo = $replyTo;
-    $this->returnPath = ($returnPath) ?
-      $returnPath :
-      $this->sender['from_email'];
+    $this->returnPath = $returnPath;
     $this->mailer = $this->buildMailer();
     $this->mailerLogger = new Swift_Plugins_Loggers_ArrayLogger();
     $this->mailer->registerPlugin(new Swift_Plugins_LoggerPlugin($this->mailerLogger));
