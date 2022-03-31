@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
 <ruleset name="MailPoet">
-  <config name="installed_paths" value="../../squizlabs/php_codesniffer,../../phpcompatibility/php-compatibility,../../slevomat/coding-standard"/>
+  <config name="installed_paths" value="../../squizlabs/php_codesniffer,../../phpcompatibility/php-compatibility,../../slevomat/coding-standard,../../wporg/plugin-directory/MinimalPluginStandard,../../wp-coding-standards/wpcs"/>
   <description>MailPoet specific rule set</description>
   <exclude-pattern>*/phpstan/woocommerce.php</exclude-pattern>
-  <config name="testVersion" value="7.2-"/>
 
   <!-- Files -->
   <rule ref="Generic.Files.ByteOrderMark"/> <!-- Disallow usage of BOMs -->
@@ -228,4 +227,15 @@
   <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps"/>
   <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps"/>
   <rule ref="Squiz.NamingConventions.ValidVariableName.StringNotCamelCaps"/>
+
+  <!-- WordPress.org Code Analysis -->
+  <rule ref="MinimalPluginStandard"/>
+
+  <!--
+    Instead of directly using <config name="testVersion" value="7.2-"/>, this
+    needs to be included to override what MinimalPluginStandard set before.
+
+    See: https://github.com/squizlabs/PHP_CodeSniffer/issues/2197
+  -->
+  <rule ref="./php-version.xml"/>
 </ruleset>
