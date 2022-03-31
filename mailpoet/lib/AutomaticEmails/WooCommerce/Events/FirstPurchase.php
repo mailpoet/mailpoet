@@ -198,13 +198,13 @@ class FirstPurchase {
 
   private function getGuestCustomerOrderCountByEmail($customerEmail) {
     global $wpdb;
-    $count = $wpdb->get_var( "SELECT COUNT(*)
+    $count = $wpdb->get_var( $wpdb->prepare("SELECT COUNT(*)
         FROM $wpdb->posts as posts
         LEFT JOIN {$wpdb->postmeta} AS meta ON posts.ID = meta.post_id
         WHERE   meta.meta_key = '_billing_email'
         AND     posts.post_type = 'shop_order'
-        AND     meta_value = '" . WPFunctions::get()->escSql($customerEmail) . "'
-    " );
+        AND     meta_value = %s
+    ", $customerEmail));
     return (int)$count;
   }
 }

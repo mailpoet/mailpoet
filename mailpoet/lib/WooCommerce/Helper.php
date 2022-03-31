@@ -63,10 +63,10 @@ class Helper {
 
   public function getOrdersCountCreatedBefore($dateTime) {
     global $wpdb;
-    $result = $wpdb->get_var("
+    $result = $wpdb->get_var($wpdb->prepare("
         SELECT DISTINCT count(p.ID) FROM {$wpdb->prefix}posts as p
-        WHERE p.post_type = 'shop_order' AND p.post_date < '{$dateTime}'
-    ");
+        WHERE p.post_type = 'shop_order' AND p.post_date < %s
+    "), $dateTime);
     return (int)$result;
   }
 

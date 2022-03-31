@@ -85,7 +85,7 @@ class Migration extends SimpleWorker {
 
   private function checkUnmigratedColumnsExist() {
     global $wpdb;
-    $existingColumns = $wpdb->get_col('DESC ' . SendingQueueModel::$_table);
+    $existingColumns = $wpdb->get_col('DESC ' . esc_sql(SendingQueueModel::$_table));
     return in_array('type', $existingColumns);
   }
 
@@ -145,12 +145,13 @@ class Migration extends SimpleWorker {
           ));
           // link the queue with the task via task_id
           $newTaskId = $wpdb->insert_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          $wpdb->query(sprintf(
-            'UPDATE %1$s SET `task_id` = %2$s WHERE `id` = %3$s',
-            MP_SENDING_QUEUES_TABLE,
+          $table = esc_sql(MP_SENDING_QUEUES_TABLE);
+          $query = $wpdb->prepare(
+            "UPDATE `$table` SET `task_id` = %s WHERE `id` = %s",
             $newTaskId,
             $queue['id']
-          ));
+          );
+          $wpdb->query($query);
         }
       }
     }
@@ -195,10 +196,10 @@ class Migration extends SimpleWorker {
     $migratedUnprocessedCount = ScheduledTaskSubscriber::getUnprocessedCount($taskId);
     $migratedProcessedCount = ScheduledTaskSubscriber::getProcessedCount($taskId);
 
-    $subscribers = $wpdb->get_var(sprintf(
-      'SELECT `subscribers` FROM %1$s WHERE `task_id` = %2$d ' .
-      'AND (`count_processed` > %3$d OR `count_to_process` > %4$d)',
-      MP_SENDING_QUEUES_TABLE,
+    $table = MP_SENDING_QUEUES_TABLE;
+    $subscribers = $wpdb->get_var($wpdb->prepare(
+      "SELECT `subscribers` FROM `$table` WHERE `task_id` = %d 
+             AND (`count_processed` > %d OR `count_to_process` > %d)",
       $taskId,
       $migratedUnprocessedCount,
       $migratedProcessedCount
