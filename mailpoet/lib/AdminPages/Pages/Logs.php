@@ -22,11 +22,11 @@ class Logs {
   }
 
   public function render() {
-    $search = isset($_GET['search']) ? $_GET['search'] : null;
-    $from = isset($_GET['from']) ? $_GET['from'] : null;
-    $to = isset($_GET['to']) ? $_GET['to'] : null;
-    $offset = isset($_GET['offset']) ? $_GET['offset'] : null;
-    $limit = isset($_GET['limit']) ? $_GET['limit'] : null;
+    $search = isset($_GET['search']) ? sanitize_text_field(wp_unslash($_GET['search'])) : null;
+    $from = isset($_GET['from']) ? sanitize_text_field(wp_unslash($_GET['from'])) : null;
+    $to = isset($_GET['to']) ? sanitize_text_field(wp_unslash($_GET['to'])) : null;
+    $offset = isset($_GET['offset']) ? sanitize_text_field(wp_unslash($_GET['offset'])) : null;
+    $limit = isset($_GET['limit']) ? sanitize_text_field(wp_unslash($_GET['limit'])) : null;
     $dateFrom = (new Carbon())->subDays(7);
     if (isset($from)) {
       $dateFrom = new Carbon($from);

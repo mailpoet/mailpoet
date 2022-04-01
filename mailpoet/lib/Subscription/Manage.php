@@ -72,13 +72,27 @@ class Manage {
   }
 
   public function onSave() {
-    $action = (isset($_POST['action']) ? $_POST['action'] : null);
-    $token = (isset($_POST['token']) ? $_POST['token'] : null);
+    $action = (isset($_POST['action']) ? sanitize_text_field(wp_unslash($_POST['action'])) : '');
+    $token = (isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : '');
 
     if ($action !== 'mailpoet_subscription_update' || empty($_POST['data'])) {
       $this->urlHelper->redirectBack();
     }
-    $subscriberData = $_POST['data'];
+
+    $sanitize = function($value) {
+      if (is_array($value)) {
+        foreach ($value as $k => $v) {
+          $value[sanitize_text_field($k)] = sanitize_text_field($v);
+        }
+        return $value;
+      };
+      return sanitize_text_field($value);
+    };
+
+    //phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+    // custom sanitization via $sanitize
+    $subscriberData = array_map($sanitize, wp_unslash((array)$_POST['data']));
+    //phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
     $subscriberData = $this->fieldNameObfuscator->deobfuscateFormPayload($subscriberData);
 
     $result = [];

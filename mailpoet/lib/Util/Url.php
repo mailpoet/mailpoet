@@ -37,7 +37,7 @@ class Url {
   public function redirectBack($params = []) {
     // check mailpoet_redirect parameter
     $referer = (isset($_POST['mailpoet_redirect'])
-      ? $_POST['mailpoet_redirect']
+      ? sanitize_text_field(wp_unslash($_POST['mailpoet_redirect']))
       : $this->wp->wpGetReferer()
     );
 

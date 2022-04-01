@@ -110,7 +110,7 @@ function mailpoet_php_version_notice() {
   );
 }
 
-if (isset($_SERVER['SERVER_SOFTWARE']) && strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'microsoft-iis') !== false) {
+if (isset($_SERVER['SERVER_SOFTWARE']) && strpos(strtolower(sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE']))), 'microsoft-iis') !== false) {
   add_action('admin_notices', 'mailpoet_microsoft_iis_notice');
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');

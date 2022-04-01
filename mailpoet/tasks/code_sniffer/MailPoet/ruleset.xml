@@ -230,7 +230,7 @@
 
   <!-- WordPress.org Code Analysis -->
   <rule ref="MinimalPluginStandard"/>
-
+  <rule ref="WordPress.Security.ValidatedSanitizedInput"/>
   <!--
     Instead of directly using <config name="testVersion" value="7.2-"/>, this
     needs to be included to override what MinimalPluginStandard set before.

@@ -24,11 +24,10 @@ function formExportMenu() {
 }
 
 function mailpoetExportForms() {
-  if ($_GET['exportId']) {
-    return mailpoetExportForm((int)$_GET['exportId']);
-  } else {
-    return mailpoetRenderFormList();
+  if (isset($_GET['exportId'])) {
+    return mailpoetExportForm(absint(wp_unslash($_GET['exportId'])));
   }
+  return mailpoetRenderFormList();
 }
 
 function mailpoetRenderFormList() {

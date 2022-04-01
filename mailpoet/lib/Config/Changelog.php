@@ -55,7 +55,10 @@ class Changelog {
     if (
       !(isset($_GET['page']))
       or
-      (isset($_GET['page']) && strpos($_GET['page'], 'mailpoet') !== 0)
+      (isset($_GET['page']) && strpos(
+        sanitize_text_field(wp_unslash($_GET['page'])),
+        'mailpoet'
+      ) !== 0)
     ) {
       return;
     }
@@ -110,7 +113,16 @@ class Changelog {
   }
 
   private function checkMp2Migration() {
-    if (!in_array($_GET['page'], ['mailpoet-migration', 'mailpoet-settings']) && $this->isMp2MigrationInProgress()) {
+    if (
+      !isset($_GET['page']) ||
+      !in_array(
+      sanitize_text_field(wp_unslash($_GET['page'])),
+      [
+        'mailpoet-migration',
+        'mailpoet-settings',
+      ]
+      ) && $this->isMp2MigrationInProgress()
+    ) {
       // Force the redirection if the migration has started but is not completed
       $this->terminateWithRedirect($this->wp->adminUrl('admin.php?page=mailpoet-migration'));
     }
@@ -132,7 +144,15 @@ class Changelog {
 
   private function checkWooCommerceListImportPage() {
     if (
-      !in_array($_GET['page'], ['mailpoet-woocommerce-setup', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
+      !isset($_GET['page']) ||
+      !in_array(
+        sanitize_text_field(wp_unslash($_GET['page'])),
+        [
+          'mailpoet-woocommerce-setup',
+          'mailpoet-welcome-wizard',
+          'mailpoet-migration',
+        ]
+      )
       && $this->shouldShowWooCommerceListImportPage()
     ) {
       $this->urlHelper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-setup'));
@@ -141,7 +161,15 @@ class Changelog {
 
   private function checkRevenueTrackingPermissionPage() {
     if (
-      !in_array($_GET['page'], ['mailpoet-woocommerce-setup', 'mailpoet-welcome-wizard', 'mailpoet-migration'])
+      !isset($_GET['page']) ||
+      !in_array(
+        sanitize_text_field(wp_unslash($_GET['page'])),
+        [
+          'mailpoet-woocommerce-setup',
+          'mailpoet-welcome-wizard',
+          'mailpoet-migration',
+        ]
+      )
       && $this->shouldShowRevenueTrackingPermissionPage()
     ) {
       $this->urlHelper->redirectTo($this->wp->adminUrl('admin.php?page=mailpoet-woocommerce-setup'));
