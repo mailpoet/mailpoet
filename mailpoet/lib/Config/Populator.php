@@ -533,14 +533,17 @@ class Populator {
   private function rowExists(string $tableName, array $columns): bool {
     global $wpdb;
 
-    $conditions = array_map(function($key) use ($columns) {
-      return "$key='{$columns[$key]}'";
-    }, array_keys($columns));
+    $conditions = array_map(function($key, $value) {
+      return esc_sql($key) . "='" . esc_sql($value) . "'";
+    }, array_keys($columns), $columns);
 
     $table = esc_sql($tableName);
+    // phpcs:disable WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
+    // $conditions is escaped
     return $wpdb->get_var(
       "SELECT COUNT(*) FROM $table WHERE " . implode(' AND ', $conditions)
     ) > 0;
+    // phpcs:enable WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
   }
 
   private function insertRow($table, $row) {
@@ -568,13 +571,14 @@ class Populator {
     $conditions = ['1=1'];
     $values = [];
     foreach ($where as $field => $value) {
-      $conditions[] = "`t1`.`$field` = `t2`.`$field`";
-      $conditions[] = "`t1`.`$field` = %s";
+      $conditions[] = "`t1`.`" . esc_sql($field) . "` = `t2`.`" . esc_sql($field) . "`";
+      $conditions[] = "`t1`.`" . esc_sql($field) . "` = %s";
       $values[] = $value;
     }
 
     $conditions = implode(' AND ', $conditions);
 
+    $table = esc_sql($table);
     return $wpdb->query(
       $wpdb->prepare(
         "DELETE t1 FROM $table t1, $table t2 WHERE t1.id < t2.id AND $conditions",
@@ -613,7 +617,7 @@ class Populator {
     }
     $tables = [ScheduledTask::$_table, SendingQueue::$_table];
     foreach ($tables as $table) {
-      $wpdb->query("UPDATE `$table` SET meta = NULL WHERE meta = 'null'");
+      $wpdb->query("UPDATE `" . esc_sql($table) . "` SET meta = NULL WHERE meta = 'null'");
     }
     return true;
   }
@@ -703,11 +707,10 @@ class Populator {
     if (version_compare((string)$this->settings->get('db_version', '3.46.14'), '3.46.13', '>')) {
       return;
     }
-    $query = "UPDATE `%s` SET `url` = '%s' WHERE `url` = '%s';";
     global $wpdb;
-    $wpdb->query(sprintf(
-      $query,
-      $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName(),
+    $table = esc_sql($this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName());
+    $wpdb->query($wpdb->prepare(
+      "UPDATE `$table` SET `url` = %s WHERE `url` = %s;",
       NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
       NewsletterLinkEntity::UNSUBSCRIBE_LINK_SHORT_CODE
     ));

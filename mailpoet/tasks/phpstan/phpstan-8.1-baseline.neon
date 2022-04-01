@@ -1,6 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Cannot cast string|void to string\\.$#"
+			count: 2
+			path: ../../lib/Automation/Engine/Storage/WorkflowRunStorage.php
+
+		-
+			message: "#^Cannot cast string|void to string\\.$#"
+			count: 3
+			path: ../../lib/Automation/Engine/Storage/WorkflowStorage.php
+
+		-
 			message: "#^Cannot access property \\$permissions on mixed\\.$#"
 			count: 1
 			path: ../../lib/API/JSON/API.php

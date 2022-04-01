@@ -423,7 +423,12 @@ class Initializer {
   public function multisiteDropTables($tables) {
     global $wpdb;
     $tablePrefix = $wpdb->prefix . Env::$pluginPrefix;
-    $mailpoetTables = $wpdb->get_col("SHOW TABLES LIKE '$tablePrefix%'");
+    $mailpoetTables = $wpdb->get_col(
+      $wpdb->prepare(
+        "SHOW TABLES LIKE %s",
+        $wpdb->esc_like($tablePrefix) . '%'
+      )
+    );
     return array_merge($tables, $mailpoetTables);
   }
 

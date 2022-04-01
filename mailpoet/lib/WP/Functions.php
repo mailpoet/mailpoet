@@ -697,22 +697,6 @@ class Functions {
     return wp_get_attachment_image_srcset($attachmentId, $size, $imageMeta);
   }
 
-  public function getResultsFromWpDb($query, ...$args) {
-    global $wpdb;
-    return $wpdb->get_results($wpdb->prepare($query, $args));
-  }
-
-  /**
-   * @return string|null Prefixed table name
-   */
-  public function getWPTableName(string $table) {
-    global $wpdb;
-    if (property_exists($wpdb, $table)) {
-      return $wpdb->$table;
-    }
-    return null;
-  }
-
   /**
    * @param string $host
    * @return array|bool
