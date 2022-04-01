@@ -28,13 +28,15 @@ class WorkflowRunStorage {
   }
 
   public function getWorkflowRun(int $id): ?WorkflowRun {
-    $query = strval($this->wpdb->prepare("SELECT * FROM $this->table WHERE id = %d", $id));
+    $table = esc_sql($this->table);
+    $query = (string)$this->wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id);
     $data = $this->wpdb->get_row($query, ARRAY_A);
     return $data ? WorkflowRun::fromArray((array)$data) : null;
   }
 
   public function updateStatus(int $id, string $status): void {
-    $query = strval($this->wpdb->prepare("UPDATE $this->table SET status = %s WHERE id = %d", $status, $id));
+    $table = esc_sql($this->table);
+    $query = (string)$this->wpdb->prepare("UPDATE $table SET status = %s WHERE id = %d", $status, $id);
     $result = $this->wpdb->query($query);
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);

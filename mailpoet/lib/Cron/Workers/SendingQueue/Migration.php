@@ -135,14 +135,19 @@ class Migration extends SimpleWorker {
 
         foreach ($queueBatch as $queue) {
           // create a new scheduled task of type "sending"
+
+          // phpcs:disable WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
+          // The only moving part is casted. $columnList and MP_SCHEDULED_TASKS_TABLE are fixed.
           $wpdb->query(sprintf(
             'INSERT IGNORE INTO %1$s (`type`, %2$s) ' .
             'SELECT "sending", %2$s FROM %3$s WHERE `id` = %4$s',
             MP_SCHEDULED_TASKS_TABLE,
             '`' . join('`, `', $columnList) . '`',
             MP_SENDING_QUEUES_TABLE,
-            $queue['id']
+            (int)$queue['id']
           ));
+          // phpcs:enable WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
+
           // link the queue with the task via task_id
           $newTaskId = $wpdb->insert_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
           $table = esc_sql(MP_SENDING_QUEUES_TABLE);
@@ -198,7 +203,7 @@ class Migration extends SimpleWorker {
 
     $table = MP_SENDING_QUEUES_TABLE;
     $subscribers = $wpdb->get_var($wpdb->prepare(
-      "SELECT `subscribers` FROM `$table` WHERE `task_id` = %d 
+      "SELECT `subscribers` FROM `$table` WHERE `task_id` = %d
              AND (`count_processed` > %d OR `count_to_process` > %d)",
       $taskId,
       $migratedUnprocessedCount,

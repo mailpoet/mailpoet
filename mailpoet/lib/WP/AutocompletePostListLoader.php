@@ -16,30 +16,34 @@ class AutocompletePostListLoader {
   }
 
   public function getProducts() {
-    $products = $this->wp->getResultsFromWpDb(
-      "SELECT `ID`, `post_title` FROM {$this->wp->getWPTableName('posts')} WHERE `post_type` = %s ORDER BY `post_title` ASC;",
+    global $wpdb;
+
+    $products = $wpdb->get_results($wpdb->prepare(
+      "SELECT `ID`, `post_title` FROM {$wpdb->posts} WHERE `post_type` = %s ORDER BY `post_title` ASC;",
       'product'
-    );
+    ));
     return $this->formatPosts($products);
   }
 
   public function getMembershipPlans() {
-    $products = $this->wp->getResultsFromWpDb(
-      "SELECT `ID`, `post_title` FROM {$this->wp->getWPTableName('posts')} WHERE `post_type` = %s AND `post_status` = 'publish' ORDER BY `post_title` ASC;",
+    global $wpdb;
+    $products = $wpdb->get_results($wpdb->prepare(
+      "SELECT `ID`, `post_title` FROM {$wpdb->posts} WHERE `post_type` = %s AND `post_status` = 'publish' ORDER BY `post_title` ASC;",
       'wc_membership_plan'
-    );
+    ));
     return $this->formatPosts($products);
   }
 
   public function getSubscriptionProducts() {
-    $products = $this->wp->getResultsFromWpDb(
-      "SELECT `ID`, `post_title` FROM {$this->wp->getWPTableName('posts')} AS p
-        INNER JOIN {$this->wp->getWPTableName('term_relationships')} AS trel ON trel.object_id = p.id
-        INNER JOIN {$this->wp->getWPTableName('term_taxonomy')} AS ttax ON ttax.term_taxonomy_id = trel.term_taxonomy_id
-        INNER JOIN {$this->wp->getWPTableName('terms')} AS t ON ttax.term_id = t.term_id AND t.slug IN ('subscription', 'variable-subscription')
+    global $wpdb;
+    $products = $wpdb->get_results($wpdb->prepare(
+      "SELECT `ID`, `post_title` FROM {$wpdb->posts} AS p
+        INNER JOIN {$wpdb->term_relationships} AS trel ON trel.object_id = p.id
+        INNER JOIN {$wpdb->term_taxonomy} AS ttax ON ttax.term_taxonomy_id = trel.term_taxonomy_id
+        INNER JOIN {$wpdb->terms} AS t ON ttax.term_id = t.term_id AND t.slug IN ('subscription', 'variable-subscription')
         WHERE `p`.`post_type` = %s ORDER BY `post_title` ASC;",
       'product'
-    );
+    ));
     return $this->formatPosts($products);
   }
 
