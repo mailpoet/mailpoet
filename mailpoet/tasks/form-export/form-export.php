@@ -39,7 +39,13 @@ function mailpoetRenderFormList() {
     /** @var FormEntity $form */
     $name = $form->getName() ?: '(no name)';
     $exportUrl = menu_page_url('export-forms', false) . '&exportId=' . $form->getId();
-    echo "<li><a href=\"$exportUrl\">$name (ID: {$form->getId()})</a></li>";
+    echo '<li><a href="' . esc_url($exportUrl) . '">' .
+    sprintf(
+      '%s (ID: %d)',
+      esc_html($name),
+      (int)$form->getId()
+      ) .
+    '</a></li>';
   }
   echo "</ul>";
 }
@@ -63,17 +69,16 @@ function mailpoetExportForm(int $id) {
   $template = mailpoetAddStringTranslations($template);
   list($template, $assetUrls) = mailpoetProcessAssets($template);
 
-  $template = htmlspecialchars($template);
-  echo "<textarea style=\"width:90%;height:80vh;\">$template</textarea>";
+  echo "<textarea style=\"width:90%;height:80vh;\">" . esc_textarea($template) . "</textarea>";
   if (!$assetUrls) {
     die;
   }
   echo "<h3>Assets to download</h3>";
   echo "<ul style=\"width:90%;height:10vh;\">";
   foreach ($assetUrls as $url) {
-    echo "<li><a href='$url' target='_blank'>$url</a></li>";
+    echo "<li><a href='" . esc_url($url) . "' target='_blank'>" . esc_url($url) . "</a></li>";
   }
-  echo "</url>";
+  echo "</ul>";
   die;
 }
 

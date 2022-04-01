@@ -43,7 +43,9 @@ if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracyPath)) {
       // set higher number of displayed AJAX rows
       $maxAjaxRows = 4;
       $tracyScriptHtml .= "<script>window.TracyMaxAjaxRows = $maxAjaxRows;</script>\n";
-      echo $tracyScriptHtml;
+
+      // just minor adjustments to Debugger::renderLoader() output
+      echo $tracyScriptHtml; // phpcs:ignore
     }
 
     add_action('admin_enqueue_scripts', 'render_tracy', PHP_INT_MAX, 0);

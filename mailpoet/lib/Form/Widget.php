@@ -93,7 +93,12 @@ class Widget extends \WP_Widget {
     ];
 
     try {
+      // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+      // phpcs:disable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+      // We control the template and the data is sanitized
       echo $this->renderer->render('form/iframe.html', $data);
+      // phpcs:enable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+      // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
     } catch (\Exception $e) {
       echo esc_html($e->getMessage());
     }
@@ -133,7 +138,7 @@ class Widget extends \WP_Widget {
     // get forms list
     $forms = $this->formsRepository->findBy(['deletedAt' => null], ['name' => 'asc']);
     ?><p>
-      <label for="<?php $this->get_field_id( 'title' ) ?>"><?php WPFunctions::get()->_e('Title:', 'mailpoet'); ?></label>
+      <label for="<?php esc_attr($this->get_field_id( 'title' )) ?>"><?php echo esc_html(WPFunctions::get()->__('Title:', 'mailpoet')); ?></label>
       <input
         type="text"
         class="widefat"
@@ -264,7 +269,12 @@ class Widget extends \WP_Widget {
     }
 
     if ($formType === 'widget') {
+      // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+      // phpcs:disable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+      // We control the template and the data is sanitized
       echo $output;
+      // phpcs:enable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+      // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
     } else {
       return $output;
     }
