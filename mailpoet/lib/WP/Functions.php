@@ -366,7 +366,7 @@ class Functions {
    * @param  string|false $pluginRelPath
    */
   public function loadPluginTextdomain($domain, $pluginRelPath = false) {
-    return load_plugin_textdomain($domain, "", $pluginRelPath);
+    return load_plugin_textdomain($domain, false, $pluginRelPath);
   }
 
   public function loadTextdomain($domain, $mofile) {
