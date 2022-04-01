@@ -61,7 +61,7 @@ class ScheduleNewsletterCest {
       $i->waitForElementClickable(['class' => 'react-datepicker__day--today'], 1);
     } catch (TimeoutException $e) {
       $i->click(['class' => 'react-datepicker__navigation--previous']);
-      $i->waitForElementClickable(['class' => 'react-datepicker__day--today'], 1);
+      $i->waitForElementClickable(['class' => 'react-datepicker__day--today']);
     }
     $i->click(['class' => "react-datepicker__day--today"]);
 
