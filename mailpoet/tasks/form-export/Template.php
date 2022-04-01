@@ -15,7 +15,7 @@ class Template extends FormTemplate {
   }
 
   public function getThumbnailUrl(): string {
-    return ''; //@todo Add thunbmail
+    return ''; //@todo Add thumbnail
   }
 
   public function getBody(): array {

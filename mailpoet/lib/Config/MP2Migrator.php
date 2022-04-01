@@ -15,7 +15,6 @@ use MailPoet\Util\Notices\AfterMigrationNotice;
 use MailPoet\Util\ProgressBar;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Idiorm\ORM;
-use function WP_CLI\Utils\esc_like;
 
 class MP2Migrator {
   const IMPORT_TIMEOUT_IN_SECONDS = 7200; // Timeout = 2 hours

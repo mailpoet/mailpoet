@@ -57,11 +57,21 @@ class TransactionalEmailHooks {
             throw new InvalidStateException('WooCommerce email template is missing!');
           }
           $this->renderer->render($newsletterModel, $emailHeading);
+          // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+          // phpcs:disable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+          // The HTML is generated from a $newsletter entity and can be considered safe
           echo $this->renderer->getHTMLBeforeContent();
+          // phpcs:enable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+          // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
         }
       });
       $this->wp->addAction('woocommerce_email_footer', function() {
+        // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+        // phpcs:disable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+        // The HTML is generated from a $newsletter entity and can be considered safe
         echo $this->renderer->getHTMLAfterContent();
+        // phpcs:enable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+        // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
       });
       $this->wp->addAction('woocommerce_email_styles', [$this->renderer, 'prefixCss']);
     });
