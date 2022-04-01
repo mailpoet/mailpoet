@@ -66,7 +66,7 @@ class Helper {
     $result = $wpdb->get_var($wpdb->prepare("
         SELECT DISTINCT count(p.ID) FROM {$wpdb->prefix}posts as p
         WHERE p.post_type = 'shop_order' AND p.post_date < %s
-    "), $dateTime);
+    ", $dateTime));
     return (int)$result;
   }
 

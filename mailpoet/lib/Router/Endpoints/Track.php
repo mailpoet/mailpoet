@@ -99,7 +99,7 @@ class Track {
         'queue' => $data->queue_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       ]);
     }
-    $data->userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+    $data->userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : null;
     return $this->_validateTrackData($data);
   }
 

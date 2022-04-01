@@ -37,7 +37,7 @@ class Cookies {
     if (!array_key_exists($name, $_COOKIE)) {
       return null;
     }
-    $value = json_decode(stripslashes($_COOKIE[$name]), true);
+    $value = json_decode(sanitize_text_field(wp_unslash(($_COOKIE[$name]))), true);
     $error = json_last_error();
     if ($error) {
       return null;

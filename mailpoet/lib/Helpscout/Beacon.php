@@ -56,7 +56,7 @@ class Beacon {
       'MailPoet Premium/MSS key' => $premiumKey,
       'WordPress version' => $this->wp->getBloginfo('version'),
       'Database version' => $dbVersion,
-      'Web server' => (!empty($_SERVER["SERVER_SOFTWARE"])) ? $_SERVER["SERVER_SOFTWARE"] : 'N/A',
+      'Web server' => (!empty($_SERVER["SERVER_SOFTWARE"])) ? sanitize_text_field(wp_unslash($_SERVER["SERVER_SOFTWARE"])) : 'N/A',
       'Server OS' => (function_exists('php_uname')) ? utf8_encode(php_uname()) : 'N/A',
       'WP_MEMORY_LIMIT' => WP_MEMORY_LIMIT,
       'WP_MAX_MEMORY_LIMIT' => WP_MAX_MEMORY_LIMIT,

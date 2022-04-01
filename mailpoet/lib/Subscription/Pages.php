@@ -420,7 +420,7 @@ class Pages {
       return $this->wp->__('Subscription management form is only available to mailing lists subscribers.', 'mailpoet');
     }
 
-    $formStatus = isset($_GET['success']) && $_GET['success']
+    $formStatus = isset($_GET['success']) && absint(wp_unslash($_GET['success']))
       ? ManageSubscriptionFormRenderer::FORM_STATE_SUCCESS
       : ManageSubscriptionFormRenderer::FORM_STATE_NOT_SUBMITTED;
 
