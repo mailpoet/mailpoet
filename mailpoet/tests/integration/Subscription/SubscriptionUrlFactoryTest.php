@@ -28,20 +28,16 @@ class SubscriptionUrlFactoryTest extends \MailPoetTest {
   }
 
   public function testGetReEngagementUrlReturnsUrlToUserSelectedPage() {
-    global $wp_rewrite;
 
     $settings = $this->diContainer->get(SettingsController::class);
-    $settings->set('reEngagement', ['page' => 2]);
+    $postId = wp_insert_post([
+      'post_title' => 'testGetReEngagementUrlReturnsUrlToUserSelectedPage',
+      'post_status' => 'publish',
+    ]);
+    $settings->set('reEngagement', ['page' => $postId]);
+    $expectedUrl = get_permalink($postId);
 
-    $pagePermaStructure = $wp_rewrite->get_page_permastruct();
-
-    // this check is needed because on CircleCI permalinks are enabled and on the local environments not necessarily.
-    if ($pagePermaStructure) {
-      $expectedUrl = '/sample-page/';
-    } else {
-      $expectedUrl = '/?page_id=2';
-    }
-
+    $this->assertIsString($expectedUrl, "Permalink is a valid string");
     $this->assertStringContainsString($expectedUrl, $this->subscriptionUrlFactory->getReEngagementUrl($this->subscriber));
   }
 
