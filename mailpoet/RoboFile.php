@@ -414,6 +414,7 @@ class RoboFile extends \Robo\Tasks {
       '--extensions=php',
       $severityFlag,
       '--standard=tasks/code_sniffer/MailPoet',
+      '-s',
     ]);
     $foldersToIgnore = [
       '.mp_svn',
@@ -1120,7 +1121,10 @@ class RoboFile extends \Robo\Tasks {
   private function createDoctrineEntityManager() {
     define('ABSPATH', getenv('WP_ROOT') . '/');
     if (\MailPoet\Config\Env::$dbPrefix === null) {
-      \MailPoet\Config\Env::$dbPrefix = ''; // ensure some prefix is set
+      /**
+       * Ensure some prefix is set
+       */
+      \MailPoet\Config\Env::$dbPrefix = '';
     }
     $annotationReaderProvider = new \MailPoet\Doctrine\Annotations\AnnotationReaderProvider();
     $configuration = (new \MailPoet\Doctrine\ConfigurationFactory($annotationReaderProvider, true))->createConfiguration();
