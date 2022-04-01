@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file may be used by MailPoet to run a cron daemon that sends emails and perform other periodic tasks. It is
+ * disabled by default, and it only works on the command line (it is not accessible via the web browser in any way).
+ * It is used by a small subset of users that are not able to use the recommended method to send MailPoet emails.
+ * This is the case for sites that have their WP-Cron jobs broken by 3rd party plugins during cron processing, which
+ * prevents MailPoet from functioning. To work around this problem, this script loads only MailPoet and WordPress,
+ * without any other plugins. That is why it needs to require wp-load.php directly.
+ */
+
 ini_set("display_errors", "1");
 error_reporting(E_ALL);
 
