@@ -89,12 +89,17 @@ class Subscription {
     $labelString = $this->settings->get(self::OPTIN_MESSAGE_SETTING_NAME);
     $template = (string)$this->wp->applyFilters(
       'mailpoet_woocommerce_checkout_optin_template',
-      $this->getSubscriptionField($inputName, $checked, $labelString),
+      wp_kses(
+        $this->getSubscriptionField($inputName, $checked, $labelString),
+        $this->allowedHtml
+      ),
       $inputName,
       $checked,
       $labelString
     );
-    echo wp_kses($template, $this->allowedHtml);
+    // The template has been sanitized above and can be considered safe.
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+    echo $template;
     if ($template) {
       $field = $this->getSubscriptionPresenceCheckField();
       echo wp_kses($field, $this->allowedHtml);
