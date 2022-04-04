@@ -57,9 +57,13 @@ class Functions {
     return __($text, $domain);
   }
 
-  public function _e($text, $domain = 'default') { //phpcs:ignore
-    return _e($text, $domain); //phpcs:ignore
+  // phpcs:disable WordPress.Security.EscapeOutput.UnsafePrintingFunction, WordPress.Security.EscapeOutput.OutputNotEscaped
+  public function _e($text, $domain = 'default') {
+    return _e($text, $domain);
   }
+
+  // phpcs:enable WordPress.Security.EscapeOutput.UnsafePrintingFunction, WordPress.Security.EscapeOutput.OutputNotEscaped
+
 
   public function _n($single, $plural, $number, $domain = 'default') {
     return _n($single, $plural, $number, $domain);

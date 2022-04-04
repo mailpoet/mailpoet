@@ -86,7 +86,8 @@ class Opens {
     header('Content-Type: image/gif');
 
     // Output of base64_decode is predetermined and safe in this case
-    echo base64_decode('R0lGODlhAQABAJAAAP8AAAAAACH5BAUQAAAALAAAAAABAAEAAAICBAEAOw=='); // phpcs:ignore
+    // phpcs:ignore WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter, WordPress.Security.EscapeOutput.OutputNotEscaped
+    echo base64_decode('R0lGODlhAQABAJAAAP8AAAAAACH5BAUQAAAALAAAAAABAAEAAAICBAEAOw==');
     exit;
   }
 }

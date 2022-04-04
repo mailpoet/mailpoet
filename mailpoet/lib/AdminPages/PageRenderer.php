@@ -81,12 +81,9 @@ class PageRenderer {
         $this->subscribersCountCacheRecalculation->schedule();
       }
 
-      // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-      // phpcs:disable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
       // We are in control of the template and the data can be considered safe at this point
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
       echo $this->renderer->render($template, $data + $defaults);
-      // phpcs:enable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
-      // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
     } catch (\Exception $e) {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());
       $notice->displayWPNotice();

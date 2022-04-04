@@ -93,12 +93,9 @@ class Widget extends \WP_Widget {
     ];
 
     try {
-      // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-      // phpcs:disable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
       // We control the template and the data is sanitized
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
       echo $this->renderer->render('form/iframe.html', $data);
-      // phpcs:enable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
-      // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
     } catch (\Exception $e) {
       echo esc_html($e->getMessage());
     }
@@ -269,12 +266,9 @@ class Widget extends \WP_Widget {
     }
 
     if ($formType === 'widget') {
-      // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-      // phpcs:disable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
       // We control the template and the data is sanitized
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
       echo $output;
-      // phpcs:enable WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
-      // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
     } else {
       return $output;
     }
