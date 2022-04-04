@@ -538,12 +538,11 @@ class Populator {
     }, array_keys($columns), $columns);
 
     $table = esc_sql($tableName);
-    // phpcs:disable WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
     // $conditions is escaped
+    // phpcs:ignore WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
     return $wpdb->get_var(
       "SELECT COUNT(*) FROM $table WHERE " . implode(' AND ', $conditions)
     ) > 0;
-    // phpcs:enable WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
   }
 
   private function insertRow($table, $row) {

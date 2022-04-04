@@ -89,10 +89,9 @@ class Manage {
       return sanitize_text_field($value);
     };
 
-    //phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
     // custom sanitization via $sanitize
+    //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
     $subscriberData = array_map($sanitize, wp_unslash((array)$_POST['data']));
-    //phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
     $subscriberData = $this->fieldNameObfuscator->deobfuscateFormPayload($subscriberData);
 
     $result = [];

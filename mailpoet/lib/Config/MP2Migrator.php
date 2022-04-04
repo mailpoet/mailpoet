@@ -610,7 +610,7 @@ class MP2Migrator {
     $sql = $wpdb->prepare("
       SELECT u.*
       FROM `$table` u
-      WHERE u.user_id > %d
+      WHERE u.user_id > %s
       ORDER BY u.user_id
       LIMIT %d
       ", $lastId, $limit);

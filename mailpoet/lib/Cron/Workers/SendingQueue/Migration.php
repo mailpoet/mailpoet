@@ -136,8 +136,8 @@ class Migration extends SimpleWorker {
         foreach ($queueBatch as $queue) {
           // create a new scheduled task of type "sending"
 
-          // phpcs:disable WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
-          // The only moving part is casted. $columnList and MP_SCHEDULED_TASKS_TABLE are fixed.
+          // Constants are safe, queue ID is cast to int.
+          // phpcs:ignore WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
           $wpdb->query(sprintf(
             'INSERT IGNORE INTO %1$s (`type`, %2$s) ' .
             'SELECT "sending", %2$s FROM %3$s WHERE `id` = %4$s',
@@ -146,7 +146,6 @@ class Migration extends SimpleWorker {
             MP_SENDING_QUEUES_TABLE,
             (int)$queue['id']
           ));
-          // phpcs:enable WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
 
           // link the queue with the task via task_id
           $newTaskId = $wpdb->insert_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
