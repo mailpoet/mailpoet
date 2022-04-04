@@ -4,19 +4,26 @@ namespace MailPoet\Automation\Integrations\MailPoet;
 
 use MailPoet\Automation\Engine\Integration;
 use MailPoet\Automation\Engine\Registry;
+use MailPoet\Automation\Integrations\MailPoet\Actions\SendWelcomeEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
 
 class MailPoetIntegration implements Integration {
   /** @var SegmentSubscribedTrigger */
   private $segmentSubscribedTrigger;
-
+  
+  /** @var SendWelcomeEmailAction */
+  private $sendWelcomeEmailAction;
+  
   public function __construct(
-    SegmentSubscribedTrigger $segmentSubscribedTrigger
+    SegmentSubscribedTrigger $segmentSubscribedTrigger, 
+    SendWelcomeEmailAction $sendWelcomeEmailAction
   ) {
     $this->segmentSubscribedTrigger = $segmentSubscribedTrigger;
+    $this->sendWelcomeEmailAction = $sendWelcomeEmailAction;
   }
 
   public function register(Registry $registry): void {
     $registry->addTrigger($this->segmentSubscribedTrigger);
+    $registry->addAction($this->sendWelcomeEmailAction);
   }
 }
