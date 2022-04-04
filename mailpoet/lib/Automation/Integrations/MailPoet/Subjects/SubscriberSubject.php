@@ -2,14 +2,14 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Subjects;
 
+use MailPoet\Automation\Engine\Workflows\AbstractSubject;
 use MailPoet\Automation\Engine\Workflows\Field;
-use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\NotFoundException;
 use MailPoet\Subscribers\SubscribersRepository;
 
-class SubscriberSubject implements Subject {
+class SubscriberSubject extends AbstractSubject {
   /** @var Field[] */
   private $fields;
 
@@ -25,8 +25,16 @@ class SubscriberSubject implements Subject {
     $this->subscribersRepository = $subscribersRepository;
 
     $this->fields = [
-      // email
-      new Field(
+      'id' => new Field(
+        'mailpoet:subscriber:email',
+        Field::TYPE_INTEGER,
+        __('Subscriber ID', 'mailpoet'),
+        function() {
+          return $this->getSubscriber()->getId();
+        }
+      ),
+      
+      'email' => new Field(
         'mailpoet:subscriber:email',
         Field::TYPE_STRING,
         __('Subscriber email', 'mailpoet'),
@@ -35,8 +43,7 @@ class SubscriberSubject implements Subject {
         }
       ),
 
-      // status
-      new Field(
+      'status' => new Field(
         'mailpoet:subscriber:status',
         Field::TYPE_ENUM,
         __('Subscriber status', 'mailpoet'),
@@ -60,6 +67,18 @@ class SubscriberSubject implements Subject {
 
   public function getFields(): array {
     return $this->fields;
+  }
+
+  public function getSubscriberIdField(): Field {
+    return $this->getField('id');
+  }
+
+  public function getSubscriberEmailField(): Field {
+    return $this->getField('email');
+  }
+
+  public function getSubscriberStatusField(): Field {
+    return $this->getField('status');
   }
 
   public function load(array $args): void {
