@@ -96,7 +96,7 @@ class WorkflowRun {
     $workflowRun->id = (int)$data['id'];
     $workflowRun->status = $data['status'];
     $workflowRun->createdAt = $data['created_at'];
-    $workflowRun->createdAt = $data['updated_at'];
+    $workflowRun->updatedAt = $data['updated_at'];
     return $workflowRun;
   }
 }
