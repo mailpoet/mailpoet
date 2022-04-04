@@ -31,24 +31,17 @@ class Comment {
   }
 
   public function extendLoggedOutForm() {
-    $allowedHtml = [
-      'p' => [
-        'class' => true,
-      ],
-      'label' => [
-        'for' => true,
-      ],
-      'input' => [
-        'type' => true,
-        'id' => true,
-        'value' => true,
-        'name' => true,
-      ],
-    ];
-    echo wp_kses($this->getSubscriptionField(), $allowedHtml);
+    // The method returns escaped content
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+    echo $this->getSubscriptionField();
   }
 
-  private function getSubscriptionField() {
+  /**
+   * Returns escaped HTML for the subscription field.
+   *
+   * @return string
+   */
+  private function getSubscriptionField(): string {
     $label = $this->settings->get(
       'subscribe.on_comment.label',
       WPFunctions::get()->__('Yes, please add me to your mailing list.', 'mailpoet')

@@ -57,21 +57,10 @@ class Registration {
     </p>';
 
     $form = (string)$this->wp->applyFilters('mailpoet_register_form_extend', $form);
-    $allowedHtml = [
-      'p' => [
-        'class' => true,
-      ],
-      'label' => [
-        'for' => true,
-      ],
-      'input' => [
-        'type' => true,
-        'id' => true,
-        'value' => true,
-        'name' => true,
-      ],
-    ];
-    print wp_kses($form, $allowedHtml);
+
+    // We control the template and $form can be considered safe.
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+    print $form;
   }
 
   public function onMultiSiteRegister($result) {
