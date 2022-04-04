@@ -151,7 +151,7 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     expect($subscriber3->getEmailCount())->equals(0);
   }
 
-  public function testItDoesNotCountIfThereAreNoSubscribersToUpdate() {
+  public function testItDoesNotCountIfThereAreNoSubscribersOrTasksToUpdate() {
     // Subscribers empty table
     [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts(null, 1);
     expect($count)->equals(0);
@@ -159,6 +159,12 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $subscriber1 = $this->createSubscriber('s1@email.com', 100);
     $subscriber2 = $this->createSubscriber('s2@email.com', 20);
     $subscriber3 = $this->createSubscriber('s3@email.com', 10);
+
+    // Tasks empty table
+    $dateFromCarbon = new Carbon();
+    $dateFrom = $dateFromCarbon->subDays(7)->toDateTime();
+    [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts($dateFrom, 1);
+    expect($count)->equals(0);
 
     $this->createCompletedSendingTasksForSubscriber($subscriber1, 80, 90);
     $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 3);
