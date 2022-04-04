@@ -250,7 +250,7 @@ jobs:
           name: "QA Frontend Assets"
           command: ./do qa:frontend-assets
   qa_php:
-    executor: wpcli_php_max_wporg
+    executor: wpcli_php_latest
     working_directory: /home/circleci/mailpoet/mailpoet
     steps:
       - attach_workspace:
