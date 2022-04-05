@@ -124,6 +124,7 @@ class Subscriber {
 
     foreach ($this->segments as $segment) {
       $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, 'subscribed');
+      $subscriber->getSubscriberSegments()->add($subscriberSegment);
       $entityManager->persist($subscriberSegment);
     }
 
