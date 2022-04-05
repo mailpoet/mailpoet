@@ -3,5 +3,5 @@
 namespace MailPoet\Mailer\Methods;
 
 interface MailerMethod {
-  public function send($newsletter, $subscriber, $extraParams = []): array;
+  public function send(array $newsletter, array $subscriber, array $extraParams = []): array;
 }
