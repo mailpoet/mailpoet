@@ -61,14 +61,14 @@ class SendWelcomeEmailAction implements Action {
       throw InvalidStateException::create()->withMessage(__('No mailpoet:segment subject provided.', 'mailpoet'));
     }
 
-    $globalSubscriberStatus = $subscriberSubject->getSubscriberStatusField()->getFactory()();
+    $globalSubscriberStatus = $subscriberSubject->getSubscriberStatusField()->getValue();
     if ($globalSubscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
       throw InvalidStateException::create()->withMessage(__(sprintf("Cannot send a welcome email to a subscriber with a global subscription status of '%s'.", $globalSubscriberStatus), 'mailpoet'));
     }
 
-    $segmentName = $segmentSubject->getNameField()->getFactory()();
+    $segmentName = $segmentSubject->getNameField()->getValue();
     $idField = $subscriberSubject->getSubscriberIdField();
-    $subscriberId = $idField->getFactory()();
+    $subscriberId = $idField->getValue();
     if ($subscriberId === null) {
       throw NotFoundException::create()->withMessage(__(sprintf("Subscriber with ID '%s' not found.", $subscriberId), 'mailpoet'));
     }
