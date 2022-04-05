@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.3
 Tested up to: 5.9
-Stable tag: 3.85.1
+Stable tag: 3.86.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -217,6 +217,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.86.0 - 2022-04-05 =
+* Improved: apply form success message styles also on Captcha confirmation page;
+* Fixed: potential "Call to undefined method" error.
 
 = 3.85.1 - 2022-03-29 =
 * Updated: 1and1 hosting renamed to "IONOS by 1&1";
