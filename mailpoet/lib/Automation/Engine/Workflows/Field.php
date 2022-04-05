@@ -54,6 +54,11 @@ class Field {
     return $this->factory;
   }
 
+  // @phpstan-ignore-next-line - there is no consistent return type
+  public function getValue() {
+    return $this->getFactory()();
+  }
+
   public function getArgs(): array {
     return $this->args;
   }
