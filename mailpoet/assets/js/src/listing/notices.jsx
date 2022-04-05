@@ -76,6 +76,16 @@ function MailerError(props) {
     () => <br key={`br-${brKey++}`} /> // eslint-disable-line no-plusplus
   );
 
+  if (props.mta_log.error.operation === 'pending_approval') {
+    return (
+      <div className="mailpoet_notice notice notice-error">
+        <p>
+          { message }
+        </p>
+      </div>
+    );
+  }
+
   if (props.mta_log.error.operation === 'insufficient_privileges') {
     return (
       <div className="mailpoet_notice notice notice-error">

@@ -169,4 +169,19 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
     expect($error->getMessage())->equals('Error while sending. Invalid MSS response format.');
   }
+
+  public function testGetPendingApprovalMessage() {
+    $apiResult = [
+      'code' => API::RESPONSE_CODE_CAN_NOT_SEND,
+      'status' => API::SENDING_STATUS_SEND_ERROR,
+      'message' => MailerError::MESSAGE_PENDING_APPROVAL,
+    ];
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
+    expect($error)->isInstanceOf(MailerError::class);
+    expect($error->getOperation())->equals(MailerError::OPERATION_PENDING_APPROVAL);
+    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    expect($error->getMessage())->stringContainsString('pending approval');
+    expect($error->getMessage())->stringContainsString("You’ll soon be able to send once our team reviews your account.");
+  }
+
 }
