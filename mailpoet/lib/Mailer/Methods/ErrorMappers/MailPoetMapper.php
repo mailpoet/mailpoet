@@ -91,23 +91,7 @@ class MailPoetMapper {
         $retryInterval = self::TEMPORARY_UNAVAILABLE_RETRY_INTERVAL;
         break;
       case API::RESPONSE_CODE_CAN_NOT_SEND:
-        if ($result['message'] === MailerError::MESSAGE_EMAIL_INSUFFICIENT_PRIVILEGES) {
-          $operation = MailerError::OPERATION_INSUFFICIENT_PRIVILEGES;
-          $message = $this->getInsufficientPrivilegesMessage();
-        } elseif ($result['message'] === MailerError::MESSAGE_EMAIL_VOLUME_LIMIT_REACHED) {
-          // Update the current email volume limit from MSS
-          $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
-          $result = $this->bridge->checkPremiumKey($premiumKey);
-          $this->bridge->storePremiumKeyAndState($premiumKey, $result);
-
-          $operation = MailerError::OPERATION_EMAIL_LIMIT_REACHED;
-          $message = $this->getEmailVolumeLimitReachedMessage();
-        } elseif ($result['message'] === MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED) {
-          $operation = MailerError::OPERATION_AUTHORIZATION;
-          $message = $this->getUnauthorizedEmailMessage($sender);
-        } else {
-          $message = $this->getAccountBannedMessage();
-        }
+        [$operation, $message] = $this->getCanNotSendError($result, $sender);
         break;
       case API::RESPONSE_CODE_KEY_INVALID:
       case API::RESPONSE_CODE_PAYLOAD_TOO_BIG:
@@ -210,5 +194,37 @@ class MailPoetMapper {
     );
 
     return "{$message}<br/>";
+  }
+
+  /**
+ * Returns error $message and $operation for API::RESPONSE_CODE_CAN_NOT_SEND
+ */
+  private function getCanNotSendError(array $result, array $sender): array {
+    if ($result['message'] === MailerError::MESSAGE_EMAIL_INSUFFICIENT_PRIVILEGES) {
+      $operation = MailerError::OPERATION_INSUFFICIENT_PRIVILEGES;
+      $message = $this->getInsufficientPrivilegesMessage();
+      return [$operation, $message];
+    }
+
+    if ($result['message'] === MailerError::MESSAGE_EMAIL_VOLUME_LIMIT_REACHED) {
+      // Update the current email volume limit from MSS
+      $premiumKey = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
+      $result = $this->bridge->checkPremiumKey($premiumKey);
+      $this->bridge->storePremiumKeyAndState($premiumKey, $result);
+
+      $operation = MailerError::OPERATION_EMAIL_LIMIT_REACHED;
+      $message = $this->getEmailVolumeLimitReachedMessage();
+      return [$operation, $message];
+    }
+
+    if ($result['message'] === MailerError::MESSAGE_EMAIL_NOT_AUTHORIZED) {
+      $operation = MailerError::OPERATION_AUTHORIZATION;
+      $message = $this->getUnauthorizedEmailMessage($sender);
+      return [$operation, $message];
+    }
+
+    $message = $this->getAccountBannedMessage();
+    $operation = MailerError::OPERATION_SEND;
+    return [$operation, $message];
   }
 }
