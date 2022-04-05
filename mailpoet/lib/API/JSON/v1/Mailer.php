@@ -51,9 +51,9 @@ class Mailer extends APIEndpoint {
   public function send($data = []) {
     try {
       $mailer = $this->mailerFactory->buildMailer(
-        (isset($data['mailer'])) ? $data['mailer'] : null,
-        (isset($data['sender'])) ? $data['sender'] : null,
-        (isset($data['reply_to'])) ? $data['reply_to'] : null
+        $data['mailer'] ?? null,
+        $data['sender'] ?? null,
+        $data['reply_to'] ?? null
       );
       // report this as 'sending_test' in metadata since this endpoint is only used to test sending methods for now
       $extraParams = [
