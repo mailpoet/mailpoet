@@ -604,7 +604,7 @@ workflows:
           mysql_command: --max_allowed_packet=100M
           mysql_image_version: 5.5-ram
           codeception_image_version: 7.4-cli_20210126.1
-          wordpress_image_version: wp-5.3_php7.2_20211213.1
+          wordpress_image_version: wp-5.6_php7.2_20220406.1
           requires:
             - build
       - unit_tests:
