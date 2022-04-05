@@ -111,6 +111,36 @@ class RoboFile extends \Robo\Tasks {
       )->run();
   }
 
+  public function translationsGetPotFileFromCircleCI() {
+    $potFilePathInsideZip = 'mailpoet/lang/mailpoet.pot';
+    $potFilePath = 'lang/mailpoet.pot';
+
+    if (!is_file(self::ZIP_BUILD_PATH)) {
+      $this->yell('mailpoet.zip file is missing. You must first download it from CircleCI using `./do release:download-zip`.', 40, 'red');
+      exit(1);
+    }
+
+    if (!is_file('mailpoet/lang')) {
+      $this->taskExec('mkdir -p ' . __DIR__ . '/lang')->run();
+    }
+
+    $zip = new ZipArchive();
+
+    if ($zip->open(self::ZIP_BUILD_PATH) === true) {
+      $potFileContent = $zip->getFromName($potFilePathInsideZip);
+      if ($potFileContent) {
+        file_put_contents($potFilePath, $potFileContent);
+        $this->say('mailpoet.pot extracted from the zip file to ' . $potFilePath);
+      } else {
+        $this->yell('Unable to find mailpoet.pot inside the zip file.', 40, 'red');
+        exit(1);
+      }
+    } else {
+      $this->yell('Unable to open the zip file.', 40, 'red');
+      exit(1);
+    }
+  }
+
   public function translationsPush() {
     $tokenEnvName = 'WP_TRANSIFEX_API_TOKEN';
     $token = getenv($tokenEnvName);
@@ -820,7 +850,7 @@ class RoboFile extends \Robo\Tasks {
         return $this->releaseDownloadZip();
       })
       ->addCode(function () {
-        return $this->translationsBuild();
+        return $this->translationsGetPotFileFromCircleCI();
       })
       ->addCode(function () {
         return $this->translationsPush();
