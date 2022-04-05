@@ -53,7 +53,7 @@ class Mailer {
   }
 
   public function getProcessingMethod() {
-    return ($this->mailer->mailerInstance instanceof MailPoet) ?
+    return ($this->mailer->mailerMethod instanceof MailPoet) ?
       'bulk' :
       'individual';
   }
@@ -66,7 +66,7 @@ class Mailer {
     if ($this->getProcessingMethod() === 'individual') {
       throw new \LogicException('Trying to send a batch with individual processing method');
     }
-    return $this->mailer->mailerInstance->send(
+    return $this->mailer->mailerMethod->send(
       $preparedNewsletters,
       $preparedSubscribers,
       $extraParams
@@ -77,7 +77,7 @@ class Mailer {
     if ($this->getProcessingMethod() === 'bulk') {
       throw new \LogicException('Trying to send an individual email with a bulk processing method');
     }
-    return $this->mailer->mailerInstance->send(
+    return $this->mailer->mailerMethod->send(
       $preparedNewsletter,
       $preparedSubscriber,
       $extraParams
