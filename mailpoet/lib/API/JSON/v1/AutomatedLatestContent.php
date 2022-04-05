@@ -59,8 +59,8 @@ class AutomatedLatestContent extends APIEndpoint {
       'order' => 'ASC',
     ];
 
-    $args = $this->wp->applyFilters('mailpoet_search_terms_args', $args);
-    $terms = WPPosts::getTerms($args);
+    $args = (array)$this->wp->applyFilters('mailpoet_search_terms_args', $args);
+    $terms = WPFunctions::get()->getTerms($args);
 
     return $this->successResponse(array_values($terms));
   }
