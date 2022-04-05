@@ -8,7 +8,7 @@ use MailPoet\Models\Subscriber;
 
 class Mailer {
   /** @var MailerMethod */
-  public $mailerInstance;
+  public $mailerMethod;
 
   const MAILER_CONFIG_SETTING_NAME = 'mta';
   const SENDING_LIMIT_INTERVAL_MULTIPLIER = 60;
@@ -19,9 +19,9 @@ class Mailer {
   const METHOD_SMTP = 'SMTP';
 
   public function __construct(
-    MailerMethod $mailerInstance
+    MailerMethod $mailerMethod
   ) {
-    $this->mailerInstance = $mailerInstance;
+    $this->mailerMethod = $mailerMethod;
   }
 
   public function send($newsletter, $subscriber, $extraParams = []) {
@@ -31,7 +31,7 @@ class Mailer {
       $subscriber = Subscriber::findOne($subscriber->getId());
     }
     $subscriber = $this->formatSubscriberNameAndEmailAddress($subscriber);
-    return $this->mailerInstance->send($newsletter, $subscriber, $extraParams);
+    return $this->mailerMethod->send($newsletter, $subscriber, $extraParams);
   }
 
   /**

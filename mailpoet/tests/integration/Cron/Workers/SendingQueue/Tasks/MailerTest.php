@@ -110,7 +110,7 @@ class MailerTest extends \MailPoetTest {
   public function testItCanSend() {
     $phpMailClass = 'MailPoet\Mailer\Methods\PHPMail';
     $mailerMock = Stub::makeEmpty(Mailer::class, [
-      'mailerInstance' => Stub::make(
+      'mailerMethod' => Stub::make(
         $phpMailClass,
         ['send' => Expected::exactly(1, function() {
           return ['response' => true];

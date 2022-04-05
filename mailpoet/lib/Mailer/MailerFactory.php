@@ -50,7 +50,7 @@ class MailerFactory {
     $returnPath = $returnPath ?? $this->getReturnPathAddress($sender);
     switch ($mailerConfig['method']) {
       case Mailer::METHOD_AMAZONSES:
-        $mailerInstance = new AmazonSES(
+        $mailerMethod = new AmazonSES(
           $mailerConfig['region'],
           $mailerConfig['access_key'],
           $mailerConfig['secret_key'],
@@ -61,7 +61,7 @@ class MailerFactory {
         );
         break;
       case Mailer::METHOD_MAILPOET:
-        $mailerInstance = new MailPoet(
+        $mailerMethod = new MailPoet(
           $mailerConfig['mailpoet_api_key'],
           $sender,
           $replyTo,
@@ -70,7 +70,7 @@ class MailerFactory {
         );
         break;
       case Mailer::METHOD_SENDGRID:
-        $mailerInstance = new SendGrid(
+        $mailerMethod = new SendGrid(
           $mailerConfig['api_key'],
           $sender,
           $replyTo,
@@ -78,7 +78,7 @@ class MailerFactory {
         );
         break;
       case Mailer::METHOD_PHPMAIL:
-        $mailerInstance = new PHPMail(
+        $mailerMethod = new PHPMail(
           $sender,
           $replyTo,
           $returnPath,
@@ -86,7 +86,7 @@ class MailerFactory {
         );
         break;
       case Mailer::METHOD_SMTP:
-        $mailerInstance = new SMTP(
+        $mailerMethod = new SMTP(
           $mailerConfig['host'],
           $mailerConfig['port'],
           $mailerConfig['authentication'],
@@ -102,7 +102,7 @@ class MailerFactory {
       default:
         throw new InvalidStateException(__('Mailing method does not exist.', 'mailpoet'));
     }
-    return new Mailer($mailerInstance);
+    return new Mailer($mailerMethod);
   }
 
   private function getMailerConfig(): array {

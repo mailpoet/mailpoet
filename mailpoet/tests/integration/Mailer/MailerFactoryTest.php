@@ -101,32 +101,32 @@ class MailerFactoryTest extends \MailPoetTest {
   public function testItCanBuildCorrectMailerMethodsBasedOnConfig() {
     $this->settings->set('mta', $this->mtaConfigs[Mailer::METHOD_PHPMAIL]);
     $mailer = $this->factory->getDefaultMailer();
-    $this->assertInstanceOf(PHPMail::class, $mailer->mailerInstance);
+    $this->assertInstanceOf(PHPMail::class, $mailer->mailerMethod);
 
     $this->factory = new MailerFactory($this->settings, $this->diContainer->get(WPFunctions::class));
     $this->settings->set('mta', $this->mtaConfigs[Mailer::METHOD_AMAZONSES]);
     $mailer = $this->factory->getDefaultMailer();
-    $this->assertInstanceOf(AmazonSES::class, $mailer->mailerInstance);
+    $this->assertInstanceOf(AmazonSES::class, $mailer->mailerMethod);
 
     $this->factory = new MailerFactory($this->settings, $this->diContainer->get(WPFunctions::class));
     $this->settings->set('mta', $this->mtaConfigs[Mailer::METHOD_MAILPOET]);
     $mailer = $this->factory->getDefaultMailer();
-    $this->assertInstanceOf(MailPoet::class, $mailer->mailerInstance);
+    $this->assertInstanceOf(MailPoet::class, $mailer->mailerMethod);
 
     $this->factory = new MailerFactory($this->settings, $this->diContainer->get(WPFunctions::class));
     $this->settings->set('mta', $this->mtaConfigs[Mailer::METHOD_SMTP]);
     $mailer = $this->factory->getDefaultMailer();
-    $this->assertInstanceOf(SMTP::class, $mailer->mailerInstance);
+    $this->assertInstanceOf(SMTP::class, $mailer->mailerMethod);
 
     $this->factory = new MailerFactory($this->settings, $this->diContainer->get(WPFunctions::class));
     $this->settings->set('mta', $this->mtaConfigs[Mailer::METHOD_SENDGRID]);
     $mailer = $this->factory->getDefaultMailer();
-    $this->assertInstanceOf(SendGrid::class, $mailer->mailerInstance);
+    $this->assertInstanceOf(SendGrid::class, $mailer->mailerMethod);
   }
 
   public function testItUsesProcessedSenderDataFromSettings() {
     $mailer = $this->factory->getDefaultMailer();
-    $mailerMethod = $mailer->mailerInstance;
+    $mailerMethod = $mailer->mailerMethod;
     $this->assertInstanceOf(PHPMail::class, $mailerMethod);
     expect($mailerMethod->sender)->equals([
       'from_name' => 'Sender',
@@ -144,7 +144,7 @@ class MailerFactoryTest extends \MailPoetTest {
   public function testItUsesSenderAsReplyToWhenReplyToIsNotSet() {
     $this->settings->set('reply_to', null);
     $mailer = $this->factory->getDefaultMailer();
-    $mailerMethod = $mailer->mailerInstance;
+    $mailerMethod = $mailer->mailerMethod;
     $this->assertInstanceOf(PHPMail::class, $mailerMethod);
     expect($mailerMethod->replyTo)->equals([
       'reply_to_name' => 'Sender',
@@ -156,7 +156,7 @@ class MailerFactoryTest extends \MailPoetTest {
   public function testItIgnoresInvalidBounceAddressAndUsesSenderAddressInstead() {
     $this->settings->set('bounce.address', 'invalid');
     $mailer = $this->factory->getDefaultMailer();
-    $mailerMethod = $mailer->mailerInstance;
+    $mailerMethod = $mailer->mailerMethod;
     $this->assertInstanceOf(PHPMail::class, $mailerMethod);
     expect($mailerMethod->returnPath)->equals('sender@email.com');
   }
@@ -164,7 +164,7 @@ class MailerFactoryTest extends \MailPoetTest {
   public function testItUsesSenderAddressInReplyToInCaseReplyToHasOnlyName() {
     $this->settings->set('reply_to', ['name' => 'Reply To']);
     $mailer = $this->factory->getDefaultMailer();
-    $mailerMethod = $mailer->mailerInstance;
+    $mailerMethod = $mailer->mailerMethod;
     $this->assertInstanceOf(PHPMail::class, $mailerMethod);
     expect($mailerMethod->replyTo)->equals([
       'reply_to_name' => 'Reply To',
@@ -184,7 +184,7 @@ class MailerFactoryTest extends \MailPoetTest {
       'address' => 'staff@mailinator.com',
     ]);
     $mailer = $this->factory->getDefaultMailer();
-    $mailerMethod = $mailer->mailerInstance;
+    $mailerMethod = $mailer->mailerMethod;
     $this->assertInstanceOf(PHPMail::class, $mailerMethod);
     expect($mailerMethod->sender['from_name'])->equals(sprintf('=?utf-8?B?%s?=', base64_encode('Sender Außergewöhnlichen тест системы')));
     expect($mailerMethod->replyTo['reply_to_name'])->equals(sprintf('=?utf-8?B?%s?=', base64_encode('Reply-To Außergewöhnlichen тест системы')));
