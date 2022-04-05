@@ -94,7 +94,7 @@ class SubscriberSubject extends AbstractSubject {
     return ['subscriber_id' => $subscriber->getId()];
   }
 
-  private function getSubscriber(): SubscriberEntity {
+  public function getSubscriber(): SubscriberEntity {
     if (!$this->subscriber) {
       throw InvalidStateException::create()->withMessage(__('Subscriber was not loaded.', 'mailpoet'));
     }
