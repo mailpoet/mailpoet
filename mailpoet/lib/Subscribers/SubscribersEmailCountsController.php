@@ -107,10 +107,12 @@ class SubscribersEmailCountsController {
 
   private function countAndMaxOfSubscribersInRange(int $startId, int $batchSize): array {
     $result = $this->entityManager->getConnection()->executeQuery("
-      SELECT s.id FROM {$this->subscribersTable} as s
-      WHERE s.id >= :startId
-      ORDER BY s.id
-      LIMIT :batchSize
+      SELECT COUNT(ids.id) as count, COALESCE(MAX(ids.id), 0) as max FROM (
+        SELECT s.id FROM {$this->subscribersTable} as s
+        WHERE s.id >= :startId
+        ORDER BY s.id
+        LIMIT :batchSize
+        ) ids
     ",
       [
         'startId' => $startId,
@@ -124,16 +126,6 @@ class SubscribersEmailCountsController {
 
     $subscribersInRange = $result->fetchAllAssociative();
 
-    $countSubscribersInRange = count(array_map(
-      function ($id) {
-        return (int)$id['id'];
-      },
-      $subscribersInRange
-    ));
-
-    if (!$countSubscribersInRange) {
-      return [0,0];
-    }
-    return [$countSubscribersInRange,$subscribersInRange[$countSubscribersInRange - 1]['id']];
+    return [$subscribersInRange[0]['count'], $subscribersInRange[0]['max']];
   }
 }
