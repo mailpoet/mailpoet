@@ -196,10 +196,32 @@ class MailPoetMapper {
     return "{$message}<br/>";
   }
 
+  private function getPendingApprovalMessage(): string {
+    $message = __("Your subscription is currently [link]pending approval[/link].You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to your authorized emails.", 'mailpoet');
+    $message = Helpers::replaceLinkTags(
+      $message,
+      'https://kb.mailpoet.com/article/350-pending-approval-subscription',
+      [
+        'target' => '_blank',
+        'rel' => 'noopener noreferrer',
+        'data-beacon-article' => '5fbd3942cff47e00160bd248',
+      ],
+      'link'
+    );
+
+    return "{$message}<br/>";
+  }
+
   /**
- * Returns error $message and $operation for API::RESPONSE_CODE_CAN_NOT_SEND
- */
-  private function getCanNotSendError(array $result, array $sender): array {
+   * Returns error $message and $operation for API::RESPONSE_CODE_CAN_NOT_SEND
+   */
+  private function getCanNotSendError(array $result, $sender): array {
+    if ($result['message'] === MailerError::MESSAGE_PENDING_APPROVAL) {
+      $operation = MailerError::OPERATION_PENDING_APPROVAL;
+      $message = $this->getPendingApprovalMessage();
+      return [$operation, $message];
+    }
+
     if ($result['message'] === MailerError::MESSAGE_EMAIL_INSUFFICIENT_PRIVILEGES) {
       $operation = MailerError::OPERATION_INSUFFICIENT_PRIVILEGES;
       $message = $this->getInsufficientPrivilegesMessage();
