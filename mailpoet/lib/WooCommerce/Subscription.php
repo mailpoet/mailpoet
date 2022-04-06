@@ -143,7 +143,7 @@ class Subscription {
       ],
       1
     );
-    return str_replace('type="text', 'type="hidden"', $field);
+    return str_replace('type="text"', 'type="hidden"', $field);
   }
 
   public function isCurrentUserSubscribed() {
