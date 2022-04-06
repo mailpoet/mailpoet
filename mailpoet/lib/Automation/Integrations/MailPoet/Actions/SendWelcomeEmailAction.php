@@ -3,11 +3,13 @@
 namespace MailPoet\Automation\Integrations\MailPoet\Actions;
 
 use MailPoet\Automation\Engine\Workflows\Action;
+use MailPoet\Automation\Engine\Workflows\ActionValidationResult;
 use MailPoet\Automation\Engine\Workflows\Step;
 use MailPoet\Automation\Engine\Workflows\Workflow;
 use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -49,47 +51,79 @@ class SendWelcomeEmailAction implements Action {
     return __('Send Welcome Email', 'mailpoet');
   }
 
-  public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
-    $subscriberSubject = $workflowRun->getSubjects()['mailpoet:subscriber'] ?? null;
-    if (!$subscriberSubject instanceof SubscriberSubject) {
-      throw InvalidStateException::create()->withMessage(__('No mailpoet:subscriber subject provided.', 'mailpoet'));
+  public function validate(Workflow $workflow, WorkflowRun $workflowRun, Step $step): ActionValidationResult {
+    $result = new ActionValidationResult();
+
+    if (!isset($step->getArgs()['welcomeEmailId'])) {
+      $result->addError(InvalidStateException::create()->withMessage('Step arguments did not include a welcomeEmailId.'));
+    } else {
+      $welcomeEmailId = (int)$step->getArgs()['welcomeEmailId'];
+      $newsletter = $this->newslettersRepository->findOneById($welcomeEmailId);
+      if ($newsletter === null) {
+        $result->addError(NotFoundException::create()->withMessage(__(sprintf("Welcome Email with ID '%s' not found.", $welcomeEmailId), 'mailpoet')));
+      } else {
+        $type = $newsletter->getType();
+        if ($type !== NewsletterEntity::TYPE_WELCOME) {
+          $result->addError(InvalidStateException::create()->withMessage("Newsletter must be a Welcome Email but actual type was '$type'."));
+        }
+      }
     }
 
     $segmentSubject = $workflowRun->getSubjects()['mailpoet:segment'] ?? null;
     if (!$segmentSubject instanceof SegmentSubject) {
-      throw InvalidStateException::create()->withMessage(__('No mailpoet:segment subject provided.', 'mailpoet'));
+      $result->addError(InvalidStateException::create()->withMessage(__('No mailpoet:segment subject provided.', 'mailpoet')));
+    } else {
+      $segment = $segmentSubject->getSegment();
     }
 
-    $segment = $segmentSubject->getSegment();
-    $subscriber = $subscriberSubject->getSubscriber();
+    $subscriberSubject = $workflowRun->getSubjects()['mailpoet:subscriber'] ?? null;
+    if (!$subscriberSubject instanceof SubscriberSubject) {
+      $result->addError(InvalidStateException::create()->withMessage(__('No mailpoet:subscriber subject provided.', 'mailpoet')));
+    } else {
+      $subscriber = $subscriberSubject->getSubscriber();
+      if ($subscriber->getStatus() !== SubscriberEntity::STATUS_SUBSCRIBED) {
+        $result->addError(InvalidStateException::create()->withMessage(__(sprintf("Cannot send a welcome email to a subscriber with a global subscription status of '%s'.", $subscriber->getStatus()), 'mailpoet')));
+      }
+    }
 
-    if ($subscriber->getStatus() !== SubscriberEntity::STATUS_SUBSCRIBED) {
-      throw InvalidStateException::create()->withMessage(__(sprintf("Cannot send a welcome email to a subscriber with a global subscription status of '%s'.", $subscriber->getStatus()), 'mailpoet'));
+    if (!isset($subscriber) || !isset($segment)) {
+      return $result;
     }
 
     $isSubscribed = $this->subscribersFinder->findSubscribersInSegments([$subscriber->getId()], [$segment->getId()]) !== [];
     if (!$isSubscribed) {
-      throw InvalidStateException::create()->withMessage(__(sprintf("Subscriber ID '%s' is not subscribed to segment ID '%s'.", $subscriber->getId(), $segment->getId()), 'mailpoet'));
+      $result->addError(InvalidStateException::create()->withMessage(__(sprintf("Subscriber ID '%s' is not subscribed to segment ID '%s'.", $subscriber->getId(), $segment->getId()), 'mailpoet')));
     }
 
-    $welcomeEmailId = (int)$step->getArgs()['welcomeEmailId'];
-    $newsletter = $this->newslettersRepository->findOneById($welcomeEmailId);
-    if ($newsletter === null) {
-      throw NotFoundException::create()->withMessage(__(sprintf("Welcome Email with ID '%s' not found.", $welcomeEmailId), 'mailpoet'));
+    if (!isset($newsletter)) {
+      return $result;
     }
 
-    // This check also occurs in createWelcomeNotificationSendingTask, in which case the method returns null, but
-    // that's not the only thing that causes a return value of null, so let's check here so we can craft a more
-    // meaningful exception.
     $previouslyScheduledNotification = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($newsletter, (int)$subscriber->getId());
     if (!empty($previouslyScheduledNotification)) {
-      throw InvalidStateException::create()->withMessage(__(sprintf("Newsletter with ID '%s' was previously scheduled for subscriber with ID '%s'.", $newsletter->getId(), $subscriber->getId())));
+      $result->addError(InvalidStateException::create()->withMessage(__(sprintf("Newsletter with ID '%s' was previously scheduled for subscriber with ID '%s'.", $newsletter->getId(), $subscriber->getId()))));
     }
 
-    $sendingTask = $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $subscriber->getId());
+    if (!$result->hasErrors()) {
+      $result->setValidatedParam('welcomeEmail', $newsletter);
+      $result->setValidatedParam('subscriberId', $subscriber->getId());
+    }
+
+    return $result;
+  }
+
+  public function run(ActionValidationResult $actionValidationResult): void {
+    if ($actionValidationResult->hasErrors()) {
+      // throw the exceptions chained together
+    }
+
+    $newsletter = $actionValidationResult->getValidatedParam('welcomeEmail');
+    $subscriberId = $actionValidationResult->getValidatedParam('subscriberId');
+
+
+    $sendingTask = $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $subscriberId);
     if ($sendingTask === null) {
-      // TODO: What exactly does this represent? I think it means the welcome email was configured to be triggered by a segment that has since been deleted. But in the case of this automation it seems like we shouldn't care about how the welcome email is configured. Do we need to be able to create welcome emails that have no explicit trigger segment? Basically something that says "This welcome email can only be triggered via an automation workflow"?
-      throw InvalidStateException::create()->withMessage("TBD");
+      throw InvalidStateException::create();
     }
 
     $errors = $sendingTask->getErrors();

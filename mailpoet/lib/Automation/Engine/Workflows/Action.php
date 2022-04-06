@@ -7,5 +7,7 @@ interface Action {
 
   public function getName(): string;
 
-  public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void;
+  public function validate(Workflow $workflow, WorkflowRun $workflowRun, Step $step): ActionValidationResult;
+
+  public function run(ActionValidationResult $actionValidationResult): void;
 }
