@@ -98,7 +98,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
 
-    expect(count($result))->equals(1);
+    expect(count($result))->equals(2);
     $filteredSubscriber = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $filteredSubscriber);
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
