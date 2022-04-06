@@ -33,7 +33,7 @@ class MailPoetCustomFields implements Filter {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscribersCustomFieldTable = $this->entityManager->getClassMetadata(SubscriberCustomFieldEntity::class)->getTableName();
 
-    $queryBuilder->innerJoin(
+    $queryBuilder->leftJoin(
       $subscribersTable,
       $subscribersCustomFieldTable,
       'subscribers_custom_field',
@@ -126,6 +126,7 @@ class MailPoetCustomFields implements Filter {
       $queryBuilder->setParameter($valueParam, $value);
     } elseif ($operator === 'not_equals') {
       $queryBuilder->andWhere("subscribers_custom_field.value != $valueParam");
+      $queryBuilder->orWhere('subscribers_custom_field.value IS NULL');
       $queryBuilder->setParameter($valueParam, $value);
     } elseif ($operator === 'more_than') {
       $queryBuilder->andWhere("subscribers_custom_field.value > $valueParam");
