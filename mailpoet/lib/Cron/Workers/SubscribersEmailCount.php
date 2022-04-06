@@ -4,6 +4,8 @@ namespace MailPoet\Cron\Workers;
 
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersEmailCountsController;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -18,13 +20,36 @@ class SubscribersEmailCount extends SimpleWorker {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var SettingsController */
+  private $settings;
+
+  /** @var TrackingConfig */
+  private $trackingConfig;
+
   public function __construct(
     SubscribersEmailCountsController $subscribersEmailCountsController,
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    SettingsController $settings,
+    TrackingConfig $trackingConfig
   ) {
     $this->subscribersEmailCountsController = $subscribersEmailCountsController;
     $this->entityManager = $entityManager;
+    $this->settings = $settings;
+    $this->trackingConfig = $trackingConfig;
     parent::__construct();
+  }
+
+  public function checkProcessingRequirements() {
+    if (!$this->trackingConfig->isEmailTrackingEnabled()) {
+      return false;
+    }
+
+    $daysToInactive = (int)$this->settings->get('deactivate_subscriber_after_inactive_days');
+    if ($daysToInactive === 0) {
+      return false;
+    }
+
+    return true;
   }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
