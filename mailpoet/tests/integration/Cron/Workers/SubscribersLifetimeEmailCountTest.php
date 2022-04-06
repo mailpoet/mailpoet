@@ -12,6 +12,8 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -49,6 +51,14 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $this->newsletter->setStatus(NewsletterEntity::STATUS_SENT);
     $this->entityManager->persist($this->newsletter);
     $this->entityManager->flush();
+  }
+
+  public function testItDoesntWorkIfInactiveSubscribersIsDisabled() {
+    $settings = SettingsController::getInstance();
+    $settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+    $settings->set('deactivate_subscriber_after_inactive_days', 0);
+
+    expect($this->worker->checkProcessingRequirements())->equals(false);
   }
 
   public function testItCalculatesTotalSubscribersEmailCountsOnFirstRun() {
