@@ -60,6 +60,7 @@ class API {
         $body = json_decode($this->wp->wpRemoteRetrieveBody($result), true);
         break;
       default:
+        $this->logKeyCheckError((int)$code, 'mss');
         $body = null;
         break;
     }
@@ -82,6 +83,7 @@ class API {
         }
         break;
       default:
+        $this->logKeyCheckError((int)$code, 'premium');
         $body = null;
         break;
     }
@@ -206,5 +208,14 @@ class API {
       'curl_info' => $this->curlHandle ? curl_getinfo($this->curlHandle) : 'n/a',
     ];
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_MSS)->error('requests-curl.failed', $logData);
+  }
+
+  private function logKeyCheckError(int $code, string $keyType): void {
+    $logData = [
+      'http_code' => $code,
+      'home_url' => $this->wp->homeUrl(),
+      'key_type' => $keyType,
+    ];
+    $this->loggerFactory->getLogger(LoggerFactory::TOPIC_MSS)->error('key-validation.failed', $logData);
   }
 }
