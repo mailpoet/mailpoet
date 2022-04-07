@@ -120,7 +120,7 @@ class RoboFile extends \Robo\Tasks {
       exit(1);
     }
 
-    if (!is_file('mailpoet/lang')) {
+    if (!file_exists(__DIR__ . '/lang')) {
       $this->taskExec('mkdir -p ' . __DIR__ . '/lang')->run();
     }
 
