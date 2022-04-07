@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use MailPoet\Config\Renderer;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
@@ -59,6 +60,9 @@ class Worker {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var ServicesChecker */
+  private $servicesChecker;
+
   public function __construct(
     Mailer $mailer,
     Renderer $renderer,
@@ -70,7 +74,8 @@ class Worker {
     NewsletterStatisticsRepository $newsletterStatisticsRepository,
     EntityManager $entityManager,
     SubscribersFeature $subscribersFeature,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    ServicesChecker $servicesChecker
   ) {
     $this->renderer = $renderer;
     $this->mailer = $mailer;
@@ -83,6 +88,7 @@ class Worker {
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersRepository = $subscribersRepository;
+    $this->servicesChecker = $servicesChecker;
   }
 
   /** @throws \Exception */
@@ -161,7 +167,9 @@ class Worker {
       'subscribersLimitReached' => $this->subscribersFeature->check(),
       'hasValidApiKey' => $hasValidApiKey,
       'subscribersLimit' => $this->subscribersFeature->getSubscribersLimit(),
-      'upgradeNowLink' => $hasValidApiKey ? 'https://account.mailpoet.com/upgrade' : 'https://account.mailpoet.com/?s=' . ($subscribersCount + 1),
+      'upgradeNowLink' => $hasValidApiKey
+        ? 'https://account.mailpoet.com/orders/upgrade/' . $this->servicesChecker->generatePartialApiKey()
+        : 'https://account.mailpoet.com/?s=' . ($subscribersCount + 1),
     ];
     if ($link) {
       $context['topLinkClicks'] = $link->getTotalClicksCount();

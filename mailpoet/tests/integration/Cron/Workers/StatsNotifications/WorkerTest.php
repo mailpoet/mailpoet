@@ -3,6 +3,7 @@
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
 use MailPoet\Config\Renderer;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -88,7 +89,8 @@ class WorkerTest extends \MailPoetTest {
       $this->diContainer->get(NewsletterStatisticsRepository::class),
       $this->entityManager,
       $this->diContainer->get(SubscribersFeature::class),
-      $this->diContainer->get(SubscribersRepository::class)
+      $this->diContainer->get(SubscribersRepository::class),
+      $this->diContainer->get(ServicesChecker::class)
     );
     $this->settings->set(Worker::SETTINGS_KEY, [
       'enabled' => true,

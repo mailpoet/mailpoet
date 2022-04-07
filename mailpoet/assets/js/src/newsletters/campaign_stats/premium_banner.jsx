@@ -53,8 +53,8 @@ function PremiumBanner() {
       .replace('[subscribersLimit]', window.mailpoet_subscribers_limit)
       .replace('[subscribersCount]', window.mailpoet_subscribers_count);
     const upgradeLink = hasValidApiKey
-      ? 'https://account.mailpoet.com/upgrade'
-      : `https://account.mailpoet.com/?s=${window.mailpoet_subscribers_count + 1}`;
+      ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl(MailPoet.pluginPartialKey)
+      : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(window.mailpoet_subscribers_count + 1);
 
     return (
       <div className="mailpoet-stats-premium-required">
