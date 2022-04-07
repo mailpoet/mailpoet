@@ -12,9 +12,14 @@ class Helpers {
     return json_last_error() == JSON_ERROR_NONE;
   }
 
-  public static function replaceLinkTags($source, $link = false, $attributes = [], $linkTag = false) {
-    if (!$link) return $source;
-    $linkTag = ($linkTag) ? $linkTag : self::LINK_TAG;
+  public static function replaceLinkTags(
+    string $source,
+    string $link,
+    array $attributes = [],
+    string $linkTag = self::LINK_TAG
+  ) {
+    if (empty($link)) return $source;
+
     $attributes = array_map(function($key) use ($attributes) {
       return sprintf('%s="%s"', $key, $attributes[$key]);
     }, array_keys($attributes));
