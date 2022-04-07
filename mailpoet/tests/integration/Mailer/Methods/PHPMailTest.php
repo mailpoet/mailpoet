@@ -103,7 +103,7 @@ class PHPMailTest extends \MailPoetTest {
       [
         [
           'List-Unsubscribe',
-          'http://www.mailpoet.com',
+          '<http://www.mailpoet.com>',
         ],
       ]
     );

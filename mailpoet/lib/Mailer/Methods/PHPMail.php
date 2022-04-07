@@ -80,7 +80,7 @@ class PHPMail {
     }
     $mailer->Sender = $this->returnPath; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     if (!empty($extraParams['unsubscribe_url'])) {
-      $this->mailer->addCustomHeader('List-Unsubscribe', $extraParams['unsubscribe_url']);
+      $this->mailer->addCustomHeader('List-Unsubscribe', '<' . $extraParams['unsubscribe_url'] . '>');
     }
 
     // Enforce base64 encoding when lines are too long, otherwise quoted-printable encoding
