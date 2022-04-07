@@ -111,12 +111,12 @@ class RoboFile extends \Robo\Tasks {
       )->run();
   }
 
-  public function translationsGetPotFileFromCircleCI() {
+  public function translationsGetPotFileFromBuild() {
     $potFilePathInsideZip = 'mailpoet/lang/mailpoet.pot';
     $potFilePath = 'lang/mailpoet.pot';
 
     if (!is_file(self::ZIP_BUILD_PATH)) {
-      $this->yell('mailpoet.zip file is missing. You must first download it from CircleCI using `./do release:download-zip`.', 40, 'red');
+      $this->yell('mailpoet.zip file is missing. You must first download it using `./do release:download-zip`.', 40, 'red');
       exit(1);
     }
 
@@ -850,7 +850,7 @@ class RoboFile extends \Robo\Tasks {
         return $this->releaseDownloadZip();
       })
       ->addCode(function () {
-        return $this->translationsGetPotFileFromCircleCI();
+        return $this->translationsGetPotFileFromBuild();
       })
       ->addCode(function () {
         return $this->translationsPush();
