@@ -23,9 +23,11 @@ class ActionStepRunner {
     if (!$action) {
       throw new InvalidStateException();
     }
-    $validationResult = $action->validate($workflow, $workflowRun, $step);
-    if (!$validationResult->hasErrors()) {
-      $action->run($validationResult);
+    $validationResult = $action->validate($workflow, $step, $workflowRun->getSubjects());
+    if ($validationResult->isValid()) {
+      $action->run($workflow, $workflowRun, $step);
+    } else {
+      throw InvalidStateException::create()->withErrors($validationResult->getErrors());
     }
   }
 }

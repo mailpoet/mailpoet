@@ -2,14 +2,14 @@
 
 namespace MailPoet\Automation\Engine;
 
-use MailPoet\Automation\Engine\Workflows\Action;
+use MailPoet\Automation\Engine\Workflows\ActionInterface;
 use MailPoet\Automation\Engine\Workflows\Trigger;
 
 class Registry {
   /** @var array<string, Trigger> */
   private $triggers = [];
 
-  /** @var array<string, Action> */
+  /** @var array<string, ActionInterface> */
   private $actions = [];
 
   public function addTrigger(Trigger $trigger): void {
@@ -29,7 +29,7 @@ class Registry {
     return $this->triggers;
   }
 
-  public function addAction(Action $action): void {
+  public function addAction(ActionInterface $action): void {
     $key = $action->getKey();
     if (isset($this->actions[$key])) {
       throw new \Exception(); // TODO
@@ -37,11 +37,11 @@ class Registry {
     $this->actions[$key] = $action;
   }
 
-  public function getAction(string $key): ?Action {
+  public function getAction(string $key): ?ActionInterface {
     return $this->actions[$key] ?? null;
   }
 
-  /** @return array<string, Action> */
+  /** @return array<string, ActionInterface> */
   public function getActions(): array {
     return $this->actions;
   }

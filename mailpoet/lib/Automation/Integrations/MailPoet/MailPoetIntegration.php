@@ -4,7 +4,7 @@ namespace MailPoet\Automation\Integrations\MailPoet;
 
 use MailPoet\Automation\Engine\Integration;
 use MailPoet\Automation\Engine\Registry;
-use MailPoet\Automation\Integrations\MailPoet\Actions\SendWelcomeEmailAction;
+use MailPoet\Automation\Integrations\MailPoet\Actions\SendWelcomeEmail\Action as SendWelcomeEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
 
 class MailPoetIntegration implements Integration {
