@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "engines": {
+    "npm": "^8.1"
+  },
+  "devDependencies": {
+    "prettier": "2.6.2"
+  }
+}
