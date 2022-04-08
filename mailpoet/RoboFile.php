@@ -20,6 +20,7 @@ class RoboFile extends \Robo\Tasks {
       ->stopOnFail()
       ->exec('./tools/vendor/composer.phar install')
       ->exec('npm ci --prefer-offline')
+      ->exec('cd .. && npm ci --prefer-offline')
       ->exec('cd ../eslint-config && npm ci --prefer-offline')
       ->run();
   }
