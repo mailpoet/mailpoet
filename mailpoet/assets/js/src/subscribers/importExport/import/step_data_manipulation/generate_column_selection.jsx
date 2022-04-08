@@ -78,7 +78,10 @@ export default () => {
             // prompt user
             if (elementId === selectedOptionId
               && elementId !== 'ignore') {
-              if (confirm(`${MailPoet.I18n.t('selectedValueAlreadyMatched')} ${MailPoet.I18n.t('confirmCorrespondingColumn')}`)) { // eslint-disable-line
+              if (
+                // eslint-disable-next-line no-restricted-globals, no-alert
+                confirm(`${MailPoet.I18n.t('selectedValueAlreadyMatched')} ${MailPoet.I18n.t('confirmCorrespondingColumn')}`)
+              ) {
                 jQuery(element).data('column-id', 'ignore');
               } else {
                 selectEvent.preventDefault();

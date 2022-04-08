@@ -9,9 +9,11 @@ import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
 var BL = BehaviorsLookup;
 
 BL.WooCommerceStylesBehavior = Marionette.Behavior.extend({
-  events: function () { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  events: function () {
     return {
-      'change #mailpoet_wc_branding_color': function (event) { // eslint-disable-line func-names
+      // eslint-disable-next-line func-names
+      'change #mailpoet_wc_branding_color': function (event) {
         let linkFontColor;
         const brandingColor = event.target.value;
         const headingFontColor = (this.wcHexIsLight(brandingColor)) ? '#202020' : '#ffffff';
@@ -28,7 +30,8 @@ BL.WooCommerceStylesBehavior = Marionette.Behavior.extend({
   },
   // This is the wc_hex_is_light() WooCommerce function ported from PHP to JS.
   // Taken from https://stackoverflow.com/a/51567564
-  wcHexIsLight: function (color) { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  wcHexIsLight: function (color) {
     const hex = color.replace('#', '');
     const colR = parseInt(hex.substr(0, 2), 16);
     const colG = parseInt(hex.substr(2, 2), 16);

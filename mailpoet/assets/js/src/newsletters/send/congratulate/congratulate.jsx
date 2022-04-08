@@ -143,8 +143,10 @@ class Congratulate extends Component {
   render() {
     return (
       <>
-        {/* eslint-disable-next-line react/no-danger */}
-        <style dangerouslySetInnerHTML={{ __html: 'body { background: #fff; overflow-x: hidden; }' }} />
+        <style
+          /* eslint-disable-next-line react/no-danger */
+          dangerouslySetInnerHTML={{ __html: 'body { background: #fff; overflow-x: hidden; }' }}
+        />
         <div className="mailpoet-congratulate">
           <div className="mailpoet-gap-large" />
           {this.renderContent()}

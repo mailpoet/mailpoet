@@ -8,7 +8,9 @@ import BackboneMarionette from 'backbone.marionette'; // eslint-disable-line fun
 
 var Marionette = BackboneMarionette;
 var BehaviorsLookup = {};
-Marionette.Behaviors.behaviorsLookup = function () { // eslint-disable-line func-names
+
+// eslint-disable-next-line func-names
+Marionette.Behaviors.behaviorsLookup = function () {
   return BehaviorsLookup;
 };
 

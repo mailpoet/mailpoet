@@ -2,7 +2,8 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Input from 'common/form/input/input';
 
-class FormFieldText extends Component { // eslint-disable-line react/prefer-stateless-function, max-len
+// eslint-disable-next-line react/prefer-stateless-function, max-len
+class FormFieldText extends Component {
   render() {
     const name = this.props.field.name || null;
     const item = this.props.item || {};

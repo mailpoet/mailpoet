@@ -79,15 +79,19 @@ export const MailPoetNotice = {
     }
 
     // listen to remove event
-    jQuery(this.element).on('close', function () { // eslint-disable-line func-names
-      jQuery(this).fadeOut(200, function () { // eslint-disable-line func-names
-        // on close callback
-        if (onClose !== null) {
-          onClose();
-        }
-        // remove notice
-        jQuery(this).remove();
-      });
+    jQuery(this.element).on(
+      'close',
+      // eslint-disable-next-line func-names
+      function () {
+        // eslint-disable-next-line func-names
+        jQuery(this).fadeOut(200, function () {
+          // on close callback
+          if (onClose !== null) {
+            onClose();
+          }
+          // remove notice
+          jQuery(this).remove();
+        });
     }.bind(this.element));
 
     return this;
@@ -161,14 +165,19 @@ export const MailPoetNotice = {
 
     // if the notice is not static, it has to disappear after a timeout
     if (this.options.static === false) {
-      setTimeout(function (target) { // eslint-disable-line func-names
-        target.trigger('close');
-      }, this.options.timeout, this.element);
+      setTimeout(
+        // eslint-disable-next-line func-names
+        function (target) {
+         target.trigger('close');
+        },
+        this.options.timeout, this.element
+      );
     }
 
     if (this.options.hideClose === false) {
       this.element.append('<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>');
-      this.element.find('.notice-dismiss').on('click', function () { // eslint-disable-line func-names
+      // eslint-disable-next-line func-names
+      this.element.find('.notice-dismiss').on('click', function () {
         jQuery(this).trigger('close');
       });
     }

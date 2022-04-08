@@ -16,12 +16,14 @@ BL.ShowSettingsBehavior = Marionette.Behavior.extend({
   events: {
     'click .mailpoet_content': 'showSettings',
   },
-  showSettings: function (event) { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  showSettings: function (event) {
     if (!this.isIgnoredElement(event.target)) {
       this.view.triggerMethod('showSettings');
     }
   },
-  isIgnoredElement: function (element) { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  isIgnoredElement: function (element) {
     return this.options.ignoreFrom
         && this.options.ignoreFrom.length > 0
         && jQuery(element).is(this.options.ignoreFrom);

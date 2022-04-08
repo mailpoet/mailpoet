@@ -1,5 +1,6 @@
 export const MailPoetNum = {
-  toLocaleFixed: function (num, precisionOpts) { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  toLocaleFixed: function (num, precisionOpts) {
     var precision = precisionOpts || 0;
     var factor = 10 ** precision;
     return (Math.round(num * factor) / factor)

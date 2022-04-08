@@ -14,8 +14,10 @@ function ColumnDataMatch({ header, subscribers }) {
       <th>{MailPoet.I18n.t('matchData')}</th>
       {
         matchedColumnTypes.map((columnType, i) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <th key={columnType.column_id + i}>
+          <th
+            // eslint-disable-next-line react/no-array-index-key
+            key={columnType.column_id + i}
+          >
             {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <select
               className="mailpoet_subscribers_column_data_match"
@@ -60,8 +62,14 @@ function Subscriber({ subscriber, index }) {
   return (
     <>
       <td>{index}</td>
-      {/* eslint-disable-next-line react/no-array-index-key */}
-      {subscriber.map((field, i) => <td key={`${field}-${index}-${i}`}>{field}</td>)}
+      {subscriber.map((field, i) => (
+        <td
+          /* eslint-disable-next-line react/no-array-index-key */
+          key={`${field}-${index}-${i}`}
+        >
+          {field}
+        </td>
+      ))}
     </>
   );
 }
