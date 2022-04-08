@@ -26,7 +26,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
   }
 
   public function testItDoesNotGetPostTypesExludedFromSearch() {
-    $response = $this->endpoint ->getPostTypes();
+    $response = $this->endpoint->getPostTypes();
     // WP's default post type 'revision' is excluded from search
     // https://codex.wordpress.org/Post_Types
     $revisionPostType = get_post_type_object('revision');
