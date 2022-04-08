@@ -41,7 +41,8 @@
       {
         "either": "either" // control has to be either nested or associated via htmlFor
       }
-    ]
+    ],
+    "import/no-default-export": 1 // no default exports
   },
   "overrides": [
     {
