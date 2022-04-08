@@ -6,21 +6,17 @@ import Select from 'common/form/select/select';
 import Input from 'common/form/input/input';
 import { Grid } from 'common/grid';
 
-import {
-  WordpressRoleFormItem,
-} from '../../types';
+import { WordpressRoleFormItem } from '../../types';
 
 export function validateText(item: WordpressRoleFormItem): boolean {
   return (
-    (typeof item.value === 'string')
-    && (item.value.length > 0)
-    && (
-      (item.operator === 'equals')
-      || (item.operator === 'contains')
-      || (item.operator === 'not_equals')
-      || (item.operator === 'more_than')
-      || (item.operator === 'less_than')
-    )
+    typeof item.value === 'string' &&
+    item.value.length > 0 &&
+    (item.operator === 'equals' ||
+      item.operator === 'contains' ||
+      item.operator === 'not_equals' ||
+      item.operator === 'more_than' ||
+      item.operator === 'less_than')
   );
 }
 
@@ -28,13 +24,16 @@ type Props = {
   filterIndex: number;
 };
 
-export function Text({ filterIndex }:Props):JSX.Element {
+export function Text({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilterFromEvent, updateSegmentFilter } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilterFromEvent, updateSegmentFilter } = useDispatch(
+    'mailpoet-dynamic-segments-form',
+  );
 
   useEffect(() => {
     if (segment.operator === undefined) {

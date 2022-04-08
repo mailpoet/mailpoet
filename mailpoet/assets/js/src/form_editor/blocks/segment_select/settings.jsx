@@ -12,7 +12,8 @@ import { useSelect } from '@wordpress/data';
 
 import Preview from './settings_preview.jsx';
 
-const findSegment = (segments, segmentId) => segments.find((s) => s.id === segmentId);
+const findSegment = (segments, segmentId) =>
+  segments.find((s) => s.id === segmentId);
 
 function SegmentSelectSettings({
   label,
@@ -23,14 +24,17 @@ function SegmentSelectSettings({
 }) {
   const allSegments = useSelect(
     (select) => select('mailpoet-form-editor').getAllAvailableSegments(),
-    []
+    [],
   );
 
-  const segmentsListToBeAdded = allSegments.map((segment) => ({
-    label: segment.name,
-    value: segment.id,
-  }))
-    .filter((segment) => !findSegment(segmentsAddedIntoSelection, segment.value));
+  const segmentsListToBeAdded = allSegments
+    .map((segment) => ({
+      label: segment.name,
+      value: segment.id,
+    }))
+    .filter(
+      (segment) => !findSegment(segmentsAddedIntoSelection, segment.value),
+    );
 
   const addSegment = (segmentId) => {
     const segment = findSegment(allSegments, segmentId);
@@ -42,17 +46,19 @@ function SegmentSelectSettings({
   };
 
   const updateSegment = (segment) => {
-    setNewSelection(segmentsAddedIntoSelection.map((segmentInSelection) => {
-      if (segment.id !== segmentInSelection) {
-        return segmentInSelection;
-      }
-      return segment;
-    }));
+    setNewSelection(
+      segmentsAddedIntoSelection.map((segmentInSelection) => {
+        if (segment.id !== segmentInSelection) {
+          return segmentInSelection;
+        }
+        return segment;
+      }),
+    );
   };
 
   const removeSegment = (segmentId) => {
     setNewSelection(
-      segmentsAddedIntoSelection.filter((segment) => segmentId !== segment.id)
+      segmentsAddedIntoSelection.filter((segment) => segmentId !== segment.id),
     );
   };
 
@@ -101,11 +107,13 @@ SegmentSelectSettings.propTypes = {
   onLabelChanged: PropTypes.func.isRequired,
   addSegmentIntoSelection: PropTypes.func.isRequired,
   setNewSelection: PropTypes.func.isRequired,
-  segmentsAddedIntoSelection: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    isChecked: PropTypes.bool,
-    id: PropTypes.string.isRequired,
-  }).isRequired).isRequired,
+  segmentsAddedIntoSelection: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      isChecked: PropTypes.bool,
+      id: PropTypes.string.isRequired,
+    }).isRequired,
+  ).isRequired,
 };
 
 export default SegmentSelectSettings;

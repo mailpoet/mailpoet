@@ -9,7 +9,10 @@ export default function SendGridFields() {
   const options = useSelector('getSendGridOptions')();
   return (
     <>
-      <SendingFrequency recommendedEmails={options.emails} recommendedInterval={options.interval} />
+      <SendingFrequency
+        recommendedEmails={options.emails}
+        recommendedInterval={options.interval}
+      />
       <Label title={t('apiKey')} htmlFor="mailpoet_sendgrid_api_key" />
       <Inputs>
         <Input

@@ -1,6 +1,10 @@
 import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { SelectControl, RadioControl, ToggleControl } from '@wordpress/components';
+import {
+  SelectControl,
+  RadioControl,
+  ToggleControl,
+} from '@wordpress/components';
 import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 import AnimationSettings from './animation_settings';
@@ -9,7 +13,7 @@ import CookieSettings from './cookie_settings';
 
 const delayValues = [0, 2, 5, 10, 15, 30, 45, 60, 120, 180, 240];
 
-function SlideInSettings():JSX.Element {
+function SlideInSettings(): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -24,7 +28,10 @@ function SlideInSettings():JSX.Element {
       <ToggleControl
         label={MailPoet.I18n.t('enable')}
         checked={isActive}
-        onChange={compose([changeFormSettings, assocPath('formPlacement.slideIn.enabled', __, formSettings)])}
+        onChange={compose([
+          changeFormSettings,
+          assocPath('formPlacement.slideIn.enabled', __, formSettings),
+        ])}
       />
       {isActive && (
         <>
@@ -33,10 +40,19 @@ function SlideInSettings():JSX.Element {
             label={MailPoet.I18n.t('formPlacementPlacementPosition')}
             selected={formSettings.formPlacement.slideIn.position}
             options={[
-              { label: MailPoet.I18n.t('formPlacementPlacementPositionLeft'), value: 'left' },
-              { label: MailPoet.I18n.t('formPlacementPlacementPositionRight'), value: 'right' },
+              {
+                label: MailPoet.I18n.t('formPlacementPlacementPositionLeft'),
+                value: 'left',
+              },
+              {
+                label: MailPoet.I18n.t('formPlacementPlacementPositionRight'),
+                value: 'right',
+              },
             ]}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.slideIn.position', __, formSettings)])}
+            onChange={compose([
+              changeFormSettings,
+              assocPath('formPlacement.slideIn.position', __, formSettings),
+            ])}
           />
           <SizeSettings
             label={MailPoet.I18n.t('formSettingsWidth')}
@@ -47,19 +63,31 @@ function SlideInSettings():JSX.Element {
             maxPercents={100}
             defaultPixelValue={560}
             defaultPercentValue={100}
-            onChange={(width): void => (
-              changeFormSettings(assocPath('formPlacement.slideIn.styles.width', width, formSettings))
-            )}
+            onChange={(width): void =>
+              changeFormSettings(
+                assocPath(
+                  'formPlacement.slideIn.styles.width',
+                  width,
+                  formSettings,
+                ),
+              )
+            }
           />
           <PlacementSettings settingsPlacementKey="slideIn" />
           <AnimationSettings settingsPlacementKey="slideIn" />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
             value={formSettings.formPlacement.slideIn.delay}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.slideIn.delay', __, formSettings)])}
+            onChange={compose([
+              changeFormSettings,
+              assocPath('formPlacement.slideIn.delay', __, formSettings),
+            ])}
             options={delayValues.map((delayValue) => ({
               value: delayValue,
-              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', `${delayValue}`),
+              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace(
+                '%1s',
+                `${delayValue}`,
+              ),
             }))}
           />
           <CookieSettings settingsPlacementKey="slideIn" />

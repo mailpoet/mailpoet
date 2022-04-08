@@ -18,10 +18,7 @@ const NewsletterPropType = PropTypes.shape({
   id: PropTypes.number.isRequired,
   sent_at: PropTypes.string,
   status: PropTypes.string.isRequired,
-  queue: PropTypes.oneOfType([
-    QueuePropType,
-    PropTypes.bool,
-  ]),
+  queue: PropTypes.oneOfType([QueuePropType, PropTypes.bool]),
 });
 
 function QueueSending({ newsletter }) {
@@ -59,8 +56,16 @@ function QueueSending({ newsletter }) {
   return (
     <>
       <APIErrorsNotice errors={errors} />
-      {paused && <Button dimension="small" onClick={resumeSending}>{MailPoet.I18n.t('resume')}</Button>}
-      {!paused && <Button dimension="small" onClick={pauseSending}>{MailPoet.I18n.t('pause')}</Button>}
+      {paused && (
+        <Button dimension="small" onClick={resumeSending}>
+          {MailPoet.I18n.t('resume')}
+        </Button>
+      )}
+      {!paused && (
+        <Button dimension="small" onClick={pauseSending}>
+          {MailPoet.I18n.t('pause')}
+        </Button>
+      )}
     </>
   );
 }
@@ -71,14 +76,22 @@ QueueSending.propTypes = {
 function QueueStatus({ newsletter, mailerLog }) {
   let newsletterDate = newsletter.sent_at || newsletter.queue.scheduled_at;
   if (newsletterDate) {
-    newsletterDate = parseDate(newsletterDate, 'yyyy-MM-dd HH:mm:ss', new Date());
+    newsletterDate = parseDate(
+      newsletterDate,
+      'yyyy-MM-dd HH:mm:ss',
+      new Date(),
+    );
   }
-  const isNewsletterSending = newsletter.queue && newsletter.queue.status !== 'scheduled';
+  const isNewsletterSending =
+    newsletter.queue && newsletter.queue.status !== 'scheduled';
   const isMtaPaused = mailerLog.status === 'paused';
 
   const renderSentNewsletter = (
     <>
-      <Link to={`/sending-status/${newsletter.id}`} data-automation-id={`sending_status_${newsletter.id}`}>
+      <Link
+        to={`/sending-status/${newsletter.id}`}
+        data-automation-id={`sending_status_${newsletter.id}`}
+      >
         <NewsletterStatus
           processed={parseInt(newsletter.queue.count_processed, 10)}
           scheduledFor={newsletterDate}
@@ -87,7 +100,9 @@ function QueueStatus({ newsletter, mailerLog }) {
           status={newsletter.status}
         />
       </Link>
-      {(newsletter.queue.status !== 'completed' && !isMtaPaused) && <QueueSending newsletter={newsletter} />}
+      {newsletter.queue.status !== 'completed' && !isMtaPaused && (
+        <QueueSending newsletter={newsletter} />
+      )}
     </>
   );
 

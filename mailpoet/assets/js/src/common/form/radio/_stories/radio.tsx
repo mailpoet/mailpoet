@@ -23,18 +23,10 @@ export function Radios() {
     <>
       <Heading level={3}>Inline individual radios</Heading>
       <div>
-        <Radio
-          onCheck={action('radio-individual-1')}
-          name="story"
-          value="1"
-        >
+        <Radio onCheck={action('radio-individual-1')} name="story" value="1">
           Option 1
         </Radio>
-        <Radio
-          onCheck={action('radio-individual-2')}
-          name="story"
-          value="2"
-        >
+        <Radio onCheck={action('radio-individual-2')} name="story" value="2">
           Option 2
         </Radio>
       </div>

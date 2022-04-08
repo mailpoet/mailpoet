@@ -24,7 +24,9 @@ export function createSelection(segments, onSelectionChange) {
       templateSelection: templateRendered,
     })
     .on('change', (event) => {
-      const segmentSelectionNotice = jQuery('[data-id="notice_segmentSelection"]');
+      const segmentSelectionNotice = jQuery(
+        '[data-id="notice_segmentSelection"]',
+      );
       if (!event.currentTarget.value) {
         if (!segmentSelectionNotice.length) {
           MailPoet.Notice.error(MailPoet.I18n.t('segmentSelectionRequired'), {
@@ -45,11 +47,8 @@ export function createSelection(segments, onSelectionChange) {
 export function destroySelection() {
   const segmentSelectElement = jQuery('select#mailpoet_segments_select');
   if (segmentSelectElement.data('select2')) {
-    segmentSelectElement
-      .select2('destroy');
-    segmentSelectElement
-      .find('option')
-      .remove();
+    segmentSelectElement.select2('destroy');
+    segmentSelectElement.find('option').remove();
     segmentSelectElement
       .off('select2:unselecting')
       .off('change')

@@ -19,20 +19,23 @@ type Props = {
   filterIndex: number;
 };
 
-export function WordpressRoleFields({ filterIndex }:Props) : JSX.Element {
+export function WordpressRoleFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
+    'mailpoet-dynamic-segments-form',
+  );
 
   useEffect(() => {
     if (
-      (segment.action === SubscriberActionTypes.WORDPRESS_ROLE)
-      && (segment.operator !== AnyValueTypes.ANY)
-      && (segment.operator !== AnyValueTypes.ALL)
-      && (segment.operator !== AnyValueTypes.NONE)
+      segment.action === SubscriberActionTypes.WORDPRESS_ROLE &&
+      segment.operator !== AnyValueTypes.ANY &&
+      segment.operator !== AnyValueTypes.ALL &&
+      segment.operator !== AnyValueTypes.NONE
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
@@ -60,7 +63,9 @@ export function WordpressRoleFields({ filterIndex }:Props) : JSX.Element {
         >
           <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
           <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-          <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+          <option value={AnyValueTypes.NONE}>
+            {MailPoet.I18n.t('noneOf')}
+          </option>
         </Select>
       </Grid.CenteredRow>
       <Grid.CenteredRow>
@@ -71,15 +76,10 @@ export function WordpressRoleFields({ filterIndex }:Props) : JSX.Element {
           automationId="segment-wordpress-role"
           placeholder={MailPoet.I18n.t('selectUserRolePlaceholder')}
           options={options}
-          value={
-            filter(
-              (option) => {
-                if (!segment.wordpressRole) return undefined;
-                return segment.wordpressRole.indexOf(option.value) !== -1;
-              },
-              options,
-            )
-          }
+          value={filter((option) => {
+            if (!segment.wordpressRole) return undefined;
+            return segment.wordpressRole.indexOf(option.value) !== -1;
+          }, options)}
           onChange={(selectOptions: SelectOption[]): void => {
             updateSegmentFilter(
               { wordpressRole: map('value', selectOptions) },

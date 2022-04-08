@@ -6,11 +6,16 @@ import Notice from 'notices/notice';
 function EmailVolumeLimitNotice(): JSX.Element {
   if (!MailPoet.emailVolumeLimitReached) return null;
 
-  const title = MailPoet.I18n.t('emailVolumeLimitNoticeTitle')
-    .replace('[emailVolumeLimit]', MailPoet.emailVolumeLimit);
-  const youReachedEmailVolumeLimit = MailPoet.I18n.t('youReachedEmailVolumeLimit')
-    .replace('[emailVolumeLimit]', MailPoet.emailVolumeLimit);
-  const upgradeLink = MailPoet.MailPoetComUrlFactory.getUpgradeUrl(MailPoet.pluginPartialKey);
+  const title = MailPoet.I18n.t('emailVolumeLimitNoticeTitle').replace(
+    '[emailVolumeLimit]',
+    MailPoet.emailVolumeLimit,
+  );
+  const youReachedEmailVolumeLimit = MailPoet.I18n.t(
+    'youReachedEmailVolumeLimit',
+  ).replace('[emailVolumeLimit]', MailPoet.emailVolumeLimit);
+  const upgradeLink = MailPoet.MailPoetComUrlFactory.getUpgradeUrl(
+    MailPoet.pluginPartialKey,
+  );
   const refreshSubscribers = async () => {
     await MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
@@ -21,17 +26,26 @@ function EmailVolumeLimitNotice(): JSX.Element {
   };
 
   const date = new Date();
-  const firstDayOfTheNextMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+  const firstDayOfTheNextMonth = new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    1,
+  );
   let toContinueUpgradeYourPlanOrWaitUntil = ReactStringReplace(
     MailPoet.I18n.t('toContinueUpgradeYourPlanOrWaitUntil'),
     /\[link](.*?)\[\/link]/g,
-    (match) => (<a target="_blank" rel="noreferrer" href={upgradeLink} key={match}>{match}</a>),
+    (match) => (
+      <a target="_blank" rel="noreferrer" href={upgradeLink} key={match}>
+        {match}
+      </a>
+    ),
   );
 
   toContinueUpgradeYourPlanOrWaitUntil = ReactStringReplace(
     toContinueUpgradeYourPlanOrWaitUntil,
     /<b>\[date]<\/b>\./g,
-    () => (ReactHtmlParser(`<b>${MailPoet.Date.short(firstDayOfTheNextMonth)}</b>.`)),
+    () =>
+      ReactHtmlParser(`<b>${MailPoet.Date.short(firstDayOfTheNextMonth)}</b>.`),
   );
 
   return (
@@ -50,13 +64,8 @@ function EmailVolumeLimitNotice(): JSX.Element {
           href={upgradeLink}
         >
           {MailPoet.I18n.t('upgradeNow')}
-        </a>
-        {' '}
-        <button
-          type="button"
-          className="button"
-          onClick={refreshSubscribers}
-        >
+        </a>{' '}
+        <button type="button" className="button" onClick={refreshSubscribers}>
           {MailPoet.I18n.t('refreshMyEmailVolumeLimit')}
         </button>
       </p>

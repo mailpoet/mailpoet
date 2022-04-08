@@ -10,7 +10,8 @@ import _ from 'underscore';
 import PropTypes from 'prop-types';
 import { GlobalContext } from 'context/index.jsx';
 
-const getEditorUrl = (id) => `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
+const getEditorUrl = (id) =>
+  `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
 
 const templatesCategories = [];
 if (window.mailpoet_newsletters_templates_recently_sent_count) {
@@ -42,7 +43,7 @@ templatesCategories.push(
       name: 'blank',
       label: MailPoet.I18n.t('tabBlankTitle'),
     },
-  ]
+  ],
 );
 
 if (window.mailpoet_woocommerce_active) {
@@ -58,7 +59,7 @@ templatesCategories.push(
       name: 'saved',
       label: MailPoet.I18n.t('savedTemplates'),
     },
-  ]
+  ],
 );
 
 class NewsletterTemplates extends Component {
@@ -83,41 +84,49 @@ class NewsletterTemplates extends Component {
       api_version: window.mailpoet_api_version,
       endpoint: 'newsletterTemplates',
       action: 'getAll',
-    }).done((response) => {
-      if (response.data.length === 0) {
-        response.data = [
-          {
-            name:
-              MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
-            categories: '["welcome", "notification", "standard", "woocommerce"]',
-            readonly: true,
-          },
-        ];
-      }
-      response.data.forEach(this.addTemplate);
-      this.sortTemplates();
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.context.notices.error(
-          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-          { scroll: true }
-        );
-      }
-    }).always(() => {
-      this.selectInitialTab();
-    });
+    })
+      .done((response) => {
+        if (response.data.length === 0) {
+          response.data = [
+            {
+              name: MailPoet.I18n.t('mailpoetGuideTemplateTitle'),
+              categories:
+                '["welcome", "notification", "standard", "woocommerce"]',
+              readonly: true,
+            },
+          ];
+        }
+        response.data.forEach(this.addTemplate);
+        this.sortTemplates();
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          this.context.notices.error(
+            response.errors.map((error) => (
+              <p key={error.message}>{error.message}</p>
+            )),
+            { scroll: true },
+          );
+        }
+      })
+      .always(() => {
+        this.selectInitialTab();
+      });
   }
 
   addTemplate(template) {
-    const categoriesNames = templatesCategories.map((category) => category.name);
+    const categoriesNames = templatesCategories.map(
+      (category) => category.name,
+    );
     let categories;
 
     if (categoriesNames.indexOf('woocommerce') === -1) {
       categoriesNames.push('woocommerce');
     }
     try {
-      categories = JSON.parse(template.categories)
-        .filter((name) => categoriesNames.indexOf(name) !== -1);
+      categories = JSON.parse(template.categories).filter(
+        (name) => categoriesNames.indexOf(name) !== -1,
+      );
     } catch (err) {
       categories = [];
     }
@@ -142,10 +151,16 @@ class NewsletterTemplates extends Component {
       this.templates[category].sort((a, b) => {
         // MAILPOET-2087 - templates of type "blank" should be first
         if (blankFirstCategories.includes(category)) {
-          if (a.categories.includes('"blank"') && !b.categories.includes('"blank"')) {
+          if (
+            a.categories.includes('"blank"') &&
+            !b.categories.includes('"blank"')
+          ) {
             return -1;
           }
-          if (!a.categories.includes('"blank"') && b.categories.includes('"blank"')) {
+          if (
+            !a.categories.includes('"blank"') &&
+            b.categories.includes('"blank"')
+          ) {
             return 1;
           }
         }
@@ -167,43 +182,52 @@ class NewsletterTemplates extends Component {
       data: {
         id: this.props.match.params.id,
       },
-    }).done((response) => {
-      emailType = response.data.type;
-      if (emailType === 'automatic') {
-        emailType = response.data.options.group || emailType;
-      }
-      if (window.mailpoet_newsletters_templates_recently_sent_count) {
-        selectedTab = 'recent';
-      } else if (_.findWhere(templatesCategories, { name: response.data.type })) {
-        selectedTab = response.data.type;
-      } else if (
-        response.data.type === 'automatic'
-        && _.findWhere(templatesCategories, { name: response.data.options.group })
-      ) {
-        selectedTab = response.data.options.group;
-      }
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.context.notices.error(
-          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-          { scroll: true }
-        );
-      }
-    }).always(() => {
-      this.setState({
-        templates: this.templates,
-        emailType,
-        selectedTab,
-        loading: false,
+    })
+      .done((response) => {
+        emailType = response.data.type;
+        if (emailType === 'automatic') {
+          emailType = response.data.options.group || emailType;
+        }
+        if (window.mailpoet_newsletters_templates_recently_sent_count) {
+          selectedTab = 'recent';
+        } else if (
+          _.findWhere(templatesCategories, { name: response.data.type })
+        ) {
+          selectedTab = response.data.type;
+        } else if (
+          response.data.type === 'automatic' &&
+          _.findWhere(templatesCategories, {
+            name: response.data.options.group,
+          })
+        ) {
+          selectedTab = response.data.options.group;
+        }
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          this.context.notices.error(
+            response.errors.map((error) => (
+              <p key={error.message}>{error.message}</p>
+            )),
+            { scroll: true },
+          );
+        }
+      })
+      .always(() => {
+        this.setState({
+          templates: this.templates,
+          emailType,
+          selectedTab,
+          loading: false,
+        });
       });
-    });
   }
 
   afterTemplateDelete(success, id) {
     if (success) {
       Object.keys(this.templates).forEach((category) => {
         this.templates[category] = this.templates[category].filter(
-          (template) => template.id !== id
+          (template) => template.id !== id,
         );
       });
     }
@@ -235,12 +259,18 @@ class NewsletterTemplates extends Component {
   render() {
     if (this.state.loading) return <Loading />;
 
-    const categories = templatesCategories.concat({
-      name: 'import',
-      label: MailPoet.I18n.t('tabImportTitle'),
-    }).map((category) => Object.assign(category, {
-      automationId: `templates-${category.name.replace(/\s+/g, '-').toLowerCase()}`,
-    }));
+    const categories = templatesCategories
+      .concat({
+        name: 'import',
+        label: MailPoet.I18n.t('tabImportTitle'),
+      })
+      .map((category) =>
+        Object.assign(category, {
+          automationId: `templates-${category.name
+            .replace(/\s+/g, '-')
+            .toLowerCase()}`,
+        }),
+      );
 
     const selectedTab = this.state.selectedTab;
     let content = null;
@@ -283,7 +313,10 @@ class NewsletterTemplates extends Component {
       <div>
         <Background color="#fff" />
 
-        <ListingHeadingStepsRoute emailType={this.state.emailType} automationId="email_template_selection_heading" />
+        <ListingHeadingStepsRoute
+          emailType={this.state.emailType}
+          automationId="email_template_selection_heading"
+        />
 
         <div className="mailpoet-templates">
           <Categories

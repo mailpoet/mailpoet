@@ -5,7 +5,9 @@ const displayTutorial = () => {
   if (window.config.dragDemoUrlSettings) {
     return;
   }
-  if (moment(window.config.installedAt).isBefore(moment().subtract(7, 'days'))) {
+  if (
+    moment(window.config.installedAt).isBefore(moment().subtract(7, 'days'))
+  ) {
     return;
   }
   MailPoet.Modal.popup({

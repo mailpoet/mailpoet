@@ -13,7 +13,7 @@ describe('Content', function () {
     var model;
 
     beforeEach(function () {
-      model = new (ContentComponent.NewsletterModel)({
+      model = new ContentComponent.NewsletterModel({
         body: {
           globalStyles: {
             style1: 'style1Value',
@@ -29,7 +29,11 @@ describe('Content', function () {
     });
 
     it('triggers autosave on change', function () {
-      var mock = sinon.mock({ trigger: function () {} }).expects('trigger').once().withArgs('autoSave');
+      var mock = sinon
+        .mock({ trigger: function () {} })
+        .expects('trigger')
+        .once()
+        .withArgs('autoSave');
       global.stubChannel(EditorApplication, {
         trigger: mock,
       });
@@ -45,7 +49,7 @@ describe('Content', function () {
     describe('toJSON()', function () {
       it('will only contain properties modifiable by the editor', function () {
         var json;
-        model = new (ContentComponent.NewsletterModel)({
+        model = new ContentComponent.NewsletterModel({
           id: 19,
           subject: 'some subject',
           preheader: 'some preheader',
@@ -58,7 +62,11 @@ describe('Content', function () {
         expect(json.id).to.equal(19);
         expect(json.subject).to.equal('some subject');
         expect(json.preheader).to.equal('some preheader');
-        expect(json).to.not.include.keys('segments', 'modified_at', 'someField');
+        expect(json).to.not.include.keys(
+          'segments',
+          'modified_at',
+          'someField',
+        );
       });
     });
   });
@@ -71,8 +79,12 @@ describe('Content', function () {
         blockModel: blockModel,
         blockView: blockView,
       });
-      expect(ContentComponent.getBlockTypeModel('testType')).to.deep.equal(blockModel);
-      expect(ContentComponent.getBlockTypeView('testType')).to.deep.equal(blockView);
+      expect(ContentComponent.getBlockTypeModel('testType')).to.deep.equal(
+        blockModel,
+      );
+      expect(ContentComponent.getBlockTypeView('testType')).to.deep.equal(
+        blockView,
+      );
     });
   });
 
@@ -112,13 +124,18 @@ describe('Content', function () {
       };
       EditorApplication.getConfig().set('blockDefaults', blockDefaults);
       json = ContentComponent.toJSON();
-      expect(json).to.deep.equal(_.extend({
-        body: {
-          content: dataField,
-          globalStyles: stylesField,
-          blockDefaults: blockDefaults,
-        },
-      }, newsletterFields));
+      expect(json).to.deep.equal(
+        _.extend(
+          {
+            body: {
+              content: dataField,
+              globalStyles: stylesField,
+              blockDefaults: blockDefaults,
+            },
+          },
+          newsletterFields,
+        ),
+      );
     });
   });
 });

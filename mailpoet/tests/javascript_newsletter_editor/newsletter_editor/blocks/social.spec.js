@@ -13,7 +13,7 @@ describe('Social', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
-      model = new (SocialBlock.SocialBlockModel)();
+      model = new SocialBlock.SocialBlockModel();
       sandbox = sinon.createSandbox();
     });
 
@@ -41,7 +41,7 @@ describe('Social', function () {
           },
         },
       });
-      model = new (SocialBlock.SocialBlockModel)();
+      model = new SocialBlock.SocialBlockModel();
 
       expect(model.get('iconSet')).to.equal('customConfigIconSet');
     });
@@ -78,7 +78,7 @@ describe('Social', function () {
           },
         },
       });
-      model = new (SocialBlock.SocialIconModel)();
+      model = new SocialBlock.SocialIconModel();
     });
 
     it('has a socialIcon type', function () {
@@ -118,7 +118,8 @@ describe('Social', function () {
             custom: 'http://www.sott.net/images/icons/big_x.png',
           },
           light: {
-            custom: 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png',
+            custom:
+              'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png',
           },
         },
         socialIcons: {
@@ -129,7 +130,7 @@ describe('Social', function () {
           },
         },
       });
-      model = new (SocialBlock.SocialBlockModel)({
+      model = new SocialBlock.SocialBlockModel({
         type: 'social',
         iconSet: 'default',
         icons: [
@@ -145,7 +146,7 @@ describe('Social', function () {
     });
 
     it('renders', function () {
-      var view = new (SocialBlock.SocialBlockView)({ model: model });
+      var view = new SocialBlock.SocialBlockView({ model: model });
       expect(view.render).to.not.throw();
       expect(view.$('.mailpoet_social')).to.have.length(1);
     });
@@ -155,7 +156,7 @@ describe('Social', function () {
 
       before(function () {
         global.stubChannel(EditorApplication);
-        model = new (SocialBlock.SocialBlockModel)({
+        model = new SocialBlock.SocialBlockModel({
           type: 'social',
           iconSet: 'default',
           styles: {
@@ -180,18 +181,30 @@ describe('Social', function () {
             },
           ],
         });
-        view = new (SocialBlock.SocialBlockView)({ model: model });
+        view = new SocialBlock.SocialBlockView({ model: model });
         view.render();
       });
 
       it('shows multiple social icons', function () {
-        expect(view.$('.mailpoet_social a').eq(0).prop('href')).to.equal('http://example.org/');
-        expect(view.$('.mailpoet_social img').eq(0).prop('src')).to.equal('http://example.org/someimage.png');
-        expect(view.$('.mailpoet_social img').eq(0).prop('alt')).to.equal('some text');
+        expect(view.$('.mailpoet_social a').eq(0).prop('href')).to.equal(
+          'http://example.org/',
+        );
+        expect(view.$('.mailpoet_social img').eq(0).prop('src')).to.equal(
+          'http://example.org/someimage.png',
+        );
+        expect(view.$('.mailpoet_social img').eq(0).prop('alt')).to.equal(
+          'some text',
+        );
 
-        expect(view.$('.mailpoet_social a').eq(1).prop('href')).to.equal('http://facebook.com/');
-        expect(view.$('.mailpoet_social img').eq(1).prop('src')).to.equal('http://facebook.com/icon.png');
-        expect(view.$('.mailpoet_social img').eq(1).prop('alt')).to.equal('Facebook icon');
+        expect(view.$('.mailpoet_social a').eq(1).prop('href')).to.equal(
+          'http://facebook.com/',
+        );
+        expect(view.$('.mailpoet_social img').eq(1).prop('src')).to.equal(
+          'http://facebook.com/icon.png',
+        );
+        expect(view.$('.mailpoet_social img').eq(1).prop('alt')).to.equal(
+          'Facebook icon',
+        );
       });
 
       it('is aligned properly', function () {
@@ -211,7 +224,8 @@ describe('Social', function () {
             custom: 'someimage.png',
           },
           light: {
-            custom: 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png',
+            custom:
+              'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png',
           },
         },
         socialIcons: {
@@ -222,7 +236,7 @@ describe('Social', function () {
           },
         },
       });
-      model = new (SocialBlock.SocialBlockModel)({
+      model = new SocialBlock.SocialBlockModel({
         type: 'social',
         iconSet: 'default',
         icons: [
@@ -240,7 +254,7 @@ describe('Social', function () {
     });
 
     it('renders', function () {
-      var view = new (SocialBlock.SocialBlockSettingsView)({ model: model });
+      var view = new SocialBlock.SocialBlockSettingsView({ model: model });
       expect(view.render).to.not.throw();
     });
 
@@ -254,7 +268,8 @@ describe('Social', function () {
               custom: 'http://www.sott.net/images/icons/big_x.png',
             },
             light: {
-              custom: 'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png',
+              custom:
+                'http://content.indiainfoline.com/wc/news/ImageGallery/css/close_32x32.png',
             },
           },
           socialIcons: {
@@ -265,7 +280,7 @@ describe('Social', function () {
             },
           },
         });
-        model = new (SocialBlock.SocialBlockModel)({
+        model = new SocialBlock.SocialBlockModel({
           type: 'social',
           iconSet: 'default',
           styles: {
@@ -285,13 +300,17 @@ describe('Social', function () {
             },
           ],
         });
-        view = new (SocialBlock.SocialBlockSettingsView)({ model: model });
+        view = new SocialBlock.SocialBlockSettingsView({ model: model });
         view.render();
       });
 
       it('updates icons in settings if iconset changes', function () {
         view.$('.mailpoet_social_icon_set').last().trigger('click');
-        expect(view.$('.mailpoet_social_icon_field_image').val()).to.equal(EditorApplication.getAvailableStyles().get('socialIconSets.light.custom'));
+        expect(view.$('.mailpoet_social_icon_field_image').val()).to.equal(
+          EditorApplication.getAvailableStyles().get(
+            'socialIconSets.light.custom',
+          ),
+        );
       });
 
       it('removes the icon when "remove" is clicked', function () {
@@ -319,7 +338,7 @@ describe('Social', function () {
         global.MailPoet.Modal.cancel = mock;
         view.$('.mailpoet_done_editing').trigger('click');
         mock.verify();
-        delete (global.MailPoet.Modal.cancel);
+        delete global.MailPoet.Modal.cancel;
       });
     });
   });

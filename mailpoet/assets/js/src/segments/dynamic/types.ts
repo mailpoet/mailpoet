@@ -111,10 +111,10 @@ export type Segment = {
 };
 
 export type AnyFormItem =
-  WordpressRoleFormItem |
-  WooCommerceFormItem |
-  WooCommerceSubscriptionFormItem |
-  EmailFormItem;
+  | WordpressRoleFormItem
+  | WooCommerceFormItem
+  | WooCommerceSubscriptionFormItem
+  | EmailFormItem;
 
 export interface SubscriberCount {
   count?: number;
@@ -203,11 +203,11 @@ export interface StateType {
   wooCurrencySymbol: string;
   wooCountries: WindowWooCommerceCountries;
   customFieldsList: WindowCustomFields;
-  segment: Segment,
-  subscriberCount: SubscriberCount,
-  errors: string[],
-  allAvailableFilters: GroupFilterValue[],
-  staticSegmentsList: StaticSegment[],
+  segment: Segment;
+  subscriberCount: SubscriberCount;
+  errors: string[];
+  allAvailableFilters: GroupFilterValue[];
+  staticSegmentsList: StaticSegment[];
 }
 
 export enum Actions {

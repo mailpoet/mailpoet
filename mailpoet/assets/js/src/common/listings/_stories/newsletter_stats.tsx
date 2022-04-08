@@ -14,7 +14,10 @@ MailPoet.I18n.add('openedStatTooltipAverage', 'under 10%');
 MailPoet.I18n.add('clickedStatTooltipExcellent', 'above 3%');
 MailPoet.I18n.add('clickedStatTooltipGood', 'between 1 and 3%');
 MailPoet.I18n.add('clickedStatTooltipAverage', 'under 1%');
-MailPoet.I18n.add('revenueStatsTooltipShort', 'Revenues by customer who clicked on this email in the last 2 weeks.');
+MailPoet.I18n.add(
+  'revenueStatsTooltipShort',
+  'Revenues by customer who clicked on this email in the last 2 weeks.',
+);
 
 export default {
   title: 'Listing',
@@ -36,11 +39,26 @@ export function NewsletterStatsComponent() {
 
       <Heading level={3}>With badges and revenues</Heading>
 
-      <NewsletterStats opened={1} clicked={0.1} revenues="10€" newsletterId={4} />
+      <NewsletterStats
+        opened={1}
+        clicked={0.1}
+        revenues="10€"
+        newsletterId={4}
+      />
       <div className="mailpoet-gap" />
-      <NewsletterStats opened={11} clicked={1.1} revenues="100€" newsletterId={5} />
+      <NewsletterStats
+        opened={11}
+        clicked={1.1}
+        revenues="100€"
+        newsletterId={5}
+      />
       <div className="mailpoet-gap" />
-      <NewsletterStats opened={31} clicked={3.1} revenues="1000€" newsletterId={6} />
+      <NewsletterStats
+        opened={31}
+        clicked={3.1}
+        revenues="1000€"
+        newsletterId={6}
+      />
 
       <div className="mailpoet-gap" />
 
@@ -56,11 +74,29 @@ export function NewsletterStatsComponent() {
 
       <Heading level={3}>No badges, with revenues</Heading>
 
-      <NewsletterStats hideBadges opened={1} clicked={0.1} revenues="10€" newsletterId={10} />
+      <NewsletterStats
+        hideBadges
+        opened={1}
+        clicked={0.1}
+        revenues="10€"
+        newsletterId={10}
+      />
       <div className="mailpoet-gap" />
-      <NewsletterStats hideBadges opened={11} clicked={1.1} revenues="100€" newsletterId={11} />
+      <NewsletterStats
+        hideBadges
+        opened={11}
+        clicked={1.1}
+        revenues="100€"
+        newsletterId={11}
+      />
       <div className="mailpoet-gap" />
-      <NewsletterStats hideBadges opened={31} clicked={3.1} revenues="1000€" newsletterId={12} />
+      <NewsletterStats
+        hideBadges
+        opened={31}
+        clicked={3.1}
+        revenues="1000€"
+        newsletterId={12}
+      />
     </>
   );
 }

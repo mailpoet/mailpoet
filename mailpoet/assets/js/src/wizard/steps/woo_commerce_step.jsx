@@ -22,7 +22,8 @@ function WizardWooCommerceStep(props) {
     return false;
   };
 
-  const finishButtonText = props.isWizardStep ? MailPoet.I18n.t('wooCommerceSetupFinishButtonTextWizard')
+  const finishButtonText = props.isWizardStep
+    ? MailPoet.I18n.t('wooCommerceSetupFinishButtonTextWizard')
     : MailPoet.I18n.t('wooCommerceSetupFinishButtonTextStandalone');
 
   let importTypeChecked;
@@ -42,7 +43,9 @@ function WizardWooCommerceStep(props) {
             <YesNo
               showError={submitted && importType === null}
               checked={importTypeChecked}
-              onCheck={(value) => setImportType(value ? 'subscribed' : 'unsubscribed')}
+              onCheck={(value) =>
+                setImportType(value ? 'subscribed' : 'unsubscribed')
+              }
               name="mailpoet_woocommerce_import_type"
               automationId="woocommerce_import_type"
             />
@@ -62,7 +65,7 @@ function WizardWooCommerceStep(props) {
                   >
                     {match}
                   </a>
-                )
+                ),
               )}
             </p>
             <div className="mailpoet-wizard-note">
@@ -97,7 +100,7 @@ function WizardWooCommerceStep(props) {
                   >
                     {match}
                   </a>
-                )
+                ),
               )}
             </p>
             <div className="mailpoet-wizard-note">

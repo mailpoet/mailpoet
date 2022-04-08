@@ -17,7 +17,7 @@ describe('WoocommerceContent', function () {
         blockDefaults: {},
       });
       global.stubAvailableStyles(EditorApplication);
-      model = new (WCContentBlock.BlockModel)();
+      model = new WCContentBlock.BlockModel();
       sandbox = sinon.createSandbox();
     });
 
@@ -31,7 +31,9 @@ describe('WoocommerceContent', function () {
     });
 
     it('has titleColor', function () {
-      expect(model.get('styles.titleColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
+      expect(model.get('styles.titleColor')).to.match(
+        /^(#[abcdef0-9]{6})|transparent$/,
+      );
     });
 
     it('uses defaults from config when they are set', function () {
@@ -44,7 +46,7 @@ describe('WoocommerceContent', function () {
           },
         },
       });
-      model = new (WCContentBlock.BlockModel)();
+      model = new WCContentBlock.BlockModel();
 
       expect(model.get('styles.titleColor')).to.equal('#567890');
     });
@@ -58,8 +60,8 @@ describe('WoocommerceContent', function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
       global.stubAvailableStyles(EditorApplication);
-      model = new (WCContentBlock.BlockModel)();
-      view = new (WCContentBlock.BlockView)({ model: model });
+      model = new WCContentBlock.BlockModel();
+      view = new WCContentBlock.BlockView({ model: model });
     });
 
     it('renders', function () {

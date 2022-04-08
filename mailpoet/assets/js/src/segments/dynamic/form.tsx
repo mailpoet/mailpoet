@@ -29,15 +29,20 @@ interface Props {
   segmentId?: number;
 }
 
-const FiltersBefore = Hooks.applyFilters('mailpoet_dynamic_segments_form_filters_before', (): FunctionComponent => null);
-const FilterBefore = Hooks.applyFilters('mailpoet_dynamic_filters_filter_before', (): FunctionComponent => null);
-const FilterAfter = Hooks.applyFilters('mailpoet_dynamic_filters_filter_after', (): JSX.Element => (
-  <div className="mailpoet-gap" />
-));
+const FiltersBefore = Hooks.applyFilters(
+  'mailpoet_dynamic_segments_form_filters_before',
+  (): FunctionComponent => null,
+);
+const FilterBefore = Hooks.applyFilters(
+  'mailpoet_dynamic_filters_filter_before',
+  (): FunctionComponent => null,
+);
+const FilterAfter = Hooks.applyFilters(
+  'mailpoet_dynamic_filters_filter_after',
+  (): JSX.Element => <div className="mailpoet-gap" />,
+);
 
-export function Form({
-  segmentId,
-}:Props) :JSX.Element {
+export function Form({ segmentId }: Props): JSX.Element {
   const segment: Segment = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
     [],
@@ -49,7 +54,10 @@ export function Form({
   );
 
   const filterRows: FilterRow[] = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').findFiltersValueForSegment(segment),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').findFiltersValueForSegment(
+        segment,
+      ),
     [segment],
   );
 
@@ -63,25 +71,28 @@ export function Form({
     [],
   );
 
-  const { updateSegment, updateSegmentFilter, handleSave } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegment, updateSegmentFilter, handleSave } = useDispatch(
+    'mailpoet-dynamic-segments-form',
+  );
 
   const [premiumBannerVisible, setPremiumBannerVisible] = useState(false);
   const showPremiumBanner = (): void => {
     setPremiumBannerVisible(true);
   };
-  const addConditionAction = Hooks.applyFilters('mailpoet_dynamic_segments_form_add_condition_action', showPremiumBanner);
+  const addConditionAction = Hooks.applyFilters(
+    'mailpoet_dynamic_segments_form_add_condition_action',
+    showPremiumBanner,
+  );
 
   return (
     <form className="mailpoet_form">
-      {(errors.length > 0 && (
+      {errors.length > 0 && (
         <APIErrorsNotice errors={errors.map((error) => ({ message: error }))} />
-      ))}
+      )}
       <div className="mailpoet-form-grid">
         <div className="mailpoet-form-field-name form-field-row-name mailpoet-segments-name-section">
           <Heading level={4}>
-            <label htmlFor="field_name">
-              {MailPoet.I18n.t('name')}
-            </label>
+            <label htmlFor="field_name">{MailPoet.I18n.t('name')}</label>
           </Heading>
           <div className="mailpoet-form-field">
             <Input
@@ -90,9 +101,7 @@ export function Form({
               name="name"
               id="field_name"
               defaultValue={segment.name}
-              onChange={
-                (e): void => updateSegment({ name: e.target.value })
-              }
+              onChange={(e): void => updateSegment({ name: e.target.value })}
             />
           </div>
         </div>
@@ -111,8 +120,8 @@ export function Form({
               name="description"
               id="field_description"
               value={segment.description}
-              onChange={
-                (e): void => updateSegment({ description: e.target.value })
+              onChange={(e): void =>
+                updateSegment({ description: e.target.value })
               }
             />
           </div>
@@ -124,33 +133,40 @@ export function Form({
             </label>
           </Heading>
           <FiltersBefore />
-          {Array.isArray(filterRows) && filterRows.map((filterRow, index) => (
-            <Fragment key={filterRow.index}>
-              <Grid.ThreeColumns className="mailpoet-segments-grid" automationId={`filter-row-${index}`}>
-                <FilterBefore filterRows={filterRows} index={index} />
-                <Grid.CenteredRow>
-                  <Select
-                    dimension="small"
-                    placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
-                    options={segmentFilters}
-                    value={filterRow.filterValue}
-                    onChange={(newValue: FilterValue): void => {
-                      updateSegmentFilter({
-                        segmentType: newValue.group,
-                        action: newValue.value,
-                      }, index);
-                    }}
-                    automationId="select-segment-action"
-                    isFullWidth
-                  />
-                </Grid.CenteredRow>
-                {filterRow.index !== undefined && (
-                  <FormFilterFields filterIndex={filterRow.index} />
-                )}
-              </Grid.ThreeColumns>
-              <FilterAfter index={index} />
-            </Fragment>
-          ))}
+          {Array.isArray(filterRows) &&
+            filterRows.map((filterRow, index) => (
+              <Fragment key={filterRow.index}>
+                <Grid.ThreeColumns
+                  className="mailpoet-segments-grid"
+                  automationId={`filter-row-${index}`}
+                >
+                  <FilterBefore filterRows={filterRows} index={index} />
+                  <Grid.CenteredRow>
+                    <Select
+                      dimension="small"
+                      placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
+                      options={segmentFilters}
+                      value={filterRow.filterValue}
+                      onChange={(newValue: FilterValue): void => {
+                        updateSegmentFilter(
+                          {
+                            segmentType: newValue.group,
+                            action: newValue.value,
+                          },
+                          index,
+                        );
+                      }}
+                      automationId="select-segment-action"
+                      isFullWidth
+                    />
+                  </Grid.CenteredRow>
+                  {filterRow.index !== undefined && (
+                    <FormFilterFields filterIndex={filterRow.index} />
+                  )}
+                </Grid.ThreeColumns>
+                <FilterAfter index={index} />
+              </Fragment>
+            ))}
           <Button
             type="button"
             variant="tertiary"
@@ -179,7 +195,10 @@ export function Form({
               e.preventDefault();
               handleSave(segmentId);
             }}
-            isDisabled={!isFormValid(segment.filters) || subscriberCount.count === undefined}
+            isDisabled={
+              !isFormValid(segment.filters) ||
+              subscriberCount.count === undefined
+            }
           >
             {MailPoet.I18n.t('save')}
           </Button>

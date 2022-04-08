@@ -34,49 +34,44 @@ export function Scheduling({
 
   return (
     <>
-      <Heading level={4}>{MailPoet.I18n.t('selectEventToSendReEngagementEmail')}</Heading>
+      <Heading level={4}>
+        {MailPoet.I18n.t('selectEventToSendReEngagementEmail')}
+      </Heading>
       <Grid.CenteredRow className="mailpoet-re-engagement-scheduling">
-        <p>
-          {MailPoet.I18n.t('reEngagementTextPre')}
-        </p>
+        <p>{MailPoet.I18n.t('reEngagementTextPre')}</p>
         <Input
           type="text"
           placeholder={MailPoet.I18n.t('reEngagementAterTimeNumberPlaceholder')}
           value={afterTimeNumber}
           onChange={onChange(updateAfterTimeNumber)}
         />
-        <Select
-          value={afterTimeType}
-          onChange={onChange(updateAfterTimeType)}
-        >
+        <Select value={afterTimeType} onChange={onChange(updateAfterTimeType)}>
           <option value="weeks">weeks</option>
           <option value="months">months</option>
         </Select>
       </Grid.CenteredRow>
-      {
-        ((!!inactiveSubscribersPeriod) && (inactivePeriod <= daysSelected)) && (
-          <p className="mailpoet-re-engagement-scheduling-note">
-            {
-              ReactStringReplace(
-                MailPoet.I18n.t('reEngagementEmailWarning')
-                  .replace('{$months}', `${Math.floor(inactiveSubscribersPeriod / 30)}`),
-                /\[link\](.*?)\[\/link\]/g,
-                (match) => (
-                  <a
-                    key="link"
-                    href="https://kb.mailpoet.com/article/264-inactive-subscribers"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-beacon-article="5cbf19622c7d3a026fd3efe1"
-                  >
-                    {match}
-                  </a>
-                ),
-              )
-            }
-          </p>
-        )
-      }
+      {!!inactiveSubscribersPeriod && inactivePeriod <= daysSelected && (
+        <p className="mailpoet-re-engagement-scheduling-note">
+          {ReactStringReplace(
+            MailPoet.I18n.t('reEngagementEmailWarning').replace(
+              '{$months}',
+              `${Math.floor(inactiveSubscribersPeriod / 30)}`,
+            ),
+            /\[link\](.*?)\[\/link\]/g,
+            (match) => (
+              <a
+                key="link"
+                href="https://kb.mailpoet.com/article/264-inactive-subscribers"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-beacon-article="5cbf19622c7d3a026fd3efe1"
+              >
+                {match}
+              </a>
+            ),
+          )}
+        </p>
+      )}
     </>
   );
 }

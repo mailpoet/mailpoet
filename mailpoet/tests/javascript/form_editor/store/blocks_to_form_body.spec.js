@@ -95,10 +95,10 @@ describe('Blocks to Form Body', () => {
         },
       },
     };
-    const [
-      inputWithThemeStyles,
-      inputWithCustomStyles,
-    ] = formBlocksToBody([blockWithThemeStyles, blockWithCustomStyles]);
+    const [inputWithThemeStyles, inputWithCustomStyles] = formBlocksToBody([
+      blockWithThemeStyles,
+      blockWithCustomStyles,
+    ]);
     expect(inputWithThemeStyles.styles).to.eql({
       full_width: '1',
     });
@@ -142,10 +142,10 @@ describe('Blocks to Form Body', () => {
         },
       },
     };
-    const [
-      inputWithThemeStyles,
-      inputWithCustomStyles,
-    ] = formBlocksToBody([blockWithThemeStyles, blockWithCustomStyles]);
+    const [inputWithThemeStyles, inputWithCustomStyles] = formBlocksToBody([
+      blockWithThemeStyles,
+      blockWithCustomStyles,
+    ]);
     expect(inputWithThemeStyles.styles).to.deep.equal({
       full_width: '1',
     });
@@ -295,9 +295,7 @@ describe('Blocks to Form Body', () => {
       params: {
         label: 'Select',
         required: '1',
-        values: [
-          { value: 'option 1' },
-        ],
+        values: [{ value: 'option 1' }],
       },
       type: 'select',
       updated_at: '2019-12-10T15:05:06+00:00',
@@ -323,9 +321,7 @@ describe('Blocks to Form Body', () => {
       params: {
         label: 'Options',
         required: '1',
-        values: [
-          { value: 'option 1' },
-        ],
+        values: [{ value: 'option 1' }],
       },
       type: 'radio',
       updated_at: '2019-12-10T15:05:06+00:00',
@@ -396,24 +392,26 @@ describe('Blocks to Form Body', () => {
   });
 
   it('Should map full heading block', () => {
-    const [input] = formBlocksToBody([{
-      clientId: 'd9dd2b88-d01f-4a5e-80a4-afaa74de1b00',
-      name: 'core/heading',
-      isValid: true,
-      attributes: {
-        content: 'Heading content',
-        level: 3,
-        textAlign: 'center',
-        anchor: 'anchor',
-        className: 'class',
-        style: {
-          color: {
-            background: '#321',
-            text: '#123',
+    const [input] = formBlocksToBody([
+      {
+        clientId: 'd9dd2b88-d01f-4a5e-80a4-afaa74de1b00',
+        name: 'core/heading',
+        isValid: true,
+        attributes: {
+          content: 'Heading content',
+          level: 3,
+          textAlign: 'center',
+          anchor: 'anchor',
+          className: 'class',
+          style: {
+            color: {
+              background: '#321',
+              text: '#123',
+            },
           },
         },
       },
-    }]);
+    ]);
     expect(input.type).to.be.equal('heading');
     expect(input.params.content).to.be.equal('Heading content');
     expect(input.params.level).to.be.equal(3);
@@ -456,15 +454,17 @@ describe('Blocks to Form Body', () => {
   });
 
   it('Should map empty image block', () => {
-    const [input] = formBlocksToBody([{
-      clientId: '895d5bfd-9fef-4b58-83be-7259a7375786',
-      name: 'core/image',
-      isValid: true,
-      attributes: {
-        alt: '',
-        linkDestination: 'none',
+    const [input] = formBlocksToBody([
+      {
+        clientId: '895d5bfd-9fef-4b58-83be-7259a7375786',
+        name: 'core/image',
+        isValid: true,
+        attributes: {
+          alt: '',
+          linkDestination: 'none',
+        },
       },
-    }]);
+    ]);
     expect(input.type).to.be.equal('image');
     expect(input.params.align).to.be.equal(null);
     expect(input.params.url).to.be.equal(null);
@@ -509,9 +509,7 @@ describe('Blocks to Form Body', () => {
       params: {
         label: 'Check',
         required: '1',
-        values: [
-          { value: 'option 1' },
-        ],
+        values: [{ value: 'option 1' }],
       },
       type: 'checkbox',
       updated_at: '2019-12-13T15:22:07+00:00',
@@ -663,17 +661,22 @@ describe('Blocks to Form Body', () => {
       gradient: 'black-white',
     };
     const [mapped] = formBlocksToBody([columns]);
-    expect(mapped.params.gradient).to.be.equal('linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)');
+    expect(mapped.params.gradient).to.be.equal(
+      'linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+    );
 
     columns.attributes = {
       style: {
         color: {
-          gradient: 'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+          gradient:
+            'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
         },
       },
     };
     const [mapped2] = formBlocksToBody([columns]);
-    expect(mapped2.params.gradient).to.be.equal('linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)');
+    expect(mapped2.params.gradient).to.be.equal(
+      'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+    );
   });
 
   it('Should map gradient for single column', () => {
@@ -683,17 +686,22 @@ describe('Blocks to Form Body', () => {
       gradient: 'black-white',
     };
     const [mapped] = formBlocksToBody([columns]);
-    expect(mapped.body[0].params.gradient).to.be.equal('linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)');
+    expect(mapped.body[0].params.gradient).to.be.equal(
+      'linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+    );
 
     column.attributes = {
       style: {
         color: {
-          gradient: 'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+          gradient:
+            'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
         },
       },
     };
     const [mapped2] = formBlocksToBody([columns]);
-    expect(mapped2.body[0].params.gradient).to.be.equal('linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)');
+    expect(mapped2.body[0].params.gradient).to.be.equal(
+      'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+    );
   });
 
   it('Should map class names', () => {

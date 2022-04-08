@@ -8,17 +8,18 @@ In MailPoet, subscribers are organized into lists. This method returns an array 
 
 ### A list data structure
 
-| Property | Type | Limits | Description |
-| --- | --- | --- | --- |
-| id | string | 11 chars | Id of the list |
-| name | string | 90 chars | Name of the list |
-| type | string | - | Type of the list. Currently, there is only one supported value: `default` |
-| description | string | 250 chars | Description of the list |
-| created_at | string\|null | - | UTC time of creation in 'Y-m-d H:i:s' format |
-| updated_at | string | - | UTC time of last update in 'Y-m-d H:i:s' format |
-| deleted_at | string\|null | - | This property is not null only when the list is in the trash. It contains UTC time in 'Y-m-d H:i:s' format. |
+| Property    | Type         | Limits    | Description                                                                                                 |
+| ----------- | ------------ | --------- | ----------------------------------------------------------------------------------------------------------- |
+| id          | string       | 11 chars  | Id of the list                                                                                              |
+| name        | string       | 90 chars  | Name of the list                                                                                            |
+| type        | string       | -         | Type of the list. Currently, there is only one supported value: `default`                                   |
+| description | string       | 250 chars | Description of the list                                                                                     |
+| created_at  | string\|null | -         | UTC time of creation in 'Y-m-d H:i:s' format                                                                |
+| updated_at  | string       | -         | UTC time of last update in 'Y-m-d H:i:s' format                                                             |
+| deleted_at  | string\|null | -         | This property is not null only when the list is in the trash. It contains UTC time in 'Y-m-d H:i:s' format. |
 
 ### Response Example
+
 ```php
 <?php
 [

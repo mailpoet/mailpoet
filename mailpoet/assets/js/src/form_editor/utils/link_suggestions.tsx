@@ -9,7 +9,7 @@ import type { WP_REST_API_Search_Results } from 'wp-types';
  * @see https://github.com/WordPress/gutenberg/blob/5941c924425f1d09bc724652cc316f5df90d4d32/packages/editor/src/components/provider/index.js#L31
  */
 const fetchLinkSuggestions = async (search: string, { perPage = 20 } = {}) => {
-  const posts : WP_REST_API_Search_Results = await apiFetch({
+  const posts: WP_REST_API_Search_Results = await apiFetch({
     path: addQueryArgs('/wp/v2/search', {
       search,
       per_page: perPage,

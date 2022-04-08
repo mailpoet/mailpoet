@@ -13,13 +13,15 @@ function InvalidMssKeyNotice({ mssKeyInvalid, subscribersCount }: Props) {
     <Notice type="error" timeout={false} closable={false} renderInPlace>
       <h3>{MailPoet.I18n.t('allSendingPausedHeader')}</h3>
       <p>
-        {
-          ReactStringReplace(
-            MailPoet.I18n.t('allSendingPausedBody'),
-            /\[link\](.*?)\[\/link\]/g,
-            (match) => <a href="?page=mailpoet-settings#premium" key="check-sending">{ match }</a>,
-          )
-        }
+        {ReactStringReplace(
+          MailPoet.I18n.t('allSendingPausedBody'),
+          /\[link\](.*?)\[\/link\]/g,
+          (match) => (
+            <a href="?page=mailpoet-settings#premium" key="check-sending">
+              {match}
+            </a>
+          ),
+        )}
       </p>
       <p>
         <a

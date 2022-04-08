@@ -65,16 +65,17 @@ class Listing extends Component {
   setParams = () => {
     if (this.props.location) {
       const params = Object.keys(this.state)
-        .filter((key) => (
-          [
-            'group',
-            'filter',
-            'search',
-            'page',
-            'sort_by',
-            'sort_order',
-          ].indexOf(key) !== -1
-        ))
+        .filter(
+          (key) =>
+            [
+              'group',
+              'filter',
+              'search',
+              'page',
+              'sort_by',
+              'sort_order',
+            ].indexOf(key) !== -1,
+        )
         .map((key) => {
           let value = this.state[key];
           if (value === Object(value)) {
@@ -101,9 +102,8 @@ class Listing extends Component {
   };
 
   getUrlWithParams = (params) => {
-    let baseUrl = (this.props.base_url !== undefined)
-      ? this.props.base_url
-      : null;
+    let baseUrl =
+      this.props.base_url !== undefined ? this.props.base_url : null;
 
     if (baseUrl) {
       baseUrl = this.setBaseUrlParams(baseUrl);
@@ -164,37 +164,45 @@ class Listing extends Component {
         sort_by: this.state.sort_by,
         sort_order: this.state.sort_order,
       },
-    }).always(() => {
-      if (!this.isComponentMounted) return;
-      this.setState({ loading: false });
-    }).done((response) => {
-      if (!this.isComponentMounted) return;
-      this.setState({
-        items: response.data || [],
-        filters: response.meta.filters || {},
-        groups: response.meta.groups || [],
-        count: response.meta.count || 0,
-        meta: _.omit(response.meta, ['filters', 'groups', 'count']),
-      }, () => {
-        // if viewing an empty trash
-        if (this.state.group === 'trash' && response.meta.count === 0) {
-          // redirect to default group
-          this.handleGroup('all');
-        }
+    })
+      .always(() => {
+        if (!this.isComponentMounted) return;
+        this.setState({ loading: false });
+      })
+      .done((response) => {
+        if (!this.isComponentMounted) return;
+        this.setState(
+          {
+            items: response.data || [],
+            filters: response.meta.filters || {},
+            groups: response.meta.groups || [],
+            count: response.meta.count || 0,
+            meta: _.omit(response.meta, ['filters', 'groups', 'count']),
+          },
+          () => {
+            // if viewing an empty trash
+            if (this.state.group === 'trash' && response.meta.count === 0) {
+              // redirect to default group
+              this.handleGroup('all');
+            }
 
-        // trigger afterGetItems callback if specified
-        if (this.props.afterGetItems !== undefined) {
-          this.props.afterGetItems(this.state);
+            // trigger afterGetItems callback if specified
+            if (this.props.afterGetItems !== undefined) {
+              this.props.afterGetItems(this.state);
+            }
+          },
+        );
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          this.context.notices.error(
+            response.errors.map((error) => (
+              <p key={error.message}>{error.message}</p>
+            )),
+            { scroll: true },
+          );
         }
       });
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.context.notices.error(
-          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-          { scroll: true }
-        );
-      }
-    });
   };
 
   initWithParams = (params) => {
@@ -256,20 +264,24 @@ class Listing extends Component {
       data: {
         id,
       },
-    }).done((response) => {
-      if (
-        this.props.messages !== undefined
-        && this.props.messages.onRestore !== undefined
-      ) {
-        this.props.messages.onRestore(response);
-      }
-      this.getItems();
-    }).fail((response) => {
-      this.context.notices.error(
-        response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-        { scroll: true }
-      );
-    });
+    })
+      .done((response) => {
+        if (
+          this.props.messages !== undefined &&
+          this.props.messages.onRestore !== undefined
+        ) {
+          this.props.messages.onRestore(response);
+        }
+        this.getItems();
+      })
+      .fail((response) => {
+        this.context.notices.error(
+          response.errors.map((error) => (
+            <p key={error.message}>{error.message}</p>
+          )),
+          { scroll: true },
+        );
+      });
   };
 
   handleTrashItem = (id) => {
@@ -285,21 +297,25 @@ class Listing extends Component {
       data: {
         id,
       },
-    }).done((response) => {
-      if (
-        this.props.messages !== undefined
-        && this.props.messages.onTrash !== undefined
-      ) {
-        this.props.messages.onTrash(response);
-      }
-      this.getItems();
-    }).fail((response) => {
-      this.context.notices.error(
-        response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-        { scroll: true }
-      );
-      this.setState({ loading: false });
-    });
+    })
+      .done((response) => {
+        if (
+          this.props.messages !== undefined &&
+          this.props.messages.onTrash !== undefined
+        ) {
+          this.props.messages.onTrash(response);
+        }
+        this.getItems();
+      })
+      .fail((response) => {
+        this.context.notices.error(
+          response.errors.map((error) => (
+            <p key={error.message}>{error.message}</p>
+          )),
+          { scroll: true },
+        );
+        this.setState({ loading: false });
+      });
   };
 
   handleDeleteItem = (id) => {
@@ -315,46 +331,55 @@ class Listing extends Component {
       data: {
         id,
       },
-    }).done((response) => {
-      if (
-        this.props.messages !== undefined
-        && this.props.messages.onDelete !== undefined
-      ) {
-        this.props.messages.onDelete(response);
-      }
-      this.getItems();
-    }).fail((response) => {
-      this.context.notices.error(
-        response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-        { scroll: true }
-      );
-    });
+    })
+      .done((response) => {
+        if (
+          this.props.messages !== undefined &&
+          this.props.messages.onDelete !== undefined
+        ) {
+          this.props.messages.onDelete(response);
+        }
+        this.getItems();
+      })
+      .fail((response) => {
+        this.context.notices.error(
+          response.errors.map((error) => (
+            <p key={error.message}>{error.message}</p>
+          )),
+          { scroll: true },
+        );
+      });
   };
 
-  handleEmptyTrash = () => this.handleBulkAction('all', {
-    action: 'delete',
-    group: 'trash',
-  }).done((response) => {
-    if (
-      this.props.messages !== undefined
-        && this.props.messages.onDelete !== undefined
-    ) {
-      this.props.messages.onDelete(response);
-    }
-    // redirect to default group
-    this.handleGroup('all');
-  }).fail((response) => {
-    this.context.notices.error(
-      response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-      { scroll: true }
-    );
-  });
+  handleEmptyTrash = () =>
+    this.handleBulkAction('all', {
+      action: 'delete',
+      group: 'trash',
+    })
+      .done((response) => {
+        if (
+          this.props.messages !== undefined &&
+          this.props.messages.onDelete !== undefined
+        ) {
+          this.props.messages.onDelete(response);
+        }
+        // redirect to default group
+        this.handleGroup('all');
+      })
+      .fail((response) => {
+        this.context.notices.error(
+          response.errors.map((error) => (
+            <p key={error.message}>{error.message}</p>
+          )),
+          { scroll: true },
+        );
+      });
 
   handleBulkAction = (selectedIds, params) => {
     if (
-      this.state.selection === false
-      && this.state.selected_ids.length === 0
-      && selectedIds !== 'all'
+      this.state.selection === false &&
+      this.state.selected_ids.length === 0 &&
+      selectedIds !== 'all'
     ) {
       return false;
     }
@@ -379,40 +404,53 @@ class Listing extends Component {
       endpoint: this.props.endpoint,
       action: 'bulkAction',
       data,
-    }).done(() => {
-      // Reload items after a bulk action except for empty trash action which redirects to All tab.
-      const isEmptyTrashAction = selectedIds === 'all' && params.group === 'trash' && params.action === 'delete';
-      if (!isEmptyTrashAction) {
-        this.getItems();
-      }
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.context.notices.error(
-          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-          { scroll: true }
-        );
-      }
-    });
+    })
+      .done(() => {
+        // Reload items after a bulk action except for empty trash action which redirects to All tab.
+        const isEmptyTrashAction =
+          selectedIds === 'all' &&
+          params.group === 'trash' &&
+          params.action === 'delete';
+        if (!isEmptyTrashAction) {
+          this.getItems();
+        }
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          this.context.notices.error(
+            response.errors.map((error) => (
+              <p key={error.message}>{error.message}</p>
+            )),
+            { scroll: true },
+          );
+        }
+      });
   };
 
   handleSearch = (search) => {
-    this.setState({
-      search,
-      page: 1,
-      selection: false,
-      selected_ids: [],
-    }, () => {
-      this.setParams();
-    });
+    this.setState(
+      {
+        search,
+        page: 1,
+        selection: false,
+        selected_ids: [],
+      },
+      () => {
+        this.setParams();
+      },
+    );
   };
 
   handleSort = (sortBy, sortOrder = 'asc') => {
-    this.setState({
-      sort_by: sortBy,
-      sort_order: (sortOrder === 'asc') ? 'asc' : 'desc',
-    }, () => {
-      this.setParams();
-    });
+    this.setState(
+      {
+        sort_by: sortBy,
+        sort_order: sortOrder === 'asc' ? 'asc' : 'desc',
+      },
+      () => {
+        this.setParams();
+      },
+    );
   };
 
   handleSelectItem = (id, isChecked) => {
@@ -424,7 +462,8 @@ class Listing extends Component {
         selectedIds = jQuery.merge(selectedIds, [id]);
         // check whether all items on the page are selected
         if (
-          jQuery('tbody .mailpoet-listing-check-column :checkbox:not(:checked)').length === 0
+          jQuery('tbody .mailpoet-listing-check-column :checkbox:not(:checked)')
+            .length === 0
         ) {
           selection = 'page';
         }
@@ -473,34 +512,43 @@ class Listing extends Component {
   };
 
   handleFilter = (filters) => {
-    this.setState({
-      filter: filters,
-      page: 1,
-    }, () => {
-      this.setParams();
-    });
+    this.setState(
+      {
+        filter: filters,
+        page: 1,
+      },
+      () => {
+        this.setParams();
+      },
+    );
   };
 
   handleGroup = (group) => {
     // reset search
     jQuery('#search_input').val('');
 
-    this.setState({
-      group,
-      page: 1,
-    }, () => {
-      this.setParams();
-    });
+    this.setState(
+      {
+        group,
+        page: 1,
+      },
+      () => {
+        this.setParams();
+      },
+    );
   };
 
   handleSetPage = (page) => {
-    this.setState({
-      page,
-      selection: false,
-      selected_ids: [],
-    }, () => {
-      this.setParams();
-    });
+    this.setState(
+      {
+        page,
+        selection: false,
+        selected_ids: [],
+      },
+      () => {
+        this.setParams();
+      },
+    );
   };
 
   handleRenderItem = (item, actions) => {
@@ -520,7 +568,7 @@ class Listing extends Component {
     // columns
     let columns = this.props.columns || [];
     columns = columns.filter(
-      (column) => (column.display === undefined || !!(column.display) === true)
+      (column) => column.display === undefined || !!column.display === true,
     );
 
     // bulk actions
@@ -544,28 +592,29 @@ class Listing extends Component {
     // item actions
     const itemActions = this.props.item_actions || [];
 
-    const tableClasses = classNames(
-      'mailpoet-listing-table',
-      {
-        'mailpoet-listing-loading': this.state.loading,
-      }
-    );
+    const tableClasses = classNames('mailpoet-listing-table', {
+      'mailpoet-listing-loading': this.state.loading,
+    });
 
     // search
     let search = (
-      <ListingSearch
-        onSearch={this.handleSearch}
-        search={this.state.search}
-      />
+      <ListingSearch onSearch={this.handleSearch} search={this.state.search} />
     );
     if (this.props.search === false) {
       search = false;
     }
 
-    const categories = this.state.groups.map((group) => Object.assign(group, {
-      automationId: `filters_${group.label.replace(' ', '_').toLowerCase()}`,
-    }))
-      .filter((category) => !(category.name === 'trash' && category.count === 0));
+    const categories = this.state.groups
+      .map((group) =>
+        Object.assign(group, {
+          automationId: `filters_${group.label
+            .replace(' ', '_')
+            .toLowerCase()}`,
+        }),
+      )
+      .filter(
+        (category) => !(category.name === 'trash' && category.count === 0),
+      );
 
     // groups
     let groups = (
@@ -589,16 +638,19 @@ class Listing extends Component {
       extraActions = this.props.renderExtraActions(this.state);
     }
 
-    const listingClassName = classNames('mailpoet-listing', this.props.className);
+    const listingClassName = classNames(
+      'mailpoet-listing',
+      this.props.className,
+    );
 
     return (
       <>
-        { this.state.meta.mta_method && <MailerError {...this.state.meta} /> }
+        {this.state.meta.mta_method && <MailerError {...this.state.meta} />}
         <div className={listingClassName}>
           <div className="mailpoet-listing-header">
-            { groups }
+            {groups}
             <div>
-              { search }
+              {search}
               <ListingFilters
                 filters={this.state.filters}
                 filter={this.state.filter}
@@ -658,7 +710,6 @@ class Listing extends Component {
               isItemDeletable={this.props.isItemDeletable}
               isItemToggleable={this.props.isItemToggleable}
             />
-
           </table>
           <div className="mailpoet-listing-footer clearfix">
             <ListingPages

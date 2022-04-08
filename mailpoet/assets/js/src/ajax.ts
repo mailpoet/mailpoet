@@ -15,9 +15,11 @@ export type ErrorResponse = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isErrorResponse = (error: any): error is ErrorResponse => (
-  error && typeof error === 'object' && 'errors' in error && Array.isArray(error.errors)
-);
+export const isErrorResponse = (error: any): error is ErrorResponse =>
+  error &&
+  typeof error === 'object' &&
+  'errors' in error &&
+  Array.isArray(error.errors);
 
 type ResponseType = JQuery.Deferred<Response, ErrorResponse>;
 
@@ -94,7 +96,9 @@ export const MailPoetAjax = {
   },
   constructGetUrl: function constructGetUrl(options): string {
     this.init(options);
-    return `${this.options.url as string}?${jQuery.param(this.getParams() as object)}`;
+    return `${this.options.url as string}?${jQuery.param(
+      this.getParams() as object,
+    )}`;
   },
   request: function request(method, options): ResponseType {
     // set options
@@ -117,15 +121,26 @@ export const MailPoetAjax = {
       success: null,
       dataType: 'json',
       timeout: this.options.timeout,
-    }).then((data: Response) => deferred.resolve(data), (failedXhr, textStatus) => {
-      let errorData: ErrorResponse;
-      if (textStatus === 'timeout') {
-        errorData = buildErrorResponse(MailPoetI18n.t('ajaxTimeoutErrorMessage').replace('%d', timeout.toString()));
-      } else {
-        errorData = requestFailed(MailPoetI18n.t('ajaxFailedErrorMessage'), failedXhr);
-      }
-      void deferred.reject(errorData);
-    });
+    }).then(
+      (data: Response) => deferred.resolve(data),
+      (failedXhr, textStatus) => {
+        let errorData: ErrorResponse;
+        if (textStatus === 'timeout') {
+          errorData = buildErrorResponse(
+            MailPoetI18n.t('ajaxTimeoutErrorMessage').replace(
+              '%d',
+              timeout.toString(),
+            ),
+          );
+        } else {
+          errorData = requestFailed(
+            MailPoetI18n.t('ajaxFailedErrorMessage'),
+            failedXhr,
+          );
+        }
+        void deferred.reject(errorData);
+      },
+    );
 
     // clear options
     this.options = {};

@@ -6,4 +6,9 @@ import '../assets/dist/css/mailpoet-plugin.css';
 import '../assets/dist/css/mailpoet-form-editor.css';
 
 addDecorator(withPerformance);
-addDecorator(story => <div className="wp-core-ui" id="wpbody"><div id="mailpoet-modal"></div>{story()}</div>);
+addDecorator((story) => (
+  <div className="wp-core-ui" id="wpbody">
+    <div id="mailpoet-modal"></div>
+    {story()}
+  </div>
+));

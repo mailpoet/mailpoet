@@ -1,6 +1,10 @@
 import ReactDOM from 'react-dom';
 import {
-  HashRouter, Switch, Route, Redirect, useParams,
+  HashRouter,
+  Switch,
+  Route,
+  Redirect,
+  useParams,
 } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import _ from 'underscore';
@@ -38,7 +42,8 @@ import EmailVolumeLimitNotice from 'notices/email_volume_limit_notice';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
-const trackTabSwitch = (tabKey) => MailPoet.trackEvent(`Tab Emails > ${tabKey} clicked`);
+const trackTabSwitch = (tabKey) =>
+  MailPoet.trackEvent(`Tab Emails > ${tabKey} clicked`);
 
 const Tabs = withNpsPoll(() => {
   const { parentId } = useParams();
@@ -76,11 +81,11 @@ const Tabs = withNpsPoll(() => {
           title={MailPoet.I18n.t('tabNotificationTitle')}
           automationId={`tab-${MailPoet.I18n.t('tabNotificationTitle')}`}
         >
-          {
-            parentId
-              ? <NewsletterListNotificationHistory parentId={parentId} />
-              : <NewsletterListNotification />
-          }
+          {parentId ? (
+            <NewsletterListNotificationHistory parentId={parentId} />
+          ) : (
+            <NewsletterListNotification />
+          )}
         </Tab>
         <Tab
           key="re_engagement"
@@ -90,16 +95,17 @@ const Tabs = withNpsPoll(() => {
         >
           <NewsletterListReEngagement />
         </Tab>
-        {window.mailpoet_woocommerce_active && _.map(automaticEmails, (email) => (
-          <Tab
-            key={email.slug}
-            route={`${email.slug}/(.*)?`}
-            title={email.title}
-            automationId={`tab-${email.title}`}
-          >
-            <Listings />
-          </Tab>
-        ))}
+        {window.mailpoet_woocommerce_active &&
+          _.map(automaticEmails, (email) => (
+            <Tab
+              key={email.slug}
+              route={`${email.slug}/(.*)?`}
+              title={email.title}
+              automationId={`tab-${email.title}`}
+            >
+              <Listings />
+            </Tab>
+          ))}
       </RoutedTabs>
     </>
   );
@@ -124,7 +130,7 @@ const getAutomaticEmailsRoutes = () => {
               email,
               name: event.slug,
             };
-            return (<EventsConditions {...componentProps} />);
+            return <EventsConditions {...componentProps} />;
           },
         });
       });
@@ -137,7 +143,7 @@ const getAutomaticEmailsRoutes = () => {
           ...props,
           email,
         };
-        return (<AutomaticEmailEventsList {...componentProps} />);
+        return <AutomaticEmailEventsList {...componentProps} />;
       },
     });
   });
@@ -232,7 +238,9 @@ function App() {
           sendTransactionalEmails={window.mailpoet_send_transactional_emails}
           mtaMethod={window.mailpoet_mta_method}
           apiVersion={window.mailpoet_api_version}
-          noticeDismissed={window.mailpoet_transactional_emails_opt_in_notice_dismissed}
+          noticeDismissed={
+            window.mailpoet_transactional_emails_opt_in_notice_dismissed
+          }
         />
         <InvalidMssKeyNotice
           mssKeyInvalid={window.mailpoet_mss_key_invalid}
@@ -240,7 +248,17 @@ function App() {
         />
 
         <Switch>
-          <Route exact path="/" render={() => <Redirect to={window.mailpoet_newsletters_count === 0 ? '/new' : '/standard'} />} />
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <Redirect
+                to={
+                  window.mailpoet_newsletters_count === 0 ? '/new' : '/standard'
+                }
+              />
+            )}
+          />
           {routes.map((route) => (
             <Route
               key={route.path}

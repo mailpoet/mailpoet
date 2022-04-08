@@ -1,44 +1,52 @@
 import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { ToggleControl } from '@wordpress/components';
-import {
-  assocPath,
-  compose,
-  cond,
-  isEqual,
-  identity,
-  sortBy,
-} from 'lodash/fp';
+import { assocPath, compose, cond, isEqual, identity, sortBy } from 'lodash/fp';
 import Selection from '../../selection';
 
 type Props = {
   settingsPlacementKey: string;
 };
 
-function PlacementSettings({ settingsPlacementKey }: Props) : JSX.Element {
+function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
   );
-  const tags = useSelect((select) => sortBy(
-    'name',
-    select('mailpoet-form-editor').getAllWPTags()
-      .concat(select('mailpoet-form-editor').getAllWooCommerceTags()),
-  ), []);
-  const categories = useSelect((select) => sortBy(
-    'name',
-    select('mailpoet-form-editor').getAllWPCategories()
-      .concat(select('mailpoet-form-editor').getAllWooCommerceCategories()),
-  ), []);
+  const tags = useSelect(
+    (select) =>
+      sortBy(
+        'name',
+        select('mailpoet-form-editor')
+          .getAllWPTags()
+          .concat(select('mailpoet-form-editor').getAllWooCommerceTags()),
+      ),
+    [],
+  );
+  const categories = useSelect(
+    (select) =>
+      sortBy(
+        'name',
+        select('mailpoet-form-editor')
+          .getAllWPCategories()
+          .concat(select('mailpoet-form-editor').getAllWooCommerceCategories()),
+      ),
+    [],
+  );
   const pages = useSelect(
     (select) => select('mailpoet-form-editor').getAllWPPages(),
     [],
   );
-  const posts = useSelect((select) => sortBy(
-    'name',
-    select('mailpoet-form-editor').getAllWPPosts()
-      .concat(select('mailpoet-form-editor').getAllWooCommerceProducts()),
-  ), []);
+  const posts = useSelect(
+    (select) =>
+      sortBy(
+        'name',
+        select('mailpoet-form-editor')
+          .getAllWPPosts()
+          .concat(select('mailpoet-form-editor').getAllWooCommerceProducts()),
+      ),
+    [],
+  );
   const isPreviewShown = useSelect(
     (select) => select('mailpoet-form-editor').getIsPreviewShown(),
     [],
@@ -58,14 +66,23 @@ function PlacementSettings({ settingsPlacementKey }: Props) : JSX.Element {
         onChange={(newValue): void => {
           compose([
             changeFormSettings,
-            assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, newValue),
+            assocPath(
+              `formPlacement.${settingsPlacementKey}.pages.all`,
+              newValue,
+            ),
             cond([
               [
                 // condition, if the predicate function is true the next compose is run
                 (): boolean => newValue,
                 compose([
-                  assocPath(`formPlacement.${settingsPlacementKey}.pages.selected`, []), // if enabled clear selected pages
-                  assocPath(`formPlacement.${settingsPlacementKey}.categories`, []), // if enabled clear selected categories
+                  assocPath(
+                    `formPlacement.${settingsPlacementKey}.pages.selected`,
+                    [],
+                  ), // if enabled clear selected pages
+                  assocPath(
+                    `formPlacement.${settingsPlacementKey}.categories`,
+                    [],
+                  ), // if enabled clear selected categories
                   assocPath(`formPlacement.${settingsPlacementKey}.tags`, []), // if enabled clear selected tags
                 ]),
               ],
@@ -77,23 +94,34 @@ function PlacementSettings({ settingsPlacementKey }: Props) : JSX.Element {
       <div data-automation-id="form-placement-select-page">
         <div className="form-editor-placement-selection">
           <Selection
-            dropDownParent={isPreviewShown ? '.mailpoet-modal-content' : undefined}
+            dropDownParent={
+              isPreviewShown ? '.mailpoet-modal-content' : undefined
+            }
             item={{
-              id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].pages.selected.join()}`,
+              id: `${prefix}${formSettings.formPlacement[
+                settingsPlacementKey
+              ].pages.selected.join()}`,
             }}
             onValueChange={(e): void => {
-              const selected = formSettings.formPlacement[settingsPlacementKey].pages.selected;
+              const selected =
+                formSettings.formPlacement[settingsPlacementKey].pages.selected;
               if (isEqual(selected, e.target.value)) {
                 return;
               }
               compose([
                 changeFormSettings,
-                assocPath(`formPlacement.${settingsPlacementKey}.pages.selected`, e.target.value),
+                assocPath(
+                  `formPlacement.${settingsPlacementKey}.pages.selected`,
+                  e.target.value,
+                ),
                 cond([
                   [
                     // only disable "All pages" toggle if not empty
                     (): boolean => !!e.target.value.length,
-                    assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false), // disable all if some pages are selected
+                    assocPath(
+                      `formPlacement.${settingsPlacementKey}.pages.all`,
+                      false,
+                    ), // disable all if some pages are selected
                   ],
                   [(): boolean => !e.target.value.length, identity],
                 ]),
@@ -106,7 +134,8 @@ function PlacementSettings({ settingsPlacementKey }: Props) : JSX.Element {
               multiple: true,
               placeholder: MailPoet.I18n.t('selectPage'),
               getLabel: (page): void => page.name,
-              selected: (): void => formSettings.formPlacement[settingsPlacementKey].pages.selected,
+              selected: (): void =>
+                formSettings.formPlacement[settingsPlacementKey].pages.selected,
             }}
           />
         </div>
@@ -117,13 +146,22 @@ function PlacementSettings({ settingsPlacementKey }: Props) : JSX.Element {
         onChange={(newValue): void => {
           compose([
             changeFormSettings,
-            assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, newValue),
+            assocPath(
+              `formPlacement.${settingsPlacementKey}.posts.all`,
+              newValue,
+            ),
             cond([
               [
                 (): boolean => newValue,
                 compose([
-                  assocPath(`formPlacement.${settingsPlacementKey}.posts.selected`, []), // if enabled clear selected pages
-                  assocPath(`formPlacement.${settingsPlacementKey}.categories`, []), // if enabled clear selected categories
+                  assocPath(
+                    `formPlacement.${settingsPlacementKey}.posts.selected`,
+                    [],
+                  ), // if enabled clear selected pages
+                  assocPath(
+                    `formPlacement.${settingsPlacementKey}.categories`,
+                    [],
+                  ), // if enabled clear selected categories
                   assocPath(`formPlacement.${settingsPlacementKey}.tags`, []), // if enabled clear selected tags
                 ]),
               ],
@@ -134,23 +172,34 @@ function PlacementSettings({ settingsPlacementKey }: Props) : JSX.Element {
       />
       <div className="form-editor-placement-selection">
         <Selection
-          dropDownParent={isPreviewShown ? '.mailpoet-modal-content' : undefined}
+          dropDownParent={
+            isPreviewShown ? '.mailpoet-modal-content' : undefined
+          }
           item={{
-            id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].posts.selected.join()}`,
+            id: `${prefix}${formSettings.formPlacement[
+              settingsPlacementKey
+            ].posts.selected.join()}`,
           }}
           onValueChange={(e): void => {
-            const selected = formSettings.formPlacement[settingsPlacementKey].posts.selected;
+            const selected =
+              formSettings.formPlacement[settingsPlacementKey].posts.selected;
             if (isEqual(selected, e.target.value)) {
               return;
             }
             compose([
               changeFormSettings,
-              assocPath(`formPlacement.${settingsPlacementKey}.posts.selected`, e.target.value),
+              assocPath(
+                `formPlacement.${settingsPlacementKey}.posts.selected`,
+                e.target.value,
+              ),
               cond([
                 [
                   // only disable "All pages" toggle if not empty
                   (): boolean => !!e.target.value.length,
-                  assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some pages are selected
+                  assocPath(
+                    `formPlacement.${settingsPlacementKey}.posts.all`,
+                    false,
+                  ), // disable all if some pages are selected
                 ],
                 [(): boolean => !e.target.value.length, identity],
               ]),
@@ -163,35 +212,50 @@ function PlacementSettings({ settingsPlacementKey }: Props) : JSX.Element {
             multiple: true,
             placeholder: MailPoet.I18n.t('selectPage'),
             getLabel: (page): string => page.name,
-            selected: (): Array<string> => (
-              formSettings.formPlacement[settingsPlacementKey].posts.selected
-            ),
+            selected: (): Array<string> =>
+              formSettings.formPlacement[settingsPlacementKey].posts.selected,
           }}
         />
       </div>
       <div>
-        <h3 className="form-editor-sidebar-heading">{MailPoet.I18n.t('displayOnCategories')}</h3>
+        <h3 className="form-editor-sidebar-heading">
+          {MailPoet.I18n.t('displayOnCategories')}
+        </h3>
         <div className="form-editor-placement-selection">
           <Selection
-            dropDownParent={isPreviewShown ? '.mailpoet-modal-content' : undefined}
+            dropDownParent={
+              isPreviewShown ? '.mailpoet-modal-content' : undefined
+            }
             item={{
-              id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].categories.join()}`,
+              id: `${prefix}${formSettings.formPlacement[
+                settingsPlacementKey
+              ].categories.join()}`,
             }}
             onValueChange={(e): void => {
-              const selected = formSettings.formPlacement[settingsPlacementKey].categories;
+              const selected =
+                formSettings.formPlacement[settingsPlacementKey].categories;
               if (isEqual(selected, e.target.value)) {
                 return;
               }
               compose([
                 changeFormSettings,
-                assocPath(`formPlacement.${settingsPlacementKey}.categories`, e.target.value),
+                assocPath(
+                  `formPlacement.${settingsPlacementKey}.categories`,
+                  e.target.value,
+                ),
                 cond([
                   [
                     // only disable "All pages" toggle if not empty
                     (): boolean => !!e.target.value.length,
                     compose([
-                      assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
-                      assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
+                      assocPath(
+                        `formPlacement.${settingsPlacementKey}.pages.all`,
+                        false,
+                      ),
+                      assocPath(
+                        `formPlacement.${settingsPlacementKey}.posts.all`,
+                        false,
+                      ), // disable all if some posts are selected
                     ]),
                   ],
                   [(): boolean => !e.target.value.length, identity],
@@ -205,36 +269,51 @@ function PlacementSettings({ settingsPlacementKey }: Props) : JSX.Element {
               multiple: true,
               placeholder: MailPoet.I18n.t('selectPage'),
               getLabel: (category): string => category.name,
-              selected: (): Array<string> => (
-                formSettings.formPlacement[settingsPlacementKey].categories
-              ),
+              selected: (): Array<string> =>
+                formSettings.formPlacement[settingsPlacementKey].categories,
             }}
           />
         </div>
       </div>
       <div>
-        <h3 className="form-editor-sidebar-heading">{MailPoet.I18n.t('displayOnTags')}</h3>
+        <h3 className="form-editor-sidebar-heading">
+          {MailPoet.I18n.t('displayOnTags')}
+        </h3>
         <div className="form-editor-placement-selection">
           <Selection
-            dropDownParent={isPreviewShown ? '.mailpoet-modal-content' : undefined}
+            dropDownParent={
+              isPreviewShown ? '.mailpoet-modal-content' : undefined
+            }
             item={{
-              id: `${prefix}${formSettings.formPlacement[settingsPlacementKey].tags.join()}`,
+              id: `${prefix}${formSettings.formPlacement[
+                settingsPlacementKey
+              ].tags.join()}`,
             }}
             onValueChange={(e): void => {
-              const selected = formSettings.formPlacement[settingsPlacementKey].tags;
+              const selected =
+                formSettings.formPlacement[settingsPlacementKey].tags;
               if (isEqual(selected, e.target.value)) {
                 return;
               }
               compose([
                 changeFormSettings,
-                assocPath(`formPlacement.${settingsPlacementKey}.tags`, e.target.value),
+                assocPath(
+                  `formPlacement.${settingsPlacementKey}.tags`,
+                  e.target.value,
+                ),
                 cond([
                   [
                     // only disable "All pages" toggle if not empty
                     (): boolean => !!e.target.value.length,
                     compose([
-                      assocPath(`formPlacement.${settingsPlacementKey}.pages.all`, false),
-                      assocPath(`formPlacement.${settingsPlacementKey}.posts.all`, false), // disable all if some posts are selected
+                      assocPath(
+                        `formPlacement.${settingsPlacementKey}.pages.all`,
+                        false,
+                      ),
+                      assocPath(
+                        `formPlacement.${settingsPlacementKey}.posts.all`,
+                        false,
+                      ), // disable all if some posts are selected
                     ]),
                   ],
                   [(): boolean => !e.target.value.length, identity],
@@ -248,7 +327,8 @@ function PlacementSettings({ settingsPlacementKey }: Props) : JSX.Element {
               multiple: true,
               placeholder: MailPoet.I18n.t('selectPage'),
               getLabel: (tag): string => tag.name,
-              selected: (): Array<string> => formSettings.formPlacement[settingsPlacementKey].tags,
+              selected: (): Array<string> =>
+                formSettings.formPlacement[settingsPlacementKey].tags,
             }}
           />
         </div>

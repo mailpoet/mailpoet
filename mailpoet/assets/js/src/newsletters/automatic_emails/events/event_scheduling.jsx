@@ -17,8 +17,12 @@ class EventScheduling extends Component {
     const { item, event } = this.props;
 
     this.handleChange = this.handleChange.bind(this);
-    const afterTimeType = item.afterTimeType || event.defaultAfterTimeType || defaultAfterTimeType;
-    const eventDefaultAfterTimeNumber = afterTimeType === 'minutes' ? defaultAfterTimeNumberForMinutes : defaultAfterTimeNumber;
+    const afterTimeType =
+      item.afterTimeType || event.defaultAfterTimeType || defaultAfterTimeType;
+    const eventDefaultAfterTimeNumber =
+      afterTimeType === 'minutes'
+        ? defaultAfterTimeNumberForMinutes
+        : defaultAfterTimeNumber;
     const afterTimeNumber = item.afterTimeNumber || eventDefaultAfterTimeNumber;
 
     this.state = {
@@ -27,8 +31,9 @@ class EventScheduling extends Component {
     };
 
     // Propagate change when default values were applied
-    if (item.afterTimeNumber !== afterTimeNumber
-      || item.afterTimeType !== afterTimeType
+    if (
+      item.afterTimeNumber !== afterTimeNumber ||
+      item.afterTimeType !== afterTimeType
     ) {
       this.propagateChange(this.state);
     }
@@ -59,12 +64,13 @@ class EventScheduling extends Component {
     const { event } = this.props;
     let values = timeDelayValues;
     if (event.timeDelayValues) {
-      values = Object
-        .entries(event.timeDelayValues)
-        .reduce((accumulator, [key, value]) => {
+      values = Object.entries(event.timeDelayValues).reduce(
+        (accumulator, [key, value]) => {
           accumulator[key] = value.text;
           return accumulator;
-        }, {});
+        },
+        {},
+      );
     }
     const { afterTimeType } = this.state;
     const props = {
@@ -82,10 +88,7 @@ class EventScheduling extends Component {
     };
 
     return (
-      <Selection
-        field={props.field}
-        onValueChange={props.onValueChange}
-      />
+      <Selection field={props.field} onValueChange={props.onValueChange} />
     );
   }
 
@@ -94,10 +97,11 @@ class EventScheduling extends Component {
     const { afterTimeType, afterTimeNumber } = this.state;
     if (afterTimeType === 'immediate') return null;
     if (
-      event.timeDelayValues
-      && event.timeDelayValues[afterTimeType]
-      && !event.timeDelayValues[afterTimeType].displayAfterTimeNumberField
-    ) return null;
+      event.timeDelayValues &&
+      event.timeDelayValues[afterTimeType] &&
+      !event.timeDelayValues[afterTimeType].displayAfterTimeNumberField
+    )
+      return null;
 
     const props = {
       field: {
@@ -108,7 +112,9 @@ class EventScheduling extends Component {
         validation: {
           'data-parsley-required': true,
           'data-parsley-errors-container': '.mailpoet-form-errors',
-          'data-parsley-scheduled-at': MailPoet.I18n.t('emailCanBeScheduledUpToFiveYears'),
+          'data-parsley-scheduled-at': MailPoet.I18n.t(
+            'emailCanBeScheduledUpToFiveYears',
+          ),
         },
       },
       item: {},
@@ -141,22 +147,19 @@ class EventScheduling extends Component {
         </div>
         <div className="mailpoet-form-errors" />
         <div className="mailpoet-gap" />
-        {
-          event.schedulingReadMoreLink
-          && (
-            <>
-              <a
-                href={event.schedulingReadMoreLink.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="event-scheduling-read-more-link"
-              >
-                {event.schedulingReadMoreLink.text}
-              </a>
-              <div className="mailpoet-gap" />
-            </>
-          )
-        }
+        {event.schedulingReadMoreLink && (
+          <>
+            <a
+              href={event.schedulingReadMoreLink.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="event-scheduling-read-more-link"
+            >
+              {event.schedulingReadMoreLink.text}
+            </a>
+            <div className="mailpoet-gap" />
+          </>
+        )}
       </>
     );
   }
@@ -171,10 +174,12 @@ EventScheduling.propTypes = {
   onValueChange: PropTypes.func,
   event: PropTypes.shape({
     defaultAfterTimeType: PropTypes.string,
-    timeDelayValues: PropTypes.objectOf(PropTypes.shape({
-      text: PropTypes.string,
-      displayAfterTimeNumberField: PropTypes.bool,
-    })),
+    timeDelayValues: PropTypes.objectOf(
+      PropTypes.shape({
+        text: PropTypes.string,
+        displayAfterTimeNumberField: PropTypes.bool,
+      }),
+    ),
     schedulingReadMoreLink: PropTypes.shape({
       link: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,

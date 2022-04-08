@@ -1,8 +1,5 @@
 import moment from 'moment';
-import {
-  Panel,
-  PanelBody,
-} from '@wordpress/components';
+import { Panel, PanelBody } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
@@ -17,22 +14,20 @@ import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 function CustomDateEdit({ attributes, setAttributes, clientId }) {
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
-    []
+    [],
   );
   const dateSettings = useSelect(
     (sel) => sel('mailpoet-form-editor').getDateSettingsData(),
-    []
+    [],
   );
   const isDeleting = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
-    []
+    [],
   );
 
-  const {
-    saveCustomField,
-    deleteCustomField,
-    customFieldEdited,
-  } = useDispatch('mailpoet-form-editor');
+  const { saveCustomField, deleteCustomField, customFieldEdited } = useDispatch(
+    'mailpoet-form-editor',
+  );
   const inspectorControls = (
     <InspectorControls>
       <Panel>
@@ -45,25 +40,29 @@ function CustomDateEdit({ attributes, setAttributes, clientId }) {
             dateFormat={attributes.dateFormat}
             dateType={attributes.dateType}
             isSaving={isSaving}
-            onSave={(params) => saveCustomField({
-              customFieldId: attributes.customFieldId,
-              data: {
-                params: mapCustomFieldFormData('date', params),
-              },
-              onFinish: () => setAttributes({
-                mandatory: params.mandatory,
-                dateType: params.dateType,
-                dateFormat: params.dateFormat,
-                defaultToday: params.defaultToday,
-                label: params.label,
-              }),
-            })}
-            onCustomFieldDelete={() => deleteCustomField(
-              attributes.customFieldId,
-              clientId
-            )}
+            onSave={(params) =>
+              saveCustomField({
+                customFieldId: attributes.customFieldId,
+                data: {
+                  params: mapCustomFieldFormData('date', params),
+                },
+                onFinish: () =>
+                  setAttributes({
+                    mandatory: params.mandatory,
+                    dateType: params.dateType,
+                    dateFormat: params.dateFormat,
+                    defaultToday: params.defaultToday,
+                    label: params.label,
+                  }),
+              })
+            }
+            onCustomFieldDelete={() =>
+              deleteCustomField(attributes.customFieldId, clientId)
+            }
             isDeleting={isDeleting}
-            onChange={(data, hasUnsavedChanges) => hasUnsavedChanges && customFieldEdited()}
+            onChange={(data, hasUnsavedChanges) =>
+              hasUnsavedChanges && customFieldEdited()
+            }
           />
         </PanelBody>
       </Panel>
@@ -74,7 +73,11 @@ function CustomDateEdit({ attributes, setAttributes, clientId }) {
     <ParagraphEdit className={attributes.className}>
       <div className="mailpoet_custom_date">
         {inspectorControls}
-        <label className="mailpoet_date_label" data-automation-id="editor_custom_date_label" htmlFor={clientId}>
+        <label
+          className="mailpoet_date_label"
+          data-automation-id="editor_custom_date_label"
+          htmlFor={clientId}
+        >
           {formatLabel(attributes)}
         </label>
         <FormFieldDate
@@ -89,7 +92,9 @@ function CustomDateEdit({ attributes, setAttributes, clientId }) {
             },
           }}
           item={{
-            [clientId]: attributes.defaultToday ? moment().format('YYYY-MM-DD') : '',
+            [clientId]: attributes.defaultToday
+              ? moment().format('YYYY-MM-DD')
+              : '',
           }}
           addDefaultClasses
           onValueChange={() => {}}

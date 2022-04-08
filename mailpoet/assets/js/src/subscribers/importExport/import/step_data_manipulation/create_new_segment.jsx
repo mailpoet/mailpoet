@@ -23,24 +23,26 @@ export default (onCreateSegment) => {
         name: segmentName,
         description: segmentDescription,
       },
-    }).done((response) => {
-      onCreateSegment({
-        id: response.data.id,
-        name: response.data.name,
-        text: response.data.name, // Required select2 property
-        subscriberCount: 0,
-      });
+    })
+      .done((response) => {
+        onCreateSegment({
+          id: response.data.id,
+          name: response.data.name,
+          text: response.data.name, // Required select2 property
+          subscriberCount: 0,
+        });
 
-      MailPoet.Modal.close();
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.hide();
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
-          { positionAfter: '#new_segment_name' }
-        );
-      }
-    });
+        MailPoet.Modal.close();
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.hide();
+          MailPoet.Notice.error(
+            response.errors.map((error) => error.message),
+            { positionAfter: '#new_segment_name' },
+          );
+        }
+      });
   });
   jQuery('#new_segment_cancel').on('click', () => {
     MailPoet.Modal.close();

@@ -8,27 +8,22 @@ export default {
 };
 
 export function Layouts(): ReactElement {
-  const content = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi libero sapien, tristique sollicitudin lobortis id, viverra id libero.';
+  const content =
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi libero sapien, tristique sollicitudin lobortis id, viverra id libero.';
 
   return (
     <>
       <Heading level={3}>Column</Heading>
-      <Grid.Column className="custom-class">
-        {content}
-      </Grid.Column>
+      <Grid.Column className="custom-class">{content}</Grid.Column>
 
       <div className="mailpoet-gap" />
 
-      <Grid.Column align="center">
-        {content}
-      </Grid.Column>
+      <Grid.Column align="center">{content}</Grid.Column>
 
       <div className="mailpoet-gap" />
 
       <Heading level={3}>Column - small</Heading>
-      <Grid.Column dimension="small">
-        {content}
-      </Grid.Column>
+      <Grid.Column dimension="small">{content}</Grid.Column>
 
       <div className="mailpoet-gap" />
 
@@ -77,9 +72,7 @@ export function Layouts(): ReactElement {
             <br />
             Part
           </div>
-          <div>
-            Right Part
-          </div>
+          <div>Right Part</div>
         </Grid.SpaceBetween>
       </Grid.Column>
 
@@ -93,22 +86,16 @@ export function Layouts(): ReactElement {
             <br />
             Part
           </div>
-          <div>
-            Right Part
-          </div>
+          <div>Right Part</div>
         </Grid.SpaceBetween>
       </Grid.Column>
 
       <Heading level={3}>Centered row</Heading>
       <Grid.Column>
         <Grid.CenteredRow className="custom-class">
-          <div>
-            Left
-          </div>
+          <div>Left</div>
           <Input type="text" />
-          <div>
-            Right
-          </div>
+          <div>Right</div>
         </Grid.CenteredRow>
       </Grid.Column>
     </>

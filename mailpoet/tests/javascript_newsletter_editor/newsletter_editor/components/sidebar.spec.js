@@ -7,7 +7,7 @@ describe('Sidebar', function () {
   describe('content view', function () {
     var view;
     beforeEach(function () {
-      view = new (SidebarComponent.SidebarWidgetsView)({
+      view = new SidebarComponent.SidebarWidgetsView({
         collection: new Backbone.Collection([]),
       });
     });
@@ -20,7 +20,7 @@ describe('Sidebar', function () {
   describe('layout view', function () {
     var view;
     beforeEach(function () {
-      view = new (SidebarComponent.SidebarLayoutWidgetsView)({
+      view = new SidebarComponent.SidebarLayoutWidgetsView({
         collection: new Backbone.Collection([]),
       });
     });
@@ -33,7 +33,7 @@ describe('Sidebar', function () {
   describe('styles view', function () {
     var view;
     beforeEach(function () {
-      view = new (SidebarComponent.SidebarStylesView)({
+      view = new SidebarComponent.SidebarStylesView({
         model: new Backbone.SuperModel({}),
         availableStyles: new Backbone.SuperModel({}),
       });
@@ -78,20 +78,30 @@ describe('Sidebar', function () {
         });
         availableStyles = new Backbone.SuperModel({
           fonts: {
-            standard: ['Arial', 'Times New Roman', 'Tahoma', 'Comic Sans', 'Lucida'],
+            standard: [
+              'Arial',
+              'Times New Roman',
+              'Tahoma',
+              'Comic Sans',
+              'Lucida',
+            ],
             custom: [
-              'Arvo', 'Lato', 'Lora', 'Merriweather', 'Merriweather Sans', 'Noticia Text',
-              'Open Sans', 'Playfair Display', 'Roboto', 'Source Sans Pro',
+              'Arvo',
+              'Lato',
+              'Lora',
+              'Merriweather',
+              'Merriweather Sans',
+              'Noticia Text',
+              'Open Sans',
+              'Playfair Display',
+              'Roboto',
+              'Source Sans Pro',
             ],
           },
-          textSizes: [
-            '9px', '10px',
-          ],
-          headingSizes: [
-            '10px', '12px', '14px', '16px', '18px',
-          ],
+          textSizes: ['9px', '10px'],
+          headingSizes: ['10px', '12px', '14px', '16px', '18px'],
         });
-        innerView = new (SidebarComponent.SidebarStylesView)({
+        innerView = new SidebarComponent.SidebarStylesView({
           model: model,
           availableStyles: availableStyles,
         });
@@ -100,7 +110,10 @@ describe('Sidebar', function () {
       });
 
       it('changes model if text font color field changes', function () {
-        innerView.$('#mailpoet_text_font_color').val('#123456').trigger('change');
+        innerView
+          .$('#mailpoet_text_font_color')
+          .val('#123456')
+          .trigger('change');
         expect(model.get('text.fontColor')).to.equal('#123456');
       });
 
@@ -125,22 +138,34 @@ describe('Sidebar', function () {
       });
 
       it('changes model if newsletter background color field changes', function () {
-        innerView.$('#mailpoet_newsletter_background_color').val('#636237').trigger('change');
+        innerView
+          .$('#mailpoet_newsletter_background_color')
+          .val('#636237')
+          .trigger('change');
         expect(model.get('wrapper.backgroundColor')).to.equal('#636237');
       });
 
       it('changes model if background color field changes', function () {
-        innerView.$('#mailpoet_background_color').val('#878587').trigger('change');
+        innerView
+          .$('#mailpoet_background_color')
+          .val('#878587')
+          .trigger('change');
         expect(model.get('body.backgroundColor')).to.equal('#878587');
       });
 
       it('changes model if text font family field changes', function () {
-        innerView.$('#mailpoet_text_font_family').val('Times New Roman').trigger('change');
+        innerView
+          .$('#mailpoet_text_font_family')
+          .val('Times New Roman')
+          .trigger('change');
         expect(model.get('text.fontFamily')).to.equal('Times New Roman');
       });
 
       it('changes model if h1 font family field changes', function () {
-        innerView.$('#mailpoet_h1_font_family').val('Comic Sans').trigger('change');
+        innerView
+          .$('#mailpoet_h1_font_family')
+          .val('Comic Sans')
+          .trigger('change');
         expect(model.get('h1.fontFamily')).to.equal('Comic Sans');
       });
 
@@ -175,7 +200,10 @@ describe('Sidebar', function () {
       });
 
       it('changes model if link underline field changes', function () {
-        innerView.$('#mailpoet_a_font_underline').prop('checked', true).trigger('change');
+        innerView
+          .$('#mailpoet_a_font_underline')
+          .prop('checked', true)
+          .trigger('change');
         expect(model.get('link.textDecoration')).to.equal('underline');
       });
     });

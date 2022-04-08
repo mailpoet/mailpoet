@@ -9,7 +9,7 @@ import CookieSettings from './cookie_settings';
 
 const delayValues = [0, 2, 5, 10, 15, 30, 45, 60, 120, 180, 240];
 
-function PopUpSettings() : JSX.Element {
+function PopUpSettings(): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -25,7 +25,10 @@ function PopUpSettings() : JSX.Element {
       <ToggleControl
         label={MailPoet.I18n.t('enable')}
         checked={isActive}
-        onChange={compose([changeFormSettings, assocPath('formPlacement.popup.enabled', __, formSettings)])}
+        onChange={compose([
+          changeFormSettings,
+          assocPath('formPlacement.popup.enabled', __, formSettings),
+        ])}
       />
       {isActive && (
         <>
@@ -39,29 +42,50 @@ function PopUpSettings() : JSX.Element {
             maxPercents={100}
             defaultPixelValue={560}
             defaultPercentValue={100}
-            onChange={(width): void => (
-              changeFormSettings(assocPath('formPlacement.popup.styles.width', width, formSettings))
-            )}
+            onChange={(width): void =>
+              changeFormSettings(
+                assocPath(
+                  'formPlacement.popup.styles.width',
+                  width,
+                  formSettings,
+                ),
+              )
+            }
           />
           <PlacementSettings settingsPlacementKey="popup" />
           <AnimationSettings settingsPlacementKey="popup" />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
             value={formSettings.formPlacement.popup.delay}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.popup.delay', __, formSettings)])}
+            onChange={compose([
+              changeFormSettings,
+              assocPath('formPlacement.popup.delay', __, formSettings),
+            ])}
             options={delayValues.map((delayValue) => ({
               value: delayValue,
-              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', `${delayValue}`),
+              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace(
+                '%1s',
+                `${delayValue}`,
+              ),
             }))}
           />
           <CookieSettings settingsPlacementKey="popup" />
           <div>
-            <p><b>{MailPoet.I18n.t('exitIntentTitle')}</b></p>
+            <p>
+              <b>{MailPoet.I18n.t('exitIntentTitle')}</b>
+            </p>
             <p>{MailPoet.I18n.t('exitIntentDescription')}</p>
             <ToggleControl
               label={MailPoet.I18n.t('exitIntentSwitch')}
               checked={formSettings.formPlacement.popup.exitIntentEnabled}
-              onChange={compose([changeFormSettings, assocPath('formPlacement.popup.exitIntentEnabled', __, formSettings)])}
+              onChange={compose([
+                changeFormSettings,
+                assocPath(
+                  'formPlacement.popup.exitIntentEnabled',
+                  __,
+                  formSettings,
+                ),
+              ])}
             />
           </div>
         </>

@@ -15,20 +15,21 @@ import findBlock from './find_block.jsx';
 const formatApiErrorMessage = (response) => {
   let errorMessage = null;
   if (response.errors.length > 0) {
-    errorMessage = response.errors.map((error) => (error.message));
+    errorMessage = response.errors.map((error) => error.message);
     errorMessage = errorMessage.join(', ');
   }
   return errorMessage;
 };
 
 // Recursively apply callback on every block in blocks tree
-const mapBlocks = (blocks, callback) => blocks.map((block) => {
-  const result = callback(block);
-  if (block.innerBlocks) {
-    result.innerBlocks = mapBlocks(block.innerBlocks, callback);
-  }
-  return result;
-});
+const mapBlocks = (blocks, callback) =>
+  blocks.map((block) => {
+    const result = callback(block);
+    if (block.innerBlocks) {
+      result.innerBlocks = mapBlocks(block.innerBlocks, callback);
+    }
+    return result;
+  });
 
 export default {
   SAVE_FORM() {
@@ -42,12 +43,14 @@ export default {
     }
     const formData = select('mailpoet-form-editor').getFormData();
     const formBlocks = select('mailpoet-form-editor').getFormBlocks();
-    const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
+    const customFields = select(
+      'mailpoet-form-editor',
+    ).getAllAvailableCustomFields();
     const blocksToFormBody = blocksToFormBodyFactory(
       SETTINGS_DEFAULTS.fontSizes,
       SETTINGS_DEFAULTS.colors,
       SETTINGS_DEFAULTS.gradients,
-      customFields
+      customFields,
     );
     const requestData = {
       ...mapFormDataBeforeSaving(formData),
@@ -59,18 +62,26 @@ export default {
       endpoint: 'forms',
       action: 'saveEditor',
       data: requestData,
-    }).done((result) => {
-      dispatch('mailpoet-form-editor').saveFormDone(result.data.id);
-      Cookies.remove(`popup_form_dismissed_${result.data.id}`, { path: '/' });
-    }).fail((response) => {
-      dispatch('mailpoet-form-editor').saveFormFailed(formatApiErrorMessage(response));
-    });
+    })
+      .done((result) => {
+        dispatch('mailpoet-form-editor').saveFormDone(result.data.id);
+        Cookies.remove(`popup_form_dismissed_${result.data.id}`, { path: '/' });
+      })
+      .fail((response) => {
+        dispatch('mailpoet-form-editor').saveFormFailed(
+          formatApiErrorMessage(response),
+        );
+      });
   },
 
   SAVE_CUSTOM_FIELD(actionData) {
     dispatch('mailpoet-form-editor').saveCustomFieldStarted();
-    const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
-    const customField = customFields.find((cf) => cf.id === actionData.customFieldId);
+    const customFields = select(
+      'mailpoet-form-editor',
+    ).getAllAvailableCustomFields();
+    const customField = customFields.find(
+      (cf) => cf.id === actionData.customFieldId,
+    );
     const requestData = {};
     merge(requestData, customField, actionData.data);
     MailPoet.Ajax.post({
@@ -80,12 +91,17 @@ export default {
       data: requestData,
     })
       .then((response) => {
-        dispatch('mailpoet-form-editor').saveCustomFieldDone(customField.id, response.data);
+        dispatch('mailpoet-form-editor').saveCustomFieldDone(
+          customField.id,
+          response.data,
+        );
         if (typeof actionData.onFinish === 'function') actionData.onFinish();
       })
       .then(dispatch('mailpoet-form-editor').saveForm)
       .fail((response) => {
-        dispatch('mailpoet-form-editor').saveCustomFieldFailed(formatApiErrorMessage(response));
+        dispatch('mailpoet-form-editor').saveCustomFieldFailed(
+          formatApiErrorMessage(response),
+        );
       });
   },
 
@@ -111,18 +127,27 @@ export default {
         });
         const blockName = registerCustomFieldBlock(customField);
         const customFieldBlock = createBlock(blockName);
-        dispatch('core/block-editor').replaceBlock(action.clientId, customFieldBlock);
+        dispatch('core/block-editor').replaceBlock(
+          action.clientId,
+          customFieldBlock,
+        );
         dispatch('mailpoet-form-editor').createCustomFieldDone(response.data);
       })
       .fail((response) => {
-        dispatch('mailpoet-form-editor').createCustomFieldFailed(formatApiErrorMessage(response));
+        dispatch('mailpoet-form-editor').createCustomFieldFailed(
+          formatApiErrorMessage(response),
+        );
       });
   },
 
   DELETE_CUSTOM_FIELD(actionData) {
     dispatch('mailpoet-form-editor').deleteCustomFieldStarted();
-    const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
-    const customField = customFields.find((cf) => cf.id === actionData.customFieldId);
+    const customFields = select(
+      'mailpoet-form-editor',
+    ).getAllAvailableCustomFields();
+    const customField = customFields.find(
+      (cf) => cf.id === actionData.customFieldId,
+    );
     const namesMap = getCustomFieldBlockSettings(customField);
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -136,14 +161,22 @@ export default {
         MailPoet.trackEvent('Forms > Delete custom field', {
           'Field type': customField.type,
         });
-        dispatch('mailpoet-form-editor').deleteCustomFieldDone(actionData.customFieldId, actionData.clientId);
+        dispatch('mailpoet-form-editor').deleteCustomFieldDone(
+          actionData.customFieldId,
+          actionData.clientId,
+        );
         dispatch('core/block-editor').removeBlock(actionData.clientId);
         unregisterBlockType(
-          formatCustomFieldBlockName(namesMap[customField.type].name, customField)
+          formatCustomFieldBlockName(
+            namesMap[customField.type].name,
+            customField,
+          ),
         );
       })
       .fail((response) => {
-        dispatch('mailpoet-form-editor').deleteCustomFieldFailed(formatApiErrorMessage(response));
+        dispatch('mailpoet-form-editor').deleteCustomFieldFailed(
+          formatApiErrorMessage(response),
+        );
       });
   },
 
@@ -152,8 +185,12 @@ export default {
     const updatedBlocks = mapBlocks(currentBlocks, (block) => {
       const updatedBlock = { ...block };
       if (
-        ['mailpoet-form/last-name-input', 'mailpoet-form/first-name-input', 'mailpoet-form/email-input'].includes(block.name)
-        || block.name.startsWith('mailpoet-form/custom-text')
+        [
+          'mailpoet-form/last-name-input',
+          'mailpoet-form/first-name-input',
+          'mailpoet-form/email-input',
+        ].includes(block.name) ||
+        block.name.startsWith('mailpoet-form/custom-text')
       ) {
         updatedBlock.attributes = {
           ...updatedBlock.attributes,
@@ -192,14 +229,20 @@ export default {
     const currentBlocks = select('mailpoet-form-editor').getFormBlocks();
     const fixedBlocks = [...newBlocks];
     if (!emailInput) {
-      let currentEmailInput = findBlock(currentBlocks, 'mailpoet-form/email-input');
+      let currentEmailInput = findBlock(
+        currentBlocks,
+        'mailpoet-form/email-input',
+      );
       if (!currentEmailInput) {
         currentEmailInput = createBlock('mailpoet-form/email-input');
       }
       fixedBlocks.unshift(currentEmailInput);
     }
     if (!submitInput) {
-      let currentSubmit = findBlock(currentBlocks, 'mailpoet-form/submit-button');
+      let currentSubmit = findBlock(
+        currentBlocks,
+        'mailpoet-form/submit-button',
+      );
       if (!currentSubmit) {
         currentSubmit = createBlock('mailpoet-form/submit-button');
       }

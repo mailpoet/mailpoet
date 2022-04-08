@@ -7,14 +7,32 @@ import {
   SubscriberActionTypes,
 } from '../types';
 import { WordpressRoleFields } from './subscriber_wordpress_role';
-import { SubscriberScoreFields, validateSubscriberScore } from './subscriber_score';
-import { SubscribedDateFields, SubscribedDateOperator } from './subscriber_subscribed_date';
-import { MailPoetCustomFields, validateMailPoetCustomField } from './subscriber_mailpoet_custom_field';
-import { SubscribedToList, validateSubscribedToList } from './subscriber_subscribed_to_list';
+import {
+  SubscriberScoreFields,
+  validateSubscriberScore,
+} from './subscriber_score';
+import {
+  SubscribedDateFields,
+  SubscribedDateOperator,
+} from './subscriber_subscribed_date';
+import {
+  MailPoetCustomFields,
+  validateMailPoetCustomField,
+} from './subscriber_mailpoet_custom_field';
+import {
+  SubscribedToList,
+  validateSubscribedToList,
+} from './subscriber_subscribed_to_list';
 
 export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
-  if ((!formItems.action) || (formItems.action === SubscriberActionTypes.WORDPRESS_ROLE)) {
-    return Array.isArray(formItems.wordpressRole) && (formItems.wordpressRole.length > 0);
+  if (
+    !formItems.action ||
+    formItems.action === SubscriberActionTypes.WORDPRESS_ROLE
+  ) {
+    return (
+      Array.isArray(formItems.wordpressRole) &&
+      formItems.wordpressRole.length > 0
+    );
   }
   if (formItems.action === SubscriberActionTypes.MAILPOET_CUSTOM_FIELD) {
     return validateMailPoetCustomField(formItems);
@@ -29,30 +47,50 @@ export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
     return false;
   }
   if (
-    formItems.operator === SubscribedDateOperator.BEFORE
-    || formItems.operator === SubscribedDateOperator.AFTER
-    || formItems.operator === SubscribedDateOperator.ON
-    || formItems.operator === SubscribedDateOperator.NOT_ON
+    formItems.operator === SubscribedDateOperator.BEFORE ||
+    formItems.operator === SubscribedDateOperator.AFTER ||
+    formItems.operator === SubscribedDateOperator.ON ||
+    formItems.operator === SubscribedDateOperator.NOT_ON
   ) {
     const re = /^\d+-\d+-\d+$/;
     return re.test(formItems.value);
   }
   if (
-    formItems.operator === SubscribedDateOperator.IN_THE_LAST
-    || formItems.operator === SubscribedDateOperator.NOT_IN_THE_LAST
+    formItems.operator === SubscribedDateOperator.IN_THE_LAST ||
+    formItems.operator === SubscribedDateOperator.NOT_IN_THE_LAST
   ) {
     const re = /^\d+$/;
-    return re.test(formItems.value) && (Number(formItems.value) > 0);
+    return re.test(formItems.value) && Number(formItems.value) > 0;
   }
   return false;
 }
 
 export const SubscriberSegmentOptions = [
-  { value: SubscriberActionTypes.MAILPOET_CUSTOM_FIELD, label: MailPoet.I18n.t('mailpoetCustomField'), group: SegmentTypes.WordPressRole },
-  { value: SubscriberActionTypes.SUBSCRIBER_SCORE, label: MailPoet.I18n.t('subscriberScore'), group: SegmentTypes.WordPressRole },
-  { value: SubscriberActionTypes.SUBSCRIBED_DATE, label: MailPoet.I18n.t('subscribedDate'), group: SegmentTypes.WordPressRole },
-  { value: SubscriberActionTypes.SUBSCRIBED_TO_LIST, label: MailPoet.I18n.t('subscribedToList'), group: SegmentTypes.WordPressRole },
-  { value: SubscriberActionTypes.WORDPRESS_ROLE, label: MailPoet.I18n.t('segmentsSubscriber'), group: SegmentTypes.WordPressRole },
+  {
+    value: SubscriberActionTypes.MAILPOET_CUSTOM_FIELD,
+    label: MailPoet.I18n.t('mailpoetCustomField'),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
+    value: SubscriberActionTypes.SUBSCRIBER_SCORE,
+    label: MailPoet.I18n.t('subscriberScore'),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
+    value: SubscriberActionTypes.SUBSCRIBED_DATE,
+    label: MailPoet.I18n.t('subscribedDate'),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
+    value: SubscriberActionTypes.SUBSCRIBED_TO_LIST,
+    label: MailPoet.I18n.t('subscribedToList'),
+    group: SegmentTypes.WordPressRole,
+  },
+  {
+    value: SubscriberActionTypes.WORDPRESS_ROLE,
+    label: MailPoet.I18n.t('segmentsSubscriber'),
+    group: SegmentTypes.WordPressRole,
+  },
 ];
 
 const componentsMap = {
@@ -67,9 +105,10 @@ type Props = {
   filterIndex: number;
 };
 
-export function SubscriberFields({ filterIndex } : Props):JSX.Element {
+export function SubscriberFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
@@ -82,7 +121,5 @@ export function SubscriberFields({ filterIndex } : Props):JSX.Element {
 
   if (!Component) return null;
 
-  return (
-    <Component filterIndex={filterIndex} />
-  );
+  return <Component filterIndex={filterIndex} />;
 }

@@ -4,13 +4,7 @@ import { Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-function PreviewItem({
-  value,
-  remove,
-  onUpdate,
-  onCheck,
-  index,
-}) {
+function PreviewItem({ value, remove, onUpdate, onCheck, index }) {
   return (
     <div
       className="mailpoet-form-segments-settings-list"
@@ -29,17 +23,14 @@ function PreviewItem({
         data-automation-id="custom_field_value_settings_value"
         onChange={(event) => onUpdate(value.id, event.target.value)}
       />
-      {
-        (index !== 0)
-      && (
+      {index !== 0 && (
         <Dashicon
           icon="no-alt"
           color="#900"
           className="mailpoet-form-segments-segment-remove"
           onClick={partial(remove, value.id)}
         />
-      )
-      }
+      )}
     </div>
   );
 }
@@ -56,12 +47,7 @@ PreviewItem.propTypes = {
   remove: PropTypes.func.isRequired,
 };
 
-function Preview({
-  values,
-  update,
-  remove,
-  onReorder,
-}) {
+function Preview({ values, update, remove, onReorder }) {
   const [valuesWhileMoved, setValues] = useState(values);
 
   useEffect(() => {
@@ -103,36 +89,34 @@ function Preview({
     onReorder(newValues);
   };
 
-  const renderItems = () => (valuesWhileMoved.map((value, index) => (
-    <Draggable key={value.id} draggableId={value.id} index={index}>
-      {(provided) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-        >
-          <PreviewItem
-            key={`inner${value.id}`}
-            index={index}
-            value={value}
-            remove={remove}
-            onCheck={onCheck}
-            onUpdate={onUpdate}
-          />
-        </div>
-      )}
-    </Draggable>
-  )));
+  const renderItems = () =>
+    valuesWhileMoved.map((value, index) => (
+      <Draggable key={value.id} draggableId={value.id} index={index}>
+        {(provided) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          >
+            <PreviewItem
+              key={`inner${value.id}`}
+              index={index}
+              value={value}
+              remove={remove}
+              onCheck={onCheck}
+              onUpdate={onUpdate}
+            />
+          </div>
+        )}
+      </Draggable>
+    ));
 
   return (
     <div className="mailpoet-dnd-items-list">
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
           {(provided) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
+            <div {...provided.droppableProps} ref={provided.innerRef}>
               {renderItems()}
               {provided.placeholder}
             </div>
@@ -144,10 +128,12 @@ function Preview({
 }
 
 Preview.propTypes = {
-  values: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
-  }).isRequired).isRequired,
+  values: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+    }).isRequired,
+  ).isRequired,
   update: PropTypes.func.isRequired,
   remove: PropTypes.func.isRequired,
   onReorder: PropTypes.func.isRequired,

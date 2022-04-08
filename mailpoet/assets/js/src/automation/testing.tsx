@@ -30,20 +30,26 @@ const createWorkflow = () => {
 };
 
 export function CreateTestingWorkflowButton(): JSX.Element {
-  const [createSchema, { loading, error }] = useMutation('workflows', { method: 'POST' });
+  const [createSchema, { loading, error }] = useMutation('workflows', {
+    method: 'POST',
+  });
 
   return (
     <div>
       <button
         type="button"
-        onClick={() => createSchema({
-          body: JSON.stringify(createWorkflow()),
-        })}
+        onClick={() =>
+          createSchema({
+            body: JSON.stringify(createWorkflow()),
+          })
+        }
         disabled={loading}
       >
         Create testing workflow
       </button>
-      {error && (<div>{error?.data?.message ?? 'An unknown error occurred'}</div>)}
+      {error && (
+        <div>{error?.data?.message ?? 'An unknown error occurred'}</div>
+      )}
     </div>
   );
 }

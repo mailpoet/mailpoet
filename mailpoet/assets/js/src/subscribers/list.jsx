@@ -54,13 +54,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneSubscriberTrashed')
-      );
+      message = MailPoet.I18n.t('oneSubscriberTrashed');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleSubscribersTrashed')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleSubscribersTrashed').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -69,13 +68,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneSubscriberDeleted')
-      );
+      message = MailPoet.I18n.t('oneSubscriberDeleted');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleSubscribersDeleted')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleSubscribersDeleted').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -84,23 +82,29 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneSubscriberRestored')
-      );
+      message = MailPoet.I18n.t('oneSubscriberRestored');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleSubscribersRestored')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleSubscribersRestored').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
   onNoItemsFound: (group) => {
-    if (group === 'bounced' && !window.mailpoet_premium_active && !window.mailpoet_mss_active) {
+    if (
+      group === 'bounced' &&
+      !window.mailpoet_premium_active &&
+      !window.mailpoet_mss_active
+    ) {
       return (
         <div>
           <p>{MailPoet.I18n.t('bouncedSubscribersHelp')}</p>
           <p>
-            <a href="admin.php?page=mailpoet-upgrade" className="button-primary">
+            <a
+              href="admin.php?page=mailpoet-upgrade"
+              className="button-primary"
+            >
               {MailPoet.I18n.t('bouncedSubscribersPremiumButtonText')}
             </a>
           </p>
@@ -113,18 +117,10 @@ const messages = {
 };
 
 const createModal = (submitModal, closeModal, field, title) => (
-  <Modal
-    title={title}
-    onRequestClose={closeModal}
-    isDismissible
-  >
+  <Modal title={title} onRequestClose={closeModal} isDismissible>
     <Selection field={field} />
     <span className="mailpoet-gap-half" />
-    <Button
-      onClick={submitModal}
-      dimension="small"
-      variant="secondary"
-    >
+    <Button onClick={submitModal} dimension="small" variant="secondary">
       {MailPoet.I18n.t('apply')}
     </Button>
   </Modal>
@@ -140,13 +136,16 @@ const bulkActions = [
         name: 'move_to_segment',
         endpoint: 'segments',
         filter: function filter(segment) {
-          return !!(
-            !segment.deleted_at && segment.type === 'default'
-          );
+          return !!(!segment.deleted_at && segment.type === 'default');
         },
       };
 
-      return createModal(submitModal, closeModal, field, MailPoet.I18n.t('moveToList'));
+      return createModal(
+        submitModal,
+        closeModal,
+        field,
+        MailPoet.I18n.t('moveToList'),
+      );
     },
     getData: function getData() {
       return {
@@ -156,8 +155,8 @@ const bulkActions = [
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersMovedToList')
-          .replace('%1$d', (Number(response.meta.count)).toLocaleString())
-          .replace('%2$s', response.meta.segment)
+          .replace('%1$d', Number(response.meta.count).toLocaleString())
+          .replace('%2$s', response.meta.segment),
       );
     },
   },
@@ -170,13 +169,16 @@ const bulkActions = [
         name: 'add_to_segment',
         endpoint: 'segments',
         filter: function filter(segment) {
-          return !!(
-            !segment.deleted_at && segment.type === 'default'
-          );
+          return !!(!segment.deleted_at && segment.type === 'default');
         },
       };
 
-      return createModal(submitModal, closeModal, field, MailPoet.I18n.t('addToList'));
+      return createModal(
+        submitModal,
+        closeModal,
+        field,
+        MailPoet.I18n.t('addToList'),
+      );
     },
     getData: function getData() {
       return {
@@ -186,8 +188,8 @@ const bulkActions = [
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersAddedToList')
-          .replace('%1$d', (Number(response.meta.count)).toLocaleString())
-          .replace('%2$s', response.meta.segment)
+          .replace('%1$d', Number(response.meta.count).toLocaleString())
+          .replace('%2$s', response.meta.segment),
       );
     },
   },
@@ -200,13 +202,16 @@ const bulkActions = [
         name: 'remove_from_segment',
         endpoint: 'segments',
         filter: function filter(segment) {
-          return !!(
-            segment.type === 'default'
-          );
+          return !!(segment.type === 'default');
         },
       };
 
-      return createModal(submitModal, closeModal, field, MailPoet.I18n.t('removeFromList'));
+      return createModal(
+        submitModal,
+        closeModal,
+        field,
+        MailPoet.I18n.t('removeFromList'),
+      );
     },
     getData: function getData() {
       return {
@@ -216,8 +221,8 @@ const bulkActions = [
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
         MailPoet.I18n.t('multipleSubscribersRemovedFromList')
-          .replace('%1$d', (Number(response.meta.count)).toLocaleString())
-          .replace('%2$s', response.meta.segment)
+          .replace('%1$d', Number(response.meta.count).toLocaleString())
+          .replace('%2$s', response.meta.segment),
       );
     },
   },
@@ -226,8 +231,10 @@ const bulkActions = [
     label: MailPoet.I18n.t('removeFromAllLists'),
     onSuccess: function onSuccess(response) {
       MailPoet.Notice.success(
-        MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists')
-          .replace('%1$d', (Number(response.meta.count)).toLocaleString())
+        MailPoet.I18n.t('multipleSubscribersRemovedFromAllLists').replace(
+          '%1$d',
+          Number(response.meta.count).toLocaleString(),
+        ),
       );
     },
   },
@@ -240,16 +247,22 @@ const bulkActions = [
     name: 'unsubscribe',
     label: MailPoet.I18n.t('unsubscribe'),
     onSelect: (submitModal, closeModal, bulkActionProps) => {
-      const count = (bulkActionProps.selection !== 'all')
-        ? bulkActionProps.selected_ids.length
-        : bulkActionProps.count;
+      const count =
+        bulkActionProps.selection !== 'all'
+          ? bulkActionProps.selected_ids.length
+          : bulkActionProps.count;
       return (
         <Modal
           title={MailPoet.I18n.t('unsubscribe')}
           onRequestClose={closeModal}
           isDismissible
         >
-          <p>{MailPoet.I18n.t('unsubscribeConfirm').replace('%s', count.toLocaleString())}</p>
+          <p>
+            {MailPoet.I18n.t('unsubscribeConfirm').replace(
+              '%s',
+              count.toLocaleString(),
+            )}
+          </p>
           <span className="mailpoet-gap-half" />
           <Button
             onClick={submitModal}
@@ -271,12 +284,13 @@ const itemActions = [
     label: MailPoet.I18n.t('statsListingActionTitle'),
     link: function link(subscriber, location) {
       return (
-        <Link to={{
-          pathname: `/stats/${subscriber.id}`,
-          state: {
-            backUrl: location?.pathname,
-          },
-        }}
+        <Link
+          to={{
+            pathname: `/stats/${subscriber.id}`,
+            state: {
+              backUrl: location?.pathname,
+            },
+          }}
         >
           {MailPoet.I18n.t('statsListingActionTitle')}
         </Link>
@@ -288,12 +302,13 @@ const itemActions = [
     label: MailPoet.I18n.t('edit'),
     link: function link(subscriber, location) {
       return (
-        <Link to={{
-          pathname: `/edit/${subscriber.id}`,
-          state: {
-            backUrl: location?.pathname,
-          },
-        }}
+        <Link
+          to={{
+            pathname: `/edit/${subscriber.id}`,
+            state: {
+              backUrl: location?.pathname,
+            },
+          }}
         >
           {MailPoet.I18n.t('edit')}
         </Link>
@@ -305,7 +320,10 @@ const itemActions = [
     className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('resendConfirmationEmail'),
     display: function display(subscriber) {
-      return subscriber.status === 'unconfirmed' && subscriber.count_confirmations < window.mailpoet_max_confirmation_emails;
+      return (
+        subscriber.status === 'unconfirmed' &&
+        subscriber.count_confirmations < window.mailpoet_max_confirmation_emails
+      );
     },
     onClick: function onClick(subscriber) {
       return MailPoet.Ajax.post({
@@ -316,7 +334,9 @@ const itemActions = [
           id: subscriber.id,
         },
       })
-        .done(() => MailPoet.Notice.success(MailPoet.I18n.t('oneConfirmationEmailSent')))
+        .done(() =>
+          MailPoet.Notice.success(MailPoet.I18n.t('oneConfirmationEmailSent')),
+        )
         .fail((response) => MailPoet.Notice.showApiErrorNotice(response));
     },
   },
@@ -327,8 +347,9 @@ const itemActions = [
 ];
 
 const isItemDeletable = (subscriber) => {
-  const isDeletable = Number(subscriber.wp_user_id) === 0
-    && Number(subscriber.is_woocommerce_user) === 0;
+  const isDeletable =
+    Number(subscriber.wp_user_id) === 0 &&
+    Number(subscriber.is_woocommerce_user) === 0;
   return isDeletable;
 };
 
@@ -350,7 +371,7 @@ function SubscriberList({ match }) {
       'manage-column',
       'column-primary',
       'has-row-actions',
-      'column-username'
+      'column-username',
     );
 
     let status = '';
@@ -406,23 +427,24 @@ function SubscriberList({ match }) {
               },
             }}
           >
-            { subscriber.email }
+            {subscriber.email}
           </Link>
           <div className="mailpoet-listing-subtitle">
-            { subscriber.first_name }
-            {' '}
-            { subscriber.last_name }
+            {subscriber.first_name} {subscriber.last_name}
           </div>
-          { actions }
+          {actions}
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('status')}>
-          { status }
+          {status}
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('lists')}>
           <Tags segments={subscribedSegments} dimension="large" />
         </td>
-        { (mailpoetTrackingEnabled === true) ? (
-          <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('statisticsColumn')}>
+        {mailpoetTrackingEnabled === true ? (
+          <td
+            className="column mailpoet-listing-stats-column"
+            data-colname={MailPoet.I18n.t('statisticsColumn')}
+          >
             <div className="mailpoet-listing-stats">
               <a
                 key={`stats-link-${subscriber.id}`}
@@ -435,11 +457,14 @@ function SubscriberList({ match }) {
               </a>
             </div>
           </td>
-        ) : null }
-        <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribedOn')}>
-          { MailPoet.Date.short(subscriber.created_at) }
+        ) : null}
+        <td
+          className="column-date mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('subscribedOn')}
+        >
+          {MailPoet.Date.short(subscriber.created_at)}
           <br />
-          { MailPoet.Date.time(subscriber.created_at) }
+          {MailPoet.Date.time(subscriber.created_at)}
         </td>
       </div>
     );

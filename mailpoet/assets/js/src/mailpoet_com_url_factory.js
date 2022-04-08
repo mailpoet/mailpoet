@@ -1,4 +1,4 @@
-const MailPoetComUrlFactory = referralId => {
+const MailPoetComUrlFactory = (referralId) => {
   const baseUrl = 'https://www.mailpoet.com/';
   const baseShopUrl = 'https://account.mailpoet.com/';
 
@@ -8,7 +8,9 @@ const MailPoetComUrlFactory = referralId => {
       finalParams.ref = referralId;
     }
     const url = new URL(path, base);
-    Object.keys(finalParams).map(key => (url.searchParams.set(key, finalParams[key])));
+    Object.keys(finalParams).map((key) =>
+      url.searchParams.set(key, finalParams[key]),
+    );
     return url.toString();
   };
 
@@ -19,15 +21,17 @@ const MailPoetComUrlFactory = referralId => {
       return getUrl(baseUrl, 'free-plan', paramsObject);
     },
 
-    getPricingPageUrl: subscribers => (
-      getUrl(baseUrl, 'pricing', { subscribers })
-    ),
+    getPricingPageUrl: (subscribers) =>
+      getUrl(baseUrl, 'pricing', { subscribers }),
 
-    getUpgradeUrl: (key) => (
-      getUrl(baseShopUrl, '/orders/upgrade/' + key, {})
-    ),
+    getUpgradeUrl: (key) => getUrl(baseShopUrl, '/orders/upgrade/' + key, {}),
 
-    getPurchasePlanUrl: (subscribersCount, subscriberEmail, planGroup, trackingObject) => {
+    getPurchasePlanUrl: (
+      subscribersCount,
+      subscriberEmail,
+      planGroup,
+      trackingObject,
+    ) => {
       let paramsObject = { s: subscribersCount };
       if (typeof subscriberEmail === 'string') {
         paramsObject.email = subscriberEmail;

@@ -27,19 +27,19 @@ import {
 } from 'newsletters/scheduling/common.jsx';
 
 const messages = {
-  onNoItemsFound: (group, search) => MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
+  onNoItemsFound: (group, search) =>
+    MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
   onTrash: (response) => {
     const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterTrashed')
-      );
+      message = MailPoet.I18n.t('oneNewsletterTrashed');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersTrashed')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleNewslettersTrashed').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -48,13 +48,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterDeleted')
-      );
+      message = MailPoet.I18n.t('oneNewsletterDeleted');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersDeleted')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleNewslettersDeleted').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -63,13 +62,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterRestored')
-      );
+      message = MailPoet.I18n.t('oneNewsletterRestored');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersRestored')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleNewslettersRestored').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -115,7 +113,11 @@ const newsletterActions = [
     name: 'view',
     link: function link(newsletter) {
       return (
-        <a href={newsletter.preview_url} target="_blank" rel="noopener noreferrer">
+        <a
+          href={newsletter.preview_url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {MailPoet.I18n.t('preview')}
         </a>
       );
@@ -139,19 +141,24 @@ const newsletterActions = [
         data: {
           id: newsletter.id,
         },
-      }).done((response) => {
-        MailPoet.Notice.success(
-          (MailPoet.I18n.t('newsletterDuplicated')).replace('%1$s', response.data.subject)
-        );
-        refresh();
-      }).fail((response) => {
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
-            { scroll: true }
+      })
+        .done((response) => {
+          MailPoet.Notice.success(
+            MailPoet.I18n.t('newsletterDuplicated').replace(
+              '%1$s',
+              response.data.subject,
+            ),
           );
-        }
-      });
+          refresh();
+        })
+        .fail((response) => {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map((error) => error.message),
+              { scroll: true },
+            );
+          }
+        });
     },
   },
   {
@@ -181,18 +188,20 @@ class NewsletterListNotification extends Component {
         id: Number(e.target.getAttribute('data-id')),
         status: checked ? 'active' : 'draft',
       },
-    }).done((response) => {
-      if (response.data.status === 'active') {
-        MailPoet.Notice.success(MailPoet.I18n.t('postNotificationActivated'));
-      }
-      // force refresh of listing so that groups are updated
-      this.forceUpdate();
-    }).fail((response) => {
-      MailPoet.Notice.showApiErrorNotice(response);
+    })
+      .done((response) => {
+        if (response.data.status === 'active') {
+          MailPoet.Notice.success(MailPoet.I18n.t('postNotificationActivated'));
+        }
+        // force refresh of listing so that groups are updated
+        this.forceUpdate();
+      })
+      .fail((response) => {
+        MailPoet.Notice.showApiErrorNotice(response);
 
-      // reset value to previous newsletter's status
-      e.target.checked = !checked;
-    });
+        // reset value to previous newsletter's status
+        e.target.checked = !checked;
+      });
   };
 
   renderStatus = (newsletter) => (
@@ -212,7 +221,7 @@ class NewsletterListNotification extends Component {
     if (newsletter.segments.length === 0) {
       return (
         <Link className="mailpoet-listing-error" to={`/send/${newsletter.id}`}>
-          { MailPoet.I18n.t('sendingToSegmentsNotSpecified') }
+          {MailPoet.I18n.t('sendingToSegmentsNotSpecified')}
         </Link>
       );
     }
@@ -220,27 +229,35 @@ class NewsletterListNotification extends Component {
     const sendingToSegments = ReactStringReplace(
       MailPoet.I18n.t('sendTo'),
       '%1$s',
-      (match, i) => (
-        <Tags segments={newsletter.segments} key={i} />
-      )
+      (match, i) => <Tags segments={newsletter.segments} key={i} />,
     );
 
     // set sending frequency
     switch (newsletter.options.intervalType) {
       case 'daily':
-        sendingFrequency = MailPoet.I18n.t('sendDaily').replace('%1$s', timeOfDayValues[newsletter.options.timeOfDay]);
+        sendingFrequency = MailPoet.I18n.t('sendDaily').replace(
+          '%1$s',
+          timeOfDayValues[newsletter.options.timeOfDay],
+        );
         break;
 
       case 'weekly':
-        sendingFrequency = MailPoet.I18n.t('sendWeekly').replace('%1$s', weekDayValues[newsletter.options.weekDay]).replace('%2$s', timeOfDayValues[newsletter.options.timeOfDay]);
+        sendingFrequency = MailPoet.I18n.t('sendWeekly')
+          .replace('%1$s', weekDayValues[newsletter.options.weekDay])
+          .replace('%2$s', timeOfDayValues[newsletter.options.timeOfDay]);
         break;
 
       case 'monthly':
-        sendingFrequency = MailPoet.I18n.t('sendMonthly').replace('%1$s', monthDayValues[newsletter.options.monthDay]).replace('%2$s', timeOfDayValues[newsletter.options.timeOfDay]);
+        sendingFrequency = MailPoet.I18n.t('sendMonthly')
+          .replace('%1$s', monthDayValues[newsletter.options.monthDay])
+          .replace('%2$s', timeOfDayValues[newsletter.options.timeOfDay]);
         break;
 
       case 'nthWeekDay':
-        sendingFrequency = MailPoet.I18n.t('sendNthWeekDay').replace('%1$s', nthWeekDayValues[newsletter.options.nthWeekDay]).replace('%2$s', weekDayValues[newsletter.options.weekDay]).replace('%3$s', timeOfDayValues[newsletter.options.timeOfDay]);
+        sendingFrequency = MailPoet.I18n.t('sendNthWeekDay')
+          .replace('%1$s', nthWeekDayValues[newsletter.options.nthWeekDay])
+          .replace('%2$s', weekDayValues[newsletter.options.weekDay])
+          .replace('%3$s', timeOfDayValues[newsletter.options.timeOfDay]);
         break;
 
       case 'immediately':
@@ -254,19 +271,19 @@ class NewsletterListNotification extends Component {
 
     return (
       <span>
-        { sendingToSegments }
+        {sendingToSegments}
         <div className="mailpoet-listing-schedule">
           <div className="mailpoet-listing-schedule-icon">
             <ScheduledIcon />
           </div>
-          { sendingFrequency }
+          {sendingFrequency}
         </div>
       </span>
     );
   };
 
   renderHistoryLink = (newsletter) => {
-    const childrenCount = Number((newsletter.children_count));
+    const childrenCount = Number(newsletter.children_count);
     if (childrenCount === 0) {
       return (
         <span className="mailpoet-listing-status-unknown mailpoet-font-extra-small mailpoet-listing-notification-status">
@@ -280,8 +297,16 @@ class NewsletterListNotification extends Component {
         data-automation-id={`history-${newsletter.id}`}
         to={`/notification/history/${newsletter.id}`}
       >
-        <Button className="mailpoet-hide-on-mobile" dimension="small">{ MailPoet.I18n.t('viewHistory') }</Button>
-        <Button className="mailpoet-show-on-mobile mailpoet-listing-notification-status" dimension="small" variant="secondary">{ MailPoet.I18n.t('viewHistory') }</Button>
+        <Button className="mailpoet-hide-on-mobile" dimension="small">
+          {MailPoet.I18n.t('viewHistory')}
+        </Button>
+        <Button
+          className="mailpoet-show-on-mobile mailpoet-listing-notification-status"
+          dimension="small"
+          variant="secondary"
+        >
+          {MailPoet.I18n.t('viewHistory')}
+        </Button>
       </Link>
     );
   };
@@ -290,7 +315,7 @@ class NewsletterListNotification extends Component {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
-      'has-row-actions'
+      'has-row-actions',
     );
 
     return (
@@ -300,23 +325,29 @@ class NewsletterListNotification extends Component {
             className="mailpoet-listing-title"
             href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}
           >
-            { newsletter.subject }
+            {newsletter.subject}
           </a>
-          { actions }
+          {actions}
         </td>
-        <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('settings')}>
-          { this.renderSettings(newsletter) }
+        <td
+          className="column mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('settings')}
+        >
+          {this.renderSettings(newsletter)}
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('history')}>
-          { this.renderHistoryLink(newsletter) }
+          {this.renderHistoryLink(newsletter)}
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('status')}>
-          { this.renderStatus(newsletter) }
+          {this.renderStatus(newsletter)}
         </td>
-        <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
-          { MailPoet.Date.short(newsletter.updated_at) }
+        <td
+          className="column-date mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('lastModifiedOn')}
+        >
+          {MailPoet.Date.short(newsletter.updated_at)}
           <br />
-          { MailPoet.Date.time(newsletter.updated_at) }
+          {MailPoet.Date.time(newsletter.updated_at)}
         </td>
       </div>
     );
@@ -353,7 +384,10 @@ class NewsletterListNotification extends Component {
             sort_order="desc"
             afterGetItems={(state) => {
               if (!state.loading) {
-                const total = state.groups.reduce((count, group) => (count + group.count), 0);
+                const total = state.groups.reduce(
+                  (count, group) => count + group.count,
+                  0,
+                );
                 this.setState({ newslettersCount: total });
               }
               checkMailerStatus(state);

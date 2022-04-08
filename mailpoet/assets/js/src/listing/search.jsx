@@ -43,9 +43,7 @@ class ListingSearch extends Component {
   }
 
   handleSearch() {
-    this.props.onSearch(
-      this.state.search.trim()
-    );
+    this.props.onSearch(this.state.search.trim());
   }
 
   onChange(e) {
@@ -59,7 +57,13 @@ class ListingSearch extends Component {
     }
     return (
       <div className="mailpoet-listing-search">
-        <form name="search" onSubmit={(e) => { e.preventDefault(); this.handleSearch(); }}>
+        <form
+          name="search"
+          onSubmit={(e) => {
+            e.preventDefault();
+            this.handleSearch();
+          }}
+        >
           <label htmlFor="search_input" className="screen-reader-text">
             {MailPoet.I18n.t('searchLabel')}
           </label>

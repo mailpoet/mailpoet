@@ -14,17 +14,26 @@ function ExperimentalFeatures() {
       api_version: window.mailpoet_api_version,
       endpoint: 'featureFlags',
       action: 'getAll',
-    }).done((response) => {
-      const flagsMap = response.data.reduce((obj, item) => ({ ...obj, [item.name]: item }), {});
-      setFlags(flagsMap);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        showError(
-          <>{response.errors.map((error) => <p>{error.message}</p>)}</>,
-          { scroll: true }
+    })
+      .done((response) => {
+        const flagsMap = response.data.reduce(
+          (obj, item) => ({ ...obj, [item.name]: item }),
+          {},
         );
-      }
-    });
+        setFlags(flagsMap);
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          showError(
+            <>
+              {response.errors.map((error) => (
+                <p>{error.message}</p>
+              ))}
+            </>,
+            { scroll: true },
+          );
+        }
+      });
   }, [showError]);
 
   function handleChange(event) {
@@ -38,20 +47,26 @@ function ExperimentalFeatures() {
       data: {
         [name]: value ? 1 : 0,
       },
-    }).done(() => {
-      const flag = flags[name];
-      flag.value = value;
-      setFlags({ ...flags, [name]: flag });
-      const message = `Feature '${name}' was ${value ? 'enabled' : 'disabled'}.`;
-      contextValue.notices.success(<p>{message}</p>);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        showError(
-          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-          { scroll: true }
-        );
-      }
-    });
+    })
+      .done(() => {
+        const flag = flags[name];
+        flag.value = value;
+        setFlags({ ...flags, [name]: flag });
+        const message = `Feature '${name}' was ${
+          value ? 'enabled' : 'disabled'
+        }.`;
+        contextValue.notices.success(<p>{message}</p>);
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          showError(
+            response.errors.map((error) => (
+              <p key={error.message}>{error.message}</p>
+            )),
+            { scroll: true },
+          );
+        }
+      });
   }
 
   if (flags === null) {
@@ -66,7 +81,7 @@ function ExperimentalFeatures() {
     <GlobalContext.Provider value={contextValue}>
       <>
         <Notices />
-        { Object.values(flags).map((flag) => {
+        {Object.values(flags).map((flag) => {
           const id = `experimental-feature-${flag.name}`;
           return (
             <div key={flag.name}>
@@ -77,8 +92,7 @@ function ExperimentalFeatures() {
                   name={flag.name}
                   defaultChecked={flag.value}
                   onChange={handleChange}
-                />
-                {' '}
+                />{' '}
                 {flag.name}
               </label>
             </div>
@@ -89,10 +103,9 @@ function ExperimentalFeatures() {
   );
 }
 
-const experimentalFeaturesContainer = document.getElementById('experimental_features_container');
+const experimentalFeaturesContainer = document.getElementById(
+  'experimental_features_container',
+);
 if (experimentalFeaturesContainer) {
-  ReactDOM.render(
-    <ExperimentalFeatures />,
-    experimentalFeaturesContainer
-  );
+  ReactDOM.render(<ExperimentalFeatures />, experimentalFeaturesContainer);
 }

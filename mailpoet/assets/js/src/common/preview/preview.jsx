@@ -5,11 +5,7 @@ import classnames from 'classnames';
 import MobileIcon from './mobile_icon';
 import DesktopIcon from './desktop_icon';
 
-function Preview({
-  children,
-  onDisplayTypeChange,
-  selectedDisplayType,
-}) {
+function Preview({ children, onDisplayTypeChange, selectedDisplayType }) {
   const [displayType, setDisplayType] = useState(selectedDisplayType);
   const changeType = (type) => {
     setDisplayType(type);
@@ -19,7 +15,9 @@ function Preview({
     <div className="mailpoet_browser_preview">
       <div className="mailpoet_browser_preview_toggle">
         <a
-          className={classnames('mailpoet_browser_preview_icon', { mailpoet_active: displayType === 'desktop' })}
+          className={classnames('mailpoet_browser_preview_icon', {
+            mailpoet_active: displayType === 'desktop',
+          })}
           onClick={(e) => {
             e.preventDefault();
             changeType('desktop');
@@ -31,7 +29,9 @@ function Preview({
           <DesktopIcon />
         </a>
         <a
-          className={classnames('mailpoet_browser_preview_icon', { mailpoet_active: displayType === 'mobile' })}
+          className={classnames('mailpoet_browser_preview_icon', {
+            mailpoet_active: displayType === 'mobile',
+          })}
           onClick={(e) => {
             e.preventDefault();
             changeType('mobile');
@@ -46,16 +46,22 @@ function Preview({
       <div
         className={classnames(
           'mailpoet_browser_preview_container',
-          { mailpoet_browser_preview_container_mobile: displayType !== 'desktop' },
-          { mailpoet_browser_preview_container_desktop: displayType === 'desktop' },
+          {
+            mailpoet_browser_preview_container_mobile:
+              displayType !== 'desktop',
+          },
+          {
+            mailpoet_browser_preview_container_desktop:
+              displayType === 'desktop',
+          },
         )}
       >
-        <div className="mailpoet_browser_preview_border">
-          {children}
-        </div>
+        <div className="mailpoet_browser_preview_border">{children}</div>
       </div>
-      {(displayType !== 'desktop') && (
-        <p className="mailpoet_form_preview_disclaimer">{MailPoet.I18n.t('formPreviewMobileDisclaimer')}</p>
+      {displayType !== 'desktop' && (
+        <p className="mailpoet_form_preview_disclaimer">
+          {MailPoet.I18n.t('formPreviewMobileDisclaimer')}
+        </p>
       )}
     </div>
   );

@@ -20,10 +20,9 @@ export default function Transactional() {
     <>
       <Label
         title={t('transactionalTitle')}
-        description={(
+        description={
           <>
-            {t('transactionalDescription')}
-            {' '}
+            {t('transactionalDescription')}{' '}
             <a
               className="mailpoet-link"
               href="https://kb.mailpoet.com/article/292-choose-how-to-send-your-wordpress-websites-emails"
@@ -34,7 +33,7 @@ export default function Transactional() {
               {t('transactionalLink')}
             </a>
           </>
-        )}
+        }
         htmlFor=""
       />
       <Inputs>
@@ -73,9 +72,7 @@ export default function Transactional() {
             checked={enabled === ''}
             onCheck={setEnabled}
           />
-          <label htmlFor="transactional-disabled">
-            {t('transactionalWP')}
-          </label>
+          <label htmlFor="transactional-disabled">{t('transactionalWP')}</label>
         </div>
       </Inputs>
     </>

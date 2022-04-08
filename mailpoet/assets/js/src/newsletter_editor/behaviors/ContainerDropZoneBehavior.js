@@ -19,10 +19,9 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
     columnLimit: 3,
   },
   onRender: function () {
-    var dragAndDropDisabled = (
-      _.isObject(this.view.options.renderOptions)
-        && this.view.options.renderOptions.disableDragAndDrop === true
-    );
+    var dragAndDropDisabled =
+      _.isObject(this.view.options.renderOptions) &&
+      this.view.options.renderOptions.disableDragAndDrop === true;
     if (!dragAndDropDisabled) {
       this.addDropZone();
     }
@@ -36,10 +35,12 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
     // TODO: Extract this limitation code to be controlled from containers
     if (this.view.renderOptions.depth === 0) {
       // Root level accept. Allow only layouts
-      acceptableElementSelector = '.mailpoet_droppable_block.mailpoet_droppable_layout_block';
+      acceptableElementSelector =
+        '.mailpoet_droppable_block.mailpoet_droppable_layout_block';
     } else if (this.view.renderOptions.depth === 2) {
       // Column level accept. Disallow layouts, allow only content blocks
-      acceptableElementSelector = '.mailpoet_droppable_block:not(.mailpoet_droppable_layout_block)';
+      acceptableElementSelector =
+        '.mailpoet_droppable_block:not(.mailpoet_droppable_layout_block)';
     } else {
       // Layout section container level. Allow nothing.
       return;
@@ -72,7 +73,7 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
           event.dragmove.pageY,
           view.$el,
           view.model.get('orientation'),
-          view.model.get('blocks').length
+          view.model.get('blocks').length,
         );
         var element = view.$el;
         var markerWidth = '';
@@ -103,7 +104,8 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
           markerWidth = targetElement.width();
           markerHeight = targetElement.height();
         } else {
-          isLastBlockInsertion = that.getCollection().length === dropPosition.index;
+          isLastBlockInsertion =
+            that.getCollection().length === dropPosition.index;
           if (isLastBlockInsertion) {
             targetModel = viewCollection.at(dropPosition.index - 1);
           } else {
@@ -156,7 +158,10 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
         if (viewCollection.length - 1 === dropPosition.index) {
           marker.addClass('mailpoet_drop_marker_last');
         }
-        if (dropPosition.index > 0 && viewCollection.length - 1 > dropPosition.index) {
+        if (
+          dropPosition.index > 0 &&
+          viewCollection.length - 1 > dropPosition.index
+        ) {
           marker.addClass('mailpoet_drop_marker_middle');
         }
         marker.addClass('mailpoet_drop_marker_' + dropPosition.position);
@@ -167,17 +172,15 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
         if (dropPosition.position === 'before') {
           $targetBlock = that
             .getChildren()
-            .findByModel(viewCollection.at(dropPosition.index - 1))
-            .$el;
+            .findByModel(viewCollection.at(dropPosition.index - 1)).$el;
         } else {
           $targetBlock = that
             .getChildren()
-            .findByModel(viewCollection.at(dropPosition.index))
-            .$el;
+            .findByModel(viewCollection.at(dropPosition.index)).$el;
         }
         margin = $targetBlock.outerHeight(true) - $targetBlock.outerHeight();
 
-        marker.css('top', topOffset - (margin / 2));
+        marker.css('top', topOffset - margin / 2);
         marker.css('left', leftOffset);
         marker.css('width', markerWidth);
         marker.css('height', markerHeight);
@@ -204,7 +207,7 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
           event.dragEvent.pageY,
           view.$el,
           view.model.get('orientation'),
-          view.model.get('blocks').length
+          view.model.get('blocks').length,
         );
         var droppableModel = event.draggable.getDropModel();
         var viewCollection = that.getCollection();
@@ -218,12 +221,20 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
 
         if (dropPosition.insertionType === 'normal') {
           // Normal insertion of dropModel into existing collection
-          index = (dropPosition.position === 'after') ? dropPosition.index + 1 : dropPosition.index;
+          index =
+            dropPosition.position === 'after'
+              ? dropPosition.index + 1
+              : dropPosition.index;
 
-          if (view.model.get('orientation') === 'horizontal' && droppableModel.get('type') !== 'container') {
+          if (
+            view.model.get('orientation') === 'horizontal' &&
+            droppableModel.get('type') !== 'container'
+          ) {
             // Regular blocks always need to be inserted into columns - vertical containers
 
-            tempCollection = new (window.EditorApplication.getBlockTypeModel('container'))({
+            tempCollection = new (window.EditorApplication.getBlockTypeModel(
+              'container',
+            ))({
               orientation: 'vertical',
             });
             tempCollection.get('blocks').add(droppableModel);
@@ -238,27 +249,38 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
           // and inserting dropModel into that
           tempModel = viewCollection.at(dropPosition.index);
 
-          tempCollection = new (window.EditorApplication.getBlockTypeModel('container'))({
-            orientation: (view.model.get('orientation') === 'vertical') ? 'horizontal' : 'vertical',
+          tempCollection = new (window.EditorApplication.getBlockTypeModel(
+            'container',
+          ))({
+            orientation:
+              view.model.get('orientation') === 'vertical'
+                ? 'horizontal'
+                : 'vertical',
           });
 
           viewCollection.remove(tempModel);
 
           if (tempCollection.get('orientation') === 'horizontal') {
             if (dropPosition.position === 'before') {
-              tempCollection2 = new (window.EditorApplication.getBlockTypeModel('container'))({
+              tempCollection2 = new (window.EditorApplication.getBlockTypeModel(
+                'container',
+              ))({
                 orientation: 'vertical',
               });
               tempCollection2.get('blocks').add(droppableModel);
               tempCollection.get('blocks').add(tempCollection2);
             }
-            tempCollection2 = new (window.EditorApplication.getBlockTypeModel('container'))({
+            tempCollection2 = new (window.EditorApplication.getBlockTypeModel(
+              'container',
+            ))({
               orientation: 'vertical',
             });
             tempCollection2.get('blocks').add(tempModel);
             tempCollection.get('blocks').add(tempCollection2);
             if (dropPosition.position === 'after') {
-              tempCollection2 = new (window.EditorApplication.getBlockTypeModel('container'))({
+              tempCollection2 = new (window.EditorApplication.getBlockTypeModel(
+                'container',
+              ))({
                 orientation: 'vertical',
               });
               tempCollection2.get('blocks').add(droppableModel);
@@ -279,8 +301,7 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
           droppedView = that
             .getChildren()
             .findByModel(tempCollection)
-            .children
-            .findByModel(droppableModel);
+            .children.findByModel(droppableModel);
         }
 
         // Call post add actions
@@ -302,7 +323,7 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
     this.view.$('.mailpoet_drop_marker').remove();
   },
   getDropPosition: function (eventX, eventY, isUnsafe) {
-    var SPECIAL_AREA_INSERTION_WIDTH = 0.00; // Disable special insertion. Default: 0.3
+    var SPECIAL_AREA_INSERTION_WIDTH = 0.0; // Disable special insertion. Default: 0.3
 
     var element = this.view.$el;
     var orientation = this.view.model.get('orientation');
@@ -352,15 +373,15 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
     }
 
     if (
-      relativeOffset <= elementLength * SPECIAL_AREA_INSERTION_WIDTH
-        && (unsafe || canAcceptSpecialInsertion)
+      relativeOffset <= elementLength * SPECIAL_AREA_INSERTION_WIDTH &&
+      (unsafe || canAcceptSpecialInsertion)
     ) {
       insertionType = 'special';
       position = 'before';
       index = this._computeSpecialIndex(eventX, eventY);
     } else if (
-      relativeOffset > elementLength * (1 - SPECIAL_AREA_INSERTION_WIDTH)
-        && (unsafe || canAcceptSpecialInsertion)
+      relativeOffset > elementLength * (1 - SPECIAL_AREA_INSERTION_WIDTH) &&
+      (unsafe || canAcceptSpecialInsertion)
     ) {
       insertionType = 'special';
       position = 'after';
@@ -372,7 +393,12 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
       index = indexAndPosition.index;
     }
 
-    if (!unsafe && orientation === 'vertical' && insertionType === 'special' && this.getCollection().at(index).get('orientation') === 'horizontal') {
+    if (
+      !unsafe &&
+      orientation === 'vertical' &&
+      insertionType === 'special' &&
+      this.getCollection().at(index).get('orientation') === 'horizontal'
+    ) {
       // Prevent placing horizontal container in another horizontal container,
       // which would allow breaking the column limit.
       // Switch that to normal insertion
@@ -401,7 +427,9 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
 
     var index = this._computeCellIndex(eventX, eventY);
     // TODO: Handle case when there are no children, container is empty
-    var targetView = this.getChildren().findByModel(this.getCollection().at(index));
+    var targetView = this.getChildren().findByModel(
+      this.getCollection().at(index),
+    );
     var orientation = this.view.model.get('orientation');
     var element = targetView.$el;
     var eventOffset;
@@ -418,7 +446,7 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
       elementDimension = element.outerWidth(true);
     }
 
-    if (eventOffset <= closeOffset + (elementDimension / 2)) {
+    if (eventOffset <= closeOffset + elementDimension / 2) {
       // First half of the element
       return {
         index: index,
@@ -436,7 +464,7 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
   },
   _computeCellIndex: function (eventX, eventY) {
     var orientation = this.view.model.get('orientation');
-    var eventOffset = (orientation === 'vertical') ? eventY : eventX;
+    var eventOffset = orientation === 'vertical' ? eventY : eventX;
     var resultView = this.getChildren().find(function (view) {
       var element = view.$el;
       var closeOffset;
@@ -454,7 +482,7 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
       return closeOffset <= eventOffset && eventOffset <= farOffset;
     });
 
-    var index = (typeof resultView === 'object') ? resultView._index : 0;
+    var index = typeof resultView === 'object' ? resultView._index : 0;
 
     return index;
   },
@@ -463,13 +491,23 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
     var depth = this.view.renderOptions.depth;
     var childCount = this.getChildren().length;
     // Note that depth is zero indexed. Root container has depth=0
-    return orientation === 'vertical' || (orientation === 'horizontal' && depth === 1 && childCount < this.options.columnLimit);
+    return (
+      orientation === 'vertical' ||
+      (orientation === 'horizontal' &&
+        depth === 1 &&
+        childCount < this.options.columnLimit)
+    );
   },
   _canAcceptSpecialInsertion: function () {
     var orientation = this.view.model.get('orientation');
     var depth = this.view.renderOptions.depth;
     var childCount = this.getChildren().length;
-    return depth === 0 || (depth === 1 && orientation === 'horizontal' && childCount <= this.options.columnLimit);
+    return (
+      depth === 0 ||
+      (depth === 1 &&
+        orientation === 'horizontal' &&
+        childCount <= this.options.columnLimit)
+    );
   },
   getCollectionView: function () {
     return this.view.getChildView('blocks');

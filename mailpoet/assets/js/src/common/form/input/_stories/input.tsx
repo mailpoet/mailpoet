@@ -12,11 +12,7 @@ export function Inputs() {
     <>
       <Heading level={3}>Small inputs</Heading>
       <div>
-        <Input
-          type="text"
-          dimension="small"
-          placeholder="Small input value"
-        />
+        <Input type="text" dimension="small" placeholder="Small input value" />
         <div className="mailpoet-gap" />
         <Input
           type="text"
@@ -43,10 +39,7 @@ export function Inputs() {
       <br />
       <Heading level={3}>Regular inputs</Heading>
       <div>
-        <Input
-          type="text"
-          placeholder="Regular input"
-        />
+        <Input type="text" placeholder="Regular input" />
         <div className="mailpoet-gap" />
         <Input
           type="text"
@@ -67,20 +60,12 @@ export function Inputs() {
           iconEnd={icon}
         />
         <div className="mailpoet-gap" />
-        <Input
-          disabled
-          type="text"
-          placeholder="Disabled input"
-        />
+        <Input disabled type="text" placeholder="Disabled input" />
       </div>
       <br />
       <Heading level={3}>Full-width inputs</Heading>
       <div>
-        <Input
-          type="text"
-          placeholder="Full-width input"
-          isFullWidth
-        />
+        <Input type="text" placeholder="Full-width input" isFullWidth />
         <Input
           type="text"
           placeholder="Full-width input with iconStart"

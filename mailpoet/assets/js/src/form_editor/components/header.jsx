@@ -5,10 +5,7 @@ import {
   ToolbarItem,
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
-import {
-  moreVertical,
-  plus,
-} from '@wordpress/icons';
+import { moreVertical, plus } from '@wordpress/icons';
 import { __, _x } from '@wordpress/i18n';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
@@ -19,26 +16,22 @@ import HistoryRedo from './history_redo';
 function Header({ isInserterOpened, setIsInserterOpened }) {
   const sidebarOpened = useSelect(
     (select) => select('mailpoet-form-editor').getSidebarOpened(),
-    []
+    [],
   );
   const isFormSaving = useSelect(
     (select) => select('mailpoet-form-editor').getIsFormSaving(),
-    []
+    [],
   );
   const isPreview = useSelect(
     (select) => select('mailpoet-form-editor').getIsPreviewShown(),
-    []
+    [],
   );
   const isFullscreen = useSelect(
     (select) => select('mailpoet-form-editor').isFullscreenEnabled(),
-    []
+    [],
   );
-  const {
-    toggleSidebar,
-    saveForm,
-    showPreview,
-    toggleFullscreen,
-  } = useDispatch('mailpoet-form-editor');
+  const { toggleSidebar, saveForm, showPreview, toggleFullscreen } =
+    useDispatch('mailpoet-form-editor');
 
   return (
     <div className="edit-post-header">
@@ -110,17 +103,10 @@ function Header({ isInserterOpened, setIsInserterOpened }) {
             isPressed={isInserterOpened}
             onClick={() => setIsInserterOpened(!isInserterOpened)}
             icon={plus}
-            label={_x(
-              'Add block',
-              'Generic label for block inserter button'
-            )}
+            label={_x('Add block', 'Generic label for block inserter button')}
           />
-          <HistoryUndo
-            data-automation-id="form_undo_button"
-          />
-          <HistoryRedo
-            data-automation-id="form_redo_button"
-          />
+          <HistoryUndo data-automation-id="form_undo_button" />
+          <HistoryRedo data-automation-id="form_redo_button" />
         </div>
       </div>
     </div>

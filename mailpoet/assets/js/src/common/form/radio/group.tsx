@@ -33,7 +33,7 @@ function RadioGroup({
     <div>
       {options.map((props: RadioProps) => {
         const { label, ...attributes } = props;
-        const value = (props.value as RadioValueType);
+        const value = props.value as RadioValueType;
         return (
           <Radio
             checked={currentValue === value}

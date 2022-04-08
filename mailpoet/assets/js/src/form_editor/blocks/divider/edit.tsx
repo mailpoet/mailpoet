@@ -10,23 +10,18 @@ import {
   SelectControl,
   ToggleControl,
 } from '@wordpress/components';
-import {
-  Attributes,
-  Style,
-  Types,
-  defaultAttributes,
-} from './divider_types';
+import { Attributes, Style, Types, defaultAttributes } from './divider_types';
 
 type Props = {
   attributes: Attributes;
   setAttributes: (attribute) => void;
 };
 
-function DividerEdit(
-  { attributes, setAttributes }: Props,
-): JSX.Element {
-  const attributeDividerHeight = attributes.dividerHeight ?? defaultAttributes.dividerHeight;
-  const attributeDividerWidth = attributes.dividerWidth ?? defaultAttributes.dividerWidth;
+function DividerEdit({ attributes, setAttributes }: Props): JSX.Element {
+  const attributeDividerHeight =
+    attributes.dividerHeight ?? defaultAttributes.dividerHeight;
+  const attributeDividerWidth =
+    attributes.dividerWidth ?? defaultAttributes.dividerWidth;
   const attributeHeight = attributes.height ?? defaultAttributes.height;
 
   const dividerSettings = (
@@ -35,11 +30,20 @@ function DividerEdit(
         label={MailPoet.I18n.t('blockDividerStyle')}
         data-automation-id="settings_divider_style"
         value={attributes.style}
-        onChange={(style): void => (setAttributes({ style }))}
+        onChange={(style): void => setAttributes({ style })}
         options={[
-          { value: Style.Solid, label: MailPoet.I18n.t('blockDividerStyleSolid') },
-          { value: Style.Dashed, label: MailPoet.I18n.t('blockDividerStyleDashed') },
-          { value: Style.Dotted, label: MailPoet.I18n.t('blockDividerStyleDotted') },
+          {
+            value: Style.Solid,
+            label: MailPoet.I18n.t('blockDividerStyleSolid'),
+          },
+          {
+            value: Style.Dashed,
+            label: MailPoet.I18n.t('blockDividerStyleDashed'),
+          },
+          {
+            value: Style.Dotted,
+            label: MailPoet.I18n.t('blockDividerStyleDotted'),
+          },
         ]}
       />
       <RangeControl
@@ -49,7 +53,7 @@ function DividerEdit(
         min={1}
         max={40}
         allowReset
-        onChange={(dividerHeight:number): void => {
+        onChange={(dividerHeight: number): void => {
           let newHeight = attributeHeight;
           if (dividerHeight !== undefined) {
             newHeight = Math.max(dividerHeight, attributeHeight);
@@ -67,12 +71,12 @@ function DividerEdit(
         min={1}
         max={100}
         allowReset
-        onChange={(dividerWidth): void => (setAttributes({ dividerWidth }))}
+        onChange={(dividerWidth): void => setAttributes({ dividerWidth })}
       />
       <ColorSettings
         name={MailPoet.I18n.t('blockDividerColor')}
         value={attributes.color}
-        onChange={(color): void => (setAttributes({ color }))}
+        onChange={(color): void => setAttributes({ color })}
       />
     </>
   );
@@ -98,10 +102,13 @@ function DividerEdit(
               min={1}
               max={400}
               allowReset
-              onChange={(height:number): void => {
+              onChange={(height: number): void => {
                 let newDividerHeightHeight = attributeDividerHeight;
                 if (height !== undefined) {
-                  newDividerHeightHeight = Math.min(height, attributeDividerHeight);
+                  newDividerHeightHeight = Math.min(
+                    height,
+                    attributeDividerHeight,
+                  );
                 } else {
                   newDividerHeightHeight = 1;
                 }
@@ -115,13 +122,13 @@ function DividerEdit(
               label={MailPoet.I18n.t('blockSpacerEnableDivider')}
               className="mailpoet-automation-divider-togle-enable"
               checked={attributes.type === Types.Divider}
-              onChange={(checked): void => setAttributes({
-                type: checked ? Types.Divider : Types.Spacer,
-              })}
+              onChange={(checked): void =>
+                setAttributes({
+                  type: checked ? Types.Divider : Types.Spacer,
+                })
+              }
             />
-            {(
-              (attributes.type === Types.Divider) && (dividerSettings)
-            )}
+            {attributes.type === Types.Divider && dividerSettings}
           </PanelBody>
         </Panel>
       </InspectorControls>
@@ -138,7 +145,11 @@ function DividerEdit(
           justifyContent: 'center',
         }}
       >
-        <div className="mailpoet_divider" data-automation-id="editor_divider_block" style={dividerStyles} />
+        <div
+          className="mailpoet_divider"
+          data-automation-id="editor_divider_block"
+          style={dividerStyles}
+        />
       </div>
     </>
   );

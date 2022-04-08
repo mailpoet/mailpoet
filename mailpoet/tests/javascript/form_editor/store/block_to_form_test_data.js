@@ -36,11 +36,7 @@ export const segmentsBlock = {
     labelWithinInput: false,
     mandatory: false,
     label: 'Select list(s):',
-    values: [
-      { id: '6' },
-      { id: '24', isChecked: true },
-      { id: '29' },
-    ],
+    values: [{ id: '6' }, { id: '24', isChecked: true }, { id: '29' }],
   },
 };
 
@@ -104,10 +100,7 @@ export const customRadioBlock = {
     hideLabel: true,
     mandatory: true,
     customFieldId: 2,
-    values: [
-      { name: 'option 1' },
-      { name: 'option 2' },
-    ],
+    values: [{ name: 'option 1' }, { name: 'option 2' }],
   },
 };
 
@@ -140,10 +133,7 @@ export const customSelectBlock = {
     labelWithinInput: false,
     mandatory: false,
     customFieldId: 6,
-    values: [
-      { name: 'option 1' },
-      { name: 'option 2' },
-    ],
+    values: [{ name: 'option 1' }, { name: 'option 2' }],
   },
 };
 

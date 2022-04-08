@@ -1,4 +1,4 @@
-const findBlockPath = (blocks, id, path = []) => (
+const findBlockPath = (blocks, id, path = []) =>
   blocks.reduce((result, block) => {
     if (result.length) {
       return result;
@@ -12,8 +12,7 @@ const findBlockPath = (blocks, id, path = []) => (
       return findBlockPath(block.innerBlocks, id, path);
     }
     return [];
-  }, [])
-);
+  }, []);
 
 export default {
   isFormSaved(state) {
@@ -45,9 +44,10 @@ export default {
   },
   getFormExports(state) {
     return Object.fromEntries(
-      Object
-        .entries(state.formExports)
-        .map(([k, v]) => [k, v.replace(':form_id:', state.formData.id)])
+      Object.entries(state.formExports).map(([k, v]) => [
+        k,
+        v.replace(':form_id:', state.formData.id),
+      ]),
     );
   },
   getFormSettings(state) {
@@ -102,12 +102,18 @@ export default {
   getFormWidth(state, displayType) {
     const settings = state.formData.settings;
     switch (displayType) {
-      case 'below_post': return settings.formPlacement.belowPosts.styles.width;
-      case 'popup': return settings.formPlacement.popup.styles.width;
-      case 'slide_in': return settings.formPlacement.slideIn.styles.width;
-      case 'fixed_bar': return settings.formPlacement.fixedBar.styles.width;
-      case 'others': return settings.formPlacement.others.styles.width;
-      default: throw Error(`Invalid form display type ${displayType}`);
+      case 'below_post':
+        return settings.formPlacement.belowPosts.styles.width;
+      case 'popup':
+        return settings.formPlacement.popup.styles.width;
+      case 'slide_in':
+        return settings.formPlacement.slideIn.styles.width;
+      case 'fixed_bar':
+        return settings.formPlacement.fixedBar.styles.width;
+      case 'others':
+        return settings.formPlacement.others.styles.width;
+      default:
+        throw Error(`Invalid form display type ${displayType}`);
     }
   },
   getIsCustomFieldSaving(state) {

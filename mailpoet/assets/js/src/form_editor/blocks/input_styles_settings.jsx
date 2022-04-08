@@ -13,10 +13,7 @@ import PropTypes from 'prop-types';
 
 import ColorSettings from 'form_editor/components/color_settings';
 
-function InputStylesSettings({
-  styles,
-  onChange,
-}) {
+function InputStylesSettings({ styles, onChange }) {
   const localStylesRef = useRef(styles);
   const localStyles = localStylesRef.current;
 
@@ -47,8 +44,14 @@ function InputStylesSettings({
 
   return (
     <Panel className="mailpoet-automation-input-styles-panel">
-      <PanelBody title={MailPoet.I18n.t('formSettingsStyles')} initialOpen={false}>
-        <div className="mailpoet-styles-settings" data-automation-id="input_styles_settings">
+      <PanelBody
+        title={MailPoet.I18n.t('formSettingsStyles')}
+        initialOpen={false}
+      >
+        <div
+          className="mailpoet-styles-settings"
+          data-automation-id="input_styles_settings"
+        >
           <ToggleControl
             label={MailPoet.I18n.t('formSettingsDisplayFullWidth')}
             checked={localStyles.fullWidth}
@@ -80,7 +83,11 @@ function InputStylesSettings({
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderSize')}
-                value={localStyles.borderSize === undefined ? 1 : localStyles.borderSize}
+                value={
+                  localStyles.borderSize === undefined
+                    ? 1
+                    : localStyles.borderSize
+                }
                 min={0}
                 max={10}
                 allowReset
@@ -89,7 +96,11 @@ function InputStylesSettings({
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderRadius')}
-                value={localStyles.borderRadius === undefined ? 1 : localStyles.borderRadius}
+                value={
+                  localStyles.borderRadius === undefined
+                    ? 1
+                    : localStyles.borderRadius
+                }
                 min={0}
                 max={40}
                 allowReset
@@ -103,7 +114,11 @@ function InputStylesSettings({
             </>
           ) : null}
           <div>
-            <Button isPrimary onClick={() => applyStylesToAllTextInputs(localStyles)} data-automation-id="styles_apply_to_all">
+            <Button
+              isPrimary
+              onClick={() => applyStylesToAllTextInputs(localStyles)}
+              data-automation-id="styles_apply_to_all"
+            >
               {MailPoet.I18n.t('formSettingsApplyToAll')}
             </Button>
           </div>

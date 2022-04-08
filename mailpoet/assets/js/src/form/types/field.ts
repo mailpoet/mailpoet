@@ -11,7 +11,7 @@ export type Field = {
   tooltip?: string;
   customLabel?: string;
   className?: string;
-  disabled?: false
+  disabled?: false;
   label?: string;
   tip?: string | null | ReactNode | Array<ReactNode>;
   placeholder?: string;
@@ -19,11 +19,11 @@ export type Field = {
   component?: ComponentType;
   fields?: Array<Field>;
   validation?: Record<string, string | boolean | number>;
-  inline?: boolean,
-  multiple?: boolean,
-  onBeforeChange?: () => void,
-  filter?: (segment: Segment) => boolean,
-  getLabel?: (segment: Segment) => string,
-  getCount?: (segment: Segment) => string,
-  transformChangedValue?: (arg: unknown) => Segment,
+  inline?: boolean;
+  multiple?: boolean;
+  onBeforeChange?: () => void;
+  filter?: (segment: Segment) => boolean;
+  getLabel?: (segment: Segment) => string;
+  getCount?: (segment: Segment) => string;
+  transformChangedValue?: (arg: unknown) => Segment;
 };

@@ -7,9 +7,12 @@ import Select from 'common/form/select/select';
 function LastSentQuestion({ onSubmit }) {
   const [value, setValue] = useState('over2years');
 
-  const handleChange = useCallback((event) => {
-    setValue(event.target.value);
-  }, [setValue]);
+  const handleChange = useCallback(
+    (event) => {
+      setValue(event.target.value);
+    },
+    [setValue],
+  );
 
   const handleSubmit = useCallback(() => {
     if (value === 'over2years' || value === '1to2years') {
@@ -30,10 +33,18 @@ function LastSentQuestion({ onSubmit }) {
           onChange={handleChange}
           automationId="last_sent_to_list"
         >
-          <option value="over2years">{MailPoet.I18n.t('validationStepLastSentOption1')}</option>
-          <option value="1to2years">{MailPoet.I18n.t('validationStepLastSentOption2')}</option>
-          <option value="less1year">{MailPoet.I18n.t('validationStepLastSentOption3')}</option>
-          <option value="less3months">{MailPoet.I18n.t('validationStepLastSentOption4')}</option>
+          <option value="over2years">
+            {MailPoet.I18n.t('validationStepLastSentOption1')}
+          </option>
+          <option value="1to2years">
+            {MailPoet.I18n.t('validationStepLastSentOption2')}
+          </option>
+          <option value="less1year">
+            {MailPoet.I18n.t('validationStepLastSentOption3')}
+          </option>
+          <option value="less3months">
+            {MailPoet.I18n.t('validationStepLastSentOption4')}
+          </option>
         </Select>
       </div>
       <div className="mailpoet-settings-save">

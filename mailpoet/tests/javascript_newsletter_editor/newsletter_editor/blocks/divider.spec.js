@@ -17,7 +17,7 @@ describe('Divider', function () {
         blockDefaults: {},
       });
       global.stubAvailableStyles(EditorApplication);
-      model = new (DividerBlock.DividerBlockModel)();
+      model = new DividerBlock.DividerBlockModel();
       sandbox = sinon.createSandbox();
     });
 
@@ -31,7 +31,9 @@ describe('Divider', function () {
     });
 
     it('has a background color', function () {
-      expect(model.get('styles.block.backgroundColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
+      expect(model.get('styles.block.backgroundColor')).to.match(
+        /^(#[abcdef0-9]{6})|transparent$/,
+      );
     });
 
     it('has padding', function () {
@@ -39,7 +41,9 @@ describe('Divider', function () {
     });
 
     it('has border style', function () {
-      expect(model.get('styles.block.borderStyle')).to.match(/^(none|dotted|dashed|solid|double|groove|ridge|inset|outset)$/);
+      expect(model.get('styles.block.borderStyle')).to.match(
+        /^(none|dotted|dashed|solid|double|groove|ridge|inset|outset)$/,
+      );
     });
 
     it('has border width', function () {
@@ -47,7 +51,9 @@ describe('Divider', function () {
     });
 
     it('has border color', function () {
-      expect(model.get('styles.block.borderColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
+      expect(model.get('styles.block.borderColor')).to.match(
+        /^(#[abcdef0-9]{6})|transparent$/,
+      );
     });
 
     it('changes attributes with set', function () {
@@ -88,9 +94,11 @@ describe('Divider', function () {
           },
         },
       });
-      innerModel = new (DividerBlock.DividerBlockModel)();
+      innerModel = new DividerBlock.DividerBlockModel();
 
-      expect(innerModel.get('styles.block.backgroundColor')).to.equal('#123456');
+      expect(innerModel.get('styles.block.backgroundColor')).to.equal(
+        '#123456',
+      );
       expect(innerModel.get('styles.block.padding')).to.equal('37px');
       expect(innerModel.get('styles.block.borderStyle')).to.equal('inset');
       expect(innerModel.get('styles.block.borderWidth')).to.equal('7px');
@@ -121,8 +129,8 @@ describe('Divider', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
-      model = new (DividerBlock.DividerBlockModel)();
-      view = new (DividerBlock.DividerBlockView)({ model: model });
+      model = new DividerBlock.DividerBlockModel();
+      view = new DividerBlock.DividerBlockView({ model: model });
     });
 
     it('renders', function () {
@@ -135,7 +143,9 @@ describe('Divider', function () {
 
       model.set('styles.block.borderStyle', 'inset');
 
-      expect(view.$('.mailpoet_divider').css('border-top-style')).to.equal('inset');
+      expect(view.$('.mailpoet_divider').css('border-top-style')).to.equal(
+        'inset',
+      );
     });
 
     it('opens settings if clicked', function () {
@@ -165,8 +175,8 @@ describe('Divider', function () {
     it('renders', function () {
       var model;
       var view;
-      model = new (DividerBlock.DividerBlockModel)();
-      view = new (DividerBlock.DividerBlockSettingsView)({ model: model });
+      model = new DividerBlock.DividerBlockModel();
+      view = new DividerBlock.DividerBlockSettingsView({ model: model });
       expect(view.render).to.not.throw();
       expect(view.$('.mailpoet_divider_selector')).to.have.length(1);
     });
@@ -183,8 +193,8 @@ describe('Divider', function () {
       });
 
       beforeEach(function () {
-        model = new (DividerBlock.DividerBlockModel)();
-        view = new (DividerBlock.DividerBlockSettingsView)({ model: model });
+        model = new DividerBlock.DividerBlockModel();
+        view = new DividerBlock.DividerBlockSettingsView({ model: model });
         view.render();
       });
 
@@ -194,45 +204,72 @@ describe('Divider', function () {
       });
 
       it('updates the model when divider width slider changes', function () {
-        view.$('.mailpoet_field_divider_border_width').val('17').trigger('change');
+        view
+          .$('.mailpoet_field_divider_border_width')
+          .val('17')
+          .trigger('change');
         expect(model.get('styles.block.borderWidth')).to.equal('17px');
       });
 
       it('updates the range slider when divider width input changes', function () {
-        view.$('.mailpoet_field_divider_border_width_input').val('19').trigger('input');
-        expect(view.$('.mailpoet_field_divider_border_width').val()).to.equal('19');
+        view
+          .$('.mailpoet_field_divider_border_width_input')
+          .val('19')
+          .trigger('input');
+        expect(view.$('.mailpoet_field_divider_border_width').val()).to.equal(
+          '19',
+        );
       });
 
       it('updates the input when divider width range slider changes', function () {
-        view.$('.mailpoet_field_divider_border_width').val('19').trigger('change');
-        expect(view.$('.mailpoet_field_divider_border_width_input').val()).to.equal('19');
+        view
+          .$('.mailpoet_field_divider_border_width')
+          .val('19')
+          .trigger('change');
+        expect(
+          view.$('.mailpoet_field_divider_border_width_input').val(),
+        ).to.equal('19');
       });
 
       it('updates the model when divider color changes', function () {
-        view.$('.mailpoet_field_divider_border_color').val('#123457').trigger('change');
+        view
+          .$('.mailpoet_field_divider_border_color')
+          .val('#123457')
+          .trigger('change');
         expect(model.get('styles.block.borderColor')).to.equal('#123457');
       });
 
       it('updates the model when divider background color changes', function () {
-        view.$('.mailpoet_field_divider_background_color').val('#cccccc').trigger('change');
+        view
+          .$('.mailpoet_field_divider_background_color')
+          .val('#cccccc')
+          .trigger('change');
         expect(model.get('styles.block.backgroundColor')).to.equal('#cccccc');
       });
 
       it('changes color of available divider styles when actual divider color changes', function () {
         var newColor = '#889912';
-        view.$('.mailpoet_field_divider_border_color').val(newColor).trigger('change');
-        expect(view.$('.mailpoet_field_divider_style div')).to.have.$css('border-top-color', newColor);
+        view
+          .$('.mailpoet_field_divider_border_color')
+          .val(newColor)
+          .trigger('change');
+        expect(view.$('.mailpoet_field_divider_style div')).to.have.$css(
+          'border-top-color',
+          newColor,
+        );
       });
 
       it('does not display "Apply to all" option when `hideApplyToAll` option is active', function () {
-        view = new (DividerBlock.DividerBlockSettingsView)({
+        view = new DividerBlock.DividerBlockSettingsView({
           model: model,
           renderOptions: {
             hideApplyToAll: true,
           },
         });
         view.render();
-        expect(view.$('.mailpoet_button_divider_apply_to_all').length).to.equal(0);
+        expect(view.$('.mailpoet_button_divider_apply_to_all').length).to.equal(
+          0,
+        );
       });
 
       it.skip('closes the sidepanel after "Done" is clicked', function () {
@@ -240,7 +277,7 @@ describe('Divider', function () {
         global.MailPoet.Modal.cancel = mock;
         view.$('.mailpoet_done_editing').trigger('click');
         mock.verify();
-        delete (global.MailPoet.Modal.cancel);
+        delete global.MailPoet.Modal.cancel;
       });
     });
   });

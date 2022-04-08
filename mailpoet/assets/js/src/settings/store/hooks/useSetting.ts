@@ -12,7 +12,9 @@ import { useAction } from './useActions';
  *  keyof: http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-1.html#keyof-and-lookup-types
  *  overloading functions: http://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html#function-overloads
  */
-export function useSetting<Key1 extends keyof Settings>(key1: Key1): ValueAndSetter<Settings[Key1]>;
+export function useSetting<Key1 extends keyof Settings>(
+  key1: Key1,
+): ValueAndSetter<Settings[Key1]>;
 export function useSetting<
   Key1 extends keyof Settings,
   Key2 extends keyof Settings[Key1],
@@ -21,7 +23,11 @@ export function useSetting<
   Key1 extends keyof Settings,
   Key2 extends keyof Settings[Key1],
   Key3 extends keyof Settings[Key1][Key2],
->(key1: Key1, key2: Key2, key3: Key3): ValueAndSetter<Settings[Key1][Key2][Key3]>;
+>(
+  key1: Key1,
+  key2: Key2,
+  key3: Key3,
+): ValueAndSetter<Settings[Key1][Key2][Key3]>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useSetting(...path: string[]): [any, (value: any) => any] {

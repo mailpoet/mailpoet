@@ -10,10 +10,9 @@ export default function BounceAddress() {
     <>
       <Label
         title={t('bounceEmail')}
-        description={(
+        description={
           <>
-            {t('yourBouncedEmails')}
-            {' '}
+            {t('yourBouncedEmails')}{' '}
             <a
               className="mailpoet-link"
               href="https://kb.mailpoet.com/article/180-how-bounce-management-works-in-mailpoet-3"
@@ -24,7 +23,7 @@ export default function BounceAddress() {
               {t('readMore')}
             </a>
           </>
-        )}
+        }
         htmlFor="bounce-address"
       />
       <Inputs>

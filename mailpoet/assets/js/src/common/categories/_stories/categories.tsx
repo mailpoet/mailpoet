@@ -17,9 +17,21 @@ export function CategoriesWithCount() {
 
   return (
     <>
-      <Categories onSelect={noop} categories={categories} active={categories[0].name} />
-      <Categories onSelect={noop} categories={categories} active={categories[2].name} />
-      <Categories onSelect={noop} categories={categories} active={categories[4].name} />
+      <Categories
+        onSelect={noop}
+        categories={categories}
+        active={categories[0].name}
+      />
+      <Categories
+        onSelect={noop}
+        categories={categories}
+        active={categories[2].name}
+      />
+      <Categories
+        onSelect={noop}
+        categories={categories}
+        active={categories[4].name}
+      />
     </>
   );
 }
@@ -35,9 +47,21 @@ export function CategoriesWithoutCount() {
 
   return (
     <>
-      <Categories onSelect={noop} categories={categories} active={categories[0].name} />
-      <Categories onSelect={noop} categories={categories} active={categories[2].name} />
-      <Categories onSelect={noop} categories={categories} active={categories[4].name} />
+      <Categories
+        onSelect={noop}
+        categories={categories}
+        active={categories[0].name}
+      />
+      <Categories
+        onSelect={noop}
+        categories={categories}
+        active={categories[2].name}
+      />
+      <Categories
+        onSelect={noop}
+        categories={categories}
+        active={categories[4].name}
+      />
     </>
   );
 }

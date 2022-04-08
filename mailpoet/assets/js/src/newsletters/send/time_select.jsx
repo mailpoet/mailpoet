@@ -5,16 +5,11 @@ import Select from 'common/form/select/select.tsx';
 // eslint-disable-next-line react/prefer-stateless-function
 class TimeSelect extends Component {
   render() {
-    const options = Object.keys(this.props.timeOfDayItems).map(
-      (value) => (
-        <option
-          key={`option-${this.props.timeOfDayItems[value]}`}
-          value={value}
-        >
-          { this.props.timeOfDayItems[value] }
-        </option>
-      )
-    );
+    const options = Object.keys(this.props.timeOfDayItems).map((value) => (
+      <option key={`option-${this.props.timeOfDayItems[value]}`} value={value}>
+        {this.props.timeOfDayItems[value]}
+      </option>
+    ));
 
     return (
       <Select

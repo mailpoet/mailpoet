@@ -31,8 +31,9 @@ class Form extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.params.id === undefined
-      && prevProps.location.pathname !== this.props.location.pathname
+    if (
+      this.props.params.id === undefined &&
+      prevProps.location.pathname !== this.props.location.pathname
     ) {
       setImmediate(() => {
         this.setState({
@@ -60,22 +61,27 @@ class Form extends Component {
       data: {
         id,
       },
-    }).done((response) => {
-      this.setState({
-        loading: false,
-        item: response.data,
+    })
+      .done((response) => {
+        this.setState({
+          loading: false,
+          item: response.data,
+        });
+        if (typeof this.props.onItemLoad === 'function') {
+          this.props.onItemLoad(response.data);
+        }
+      })
+      .fail(() => {
+        this.setState(
+          {
+            loading: false,
+            item: {},
+          },
+          function failSetStateCallback() {
+            this.props.history.push('/lists');
+          },
+        );
       });
-      if (typeof this.props.onItemLoad === 'function') {
-        this.props.onItemLoad(response.data);
-      }
-    }).fail(() => {
-      this.setState({
-        loading: false,
-        item: {},
-      }, function failSetStateCallback() {
-        this.props.history.push('/lists');
-      });
-    });
   };
 
   handleSubmit = (e) => {
@@ -113,25 +119,28 @@ class Form extends Component {
       endpoint: this.props.endpoint,
       action: 'save',
       data: item,
-    }).always(() => {
-      this.setState({ loading: false });
-    }).done(() => {
-      if (this.props.onSuccess !== undefined) {
-        this.props.onSuccess();
-      } else {
-        this.props.history.push('/');
-      }
+    })
+      .always(() => {
+        this.setState({ loading: false });
+      })
+      .done(() => {
+        if (this.props.onSuccess !== undefined) {
+          this.props.onSuccess();
+        } else {
+          this.props.history.push('/');
+        }
 
-      if (this.props.params.id !== undefined) {
-        this.props.messages.onUpdate();
-      } else {
-        this.props.messages.onCreate();
-      }
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.setState({ errors: response.errors });
-      }
-    });
+        if (this.props.params.id !== undefined) {
+          this.props.messages.onUpdate();
+        } else {
+          this.props.messages.onCreate();
+        }
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          this.setState({ errors: response.errors });
+        }
+      });
   };
 
   handleValueChange = (e) => {
@@ -155,16 +164,18 @@ class Form extends Component {
     let errors;
     if (this.getErrors() !== undefined) {
       errors = this.getErrors().map((error) => (
-        <div className="mailpoet_notice notice inline error is-dismissible" key={`error-${error.message}`}>
-          <p>{ error.message }</p>
+        <div
+          className="mailpoet_notice notice inline error is-dismissible"
+          key={`error-${error.message}`}
+        >
+          <p>{error.message}</p>
         </div>
       ));
     }
 
-    const formClasses = classNames(
-      'mailpoet_form',
-      { mailpoet_form_loading: this.state.loading || this.props.loading }
-    );
+    const formClasses = classNames('mailpoet_form', {
+      mailpoet_form_loading: this.state.loading || this.props.loading,
+    });
 
     let beforeFormContent = false;
     let afterFormContent = false;
@@ -203,10 +214,7 @@ class Form extends Component {
       actions = this.props.children;
     } else {
       actions = (
-        <Button
-          type="submit"
-          isDisabled={this.state.loading}
-        >
+        <Button type="submit" isDisabled={this.state.loading}>
           {MailPoet.I18n.t('save')}
         </Button>
       );
@@ -214,34 +222,27 @@ class Form extends Component {
 
     return (
       <div>
-        <div className="mailpoet-form-content-around">
-          { beforeFormContent }
-        </div>
+        <div className="mailpoet-form-content-around">{beforeFormContent}</div>
         <form
           id={this.props.id}
           ref={this.formRef}
           className={formClasses}
           onSubmit={
-            (this.props.onSubmit !== undefined)
+            this.props.onSubmit !== undefined
               ? this.props.onSubmit
               : this.handleSubmit
           }
           data-automation-id={this.props.automationId}
         >
-          { errors }
+          {errors}
 
           <div className="mailpoet-form-grid">
             {fields}
 
-            <div className="mailpoet-form-actions">
-              { actions }
-            </div>
+            <div className="mailpoet-form-actions">{actions}</div>
           </div>
-
         </form>
-        <div className="mailpoet-form-content-around">
-          { afterFormContent }
-        </div>
+        <div className="mailpoet-form-content-around">{afterFormContent}</div>
       </div>
     );
   }
@@ -296,8 +297,12 @@ Form.defaultProps = {
   onSubmit: undefined,
   automationId: '',
   messages: {
-    onUpdate: () => { /* no-op */ },
-    onCreate: () => { /* no-op */ },
+    onUpdate: () => {
+      /* no-op */
+    },
+    onCreate: () => {
+      /* no-op */
+    },
   },
   endpoint: undefined,
 };

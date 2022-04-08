@@ -8,7 +8,7 @@ export default () => {
 
   const formStyles = useSelect(
     (select) => select('mailpoet-form-editor').getFormStyles(),
-    []
+    [],
   );
 
   try {
@@ -17,6 +17,9 @@ export default () => {
     return ReactDOM.createPortal(null, element);
   }
 
-  const transoformedStyles = transformStyles([{ css: formStyles }], '.editor-styles-wrapper');
+  const transoformedStyles = transformStyles(
+    [{ css: formStyles }],
+    '.editor-styles-wrapper',
+  );
   return ReactDOM.createPortal(transoformedStyles[0], element);
 };

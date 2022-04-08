@@ -20,7 +20,6 @@ export function Segments() {
       <Tags segments={segments}>
         <span>Prefix: </span>
       </Tags>
-
     </>
   );
 }

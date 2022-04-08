@@ -22,15 +22,10 @@ function Badge({
 }: BadgeProps) {
   return (
     <span>
-      <Tag
-        isInverted={isInverted}
-        variant={type}
-        data-tip
-        data-for={tooltipId}
-      >
+      <Tag isInverted={isInverted} variant={type} data-tip data-for={tooltipId}>
         {name}
       </Tag>
-      { tooltip && (
+      {tooltip && (
         <Tooltip
           place={tooltipPlace || 'top'}
           multiline
@@ -38,7 +33,7 @@ function Badge({
         >
           {tooltip}
         </Tooltip>
-      ) }
+      )}
     </span>
   );
 }

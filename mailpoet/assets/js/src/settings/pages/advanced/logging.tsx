@@ -9,18 +9,14 @@ export default function Logging() {
     <>
       <Label
         title={t('loggingTitle')}
-        description={(
+        description={
           <>
-            {t('loggingDescription')}
-            {' '}
-            <a
-              href="?page=mailpoet-logs"
-              className="mailpoet-link"
-            >
+            {t('loggingDescription')}{' '}
+            <a href="?page=mailpoet-logs" className="mailpoet-link">
               {t('loggingDescriptionLink')}
             </a>
           </>
-        )}
+        }
         htmlFor="logging-level"
       />
       <Inputs>
@@ -32,9 +28,15 @@ export default function Logging() {
           isMinWidth
           dimension="small"
         >
-          <option value="everything" data-automation-id="log-everything">{t('everythingLogOption')}</option>
-          <option value="errors" data-automation-id="log-errors">{t('errorsLogOption')}</option>
-          <option value="nothing" data-automation-id="log-nothing">{t('nothingLogOption')}</option>
+          <option value="everything" data-automation-id="log-everything">
+            {t('everythingLogOption')}
+          </option>
+          <option value="errors" data-automation-id="log-errors">
+            {t('errorsLogOption')}
+          </option>
+          <option value="nothing" data-automation-id="log-nothing">
+            {t('nothingLogOption')}
+          </option>
         </Select>
       </Inputs>
     </>

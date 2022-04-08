@@ -23,9 +23,10 @@ function SenderEmailAddressWarning({ emailAddress, mssActive }) {
             /(%1\$s|%2\$s|<em>.*<\/em>)/,
             (match) => {
               if (match === '%1$s') return suggestedEmailAddress;
-              if (match === '%2$s') return <em key="sender-email">{ emailAddress }</em>;
+              if (match === '%2$s')
+                return <em key="sender-email">{emailAddress}</em>;
               return <em key="reply-to">{match.replace(/<\/?em>/g, '')}</em>;
-            }
+            },
           )}
         </p>
         <p className="sender_email_address_warning">

@@ -59,11 +59,16 @@ function Notice({
   if (hidden) return null;
 
   const content = (
-    <div ref={elementRef} className={`notice ${type} ${closable ? 'is-dismissible' : ''}`}>
+    <div
+      ref={elementRef}
+      className={`notice ${type} ${closable ? 'is-dismissible' : ''}`}
+    >
       {children}
       {closable && (
         <button type="button" className="notice-dismiss" onClick={close}>
-          <span className="screen-reader-text">{MailPoet.I18n.t('dismissNotice')}</span>
+          <span className="screen-reader-text">
+            {MailPoet.I18n.t('dismissNotice')}
+          </span>
         </button>
       )}
     </div>

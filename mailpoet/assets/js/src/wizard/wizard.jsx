@@ -1,10 +1,5 @@
 import ReactDOM from 'react-dom';
-import {
-  Route,
-  HashRouter,
-  Redirect,
-  Switch,
-} from 'react-router-dom';
+import { Route, HashRouter, Redirect, Switch } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
 import Notices from 'notices/notices.jsx';
 import WelcomeWizardStepsController from './welcome_wizard_controller.jsx';

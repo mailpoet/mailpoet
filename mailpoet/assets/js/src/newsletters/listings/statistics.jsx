@@ -24,11 +24,7 @@ const wrapInLink = (content, params, id, totalSent) => {
     );
   }
   return (
-    <Link
-      key={`stats-${id}`}
-      to={params.link}
-      onClick={params.onClick || null}
-    >
+    <Link key={`stats-${id}`} to={params.link} onClick={params.onClick || null}>
       {content}
     </Link>
   );
@@ -38,9 +34,10 @@ function Statistics({ newsletter, isSent, currentTime }) {
   let sent = isSent;
   if (sent === undefined) {
     // condition for standard and post notification listings
-    sent = newsletter.statistics
-      && newsletter.queue
-      && newsletter.queue.status !== 'scheduled';
+    sent =
+      newsletter.statistics &&
+      newsletter.queue &&
+      newsletter.queue.status !== 'scheduled';
   }
   if (!sent) {
     return null;
@@ -48,11 +45,16 @@ function Statistics({ newsletter, isSent, currentTime }) {
 
   const params = {
     link: `/stats/${newsletter.id}`,
-    onClick: Hooks.applyFilters('mailpoet_newsletters_listing_stats_tracking', trackStatsCTAClicked),
+    onClick: Hooks.applyFilters(
+      'mailpoet_newsletters_listing_stats_tracking',
+      trackStatsCTAClicked,
+    ),
   };
 
   // welcome emails provide explicit total_sent value
-  const totalSent = Number((newsletter.total_sent || newsletter.queue.count_processed));
+  const totalSent = Number(
+    newsletter.total_sent || newsletter.queue.count_processed,
+  );
 
   let percentageClicked = 0;
   let percentageOpened = 0;
@@ -73,7 +75,8 @@ function Statistics({ newsletter, isSent, currentTime }) {
     // standard emails and post notifications:
     // display green box for newsletters that were just sent
     showStatsTimeout = 6; // in hours
-    newsletterDate = newsletter.queue.scheduled_at || newsletter.queue.created_at;
+    newsletterDate =
+      newsletter.queue.scheduled_at || newsletter.queue.created_at;
     sentHoursAgo = moment(currentTime).diff(moment(newsletterDate), 'hours');
     tooEarlyForStats = sentHoursAgo < showStatsTimeout;
     showKbLink = true;
@@ -83,28 +86,26 @@ function Statistics({ newsletter, isSent, currentTime }) {
     showKbLink = false;
   }
 
-  const improveStatsKBLink = 'https://kb.mailpoet.com/article/191-how-to-improve-my-open-and-click-rates';
+  const improveStatsKBLink =
+    'https://kb.mailpoet.com/article/191-how-to-improve-my-open-and-click-rates';
 
   // thresholds to display badges
   const minNewslettersSent = 20;
   const minNewsletterOpens = 5;
 
-  const showBadges = totalSent >= minNewslettersSent
-    && newsletter.statistics.opened >= minNewsletterOpens
-    && !tooEarlyForStats;
+  const showBadges =
+    totalSent >= minNewslettersSent &&
+    newsletter.statistics.opened >= minNewsletterOpens &&
+    !tooEarlyForStats;
 
-  const wrapContentInLink = (content, idPrefix) => wrapInLink(
-    content,
-    params,
-    `${idPrefix}-${newsletter.id}`,
-    totalSent
-  );
+  const wrapContentInLink = (content, idPrefix) =>
+    wrapInLink(content, params, `${idPrefix}-${newsletter.id}`, totalSent);
 
   const openedClickedAndRevenueStats = (
     <NewsletterStats
       opened={percentageOpened}
       clicked={percentageClicked}
-      revenues={(revenue && revenue.value > 0) ? revenue.formatted : null}
+      revenues={revenue && revenue.value > 0 ? revenue.formatted : null}
       hideBadges={!showBadges}
       newsletterId={newsletter.id}
       wrapContentInLink={wrapContentInLink}
@@ -114,14 +115,21 @@ function Statistics({ newsletter, isSent, currentTime }) {
   const content = (
     <>
       {openedClickedAndRevenueStats}
-      {tooEarlyForStats && wrapContentInLink(
-        (
-          <Tag className="mailpoet-listing-stats-too-early" dimension="large" variant="excellent" isInverted>
-            {MailPoet.I18n.t('checkBackInHours').replace('%1$d', showStatsTimeout - sentHoursAgo)}
-          </Tag>
-        ),
-        'check-back'
-      )}
+      {tooEarlyForStats &&
+        wrapContentInLink(
+          <Tag
+            className="mailpoet-listing-stats-too-early"
+            dimension="large"
+            variant="excellent"
+            isInverted
+          >
+            {MailPoet.I18n.t('checkBackInHours').replace(
+              '%1$d',
+              showStatsTimeout - sentHoursAgo,
+            )}
+          </Tag>,
+          'check-back',
+        )}
     </>
   );
 
@@ -131,10 +139,11 @@ function Statistics({ newsletter, isSent, currentTime }) {
   const minTotalSent = 10;
 
   let afterContent;
-  if (showKbLink
-    && percentageOpened < maxPercentageOpened
-    && sentHoursAgo >= minSentHoursAgo
-    && totalSent >= minTotalSent
+  if (
+    showKbLink &&
+    percentageOpened < maxPercentageOpened &&
+    sentHoursAgo >= minSentHoursAgo &&
+    totalSent >= minTotalSent
   ) {
     // help link for bad open rate
     afterContent = (
@@ -183,15 +192,9 @@ const QueuePropType = PropTypes.shape({
 Statistics.propTypes = {
   newsletter: PropTypes.shape({
     id: PropTypes.number.isRequired,
-    queue: PropTypes.oneOfType([
-      QueuePropType,
-      PropTypes.bool,
-    ]),
+    queue: PropTypes.oneOfType([QueuePropType, PropTypes.bool]),
     total_sent: PropTypes.number,
-    statistics: PropTypes.oneOfType([
-      StatisticsPropType,
-      PropTypes.bool,
-    ]),
+    statistics: PropTypes.oneOfType([StatisticsPropType, PropTypes.bool]),
   }).isRequired,
   isSent: PropTypes.bool,
   currentTime: PropTypes.string,

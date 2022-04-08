@@ -24,7 +24,7 @@ function App({ onRequestClose }: Props) {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <Notices />
-      { showModal && (
+      {showModal && (
         <SetFromAddressModal
           onRequestClose={() => {
             setShowModal(false);
@@ -45,13 +45,16 @@ App.defaultProps = {
 const container = document.getElementById('mailpoet_set_from_address_modal');
 if (container) {
   ReactDOM.render(
-    <App onRequestClose={() => {
-      // if in Settings, reload page, so the new saved FROM address is loaded
-      const isInSettings = window.location.href.includes('?page=mailpoet-settings');
-      if (isInSettings) {
-        window.location.reload();
-      }
-    }}
+    <App
+      onRequestClose={() => {
+        // if in Settings, reload page, so the new saved FROM address is loaded
+        const isInSettings = window.location.href.includes(
+          '?page=mailpoet-settings',
+        );
+        if (isInSettings) {
+          window.location.reload();
+        }
+      }}
     />,
     container,
   );

@@ -36,14 +36,13 @@ const baseConfig = {
   output: {
     publicPath: '', // This is needed to have correct names in WebpackManifestPlugin
     path: path.join(__dirname, 'assets/dist/js'),
-    filename: (PRODUCTION_ENV) ? '[name].[fullhash:8].js' : '[name].js',
-    chunkFilename: (PRODUCTION_ENV) ? '[name].[fullhash:8].chunk.js' : '[name].chunk.js',
+    filename: PRODUCTION_ENV ? '[name].[fullhash:8].js' : '[name].js',
+    chunkFilename: PRODUCTION_ENV
+      ? '[name].[fullhash:8].chunk.js'
+      : '[name].chunk.js',
   },
   resolve: {
-    modules: [
-      'node_modules',
-      'assets/js/src',
-    ],
+    modules: ['node_modules', 'assets/js/src'],
     fallback: {
       fs: false,
       // We need path polyfill so that eslint is able to lint webpack.config.js
@@ -54,7 +53,8 @@ const baseConfig = {
     alias: {
       handlebars: 'handlebars/dist/handlebars.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
-      'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
+      'backbone.supermodel$':
+        'backbone.supermodel/build/backbone.supermodel.js',
       'sticky-kit': 'vendor/jquery.sticky-kit.js',
       interact$: 'interact.js/interact.js',
       spectrum$: 'spectrum-colorpicker/spectrum.js',
@@ -181,7 +181,10 @@ const baseConfig = {
         ],
       },
       {
-        include: path.resolve(__dirname, 'assets/js/src/segments/dynamic/types.ts'),
+        include: path.resolve(
+          __dirname,
+          'assets/js/src/segments/dynamic/types.ts',
+        ),
         use: [
           {
             loader: 'expose-loader',
@@ -245,8 +248,8 @@ const baseConfig = {
               flags: 'g',
             },
             {
-              search: 'resolve\\(\'tinymce',
-              replace: 'resolve(\'mailpoetTinymce',
+              search: "resolve\\('tinymce",
+              replace: "resolve('mailpoetTinymce",
               flags: 'g',
             },
           ],
@@ -327,7 +330,7 @@ const publicConfig = {
     // replace MailPoet definition with a smaller version for public
     new webpack.NormalModuleReplacementPlugin(
       /mailpoet\.ts/,
-      './mailpoet_public.ts'
+      './mailpoet_public.ts',
     ),
   ],
   externals: {
@@ -339,9 +342,7 @@ const publicConfig = {
 const migratorConfig = {
   name: 'mp2migrator',
   entry: {
-    mp2migrator: [
-      'mp2migrator.js',
-    ],
+    mp2migrator: ['mp2migrator.js'],
   },
   externals: {
     jquery: 'jQuery',
@@ -382,7 +383,10 @@ const testConfig = {
     ],
   },
   output: {
-    path: path.join(__dirname, 'tests/javascript_newsletter_editor/testBundles'),
+    path: path.join(
+      __dirname,
+      'tests/javascript_newsletter_editor/testBundles',
+    ),
     filename: '[name].js',
   },
   plugins: [
@@ -391,7 +395,7 @@ const testConfig = {
     // replace MailPoet definition with a smaller version for public
     new webpack.NormalModuleReplacementPlugin(
       /mailpoet\.js/,
-      './mailpoet_tests.js'
+      './mailpoet_tests.js',
     ),
   ],
   resolve: {
@@ -405,7 +409,8 @@ const testConfig = {
       handlebars: 'handlebars/dist/handlebars.js',
       'sticky-kit': 'vendor/jquery.sticky-kit.js',
       'backbone.marionette': 'backbone.marionette/lib/backbone.marionette',
-      'backbone.supermodel$': 'backbone.supermodel/build/backbone.supermodel.js',
+      'backbone.supermodel$':
+        'backbone.supermodel/build/backbone.supermodel.js',
       blob$: 'blob-tmp/Blob.js',
       'wp-js-hooks': path.resolve(__dirname, 'assets/js/src/hooks.js'),
     },
@@ -476,12 +481,12 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
     'marketing-optin-block': path.resolve(
       process.cwd(),
       'assets/js/src/marketing_optin_block',
-      'index.tsx'
+      'index.tsx',
     ),
     'marketing-optin-block-frontend': path.resolve(
       process.cwd(),
       'assets/js/src/marketing_optin_block',
-      'frontend.ts'
+      'frontend.ts',
     ),
   },
   output: {
@@ -501,7 +506,7 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
             plugins: [
               require.resolve('@babel/plugin-proposal-class-properties'),
               require.resolve(
-                '@babel/plugin-proposal-nullish-coalescing-operator'
+                '@babel/plugin-proposal-nullish-coalescing-operator',
               ),
             ].filter(Boolean),
           },
@@ -514,7 +519,8 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
   },
   plugins: [
     ...wpScriptConfig.plugins.filter(
-      (plugin) => plugin.constructor.name !== 'DependencyExtractionWebpackPlugin'
+      (plugin) =>
+        plugin.constructor.name !== 'DependencyExtractionWebpackPlugin',
     ),
     new DependencyExtractionWebpackPlugin({
       injectPolyfill: true,
@@ -553,7 +559,7 @@ module.exports = configs.map((conf) => {
       new WebpackManifestPlugin({
         // create single manifest file for all Webpack configs
         seed: manifestSeed,
-      })
+      }),
     );
   }
   return Object.assign({}, baseConfig, config);

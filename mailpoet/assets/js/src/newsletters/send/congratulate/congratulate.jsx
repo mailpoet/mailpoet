@@ -30,8 +30,12 @@ function renderSuccess(newsletter, testingPassed) {
   }
   return (
     <Success
-      illustrationImageUrl={window.mailpoet_congratulations_success_images[SUCCESS_IMAGE_INDEX]}
-      MSSPitchIllustrationUrl={window.mailpoet_congratulations_success_images[SUCCESS_IMAGE_INDEX]}
+      illustrationImageUrl={
+        window.mailpoet_congratulations_success_images[SUCCESS_IMAGE_INDEX]
+      }
+      MSSPitchIllustrationUrl={
+        window.mailpoet_congratulations_success_images[SUCCESS_IMAGE_INDEX]
+      }
       successClicked={successPageClosed}
       newsletter={newsletter}
       isWoocommerceActive={window.mailpoet_woocommerce_active}
@@ -40,7 +44,10 @@ function renderSuccess(newsletter, testingPassed) {
         MailPoet.subscribersCount,
         MailPoet.currentWpUserEmail,
         'starter',
-        { utm_medium: 'first-newsletter-congratulations', utm_campaign: 'purchase' }
+        {
+          utm_medium: 'first-newsletter-congratulations',
+          utm_campaign: 'purchase',
+        },
       )}
     />
   );
@@ -94,13 +101,21 @@ class Congratulate extends Component {
   }
 
   tick() {
-    if (moment().subtract(SECONDS_WAITING_FOR_SUCCESS, 'second').isAfter(this.state.timeStart)) {
+    if (
+      moment()
+        .subtract(SECONDS_WAITING_FOR_SUCCESS, 'second')
+        .isAfter(this.state.timeStart)
+    ) {
       this.setState({ error: true, loading: false });
     }
     if (this.state.loading) {
       this.loadNewsletter(this.props.match.params.id);
     }
-    if (moment().subtract(SECONDS_MINIMUIM_LOADING_SCREEN_DISPLAYED, 'seconds').isAfter(this.state.timeStart)) {
+    if (
+      moment()
+        .subtract(SECONDS_MINIMUIM_LOADING_SCREEN_DISPLAYED, 'seconds')
+        .isAfter(this.state.timeStart)
+    ) {
       this.setState({ minimumLoadingTimePassed: true });
     }
     if (this.state.loading || !this.state.minimumLoadingTimePassed) {
@@ -116,14 +131,20 @@ class Congratulate extends Component {
       data: {
         id,
       },
-    })
-      .done((response) => this.newsletterLoaded(response.data));
+    }).done((response) => this.newsletterLoaded(response.data));
   }
 
   newsletterLoaded(newsletter) {
-    if ((newsletter.type !== 'standard') || (newsletter.status === 'scheduled')) {
-      this.setState({ newsletter, loading: false, minimumLoadingTimePassed: true });
-    } else if ((newsletter.status === 'sent') || (newsletter.status === 'sending')) {
+    if (newsletter.type !== 'standard' || newsletter.status === 'scheduled') {
+      this.setState({
+        newsletter,
+        loading: false,
+        minimumLoadingTimePassed: true,
+      });
+    } else if (
+      newsletter.status === 'sent' ||
+      newsletter.status === 'sending'
+    ) {
       this.setState({ newsletter, loading: false, testingPassed: true });
     } else {
       this.setState({ newsletter });
@@ -145,7 +166,9 @@ class Congratulate extends Component {
       <>
         <style
           /* eslint-disable-next-line react/no-danger */
-          dangerouslySetInnerHTML={{ __html: 'body { background: #fff; overflow-x: hidden; }' }}
+          dangerouslySetInnerHTML={{
+            __html: 'body { background: #fff; overflow-x: hidden; }',
+          }}
         />
         <div className="mailpoet-congratulate">
           <div className="mailpoet-gap-large" />

@@ -17,20 +17,25 @@ class SendEventConditions extends Component {
     this.email = field.email;
     this.emailOptions = field.emailOptions;
     this.events = _.indexBy(this.email.events, 'slug');
-    this.segments = _.filter(window.mailpoet_segments, (segment) => segment.deleted_at === null);
+    this.segments = _.filter(
+      window.mailpoet_segments,
+      (segment) => segment.deleted_at === null,
+    );
 
     const event = this.events[this.emailOptions.event];
-    const afterTimeType = this.emailOptions.afterTimeType
-      || event.defaultAfterTimeType
-      || defaultAfterTimeType;
+    const afterTimeType =
+      this.emailOptions.afterTimeType ||
+      event.defaultAfterTimeType ||
+      defaultAfterTimeType;
 
     this.state = {
       event,
       afterTimeType,
       eventSlug: this.emailOptions.event,
       eventOptionValue: null,
-      afterTimeNumber: this.emailOptions.afterTimeNumber || defaultAfterTimeNumber,
-      segment: (this.emailOptions.segment) ? this.emailOptions.segment : null,
+      afterTimeNumber:
+        this.emailOptions.afterTimeNumber || defaultAfterTimeNumber,
+      segment: this.emailOptions.segment ? this.emailOptions.segment : null,
     };
   }
 
@@ -40,7 +45,11 @@ class SendEventConditions extends Component {
 
     if (newState.afterTimeType && newState.afterTimeType === 'immediate') {
       newState.afterTimeNumber = null;
-    } else if (newState.afterTimeType && !newState.afterTimeNumber && !afterTimeNumber) {
+    } else if (
+      newState.afterTimeType &&
+      !newState.afterTimeNumber &&
+      !afterTimeNumber
+    ) {
       newState.afterTimeNumber = defaultAfterTimeNumber;
     }
 
@@ -86,10 +95,7 @@ class SendEventConditions extends Component {
 
     return (
       <div className="event-segment-selection">
-        <Selection
-          field={props.field}
-          onValueChange={props.onValueChange}
-        />
+        <Selection field={props.field} onValueChange={props.onValueChange} />
       </div>
     );
   }
@@ -137,7 +143,11 @@ class SendEventConditions extends Component {
 
   propagateChange() {
     const {
-      eventSlug, afterTimeType, afterTimeNumber, segment, eventOptionValue,
+      eventSlug,
+      afterTimeType,
+      afterTimeNumber,
+      segment,
+      eventOptionValue,
     } = this.state;
     const { onValueChange } = this.props;
     if (!onValueChange) return;
@@ -150,7 +160,8 @@ class SendEventConditions extends Component {
 
     if (afterTimeNumber) options.afterTimeNumber = afterTimeNumber;
     if (segment) options.segment = segment;
-    if (eventOptionValue) options.meta = JSON.stringify({ option: this.state.eventOptionValue });
+    if (eventOptionValue)
+      options.meta = JSON.stringify({ option: this.state.eventOptionValue });
 
     onValueChange({
       target: {

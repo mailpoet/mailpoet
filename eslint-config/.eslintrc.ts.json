@@ -22,11 +22,7 @@
       "jsx": true
     }
   },
-  "plugins": [
-    "react-hooks",
-    "no-only-tests",
-    "@typescript-eslint"
-  ],
+  "plugins": ["react-hooks", "no-only-tests", "@typescript-eslint"],
   "settings": {
     "import/resolver": "webpack",
     "import/core-modules": [
@@ -45,10 +41,7 @@
     ]
   },
   "rules": {
-    "react/no-unstable-nested-components": [
-      "error",
-      { "allowAsProps": true }
-    ],
+    "react/no-unstable-nested-components": ["error", { "allowAsProps": true }],
     // PropTypes
     "react/prop-types": 0,
     "react/jsx-props-no-spreading": 0,
@@ -57,9 +50,9 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     // Exceptions
-    "@typescript-eslint/no-explicit-any":  "error", // make it an error instead of warning - we treat them the same, this is more visible
+    "@typescript-eslint/no-explicit-any": "error", // make it an error instead of warning - we treat them the same, this is more visible
     "no-void": 0, // can conflict with @typescript-eslint/no-floating-promises
-    "react/jsx-no-useless-fragment" : [
+    "react/jsx-no-useless-fragment": [
       "error",
       {
         "allowExpressions": true
@@ -76,13 +69,19 @@
     "import/prefer-default-export": 0, // we want to stop using default exports and start using named exports
     "react/destructuring-assignment": 0, // that would be too many changes to fix this one
     "prefer-destructuring": 0, // that would be too many changes to fix this one
-    "jsx-a11y/label-has-for": [2, {
-      "required": {"some": ["nesting", "id"]} // some of our labels are hidden and we cannot nest those
-    }],
+    "jsx-a11y/label-has-for": [
+      2,
+      {
+        "required": { "some": ["nesting", "id"] } // some of our labels are hidden and we cannot nest those
+      }
+    ],
     "jsx-a11y/anchor-is-valid": 0, // cannot fix this one, it would break wprdpress themes
-    "jsx-a11y/label-has-associated-control": [ 2, {
-      "either": "either" // control has to be either nested or associated via htmlFor
-    }]
+    "jsx-a11y/label-has-associated-control": [
+      2,
+      {
+        "either": "either" // control has to be either nested or associated via htmlFor
+      }
+    ]
   },
   "overrides": [
     {
@@ -96,7 +95,10 @@
     {
       "files": ["**/_stories/*.tsx"],
       "rules": {
-        "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
+        "import/no-extraneous-dependencies": [
+          "error",
+          { "devDependencies": true }
+        ]
       }
     },
     {

@@ -1,7 +1,5 @@
 import { CSSProperties } from 'react';
-import {
-  CustomSelectControl,
-} from '@wordpress/components';
+import { CustomSelectControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 
@@ -29,7 +27,7 @@ function FontFamilySettings({
   value,
   name,
   hideLabelFromVision = false,
-}: Props) : JSX.Element {
+}: Props): JSX.Element {
   const customFonts = useSelect(
     (select) => select('mailpoet-form-editor').getAllCustomFonts(),
     [],
@@ -82,7 +80,8 @@ function FontFamilySettings({
       });
     });
   }
-  let selectedValue = value !== undefined && options.find((item) => item.value === value);
+  let selectedValue =
+    value !== undefined && options.find((item) => item.value === value);
   if (!selectedValue) {
     selectedValue = options[0];
   }

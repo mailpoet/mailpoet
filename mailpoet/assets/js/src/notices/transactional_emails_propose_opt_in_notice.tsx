@@ -51,8 +51,7 @@ function TransactionalEmailsProposeOptInNotice({
     <Notice type="success" timeout={false} onClose={saveNoticeDismissed}>
       <h3>{MailPoet.I18n.t('transactionalEmailNoticeTitle')}</h3>
       <p>
-        {MailPoet.I18n.t('transactionalEmailNoticeBody')}
-        {' '}
+        {MailPoet.I18n.t('transactionalEmailNoticeBody')}{' '}
         <a
           href="https://kb.mailpoet.com/article/292-choose-how-to-send-your-wordpress-websites-emails"
           target="_blank"
@@ -62,11 +61,7 @@ function TransactionalEmailsProposeOptInNotice({
         </a>
       </p>
       <p>
-        <button
-          type="button"
-          className="button"
-          onClick={enable}
-        >
+        <button type="button" className="button" onClick={enable}>
           {MailPoet.I18n.t('transactionalEmailNoticeCTA')}
         </button>
       </p>

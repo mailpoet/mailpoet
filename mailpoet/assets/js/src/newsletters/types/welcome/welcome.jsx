@@ -22,7 +22,9 @@ class NewsletterWelcome extends Component {
     super(props);
     let availableSegments = window.mailpoet_segments || [];
     let defaultSegment = 1;
-    availableSegments = availableSegments.filter((segment) => segment.type === 'default');
+    availableSegments = availableSegments.filter(
+      (segment) => segment.type === 'default',
+    );
 
     if (_.size(availableSegments) > 0) {
       defaultSegment = _.first(availableSegments).id;
@@ -62,16 +64,18 @@ class NewsletterWelcome extends Component {
         type: 'welcome',
         subject: MailPoet.I18n.t('draftNewsletterTitle'),
       }),
-    }).done((response) => {
-      this.showTemplateSelection(response.data.id);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
-          { scroll: true }
-        );
-      }
-    });
+    })
+      .done((response) => {
+        this.showTemplateSelection(response.data.id);
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          MailPoet.Notice.error(
+            response.errors.map((error) => error.message),
+            { scroll: true },
+          );
+        }
+      });
   }
 
   isValid = () => jQuery('#welcome_scheduling').parsley().isValid();
@@ -87,10 +91,15 @@ class NewsletterWelcome extends Component {
       <div>
         <Background color="#fff" />
 
-        <ListingHeadingStepsRoute emailType="welcome" automationId="welcome_email_creation_heading" />
+        <ListingHeadingStepsRoute
+          emailType="welcome"
+          automationId="welcome_email_creation_heading"
+        />
 
         <Grid.Column align="center" className="mailpoet-schedule-email">
-          <Heading level={4}>{MailPoet.I18n.t('selectEventToSendWelcomeEmail')}</Heading>
+          <Heading level={4}>
+            {MailPoet.I18n.t('selectEventToSendWelcomeEmail')}
+          </Heading>
           <form id="welcome_scheduling">
             <WelcomeScheduling
               item={this.state}
@@ -98,11 +107,7 @@ class NewsletterWelcome extends Component {
               onValueChange={this.handleValueChange}
             />
 
-            <Button
-              isFullWidth
-              type="submit"
-              onClick={this.handleNext}
-            >
+            <Button isFullWidth type="submit" onClick={this.handleNext}>
               {MailPoet.I18n.t('next')}
             </Button>
           </form>

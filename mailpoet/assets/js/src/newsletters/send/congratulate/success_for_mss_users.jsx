@@ -24,7 +24,9 @@ function MSSUserSuccess(props) {
   const [isClosing, setIsClosing] = useState(false);
   return (
     <>
-      <Heading level={0}>{MailPoet.I18n.t('congratulationsSuccessHeader')}</Heading>
+      <Heading level={0}>
+        {MailPoet.I18n.t('congratulationsSuccessHeader')}
+      </Heading>
       <Heading level={3}>{getSuccessMessage(props.newsletter)}</Heading>
       <div className="mailpoet-gap-large" />
       <div className="mailpoet-gap-large" />
@@ -33,7 +35,10 @@ function MSSUserSuccess(props) {
       <Button
         type="button"
         dimension="small"
-        onClick={() => { props.successClicked(); setIsClosing(true); }}
+        onClick={() => {
+          props.successClicked();
+          setIsClosing(true);
+        }}
         withSpinner={isClosing}
       >
         {MailPoet.I18n.t('close')}

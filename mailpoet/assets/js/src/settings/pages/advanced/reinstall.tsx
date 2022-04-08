@@ -19,7 +19,10 @@ export default function Reinstall() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const action = (await reinstall()) as any as Result;
       if (action.type === 'SAVE_FAILED') {
-        notices.error(action.error.map((err) => <p>{err}</p>), { scroll: true });
+        notices.error(
+          action.error.map((err) => <p>{err}</p>),
+          { scroll: true },
+        );
       } else {
         window.location.href = 'admin.php?page=mailpoet-newsletters';
       }

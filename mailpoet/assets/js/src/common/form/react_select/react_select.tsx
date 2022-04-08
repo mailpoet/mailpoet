@@ -19,9 +19,13 @@ type LabelRendererProps = {
 function LabelRenderer(data: LabelRendererProps) {
   return (
     <div className="mailpoet-form-react-select-option">
-      {data.tag && <span className="mailpoet-form-react-select-tag">{data.tag}</span>}
+      {data.tag && (
+        <span className="mailpoet-form-react-select-tag">{data.tag}</span>
+      )}
       <span>{data.label}</span>
-      {data.count !== undefined && <span className="mailpoet-form-react-select-count">{data.count}</span>}
+      {data.count !== undefined && (
+        <span className="mailpoet-form-react-select-count">{data.count}</span>
+      )}
     </div>
   );
 }
@@ -43,14 +47,12 @@ function Option(props: OptionProps<OptionData>) {
       style={style}
       ref={props.innerRef}
       {...props.innerProps}
-      className={
-        classnames({
-          'mailpoet-form-react-select__option': true,
-          'mailpoet-form-react-select__option--is-disabled': props.isDisabled,
-          'mailpoet-form-react-select__option--is-focused': props.isFocused,
-          'mailpoet-form-react-select__option--is-selected': props.isSelected,
-        })
-      }
+      className={classnames({
+        'mailpoet-form-react-select__option': true,
+        'mailpoet-form-react-select__option--is-disabled': props.isDisabled,
+        'mailpoet-form-react-select__option--is-focused': props.isFocused,
+        'mailpoet-form-react-select__option--is-selected': props.isSelected,
+      })}
     >
       {LabelRenderer(props.data)}
     </div>
@@ -62,12 +64,11 @@ function SingleValue(props: any) {
   return (
     <div
       {...props.innerProps}
-      className={
-      classnames({
+      className={classnames({
         'mailpoet-form-react-select__single-value': true,
-        'mailpoet-form-react-select__single-value--is-disabled': props.isDisabled,
-      })
-    }
+        'mailpoet-form-react-select__single-value--is-disabled':
+          props.isDisabled,
+      })}
     >
       {LabelRenderer(props.data as LabelRendererProps)}
     </div>
@@ -105,17 +106,11 @@ function ReactSelect({
 }: Props) {
   return (
     <div
-      className={
-      classnames(
-        'mailpoet-form-input',
-        'mailpoet-form-select',
-        {
-          [`mailpoet-form-input-${dimension}`]: dimension,
-          'mailpoet-disabled': props.disabled,
-          'mailpoet-full-width': isFullWidth,
-        },
-      )
-    }
+      className={classnames('mailpoet-form-input', 'mailpoet-form-select', {
+        [`mailpoet-form-input-${dimension}`]: dimension,
+        'mailpoet-disabled': props.disabled,
+        'mailpoet-full-width': isFullWidth,
+      })}
       data-automation-id={automationId}
     >
       {iconStart}

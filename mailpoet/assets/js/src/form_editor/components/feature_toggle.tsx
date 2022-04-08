@@ -14,7 +14,7 @@ function FeatureToggle({
   label,
   info,
   onToggle,
-}: Props) : JSX.Element {
+}: Props): JSX.Element {
   return (
     <MenuItem
       icon={isActive && check}

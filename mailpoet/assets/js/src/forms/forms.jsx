@@ -18,8 +18,5 @@ function App() {
 const container = document.getElementById('forms_container');
 
 if (container) {
-  ReactDOM.render(
-    <App />,
-    container
-  );
+  ReactDOM.render(<App />, container);
 }

@@ -14,45 +14,70 @@ function QueueStatus(props) {
         rows={[
           {
             key: MailPoet.I18n.t('status'),
-            value: status.status === 'paused' ? MailPoet.I18n.t('paused') : MailPoet.I18n.t('running'),
-          }, {
+            value:
+              status.status === 'paused'
+                ? MailPoet.I18n.t('paused')
+                : MailPoet.I18n.t('running'),
+          },
+          {
             key: MailPoet.I18n.t('startedAt'),
-            value: status.started ? MailPoet.Date.full(status.started * 1000) : MailPoet.I18n.t('unknown'),
-          }, {
+            value: status.started
+              ? MailPoet.Date.full(status.started * 1000)
+              : MailPoet.I18n.t('unknown'),
+          },
+          {
             key: MailPoet.I18n.t('sentEmails'),
             value: status.sent || 0,
-          }, {
+          },
+          {
             key: MailPoet.I18n.t('retryAttempt'),
             value: status.retry_attempt || MailPoet.I18n.t('none'),
-          }, {
+          },
+          {
             key: MailPoet.I18n.t('retryAt'),
-            value: status.retry_at ? MailPoet.Date.full(status.retry_at * 1000) : MailPoet.I18n.t('none'),
-          }, {
+            value: status.retry_at
+              ? MailPoet.Date.full(status.retry_at * 1000)
+              : MailPoet.I18n.t('none'),
+          },
+          {
             key: MailPoet.I18n.t('error'),
-            value: status.error ? status.error.error_message : MailPoet.I18n.t('none'),
-          }, {
+            value: status.error
+              ? status.error.error_message
+              : MailPoet.I18n.t('none'),
+          },
+          {
             key: MailPoet.I18n.t('totalCompletedTasks'),
             value: status.tasksStatusCounts.completed,
-          }, {
+          },
+          {
             key: MailPoet.I18n.t('totalRunningTasks'),
             value: status.tasksStatusCounts.running,
-          }, {
+          },
+          {
             key: MailPoet.I18n.t('totalPausedTasks'),
             value: status.tasksStatusCounts.paused,
-          }, {
+          },
+          {
             key: MailPoet.I18n.t('totalScheduledTasks'),
             value: status.tasksStatusCounts.scheduled,
           },
         ]}
       />
       <h5>{MailPoet.I18n.t('scheduledTasks')}</h5>
-      <TasksList show_scheduled_at tasks={status.latestTasks.filter((task) => (task.status === 'scheduled'))} />
+      <TasksList
+        show_scheduled_at
+        tasks={status.latestTasks.filter((task) => task.status === 'scheduled')}
+      />
 
       <h5>{MailPoet.I18n.t('runningTasks')}</h5>
-      <TasksList tasks={status.latestTasks.filter((task) => (task.status === null))} />
+      <TasksList
+        tasks={status.latestTasks.filter((task) => task.status === null)}
+      />
 
       <h5>{MailPoet.I18n.t('completedTasks')}</h5>
-      <TasksList tasks={status.latestTasks.filter((task) => (task.status === 'completed'))} />
+      <TasksList
+        tasks={status.latestTasks.filter((task) => task.status === 'completed')}
+      />
     </>
   );
 }

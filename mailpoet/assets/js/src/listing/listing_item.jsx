@@ -7,10 +7,7 @@ import Checkbox from 'common/form/checkbox/checkbox.tsx';
 
 class ListingItem extends Component {
   handleSelectItem = (e) => {
-    this.props.onSelectItem(
-      parseInt(e.target.value, 10),
-      e.target.checked
-    );
+    this.props.onSelectItem(parseInt(e.target.value, 10), e.target.checked);
 
     return !e.target.checked;
   };
@@ -32,17 +29,19 @@ class ListingItem extends Component {
 
     if (this.props.is_selectable === true) {
       checkbox = (
-        <th className="mailpoet-listing-check-column mailpoet-hide-on-mobile" scope="row">
-          <label className="screen-reader-text" htmlFor={`listing-row-checkbox-${this.props.item.id}`}>
-            {
-              `Select ${this.props.item[this.props.columns[0].name]}`
-            }
+        <th
+          className="mailpoet-listing-check-column mailpoet-hide-on-mobile"
+          scope="row"
+        >
+          <label
+            className="screen-reader-text"
+            htmlFor={`listing-row-checkbox-${this.props.item.id}`}
+          >
+            {`Select ${this.props.item[this.props.columns[0].name]}`}
           </label>
           <Checkbox
             value={this.props.item.id}
-            checked={
-              this.props.item.selected || this.props.selection === 'all'
-            }
+            checked={this.props.item.selected || this.props.selection === 'all'}
             onCheck={() => {}}
             onChange={this.handleSelectItem}
             disabled={this.props.selection === 'all'}
@@ -58,7 +57,10 @@ class ListingItem extends Component {
 
     if (customActions.length > 0) {
       itemActions = customActions
-        .filter((action) => action.display === undefined || action.display(this.props.item))
+        .filter(
+          (action) =>
+            action.display === undefined || action.display(this.props.item),
+        )
         .map((action, index) => {
           let customAction = null;
 
@@ -91,14 +93,16 @@ class ListingItem extends Component {
                 role="button"
                 tabIndex={index}
                 onKeyDown={(event) => {
-                  if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+                  if (
+                    ['keydown', 'keypress'].includes(event.type) &&
+                    ['Enter', ' '].includes(event.key)
                   ) {
                     event.preventDefault();
                     this.props.onRefreshItems();
                   }
                 }}
               >
-                { action.link(this.props.item) }
+                {action.link(this.props.item)}
               </span>
             );
           } else if (action.link) {
@@ -107,7 +111,7 @@ class ListingItem extends Component {
                 key={`action-${action.name}`}
                 className={classNames(action.name, action.className)}
               >
-                { action.link(this.props.item, this.props.location) }
+                {action.link(this.props.item, this.props.location)}
               </span>
             );
           } else {
@@ -121,11 +125,14 @@ class ListingItem extends Component {
                   onClick={(event) => {
                     event.preventDefault();
                     if (action.onClick !== undefined) {
-                      action.onClick(this.props.item, this.props.onRefreshItems);
+                      action.onClick(
+                        this.props.item,
+                        this.props.onRefreshItems,
+                      );
                     }
                   }}
                 >
-                  { action.label }
+                  {action.label}
                 </a>
               </span>
             );
@@ -135,12 +142,13 @@ class ListingItem extends Component {
     } else {
       itemActions = (
         <span className="edit mailpoet-hide-on-mobile">
-          <Link to={{
-            pathname: `/edit/${this.props.item.id}`,
-            state: {
-              backUrl: this.props.location?.pathname,
-            },
-          }}
+          <Link
+            to={{
+              pathname: `/edit/${this.props.item.id}`,
+              state: {
+                backUrl: this.props.location?.pathname,
+              },
+            }}
           >
             {MailPoet.I18n.t('edit')}
           </Link>
@@ -187,22 +195,26 @@ class ListingItem extends Component {
     } else {
       actions = (
         <div className="mailpoet-listing-actions-holder">
-          <div className="mailpoet-listing-actions">
-            { itemActions }
-          </div>
+          <div className="mailpoet-listing-actions">{itemActions}</div>
         </div>
       );
     }
 
     const rowClasses = classNames({
-      'mailpoet-listing-row-selected': this.props.item.selected || this.props.selection === 'all',
-      'mailpoet-listing-row-inactive': this.props.isItemInactive(this.props.item),
+      'mailpoet-listing-row-selected':
+        this.props.item.selected || this.props.selection === 'all',
+      'mailpoet-listing-row-inactive': this.props.isItemInactive(
+        this.props.item,
+      ),
     });
 
     return (
-      <tr className={rowClasses} data-automation-id={`listing_item_${this.props.item.id}`}>
-        { checkbox }
-        { this.props.onRenderItem(this.props.item, actions) }
+      <tr
+        className={rowClasses}
+        data-automation-id={`listing_item_${this.props.item.id}`}
+      >
+        {checkbox}
+        {this.props.onRenderItem(this.props.item, actions)}
       </tr>
     );
   }

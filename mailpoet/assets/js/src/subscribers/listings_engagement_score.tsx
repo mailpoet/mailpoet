@@ -9,7 +9,7 @@ interface Props {
 export function ListingsEngagementScore({
   id,
   engagementScore,
-}:Props) : JSX.Element {
+}: Props): JSX.Element {
   const badges = {
     unknown: {
       name: MailPoet.I18n.t('unknownBadgeName'),
@@ -56,31 +56,19 @@ export function ListingsEngagementScore({
         {MailPoet.I18n.t('engagementScoreDescription')}
       </div>
       <div className="mailpoet-listing-stats-tooltip-content">
-        <Badge
-          type="unknown"
-          name={MailPoet.I18n.t('unknownBadgeName')}
-        />
+        <Badge type="unknown" name={MailPoet.I18n.t('unknownBadgeName')} />
         {' : '}
         {badges.unknown.tooltipText}
         <br />
-        <Badge
-          type="excellent"
-          name={MailPoet.I18n.t('excellentBadgeName')}
-        />
+        <Badge type="excellent" name={MailPoet.I18n.t('excellentBadgeName')} />
         {' : '}
         {badges.excellent.tooltipText}
         <br />
-        <Badge
-          type="good"
-          name={MailPoet.I18n.t('goodBadgeName')}
-        />
+        <Badge type="good" name={MailPoet.I18n.t('goodBadgeName')} />
         {' : '}
         {badges.good.tooltipText}
         <br />
-        <Badge
-          type="average"
-          name={MailPoet.I18n.t('averageBadgeName')}
-        />
+        <Badge type="average" name={MailPoet.I18n.t('averageBadgeName')} />
         {' : '}
         {badges.average.tooltipText}
       </div>
@@ -90,16 +78,10 @@ export function ListingsEngagementScore({
     <div className="mailpoet-listing-stats-opened-clicked">
       {engagementScore != null && (
         <div className="mailpoet-listing-stats-percentages">
-          {
-            engagementScore
-              .toLocaleString(
-                undefined,
-                {
-                  minimumFractionDigits: 1,
-                  maximumFractionDigits: 1,
-                },
-              )
-          }
+          {engagementScore.toLocaleString(undefined, {
+            minimumFractionDigits: 1,
+            maximumFractionDigits: 1,
+          })}
           %
         </div>
       )}

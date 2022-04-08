@@ -39,7 +39,10 @@ export default function DefaultSidebar({ onClose }: Props): JSX.Element {
           <li>
             <button
               onClick={(): void => switchDefaultSidebarTab('form')}
-              className={classnames('components-button edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'form' })}
+              className={classnames(
+                'components-button edit-post-sidebar__panel-tab',
+                { 'is-active': activeTab === 'form' },
+              )}
               data-automation-id="mailpoet_form_settings_tab"
               type="button"
             >
@@ -49,7 +52,10 @@ export default function DefaultSidebar({ onClose }: Props): JSX.Element {
           <li>
             <button
               onClick={(): void => switchDefaultSidebarTab('block')}
-              className={classnames('components-button edit-post-sidebar__panel-tab', { 'is-active': activeTab === 'block' })}
+              className={classnames(
+                'components-button edit-post-sidebar__panel-tab',
+                { 'is-active': activeTab === 'block' },
+              )}
               data-automation-id="mailpoet_block_settings_tab"
               type="button"
             >

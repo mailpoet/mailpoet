@@ -31,8 +31,8 @@ services:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
     ports:
-      - "8002:80"
-      - "8083:8083" # Storybook port number, see package.json
+      - '8002:80'
+      - '8083:8083' # Storybook port number, see package.json
     depends_on:
       - db
       - smtp
@@ -43,17 +43,17 @@ services:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
-      PHP_IDE_CONFIG: "serverName=Mailpoet"
-      COMPOSER_HOME: "/tmp/.composer"
-      NPM_CONFIG_CACHE: "/tmp/.npm"
+      PHP_IDE_CONFIG: 'serverName=Mailpoet'
+      COMPOSER_HOME: '/tmp/.composer'
+      NPM_CONFIG_CACHE: '/tmp/.npm'
       MAILPOET_DEV_SITE: 1
     volumes:
-      - "./wordpress:/var/www/html"
-      - "./eslint-config:/var/www/html/wp-content/plugins/eslint-config"
-      - "./tsconfig.base.json:/var/www/html/wp-content/plugins/tsconfig.base.json:ro"
-      - "./mailpoet:/var/www/html/wp-content/plugins/mailpoet"
-      - "./mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium"
-      - "./templates:/var/www/templates"
+      - './wordpress:/var/www/html'
+      - './eslint-config:/var/www/html/wp-content/plugins/eslint-config'
+      - './tsconfig.base.json:/var/www/html/wp-content/plugins/tsconfig.base.json:ro'
+      - './mailpoet:/var/www/html/wp-content/plugins/mailpoet'
+      - './mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium'
+      - './templates:/var/www/templates'
 
   test_wordpress:
     container_name: mp-test-wp
@@ -64,7 +64,7 @@ services:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
     ports:
-      - "8003:80"
+      - '8003:80'
     depends_on:
       - db
       - smtp
@@ -74,11 +74,11 @@ services:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
-      PHP_IDE_CONFIG: "serverName=Mailpoet"
+      PHP_IDE_CONFIG: 'serverName=Mailpoet'
     volumes:
-      - "./eslint-config:/var/www/html/wp-content/plugins/eslint-config"
-      - "./mailpoet:/var/www/html/wp-content/plugins/mailpoet"
-      - "./mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium"
+      - './eslint-config:/var/www/html/wp-content/plugins/eslint-config'
+      - './mailpoet:/var/www/html/wp-content/plugins/mailpoet'
+      - './mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium'
 
   smtp:
     container_name: mp-mailhog
@@ -88,9 +88,9 @@ services:
       MH_STORAGE: maildir
       MH_MAILDIR_PATH: /output
     volumes:
-      - "./dev/data/mailhog:/output"
+      - './dev/data/mailhog:/output'
     ports:
-      - "8082:8025"
+      - '8082:8025'
 
   adminer:
     container_name: mp-adminer
@@ -98,9 +98,9 @@ services:
     depends_on:
       - db
     ports:
-      - "8081:8080"
+      - '8081:8080'
     volumes:
-      - "./dev/php.ini:/usr/local/etc/php/conf.d/custom.ini"
+      - './dev/php.ini:/usr/local/etc/php/conf.d/custom.ini'
 
 volumes:
   my-datavolume:

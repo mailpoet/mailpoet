@@ -23,10 +23,15 @@ function Edit({ attributes, setAttributes }) {
         className="mailpoet-block-create-forms-list"
         value={attributes.formId}
       >
-        <option value="" disabled selected>{window.locale.selectForm}</option>
+        <option value="" disabled selected>
+          {window.locale.selectForm}
+        </option>
         {allForms.map((form) => (
           <option value={form.id}>
-            {form.name + (form.status === 'disabled' ? ` (${window.locale.inactive})` : '')}
+            {form.name +
+              (form.status === 'disabled'
+                ? ` (${window.locale.inactive})`
+                : '')}
           </option>
         ))}
       </select>
@@ -65,22 +70,16 @@ function Edit({ attributes, setAttributes }) {
         </PanelBody>
       </InspectorControls>
       <div className="mailpoet-block-div">
-        {
-          attributes.formId === null && (
-            <Placeholder
-              className="mailpoet-block-create-new"
-              icon={<BlockIcon icon={Icon} showColors />}
-              label={window.locale.subscriptionForm}
-            >
-              {selectFormSettings()}
-            </Placeholder>
-          )
-        }
-        {
-          attributes.formId !== null && (
-            renderForm()
-          )
-        }
+        {attributes.formId === null && (
+          <Placeholder
+            className="mailpoet-block-create-new"
+            icon={<BlockIcon icon={Icon} showColors />}
+            label={window.locale.subscriptionForm}
+          >
+            {selectFormSettings()}
+          </Placeholder>
+        )}
+        {attributes.formId !== null && renderForm()}
       </div>
     </>
   );

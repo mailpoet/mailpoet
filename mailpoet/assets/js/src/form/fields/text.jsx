@@ -13,8 +13,7 @@ class FormFieldText extends Component {
     if (this.props.onValueChange instanceof Function) {
       value = item[this.props.field.name];
       // set value to defaultValue if available
-      value = (value === undefined)
-        ? (this.props.field.defaultValue || '') : value;
+      value = value === undefined ? this.props.field.defaultValue || '' : value;
     }
     // defaultValue should only be set only when value is not set
     if (!value && this.props.field.defaultValue) {
@@ -35,13 +34,13 @@ class FormFieldText extends Component {
       <Input
         type="text"
         disabled={
-          (this.props.field.disabled !== undefined)
+          this.props.field.disabled !== undefined
             ? this.props.field.disabled(this.props.item)
             : false
         }
         className={className}
         size={
-          (this.props.field.size !== 'auto' && this.props.field.size > 0)
+          this.props.field.size !== 'auto' && this.props.field.size > 0
             ? this.props.field.size
             : null
         }
@@ -66,10 +65,7 @@ FormFieldText.propTypes = {
     defaultValue: PropTypes.string,
     id: PropTypes.string,
     className: PropTypes.string,
-    size: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-    ]),
+    size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     disabled: PropTypes.func,
     placeholder: PropTypes.string,
     validation: PropTypes.shape({

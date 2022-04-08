@@ -5,70 +5,106 @@ export default function mapFormDataBeforeSaving(data) {
       ...data.settings,
       form_placement: {
         popup: {
-          enabled: data.settings.formPlacement?.popup?.enabled === true ? '1' : '',
-          exit_intent_enabled: data.settings.formPlacement?.popup?.exitIntentEnabled ? '1' : '',
+          enabled:
+            data.settings.formPlacement?.popup?.enabled === true ? '1' : '',
+          exit_intent_enabled: data.settings.formPlacement?.popup
+            ?.exitIntentEnabled
+            ? '1'
+            : '',
           delay: data.settings.formPlacement?.popup?.delay,
-          cookieExpiration: data.settings.formPlacement?.popup?.cookieExpiration,
+          cookieExpiration:
+            data.settings.formPlacement?.popup?.cookieExpiration,
           styles: data.settings.formPlacement?.popup?.styles,
           animation: data.settings.formPlacement?.popup?.animation,
           categories: data.settings.formPlacement?.popup?.categories ?? [],
           tags: data.settings.formPlacement?.popup?.tags ?? [],
           posts: {
-            all: data.settings.formPlacement?.popup?.posts?.all === true ? '1' : '',
+            all:
+              data.settings.formPlacement?.popup?.posts?.all === true
+                ? '1'
+                : '',
             selected: data.settings.formPlacement?.popup?.posts?.selected,
           },
           pages: {
-            all: data.settings.formPlacement?.popup?.pages?.all === true ? '1' : '',
+            all:
+              data.settings.formPlacement?.popup?.pages?.all === true
+                ? '1'
+                : '',
             selected: data.settings.formPlacement?.popup?.pages?.selected,
           },
         },
         fixed_bar: {
-          enabled: data.settings.formPlacement?.fixedBar?.enabled === true ? '1' : '',
+          enabled:
+            data.settings.formPlacement?.fixedBar?.enabled === true ? '1' : '',
           delay: data.settings.formPlacement?.fixedBar?.delay,
-          cookieExpiration: data.settings.formPlacement?.fixedBar?.cookieExpiration,
+          cookieExpiration:
+            data.settings.formPlacement?.fixedBar?.cookieExpiration,
           styles: data.settings.formPlacement?.fixedBar?.styles,
           position: data.settings.formPlacement?.fixedBar?.position,
           animation: data.settings.formPlacement?.fixedBar?.animation,
           categories: data.settings.formPlacement?.fixedBar?.categories ?? [],
           tags: data.settings.formPlacement?.fixedBar?.tags ?? [],
           posts: {
-            all: data.settings.formPlacement?.fixedBar?.posts?.all === true ? '1' : '',
+            all:
+              data.settings.formPlacement?.fixedBar?.posts?.all === true
+                ? '1'
+                : '',
             selected: data.settings.formPlacement?.fixedBar?.posts?.selected,
           },
           pages: {
-            all: data.settings.formPlacement?.fixedBar?.pages?.all === true ? '1' : '',
+            all:
+              data.settings.formPlacement?.fixedBar?.pages?.all === true
+                ? '1'
+                : '',
             selected: data.settings.formPlacement?.fixedBar?.pages?.selected,
           },
         },
         below_posts: {
-          enabled: data.settings.formPlacement?.belowPosts?.enabled === true ? '1' : '',
+          enabled:
+            data.settings.formPlacement?.belowPosts?.enabled === true
+              ? '1'
+              : '',
           styles: data.settings.formPlacement?.belowPosts?.styles,
           categories: data.settings.formPlacement?.belowPosts?.categories ?? [],
           tags: data.settings.formPlacement?.belowPosts?.tags ?? [],
           posts: {
-            all: data.settings.formPlacement?.belowPosts?.posts?.all === true ? '1' : '',
+            all:
+              data.settings.formPlacement?.belowPosts?.posts?.all === true
+                ? '1'
+                : '',
             selected: data.settings.formPlacement?.belowPosts?.posts?.selected,
           },
           pages: {
-            all: data.settings.formPlacement?.belowPosts?.pages?.all === true ? '1' : '',
+            all:
+              data.settings.formPlacement?.belowPosts?.pages?.all === true
+                ? '1'
+                : '',
             selected: data.settings.formPlacement?.belowPosts?.pages?.selected,
           },
         },
         slide_in: {
-          enabled: data.settings.formPlacement?.slideIn?.enabled === true ? '1' : '',
+          enabled:
+            data.settings.formPlacement?.slideIn?.enabled === true ? '1' : '',
           delay: data.settings.formPlacement?.slideIn?.delay,
-          cookieExpiration: data.settings.formPlacement?.slideIn?.cookieExpiration,
+          cookieExpiration:
+            data.settings.formPlacement?.slideIn?.cookieExpiration,
           position: data.settings.formPlacement?.slideIn?.position,
           animation: data.settings.formPlacement?.slideIn?.animation,
           styles: data.settings.formPlacement?.slideIn?.styles,
           categories: data.settings.formPlacement?.slideIn?.categories ?? [],
           tags: data.settings.formPlacement?.slideIn?.tags ?? [],
           posts: {
-            all: data.settings.formPlacement?.slideIn?.posts?.all === true ? '1' : '',
+            all:
+              data.settings.formPlacement?.slideIn?.posts?.all === true
+                ? '1'
+                : '',
             selected: data.settings.formPlacement?.slideIn?.posts?.selected,
           },
           pages: {
-            all: data.settings.formPlacement?.slideIn?.pages?.all === true ? '1' : '',
+            all:
+              data.settings.formPlacement?.slideIn?.pages?.all === true
+                ? '1'
+                : '',
             selected: data.settings.formPlacement?.slideIn?.pages?.selected,
           },
         },

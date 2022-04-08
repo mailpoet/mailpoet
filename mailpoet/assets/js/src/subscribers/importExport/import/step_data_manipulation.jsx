@@ -30,17 +30,17 @@ function StepDataManipulation({
   setStepDataManipulationData,
 }) {
   const [selectedSegments, setSelectedSegments] = useState([]);
-  const [updateExistingSubscribers, setUpdateExistingSubscribers] = useState(true);
-  const [newSubscribersStatus, setNewSubscribersStatus] = useState('subscribed');
-  const [existingSubscribersStatus, setExistingSubscribersStatus] = useState('dontUpdate');
-  useEffect(
-    () => {
-      if (typeof (stepMethodSelectionData) === 'undefined') {
-        history.replace('step_method_selection');
-      }
-    },
-    [stepMethodSelectionData, history],
-  );
+  const [updateExistingSubscribers, setUpdateExistingSubscribers] =
+    useState(true);
+  const [newSubscribersStatus, setNewSubscribersStatus] =
+    useState('subscribed');
+  const [existingSubscribersStatus, setExistingSubscribersStatus] =
+    useState('dontUpdate');
+  useEffect(() => {
+    if (typeof stepMethodSelectionData === 'undefined') {
+      history.replace('step_method_selection');
+    }
+  }, [stepMethodSelectionData, history]);
 
   const importSubscribers = () => {
     doImport(
@@ -52,18 +52,16 @@ function StepDataManipulation({
       (importResults) => {
         setStepDataManipulationData(importResults);
         history.push('step_results');
-      }
+      },
     );
   };
 
-  if (typeof (stepMethodSelectionData) === 'undefined') {
+  if (typeof stepMethodSelectionData === 'undefined') {
     return null;
   }
   return (
     <div data-automation-id="import_data_manipulation_step">
-      <Warnings
-        stepMethodSelectionData={stepMethodSelectionData}
-      />
+      <Warnings stepMethodSelectionData={stepMethodSelectionData} />
       <MatchTable
         subscribersCount={stepMethodSelectionData.subscribersCount}
         subscribers={stepMethodSelectionData.subscribers}
@@ -85,11 +83,14 @@ function StepDataManipulation({
         />
         <PreviousNextStepButtons
           canGoNext={selectedSegments.length > 0}
-          onPreviousAction={() => (
+          onPreviousAction={() =>
             history.push(
-              getPreviousStepLink(stepMethodSelectionData, subscribersLimitForValidation)
+              getPreviousStepLink(
+                stepMethodSelectionData,
+                subscribersLimitForValidation,
+              ),
             )
-          )}
+          }
           onNextAction={importSubscribers}
           isLastStep
         />
@@ -109,12 +110,15 @@ StepDataManipulation.propTypes = {
     invalid: PropTypes.arrayOf(PropTypes.string),
     role: PropTypes.arrayOf(PropTypes.string),
     subscribersCount: PropTypes.number,
-    subscribers: PropTypes.arrayOf( // all subscribers
-      PropTypes.arrayOf( // single subscribers
-        PropTypes.oneOfType( // properties of a subscriber
-          [PropTypes.string, PropTypes.number]
-        )
-      )
+    subscribers: PropTypes.arrayOf(
+      // all subscribers
+      PropTypes.arrayOf(
+        // single subscribers
+        PropTypes.oneOfType(
+          // properties of a subscriber
+          [PropTypes.string, PropTypes.number],
+        ),
+      ),
     ),
   }),
   subscribersLimitForValidation: PropTypes.number.isRequired,

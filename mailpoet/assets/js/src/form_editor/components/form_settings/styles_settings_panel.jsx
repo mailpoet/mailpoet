@@ -23,7 +23,7 @@ function StylesSettingsPanel({ onToggle, isOpened }) {
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
   const settings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
-    []
+    [],
   );
   const settingsRef = useRef(settings);
   useEffect(() => {
@@ -32,7 +32,7 @@ function StylesSettingsPanel({ onToggle, isOpened }) {
 
   const updateStyles = (property, value) => {
     const updated = { ...settingsRef.current };
-    updated[property] = value ?? (defaultFormStyles[property] ?? undefined);
+    updated[property] = value ?? defaultFormStyles[property] ?? undefined;
     changeFormSettings(updated);
     settingsRef.current = updated;
   };
@@ -57,7 +57,10 @@ function StylesSettingsPanel({ onToggle, isOpened }) {
             imageUrl={settings.backgroundImageUrl}
             onImageUrlChange={partial(updateStyles, 'backgroundImageUrl')}
             imageDisplay={settings.backgroundImageDisplay}
-            onImageDisplayChange={partial(updateStyles, 'backgroundImageDisplay')}
+            onImageDisplayChange={partial(
+              updateStyles,
+              'backgroundImageDisplay',
+            )}
           />
           <ColorSettings
             name={MailPoet.I18n.t('formSettingsStylesFontColor')}
@@ -92,7 +95,9 @@ function StylesSettingsPanel({ onToggle, isOpened }) {
           />
           <RangeControl
             label={MailPoet.I18n.t('formSettingsBorderRadius')}
-            value={settings.borderRadius !== undefined ? settings.borderRadius : 0}
+            value={
+              settings.borderRadius !== undefined ? settings.borderRadius : 0
+            }
             min={0}
             max={40}
             allowReset
@@ -107,9 +112,18 @@ function StylesSettingsPanel({ onToggle, isOpened }) {
             label={MailPoet.I18n.t('formSettingsAlignment')}
             onChange={partial(updateStyles, 'alignment')}
             options={[
-              { value: HorizontalAlignment.Left, label: MailPoet.I18n.t('formSettingsAlignmentLeft') },
-              { value: HorizontalAlignment.Center, label: MailPoet.I18n.t('formSettingsAlignmentCenter') },
-              { value: HorizontalAlignment.Right, label: MailPoet.I18n.t('formSettingsAlignmentRight') },
+              {
+                value: HorizontalAlignment.Left,
+                label: MailPoet.I18n.t('formSettingsAlignmentLeft'),
+              },
+              {
+                value: HorizontalAlignment.Center,
+                label: MailPoet.I18n.t('formSettingsAlignmentCenter'),
+              },
+              {
+                value: HorizontalAlignment.Right,
+                label: MailPoet.I18n.t('formSettingsAlignmentRight'),
+              },
             ]}
             value={settings.alignment}
           />

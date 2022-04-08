@@ -14,10 +14,8 @@ var CommunicationComponent = Communication;
 describe('Products', function () {
   Backbone.Radio = {
     Requests: {
-      request: function () {
-      },
-      reply: function () {
-      },
+      request: function () {},
+      reply: function () {},
     },
   };
   describe('model', function () {
@@ -34,9 +32,11 @@ describe('Products', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
-      EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
+      EditorApplication.getBlockTypeModel = sinon
+        .stub()
+        .returns(Backbone.SuperModel);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-      model = new (ProductsBlock.ProductsBlockModel)();
+      model = new ProductsBlock.ProductsBlockModel();
       sandbox = sinon.createSandbox();
     });
 
@@ -90,7 +90,9 @@ describe('Products', function () {
     });
 
     it('has image position', function () {
-      expect(model.get('featuredImagePosition')).to.match(/^(centered|left|right|alternate|none)$/);
+      expect(model.get('featuredImagePosition')).to.match(
+        /^(centered|left|right|alternate|none)$/,
+      );
     });
 
     it('has an option to display price', function () {
@@ -173,7 +175,7 @@ describe('Products', function () {
           },
         },
       });
-      innerModel = new (ProductsBlock.ProductsBlockModel)();
+      innerModel = new ProductsBlock.ProductsBlockModel();
 
       expect(innerModel.get('amount')).to.equal('12');
       expect(innerModel.get('contentType')).to.equal('product');
@@ -189,14 +191,28 @@ describe('Products', function () {
       expect(innerModel.get('readMoreText')).to.equal('Go Shopping text');
       expect(innerModel.get('readMoreButton.text')).to.equal('Go Shopping');
       expect(innerModel.get('readMoreButton.url')).to.equal('[productLink]');
-      expect(innerModel.get('readMoreButton.styles.block.backgroundColor')).to.equal('#123456');
-      expect(innerModel.get('readMoreButton.styles.block.borderColor')).to.equal('#234567');
-      expect(innerModel.get('readMoreButton.styles.link.fontColor')).to.equal('#345678');
-      expect(innerModel.get('readMoreButton.styles.link.fontFamily')).to.equal('Tahoma');
-      expect(innerModel.get('readMoreButton.styles.link.fontSize')).to.equal('37px');
+      expect(
+        innerModel.get('readMoreButton.styles.block.backgroundColor'),
+      ).to.equal('#123456');
+      expect(
+        innerModel.get('readMoreButton.styles.block.borderColor'),
+      ).to.equal('#234567');
+      expect(innerModel.get('readMoreButton.styles.link.fontColor')).to.equal(
+        '#345678',
+      );
+      expect(innerModel.get('readMoreButton.styles.link.fontFamily')).to.equal(
+        'Tahoma',
+      );
+      expect(innerModel.get('readMoreButton.styles.link.fontSize')).to.equal(
+        '37px',
+      );
       expect(innerModel.get('showDivider')).to.equal(true);
-      expect(innerModel.get('divider.src')).to.equal('http://example.org/someConfigDividerImage.png');
-      expect(innerModel.get('divider.styles.block.backgroundColor')).to.equal('#456789');
+      expect(innerModel.get('divider.src')).to.equal(
+        'http://example.org/someConfigDividerImage.png',
+      );
+      expect(innerModel.get('divider.styles.block.backgroundColor')).to.equal(
+        '#456789',
+      );
       expect(innerModel.get('divider.styles.block.padding')).to.equal('38px');
     });
 
@@ -227,11 +243,13 @@ describe('Products', function () {
     });
 
     it('triggers loading and loaded events for more products', function () {
-      var stub = sinon.stub(CommunicationComponent, 'getPosts').callsFake(function () {
-        var deferred = jQuery.Deferred();
-        deferred.resolve([{}]); // 1 product
-        return deferred;
-      });
+      var stub = sinon
+        .stub(CommunicationComponent, 'getPosts')
+        .callsFake(function () {
+          var deferred = jQuery.Deferred();
+          deferred.resolve([{}]); // 1 product
+          return deferred;
+        });
       var spy = sinon.spy(model, 'trigger');
 
       model.set({
@@ -244,8 +262,8 @@ describe('Products', function () {
       stub.restore();
       spy.restore();
 
-      expect(spy.withArgs('loadingMoreProducts').calledOnce).to.be.true;// eslint-disable-line no-unused-expressions
-      expect(spy.withArgs('moreProductsLoaded').calledOnce).to.be.true;// eslint-disable-line no-unused-expressions
+      expect(spy.withArgs('loadingMoreProducts').calledOnce).to.be.true; // eslint-disable-line no-unused-expressions
+      expect(spy.withArgs('moreProductsLoaded').calledOnce).to.be.true; // eslint-disable-line no-unused-expressions
       expect(model.get('_availableProducts').length).to.equal(3);
     });
 
@@ -265,9 +283,11 @@ describe('Products', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
-      EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
-      model = new (ProductsBlock.ProductsBlockModel)();
-      view = new (ProductsBlock.ProductsBlockView)({ model: model });
+      EditorApplication.getBlockTypeModel = sinon
+        .stub()
+        .returns(Backbone.Model);
+      model = new ProductsBlock.ProductsBlockModel();
+      view = new ProductsBlock.ProductsBlockView({ model: model });
 
       // Disable auto-opening of settings view
       view.off('showSettings');
@@ -292,10 +312,11 @@ describe('Products', function () {
       global.stubConfig(EditorApplication, {
         blockDefaults: {},
       });
-      EditorApplication.getBlockTypeModel = sinon.stub()
+      EditorApplication.getBlockTypeModel = sinon
+        .stub()
         .returns(ContainerBlock.ContainerBlockModel);
-      model = new (ProductsBlock.ProductsBlockModel)();
-      view = new (ProductsBlock.ProductsBlockSettingsView)({ model: model });
+      model = new ProductsBlock.ProductsBlockModel();
+      view = new ProductsBlock.ProductsBlockSettingsView({ model: model });
     });
 
     it('renders', function () {
@@ -308,7 +329,10 @@ describe('Products', function () {
     describe('once rendered', function () {
       it('changes the model if post status changes', function () {
         var newValue = 'pending';
-        view.$('.mailpoet_products_post_status').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_post_status')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('postStatus')).to.equal(newValue);
       });
 
@@ -320,55 +344,82 @@ describe('Products', function () {
 
       it('changes the model if display type changes', function () {
         var newValue = 'full';
-        view.$('.mailpoet_products_display_type').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_display_type')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('displayType')).to.equal(newValue);
       });
 
       it('changes the model if title format changes', function () {
         var newValue = 'h3';
-        view.$('.mailpoet_products_title_format').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_title_format')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('titleFormat')).to.equal(newValue);
       });
 
       it('changes the model if title alignment changes', function () {
         var newValue = 'right';
-        view.$('.mailpoet_products_title_alignment').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_title_alignment')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('titleAlignment')).to.equal(newValue);
       });
 
       it('changes the model if title link changes', function () {
         var newValue = true;
-        view.$('.mailpoet_products_title_as_links').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_title_as_links')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('titleIsLink')).to.equal(newValue);
       });
 
       it('changes the model if image alignment changes', function () {
         var newValue = false;
-        view.$('.mailpoet_products_image_full_width').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_image_full_width')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('imageFullWidth')).to.equal(newValue);
       });
 
       it('changes the model if image position changes', function () {
         var newValue = 'aboveTitle';
-        view.$('.mailpoet_products_featured_image_position').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_featured_image_position')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('featuredImagePosition')).to.equal(newValue);
       });
 
       it('changes the model if price position changes', function () {
         var newValue = 'below';
-        view.$('.mailpoet_products_price_position').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_price_position')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('pricePosition')).to.equal(newValue);
       });
 
       it('changes the model if buy now button type changes', function () {
         var newValue = 'link';
-        view.$('.mailpoet_products_read_more_type').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_read_more_type')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('readMoreType')).to.equal(newValue);
       });
 
       it('changes the model if read more text changes', function () {
         var newValue = 'New buy now text';
-        view.$('.mailpoet_products_read_more_text').val(newValue).trigger('input');
+        view
+          .$('.mailpoet_products_read_more_text')
+          .val(newValue)
+          .trigger('input');
         expect(model.get('readMoreText')).to.equal(newValue);
       });
 
@@ -376,22 +427,34 @@ describe('Products', function () {
         var innerModel;
         var innerView;
         beforeEach(function () {
-          innerModel = new (ProductsBlock.ProductsBlockModel)();
+          innerModel = new ProductsBlock.ProductsBlockModel();
           innerModel.request = sinon.stub().returns({ $el: {} });
-          innerView = new (ProductsBlock.ProductsBlockSettingsView)({ model: innerModel });
+          innerView = new ProductsBlock.ProductsBlockSettingsView({
+            model: innerModel,
+          });
           innerView.render();
-          innerView.$('.mailpoet_products_display_type').val('titleOnly').trigger('change');
+          innerView
+            .$('.mailpoet_products_display_type')
+            .val('titleOnly')
+            .trigger('change');
         });
 
         it('hides "title position" option', function () {
-          expect(innerView.$('.mailpoet_products_title_position')).to.have.$class('mailpoet_hidden');
-          expect(innerView.$('.mailpoet_products_title_position_separator')).to.have.$class('mailpoet_hidden');
+          expect(
+            innerView.$('.mailpoet_products_title_position'),
+          ).to.have.$class('mailpoet_hidden');
+          expect(
+            innerView.$('.mailpoet_products_title_position_separator'),
+          ).to.have.$class('mailpoet_hidden');
         });
       });
 
       it('changes the model if show divider changes', function () {
         var newValue = true;
-        view.$('.mailpoet_products_show_divider').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_show_divider')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('showDivider')).to.equal(newValue);
       });
     });

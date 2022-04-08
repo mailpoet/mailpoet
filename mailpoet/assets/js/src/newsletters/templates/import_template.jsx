@@ -27,7 +27,9 @@ class ImportTemplate extends Component {
         this.saveTemplate(JSON.parse(evt.target.result));
         MailPoet.trackEvent('Emails > Template imported');
       } catch (err) {
-        this.context.notices.error(<p>{MailPoet.I18n.t('templateFileMalformedError')}</p>);
+        this.context.notices.error(
+          <p>{MailPoet.I18n.t('templateFileMalformedError')}</p>,
+        );
       }
     };
 
@@ -55,9 +57,9 @@ class ImportTemplate extends Component {
     }
 
     if (
-      template.categories.indexOf('standard') === -1
-      && template.categories.indexOf('welcome') === -1
-      && template.categories.indexOf('notification') === -1
+      template.categories.indexOf('standard') === -1 &&
+      template.categories.indexOf('welcome') === -1 &&
+      template.categories.indexOf('notification') === -1
     ) {
       template.categories.push('standard');
     }
@@ -70,17 +72,21 @@ class ImportTemplate extends Component {
       endpoint: 'newsletterTemplates',
       action: 'save',
       data: template,
-    }).done((response) => {
-      afterImport(true, response.data);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.context.notices.error(
-          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-          { scroll: true }
-        );
-      }
-      afterImport(false);
-    });
+    })
+      .done((response) => {
+        afterImport(true, response.data);
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          this.context.notices.error(
+            response.errors.map((error) => (
+              <p key={error.message}>{error.message}</p>
+            )),
+            { scroll: true },
+          );
+        }
+        afterImport(false);
+      });
   }
 
   render() {

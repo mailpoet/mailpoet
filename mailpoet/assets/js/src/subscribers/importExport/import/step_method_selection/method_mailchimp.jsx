@@ -37,7 +37,7 @@ function MethodMailChimp({ onFinish, onPrevious }) {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
             response.errors.map((error) => error.message),
-            { scroll: true }
+            { scroll: true },
           );
         }
       });
@@ -62,7 +62,7 @@ function MethodMailChimp({ onFinish, onPrevious }) {
         if (response.errors.length > 0) {
           MailPoet.Notice.error(
             response.errors.map((error) => error.message),
-            { scroll: true }
+            { scroll: true },
           );
         }
       });
@@ -72,7 +72,9 @@ function MethodMailChimp({ onFinish, onPrevious }) {
     if (!mailChimpLoadedLists) return null;
     return (
       <>
-        <div className="mailpoet-settings-label">{MailPoet.I18n.t('methodMailChimpSelectList')}</div>
+        <div className="mailpoet-settings-label">
+          {MailPoet.I18n.t('methodMailChimpSelectList')}
+        </div>
         <div className="mailpoet-settings-inputs">
           <Selection
             field={{
@@ -94,7 +96,9 @@ function MethodMailChimp({ onFinish, onPrevious }) {
     <>
       <div className="mailpoet-settings-label">
         <label htmlFor="mailpoet_mailchimp_key_input">
-          <span className="mailpoet_import_heading">{MailPoet.I18n.t('methodMailChimpLabel')}</span>
+          <span className="mailpoet_import_heading">
+            {MailPoet.I18n.t('methodMailChimpLabel')}
+          </span>
           <p className="description">
             {ReactStringReplace(
               MailPoet.I18n.t('methodMailChimpDescription'),
@@ -108,9 +112,9 @@ function MethodMailChimp({ onFinish, onPrevious }) {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  { match }
+                  {match}
                 </a>
-              )
+              ),
             )}
           </p>
         </label>
@@ -129,7 +133,8 @@ function MethodMailChimp({ onFinish, onPrevious }) {
           </Button>
           <span className="mailpoet-gap" />
           <span>
-            { Array.isArray(mailChimpLoadedLists) && mailChimpLoadedLists.length === 0
+            {Array.isArray(mailChimpLoadedLists) &&
+            mailChimpLoadedLists.length === 0
               ? MailPoet.I18n.t('noMailChimpLists')
               : null}
           </span>

@@ -34,11 +34,10 @@ export const MailPoet = {
   emailRegex: window.mailpoet_email_regex,
   wpSegmentState: window.mailpoet_wp_segment_state,
   wpWeekStartsOn: window.mailpoet_wp_week_starts_on,
-  subscribersCountsCacheCreatedAt: window.mailpoet_subscribers_counts_cache_created_at,
-  getShortcodeLinks: (): string[] => (window.mailpoet_shortcode_links
-    ? window.mailpoet_shortcode_links
-    : []
-  ),
+  subscribersCountsCacheCreatedAt:
+    window.mailpoet_subscribers_counts_cache_created_at,
+  getShortcodeLinks: (): string[] =>
+    window.mailpoet_shortcode_links ? window.mailpoet_shortcode_links : [],
   settings: window.mailpoet_settings,
   trackingConfig: window.mailpoet_tracking_config || {},
   I18n: MailPoetI18n,

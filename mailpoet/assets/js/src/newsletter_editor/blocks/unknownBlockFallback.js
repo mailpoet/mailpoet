@@ -8,7 +8,9 @@ Module.BlockModel = base.BlockModel.extend({});
 
 Module.BlockView = base.BlockView.extend({
   className: 'mailpoet_block mailpoet_fallback_block mailpoet_droppable_block',
-  getTemplate: function getTemplate() { return window.templates.unknownBlockFallbackBlock; },
+  getTemplate: function getTemplate() {
+    return window.templates.unknownBlockFallbackBlock;
+  },
   onRender: function onRender() {
     this.toolsView = new Module.BlockToolsView({
       model: this.model,
@@ -30,7 +32,9 @@ Module.BlockView = base.BlockView.extend({
 
 Module.WidgetView = base.WidgetView.extend({
   id: 'automation_editor_block_fallback',
-  getTemplate: function getTemplate() { return window.templates.unknownBlockFallbackInsertion; },
+  getTemplate: function getTemplate() {
+    return window.templates.unknownBlockFallbackInsertion;
+  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,

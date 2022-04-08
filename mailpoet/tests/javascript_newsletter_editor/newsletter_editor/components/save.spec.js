@@ -59,7 +59,7 @@ describe('Save', function () {
       }).default;
       promise.resolve({ success: true });
       innerModule.save();
-      expect(spy.withArgs('afterEditorSave').calledOnce).to.be.true;// eslint-disable-line no-unused-expressions
+      expect(spy.withArgs('afterEditorSave').calledOnce).to.be.true; // eslint-disable-line no-unused-expressions
     });
 
     it('sends newsletter json to server for saving', function () {
@@ -80,7 +80,8 @@ describe('Save', function () {
     it('encodes newsletter body in JSON format', function () {
       var innerModule;
       var body = { type: 'testType' };
-      var mock = sinon.mock()
+      var mock = sinon
+        .mock()
         .once()
         .withArgs({
           body: JSON.stringify(body),
@@ -106,15 +107,17 @@ describe('Save', function () {
     var validNewsletter = {
       body: {
         content: {
-          blocks: [
-            { type: 'footer' },
-          ],
+          blocks: [{ type: 'footer' }],
         },
       },
     };
     before(function () {
-      var newsletter = { get: sinon.stub().withArgs('type').returns('newsletter') };
-      EditorApplication._contentContainer = { isValid: sinon.stub().returns(true) };
+      var newsletter = {
+        get: sinon.stub().withArgs('type').returns('newsletter'),
+      };
+      EditorApplication._contentContainer = {
+        isValid: sinon.stub().returns(true),
+      };
       global.stubConfig(EditorApplication);
       EditorApplication.getNewsletter = sinon.stub().returns(newsletter);
     });
@@ -125,7 +128,7 @@ describe('Save', function () {
       model.isWoocommerceTransactional = function () {
         return false;
       };
-      view = new (SaveComponent.SaveView)({ model: model });
+      view = new SaveComponent.SaveView({ model: model });
       expect(view.render).to.not.throw();
     });
 
@@ -138,7 +141,7 @@ describe('Save', function () {
         model.isWoocommerceTransactional = function () {
           return false;
         };
-        view = new (SaveComponent.SaveView)({ model: model });
+        view = new SaveComponent.SaveView({ model: model });
         hideValidationErrorStub = sinon.stub(view, 'hideValidationError');
       });
 
@@ -148,14 +151,14 @@ describe('Save', function () {
       });
 
       it('hides errors for valid post notification', function () {
-        var newsletter = { get: sinon.stub().withArgs('type').returns('notification') };
+        var newsletter = {
+          get: sinon.stub().withArgs('type').returns('notification'),
+        };
         EditorApplication.getNewsletter = sinon.stub().returns(newsletter);
         view.validateNewsletter({
           body: {
             content: {
-              blocks: [
-                { type: 'automatedLatestContent' },
-              ],
+              blocks: [{ type: 'automatedLatestContent' }],
             },
           },
         });
@@ -163,7 +166,9 @@ describe('Save', function () {
       });
 
       it('shows error for notification email type when ALC content is not present', function () {
-        var newsletter = { get: sinon.stub().withArgs('type').returns('notification') };
+        var newsletter = {
+          get: sinon.stub().withArgs('type').returns('notification'),
+        };
         var showValidationErrorStub = sinon.stub(view, 'showValidationError');
         EditorApplication.getNewsletter = sinon.stub().returns(newsletter);
         view.validateNewsletter(validNewsletter);
@@ -175,17 +180,23 @@ describe('Save', function () {
       var view;
       var model;
       beforeEach(function () {
-        EditorApplication._contentContainer = { isValid: sinon.stub().returns(true) };
+        EditorApplication._contentContainer = {
+          isValid: sinon.stub().returns(true),
+        };
         model = new Backbone.SuperModel({});
         model.isWoocommerceTransactional = function () {
           return false;
         };
-        view = new (SaveComponent.SaveView)({ model: model });
+        view = new SaveComponent.SaveView({ model: model });
         view.render();
       });
 
       it('triggers newsletter saving when clicked on save button', function () {
-        var mock = sinon.mock({ request: function () {} }).expects('request').once().withArgs('save');
+        var mock = sinon
+          .mock({ request: function () {} })
+          .expects('request')
+          .once()
+          .withArgs('save');
         global.stubChannel(EditorApplication, {
           request: mock,
         });
@@ -196,11 +207,17 @@ describe('Save', function () {
 
       it('displays saving options when clicked on save options button', function () {
         view.$('.mailpoet_save_show_options').trigger('click');
-        expect(view.$('.mailpoet_save_options')).to.not.have.$class('mailpoet_hidden');
+        expect(view.$('.mailpoet_save_options')).to.not.have.$class(
+          'mailpoet_hidden',
+        );
       });
 
       it('triggers template saving when clicked on "save as template" button', function () {
-        var mock = sinon.mock({ post: function () {} }).expects('post').once().returns(jQuery.Deferred());
+        var mock = sinon
+          .mock({ post: function () {} })
+          .expects('post')
+          .once()
+          .returns(jQuery.Deferred());
         var promiseMock = {};
         var module;
 
@@ -224,7 +241,9 @@ describe('Save', function () {
               post: mock,
             },
             I18n: {
-              t: function () { return ''; },
+              t: function () {
+                return '';
+              },
             },
             Notice: {
               success: function () {},
@@ -243,11 +262,13 @@ describe('Save', function () {
         model.isWoocommerceTransactional = function () {
           return false;
         };
-        view = new (module.SaveView)({ model: model });
+        view = new module.SaveView({ model: model });
         view.render();
 
         view.$('.mailpoet_save_as_template_name').val('A sample template');
-        view.$('.mailpoet_save_as_template_description').val('Sample template description');
+        view
+          .$('.mailpoet_save_as_template_description')
+          .val('Sample template description');
         view.$('.mailpoet_save_as_template').trigger('click');
 
         mock.verify();
@@ -269,7 +290,7 @@ describe('Save', function () {
         model.isWoocommerceTransactional = function () {
           return false;
         };
-        view = new (module.SaveView)({ model: model });
+        view = new module.SaveView({ model: model });
         view.render();
 
         view.$('.mailpoet_save_next').trigger('click');
@@ -282,7 +303,7 @@ describe('Save', function () {
   describe('preview view', function () {
     var view;
     beforeEach(function () {
-      view = new (SaveComponent.NewsletterPreviewView)();
+      view = new SaveComponent.NewsletterPreviewView();
     });
 
     it.skip('renders', function () {

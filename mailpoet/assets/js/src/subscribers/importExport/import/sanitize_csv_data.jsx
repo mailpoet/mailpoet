@@ -2,7 +2,10 @@
 // single/double quotes and convert to lowercase
 import _ from 'underscore';
 
-const isRoleEmail = (email) => window.roleBasedEmails.findIndex((element) => email.startsWith(`${element}@`)) >= 0;
+const isRoleEmail = (email) =>
+  window.roleBasedEmails.findIndex((element) =>
+    email.startsWith(`${element}@`),
+  ) >= 0;
 
 const detectAndCleanupEmail = (emailString) => {
   let test;
@@ -69,8 +72,10 @@ function sanitizeCSVData(csvData) {
       if (emailColumnPosition === null) {
         Object.keys(rowData).forEach((column) => {
           emailAddress = detectAndCleanupEmail(rowData[column]);
-          if (emailColumnPosition === null
-            && window.mailpoet_email_regex.test(emailAddress)) {
+          if (
+            emailColumnPosition === null &&
+            window.mailpoet_email_regex.test(emailAddress)
+          ) {
             emailColumnPosition = column;
             // add current e-mail to an object index
             parsedEmails[emailAddress] = true;
@@ -78,8 +83,7 @@ function sanitizeCSVData(csvData) {
             processedSubscribers[emailAddress] = rowData;
           }
         });
-        if (emailColumnPosition === null
-          && parseInt(rowCount, 10) === 0) {
+        if (emailColumnPosition === null && parseInt(rowCount, 10) === 0) {
           isHeaderFound = true;
           processedSubscribers[0] = rowData;
         }
@@ -106,19 +110,18 @@ function sanitizeCSVData(csvData) {
   // if the header options is set, there should be at least
   // 2 data rows, otherwise at least 1 data row
   if (
-    processedSubscribers
-    && (
-      (isHeaderFound && processedSubscribers.length >= 2)
-      || (!isHeaderFound && processedSubscribers.length >= 1)
-    )
+    processedSubscribers &&
+    ((isHeaderFound && processedSubscribers.length >= 2) ||
+      (!isHeaderFound && processedSubscribers.length >= 1))
   ) {
     // since we assume that the header line is always present, we need
     // to detect the header by checking if it contains a valid e-mail address
     return {
-      header: (!window.mailpoet_email_regex.test(
-        processedSubscribers[0][emailColumnPosition]
+      header: !window.mailpoet_email_regex.test(
+        processedSubscribers[0][emailColumnPosition],
       )
-      ) ? processedSubscribers.shift() : null,
+        ? processedSubscribers.shift()
+        : null,
       subscribers: processedSubscribers,
       subscribersCount: processedSubscribers.length,
       duplicate: _.uniq(duplicateEmails),

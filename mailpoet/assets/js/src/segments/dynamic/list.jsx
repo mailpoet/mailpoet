@@ -40,13 +40,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneDynamicSegmentTrashed')
-      );
+      message = MailPoet.I18n.t('oneDynamicSegmentTrashed');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleDynamicSegmentsTrashed')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleDynamicSegmentsTrashed').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -55,13 +54,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneDynamicSegmentDeleted')
-      );
+      message = MailPoet.I18n.t('oneDynamicSegmentDeleted');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleDynamicSegmentsDeleted')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleDynamicSegmentsDeleted').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -70,13 +68,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneDynamicSegmentRestored')
-      );
+      message = MailPoet.I18n.t('oneDynamicSegmentRestored');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleDynamicSegmentsRestored')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleDynamicSegmentsRestored').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -87,32 +84,22 @@ const itemActions = [
     name: 'edit',
     className: 'mailpoet-hide-on-mobile',
     link: (item) => (
-      <Link to={`/edit-segment/${item.id}`}>
-        {MailPoet.I18n.t('edit')}
-      </Link>
+      <Link to={`/edit-segment/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>
     ),
-    display: (item) => (
-      !item.is_plugin_missing
-    ),
+    display: (item) => !item.is_plugin_missing,
   },
   {
     name: 'edit_disabled',
     className: 'mailpoet-hide-on-mobile mailpoet-disabled',
     link: (item) => (
-      <Link to={`/edit-segment/${item.id}`}>
-        {MailPoet.I18n.t('edit')}
-      </Link>
+      <Link to={`/edit-segment/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>
     ),
-    display: (item) => (
-      item.is_plugin_missing
-    ),
+    display: (item) => item.is_plugin_missing,
   },
   {
     name: 'view_subscribers',
     link: (item) => (
-      <a href={item.subscribers_url}>
-        {MailPoet.I18n.t('viewSubscribers')}
-      </a>
+      <a href={item.subscribers_url}>{MailPoet.I18n.t('viewSubscribers')}</a>
     ),
   },
   {
@@ -132,48 +119,65 @@ const bulkActions = [
 function renderItem(item, actions) {
   return (
     <>
-      <td className="column-primary" data-colname={MailPoet.I18n.t('nameColumn')}>
-        <span className="mailpoet-listing-title">
-          { item.name }
-        </span>
-        { actions }
+      <td
+        className="column-primary"
+        data-colname={MailPoet.I18n.t('nameColumn')}
+      >
+        <span className="mailpoet-listing-title">{item.name}</span>
+        {actions}
       </td>
       <td data-colname={MailPoet.I18n.t('description')}>
-        <abbr>{ item.description }</abbr>
+        <abbr>{item.description}</abbr>
       </td>
-      { item.is_plugin_missing
-        ? (
-          <td colSpan="2" className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('missingPluginMessageColumn')}>
-            { item.missing_plugin_message
-              && item.missing_plugin_message.message && item.missing_plugin_message.link
-              ? (
-                ReactStringReplace(
-                  item.missing_plugin_message.message,
-                  /\[link](.*?)\[\/link]/g,
-                  (match) => (
-                    <a className="mailpoet-listing-link-important" key="missingPluginMessageLink" href={item.missing_plugin_message.link} target="_blank" rel="noopener noreferrer">{match}</a>
-                  )
-                )
+      {item.is_plugin_missing ? (
+        <td
+          colSpan="2"
+          className="column mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('missingPluginMessageColumn')}
+        >
+          {item.missing_plugin_message &&
+          item.missing_plugin_message.message &&
+          item.missing_plugin_message.link
+            ? ReactStringReplace(
+                item.missing_plugin_message.message,
+                /\[link](.*?)\[\/link]/g,
+                (match) => (
+                  <a
+                    className="mailpoet-listing-link-important"
+                    key="missingPluginMessageLink"
+                    href={item.missing_plugin_message.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {match}
+                  </a>
+                ),
               )
-              : (
-                item.missing_plugin_message
-              )}
+            : item.missing_plugin_message}
+        </td>
+      ) : (
+        <>
+          <td
+            className="column mailpoet-hide-on-mobile"
+            data-colname={MailPoet.I18n.t('subscribersCountColumn')}
+          >
+            {parseInt(item.count_all, 10).toLocaleString()}
           </td>
-        )
-        : (
-          <>
-            <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribersCountColumn')}>
-              { parseInt(item.count_all, 10).toLocaleString() }
-            </td>
-            <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribed')}>
-              { parseInt(item.count_subscribed, 10).toLocaleString() }
-            </td>
-          </>
-        )}
-      <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('updatedAtColumn')}>
-        { MailPoet.Date.short(item.created_at) }
+          <td
+            className="column mailpoet-hide-on-mobile"
+            data-colname={MailPoet.I18n.t('subscribed')}
+          >
+            {parseInt(item.count_subscribed, 10).toLocaleString()}
+          </td>
+        </>
+      )}
+      <td
+        className="column-date mailpoet-hide-on-mobile"
+        data-colname={MailPoet.I18n.t('updatedAtColumn')}
+      >
+        {MailPoet.Date.short(item.created_at)}
         <br />
-        { MailPoet.Date.time(item.created_at) }
+        {MailPoet.Date.time(item.created_at)}
       </td>
     </>
   );
@@ -198,13 +202,8 @@ function DynamicSegmentList(props) {
         bulk_actions={bulkActions}
       />
       <p className="mailpoet_sending_methods_help help">
-        <b>
-          {MailPoet.I18n.t('segmentsTip')}
-          :
-        </b>
-        {' '}
-        {MailPoet.I18n.t('segmentsTipText')}
-        {' '}
+        <b>{MailPoet.I18n.t('segmentsTip')}:</b>{' '}
+        {MailPoet.I18n.t('segmentsTipText')}{' '}
         <a
           href="https://kb.mailpoet.com/article/237-guide-to-subscriber-segmentation?utm_source=plugin&utm_medium=segments&utm_campaign=helpdocs"
           data-beacon-article="5a574bd92c7d3a194368233e"

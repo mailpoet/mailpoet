@@ -16,7 +16,10 @@ function App() {
       <TopBar />
       <Notices />
       <RoutedTabs activeKey="knowledgeBase">
-        <Tab key="knowledgeBase" title={MailPoet.I18n.t('tabKnowledgeBaseTitle')}>
+        <Tab
+          key="knowledgeBase"
+          title={MailPoet.I18n.t('tabKnowledgeBaseTitle')}
+        >
           <KnowledgeBase />
         </Tab>
         <Tab key="systemStatus" title={MailPoet.I18n.t('tabSystemStatusTitle')}>

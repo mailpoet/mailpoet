@@ -4,8 +4,11 @@ import ReactStringReplace from 'react-string-replace';
 import { Field } from '../../form/types';
 
 // Track once per page load
-const trackCampaignNameTyped = _.once(() => MailPoet.trackEvent('User has typed a GA campaign name'));
-const tipLink = 'https://kb.mailpoet.com/article/187-track-your-newsletters-subscribers-in-google-analytics';
+const trackCampaignNameTyped = _.once(() =>
+  MailPoet.trackEvent('User has typed a GA campaign name'),
+);
+const tipLink =
+  'https://kb.mailpoet.com/article/187-track-your-newsletters-subscribers-in-google-analytics';
 const tip = ReactStringReplace(
   MailPoet.I18n.t('gaCampaignTip'),
   /\[link\](.*?)\[\/link\]/g,
@@ -19,7 +22,7 @@ const tip = ReactStringReplace(
         rel="noopener noreferrer"
         className="mailpoet-link"
       >
-        { match }
+        {match}
       </a>
     </span>
   ),

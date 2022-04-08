@@ -11,12 +11,8 @@ describe('History Record Reducer', () => {
     initialState = {
       editorHistory: [],
       editorHistoryOffset: 0,
-      formBlocks: [
-        { name: 'Name of block' },
-      ],
-      formData: [
-        { backgroundColor: 'red' },
-      ],
+      formBlocks: [{ name: 'Name of block' }],
+      formData: [{ backgroundColor: 'red' }],
     };
   });
 
@@ -37,12 +33,8 @@ describe('History Record Reducer', () => {
       ...initialState,
       editorHistory: [
         {
-          blocks: [
-            { name },
-          ],
-          data: [
-            { backgroundColor },
-          ],
+          blocks: [{ name }],
+          data: [{ backgroundColor }],
         },
       ],
     };
@@ -61,12 +53,8 @@ describe('History Record Reducer', () => {
       editorHistoryOffset: 1,
       editorHistory: [
         {
-          blocks: [
-            { name },
-          ],
-          data: [
-            { backgroundColor },
-          ],
+          blocks: [{ name }],
+          data: [{ backgroundColor }],
         },
       ],
     };
@@ -83,12 +71,8 @@ describe('History Record Reducer', () => {
       editorHistoryOffset: 0,
       editorHistory: [
         {
-          blocks: [
-            { name: 'Name' },
-          ],
-          data: [
-            { backgroundColor: 'green' },
-          ],
+          blocks: [{ name: 'Name' }],
+          data: [{ backgroundColor: 'green' }],
         },
       ],
     };

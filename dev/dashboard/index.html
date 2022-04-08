@@ -1,85 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>MailPoet dev environment</title>
-  <link rel="icon" href="favicon.png" />
-  <style>
-    body {
-      background: #ffe0d0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-    }
-    p {
-      color: #071c6d;
-      font-weight: 600;
-      text-align: center;
-      text-transform: uppercase;
-    }
-    a {
-      color: #fe5301;
-      transition: all 0.25s ease-in-out;
-    }
-    a:hover {
-      color: #cb4201;
-    }
-    table {
-      margin: 2em auto;
-    }
-    table tr td {
-      color: #071c6d;
-      padding: 5px 10px;
-    }
-    table tr td:nth-child(2) {
-      font-weight: 600;
-    }
-    img {
-      margin: 3em auto 0;
-      width: 250px;
-      display: block;
-    }
-  </style>
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <title>MailPoet dev environment</title>
+    <link rel="icon" href="favicon.png" />
+    <style>
+      body {
+        background: #ffe0d0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+          'Segoe UI Symbol';
+      }
+      p {
+        color: #071c6d;
+        font-weight: 600;
+        text-align: center;
+        text-transform: uppercase;
+      }
+      a {
+        color: #fe5301;
+        transition: all 0.25s ease-in-out;
+      }
+      a:hover {
+        color: #cb4201;
+      }
+      table {
+        margin: 2em auto;
+      }
+      table tr td {
+        color: #071c6d;
+        padding: 5px 10px;
+      }
+      table tr td:nth-child(2) {
+        font-weight: 600;
+      }
+      img {
+        margin: 3em auto 0;
+        width: 250px;
+        display: block;
+      }
+    </style>
+  </head>
 
-<body>
-  <a href="/"><img src="logo.svg" /></a>
-  <p>Dev environment</p>
-  <table>
-    <tbody>
-    <tr>
-      <td>🖥</td>
-      <td>
-        <a href="http://localhost:8002">WordPress</a>
-        [<a href="http://localhost:8002/wp-admin/">wp-admin</a>]
-      </td>
-      <td>App for development</td>
-      <td><a href="http://localhost:8002">http://localhost:8002</a></td>
-    </tr>
-    <tr>
-      <td>🚥</td>
-      <td>
-        <a href="http://localhost:8003">WordPress Tests</a>
-        [<a href="http://localhost:8003/wp-admin/">wp-admin</a>]
-      </td>
-      <td>App for E2E tests</td>
-      <td><a href="http://localhost:8003">http://localhost:8003</a></td>
-    </tr>
-    <tr>
-      <td>💾</td>
-      <td>
-        <a href="http://localhost:8081?server=db&mysql=wordpress&username=wordpress">Adminer</a>
-      </td>
-      <td>DB management</td>
-      <td>
-        <a href="http://localhost:8081?server=db&mysql=wordpress&username=wordpress">http://localhost:8081</a>
-      </td>
-    </tr>
-    <tr>
-      <td>📪</td>
-      <td><a href="http://localhost:8082">MailHog</a></td>
-      <td>Email catcher</td>
-      <td><a href="http://localhost:8082">http://localhost:8082</a></td>
-    </tr>
-    </tbody>
-  </table>
-</body>
+  <body>
+    <a href="/"><img src="logo.svg" /></a>
+    <p>Dev environment</p>
+    <table>
+      <tbody>
+        <tr>
+          <td>🖥</td>
+          <td>
+            <a href="http://localhost:8002">WordPress</a>
+            [<a href="http://localhost:8002/wp-admin/">wp-admin</a>]
+          </td>
+          <td>App for development</td>
+          <td><a href="http://localhost:8002">http://localhost:8002</a></td>
+        </tr>
+        <tr>
+          <td>🚥</td>
+          <td>
+            <a href="http://localhost:8003">WordPress Tests</a>
+            [<a href="http://localhost:8003/wp-admin/">wp-admin</a>]
+          </td>
+          <td>App for E2E tests</td>
+          <td><a href="http://localhost:8003">http://localhost:8003</a></td>
+        </tr>
+        <tr>
+          <td>💾</td>
+          <td>
+            <a
+              href="http://localhost:8081?server=db&mysql=wordpress&username=wordpress"
+              >Adminer</a
+            >
+          </td>
+          <td>DB management</td>
+          <td>
+            <a
+              href="http://localhost:8081?server=db&mysql=wordpress&username=wordpress"
+              >http://localhost:8081</a
+            >
+          </td>
+        </tr>
+        <tr>
+          <td>📪</td>
+          <td><a href="http://localhost:8082">MailHog</a></td>
+          <td>Email catcher</td>
+          <td><a href="http://localhost:8082">http://localhost:8082</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
 </html>

@@ -33,8 +33,10 @@ export function updateSegment(data: AnyFormItem): SetSegmentActionType {
   };
 }
 
-export function updateSegmentFilter(filter: AnyFormItem, filterIndex: number)
-  : SetSegmentFilerActionType {
+export function updateSegmentFilter(
+  filter: AnyFormItem,
+  filterIndex: number,
+): SetSegmentFilerActionType {
   return {
     type: Actions.UPDATE_SEGMENT_FILTER,
     filter,
@@ -68,7 +70,9 @@ export function updateSegmentFilterFromEvent(
   };
 }
 
-export function updateSubscriberCount(data: SubscriberCount): SetSubscriberCountActionType {
+export function updateSubscriberCount(
+  data: SubscriberCount,
+): SetSubscriberCountActionType {
   return {
     type: Actions.UPDATE_SUBSCRIBER_COUNT,
     subscriberCount: data,
@@ -84,10 +88,10 @@ export function* pageLoaded(segmentId?: number): Generator<{
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore -- I don't know how to configure typescript to understand this
-  const { res, success } = (yield ({
+  const { res, success } = yield {
     type: 'LOAD_SEGMENT',
     segmentId,
-  }));
+  };
   if (!success || res.is_plugin_missing) {
     window.location.href = 'admin.php?page=mailpoet-segments#/segments';
   }
@@ -116,10 +120,10 @@ export function* handleSave(segmentId?: number): Generator<{
   yield setErrors([]);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore -- I don't know how to configure typescript to understand this
-  const { error, success } = (yield ({
+  const { error, success } = yield {
     type: 'SAVE_SEGMENT',
     segment,
-  }));
+  };
 
   if (success) {
     window.location.href = 'admin.php?page=mailpoet-segments#/segments';

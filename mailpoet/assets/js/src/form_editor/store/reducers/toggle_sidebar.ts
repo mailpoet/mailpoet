@@ -6,7 +6,10 @@ export const toggleSidebar = (state, action: ToggleAction) => ({
   sidebarOpened: action.toggleTo,
 });
 
-export const toggleInserterSidebar = (state, action: ToggleBlockInserterAction) => {
+export const toggleInserterSidebar = (
+  state,
+  action: ToggleBlockInserterAction,
+) => {
   let inserterPanel: BlockInsertionPoint;
   if (!action.value) {
     inserterPanel = null;

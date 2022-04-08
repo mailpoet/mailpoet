@@ -11,10 +11,9 @@ export default function ShareData() {
     <>
       <Label
         title={t('shareDataTitle')}
-        description={(
+        description={
           <>
-            {t('shareDataDescription')}
-            {' '}
+            {t('shareDataDescription')}{' '}
             <a
               className="mailpoet-link"
               href="https://kb.mailpoet.com/article/130-sharing-your-data-with-us"
@@ -25,7 +24,7 @@ export default function ShareData() {
               {t('readMore')}
             </a>
           </>
-        )}
+        }
         htmlFor=""
       />
       <Inputs>
@@ -39,9 +38,7 @@ export default function ShareData() {
           }}
           automationId="analytics-yes"
         />
-        <label htmlFor="share-data-enabled">
-          {t('yes')}
-        </label>
+        <label htmlFor="share-data-enabled">{t('yes')}</label>
         <span className="mailpoet-gap" />
         <Radio
           id="share-data-disabled"
@@ -50,9 +47,7 @@ export default function ShareData() {
           onCheck={setEnabled}
           automationId="analytics-no"
         />
-        <label htmlFor="share-data-disabled">
-          {t('no')}
-        </label>
+        <label htmlFor="share-data-disabled">{t('no')}</label>
       </Inputs>
     </>
   );

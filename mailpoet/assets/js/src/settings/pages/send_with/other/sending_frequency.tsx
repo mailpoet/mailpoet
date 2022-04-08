@@ -22,25 +22,46 @@ type Props = {
   recommendedEmails: number;
   recommendedInterval: number;
 };
-export default function SendingFrequency({ recommendedEmails, recommendedInterval }: Props) {
+export default function SendingFrequency({
+  recommendedEmails,
+  recommendedInterval,
+}: Props) {
   const [frequency, setFrequency] = useSetting('mailpoet_sending_frequency');
-  const [frequencyEmails, setFrequencyEmails] = useSetting('mta', 'frequency', 'emails');
-  const [frequencyInterval, setFrequencyInterval] = useSetting('mta', 'frequency', 'interval');
+  const [frequencyEmails, setFrequencyEmails] = useSetting(
+    'mta',
+    'frequency',
+    'emails',
+  );
+  const [frequencyInterval, setFrequencyInterval] = useSetting(
+    'mta',
+    'frequency',
+    'interval',
+  );
   useEffect(() => {
     if (frequency === 'auto') {
       setFrequencyEmails(`${recommendedEmails}`);
       setFrequencyInterval(`${recommendedInterval}`);
     }
-  }, [frequency, recommendedEmails, recommendedInterval, setFrequencyEmails, setFrequencyInterval]);
+  }, [
+    frequency,
+    recommendedEmails,
+    recommendedInterval,
+    setFrequencyEmails,
+    setFrequencyInterval,
+  ]);
 
   const dailyEmails = Math.floor(
-    (MINUTES_PER_DAY * parseInt(frequencyEmails, 10)) / parseInt(frequencyInterval, 10),
+    (MINUTES_PER_DAY * parseInt(frequencyEmails, 10)) /
+      parseInt(frequencyInterval, 10),
   );
   const emailsPerSecond = Math.floor((dailyEmails / SECONDS_PER_DAY) * 10) / 10;
 
   return (
     <>
-      <Label title={t('sendingFrequency')} htmlFor="mailpoet_sending_frequency" />
+      <Label
+        title={t('sendingFrequency')}
+        htmlFor="mailpoet_sending_frequency"
+      />
       <Inputs>
         <div className="mailpoet-settings-inputs-row">
           <Select
@@ -87,26 +108,35 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
         )}
         {frequency === 'auto' && (
           <div className="mailpoet-settings-inputs-row">
-            {t('xEmails').replace('%1$s', frequencyEmails)}
-            {' '}
+            {t('xEmails').replace('%1$s', frequencyEmails)}{' '}
             {formatInterval(frequencyInterval)}
             {'. '}
           </div>
         )}
         <div className="mailpoet-settings-inputs-row">
           {ReactStringReplace(
-            t('thatsXEmailsPerDay').replace('%1$s', dailyEmails.toLocaleString()),
+            t('thatsXEmailsPerDay').replace(
+              '%1$s',
+              dailyEmails.toLocaleString(),
+            ),
             /<strong>(.*?)<\/strong>/g,
-            (match, i) => <strong key={i}>{match}</strong>,
+            (match, i) => (
+              <strong key={i}>{match}</strong>
+            ),
           )}
         </div>
         {emailsPerSecond > 1 && (
           <div className="mailpoet-settings-inputs-row">
             <span className="mailpoet_emails_per_second_warning">
               {ReactStringReplace(
-                t('thatsXEmailsPerSecond').replace('%1$s', emailsPerSecond.toLocaleString()),
+                t('thatsXEmailsPerSecond').replace(
+                  '%1$s',
+                  emailsPerSecond.toLocaleString(),
+                ),
                 /<strong>(.*?)<\/strong>/g,
-                (match, i) => <strong key={i}>{match}</strong>,
+                (match, i) => (
+                  <strong key={i}>{match}</strong>
+                ),
               )}
             </span>
           </div>
@@ -114,9 +144,14 @@ export default function SendingFrequency({ recommendedEmails, recommendedInterva
         {frequency === 'manual' && (
           <div className="mailpoet-settings-inputs-row">
             {ReactStringReplace(
-              t('frequencyWarning').replace('%1$s', emailsPerSecond.toLocaleString()),
+              t('frequencyWarning').replace(
+                '%1$s',
+                emailsPerSecond.toLocaleString(),
+              ),
               /<strong>(.*?)<\/strong>/g,
-              (match, i) => <strong key={i}>{match}</strong>,
+              (match, i) => (
+                <strong key={i}>{match}</strong>
+              ),
             )}
           </div>
         )}

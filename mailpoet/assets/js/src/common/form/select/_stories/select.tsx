@@ -18,10 +18,7 @@ export function NativeSelect() {
           <option value="3">Opt 3</option>
         </Select>
         <div className="mailpoet-gap" />
-        <Select
-          isMinWidth
-          iconStart={icon}
-        >
+        <Select isMinWidth iconStart={icon}>
           <option value="1">Opt 1</option>
           <option value="2">Opt 2</option>
           <option value="3">Opt 3</option>
@@ -36,10 +33,7 @@ export function NativeSelect() {
           <option value="3">Option 3</option>
         </Select>
         <div className="mailpoet-gap" />
-        <Select
-          dimension="small"
-          iconStart={icon}
-        >
+        <Select dimension="small" iconStart={icon}>
           <option value="1">Option 1</option>
           <option value="2">Option 2</option>
           <option value="3">Option 3</option>
@@ -73,10 +67,7 @@ export function NativeSelect() {
           <option value="3">Option 3</option>
         </Select>
         <div className="mailpoet-gap" />
-        <Select
-          isFullWidth
-          iconStart={icon}
-        >
+        <Select isFullWidth iconStart={icon}>
           <option value="1">Option 1</option>
           <option value="2">Option 2</option>
           <option value="3">Option 3</option>

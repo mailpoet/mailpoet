@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 class ListingColumn extends Component {
   handleSort = () => {
     const sortBy = this.props.column.name;
-    const sortOrder = (this.props.column.sorted === 'asc') ? 'desc' : 'asc';
+    const sortOrder = this.props.column.sorted === 'asc' ? 'desc' : 'asc';
     this.props.onSort(sortBy, sortOrder);
   };
 
@@ -15,8 +15,8 @@ class ListingColumn extends Component {
       { 'column-primary': this.props.column.is_primary },
       { sortable: this.props.column.sortable },
       this.props.column.sorted,
-      { sorted: (this.props.sort_by === this.props.column.name) },
-      this.props.column.className
+      { sorted: this.props.sort_by === this.props.column.name },
+      this.props.column.className,
     );
     let label;
 
@@ -27,14 +27,16 @@ class ListingColumn extends Component {
           role="button"
           tabIndex={0}
           onKeyDown={(event) => {
-            if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+            if (
+              ['keydown', 'keypress'].includes(event.type) &&
+              ['Enter', ' '].includes(event.key)
             ) {
               event.preventDefault();
               this.handleSort();
             }
           }}
         >
-          <span>{ this.props.column.label }</span>
+          <span>{this.props.column.label}</span>
           <span className="mailpoet-listing-sorting-arrow" />
         </a>
       );
@@ -63,10 +65,7 @@ ListingColumn.propTypes = {
     is_primary: PropTypes.bool,
     sortable: PropTypes.bool,
     label: PropTypes.string,
-    width: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-    ]),
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     className: PropTypes.string,
   }).isRequired,
   sort_by: PropTypes.string,

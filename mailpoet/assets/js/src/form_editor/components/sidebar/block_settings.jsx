@@ -1,6 +1,4 @@
-import {
-  Panel,
-} from '@wordpress/components';
+import { Panel } from '@wordpress/components';
 import { BlockInspector } from '@wordpress/block-editor';
 
 export default function BlockSettings() {

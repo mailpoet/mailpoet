@@ -41,19 +41,19 @@ const columns = [
 ];
 
 const messages = {
-  onNoItemsFound: (group, search) => MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
+  onNoItemsFound: (group, search) =>
+    MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
   onTrash: (response) => {
     const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterTrashed')
-      );
+      message = MailPoet.I18n.t('oneNewsletterTrashed');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersTrashed')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleNewslettersTrashed').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -62,13 +62,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterDeleted')
-      );
+      message = MailPoet.I18n.t('oneNewsletterDeleted');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersDeleted')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleNewslettersDeleted').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -77,13 +76,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterRestored')
-      );
+      message = MailPoet.I18n.t('oneNewsletterRestored');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersRestored')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleNewslettersRestored').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -102,7 +100,11 @@ const newsletterActions = addStatsCTAAction([
     name: 'view',
     link: function link(newsletter) {
       return (
-        <a href={newsletter.preview_url} target="_blank" rel="noopener noreferrer">
+        <a
+          href={newsletter.preview_url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {MailPoet.I18n.t('preview')}
         </a>
       );
@@ -118,7 +120,7 @@ const renderItem = (newsletter, actions, meta) => {
   const rowClasses = classNames(
     'manage-column',
     'column-primary',
-    'has-row-actions'
+    'has-row-actions',
   );
 
   return (
@@ -130,28 +132,40 @@ const renderItem = (newsletter, actions, meta) => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            { newsletter.queue.newsletter_rendered_subject || newsletter.subject }
+            {newsletter.queue.newsletter_rendered_subject || newsletter.subject}
           </a>
         </strong>
-        { actions }
+        {actions}
       </td>
-      <td className="column mailpoet-listing-status-column" data-colname={MailPoet.I18n.t('status')}>
+      <td
+        className="column mailpoet-listing-status-column"
+        data-colname={MailPoet.I18n.t('status')}
+      >
         <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />
       </td>
-      <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('lists')}>
+      <td
+        className="column mailpoet-hide-on-mobile"
+        data-colname={MailPoet.I18n.t('lists')}
+      >
         <Tags segments={newsletter.segments} dimension="large" />
       </td>
-      { (mailpoetTrackingEnabled === true) ? (
-        <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('statistics')}>
+      {mailpoetTrackingEnabled === true ? (
+        <td
+          className="column mailpoet-listing-stats-column"
+          data-colname={MailPoet.I18n.t('statistics')}
+        >
           <Statistics newsletter={newsletter} currentTime={meta.current_time} />
         </td>
-      ) : null }
-      <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('sentOn')}>
-        { (newsletter.sent_at) ? (
+      ) : null}
+      <td
+        className="column-date mailpoet-hide-on-mobile"
+        data-colname={MailPoet.I18n.t('sentOn')}
+      >
+        {newsletter.sent_at ? (
           <>
-            { MailPoet.Date.short(newsletter.sent_at) }
+            {MailPoet.Date.short(newsletter.sent_at)}
             <br />
-            { MailPoet.Date.time(newsletter.sent_at) }
+            {MailPoet.Date.time(newsletter.sent_at)}
           </>
         ) : null}
       </td>

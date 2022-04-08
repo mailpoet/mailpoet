@@ -1,8 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Button, TextControl,
-  ToggleControl,
-} from '@wordpress/components';
+import { Button, TextControl, ToggleControl } from '@wordpress/components';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 import { reduce, isEmpty, isEqualWith } from 'lodash';
@@ -23,33 +20,43 @@ function CustomFieldSettings({
 }) {
   const [localLabel, setLocalLabel] = useState(label);
   const [localMandatory, setLocalMandatory] = useState(mandatory);
-  const [localValues, setLocalValues] = useState(JSON.parse(JSON.stringify(values)));
+  const [localValues, setLocalValues] = useState(
+    JSON.parse(JSON.stringify(values)),
+  );
 
   const update = (value) => {
-    setLocalValues(localValues.map((valueInSelection) => {
-      if (value.id !== valueInSelection.id) {
-        return valueInSelection;
-      }
-      return value;
-    }));
-  };
-
-  const remove = (valueId) => {
     setLocalValues(
-      localValues.filter((value) => valueId !== value.id)
+      localValues.map((valueInSelection) => {
+        if (value.id !== valueInSelection.id) {
+          return valueInSelection;
+        }
+        return value;
+      }),
     );
   };
 
-  const localData = useMemo(() => ({
-    label: localLabel,
-    mandatory: localMandatory,
-    values: localValues,
-    isValid: reduce(localValues, (acc, value) => !isEmpty(value.name) && acc, true),
-  }), [localLabel, localMandatory, localValues]);
+  const remove = (valueId) => {
+    setLocalValues(localValues.filter((value) => valueId !== value.id));
+  };
 
-  const hasUnsavedChanges = localMandatory !== mandatory
-    || !isEqualWith(values, localValues)
-    || localLabel !== label;
+  const localData = useMemo(
+    () => ({
+      label: localLabel,
+      mandatory: localMandatory,
+      values: localValues,
+      isValid: reduce(
+        localValues,
+        (acc, value) => !isEmpty(value.name) && acc,
+        true,
+      ),
+    }),
+    [localLabel, localMandatory, localValues],
+  );
+
+  const hasUnsavedChanges =
+    localMandatory !== mandatory ||
+    !isEqualWith(values, localValues) ||
+    localLabel !== label;
 
   useEffect(() => {
     if (onChange) {
@@ -58,7 +65,10 @@ function CustomFieldSettings({
   }, [localData, onChange, hasUnsavedChanges]);
 
   return (
-    <div className="custom-field-settings" data-automation-id="custom_field_settings">
+    <div
+      className="custom-field-settings"
+      data-automation-id="custom_field_settings"
+    >
       <TextControl
         label={MailPoet.I18n.t('label')}
         value={localLabel}
@@ -79,13 +89,15 @@ function CustomFieldSettings({
       />
       <Button
         isLink
-        onClick={() => setLocalValues([
-          ...localValues,
-          {
-            id: `${Math.random() * 1000}-${Date.now()}`,
-            name: `Option ${localValues.length + 1}`,
-          },
-        ])}
+        onClick={() =>
+          setLocalValues([
+            ...localValues,
+            {
+              id: `${Math.random() * 1000}-${Date.now()}`,
+              name: `Option ${localValues.length + 1}`,
+            },
+          ])
+        }
         className="button-on-top"
         data-automation-id="custom_field_values_add_item"
       >
@@ -95,11 +107,13 @@ function CustomFieldSettings({
       {onSave ? (
         <Button
           isPrimary
-          onClick={() => onSave({
-            mandatory: localMandatory,
-            values: localValues,
-            label: localLabel,
-          })}
+          onClick={() =>
+            onSave({
+              mandatory: localMandatory,
+              values: localValues,
+              label: localLabel,
+            })
+          }
           isBusy={isSaving}
           disabled={isSaving || !hasUnsavedChanges}
           className="button-on-top"
@@ -121,10 +135,12 @@ function CustomFieldSettings({
 CustomFieldSettings.propTypes = {
   label: PropTypes.string,
   mandatory: PropTypes.bool,
-  values: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
-  })),
+  values: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+    }),
+  ),
   onSave: PropTypes.func,
   isSaving: PropTypes.bool,
   isDeleting: PropTypes.bool,

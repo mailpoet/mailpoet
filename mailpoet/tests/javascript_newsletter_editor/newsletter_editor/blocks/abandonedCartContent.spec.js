@@ -14,10 +14,8 @@ var CommunicationComponent = Communication;
 describe('Abandoned Cart Content', function () {
   Backbone.Radio = {
     Requests: {
-      request: function () {
-      },
-      reply: function () {
-      },
+      request: function () {},
+      reply: function () {},
     },
   };
   describe('model', function () {
@@ -34,9 +32,11 @@ describe('Abandoned Cart Content', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
-      EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
+      EditorApplication.getBlockTypeModel = sinon
+        .stub()
+        .returns(Backbone.SuperModel);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-      model = new (AbandonedCartContentBlock.AbandonedCartContentBlockModel)();
+      model = new AbandonedCartContentBlock.AbandonedCartContentBlockModel();
       sandbox = sinon.createSandbox();
     });
 
@@ -82,7 +82,9 @@ describe('Abandoned Cart Content', function () {
     });
 
     it('has image position', function () {
-      expect(model.get('featuredImagePosition')).to.match(/^(centered|left|right|alternate|none)$/);
+      expect(model.get('featuredImagePosition')).to.match(
+        /^(centered|left|right|alternate|none)$/,
+      );
     });
 
     it('has an option to display price', function () {
@@ -154,7 +156,8 @@ describe('Abandoned Cart Content', function () {
           },
         },
       });
-      innerModel = new (AbandonedCartContentBlock.AbandonedCartContentBlockModel)();
+      innerModel =
+        new AbandonedCartContentBlock.AbandonedCartContentBlockModel();
 
       expect(innerModel.get('amount')).to.equal('12');
       expect(innerModel.get('contentType')).to.equal('product');
@@ -170,14 +173,28 @@ describe('Abandoned Cart Content', function () {
       expect(innerModel.get('readMoreText')).to.equal('Go Shopping text');
       expect(innerModel.get('readMoreButton.text')).to.equal('Go Shopping');
       expect(innerModel.get('readMoreButton.url')).to.equal('[productLink]');
-      expect(innerModel.get('readMoreButton.styles.block.backgroundColor')).to.equal('#123456');
-      expect(innerModel.get('readMoreButton.styles.block.borderColor')).to.equal('#234567');
-      expect(innerModel.get('readMoreButton.styles.link.fontColor')).to.equal('#345678');
-      expect(innerModel.get('readMoreButton.styles.link.fontFamily')).to.equal('Tahoma');
-      expect(innerModel.get('readMoreButton.styles.link.fontSize')).to.equal('37px');
+      expect(
+        innerModel.get('readMoreButton.styles.block.backgroundColor'),
+      ).to.equal('#123456');
+      expect(
+        innerModel.get('readMoreButton.styles.block.borderColor'),
+      ).to.equal('#234567');
+      expect(innerModel.get('readMoreButton.styles.link.fontColor')).to.equal(
+        '#345678',
+      );
+      expect(innerModel.get('readMoreButton.styles.link.fontFamily')).to.equal(
+        'Tahoma',
+      );
+      expect(innerModel.get('readMoreButton.styles.link.fontSize')).to.equal(
+        '37px',
+      );
       expect(innerModel.get('showDivider')).to.equal(true);
-      expect(innerModel.get('divider.src')).to.equal('http://example.org/someConfigDividerImage.png');
-      expect(innerModel.get('divider.styles.block.backgroundColor')).to.equal('#456789');
+      expect(innerModel.get('divider.src')).to.equal(
+        'http://example.org/someConfigDividerImage.png',
+      );
+      expect(innerModel.get('divider.styles.block.backgroundColor')).to.equal(
+        '#456789',
+      );
       expect(innerModel.get('divider.styles.block.padding')).to.equal('38px');
     });
 
@@ -185,7 +202,9 @@ describe('Abandoned Cart Content', function () {
       var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
       model.trigger('change');
       expect(stub.callCount).to.equal(1);
-      expect(stub.getCall(0).args[0]).to.equal('blockDefaults.abandonedCartContent');
+      expect(stub.getCall(0).args[0]).to.equal(
+        'blockDefaults.abandonedCartContent',
+      );
       expect(stub.getCall(0).args[1]).to.deep.equal(model.toJSON());
     });
   });
@@ -197,9 +216,13 @@ describe('Abandoned Cart Content', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
-      EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
-      model = new (AbandonedCartContentBlock.AbandonedCartContentBlockModel)();
-      view = new (AbandonedCartContentBlock.AbandonedCartContentBlockView)({ model: model });
+      EditorApplication.getBlockTypeModel = sinon
+        .stub()
+        .returns(Backbone.Model);
+      model = new AbandonedCartContentBlock.AbandonedCartContentBlockModel();
+      view = new AbandonedCartContentBlock.AbandonedCartContentBlockView({
+        model: model,
+      });
 
       // Disable auto-opening of settings view
       view.off('showSettings');
@@ -211,7 +234,9 @@ describe('Abandoned Cart Content', function () {
 
     it('renders', function () {
       expect(view.render).to.not.throw();
-      expect(view.$('.mailpoet_abandoned_cart_content_container')).to.have.length(1);
+      expect(
+        view.$('.mailpoet_abandoned_cart_content_container'),
+      ).to.have.length(1);
     });
   });
 
@@ -224,12 +249,14 @@ describe('Abandoned Cart Content', function () {
       global.stubConfig(EditorApplication, {
         blockDefaults: {},
       });
-      EditorApplication.getBlockTypeModel = sinon.stub()
+      EditorApplication.getBlockTypeModel = sinon
+        .stub()
         .returns(ContainerBlock.ContainerBlockModel);
-      model = new (AbandonedCartContentBlock.AbandonedCartContentBlockModel)();
-      view = new (AbandonedCartContentBlock.AbandonedCartContentBlockSettingsView)({
-        model: model,
-      });
+      model = new AbandonedCartContentBlock.AbandonedCartContentBlockModel();
+      view =
+        new AbandonedCartContentBlock.AbandonedCartContentBlockSettingsView({
+          model: model,
+        });
     });
 
     it('renders', function () {
@@ -242,49 +269,73 @@ describe('Abandoned Cart Content', function () {
     describe('once rendered', function () {
       it('changes the model if post status changes', function () {
         var newValue = 'pending';
-        view.$('.mailpoet_products_post_status').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_post_status')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('postStatus')).to.equal(newValue);
       });
 
       it('changes the model if display type changes', function () {
         var newValue = 'full';
-        view.$('.mailpoet_products_display_type').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_display_type')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('displayType')).to.equal(newValue);
       });
 
       it('changes the model if title format changes', function () {
         var newValue = 'h3';
-        view.$('.mailpoet_products_title_format').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_title_format')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('titleFormat')).to.equal(newValue);
       });
 
       it('changes the model if title alignment changes', function () {
         var newValue = 'right';
-        view.$('.mailpoet_products_title_alignment').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_title_alignment')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('titleAlignment')).to.equal(newValue);
       });
 
       it('changes the model if title link changes', function () {
         var newValue = true;
-        view.$('.mailpoet_products_title_as_links').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_title_as_links')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('titleIsLink')).to.equal(newValue);
       });
 
       it('changes the model if image alignment changes', function () {
         var newValue = false;
-        view.$('.mailpoet_products_image_full_width').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_image_full_width')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('imageFullWidth')).to.equal(newValue);
       });
 
       it('changes the model if image position changes', function () {
         var newValue = 'aboveTitle';
-        view.$('.mailpoet_products_featured_image_position').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_featured_image_position')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('featuredImagePosition')).to.equal(newValue);
       });
 
       it('changes the model if price position changes', function () {
         var newValue = 'below';
-        view.$('.mailpoet_products_price_position').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_price_position')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('pricePosition')).to.equal(newValue);
       });
 
@@ -292,24 +343,38 @@ describe('Abandoned Cart Content', function () {
         var innerModel;
         var innerView;
         beforeEach(function () {
-          innerModel = new (AbandonedCartContentBlock.AbandonedCartContentBlockModel)();
+          innerModel =
+            new AbandonedCartContentBlock.AbandonedCartContentBlockModel();
           innerModel.request = sinon.stub().returns({ $el: {} });
-          innerView = new (AbandonedCartContentBlock.AbandonedCartContentBlockSettingsView)({
-            model: innerModel,
-          });
+          innerView =
+            new AbandonedCartContentBlock.AbandonedCartContentBlockSettingsView(
+              {
+                model: innerModel,
+              },
+            );
           innerView.render();
-          innerView.$('.mailpoet_products_display_type').val('titleOnly').trigger('change');
+          innerView
+            .$('.mailpoet_products_display_type')
+            .val('titleOnly')
+            .trigger('change');
         });
 
         it('hides "title position" option', function () {
-          expect(innerView.$('.mailpoet_products_title_position')).to.have.$class('mailpoet_hidden');
-          expect(innerView.$('.mailpoet_products_title_position_separator')).to.have.$class('mailpoet_hidden');
+          expect(
+            innerView.$('.mailpoet_products_title_position'),
+          ).to.have.$class('mailpoet_hidden');
+          expect(
+            innerView.$('.mailpoet_products_title_position_separator'),
+          ).to.have.$class('mailpoet_hidden');
         });
       });
 
       it('changes the model if show divider changes', function () {
         var newValue = true;
-        view.$('.mailpoet_products_show_divider').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_products_show_divider')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('showDivider')).to.equal(newValue);
       });
     });

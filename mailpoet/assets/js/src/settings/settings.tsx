@@ -29,25 +29,53 @@ export default function Settings() {
       <TopBar />
       {isSaving && <Loading />}
       <Notices />
-      <RoutedTabs activeKey="basics" onSwitch={(tabKey: string) => trackTabSwitched(tabKey)}>
-        <Tab key="basics" title={t('basicsTab')} automationId="basic_settings_tab">
+      <RoutedTabs
+        activeKey="basics"
+        onSwitch={(tabKey: string) => trackTabSwitched(tabKey)}
+      >
+        <Tab
+          key="basics"
+          title={t('basicsTab')}
+          automationId="basic_settings_tab"
+        >
           <Basics />
         </Tab>
-        <Tab key="signup" title={t('signupConfirmationTab')} automationId="signup_settings_tab">
+        <Tab
+          key="signup"
+          title={t('signupConfirmationTab')}
+          automationId="signup_settings_tab"
+        >
           <SignupConfirmation />
         </Tab>
-        <Tab key="mta" route="mta/:subPage?" title={t('sendWithTab')} automationId="send_with_settings_tab">
+        <Tab
+          key="mta"
+          route="mta/:subPage?"
+          title={t('sendWithTab')}
+          automationId="send_with_settings_tab"
+        >
           <SendWith />
         </Tab>
         {hasWooCommerce && (
-          <Tab key="woocommerce" title={t('wooCommerceTab')} automationId="woocommerce_settings_tab">
+          <Tab
+            key="woocommerce"
+            title={t('wooCommerceTab')}
+            automationId="woocommerce_settings_tab"
+          >
             <WooCommerce />
           </Tab>
         )}
-        <Tab key="advanced" title={t('advancedTab')} automationId="settings-advanced-tab">
+        <Tab
+          key="advanced"
+          title={t('advancedTab')}
+          automationId="settings-advanced-tab"
+        >
           <Advanced />
         </Tab>
-        <Tab key="premium" title={t('keyActivationTab')} automationId="activation_settings_tab">
+        <Tab
+          key="premium"
+          title={t('keyActivationTab')}
+          automationId="activation_settings_tab"
+        >
           <KeyActivation />
         </Tab>
       </RoutedTabs>

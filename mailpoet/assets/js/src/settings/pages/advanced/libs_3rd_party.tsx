@@ -11,10 +11,9 @@ export function Libs3rdParty() {
     <>
       <Label
         title={t('libs3rdPartyTitle')}
-        description={(
+        description={
           <>
-            {t('libs3rdPartyDescription')}
-            {' '}
+            {t('libs3rdPartyDescription')}{' '}
             <a
               className="mailpoet-link"
               href="https://kb.mailpoet.com/article/338-what-3rd-party-libraries-we-use"
@@ -25,7 +24,7 @@ export function Libs3rdParty() {
               {t('readMore')}
             </a>
           </>
-        )}
+        }
         htmlFor=""
       />
       <Inputs>
@@ -35,9 +34,7 @@ export function Libs3rdParty() {
           checked={enabled === '1'}
           onCheck={setEnabled}
         />
-        <label htmlFor="libs-3rd-party-enabled">
-          {t('yes')}
-        </label>
+        <label htmlFor="libs-3rd-party-enabled">{t('yes')}</label>
         <span className="mailpoet-gap" />
         <Radio
           id="libs-3rd-party-disabled"
@@ -48,9 +45,7 @@ export function Libs3rdParty() {
             setAnalyticsEnabled('');
           }}
         />
-        <label htmlFor="libs-3rd-party-disabled">
-          {t('no')}
-        </label>
+        <label htmlFor="libs-3rd-party-disabled">{t('no')}</label>
       </Inputs>
     </>
   );

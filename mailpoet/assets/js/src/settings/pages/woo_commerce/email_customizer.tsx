@@ -5,7 +5,10 @@ import { Label, Inputs } from 'settings/components';
 import { useSetting, useAction } from 'settings/store/hooks';
 
 export default function EmailCustomizer() {
-  const [enabled, setEnabled] = useSetting('woocommerce', 'use_mailpoet_editor');
+  const [enabled, setEnabled] = useSetting(
+    'woocommerce',
+    'use_mailpoet_editor',
+  );
   const [newsletterId] = useSetting('woocommerce', 'transactional_email_id');
   const openWoocommerceCustomizer = useAction('openWoocommerceCustomizer');
   const openEditor = () => openWoocommerceCustomizer(newsletterId);

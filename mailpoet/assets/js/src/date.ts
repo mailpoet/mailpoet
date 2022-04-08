@@ -5,21 +5,21 @@ export interface DateOptions {
   offset?: number;
 }
 
-export const MailPoetDate : {
-  version:number,
-  options: object,
+export const MailPoetDate: {
+  version: number;
+  options: object;
   defaults: {
-    offset: number,
-    format: string,
-  },
-  init: (opts?: DateOptions) => typeof MailPoetDate,
-  format: (date: MomentInput, opts?: DateOptions) => string,
-  toDate: (date: MomentInput, opts?: DateOptions) => Date,
-  short: (date: MomentInput) => string,
-  full: (date: MomentInput) => string,
-  time: (date: MomentInput) => string,
-  convertFormat: (format: string) => string,
-  isInFuture: (dateString: string, currentTime: MomentInput) => boolean
+    offset: number;
+    format: string;
+  };
+  init: (opts?: DateOptions) => typeof MailPoetDate;
+  format: (date: MomentInput, opts?: DateOptions) => string;
+  toDate: (date: MomentInput, opts?: DateOptions) => Date;
+  short: (date: MomentInput) => string;
+  full: (date: MomentInput) => string;
+  time: (date: MomentInput) => string;
+  convertFormat: (format: string) => string;
+  isInFuture: (dateString: string, currentTime: MomentInput) => boolean;
 } = {
   version: 0.1,
   options: {},
@@ -32,17 +32,18 @@ export const MailPoetDate : {
 
     // set UTC offset
     if (
-      options.offset === undefined
-      && window.mailpoet_date_offset !== undefined
+      options.offset === undefined &&
+      window.mailpoet_date_offset !== undefined
     ) {
-      options.offset = typeof window.mailpoet_date_offset === 'string'
-        ? parseFloat(window.mailpoet_date_offset)
-        : window.mailpoet_date_offset;
+      options.offset =
+        typeof window.mailpoet_date_offset === 'string'
+          ? parseFloat(window.mailpoet_date_offset)
+          : window.mailpoet_date_offset;
     }
     // set dateTime format
     if (
-      options.format === undefined
-      && window.mailpoet_datetime_format !== undefined
+      options.format === undefined &&
+      window.mailpoet_datetime_format !== undefined
     ) {
       options.format = window.mailpoet_datetime_format;
     }
@@ -178,5 +179,6 @@ export const MailPoetDate : {
 
     return convertedFormat.join('');
   },
-  isInFuture: (dateString: string, currentTime: MomentInput): boolean => Moment(dateString).isAfter(currentTime, 's'),
+  isInFuture: (dateString: string, currentTime: MomentInput): boolean =>
+    Moment(dateString).isAfter(currentTime, 's'),
 } as const;

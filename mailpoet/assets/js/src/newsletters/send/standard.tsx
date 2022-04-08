@@ -22,9 +22,9 @@ type StandardSchedulingProps = {
     target: {
       name: string;
       value: string;
-    },
+    };
   }) => void;
-  field: Field
+  field: Field;
 };
 
 class StandardScheduling extends Component<StandardSchedulingProps> {
@@ -77,9 +77,7 @@ class StandardScheduling extends Component<StandardSchedulingProps> {
       schedulingOptions = (
         <>
           <span className="mailpoet-form-schedule-time">
-            {MailPoet.I18n.t('websiteTimeIs')}
-            {' '}
-            {currentTime}
+            {MailPoet.I18n.t('websiteTimeIs')} {currentTime}
           </span>
           <div className="mailpoet-gap" />
           <div id="mailpoet_scheduling">
@@ -130,7 +128,9 @@ let fields: Array<Field> = [
         type: 'text',
         validation: {
           'data-parsley-required': true,
-          'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError'),
+          'data-parsley-required-message': MailPoet.I18n.t(
+            'emptySubjectLineError',
+          ),
           maxLength: 250,
         },
       },
@@ -139,7 +139,9 @@ let fields: Array<Field> = [
         customLabel: MailPoet.I18n.t('preheaderLabel'),
         className: 'mailpoet-form-field-preheader',
         placeholder: MailPoet.I18n.t('preheaderLine'),
-        tooltip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t('preheaderLineTip2')}`,
+        tooltip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t(
+          'preheaderLineTip2',
+        )}`,
         type: 'textarea',
         validation: {
           maxLength: 250,
@@ -166,13 +168,19 @@ let fields: Array<Field> = [
     getCount: function getCount(segment: { subscribers: string }): string {
       return parseInt(segment.subscribers, 10).toLocaleString();
     },
-    transformChangedValue: function transformChangedValue(segmentIds: string[]): unknown[] {
+    transformChangedValue: function transformChangedValue(
+      segmentIds: string[],
+    ): unknown[] {
       const allSegments = this.getItems() || [];
-      return segmentIds.map((id) => allSegments.find((segment) => segment.id === id));
+      return segmentIds.map((id) =>
+        allSegments.find((segment) => segment.id === id),
+      );
     },
     validation: {
       'data-parsley-required': true,
-      'data-parsley-required-message': MailPoet.I18n.t('noSegmentsSelectedError'),
+      'data-parsley-required-message': MailPoet.I18n.t(
+        'noSegmentsSelectedError',
+      ),
     },
   },
   {
@@ -239,23 +247,28 @@ type SendButtonOptions = {
 
 export default {
   getFields: (): typeof fields => fields,
-  getSendButtonOptions: (newsletter: Partial<NewsLetter> = {}): SendButtonOptions => {
+  getSendButtonOptions: (
+    newsletter: Partial<NewsLetter> = {},
+  ): SendButtonOptions => {
     const currentDateTime = Moment(window.mailpoet_current_date_time);
-    const isScheduled = (
-      typeof newsletter.options === 'object'
-      && newsletter.options?.isScheduled === '1'
-      && MailPoet.Date.isInFuture(newsletter.options?.scheduledAt, currentDateTime)
-    );
+    const isScheduled =
+      typeof newsletter.options === 'object' &&
+      newsletter.options?.isScheduled === '1' &&
+      MailPoet.Date.isInFuture(
+        newsletter.options?.scheduledAt,
+        currentDateTime,
+      );
 
     const options: SendButtonOptions = {
-      value: (isScheduled
+      value: isScheduled
         ? MailPoet.I18n.t('schedule')
-        : MailPoet.I18n.t('send')
-      ),
+        : MailPoet.I18n.t('send'),
     };
 
-    if (newsletter.status === NewsletterStatus.Sent
-      || newsletter.status === NewsletterStatus.Sending) {
+    if (
+      newsletter.status === NewsletterStatus.Sent ||
+      newsletter.status === NewsletterStatus.Sending
+    ) {
       options.disabled = 'disabled';
     }
 

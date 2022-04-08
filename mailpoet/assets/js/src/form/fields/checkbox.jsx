@@ -20,27 +20,21 @@ class FormFieldCheckbox extends Component {
 
     // isChecked will be true only if the value is "1"
     // it will be false in case value is "0" or empty
-    const isChecked = !!(Number(this.props.item[this.props.field.name]));
-    const options = Object.keys(this.props.field.values).map(
-      (value) => (
-        <p key={`checkbox-${value}`}>
-          <Checkbox
-            value="1"
-            checked={isChecked}
-            name={this.props.field.name}
-            onCheck={this.onValueChange}
-          >
-            { this.props.field.values[value] }
-          </Checkbox>
-        </p>
-      )
-    );
+    const isChecked = !!Number(this.props.item[this.props.field.name]);
+    const options = Object.keys(this.props.field.values).map((value) => (
+      <p key={`checkbox-${value}`}>
+        <Checkbox
+          value="1"
+          checked={isChecked}
+          name={this.props.field.name}
+          onCheck={this.onValueChange}
+        >
+          {this.props.field.values[value]}
+        </Checkbox>
+      </p>
+    ));
 
-    return (
-      <div>
-        { options }
-      </div>
-    );
+    return <div>{options}</div>;
   }
 }
 

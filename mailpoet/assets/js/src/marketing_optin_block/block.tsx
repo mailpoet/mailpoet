@@ -6,16 +6,17 @@ import { CheckboxControl } from '@woocommerce/blocks-checkout';
 import { useState, useEffect, RawHTML } from '@wordpress/element';
 import { getSetting } from '@woocommerce/settings';
 
-const { optinEnabled, defaultText, defaultStatus } = getSetting('mailpoet_data');
+const { optinEnabled, defaultText, defaultStatus } =
+  getSetting('mailpoet_data');
 
 function Block({
   text,
   checkoutExtensionData,
 }: {
-  text: string,
+  text: string;
   checkoutExtensionData: {
-    setExtensionData: (namespace: string, key: string, value: unknown) => void
-  }
+    setExtensionData: (namespace: string, key: string, value: unknown) => void;
+  };
 }): JSX.Element {
   const [checked, setChecked] = useState(defaultStatus);
   const { setExtensionData } = checkoutExtensionData || {};
@@ -31,7 +32,7 @@ function Block({
 
   return (
     <CheckboxControl checked={checked} onChange={setChecked}>
-      <RawHTML>{ text || defaultText }</RawHTML>
+      <RawHTML>{text || defaultText}</RawHTML>
     </CheckboxControl>
   );
 }

@@ -6,9 +6,21 @@ import { Label, Inputs, SegmentsSelect } from 'settings/components';
 import { useSetting, useAction } from 'settings/store/hooks';
 
 export default function CheckoutOptin() {
-  const [enabled, setEnabled] = useSetting('woocommerce', 'optin_on_checkout', 'enabled');
-  const [segments, setSegments] = useSetting('woocommerce', 'optin_on_checkout', 'segments');
-  const [message, setMessage] = useSetting('woocommerce', 'optin_on_checkout', 'message');
+  const [enabled, setEnabled] = useSetting(
+    'woocommerce',
+    'optin_on_checkout',
+    'enabled',
+  );
+  const [segments, setSegments] = useSetting(
+    'woocommerce',
+    'optin_on_checkout',
+    'segments',
+  );
+  const [message, setMessage] = useSetting(
+    'woocommerce',
+    'optin_on_checkout',
+    'message',
+  );
   const setErrorFlag = useAction('setErrorFlag');
   const emptyMessage = message.trim() === '';
   useEffect(() => {

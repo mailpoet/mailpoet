@@ -39,7 +39,12 @@ function SegmentForm(props) {
 
       <Heading level={1} className="mailpoet-title">
         <span>{MailPoet.I18n.t('segment')}</span>
-        <Link className="mailpoet-button button button-secondary button-small" to="/">{MailPoet.I18n.t('backToList')}</Link>
+        <Link
+          className="mailpoet-button button button-secondary button-small"
+          to="/"
+        >
+          {MailPoet.I18n.t('backToList')}
+        </Link>
       </Heading>
 
       <SubscribersLimitNotice />

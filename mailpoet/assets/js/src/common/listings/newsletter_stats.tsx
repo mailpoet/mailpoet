@@ -32,8 +32,7 @@ function NewsletterStats({
         %
         <br />
         <span className="mailpoet-listing-stats-percentages-opens">
-          {openedDisplay}
-          %
+          {openedDisplay}%
         </span>
       </div>
       {!hideBadges && (
@@ -53,12 +52,10 @@ function NewsletterStats({
     const revenuesTooltipId = `revenues-${newsletterId || '0'}`;
     revenueStats = (
       <div>
-        <Tag data-tip data-for={revenuesTooltipId}>{revenues}</Tag>
-        <Tooltip
-          place="top"
-          multiline
-          id={revenuesTooltipId}
-        >
+        <Tag data-tip data-for={revenuesTooltipId}>
+          {revenues}
+        </Tag>
+        <Tooltip place="top" multiline id={revenuesTooltipId}>
           <div className="mailpoet-listing-stats-tooltip-content">
             {MailPoet.I18n.t('revenueStatsTooltipShort')}
           </div>
@@ -68,7 +65,10 @@ function NewsletterStats({
   }
 
   if (wrapContentInLink) {
-    clickedAndOpenedStats = wrapContentInLink(clickedAndOpenedStats, 'opened-and-clicked');
+    clickedAndOpenedStats = wrapContentInLink(
+      clickedAndOpenedStats,
+      'opened-and-clicked',
+    );
     revenueStats = wrapContentInLink(revenueStats, 'revenue');
   }
 

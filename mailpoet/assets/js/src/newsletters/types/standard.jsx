@@ -15,16 +15,20 @@ class NewsletterStandard extends Component {
       data: {
         type: 'standard',
       },
-    }).done((response) => {
-      this.showTemplateSelection(response.data.id);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.context.notices.error(
-          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-          { scroll: true }
-        );
-      }
-    });
+    })
+      .done((response) => {
+        this.showTemplateSelection(response.data.id);
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          this.context.notices.error(
+            response.errors.map((error) => (
+              <p key={error.message}>{error.message}</p>
+            )),
+            { scroll: true },
+          );
+        }
+      });
   }
 
   showTemplateSelection = (newsletterId) => {
@@ -34,7 +38,10 @@ class NewsletterStandard extends Component {
   render() {
     return (
       <div>
-        <ListingHeadingStepsRoute emailType="standard" automationId="standard_newsletter_creation_heading" />
+        <ListingHeadingStepsRoute
+          emailType="standard"
+          automationId="standard_newsletter_creation_heading"
+        />
       </div>
     );
   }

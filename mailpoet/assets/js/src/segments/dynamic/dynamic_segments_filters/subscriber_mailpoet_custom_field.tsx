@@ -33,8 +33,11 @@ const validationMap = {
   [CustomFieldsTypes.DATE]: validateDate,
 };
 
-export function validateMailPoetCustomField(formItems: WordpressRoleFormItem): boolean {
-  const validator: (WordpressRoleFormItem) => boolean = validationMap[formItems.custom_field_type];
+export function validateMailPoetCustomField(
+  formItems: WordpressRoleFormItem,
+): boolean {
+  const validator: (WordpressRoleFormItem) => boolean =
+    validationMap[formItems.custom_field_type];
   if (!validator) return false;
 
   return validator(formItems);
@@ -53,9 +56,10 @@ type Props = {
   filterIndex: number;
 };
 
-export function MailPoetCustomFields({ filterIndex }:Props):JSX.Element {
+export function MailPoetCustomFields({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
@@ -85,36 +89,35 @@ export function MailPoetCustomFields({ filterIndex }:Props):JSX.Element {
           placeholder={MailPoet.I18n.t('selectCustomFieldPlaceholder')}
           options={options}
           automationId="select-custom-field"
-          value={
-            find(
-              (option) => {
-                if (!segment.custom_field_id) return undefined;
-                return segment.custom_field_id === option.value;
-              },
-              options,
-            )
-          }
+          value={find((option) => {
+            if (!segment.custom_field_id) return undefined;
+            return segment.custom_field_id === option.value;
+          }, options)}
           onChange={(option: SelectOption): void => {
-            const customField = find({ id: Number(option.value) }, customFieldsList);
+            const customField = find(
+              { id: Number(option.value) },
+              customFieldsList,
+            );
             if (!customField) return;
-            updateSegmentFilter({
-              custom_field_id: option.value,
-              custom_field_type: customField.type,
-              operator: undefined,
-              value: undefined,
-            }, filterIndex);
+            updateSegmentFilter(
+              {
+                custom_field_id: option.value,
+                custom_field_type: customField.type,
+                operator: undefined,
+                value: undefined,
+              },
+              filterIndex,
+            );
           }}
         />
       </div>
       <div>
-        {
-          TypeComponent && (
-            <TypeComponent
-              customField={selectedCustomField}
-              filterIndex={filterIndex}
-            />
-          )
-        }
+        {TypeComponent && (
+          <TypeComponent
+            customField={selectedCustomField}
+            filterIndex={filterIndex}
+          />
+        )}
       </div>
     </>
   );

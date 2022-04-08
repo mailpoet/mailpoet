@@ -23,9 +23,7 @@ export function EngagementTracking(): ReactElement {
             onCheck={setTrackingLevel}
             automationId="tracking-basic-radio"
           />
-          <label htmlFor="tracking-basic">
-            {t('engagementTrackingBasic')}
-          </label>
+          <label htmlFor="tracking-basic">{t('engagementTrackingBasic')}</label>
         </div>
         <div className="mailpoet-settings-inputs-row">
           <Radio
@@ -47,9 +45,7 @@ export function EngagementTracking(): ReactElement {
             onCheck={setTrackingLevel}
             automationId="tracking-full-radio"
           />
-          <label htmlFor="tracking-full">
-            {t('engagementTrackingFull')}
-          </label>
+          <label htmlFor="tracking-full">{t('engagementTrackingFull')}</label>
         </div>
       </Inputs>
     </>

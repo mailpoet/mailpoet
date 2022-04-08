@@ -7,7 +7,8 @@ import CustomCssPanel from './custom_css_panel';
 
 export default function FormSettings(): JSX.Element {
   const dispatchResult = useDispatch('mailpoet-form-editor');
-  const toggleSidebarPanel:(t1: string, ...ts: []) => void = dispatchResult.toggleSidebarPanel;
+  const toggleSidebarPanel: (t1: string, ...ts: []) => void =
+    dispatchResult.toggleSidebarPanel;
   const openedPanels = useSelect(
     (select) => select('mailpoet-form-editor').getSidebarOpenedPanels(),
     [],

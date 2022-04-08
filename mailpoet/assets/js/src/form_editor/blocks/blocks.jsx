@@ -23,24 +23,40 @@ export const registerCustomFieldBlock = (customField) => {
 
   if (!namesMap[customField.type]) return null;
 
-  const blockName = formatCustomFieldBlockName(namesMap[customField.type].name, customField);
+  const blockName = formatCustomFieldBlockName(
+    namesMap[customField.type].name,
+    customField,
+  );
   registerBlockType(blockName, namesMap[customField.type].settings);
   return blockName;
 };
 
 export const initBlocks = () => {
-  const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
+  const customFields = select(
+    'mailpoet-form-editor',
+  ).getAllAvailableCustomFields();
 
   // Configure Custom HTML block to be available in inserter only for admins
-  html.settings.supports.inserter = select('mailpoet-form-editor').isUserAdministrator();
+  html.settings.supports.inserter = select(
+    'mailpoet-form-editor',
+  ).isUserAdministrator();
 
   const categories = [
     { slug: 'obligatory', title: '' }, // Blocks from this category are not in block insert popup
   ];
 
-  categories.push({ slug: 'design', title: MailPoet.I18n.t('layoutBlocksCategory') });
-  categories.push({ slug: 'fields', title: MailPoet.I18n.t('fieldsBlocksCategory') });
-  categories.push({ slug: 'custom-fields', title: MailPoet.I18n.t('customFieldsBlocksCategory') });
+  categories.push({
+    slug: 'design',
+    title: MailPoet.I18n.t('layoutBlocksCategory'),
+  });
+  categories.push({
+    slug: 'fields',
+    title: MailPoet.I18n.t('fieldsBlocksCategory'),
+  });
+  categories.push({
+    slug: 'custom-fields',
+    title: MailPoet.I18n.t('customFieldsBlocksCategory'),
+  });
   setCategories(categories);
 
   registerBlockType(divider.name, divider.settings);

@@ -14,32 +14,42 @@ var ImageWidgetView;
 
 Module.ImageBlockModel = base.BlockModel.extend({
   defaults: function () {
-    return this._getDefaults({
-      type: 'image',
-      link: '',
-      src: '',
-      alt: 'An image of...',
-      fullWidth: true, // true | false
-      width: '64px',
-      height: '64px',
-      styles: {
-        block: {
-          textAlign: 'center',
+    return this._getDefaults(
+      {
+        type: 'image',
+        link: '',
+        src: '',
+        alt: 'An image of...',
+        fullWidth: true, // true | false
+        width: '64px',
+        height: '64px',
+        styles: {
+          block: {
+            textAlign: 'center',
+          },
         },
       },
-    }, App.getConfig().get('blockDefaults.image'));
+      App.getConfig().get('blockDefaults.image'),
+    );
   },
   _updateDefaults: function () {},
 });
 
 Module.ImageBlockView = base.BlockView.extend({
   className: 'mailpoet_block mailpoet_image_block mailpoet_droppable_block',
-  getTemplate: function () { return window.templates.imageBlock; },
-  onDragSubstituteBy: function () { return Module.ImageWidgetView; },
+  getTemplate: function () {
+    return window.templates.imageBlock;
+  },
+  onDragSubstituteBy: function () {
+    return Module.ImageWidgetView;
+  },
   templateContext: function () {
-    return _.extend({
-      imageMissingSrc: App.getConfig().get('urls.imageMissing'),
-    }, base.BlockView.prototype.templateContext.apply(this));
+    return _.extend(
+      {
+        imageMissingSrc: App.getConfig().get('urls.imageMissing'),
+      },
+      base.BlockView.prototype.templateContext.apply(this),
+    );
   },
   behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
     ResizableBehavior: {
@@ -81,7 +91,9 @@ Module.ImageBlockView = base.BlockView.extend({
 });
 
 Module.ImageBlockToolsView = base.BlockToolsView.extend({
-  getSettingsView: function () { return Module.ImageBlockSettingsView; },
+  getSettingsView: function () {
+    return Module.ImageBlockSettingsView;
+  },
 });
 
 Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
@@ -91,28 +103,57 @@ Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
     },
   }),
   onRender: function () {
-    MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-full-width'), {
-      tooltipId: 'tooltip-editor-full-width',
-      tooltip: MailPoet.I18n.t('helpTooltipDesignerFullWidth'),
-      place: 'top',
-    });
-    MailPoet.helpTooltip.show(document.getElementById('tooltip-designer-ideal-width'), {
-      tooltipId: 'tooltip-editor-ideal-width',
-      tooltip: MailPoet.I18n.t('helpTooltipDesignerIdealWidth'),
-      place: 'bottom',
-    });
+    MailPoet.helpTooltip.show(
+      document.getElementById('tooltip-designer-full-width'),
+      {
+        tooltipId: 'tooltip-editor-full-width',
+        tooltip: MailPoet.I18n.t('helpTooltipDesignerFullWidth'),
+        place: 'top',
+      },
+    );
+    MailPoet.helpTooltip.show(
+      document.getElementById('tooltip-designer-ideal-width'),
+      {
+        tooltipId: 'tooltip-editor-ideal-width',
+        tooltip: MailPoet.I18n.t('helpTooltipDesignerIdealWidth'),
+        place: 'bottom',
+      },
+    );
   },
-  getTemplate: function () { return window.templates.imageBlockSettings; },
+  getTemplate: function () {
+    return window.templates.imageBlockSettings;
+  },
   events: function () {
     return {
       'input .mailpoet_field_image_link': _.partial(this.changeField, 'link'),
-      'input .mailpoet_field_image_alt_text': _.partial(this.changeField, 'alt'),
-      'change .mailpoet_field_image_full_width': _.partial(this.changeBoolCheckboxField, 'fullWidth'),
-      'change .mailpoet_field_image_alignment': _.partial(this.changeField, 'styles.block.textAlign'),
+      'input .mailpoet_field_image_alt_text': _.partial(
+        this.changeField,
+        'alt',
+      ),
+      'change .mailpoet_field_image_full_width': _.partial(
+        this.changeBoolCheckboxField,
+        'fullWidth',
+      ),
+      'change .mailpoet_field_image_alignment': _.partial(
+        this.changeField,
+        'styles.block.textAlign',
+      ),
       'click .mailpoet_done_editing': 'close',
-      'input .mailpoet_field_image_width': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width_input', _.partial(this.changePixelField, 'width').bind(this)),
-      'change .mailpoet_field_image_width': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width_input', _.partial(this.changePixelField, 'width').bind(this)),
-      'input .mailpoet_field_image_width_input': _.partial(this.updateValueAndCall, '.mailpoet_field_image_width', _.partial(this.changePixelField, 'width').bind(this)),
+      'input .mailpoet_field_image_width': _.partial(
+        this.updateValueAndCall,
+        '.mailpoet_field_image_width_input',
+        _.partial(this.changePixelField, 'width').bind(this),
+      ),
+      'change .mailpoet_field_image_width': _.partial(
+        this.updateValueAndCall,
+        '.mailpoet_field_image_width_input',
+        _.partial(this.changePixelField, 'width').bind(this),
+      ),
+      'input .mailpoet_field_image_width_input': _.partial(
+        this.updateValueAndCall,
+        '.mailpoet_field_image_width',
+        _.partial(this.changePixelField, 'width').bind(this),
+      ),
     };
   },
   modelEvents: function () {
@@ -148,7 +189,9 @@ Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
 
 ImageWidgetView = base.WidgetView.extend({
   id: 'automation_editor_block_image',
-  getTemplate: function () { return window.templates.imageInsertion; },
+  getTemplate: function () {
+    return window.templates.imageInsertion;
+  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,
@@ -156,7 +199,9 @@ ImageWidgetView = base.WidgetView.extend({
         return new Module.ImageBlockModel();
       },
       onDrop: function (options) {
-        options.droppedView.triggerMethod('showSettings', { showImageManager: true });
+        options.droppedView.triggerMethod('showSettings', {
+          showImageManager: true,
+        });
       },
     },
   },

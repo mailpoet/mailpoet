@@ -33,9 +33,12 @@ Module.HistoryView = Marionette.View.extend({
     Mousetrap.bind(['ctrl+z', 'command+z'], function keyboardUndo() {
       that.undo();
     });
-    Mousetrap.bind(['shift+ctrl+z', 'shift+command+z'], function keyboardRedo() {
-      that.redo();
-    });
+    Mousetrap.bind(
+      ['shift+ctrl+z', 'shift+command+z'],
+      function keyboardRedo() {
+        that.redo();
+      },
+    );
   },
 
   onAttach: function onRender() {
@@ -50,7 +53,9 @@ Module.HistoryView = Marionette.View.extend({
       return;
     }
     stringifiedBody = JSON.stringify(json.body);
-    if (this.model.statesStack[this.model.currentStateIndex] === stringifiedBody) {
+    if (
+      this.model.statesStack[this.model.currentStateIndex] === stringifiedBody
+    ) {
       return;
     }
     if (this.model.currentStateIndex > 0) {
@@ -60,13 +65,13 @@ Module.HistoryView = Marionette.View.extend({
     this.model.currentStateIndex = 0;
     this.model.statesStack.length = Math.min(
       this.model.statesStack.length,
-      this.MAX_HISTORY_STATES
+      this.MAX_HISTORY_STATES,
     );
     this.updateArrowsUI();
   },
 
   canUndo: function canUndo() {
-    return this.model.currentStateIndex < (this.model.statesStack.length - 1);
+    return this.model.currentStateIndex < this.model.statesStack.length - 1;
   },
 
   canRedo: function canRedo() {
@@ -79,7 +84,7 @@ Module.HistoryView = Marionette.View.extend({
     }
     this.model.currentStateIndex = Math.min(
       this.model.statesStack.length - 1,
-      this.model.currentStateIndex + 1
+      this.model.currentStateIndex + 1,
     );
     this.updateArrowsUI();
     this.applyState(this.model.currentStateIndex);
@@ -89,16 +94,31 @@ Module.HistoryView = Marionette.View.extend({
     if (!this.canRedo()) {
       return;
     }
-    this.model.currentStateIndex = Math.max(0, this.model.currentStateIndex - 1);
+    this.model.currentStateIndex = Math.max(
+      0,
+      this.model.currentStateIndex - 1,
+    );
     this.updateArrowsUI();
     this.applyState(this.model.currentStateIndex);
   },
 
   updateArrowsUI: function updateArrowsUI() {
-    this.elements.undo.classList.toggle('mailpoet_history_arrow_inactive', !this.canUndo());
-    this.elements.redo.classList.toggle('mailpoet_history_arrow_inactive', !this.canRedo());
-    this.elements.undo.setAttribute('title', MailPoet.I18n.t(this.canUndo() ? 'canUndo' : 'canNotUndo'));
-    this.elements.redo.setAttribute('title', MailPoet.I18n.t(this.canRedo() ? 'canRedo' : 'canNotRedo'));
+    this.elements.undo.classList.toggle(
+      'mailpoet_history_arrow_inactive',
+      !this.canUndo(),
+    );
+    this.elements.redo.classList.toggle(
+      'mailpoet_history_arrow_inactive',
+      !this.canRedo(),
+    );
+    this.elements.undo.setAttribute(
+      'title',
+      MailPoet.I18n.t(this.canUndo() ? 'canUndo' : 'canNotUndo'),
+    );
+    this.elements.redo.setAttribute(
+      'title',
+      MailPoet.I18n.t(this.canRedo() ? 'canRedo' : 'canNotRedo'),
+    );
   },
 
   applyState: function applyState(index) {

@@ -3,7 +3,9 @@ export function ContentWrapperFix() {
     <>
       <style
         /* eslint-disable-next-line react/no-danger */
-        dangerouslySetInnerHTML={{ __html: '#wpbody-content { padding-top: 73px; }' }}
+        dangerouslySetInnerHTML={{
+          __html: '#wpbody-content { padding-top: 73px; }',
+        }}
       />
 
       <style

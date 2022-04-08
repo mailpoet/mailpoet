@@ -10,9 +10,11 @@ function Fail(props) {
   const [isClosing, setIsClosing] = useState(false);
   return (
     <div>
-      <Heading level={1}>{MailPoet.I18n.t('congratulationsSendFailHeader')}</Heading>
+      <Heading level={1}>
+        {MailPoet.I18n.t('congratulationsSendFailHeader')}
+      </Heading>
       <Heading level={3}>
-        { ReactStringReplace(
+        {ReactStringReplace(
           MailPoet.I18n.t('congratulationsSendFailExplain'),
           /\[link\](.*?)\[\/link\]/g,
           (match, i) => (
@@ -23,19 +25,26 @@ function Fail(props) {
               href="https://kb.mailpoet.com/article/231-sending-does-not-work"
               data-beacon-article="5a0257ac2c7d3a272c0d7ad6"
             >
-              { match }
+              {match}
             </a>
-          )
+          ),
         )}
       </Heading>
       <div className="mailpoet-gap-large" />
       <div className="mailpoet-gap-large" />
-      <img src={window.mailpoet_congratulations_error_image} alt="" width="500" />
+      <img
+        src={window.mailpoet_congratulations_error_image}
+        alt=""
+        width="500"
+      />
       <div className="mailpoet-gap-large" />
       <Button
         dimension="small"
         type="button"
-        onClick={() => { props.failClicked(); setIsClosing(true); }}
+        onClick={() => {
+          props.failClicked();
+          setIsClosing(true);
+        }}
         withSpinner={isClosing}
       >
         {MailPoet.I18n.t('close')}

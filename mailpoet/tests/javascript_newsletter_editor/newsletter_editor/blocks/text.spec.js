@@ -11,7 +11,7 @@ describe('Text', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
-      model = new (TextBlock.TextBlockModel)();
+      model = new TextBlock.TextBlockModel();
       sandbox = sinon.createSandbox();
     });
 
@@ -35,7 +35,7 @@ describe('Text', function () {
           },
         },
       });
-      model = new (TextBlock.TextBlockModel)();
+      model = new TextBlock.TextBlockModel();
 
       expect(model.get('text')).to.equal('some custom config text');
     });
@@ -51,8 +51,8 @@ describe('Text', function () {
     var model;
     var view;
     global.stubConfig(EditorApplication);
-    model = new (TextBlock.TextBlockModel)();
-    view = new (TextBlock.TextBlockView)({ model: model });
+    model = new TextBlock.TextBlockModel();
+    view = new TextBlock.TextBlockView({ model: model });
 
     it('renders', function () {
       expect(view.render).to.not.throw();
@@ -60,11 +60,11 @@ describe('Text', function () {
     });
 
     describe('once rendered', function () {
-      model = new (TextBlock.TextBlockModel)();
+      model = new TextBlock.TextBlockModel();
 
       beforeEach(function () {
         global.stubConfig(EditorApplication);
-        view = new (TextBlock.TextBlockView)({ model: model });
+        view = new TextBlock.TextBlockView({ model: model });
         view.render();
       });
 

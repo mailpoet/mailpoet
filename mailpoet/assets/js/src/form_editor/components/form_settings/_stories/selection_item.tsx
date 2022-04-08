@@ -5,14 +5,10 @@ export default {
   title: 'FormEditor/Selection Item',
 };
 
-export function CloseIconSettings() : JSX.Element {
+export function CloseIconSettings(): JSX.Element {
   return (
     <div className="close-button-selection-item-list">
-      <SelectionItem
-        label="kjk1"
-        active={false}
-        onClick={action('on change')}
-      >
+      <SelectionItem label="kjk1" active={false} onClick={action('on change')}>
         <div>Inactive</div>
       </SelectionItem>
       <SelectionItem
@@ -23,11 +19,7 @@ export function CloseIconSettings() : JSX.Element {
       >
         <div>Cannot Activate</div>
       </SelectionItem>
-      <SelectionItem
-        label="kjk2"
-        active
-        onClick={action('on change')}
-      >
+      <SelectionItem label="kjk2" active onClick={action('on change')}>
         <div>Active</div>
       </SelectionItem>
       <SelectionItem

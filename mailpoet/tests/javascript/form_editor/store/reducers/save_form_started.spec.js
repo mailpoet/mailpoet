@@ -76,7 +76,9 @@ describe('Save Form Started Reducer', () => {
     const finalState = reducer(state, action);
     expect(finalState.sidebar.activeTab).to.equal('form');
     expect(finalState.sidebar.openedPanels).to.contain('basic-settings');
-    const listsNotice = finalState.notices.find((notice) => (notice.id === 'missing-lists'));
+    const listsNotice = finalState.notices.find(
+      (notice) => notice.id === 'missing-lists',
+    );
     expect(listsNotice).to.not.equal(null);
     expect(listsNotice.status).to.equal('error');
     expect(listsNotice.isDismissible).to.equal(true);
@@ -91,7 +93,9 @@ describe('Save Form Started Reducer', () => {
       formErrors: ['missing-email-input'],
     };
     const finalState = reducer(state, action);
-    const listsNotice = finalState.notices.find((notice) => (notice.id === 'missing-block'));
+    const listsNotice = finalState.notices.find(
+      (notice) => notice.id === 'missing-block',
+    );
     expect(listsNotice).to.not.equal(null);
     expect(listsNotice.status).to.equal('error');
     expect(listsNotice.isDismissible).to.equal(true);

@@ -3,7 +3,11 @@ import { select } from '@wordpress/data';
 import MailPoet from 'mailpoet';
 
 import { STORE_NAME } from 'settings/store/store_name';
-import { KeyActivationState, MssStatus, PremiumStatus } from 'settings/store/types';
+import {
+  KeyActivationState,
+  MssStatus,
+  PremiumStatus,
+} from 'settings/store/types';
 import { updateKeyActivationState } from './key_activation';
 import { setSettings, setSetting } from './settings';
 
@@ -52,12 +56,9 @@ export function* verifyPremiumKey(key: string) {
     data: { key },
   };
   if (!success) {
-    MailPoet.trackEvent(
-      'User has failed to validate a Premium key',
-      {
-        'Premium plugin is active': !!MailPoet.premiumVersion,
-      },
-    );
+    MailPoet.trackEvent('User has failed to validate a Premium key', {
+      'Premium plugin is active': !!MailPoet.premiumVersion,
+    });
     return updateKeyActivationState({
       premiumStatus: PremiumStatus.INVALID,
       premiumMessage: error.join(' ') || null,

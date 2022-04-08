@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import {
   Button,
-  SelectControl, TextControl,
+  SelectControl,
+  TextControl,
   ToggleControl,
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
@@ -24,15 +25,19 @@ function CustomFieldSettings({
   const [localMandatory, setLocalMandatory] = useState(mandatory);
   const [localValidate, setLocalValidate] = useState(validate);
 
-  const localData = useMemo(() => ({
-    label: localLabel,
-    mandatory: localMandatory,
-    validate: localValidate,
-  }), [localLabel, localMandatory, localValidate]);
+  const localData = useMemo(
+    () => ({
+      label: localLabel,
+      mandatory: localMandatory,
+      validate: localValidate,
+    }),
+    [localLabel, localMandatory, localValidate],
+  );
 
-  const hasUnsavedChanges = localMandatory !== mandatory
-    || localValidate !== validate
-    || localLabel !== label;
+  const hasUnsavedChanges =
+    localMandatory !== mandatory ||
+    localValidate !== validate ||
+    localLabel !== label;
 
   useEffect(() => {
     if (onChange) {
@@ -88,13 +93,13 @@ function CustomFieldSettings({
         >
           {MailPoet.I18n.t('customFieldSaveCTA')}
         </Button>
-      ) : null }
+      ) : null}
       {onCustomFieldDelete ? (
         <CustomFieldDelete
           isBusy={isSaving || isDeleting}
           onDelete={onCustomFieldDelete}
         />
-      ) : null }
+      ) : null}
     </>
   );
 }

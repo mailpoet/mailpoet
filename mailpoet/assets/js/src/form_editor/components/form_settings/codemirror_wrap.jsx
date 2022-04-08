@@ -7,9 +7,12 @@ function CodemirrorWrap({ options, value, onChange }) {
   const textArea = useRef(null);
   const editor = useRef(null);
 
-  const changeEvent = useCallback((doc) => {
-    onChange(doc.getValue());
-  }, [onChange]);
+  const changeEvent = useCallback(
+    (doc) => {
+      onChange(doc.getValue());
+    },
+    [onChange],
+  );
 
   useEffect(() => {
     editor.current = codemirror.fromTextArea(textArea.current, options);

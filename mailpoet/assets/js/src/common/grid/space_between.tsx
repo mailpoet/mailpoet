@@ -14,15 +14,10 @@ export function SpaceBetween({
 }: Props): ReactElement {
   return (
     <div
-      className={
-      classnames(
-        className,
-        'mailpoet-grid-space-between',
-        {
-          [`mailpoet-grid-space-between-vertical-${verticalAlign}`]: verticalAlign,
-        },
-      )
-    }
+      className={classnames(className, 'mailpoet-grid-space-between', {
+        [`mailpoet-grid-space-between-vertical-${verticalAlign}`]:
+          verticalAlign,
+      })}
     >
       {children}
     </div>

@@ -11,7 +11,9 @@ type Props = {
 
 export default function Shortcode({ name, title, description }: Props) {
   const [segments, setSegments] = useState([]);
-  const shortcode = `[${name}${segments.length ? ` segments="${segments.join(',')}"` : ''}]`;
+  const shortcode = `[${name}${
+    segments.length ? ` segments="${segments.join(',')}"` : ''
+  }]`;
   const selectText = (event) => {
     event.target.focus();
     event.target.select();

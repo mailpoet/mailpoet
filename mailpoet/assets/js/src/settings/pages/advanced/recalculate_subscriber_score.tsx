@@ -12,7 +12,9 @@ export function RecalculateSubscriberScore(): JSX.Element {
   const { notices } = useContext<any>(GlobalContext);
   const onClick = async (): Promise<void> => {
     await recalculateSubscribersScore();
-    notices.info(<p>{t('recalculateSubscribersScoreNotice')}</p>, { scroll: true });
+    notices.info(<p>{t('recalculateSubscribersScoreNotice')}</p>, {
+      scroll: true,
+    });
   };
   return (
     <>

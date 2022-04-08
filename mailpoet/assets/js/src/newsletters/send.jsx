@@ -36,28 +36,34 @@ function validateNewsletter(newsletter) {
   if (newsletter && newsletter.body && newsletter.body.content) {
     content = newsletter.body.content;
     body = JSON.stringify(newsletter.body.content);
-    if (!content.blocks || !Array.isArray(content.blocks) || (content.blocks.length === 0)) {
+    if (
+      !content.blocks ||
+      !Array.isArray(content.blocks) ||
+      content.blocks.length === 0
+    ) {
       return MailPoet.I18n.t('newsletterIsEmpty');
     }
   }
 
   if (
-    window.mailpoet_mss_active
-    && (body.indexOf('[link:subscription_unsubscribe_url]') < 0)
-    && (body.indexOf('[link:subscription_unsubscribe]') < 0)
+    window.mailpoet_mss_active &&
+    body.indexOf('[link:subscription_unsubscribe_url]') < 0 &&
+    body.indexOf('[link:subscription_unsubscribe]') < 0
   ) {
     return MailPoet.I18n.t('unsubscribeLinkMissing');
   }
 
-  if (newsletter.type === 're_engagement'
-    && body.indexOf('[link:subscription_re_engage_url]') < 0
+  if (
+    newsletter.type === 're_engagement' &&
+    body.indexOf('[link:subscription_re_engage_url]') < 0
   ) {
     return MailPoet.I18n.t('reEngageLinkMissing');
   }
 
-  if ((newsletter.type === 'notification')
-    && body.indexOf('"type":"automatedLatestContent"') < 0
-    && body.indexOf('"type":"automatedLatestContentLayout"') < 0
+  if (
+    newsletter.type === 'notification' &&
+    body.indexOf('"type":"automatedLatestContent"') < 0 &&
+    body.indexOf('"type":"automatedLatestContentLayout"') < 0
   ) {
     return MailPoet.I18n.t('automatedLatestContentMissing');
   }
@@ -66,7 +72,10 @@ function validateNewsletter(newsletter) {
     return MailPoet.I18n.t('emailAlreadySent');
   }
 
-  if (newsletter.type === 're_engagement' && !MailPoet.trackingConfig.emailTrackingEnabled) {
+  if (
+    newsletter.type === 're_engagement' &&
+    !MailPoet.trackingConfig.emailTrackingEnabled
+  ) {
     return (
       <span style={{ pointerEvents: 'all' }}>
         {ReactStringReplace(
@@ -80,7 +89,7 @@ function validateNewsletter(newsletter) {
             >
               {match}
             </a>
-          )
+          ),
         )}
       </span>
     );
@@ -100,10 +109,9 @@ class NewsletterSend extends Component {
   }
 
   componentDidMount() {
-    this.loadItem(this.props.match.params.id)
-      .always(() => {
-        this.setState({ loading: false });
-      });
+    this.loadItem(this.props.match.params.id).always(() => {
+      this.setState({ loading: false });
+    });
     jQuery('#mailpoet_newsletter').parsley();
   }
 
@@ -127,21 +135,24 @@ class NewsletterSend extends Component {
 
   getSubtype = (newsletter) => {
     switch (newsletter.type) {
-      case 'notification': return NotificationNewsletterFields;
-      case 'welcome': return WelcomeNewsletterFields;
-      case 're_engagement': return ReEngagementNewsletterFields;
+      case 'notification':
+        return NotificationNewsletterFields;
+      case 'welcome':
+        return WelcomeNewsletterFields;
+      case 're_engagement':
+        return ReEngagementNewsletterFields;
       case 'automatic':
         if (automaticEmails[newsletter.options.group]) {
           return AutomaticEmailFields;
         }
-        // fall through
-      default: return StandardNewsletterFields;
+      // fall through
+      default:
+        return StandardNewsletterFields;
     }
   };
 
-  getThumbnailPromise = (url) => (
-    this.state.thumbnailPromise ? this.state.thumbnailPromise : fromUrl(url)
-  );
+  getThumbnailPromise = (url) =>
+    this.state.thumbnailPromise ? this.state.thumbnailPromise : fromUrl(url);
 
   isValid = () => jQuery('#mailpoet_newsletter').parsley().isValid();
 
@@ -159,29 +170,31 @@ class NewsletterSend extends Component {
     let errorMessage = ReactStringReplace(
       MailPoet.I18n.t('newsletterInvalidFromAddress'),
       '%1$s',
-      () => fromAddress
+      () => fromAddress,
     );
     errorMessage = ReactStringReplace(
       errorMessage,
       /\[link\](.*?)\[\/link\]/g,
-      (match) => `<a href="https://account.mailpoet.com/authorization?email=${encodeURIComponent(fromAddress)}" target="_blank" rel="noopener noreferrer">${match}</a>`
+      (match) =>
+        `<a href="https://account.mailpoet.com/authorization?email=${encodeURIComponent(
+          fromAddress,
+        )}" target="_blank" rel="noopener noreferrer">${match}</a>`,
     );
     jQuery('#field_sender_address')
       .parsley()
-      .addError(
-        'invalidFromAddress',
-        { message: errorMessage.join(''), updateClass: true }
-      );
-    MailPoet.trackEvent('Unauthorized email used', { 'Unauthorized email source': 'send' });
+      .addError('invalidFromAddress', {
+        message: errorMessage.join(''),
+        updateClass: true,
+      });
+    MailPoet.trackEvent('Unauthorized email used', {
+      'Unauthorized email source': 'send',
+    });
   };
 
   removeInvalidFromAddressError = () => {
     jQuery('#field_sender_address')
       .parsley()
-      .removeError(
-        'invalidFromAddress',
-        { updateClass: true }
-      );
+      .removeError('invalidFromAddress', { updateClass: true });
   };
 
   loadItem = (id) => {
@@ -194,29 +207,42 @@ class NewsletterSend extends Component {
       data: {
         id,
       },
-    }).done((response) => {
-      const thumbnailPromise = response.data.status === 'draft' ? this.getThumbnailPromise(response.meta.preview_url) : null;
-      const item = response.data;
-      if (!item.ga_campaign) {
-        item.ga_campaign = generateGaTrackingCampaignName(item.id, item.subject);
-      }
-      this.setState({
-        item: response.data,
-        fields: this.getFieldsByNewsletter(response.data),
-        thumbnailPromise,
-        validationError: validateNewsletter(response.data),
+    })
+      .done((response) => {
+        const thumbnailPromise =
+          response.data.status === 'draft'
+            ? this.getThumbnailPromise(response.meta.preview_url)
+            : null;
+        const item = response.data;
+        if (!item.ga_campaign) {
+          item.ga_campaign = generateGaTrackingCampaignName(
+            item.id,
+            item.subject,
+          );
+        }
+        this.setState({
+          item: response.data,
+          fields: this.getFieldsByNewsletter(response.data),
+          thumbnailPromise,
+          validationError: validateNewsletter(response.data),
+        });
+      })
+      .fail(() => {
+        this.setState(
+          {
+            item: {},
+          },
+          () => {
+            this.props.history.push('/new');
+          },
+        );
       });
-    }).fail(() => {
-      this.setState({
-        item: {},
-      }, () => {
-        this.props.history.push('/new');
-      });
-    });
   };
 
   saveTemplate = (response, done) => {
-    const thumbnailPromise = this.getThumbnailPromise(response.meta.preview_url);
+    const thumbnailPromise = this.getThumbnailPromise(
+      response.meta.preview_url,
+    );
     thumbnailPromise
       .then((thumbnailData) => {
         MailPoet.Ajax.post({
@@ -269,9 +295,10 @@ class NewsletterSend extends Component {
         this.showInvalidFromAddressError();
         return MailPoet.Modal.loading(false);
       }
-      return this.saveNewsletter(e).done(() => {
-        this.setState({ loading: true });
-      })
+      return this.saveNewsletter(e)
+        .done(() => {
+          this.setState({ loading: true });
+        })
         .done((response) => {
           switch (response.data.type) {
             case 'notification':
@@ -291,119 +318,141 @@ class NewsletterSend extends Component {
     });
   };
 
-  sendNewsletter = (newsletter) => MailPoet.Ajax.post({
-    api_version: window.mailpoet_api_version,
-    endpoint: 'sendingQueue',
-    action: 'add',
-    data: {
-      newsletter_id: this.state.item.id,
-    },
-  }).done((response) => {
-    // save template in recently sent category
-    this.saveTemplate(newsletter, () => {
-      if (window.mailpoet_show_congratulate_after_first_newsletter) {
+  sendNewsletter = (newsletter) =>
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'sendingQueue',
+      action: 'add',
+      data: {
+        newsletter_id: this.state.item.id,
+      },
+    })
+      .done((response) => {
+        // save template in recently sent category
+        this.saveTemplate(newsletter, () => {
+          if (window.mailpoet_show_congratulate_after_first_newsletter) {
+            MailPoet.Modal.loading(false);
+            this.props.history.push(`/send/congratulate/${this.state.item.id}`);
+            return;
+          }
+          // redirect to listing based on newsletter type
+          this.props.history.push(`/${this.state.item.type || ''}`);
+          if (response.data.status === 'scheduled') {
+            this.context.notices.success(
+              <p>{MailPoet.I18n.t('newsletterHasBeenScheduled')}</p>,
+            );
+            MailPoet.trackEvent('Emails > Newsletter sent', {
+              scheduled: true,
+            });
+          } else {
+            this.context.notices.success(
+              <p>{MailPoet.I18n.t('newsletterBeingSent')}</p>,
+              { id: 'mailpoet_notice_being_sent' },
+            );
+            MailPoet.trackEvent('Emails > Newsletter sent', {
+              scheduled: false,
+            });
+          }
+          MailPoet.Modal.loading(false);
+        });
+      })
+      .fail((err) => {
+        this.showError(err);
+        this.setState({ loading: false });
         MailPoet.Modal.loading(false);
-        this.props.history.push(`/send/congratulate/${this.state.item.id}`);
-        return;
-      }
-      // redirect to listing based on newsletter type
-      this.props.history.push(`/${this.state.item.type || ''}`);
-      if (response.data.status === 'scheduled') {
-        this.context.notices.success(
-          <p>{MailPoet.I18n.t('newsletterHasBeenScheduled')}</p>
-        );
-        MailPoet.trackEvent('Emails > Newsletter sent', {
-          scheduled: true,
-        });
-      } else {
-        this.context.notices.success(
-          <p>{MailPoet.I18n.t('newsletterBeingSent')}</p>,
-          { id: 'mailpoet_notice_being_sent' }
-        );
-        MailPoet.trackEvent('Emails > Newsletter sent', {
-          scheduled: false,
-        });
-      }
-      MailPoet.Modal.loading(false);
-    });
-  }).fail((err) => {
-    this.showError(err);
-    this.setState({ loading: false });
-    MailPoet.Modal.loading(false);
-  });
+      });
 
-  activateNewsletter = (newsletter) => MailPoet.Ajax.post({
-    api_version: window.mailpoet_api_version,
-    endpoint: 'newsletters',
-    action: 'setStatus',
-    data: {
-      id: this.props.match.params.id,
-      status: 'active',
-    },
-  }).done((response) => {
-    // save template in recently sent category
-    this.saveTemplate(newsletter, () => {
-      if (window.mailpoet_show_congratulate_after_first_newsletter) {
+  activateNewsletter = (newsletter) =>
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'newsletters',
+      action: 'setStatus',
+      data: {
+        id: this.props.match.params.id,
+        status: 'active',
+      },
+    })
+      .done((response) => {
+        // save template in recently sent category
+        this.saveTemplate(newsletter, () => {
+          if (window.mailpoet_show_congratulate_after_first_newsletter) {
+            MailPoet.Modal.loading(false);
+            this.props.history.push(`/send/congratulate/${this.state.item.id}`);
+            return;
+          }
+          // redirect to listing based on newsletter type
+          const opts = this.state.item.options;
+          this.props.history.push(
+            this.state.item.type === 'automatic'
+              ? `/${opts.group}`
+              : `/${this.state.item.type || ''}`,
+          );
+          // display success message depending on newsletter type
+          if (
+            this.state.item.type === 'automatic' &&
+            automaticEmails[opts.group]
+          ) {
+            this.context.notices.success(
+              <p>
+                {MailPoet.I18n.t('automaticEmailActivated').replace(
+                  '%1s',
+                  automaticEmails[opts.group].title,
+                )}
+              </p>,
+            );
+          } else if (response.data.type === 'welcome') {
+            this.context.notices.success(
+              <p>{MailPoet.I18n.t('welcomeEmailActivated')}</p>,
+            );
+            MailPoet.trackEvent('Emails > Welcome email activated', {
+              'List type': opts.event,
+              Delay: `${opts.afterTimeNumber} ${opts.afterTimeType}`,
+            });
+          } else if (response.data.type === 'notification') {
+            this.context.notices.success(
+              <p>{MailPoet.I18n.t('postNotificationActivated')}</p>,
+            );
+            MailPoet.trackEvent('Emails > Post notifications activated', {
+              Frequency: opts.intervalType,
+            });
+          }
+          MailPoet.Modal.loading(false);
+        });
+      })
+      .fail((err) => {
+        this.showError(err);
+        this.setState({ loading: false });
         MailPoet.Modal.loading(false);
-        this.props.history.push(`/send/congratulate/${this.state.item.id}`);
-        return;
-      }
-      // redirect to listing based on newsletter type
-      const opts = this.state.item.options;
-      this.props.history.push((this.state.item.type === 'automatic') ? `/${opts.group}` : `/${this.state.item.type || ''}`);
-      // display success message depending on newsletter type
-      if (this.state.item.type === 'automatic' && automaticEmails[opts.group]) {
-        this.context.notices.success(
-          <p>{MailPoet.I18n.t('automaticEmailActivated').replace('%1s', automaticEmails[opts.group].title)}</p>
-        );
-      } else if (response.data.type === 'welcome') {
-        this.context.notices.success(
-          <p>{MailPoet.I18n.t('welcomeEmailActivated')}</p>
-        );
-        MailPoet.trackEvent('Emails > Welcome email activated', {
-          'List type': opts.event,
-          Delay: `${opts.afterTimeNumber} ${opts.afterTimeType}`,
-        });
-      } else if (response.data.type === 'notification') {
-        this.context.notices.success(
-          <p>{MailPoet.I18n.t('postNotificationActivated')}</p>
-        );
-        MailPoet.trackEvent('Emails > Post notifications activated', {
-          Frequency: opts.intervalType,
-        });
-      }
-      MailPoet.Modal.loading(false);
-    });
-  }).fail((err) => {
-    this.showError(err);
-    this.setState({ loading: false });
-    MailPoet.Modal.loading(false);
-  });
+      });
 
   handleResume = (e) => {
     e.preventDefault();
     if (!this.isValid()) {
       jQuery('#mailpoet_newsletter').parsley().validate();
     } else {
-      this.saveNewsletter(e).done(() => {
-        this.setState({ loading: true });
-      }).done(() => {
-        MailPoet.Ajax.post({
-          api_version: window.mailpoet_api_version,
-          endpoint: 'sendingQueue',
-          action: 'resume',
-          data: {
-            newsletter_id: this.state.item.id,
-          },
-        }).done(() => {
-          this.props.history.push(`/${this.state.item.type || ''}`);
-          this.context.notices.success(
-            <p>{MailPoet.I18n.t('newsletterSendingHasBeenResumed')}</p>
-          );
-        }).fail((response) => {
-          this.showError(response);
-        });
-      })
+      this.saveNewsletter(e)
+        .done(() => {
+          this.setState({ loading: true });
+        })
+        .done(() => {
+          MailPoet.Ajax.post({
+            api_version: window.mailpoet_api_version,
+            endpoint: 'sendingQueue',
+            action: 'resume',
+            data: {
+              newsletter_id: this.state.item.id,
+            },
+          })
+            .done(() => {
+              this.props.history.push(`/${this.state.item.type || ''}`);
+              this.context.notices.success(
+                <p>{MailPoet.I18n.t('newsletterSendingHasBeenResumed')}</p>,
+              );
+            })
+            .fail((response) => {
+              this.showError(response);
+            });
+        })
         .fail((err) => {
           this.showError(err);
         })
@@ -417,31 +466,40 @@ class NewsletterSend extends Component {
   handleSave = (e) => {
     e.preventDefault();
 
-    this.saveNewsletter(e).done(() => {
-      this.context.notices.success(
-        <p>{MailPoet.I18n.t('newsletterUpdated')}</p>
-      );
-    }).done(() => {
-      const path = this.state.item.type === 'automatic' ? this.state.item.options.group : this.state.item.type;
-      this.props.history.push(`/${path || ''}`);
-    }).fail((err) => {
-      this.showError(err);
-    });
+    this.saveNewsletter(e)
+      .done(() => {
+        this.context.notices.success(
+          <p>{MailPoet.I18n.t('newsletterUpdated')}</p>,
+        );
+      })
+      .done(() => {
+        const path =
+          this.state.item.type === 'automatic'
+            ? this.state.item.options.group
+            : this.state.item.type;
+        this.props.history.push(`/${path || ''}`);
+      })
+      .fail((err) => {
+        this.showError(err);
+      });
   };
 
   handleRedirectToDesign = (e) => {
     e.preventDefault();
     const redirectTo = e.target.href;
 
-    this.saveNewsletter(e).done(() => {
-      this.context.notices.success(
-        <p>{MailPoet.I18n.t('newsletterUpdated')}</p>
-      );
-    }).done(() => {
-      window.location = redirectTo;
-    }).fail((err) => {
-      this.showError(err);
-    });
+    this.saveNewsletter(e)
+      .done(() => {
+        this.context.notices.success(
+          <p>{MailPoet.I18n.t('newsletterUpdated')}</p>,
+        );
+      })
+      .done(() => {
+        window.location = redirectTo;
+      })
+      .fail((err) => {
+        this.showError(err);
+      });
   };
 
   saveNewsletter = () => {
@@ -451,13 +509,15 @@ class NewsletterSend extends Component {
 
     // Store only properties that can be changed on this page
     const IGNORED_NEWSLETTER_PROPERTIES = [
-      'body', 'created_at', 'deleted_at', 'hash',
-      'status', 'updated_at', 'type',
+      'body',
+      'created_at',
+      'deleted_at',
+      'hash',
+      'status',
+      'updated_at',
+      'type',
     ];
-    const newsletterData = _.omit(
-      data,
-      IGNORED_NEWSLETTER_PROPERTIES
-    );
+    const newsletterData = _.omit(data, IGNORED_NEWSLETTER_PROPERTIES);
 
     return MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -470,8 +530,10 @@ class NewsletterSend extends Component {
   showError = (response) => {
     if (response.errors.length > 0) {
       this.context.notices.error(
-        response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-        { scroll: true }
+        response.errors.map((error) => (
+          <p key={error.message}>{error.message}</p>
+        )),
+        { scroll: true },
       );
     }
   };
@@ -487,7 +549,10 @@ class NewsletterSend extends Component {
       item[name] = value;
 
       if (name === 'subject') {
-        const oldDefaultGaCampaign = generateGaTrackingCampaignName(item.id, oldSubject);
+        const oldDefaultGaCampaign = generateGaTrackingCampaignName(
+          item.id,
+          oldSubject,
+        );
 
         // regenerate GA campaign name only if it has default autogenerated value
         if (oldGaCampaign === oldDefaultGaCampaign) {
@@ -505,9 +570,10 @@ class NewsletterSend extends Component {
   };
 
   render() {
-    const isPaused = this.state.item.status === 'sending'
-      && this.state.item.queue
-      && this.state.item.queue.status === 'paused';
+    const isPaused =
+      this.state.item.status === 'sending' &&
+      this.state.item.queue &&
+      this.state.item.queue.status === 'paused';
     const fields = this.state.fields.map((field) => {
       const newField = field;
       if (field.name === 'segments' || field.name === 'options') {
@@ -518,9 +584,9 @@ class NewsletterSend extends Component {
     const sendButtonOptions = this.getSendButtonOptions();
 
     const sendingDisabled = !!(
-      window.mailpoet_subscribers_limit_reached
-      || window.mailpoet_mss_key_pending_approval
-      || this.state.validationError !== undefined
+      window.mailpoet_subscribers_limit_reached ||
+      window.mailpoet_mss_key_pending_approval ||
+      this.state.validationError !== undefined
     );
 
     let emailType = this.state.item.type;
@@ -531,7 +597,10 @@ class NewsletterSend extends Component {
     return (
       <div className="mailpoet-form-send-email">
         <Background color="#fff" />
-        <ListingHeadingStepsRoute emailType={emailType} automationId="newsletter_send_heading" />
+        <ListingHeadingStepsRoute
+          emailType={emailType}
+          automationId="newsletter_send_heading"
+        />
 
         <Form
           id="mailpoet_newsletter"
@@ -543,74 +612,70 @@ class NewsletterSend extends Component {
           onSubmit={this.handleSave}
         >
           <Grid.CenteredRow className="send-newsletter-buttons">
-            <Button variant="secondary" type="submit" automationId="email-save-draft">
+            <Button
+              variant="secondary"
+              type="submit"
+              automationId="email-save-draft"
+            >
               {MailPoet.I18n.t('saveDraftAndClose')}
             </Button>
-            {
-              isPaused
-                ? (
-                  <Button
-                    type="button"
-                    onClick={this.handleResume}
-                    isDisabled={sendingDisabled}
-                    automationId="email-resume"
-                  >
-                    {MailPoet.I18n.t('resume')}
-                  </Button>
-                )
-                : (
-                  <Button
-                    type="button"
-                    onClick={this.handleSend}
-                    {...sendButtonOptions}
-                    isDisabled={sendingDisabled}
-                    automationId="email-submit"
-                  >
-                    {sendButtonOptions.value || MailPoet.I18n.t('send')}
-                  </Button>
-                )
-            }
-            { this.state.validationError !== undefined && (
+            {isPaused ? (
+              <Button
+                type="button"
+                onClick={this.handleResume}
+                isDisabled={sendingDisabled}
+                automationId="email-resume"
+              >
+                {MailPoet.I18n.t('resume')}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                onClick={this.handleSend}
+                {...sendButtonOptions}
+                isDisabled={sendingDisabled}
+                automationId="email-submit"
+              >
+                {sendButtonOptions.value || MailPoet.I18n.t('send')}
+              </Button>
+            )}
+            {this.state.validationError !== undefined && (
               <HelpTooltip
-                tooltip={(<div>{this.state.validationError}</div>)}
+                tooltip={<div>{this.state.validationError}</div>}
                 tooltipId="helpTooltipSendEmail"
               />
-            ) }
+            )}
           </Grid.CenteredRow>
           <p>
             {MailPoet.I18n.t('orSimply')}
             &nbsp;
             <a
               className="mailpoet-link"
-              href={
-                `?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`
-              }
+              href={`?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`}
               onClick={this.handleRedirectToDesign}
             >
               {MailPoet.I18n.t('goBackToDesign')}
             </a>
             .
           </p>
-          { window.mailpoet_mss_key_pending_approval && (
+          {window.mailpoet_mss_key_pending_approval && (
             <div className="mailpoet_error">
-              {
-                ReactStringReplace(
-                  MailPoet.I18n.t('pendingKeyApprovalNotice'),
-                  /\[link\](.*?)\[\/link\]/g,
-                  (match) => (
-                    <a
-                      key="pendingKeyApprovalNoticeLink"
-                      href="https://account.mailpoet.com/authorization"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {match}
-                    </a>
-                  )
-                )
-              }
+              {ReactStringReplace(
+                MailPoet.I18n.t('pendingKeyApprovalNotice'),
+                /\[link\](.*?)\[\/link\]/g,
+                (match) => (
+                  <a
+                    key="pendingKeyApprovalNoticeLink"
+                    href="https://account.mailpoet.com/authorization"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {match}
+                  </a>
+                ),
+              )}
             </div>
-          ) }
+          )}
         </Form>
       </div>
     );

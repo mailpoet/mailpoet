@@ -24,8 +24,9 @@ class EventsConditions extends Component {
   static getEventOptionsFirstValue(eventOptions) {
     if (!eventOptions) return null;
 
-    return (_.isArray(eventOptions.values) && eventOptions.values[0].id)
-      ? eventOptions.values[0].id : null;
+    return _.isArray(eventOptions.values) && eventOptions.values[0].id
+      ? eventOptions.values[0].id
+      : null;
   }
 
   constructor(props) {
@@ -35,17 +36,21 @@ class EventsConditions extends Component {
     this.handleNextStep = this.handleNextStep.bind(this);
     this.email = email;
     this.emailEvents = this.email.events;
-    this.segments = _.filter(window.mailpoet_segments, (segment) => segment.deleted_at === null);
+    this.segments = _.filter(
+      window.mailpoet_segments,
+      (segment) => segment.deleted_at === null,
+    );
 
     const currentEvent = this.getEvent(name);
     const currentEventOptions = this.constructor.getEventOptions(currentEvent);
-    const currentEventOptionValue = this.constructor.getEventOptionsFirstValue(currentEventOptions);
+    const currentEventOptionValue =
+      this.constructor.getEventOptionsFirstValue(currentEventOptions);
 
     this.state = {
       event: currentEvent,
       eventSlug: currentEvent.slug,
       eventOptionValue: currentEventOptionValue,
-      segment: (currentEvent.sendToLists) ? this.getFirstSegment() : null,
+      segment: currentEvent.sendToLists ? this.getFirstSegment() : null,
       afterTimeType: currentEvent.defaultAfterTimeType || defaultAfterTimeType,
       afterTimeNumber: null,
     };
@@ -59,18 +64,24 @@ class EventsConditions extends Component {
       newState.event = this.getEvent(newState.eventSlug);
 
       // keep the existing segment (if set) or set it to the first segment in the list
-      newState.segment = (newState.event.sendToLists)
-        ? segment || this.getFirstSegment() : null;
+      newState.segment = newState.event.sendToLists
+        ? segment || this.getFirstSegment()
+        : null;
 
       // if the new event doesn't have options, reset the currently selected option value
       const eventOptions = this.constructor.getEventOptions(newState.event);
-      newState.eventOptionValue = (eventOptions)
-        ? this.constructor.getEventOptionsFirstValue(eventOptions) : null;
+      newState.eventOptionValue = eventOptions
+        ? this.constructor.getEventOptionsFirstValue(eventOptions)
+        : null;
     }
 
     if (newState.afterTimeType && newState.afterTimeType === 'immediate') {
       newState.afterTimeNumber = null;
-    } else if (newState.afterTimeType && !newState.afterTimeNumber && !afterTimeNumber) {
+    } else if (
+      newState.afterTimeType &&
+      !newState.afterTimeNumber &&
+      !afterTimeNumber
+    ) {
       newState.afterTimeNumber = defaultAfterTimeNumber;
     }
 
@@ -90,7 +101,12 @@ class EventsConditions extends Component {
     }
     const { history } = this.props;
     const {
-      eventSlug, afterTimeType, afterTimeNumber, event, segment, eventOptionValue,
+      eventSlug,
+      afterTimeType,
+      afterTimeNumber,
+      event,
+      segment,
+      eventOptionValue,
     } = this.state;
     const options = {
       group: this.email.slug,
@@ -99,7 +115,7 @@ class EventsConditions extends Component {
     };
 
     if (afterTimeNumber) options.afterTimeNumber = afterTimeNumber;
-    options.sendTo = (event.sendToLists) ? 'segment' : 'user';
+    options.sendTo = event.sendToLists ? 'segment' : 'user';
     if (segment) options.segment = segment;
     if (eventOptionValue) {
       options.meta = JSON.stringify({ option: eventOptionValue });
@@ -114,21 +130,25 @@ class EventsConditions extends Component {
         subject: MailPoet.I18n.t('draftNewsletterTitle'),
         options,
       },
-    }).done((response) => {
-      MailPoet.trackEvent('Emails > New Automatic Email Created', {
-        'Event type': options.event,
-        'Schedule type': options.afterTimeType,
-        'Schedule value': options.afterTimeNumber,
+    })
+      .done((response) => {
+        MailPoet.trackEvent('Emails > New Automatic Email Created', {
+          'Event type': options.event,
+          'Schedule type': options.afterTimeType,
+          'Schedule value': options.afterTimeNumber,
+        });
+        history.push(`/template/${response.data.id}`);
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          this.context.notices.error(
+            response.errors.map((error) => (
+              <p key={error.message}>{error.message}</p>
+            )),
+            { scroll: true },
+          );
+        }
       });
-      history.push(`/template/${response.data.id}`);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.context.notices.error(
-          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-          { scroll: true }
-        );
-      }
-    });
   }
 
   getEvent(eventSlug) {
@@ -136,7 +156,9 @@ class EventsConditions extends Component {
   }
 
   getFirstSegment() {
-    return (_.isArray(this.segments) && this.segments[0].id) ? this.segments[0].id : null;
+    return _.isArray(this.segments) && this.segments[0].id
+      ? this.segments[0].id
+      : null;
   }
 
   isValid = () => {
@@ -170,7 +192,6 @@ class EventsConditions extends Component {
       eventSlug,
       eventOptions: this.constructor.getEventOptions(event),
       onValueChange: this.handleChange,
-
     };
 
     return (
@@ -201,10 +222,7 @@ class EventsConditions extends Component {
 
     return (
       <div className="event-segment-selection">
-        <Selection
-          field={props.field}
-          onValueChange={props.onValueChange}
-        />
+        <Selection field={props.field} onValueChange={props.onValueChange} />
       </div>
     );
   }
@@ -231,11 +249,9 @@ class EventsConditions extends Component {
 
   displayEventTip() {
     const { event } = this.state;
-    return (event.tip) ? (
+    return event.tip ? (
       <p className="description">
-        <strong>{MailPoet.I18n.t('tip')}</strong>
-        {' '}
-        {event.tip}
+        <strong>{MailPoet.I18n.t('tip')}</strong> {event.tip}
       </p>
     ) : null;
   }
@@ -245,7 +261,10 @@ class EventsConditions extends Component {
       <div>
         <Background color="#fff" />
 
-        <ListingHeadingStepsRoute emailType="woocommerce" automationId="woocommerce_email_creation_heading" />
+        <ListingHeadingStepsRoute
+          emailType="woocommerce"
+          automationId="woocommerce_email_creation_heading"
+        />
 
         <Grid.Column align="center" className="mailpoet-schedule-email">
           <form id="newsletter_scheduling">
@@ -254,11 +273,7 @@ class EventsConditions extends Component {
             <div>{this.displaySegments()}</div>
             <div>{this.displayScheduling()}</div>
 
-            <Button
-              isFullWidth
-              onClick={this.handleNextStep}
-              type="submit"
-            >
+            <Button isFullWidth onClick={this.handleNextStep} type="submit">
               {MailPoet.I18n.t('next')}
             </Button>
           </form>

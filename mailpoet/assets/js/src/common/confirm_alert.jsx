@@ -8,13 +8,21 @@ function ConfirmAlert(props) {
     template: ReactDOMServer.renderToString(
       <>
         <p>{props.message}</p>
-        <button id="mailpoet_alert_cancel" className="button button-secondary" type="button">
+        <button
+          id="mailpoet_alert_cancel"
+          className="button button-secondary"
+          type="button"
+        >
           {props.cancelLabel}
         </button>
-        <button id="mailpoet_alert_confirm" className="button button-primary" type="submit">
+        <button
+          id="mailpoet_alert_confirm"
+          className="button button-primary"
+          type="submit"
+        >
           {props.confirmLabel}
         </button>
-      </>
+      </>,
     ),
     onInit: () => {
       document
@@ -55,6 +63,6 @@ export default function confirmAlert(props) {
       cancelLabel={props.cancelLabel}
       confirmLabel={props.confirmLabel}
       onConfirm={props.onConfirm}
-    />
+    />,
   );
 }

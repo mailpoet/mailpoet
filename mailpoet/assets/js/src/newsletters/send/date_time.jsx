@@ -16,8 +16,8 @@ class DateTime extends Component {
 
   componentDidUpdate(prevProps) {
     if (
-      this.props.value !== prevProps.value
-      || this.props.defaultDateTime !== prevProps.defaultDateTime
+      this.props.value !== prevProps.value ||
+      this.props.defaultDateTime !== prevProps.defaultDateTime
     ) {
       setImmediate(() => {
         this.setState(this.buildStateFromProps(this.props));
@@ -25,7 +25,8 @@ class DateTime extends Component {
     }
   }
 
-  getDateTime = () => [this.state.date, this.state.time].join(this.DATE_TIME_SEPARATOR);
+  getDateTime = () =>
+    [this.state.date, this.state.time].join(this.DATE_TIME_SEPARATOR);
 
   buildStateFromProps = (props) => {
     const value = props.value || this.props.defaultDateTime;

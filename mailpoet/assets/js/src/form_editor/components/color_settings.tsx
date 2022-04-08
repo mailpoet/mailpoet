@@ -1,7 +1,4 @@
-import {
-  ColorPalette,
-  BaseControl,
-} from '@wordpress/components';
+import { ColorPalette, BaseControl } from '@wordpress/components';
 import { useSetting } from '@wordpress/block-editor';
 
 type Props = {
@@ -10,17 +7,11 @@ type Props = {
   onChange: (value: string | undefined) => void;
 };
 
-function ColorSettings({
-  name,
-  value,
-  onChange,
-}: Props) : JSX.Element {
+function ColorSettings({ name, value, onChange }: Props): JSX.Element {
   const settingsColors = useSetting('color.palette');
   return (
     <div>
-      <BaseControl.VisualLabel>
-        {name}
-      </BaseControl.VisualLabel>
+      <BaseControl.VisualLabel>{name}</BaseControl.VisualLabel>
       <ColorPalette
         label={name}
         value={value}

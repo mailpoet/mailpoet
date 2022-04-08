@@ -17,7 +17,9 @@ function SubscribersHeading({ location }) {
         }}
       >
         {plusIcon}
-        <span data-automation-id="add-new-subscribers-button">{MailPoet.I18n.t('new')}</span>
+        <span data-automation-id="add-new-subscribers-button">
+          {MailPoet.I18n.t('new')}
+        </span>
       </Link>
       <a
         className="mailpoet-button not-small-screen button-secondary"

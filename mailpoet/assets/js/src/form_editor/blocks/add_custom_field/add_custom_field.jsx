@@ -9,8 +9,7 @@ export const settings = {
   description: MailPoet.I18n.t('blockAddCustomFieldDescription'),
   icon: Icon,
   category: 'custom-fields',
-  attributes: {
-  },
+  attributes: {},
   supports: {
     html: false,
     multiple: false,

@@ -14,9 +14,7 @@ class FormFieldSelect extends Component {
     let sortBy = false;
 
     if (this.props.field.placeholder !== undefined) {
-      placeholder = (
-        <option value="">{ this.props.field.placeholder }</option>
-      );
+      placeholder = <option value="">{this.props.field.placeholder}</option>;
     }
 
     if (this.props.field.filter !== undefined) {
@@ -32,11 +30,10 @@ class FormFieldSelect extends Component {
       // Extract keys from sorted [key, value] select value pairs, sorted by
       // provided sorting order.
       keys = _.map(
-        _.sortBy(
-          _.pairs(this.props.field.values),
-          (item) => sortBy(item[0], item[1])
+        _.sortBy(_.pairs(this.props.field.values), (item) =>
+          sortBy(item[0], item[1]),
         ),
-        (item) => item[0]
+        (item) => item[0],
       );
     } else {
       keys = Object.keys(this.props.field.values);
@@ -47,16 +44,11 @@ class FormFieldSelect extends Component {
         if (filter === false) return true;
         return filter(this.props.item, value);
       })
-      .map(
-        (value) => (
-          <option
-            key={`option-${value}`}
-            value={value}
-          >
-            { this.props.field.values[value] }
-          </option>
-        )
-      );
+      .map((value) => (
+        <option key={`option-${value}`} value={value}>
+          {this.props.field.values[value]}
+        </option>
+      ));
 
     return (
       <Select

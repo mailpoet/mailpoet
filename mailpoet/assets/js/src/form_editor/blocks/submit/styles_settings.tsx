@@ -58,8 +58,14 @@ function StylesSettings({
 
   return (
     <Panel className="mailpoet-automation-input-styles-panel">
-      <PanelBody title={MailPoet.I18n.t('formSettingsStyles')} initialOpen={false}>
-        <div className="mailpoet-styles-settings" data-automation-id="input_styles_settings">
+      <PanelBody
+        title={MailPoet.I18n.t('formSettingsStyles')}
+        initialOpen={false}
+      >
+        <div
+          className="mailpoet-styles-settings"
+          data-automation-id="input_styles_settings"
+        >
           <ToggleControl
             label={MailPoet.I18n.t('formSettingsDisplayFullWidth')}
             checked={localStyles.fullWidth}
@@ -114,7 +120,11 @@ function StylesSettings({
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderSize')}
-                value={localStyles.borderSize !== undefined ? localStyles.borderSize : 1}
+                value={
+                  localStyles.borderSize !== undefined
+                    ? localStyles.borderSize
+                    : 1
+                }
                 min={0}
                 max={10}
                 allowReset
@@ -123,7 +133,11 @@ function StylesSettings({
               />
               <RangeControl
                 label={MailPoet.I18n.t('formSettingsBorderRadius')}
-                value={localStyles.borderRadius !== undefined ? localStyles.borderRadius : 0}
+                value={
+                  localStyles.borderRadius !== undefined
+                    ? localStyles.borderRadius
+                    : 0
+                }
                 min={0}
                 max={40}
                 allowReset

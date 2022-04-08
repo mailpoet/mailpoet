@@ -18,7 +18,9 @@ var BlockCollection;
 BlockCollection = Backbone.Collection.extend({
   model: base.BlockModel,
   initialize: function () {
-    this.on('add change remove', function () { App.getChannel().trigger('autoSave'); });
+    this.on('add change remove', function () {
+      App.getChannel().trigger('autoSave');
+    });
   },
   parse: function (response) {
     return _.map(response, function (block) {
@@ -34,26 +36,31 @@ Module.ContainerBlockModel = base.BlockModel.extend({
     blocks: BlockCollection,
   },
   defaults: function () {
-    return this._getDefaults({
-      type: 'container',
-      columnLayout: false,
-      orientation: 'vertical',
-      image: {
-        src: null,
-        display: 'scale',
-      },
-      styles: {
-        block: {
-          backgroundColor: 'transparent',
+    return this._getDefaults(
+      {
+        type: 'container',
+        columnLayout: false,
+        orientation: 'vertical',
+        image: {
+          src: null,
+          display: 'scale',
         },
+        styles: {
+          block: {
+            backgroundColor: 'transparent',
+          },
+        },
+        blocks: new BlockCollection(),
       },
-      blocks: new BlockCollection(),
-    }, App.getConfig().get('blockDefaults.container'));
+      App.getConfig().get('blockDefaults.container'),
+    );
   },
   _updateDefaults: function updateDefaults() {},
   validate: function () {
     // Recursively propagate validation checks to blocks in the tree
-    var invalidBlock = this.get('blocks').find(function (block) { return !block.isValid(); });
+    var invalidBlock = this.get('blocks').find(function (block) {
+      return !block.isValid();
+    });
     if (invalidBlock) {
       return invalidBlock.validationError;
     }
@@ -61,7 +68,11 @@ Module.ContainerBlockModel = base.BlockModel.extend({
   },
   parse: function (response) {
     // If container has any blocks - add them to a collection
-    if (response.type === 'container' && _.has(response, 'blocks') && response.blocks.constructor === Array) {
+    if (
+      response.type === 'container' &&
+      _.has(response, 'blocks') &&
+      response.blocks.constructor === Array
+    ) {
       response.blocks = new BlockCollection(response.blocks, {
         parse: true,
       });
@@ -94,8 +105,12 @@ Module.ContainerBlocksView = Marionette.CollectionView.extend({
       renderOptions: newRenderOptions,
     };
   },
-  emptyView: function () { return Module.ContainerBlockEmptyView; },
-  emptyViewOptions: function () { return { renderOptions: this.renderOptions }; },
+  emptyView: function () {
+    return Module.ContainerBlockEmptyView;
+  },
+  emptyViewOptions: function () {
+    return { renderOptions: this.renderOptions };
+  },
   initialize: function (options) {
     this.renderOptions = options.renderOptions;
   },
@@ -105,13 +120,18 @@ Module.ContainerBlocksView = Marionette.CollectionView.extend({
   onChildviewResizeStop: function onChildviewResizeStart(event) {
     this.triggerMethod('resizeStop', event);
   },
-  removeFocusFromAnyActiveElement: function removeFocusFromAnyActiveElement(event) {
+  removeFocusFromAnyActiveElement: function removeFocusFromAnyActiveElement(
+    event,
+  ) {
     var elementClass;
     if (!event || !event.target) {
       return;
     }
     elementClass = event.target.getAttribute('class');
-    if (!elementClass || elementClass.indexOf('mailpoet_container_horizontal') === -1) {
+    if (
+      !elementClass ||
+      elementClass.indexOf('mailpoet_container_horizontal') === -1
+    ) {
       return;
     }
     document.activeElement.blur();
@@ -125,8 +145,11 @@ Module.ContainerBlockView = base.BlockView.extend({
       replaceElement: true,
     },
   }),
-  className: 'mailpoet_block mailpoet_container_block mailpoet_droppable_block mailpoet_droppable_layout_block',
-  getTemplate: function () { return window.templates.containerBlock; },
+  className:
+    'mailpoet_block mailpoet_container_block mailpoet_droppable_block mailpoet_droppable_layout_block',
+  getTemplate: function () {
+    return window.templates.containerBlock;
+  },
   events: _.extend({}, base.BlockView.prototype.events, {
     'click .mailpoet_newsletter_layer_selector': 'toggleEditingLayer',
   }),
@@ -170,8 +193,10 @@ Module.ContainerBlockView = base.BlockView.extend({
     // For two and three column layouts display their respective widgets,
     // otherwise always default to one column layout widget
     if (this.renderOptions.depth === 1) {
-      if (this.model.get('blocks').length === 3) return Module.ThreeColumnContainerWidgetView;
-      if (this.model.get('blocks').length === 2) return Module.TwoColumnContainerWidgetView;
+      if (this.model.get('blocks').length === 3)
+        return Module.ThreeColumnContainerWidgetView;
+      if (this.model.get('blocks').length === 2)
+        return Module.TwoColumnContainerWidgetView;
     }
     return Module.OneColumnContainerWidgetView;
   },
@@ -194,10 +219,13 @@ Module.ContainerBlockView = base.BlockView.extend({
       },
     });
     this.showChildView('toolsRegion', this.toolsView);
-    this.showChildView('blocks', new Module.ContainerBlocksView({
-      collection: this.model.get('blocks'),
-      renderOptions: this.renderOptions,
-    }));
+    this.showChildView(
+      'blocks',
+      new Module.ContainerBlocksView({
+        collection: this.model.get('blocks'),
+        renderOptions: this.renderOptions,
+      }),
+    );
 
     // TODO: Look for a better way to do this than here
     // Sets child container orientation HTML class here,
@@ -205,15 +233,23 @@ Module.ContainerBlockView = base.BlockView.extend({
     // and will overwrite existing region element instead
     columnLayout = this.model.get('columnLayout');
     if (typeof columnLayout === 'string') {
-      classIrregular = 'mailpoet_irregular_width_contents_container column_layout_' + columnLayout;
+      classIrregular =
+        'mailpoet_irregular_width_contents_container column_layout_' +
+        columnLayout;
     }
     this.$('> .mailpoet_container').attr(
       'class',
-      'mailpoet_container mailpoet_container_' + this.model.get('orientation') + ' ' + classIrregular
+      'mailpoet_container mailpoet_container_' +
+        this.model.get('orientation') +
+        ' ' +
+        classIrregular,
     );
   },
   addHighlight: function addHighlight() {
-    if (this.renderOptions.depth !== 1 || this.$el.hasClass('mailpoet_container_layer_active')) {
+    if (
+      this.renderOptions.depth !== 1 ||
+      this.$el.hasClass('mailpoet_container_layer_active')
+    ) {
       return;
     }
     this.$(this.ui.tools).addClass('mailpoet_display_tools');
@@ -221,7 +257,10 @@ Module.ContainerBlockView = base.BlockView.extend({
     this.toolsView.triggerMethod('showTools');
   },
   removeHighlight: function removeHighlight() {
-    if (this.renderOptions.depth !== 1 || this.$el.hasClass('mailpoet_container_layer_active')) {
+    if (
+      this.renderOptions.depth !== 1 ||
+      this.$el.hasClass('mailpoet_container_layer_active')
+    ) {
       return;
     }
     this.$(this.ui.tools).removeClass('mailpoet_display_tools');
@@ -230,7 +269,9 @@ Module.ContainerBlockView = base.BlockView.extend({
   },
   toggleEditingLayer: function (event) {
     var that = this;
-    var $toggleButton = this.$('> .mailpoet_tools .mailpoet_newsletter_layer_selector');
+    var $toggleButton = this.$(
+      '> .mailpoet_tools .mailpoet_newsletter_layer_selector',
+    );
     var $overlay = jQuery('.mailpoet_layer_overlay');
     var $container = this.$('> .mailpoet_container');
     var disableContainerLayer = function () {
@@ -257,7 +298,9 @@ Module.ContainerBlockView = base.BlockView.extend({
 });
 
 Module.ContainerBlockEmptyView = Marionette.View.extend({
-  getTemplate: function () { return window.templates.containerEmpty; },
+  getTemplate: function () {
+    return window.templates.containerEmpty;
+  },
   initialize: function (options) {
     this.renderOptions = _.defaults(options.renderOptions || {}, {});
   },
@@ -270,7 +313,9 @@ Module.ContainerBlockEmptyView = Marionette.View.extend({
 });
 
 Module.ContainerBlockToolsView = base.BlockToolsView.extend({
-  getSettingsView: function () { return Module.ContainerBlockSettingsView; },
+  getSettingsView: function () {
+    return Module.ContainerBlockSettingsView;
+  },
 });
 
 Module.ContainerBlockSettingsView = base.BlockSettingsView.extend({
@@ -279,10 +324,15 @@ Module.ContainerBlockSettingsView = base.BlockSettingsView.extend({
       onSelect: 'onImageSelect',
     },
   }),
-  getTemplate: function () { return window.templates.containerBlockSettings; },
+  getTemplate: function () {
+    return window.templates.containerBlockSettings;
+  },
   events: function () {
     return {
-      'change .mailpoet_field_container_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
+      'change .mailpoet_field_container_background_color': _.partial(
+        this.changeColorField,
+        'styles.block.backgroundColor',
+      ),
       'click .mailpoet_done_editing': 'close',
       'change .mailpoet_field_display_type': 'changeDisplayType',
     };
@@ -290,7 +340,7 @@ Module.ContainerBlockSettingsView = base.BlockSettingsView.extend({
   initialize: function () {
     base.BlockSettingsView.prototype.initialize.apply(this, arguments);
     this.model.trigger('startEditing');
-    this._columnsSettingsView = new (Module.ContainerBlockColumnsSettingsView)({
+    this._columnsSettingsView = new Module.ContainerBlockColumnsSettingsView({
       collection: this.model.get('blocks'),
     });
   },
@@ -306,7 +356,9 @@ Module.ContainerBlockSettingsView = base.BlockSettingsView.extend({
 });
 
 Module.ContainerBlockColumnsSettingsView = Marionette.CollectionView.extend({
-  childView: function () { return Module.ContainerBlockColumnSettingsView; },
+  childView: function () {
+    return Module.ContainerBlockColumnSettingsView;
+  },
   childViewOptions: function (model, index) {
     return {
       columnIndex: index,
@@ -315,7 +367,9 @@ Module.ContainerBlockColumnsSettingsView = Marionette.CollectionView.extend({
 });
 
 Module.ContainerBlockColumnSettingsView = Marionette.View.extend({
-  getTemplate: function () { return window.templates.containerBlockColumnSettings; },
+  getTemplate: function () {
+    return window.templates.containerBlockColumnSettings;
+  },
   initialize: function (options) {
     this.columnNumber = (options.columnIndex || 0) + 1;
   },
@@ -328,17 +382,18 @@ Module.ContainerBlockColumnSettingsView = Marionette.View.extend({
 });
 
 Module.OneColumnContainerWidgetView = base.WidgetView.extend({
-  className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
-  getTemplate: function () { return window.templates.oneColumnLayoutInsertion; },
+  className:
+    base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
+  getTemplate: function () {
+    return window.templates.oneColumnLayoutInsertion;
+  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,
       drop: function () {
         return new Module.ContainerBlockModel({
           orientation: 'horizontal',
-          blocks: [
-            new Module.ContainerBlockModel(),
-          ],
+          blocks: [new Module.ContainerBlockModel()],
         });
       },
     },
@@ -346,8 +401,11 @@ Module.OneColumnContainerWidgetView = base.WidgetView.extend({
 });
 
 Module.TwoColumnContainerWidgetView = base.WidgetView.extend({
-  className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
-  getTemplate: function () { return window.templates.twoColumnLayoutInsertion; },
+  className:
+    base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
+  getTemplate: function () {
+    return window.templates.twoColumnLayoutInsertion;
+  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,
@@ -365,8 +423,11 @@ Module.TwoColumnContainerWidgetView = base.WidgetView.extend({
 });
 
 Module.ThreeColumnContainerWidgetView = base.WidgetView.extend({
-  className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
-  getTemplate: function () { return window.templates.threeColumnLayoutInsertion; },
+  className:
+    base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
+  getTemplate: function () {
+    return window.templates.threeColumnLayoutInsertion;
+  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,
@@ -385,8 +446,11 @@ Module.ThreeColumnContainerWidgetView = base.WidgetView.extend({
 });
 
 Module.TwoColumn12ContainerWidgetView = base.WidgetView.extend({
-  className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
-  getTemplate: function () { return window.templates.twoColumn12LayoutInsertion; },
+  className:
+    base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
+  getTemplate: function () {
+    return window.templates.twoColumn12LayoutInsertion;
+  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,
@@ -406,8 +470,11 @@ Module.TwoColumn12ContainerWidgetView = base.WidgetView.extend({
 });
 
 Module.TwoColumn21ContainerWidgetView = base.WidgetView.extend({
-  className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
-  getTemplate: function () { return window.templates.twoColumn21LayoutInsertion; },
+  className:
+    base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
+  getTemplate: function () {
+    return window.templates.twoColumn21LayoutInsertion;
+  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,

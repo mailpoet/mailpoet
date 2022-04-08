@@ -14,7 +14,7 @@ function FormPlacementOption({
   active,
   canBeActive,
   onClick,
-}: Props) : JSX.Element {
+}: Props): JSX.Element {
   return (
     <SelectionItem
       label={label}
@@ -24,9 +24,7 @@ function FormPlacementOption({
       className="form-placement-option"
       automationId={`form-placement-option-${label}`}
     >
-      <div className="form-placement-option-icon">
-        {icon}
-      </div>
+      <div className="form-placement-option-icon">{icon}</div>
       <div className="form-placement-option-label">
         <p>{label}</p>
       </div>

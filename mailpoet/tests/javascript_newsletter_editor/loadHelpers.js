@@ -1,6 +1,11 @@
 var fs = require('fs');
 module.exports = {
-  loadFileToContainer: function loadFileToContainer(path, window, containerTagName, opts) {
+  loadFileToContainer: function loadFileToContainer(
+    path,
+    window,
+    containerTagName,
+    opts,
+  ) {
     var contents = fs.readFileSync(path);
     var container = window.document.createElement(containerTagName);
     var options = opts || {};

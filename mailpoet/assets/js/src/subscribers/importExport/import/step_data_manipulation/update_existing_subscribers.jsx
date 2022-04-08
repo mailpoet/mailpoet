@@ -2,7 +2,10 @@ import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import Radio from 'common/form/radio/radio';
 
-function UpdateExistingSubscribers({ updateExistingSubscribers, setUpdateExistingSubscribers }) {
+function UpdateExistingSubscribers({
+  updateExistingSubscribers,
+  setUpdateExistingSubscribers,
+}) {
   return (
     <>
       <div className="mailpoet-settings-label">

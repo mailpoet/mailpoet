@@ -4,10 +4,7 @@ import Notice from './notice.tsx';
 
 export default () => {
   const { notices } = useContext(GlobalContext);
-  return notices.items.map(
-    ({
-      id,
-      ...props
-    }) => <Notice key={id} {...props} />
-  );
+  return notices.items.map(({ id, ...props }) => (
+    <Notice key={id} {...props} />
+  ));
 };

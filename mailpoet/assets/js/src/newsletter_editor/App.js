@@ -30,7 +30,9 @@ AppView = Marionette.View.extend({
     click: 'onClickOutsideContentHideSettings',
   },
 
-  onClickOutsideContentHideSettings: function onClickOutsideContentHideSettings(event) {
+  onClickOutsideContentHideSettings: function onClickOutsideContentHideSettings(
+    event,
+  ) {
     if (jQuery(event.target).parents('#mailpoet_editor_content').length) {
       return;
     }
@@ -44,7 +46,11 @@ EditorApplication = Marionette.Application.extend({
   onStart: function onStart() {
     this._appView = new AppView();
     this.showView(this._appView);
-    this.listenTo(this.getChannel(), 'settingsDisplayed', this.setDisplayedSettingsId);
+    this.listenTo(
+      this.getChannel(),
+      'settingsDisplayed',
+      this.setDisplayedSettingsId,
+    );
   },
 
   getChannel: function getChannel(channel) {

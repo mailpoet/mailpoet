@@ -18,7 +18,9 @@ interface TestSendingWindow extends Window {
 declare let window: TestSendingWindow;
 
 export default function TestSending() {
-  const [email, setEmail] = useState<string>(window.mailpoet_current_user_email);
+  const [email, setEmail] = useState<string>(
+    window.mailpoet_current_user_email,
+  );
   const [mailer] = useSetting('mta');
   const { state, error } = useSelector('getTestEmailState')();
   const sendTestEmail = useAction('sendTestEmail');
@@ -26,8 +28,20 @@ export default function TestSending() {
   return (
     <>
       {state === TestEmailState.SENDING && <Loading />}
-      {state === TestEmailState.SUCCESS && <Notice type="success" scroll><p>{t('emailSent')}</p></Notice>}
-      {state === TestEmailState.FAILURE && <Notice type="error" scroll><p>{error.map((message) => <p key={message}>{message}</p>)}</p></Notice>}
+      {state === TestEmailState.SUCCESS && (
+        <Notice type="success" scroll>
+          <p>{t('emailSent')}</p>
+        </Notice>
+      )}
+      {state === TestEmailState.FAILURE && (
+        <Notice type="error" scroll>
+          <p>
+            {error.map((message) => (
+              <p key={message}>{message}</p>
+            ))}
+          </p>
+        </Notice>
+      )}
       <Label title={t('testSending')} htmlFor="mailpoet_mta_test_email" />
       <Inputs>
         <Input
@@ -48,7 +62,7 @@ export default function TestSending() {
         <HelpTooltip
           tooltipId="tooltip-settings-test"
           className="mailpoet_tooltip_icon"
-          tooltip={(
+          tooltip={
             <span style={{ pointerEvents: 'all' }}>
               {ReactStringReplace(
                 t('testEmailTooltip'),
@@ -67,7 +81,7 @@ export default function TestSending() {
                 ),
               )}
             </span>
-          )}
+          }
         />
       </Inputs>
     </>

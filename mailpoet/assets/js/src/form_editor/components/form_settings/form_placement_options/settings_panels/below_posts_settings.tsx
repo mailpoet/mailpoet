@@ -5,7 +5,7 @@ import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 import PlacementSettings from './placement_settings';
 
-function BelowPostsSettings() : JSX.Element {
+function BelowPostsSettings(): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -20,7 +20,10 @@ function BelowPostsSettings() : JSX.Element {
       <ToggleControl
         label={MailPoet.I18n.t('enable')}
         checked={isActive}
-        onChange={compose([changeFormSettings, assocPath('formPlacement.belowPosts.enabled', __, formSettings)])}
+        onChange={compose([
+          changeFormSettings,
+          assocPath('formPlacement.belowPosts.enabled', __, formSettings),
+        ])}
       />
       {isActive && (
         <>
@@ -33,9 +36,15 @@ function BelowPostsSettings() : JSX.Element {
             maxPercents={100}
             defaultPixelValue={560}
             defaultPercentValue={100}
-            onChange={(width): void => (
-              changeFormSettings(assocPath('formPlacement.belowPosts.styles.width', width, formSettings))
-            )}
+            onChange={(width): void =>
+              changeFormSettings(
+                assocPath(
+                  'formPlacement.belowPosts.styles.width',
+                  width,
+                  formSettings,
+                ),
+              )
+            }
           />
           <PlacementSettings settingsPlacementKey="belowPosts" />
         </>

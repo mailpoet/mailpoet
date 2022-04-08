@@ -16,7 +16,11 @@ function ListHeading() {
           {plusIcon}
           <span>{MailPoet.I18n.t('new')}</span>
         </Link>
-        <Link className="mailpoet-button button-secondary" to="/new-segment" data-automation-id="new-segment">
+        <Link
+          className="mailpoet-button button-secondary"
+          to="/new-segment"
+          data-automation-id="new-segment"
+        >
           {plusIcon}
           <span>{MailPoet.I18n.t('newSegment')}</span>
         </Link>

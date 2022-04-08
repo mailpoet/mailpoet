@@ -20,16 +20,22 @@ enum WooCommerceSubscriptionsActionTypes {
 }
 
 export const WooCommerceSubscriptionOptions = [
-  { value: WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS, label: MailPoet.I18n.t('segmentsActiveSubscription'), group: SegmentTypes.WooCommerceSubscription },
+  {
+    value: WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS,
+    label: MailPoet.I18n.t('segmentsActiveSubscription'),
+    group: SegmentTypes.WooCommerceSubscription,
+  },
 ];
 
 export function validateWooCommerceSubscription(
   formItem: WooCommerceSubscriptionFormItem,
 ): boolean {
-  const isIncomplete = !formItem.product_ids || !formItem.product_ids.length || !formItem.operator;
+  const isIncomplete =
+    !formItem.product_ids || !formItem.product_ids.length || !formItem.operator;
   if (
-    formItem.action === WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS
-    && isIncomplete
+    formItem.action ===
+      WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS &&
+    isIncomplete
   ) {
     return false;
   }
@@ -40,16 +46,22 @@ type Props = {
   filterIndex: number;
 };
 
-export function WooCommerceSubscriptionFields({ filterIndex }:Props) : JSX.Element {
+export function WooCommerceSubscriptionFields({
+  filterIndex,
+}: Props): JSX.Element {
   const segment: WooCommerceSubscriptionFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
+    'mailpoet-dynamic-segments-form',
+  );
 
   const subscriptionProducts: WindowSubscriptionProducts = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSubscriptionProducts(),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getSubscriptionProducts(),
     [],
   );
   const productOptions = subscriptionProducts.map((product) => ({
@@ -59,10 +71,11 @@ export function WooCommerceSubscriptionFields({ filterIndex }:Props) : JSX.Eleme
 
   useEffect(() => {
     if (
-      (segment.action === WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS)
-      && (segment.operator !== AnyValueTypes.ANY)
-      && (segment.operator !== AnyValueTypes.ALL)
-      && (segment.operator !== AnyValueTypes.NONE)
+      segment.action ===
+        WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS &&
+      segment.operator !== AnyValueTypes.ANY &&
+      segment.operator !== AnyValueTypes.ALL &&
+      segment.operator !== AnyValueTypes.NONE
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
@@ -74,16 +87,16 @@ export function WooCommerceSubscriptionFields({ filterIndex }:Props) : JSX.Eleme
         <Select
           key="select-operator"
           value={segment.operator}
-          onChange={(e) => updateSegmentFilterFromEvent(
-            'operator',
-            filterIndex,
-            e,
-          )}
+          onChange={(e) =>
+            updateSegmentFilterFromEvent('operator', filterIndex, e)
+          }
           automationId="select-operator"
         >
           <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
           <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-          <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+          <option value={AnyValueTypes.NONE}>
+            {MailPoet.I18n.t('noneOf')}
+          </option>
         </Select>
       </Grid.CenteredRow>
       <Grid.CenteredRow>
@@ -94,17 +107,18 @@ export function WooCommerceSubscriptionFields({ filterIndex }:Props) : JSX.Eleme
           isFullWidth
           placeholder={MailPoet.I18n.t('selectWooSubscription')}
           options={productOptions}
-          value={filter(
-            (option) => {
-              if (!segment.product_ids) return false;
-              return segment.product_ids.indexOf(option.value) !== -1;
-            },
-            productOptions,
-          )}
-          onChange={(options: SelectOption[]): void => updateSegmentFilter(
-            { product_ids: (options || []).map((x: SelectOption) => x.value) },
-            filterIndex,
-          )}
+          value={filter((option) => {
+            if (!segment.product_ids) return false;
+            return segment.product_ids.indexOf(option.value) !== -1;
+          }, productOptions)}
+          onChange={(options: SelectOption[]): void =>
+            updateSegmentFilter(
+              {
+                product_ids: (options || []).map((x: SelectOption) => x.value),
+              },
+              filterIndex,
+            )
+          }
           automationId="select-segment-products"
         />
       </Grid.CenteredRow>

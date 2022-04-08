@@ -22,8 +22,9 @@ export function StepsWithoutTitles() {
         <Heading level={3}>{`Step ${step}`}</Heading>
         <p>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta natus
-          consequuntur saepe harum nesciunt eum, a nulla facilis architecto incidunt
-          odio voluptas praesentium, ipsa laboriosam animi! Officiis atque odio nulla.
+          consequuntur saepe harum nesciunt eum, a nulla facilis architecto
+          incidunt odio voluptas praesentium, ipsa laboriosam animi! Officiis
+          atque odio nulla.
         </p>
         <div>
           <Button
@@ -34,11 +35,7 @@ export function StepsWithoutTitles() {
           >
             Previous step
           </Button>
-          <Button
-            onClick={nextStep}
-            dimension="small"
-            isDisabled={step === 5}
-          >
+          <Button onClick={nextStep} dimension="small" isDisabled={step === 5}>
             Next step
           </Button>
         </div>
@@ -55,13 +52,18 @@ export function StepsWithTitles() {
 
   return (
     <>
-      <Steps count={5} current={step} titles={['First', 'Second', 'Third', 'Fourth', 'Fifth']} />
+      <Steps
+        count={5}
+        current={step}
+        titles={['First', 'Second', 'Third', 'Fourth', 'Fifth']}
+      />
       <StepsContent>
         <Heading level={3}>{`Step ${step}`}</Heading>
         <p>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta natus
-          consequuntur saepe harum nesciunt eum, a nulla facilis architecto incidunt
-          odio voluptas praesentium, ipsa laboriosam animi! Officiis atque odio nulla.
+          consequuntur saepe harum nesciunt eum, a nulla facilis architecto
+          incidunt odio voluptas praesentium, ipsa laboriosam animi! Officiis
+          atque odio nulla.
         </p>
         <div>
           <Button
@@ -72,11 +74,7 @@ export function StepsWithTitles() {
           >
             Previous step
           </Button>
-          <Button
-            onClick={nextStep}
-            dimension="small"
-            isDisabled={step === 5}
-          >
+          <Button onClick={nextStep} dimension="small" isDisabled={step === 5}>
             Next step
           </Button>
         </div>

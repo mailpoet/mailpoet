@@ -1,7 +1,4 @@
-import {
-  Panel,
-  PanelBody,
-} from '@wordpress/components';
+import { Panel, PanelBody } from '@wordpress/components';
 import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 

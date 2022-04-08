@@ -1,6 +1,6 @@
 const path = require('path');
 
-const modulesDir = path.join( __dirname, '../node_modules' );
+const modulesDir = path.join(__dirname, '../node_modules');
 console.log('NODE', modulesDir);
 // Workaround for Emotion 11
 // https://github.com/storybookjs/storybook/pull/13300#issuecomment-783268111

@@ -1,29 +1,29 @@
 actor: Tester
 paths:
-    tests: tests
-    log: tests/_output
-    data: tests/_data
-    support: tests/_support
-    envs: tests/_envs
+  tests: tests
+  log: tests/_output
+  data: tests/_data
+  support: tests/_support
+  envs: tests/_envs
 settings:
-    colors: true
-    memory_limit: 1024M
-    log: true
-    strict_xml: true
+  colors: true
+  memory_limit: 1024M
+  log: true
+  strict_xml: true
 extensions:
-    enabled:
-        - Codeception\Extension\RunFailed
-        - MailPoet\TestsSupport\StatisticsExtension
+  enabled:
+    - Codeception\Extension\RunFailed
+    - MailPoet\TestsSupport\StatisticsExtension
 groups:
-    circleci_split_group: tests/acceptance/_groups/circleci_split_group
+  circleci_split_group: tests/acceptance/_groups/circleci_split_group
 coverage:
-    enabled: true
-    whitelist:
-        include:
-            - lib/*
-        exclude:
-            - lib/Config/PopulatorData/*
-            - lib/Util/Sudzy/*
-            - lib/Util/CSS.php
-            - lib/Util/Helpers.php
-            - lib/Util/XLSXWriter.php
+  enabled: true
+  whitelist:
+    include:
+      - lib/*
+    exclude:
+      - lib/Config/PopulatorData/*
+      - lib/Util/Sudzy/*
+      - lib/Util/CSS.php
+      - lib/Util/Helpers.php
+      - lib/Util/XLSXWriter.php

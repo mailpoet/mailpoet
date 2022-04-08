@@ -14,9 +14,7 @@ class FormField extends Component {
   renderField = (data) => {
     let description = false;
     if (data.field.description) {
-      description = (
-        <p className="description">{ data.field.description }</p>
-      );
+      description = <p className="description">{data.field.description}</p>;
     }
 
     let field;
@@ -141,8 +139,8 @@ class FormField extends Component {
     }
     return (
       <div className="mailpoet-form-field" key={`field-${data.index || 0}`}>
-        { field }
-        { description }
+        {field}
+        {description}
       </div>
     );
   };
@@ -151,12 +149,14 @@ class FormField extends Component {
     let field = false;
 
     if (this.props.field.fields !== undefined) {
-      field = this.props.field.fields.map((subfield, index) => this.renderField({
-        index,
-        field: subfield,
-        item: this.props.item,
-        onValueChange: this.props.onValueChange || false,
-      }));
+      field = this.props.field.fields.map((subfield, index) =>
+        this.renderField({
+          index,
+          field: subfield,
+          item: this.props.item,
+          onValueChange: this.props.onValueChange || false,
+        }),
+      );
     } else {
       field = this.renderField(this.props);
     }
@@ -165,23 +165,25 @@ class FormField extends Component {
     if (this.props.field.label) {
       label = (
         <Heading level={4}>
-          <label htmlFor={`field_${this.props.field.name}`}>{ this.props.field.label }</label>
+          <label htmlFor={`field_${this.props.field.name}`}>
+            {this.props.field.label}
+          </label>
         </Heading>
       );
     }
 
     let tip = false;
     if (this.props.field.tip) {
-      tip = (
-        <p className="mailpoet-form-description">{ this.props.field.tip }</p>
-      );
+      tip = <p className="mailpoet-form-description">{this.props.field.tip}</p>;
     }
 
     return (
-      <div className={`mailpoet-form-field-${this.props.field.name} form-field-row-${this.props.field.name}`}>
-        { label }
-        { tip }
-        { field }
+      <div
+        className={`mailpoet-form-field-${this.props.field.name} form-field-row-${this.props.field.name}`}
+      >
+        {label}
+        {tip}
+        {field}
       </div>
     );
   }
@@ -192,10 +194,7 @@ FormField.propTypes = {
   field: PropTypes.shape({
     name: PropTypes.string.isRequired,
     values: PropTypes.objectOf(PropTypes.string),
-    tip: PropTypes.oneOfType([
-      PropTypes.array,
-      PropTypes.string,
-    ]),
+    tip: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
     label: PropTypes.string,
     fields: PropTypes.arrayOf(PropTypes.object),
     description: PropTypes.string,

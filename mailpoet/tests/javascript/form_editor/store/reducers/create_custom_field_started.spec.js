@@ -3,7 +3,7 @@ import reducerFactory from '../../../../../assets/js/src/form_editor/store/reduc
 
 const MailPoetStub = {
   I18n: {
-    t: () => ('Error [name]!'),
+    t: () => 'Error [name]!',
   },
 };
 const reducer = reducerFactory(MailPoetStub);

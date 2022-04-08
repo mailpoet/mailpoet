@@ -21,7 +21,9 @@ export function getSettings(customField) {
       },
       mandatory: {
         type: 'boolean',
-        default: customField.params.required ? !!customField.params.required : false,
+        default: customField.params.required
+          ? !!customField.params.required
+          : false,
       },
       validate: {
         type: 'string',

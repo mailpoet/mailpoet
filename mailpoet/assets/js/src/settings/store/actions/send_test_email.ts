@@ -1,7 +1,10 @@
 import { t } from 'common/functions';
 import { Settings } from 'settings/store/types';
 
-export default function* sendTestEmail(recipient: string, mailer: Settings['mta']) {
+export default function* sendTestEmail(
+  recipient: string,
+  mailer: Settings['mta'],
+) {
   if (!recipient) {
     return { type: 'TEST_EMAIL_FAILED', error: [t('cantSendEmail')] };
   }
@@ -22,7 +25,11 @@ export default function* sendTestEmail(recipient: string, mailer: Settings['mta'
       subscriber: recipient,
     },
   };
-  yield { type: 'TRACK_TEST_EMAIL_SENT', success: res.success, method: mailer.method };
+  yield {
+    type: 'TRACK_TEST_EMAIL_SENT',
+    success: res.success,
+    method: mailer.method,
+  };
   if (!res.success) return { type: 'TEST_EMAIL_FAILED', error: res.error };
   return { type: 'TEST_EMAIL_SUCCESS' };
 }

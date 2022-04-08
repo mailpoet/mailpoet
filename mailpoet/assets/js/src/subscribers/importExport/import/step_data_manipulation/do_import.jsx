@@ -9,7 +9,7 @@ export default (
   newSubscribersStatus,
   existingSubscribersStatus,
   updateExistingSubscribers,
-  onImportComplete
+  onImportComplete,
 ) => {
   const columns = {};
   const queue = new jQuery.AsyncQueue();
@@ -24,19 +24,15 @@ export default (
   };
 
   MailPoet.Modal.loading(true);
-  const splitSubscribers = (localSubscribers, size) => (
+  const splitSubscribers = (localSubscribers, size) =>
     localSubscribers.reduce((res, item, index) => {
       if (index % size === 0) {
         res.push([]);
       }
       res[res.length - 1].push(item);
       return res;
-    }, [])
-  );
-  const clickSubscribers = splitSubscribers(
-    subscribersToImport,
-    batchSize
-  );
+    }, []);
+  const clickSubscribers = splitSubscribers(subscribersToImport, batchSize);
 
   _.each(
     jQuery('select.mailpoet_subscribers_column_data_match'),
@@ -46,7 +42,7 @@ export default (
         return;
       }
       columns[columnId] = { index: columnIndex };
-    }
+    },
   );
 
   _.each(clickSubscribers, () => {
@@ -65,22 +61,25 @@ export default (
           existingSubscribersStatus,
           updateSubscribers: updateExistingSubscribers,
         }),
-      }).done((response) => {
-        const added = response.data.added_to_segment_with_welcome_notification;
-        importResult.created += response.data.created;
-        importResult.updated += response.data.updated;
-        importResult.segments = response.data.segments;
-        importResult.added_to_segment_with_welcome_notification = added;
-        addQueue.run();
-      }).fail((response) => {
-        MailPoet.Modal.loading(false);
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
-            { scroll: true }
-          );
-        }
-      });
+      })
+        .done((response) => {
+          const added =
+            response.data.added_to_segment_with_welcome_notification;
+          importResult.created += response.data.created;
+          importResult.updated += response.data.updated;
+          importResult.segments = response.data.segments;
+          importResult.added_to_segment_with_welcome_notification = added;
+          addQueue.run();
+        })
+        .fail((response) => {
+          MailPoet.Modal.loading(false);
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map((error) => error.message),
+              { scroll: true },
+            );
+          }
+        });
       batchNumber += 1;
     });
   });
@@ -90,18 +89,17 @@ export default (
   queue.onComplete(() => {
     MailPoet.Modal.loading(false);
     if (
-      importResult.errors.length > 0
-      && !importResult.updated
-      && !importResult.created
+      importResult.errors.length > 0 &&
+      !importResult.updated &&
+      !importResult.created
     ) {
       MailPoet.Notice.error(_.flatten(importResult.errors));
     } else {
       importResult.segments = _.map(
-        _.filter(
-          importResult.segments,
-          (segment) => segments.includes(segment.id)
+        _.filter(importResult.segments, (segment) =>
+          segments.includes(segment.id),
         ),
-        (data) => data.name
+        (data) => data.name,
       );
       onImportComplete(importResult);
     }

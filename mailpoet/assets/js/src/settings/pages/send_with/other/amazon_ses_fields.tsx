@@ -13,7 +13,10 @@ export default function AmazonSesFields() {
 
   return (
     <>
-      <SendingFrequency recommendedEmails={options.emails} recommendedInterval={options.interval} />
+      <SendingFrequency
+        recommendedEmails={options.emails}
+        recommendedInterval={options.interval}
+      />
       <Label title={t('region')} htmlFor="mailpoet_amazon_ses_region" />
       <Inputs>
         <Select
@@ -23,8 +26,11 @@ export default function AmazonSesFields() {
           isMinWidth
           dimension="small"
         >
-          {Object.entries(options.regions)
-            .map(([label, name]) => <option key={name} value={name}>{label}</option>)}
+          {Object.entries(options.regions).map(([label, name]) => (
+            <option key={name} value={name}>
+              {label}
+            </option>
+          ))}
         </Select>
       </Inputs>
       <Label title={t('accessKey')} htmlFor="mailpoet_amazon_ses_access_key" />

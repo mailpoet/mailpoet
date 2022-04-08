@@ -21,9 +21,9 @@ function PremiumNotActiveMessage(props: PremiumNotActiveMessageProps) {
         {MailPoet.I18n.t('premiumTabPremiumNotActivatedMessage')}
       </div>
       {props.url && (
-      <Button href={props.url}>
-        {MailPoet.I18n.t('premiumTabPremiumActivateMessage')}
-      </Button>
+        <Button href={props.url}>
+          {MailPoet.I18n.t('premiumTabPremiumActivateMessage')}
+        </Button>
       )}
     </>
   );
@@ -35,9 +35,9 @@ function PremiumNotInstalledMessage(props: PremiumNotActiveMessageProps) {
         {MailPoet.I18n.t('premiumTabPremiumNotInstalledMessage')}
       </div>
       {props.url && (
-      <Button href={props.url}>
-        {MailPoet.I18n.t('premiumTabPremiumDownloadMessage')}
-      </Button>
+        <Button href={props.url}>
+          {MailPoet.I18n.t('premiumTabPremiumDownloadMessage')}
+        </Button>
       )}
     </>
   );
@@ -59,25 +59,21 @@ type Props = {
   keyMessage?: string;
 };
 export default function PremiumMessages(props: Props) {
-  const { premiumStatus: status, downloadUrl, activationUrl } = useSelector('getKeyActivationState')();
+  const {
+    premiumStatus: status,
+    downloadUrl,
+    activationUrl,
+  } = useSelector('getKeyActivationState')();
 
   switch (status) {
     case PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE:
-      return (
-        <ActiveMessage />
-      );
+      return <ActiveMessage />;
     case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED:
-      return (
-        <PremiumNotInstalledMessage url={downloadUrl} />
-      );
+      return <PremiumNotInstalledMessage url={downloadUrl} />;
     case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_ACTIVE:
-      return (
-        <PremiumNotActiveMessage url={activationUrl} />
-      );
+      return <PremiumNotActiveMessage url={activationUrl} />;
     case PremiumStatus.INVALID:
-      return (
-        <NotValidMessage message={props.keyMessage} />
-      );
+      return <NotValidMessage message={props.keyMessage} />;
     default:
       return null;
   }

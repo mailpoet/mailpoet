@@ -2,7 +2,14 @@ import classNames from 'classnames';
 import ReactTooltip, { TooltipProps } from 'react-tooltip';
 
 function Tooltip({
-  effect, textColor, backgroundColor, border, borderColor, className, children, ...props
+  effect,
+  textColor,
+  backgroundColor,
+  border,
+  borderColor,
+  className,
+  children,
+  ...props
 }: TooltipProps) {
   return (
     <ReactTooltip

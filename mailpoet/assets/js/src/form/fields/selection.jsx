@@ -18,17 +18,20 @@ class Selection extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if ((this.props.item !== undefined && prevProps.item !== undefined)
-      && (this.props.item.id !== prevProps.item.id)
+    if (
+      this.props.item !== undefined &&
+      prevProps.item !== undefined &&
+      this.props.item.id !== prevProps.item.id
     ) {
       jQuery(`#${this.selectRef.current.id}`)
         .val(this.getSelectedValues())
         .trigger('change');
     }
 
-    if (this.isSelect2Initialized()
-      && (this.getFieldId(this.props) !== this.getFieldId(prevProps))
-      && this.props.field.resetSelect2OnUpdate !== undefined
+    if (
+      this.isSelect2Initialized() &&
+      this.getFieldId(this.props) !== this.getFieldId(prevProps) &&
+      this.props.field.resetSelect2OnUpdate !== undefined
     ) {
       this.resetSelect2();
     }
@@ -63,7 +66,9 @@ class Selection extends Component {
 
   getItems = () => {
     let items;
-    if (typeof (window[`mailpoet_${this.props.field.endpoint}`]) !== 'undefined') {
+    if (
+      typeof window[`mailpoet_${this.props.field.endpoint}`] !== 'undefined'
+    ) {
       items = window[`mailpoet_${this.props.field.endpoint}`];
     } else if (this.props.field.values !== undefined) {
       items = this.props.field.values;
@@ -131,7 +136,7 @@ class Selection extends Component {
 
     let select2Options = {
       disabled: this.props.disabled || false,
-      width: (this.props.width || ''),
+      width: this.props.width || '',
       placeholder: {
         id: '', // the value of the option
         text: this.props.field.placeholder,
@@ -156,10 +161,7 @@ class Selection extends Component {
               token: window.mailpoet_token,
               endpoint: remoteQuery.endpoint,
               method: remoteQuery.method,
-              data: Object.assign(
-                remoteQuery.data,
-                { query: params.term }
-              ),
+              data: Object.assign(remoteQuery.data, { query: params.term }),
             };
           },
           processResults: function processResults(response) {
@@ -179,8 +181,8 @@ class Selection extends Component {
         minimumInputLength: remoteQuery.minimumInputLength || 2,
       });
     } else if (
-      (this.props.field.getCount !== undefined)
-      || (this.props.field.getTag !== undefined)
+      this.props.field.getCount !== undefined ||
+      this.props.field.getTag !== undefined
     ) {
       const items = this.getItems(this.props.field);
       let selectedValues = this.getSelectedValues() || [];
@@ -201,10 +203,15 @@ class Selection extends Component {
     }
 
     if (this.props.field.extendSelect2Options !== undefined) {
-      select2Options = Object.assign(select2Options, this.props.field.extendSelect2Options);
+      select2Options = Object.assign(
+        select2Options,
+        this.props.field.extendSelect2Options,
+      );
     }
 
-    const select2 = jQuery(`#${this.selectRef.current.id}`).select2(select2Options);
+    const select2 = jQuery(`#${this.selectRef.current.id}`).select2(
+      select2Options,
+    );
 
     let hasRemoved = false;
     select2.on('select2:unselecting', () => {
@@ -244,19 +251,27 @@ class Selection extends Component {
       .off('select2:opening');
   };
 
-  allowMultipleValues = () => (this.props.field.multiple === true);
+  allowMultipleValues = () => this.props.field.multiple === true;
 
-  isSelect2Initialized = () => (jQuery(`#${this.selectRef.current.id}`).hasClass('select2-hidden-accessible') === true);
+  isSelect2Initialized = () =>
+    jQuery(`#${this.selectRef.current.id}`).hasClass(
+      'select2-hidden-accessible',
+    ) === true;
 
-  isSelect2Component = () => this.allowMultipleValues() || this.props.field.forceSelect2;
+  isSelect2Component = () =>
+    this.allowMultipleValues() || this.props.field.forceSelect2;
 
   handleChange = (e) => {
     if (this.props.onValueChange === undefined) return;
 
-    const valueTextPair = jQuery(`#${this.selectRef.current.id}`).children(':selected').map(function element() {
-      return { id: jQuery(this).val(), text: jQuery(this).text() };
-    });
-    const value = (this.props.field.multiple) ? _.pluck(valueTextPair, 'id') : _.pluck(valueTextPair, 'id').toString();
+    const valueTextPair = jQuery(`#${this.selectRef.current.id}`)
+      .children(':selected')
+      .map(function element() {
+        return { id: jQuery(this).val(), text: jQuery(this).text() };
+      });
+    const value = this.props.field.multiple
+      ? _.pluck(valueTextPair, 'id')
+      : _.pluck(valueTextPair, 'id').toString();
     const transformedValue = this.transformChangedValue(value, valueTextPair);
 
     this.props.onValueChange({
@@ -273,7 +288,11 @@ class Selection extends Component {
   // desired value.
   transformChangedValue = (value, textValuePair) => {
     if (typeof this.props.field.transformChangedValue === 'function') {
-      return this.props.field.transformChangedValue.call(this, value, textValuePair);
+      return this.props.field.transformChangedValue.call(
+        this,
+        value,
+        textValuePair,
+      );
     }
     return value;
   };
@@ -305,7 +324,7 @@ class Selection extends Component {
           value={value}
           title={searchLabel}
         >
-          { label }
+          {label}
         </option>
       );
     });
@@ -320,8 +339,8 @@ class Selection extends Component {
           defaultValue={selectedValues}
           {...this.props.field.validation}
         >
-          { this.insertEmptyOption() }
-          { options }
+          {this.insertEmptyOption()}
+          {options}
         </select>
       </div>
     );
@@ -332,10 +351,7 @@ Selection.propTypes = {
   onValueChange: PropTypes.func,
   field: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    values: PropTypes.oneOfType([
-      PropTypes.object,
-      PropTypes.array,
-    ]),
+    values: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
     getLabel: PropTypes.func,
     resetSelect2OnUpdate: PropTypes.bool,
     selected: PropTypes.func,

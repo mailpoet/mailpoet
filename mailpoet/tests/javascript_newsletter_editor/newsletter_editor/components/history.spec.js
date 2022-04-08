@@ -6,7 +6,7 @@ describe('History', function () {
   describe('view', function () {
     var view;
     beforeEach(function () {
-      view = new (HistoryComponent.HistoryView)();
+      view = new HistoryComponent.HistoryView();
     });
 
     it('renders', function () {

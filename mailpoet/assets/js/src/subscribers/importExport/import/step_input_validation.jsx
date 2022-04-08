@@ -11,39 +11,32 @@ function StepInputValidation({ stepMethodSelectionData, history }) {
   const [importSource, setImportSource] = useState(undefined);
   const [lastSent, setLastSent] = useState(undefined);
 
-  useEffect(
-    () => {
-      if (stepMethodSelectionData === undefined) {
-        history.replace('step_method_selection');
+  useEffect(() => {
+    if (stepMethodSelectionData === undefined) {
+      history.replace('step_method_selection');
+    }
+  }, [stepMethodSelectionData, history]);
+
+  const lastSentSubmit = useCallback(
+    (when) => {
+      setLastSent(when);
+      if (when === 'recently') {
+        history.push('step_data_manipulation');
       }
     },
-    [stepMethodSelectionData, history],
+    [history, setLastSent],
   );
-
-  const lastSentSubmit = useCallback((when) => {
-    setLastSent(when);
-    if (when === 'recently') {
-      history.push('step_data_manipulation');
-    }
-  }, [history, setLastSent]);
 
   return (
     <>
       {importSource === undefined && (
-        <InitialQuestion
-          onSubmit={setImportSource}
-          history={history}
-        />
+        <InitialQuestion onSubmit={setImportSource} history={history} />
       )}
 
-      {importSource === 'address-book' && (
-        <WrongSourceBlock />
-      )}
+      {importSource === 'address-book' && <WrongSourceBlock />}
 
       {importSource === 'existing-list' && lastSent === undefined && (
-        <LastSentQuestion
-          onSubmit={lastSentSubmit}
-        />
+        <LastSentQuestion onSubmit={lastSentSubmit} />
       )}
 
       {importSource === 'existing-list' && lastSent === 'notRecently' && (

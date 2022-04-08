@@ -6,15 +6,13 @@ type Props = HTMLAttributes<HTMLHeadingElement> & {
   level: 0 | 1 | 2 | 3 | 4 | 5;
 };
 
-function Heading({
-  children,
-  level,
-  className,
-  ...attributes
-}: Props) {
-  const Element = level === 0 ? 'h1' : `h${level}` as const;
+function Heading({ children, level, className, ...attributes }: Props) {
+  const Element = level === 0 ? 'h1' : (`h${level}` as const);
   return (
-    <Element className={classNames(className, `mailpoet-h${level}`)} {...attributes}>
+    <Element
+      className={classNames(className, `mailpoet-h${level}`)}
+      {...attributes}
+    >
       {children}
     </Element>
   );

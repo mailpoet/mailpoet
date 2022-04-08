@@ -5,12 +5,16 @@ import PropTypes from 'prop-types';
 import { GlobalContext } from 'context/index.jsx';
 
 import Button from 'common/button/button';
-import { createSelection, destroySelection } from './generate_segment_selection.jsx';
+import {
+  createSelection,
+  destroySelection,
+} from './generate_segment_selection.jsx';
 import createNewSegment from './create_new_segment.jsx';
 
 function SelectSegment({ setSelectedSegments }) {
   const { segments: segmentsContext } = useContext(GlobalContext);
-  const { all: originalSegments, updateAll: updateContextSegments } = segmentsContext;
+  const { all: originalSegments, updateAll: updateContextSegments } =
+    segmentsContext;
   const [selectionSegments, setSelectionSegments] = useState(originalSegments);
 
   useLayoutEffect(() => {
@@ -48,7 +52,10 @@ function SelectSegment({ setSelectedSegments }) {
               <option />
             </select>
           </div>
-          <Button variant="tertiary" onClick={() => createNewSegment(onCreateNewSegment)}>
+          <Button
+            variant="tertiary"
+            onClick={() => createNewSegment(onCreateNewSegment)}
+          >
             {MailPoet.I18n.t('createANewList')}
           </Button>
         </div>

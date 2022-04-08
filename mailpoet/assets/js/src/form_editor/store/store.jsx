@@ -14,15 +14,16 @@ import { formBodyToBlocksFactory } from './form_body_to_blocks.jsx';
 import mapFormDataAfterLoading from './map_form_data_after_loading.jsx';
 
 export default () => {
-  const customFields = window.mailpoet_custom_fields.map(
-    (field) => ({ ...field, params: field.params || {} })
-  );
+  const customFields = window.mailpoet_custom_fields.map((field) => ({
+    ...field,
+    params: field.params || {},
+  }));
 
   const formBodyToBlocks = formBodyToBlocksFactory(
     SETTINGS_DEFAULTS.fontSizes,
     SETTINGS_DEFAULTS.colors,
     SETTINGS_DEFAULTS.gradients,
-    customFields
+    customFields,
   );
 
   const formData = { ...window.mailpoet_form_data };
@@ -33,13 +34,19 @@ export default () => {
     dateFormats: window.mailpoet_date_formats,
     months: window.mailpoet_month_names,
   };
-  formData.settings.segments = formData.settings.segments ? formData.settings.segments : [];
+  formData.settings.segments = formData.settings.segments
+    ? formData.settings.segments
+    : [];
 
   let previewSettings = null;
   // We don't want to try to load saved settings for forms that are brand new
   if (formData.id !== null) {
     try {
-      previewSettings = JSON.parse(window.localStorage.getItem(`mailpoet_form_preview_settings${formData.id}`));
+      previewSettings = JSON.parse(
+        window.localStorage.getItem(
+          `mailpoet_form_preview_settings${formData.id}`,
+        ),
+      );
     } catch (e) {
       // We just keep it null
     }
@@ -47,7 +54,9 @@ export default () => {
 
   let fullscreenStatus = null;
   try {
-    fullscreenStatus = JSON.parse(window.localStorage.getItem('mailpoet_form_view_options'));
+    fullscreenStatus = JSON.parse(
+      window.localStorage.getItem('mailpoet_form_view_options'),
+    );
   } catch (e) {
     fullscreenStatus = 'disabled';
   }

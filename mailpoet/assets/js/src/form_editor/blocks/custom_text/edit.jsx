@@ -1,8 +1,4 @@
-import {
-  Panel,
-  PanelBody,
-  ToggleControl,
-} from '@wordpress/components';
+import { Panel, PanelBody, ToggleControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
@@ -10,31 +6,32 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import CustomFieldSettings from './custom_field_settings.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
-import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
+import {
+  InputStylesSettings,
+  inputStylesPropTypes,
+} from '../input_styles_settings.jsx';
 import TextInputEdit from '../text_input_edit.jsx';
 
 function CustomTextEdit({ attributes, setAttributes, clientId }) {
   const isSaving = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldSaving(),
-    []
+    [],
   );
   const isDeleting = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldDeleting(),
-    []
+    [],
   );
 
-  const {
-    saveCustomField,
-    deleteCustomField,
-    customFieldEdited,
-  } = useDispatch('mailpoet-form-editor');
+  const { saveCustomField, deleteCustomField, customFieldEdited } = useDispatch(
+    'mailpoet-form-editor',
+  );
 
   const inspectorControls = (
     <InspectorControls>
       <Panel>
         <PanelBody title={MailPoet.I18n.t('customFieldSettings')} initialOpen>
           <CustomFieldSettings
-            updateAttributes={(attrs) => (setAttributes(attrs))}
+            updateAttributes={(attrs) => setAttributes(attrs)}
             customFieldId={attributes.customFieldId}
             label={attributes.label}
             mandatory={attributes.mandatory}
@@ -46,34 +43,39 @@ function CustomTextEdit({ attributes, setAttributes, clientId }) {
                 data: {
                   params: mapCustomFieldFormData('text', params),
                 },
-                onFinish: () => setAttributes({
-                  mandatory: params.mandatory,
-                  validate: params.validate,
-                  label: params.label,
-                }),
+                onFinish: () =>
+                  setAttributes({
+                    mandatory: params.mandatory,
+                    validate: params.validate,
+                    label: params.label,
+                  }),
               });
             }}
-            onCustomFieldDelete={() => deleteCustomField(
-              attributes.customFieldId,
-              clientId
-            )}
+            onCustomFieldDelete={() =>
+              deleteCustomField(attributes.customFieldId, clientId)
+            }
             isDeleting={isDeleting}
-            onChange={(data, hasUnsavedChanges) => hasUnsavedChanges && customFieldEdited()}
+            onChange={(data, hasUnsavedChanges) =>
+              hasUnsavedChanges && customFieldEdited()
+            }
           />
         </PanelBody>
       </Panel>
       <Panel>
-        <PanelBody title={MailPoet.I18n.t('customFieldsFormSettings')} initialOpen>
+        <PanelBody
+          title={MailPoet.I18n.t('customFieldsFormSettings')}
+          initialOpen
+        >
           <ToggleControl
             label={MailPoet.I18n.t('displayLabelWithinInput')}
             checked={attributes.labelWithinInput}
-            onChange={(labelWithinInput) => (setAttributes({ labelWithinInput }))}
+            onChange={(labelWithinInput) => setAttributes({ labelWithinInput })}
           />
         </PanelBody>
       </Panel>
       <InputStylesSettings
         styles={attributes.styles}
-        onChange={(styles) => (setAttributes({ styles }))}
+        onChange={(styles) => setAttributes({ styles })}
       />
     </InspectorControls>
   );

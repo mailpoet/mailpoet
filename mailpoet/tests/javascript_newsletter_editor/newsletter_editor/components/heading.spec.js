@@ -13,7 +13,7 @@ describe('Heading', function () {
       model.isWoocommerceTransactional = function () {
         return false;
       };
-      view = new (HeadingComponent.HeadingView)({
+      view = new HeadingComponent.HeadingView({
         model: model,
       });
     });
@@ -32,19 +32,25 @@ describe('Heading', function () {
         model.isWoocommerceTransactional = function () {
           return false;
         };
-        view = new (HeadingComponent.HeadingView)({
+        view = new HeadingComponent.HeadingView({
           model: model,
         });
         view.render();
       });
 
       it('changes the model when subject field is changed', function () {
-        view.$('.mailpoet_input_title').val('a new testing subject').trigger('change');
+        view
+          .$('.mailpoet_input_title')
+          .val('a new testing subject')
+          .trigger('change');
         expect(model.get('subject')).to.equal('a new testing subject');
       });
 
       it('changes the model when preheader field is changed', function () {
-        view.$('.mailpoet_input_preheader').val('a new testing preheader').trigger('change');
+        view
+          .$('.mailpoet_input_preheader')
+          .val('a new testing preheader')
+          .trigger('change');
         expect(model.get('preheader')).to.equal('a new testing preheader');
       });
     });

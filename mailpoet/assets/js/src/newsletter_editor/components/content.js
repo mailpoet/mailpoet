@@ -47,14 +47,21 @@ Module.getBody = function getBody() {
   return {
     content: App._contentContainer.toJSON(),
     globalStyles: App.getGlobalStyles().toJSON(),
-    blockDefaults: _.omit(App.getConfig().toJSON().blockDefaults, 'text', 'image'),
+    blockDefaults: _.omit(
+      App.getConfig().toJSON().blockDefaults,
+      'text',
+      'image',
+    ),
   };
 };
 
 Module.toJSON = function toJSON() {
-  return _.extend({
-    body: Module.getBody(),
-  }, App.getNewsletter().toJSON());
+  return _.extend(
+    {
+      body: Module.getBody(),
+    },
+    App.getNewsletter().toJSON(),
+  );
 };
 
 Module.getNewsletter = function getNewsletter() {
@@ -73,7 +80,9 @@ Module.renderContent = function renderContent(content) {
   if (App._contentContainerView) {
     App._contentContainerView.destroy();
   }
-  App._contentContainer = new (App.getBlockTypeModel('container'))(content, { parse: true });
+  App._contentContainer = new (App.getBlockTypeModel('container'))(content, {
+    parse: true,
+  });
   App._contentContainerView = new (App.getBlockTypeView('container'))({
     model: App._contentContainer,
     renderOptions: { depth: 0 },
@@ -92,25 +101,33 @@ App.on('before:start', function appBeforeStart(Application, options) {
   BeforeStartApp.getNewsletter = Module.getNewsletter;
   BeforeStartApp.findModels = Module.findModels;
 
-  Module.newsletter = new Module.NewsletterModel(_.omit(_.clone(options.newsletter), ['body']));
+  Module.newsletter = new Module.NewsletterModel(
+    _.omit(_.clone(options.newsletter), ['body']),
+  );
 });
 
 App.on('start', function appOnStart(Application, options) {
   var StartApp = Application;
   var body = options.newsletter.body;
-  var bodyContent = (_.has(body, 'content')) ? body.content : {};
+  var bodyContent = _.has(body, 'content') ? body.content : {};
 
-  if (!_.has(options.newsletter, 'body') || !_.isObject(options.newsletter.body)) {
-    MailPoet.Notice.error(
-      MailPoet.I18n.t('newsletterBodyIsCorrupted'),
-      { static: true }
-    );
+  if (
+    !_.has(options.newsletter, 'body') ||
+    !_.isObject(options.newsletter.body)
+  ) {
+    MailPoet.Notice.error(MailPoet.I18n.t('newsletterBodyIsCorrupted'), {
+      static: true,
+    });
   }
   Module.renderContent(bodyContent);
 
-  StartApp.getChannel().on('historyUpdate', function onHistoryUpdate(json) {
-    Module.renderContent(json.content);
-  }, this);
+  StartApp.getChannel().on(
+    'historyUpdate',
+    function onHistoryUpdate(json) {
+      Module.renderContent(json.content);
+    },
+    this,
+  );
 });
 
 export default Module;

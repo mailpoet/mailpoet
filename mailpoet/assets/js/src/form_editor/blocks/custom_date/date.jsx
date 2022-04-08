@@ -8,21 +8,20 @@ function FormFieldDateYear(props) {
   const years = [];
 
   if (props.placeholder !== undefined) {
-    years.push((
-      <option value="" key={0}>{ props.placeholder }</option>
-    ));
+    years.push(
+      <option value="" key={0}>
+        {props.placeholder}
+      </option>,
+    );
   }
 
   const currentYear = moment().year();
   for (let i = currentYear; i >= currentYear - yearsRange; i -= 1) {
-    years.push((
-      <option
-        key={i}
-        value={i}
-      >
-        { i }
-      </option>
-    ));
+    years.push(
+      <option key={i} value={i}>
+        {i}
+      </option>,
+    );
   }
   return (
     <select
@@ -31,7 +30,7 @@ function FormFieldDateYear(props) {
       onChange={props.onValueChange}
       className={classnames({ mailpoet_date_year: props.addDefaultClasses })}
     >
-      { years }
+      {years}
     </select>
   );
 }
@@ -40,10 +39,7 @@ FormFieldDateYear.propTypes = {
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
   onValueChange: PropTypes.func.isRequired,
-  year: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]).isRequired,
+  year: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   addDefaultClasses: PropTypes.bool.isRequired,
 };
 
@@ -51,20 +47,19 @@ function FormFieldDateMonth(props) {
   const months = [];
 
   if (props.placeholder !== undefined) {
-    months.push((
-      <option value="" key={0}>{ props.placeholder }</option>
-    ));
+    months.push(
+      <option value="" key={0}>
+        {props.placeholder}
+      </option>,
+    );
   }
 
   for (let i = 1; i <= 12; i += 1) {
-    months.push((
-      <option
-        key={i}
-        value={i}
-      >
-        { props.monthNames[i - 1] }
-      </option>
-    ));
+    months.push(
+      <option key={i} value={i}>
+        {props.monthNames[i - 1]}
+      </option>,
+    );
   }
   return (
     <select
@@ -73,7 +68,7 @@ function FormFieldDateMonth(props) {
       onChange={props.onValueChange}
       className={classnames({ mailpoet_date_month: props.addDefaultClasses })}
     >
-      { months }
+      {months}
     </select>
   );
 }
@@ -82,10 +77,7 @@ FormFieldDateMonth.propTypes = {
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
   onValueChange: PropTypes.func.isRequired,
-  month: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]).isRequired,
+  month: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   monthNames: PropTypes.arrayOf(PropTypes.string).isRequired,
   addDefaultClasses: PropTypes.bool.isRequired,
 };
@@ -94,20 +86,19 @@ function FormFieldDateDay(props) {
   const days = [];
 
   if (props.placeholder !== undefined) {
-    days.push((
-      <option value="" key={0}>{ props.placeholder }</option>
-    ));
+    days.push(
+      <option value="" key={0}>
+        {props.placeholder}
+      </option>,
+    );
   }
 
   for (let i = 1; i <= 31; i += 1) {
-    days.push((
-      <option
-        key={i}
-        value={i}
-      >
-        { i }
-      </option>
-    ));
+    days.push(
+      <option key={i} value={i}>
+        {i}
+      </option>,
+    );
   }
 
   return (
@@ -117,7 +108,7 @@ function FormFieldDateDay(props) {
       onChange={props.onValueChange}
       className={classnames({ mailpoet_date_day: props.addDefaultClasses })}
     >
-      { days }
+      {days}
     </select>
   );
 }
@@ -126,10 +117,7 @@ FormFieldDateDay.propTypes = {
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
   onValueChange: PropTypes.func.isRequired,
-  day: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]).isRequired,
+  day: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   addDefaultClasses: PropTypes.bool.isRequired,
 };
 
@@ -151,8 +139,9 @@ class FormFieldDate extends Component {
 
   componentDidUpdate(prevProps) {
     if (
-      (this.props.item !== undefined && prevProps.item !== undefined)
-      && (this.props.item.id !== prevProps.item.id)
+      this.props.item !== undefined &&
+      prevProps.item !== undefined &&
+      this.props.item.id !== prevProps.item.id
     ) {
       this.extractDateParts();
     }
@@ -169,16 +158,19 @@ class FormFieldDate extends Component {
 
       const value = Number(e.target.value);
 
-      this.setState({
-        [`${property}`]: value,
-      }, () => {
-        this.props.onValueChange({
-          target: {
-            name: field,
-            value: this.formatValue(),
-          },
-        });
-      });
+      this.setState(
+        {
+          [`${property}`]: value,
+        },
+        () => {
+          this.props.onValueChange({
+            target: {
+              name: field,
+              value: this.formatValue(),
+            },
+          });
+        },
+      );
     }
   }
 
@@ -225,9 +217,10 @@ class FormFieldDate extends Component {
   }
 
   extractDateParts() {
-    const value = (this.props.item[this.props.field.name] !== undefined)
-      ? this.props.item[this.props.field.name].trim()
-      : '';
+    const value =
+      this.props.item[this.props.field.name] !== undefined
+        ? this.props.item[this.props.field.name].trim()
+        : '';
 
     if (value === '') {
       return;
@@ -296,11 +289,7 @@ class FormFieldDate extends Component {
       }
     });
 
-    return (
-      <div>
-        {fields}
-      </div>
-    );
+    return <div>{fields}</div>;
   }
 }
 
