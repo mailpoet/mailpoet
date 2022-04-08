@@ -6,7 +6,8 @@ import ListingBulkActions from 'listing/bulk_actions.jsx';
 import ListingItem from 'listing/listing_item.jsx';
 import { Grid } from 'common/grid';
 
-class ListingItems extends Component { // eslint-disable-line react/prefer-stateless-function, max-len
+// eslint-disable-next-line react/prefer-stateless-function, max-len
+class ListingItems extends Component {
   render() {
     if (this.props.items.length === 0) {
       let message;

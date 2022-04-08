@@ -10,19 +10,23 @@ import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup'; // es
 var BL = BehaviorsLookup;
 
 BL.SortableBehavior = Marionette.Behavior.extend({
-  onRender: function () { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  onRender: function () {
     var collection = this.view.collection;
 
     if (_.isFunction(this.$el.sortable)) {
       this.$el.sortable({
         cursor: 'move',
-        start: function (event, ui) { // eslint-disable-line func-names
+        // eslint-disable-next-line func-names
+        start: function (event, ui) {
           ui.item.data('previousIndex', ui.item.index());
         },
-        end: function (event, ui) { // eslint-disable-line func-names
+        // eslint-disable-next-line func-names
+        end: function (event, ui) {
           ui.item.removeData('previousIndex');
         },
-        update: function (event, ui) { // eslint-disable-line func-names
+        // eslint-disable-next-line func-names
+        update: function (event, ui) {
           var previousIndex = ui.item.data('previousIndex');
           var newIndex = ui.item.index();
           var model = collection.at(previousIndex);

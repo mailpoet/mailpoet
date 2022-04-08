@@ -43,10 +43,12 @@ Module.StylesModel = SuperModel.extend({
       backgroundColor: '#cccccc',
     },
   },
-  initialize: function (data) { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  initialize: function (data) {
     // apply model defaults recursively (not only on top level)
     this.set(jQuery.extend(true, {}, this.defaults, data));
-    this.on('change', function () { App.getChannel().trigger('autoSave'); }); // eslint-disable-line func-names
+    // eslint-disable-next-line func-names
+    this.on('change', function () { App.getChannel().trigger('autoSave'); });
     App.getChannel().on('historyUpdate', this.onHistoryUpdate, this);
   },
 
@@ -56,8 +58,10 @@ Module.StylesModel = SuperModel.extend({
 });
 
 Module.StylesView = Marionette.View.extend({
-  getTemplate: function () { return window.templates.styles; }, // eslint-disable-line func-names
-  templateContext: function () { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  getTemplate: function () { return window.templates.styles; },
+  // eslint-disable-next-line func-names
+  templateContext: function () {
     return {
       isWoocommerceTransactional: this.isWoocommerceTransactional,
     };
@@ -65,27 +69,36 @@ Module.StylesView = Marionette.View.extend({
   modelEvents: {
     change: 'render',
   },
-  serializeData: function () { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  serializeData: function () {
     return this.model.toJSON();
   },
-  initialize: function (options) { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  initialize: function (options) {
     this.isWoocommerceTransactional = options.isWoocommerceTransactional;
   },
 });
 
 Module._globalStyles = new SuperModel();
-Module.getGlobalStyles = function () { // eslint-disable-line func-names
+
+// eslint-disable-next-line func-names
+Module.getGlobalStyles = function () {
   return Module._globalStyles;
 };
-Module.setGlobalStyles = function (options) { // eslint-disable-line func-names
+
+// eslint-disable-next-line func-names
+Module.setGlobalStyles = function (options) {
   Module._globalStyles = new Module.StylesModel(options);
   return Module._globalStyles;
 };
-Module.getAvailableStyles = function () { // eslint-disable-line func-names
+
+// eslint-disable-next-line func-names
+Module.getAvailableStyles = function () {
   return App.getConfig().get('availableStyles');
 };
 
-App.on('before:start', function (BeforeStartApp, options) { // eslint-disable-line func-names
+// eslint-disable-next-line func-names
+App.on('before:start', function (BeforeStartApp, options) {
   var Application = BeforeStartApp;
   var body;
   var globalStyles;
@@ -101,7 +114,8 @@ App.on('before:start', function (BeforeStartApp, options) { // eslint-disable-li
   this.setGlobalStyles(jQuery.extend(true, {}, globalStyles, overriddenGlobalStyles));
 });
 
-App.on('start', function (StartApp) { // eslint-disable-line func-names
+// eslint-disable-next-line func-names
+App.on('start', function (StartApp) {
   var stylesView = new Module.StylesView({
     model: StartApp.getGlobalStyles(),
     isWoocommerceTransactional: App.getNewsletter().isWoocommerceTransactional(),

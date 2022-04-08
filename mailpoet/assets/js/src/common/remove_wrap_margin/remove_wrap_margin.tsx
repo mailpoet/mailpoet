@@ -1,9 +1,9 @@
 function RemoveWrapMargin() {
   return (
-    <>
-      {/* eslint-disable-next-line react/no-danger */}
-      <style dangerouslySetInnerHTML={{ __html: '.wrap { margin: 0 !important; }' }} />
-    </>
+    <style
+      /* eslint-disable-next-line react/no-danger */
+      dangerouslySetInnerHTML={{ __html: '.wrap { margin: 0 !important; }' }}
+    />
   );
 }
 

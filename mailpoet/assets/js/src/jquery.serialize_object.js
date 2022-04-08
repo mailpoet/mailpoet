@@ -19,12 +19,14 @@ var $ = jQuery;
      * Dual licensed under the MIT and GPL licenses.
      * http://benalman.com/about/license/
      */
-$.fn.mailpoetSerializeObject = function (coerce) { // eslint-disable-line func-names
+// eslint-disable-next-line func-names
+$.fn.mailpoetSerializeObject = function (coerce) {
   var obj = {};
   var coerceTypes = { true: !0, false: !1, null: null };
 
   // Iterate over all name=value pairs.
-  $.each(this.serializeArray(), function (j, v) { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  $.each(this.serializeArray(), function (j, v) {
     var key = v.name;
     var val = v.value;
     var cur = obj;

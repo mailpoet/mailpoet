@@ -4,10 +4,10 @@ type Props = {
 
 function Background({ color }: Props) {
   return (
-    <>
-      {/* eslint-disable-next-line react/no-danger */}
-      <style dangerouslySetInnerHTML={{ __html: `body { background: ${color}; }` }} />
-    </>
+    <style
+      /* eslint-disable-next-line react/no-danger */
+      dangerouslySetInnerHTML={{ __html: `body { background: ${color}; }` }}
+    />
   );
 }
 

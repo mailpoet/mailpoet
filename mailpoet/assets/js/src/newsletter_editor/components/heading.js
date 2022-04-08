@@ -7,14 +7,17 @@ import MailPoet from 'mailpoet'; // eslint-disable-line func-names
 var Module = {};
 
 Module.HeadingView = Marionette.View.extend({
-  getTemplate: function () { return window.templates.heading; }, // eslint-disable-line func-names
-  templateContext: function () { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  getTemplate: function () { return window.templates.heading; },
+  // eslint-disable-next-line func-names
+  templateContext: function () {
     return {
       model: this.model.toJSON(),
       isWoocommerceTransactional: this.model.isWoocommerceTransactional(),
     };
   },
-  events: function () { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  events: function () {
     return {
       'change .mailpoet_input_title': _.partial(this.changeField, 'subject'),
       'change .mailpoet_input_preheader': _.partial(this.changeField, 'preheader'),
@@ -23,12 +26,14 @@ Module.HeadingView = Marionette.View.extend({
       },
     };
   },
-  changeField: function (field, event) { // eslint-disable-line func-names
+  // eslint-disable-next-line func-names
+  changeField: function (field, event) {
     this.model.set(field, jQuery(event.target).val());
   },
 });
 
-App.on('start', function (StartApp) { // eslint-disable-line func-names
+// eslint-disable-next-line func-names
+App.on('start', function (StartApp) {
   var model = StartApp.getNewsletter();
   StartApp._appView.showChildView('headingRegion', new Module.HeadingView({ model: model }));
   if (!model.isWoocommerceTransactional()) {
