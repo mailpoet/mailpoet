@@ -5,7 +5,8 @@
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "airbnb",
     "airbnb-typescript",
-    "plugin:react/jsx-runtime"
+    "plugin:react/jsx-runtime",
+    "prettier"
   ],
   "env": {
     "amd": true,
