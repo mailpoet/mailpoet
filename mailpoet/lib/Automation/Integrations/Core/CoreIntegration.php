@@ -4,7 +4,7 @@ namespace MailPoet\Automation\Integrations\Core;
 
 use MailPoet\Automation\Engine\Integration;
 use MailPoet\Automation\Engine\Registry;
-use MailPoet\Automation\Integrations\Core\Actions\WaitAction;
+use MailPoet\Automation\Integrations\Core\Actions\Wait\Action as WaitAction;
 
 class CoreIntegration implements Integration {
   /** @var WaitAction */
