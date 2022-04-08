@@ -41,7 +41,6 @@
     "@typescript-eslint/no-unsafe-call": 0, // this needs to match the one defined for free plugin
     "@typescript-eslint/no-unsafe-assignment": 0, // this needs to match the one defined for free plugin
     "import/extensions": 0, // we wouldn't be able to import jQuery without this line
-    "import/no-named-as-default": 0, // we use named default exports at the moment
     "import/prefer-default-export": 0, // we want to stop using default exports and start using named exports
     "react/destructuring-assignment": 0, // that would be too many changes to fix this one
     "prefer-destructuring": 0, // that would be too many changes to fix this one
@@ -57,7 +56,8 @@
       {
         "either": "either" // control has to be either nested or associated via htmlFor
       }
-    ]
+    ],
+    "import/no-default-export": 1 // no default exports
   },
   "overrides": [
     {
@@ -66,7 +66,8 @@
         "import/no-extraneous-dependencies": [
           "error",
           { "devDependencies": true }
-        ]
+        ],
+        "import/no-default-export": 0
       }
     }
   ]

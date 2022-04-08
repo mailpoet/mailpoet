@@ -81,7 +81,8 @@
       {
         "either": "either" // control has to be either nested or associated via htmlFor
       }
-    ]
+    ],
+    "import/no-default-export": 1 // no default exports
   },
   "overrides": [
     {
@@ -89,16 +90,15 @@
       "rules": {
         "no-unused-expressions": "off"
       }
-    }
-  ],
-  "overrides": [
+    },
     {
       "files": ["**/_stories/*.tsx"],
       "rules": {
         "import/no-extraneous-dependencies": [
           "error",
           { "devDependencies": true }
-        ]
+        ],
+        "import/no-default-export": 0
       }
     },
     {
