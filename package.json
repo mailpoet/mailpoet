@@ -4,6 +4,7 @@
     "npm": "^8.1"
   },
   "devDependencies": {
+    "lint-staged": "^12.3.7",
     "prettier": "2.6.2"
   }
 }
