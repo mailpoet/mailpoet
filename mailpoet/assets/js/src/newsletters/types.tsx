@@ -34,7 +34,7 @@ function NewsletterTypes({
   history,
   hideClosingButton = false,
   hideScreenOptions = true,
-}: Props) : JSX.Element {
+}: Props): JSX.Element {
   const [isCreating, setIsCreating] = useState(false);
 
   const setupNewsletter = (type): void => {
@@ -65,7 +65,7 @@ function NewsletterTypes({
         MailPoet.trackEvent('Emails > WooCommerce email customizer enabled');
       } catch (response) {
         if (isErrorResponse(response) && response.errors.length > 0) {
-          return (<APIErrorsNotice errors={response.errors} />);
+          return <APIErrorsNotice errors={response.errors} />;
         }
         return null;
       }
@@ -75,28 +75,37 @@ function NewsletterTypes({
   };
 
   const renderType = (type): JSX.Element => {
-    const badgeClassName = (window.mailpoet_is_new_user === true) ? 'mailpoet_badge mailpoet_badge_video' : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey';
+    const badgeClassName =
+      window.mailpoet_is_new_user === true
+        ? 'mailpoet_badge mailpoet_badge_video'
+        : 'mailpoet_badge mailpoet_badge_video mailpoet_badge_video_grey';
 
     return (
-      <div key={type.slug} data-type={type.slug} className="mailpoet-newsletter-type">
+      <div
+        key={type.slug}
+        data-type={type.slug}
+        className="mailpoet-newsletter-type"
+      >
         <div className="mailpoet-newsletter-type-image" />
         <div className="mailpoet-newsletter-type-content">
           <Heading level={4}>
-            {type.title}
-            {' '}
-            {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}
+            {type.title} {type.beta ? `(${MailPoet.I18n.t('beta')})` : ''}
           </Heading>
           <p>{type.description}</p>
-          { type.videoGuide && (
-            <a className={badgeClassName} href={type.videoGuide} data-beacon-article={type.videoGuideBeacon} target="_blank" rel="noopener noreferrer">
+          {type.videoGuide && (
+            <a
+              className={badgeClassName}
+              href={type.videoGuide}
+              data-beacon-article={type.videoGuideBeacon}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <span className="dashicons dashicons-format-video" />
               {MailPoet.I18n.t('seeVideoGuide')}
             </a>
-          ) }
+          )}
           <div className="mailpoet-flex-grow" />
-          <div className="mailpoet-newsletter-type-action">
-            {type.action}
-          </div>
+          <div className="mailpoet-newsletter-type-action">{type.action}</div>
         </div>
       </div>
     );
@@ -118,7 +127,9 @@ function NewsletterTypes({
             onClick={openWooCommerceCustomizer}
             tabIndex={0}
             onKeyDown={async (event): Promise<void> => {
-              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+              if (
+                ['keydown', 'keypress'].includes(event.type) &&
+                ['Enter', ' '].includes(event.key)
               ) {
                 event.preventDefault();
                 await openWooCommerceCustomizer();
@@ -153,12 +164,10 @@ function NewsletterTypes({
             </div>
           )}
 
-          <AutomaticEmailEventsList
-            email={email}
-            history={history}
-          />
+          <AutomaticEmailEventsList email={email} history={history} />
 
-          {email.slug === 'woocommerce' && getAdditionalTypes().map((type) => renderType(type), this)}
+          {email.slug === 'woocommerce' &&
+            getAdditionalTypes().map((type) => renderType(type), this)}
         </Fragment>
       );
     });
@@ -177,21 +186,29 @@ function NewsletterTypes({
         type,
         subject: MailPoet.I18n.t('draftNewsletterTitle'),
       },
-    }).done((response) => {
-      history.push(`/template/${response.data.id}`);
-    }).fail((response) => {
-      setIsCreating(false);
-      if (response.errors.length > 0) {
-        return (<APIErrorsNotice errors={response.errors} />);
-      }
-      return null;
-    });
+    })
+      .done((response) => {
+        history.push(`/template/${response.data.id}`);
+      })
+      .fail((response) => {
+        setIsCreating(false);
+        if (response.errors.length > 0) {
+          return <APIErrorsNotice errors={response.errors} />;
+        }
+        return null;
+      });
   };
 
   const createStandardNewsletter = _.partial(createNewsletter, 'standard');
-  const createNotificationNewsletter = _.partial(setupNewsletter, 'notification');
+  const createNotificationNewsletter = _.partial(
+    setupNewsletter,
+    'notification',
+  );
   const createWelcomeNewsletter = _.partial(setupNewsletter, 'welcome');
-  const createReEngagementNewsletter = _.partial(setupNewsletter, 're-engagement');
+  const createReEngagementNewsletter = _.partial(
+    setupNewsletter,
+    're-engagement',
+  );
 
   const defaultTypes = [
     {
@@ -205,7 +222,9 @@ function NewsletterTypes({
           tabIndex={0}
           withSpinner={isCreating}
           onKeyDown={(event): void => {
-            if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+            if (
+              ['keydown', 'keypress'].includes(event.type) &&
+              ['Enter', ' '].includes(event.key)
             ) {
               event.preventDefault();
               createStandardNewsletter();
@@ -220,7 +239,8 @@ function NewsletterTypes({
       slug: 'welcome',
       title: MailPoet.I18n.t('welcomeNewsletterTypeTitle'),
       description: MailPoet.I18n.t('welcomeNewsletterTypeDescription'),
-      videoGuide: 'https://kb.mailpoet.com/article/254-video-guide-to-welcome-emails',
+      videoGuide:
+        'https://kb.mailpoet.com/article/254-video-guide-to-welcome-emails',
       videoGuideBeacon: '5b05ebf20428635ba8b2aa53',
       action: (
         <Button
@@ -228,7 +248,9 @@ function NewsletterTypes({
           automationId="create_welcome"
           withSpinner={isCreating}
           onKeyDown={(event): void => {
-            if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+            if (
+              ['keydown', 'keypress'].includes(event.type) &&
+              ['Enter', ' '].includes(event.key)
             ) {
               event.preventDefault();
               createWelcomeNewsletter();
@@ -244,7 +266,8 @@ function NewsletterTypes({
       slug: 'notification',
       title: MailPoet.I18n.t('postNotificationNewsletterTypeTitle'),
       description: MailPoet.I18n.t('postNotificationNewsletterTypeDescription'),
-      videoGuide: 'https://kb.mailpoet.com/article/210-video-guide-to-post-notifications',
+      videoGuide:
+        'https://kb.mailpoet.com/article/210-video-guide-to-post-notifications',
       videoGuideBeacon: '59ba6fb3042863033a1cd5a5',
       action: (
         <Button
@@ -253,7 +276,9 @@ function NewsletterTypes({
           withSpinner={isCreating}
           tabIndex={0}
           onKeyDown={(event): void => {
-            if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+            if (
+              ['keydown', 'keypress'].includes(event.type) &&
+              ['Enter', ' '].includes(event.key)
             ) {
               event.preventDefault();
               createNotificationNewsletter();
@@ -275,7 +300,9 @@ function NewsletterTypes({
           withSpinner={isCreating}
           tabIndex={0}
           onKeyDown={(event): void => {
-            if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+            if (
+              ['keydown', 'keypress'].includes(event.type) &&
+              ['Enter', ' '].includes(event.key)
             ) {
               event.preventDefault();
               createReEngagementNewsletter();
@@ -288,9 +315,11 @@ function NewsletterTypes({
     },
   ];
 
-  let types = Hooks.applyFilters('mailpoet_newsletters_types', [
-    ...defaultTypes,
-  ], this);
+  let types = Hooks.applyFilters(
+    'mailpoet_newsletters_types',
+    [...defaultTypes],
+    this,
+  );
   if (filter) {
     types = types.filter(filter);
   }
@@ -304,12 +333,22 @@ function NewsletterTypes({
   return (
     <>
       {hideScreenOptions && <HideScreenOptions />}
-      <link rel="prefetch" href={window.mailpoet_editor_javascript_url} as="script" />
+      <link
+        rel="prefetch"
+        href={window.mailpoet_editor_javascript_url}
+        as="script"
+      />
 
       <div className="mailpoet-newsletter-types">
         {!hideClosingButton && (
           <div className="mailpoet-newsletter-types-close">
-            <button type="button" onClick={(): void => history.push('/')} className="mailpoet-modal-close">{ModalCloseIcon}</button>
+            <button
+              type="button"
+              onClick={(): void => history.push('/')}
+              className="mailpoet-modal-close"
+            >
+              {ModalCloseIcon}
+            </button>
           </div>
         )}
 
@@ -329,4 +368,6 @@ NewsletterTypes.defaultProps = {
   hideClosingButton: false,
 };
 
-export default withRouter(NewsletterTypes as ComponentType<RouteComponentProps>);
+export default withRouter(
+  NewsletterTypes as ComponentType<RouteComponentProps>,
+);

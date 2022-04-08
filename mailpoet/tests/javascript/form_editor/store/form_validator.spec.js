@@ -155,7 +155,8 @@ describe('Form validator', () => {
       },
     };
     const blocks = [emailBlock, submitBlock];
-    const formDataError = 'formData.settings.segments are expected to be an array.';
+    const formDataError =
+      'formData.settings.segments are expected to be an array.';
     expect(() => validate(null, blocks)).to.throw(formDataError);
     expect(() => validate({ settings: {} }, blocks)).to.throw(formDataError);
     const blocksError = 'formBlocks are expected to be an array.';

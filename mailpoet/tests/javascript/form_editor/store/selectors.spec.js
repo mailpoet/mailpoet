@@ -7,13 +7,17 @@ describe('Selectors', () => {
       const state = {
         formBlocks: [],
       };
-      expect(selectors.getClosestParentAttribute(state, 'id', 'attr')).to.equal(null);
+      expect(selectors.getClosestParentAttribute(state, 'id', 'attr')).to.equal(
+        null,
+      );
     });
 
     it('Should return null if block is found on top level', () => {
       const formBlocks = [{ clientId: 'id' }];
       const state = { formBlocks };
-      expect(selectors.getClosestParentAttribute(state, 'id', 'attr')).to.equal(null);
+      expect(selectors.getClosestParentAttribute(state, 'id', 'attr')).to.equal(
+        null,
+      );
     });
 
     it('Should return parent attribute of the closest parent with the attribute', () => {
@@ -71,9 +75,7 @@ describe('Selectors', () => {
 
     it('Should return true for one record in history', () => {
       const state = {
-        editorHistory: [
-          { data: 'some data' },
-        ],
+        editorHistory: [{ data: 'some data' }],
         editorHistoryOffset: 0,
       };
       expect(selectors.hasEditorUndo(state)).to.equal(true);
@@ -81,10 +83,7 @@ describe('Selectors', () => {
 
     it('Should return false for two records in history on offset one', () => {
       const state = {
-        editorHistory: [
-          { data: 'some data 1' },
-          { data: 'some data 2' },
-        ],
+        editorHistory: [{ data: 'some data 1' }, { data: 'some data 2' }],
         editorHistoryOffset: 1,
       };
       expect(selectors.hasEditorUndo(state)).to.equal(false);
@@ -114,10 +113,7 @@ describe('Selectors', () => {
 
     it('Should return true for two records in history on offset one', () => {
       const state = {
-        editorHistory: [
-          { data: 'some data 1' },
-          { data: 'some data 2' },
-        ],
+        editorHistory: [{ data: 'some data 1' }, { data: 'some data 2' }],
         editorHistoryOffset: 1,
       };
       expect(selectors.hasEditorRedo(state)).to.equal(true);

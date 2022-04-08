@@ -16,16 +16,10 @@ export function Column({
 }: Props): ReactElement {
   return (
     <div
-      className={
-      classnames(
-        className,
-        'mailpoet-grid-column',
-        {
-          [`mailpoet-grid-column-${dimension}`]: dimension,
-          [`mailpoet-grid-column-${align}`]: align,
-        },
-      )
-    }
+      className={classnames(className, 'mailpoet-grid-column', {
+        [`mailpoet-grid-column-${dimension}`]: dimension,
+        [`mailpoet-grid-column-${align}`]: align,
+      })}
     >
       {children}
     </div>

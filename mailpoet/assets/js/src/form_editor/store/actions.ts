@@ -12,7 +12,9 @@ export function toggleSidebar(toggleTo): ToggleAction {
   };
 }
 
-export function toggleInserter(toggleTo: BlockInsertionPoint | boolean): ToggleBlockInserterAction {
+export function toggleInserter(
+  toggleTo: BlockInsertionPoint | boolean,
+): ToggleBlockInserterAction {
   return {
     type: 'TOGGLE_INSERTER_SIDEBAR',
     value: toggleTo,
@@ -213,13 +215,23 @@ export function* showPreview() {
     type: 'SHOW_PREVIEW',
   };
   yield changeActiveSidebar('default');
-  const customFields = select('mailpoet-form-editor').getAllAvailableCustomFields();
+  const customFields = select(
+    'mailpoet-form-editor',
+  ).getAllAvailableCustomFields();
   const formData = select('mailpoet-form-editor').getFormData();
   const formBlocks = select('mailpoet-form-editor').getFormBlocks();
   const blocksToFormBody = blocksToFormBodyFactory(
-    SETTINGS_DEFAULTS.fontSizes as { name: string; slug: string; size: number; }[],
-    SETTINGS_DEFAULTS.colors as { name: string; slug: string; color: string; }[],
-    SETTINGS_DEFAULTS.gradients as { name: string; slug: string; gradient: string; }[],
+    SETTINGS_DEFAULTS.fontSizes as {
+      name: string;
+      slug: string;
+      size: number;
+    }[],
+    SETTINGS_DEFAULTS.colors as { name: string; slug: string; color: string }[],
+    SETTINGS_DEFAULTS.gradients as {
+      name: string;
+      slug: string;
+      gradient: string;
+    }[],
     customFields,
   );
   const { success, error } = yield {

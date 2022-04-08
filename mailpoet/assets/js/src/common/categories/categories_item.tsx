@@ -20,10 +20,7 @@ function CategoriesItem({
   automationId,
   active,
 }: Props) {
-  const classes = classNames(
-    'mailpoet-categories-item',
-    { active: !!active },
-  );
+  const classes = classNames('mailpoet-categories-item', { active: !!active });
 
   return (
     <a
@@ -41,7 +38,7 @@ function CategoriesItem({
       </span>
       {count > 0 && (
         <span className="mailpoet-categories-count">
-          { parseInt(count.toString(), 10).toLocaleString() }
+          {parseInt(count.toString(), 10).toLocaleString()}
         </span>
       )}
     </a>

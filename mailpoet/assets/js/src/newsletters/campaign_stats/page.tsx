@@ -39,35 +39,43 @@ function CampaignStatsPage({ match, history, location }: Props) {
     loading: true,
   });
 
-  const loadItem = useCallback((id) => {
-    setState({ loading: true, item: state.item });
-    MailPoet.Modal.loading(true);
+  const loadItem = useCallback(
+    (id) => {
+      setState({ loading: true, item: state.item });
+      MailPoet.Modal.loading(true);
 
-    void MailPoet.Ajax.post({
-      api_version: MailPoet.apiVersion,
-      endpoint: window.mailpoet_display_detailed_stats ? 'stats' : 'newsletters',
-      action: window.mailpoet_display_detailed_stats ? 'get' : 'getWithStats',
-      data: {
-        id,
-      },
-    }).always(() => {
-      MailPoet.Modal.loading(false);
-    }).done((response) => {
-      setState({
-        loading: false,
-        item: response.data,
-      });
-    }).fail((response:ErrorResponse) => {
-      MailPoet.Notice.error(
-        response.errors.map((error) => error.message),
-        { scroll: true },
-      );
-      setState({
-        loading: false,
-      });
-      history.push('/');
-    });
-  }, [history, state.item]);
+      void MailPoet.Ajax.post({
+        api_version: MailPoet.apiVersion,
+        endpoint: window.mailpoet_display_detailed_stats
+          ? 'stats'
+          : 'newsletters',
+        action: window.mailpoet_display_detailed_stats ? 'get' : 'getWithStats',
+        data: {
+          id,
+        },
+      })
+        .always(() => {
+          MailPoet.Modal.loading(false);
+        })
+        .done((response) => {
+          setState({
+            loading: false,
+            item: response.data,
+          });
+        })
+        .fail((response: ErrorResponse) => {
+          MailPoet.Notice.error(
+            response.errors.map((error) => error.message),
+            { scroll: true },
+          );
+          setState({
+            loading: false,
+          });
+          history.push('/');
+        });
+    },
+    [history, state.item],
+  );
 
   useEffect(() => {
     // Scroll to top in case we're coming
@@ -112,17 +120,40 @@ function CampaignStatsPage({ match, history, location }: Props) {
 
         <Tabs activeKey="clicked">
           <Tab key="clicked" title={MailPoet.I18n.t('clickedLinks')}>
-            {Hooks.applyFilters('mailpoet_newsletters_clicked_links_table', <PremiumBanner />, newsletter.clicked_links)}
+            {Hooks.applyFilters(
+              'mailpoet_newsletters_clicked_links_table',
+              <PremiumBanner />,
+              newsletter.clicked_links,
+            )}
           </Tab>
 
-          {Hooks.applyFilters('mailpoet_newsletters_purchased_products', null, newsletter)}
+          {Hooks.applyFilters(
+            'mailpoet_newsletters_purchased_products',
+            null,
+            newsletter,
+          )}
 
           <Tab key="engagement" title={MailPoet.I18n.t('subscriberEngagement')}>
-            {Hooks.applyFilters('mailpoet_newsletters_subscriber_engagement', <PremiumBanner />, location, match.params, newsletter)}
+            {Hooks.applyFilters(
+              'mailpoet_newsletters_subscriber_engagement',
+              <PremiumBanner />,
+              location,
+              match.params,
+              newsletter,
+            )}
           </Tab>
 
-          <Tab key="bounces" title={MailPoet.I18n.t('bounces')} automationId="bounces-tab">
-            {Hooks.applyFilters('mailpoet_newsletters_bounces', <PremiumBanner />, location, match.params)}
+          <Tab
+            key="bounces"
+            title={MailPoet.I18n.t('bounces')}
+            automationId="bounces-tab"
+          >
+            {Hooks.applyFilters(
+              'mailpoet_newsletters_bounces',
+              <PremiumBanner />,
+              location,
+              match.params,
+            )}
           </Tab>
         </Tabs>
       </div>

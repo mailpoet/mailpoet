@@ -51,7 +51,9 @@ export function Controls(props) {
         variant="tertiary"
         onClick={props.next}
         onKeyDown={(event) => {
-          if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+          if (
+            ['keydown', 'keypress'].includes(event.type) &&
+            ['Enter', ' '].includes(event.key)
           ) {
             event.preventDefault();
             props.next();
@@ -79,15 +81,16 @@ Controls.defaultProps = {
 function FreePlanSubscribers(props) {
   return (
     <>
-      <Heading level={1}>{MailPoet.I18n.t('welcomeWizardMSSFreeTitle')}</Heading>
+      <Heading level={1}>
+        {MailPoet.I18n.t('welcomeWizardMSSFreeTitle')}
+      </Heading>
 
       <div className="mailpoet-gap" />
       <p>{MailPoet.I18n.t('welcomeWizardMSSFreeSubtitle')}</p>
       <div className="mailpoet-gap" />
 
       <Heading level={5}>
-        {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}
-        :
+        {MailPoet.I18n.t('welcomeWizardMSSFreeListTitle')}:
       </Heading>
       <FreeBenefitsList />
 
@@ -96,7 +99,7 @@ function FreePlanSubscribers(props) {
           MailPoet.subscribersCount,
           MailPoet.currentWpUserEmail,
           'starter',
-          { utm_medium: 'onboarding', utm_campaign: 'purchase' }
+          { utm_medium: 'onboarding', utm_campaign: 'purchase' },
         )}
         next={props.next}
         nextButtonText={MailPoet.I18n.t('welcomeWizardMSSFreeButton')}
@@ -112,13 +115,12 @@ FreePlanSubscribers.propTypes = {
 function NotFreePlanSubscribers(props) {
   return (
     <>
-      <Heading level={1}>{MailPoet.I18n.t('welcomeWizardMSSNotFreeTitle')}</Heading>
+      <Heading level={1}>
+        {MailPoet.I18n.t('welcomeWizardMSSNotFreeTitle')}
+      </Heading>
 
       <div className="mailpoet-gap" />
-      <p>
-        {MailPoet.I18n.t('welcomeWizardMSSNotFreeSubtitle')}
-        :
-      </p>
+      <p>{MailPoet.I18n.t('welcomeWizardMSSNotFreeSubtitle')}:</p>
       <NotFreeBenefitsList />
 
       <Controls
@@ -136,20 +138,16 @@ NotFreePlanSubscribers.propTypes = {
 };
 
 function Step(props) {
-  return (props.subscribersCount < 1000
-    ? (
-      <FreePlanSubscribers
-        mailpoetAccountUrl={props.mailpoetAccountUrl}
-        next={props.next}
-      />
-    )
-    : (
-      <NotFreePlanSubscribers
-        mailpoetAccountUrl={props.purchaseUrl}
-        next={props.next}
-      />
-    )
-
+  return props.subscribersCount < 1000 ? (
+    <FreePlanSubscribers
+      mailpoetAccountUrl={props.mailpoetAccountUrl}
+      next={props.next}
+    />
+  ) : (
+    <NotFreePlanSubscribers
+      mailpoetAccountUrl={props.purchaseUrl}
+      next={props.next}
+    />
   );
 }
 

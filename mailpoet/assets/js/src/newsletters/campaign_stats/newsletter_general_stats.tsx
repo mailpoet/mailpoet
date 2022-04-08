@@ -2,7 +2,10 @@ import ReactStringReplace from 'react-string-replace';
 import MailPoet from 'mailpoet';
 import Hooks from 'wp-js-hooks';
 import { Grid } from 'common/grid';
-import { StatsBadge, getBadgeType } from 'common/listings/newsletter_stats/stats';
+import {
+  StatsBadge,
+  getBadgeType,
+} from 'common/listings/newsletter_stats/stats';
 import Tooltip from 'help-tooltip';
 
 import { NewsletterType } from './newsletter_type';
@@ -16,7 +19,7 @@ const minNewslettersSent = 20;
 const minNewslettersOpened = 5;
 
 // When percentage value is lower then 0.1 we want to display value with two decimal places
-const formatWithOptimalPrecision = (value:number) => {
+const formatWithOptimalPrecision = (value: number) => {
   const precision = value < 0.1 ? 2 : 1;
   return MailPoet.Num.toLocaleFixed(value, precision);
 };
@@ -35,20 +38,28 @@ export function NewsletterGeneralStats({
   if (totalSent > 0) {
     percentageClicked = (newsletter.statistics.clicked * 100) / totalSent;
     percentageOpened = (newsletter.statistics.opened * 100) / totalSent;
-    percentageMachineOpened = (newsletter.statistics.machineOpened * 100) / totalSent;
-    percentageUnsubscribed = (newsletter.statistics.unsubscribed * 100) / totalSent;
+    percentageMachineOpened =
+      (newsletter.statistics.machineOpened * 100) / totalSent;
+    percentageUnsubscribed =
+      (newsletter.statistics.unsubscribed * 100) / totalSent;
     percentageBounced = (newsletter.statistics.bounced * 100) / totalSent;
   }
   // format by decimal places count
-  const percentageClickedDisplay = formatWithOptimalPrecision(percentageClicked);
+  const percentageClickedDisplay =
+    formatWithOptimalPrecision(percentageClicked);
   const percentageOpenedDisplay = formatWithOptimalPrecision(percentageOpened);
-  const percentageMachineOpenedDisplay = formatWithOptimalPrecision(percentageMachineOpened);
-  const percentageUnsubscribedDisplay = formatWithOptimalPrecision(percentageUnsubscribed);
-  const percentageBouncedDisplay = formatWithOptimalPrecision(percentageBounced);
-
-  const displayBadges = ((totalSent >= minNewslettersSent)
-    && (newsletter.statistics.opened >= minNewslettersOpened)
+  const percentageMachineOpenedDisplay = formatWithOptimalPrecision(
+    percentageMachineOpened,
   );
+  const percentageUnsubscribedDisplay = formatWithOptimalPrecision(
+    percentageUnsubscribed,
+  );
+  const percentageBouncedDisplay =
+    formatWithOptimalPrecision(percentageBounced);
+
+  const displayBadges =
+    totalSent >= minNewslettersSent &&
+    newsletter.statistics.opened >= minNewslettersOpened;
 
   const opened = (
     <div className="mailpoet-statistics-value-small">
@@ -80,7 +91,7 @@ export function NewsletterGeneralStats({
                 data-beacon-article="6124b7fb21ef206e5592e188"
                 rel="noopener noreferrer"
               >
-                { match }
+                {match}
               </a>
             </span>
           ),
@@ -113,7 +124,9 @@ export function NewsletterGeneralStats({
   const clicked = (
     <>
       <div className="mailpoet-statistics-value">
-        <span className={`mailpoet-statistics-value-number mailpoet-statistics-value-number-${badgeTypeClicked}`}>
+        <span
+          className={`mailpoet-statistics-value-number mailpoet-statistics-value-number-${badgeTypeClicked}`}
+        >
           {percentageClickedDisplay}
           {'% '}
         </span>
@@ -146,26 +159,24 @@ export function NewsletterGeneralStats({
         <div className="mailpoet-statistics-with-left-separator">
           {unsubscribed}
         </div>
-        <div className="mailpoet-statistics-with-left-separator">
-          {bounced}
-        </div>
+        <div className="mailpoet-statistics-with-left-separator">{bounced}</div>
       </Grid.ThreeColumns>
       <Grid.ThreeColumns>
-        <div>
-          {clicked}
-        </div>
+        <div>{clicked}</div>
         <div className="mailpoet-statistics-with-left-separator">
           {opened}
           {machineOpened}
         </div>
         {isWoocommerceActive && (
           <div className="mailpoet-statistics-with-left-separator">
-            {Hooks.applyFilters('mailpoet_newsletters_revenues_stats', null, newsletter.statistics.revenue)}
+            {Hooks.applyFilters(
+              'mailpoet_newsletters_revenues_stats',
+              null,
+              newsletter.statistics.revenue,
+            )}
           </div>
         )}
-        {!isWoocommerceActive && (
-          <div />
-        )}
+        {!isWoocommerceActive && <div />}
       </Grid.ThreeColumns>
       <p className="mailpoet-stats-general-read-more">
         <a

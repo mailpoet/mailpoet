@@ -26,65 +26,65 @@
               }
             },
             "blocks": [
-            {
-              "type": "automatedLatestContent",
-              "withLayout": true,
-              "amount": "3",
-              "contentType": "post",
-              "terms": [],
-              "inclusionType": "include",
-              "displayType": "excerpt",
-              "titleFormat": "h3",
-              "titleAlignment": "left",
-              "titleIsLink": false,
-              "imageFullWidth": false,
-              "titlePosition": "abovePost",
-              "featuredImagePosition": "alternate",
-              "showAuthor": "no",
-              "authorPrecededBy": "Author:",
-              "showCategories": "no",
-              "categoriesPrecededBy": "Categories:",
-              "readMoreType": "button",
-              "readMoreText": "Read more",
-              "readMoreButton": {
-                "type": "button",
-                "text": "Read the post",
-                "url": "[postLink]",
-                "styles": {
-                  "block": {
-                    "backgroundColor": "#2ea1cd",
-                    "borderColor": "#0074a2",
-                    "borderWidth": "1px",
-                    "borderRadius": "5px",
-                    "borderStyle": "solid",
-                    "width": "160px",
-                    "lineHeight": "30px",
-                    "fontColor": "#ffffff",
-                    "fontFamily": "Verdana",
-                    "fontSize": "16px",
-                    "fontWeight": "normal",
-                    "textAlign": "center"
+              {
+                "type": "automatedLatestContent",
+                "withLayout": true,
+                "amount": "3",
+                "contentType": "post",
+                "terms": [],
+                "inclusionType": "include",
+                "displayType": "excerpt",
+                "titleFormat": "h3",
+                "titleAlignment": "left",
+                "titleIsLink": false,
+                "imageFullWidth": false,
+                "titlePosition": "abovePost",
+                "featuredImagePosition": "alternate",
+                "showAuthor": "no",
+                "authorPrecededBy": "Author:",
+                "showCategories": "no",
+                "categoriesPrecededBy": "Categories:",
+                "readMoreType": "button",
+                "readMoreText": "Read more",
+                "readMoreButton": {
+                  "type": "button",
+                  "text": "Read the post",
+                  "url": "[postLink]",
+                  "styles": {
+                    "block": {
+                      "backgroundColor": "#2ea1cd",
+                      "borderColor": "#0074a2",
+                      "borderWidth": "1px",
+                      "borderRadius": "5px",
+                      "borderStyle": "solid",
+                      "width": "160px",
+                      "lineHeight": "30px",
+                      "fontColor": "#ffffff",
+                      "fontFamily": "Verdana",
+                      "fontSize": "16px",
+                      "fontWeight": "normal",
+                      "textAlign": "center"
+                    }
                   }
-                }
-              },
-              "sortBy": "newest",
-              "showDivider": true,
-              "divider": {
-                "type": "divider",
-                "styles": {
-                  "block": {
-                    "backgroundColor": "transparent",
-                    "padding": "13px",
-                    "borderStyle": "solid",
-                    "borderWidth": "3px",
-                    "borderColor": "#aaaaaa"
+                },
+                "sortBy": "newest",
+                "showDivider": true,
+                "divider": {
+                  "type": "divider",
+                  "styles": {
+                    "block": {
+                      "backgroundColor": "transparent",
+                      "padding": "13px",
+                      "borderStyle": "solid",
+                      "borderWidth": "3px",
+                      "borderColor": "#aaaaaa"
+                    }
                   }
-                }
-              },
-              "backgroundColor": "#ffffff",
-              "backgroundColorAlternate": "#eeeeee"
-            }
-          ]
+                },
+                "backgroundColor": "#ffffff",
+                "backgroundColorAlternate": "#eeeeee"
+              }
+            ]
           }
         ]
       }

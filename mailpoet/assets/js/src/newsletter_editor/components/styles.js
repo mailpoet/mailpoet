@@ -48,7 +48,9 @@ Module.StylesModel = SuperModel.extend({
     // apply model defaults recursively (not only on top level)
     this.set(jQuery.extend(true, {}, this.defaults, data));
     // eslint-disable-next-line func-names
-    this.on('change', function () { App.getChannel().trigger('autoSave'); });
+    this.on('change', function () {
+      App.getChannel().trigger('autoSave');
+    });
     App.getChannel().on('historyUpdate', this.onHistoryUpdate, this);
   },
 
@@ -59,7 +61,9 @@ Module.StylesModel = SuperModel.extend({
 
 Module.StylesView = Marionette.View.extend({
   // eslint-disable-next-line func-names
-  getTemplate: function () { return window.templates.styles; },
+  getTemplate: function () {
+    return window.templates.styles;
+  },
   // eslint-disable-next-line func-names
   templateContext: function () {
     return {
@@ -109,16 +113,21 @@ App.on('before:start', function (BeforeStartApp, options) {
   Application.getAvailableStyles = Module.getAvailableStyles;
 
   body = options.newsletter.body;
-  globalStyles = (_.has(body, 'globalStyles')) ? body.globalStyles : {};
-  overriddenGlobalStyles = (_.has(options.config, 'overrideGlobalStyles')) ? options.config.overrideGlobalStyles : {};
-  this.setGlobalStyles(jQuery.extend(true, {}, globalStyles, overriddenGlobalStyles));
+  globalStyles = _.has(body, 'globalStyles') ? body.globalStyles : {};
+  overriddenGlobalStyles = _.has(options.config, 'overrideGlobalStyles')
+    ? options.config.overrideGlobalStyles
+    : {};
+  this.setGlobalStyles(
+    jQuery.extend(true, {}, globalStyles, overriddenGlobalStyles),
+  );
 });
 
 // eslint-disable-next-line func-names
 App.on('start', function (StartApp) {
   var stylesView = new Module.StylesView({
     model: StartApp.getGlobalStyles(),
-    isWoocommerceTransactional: App.getNewsletter().isWoocommerceTransactional(),
+    isWoocommerceTransactional:
+      App.getNewsletter().isWoocommerceTransactional(),
   });
   StartApp._appView.showChildView('stylesRegion', stylesView);
 });

@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "airbnb/legacy",
-    "prettier"
-  ],
+  "extends": ["airbnb/legacy", "prettier"],
   "env": {
     "amd": true,
     "browser": true

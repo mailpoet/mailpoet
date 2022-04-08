@@ -7,7 +7,7 @@ import { assocPath } from 'lodash/fp';
 import { TextareaControl } from '@wordpress/components';
 import { SizeSettings } from 'form_editor/components/size_settings';
 
-function OtherSettings():JSX.Element {
+function OtherSettings(): JSX.Element {
   const [copyAreaContent, setCopyAreaContent] = useState(null);
 
   const formExports = useSelect(
@@ -30,14 +30,16 @@ function OtherSettings():JSX.Element {
     MailPoet.I18n.t('addFormWidgetHint'),
     /\[link](.*?)\[\/link]/g,
     (match) => (
-      <a key="addFormWidgetHintLink" href="widgets.php" target="_blank">{match}</a>
+      <a key="addFormWidgetHintLink" href="widgets.php" target="_blank">
+        {match}
+      </a>
     ),
   );
 
   const addFormShortcodeHint = ReactStringReplace(
     MailPoet.I18n.t('addFormShortcodeHint'),
     /\[shortcode]/g,
-    (match) => (<code key={match}>{formExports.shortcode}</code>),
+    (match) => <code key={match}>{formExports.shortcode}</code>,
   );
 
   const exportLinkClicked = curry((type, event) => {
@@ -56,9 +58,17 @@ function OtherSettings():JSX.Element {
     /\[link](.*?)\[\/link]/g,
     (match) => {
       if (match === 'PHP') {
-        return (<a key="exportPHP" href="#" onClick={exportLinkClicked('php')}>{match}</a>);
+        return (
+          <a key="exportPHP" href="#" onClick={exportLinkClicked('php')}>
+            {match}
+          </a>
+        );
       }
-      return (<a key="exportIframe" href="#" onClick={exportLinkClicked('iframe')}>{match}</a>);
+      return (
+        <a key="exportIframe" href="#" onClick={exportLinkClicked('iframe')}>
+          {match}
+        </a>
+      );
     },
   );
 
@@ -68,7 +78,7 @@ function OtherSettings():JSX.Element {
       <TextareaControl
         key="copyTextArea"
         readOnly
-        onClick={(event): void => (event.target.select())}
+        onClick={(event): void => event.target.select()}
         rows={8}
         value={copyAreaContent}
       />
@@ -76,9 +86,7 @@ function OtherSettings():JSX.Element {
   };
 
   if (!isFormSaved) {
-    return (
-      <p>{MailPoet.I18n.t('saveFormFirst')}</p>
-    );
+    return <p>{MailPoet.I18n.t('saveFormFirst')}</p>;
   }
 
   return (
@@ -97,9 +105,11 @@ function OtherSettings():JSX.Element {
         maxPercents={100}
         defaultPixelValue={200}
         defaultPercentValue={100}
-        onChange={(width): void => (
-          changeFormSettings(assocPath('formPlacement.others.styles.width', width, formSettings))
-        )}
+        onChange={(width): void =>
+          changeFormSettings(
+            assocPath('formPlacement.others.styles.width', width, formSettings),
+          )
+        }
       />
     </>
   );

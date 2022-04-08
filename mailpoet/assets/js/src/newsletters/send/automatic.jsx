@@ -25,7 +25,9 @@ const getAutomaticEmailFields = (newsletter) => {
           type: 'text',
           validation: {
             'data-parsley-required': true,
-            'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError'),
+            'data-parsley-required-message': MailPoet.I18n.t(
+              'emptySubjectLineError',
+            ),
             maxLength: 250,
           },
         },
@@ -34,7 +36,9 @@ const getAutomaticEmailFields = (newsletter) => {
           customLabel: MailPoet.I18n.t('preheaderLabel'),
           className: 'mailpoet-form-field-preheader',
           placeholder: MailPoet.I18n.t('preheaderLine'),
-          tooltip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t('preheaderLineTip2')}`,
+          tooltip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t(
+            'preheaderLineTip2',
+          )}`,
           type: 'textarea',
           validation: {
             maxLength: 250,
@@ -44,7 +48,10 @@ const getAutomaticEmailFields = (newsletter) => {
     },
     {
       name: 'options',
-      label: MailPoet.I18n.t('sendAutomaticEmailWhenHeading').replace('%1s', email.title),
+      label: MailPoet.I18n.t('sendAutomaticEmailWhenHeading').replace(
+        '%1s',
+        email.title,
+      ),
       type: 'reactComponent',
       component: SendEventConditions,
       email,

@@ -5,10 +5,13 @@ import BaseBlock from 'newsletter_editor/blocks/base';
 const BlockModel = BaseBlock.BlockModel.extend({
   stale: ['contents', 'selected'],
   defaults() {
-    return this._getDefaults({
-      type: 'woocommerceHeading',
-      selected: 'completed_order',
-    }, App.getConfig().get('blockDefaults.woocommerceHeading'));
+    return this._getDefaults(
+      {
+        type: 'woocommerceHeading',
+        selected: 'completed_order',
+      },
+      App.getConfig().get('blockDefaults.woocommerceHeading'),
+    );
   },
 });
 
@@ -17,8 +20,12 @@ const BlockToolsView = BaseBlock.BlockToolsView.extend({
 });
 
 const WidgetView = BaseBlock.WidgetView.extend({
-  className: BaseBlock.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
-  getTemplate() { return window.templates.woocommerceHeadingInsertion; },
+  className:
+    BaseBlock.WidgetView.prototype.className +
+    ' mailpoet_droppable_layout_block',
+  getTemplate() {
+    return window.templates.woocommerceHeadingInsertion;
+  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,
@@ -30,7 +37,8 @@ const WidgetView = BaseBlock.WidgetView.extend({
 });
 
 const BlockView = BaseBlock.BlockView.extend({
-  className: 'mailpoet_container mailpoet_woocommerce_heading_block mailpoet_droppable_block',
+  className:
+    'mailpoet_container mailpoet_woocommerce_heading_block mailpoet_droppable_block',
   initialize: function initialize() {
     BaseBlock.BlockView.prototype.initialize.apply(this, arguments);
     this.listenTo(App.getChannel(), 'changeWCEmailType', (value) => {
@@ -39,11 +47,15 @@ const BlockView = BaseBlock.BlockView.extend({
     });
   },
   modelEvents: _.omit(BaseBlock.BlockView.prototype.modelEvents, 'change'),
-  getTemplate() { return window.templates.woocommerceHeadingBlock; },
+  getTemplate() {
+    return window.templates.woocommerceHeadingBlock;
+  },
   regions: {
     toolsRegion: '.mailpoet_tools',
   },
-  onDragSubstituteBy() { return WidgetView; },
+  onDragSubstituteBy() {
+    return WidgetView;
+  },
   onRender() {
     this.toolsView = new BlockToolsView({ model: this.model });
     this.showChildView('toolsRegion', this.toolsView);
@@ -67,5 +79,8 @@ App.on('before:start', (BeforeStartApp) => {
 });
 
 export default {
-  BlockModel, BlockView, BlockToolsView, WidgetView,
+  BlockModel,
+  BlockView,
+  BlockToolsView,
+  WidgetView,
 };

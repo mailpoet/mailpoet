@@ -21,19 +21,19 @@ import NewsletterTypes from 'newsletters/types';
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
 const messages = {
-  onNoItemsFound: (group, search) => MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
+  onNoItemsFound: (group, search) =>
+    MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
   onTrash: (response) => {
     const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterTrashed')
-      );
+      message = MailPoet.I18n.t('oneNewsletterTrashed');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersTrashed')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleNewslettersTrashed').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -42,13 +42,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterDeleted')
-      );
+      message = MailPoet.I18n.t('oneNewsletterDeleted');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersDeleted')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleNewslettersDeleted').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -57,13 +56,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterRestored')
-      );
+      message = MailPoet.I18n.t('oneNewsletterRestored');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersRestored')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleNewslettersRestored').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -109,7 +107,11 @@ let newsletterActions = [
     name: 'view',
     link: function link(newsletter) {
       return (
-        <a href={newsletter.preview_url} target="_blank" rel="noopener noreferrer">
+        <a
+          href={newsletter.preview_url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {MailPoet.I18n.t('preview')}
         </a>
       );
@@ -119,24 +121,32 @@ let newsletterActions = [
     name: 'duplicate',
     className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('duplicate'),
-    onClick: (newsletter, refresh) => MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'newsletters',
-      action: 'duplicate',
-      data: {
-        id: newsletter.id,
-      },
-    }).done((response) => {
-      MailPoet.Notice.success((MailPoet.I18n.t('newsletterDuplicated')).replace('%1$s', response.data.subject));
-      refresh();
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        MailPoet.Notice.error(
-          response.errors.map((error) => error.message),
-          { scroll: true }
-        );
-      }
-    }),
+    onClick: (newsletter, refresh) =>
+      MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'newsletters',
+        action: 'duplicate',
+        data: {
+          id: newsletter.id,
+        },
+      })
+        .done((response) => {
+          MailPoet.Notice.success(
+            MailPoet.I18n.t('newsletterDuplicated').replace(
+              '%1$s',
+              response.data.subject,
+            ),
+          );
+          refresh();
+        })
+        .fail((response) => {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map((error) => error.message),
+              { scroll: true },
+            );
+          }
+        }),
   },
   {
     name: 'edit',
@@ -172,23 +182,29 @@ class NewsletterListReEngagement extends Component {
         id: Number(e.target.getAttribute('data-id')),
         status: checked ? 'active' : 'draft',
       },
-    }).done((response) => {
-      if (response.data.status === 'active') {
-        MailPoet.Notice.success(MailPoet.I18n.t('reEngagementEmailActivated'));
-      }
-      // force refresh of listing so that groups are updated
-      this.forceUpdate();
-    }).fail((response) => {
-      MailPoet.Notice.showApiErrorNotice(response);
+    })
+      .done((response) => {
+        if (response.data.status === 'active') {
+          MailPoet.Notice.success(
+            MailPoet.I18n.t('reEngagementEmailActivated'),
+          );
+        }
+        // force refresh of listing so that groups are updated
+        this.forceUpdate();
+      })
+      .fail((response) => {
+        MailPoet.Notice.showApiErrorNotice(response);
 
-      // reset value to previous newsletter's status
-      e.target.checked = !checked;
-    });
+        // reset value to previous newsletter's status
+        e.target.checked = !checked;
+      });
   };
 
   renderStatus = (newsletter) => {
-    const totalSentMessage = MailPoet.I18n.t('sentToXSubscribers')
-      .replace('%1$d', newsletter.total_sent.toLocaleString());
+    const totalSentMessage = MailPoet.I18n.t('sentToXSubscribers').replace(
+      '%1$d',
+      newsletter.total_sent.toLocaleString(),
+    );
 
     return (
       <div>
@@ -204,7 +220,7 @@ class NewsletterListReEngagement extends Component {
             to={`/sending-status/${newsletter.id}`}
             data-automation-id={`sending_status_${newsletter.id}`}
           >
-            { totalSentMessage }
+            {totalSentMessage}
           </Link>
         </p>
       </div>
@@ -215,24 +231,31 @@ class NewsletterListReEngagement extends Component {
     if (newsletter.segments.length === 0) {
       return (
         <Link className="mailpoet-listing-error" to={`/send/${newsletter.id}`}>
-          { MailPoet.I18n.t('sendingToSegmentsNotSpecified') }
+          {MailPoet.I18n.t('sendingToSegmentsNotSpecified')}
         </Link>
       );
     }
     const sendingToSegments = ReactStringReplace(
       MailPoet.I18n.t('sendTo'),
       '%1$s',
-      (match, i) => (
-        <Tags segments={newsletter.segments} key={i} />
-      )
+      (match, i) => <Tags segments={newsletter.segments} key={i} />,
     );
 
     let frequencyKey = 'reEngagementFrequencyMonth';
-    if ((newsletter.options.afterTimeNumber > 1) && (newsletter.options.afterTimeType === 'months')) {
+    if (
+      newsletter.options.afterTimeNumber > 1 &&
+      newsletter.options.afterTimeType === 'months'
+    ) {
       frequencyKey = 'reEngagementFrequencyMonths';
-    } else if ((newsletter.options.afterTimeNumber > 1) && (newsletter.options.afterTimeType === 'weeks')) {
+    } else if (
+      newsletter.options.afterTimeNumber > 1 &&
+      newsletter.options.afterTimeType === 'weeks'
+    ) {
       frequencyKey = 'reEngagementFrequencyWeeks';
-    } else if ((newsletter.options.afterTimeNumber === 1) && (newsletter.options.afterTimeType === 'weeks')) {
+    } else if (
+      newsletter.options.afterTimeNumber === 1 &&
+      newsletter.options.afterTimeType === 'weeks'
+    ) {
       frequencyKey = 'reEngagementFrequencyWeek';
     }
 
@@ -242,12 +265,12 @@ class NewsletterListReEngagement extends Component {
 
     return (
       <span>
-        { sendingToSegments }
+        {sendingToSegments}
         <div className="mailpoet-listing-schedule">
           <div className="mailpoet-listing-schedule-icon">
             <ScheduledIcon />
           </div>
-          { sendingFrequency }
+          {sendingFrequency}
         </div>
       </span>
     );
@@ -257,7 +280,7 @@ class NewsletterListReEngagement extends Component {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
-      'has-row-actions'
+      'has-row-actions',
     );
 
     return (
@@ -267,28 +290,37 @@ class NewsletterListReEngagement extends Component {
             className="mailpoet-listing-title"
             href={`?page=mailpoet-newsletter-editor&id=${newsletter.id}`}
           >
-            { newsletter.subject }
+            {newsletter.subject}
           </a>
-          { actions }
+          {actions}
         </td>
-        <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('settings')}>
-          { this.renderSettings(newsletter) }
+        <td
+          className="column mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('settings')}
+        >
+          {this.renderSettings(newsletter)}
         </td>
-        { (mailpoetTrackingEnabled === true) ? (
-          <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('statistics')}>
+        {mailpoetTrackingEnabled === true ? (
+          <td
+            className="column mailpoet-listing-stats-column"
+            data-colname={MailPoet.I18n.t('statistics')}
+          >
             <Statistics
               newsletter={newsletter}
               isSent={newsletter.total_sent > 0 && !!newsletter.statistics}
             />
           </td>
-        ) : null }
+        ) : null}
         <td className="column" data-colname={MailPoet.I18n.t('status')}>
-          { this.renderStatus(newsletter) }
+          {this.renderStatus(newsletter)}
         </td>
-        <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('lastModifiedOn')}>
-          { MailPoet.Date.short(newsletter.updated_at) }
+        <td
+          className="column-date mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('lastModifiedOn')}
+        >
+          {MailPoet.Date.short(newsletter.updated_at)}
           <br />
-          { MailPoet.Date.time(newsletter.updated_at) }
+          {MailPoet.Date.time(newsletter.updated_at)}
         </td>
       </div>
     );
@@ -325,7 +357,10 @@ class NewsletterListReEngagement extends Component {
             sort_order="desc"
             afterGetItems={(state) => {
               if (!state.loading) {
-                const total = state.groups.reduce((count, group) => (count + group.count), 0);
+                const total = state.groups.reduce(
+                  (count, group) => count + group.count,
+                  0,
+                );
                 this.setState({ newslettersCount: total });
               }
               checkMailerStatus(state);

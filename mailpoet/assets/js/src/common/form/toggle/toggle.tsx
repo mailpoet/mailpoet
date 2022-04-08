@@ -16,14 +16,12 @@ function Toggle({
 }: Props) {
   return (
     <label
-      className={
-      classnames({
+      className={classnames({
         [className]: className,
         'mailpoet-form-toggle': true,
         [`mailpoet-form-toggle-${dimension}`]: dimension,
         'mailpoet-disabled': attributes.disabled,
-      })
-    }
+      })}
       data-automation-id={automationId}
     >
       <input

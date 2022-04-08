@@ -37,7 +37,7 @@ window.addEventListener('DOMContentLoaded', () => {
       <StrictMode>
         <App />
       </StrictMode>,
-      appElement
+      appElement,
     );
   }
 });

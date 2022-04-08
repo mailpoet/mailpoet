@@ -3,7 +3,11 @@
  */
 /* eslint-disable react/react-in-jsx-scope */
 import { Icon, megaphone } from '@wordpress/icons';
-import { registerBlockType, getCategories, setCategories } from '@wordpress/blocks';
+import {
+  registerBlockType,
+  getCategories,
+  setCategories,
+} from '@wordpress/blocks';
 
 /**
  * Internal dependencies

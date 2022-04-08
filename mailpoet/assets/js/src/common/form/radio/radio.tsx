@@ -17,13 +17,11 @@ function Radio({
 }: Props) {
   return (
     <label
-      className={
-      classnames({
+      className={classnames({
         'mailpoet-form-radio': true,
         'mailpoet-disabled': attributes.disabled,
         'mailpoet-full-width': isFullWidth,
-      })
-    }
+      })}
       data-automation-id={automationId}
     >
       <input

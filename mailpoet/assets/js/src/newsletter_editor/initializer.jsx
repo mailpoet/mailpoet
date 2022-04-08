@@ -8,7 +8,9 @@ import displayTutorial from './tutorial.jsx';
 
 const renderHeading = (newsletterType) => {
   if (newsletterType !== 'wc_transactional') {
-    const stepsHeadingContainer = document.getElementById('mailpoet_editor_steps_heading');
+    const stepsHeadingContainer = document.getElementById(
+      'mailpoet_editor_steps_heading',
+    );
     const stepsHeading = (
       <ListingHeadingSteps emailType={newsletterType} step={3} />
     );
@@ -19,7 +21,8 @@ const renderHeading = (newsletterType) => {
 
 const initializeEditor = (config) => {
   const editorContainer = document.getElementById('mailpoet_editor');
-  const getUrlParam = (param) => (document.location.search.split(`${param}=`)[1] || '').split('&')[0];
+  const getUrlParam = (param) =>
+    (document.location.search.split(`${param}=`)[1] || '').split('&')[0];
 
   if (!editorContainer || !window.EditorApplication) return;
 
@@ -38,25 +41,35 @@ const initializeEditor = (config) => {
     .done((response) => {
       const newsletter = response.data;
 
-      Promise.resolve(fetchAutomaticEmailShortcodes(config, newsletter)).then((extendedConfig) => {
-        const blockDefaults = {
-          ...extendedConfig.blockDefaults,
-          container: {},
-        };
-        window.EditorApplication.start({
-          newsletter,
-          config: { ...extendedConfig, blockDefaults },
+      Promise.resolve(fetchAutomaticEmailShortcodes(config, newsletter))
+        .then((extendedConfig) => {
+          const blockDefaults = {
+            ...extendedConfig.blockDefaults,
+            container: {},
+          };
+          window.EditorApplication.start({
+            newsletter,
+            config: { ...extendedConfig, blockDefaults },
+          });
+        })
+        .catch(() => {
+          window.EditorApplication.start({
+            newsletter,
+            config,
+          });
         });
-      }).catch(() => {
-        window.EditorApplication.start({
-          newsletter,
-          config,
-        });
-      });
 
-      renderHeading(newsletter.type === 'automatic' ? newsletter.options?.group : newsletter.type);
+      renderHeading(
+        newsletter.type === 'automatic'
+          ? newsletter.options?.group
+          : newsletter.type,
+      );
 
-      if (newsletter.status === 'sending' && newsletter.queue && newsletter.queue.status === null) {
+      if (
+        newsletter.status === 'sending' &&
+        newsletter.queue &&
+        newsletter.queue.status === null
+      ) {
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'sending_queue',
@@ -65,16 +78,21 @@ const initializeEditor = (config) => {
             newsletter_id: newsletter.id,
           },
         })
-          .done(() => MailPoet.Notice.success(MailPoet.I18n.t('newsletterIsPaused')))
+          .done(() =>
+            MailPoet.Notice.success(MailPoet.I18n.t('newsletterIsPaused')),
+          )
           .fail((pauseFailResponse) => {
             if (pauseFailResponse.errors.length > 0) {
               MailPoet.Notice.error(
                 pauseFailResponse.errors.map((error) => error.message),
-                { scroll: true, static: true }
+                { scroll: true, static: true },
               );
             }
           });
-      } else if (newsletterTypesWithActivation.includes(newsletter.type) && newsletter.status === 'active') {
+      } else if (
+        newsletterTypesWithActivation.includes(newsletter.type) &&
+        newsletter.status === 'active'
+      ) {
         MailPoet.Ajax.post({
           api_version: window.mailpoet_api_version,
           endpoint: 'newsletters',
@@ -83,26 +101,32 @@ const initializeEditor = (config) => {
             id: newsletter.id,
             status: 'draft',
           },
-        }).done((setStatusResponse) => {
-          if (setStatusResponse.data.status === 'draft') {
-            MailPoet.Notice.success(MailPoet.I18n.t('emailWasDeactivated'));
-          }
-        }).fail((pauseFailResponse) => {
-          MailPoet.Notice.error(
-            pauseFailResponse.errors.map((error) => error.message),
-            { scroll: true, static: true }
-          );
-        });
+        })
+          .done((setStatusResponse) => {
+            if (setStatusResponse.data.status === 'draft') {
+              MailPoet.Notice.success(MailPoet.I18n.t('emailWasDeactivated'));
+            }
+          })
+          .fail((pauseFailResponse) => {
+            MailPoet.Notice.error(
+              pauseFailResponse.errors.map((error) => error.message),
+              { scroll: true, static: true },
+            );
+          });
       }
     })
     .fail((response) => {
       if (response.errors.length > 0) {
         MailPoet.Notice.error(
           response.errors.map((error) => error.message),
-          { scroll: true, static: true }
+          { scroll: true, static: true },
         );
       }
     });
 };
 
-Hooks.addAction('mailpoet_newsletters_editor_initialize', 'mailpoet', initializeEditor);
+Hooks.addAction(
+  'mailpoet_newsletters_editor_initialize',
+  'mailpoet',
+  initializeEditor,
+);

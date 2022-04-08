@@ -12,11 +12,13 @@ const useNpsPoll = () => {
         width: 800,
         template: ReactDOMServer.renderToString(
           ReviewRequest({
-            username: window.mailpoet_current_wp_user_firstname
-              || window.mailpoet_current_wp_user.user_login,
-            reviewRequestIllustrationUrl: window.mailpoet_review_request_illustration_url,
+            username:
+              window.mailpoet_current_wp_user_firstname ||
+              window.mailpoet_current_wp_user.user_login,
+            reviewRequestIllustrationUrl:
+              window.mailpoet_review_request_illustration_url,
             installedDaysAgo: window.mailpoet_installed_days_ago,
-          })
+          }),
         ),
         onInit: () => {
           document
@@ -74,9 +76,10 @@ const useNpsPoll = () => {
   return null;
 };
 
-const withNpsPoll = (Component) => function useNpsPollWithComponent(props) {
-  useNpsPoll();
-  return <Component {...props} />;
-};
+const withNpsPoll = (Component) =>
+  function useNpsPollWithComponent(props) {
+    useNpsPoll();
+    return <Component {...props} />;
+  };
 
 export default withNpsPoll;

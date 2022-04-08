@@ -30,7 +30,10 @@ export const withFeatureAnnouncement = <P extends Record<string, unknown>>(
   let beamerCallback;
 
   function showPluginUpdateNotice() {
-    if (!window.mailpoet_update_available || document.getElementById('mailpoet_update_notice')) {
+    if (
+      !window.mailpoet_update_available ||
+      document.getElementById('mailpoet_update_notice')
+    ) {
       return;
     }
     const updateMailPoetNotice = ReactStringReplace(
@@ -99,7 +102,7 @@ export const withFeatureAnnouncement = <P extends Record<string, unknown>>(
   }: Omit<P, 'hasNews' | 'onBeamerClick'>) {
     return (
       <Component
-        {...props as P}
+        {...(props as P)}
         onBeamerClick={(e) => showBeamer(e)}
         hasNews={showDot}
       />

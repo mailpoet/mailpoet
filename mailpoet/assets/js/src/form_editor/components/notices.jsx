@@ -5,11 +5,11 @@ import { useDispatch, useSelect } from '@wordpress/data';
 export default function Notices() {
   const dismissibleNotices = useSelect(
     (select) => select('mailpoet-form-editor').getDismissibleNotices(),
-    []
+    [],
   );
   const nonDismissibleNotices = useSelect(
     (select) => select('mailpoet-form-editor').getNonDismissibleNotices(),
-    []
+    [],
   );
 
   const { removeNotice } = useDispatch('mailpoet-form-editor');

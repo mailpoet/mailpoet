@@ -7,7 +7,7 @@ export default function FormTitle() {
   const [isSelected, setIsSelected] = useState(false);
   const title = useSelect(
     (select) => select('mailpoet-form-editor').getFormName(),
-    []
+    [],
   );
   const titleClass = classnames({
     'is-selected': isSelected,

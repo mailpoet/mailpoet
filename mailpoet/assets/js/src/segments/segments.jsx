@@ -1,7 +1,5 @@
 import ReactDOM from 'react-dom';
-import {
-  HashRouter, Switch, Route, Redirect,
-} from 'react-router-dom';
+import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import MailPoet from 'mailpoet';
 import RoutedTabs from 'common/tabs/routed_tabs';

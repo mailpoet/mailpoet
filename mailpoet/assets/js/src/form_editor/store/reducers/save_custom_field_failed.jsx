@@ -1,5 +1,7 @@
 export default (state, action) => {
-  const notices = state.notices.filter((notice) => notice.id !== 'custom-field');
+  const notices = state.notices.filter(
+    (notice) => notice.id !== 'custom-field',
+  );
   notices.push({
     id: 'custom-field',
     content: action.message,

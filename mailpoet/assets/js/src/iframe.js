@@ -3,17 +3,12 @@ export const MailPoetIframe = {
   autoSize: function autoSize(iframe) {
     if (!iframe) return;
 
-    this.setSize(
-      iframe,
-      iframe.contentWindow.document.body.scrollHeight
-    );
+    this.setSize(iframe, iframe.contentWindow.document.body.scrollHeight);
   },
   setSize: function setSize(sizeIframe, i) {
     var iframe = sizeIframe;
     if (!iframe) return;
 
-    iframe.style.height = (
-      parseInt(i, 10) + this.marginY
-    ) + 'px';
+    iframe.style.height = parseInt(i, 10) + this.marginY + 'px';
   },
 };

@@ -21,15 +21,20 @@ function TemplateBox({
   className,
 }: Props) {
   return (
-    <div className={`mailpoet-template ${className}`} data-automation-id="select_template_box">
+    <div
+      className={`mailpoet-template ${className}`}
+      data-automation-id="select_template_box"
+    >
       {children}
       <div className="mailpoet-template-info">
-        <Heading level={5} title={label}>{label}</Heading>
+        <Heading level={5} title={label}>
+          {label}
+        </Heading>
         <div>
           {onDelete && (
-          <Button variant="destructive" onClick={onDelete}>
-            {MailPoet.I18n.t('delete')}
-          </Button>
+            <Button variant="destructive" onClick={onDelete}>
+              {MailPoet.I18n.t('delete')}
+            </Button>
           )}
           <Button automationId={automationId} onClick={onSelect}>
             {MailPoet.I18n.t('select')}

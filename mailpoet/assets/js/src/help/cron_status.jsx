@@ -9,22 +9,17 @@ function CronStatus(props) {
     active: MailPoet.I18n.t('running'),
     inactive: MailPoet.I18n.t('cronWaiting'),
   };
-  const lastError = Array.isArray(status.last_error)
-    ? (
-      <>
-        {
-          status.last_error.map((error) => (
-            <div key={error.worker}>
-              {error.worker}
-              :
-              {' '}
-              <i>{error.message}</i>
-            </div>
-          ))
-        }
-      </>
-    )
-    : status.last_error;
+  const lastError = Array.isArray(status.last_error) ? (
+    <>
+      {status.last_error.map((error) => (
+        <div key={error.worker}>
+          {error.worker}: <i>{error.message}</i>
+        </div>
+      ))}
+    </>
+  ) : (
+    status.last_error
+  );
   return (
     <div>
       <h4>{MailPoet.I18n.t('systemStatusCronStatusTitle')}</h4>
@@ -37,19 +32,27 @@ function CronStatus(props) {
           },
           {
             key: MailPoet.I18n.t('status'),
-            value: activeStatusMapping[status.status] ? activeStatusMapping[status.status] : MailPoet.I18n.t('unknown'),
+            value: activeStatusMapping[status.status]
+              ? activeStatusMapping[status.status]
+              : MailPoet.I18n.t('unknown'),
           },
           {
             key: MailPoet.I18n.t('lastUpdated'),
-            value: status.updated_at ? MailPoet.Date.full(status.updated_at * 1000) : MailPoet.I18n.t('unknown'),
+            value: status.updated_at
+              ? MailPoet.Date.full(status.updated_at * 1000)
+              : MailPoet.I18n.t('unknown'),
           },
           {
             key: MailPoet.I18n.t('lastRunStarted'),
-            value: status.run_accessed_at ? MailPoet.Date.full(status.run_started_at * 1000) : MailPoet.I18n.t('unknown'),
+            value: status.run_accessed_at
+              ? MailPoet.Date.full(status.run_started_at * 1000)
+              : MailPoet.I18n.t('unknown'),
           },
           {
             key: MailPoet.I18n.t('lastRunCompleted'),
-            value: status.run_completed_at ? MailPoet.Date.full(status.run_completed_at * 1000) : MailPoet.I18n.t('unknown'),
+            value: status.run_completed_at
+              ? MailPoet.Date.full(status.run_completed_at * 1000)
+              : MailPoet.I18n.t('unknown'),
           },
           {
             key: MailPoet.I18n.t('lastSeenError'),
@@ -57,7 +60,9 @@ function CronStatus(props) {
           },
           {
             key: MailPoet.I18n.t('lastSeenErrorDate'),
-            value: status.last_error_date ? MailPoet.Date.full(status.last_error_date * 1000) : MailPoet.I18n.t('unknown'),
+            value: status.last_error_date
+              ? MailPoet.Date.full(status.last_error_date * 1000)
+              : MailPoet.I18n.t('unknown'),
           },
         ]}
       />

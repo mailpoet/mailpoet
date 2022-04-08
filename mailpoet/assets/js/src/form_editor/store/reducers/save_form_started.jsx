@@ -1,7 +1,17 @@
 export default (MailPoet) => (state) => {
   // remove all form saving related notices
-  const notices = state.notices.filter((notice) => !['missing-lists-in-custom-segments-block', 'save-form', 'missing-lists', 'missing-block'].includes(notice.id));
-  const hasMissingLists = state.formErrors.includes('missing-lists') || state.formErrors.includes('missing-lists-in-custom-segments-block');
+  const notices = state.notices.filter(
+    (notice) =>
+      ![
+        'missing-lists-in-custom-segments-block',
+        'save-form',
+        'missing-lists',
+        'missing-block',
+      ].includes(notice.id),
+  );
+  const hasMissingLists =
+    state.formErrors.includes('missing-lists') ||
+    state.formErrors.includes('missing-lists-in-custom-segments-block');
   const sidebarOpenedPanels = [...state.sidebar.openedPanels];
   if (hasMissingLists) {
     notices.push({

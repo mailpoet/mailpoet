@@ -7,7 +7,9 @@ import {
 } from './mapping/from_blocks/styles_mapper';
 
 const mapCustomField = (block, customFields, mappedCommonProperties) => {
-  const customField = customFields.find((cf) => cf.id === block.attributes.customFieldId);
+  const customField = customFields.find(
+    (cf) => cf.id === block.attributes.customFieldId,
+  );
   if (!customField) return null;
   const mapped = {
     ...mappedCommonProperties,
@@ -77,7 +79,7 @@ const blocksToFormBodyFactory = (
   fontSizeDefinitions,
   colorDefinitions,
   gradientDefinitions,
-  customFields
+  customFields,
 ) => {
   if (!Array.isArray(customFields)) {
     throw new Error('Mapper expects customFields to be an array.');
@@ -92,234 +94,242 @@ const blocksToFormBodyFactory = (
       throw new Error('Mapper expects blocks to be an array.');
     }
 
-    return blocks.map((block) => {
-      const mapped = {
-        type: 'text',
-        params: {
-          label: block.attributes.label,
-          class_name: block.attributes.className || null,
-        },
-      };
-      if (block.attributes.mandatory) {
-        mapped.params.required = '1';
-      }
-      if (block.attributes.labelWithinInput) {
-        mapped.params.label_within = '1';
-      }
-      switch (block.name) {
-        case 'core/heading':
-          return {
-            type: 'heading',
-            id: 'heading',
-            params: {
-              content: block.attributes.content,
-              level: block.attributes.level,
-              align: block.attributes.textAlign || 'left',
-              font_size: mapFontSizeSlugToValue(
-                fontSizeDefinitions,
-                block.attributes.fontSize,
-                block.attributes.style?.typography?.fontSize
-              ),
-              text_color: mapColorSlugToValue(
-                colorDefinitions,
-                block.attributes.textColor,
-                block.attributes.style?.color?.text
-              ),
-              line_height: block.attributes.style?.typography?.lineHeight,
-              background_color: mapColorSlugToValue(
-                colorDefinitions,
-                block.attributes.backgroundColor,
-                block.attributes.style?.color?.background
-              ),
-              anchor: block.attributes.anchor || null,
-              class_name: block.attributes.className || null,
-            },
-          };
-        case 'core/paragraph':
-          return {
-            type: 'paragraph',
-            id: 'paragraph',
-            params: {
-              content: block.attributes.content,
-              drop_cap: block.attributes.dropCap ? '1' : '0',
-              align: block.attributes.align || 'left',
-              font_size: mapFontSizeSlugToValue(
-                fontSizeDefinitions,
-                block.attributes.fontSize,
-                block.attributes.style?.typography?.fontSize
-              ),
-              line_height: block.attributes.style?.typography?.lineHeight,
-              text_color: mapColorSlugToValue(
-                colorDefinitions,
-                block.attributes.textColor,
-                block.attributes.style?.color?.text
-              ),
-              background_color: mapColorSlugToValue(
-                colorDefinitions,
-                block.attributes.backgroundColor,
-                block.attributes.style?.color?.background
-              ),
-              class_name: block.attributes.className || null,
-            },
-          };
-        case 'core/image':
-          return {
-            type: 'image',
-            id: 'image',
-            params: {
-              class_name: block.attributes.className || null,
-              align: block.attributes.align || null,
-              url: block.attributes.url || null,
-              alt: block.attributes.alt || null,
-              title: block.attributes.title || null,
-              caption: block.attributes.caption || null,
-              link_destination: block.attributes.linkDestination || null,
-              link: block.attributes.link || null,
-              href: block.attributes.href || null,
-              link_class: block.attributes.linkClass || null,
-              rel: block.attributes.rel || null,
-              link_target: block.attributes.linkTarget || null,
-              id: block.attributes.id || null, // Image id
-              size_slug: block.attributes.sizeSlug || null,
-              width: block.attributes.width || null,
-              height: block.attributes.height || null,
-            },
-          };
-        case 'core/column':
-          return {
-            type: 'column',
-            body: mapBlocks(block.innerBlocks),
-            params: {
-              class_name: block.attributes.className || null,
-              vertical_alignment: block.attributes.verticalAlignment || null,
-              width: block.attributes.width || null,
-              padding: block.attributes.style?.spacing?.padding || null,
-              text_color: mapColorSlugToValue(
-                colorDefinitions,
-                block.attributes.textColor,
-                block.attributes.style?.color?.text
-              ),
-              background_color: mapColorSlugToValue(
-                colorDefinitions,
-                block.attributes.backgroundColor,
-                block.attributes.style?.color?.background
-              ),
-              gradient: mapGradientSlugToValue(
-                gradientDefinitions,
-                block.attributes.gradient,
-                block.attributes.style?.color?.gradient
-              ),
-            },
-          };
-        case 'core/columns':
-          return {
-            type: 'columns',
-            body: mapBlocks(block.innerBlocks),
-            params: {
-              vertical_alignment: block.attributes.verticalAlignment || null,
-              is_stacked_on_mobile: (block.attributes.isStackedOnMobile
-                || block.attributes.isStackedOnMobile === undefined) ? '1' : '0',
-              class_name: block.attributes.className || null,
-              padding: block.attributes.style?.spacing?.padding || null,
-              text_color: mapColorSlugToValue(
-                colorDefinitions,
-                block.attributes.textColor,
-                block.attributes.style?.color?.text
-              ),
-              background_color: mapColorSlugToValue(
-                colorDefinitions,
-                block.attributes.backgroundColor,
-                block.attributes.style?.color?.background
-              ),
-              gradient: mapGradientSlugToValue(
-                gradientDefinitions,
-                block.attributes.gradient,
-                block.attributes.style?.color?.gradient
-              ),
-            },
-          };
-        case 'mailpoet-form/email-input':
-          return {
-            ...mapped,
-            id: 'email',
-            name: 'Email',
-            params: {
-              ...mapped.params,
-              required: '1',
-            },
-            styles: mapInputBlockStyles(block.attributes.styles),
-          };
-        case 'mailpoet-form/first-name-input':
-          return {
-            ...mapped,
-            id: 'first_name',
-            name: 'First name',
-            styles: mapInputBlockStyles(block.attributes.styles),
-          };
-        case 'mailpoet-form/last-name-input':
-          return {
-            ...mapped,
-            id: 'last_name',
-            name: 'Last name',
-            styles: mapInputBlockStyles(block.attributes.styles),
-          };
-        case 'mailpoet-form/segment-select':
-          return {
-            ...mapped,
-            id: 'segments',
-            type: 'segment',
-            name: 'List selection',
-            params: {
-              ...mapped.params,
-              values: block.attributes.values.map((segment) => ({
-                id: segment.id,
-                is_checked: segment.isChecked ? '1' : undefined,
-              })),
-            },
-          };
-        case 'mailpoet-form/submit-button':
-          return {
-            ...mapped,
-            id: 'submit',
-            type: 'submit',
-            name: 'Submit',
-            styles: mapInputBlockStyles(block.attributes.styles),
-          };
-        case 'mailpoet-form/divider':
-          return {
-            ...mapped,
-            id: 'divider',
-            type: 'divider',
-            name: 'Divider',
-            params: {
-              class_name: block.attributes.className || null,
-              height: block.attributes.height,
-              type: block.attributes.type,
-              style: block.attributes.style,
-              divider_height: block.attributes.dividerHeight,
-              divider_width: block.attributes.dividerWidth,
-              color: block.attributes.color,
-            },
-          };
-        case 'mailpoet-form/html':
-          return {
-            ...mapped,
-            id: 'html',
-            type: 'html',
-            name: 'Custom text or HTML',
-            params: {
-              text: block.attributes && block.attributes.content ? block.attributes.content : '',
-              nl2br: block.attributes && block.attributes.nl2br ? '1' : '0',
-              class_name: block.attributes.className || null,
-            },
-          };
-        default:
-          if (block.name.startsWith('mailpoet-form/custom-')) {
-            return mapCustomField(block, customFields, mapped);
-          }
-          return null;
-      }
-    }).filter(Boolean);
+    return blocks
+      .map((block) => {
+        const mapped = {
+          type: 'text',
+          params: {
+            label: block.attributes.label,
+            class_name: block.attributes.className || null,
+          },
+        };
+        if (block.attributes.mandatory) {
+          mapped.params.required = '1';
+        }
+        if (block.attributes.labelWithinInput) {
+          mapped.params.label_within = '1';
+        }
+        switch (block.name) {
+          case 'core/heading':
+            return {
+              type: 'heading',
+              id: 'heading',
+              params: {
+                content: block.attributes.content,
+                level: block.attributes.level,
+                align: block.attributes.textAlign || 'left',
+                font_size: mapFontSizeSlugToValue(
+                  fontSizeDefinitions,
+                  block.attributes.fontSize,
+                  block.attributes.style?.typography?.fontSize,
+                ),
+                text_color: mapColorSlugToValue(
+                  colorDefinitions,
+                  block.attributes.textColor,
+                  block.attributes.style?.color?.text,
+                ),
+                line_height: block.attributes.style?.typography?.lineHeight,
+                background_color: mapColorSlugToValue(
+                  colorDefinitions,
+                  block.attributes.backgroundColor,
+                  block.attributes.style?.color?.background,
+                ),
+                anchor: block.attributes.anchor || null,
+                class_name: block.attributes.className || null,
+              },
+            };
+          case 'core/paragraph':
+            return {
+              type: 'paragraph',
+              id: 'paragraph',
+              params: {
+                content: block.attributes.content,
+                drop_cap: block.attributes.dropCap ? '1' : '0',
+                align: block.attributes.align || 'left',
+                font_size: mapFontSizeSlugToValue(
+                  fontSizeDefinitions,
+                  block.attributes.fontSize,
+                  block.attributes.style?.typography?.fontSize,
+                ),
+                line_height: block.attributes.style?.typography?.lineHeight,
+                text_color: mapColorSlugToValue(
+                  colorDefinitions,
+                  block.attributes.textColor,
+                  block.attributes.style?.color?.text,
+                ),
+                background_color: mapColorSlugToValue(
+                  colorDefinitions,
+                  block.attributes.backgroundColor,
+                  block.attributes.style?.color?.background,
+                ),
+                class_name: block.attributes.className || null,
+              },
+            };
+          case 'core/image':
+            return {
+              type: 'image',
+              id: 'image',
+              params: {
+                class_name: block.attributes.className || null,
+                align: block.attributes.align || null,
+                url: block.attributes.url || null,
+                alt: block.attributes.alt || null,
+                title: block.attributes.title || null,
+                caption: block.attributes.caption || null,
+                link_destination: block.attributes.linkDestination || null,
+                link: block.attributes.link || null,
+                href: block.attributes.href || null,
+                link_class: block.attributes.linkClass || null,
+                rel: block.attributes.rel || null,
+                link_target: block.attributes.linkTarget || null,
+                id: block.attributes.id || null, // Image id
+                size_slug: block.attributes.sizeSlug || null,
+                width: block.attributes.width || null,
+                height: block.attributes.height || null,
+              },
+            };
+          case 'core/column':
+            return {
+              type: 'column',
+              body: mapBlocks(block.innerBlocks),
+              params: {
+                class_name: block.attributes.className || null,
+                vertical_alignment: block.attributes.verticalAlignment || null,
+                width: block.attributes.width || null,
+                padding: block.attributes.style?.spacing?.padding || null,
+                text_color: mapColorSlugToValue(
+                  colorDefinitions,
+                  block.attributes.textColor,
+                  block.attributes.style?.color?.text,
+                ),
+                background_color: mapColorSlugToValue(
+                  colorDefinitions,
+                  block.attributes.backgroundColor,
+                  block.attributes.style?.color?.background,
+                ),
+                gradient: mapGradientSlugToValue(
+                  gradientDefinitions,
+                  block.attributes.gradient,
+                  block.attributes.style?.color?.gradient,
+                ),
+              },
+            };
+          case 'core/columns':
+            return {
+              type: 'columns',
+              body: mapBlocks(block.innerBlocks),
+              params: {
+                vertical_alignment: block.attributes.verticalAlignment || null,
+                is_stacked_on_mobile:
+                  block.attributes.isStackedOnMobile ||
+                  block.attributes.isStackedOnMobile === undefined
+                    ? '1'
+                    : '0',
+                class_name: block.attributes.className || null,
+                padding: block.attributes.style?.spacing?.padding || null,
+                text_color: mapColorSlugToValue(
+                  colorDefinitions,
+                  block.attributes.textColor,
+                  block.attributes.style?.color?.text,
+                ),
+                background_color: mapColorSlugToValue(
+                  colorDefinitions,
+                  block.attributes.backgroundColor,
+                  block.attributes.style?.color?.background,
+                ),
+                gradient: mapGradientSlugToValue(
+                  gradientDefinitions,
+                  block.attributes.gradient,
+                  block.attributes.style?.color?.gradient,
+                ),
+              },
+            };
+          case 'mailpoet-form/email-input':
+            return {
+              ...mapped,
+              id: 'email',
+              name: 'Email',
+              params: {
+                ...mapped.params,
+                required: '1',
+              },
+              styles: mapInputBlockStyles(block.attributes.styles),
+            };
+          case 'mailpoet-form/first-name-input':
+            return {
+              ...mapped,
+              id: 'first_name',
+              name: 'First name',
+              styles: mapInputBlockStyles(block.attributes.styles),
+            };
+          case 'mailpoet-form/last-name-input':
+            return {
+              ...mapped,
+              id: 'last_name',
+              name: 'Last name',
+              styles: mapInputBlockStyles(block.attributes.styles),
+            };
+          case 'mailpoet-form/segment-select':
+            return {
+              ...mapped,
+              id: 'segments',
+              type: 'segment',
+              name: 'List selection',
+              params: {
+                ...mapped.params,
+                values: block.attributes.values.map((segment) => ({
+                  id: segment.id,
+                  is_checked: segment.isChecked ? '1' : undefined,
+                })),
+              },
+            };
+          case 'mailpoet-form/submit-button':
+            return {
+              ...mapped,
+              id: 'submit',
+              type: 'submit',
+              name: 'Submit',
+              styles: mapInputBlockStyles(block.attributes.styles),
+            };
+          case 'mailpoet-form/divider':
+            return {
+              ...mapped,
+              id: 'divider',
+              type: 'divider',
+              name: 'Divider',
+              params: {
+                class_name: block.attributes.className || null,
+                height: block.attributes.height,
+                type: block.attributes.type,
+                style: block.attributes.style,
+                divider_height: block.attributes.dividerHeight,
+                divider_width: block.attributes.dividerWidth,
+                color: block.attributes.color,
+              },
+            };
+          case 'mailpoet-form/html':
+            return {
+              ...mapped,
+              id: 'html',
+              type: 'html',
+              name: 'Custom text or HTML',
+              params: {
+                text:
+                  block.attributes && block.attributes.content
+                    ? block.attributes.content
+                    : '',
+                nl2br: block.attributes && block.attributes.nl2br ? '1' : '0',
+                class_name: block.attributes.className || null,
+              },
+            };
+          default:
+            if (block.name.startsWith('mailpoet-form/custom-')) {
+              return mapCustomField(block, customFields, mapped);
+            }
+            return null;
+        }
+      })
+      .filter(Boolean);
   };
   return mapBlocks;
 };

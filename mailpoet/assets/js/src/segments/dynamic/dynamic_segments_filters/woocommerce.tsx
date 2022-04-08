@@ -26,50 +26,87 @@ enum WooCommerceActionTypes {
 }
 
 export const WooCommerceOptions = [
-  { value: WooCommerceActionTypes.CUSTOMER_IN_COUNTRY, label: MailPoet.I18n.t('wooCustomerInCountry'), group: SegmentTypes.WooCommerce },
-  { value: WooCommerceActionTypes.NUMBER_OF_ORDERS, label: MailPoet.I18n.t('wooNumberOfOrders'), group: SegmentTypes.WooCommerce },
-  { value: WooCommerceActionTypes.PURCHASED_CATEGORY, label: MailPoet.I18n.t('wooPurchasedCategory'), group: SegmentTypes.WooCommerce },
-  { value: WooCommerceActionTypes.PURCHASED_PRODUCT, label: MailPoet.I18n.t('wooPurchasedProduct'), group: SegmentTypes.WooCommerce },
-  { value: WooCommerceActionTypes.TOTAL_SPENT, label: MailPoet.I18n.t('wooTotalSpent'), group: SegmentTypes.WooCommerce },
+  {
+    value: WooCommerceActionTypes.CUSTOMER_IN_COUNTRY,
+    label: MailPoet.I18n.t('wooCustomerInCountry'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.NUMBER_OF_ORDERS,
+    label: MailPoet.I18n.t('wooNumberOfOrders'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.PURCHASED_CATEGORY,
+    label: MailPoet.I18n.t('wooPurchasedCategory'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.PURCHASED_PRODUCT,
+    label: MailPoet.I18n.t('wooPurchasedProduct'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.TOTAL_SPENT,
+    label: MailPoet.I18n.t('wooTotalSpent'),
+    group: SegmentTypes.WooCommerce,
+  },
 ];
 
 const actionTypesWithDefaultTypeAny: Array<string> = [
-  WooCommerceActionTypes.PURCHASED_PRODUCT, WooCommerceActionTypes.PURCHASED_CATEGORY];
+  WooCommerceActionTypes.PURCHASED_PRODUCT,
+  WooCommerceActionTypes.PURCHASED_CATEGORY,
+];
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
-  if (!(
-    Object
-      .values(WooCommerceActionTypes)
-      .some((v) => v === formItems.action))
+  if (
+    !Object.values(WooCommerceActionTypes).some((v) => v === formItems.action)
   ) {
     return false;
   }
-  const purchasedCategoryIsInvalid = formItems.category_ids === undefined
-    || formItems.category_ids.length === 0
-    || !formItems.operator;
-  if (formItems.action === WooCommerceActionTypes.PURCHASED_CATEGORY
-    && purchasedCategoryIsInvalid) {
+  const purchasedCategoryIsInvalid =
+    formItems.category_ids === undefined ||
+    formItems.category_ids.length === 0 ||
+    !formItems.operator;
+  if (
+    formItems.action === WooCommerceActionTypes.PURCHASED_CATEGORY &&
+    purchasedCategoryIsInvalid
+  ) {
     return false;
   }
-  const purchasedProductIsInvalid = formItems.product_ids === undefined
-    || formItems.product_ids.length === 0
-    || !formItems.operator;
-  if (formItems.action === WooCommerceActionTypes.PURCHASED_PRODUCT && purchasedProductIsInvalid) {
+  const purchasedProductIsInvalid =
+    formItems.product_ids === undefined ||
+    formItems.product_ids.length === 0 ||
+    !formItems.operator;
+  if (
+    formItems.action === WooCommerceActionTypes.PURCHASED_PRODUCT &&
+    purchasedProductIsInvalid
+  ) {
     return false;
   }
-  const countryCodeIsInvalid = formItems.country_code === undefined
-    || formItems.country_code.length === 0;
-  if (formItems.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY && countryCodeIsInvalid) {
+  const countryCodeIsInvalid =
+    formItems.country_code === undefined || formItems.country_code.length === 0;
+  if (
+    formItems.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY &&
+    countryCodeIsInvalid
+  ) {
     return false;
   }
-  const numberOfOrdersIsInvalid = !formItems.number_of_orders_count
-    || !formItems.number_of_orders_days
-    || !formItems.number_of_orders_type;
-  if (formItems.action === WooCommerceActionTypes.NUMBER_OF_ORDERS && numberOfOrdersIsInvalid) {
+  const numberOfOrdersIsInvalid =
+    !formItems.number_of_orders_count ||
+    !formItems.number_of_orders_days ||
+    !formItems.number_of_orders_type;
+  if (
+    formItems.action === WooCommerceActionTypes.NUMBER_OF_ORDERS &&
+    numberOfOrdersIsInvalid
+  ) {
     return false;
   }
-  if (formItems.action === WooCommerceActionTypes.TOTAL_SPENT
-    && (!formItems.total_spent_amount || !formItems.total_spent_days || !formItems.total_spent_type)
+  if (
+    formItems.action === WooCommerceActionTypes.TOTAL_SPENT &&
+    (!formItems.total_spent_amount ||
+      !formItems.total_spent_days ||
+      !formItems.total_spent_type)
   ) {
     return false;
   }
@@ -80,20 +117,26 @@ type Props = {
   filterIndex: number;
 };
 
-export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => {
+export const WooCommerceFields: FunctionComponent<Props> = ({
+  filterIndex,
+}) => {
   const segment: WooCommerceFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
+    'mailpoet-dynamic-segments-form',
+  );
 
   const productCategories: WindowProductCategories = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getProductCategories(),
     [],
   );
   const woocommerceCountries: WindowWooCommerceCountries = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getWooCommerceCountries(),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getWooCommerceCountries(),
     [],
   );
   const products: WindowProducts = useSelect(
@@ -101,7 +144,8 @@ export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => 
     [],
   );
   const wooCurrencySymbol: string = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getWooCommerceCurrencySymbol(),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getWooCommerceCurrencySymbol(),
     [],
   );
   const productOptions = products.map((product) => ({
@@ -123,29 +167,29 @@ export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => 
 
   useEffect(() => {
     if (
-      segment.number_of_orders_type === undefined
-      && segment.action === WooCommerceActionTypes.NUMBER_OF_ORDERS
+      segment.number_of_orders_type === undefined &&
+      segment.action === WooCommerceActionTypes.NUMBER_OF_ORDERS
     ) {
       updateSegmentFilter({ number_of_orders_type: '=' }, filterIndex);
     }
     if (
-      segment.total_spent_type === undefined
-      && segment.action === WooCommerceActionTypes.TOTAL_SPENT
+      segment.total_spent_type === undefined &&
+      segment.action === WooCommerceActionTypes.TOTAL_SPENT
     ) {
       updateSegmentFilter({ total_spent_type: '>' }, filterIndex);
     }
     if (
-      actionTypesWithDefaultTypeAny.includes(segment.action)
-      && segment.operator !== AnyValueTypes.ALL
-      && segment.operator !== AnyValueTypes.ANY
-      && segment.operator !== AnyValueTypes.NONE
+      actionTypesWithDefaultTypeAny.includes(segment.action) &&
+      segment.operator !== AnyValueTypes.ALL &&
+      segment.operator !== AnyValueTypes.ANY &&
+      segment.operator !== AnyValueTypes.NONE
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
     if (
-      segment.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY
-      && segment.operator !== AnyValueTypes.ANY
-      && segment.operator !== AnyValueTypes.NONE
+      segment.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY &&
+      segment.operator !== AnyValueTypes.ANY &&
+      segment.operator !== AnyValueTypes.NONE
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
@@ -158,15 +202,20 @@ export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => 
           <Select
             key="select-operator"
             value={segment.operator}
-            onChange={(e): void => updateSegmentFilter(
-              { operator: e.target.value },
-              filterIndex,
-            )}
+            onChange={(e): void =>
+              updateSegmentFilter({ operator: e.target.value }, filterIndex)
+            }
             automationId="select-operator"
           >
-            <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-            <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-            <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+            <option value={AnyValueTypes.ANY}>
+              {MailPoet.I18n.t('anyOf')}
+            </option>
+            <option value={AnyValueTypes.ALL}>
+              {MailPoet.I18n.t('allOf')}
+            </option>
+            <option value={AnyValueTypes.NONE}>
+              {MailPoet.I18n.t('noneOf')}
+            </option>
           </Select>
         </Grid.CenteredRow>
         <Grid.CenteredRow>
@@ -177,19 +226,25 @@ export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => 
             isFullWidth
             placeholder={MailPoet.I18n.t('selectWooPurchasedProduct')}
             options={productOptions}
-            value={filter(
-              (productOption) => {
-                if (segment.product_ids === undefined || segment.product_ids.length === 0) {
-                  return undefined;
-                }
-                return segment.product_ids.indexOf(productOption.value) !== -1;
-              },
-              productOptions,
-            )}
-            onChange={(options: SelectOption[]): void => updateSegmentFilter(
-              { product_ids: (options || []).map((x: SelectOption) => x.value) },
-              filterIndex,
-            )}
+            value={filter((productOption) => {
+              if (
+                segment.product_ids === undefined ||
+                segment.product_ids.length === 0
+              ) {
+                return undefined;
+              }
+              return segment.product_ids.indexOf(productOption.value) !== -1;
+            }, productOptions)}
+            onChange={(options: SelectOption[]): void =>
+              updateSegmentFilter(
+                {
+                  product_ids: (options || []).map(
+                    (x: SelectOption) => x.value,
+                  ),
+                },
+                filterIndex,
+              )
+            }
             automationId="select-segment-products"
           />
         </Grid.CenteredRow>
@@ -202,15 +257,20 @@ export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => 
           <Select
             key="select-operator"
             value={segment.operator}
-            onChange={(e): void => updateSegmentFilter(
-              { operator: e.target.value },
-              filterIndex,
-            )}
+            onChange={(e): void =>
+              updateSegmentFilter({ operator: e.target.value }, filterIndex)
+            }
             automationId="select-operator"
           >
-            <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-            <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-            <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+            <option value={AnyValueTypes.ANY}>
+              {MailPoet.I18n.t('anyOf')}
+            </option>
+            <option value={AnyValueTypes.ALL}>
+              {MailPoet.I18n.t('allOf')}
+            </option>
+            <option value={AnyValueTypes.NONE}>
+              {MailPoet.I18n.t('noneOf')}
+            </option>
           </Select>
         </Grid.CenteredRow>
         <Grid.CenteredRow>
@@ -221,19 +281,25 @@ export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => 
             isFullWidth
             placeholder={MailPoet.I18n.t('selectWooPurchasedCategory')}
             options={categoryOptions}
-            value={filter(
-              (categoryOption) => {
-                if (segment.category_ids === undefined || segment.category_ids.length === 0) {
-                  return undefined;
-                }
-                return segment.category_ids.indexOf(categoryOption.value) !== -1;
-              },
-              categoryOptions,
-            )}
-            onChange={(options: SelectOption[]): void => updateSegmentFilter(
-              { category_ids: (options || []).map((x: SelectOption) => x.value) },
-              filterIndex,
-            )}
+            value={filter((categoryOption) => {
+              if (
+                segment.category_ids === undefined ||
+                segment.category_ids.length === 0
+              ) {
+                return undefined;
+              }
+              return segment.category_ids.indexOf(categoryOption.value) !== -1;
+            }, categoryOptions)}
+            onChange={(options: SelectOption[]): void =>
+              updateSegmentFilter(
+                {
+                  category_ids: (options || []).map(
+                    (x: SelectOption) => x.value,
+                  ),
+                },
+                filterIndex,
+              )
+            }
             automationId="select-segment-category"
           />
         </Grid.CenteredRow>
@@ -247,7 +313,11 @@ export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => 
             key="select"
             value={segment.number_of_orders_type}
             onChange={(e): void => {
-              updateSegmentFilterFromEvent('number_of_orders_type', filterIndex, e);
+              updateSegmentFilterFromEvent(
+                'number_of_orders_type',
+                filterIndex,
+                e,
+              );
             }}
             automationId="select-number-of-orders-type"
           >
@@ -263,7 +333,11 @@ export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => 
             value={segment.number_of_orders_count || ''}
             placeholder={MailPoet.I18n.t('wooNumberOfOrdersCount')}
             onChange={(e): void => {
-              updateSegmentFilterFromEvent('number_of_orders_count', filterIndex, e);
+              updateSegmentFilterFromEvent(
+                'number_of_orders_count',
+                filterIndex,
+                e,
+              );
             }}
           />
           <div>{MailPoet.I18n.t('wooNumberOfOrdersOrders')}</div>
@@ -277,7 +351,11 @@ export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => 
             value={segment.number_of_orders_days || ''}
             placeholder={MailPoet.I18n.t('daysPlaceholder')}
             onChange={(e): void => {
-              updateSegmentFilterFromEvent('number_of_orders_days', filterIndex, e);
+              updateSegmentFilterFromEvent(
+                'number_of_orders_days',
+                filterIndex,
+                e,
+              );
             }}
           />
           <div>{MailPoet.I18n.t('days')}</div>
@@ -309,7 +387,11 @@ export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => 
             value={segment.total_spent_amount || ''}
             placeholder={MailPoet.I18n.t('wooTotalSpentAmount')}
             onChange={(e): void => {
-              updateSegmentFilterFromEvent('total_spent_amount', filterIndex, e);
+              updateSegmentFilterFromEvent(
+                'total_spent_amount',
+                filterIndex,
+                e,
+              );
             }}
           />
           <div>{wooCurrencySymbol}</div>
@@ -337,14 +419,17 @@ export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => 
           <Select
             key="select-operator-country"
             value={segment.operator}
-            onChange={(e): void => updateSegmentFilter(
-              { operator: e.target.value },
-              filterIndex,
-            )}
+            onChange={(e): void =>
+              updateSegmentFilter({ operator: e.target.value }, filterIndex)
+            }
             automationId="select-operator-country"
           >
-            <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-            <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+            <option value={AnyValueTypes.ANY}>
+              {MailPoet.I18n.t('anyOf')}
+            </option>
+            <option value={AnyValueTypes.NONE}>
+              {MailPoet.I18n.t('noneOf')}
+            </option>
           </Select>
         </Grid.CenteredRow>
         <Grid.CenteredRow>
@@ -355,19 +440,20 @@ export const WooCommerceFields: FunctionComponent<Props> = ({ filterIndex }) => 
             isMulti
             placeholder={MailPoet.I18n.t('selectWooCountry')}
             options={countryOptions}
-            value={
-              filter(
-                (option) => {
-                  if (!segment.country_code) return undefined;
-                  return segment.country_code.indexOf(option.value) !== -1;
+            value={filter((option) => {
+              if (!segment.country_code) return undefined;
+              return segment.country_code.indexOf(option.value) !== -1;
+            }, countryOptions)}
+            onChange={(options: SelectOption[]): void =>
+              updateSegmentFilter(
+                {
+                  country_code: (options || []).map(
+                    (x: SelectOption) => x.value,
+                  ),
                 },
-                countryOptions,
+                filterIndex,
               )
             }
-            onChange={(options: SelectOption[]): void => updateSegmentFilter(
-              { country_code: (options || []).map((x: SelectOption) => x.value) },
-              filterIndex,
-            )}
             automationId="select-segment-country"
           />
         </Grid.CenteredRow>

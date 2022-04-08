@@ -83,12 +83,7 @@ export type Settings = {
     encryption: string;
     authentication: '1' | '-1';
     mailpoet_api_key_state: {
-      state:
-      | 'valid'
-      | 'invalid'
-      | 'expiring'
-      | 'already_used'
-      | 'check_error';
+      state: 'valid' | 'invalid' | 'expiring' | 'already_used' | 'check_error';
       data: Record<string, unknown>;
     };
   };
@@ -119,21 +114,16 @@ export type Settings = {
   premium: {
     premium_key: string;
     premium_key_state: {
-      state:
-      | 'valid'
-      | 'invalid'
-      | 'expiring'
-      | 'already_used'
-      | 'check_error';
+      state: 'valid' | 'invalid' | 'expiring' | 'already_used' | 'check_error';
       data: Record<string, unknown>;
     };
   };
   authorized_emails_addresses_check: null | {
     invalid_sender_address?: string;
     invalid_senders_in_newsletters?: Array<{
-      'subject': string;
-      'sender_address': string;
-      'newsletter_id': number | string;
+      subject: string;
+      sender_address: string;
+      newsletter_id: number | string;
     }>;
   };
 };

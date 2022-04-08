@@ -4,17 +4,18 @@ import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
 export default function InactiveSubscribers() {
-  const [duration, setDuration] = useSetting('deactivate_subscriber_after_inactive_days');
+  const [duration, setDuration] = useSetting(
+    'deactivate_subscriber_after_inactive_days',
+  );
   const [trackingLevel] = useSetting('tracking', 'level');
   const sufficientTracking = trackingLevel !== 'basic';
   return (
     <>
       <Label
         title={t('inactiveSubsTitle')}
-        description={(
+        description={
           <>
-            {t('inactiveSubsDescription')}
-            {' '}
+            {t('inactiveSubsDescription')}{' '}
             <a
               className="mailpoet-link"
               href="https://kb.mailpoet.com/article/264-inactive-subscribers"
@@ -25,11 +26,15 @@ export default function InactiveSubscribers() {
               {t('readMore')}
             </a>
           </>
-        )}
+        }
         htmlFor=""
       />
       <Inputs>
-        {!sufficientTracking && <p data-automation-id="inactive-subscribers-disabled">{t('disabledBecauseTrackingIs')}</p>}
+        {!sufficientTracking && (
+          <p data-automation-id="inactive-subscribers-disabled">
+            {t('disabledBecauseTrackingIs')}
+          </p>
+        )}
         {sufficientTracking && (
           <div data-automation-id="inactive-subscribers-enabled">
             <div className="mailpoet-settings-inputs-row">

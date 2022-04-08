@@ -31,7 +31,11 @@ describe('getPostTypes', function () {
 
   it('caches results', function () {
     var deferred = jQuery.Deferred();
-    var mock = sinon.mock({ post: function () {} }).expects('post').once().returns(deferred);
+    var mock = sinon
+      .mock({ post: function () {} })
+      .expects('post')
+      .once()
+      .returns(deferred);
     var module = CommunicationInjector({
       mailpoet: {
         Ajax: {
@@ -98,7 +102,11 @@ describe('getTaxonomies', function () {
 
   it('caches results', function () {
     var deferred = jQuery.Deferred();
-    var mock = sinon.mock({ post: function () {} }).expects('post').once().returns(deferred);
+    var mock = sinon
+      .mock({ post: function () {} })
+      .expects('post')
+      .once()
+      .returns(deferred);
     var module = CommunicationInjector({
       mailpoet: {
         Ajax: {
@@ -162,7 +170,11 @@ describe('getTerms', function () {
 
   it('caches results', function () {
     var deferred = jQuery.Deferred();
-    var mock = sinon.mock({ post: function () {} }).expects('post').once().returns(deferred);
+    var mock = sinon
+      .mock({ post: function () {} })
+      .expects('post')
+      .once()
+      .returns(deferred);
     var module = CommunicationInjector({
       mailpoet: {
         Ajax: {
@@ -213,10 +225,7 @@ describe('getPosts', function () {
           post: function () {
             var deferred = jQuery.Deferred();
             deferred.resolve({
-              data: [
-                { post_title: 'title 1' },
-                { post_title: 'post title 2' },
-              ],
+              data: [{ post_title: 'title 1' }, { post_title: 'post title 2' }],
             });
             return deferred;
           },
@@ -224,13 +233,20 @@ describe('getPosts', function () {
       },
     }).default;
     module.getPosts().done(function (posts) {
-      expect(posts).to.eql([{ post_title: 'title 1' }, { post_title: 'post title 2' }]);
+      expect(posts).to.eql([
+        { post_title: 'title 1' },
+        { post_title: 'post title 2' },
+      ]);
     });
   });
 
   it('caches results', function () {
     var deferred = jQuery.Deferred();
-    var mock = sinon.mock({ post: function () {} }).expects('post').once().returns(deferred);
+    var mock = sinon
+      .mock({ post: function () {} })
+      .expects('post')
+      .once()
+      .returns(deferred);
     var module = CommunicationInjector({
       mailpoet: {
         Ajax: {
@@ -295,13 +311,20 @@ describe('getTransformedPosts', function () {
       },
     }).default;
     module.getTransformedPosts().done(function (posts) {
-      expect(posts).to.eql([{ type: 'text', text: 'something' }, { type: 'text', text: 'something else' }]);
+      expect(posts).to.eql([
+        { type: 'text', text: 'something' },
+        { type: 'text', text: 'something else' },
+      ]);
     });
   });
 
   it('caches results', function () {
     var deferred = jQuery.Deferred();
-    var mock = sinon.mock({ post: function () {} }).expects('post').once().returns(deferred);
+    var mock = sinon
+      .mock({ post: function () {} })
+      .expects('post')
+      .once()
+      .returns(deferred);
     var module = CommunicationInjector({
       mailpoet: {
         Ajax: {

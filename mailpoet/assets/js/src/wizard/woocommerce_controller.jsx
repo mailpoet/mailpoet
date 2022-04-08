@@ -13,18 +13,20 @@ function WooCommerceController({ isWizardStep = false }) {
     MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
   };
 
-  const updateSettings = (data) => MailPoet.Ajax.post({
-    api_version: window.mailpoet_api_version,
-    endpoint: 'settings',
-    action: 'set',
-    data,
-  }).fail(handleApiError);
+  const updateSettings = (data) =>
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'settings',
+      action: 'set',
+      data,
+    }).fail(handleApiError);
 
-  const scheduleImport = () => MailPoet.Ajax.post({
-    api_version: window.mailpoet_api_version,
-    endpoint: 'importExport',
-    action: 'setupWooCommerceInitialImport',
-  }).fail(handleApiError);
+  const scheduleImport = () =>
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'importExport',
+      action: 'setupWooCommerceInitialImport',
+    }).fail(handleApiError);
 
   const finishWizard = () => {
     window.location = window.finish_wizard_url;
@@ -32,12 +34,14 @@ function WooCommerceController({ isWizardStep = false }) {
 
   const submit = (importType, allowed) => {
     setLoading(true);
-    const trackingLevelForDisabledCookies = MailPoet.settings.tracking?.level === 'basic' ? 'basic' : 'partial';
+    const trackingLevelForDisabledCookies =
+      MailPoet.settings.tracking?.level === 'basic' ? 'basic' : 'partial';
     const newTrackingLevel = allowed ? 'full' : trackingLevelForDisabledCookies;
     const settings = {
       // importType
       woocommerce_import_screen_displayed: 1,
-      'mailpoet_subscribe_old_woocommerce_customers.enabled': importType === 'subscribed' ? 1 : 0,
+      'mailpoet_subscribe_old_woocommerce_customers.enabled':
+        importType === 'subscribed' ? 1 : 0,
       // cookies allowed
       'tracking.level': newTrackingLevel,
       'woocommerce.accept_cookie_revenue_tracking.set': 1,
@@ -49,16 +53,16 @@ function WooCommerceController({ isWizardStep = false }) {
     <WelcomeWizardStepLayout
       illustrationUrl={window.wizard_woocommerce_illustration_url}
     >
-      <WooCommerceStep loading={loading} submitForm={submit} isWizardStep={isWizardStep} />
+      <WooCommerceStep
+        loading={loading}
+        submitForm={submit}
+        isWizardStep={isWizardStep}
+      />
     </WelcomeWizardStepLayout>
   );
 
   if (!isWizardStep) {
-    return (
-      <StepsContent>
-        {result}
-      </StepsContent>
-    );
+    return <StepsContent>{result}</StepsContent>;
   }
 
   return result;

@@ -25,10 +25,15 @@ describe('Automated Latest Content Layout Supervisor', function () {
 
   it('fetches posts in bulk from the server', function () {
     global.stubChannel(EditorApplication);
-    EditorApplication.findModels = sinon.stub().returns([new Backbone.SuperModel()]);
+    EditorApplication.findModels = sinon
+      .stub()
+      .returns([new Backbone.SuperModel()]);
 
-    mock = sinon.mock({ getBulkTransformedPosts: function () {} })
-      .expects('getBulkTransformedPosts').once().returns(jQuery.Deferred());
+    mock = sinon
+      .mock({ getBulkTransformedPosts: function () {} })
+      .expects('getBulkTransformedPosts')
+      .once()
+      .returns(jQuery.Deferred());
 
     module = AutomatedLatestContentInjector({
       'newsletter_editor/components/communication': {
@@ -45,13 +50,8 @@ describe('Automated Latest Content Layout Supervisor', function () {
   it('refreshes posts for given blocks', function () {
     var block1 = new Backbone.SuperModel();
     var block2 = new Backbone.SuperModel();
-    var postsSet1 = [
-      { type: 'customTypeOne' },
-    ];
-    var postsSet2 = [
-      { type: 'customTypeTwo' },
-      { type: 'customTypeTwo' },
-    ];
+    var postsSet1 = [{ type: 'customTypeOne' }];
+    var postsSet2 = [{ type: 'customTypeTwo' }, { type: 'customTypeTwo' }];
     var mock1 = sinon.mock(block1);
     var mock2 = sinon.mock(block2);
 
@@ -78,8 +78,10 @@ describe('Automated latest content layout', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
-      EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.SuperModel);
-      model = new (module.AutomatedLatestContentLayoutBlockModel)();
+      EditorApplication.getBlockTypeModel = sinon
+        .stub()
+        .returns(Backbone.SuperModel);
+      model = new module.AutomatedLatestContentLayoutBlockModel();
       sandbox = sinon.createSandbox();
     });
 
@@ -130,7 +132,9 @@ describe('Automated latest content layout', function () {
     });
 
     it('has featured image position', function () {
-      expect(model.get('featuredImagePosition')).to.match(/^(centered|left|right|alternate|none)$/);
+      expect(model.get('featuredImagePosition')).to.match(
+        /^(centered|left|right|alternate|none)$/,
+      );
     });
 
     it('has title position', function () {
@@ -146,7 +150,9 @@ describe('Automated latest content layout', function () {
     });
 
     it('has an option to display categories', function () {
-      expect(model.get('showCategories')).to.match(/^(no|aboveText|belowText)$/);
+      expect(model.get('showCategories')).to.match(
+        /^(no|aboveText|belowText)$/,
+      );
     });
 
     it('has text preceding categories', function () {
@@ -226,7 +232,7 @@ describe('Automated latest content layout', function () {
           },
         },
       });
-      model = new (module.AutomatedLatestContentLayoutBlockModel)();
+      model = new module.AutomatedLatestContentLayoutBlockModel();
 
       expect(model.get('amount')).to.equal('17');
       expect(model.get('contentType')).to.equal('mailpoet_page');
@@ -239,36 +245,61 @@ describe('Automated latest content layout', function () {
       expect(model.get('featuredImagePosition')).to.equal('aboveTitle');
       expect(model.get('titlePosition')).to.equal('aboveExcerpt');
       expect(model.get('showAuthor')).to.equal('belowText');
-      expect(model.get('authorPrecededBy')).to.equal('Custom config author preceded by');
+      expect(model.get('authorPrecededBy')).to.equal(
+        'Custom config author preceded by',
+      );
       expect(model.get('showCategories')).to.equal('belowText');
-      expect(model.get('categoriesPrecededBy')).to.equal('Custom config categories preceded by');
+      expect(model.get('categoriesPrecededBy')).to.equal(
+        'Custom config categories preceded by',
+      );
       expect(model.get('readMoreType')).to.equal('button');
-      expect(model.get('readMoreText')).to.equal('Custom Config read more text');
-      expect(model.get('readMoreButton.text')).to.equal('Custom config read more');
+      expect(model.get('readMoreText')).to.equal(
+        'Custom Config read more text',
+      );
+      expect(model.get('readMoreButton.text')).to.equal(
+        'Custom config read more',
+      );
       expect(model.get('readMoreButton.url')).to.equal('[postLink]');
-      expect(model.get('readMoreButton.styles.block.backgroundColor')).to.equal('#123456');
-      expect(model.get('readMoreButton.styles.block.borderColor')).to.equal('#234567');
-      expect(model.get('readMoreButton.styles.link.fontColor')).to.equal('#345678');
-      expect(model.get('readMoreButton.styles.link.fontFamily')).to.equal('Tahoma');
+      expect(model.get('readMoreButton.styles.block.backgroundColor')).to.equal(
+        '#123456',
+      );
+      expect(model.get('readMoreButton.styles.block.borderColor')).to.equal(
+        '#234567',
+      );
+      expect(model.get('readMoreButton.styles.link.fontColor')).to.equal(
+        '#345678',
+      );
+      expect(model.get('readMoreButton.styles.link.fontFamily')).to.equal(
+        'Tahoma',
+      );
       expect(model.get('readMoreButton.styles.link.fontSize')).to.equal('37px');
       expect(model.get('sortBy')).to.equal('oldest');
       expect(model.get('showDivider')).to.equal(true);
-      expect(model.get('divider.src')).to.equal('http://example.org/someConfigDividerImage.png');
-      expect(model.get('divider.styles.block.backgroundColor')).to.equal('#456789');
+      expect(model.get('divider.src')).to.equal(
+        'http://example.org/someConfigDividerImage.png',
+      );
+      expect(model.get('divider.styles.block.backgroundColor')).to.equal(
+        '#456789',
+      );
       expect(model.get('divider.styles.block.padding')).to.equal('38px');
     });
 
     it('accepts displayable posts', function () {
-      EditorApplication.getBlockTypeModel = sinon.stub()
+      EditorApplication.getBlockTypeModel = sinon
+        .stub()
         .returns(ContainerBlock.ContainerBlockModel);
-      model = new (module.AutomatedLatestContentLayoutBlockModel)();
+      model = new module.AutomatedLatestContentLayoutBlockModel();
 
-      model.updatePosts([{
-        type: 'someCustomType',
-      }]);
+      model.updatePosts([
+        {
+          type: 'someCustomType',
+        },
+      ]);
 
       expect(model.get('_container.blocks').size()).to.equal(1);
-      expect(model.get('_container.blocks').first().get('type')).to.equal('someCustomType');
+      expect(model.get('_container.blocks').first().get('type')).to.equal(
+        'someCustomType',
+      );
     });
 
     it('updates blockDefaults.automatedLatestContentLayout when handling changes', function () {
@@ -291,7 +322,9 @@ describe('Automated latest content layout', function () {
       model.set('sortBy', 'oldest');
       model.set('showDivider', false);
       expect(stub.callCount).to.equal(17);
-      expect(stub.getCall(16).args[0]).to.equal('blockDefaults.automatedLatestContentLayout');
+      expect(stub.getCall(16).args[0]).to.equal(
+        'blockDefaults.automatedLatestContentLayout',
+      );
       expect(stub.getCall(16).args[1]).to.deep.equal(model.toJSON());
     });
   });
@@ -308,10 +341,12 @@ describe('Automated latest content layout', function () {
     beforeEach(function () {
       global.stubChannel(EditorApplication);
       global.stubConfig(EditorApplication);
-      EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
+      EditorApplication.getBlockTypeModel = sinon
+        .stub()
+        .returns(Backbone.Model);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-      model = new (module.AutomatedLatestContentLayoutBlockModel)();
-      view = new (module.AutomatedLatestContentLayoutBlockView)({ model: model });
+      model = new module.AutomatedLatestContentLayoutBlockModel();
+      view = new module.AutomatedLatestContentLayoutBlockView({ model: model });
     });
 
     afterEach(function () {
@@ -332,16 +367,22 @@ describe('Automated latest content layout', function () {
       onStub = sinon.stub();
       global.stubChannel(EditorApplication, { on: onStub });
       global.stubConfig(EditorApplication);
-      EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
+      EditorApplication.getBlockTypeModel = sinon
+        .stub()
+        .returns(Backbone.Model);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
-      view = new (AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockView)({
-        model: { set: sinon.stub() },
-      });
+      view =
+        new AutomatedLatestContentBlock.AutomatedLatestContentLayoutBlockView({
+          model: { set: sinon.stub() },
+        });
     });
 
     it('listens to the event', function () {
       expect(onStub).to.have.been.callCount(1);
-      expect(onStub).to.have.been.calledWith('replaceAllButtonStyles', sinon.match.func);
+      expect(onStub).to.have.been.calledWith(
+        'replaceAllButtonStyles',
+        sinon.match.func,
+      );
     });
 
     it('updates the model', function () {
@@ -355,7 +396,9 @@ describe('Automated latest content layout', function () {
       };
       callback(data);
       expect(view.model.set).to.have.been.callCount(1);
-      expect(view.model.set).to.have.been.calledWithMatch(sinon.match.has('readMoreButton', data));
+      expect(view.model.set).to.have.been.calledWithMatch(
+        sinon.match.has('readMoreButton', data),
+      );
     });
   });
 
@@ -404,13 +447,17 @@ describe('Automated latest content layout', function () {
       global.stubConfig(EditorApplication, {
         blockDefaults: {},
       });
-      EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
+      EditorApplication.getBlockTypeModel = sinon
+        .stub()
+        .returns(Backbone.Model);
       EditorApplication.getBlockTypeView = sinon.stub().returns(Backbone.View);
     });
 
     beforeEach(function () {
-      model = new (module.AutomatedLatestContentLayoutBlockModel)();
-      view = new (module.AutomatedLatestContentLayoutBlockSettingsView)({ model: model });
+      model = new module.AutomatedLatestContentLayoutBlockModel();
+      view = new module.AutomatedLatestContentLayoutBlockSettingsView({
+        model: model,
+      });
     });
 
     after(function () {
@@ -423,63 +470,92 @@ describe('Automated latest content layout', function () {
 
     describe('once rendered', function () {
       beforeEach(function () {
-        model = new (module.AutomatedLatestContentLayoutBlockModel)();
-        view = new (module.AutomatedLatestContentLayoutBlockSettingsView)({ model: model });
+        model = new module.AutomatedLatestContentLayoutBlockModel();
+        view = new module.AutomatedLatestContentLayoutBlockSettingsView({
+          model: model,
+        });
         view.render();
       });
 
       it('changes the model if post amount changes', function () {
         var newValue = '11';
-        view.$('.mailpoet_automated_latest_content_show_amount').val(newValue).trigger('input');
+        view
+          .$('.mailpoet_automated_latest_content_show_amount')
+          .val(newValue)
+          .trigger('input');
         expect(model.get('amount')).to.equal(newValue);
       });
 
       it('changes the model if post type changes', function () {
         var newValue = 'mailpoet_page';
-        view.$('.mailpoet_automated_latest_content_content_type').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_content_type')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('contentType')).to.equal(newValue);
       });
 
       it('changes the model if inclusion type changes', function () {
         var newValue = 'exclude';
-        view.$('.mailpoet_automated_latest_content_include_or_exclude').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_include_or_exclude')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('inclusionType')).to.equal(newValue);
       });
 
       it('changes the model if display type changes', function () {
         var newValue = 'full';
-        view.$('.mailpoet_automated_latest_content_display_type').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_display_type')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('displayType')).to.equal(newValue);
       });
 
       it('changes the model if title format changes', function () {
         var newValue = 'h3';
-        view.$('.mailpoet_automated_latest_content_title_format').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_title_format')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('titleFormat')).to.equal(newValue);
       });
 
       it('changes the model if title alignment changes', function () {
         var newValue = 'right';
-        view.$('.mailpoet_automated_latest_content_title_alignment').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_title_alignment')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('titleAlignment')).to.equal(newValue);
       });
 
       it('changes the model if title link changes', function () {
         var newValue = true;
-        view.$('.mailpoet_automated_latest_content_title_as_links').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_title_as_links')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('titleIsLink')).to.equal(newValue);
       });
 
       it('changes the model if image alignment changes', function () {
         var newValue = false;
-        view.$('.mailpoet_automated_latest_content_image_full_width').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_image_full_width')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('imageFullWidth')).to.equal(newValue);
       });
 
       it('changes the model if featured image position changes for excerpt display type', function () {
         var newValue = 'right';
         model.set('displayType', 'excerpt');
-        view.$('.mailpoet_automated_latest_content_featured_image_position').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_featured_image_position')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('featuredImagePosition')).to.equal(newValue);
         expect(model.get('_featuredImagePosition')).to.equal(newValue);
       });
@@ -487,89 +563,136 @@ describe('Automated latest content layout', function () {
       it('changes the model if featured image position changes for full post display type', function () {
         var newValue = 'alternate';
         model.set('displayType', 'full');
-        view.$('.mailpoet_automated_latest_content_featured_image_position').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_featured_image_position')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('fullPostFeaturedImagePosition')).to.equal(newValue);
         expect(model.get('_featuredImagePosition')).to.equal(newValue);
       });
 
       it('changes the model if featured image position changes', function () {
         var newValue = 'aboveExcerpt';
-        view.$('.mailpoet_automated_latest_content_title_position').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_title_position')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('titlePosition')).to.equal(newValue);
       });
 
       it('changes the model if show author changes', function () {
         var newValue = 'belowText';
-        view.$('.mailpoet_automated_latest_content_show_author').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_show_author')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('showAuthor')).to.equal(newValue);
       });
 
       it('changes the model if author preceded by  changes', function () {
         var newValue = 'New author preceded by test';
-        view.$('.mailpoet_automated_latest_content_author_preceded_by').val(newValue).trigger('input');
+        view
+          .$('.mailpoet_automated_latest_content_author_preceded_by')
+          .val(newValue)
+          .trigger('input');
         expect(model.get('authorPrecededBy')).to.equal(newValue);
       });
 
       it('changes the model if show categories changes', function () {
         var newValue = 'belowText';
-        view.$('.mailpoet_automated_latest_content_show_categories').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_show_categories')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('showCategories')).to.equal(newValue);
       });
 
       it('changes the model if categories preceded by changes', function () {
         var newValue = 'New categories preceded by test';
-        view.$('.mailpoet_automated_latest_content_categories').val(newValue).trigger('input');
+        view
+          .$('.mailpoet_automated_latest_content_categories')
+          .val(newValue)
+          .trigger('input');
         expect(model.get('categoriesPrecededBy')).to.equal(newValue);
       });
 
       it('changes the model if read more button type changes', function () {
         var newValue = 'link';
-        view.$('.mailpoet_automated_latest_content_read_more_type').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_read_more_type')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('readMoreType')).to.equal(newValue);
       });
 
       it('changes the model if read more text changes', function () {
         var newValue = 'New read more text';
-        view.$('.mailpoet_automated_latest_content_read_more_text').val(newValue).trigger('input');
+        view
+          .$('.mailpoet_automated_latest_content_read_more_text')
+          .val(newValue)
+          .trigger('input');
         expect(model.get('readMoreText')).to.equal(newValue);
       });
 
       it('changes the model if sort by changes', function () {
         var newValue = 'oldest';
-        view.$('.mailpoet_automated_latest_content_sort_by').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_sort_by')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('sortBy')).to.equal(newValue);
       });
 
       it('changes the model if show divider changes', function () {
         var newValue = true;
-        view.$('.mailpoet_automated_latest_content_show_divider').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_automated_latest_content_show_divider')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('showDivider')).to.equal(newValue);
       });
 
       describe('when "title only" display type is selected', function () {
         beforeEach(function () {
-          model = new (module.AutomatedLatestContentLayoutBlockModel)();
-          view = new (module.AutomatedLatestContentLayoutBlockSettingsView)({ model: model });
+          model = new module.AutomatedLatestContentLayoutBlockModel();
+          view = new module.AutomatedLatestContentLayoutBlockSettingsView({
+            model: model,
+          });
           view.render();
-          view.$('.mailpoet_automated_latest_content_display_type').val('titleOnly').trigger('change');
+          view
+            .$('.mailpoet_automated_latest_content_display_type')
+            .val('titleOnly')
+            .trigger('change');
         });
 
         it('shows "title as list" option', function () {
-          expect(view.$('.mailpoet_automated_latest_content_title_as_list')).to.not.have.$class('mailpoet_hidden');
+          expect(
+            view.$('.mailpoet_automated_latest_content_title_as_list'),
+          ).to.not.have.$class('mailpoet_hidden');
         });
 
         describe('when "title as list" is selected', function () {
           beforeEach(function () {
-            model = new (module.AutomatedLatestContentLayoutBlockModel)();
-            view = new (module.AutomatedLatestContentLayoutBlockSettingsView)({ model: model });
+            model = new module.AutomatedLatestContentLayoutBlockModel();
+            view = new module.AutomatedLatestContentLayoutBlockSettingsView({
+              model: model,
+            });
             view.render();
-            view.$('.mailpoet_automated_latest_content_display_type').val('titleOnly').trigger('change');
-            view.$('.mailpoet_automated_latest_content_title_format').val('ul').trigger('change');
+            view
+              .$('.mailpoet_automated_latest_content_display_type')
+              .val('titleOnly')
+              .trigger('change');
+            view
+              .$('.mailpoet_automated_latest_content_title_format')
+              .val('ul')
+              .trigger('change');
           });
 
           describe('"title is link" option', function () {
             it('is hidden', function () {
-              expect(view.$('.mailpoet_automated_latest_content_title_as_link')).to.have.$class('mailpoet_hidden');
+              expect(
+                view.$('.mailpoet_automated_latest_content_title_as_link'),
+              ).to.have.$class('mailpoet_hidden');
             });
 
             it('is set to "yes"', function () {
@@ -580,13 +703,21 @@ describe('Automated latest content layout', function () {
 
         describe('when "title as list" is deselected', function () {
           before(function () {
-            view.$('.mailpoet_automated_latest_content_title_format').val('ul').trigger('change');
-            view.$('.mailpoet_automated_latest_content_title_format').val('h3').trigger('change');
+            view
+              .$('.mailpoet_automated_latest_content_title_format')
+              .val('ul')
+              .trigger('change');
+            view
+              .$('.mailpoet_automated_latest_content_title_format')
+              .val('h3')
+              .trigger('change');
           });
 
           describe('"title is link" option', function () {
             it('is visible', function () {
-              expect(view.$('.mailpoet_automated_latest_content_title_as_link')).to.not.have.$class('mailpoet_hidden');
+              expect(
+                view.$('.mailpoet_automated_latest_content_title_as_link'),
+              ).to.not.have.$class('mailpoet_hidden');
             });
           });
         });

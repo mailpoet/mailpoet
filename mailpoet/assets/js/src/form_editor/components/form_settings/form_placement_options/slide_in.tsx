@@ -4,7 +4,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import Icon from './icons/slide_in_icon';
 import FormPlacementOption from './form_placement_option';
 
-function SlideIn():JSX.Element {
+function SlideIn(): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -16,7 +16,7 @@ function SlideIn():JSX.Element {
       active={formSettings.formPlacement.slideIn.enabled}
       label={MailPoet.I18n.t('placeSlideInFormOnPages')}
       icon={Icon}
-      onClick={(): void => (showPlacementSettings('slide_in'))}
+      onClick={(): void => showPlacementSettings('slide_in')}
       canBeActive
     />
   );

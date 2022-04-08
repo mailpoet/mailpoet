@@ -18,29 +18,31 @@ import FormTitle from '../form_title';
 function BasicSettingsPanel({ onToggle, isOpened }) {
   const settings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
-    []
+    [],
   );
   const segments = useSelect(
     (select) => select('mailpoet-form-editor').getAllAvailableSegments(),
-    []
+    [],
   );
 
   const pages = useSelect(
     (select) => select('mailpoet-form-editor').getAllAvailablePages(),
-    []
+    [],
   );
 
   const missingListError = useSelect(
     (select) => select('mailpoet-form-editor').getNotice('missing-lists'),
-    []
+    [],
   );
 
   const isFormEnabled = useSelect(
     (select) => select('mailpoet-form-editor').isFormEnabled(),
-    []
+    [],
   );
 
-  const { changeFormSettings, toggleForm } = useDispatch('mailpoet-form-editor');
+  const { changeFormSettings, toggleForm } = useDispatch(
+    'mailpoet-form-editor',
+  );
 
   const onSegmentsChange = (e) => {
     // We don't want to update state when is same
@@ -77,12 +79,17 @@ function BasicSettingsPanel({ onToggle, isOpened }) {
   };
 
   const selectedSegments = settings.segments
-    ? segments.filter((seg) => (settings.segments.includes(seg.id.toString())))
+    ? segments.filter((seg) => settings.segments.includes(seg.id.toString()))
     : [];
-  const shouldDisplayMissingListError = missingListError && !selectedSegments.length;
+  const shouldDisplayMissingListError =
+    missingListError && !selectedSegments.length;
   return (
     <Panel>
-      <PanelBody title={MailPoet.I18n.t('formSettings')} opened={isOpened} onToggle={onToggle}>
+      <PanelBody
+        title={MailPoet.I18n.t('formSettings')}
+        opened={isOpened}
+        onToggle={onToggle}
+      >
         <FormTitle />
         <ToggleControl
           label={MailPoet.I18n.t('displayForm')}
@@ -91,11 +98,15 @@ function BasicSettingsPanel({ onToggle, isOpened }) {
         />
         <BaseControl
           label={MailPoet.I18n.t('settingsListLabel')}
-          className={classnames({ 'mailpoet-form-missing-lists': shouldDisplayMissingListError })}
+          className={classnames({
+            'mailpoet-form-missing-lists': shouldDisplayMissingListError,
+          })}
         >
           {shouldDisplayMissingListError ? (
-            <span className="mailpoet-form-lists-error">{MailPoet.I18n.t('settingsPleaseSelectList')}</span>
-          ) : null }
+            <span className="mailpoet-form-lists-error">
+              {MailPoet.I18n.t('settingsPleaseSelectList')}
+            </span>
+          ) : null}
           <Selection
             item={{
               segments: selectedSegments,
@@ -107,8 +118,12 @@ function BasicSettingsPanel({ onToggle, isOpened }) {
               values: segments,
               multiple: true,
               placeholder: MailPoet.I18n.t('settingsPleaseSelectList'),
-              getLabel: (seg) => (`${seg.name} (${parseInt(seg.subscribers, 10).toLocaleString()})`),
-              filter: (seg) => (!!(!seg.deleted_at && seg.type === 'default')),
+              getLabel: (seg) =>
+                `${seg.name} (${parseInt(
+                  seg.subscribers,
+                  10,
+                ).toLocaleString()})`,
+              filter: (seg) => !!(!seg.deleted_at && seg.type === 'default'),
             }}
           />
         </BaseControl>
@@ -131,7 +146,10 @@ function BasicSettingsPanel({ onToggle, isOpened }) {
         {settings.on_success === 'page' ? (
           <SelectControl
             value={settings.success_page}
-            options={pages.map((page) => ({ value: page.id.toString(), label: page.title }))}
+            options={pages.map((page) => ({
+              value: page.id.toString(),
+              label: page.title,
+            }))}
             onChange={onSuccessPageChange}
           />
         ) : (

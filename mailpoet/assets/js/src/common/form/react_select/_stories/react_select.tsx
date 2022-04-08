@@ -26,7 +26,8 @@ export function ReactSelect() {
     },
     {
       value: 'long',
-      label: 'Very very very very very very very very very very very very long option',
+      label:
+        'Very very very very very very very very very very very very long option',
       tag: 'long',
       count: 1234,
     },

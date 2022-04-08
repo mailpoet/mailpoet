@@ -14,17 +14,15 @@ import {
   WordpressRoleFormItem,
 } from '../types';
 
-export function validateSubscribedToList(formItems: WordpressRoleFormItem): boolean {
+export function validateSubscribedToList(
+  formItems: WordpressRoleFormItem,
+): boolean {
   return (
-    (
-      (formItems.operator === AnyValueTypes.ANY)
-      || (formItems.operator === AnyValueTypes.ALL)
-      || (formItems.operator === AnyValueTypes.NONE)
-    )
-    && (
-      (Array.isArray(formItems.segments))
-      && (formItems.segments.length > 0)
-    )
+    (formItems.operator === AnyValueTypes.ANY ||
+      formItems.operator === AnyValueTypes.ALL ||
+      formItems.operator === AnyValueTypes.NONE) &&
+    Array.isArray(formItems.segments) &&
+    formItems.segments.length > 0
   );
 }
 
@@ -32,25 +30,27 @@ type Props = {
   filterIndex: number;
 };
 
-export function SubscribedToList({ filterIndex }:Props) : JSX.Element {
+export function SubscribedToList({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex],
   );
   const staticSegmentsList: StaticSegment[] = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getStaticSegmentsList(),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getStaticSegmentsList(),
     [],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
+    'mailpoet-dynamic-segments-form',
+  );
 
   useEffect(() => {
     if (
-      (
-        (segment.operator !== AnyValueTypes.ANY)
-        && (segment.operator !== AnyValueTypes.ALL)
-        && (segment.operator !== AnyValueTypes.NONE)
-      )
+      segment.operator !== AnyValueTypes.ANY &&
+      segment.operator !== AnyValueTypes.ALL &&
+      segment.operator !== AnyValueTypes.NONE
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
@@ -73,7 +73,9 @@ export function SubscribedToList({ filterIndex }:Props) : JSX.Element {
         >
           <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
           <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-          <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+          <option value={AnyValueTypes.NONE}>
+            {MailPoet.I18n.t('noneOf')}
+          </option>
         </Select>
       </Grid.CenteredRow>
       <Grid.CenteredRow>
@@ -83,16 +85,11 @@ export function SubscribedToList({ filterIndex }:Props) : JSX.Element {
           isMulti
           placeholder={MailPoet.I18n.t('searchLists')}
           options={options}
-          value={
-            filter(
-              (option) => {
-                if (!segment.segments) return undefined;
-                const segmentId = option.value;
-                return segment.segments.indexOf(segmentId) !== -1;
-              },
-              options,
-            )
-          }
+          value={filter((option) => {
+            if (!segment.segments) return undefined;
+            const segmentId = option.value;
+            return segment.segments.indexOf(segmentId) !== -1;
+          }, options)}
           onChange={(selectOptions: SelectOption[]): void => {
             updateSegmentFilter(
               { segments: map('value', selectOptions) },

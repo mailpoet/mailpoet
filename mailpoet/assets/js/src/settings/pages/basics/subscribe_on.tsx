@@ -42,9 +42,19 @@ export default function SubscribeOn({ title, description, event }: Props) {
               value={label}
               onChange={onChange(setLabel)}
             />
-            <label className="mailpoet-settings-inputs-row" htmlFor={`subscribe-${event}-segments`}>{t('usersWillBeSubscribedTo')}</label>
+            <label
+              className="mailpoet-settings-inputs-row"
+              htmlFor={`subscribe-${event}-segments`}
+            >
+              {t('usersWillBeSubscribedTo')}
+            </label>
             <div data-automation-id={`subscribe-${event}-segments-selection`}>
-              <SegmentsSelect id={`subscribe-${event}-segments`} placeholder={t('chooseList')} value={segments} setValue={setSegments} />
+              <SegmentsSelect
+                id={`subscribe-${event}-segments`}
+                placeholder={t('chooseList')}
+                value={segments}
+                setValue={setSegments}
+              />
             </div>
           </>
         )}

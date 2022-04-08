@@ -25,11 +25,14 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
     selector: '.mailpoet_content',
     toolbar1: 'bold italic link unlink forecolor mailpoet_shortcodes',
     toolbar2: '',
-    validElements: 'p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br,del',
+    validElements:
+      'p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br,del',
     invalidElements: 'script',
     blockFormats: 'Paragraph=p',
     plugins: 'link mailpoet_shortcodes',
-    configurationFilter: function configurationFilter(originalConfig) { return originalConfig; },
+    configurationFilter: function configurationFilter(originalConfig) {
+      return originalConfig;
+    },
   },
   initialize: function initialize() {
     this.listenTo(App.getChannel(), 'dragStart', this.hideEditor);
@@ -47,62 +50,64 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
 
     tinymce.PluginManager.add('mailpoet_shortcodes', tinymceMailpoetShortcodes);
 
-    tinymce.init(this.options.configurationFilter({
-      target: this.el.querySelector(this.options.selector),
-      inline: true,
-      contextmenu: false,
+    tinymce.init(
+      this.options.configurationFilter({
+        target: this.el.querySelector(this.options.selector),
+        inline: true,
+        contextmenu: false,
 
-      menubar: false,
-      toolbar1: this.options.toolbar1,
-      toolbar2: this.options.toolbar2,
+        menubar: false,
+        toolbar1: this.options.toolbar1,
+        toolbar2: this.options.toolbar2,
 
-      browser_spellcheck: true,
+        browser_spellcheck: true,
 
-      valid_elements: this.options.validElements,
-      invalid_elements: this.options.invalidElements,
-      block_formats: this.options.blockFormats,
-      relative_urls: false,
-      remove_script_host: false,
-      convert_urls: true,
-      urlconverter_callback: function urlconverterCallback(url) {
-        if (url.match(/\[.+\]/g)) {
-          // Do not convert URLs with shortcodes
-          return url;
-        }
-
-        return this.documentBaseURI.toAbsolute(
-          url,
-          this.settings.remove_script_host
-        );
-      },
-
-      plugins: this.options.plugins,
-
-      setup: function setup(editor) {
-        // Store the editor instance
-        that.tinymceEditor = editor;
-        editor.on('change', function onChange() {
-          that.view.triggerMethod('text:editor:change', editor.getContent());
-        });
-
-        editor.on('click', function onClick(e) {
-          if (App.getDisplayedSettingsId()) {
-            App.getChannel().trigger('hideSettings');
+        valid_elements: this.options.validElements,
+        invalid_elements: this.options.invalidElements,
+        block_formats: this.options.blockFormats,
+        relative_urls: false,
+        remove_script_host: false,
+        convert_urls: true,
+        urlconverter_callback: function urlconverterCallback(url) {
+          if (url.match(/\[.+\]/g)) {
+            // Do not convert URLs with shortcodes
+            return url;
           }
-          // if caret not in editor, place it there (triggers focus on editor)
-          if (document.activeElement !== editor.targetElm) {
-            editor.selection.placeCaretAt(e.clientX, e.clientY);
-          }
-        });
 
-        editor.on('focus', function onFocus() {
-          that.view.triggerMethod('text:editor:focus');
-        });
+          return this.documentBaseURI.toAbsolute(
+            url,
+            this.settings.remove_script_host,
+          );
+        },
 
-        editor.on('blur', function onBlur() {
-          that.view.triggerMethod('text:editor:blur');
-        });
-      },
-    }));
+        plugins: this.options.plugins,
+
+        setup: function setup(editor) {
+          // Store the editor instance
+          that.tinymceEditor = editor;
+          editor.on('change', function onChange() {
+            that.view.triggerMethod('text:editor:change', editor.getContent());
+          });
+
+          editor.on('click', function onClick(e) {
+            if (App.getDisplayedSettingsId()) {
+              App.getChannel().trigger('hideSettings');
+            }
+            // if caret not in editor, place it there (triggers focus on editor)
+            if (document.activeElement !== editor.targetElm) {
+              editor.selection.placeCaretAt(e.clientX, e.clientY);
+            }
+          });
+
+          editor.on('focus', function onFocus() {
+            that.view.triggerMethod('text:editor:focus');
+          });
+
+          editor.on('blur', function onBlur() {
+            that.view.triggerMethod('text:editor:blur');
+          });
+        },
+      }),
+    );
   },
 });

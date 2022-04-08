@@ -15,7 +15,7 @@ function ColorGradientSettings({
   gradientValue,
   onColorChange,
   onGradientChange,
-}: Props) : JSX.Element {
+}: Props): JSX.Element {
   const settingsColors = useSetting('color.palette');
   const settingsGradients = useSetting('color.gradients');
   return (

@@ -28,13 +28,10 @@ class ListingBulkActions extends Component {
       return;
     }
 
-    const selectedIds = (this.props.selection !== 'all')
-      ? this.props.selected_ids
-      : [];
+    const selectedIds =
+      this.props.selection !== 'all' ? this.props.selected_ids : [];
 
-    const data = (action.getData !== undefined)
-      ? action.getData()
-      : {};
+    const data = action.getData !== undefined ? action.getData() : {};
 
     data.action = action.name;
 
@@ -58,7 +55,9 @@ class ListingBulkActions extends Component {
   getSelectedAction(actionName) {
     const selectedAction = actionName;
     if (selectedAction.length > 0) {
-      const action = this.props.bulk_actions.filter((act) => (act.name === selectedAction));
+      const action = this.props.bulk_actions.filter(
+        (act) => act.name === selectedAction,
+      );
 
       if (action.length > 0) {
         return action[0];
@@ -73,13 +72,16 @@ class ListingBulkActions extends Component {
     }
 
     return (
-      <div className="mailpoet-listing-bulk-actions" data-automation-id="listing-bulk-actions">
+      <div
+        className="mailpoet-listing-bulk-actions"
+        data-automation-id="listing-bulk-actions"
+      >
         <span className="screen-reader-text">
           {MailPoet.I18n.t('selectBulkAction')}
         </span>
 
         <div>
-          { this.props.bulk_actions.map((action) => (
+          {this.props.bulk_actions.map((action) => (
             <a
               href="#"
               data-automation-id={`action-${action.name}`}
@@ -89,12 +91,12 @@ class ListingBulkActions extends Component {
                 return this.handleApplyAction(action.name);
               }}
             >
-              { action.label }
+              {action.label}
             </a>
-          )) }
+          ))}
         </div>
 
-        { this.state.extra }
+        {this.state.extra}
       </div>
     );
   }
@@ -102,10 +104,7 @@ class ListingBulkActions extends Component {
 
 ListingBulkActions.propTypes = {
   bulk_actions: PropTypes.arrayOf(PropTypes.object).isRequired,
-  selection: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.bool,
-  ]).isRequired,
+  selection: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]).isRequired,
   selected_ids: PropTypes.arrayOf(PropTypes.number).isRequired,
   onBulkAction: PropTypes.func.isRequired,
 };

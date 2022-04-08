@@ -17,7 +17,10 @@ export const mapPathToSteps = (location: Location): number | null => {
   let stepNumber = null;
 
   stepsMap.forEach(([regex, step]) => {
-    if ((new RegExp(`^#${regex}`)).exec(location.hash) || (new RegExp(`^${regex}`)).exec(location.pathname)) {
+    if (
+      new RegExp(`^#${regex}`).exec(location.hash) ||
+      new RegExp(`^${regex}`).exec(location.pathname)
+    ) {
       stepNumber = step;
     }
   });
@@ -56,7 +59,10 @@ const stepsListingHeading = (
 ): JSX.Element => {
   const emailTypeTitle = getEmailTypeTitle(emailType);
   return (
-    <div className="mailpoet-newsletter-listing-heading-wrapper" data-automation-id={automationId}>
+    <div
+      className="mailpoet-newsletter-listing-heading-wrapper"
+      data-automation-id={automationId}
+    >
       <HideScreenOptions />
       <Steps
         count={4}
@@ -68,7 +74,9 @@ const stepsListingHeading = (
           getEmailSendTitle(emailType),
         ]}
       />
-      <h1 className="mailpoet-newsletter-listing-heading title mailpoet_hidden">{' '}</h1>
+      <h1 className="mailpoet-newsletter-listing-heading title mailpoet_hidden">
+        {' '}
+      </h1>
     </div>
   );
 };

@@ -12,10 +12,12 @@ import { noop } from 'lodash';
 
 import Tabs, { Props as TabProps } from './tabs';
 
-function RouterAwareTabs(props: TabProps & {
-  keyPathMap: { [key: string]: string };
-  routerPrefix?: string;
-}) {
+function RouterAwareTabs(
+  props: TabProps & {
+    keyPathMap: { [key: string]: string };
+    routerPrefix?: string;
+  },
+) {
   const match = useRouteMatch();
   const history = useHistory();
 
@@ -56,12 +58,16 @@ function RoutedTabs({
   const keyPathMap: { [key: string]: string } = {};
   Children.map(children, (child: ReactElement) => {
     if (child) {
-      keyPathMap[child.key] = `${routerPrefix}${child.props.route || child.key}`;
+      keyPathMap[child.key] = `${routerPrefix}${
+        child.props.route || child.key
+      }`;
     }
   });
 
   if (!keyPathMap[activeKey]) {
-    throw new Error(`Child <Tab> with key ${activeKey} not found in <RoutedTabs> children`);
+    throw new Error(
+      `Child <Tab> with key ${activeKey} not found in <RoutedTabs> children`,
+    );
   }
 
   // Notes about performance:
@@ -92,9 +98,11 @@ function RoutedTabs({
     return routedTabs;
   }
 
-  return routerType === 'browser'
-    ? <BrowserRouter>{routedTabs}</BrowserRouter>
-    : <HashRouter>{routedTabs}</HashRouter>;
+  return routerType === 'browser' ? (
+    <BrowserRouter>{routedTabs}</BrowserRouter>
+  ) : (
+    <HashRouter>{routedTabs}</HashRouter>
+  );
 }
 
 export default RoutedTabs;

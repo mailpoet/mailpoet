@@ -16,22 +16,27 @@ function TextInputEdit({
 }) {
   const settings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
-    []
+    [],
   );
   const input = useRef(null);
   const id = `${name}_${Math.random().toString(36).substring(2, 15)}`;
   const [value, setValue] = useState('');
 
-  const labelStyles = !styles.inheritFromTheme ? {
-    fontWeight: styles.bold ? 'bold' : 'inherit',
-  } : {};
+  const labelStyles = !styles.inheritFromTheme
+    ? {
+        fontWeight: styles.bold ? 'bold' : 'inherit',
+      }
+    : {};
 
-  const inputStyles = !styles.inheritFromTheme ? {
-    borderRadius: styles.borderRadius ? `${styles.borderRadius}px` : 0,
-    borderWidth: styles.borderSize !== undefined ? `${styles.borderSize}px` : '1px',
-    borderColor: styles.borderColor || 'initial',
-    borderStyle: 'solid',
-  } : {};
+  const inputStyles = !styles.inheritFromTheme
+    ? {
+        borderRadius: styles.borderRadius ? `${styles.borderRadius}px` : 0,
+        borderWidth:
+          styles.borderSize !== undefined ? `${styles.borderSize}px` : '1px',
+        borderColor: styles.borderColor || 'initial',
+        borderStyle: 'solid',
+      }
+    : {};
 
   if (settings.inputPadding !== undefined) {
     inputStyles.padding = settings.inputPadding;
@@ -74,9 +79,7 @@ function TextInputEdit({
     style += '}';
     return (
       <>
-        <style>
-          {style}
-        </style>
+        <style>{style}</style>
         <input
           id={id}
           ref={input}
@@ -97,7 +100,12 @@ function TextInputEdit({
   return (
     <ParagraphEdit className={className}>
       {!labelWithinInput ? (
-        <label className="mailpoet_text_label" data-automation-id={`editor_${name}_label`} htmlFor={id} style={labelStyles}>
+        <label
+          className="mailpoet_text_label"
+          data-automation-id={`editor_${name}_label`}
+          htmlFor={id}
+          style={labelStyles}
+        >
           {formatLabel({ label, mandatory })}
         </label>
       ) : null}

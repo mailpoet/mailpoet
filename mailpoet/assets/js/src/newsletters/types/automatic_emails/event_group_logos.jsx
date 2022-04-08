@@ -1,6 +1,13 @@
 const AutomaticEmailEventGroupLogos = {
   woocommerce: (
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 120 71" style={{ enableBackground: 'new 0 0 120 71' }}>
+    <svg
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      x="0px"
+      y="0px"
+      viewBox="0 0 120 71"
+      style={{ enableBackground: 'new 0 0 120 71' }}
+    >
       <path
         fill="#9ca6cc"
         d="M11.4,0.7h97.1c6.1,0,11.1,4.9,11.1,11v36.7c0,6.1-5,11-11.1,11H73.7L78.5,71l-21-11.6h-46 c-6.1,0-11.1-4.9-11.1-11V11.7C0.3,5.7,5.3,0.7,11.4,0.7z"

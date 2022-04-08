@@ -29,7 +29,9 @@ export function SizeSettings({
   defaultPixelValue = 200,
   onChange,
 }: Props): JSX.Element {
-  const [localValue, setLocalValue] = useState(value ?? { unit: 'pixel', value: undefined });
+  const [localValue, setLocalValue] = useState(
+    value ?? { unit: 'pixel', value: undefined },
+  );
 
   useEffect(() => {
     setLocalValue(value);
@@ -54,7 +56,12 @@ export function SizeSettings({
         }}
       />
       <RangeControl
-        value={localValue.value ?? (localValue.unit === 'pixel' ? defaultPixelValue : defaultPercentValue)}
+        value={
+          localValue.value ??
+          (localValue.unit === 'pixel'
+            ? defaultPixelValue
+            : defaultPercentValue)
+        }
         min={localValue.unit === 'pixel' ? minPixels : minPercents}
         max={localValue.unit === 'pixel' ? maxPixels : maxPercents}
         onChange={(val): void => {

@@ -8,7 +8,7 @@ type Props = {
   activePanel: string;
 };
 
-function SettingsPanel({ activePanel }: Props) : JSX.Element {
+function SettingsPanel({ activePanel }: Props): JSX.Element {
   return (
     <div className="mailpoet-styles-settings">
       {activePanel === 'others' && <OtherSettings />}

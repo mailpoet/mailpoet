@@ -26,26 +26,30 @@ const resumeMailerSending = () => {
     api_version: MailPoet.apiVersion,
     endpoint: 'mailer',
     action: 'resumeSending',
-  }).done(() => {
-    MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
-  }).fail((response:ErrorResponse) => {
-    if (response.errors.length > 0) {
-      MailPoet.Notice.error(
-        response.errors.map((error) => error.message),
-        { scroll: true },
-      );
-    }
-  });
+  })
+    .done(() => {
+      MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
+    })
+    .fail((response: ErrorResponse) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map((error) => error.message),
+          { scroll: true },
+        );
+      }
+    });
 };
 
-const resumeSendingIfAuthorized = (fromAddress: string | null) => isValidFromAddress(fromAddress)
-  .then((valid) => {
+const resumeSendingIfAuthorized = (fromAddress: string | null) =>
+  isValidFromAddress(fromAddress).then((valid) => {
     if (!valid) {
       MailPoet.Notice.error(
         MailPoet.I18n.t('mailerSendingNotResumedUnauthorized'),
         { scroll: true },
       );
-      MailPoet.trackEvent('Unauthorized email used', { 'Unauthorized email source': 'send' });
+      MailPoet.trackEvent('Unauthorized email used', {
+        'Unauthorized email source': 'send',
+      });
       return false;
     }
     return resumeMailerSending();
@@ -54,7 +58,11 @@ const resumeSendingIfAuthorized = (fromAddress: string | null) => isValidFromAdd
 // use jQuery since some of the targeted notices are added to the DOM using the old
 // jQuery-based notice implementation which doesn't trigger pure-JS added listeners
 jQuery(($) => {
-  $(document).on('click', '.notice .mailpoet-js-button-resume-sending', (e) : void => {
-    void resumeSendingIfAuthorized(e.target.value as string);
-  });
+  $(document).on(
+    'click',
+    '.notice .mailpoet-js-button-resume-sending',
+    (e): void => {
+      void resumeSendingIfAuthorized(e.target.value as string);
+    },
+  );
 });

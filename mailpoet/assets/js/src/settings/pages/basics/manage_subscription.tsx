@@ -2,7 +2,10 @@ import ReactStringReplace from 'react-string-replace';
 import { t } from 'common/functions';
 import { useSetting } from 'settings/store/hooks';
 import {
-  Label, Inputs, SegmentsSelect, PagesSelect,
+  Label,
+  Inputs,
+  SegmentsSelect,
+  PagesSelect,
 } from 'settings/components';
 
 export default function ManageSubscription() {
@@ -12,10 +15,9 @@ export default function ManageSubscription() {
     <>
       <Label
         title={t('manageSubTitle')}
-        description={(
+        description={
           <>
-            {t('manageSubDescription1')}
-            {' '}
+            {t('manageSubDescription1')}{' '}
             {ReactStringReplace(
               t('manageSubDescription2'),
               /\[link\](.*?)\[\/link\]/,
@@ -33,7 +35,7 @@ export default function ManageSubscription() {
               ),
             )}
           </>
-        )}
+        }
         htmlFor="subscription-manage-page"
       />
       <Inputs>
@@ -45,7 +47,12 @@ export default function ManageSubscription() {
           automationId="subscription-manage-page-selection"
           linkAutomationId="preview_manage_subscription_page_link"
         />
-        <label className="mailpoet-settings-inputs-row" htmlFor="subscription-segments">{t('subscribersCanChooseFrom')}</label>
+        <label
+          className="mailpoet-settings-inputs-row"
+          htmlFor="subscription-segments"
+        >
+          {t('subscribersCanChooseFrom')}
+        </label>
         <SegmentsSelect
           id="subscription-segments"
           value={segments}

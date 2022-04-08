@@ -6,9 +6,7 @@ function WelcomeWizardStepLayoutBody(props) {
       <div className="mailpoet-wizard-step-illustration">
         <img src={props.illustrationUrl} width="500" alt="" />
       </div>
-      <div className="mailpoet-wizard-step-content">
-        {props.children}
-      </div>
+      <div className="mailpoet-wizard-step-content">{props.children}</div>
     </div>
   );
 }

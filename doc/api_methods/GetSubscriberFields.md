@@ -11,14 +11,15 @@ See also [addSubscriberField function.](AddSubscriberField.md)
 
 ## Subscriber Field
 
-| Property | Type | Limits | Description |
-| --- | --- | --- | --- |
-| id | string | 11 chars |Field Id |
-| name | string | 90 chars | Human readable name. Intended to be used, as an example, as a label for form input. |
-| type | string | - | Type of the field. Possible values are: `text`, `date`, `textarea`, `radio`, `checkbox`, `select` |
-| params | array | - | Contains various information, see examples below. |
+| Property | Type   | Limits   | Description                                                                                       |
+| -------- | ------ | -------- | ------------------------------------------------------------------------------------------------- |
+| id       | string | 11 chars | Field Id                                                                                          |
+| name     | string | 90 chars | Human readable name. Intended to be used, as an example, as a label for form input.               |
+| type     | string | -        | Type of the field. Possible values are: `text`, `date`, `textarea`, `radio`, `checkbox`, `select` |
+| params   | array  | -        | Contains various information, see examples below.                                                 |
 
 ## Response Example
+
 ```php
 <?php
 [

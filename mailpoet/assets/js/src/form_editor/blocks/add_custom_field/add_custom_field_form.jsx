@@ -1,10 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Button,
-  SelectControl,
-  TextControl,
-} from '@wordpress/components';
+import { Button, SelectControl, TextControl } from '@wordpress/components';
 
 import MailPoet from 'mailpoet';
 import { isEmpty } from 'lodash';
@@ -47,7 +43,8 @@ function AddCustomFieldForm({ dateSettings, onSubmit }) {
   const [fieldName, setFieldName] = useState(null);
   const [fieldSettings, setFieldSettings] = useState({});
 
-  const canSubmit = fieldName && !isEmpty(fieldSettings) && (fieldSettings.isValid !== false);
+  const canSubmit =
+    fieldName && !isEmpty(fieldSettings) && fieldSettings.isValid !== false;
   const defaultType = dateSettings.dateTypes[0].value;
   const defaultFormat = dateSettings.dateFormats[defaultType][0];
 
@@ -56,9 +53,15 @@ function AddCustomFieldForm({ dateSettings, onSubmit }) {
       case 'checkbox':
         return (
           <CheckboxFieldSettings
-            mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
-            isChecked={fieldSettings.isChecked ? fieldSettings.isChecked : false}
-            checkboxLabel={fieldSettings.checkboxLabel ? fieldSettings.checkboxLabel : ''}
+            mandatory={
+              fieldSettings.mandatory ? fieldSettings.mandatory : false
+            }
+            isChecked={
+              fieldSettings.isChecked ? fieldSettings.isChecked : false
+            }
+            checkboxLabel={
+              fieldSettings.checkboxLabel ? fieldSettings.checkboxLabel : ''
+            }
             onChange={setFieldSettings}
           />
         );
@@ -66,10 +69,20 @@ function AddCustomFieldForm({ dateSettings, onSubmit }) {
         return (
           <DateFieldSettings
             dateSettings={dateSettings}
-            mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
-            dateFormat={fieldSettings.dateFormat ? fieldSettings.dateFormat : defaultFormat}
-            dateType={fieldSettings.dateType ? fieldSettings.dateType : defaultType}
-            defaultToday={fieldSettings.defaultToday ? fieldSettings.defaultToday : false}
+            mandatory={
+              fieldSettings.mandatory ? fieldSettings.mandatory : false
+            }
+            dateFormat={
+              fieldSettings.dateFormat
+                ? fieldSettings.dateFormat
+                : defaultFormat
+            }
+            dateType={
+              fieldSettings.dateType ? fieldSettings.dateType : defaultType
+            }
+            defaultToday={
+              fieldSettings.defaultToday ? fieldSettings.defaultToday : false
+            }
             onChange={setFieldSettings}
           />
         );
@@ -77,15 +90,23 @@ function AddCustomFieldForm({ dateSettings, onSubmit }) {
       case 'select':
         return (
           <RadioAndSelectFieldSettings
-            mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
-            values={fieldSettings.values ? fieldSettings.values : [{ name: '', id: Math.random().toString() }]}
+            mandatory={
+              fieldSettings.mandatory ? fieldSettings.mandatory : false
+            }
+            values={
+              fieldSettings.values
+                ? fieldSettings.values
+                : [{ name: '', id: Math.random().toString() }]
+            }
             onChange={setFieldSettings}
           />
         );
       default:
         return (
           <TextFieldSettings
-            mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
+            mandatory={
+              fieldSettings.mandatory ? fieldSettings.mandatory : false
+            }
             validate={fieldSettings.validate ? fieldSettings.validate : ''}
             fieldType={fieldType}
             onChange={setFieldSettings}
@@ -95,7 +116,10 @@ function AddCustomFieldForm({ dateSettings, onSubmit }) {
   };
 
   return (
-    <div className="mailpoet_custom_field_add_form" data-automation-id="create_custom_field_form">
+    <div
+      className="mailpoet_custom_field_add_form"
+      data-automation-id="create_custom_field_form"
+    >
       <hr />
       <SelectControl
         label={MailPoet.I18n.t('selectCustomFieldType')}
@@ -134,10 +158,12 @@ function AddCustomFieldForm({ dateSettings, onSubmit }) {
 
 AddCustomFieldForm.propTypes = {
   dateSettings: PropTypes.shape({
-    dateTypes: PropTypes.arrayOf(PropTypes.shape({
-      label: PropTypes.string,
-      value: PropTypes.string,
-    })),
+    dateTypes: PropTypes.arrayOf(
+      PropTypes.shape({
+        label: PropTypes.string,
+        value: PropTypes.string,
+      }),
+    ),
     dateFormats: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
     months: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,

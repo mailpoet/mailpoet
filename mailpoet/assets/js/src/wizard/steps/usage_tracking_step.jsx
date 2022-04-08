@@ -21,13 +21,17 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
 
   return (
     <>
-      <Heading level={1}>{MailPoet.I18n.t('welcomeWizardUsageTrackingStepTitle')}</Heading>
+      <Heading level={1}>
+        {MailPoet.I18n.t('welcomeWizardUsageTrackingStepTitle')}
+      </Heading>
 
       <div className="mailpoet-gap" />
       <p>{MailPoet.I18n.t('welcomeWizardTrackingText')}</p>
       <div className="mailpoet-gap" />
 
-      <Heading level={5}>{MailPoet.I18n.t('welcomeWizardUsageTrackingStepSubTitle')}</Heading>
+      <Heading level={5}>
+        {MailPoet.I18n.t('welcomeWizardUsageTrackingStepSubTitle')}
+      </Heading>
       <Grid.TwoColumnsList>
         <List>
           <li>{MailPoet.I18n.t('welcomeWizardTrackingList1')}</li>
@@ -45,7 +49,10 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
           <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
               onCheck={(value) => {
-                const newState = { tracking: value, libs3rdParty: state.libs3rdParty };
+                const newState = {
+                  tracking: value,
+                  libs3rdParty: state.libs3rdParty,
+                };
                 if (value) {
                   newState.libs3rdParty = value;
                 }
@@ -57,8 +64,7 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
           </div>
           <div>
             <p>
-              {MailPoet.I18n.t('welcomeWizardUsageTrackingStepTrackingLabel')}
-              {' '}
+              {MailPoet.I18n.t('welcomeWizardUsageTrackingStepTrackingLabel')}{' '}
               <a
                 href="https://kb.mailpoet.com/article/130-sharing-your-data-with-us"
                 data-beacon-article="57ce0aaac6979108399a0454"
@@ -69,8 +75,14 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
               </a>
             </p>
             <div className="mailpoet-wizard-note">
-              <span>{MailPoet.I18n.t('welcomeWizardUsageTrackingStepTrackingLabelNoteNote')}</span>
-              {MailPoet.I18n.t('welcomeWizardUsageTrackingStepTrackingLabelNote')}
+              <span>
+                {MailPoet.I18n.t(
+                  'welcomeWizardUsageTrackingStepTrackingLabelNoteNote',
+                )}
+              </span>
+              {MailPoet.I18n.t(
+                'welcomeWizardUsageTrackingStepTrackingLabelNote',
+              )}
             </div>
           </div>
         </div>
@@ -81,7 +93,10 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
           <div className="mailpoet-wizard-woocommerce-toggle">
             <YesNo
               onCheck={(value) => {
-                const newState = { libs3rdParty: value, tracking: state.tracking };
+                const newState = {
+                  libs3rdParty: value,
+                  tracking: state.tracking,
+                };
                 if (!value) {
                   newState.tracking = value;
                 }
@@ -93,20 +108,29 @@ function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
           </div>
           <div>
             <p>
-              {MailPoet.I18n.t('welcomeWizardUsageTrackingStepLibs3rdPartyLabel')}
-              {' '}
+              {MailPoet.I18n.t(
+                'welcomeWizardUsageTrackingStepLibs3rdPartyLabel',
+              )}{' '}
               <a
                 href="https://kb.mailpoet.com/article/338-what-3rd-party-libraries-we-use"
                 data-beacon-article="5f7c7dd94cedfd0017dcece8"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {MailPoet.I18n.t('welcomeWizardUsageTrackingStepLibs3rdPartyLink')}
+                {MailPoet.I18n.t(
+                  'welcomeWizardUsageTrackingStepLibs3rdPartyLink',
+                )}
               </a>
             </p>
             <div className="mailpoet-wizard-note">
-              <span>{MailPoet.I18n.t('welcomeWizardUsageTrackingStepLibs3rdPartyLabelNoteNote')}</span>
-              {MailPoet.I18n.t('welcomeWizardUsageTrackingStepLibs3rdPartyLabelNote')}
+              <span>
+                {MailPoet.I18n.t(
+                  'welcomeWizardUsageTrackingStepLibs3rdPartyLabelNoteNote',
+                )}
+              </span>
+              {MailPoet.I18n.t(
+                'welcomeWizardUsageTrackingStepLibs3rdPartyLabelNote',
+              )}
             </div>
           </div>
         </div>

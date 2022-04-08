@@ -9,19 +9,16 @@ type HistoryRecord = {
   time: number;
 };
 
-const createRecord = (
-  editorHistory: HistoryRecord[],
-  state,
-): HistoryRecord => {
+const createRecord = (editorHistory: HistoryRecord[], state): HistoryRecord => {
   const lastHistoryRecord = editorHistory[editorHistory.length - 1];
   const time = Date.now();
 
   // When we would create two almost same records in a row in very short time,
   // then we overwrite remove the last record
   if (
-    lastHistoryRecord !== undefined
-    && (time - lastHistoryRecord.time) < HISTORY_DEBOUNCE
-    && editorHistory.length > 1
+    lastHistoryRecord !== undefined &&
+    time - lastHistoryRecord.time < HISTORY_DEBOUNCE &&
+    editorHistory.length > 1
   ) {
     editorHistory.pop();
 
@@ -40,9 +37,9 @@ const createRecord = (
 
   // We won't store two same records in a row, then we retur null
   if (
-    lastHistoryRecord !== undefined
-    && isEqual(lastHistoryRecord.data, newHistoryRecord.data)
-    && isEqual(lastHistoryRecord.blocks, newHistoryRecord.blocks)
+    lastHistoryRecord !== undefined &&
+    isEqual(lastHistoryRecord.data, newHistoryRecord.data) &&
+    isEqual(lastHistoryRecord.blocks, newHistoryRecord.blocks)
   ) {
     return null;
   }
@@ -62,7 +59,8 @@ export const createHistoryRecord = (state) => {
   // When we want to create a history record, and we aren't at the end,
   // then we have to drop the rest of the history stack
   if (state.editorHistoryOffset !== 0) {
-    const offset = state.editorHistory.length - ((state.editorHistoryOffset as number) + 1);
+    const offset =
+      state.editorHistory.length - ((state.editorHistoryOffset as number) + 1);
     editorHistoryOffset = 0;
     editorHistory = editorHistory.slice(0, offset);
   }
@@ -109,6 +107,6 @@ const historyMove = (state, increment: number) => {
   };
 };
 
-export const historyUndo = (state) => (historyMove(state, 1));
+export const historyUndo = (state) => historyMove(state, 1);
 
-export const historyRedo = (state) => (historyMove(state, -1));
+export const historyRedo = (state) => historyMove(state, -1);

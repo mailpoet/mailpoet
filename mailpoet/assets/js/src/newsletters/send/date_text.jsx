@@ -76,9 +76,8 @@ locale.localize.day = buildLocalizeFn({
   values: dayValues,
   defaultWidth: 'wide',
 });
-locale.options.weekStartsOn = typeof MailPoet.wpWeekStartsOn !== 'undefined'
-  ? MailPoet.wpWeekStartsOn
-  : 1;
+locale.options.weekStartsOn =
+  typeof MailPoet.wpWeekStartsOn !== 'undefined' ? MailPoet.wpWeekStartsOn : 1;
 
 registerLocale('mailpoet', locale);
 
@@ -98,7 +97,11 @@ class DateText extends Component {
   getDisplayDateFormat = (format) => {
     const convertedFormat = MailPoet.Date.convertFormat(format);
     // Convert moment format to date-fns, see: https://git.io/fxCyr
-    return convertedFormat.replace(/D/g, 'd').replace(/Y/g, 'y').replace(/\[/g, '').replace(/\]/g, '');
+    return convertedFormat
+      .replace(/D/g, 'd')
+      .replace(/Y/g, 'y')
+      .replace(/\[/g, '')
+      .replace(/\]/g, '');
   };
 
   getDate = (date) => {

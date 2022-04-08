@@ -21,17 +21,11 @@ function Tag({
   return (
     <div
       {...dataAttributes}
-      className={
-      classnames(
-        className,
-        'mailpoet-tag',
-        {
-          [`mailpoet-tag-${variant}`]: variant,
-          [`mailpoet-tag-${dimension}`]: dimension,
-          'mailpoet-tag-inverted': isInverted,
-        },
-      )
-    }
+      className={classnames(className, 'mailpoet-tag', {
+        [`mailpoet-tag-${variant}`]: variant,
+        [`mailpoet-tag-${dimension}`]: dimension,
+        'mailpoet-tag-inverted': isInverted,
+      })}
     >
       {children}
     </div>

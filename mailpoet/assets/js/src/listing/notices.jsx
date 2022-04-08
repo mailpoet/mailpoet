@@ -7,35 +7,48 @@ const resumeMailerSending = () => {
     api_version: window.mailpoet_api_version,
     endpoint: 'mailer',
     action: 'resumeSending',
-  }).done(() => {
-    MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
-    window.mailpoet_listing.forceUpdate();
-  }).fail((response) => {
-    if (response.errors.length > 0) {
-      MailPoet.Notice.error(
-        response.errors.map((error) => error.message),
-        { scroll: true }
-      );
-    }
-  });
+  })
+    .done(() => {
+      MailPoet.Notice.success(MailPoet.I18n.t('mailerSendingResumedNotice'));
+      window.mailpoet_listing.forceUpdate();
+    })
+    .fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map((error) => error.message),
+          { scroll: true },
+        );
+      }
+    });
 };
 
 function MailerError(props) {
-  if (!props.mta_log.error || props.mta_log.status !== 'paused' || props.mta_log.error.operation === 'authorization') {
+  if (
+    !props.mta_log.error ||
+    props.mta_log.status !== 'paused' ||
+    props.mta_log.error.operation === 'authorization'
+  ) {
     return null;
   }
   // do not display MailPoet API Key error twice
-  if (props.mta_log.error.operation === 'send' && props.mta_method === 'MailPoet' && MailPoet.hasInvalidMssApiKey) {
+  if (
+    props.mta_log.error.operation === 'send' &&
+    props.mta_method === 'MailPoet' &&
+    MailPoet.hasInvalidMssApiKey
+  ) {
     return null;
   }
   // do not display Email Volume Limit reached error twice
-  if (props.mta_method === 'MailPoet' && props.mta_log.error.operation === 'email_limit_reached') {
+  if (
+    props.mta_method === 'MailPoet' &&
+    props.mta_log.error.operation === 'email_limit_reached'
+  ) {
     return null;
   }
   if (props.mta_log.error.operation === 'migration') {
     return (
       <div className="mailpoet_notice notice notice-warning">
-        <p>{ props.mta_log.error.error_message }</p>
+        <p>{props.mta_log.error.error_message}</p>
       </div>
     );
   }
@@ -55,7 +68,10 @@ function MailerError(props) {
   });
 
   message = ReactStringReplace(message, /\[link-(\d+)\]/g, (match) => {
-    const link = new DOMParser().parseFromString(links[match], 'text/xml').firstChild;
+    const link = new DOMParser().parseFromString(
+      links[match],
+      'text/xml',
+    ).firstChild;
     return (
       <a
         key={`a-${match}`}
@@ -63,7 +79,7 @@ function MailerError(props) {
         target={link.getAttribute('target')}
         rel={link.getAttribute('rel')}
       >
-        { link.textContent }
+        {link.textContent}
       </a>
     );
   });
@@ -73,15 +89,13 @@ function MailerError(props) {
   message = ReactStringReplace(
     message,
     /(<br\s*\/?>)/g,
-    () => <br key={`br-${brKey++}`} /> // eslint-disable-line no-plusplus
+    () => <br key={`br-${brKey++}`} />, // eslint-disable-line no-plusplus
   );
 
   if (props.mta_log.error.operation === 'pending_approval') {
     return (
       <div className="mailpoet_notice notice notice-error">
-        <p>
-          { message }
-        </p>
+        <p>{message}</p>
       </div>
     );
   }
@@ -89,9 +103,7 @@ function MailerError(props) {
   if (props.mta_log.error.operation === 'insufficient_privileges') {
     return (
       <div className="mailpoet_notice notice notice-error">
-        <p>
-          { message }
-        </p>
+        <p>{message}</p>
         <p>
           <a
             href="#"
@@ -101,7 +113,7 @@ function MailerError(props) {
               resumeMailerSending(event);
             }}
           >
-            { MailPoet.I18n.t('mailerResumeSendingAfterUpgradeButton') }
+            {MailPoet.I18n.t('mailerResumeSendingAfterUpgradeButton')}
           </a>
         </p>
       </div>
@@ -111,16 +123,19 @@ function MailerError(props) {
   return (
     <div className="mailpoet_notice notice notice-error">
       <p>
-        {
-          props.mta_log.error.operation === 'send'
-            ? MailPoet.I18n.t('mailerSendErrorNotice').replace('%1$s', props.mta_method)
-            : MailPoet.I18n.t('mailerConnectionErrorNotice')
-        }
-        :
-        {' '}
-        <i>{ message }</i>
+        {props.mta_log.error.operation === 'send'
+          ? MailPoet.I18n.t('mailerSendErrorNotice').replace(
+              '%1$s',
+              props.mta_method,
+            )
+          : MailPoet.I18n.t('mailerConnectionErrorNotice')}
+        : <i>{message}</i>
       </p>
-      { props.mta_method === 'PHPMail' ? <PHPMailerCheckSettingsNotice /> : <MailerCheckSettingsNotice /> }
+      {props.mta_method === 'PHPMail' ? (
+        <PHPMailerCheckSettingsNotice />
+      ) : (
+        <MailerCheckSettingsNotice />
+      )}
       <p>
         <a
           href="#"
@@ -130,7 +145,7 @@ function MailerError(props) {
             resumeMailerSending(event);
           }}
         >
-          { MailPoet.I18n.t('mailerResumeSendingButton') }
+          {MailPoet.I18n.t('mailerResumeSendingButton')}
         </a>
       </p>
     </div>
@@ -145,24 +160,26 @@ MailerError.propTypes = {
 function PHPMailerCheckSettingsNotice() {
   return (
     <>
-      <p>{ MailPoet.I18n.t('mailerSendErrorCheckConfiguration') }</p>
+      <p>{MailPoet.I18n.t('mailerSendErrorCheckConfiguration')}</p>
       <br />
       <p>
-        {
-          ReactStringReplace(
-            MailPoet.I18n.t('mailerSendErrorUseSendingService'),
-            /<b>(.*?)<\/b>/g,
-            (match, key) => <b key={key}>{ match }</b>
-          )
-        }
+        {ReactStringReplace(
+          MailPoet.I18n.t('mailerSendErrorUseSendingService'),
+          /<b>(.*?)<\/b>/g,
+          (match, key) => (
+            <b key={key}>{match}</b>
+          ),
+        )}
       </p>
       <p>
         <a
-          href={MailPoet.MailPoetComUrlFactory.getFreePlanUrl({ utm_campaign: 'sending-error' })}
+          href={MailPoet.MailPoetComUrlFactory.getFreePlanUrl({
+            utm_campaign: 'sending-error',
+          })}
           target="_blank"
           rel="noopener noreferrer"
         >
-          { MailPoet.I18n.t('mailerSendErrorSignUpForSendingService') }
+          {MailPoet.I18n.t('mailerSendErrorSignUpForSendingService')}
         </a>
       </p>
       <br />
@@ -173,13 +190,15 @@ function PHPMailerCheckSettingsNotice() {
 function MailerCheckSettingsNotice() {
   return (
     <p>
-      {
-        ReactStringReplace(
-          MailPoet.I18n.t('mailerCheckSettingsNotice'),
-          /\[link\](.*?)\[\/link\]/g,
-          (match) => <a href="?page=mailpoet-settings#mta" key="check-sending">{ match }</a>
-        )
-      }
+      {ReactStringReplace(
+        MailPoet.I18n.t('mailerCheckSettingsNotice'),
+        /\[link\](.*?)\[\/link\]/g,
+        (match) => (
+          <a href="?page=mailpoet-settings#mta" key="check-sending">
+            {match}
+          </a>
+        ),
+      )}
     </p>
   );
 }

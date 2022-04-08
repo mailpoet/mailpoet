@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-  useRef,
-} from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import MailPoet from 'mailpoet';
 import { Spinner, SelectControl } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
@@ -12,10 +7,12 @@ import Preview from 'common/preview/preview.jsx';
 import Modal from 'common/modal/modal';
 import PlacementSettingsPanel from 'form_editor/components/form_settings/form_placement_options/settings_panel';
 
-function FormPreview() : JSX.Element {
+function FormPreview(): JSX.Element {
   const iframeElement = useRef(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
-  const { hidePreview, changePreviewSettings } = useDispatch('mailpoet-form-editor');
+  const { hidePreview, changePreviewSettings } = useDispatch(
+    'mailpoet-form-editor',
+  );
   const isPreview = useSelect(
     (select) => select('mailpoet-form-editor').getIsPreviewShown(),
     [],
@@ -53,7 +50,8 @@ function FormPreview() : JSX.Element {
   useEffect(() => {
     setIframeLoaded(false);
     const beacon = document.getElementById('beacon-container');
-    if (isPreview && beacon) { // hide beacon in the preview modal
+    if (isPreview && beacon) {
+      // hide beacon in the preview modal
       beacon.style.display = 'none';
     }
   }, [isPreview]);
@@ -64,7 +62,13 @@ function FormPreview() : JSX.Element {
     }
     const data = { formType: previewSettings.formType, formSettings };
     iframeElement.current.contentWindow.postMessage(data, previewPageUrl);
-  }, [formSettings, iframeElement, previewSettings, iframeLoaded, previewPageUrl]);
+  }, [
+    formSettings,
+    iframeElement,
+    previewSettings,
+    iframeLoaded,
+    previewPageUrl,
+  ]);
 
   const closePreview = useCallback((): void => {
     const beacon = document.getElementById('beacon-container');
@@ -74,14 +78,20 @@ function FormPreview() : JSX.Element {
     hidePreview();
   }, [hidePreview]);
 
-  const setFormType = useCallback((type): void => {
-    setIframeLoaded(false);
-    changePreviewSettings({ ...previewSettings, formType: type });
-  }, [changePreviewSettings, previewSettings]);
+  const setFormType = useCallback(
+    (type): void => {
+      setIframeLoaded(false);
+      changePreviewSettings({ ...previewSettings, formType: type });
+    },
+    [changePreviewSettings, previewSettings],
+  );
 
-  const onPreviewTypeChange = useCallback((type): void => {
-    changePreviewSettings({ ...previewSettings, displayType: type });
-  }, [changePreviewSettings, previewSettings]);
+  const onPreviewTypeChange = useCallback(
+    (type): void => {
+      changePreviewSettings({ ...previewSettings, displayType: type });
+    },
+    [changePreviewSettings, previewSettings],
+  );
 
   if (!isPreview) return null;
 
@@ -118,10 +128,22 @@ function FormPreview() : JSX.Element {
               data-automation-id="form_type_selection"
               options={[
                 { value: 'others', label: MailPoet.I18n.t('placeFormOthers') },
-                { value: 'below_post', label: MailPoet.I18n.t('placeFormBellowPages') },
-                { value: 'fixed_bar', label: MailPoet.I18n.t('placeFixedBarFormOnPages') },
-                { value: 'popup', label: MailPoet.I18n.t('placePopupFormOnPages') },
-                { value: 'slide_in', label: MailPoet.I18n.t('placeSlideInFormOnPages') },
+                {
+                  value: 'below_post',
+                  label: MailPoet.I18n.t('placeFormBellowPages'),
+                },
+                {
+                  value: 'fixed_bar',
+                  label: MailPoet.I18n.t('placeFixedBarFormOnPages'),
+                },
+                {
+                  value: 'popup',
+                  label: MailPoet.I18n.t('placePopupFormOnPages'),
+                },
+                {
+                  value: 'slide_in',
+                  label: MailPoet.I18n.t('placeSlideInFormOnPages'),
+                },
               ]}
             />
             <PlacementSettingsPanel activePanel={previewSettings.formType} />
@@ -144,11 +166,12 @@ function FormPreview() : JSX.Element {
               data-automation-id="form_preview_iframe"
               scrolling={previewSettings.formType === 'others' ? 'no' : 'yes'}
             />
-            {previewSettings.formType === 'others' && previewSettings.displayType === 'desktop' && (
-              <div className="mailpoet_form_preview_disclaimer">
-                {MailPoet.I18n.t('formPreviewOthersDisclaimer')}
-              </div>
-            )}
+            {previewSettings.formType === 'others' &&
+              previewSettings.displayType === 'desktop' && (
+                <div className="mailpoet_form_preview_disclaimer">
+                  {MailPoet.I18n.t('formPreviewOthersDisclaimer')}
+                </div>
+              )}
           </Preview>
         </div>
       )}

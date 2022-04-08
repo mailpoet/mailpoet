@@ -17,7 +17,9 @@ Module.ConfigModel = SuperModel.extend({
 
 // Global and available styles for access in blocks and their settings
 Module.config = {};
-Module.getConfig = function getConfig() { return Module.config; };
+Module.getConfig = function getConfig() {
+  return Module.config;
+};
 Module.setConfig = function setConfig(options) {
   Module.config = new Module.ConfigModel(options, { parse: true });
   return Module.config;
@@ -32,7 +34,7 @@ App.on('before:start', (BeforeStartApp, options) => {
 
   config.blockDefaults = _.extend(
     config.blockDefaults,
-    options.newsletter.body?.blockDefaults || {}
+    options.newsletter.body?.blockDefaults || {},
   );
 
   Application.setConfig(config);

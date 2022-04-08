@@ -4,16 +4,9 @@ import { CheckboxControl, Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-function PreviewItem({
-  segment,
-  removeSegment,
-  onCheck,
-}) {
+function PreviewItem({ segment, removeSegment, onCheck }) {
   return (
-    <div
-      className="mailpoet-form-segments-settings-list"
-      key={segment.id}
-    >
+    <div className="mailpoet-form-segments-settings-list" key={segment.id}>
       <CheckboxControl
         label={segment.name}
         defaultChecked={!!segment.isChecked}
@@ -72,33 +65,31 @@ function Preview({
     onSegmentsReorder(newValues);
   };
 
-  const renderItems = () => (segmentsWhileMoved.map((segment, index) => (
-    <Draggable key={segment.id} draggableId={segment.id} index={index}>
-      {(provided) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-        >
-          <PreviewItem
-            key={segment.id}
-            index={index}
-            segment={segment}
-            onCheck={onCheck}
-            removeSegment={removeSegment}
-          />
-        </div>
-      )}
-    </Draggable>
-  )));
+  const renderItems = () =>
+    segmentsWhileMoved.map((segment, index) => (
+      <Draggable key={segment.id} draggableId={segment.id} index={index}>
+        {(provided) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          >
+            <PreviewItem
+              key={segment.id}
+              index={index}
+              segment={segment}
+              onCheck={onCheck}
+              removeSegment={removeSegment}
+            />
+          </div>
+        )}
+      </Draggable>
+    ));
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable">
         {(provided) => (
-          <div
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-          >
+          <div {...provided.droppableProps} ref={provided.innerRef}>
             {renderItems()}
             {provided.placeholder}
           </div>
@@ -109,11 +100,13 @@ function Preview({
 }
 
 Preview.propTypes = {
-  segments: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    isChecked: PropTypes.bool,
-    id: PropTypes.string.isRequired,
-  }).isRequired).isRequired,
+  segments: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      isChecked: PropTypes.bool,
+      id: PropTypes.string.isRequired,
+    }).isRequired,
+  ).isRequired,
   updateSegment: PropTypes.func.isRequired,
   removeSegment: PropTypes.func.isRequired,
   onSegmentsReorder: PropTypes.func.isRequired,

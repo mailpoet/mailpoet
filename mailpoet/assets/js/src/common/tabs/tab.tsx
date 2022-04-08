@@ -10,12 +10,8 @@ type Props = {
   children: ReactNode;
 };
 
-function Tab({
-  children,
-}: Props) {
-  return (
-    <>{children}</>
-  );
+function Tab({ children }: Props) {
+  return <>{children}</>;
 }
 
 export default Tab;

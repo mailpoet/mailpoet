@@ -27,13 +27,16 @@ function SubscribersInPlan({
 
   return (
     <div className="mailpoet-subscribers-in-plan">
-      {ReactStringReplace(MailPoet.I18n.t('subscribersInPlan'), '%s', () => subscribersInPlanCount)}
-      {' '}
+      {ReactStringReplace(
+        MailPoet.I18n.t('subscribersInPlan'),
+        '%s',
+        () => subscribersInPlanCount,
+      )}{' '}
       <HelpTooltip
         tooltip={MailPoet.I18n.t('subscribersInPlanTooltip')}
         place="right"
       />
-      <span className="mailpoet-subscribers-in-plan-spacer">{' '}</span>
+      <span className="mailpoet-subscribers-in-plan-spacer"> </span>
     </div>
   );
 }

@@ -59,13 +59,17 @@ class NotificationScheduling extends Component {
     this.handleValueChanges(changes);
   };
 
-  handleTimeOfDayChange = (event) => this.handleValueChanges({ timeOfDay: event.target.value });
+  handleTimeOfDayChange = (event) =>
+    this.handleValueChanges({ timeOfDay: event.target.value });
 
-  handleWeekDayChange = (event) => this.handleValueChanges({ weekDay: event.target.value });
+  handleWeekDayChange = (event) =>
+    this.handleValueChanges({ weekDay: event.target.value });
 
-  handleMonthDayChange = (event) => this.handleValueChanges({ monthDay: event.target.value });
+  handleMonthDayChange = (event) =>
+    this.handleValueChanges({ monthDay: event.target.value });
 
-  handleNthWeekDayChange = (event) => this.handleValueChanges({ nthWeekDay: event.target.value });
+  handleNthWeekDayChange = (event) =>
+    this.handleValueChanges({ nthWeekDay: event.target.value });
 
   render() {
     const value = this.getCurrentValue();
@@ -84,7 +88,10 @@ class NotificationScheduling extends Component {
       );
     }
 
-    if (value.intervalType === 'weekly' || value.intervalType === 'nthWeekDay') {
+    if (
+      value.intervalType === 'weekly' ||
+      value.intervalType === 'nthWeekDay'
+    ) {
       weekDaySelection = (
         <Select
           field={weekDayField}
@@ -131,7 +138,9 @@ class NotificationScheduling extends Component {
           {timeOfDaySelection}
         </div>
 
-        {value.intervalType !== 'immediately' && <div className="mailpoet-gap" />}
+        {value.intervalType !== 'immediately' && (
+          <div className="mailpoet-gap" />
+        )}
       </div>
     );
   }

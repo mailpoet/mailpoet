@@ -17,8 +17,11 @@ describe('MailPoetDate', () => {
       const tomorrow = now.clone().add(1, 'days').toISOString();
 
       expect(
-        MailPoetDate.isInFuture(now.clone().add(1, 'seconds').toISOString(), now),
-        '1 second in future'
+        MailPoetDate.isInFuture(
+          now.clone().add(1, 'seconds').toISOString(),
+          now,
+        ),
+        '1 second in future',
       ).to.be.true;
       expect(MailPoetDate.isInFuture(tomorrow, now.valueOf())).to.be.true;
     });
@@ -27,10 +30,14 @@ describe('MailPoetDate', () => {
       const yesterday = now.clone().add(-1, 'days');
 
       expect(
-        MailPoetDate.isInFuture(now.clone().add(-1, 'seconds').toISOString(), now),
-        '1 second in the past'
+        MailPoetDate.isInFuture(
+          now.clone().add(-1, 'seconds').toISOString(),
+          now,
+        ),
+        '1 second in the past',
       ).to.be.false;
-      expect(MailPoetDate.isInFuture(yesterday.toISOString(), now), 'yesterday').to.be.false;
+      expect(MailPoetDate.isInFuture(yesterday.toISOString(), now), 'yesterday')
+        .to.be.false;
     });
   });
 });

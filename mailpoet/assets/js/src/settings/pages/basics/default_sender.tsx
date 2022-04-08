@@ -1,11 +1,6 @@
 import { useEffect } from 'react';
 import { Label, Inputs } from 'settings/components';
-import {
-  isEmail,
-  t,
-  onChange,
-  setLowercaseValue,
-} from 'common/functions';
+import { isEmail, t, onChange, setLowercaseValue } from 'common/functions';
 import Input from 'common/form/input/input';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import SenderEmailAddressWarning from 'common/sender_email_address_warning.jsx';
@@ -17,7 +12,7 @@ export default function DefaultSender() {
   const [replyToName, setReplyToName] = useSetting('reply_to', 'name');
   const [replyToEmail, setReplyToEmail] = useSetting('reply_to', 'address');
   const setErrorFlag = useAction('setErrorFlag');
-  const invalidSenderEmail = (senderEmail && !isEmail(senderEmail));
+  const invalidSenderEmail = senderEmail && !isEmail(senderEmail);
   const invalidReplyToEmail = replyToEmail && !isEmail(replyToEmail);
   useEffect(() => {
     setErrorFlag(invalidSenderEmail || invalidReplyToEmail);
@@ -62,7 +57,9 @@ export default function DefaultSender() {
             mssActive={isMssActive}
           />
         </div>
-        <label className="mailpoet-settings-inputs-row" htmlFor="reply_to-name">Reply-to</label>
+        <label className="mailpoet-settings-inputs-row" htmlFor="reply_to-name">
+          Reply-to
+        </label>
         <Input
           dimension="small"
           type="text"

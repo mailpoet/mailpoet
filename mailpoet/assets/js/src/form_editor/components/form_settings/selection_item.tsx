@@ -24,24 +24,22 @@ function SelectionItem({
   className,
   automationId,
   displaySettingsIcon,
-}: Props) : JSX.Element {
+}: Props): JSX.Element {
   const [hover, setHover] = useState(false);
   return (
     <div
       key={label}
       data-automation-id={automationId}
-      className={
-        classnames(
-          className,
-          'selection-item',
-          { 'selection-item-active': active && canBeActive },
-        )
-      }
+      className={classnames(className, 'selection-item', {
+        'selection-item-active': active && canBeActive,
+      })}
       onMouseEnter={(): void => setHover(true)}
       onMouseLeave={(): void => setHover(false)}
       onClick={onClick}
       onKeyDown={(event): void => {
-        if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+        if (
+          ['keydown', 'keypress'].includes(event.type) &&
+          ['Enter', ' '].includes(event.key)
         ) {
           event.preventDefault();
           onClick();
@@ -52,41 +50,27 @@ function SelectionItem({
     >
       <div className="selection-item-body">
         <div className="selection-item-settings">
-          {
-            displaySettingsIcon
-              ? (
-                <div
-                  className={
-                    classnames(
-                      'selection-item-icon',
-                      { 'selection-item-icon-hover': hover },
-                    )
-                  }
-                >
-                  {SettingsIcon}
-                </div>
-              )
-              : (<div />)
-          }
-          {
-            hover && !active && canBeActive
-            && <div className="selection-item-settings-oval" />
-          }
-          {
-            active && canBeActive
-            && (
-              <div className="selection-item-check">
-                {CheckIcon}
-              </div>
-            )
-          }
+          {displaySettingsIcon ? (
+            <div
+              className={classnames('selection-item-icon', {
+                'selection-item-icon-hover': hover,
+              })}
+            >
+              {SettingsIcon}
+            </div>
+          ) : (
+            <div />
+          )}
+          {hover && !active && canBeActive && (
+            <div className="selection-item-settings-oval" />
+          )}
+          {active && canBeActive && (
+            <div className="selection-item-check">{CheckIcon}</div>
+          )}
         </div>
         {children}
       </div>
-      {
-        hover
-        && <div className="selection-item-overlay" />
-      }
+      {hover && <div className="selection-item-overlay" />}
     </div>
   );
 }

@@ -35,7 +35,9 @@ Module.BlockModel = SuperModel.extend({
     // Otherwise SuperModel interprets it not as a simpleObject
     // and misbehaves
     // TODO: Investigate for a better solution
-    return JSON.parse(JSON.stringify(jQuery.extend(blockDefaults, defaults || {})));
+    return JSON.parse(
+      JSON.stringify(jQuery.extend(blockDefaults, defaults || {})),
+    );
   },
   _updateDefaults: function updateDefaults() {
     var context = this.get('context') || this.get('type');
@@ -126,8 +128,8 @@ Module.BlockView = AugmentedView.extend({
     this.toolsView.triggerMethod('showSettings', options);
   },
   /**
-     * Defines drop behavior of BlockView instance
-     */
+   * Defines drop behavior of BlockView instance
+   */
   getDropFunc: function getDropFunc() {
     return function getDropFuncClone() {
       return this.model.clone();
@@ -140,15 +142,16 @@ Module.BlockView = AugmentedView.extend({
     this.$el.removeClass('mailpoet_ignore_drag');
   },
   deleteBlock: function deleteBlock() {
-    this.transitionOut().then(function deleteBlockDestroy() {
-      this.model.destroy();
-    }.bind(this));
+    this.transitionOut().then(
+      function deleteBlockDestroy() {
+        this.model.destroy();
+      }.bind(this),
+    );
   },
   duplicateBlock: function duplicateBlock() {
-    this.model.collection.add(
-      this.model.toJSON(),
-      { at: this.model.collection.findIndex(this.model) }
-    );
+    this.model.collection.add(this.model.toJSON(), {
+      at: this.model.collection.findIndex(this.model),
+    });
   },
   transitionOut: function transitionOut() {
     return this._transition('slideUp', 'fadeOut', 'easeIn');
@@ -156,30 +159,28 @@ Module.BlockView = AugmentedView.extend({
   _transition: function transition(slideDirection, fadeDirection, easing) {
     var promise = jQuery.Deferred();
 
-    this.$el.velocity(
-      slideDirection,
-      {
+    this.$el
+      .velocity(slideDirection, {
         duration: 250,
         easing: easing,
         complete: function complete() {
           promise.resolve();
         },
-      }
-    ).velocity(
-      fadeDirection,
-      {
+      })
+      .velocity(fadeDirection, {
         duration: 250,
         easing: easing,
         queue: false, // Do not enqueue, trigger animation in parallel
-      }
-    );
+      });
 
     return promise;
   },
 });
 
 Module.BlockToolsView = AugmentedView.extend({
-  getTemplate: function getTemplate() { return window.templates.genericBlockTools; },
+  getTemplate: function getTemplate() {
+    return window.templates.genericBlockTools;
+  },
   events: {
     'click .mailpoet_edit_block': 'toggleSettings',
     'click .mailpoet_delete_block_activate': 'showDeletionConfirmation',
@@ -194,7 +195,9 @@ Module.BlockToolsView = AugmentedView.extend({
     duplicate: true,
     move: true,
   },
-  getSettingsView: function getSettingsView() { return Module.BlockSettingsView; },
+  getSettingsView: function getSettingsView() {
+    return Module.BlockSettingsView;
+  },
   initialize: function initialize(opts) {
     var options = opts || {};
     if (!_.isUndefined(options.tools)) {
@@ -232,7 +235,7 @@ Module.BlockToolsView = AugmentedView.extend({
     }
     document.activeElement.blur();
     App.getChannel().trigger('settingsDisplayed', this.model.cid);
-    (new ViewType(_.extend({ model: this.model }, options || {}))).render();
+    new ViewType(_.extend({ model: this.model }, options || {})).render();
   },
   showDeletionConfirmation: function showDeletionConfirmation() {
     this.$('.mailpoet_delete_block')
@@ -240,7 +243,9 @@ Module.BlockToolsView = AugmentedView.extend({
       .find('> .mailpoet_block_highlight')
       .css({ background: '#E64047', opacity: 0.5 });
 
-    this.$('.mailpoet_delete_block').addClass('mailpoet_delete_block_activated');
+    this.$('.mailpoet_delete_block').addClass(
+      'mailpoet_delete_block_activated',
+    );
   },
   hideDeletionConfirmation: function hideDeletionConfirmation() {
     this.$('.mailpoet_delete_block')
@@ -248,7 +253,9 @@ Module.BlockToolsView = AugmentedView.extend({
       .find('> .mailpoet_block_highlight')
       .css({ background: 'transparent', opacity: 1 });
 
-    this.$('.mailpoet_delete_block').removeClass('mailpoet_delete_block_activated');
+    this.$('.mailpoet_delete_block').removeClass(
+      'mailpoet_delete_block_activated',
+    );
   },
   deleteBlock: function deleteBlock(event) {
     event.preventDefault();
@@ -308,10 +315,10 @@ Module.BlockSettingsView = Marionette.View.extend({
     this.model.set(field, jQuery(event.target).val() + suffix);
   },
   changeBoolField: function changeBoolField(field, event) {
-    this.model.set(field, (jQuery(event.target).val() === 'true'));
+    this.model.set(field, jQuery(event.target).val() === 'true');
   },
   changeBoolCheckboxField: function changeBoolCheckboxField(field, event) {
-    this.model.set(field, (!!jQuery(event.target).prop('checked')));
+    this.model.set(field, !!jQuery(event.target).prop('checked'));
   },
   changeColorField: function changeColorField(field, event) {
     var value = jQuery(event.target).val();
@@ -328,7 +335,8 @@ Module.BlockSettingsView = Marionette.View.extend({
 });
 
 Module.WidgetView = Marionette.View.extend({
-  className: 'mailpoet_widget mailpoet_droppable_block mailpoet_droppable_widget',
+  className:
+    'mailpoet_widget mailpoet_droppable_block mailpoet_droppable_widget',
   behaviors: {
     DraggableBehavior: {
       drop: function drop() {

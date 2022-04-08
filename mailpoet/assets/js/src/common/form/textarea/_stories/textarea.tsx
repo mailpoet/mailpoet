@@ -11,30 +11,19 @@ export function Textareas() {
     <>
       <Heading level={3}>Small textareas</Heading>
       <div>
-        <Textarea
-          dimension="small"
-          placeholder="Small textarea value"
-        />
+        <Textarea dimension="small" placeholder="Small textarea value" />
       </div>
       <br />
       <Heading level={3}>Regular textareas</Heading>
       <div>
-        <Textarea
-          placeholder="Regular textarea"
-        />
+        <Textarea placeholder="Regular textarea" />
         <div className="mailpoet-gap" />
-        <Textarea
-          disabled
-          placeholder="Disabled textarea"
-        />
+        <Textarea disabled placeholder="Disabled textarea" />
       </div>
       <br />
       <Heading level={3}>Full-width textareas</Heading>
       <div>
-        <Textarea
-          placeholder="Full-width textarea"
-          isFullWidth
-        />
+        <Textarea placeholder="Full-width textarea" isFullWidth />
       </div>
       <br />
     </>

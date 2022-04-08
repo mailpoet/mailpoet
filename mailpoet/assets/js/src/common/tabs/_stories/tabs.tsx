@@ -23,9 +23,15 @@ export function WithoutIcons() {
     <div style={wrapperStyles}>
       <Heading level={3}>Tabs</Heading>
       <Tabs activeKey="first" onSwitch={action('onSwitchTabs')}>
-        <Tab key="first" title="First">First tab content</Tab>
-        <Tab key="second" title="Second">Second tab content</Tab>
-        <Tab key="third" title="Third">Third tab content</Tab>
+        <Tab key="first" title="First">
+          First tab content
+        </Tab>
+        <Tab key="second" title="Second">
+          Second tab content
+        </Tab>
+        <Tab key="third" title="Third">
+          Third tab content
+        </Tab>
       </Tabs>
 
       <div className="mailpoet-gap" />
@@ -34,22 +40,40 @@ export function WithoutIcons() {
       <Tabs activeKey="first" onSwitch={action('onSwitchNestedTabsRoot')}>
         <Tab key="first" title="First">
           <Tabs activeKey="first" onSwitch={action('onSwitchNestedTabsChild')}>
-            <Tab key="first" title="First">First tab content</Tab>
-            <Tab key="second" title="Second">Second tab content</Tab>
-            <Tab key="third" title="Third">Third tab content</Tab>
+            <Tab key="first" title="First">
+              First tab content
+            </Tab>
+            <Tab key="second" title="Second">
+              Second tab content
+            </Tab>
+            <Tab key="third" title="Third">
+              Third tab content
+            </Tab>
           </Tabs>
         </Tab>
-        <Tab key="second" title="Second">Second tab content</Tab>
-        <Tab key="third" title="Third">Third tab content</Tab>
+        <Tab key="second" title="Second">
+          Second tab content
+        </Tab>
+        <Tab key="third" title="Third">
+          Third tab content
+        </Tab>
       </Tabs>
 
       <div className="mailpoet-gap" />
 
-      <Heading level={3}>Routed tabs (work Back/Forward browser buttons)</Heading>
+      <Heading level={3}>
+        Routed tabs (work Back/Forward browser buttons)
+      </Heading>
       <RoutedTabs activeKey="" onSwitch={action('onSwitchRoutedTabs')}>
-        <Tab key="" title="First">First tab content</Tab>
-        <Tab key="second" title="Second">Second tab content</Tab>
-        <Tab key="third" title="Third">Third tab content</Tab>
+        <Tab key="" title="First">
+          First tab content
+        </Tab>
+        <Tab key="second" title="Second">
+          Second tab content
+        </Tab>
+        <Tab key="third" title="Third">
+          Third tab content
+        </Tab>
       </RoutedTabs>
     </div>
   );

@@ -11,14 +11,13 @@ type Props = {
   location: Location;
 };
 
-export default function OpenedEmailsStats(
-  { params, location }: Props,
-) : JSX.Element {
+export default function OpenedEmailsStats({
+  params,
+  location,
+}: Props): JSX.Element {
   return (
     <>
-      <Heading level={4}>
-        {MailPoet.I18n.t('openedEmailsHeading')}
-      </Heading>
+      <Heading level={4}>{MailPoet.I18n.t('openedEmailsHeading')}</Heading>
       {!MailPoet.premiumActive || MailPoet.subscribersLimitReached ? (
         <NoAccessInfo
           limitReached={MailPoet.subscribersLimitReached}
@@ -29,7 +28,11 @@ export default function OpenedEmailsStats(
           hasPremiumSupport={MailPoet.hasPremiumSupport}
         />
       ) : (
-        Hooks.applyFilters('mailpoet_subscribers_opened_emails_stats', params, location)
+        Hooks.applyFilters(
+          'mailpoet_subscribers_opened_emails_stats',
+          params,
+          location,
+        )
       )}
     </>
   );

@@ -1,6 +1,10 @@
 import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { SelectControl, RadioControl, ToggleControl } from '@wordpress/components';
+import {
+  SelectControl,
+  RadioControl,
+  ToggleControl,
+} from '@wordpress/components';
 import { assocPath, compose, __ } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
 import AnimationSettings from './animation_settings';
@@ -9,7 +13,7 @@ import CookieSettings from './cookie_settings';
 
 const delayValues = [0, 2, 5, 10, 15, 30, 45, 60, 120, 180, 240];
 
-function FixedBarSettings() : JSX.Element {
+function FixedBarSettings(): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -24,7 +28,10 @@ function FixedBarSettings() : JSX.Element {
       <ToggleControl
         label={MailPoet.I18n.t('enable')}
         checked={isActive}
-        onChange={compose([changeFormSettings, assocPath('formPlacement.fixedBar.enabled', __, formSettings)])}
+        onChange={compose([
+          changeFormSettings,
+          assocPath('formPlacement.fixedBar.enabled', __, formSettings),
+        ])}
       />
       {isActive && (
         <>
@@ -33,10 +40,19 @@ function FixedBarSettings() : JSX.Element {
             label={MailPoet.I18n.t('formPlacementPlacementPosition')}
             selected={formSettings.formPlacement.fixedBar.position}
             options={[
-              { label: MailPoet.I18n.t('formPlacementPlacementPositionTop'), value: 'top' },
-              { label: MailPoet.I18n.t('formPlacementPlacementPositionBottom'), value: 'bottom' },
+              {
+                label: MailPoet.I18n.t('formPlacementPlacementPositionTop'),
+                value: 'top',
+              },
+              {
+                label: MailPoet.I18n.t('formPlacementPlacementPositionBottom'),
+                value: 'bottom',
+              },
             ]}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.fixedBar.position', __, formSettings)])}
+            onChange={compose([
+              changeFormSettings,
+              assocPath('formPlacement.fixedBar.position', __, formSettings),
+            ])}
           />
           <SizeSettings
             label={MailPoet.I18n.t('formSettingsWidth')}
@@ -47,19 +63,31 @@ function FixedBarSettings() : JSX.Element {
             maxPercents={100}
             defaultPixelValue={560}
             defaultPercentValue={100}
-            onChange={(width): void => (
-              changeFormSettings(assocPath('formPlacement.fixedBar.styles.width', width, formSettings))
-            )}
+            onChange={(width): void =>
+              changeFormSettings(
+                assocPath(
+                  'formPlacement.fixedBar.styles.width',
+                  width,
+                  formSettings,
+                ),
+              )
+            }
           />
           <PlacementSettings settingsPlacementKey="fixedBar" />
           <AnimationSettings settingsPlacementKey="fixedBar" />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
             value={formSettings.formPlacement.fixedBar.delay}
-            onChange={compose([changeFormSettings, assocPath('formPlacement.fixedBar.delay', __, formSettings)])}
+            onChange={compose([
+              changeFormSettings,
+              assocPath('formPlacement.fixedBar.delay', __, formSettings),
+            ])}
             options={delayValues.map((delayValue) => ({
               value: delayValue,
-              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace('%1s', `${delayValue}`),
+              label: MailPoet.I18n.t('formPlacementDelaySeconds').replace(
+                '%1s',
+                `${delayValue}`,
+              ),
             }))}
           />
           <CookieSettings settingsPlacementKey="fixedBar" />

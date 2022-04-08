@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 declare module 'wp-js-hooks' {
-  function addFilter(name: string, namespace: string, callback: (...args: any[]) => any): void;
+  function addFilter(
+    name: string,
+    namespace: string,
+    callback: (...args: any[]) => any,
+  ): void;
   function applyFilters(name: string, ...args: any[]): any;
 }
 
 type ErrorResponse = {
-  errors:{
-    message:string
-  }[]
+  errors: {
+    message: string;
+  }[];
 };
-interface JQuery{
+interface JQuery {
   parsley: () => any;
 }
 
@@ -42,7 +46,7 @@ declare module '@woocommerce/settings' {
 declare module '@woocommerce/blocks-checkout' {
   import type { BlockConfiguration } from '@wordpress/blocks';
 
-  interface CheckoutBlockOptionsMetadata extends Partial< BlockConfiguration > {
+  interface CheckoutBlockOptionsMetadata extends Partial<BlockConfiguration> {
     name: string;
     parent: string[];
   }

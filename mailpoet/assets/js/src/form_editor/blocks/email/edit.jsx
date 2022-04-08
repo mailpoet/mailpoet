@@ -9,7 +9,10 @@ import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
 
 import TextInputEdit from '../text_input_edit.jsx';
-import { InputStylesSettings, inputStylesPropTypes } from '../input_styles_settings.jsx';
+import {
+  InputStylesSettings,
+  inputStylesPropTypes,
+} from '../input_styles_settings.jsx';
 
 function EmailEdit({ attributes, setAttributes }) {
   const inspectorControls = (
@@ -20,18 +23,18 @@ function EmailEdit({ attributes, setAttributes }) {
             label={MailPoet.I18n.t('label')}
             value={attributes.label}
             data-automation-id="settings_email_label_input"
-            onChange={(label) => (setAttributes({ label }))}
+            onChange={(label) => setAttributes({ label })}
           />
           <ToggleControl
             label={MailPoet.I18n.t('displayLabelWithinInput')}
             checked={attributes.labelWithinInput}
-            onChange={(labelWithinInput) => (setAttributes({ labelWithinInput }))}
+            onChange={(labelWithinInput) => setAttributes({ labelWithinInput })}
           />
         </PanelBody>
       </Panel>
       <InputStylesSettings
         styles={attributes.styles}
-        onChange={(styles) => (setAttributes({ styles }))}
+        onChange={(styles) => setAttributes({ styles })}
       />
     </InspectorControls>
   );

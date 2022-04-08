@@ -18,16 +18,11 @@ function Datepicker({
 }: Props) {
   return (
     <div
-      className={
-      classnames(
-        'mailpoet-datepicker mailpoet-form-input',
-        {
-          [`mailpoet-form-input-${dimension}`]: dimension,
-          'mailpoet-disabled': props.disabled,
-          'mailpoet-full-width': isFullWidth,
-        },
-      )
-    }
+      className={classnames('mailpoet-datepicker mailpoet-form-input', {
+        [`mailpoet-form-input-${dimension}`]: dimension,
+        'mailpoet-disabled': props.disabled,
+        'mailpoet-full-width': isFullWidth,
+      })}
     >
       {iconStart}
       <ReactDatePicker

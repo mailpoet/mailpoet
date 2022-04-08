@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  useRouteMatch,
-  useLocation,
-} from 'react-router-dom';
+import { useRouteMatch, useLocation } from 'react-router-dom';
 import MailPoet from 'mailpoet';
 import Loading from 'common/loading';
 import { useGlobalContextValue } from 'context';
@@ -29,7 +26,7 @@ export type StatsType = {
   };
 };
 
-export function SubscriberStats() : JSX.Element {
+export function SubscriberStats(): JSX.Element {
   const match = useRouteMatch<{ id: string }>();
   const location = useLocation();
   const [stats, setStats] = useState<StatsType | null>(null);
@@ -45,22 +42,28 @@ export function SubscriberStats() : JSX.Element {
       data: {
         subscriber_id: match.params.id,
       },
-    }).done((response) => {
-      setStats(response.data as StatsType);
-      setLoading(false);
-    }).fail((response) => {
-      setLoading(false);
-      if (response.errors.length > 0) {
-        showError(
-          <>{response.errors.map((error) => <p key={error.message}>{error.message}</p>)}</>,
-          { scroll: true },
-        );
-      }
-    });
+    })
+      .done((response) => {
+        setStats(response.data as StatsType);
+        setLoading(false);
+      })
+      .fail((response) => {
+        setLoading(false);
+        if (response.errors.length > 0) {
+          showError(
+            <>
+              {response.errors.map((error) => (
+                <p key={error.message}>{error.message}</p>
+              ))}
+            </>,
+            { scroll: true },
+          );
+        }
+      });
   }, [match.params.id, showError]);
 
   if (loading) {
-    return (<Loading />);
+    return <Loading />;
   }
 
   return (
@@ -69,9 +72,9 @@ export function SubscriberStats() : JSX.Element {
       <p>
         {MailPoet.I18n.t('lastEngagement')}
         {': '}
-        {
-          stats.last_engagement ? MailPoet.Date.format(stats.last_engagement) : MailPoet.I18n.t('never')
-        }
+        {stats.last_engagement
+          ? MailPoet.Date.format(stats.last_engagement)
+          : MailPoet.I18n.t('never')}
       </p>
       <div className="mailpoet-subscriber-stats-summary-grid">
         <Summary

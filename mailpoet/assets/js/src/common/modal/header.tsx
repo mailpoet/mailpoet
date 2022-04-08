@@ -7,9 +7,7 @@ type Props = {
 function ModalHeader({ title }: Props) {
   return (
     <div className="mailpoet-modal-header">
-      <Heading level={3}>
-        { title }
-      </Heading>
+      <Heading level={3}>{title}</Heading>
     </div>
   );
 }

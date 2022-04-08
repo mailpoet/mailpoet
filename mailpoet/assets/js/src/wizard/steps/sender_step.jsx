@@ -9,7 +9,9 @@ import Input from '../../common/form/input/input';
 function WelcomeWizardSenderStep(props) {
   return (
     <>
-      <Heading level={1}>{MailPoet.I18n.t('welcomeWizardLetsStartTitle')}</Heading>
+      <Heading level={1}>
+        {MailPoet.I18n.t('welcomeWizardLetsStartTitle')}
+      </Heading>
 
       <div className="mailpoet-gap" />
       <p>{MailPoet.I18n.t('welcomeWizardSenderText')}</p>
@@ -19,13 +21,17 @@ function WelcomeWizardSenderStep(props) {
         id="mailpoet_sender_form"
         onSubmit={(e) => {
           e.preventDefault();
-          if (!jQuery('#mailpoet_sender_form').parsley().validate()) { return; }
+          if (!jQuery('#mailpoet_sender_form').parsley().validate()) {
+            return;
+          }
           props.submit_sender();
         }}
       >
         <Grid.TwoColumns>
           <label htmlFor="senderName">
-            <span className="mailpoet-wizard-label">{MailPoet.I18n.t('senderName')}</span>
+            <span className="mailpoet-wizard-label">
+              {MailPoet.I18n.t('senderName')}
+            </span>
             <Input
               isFullWidth
               name="senderName"
@@ -38,7 +44,9 @@ function WelcomeWizardSenderStep(props) {
           </label>
 
           <label htmlFor="senderAddress">
-            <span className="mailpoet-wizard-label">{MailPoet.I18n.t('senderAddress')}</span>
+            <span className="mailpoet-wizard-label">
+              {MailPoet.I18n.t('senderAddress')}
+            </span>
             <Input
               isFullWidth
               name="senderAddress"
@@ -55,11 +63,7 @@ function WelcomeWizardSenderStep(props) {
         <div className="mailpoet-gap" />
         <div className="mailpoet-gap" />
 
-        <Button
-          isFullWidth
-          type="submit"
-          withSpinner={props.loading}
-        >
+        <Button isFullWidth type="submit" withSpinner={props.loading}>
           {MailPoet.I18n.t('continue')}
         </Button>
         <Button

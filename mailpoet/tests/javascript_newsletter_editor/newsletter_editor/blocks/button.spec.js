@@ -16,7 +16,7 @@ describe('Button', function () {
       global.stubConfig(EditorApplication, {
         blockDefaults: {},
       });
-      model = new (ButtonBlock.ButtonBlockModel)();
+      model = new ButtonBlock.ButtonBlockModel();
       sandbox = sinon.createSandbox();
     });
 
@@ -40,11 +40,15 @@ describe('Button', function () {
     });
 
     it('has a block background color', function () {
-      expect(model.get('styles.block.backgroundColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
+      expect(model.get('styles.block.backgroundColor')).to.match(
+        /^(#[abcdef0-9]{6})|transparent$/,
+      );
     });
 
     it('has a block border color', function () {
-      expect(model.get('styles.block.borderColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
+      expect(model.get('styles.block.borderColor')).to.match(
+        /^(#[abcdef0-9]{6})|transparent$/,
+      );
     });
 
     it('has a block border width', function () {
@@ -60,7 +64,9 @@ describe('Button', function () {
     });
 
     it('has a text color', function () {
-      expect(model.get('styles.block.fontColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
+      expect(model.get('styles.block.fontColor')).to.match(
+        /^(#[abcdef0-9]{6})|transparent$/,
+      );
     });
 
     it('has a text font family', function () {
@@ -121,7 +127,9 @@ describe('Button', function () {
       var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
       model.set('context', 'posts.readMoreButton');
       expect(stub.callCount).to.equal(1);
-      expect(stub.getCall(0).args[0]).to.equal('blockDefaults.posts.readMoreButton');
+      expect(stub.getCall(0).args[0]).to.equal(
+        'blockDefaults.posts.readMoreButton',
+      );
       expect(stub.getCall(0).args[1]).to.deep.equal(model.toJSON());
     });
 
@@ -149,7 +157,7 @@ describe('Button', function () {
           },
         },
       });
-      model = new (ButtonBlock.ButtonBlockModel)();
+      model = new ButtonBlock.ButtonBlockModel();
 
       expect(model.get('text')).to.equal('Some new text');
       expect(model.get('url')).to.equal('http://somenewurl.com');
@@ -172,22 +180,24 @@ describe('Button', function () {
 
     beforeEach(function () {
       global.stubChannel(EditorApplication);
-      model = new (ButtonBlock.ButtonBlockModel)();
+      model = new ButtonBlock.ButtonBlockModel();
     });
 
     it('renders', function () {
-      var view = new (ButtonBlock.ButtonBlockView)({ model: model });
+      var view = new ButtonBlock.ButtonBlockView({ model: model });
       expect(view.render).to.not.throw();
       expect(view.$('.mailpoet_editor_button')).to.have.length(1);
     });
 
     it('rerenders when attributes change', function () {
-      var view = new (ButtonBlock.ButtonBlockView)({ model: model });
+      var view = new ButtonBlock.ButtonBlockView({ model: model });
       view.render();
 
       model.set('text', 'Some new text');
 
-      expect(view.$('.mailpoet_editor_button').text()).to.equal('Some new text');
+      expect(view.$('.mailpoet_editor_button').text()).to.equal(
+        'Some new text',
+      );
     });
 
     describe('once rendered', function () {
@@ -196,7 +206,7 @@ describe('Button', function () {
 
       before(function () {
         global.stubChannel(EditorApplication);
-        innerModel = new (ButtonBlock.ButtonBlockModel)({
+        innerModel = new ButtonBlock.ButtonBlockModel({
           text: 'Some button',
           url: 'http://example.org',
           styles: {
@@ -215,62 +225,88 @@ describe('Button', function () {
             },
           },
         });
-        view = new (ButtonBlock.ButtonBlockView)({ model: innerModel });
+        view = new ButtonBlock.ButtonBlockView({ model: innerModel });
         view.render();
       });
 
       it('has a specified text', function () {
-        expect(view.$('.mailpoet_editor_button').text()).to.equal(innerModel.get('text'));
+        expect(view.$('.mailpoet_editor_button').text()).to.equal(
+          innerModel.get('text'),
+        );
       });
 
       it('has a specified button url', function () {
-        expect(view.$('.mailpoet_editor_button').attr('href')).to.equal(innerModel.get('url'));
+        expect(view.$('.mailpoet_editor_button').attr('href')).to.equal(
+          innerModel.get('url'),
+        );
       });
 
       it('has a specified background color', function () {
         // jQuery colors appear in rgb format, not hex6
-        expect(view.$('.mailpoet_editor_button').css('background-color')).to.equal('rgb(18, 52, 86)');
+        expect(
+          view.$('.mailpoet_editor_button').css('background-color'),
+        ).to.equal('rgb(18, 52, 86)');
       });
 
       it('has a specified border color', function () {
-        expect(view.$('.mailpoet_editor_button').css('border-color')).to.equal(innerModel.get('styles.block.borderColor'));
+        expect(view.$('.mailpoet_editor_button').css('border-color')).to.equal(
+          innerModel.get('styles.block.borderColor'),
+        );
       });
 
       it('has a specified border width', function () {
-        expect(view.$('.mailpoet_editor_button').css('border-width')).to.equal(innerModel.get('styles.block.borderWidth'));
+        expect(view.$('.mailpoet_editor_button').css('border-width')).to.equal(
+          innerModel.get('styles.block.borderWidth'),
+        );
       });
 
       it('has a specified border radius', function () {
-        expect(view.$('.mailpoet_editor_button').css('border-radius')).to.equal(innerModel.get('styles.block.borderRadius'));
+        expect(view.$('.mailpoet_editor_button').css('border-radius')).to.equal(
+          innerModel.get('styles.block.borderRadius'),
+        );
       });
 
       it('has a specified border style', function () {
-        expect(view.$('.mailpoet_editor_button').css('border-style')).to.equal(innerModel.get('styles.block.borderStyle'));
+        expect(view.$('.mailpoet_editor_button').css('border-style')).to.equal(
+          innerModel.get('styles.block.borderStyle'),
+        );
       });
 
       it('has a specified width', function () {
-        expect(view.$('.mailpoet_editor_button').css('width')).to.equal(innerModel.get('styles.block.width'));
+        expect(view.$('.mailpoet_editor_button').css('width')).to.equal(
+          innerModel.get('styles.block.width'),
+        );
       });
 
       it('has a specified line height', function () {
-        expect(view.$('.mailpoet_editor_button').css('lineHeight')).to.equal(innerModel.get('styles.block.lineHeight'));
+        expect(view.$('.mailpoet_editor_button').css('lineHeight')).to.equal(
+          innerModel.get('styles.block.lineHeight'),
+        );
       });
 
       it('has a specified font color', function () {
         // jQuery colors appear in rgb format, not hex6
-        expect(view.$('.mailpoet_editor_button').css('color')).to.equal('rgb(52, 86, 120)');
+        expect(view.$('.mailpoet_editor_button').css('color')).to.equal(
+          'rgb(52, 86, 120)',
+        );
       });
 
       it('has a specified font family', function () {
-        expect(view.$('.mailpoet_editor_button').css('font-family')).to.contain(innerModel.get('styles.block.fontFamily'));
+        expect(view.$('.mailpoet_editor_button').css('font-family')).to.contain(
+          innerModel.get('styles.block.fontFamily'),
+        );
       });
 
       it('has a specified font size', function () {
-        expect(view.$('.mailpoet_editor_button').css('font-size')).to.equal(innerModel.get('styles.block.fontSize'));
+        expect(view.$('.mailpoet_editor_button').css('font-size')).to.equal(
+          innerModel.get('styles.block.fontSize'),
+        );
       });
 
       it('has a specified font weight', function () {
-        expect(view.$('.mailpoet_editor_button').css('font-weight')).to.equal(innerModel.get('styles.block.fontWeight'));
+        expect(view.$('.mailpoet_editor_button').css('font-weight')).to.equal(
+          innerModel.get('styles.block.fontWeight'),
+        );
       });
 
       it('opens settings if clicked', function () {
@@ -291,13 +327,16 @@ describe('Button', function () {
       onStub = sinon.stub();
       global.stubChannel(EditorApplication, { on: onStub });
       model = { set: sinon.stub(), toJSON: sinon.stub() };
-      view = new (ButtonBlock.ButtonBlockView)({ model: model });
+      view = new ButtonBlock.ButtonBlockView({ model: model });
       view.render();
     });
 
     it('listens to the event', function () {
       expect(onStub).to.have.been.callCount(1);
-      expect(onStub).to.have.been.calledWith('replaceAllButtonStyles', sinon.match.func);
+      expect(onStub).to.have.been.calledWith(
+        'replaceAllButtonStyles',
+        sinon.match.func,
+      );
     });
 
     it('updates the model', function () {
@@ -328,14 +367,14 @@ describe('Button', function () {
         headingSizes: ['16px', '20px'],
       });
 
-      model = new (ButtonBlock.ButtonBlockModel)({
+      model = new ButtonBlock.ButtonBlockModel({
         type: 'button',
         text: 'Some random text',
       });
     });
 
     it('renders', function () {
-      var view = new (ButtonBlock.ButtonBlockSettingsView)({ model: model });
+      var view = new ButtonBlock.ButtonBlockSettingsView({ model: model });
       expect(view.render).to.not.throw();
     });
 
@@ -354,11 +393,11 @@ describe('Button', function () {
       });
 
       beforeEach(function () {
-        model = new (ButtonBlock.ButtonBlockModel)({
+        model = new ButtonBlock.ButtonBlockModel({
           type: 'button',
           text: 'Some random text',
         });
-        view = new (ButtonBlock.ButtonBlockSettingsView)({ model: model });
+        view = new ButtonBlock.ButtonBlockSettingsView({ model: model });
 
         view.render();
       });
@@ -382,7 +421,10 @@ describe('Button', function () {
       it('updates the model when font color changes', function () {
         var newValue = '#cccccc';
 
-        view.$('.mailpoet_field_button_font_color').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_field_button_font_color')
+          .val(newValue)
+          .trigger('change');
 
         expect(model.get('styles.block.fontColor')).to.equal(newValue);
       });
@@ -390,27 +432,39 @@ describe('Button', function () {
       it('updates the model when font family changes', function () {
         var newValue = 'Tahoma';
 
-        view.$('.mailpoet_field_button_font_family').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_field_button_font_family')
+          .val(newValue)
+          .trigger('change');
 
         expect(model.get('styles.block.fontFamily')).to.equal(newValue);
       });
 
       it('updates the model when font size changes', function () {
         var newValue = '20px';
-        view.$('.mailpoet_field_button_font_size').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_field_button_font_size')
+          .val(newValue)
+          .trigger('change');
         expect(model.get('styles.block.fontSize')).to.equal(newValue);
       });
 
       it('updates the model when font weight changes', function () {
         var newValue = 'bold';
-        view.$('.mailpoet_field_button_font_weight').prop('checked', true).trigger('change');
+        view
+          .$('.mailpoet_field_button_font_weight')
+          .prop('checked', true)
+          .trigger('change');
         expect(model.get('styles.block.fontWeight')).to.equal(newValue);
       });
 
       it('updates the model when background color changes', function () {
         var newValue = '#cccccc';
 
-        view.$('.mailpoet_field_button_background_color').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_field_button_background_color')
+          .val(newValue)
+          .trigger('change');
 
         expect(model.get('styles.block.backgroundColor')).to.equal(newValue);
       });
@@ -418,35 +472,64 @@ describe('Button', function () {
       it('updates the model when border color changes', function () {
         var newValue = '#cccccc';
 
-        view.$('.mailpoet_field_button_border_color').val(newValue).trigger('change');
+        view
+          .$('.mailpoet_field_button_border_color')
+          .val(newValue)
+          .trigger('change');
 
         expect(model.get('styles.block.borderColor')).to.equal(newValue);
       });
 
       it('updates the model when border width changes', function () {
-        view.$('.mailpoet_field_button_border_width').val('3').trigger('change');
+        view
+          .$('.mailpoet_field_button_border_width')
+          .val('3')
+          .trigger('change');
         expect(model.get('styles.block.borderWidth')).to.equal('3px');
       });
       it('updates the range slider when border width input changes', function () {
-        view.$('.mailpoet_field_button_border_width_input').val('5').trigger('input');
-        expect(view.$('.mailpoet_field_button_border_width').val()).to.equal('5');
+        view
+          .$('.mailpoet_field_button_border_width_input')
+          .val('5')
+          .trigger('input');
+        expect(view.$('.mailpoet_field_button_border_width').val()).to.equal(
+          '5',
+        );
       });
       it('updates the input when border width range slider changes', function () {
-        view.$('.mailpoet_field_button_border_width').val('4').trigger('change');
-        expect(view.$('.mailpoet_field_button_border_width_input').val()).to.equal('4');
+        view
+          .$('.mailpoet_field_button_border_width')
+          .val('4')
+          .trigger('change');
+        expect(
+          view.$('.mailpoet_field_button_border_width_input').val(),
+        ).to.equal('4');
       });
 
       it('updates the model when border radius changes', function () {
-        view.$('.mailpoet_field_button_border_radius').val('7').trigger('change');
+        view
+          .$('.mailpoet_field_button_border_radius')
+          .val('7')
+          .trigger('change');
         expect(model.get('styles.block.borderRadius')).to.equal('7px');
       });
       it('updates the range slider when border radius input changes', function () {
-        view.$('.mailpoet_field_button_border_radius_input').val('7').trigger('input');
-        expect(view.$('.mailpoet_field_button_border_radius').val()).to.equal('7');
+        view
+          .$('.mailpoet_field_button_border_radius_input')
+          .val('7')
+          .trigger('input');
+        expect(view.$('.mailpoet_field_button_border_radius').val()).to.equal(
+          '7',
+        );
       });
       it('updates the input when border radius range slider changes', function () {
-        view.$('.mailpoet_field_button_border_radius').val('7').trigger('change');
-        expect(view.$('.mailpoet_field_button_border_radius_input').val()).to.equal('7');
+        view
+          .$('.mailpoet_field_button_border_radius')
+          .val('7')
+          .trigger('change');
+        expect(
+          view.$('.mailpoet_field_button_border_radius_input').val(),
+        ).to.equal('7');
       });
 
       it('updates the model when width changes', function () {
@@ -454,29 +537,47 @@ describe('Button', function () {
         expect(model.get('styles.block.width')).to.equal('127px');
       });
       it('updates the range slider when width input changes', function () {
-        view.$('.mailpoet_field_button_width_input').val('127').trigger('input');
+        view
+          .$('.mailpoet_field_button_width_input')
+          .val('127')
+          .trigger('input');
         expect(view.$('.mailpoet_field_button_width').val()).to.equal('127');
       });
       it('updates the input when width range slider changes', function () {
         view.$('.mailpoet_field_button_width').val('127').trigger('change');
-        expect(view.$('.mailpoet_field_button_width_input').val()).to.equal('127');
+        expect(view.$('.mailpoet_field_button_width_input').val()).to.equal(
+          '127',
+        );
       });
 
       it('updates the model when line height changes', function () {
-        view.$('.mailpoet_field_button_line_height').val('37').trigger('change');
+        view
+          .$('.mailpoet_field_button_line_height')
+          .val('37')
+          .trigger('change');
         expect(model.get('styles.block.lineHeight')).to.equal('37px');
       });
       it('updates the range slider when line height input changes', function () {
-        view.$('.mailpoet_field_button_line_height_input').val('37').trigger('input');
-        expect(view.$('.mailpoet_field_button_line_height').val()).to.equal('37');
+        view
+          .$('.mailpoet_field_button_line_height_input')
+          .val('37')
+          .trigger('input');
+        expect(view.$('.mailpoet_field_button_line_height').val()).to.equal(
+          '37',
+        );
       });
       it('updates the input when line height range slider changes', function () {
-        view.$('.mailpoet_field_button_line_height').val('37').trigger('change');
-        expect(view.$('.mailpoet_field_button_line_height_input').val()).to.equal('37');
+        view
+          .$('.mailpoet_field_button_line_height')
+          .val('37')
+          .trigger('change');
+        expect(
+          view.$('.mailpoet_field_button_line_height_input').val(),
+        ).to.equal('37');
       });
 
       it('does not display link option when `hideLink` option is active', function () {
-        view = new (ButtonBlock.ButtonBlockSettingsView)({
+        view = new ButtonBlock.ButtonBlockSettingsView({
           model: model,
           renderOptions: {
             hideLink: true,
@@ -487,22 +588,26 @@ describe('Button', function () {
       });
 
       it('does not display "Apply to all" option when `hideApplyToAll` option is active', function () {
-        view = new (ButtonBlock.ButtonBlockSettingsView)({
+        view = new ButtonBlock.ButtonBlockSettingsView({
           model: model,
           renderOptions: {
             hideApplyToAll: true,
           },
         });
         view.render();
-        expect(view.$('.mailpoet_field_button_replace_all_styles').length).to.equal(0);
+        expect(
+          view.$('.mailpoet_field_button_replace_all_styles').length,
+        ).to.equal(0);
       });
 
       it('displays/hides tools and highlight block when settings active/inactive', function () {
         var settingsView;
-        var blockView = new (ButtonBlock.ButtonBlockView)({ model: model });
+        var blockView = new ButtonBlock.ButtonBlockView({ model: model });
         blockView.render();
         expect(blockView.$el.hasClass('mailpoet_highlight')).to.equal(false);
-        settingsView = new (ButtonBlock.ButtonBlockSettingsView)({ model: model });
+        settingsView = new ButtonBlock.ButtonBlockSettingsView({
+          model: model,
+        });
         settingsView.render();
         expect(blockView.$el.hasClass('mailpoet_highlight')).to.equal(true);
         settingsView.destroy();
@@ -514,7 +619,7 @@ describe('Button', function () {
         global.MailPoet.Modal.cancel = mock;
         view.$('.mailpoet_done_editing').trigger('click');
         mock.verify();
-        delete (global.MailPoet.Modal.cancel);
+        delete global.MailPoet.Modal.cancel;
       });
     });
   });

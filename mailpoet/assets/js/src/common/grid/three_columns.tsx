@@ -7,9 +7,16 @@ type Props = {
   automationId?: string;
 };
 
-export function ThreeColumns({ children, className, automationId }: Props): ReactElement {
+export function ThreeColumns({
+  children,
+  className,
+  automationId,
+}: Props): ReactElement {
   return (
-    <div className={classnames(className, 'mailpoet-grid-three-columns')} data-automation-id={automationId}>
+    <div
+      className={classnames(className, 'mailpoet-grid-three-columns')}
+      data-automation-id={automationId}
+    >
       {children}
     </div>
   );

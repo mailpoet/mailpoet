@@ -14,10 +14,9 @@ export default function TaskScheduler() {
     <>
       <Label
         title={t('taskCron')}
-        description={(
+        description={
           <>
-            {t('taskCronDescription')}
-            {' '}
+            {t('taskCronDescription')}{' '}
             <a
               className="mailpoet-link"
               href="https://kb.mailpoet.com/article/129-what-is-the-newsletter-task-scheduler"
@@ -28,7 +27,7 @@ export default function TaskScheduler() {
               {t('readMore')}
             </a>
           </>
-        )}
+        }
         htmlFor="cron_trigger-method"
       />
       <Inputs>
@@ -79,9 +78,7 @@ export default function TaskScheduler() {
             onCheck={setMethod}
             automationId="linux_cron_radio"
           />
-          <label htmlFor="cron_trigger-method-cron">
-            {t('serverCron')}
-          </label>
+          <label htmlFor="cron_trigger-method-cron">{t('serverCron')}</label>
         </div>
         {method === 'Linux Cron' && (
           <div className="mailpoet-settings-inputs-row">
@@ -97,12 +94,7 @@ export default function TaskScheduler() {
             <div className="mailpoet-settings-inputs-row">
               {t('withFrequency')}
             </div>
-            <Input
-              dimension="small"
-              type="text"
-              readOnly
-              value="*/1 * * * *"
-            />
+            <Input dimension="small" type="text" readOnly value="*/1 * * * *" />
           </div>
         )}
       </Inputs>

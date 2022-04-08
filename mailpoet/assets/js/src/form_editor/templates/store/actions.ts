@@ -1,12 +1,12 @@
 import { select } from '@wordpress/data';
 
-import {
-  CategoryActionType,
-  CategoryType,
-} from './types';
+import { CategoryActionType, CategoryType } from './types';
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- IDK what else could be the return value
-export function* selectTemplate(templateId: string, templateName: string): object {
+export function* selectTemplate(
+  templateId: string,
+  templateName: string,
+): object {
   yield { type: 'SELECT_TEMPLATE_START' };
   yield {
     type: 'TRACK_EVENT',

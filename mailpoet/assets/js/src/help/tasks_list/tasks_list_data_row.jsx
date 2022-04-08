@@ -8,16 +8,16 @@ function TasksListDataRow(props) {
     scheduled = parseDate(scheduled, 'yyyy-MM-dd HH:mm:ss', new Date());
   }
 
-  const updated = parseDate(props.task.updated_at, 'yyyy-MM-dd HH:mm:ss', new Date());
+  const updated = parseDate(
+    props.task.updated_at,
+    'yyyy-MM-dd HH:mm:ss',
+    new Date(),
+  );
 
   return (
     <tr>
-      <td className="column column-primary">
-        {props.task.id}
-      </td>
-      <td className="column">
-        {props.task.type}
-      </td>
+      <td className="column column-primary">{props.task.id}</td>
+      <td className="column">{props.task.type}</td>
       <td className="column">
         {props.task.newsletter ? (
           <a
@@ -29,18 +29,22 @@ function TasksListDataRow(props) {
           >
             {props.task.newsletter.subject || MailPoet.I18n.t('preview')}
           </a>
-        ) : MailPoet.I18n.t('none')}
+        ) : (
+          MailPoet.I18n.t('none')
+        )}
       </td>
-      <td className="column">
-        {props.task.priority}
-      </td>
+      <td className="column">{props.task.priority}</td>
       {props.show_scheduled_at ? (
         <td className="column-date">
-          <abbr>{`${MailPoet.Date.short(scheduled)} ${MailPoet.Date.time(scheduled)}`}</abbr>
+          <abbr>{`${MailPoet.Date.short(scheduled)} ${MailPoet.Date.time(
+            scheduled,
+          )}`}</abbr>
         </td>
       ) : null}
       <td className="column-date">
-        <abbr>{`${MailPoet.Date.short(updated)} ${MailPoet.Date.time(updated)}`}</abbr>
+        <abbr>{`${MailPoet.Date.short(updated)} ${MailPoet.Date.time(
+          updated,
+        )}`}</abbr>
       </td>
     </tr>
   );

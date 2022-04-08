@@ -3,14 +3,13 @@ import PropTypes from 'prop-types';
 import Radio from 'common/form/radio/radio';
 import Tag from 'common/tag/tag';
 
-function SelectImportMethod({
-  activeMethod,
-  onMethodChange,
-}) {
+function SelectImportMethod({ activeMethod, onMethodChange }) {
   return (
     <>
       <div className="mailpoet-settings-label">
-        <span className="mailpoet_import_heading">{MailPoet.I18n.t('methodSelectionHead')}</span>
+        <span className="mailpoet_import_heading">
+          {MailPoet.I18n.t('methodSelectionHead')}
+        </span>
         <div className="mailpoet-settings-inputs-row">
           <a
             href="https://kb.mailpoet.com/article/242-video-guide-importing-subscribers-using-a-csv-file"
@@ -18,7 +17,9 @@ function SelectImportMethod({
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Tag dimension="large" variant="excellent" isInverted>{MailPoet.I18n.t('seeVideo')}</Tag>
+            <Tag dimension="large" variant="excellent" isInverted>
+              {MailPoet.I18n.t('seeVideo')}
+            </Tag>
           </a>
         </div>
       </div>

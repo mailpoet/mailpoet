@@ -94,14 +94,19 @@ jQuery(($) => {
     if (formDiv.data('is-preview')) return;
     const formCookieName = getFormCookieName(formDiv);
     if (Cookies.get(formCookieName) === '1') return;
-    const cookieExpirationTime = formDiv.find('form').data('cookie-expiration-time');
-    Cookies.set(formCookieName, '1', { ...(cookieExpirationTime && { expires: cookieExpirationTime }), path: '/' });
+    const cookieExpirationTime = formDiv
+      .find('form')
+      .data('cookie-expiration-time');
+    Cookies.set(formCookieName, '1', {
+      ...(cookieExpirationTime && { expires: cookieExpirationTime }),
+      path: '/',
+    });
   }
 
   function isSameDomain(url) {
     const link = document.createElement('a');
     link.href = url;
-    return (window.location.hostname === link.hostname);
+    return window.location.hostname === link.hostname;
   }
 
   function updateCaptcha(e) {
@@ -120,23 +125,29 @@ jQuery(($) => {
     const newFontFamily = `"${fontName}", ${originalFontFamily}`;
     formDiv.css('font-family', newFontFamily);
     formDiv.find('input, option').css('font-family', 'inherit');
-    formDiv.find('input[type=text], textarea, input[type=email], select').css('font-family', newFontFamily);
+    formDiv
+      .find('input[type=text], textarea, input[type=email], select')
+      .css('font-family', newFontFamily);
     formDiv.find(':header').css('font-family', 'inherit');
 
-    formDiv.find('input[data-font-family]').each(function applyFontFamilyToInput() {
-      const element = $(this);
-      const inputFontFamily = element.data('font-family');
-      const inputOriginalFontFamily = element.css('font-family');
-      const inputNewFontFamily = `"${inputFontFamily}", ${inputOriginalFontFamily}`;
-      element.css('font-family', inputNewFontFamily);
-    });
+    formDiv
+      .find('input[data-font-family]')
+      .each(function applyFontFamilyToInput() {
+        const element = $(this);
+        const inputFontFamily = element.data('font-family');
+        const inputOriginalFontFamily = element.css('font-family');
+        const inputNewFontFamily = `"${inputFontFamily}", ${inputOriginalFontFamily}`;
+        element.css('font-family', inputNewFontFamily);
+      });
 
-    formDiv.find('.mailpoet-has-font').each(function applyFontFamilyToRichText() {
-      const element = $(this);
-      const spanOriginalFontFamily = element.css('font-family');
-      const spanNewFontFamily = `"${spanOriginalFontFamily}", ${originalFontFamily}`;
-      element.css('font-family', spanNewFontFamily);
-    });
+    formDiv
+      .find('.mailpoet-has-font')
+      .each(function applyFontFamilyToRichText() {
+        const element = $(this);
+        const spanOriginalFontFamily = element.css('font-family');
+        const spanNewFontFamily = `"${spanOriginalFontFamily}", ${originalFontFamily}`;
+        element.css('font-family', spanNewFontFamily);
+      });
   }
 
   function doDisplayForm(formDiv, showOverlay) {
@@ -215,7 +226,12 @@ jQuery(($) => {
 
   (() => {
     $('.mailpoet_form').each((index, element) => {
-      $(element).children('.mailpoet_paragraph, .mailpoet_form_image, .mailpoet_form_paragraph').last().addClass('last');
+      $(element)
+        .children(
+          '.mailpoet_paragraph, .mailpoet_form_image, .mailpoet_form_paragraph',
+        )
+        .last()
+        .addClass('last');
     });
     $('form.mailpoet_form').each((index, element) => {
       const form = $(element);
@@ -230,13 +246,15 @@ jQuery(($) => {
       closeForm(formDiv);
     });
 
-    $('div.mailpoet_form_fixed_bar, div.mailpoet_form_slide_in').each((index, element) => {
-      const formDiv = $(element);
-      const formCookieName = getFormCookieName(formDiv);
-      const cookieValue = Cookies.get(formCookieName);
-      if (cookieValue === '1' && !formDiv.data('is-preview')) return;
-      showForm(formDiv);
-    });
+    $('div.mailpoet_form_fixed_bar, div.mailpoet_form_slide_in').each(
+      (index, element) => {
+        const formDiv = $(element);
+        const formCookieName = getFormCookieName(formDiv);
+        const cookieValue = Cookies.get(formCookieName);
+        if (cookieValue === '1' && !formDiv.data('is-preview')) return;
+        showForm(formDiv);
+      },
+    );
 
     $('div.mailpoet_form_popup').each((index, element) => {
       const formDiv = $(element);
@@ -288,7 +306,9 @@ jQuery(($) => {
         }
 
         if (window.grecaptcha && formData.recaptcha) {
-          formData.data.recaptcha = window.grecaptcha.getResponse(formData.recaptcha);
+          formData.data.recaptcha = window.grecaptcha.getResponse(
+            formData.recaptcha,
+          );
         }
 
         form.addClass('mailpoet_form_sending');
@@ -303,8 +323,8 @@ jQuery(($) => {
         })
           .fail((response) => {
             if (
-              response.meta !== undefined
-              && response.meta.redirect_url !== undefined
+              response.meta !== undefined &&
+              response.meta.redirect_url !== undefined
             ) {
               // go to page
               window.top.location.href = response.meta.redirect_url;
@@ -312,9 +332,12 @@ jQuery(($) => {
               if (response.meta && response.meta.refresh_captcha) {
                 updateCaptcha();
               }
-              form.find('.mailpoet_validate_error').html(
-                response.errors.map((error) => error.message).join('<br />')
-              ).show();
+              form
+                .find('.mailpoet_validate_error')
+                .html(
+                  response.errors.map((error) => error.message).join('<br />'),
+                )
+                .show();
             }
           })
           .done((response) => {
@@ -326,8 +349,8 @@ jQuery(($) => {
           .done((response) => {
             // successfully subscribed
             if (
-              response.meta !== undefined
-              && response.meta.redirect_url !== undefined
+              response.meta !== undefined &&
+              response.meta.redirect_url !== undefined
             ) {
               setFormCookieAfterSubscription(form);
               // go to page
@@ -347,9 +370,9 @@ jQuery(($) => {
 
             // resize iframe
             if (
-              window.frameElement !== null
-              && MailPoet !== undefined
-              && MailPoet.Iframe
+              window.frameElement !== null &&
+              MailPoet !== undefined &&
+              MailPoet.Iframe
             ) {
               MailPoet.Iframe.autoSize(window.frameElement);
             }

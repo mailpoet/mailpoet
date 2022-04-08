@@ -12,10 +12,7 @@ export function WithoutIcons() {
     <>
       <Heading level={3}>Small buttons</Heading>
       <p>
-        <Button
-          onClick={action('primary small')}
-          dimension="small"
-        >
+        <Button onClick={action('primary small')} dimension="small">
           Primary button
         </Button>
         <Button
@@ -44,27 +41,14 @@ export function WithoutIcons() {
 
       <Heading level={3}>Regular buttons</Heading>
       <p>
-        <Button
-          onClick={action('primary regular')}
-        >
-          Primary button
-        </Button>
-        <Button
-          onClick={action('secondary regular')}
-          variant="secondary"
-        >
+        <Button onClick={action('primary regular')}>Primary button</Button>
+        <Button onClick={action('secondary regular')} variant="secondary">
           Secondary button
         </Button>
-        <Button
-          onClick={action('tertiary regular')}
-          variant="tertiary"
-        >
+        <Button onClick={action('tertiary regular')} variant="tertiary">
           Tertiary button
         </Button>
-        <Button
-          onClick={action('destructive regular')}
-          variant="destructive"
-        >
+        <Button onClick={action('destructive regular')} variant="destructive">
           Destructive button
         </Button>
       </p>
@@ -72,25 +56,14 @@ export function WithoutIcons() {
 
       <Heading level={3}>Disabled buttons</Heading>
       <p>
-        <Button isDisabled>
-          Primary button
-        </Button>
-        <Button
-          isDisabled
-          variant="secondary"
-        >
+        <Button isDisabled>Primary button</Button>
+        <Button isDisabled variant="secondary">
           Secondary button
         </Button>
-        <Button
-          isDisabled
-          variant="tertiary"
-        >
+        <Button isDisabled variant="tertiary">
           Tertiary button
         </Button>
-        <Button
-          isDisabled
-          variant="destructive"
-        >
+        <Button isDisabled variant="destructive">
           Destructive button
         </Button>
       </p>
@@ -98,25 +71,14 @@ export function WithoutIcons() {
 
       <Heading level={3}>Buttons with spinner</Heading>
       <p>
-        <Button withSpinner>
-          Primary button
-        </Button>
-        <Button
-          withSpinner
-          variant="secondary"
-        >
+        <Button withSpinner>Primary button</Button>
+        <Button withSpinner variant="secondary">
           Secondary button
         </Button>
-        <Button
-          withSpinner
-          variant="tertiary"
-        >
+        <Button withSpinner variant="tertiary">
           Tertiary button
         </Button>
-        <Button
-          withSpinner
-          variant="destructive"
-        >
+        <Button withSpinner variant="destructive">
           Destructive button
         </Button>
       </p>
@@ -124,10 +86,7 @@ export function WithoutIcons() {
 
       <Heading level={3}>Full width buttons</Heading>
       <p>
-        <Button
-          onClick={action('primary full-width')}
-          isFullWidth
-        >
+        <Button onClick={action('primary full-width')} isFullWidth>
           Primary button
         </Button>
         <Button

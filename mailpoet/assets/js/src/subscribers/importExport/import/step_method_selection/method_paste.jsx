@@ -4,17 +4,13 @@ import ReactStringReplace from 'react-string-replace';
 import Textarea from 'common/form/textarea/textarea';
 import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
-const kbLink = 'https://kb.mailpoet.com/article/126-importing-subscribers-with-csv-files';
+const kbLink =
+  'https://kb.mailpoet.com/article/126-importing-subscribers-with-csv-files';
 
-const placeholder = 'Email, First Name, Last Name\njohn@doe.com, John, Doe\nmary@smith.com, Mary, Smith\njohnny@walker.com, Johnny, Walker';
+const placeholder =
+  'Email, First Name, Last Name\njohn@doe.com, John, Doe\nmary@smith.com, Mary, Smith\njohnny@walker.com, Johnny, Walker';
 
-function MethodPaste({
-  onValueChange,
-  canFinish,
-  onFinish,
-  data,
-  onPrevious,
-}) {
+function MethodPaste({ onValueChange, canFinish, onFinish, data, onPrevious }) {
   const onChange = (e) => {
     onValueChange(e.target.value);
   };
@@ -22,9 +18,7 @@ function MethodPaste({
   return (
     <>
       <div className="mailpoet-settings-label">
-        <label htmlFor="paste_input">
-          {MailPoet.I18n.t('pasteLabel')}
-        </label>
+        <label htmlFor="paste_input">{MailPoet.I18n.t('pasteLabel')}</label>
         <p className="description">
           {ReactStringReplace(
             MailPoet.I18n.t('pasteDescription'),
@@ -38,9 +32,9 @@ function MethodPaste({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                { match }
+                {match}
               </a>
-            )
+            ),
           )}
         </p>
       </div>

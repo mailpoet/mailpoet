@@ -12,8 +12,8 @@ export default function Captcha() {
   const [secret, setSecret] = useSetting('captcha', 'recaptcha_secret_token');
   const hasBuiltInCaptcha = useSelector('isBuiltInCaptchaSupported')();
   const setErrorFlag = useAction('setErrorFlag');
-  const missingToken = (type === 'recaptcha' && token.trim() === '');
-  const missingSecret = (type === 'recaptcha' && secret.trim() === '');
+  const missingToken = type === 'recaptcha' && token.trim() === '';
+  const missingSecret = type === 'recaptcha' && secret.trim() === '';
   useEffect(() => {
     setErrorFlag(missingToken || missingSecret);
   }, [missingSecret, missingToken, setErrorFlag]);
@@ -22,10 +22,9 @@ export default function Captcha() {
     <>
       <Label
         title={t('captchaTitle')}
-        description={(
+        description={
           <>
-            {t('captchaDescription')}
-            {' '}
+            {t('captchaDescription')}{' '}
             <a
               className="mailpoet-link"
               href="https://www.google.com/recaptcha/admin"
@@ -35,7 +34,7 @@ export default function Captcha() {
               {t('signupForCaptchaKey')}
             </a>
           </>
-        )}
+        }
         htmlFor=""
       />
       <Inputs>
@@ -48,8 +47,7 @@ export default function Captcha() {
             onCheck={setType}
           />
           <label htmlFor="built-in-captcha">
-            {t('builtInCaptcha')}
-            {' '}
+            {t('builtInCaptcha')}{' '}
             {!hasBuiltInCaptcha && t('disbaledBecauseExtensionMissing')}
           </label>
         </div>
@@ -60,9 +58,7 @@ export default function Captcha() {
             checked={type === 'recaptcha'}
             onCheck={setType}
           />
-          <label htmlFor="google-captcha">
-            {t('googleReCaptcha')}
-          </label>
+          <label htmlFor="google-captcha">{t('googleReCaptcha')}</label>
         </div>
         {type === 'recaptcha' && (
           <div className="mailpoet-settings-inputs-row">
@@ -100,9 +96,7 @@ export default function Captcha() {
             checked={type === ''}
             onCheck={setType}
           />
-          <label htmlFor="no-captcha">
-            {t('disable')}
-          </label>
+          <label htmlFor="no-captcha">{t('disable')}</label>
         </div>
       </Inputs>
     </>

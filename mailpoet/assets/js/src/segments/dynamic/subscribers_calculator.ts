@@ -1,11 +1,7 @@
 import MailPoet from 'mailpoet';
 import _ from 'lodash';
 
-import {
-  AnyFormItem,
-  Segment,
-  SegmentConnectTypes,
-} from './types';
+import { AnyFormItem, Segment, SegmentConnectTypes } from './types';
 
 export interface Result {
   count: number;
@@ -42,15 +38,14 @@ function loadCount(formItem: Segment): PromiseLike<Result> {
     action: 'getCount',
     data: formItem,
     timeout: 20000, // 20 seconds
-  })
-    .then((response) => {
-      const { data } = response;
-      previousResult = {
-        count: data.count,
-        errors: undefined,
-      };
-      return previousResult;
-    });
+  }).then((response) => {
+    const { data } = response;
+    previousResult = {
+      count: data.count,
+      errors: undefined,
+    };
+    return previousResult;
+  });
 }
 
 export { loadCount };

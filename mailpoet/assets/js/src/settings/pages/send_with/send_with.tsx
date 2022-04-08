@@ -4,7 +4,5 @@ import OtherSendingMethods from './other/other_sending_methods';
 
 export default function SendWith() {
   const { subPage } = useParams<{ subPage: string }>();
-  return subPage === 'other'
-    ? <OtherSendingMethods />
-    : <SendWithChoice />;
+  return subPage === 'other' ? <OtherSendingMethods /> : <SendWithChoice />;
 }

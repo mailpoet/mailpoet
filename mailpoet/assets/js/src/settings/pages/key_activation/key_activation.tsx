@@ -20,9 +20,9 @@ type KeyState = {
 };
 
 function Messages(
-  state:KeyActivationState,
-  showPendingApprovalNotice:boolean,
-  activationCallback:()=>Promise<void>,
+  state: KeyActivationState,
+  showPendingApprovalNotice: boolean,
+  activationCallback: () => Promise<void>,
 ) {
   if (state.code === 503) {
     return (
@@ -43,16 +43,14 @@ function Messages(
       )}
       {state.congratulatoryMssEmailSentTo && (
         <div className="mailpoet_success_item mailpoet_success">
-          {
-            t('premiumTabCongratulatoryMssEmailSent')
-              .replace('[email_address]', state.congratulatoryMssEmailSentTo)
-          }
+          {t('premiumTabCongratulatoryMssEmailSent').replace(
+            '[email_address]',
+            state.congratulatoryMssEmailSentTo,
+          )}
         </div>
       )}
       {state.premiumStatus !== null && (
-        <PremiumMessages
-          keyMessage={state.premiumMessage}
-        />
+        <PremiumMessages keyMessage={state.premiumMessage} />
       )}
 
       {showPendingApprovalNotice && (
@@ -60,9 +58,7 @@ function Messages(
           <div className="pending_approval_heading">
             {t('premiumTabPendingApprovalHeading')}
           </div>
-          <div>
-            {t('premiumTabPendingApprovalMessage')}
-          </div>
+          <div>{t('premiumTabPendingApprovalMessage')}</div>
         </div>
       )}
 
@@ -92,21 +88,25 @@ export default function KeyActivation() {
   const verifyPremiumKey = useAction('verifyPremiumKey');
   const sendCongratulatoryMssEmail = useAction('sendCongratulatoryMssEmail');
   const [senderAddress, setSenderAddress] = useSetting('sender', 'address');
-  const [unauthorizedAddresses, setUnauthorizedAddresses] = useSetting('authorized_emails_addresses_check');
+  const [unauthorizedAddresses, setUnauthorizedAddresses] = useSetting(
+    'authorized_emails_addresses_check',
+  );
   const [apiKeyState] = useSetting('mta', 'mailpoet_api_key_state', 'data');
   const setAuthorizedAddress = async (address: string) => {
     await setSenderAddress(address);
     await setUnauthorizedAddresses(null);
   };
 
-  const showFromAddressModal = state.fromAddressModalCanBeShown
-    && state.mssStatus === MssStatus.VALID_MSS_ACTIVE
-    && (!senderAddress || unauthorizedAddresses);
+  const showFromAddressModal =
+    state.fromAddressModalCanBeShown &&
+    state.mssStatus === MssStatus.VALID_MSS_ACTIVE &&
+    (!senderAddress || unauthorizedAddresses);
 
-  const showPendingApprovalNotice = state.inProgress === false
-    && state.mssStatus === MssStatus.VALID_MSS_ACTIVE
-    && apiKeyState
-    && (apiKeyState as KeyState).is_approved === false;
+  const showPendingApprovalNotice =
+    state.inProgress === false &&
+    state.mssStatus === MssStatus.VALID_MSS_ACTIVE &&
+    apiKeyState &&
+    (apiKeyState as KeyState).is_approved === false;
 
   const verifyKey = async () => {
     if (!state.key) {
@@ -147,21 +147,20 @@ export default function KeyActivation() {
           id="mailpoet_premium_key"
           name="premium[premium_key]"
           value={state.key || ''}
-          onChange={(event) => setState({
-            mssStatus: null,
-            premiumStatus: null,
-            premiumInstallationStatus: null,
-            key: event.target.value.trim() || null,
-          })}
+          onChange={(event) =>
+            setState({
+              mssStatus: null,
+              premiumStatus: null,
+              premiumInstallationStatus: null,
+              key: event.target.value.trim() || null,
+            })
+          }
         />
         <Button type="button" onClick={verifyKey}>
           {t('premiumTabVerifyButton')}
         </Button>
-        {state.isKeyValid !== null && Messages(
-          state,
-          showPendingApprovalNotice,
-          activationCallback,
-        )}
+        {state.isKeyValid !== null &&
+          Messages(state, showPendingApprovalNotice, activationCallback)}
       </Inputs>
       {showFromAddressModal && (
         <SetFromAddressModal

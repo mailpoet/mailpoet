@@ -3,7 +3,10 @@ import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs, PagesSelect } from 'settings/components';
 
 export function ReEngagementPage(): JSX.Element {
-  const [reEngagementPage, setReEngagementPage] = useSetting('reEngagement', 'page');
+  const [reEngagementPage, setReEngagementPage] = useSetting(
+    'reEngagement',
+    'page',
+  );
 
   return (
     <>

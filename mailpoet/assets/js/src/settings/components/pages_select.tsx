@@ -8,7 +8,12 @@ type Props = {
   automationId?: string;
   linkAutomationId?: string;
   setValue: (x: string) => void;
-  preview: 'manage' | 'unsubscribe' | 'confirm' | 'confirm_unsubscribe' | 're_engagement';
+  preview:
+    | 'manage'
+    | 'unsubscribe'
+    | 'confirm'
+    | 'confirm_unsubscribe'
+    | 're_engagement';
 };
 
 export default function PageSelect(props: Props) {

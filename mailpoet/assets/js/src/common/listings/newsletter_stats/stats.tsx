@@ -13,11 +13,7 @@ type StatsBadgeProps = {
 const stats = {
   opened: {
     badgeRanges: [30, 10, 0],
-    badgeTypes: [
-      'excellent',
-      'good',
-      'average',
-    ],
+    badgeTypes: ['excellent', 'good', 'average'],
     tooltipText: [
       MailPoet.I18n.t('openedStatTooltipExcellent'),
       MailPoet.I18n.t('openedStatTooltipGood'),
@@ -26,11 +22,7 @@ const stats = {
   },
   clicked: {
     badgeRanges: [3, 1, 0],
-    badgeTypes: [
-      'excellent',
-      'good',
-      'average',
-    ],
+    badgeTypes: ['excellent', 'good', 'average'],
     tooltipText: [
       MailPoet.I18n.t('clickedStatTooltipExcellent'),
       MailPoet.I18n.t('clickedStatTooltipGood'),
@@ -92,24 +84,15 @@ export function StatsBadge(props: StatsBadgeProps) {
         {badge.tooltipTitle.toUpperCase()}
       </div>
       <div className="mailpoet-listing-stats-tooltip-content">
-        <Badge
-          type="excellent"
-          name={badges.excellent.name}
-        />
+        <Badge type="excellent" name={badges.excellent.name} />
         {' : '}
         {stat.tooltipText[0]}
         <br />
-        <Badge
-          type="good"
-          name={badges.good.name}
-        />
+        <Badge type="good" name={badges.good.name} />
         {' : '}
         {stat.tooltipText[1]}
         <br />
-        <Badge
-          type="average"
-          name={badges.average.name}
-        />
+        <Badge type="average" name={badges.average.name} />
         {' : '}
         {stat.tooltipText[2]}
       </div>

@@ -42,13 +42,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneFormTrashed')
-      );
+      message = MailPoet.I18n.t('oneFormTrashed');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleFormsTrashed')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleFormsTrashed').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -57,13 +56,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneFormDeleted')
-      );
+      message = MailPoet.I18n.t('oneFormDeleted');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleFormsDeleted')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleFormsDeleted').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -72,20 +70,25 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneFormRestored')
-      );
+      message = MailPoet.I18n.t('oneFormRestored');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleFormsRestored')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleFormsRestored').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
   onNoItemsFound: () => (
     <div className="mailpoet-forms-add-new-row">
       <p>{MailPoet.I18n.t('noItemsFound')}</p>
-      <Button onClick={onAddNewForm} automationId="add_new_form" iconStart={plusIcon}>{MailPoet.I18n.t('new')}</Button>
+      <Button
+        onClick={onAddNewForm}
+        automationId="add_new_form"
+        iconStart={plusIcon}
+      >
+        {MailPoet.I18n.t('new')}
+      </Button>
     </div>
   ),
 };
@@ -127,7 +130,9 @@ const itemActions = [
     label: MailPoet.I18n.t('edit'),
     link: function link(item) {
       return (
-        <a href={`admin.php?page=mailpoet-form-editor&id=${item.id}`}>{MailPoet.I18n.t('edit')}</a>
+        <a href={`admin.php?page=mailpoet-form-editor&id=${item.id}`}>
+          {MailPoet.I18n.t('edit')}
+        </a>
       );
     },
   },
@@ -143,20 +148,24 @@ const itemActions = [
         data: {
           id: item.id,
         },
-      }).done((response) => {
-        const formName = response.data.name ? response.data.name : MailPoet.I18n.t('noName');
-        MailPoet.Notice.success(
-          (MailPoet.I18n.t('formDuplicated')).replace('%1$s', formName)
-        );
-        refresh();
-      }).fail((response) => {
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
-            { scroll: true }
+      })
+        .done((response) => {
+          const formName = response.data.name
+            ? response.data.name
+            : MailPoet.I18n.t('noName');
+          MailPoet.Notice.success(
+            MailPoet.I18n.t('formDuplicated').replace('%1$s', formName),
           );
-        }
-      });
+          refresh();
+        })
+        .fail((response) => {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map((error) => error.message),
+              { scroll: true },
+            );
+          }
+        });
     },
   },
   {
@@ -179,16 +188,18 @@ class FormList extends Component {
         id: Number(e.target.getAttribute('data-id')),
         status: checked ? 'enabled' : 'disabled',
       },
-    }).done((response) => {
-      if (response.data.status === 'enabled') {
-        MailPoet.Notice.success(MailPoet.I18n.t('formActivated'));
-      }
-    }).fail((response) => {
-      MailPoet.Notice.showApiErrorNotice(response);
+    })
+      .done((response) => {
+        if (response.data.status === 'enabled') {
+          MailPoet.Notice.success(MailPoet.I18n.t('formActivated'));
+        }
+      })
+      .fail((response) => {
+        MailPoet.Notice.showApiErrorNotice(response);
 
-      // reset value to previous form's status
-      e.target.checked = !checked;
-    });
+        // reset value to previous form's status
+        e.target.checked = !checked;
+      });
   };
 
   isItemInactive = (form) => form.status === 'disabled';
@@ -215,11 +226,12 @@ class FormList extends Component {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
-      'has-row-actions'
+      'has-row-actions',
     );
 
-    const segments = window.mailpoet_segments
-      .filter((segment) => (jQuery.inArray(segment.id, form.segments) !== -1));
+    const segments = window.mailpoet_segments.filter(
+      (segment) => jQuery.inArray(segment.id, form.segments) !== -1,
+    );
 
     const placement = getFormPlacement(form.settings);
 
@@ -230,25 +242,32 @@ class FormList extends Component {
             className="mailpoet-listing-title"
             href={`admin.php?page=mailpoet-form-editor&id=${form.id}`}
           >
-            { form.name ? form.name : `(${MailPoet.I18n.t('noName')})`}
+            {form.name ? form.name : `(${MailPoet.I18n.t('noName')})`}
           </a>
-          { actions }
+          {actions}
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('segments')}>
           <Tags segments={segments} dimension="large">
-            {form.settings.segments_selected_by === 'user' && <span className="mailpoet-tags-prefix">{MailPoet.I18n.t('userChoice')}</span>}
+            {form.settings.segments_selected_by === 'user' && (
+              <span className="mailpoet-tags-prefix">
+                {MailPoet.I18n.t('userChoice')}
+              </span>
+            )}
           </Tags>
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('type')}>
-          { placement }
+          {placement}
         </td>
         <td className="column" data-colname={MailPoet.I18n.t('status')}>
-          { this.renderStatus(form) }
+          {this.renderStatus(form)}
         </td>
-        <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('updatedAt')}>
-          { MailPoet.Date.short(form.updated_at) }
+        <td
+          className="column-date mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('updatedAt')}
+        >
+          {MailPoet.Date.short(form.updated_at)}
           <br />
-          { MailPoet.Date.time(form.updated_at) }
+          {MailPoet.Date.time(form.updated_at)}
         </td>
       </>
     );

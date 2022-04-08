@@ -8,11 +8,14 @@ type Props = {
   cacheCalculation: string;
 };
 
-export function SubscribersCacheMessage({ cacheCalculation }: Props): JSX.Element {
+export function SubscribersCacheMessage({
+  cacheCalculation,
+}: Props): JSX.Element {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
-  const datetimeDiff = new Date().getTime() - new Date(cacheCalculation).getTime();
-  const minutes = Math.floor((datetimeDiff / 1000) / 60);
+  const datetimeDiff =
+    new Date().getTime() - new Date(cacheCalculation).getTime();
+  const minutes = Math.floor(datetimeDiff / 1000 / 60);
 
   const handleRecalculate = () => {
     setLoading(true);
@@ -20,17 +23,18 @@ export function SubscribersCacheMessage({ cacheCalculation }: Props): JSX.Elemen
       api_version: MailPoet.apiVersion,
       endpoint: 'settings',
       action: 'recalculateSubscribersCountsCache',
-    }).done(() => {
-      window.location.reload();
-    }).fail((response:ErrorResponse) => {
-      setErrors(response.errors.map((error) => error.message));
-      setLoading(false);
-    });
+    })
+      .done(() => {
+        window.location.reload();
+      })
+      .fail((response: ErrorResponse) => {
+        setErrors(response.errors.map((error) => error.message));
+        setLoading(false);
+      });
   };
 
   return (
     <div className="mailpoet-subscribers-cache-notice">
-
       {ReactStringReplace(
         MailPoet.I18n.t('subscribersCountWereCalculatedWithMinutesAgo'),
         /<abbr>(.*?)<\/abbr>/,
@@ -52,7 +56,13 @@ export function SubscribersCacheMessage({ cacheCalculation }: Props): JSX.Elemen
         {MailPoet.I18n.t('recalculateNow')}
       </Button>
       <div className="mailpoet-gap" />
-      {errors.length > 0 && <Notice type="error">{errors.map((error) => <p key={error}>{error}</p>)}</Notice>}
+      {errors.length > 0 && (
+        <Notice type="error">
+          {errors.map((error) => (
+            <p key={error}>{error}</p>
+          ))}
+        </Notice>
+      )}
     </div>
   );
 }

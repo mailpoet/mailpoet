@@ -20,26 +20,25 @@ export default function NoAccessInfo({
   premiumActive,
   hasValidApiKey,
   hasPremiumSupport,
-}: Props) : JSX.Element {
+}: Props): JSX.Element {
   const getBannerMessage: FunctionComponent = () => {
     let message = MailPoet.I18n.t('premiumRequired');
     if (!premiumActive) {
       return (
         <p>
-          {ReactStringReplace(
-            message,
-            /\[link](.*?)\[\/link]/g,
-            (match) => (
-              <a key={match} href={MailPoet.premiumLink}>{match}</a>
-            ),
-          )}
+          {ReactStringReplace(message, /\[link](.*?)\[\/link]/g, (match) => (
+            <a key={match} href={MailPoet.premiumLink}>
+              {match}
+            </a>
+          ))}
         </p>
       );
     }
     // Covers premium with paid plan
     if (hasPremiumSupport) {
       message = MailPoet.I18n.t('planLimitReached');
-    } else { // Covers premium without apikey and premium with free plan api key
+    } else {
+      // Covers premium without apikey and premium with free plan api key
       message = MailPoet.I18n.t('freeLimitReached');
     }
     return (
@@ -47,19 +46,24 @@ export default function NoAccessInfo({
         {ReactStringReplace(
           message,
           /(\[subscribersCount]|\[subscribersLimit])/g,
-          (match) => ((match === '[subscribersCount]') ? subscribersCountTowardsLimit : limitValue),
+          (match) =>
+            match === '[subscribersCount]'
+              ? subscribersCountTowardsLimit
+              : limitValue,
         )}
       </p>
     );
   };
 
-  const getCtaButton: FunctionComponent = () => (
+  const getCtaButton: FunctionComponent = () =>
     premiumActive && limitReached ? (
       <Button
         href={
           hasValidApiKey
             ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl()
-            : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(subscribersCountTowardsLimit + 1)
+            : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
+                subscribersCountTowardsLimit + 1,
+              )
         }
       >
         {MailPoet.I18n.t('premiumBannerCtaUpgrade')}
@@ -75,11 +79,13 @@ export default function NoAccessInfo({
       >
         {MailPoet.I18n.t('premiumBannerCtaFree')}
       </Button>
-    )
-  );
+    );
 
   return (
-    <table className="mailpoet-listing-table" data-automation-id="subscriber-stats-no-access">
+    <table
+      className="mailpoet-listing-table"
+      data-automation-id="subscriber-stats-no-access"
+    >
       <thead>
         <tr>
           <th>{MailPoet.I18n.t('email')}</th>
@@ -93,7 +99,11 @@ export default function NoAccessInfo({
           <td colSpan={4}>
             <div className="mailpoet-subscriber-stats-no-access-content">
               <PremiumRequired
-                title={premiumActive && limitReached ? MailPoet.I18n.t('upgradeRequired') : MailPoet.I18n.t('premiumFeature')}
+                title={
+                  premiumActive && limitReached
+                    ? MailPoet.I18n.t('upgradeRequired')
+                    : MailPoet.I18n.t('premiumFeature')
+                }
                 message={getBannerMessage({})}
                 actionButton={getCtaButton({})}
               />

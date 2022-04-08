@@ -19,10 +19,17 @@ export default function PHPMailFields() {
           isMinWidth
           dimension="small"
         >
-          {Object.entries(hosts).map(([key, h]) => <option key={key} value={key}>{h.name}</option>)}
+          {Object.entries(hosts).map(([key, h]) => (
+            <option key={key} value={key}>
+              {h.name}
+            </option>
+          ))}
         </Select>
       </Inputs>
-      <SendingFrequency recommendedEmails={host.emails} recommendedInterval={host.interval} />
+      <SendingFrequency
+        recommendedEmails={host.emails}
+        recommendedInterval={host.interval}
+      />
     </>
   );
 }

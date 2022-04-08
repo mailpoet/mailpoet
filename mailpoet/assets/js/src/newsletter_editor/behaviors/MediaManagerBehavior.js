@@ -62,9 +62,11 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
     }
 
     MediaManager = window.wp.media.view.MediaFrame.Select.extend({
-
       initialize: function () {
-        window.wp.media.view.MediaFrame.prototype.initialize.apply(this, arguments);
+        window.wp.media.view.MediaFrame.prototype.initialize.apply(
+          this,
+          arguments,
+        );
 
         _.defaults(this.options, {
           multiple: true,
@@ -149,15 +151,26 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
           },
         };
 
-        _.each(handlers, function (regionHandlers, region) {
-          _.each(regionHandlers, function (callback, handler) {
-            this.on(region + ':render:' + handler, this[callback], this);
-          }, this);
-        }, this);
+        _.each(
+          handlers,
+          function (regionHandlers, region) {
+            _.each(
+              regionHandlers,
+              function (callback, handler) {
+                this.on(region + ':render:' + handler, this[callback], this);
+              },
+              this,
+            );
+          },
+          this,
+        );
       },
 
       uploadContent: function () {
-        window.wp.media.view.MediaFrame.Select.prototype.uploadContent.apply(this, arguments);
+        window.wp.media.view.MediaFrame.Select.prototype.uploadContent.apply(
+          this,
+          arguments,
+        );
         this.$el.addClass('hide-toolbar');
       },
 
@@ -206,17 +219,22 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
       selectionStatusToolbar: function (view) {
         var editable = this.state().get('editable');
 
-        view.set('selection', new window.wp.media.view.Selection({
-          controller: this,
-          collection: this.state().get('selection'),
-          priority: -40,
+        view.set(
+          'selection',
+          new window.wp.media.view.Selection({
+            controller: this,
+            collection: this.state().get('selection'),
+            priority: -40,
 
-          // If the selection is editable, pass the callback to
-          // switch the content mode.
-          editable: editable && function () {
-            this.controller.content.mode('edit-selection');
-          },
-        }).render());
+            // If the selection is editable, pass the callback to
+            // switch the content mode.
+            editable:
+              editable &&
+              function () {
+                this.controller.content.mode('edit-selection');
+              },
+          }).render(),
+        );
       },
 
       mainInsertToolbar: function (view) {
@@ -247,7 +265,6 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
           text: 'Add images',
         });
       },
-
     });
 
     theFrame = new MediaManager({
@@ -281,23 +298,28 @@ BL.MediaManagerBehavior = Marionette.Behavior.extend({
           _.keys(sizes),
           function (size) {
             return Math.abs(targetImageWidth - sizes[size].width);
-          }
+          },
         );
         var bestWidth = sizes[_.first(increasingByWidthDifference)].width;
-        var imagesOfBestWidth = _.filter(
-          _.values(sizes),
-          function (size) { return size.width === bestWidth; }
-        );
+        var imagesOfBestWidth = _.filter(_.values(sizes), function (size) {
+          return size.width === bestWidth;
+        });
 
         // Maximize the height if there are multiple images with same width
-        var mainSize = _.max(imagesOfBestWidth, function (size) { return size.height; });
+        var mainSize = _.max(imagesOfBestWidth, function (size) {
+          return size.height;
+        });
 
         if (that.options.onSelect) {
           that.view[that.options.onSelect]({
             height: mainSize.height + 'px',
             width: mainSize.width + 'px',
             src: mainSize.url,
-            alt: (attachment.get('alt') !== '' && attachment.get('alt') !== undefined) ? attachment.get('alt') : attachment.get('title'),
+            alt:
+              attachment.get('alt') !== '' &&
+              attachment.get('alt') !== undefined
+                ? attachment.get('alt')
+                : attachment.get('title'),
           });
         }
       });

@@ -8,10 +8,7 @@ import FontFamilySettings from '../components/font_family_settings';
 const name = 'mailpoet-form/font-selection';
 const title = 'Font Selection';
 
-const supportedBlocks = [
-  'core/paragraph',
-  'core/heading',
-];
+const supportedBlocks = ['core/paragraph', 'core/heading'];
 
 type Attributes = {
   font?: string;
@@ -41,11 +38,7 @@ type Props = {
   };
 };
 
-function Edit({
-  value,
-  onChange,
-  activeAttributes,
-}: Props) : JSX.Element {
+function Edit({ value, onChange, activeAttributes }: Props): JSX.Element {
   const selectedBlock = useSelect(
     (sel) => sel('core/block-editor').getSelectedBlock(),
     [],

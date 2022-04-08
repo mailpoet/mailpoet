@@ -1,8 +1,5 @@
 import PropTypes from 'prop-types';
-import {
-  Placeholder,
-  Spinner,
-} from '@wordpress/components';
+import { Placeholder, Spinner } from '@wordpress/components';
 import { BlockIcon } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 import MailPoet from 'mailpoet';
@@ -15,12 +12,12 @@ function AddCustomField({ clientId }) {
 
   const dateSettings = useSelect(
     (sel) => sel('mailpoet-form-editor').getDateSettingsData(),
-    []
+    [],
   );
 
   const isCreating = useSelect(
     (sel) => sel('mailpoet-form-editor').getIsCustomFieldCreating(),
-    []
+    [],
   );
 
   const onSubmit = (formData) => {
@@ -38,7 +35,9 @@ function AddCustomField({ clientId }) {
           <p>{MailPoet.I18n.t('blockAddCustomFieldDescription')}</p>
           <AddCustomFieldForm onSubmit={onSubmit} dateSettings={dateSettings} />
         </>
-      ) : (<Spinner />)}
+      ) : (
+        <Spinner />
+      )}
     </Placeholder>
   );
 }

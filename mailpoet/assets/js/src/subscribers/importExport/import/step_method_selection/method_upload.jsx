@@ -4,14 +4,10 @@ import ReactStringReplace from 'react-string-replace';
 import Input from 'common/form/input/input';
 import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
 
-const kbLink = 'https://kb.mailpoet.com/article/126-importing-subscribers-with-csv-files';
+const kbLink =
+  'https://kb.mailpoet.com/article/126-importing-subscribers-with-csv-files';
 
-function MethodUpload({
-  onValueChange,
-  canFinish,
-  onFinish,
-  onPrevious,
-}) {
+function MethodUpload({ onValueChange, canFinish, onFinish, onPrevious }) {
   const onChange = (e) => {
     const ext = e.target.value.match(/[^.]+$/);
     MailPoet.Notice.hide();
@@ -26,9 +22,7 @@ function MethodUpload({
   return (
     <>
       <div className="mailpoet-settings-label">
-        <label htmlFor="file_local">
-          {MailPoet.I18n.t('methodUpload')}
-        </label>
+        <label htmlFor="file_local">{MailPoet.I18n.t('methodUpload')}</label>
         <p className="description">
           {ReactStringReplace(
             MailPoet.I18n.t('pasteDescription'),
@@ -42,9 +36,9 @@ function MethodUpload({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                { match }
+                {match}
               </a>
-            )
+            ),
           )}
         </p>
       </div>

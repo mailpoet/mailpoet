@@ -32,7 +32,7 @@ const getMapper = partial(
   formBodyToBlocksFactory,
   fontSizeDefinitions,
   colorDefinitions,
-  gradientDefinitions
+  gradientDefinitions,
 );
 const formBodyToBlocks = getMapper([]);
 
@@ -97,14 +97,15 @@ describe('Form Body To Blocks', () => {
       updated_at: '2019-12-10T15:05:06+00:00',
     };
     const map = getMapper([customFieldText, customFieldTextarea]);
-    const [email, firstName, lastName, customText, customTextArea, submit] = map([
-      { ...emailInput, position: '1' },
-      { ...firstNameInput, position: '2' },
-      { ...lastNameInput, position: '3' },
-      { ...customTextInput, position: '4' },
-      { ...customTextareaInput, position: '5', id: 2 },
-      { ...submitInput, position: '6' },
-    ]);
+    const [email, firstName, lastName, customText, customTextArea, submit] =
+      map([
+        { ...emailInput, position: '1' },
+        { ...firstNameInput, position: '2' },
+        { ...lastNameInput, position: '3' },
+        { ...customTextInput, position: '4' },
+        { ...customTextareaInput, position: '5', id: 2 },
+        { ...submitInput, position: '6' },
+      ]);
     const defaultStyles = {
       fullWidth: false,
       inheritFromTheme: true,
@@ -359,10 +360,7 @@ describe('Form Body To Blocks', () => {
         required: '1',
         label: 'Options 123',
         hide_label: '',
-        values: [
-          { value: 'option 1' },
-          { value: 'option 2' },
-        ],
+        values: [{ value: 'option 1' }, { value: 'option 2' }],
       },
       type: 'radio',
       updated_at: '2019-12-10T15:05:06+00:00',
@@ -552,18 +550,22 @@ describe('Form Body To Blocks', () => {
   it('Should map columns gradient', () => {
     const nested = { ...nestedColumns };
     nested.params = {
-      gradient: 'linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+      gradient:
+        'linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
     };
     const [block] = formBodyToBlocks([nested]);
     expect(block.attributes.gradient).to.be.equal('black-white');
     expect(block.attributes.style.color.gradient).to.be.undefined;
 
     nested.params = {
-      gradient: 'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+      gradient:
+        'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
     };
     const [block2] = formBodyToBlocks([nested]);
     expect(block2.attributes.gradient).to.be.undefined;
-    expect(block2.attributes.style.color.gradient).to.be.equal('linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)');
+    expect(block2.attributes.style.color.gradient).to.be.equal(
+      'linear-gradient(95deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%)',
+    );
   });
 
   it('Should map class name', () => {
@@ -595,7 +597,9 @@ describe('Form Body To Blocks', () => {
     customText.params.class_name = 'custom-class-3 custom-class-4';
     const map = getMapper([customField]);
     const [mappedCustomText] = map([customText]);
-    expect(mappedCustomText.attributes.className).to.be.equal('custom-class-3 custom-class-4');
+    expect(mappedCustomText.attributes.className).to.be.equal(
+      'custom-class-3 custom-class-4',
+    );
   });
 
   it('It should map heading', () => {
@@ -615,7 +619,10 @@ describe('Form Body To Blocks', () => {
   });
 
   it('It should map heading custom font size and line height', () => {
-    const heading = { ...headingInput, params: { font_size: '34', line_height: '1.5' } };
+    const heading = {
+      ...headingInput,
+      params: { font_size: '34', line_height: '1.5' },
+    };
 
     const [block] = formBodyToBlocks([heading]);
     expect(block.attributes.fontSize).to.be.undefined;
@@ -642,7 +649,10 @@ describe('Form Body To Blocks', () => {
   });
 
   it('It should map paragraph custom font size and line height', () => {
-    const heading = { ...paragraphInput, params: { font_size: '34', line_height: '1.5' } };
+    const heading = {
+      ...paragraphInput,
+      params: { font_size: '34', line_height: '1.5' },
+    };
 
     const [block] = formBodyToBlocks([heading]);
     expect(block.attributes.fontSize).to.be.undefined;

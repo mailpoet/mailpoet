@@ -1,4 +1,4 @@
-const findBlock = (blocks, name) => (
+const findBlock = (blocks, name) =>
   blocks.reduce((result, block) => {
     if (result) {
       return result;
@@ -10,7 +10,6 @@ const findBlock = (blocks, name) => (
       return findBlock(block.innerBlocks, name);
     }
     return null;
-  }, null)
-);
+  }, null);
 
 export default findBlock;

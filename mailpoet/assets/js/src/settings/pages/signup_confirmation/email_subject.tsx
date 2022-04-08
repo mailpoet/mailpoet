@@ -10,10 +10,7 @@ export default function EmailSubject() {
   if (!enabled) return null;
   return (
     <>
-      <Label
-        title={t('emailSubject')}
-        htmlFor="signup_confirmation-subject"
-      />
+      <Label title={t('emailSubject')} htmlFor="signup_confirmation-subject" />
       <Inputs>
         <Input
           dimension="small"

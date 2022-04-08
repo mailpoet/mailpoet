@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   ToggleControl,
-  SelectControl, TextControl,
+  SelectControl,
+  TextControl,
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
 import MailPoet from 'mailpoet';
@@ -27,19 +28,29 @@ function CustomFieldSettings({
   const [localDateType, setLocalDateType] = useState(dateType);
   const [localDateFormat, setLocalDateFormat] = useState(dateFormat);
 
-  const localData = useMemo(() => ({
-    label: localLabel,
-    mandatory: localMandatory,
-    dateType: localDateType,
-    dateFormat: localDateFormat,
-    defaultToday: localDefaultToday,
-  }), [localLabel, localMandatory, localDateType, localDateFormat, localDefaultToday]);
+  const localData = useMemo(
+    () => ({
+      label: localLabel,
+      mandatory: localMandatory,
+      dateType: localDateType,
+      dateFormat: localDateFormat,
+      defaultToday: localDefaultToday,
+    }),
+    [
+      localLabel,
+      localMandatory,
+      localDateType,
+      localDateFormat,
+      localDefaultToday,
+    ],
+  );
 
-  const hasUnsavedChanges = localMandatory !== mandatory
-    || localDefaultToday !== defaultToday
-    || localDateType !== dateType
-    || localDateFormat !== dateFormat
-    || localLabel !== label;
+  const hasUnsavedChanges =
+    localMandatory !== mandatory ||
+    localDefaultToday !== defaultToday ||
+    localDateType !== dateType ||
+    localDateFormat !== dateFormat ||
+    localLabel !== label;
 
   useEffect(() => {
     if (onChange) {
@@ -99,13 +110,15 @@ function CustomFieldSettings({
       {onSave ? (
         <Button
           isPrimary
-          onClick={() => onSave({
-            mandatory: localMandatory,
-            dateType: localDateType,
-            dateFormat: localDateFormat,
-            defaultToday: localDefaultToday,
-            label: localLabel,
-          })}
+          onClick={() =>
+            onSave({
+              mandatory: localMandatory,
+              dateType: localDateType,
+              dateFormat: localDateFormat,
+              defaultToday: localDefaultToday,
+              label: localLabel,
+            })
+          }
           isBusy={isSaving}
           disabled={isSaving || !hasUnsavedChanges}
           className="button-on-top"
@@ -133,10 +146,12 @@ CustomFieldSettings.propTypes = {
   onSave: PropTypes.func,
   isSaving: PropTypes.bool,
   dateSettings: PropTypes.shape({
-    dateTypes: PropTypes.arrayOf(PropTypes.shape({
-      label: PropTypes.string,
-      value: PropTypes.string,
-    })),
+    dateTypes: PropTypes.arrayOf(
+      PropTypes.shape({
+        label: PropTypes.string,
+        value: PropTypes.string,
+      }),
+    ),
     dateFormats: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
     months: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,

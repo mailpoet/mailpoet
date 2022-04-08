@@ -1,9 +1,8 @@
 import MailPoet from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 
-export function ConsentDescription() : JSX.Element {
+export function ConsentDescription(): JSX.Element {
   return (
-
     <p className="description">
       {ReactStringReplace(
         MailPoet.I18n.t('consentSubscribed'),

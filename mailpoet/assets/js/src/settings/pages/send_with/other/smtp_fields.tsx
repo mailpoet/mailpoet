@@ -12,27 +12,61 @@ export default function SmtpFields() {
   const [login, setLogin] = useSetting('mta', 'login');
   const [password, setPassword] = useSetting('mta', 'password');
   const [encryption, setEncryption] = useSetting('mta', 'encryption');
-  const [authentication, setAuthentication] = useSetting('mta', 'authentication');
+  const [authentication, setAuthentication] = useSetting(
+    'mta',
+    'authentication',
+  );
   return (
     <>
       <SendingFrequency recommendedEmails={100} recommendedInterval={5} />
-      <Label title={t('smtpHost')} description={t('smtpHostExample')} htmlFor="mailpoet_smtp_host" />
+      <Label
+        title={t('smtpHost')}
+        description={t('smtpHostExample')}
+        htmlFor="mailpoet_smtp_host"
+      />
       <Inputs>
-        <Input dimension="small" type="text" id="mailpoet_smtp_host" value={host} onChange={onChange(setHost)} />
+        <Input
+          dimension="small"
+          type="text"
+          id="mailpoet_smtp_host"
+          value={host}
+          onChange={onChange(setHost)}
+        />
       </Inputs>
       <Label title={t('smtpPort')} htmlFor="mailpoet_smtp_port" />
       <Inputs>
-        <Input dimension="small" type="text" id="mailpoet_smtp_port" value={port} onChange={onChange(setPort)} />
+        <Input
+          dimension="small"
+          type="text"
+          id="mailpoet_smtp_port"
+          value={port}
+          onChange={onChange(setPort)}
+        />
       </Inputs>
       <Label title={t('login')} htmlFor="mailpoet_smtp_login" />
       <Inputs>
-        <Input dimension="small" type="text" id="mailpoet_smtp_login" value={login} onChange={onChange(setLogin)} />
+        <Input
+          dimension="small"
+          type="text"
+          id="mailpoet_smtp_login"
+          value={login}
+          onChange={onChange(setLogin)}
+        />
       </Inputs>
       <Label title={t('password')} htmlFor="mailpoet_smtp_password" />
       <Inputs>
-        <Input dimension="small" type="password" id="mailpoet_smtp_password" value={password} onChange={onChange(setPassword)} />
+        <Input
+          dimension="small"
+          type="password"
+          id="mailpoet_smtp_password"
+          value={password}
+          onChange={onChange(setPassword)}
+        />
       </Inputs>
-      <Label title={t('secureConnectioon')} htmlFor="mailpoet_smtp_encryption" />
+      <Label
+        title={t('secureConnectioon')}
+        htmlFor="mailpoet_smtp_encryption"
+      />
       <Inputs>
         <Select
           id="mailpoet_smtp_encryption"
@@ -46,12 +80,23 @@ export default function SmtpFields() {
           <option value="tls">TLS</option>
         </Select>
       </Inputs>
-      <Label title={t('authentication')} description={t('authenticationDescription')} htmlFor="mailpoet_smtp_authentication" />
+      <Label
+        title={t('authentication')}
+        description={t('authenticationDescription')}
+        htmlFor="mailpoet_smtp_authentication"
+      />
       <Inputs>
-        <Radio value="1" checked={authentication === '1'} onCheck={setAuthentication} />
-        {t('yes')}
-        {' '}
-        <Radio value="-1" checked={authentication === '-1'} onCheck={setAuthentication} />
+        <Radio
+          value="1"
+          checked={authentication === '1'}
+          onCheck={setAuthentication}
+        />
+        {t('yes')}{' '}
+        <Radio
+          value="-1"
+          checked={authentication === '-1'}
+          onCheck={setAuthentication}
+        />
         {t('no')}
       </Inputs>
     </>

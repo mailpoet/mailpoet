@@ -20,7 +20,9 @@ let fields = [
         type: 'text',
         validation: {
           'data-parsley-required': true,
-          'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError'),
+          'data-parsley-required-message': MailPoet.I18n.t(
+            'emptySubjectLineError',
+          ),
           maxLength: 250,
         },
       },
@@ -29,7 +31,9 @@ let fields = [
         customLabel: MailPoet.I18n.t('preheaderLabel'),
         className: 'mailpoet-form-field-preheader',
         placeholder: MailPoet.I18n.t('preheaderLine'),
-        tooltip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t('preheaderLineTip2')}`,
+        tooltip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t(
+          'preheaderLineTip2',
+        )}`,
         type: 'textarea',
         validation: {
           maxLength: 250,
@@ -64,11 +68,15 @@ let fields = [
     },
     transformChangedValue: function transformChangedValue(segmentIds) {
       const allSegments = this.getItems();
-      return _.map(segmentIds, (id) => _.find(allSegments, (segment) => segment.id === id));
+      return _.map(segmentIds, (id) =>
+        _.find(allSegments, (segment) => segment.id === id),
+      );
     },
     validation: {
       'data-parsley-required': true,
-      'data-parsley-required-message': MailPoet.I18n.t('noSegmentsSelectedError'),
+      'data-parsley-required-message': MailPoet.I18n.t(
+        'noSegmentsSelectedError',
+      ),
     },
   },
   {

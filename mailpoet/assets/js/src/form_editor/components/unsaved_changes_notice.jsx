@@ -5,7 +5,7 @@ import { useSelect } from '@wordpress/data';
 function UnsavedChangesNotice() {
   const hasUnsavedChanges = useSelect(
     (sel) => sel('mailpoet-form-editor').hasUnsavedChanges(),
-    []
+    [],
   );
 
   function onUnload(event) {

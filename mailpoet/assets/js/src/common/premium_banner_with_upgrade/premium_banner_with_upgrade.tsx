@@ -31,25 +31,27 @@ const getBannerMessage = (translationKey: string) => {
       {ReactStringReplace(
         message,
         /(\[subscribersCount]|\[subscribersLimit])/g,
-        (match) => ((match === '[subscribersCount]') ? subscribersCount : subscribersLimit),
+        (match) =>
+          match === '[subscribersCount]' ? subscribersCount : subscribersLimit,
       )}
     </p>
   );
 };
 
-const getCtaButton = (translationKey: string, link: string, target = '_blank') => (
-  <Button
-    href={link}
-    target={target}
-    rel="noopener noreferrer"
-  >
+const getCtaButton = (
+  translationKey: string,
+  link: string,
+  target = '_blank',
+) => (
+  <Button href={link} target={target} rel="noopener noreferrer">
     {MailPoet.I18n.t(translationKey)}
   </Button>
 );
 
-function PremiumBannerWithUpgrade(
-  { message, actionButton }: Props,
-) : JSX.Element {
+function PremiumBannerWithUpgrade({
+  message,
+  actionButton,
+}: Props): JSX.Element {
   let bannerMessage: ReactNode;
   let ctaButton: ReactNode;
 
@@ -57,14 +59,25 @@ function PremiumBannerWithUpgrade(
     bannerMessage = getBannerMessage('premiumFeatureDescription');
 
     ctaButton = isPremiumPluginInstalled
-      ? getCtaButton('premiumFeatureButtonActivatePremium', premiumPluginActivationUrl, '_self')
-      : getCtaButton('premiumFeatureButtonDownloadPremium', premiumPluginDownloadUrl);
+      ? getCtaButton(
+          'premiumFeatureButtonActivatePremium',
+          premiumPluginActivationUrl,
+          '_self',
+        )
+      : getCtaButton(
+          'premiumFeatureButtonDownloadPremium',
+          premiumPluginDownloadUrl,
+        );
   } else if (subscribersLimitReached) {
-    bannerMessage = getBannerMessage('premiumFeatureDescriptionSubscribersLimitReached');
+    bannerMessage = getBannerMessage(
+      'premiumFeatureDescriptionSubscribersLimitReached',
+    );
 
     const link = anyValidKey
       ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl(pluginPartialKey)
-      : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(+subscribersCount + 1);
+      : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
+          +subscribersCount + 1,
+        );
 
     ctaButton = getCtaButton('premiumFeatureButtonUpgradePlan', link);
   } else {

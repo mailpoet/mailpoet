@@ -15,7 +15,7 @@ describe('Image', function () {
       global.stubConfig(EditorApplication, {
         blockDefaults: {},
       });
-      model = new (ImageBlock.ImageBlockModel)();
+      model = new ImageBlock.ImageBlockModel();
       sandbox = sinon.createSandbox();
     });
     afterEach(function () {
@@ -51,7 +51,9 @@ describe('Image', function () {
     });
 
     it('has alignment', function () {
-      expect(model.get('styles.block.textAlign')).to.match(/^(left|center|right)$/);
+      expect(model.get('styles.block.textAlign')).to.match(
+        /^(left|center|right)$/,
+      );
     });
 
     it('changes attributes with set', function () {
@@ -96,10 +98,14 @@ describe('Image', function () {
           },
         },
       });
-      innerModel = new (ImageBlock.ImageBlockModel)();
+      innerModel = new ImageBlock.ImageBlockModel();
 
-      expect(innerModel.get('link')).to.equal('http://example.org/customConfigPage');
-      expect(innerModel.get('src')).to.equal('http://example.org/someCustomConfigImage.png');
+      expect(innerModel.get('link')).to.equal(
+        'http://example.org/customConfigPage',
+      );
+      expect(innerModel.get('src')).to.equal(
+        'http://example.org/someCustomConfigImage.png',
+      );
       expect(innerModel.get('alt')).to.equal('Custom config alt');
       expect(innerModel.get('fullWidth')).to.equal(false);
       expect(innerModel.get('width')).to.equal('1234px');
@@ -122,16 +128,19 @@ describe('Image', function () {
     it('renders', function () {
       var view;
       var model;
-      model = new (ImageBlock.ImageBlockModel)();
-      view = new (ImageBlock.ImageBlockView)({ model: model });
+      model = new ImageBlock.ImageBlockModel();
+      view = new ImageBlock.ImageBlockView({ model: model });
       expect(view.render).to.not.throw();
       expect(view.$('.mailpoet_content')).to.have.length(1);
     });
 
     describe('render', function () {
       it('sets sizes to model from rendered image when they are null', function () {
-        const model = new (ImageBlock.ImageBlockModel)({ width: null, height: null });
-        const view = new (ImageBlock.ImageBlockView)({ model: model });
+        const model = new ImageBlock.ImageBlockModel({
+          width: null,
+          height: null,
+        });
+        const view = new ImageBlock.ImageBlockView({ model: model });
         view.render();
         view.$('.mailpoet_content img').get(0).width = 100;
         view.$('.mailpoet_content img').get(0).height = 200;
@@ -141,8 +150,11 @@ describe('Image', function () {
       });
 
       it('sets sizes to model from rendered image when they are set to auto', function () {
-        const model = new (ImageBlock.ImageBlockModel)({ width: 'auto', height: 'auto' });
-        const view = new (ImageBlock.ImageBlockView)({ model: model });
+        const model = new ImageBlock.ImageBlockModel({
+          width: 'auto',
+          height: 'auto',
+        });
+        const view = new ImageBlock.ImageBlockView({ model: model });
         view.render();
         view.$('.mailpoet_content img').get(0).width = 100;
         view.$('.mailpoet_content img').get(0).height = 200;
@@ -152,8 +164,11 @@ describe('Image', function () {
       });
 
       it('keeps sizes when they are already set', function () {
-        const model = new (ImageBlock.ImageBlockModel)({ width: 300, height: 400 });
-        const view = new (ImageBlock.ImageBlockView)({ model: model });
+        const model = new ImageBlock.ImageBlockModel({
+          width: 300,
+          height: 400,
+        });
+        const view = new ImageBlock.ImageBlockView({ model: model });
         view.render();
         view.$('.mailpoet_content img').get(0).width = 100;
         view.$('.mailpoet_content img').get(0).height = 200;
@@ -170,24 +185,32 @@ describe('Image', function () {
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubAvailableStyles(EditorApplication);
-        model = new (ImageBlock.ImageBlockModel)({
+        model = new ImageBlock.ImageBlockModel({
           link: 'http://example.org/somepath',
           src: 'http://example.org/someimage.png',
           alt: 'some alt',
         });
-        view = new (ImageBlock.ImageBlockView)({ model: model });
+        view = new ImageBlock.ImageBlockView({ model: model });
         view.render();
       });
 
       it('displays the image', function () {
-        expect(view.$('.mailpoet_content a').attr('href')).to.equal('http://example.org/somepath');
-        expect(view.$('.mailpoet_content img').attr('src')).to.equal('http://example.org/someimage.png');
-        expect(view.$('.mailpoet_content img').attr('alt')).to.equal('some alt');
+        expect(view.$('.mailpoet_content a').attr('href')).to.equal(
+          'http://example.org/somepath',
+        );
+        expect(view.$('.mailpoet_content img').attr('src')).to.equal(
+          'http://example.org/someimage.png',
+        );
+        expect(view.$('.mailpoet_content img').attr('alt')).to.equal(
+          'some alt',
+        );
       });
 
       it('rerenders if attribute changes', function () {
         var newValue = 'http://example.org/someNEWimage.png';
-        expect(view.$('.mailpoet_content img').attr('src')).to.not.equal(newValue);
+        expect(view.$('.mailpoet_content img').attr('src')).to.not.equal(
+          newValue,
+        );
         model.set('src', newValue);
         expect(view.$('.mailpoet_content img').attr('src')).to.equal(newValue);
       });
@@ -215,8 +238,8 @@ describe('Image', function () {
         blockDefaults: {},
       });
       global.stubImage(newWidth, newHeight);
-      model = new (ImageBlock.ImageBlockModel)();
-      view = new (ImageBlock.ImageBlockSettingsView)({ model: model });
+      model = new ImageBlock.ImageBlockModel();
+      view = new ImageBlock.ImageBlockSettingsView({ model: model });
     });
 
     it('renders', function () {
@@ -251,12 +274,19 @@ describe('Image', function () {
       });
 
       it('updates the model when padding changes', function () {
-        view.$('.mailpoet_field_image_full_width').prop('checked', false).trigger('change');
+        view
+          .$('.mailpoet_field_image_full_width')
+          .prop('checked', false)
+          .trigger('change');
         expect(model.get('fullWidth')).to.equal(false);
       });
 
       it('updates the model when alignment changes', function () {
-        view.$('.mailpoet_field_image_alignment').first().prop('checked', true).trigger('change');
+        view
+          .$('.mailpoet_field_image_alignment')
+          .first()
+          .prop('checked', true)
+          .trigger('change');
         expect(model.get('styles.block.textAlign')).to.equal('left');
       });
 
@@ -265,7 +295,7 @@ describe('Image', function () {
         global.MailPoet.Modal.cancel = mock;
         view.$('.mailpoet_done_editing').trigger('click');
         mock.verify();
-        delete (global.MailPoet.Modal.cancel);
+        delete global.MailPoet.Modal.cancel;
       });
     });
   });

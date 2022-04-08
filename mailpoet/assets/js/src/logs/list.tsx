@@ -17,7 +17,11 @@ type LogData = {
 
 export type Logs = LogData[];
 
-function isCtrl(event: { ctrlKey ?:boolean, metaKey ?:boolean, altKey ?:boolean }): boolean {
+function isCtrl(event: {
+  ctrlKey?: boolean;
+  metaKey?: boolean;
+  altKey?: boolean;
+}): boolean {
   return (event.ctrlKey || event.metaKey) && !event.altKey; // shiftKey allowed
 }
 
@@ -26,9 +30,9 @@ type MessageProps = {
   editing: boolean;
 };
 
-function Message({ message, editing }: MessageProps):JSX.Element {
+function Message({ message, editing }: MessageProps): JSX.Element {
   if (!editing) {
-    return (<>{`${message.substr(0, 150)}…`}</>);
+    return <>{`${message.substr(0, 150)}…`}</>;
   }
   return (
     <textarea value={message} className="mailpoet-logs-full-message" readOnly />
@@ -39,10 +43,14 @@ type LogProps = {
   log: LogData;
 };
 
-function Log({ log }: LogProps) : JSX.Element {
+function Log({ log }: LogProps): JSX.Element {
   const [editing, setEditing] = useState(false);
 
-  function messageClick(event: { ctrlKey ?:boolean, metaKey ?:boolean, altKey ?:boolean }): void {
+  function messageClick(event: {
+    ctrlKey?: boolean;
+    metaKey?: boolean;
+    altKey?: boolean;
+  }): void {
     if (!isCtrl(event)) return;
     if (editing) return;
     setEditing(true);
@@ -85,24 +93,26 @@ export function List({
   originalSearch,
   originalOffset,
   originalLimit,
-}: ListProps) : JSX.Element {
+}: ListProps): JSX.Element {
   const [from, setFrom] = useState(originalFrom ?? undefined);
   const [to, setTo] = useState(originalTo ?? undefined);
   const [offset, setOffset] = useState(originalOffset ?? '');
   const [limit, setLimit] = useState(originalLimit ?? '');
   const [search, setSearch] = useState(originalSearch || '');
 
-  const dateChanged = curry((setter:(value:string) => void, value: string): void => {
-    if (value === null) {
-      setter(undefined);
-      return;
-    }
-    // Swap display format to storage format
-    const formatting = {
-      format: 'Y-m-d',
-    };
-    setter(MailPoet.Date.format(value, formatting));
-  });
+  const dateChanged = curry(
+    (setter: (value: string) => void, value: string): void => {
+      if (value === null) {
+        setter(undefined);
+        return;
+      }
+      // Swap display format to storage format
+      const formatting = {
+        format: 'Y-m-d',
+      };
+      setter(MailPoet.Date.format(value, formatting));
+    },
+  );
 
   const filterClick = useCallback((): void => {
     const data: FilterType = {};
@@ -202,7 +212,9 @@ export function List({
           </tr>
         </thead>
         <tbody>
-          {logs.map((log) => <Log log={log} key={`log-${log.id}`} />)}
+          {logs.map((log) => (
+            <Log log={log} key={`log-${log.id}`} />
+          ))}
         </tbody>
       </table>
     </div>

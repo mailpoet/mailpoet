@@ -22,9 +22,7 @@ class TemplateBox extends Component {
   }
 
   onDelete() {
-    const {
-      id, name, beforeDelete, afterDelete,
-    } = this.props;
+    const { id, name, beforeDelete, afterDelete } = this.props;
     const onConfirm = () => {
       beforeDelete();
       MailPoet.Ajax.post({
@@ -34,17 +32,21 @@ class TemplateBox extends Component {
         data: {
           id,
         },
-      }).done(() => {
-        afterDelete(true, id);
-      }).fail((response) => {
-        if (response.errors.length > 0) {
-          this.context.notices.error(
-            response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-            { scroll: true }
-          );
-        }
-        afterDelete(false);
-      });
+      })
+        .done(() => {
+          afterDelete(true, id);
+        })
+        .fail((response) => {
+          if (response.errors.length > 0) {
+            this.context.notices.error(
+              response.errors.map((error) => (
+                <p key={error.message}>{error.message}</p>
+              )),
+              { scroll: true },
+            );
+          }
+          afterDelete(false);
+        });
     };
     confirmAlert({
       message: MailPoet.I18n.t('confirmTemplateDeletion').replace('%1$s', name),
@@ -61,9 +63,7 @@ class TemplateBox extends Component {
   }
 
   onSelect() {
-    const {
-      newsletterId, name, beforeSelect, afterSelect,
-    } = this.props;
+    const { newsletterId, name, beforeSelect, afterSelect } = this.props;
 
     beforeSelect();
 
@@ -79,23 +79,25 @@ class TemplateBox extends Component {
         id: newsletterId,
         template_id: this.props.id,
       },
-    }).done((response) => {
-      afterSelect(true, response.data.id);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.context.notices.error(
-          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-          { scroll: true }
-        );
-      }
-      afterSelect(false);
-    });
+    })
+      .done((response) => {
+        afterSelect(true, response.data.id);
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          this.context.notices.error(
+            response.errors.map((error) => (
+              <p key={error.message}>{error.message}</p>
+            )),
+            { scroll: true },
+          );
+        }
+        afterSelect(false);
+      });
   }
 
   render() {
-    const {
-      index, name, thumbnail, readonly,
-    } = this.props;
+    const { index, name, thumbnail, readonly } = this.props;
 
     let preview = '';
     if (typeof thumbnail === 'string' && thumbnail.length > 0) {
@@ -109,7 +111,15 @@ class TemplateBox extends Component {
           }}
         >
           <div className="mailpoet-template-thumbnail">
-            {thumbnail ? (<img src={thumbnail} alt={MailPoet.I18n.t('templatePreview')} loading="lazy" />) : ''}
+            {thumbnail ? (
+              <img
+                src={thumbnail}
+                alt={MailPoet.I18n.t('templatePreview')}
+                loading="lazy"
+              />
+            ) : (
+              ''
+            )}
           </div>
           <div className="mailpoet-template-preview-overlay">
             <Button>{MailPoet.I18n.t('zoom')}</Button>
@@ -126,7 +136,7 @@ class TemplateBox extends Component {
         automationId={`select_template_${index}`}
         className="mailpoet-template-two-lines"
       >
-        { preview }
+        {preview}
       </TemplateBoxWrap>
     );
   }

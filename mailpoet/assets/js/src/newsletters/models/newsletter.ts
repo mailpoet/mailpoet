@@ -28,8 +28,8 @@ export type NewsLetter = {
       link: CSSStyleDeclaration;
       text: CSSStyleDeclaration;
       wrapper: CSSStyleDeclaration;
-    }
-  }
+    };
+  };
   created_at: string;
   deleted_at: null | string;
   ga_campaign: string;
@@ -44,8 +44,8 @@ export type NewsLetter = {
   preheader: string;
   queue: boolean;
   reply_to_address: string;
-  reply_to_name: string
-  segments: Array<unknown>
+  reply_to_name: string;
+  segments: Array<unknown>;
   sender_address: string;
   sender_name: string;
   sent_at: null | string;

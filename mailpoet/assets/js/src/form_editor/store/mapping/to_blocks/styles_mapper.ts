@@ -60,7 +60,10 @@ export const mapInputBlockStyles = (styles: InputBlockStylesServerData) => {
   return mappedStyles;
 };
 
-export const mapColorSlug = (colorDefinitions: ColorDefinition[], colorValue) => {
+export const mapColorSlug = (
+  colorDefinitions: ColorDefinition[],
+  colorValue,
+) => {
   const result = colorDefinitions.find((color) => color.color === colorValue);
   return result ? result.slug : undefined;
 };
@@ -72,7 +75,7 @@ export const mapGradientSlug = (definitions: GradientDefinition[], value) => {
 
 export const mapFontSizeSlug = (
   fontSizeDefinitions: FontSizeDefinition[],
-  fontSizeValue:string,
+  fontSizeValue: string,
 ) => {
   let value = 0;
   if (fontSizeValue) {
@@ -81,6 +84,8 @@ export const mapFontSizeSlug = (
       value = 2;
     }
   }
-  const result = fontSizeDefinitions.find((fontSize) => fontSize.size === value);
+  const result = fontSizeDefinitions.find(
+    (fontSize) => fontSize.size === value,
+  );
   return result ? result.slug : undefined;
 };

@@ -5,12 +5,9 @@ import { debounce } from 'lodash';
 import { isFormValid } from './validator';
 import { loadCount } from './subscribers_calculator';
 
-import {
-  Segment,
-  SubscriberCount,
-} from './types';
+import { Segment, SubscriberCount } from './types';
 
-function SubscribersCounter() : JSX.Element {
+function SubscribersCounter(): JSX.Element {
   const segment: Segment = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getSegment(),
     [],
@@ -21,7 +18,9 @@ function SubscribersCounter() : JSX.Element {
     [],
   );
 
-  const { updateSubscriberCount } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSubscriberCount } = useDispatch(
+    'mailpoet-dynamic-segments-form',
+  );
 
   const serializedSegment = JSON.stringify(segment);
   const latestRequestIdRef = useRef(1);
@@ -41,32 +40,35 @@ function SubscribersCounter() : JSX.Element {
     const requestId = latestRequestIdRef.current;
     isRequestInFlight.current = true;
 
-    loadCount(loadItem).then((response) => {
-      isRequestInFlight.current = false;
-      if (deferredRequestRef.current) {
-        load(deferredRequestRef.current);
-        return;
-      }
-      if (requestId !== latestRequestIdRef.current) {
-        // Don't do anything with the response because a newer request has been initiated
-        return;
-      }
-      const finished = {} as SubscriberCount;
-      finished.loading = false;
-      if (response) {
-        finished.count = response.count;
-        finished.errors = response.errors;
-      }
-      updateSubscriberCount(finished);
-    }, (errorResponse) => {
-      isRequestInFlight.current = false;
-      const finished = {} as SubscriberCount;
-      const errors = errorResponse.errors.map((error) => error.message);
-      finished.loading = false;
-      finished.count = undefined;
-      finished.errors = errors;
-      updateSubscriberCount(finished);
-    });
+    loadCount(loadItem).then(
+      (response) => {
+        isRequestInFlight.current = false;
+        if (deferredRequestRef.current) {
+          load(deferredRequestRef.current);
+          return;
+        }
+        if (requestId !== latestRequestIdRef.current) {
+          // Don't do anything with the response because a newer request has been initiated
+          return;
+        }
+        const finished = {} as SubscriberCount;
+        finished.loading = false;
+        if (response) {
+          finished.count = response.count;
+          finished.errors = response.errors;
+        }
+        updateSubscriberCount(finished);
+      },
+      (errorResponse) => {
+        isRequestInFlight.current = false;
+        const finished = {} as SubscriberCount;
+        const errors = errorResponse.errors.map((error) => error.message);
+        finished.loading = false;
+        finished.count = undefined;
+        finished.errors = errors;
+        updateSubscriberCount(finished);
+      },
+    );
   }
 
   const debouncedLoadRef = useRef(debounce(load, 2000, { trailing: true }));
@@ -92,8 +94,7 @@ function SubscribersCounter() : JSX.Element {
     return (
       <div className="mailpoet-form-field">
         <span className="mailpoet-form-error-message">
-          {MailPoet.I18n.t('dynamicSegmentSizeCalculatingTimeout')}
-          {' '}
+          {MailPoet.I18n.t('dynamicSegmentSizeCalculatingTimeout')}{' '}
           <a
             href="https://kb.mailpoet.com/article/237-guide-to-subscriber-segmentation?utm_source=plugin&utm_medium=segments"
             data-beacon-article="5a574bd92c7d3a194368233e"
@@ -109,9 +110,7 @@ function SubscribersCounter() : JSX.Element {
   }
 
   if (!subscribersCount.loading && subscribersCount.count === undefined) {
-    return (
-      <span />
-    );
+    return <span />;
   }
 
   if (subscribersCount.loading) {
@@ -127,7 +126,10 @@ function SubscribersCounter() : JSX.Element {
   return (
     <div className="mailpoet-form-field">
       <span className="mailpoet-form-notice-message">
-        {(MailPoet.I18n.t('dynamicSegmentSize')).replace('%1$d', subscribersCount.count.toLocaleString())}
+        {MailPoet.I18n.t('dynamicSegmentSize').replace(
+          '%1$d',
+          subscribersCount.count.toLocaleString(),
+        )}
       </span>
     </div>
   );

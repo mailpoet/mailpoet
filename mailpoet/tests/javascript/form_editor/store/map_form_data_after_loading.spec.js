@@ -7,7 +7,8 @@ const data = {
   settings: {
     segments: ['3'],
     on_success: 'message',
-    success_message: 'Check your inbox or spam folder to confirm your subscription.',
+    success_message:
+      'Check your inbox or spam folder to confirm your subscription.',
     success_page: '5',
     segments_selected_by: 'admin',
     form_placement: {
@@ -61,12 +62,17 @@ describe('Form Data Load Mapper', () => {
     });
 
     it('Maps segments', () => {
-      expect(map(data).settings).to.have.property('segments').that.deep.eq(['3']);
+      expect(map(data).settings)
+        .to.have.property('segments')
+        .that.deep.eq(['3']);
     });
 
     it('Maps Success', () => {
       expect(map(data).settings).to.have.property('on_success', 'message');
-      expect(map(data).settings).to.have.property('success_message', 'Check your inbox or spam folder to confirm your subscription.');
+      expect(map(data).settings).to.have.property(
+        'success_message',
+        'Check your inbox or spam folder to confirm your subscription.',
+      );
       expect(map(data).settings).to.have.property('success_page', '5');
     });
 
@@ -89,11 +95,13 @@ describe('Form Data Load Mapper', () => {
       expect(result.formPlacement.belowPosts)
         .to.have.property('posts')
         .that.is.an('object')
-        .that.have.property('selected').that.deep.equal(['1']);
+        .that.have.property('selected')
+        .that.deep.equal(['1']);
       expect(result.formPlacement.belowPosts)
         .to.have.property('pages')
         .that.is.an('object')
-        .that.have.property('selected').that.deep.equal([]);
+        .that.have.property('selected')
+        .that.deep.equal([]);
     });
 
     it('Sets default form styles', () => {
@@ -118,19 +126,39 @@ describe('Form Data Load Mapper', () => {
     });
 
     it('Sets default placements styles', () => {
-      expect(map(data).settings.formPlacement.belowPosts).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
-      expect(map(data).settings.formPlacement.popup).to.have.property('styles').that.deep.eq({ width: { unit: 'pixel', value: 560 } });
-      expect(map(data).settings.formPlacement.fixedBar).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
-      expect(map(data).settings.formPlacement.slideIn).to.have.property('styles').that.deep.eq({ width: { unit: 'pixel', value: 560 } });
-      expect(map(data).settings.formPlacement.others).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 100 } });
+      expect(map(data).settings.formPlacement.belowPosts)
+        .to.have.property('styles')
+        .that.deep.eq({ width: { unit: 'percent', value: 100 } });
+      expect(map(data).settings.formPlacement.popup)
+        .to.have.property('styles')
+        .that.deep.eq({ width: { unit: 'pixel', value: 560 } });
+      expect(map(data).settings.formPlacement.fixedBar)
+        .to.have.property('styles')
+        .that.deep.eq({ width: { unit: 'percent', value: 100 } });
+      expect(map(data).settings.formPlacement.slideIn)
+        .to.have.property('styles')
+        .that.deep.eq({ width: { unit: 'pixel', value: 560 } });
+      expect(map(data).settings.formPlacement.others)
+        .to.have.property('styles')
+        .that.deep.eq({ width: { unit: 'percent', value: 100 } });
     });
 
     it('Sets default delays and positions', () => {
-      expect(map(data).settings.formPlacement.popup).to.have.property('delay').eq(15);
-      expect(map(data).settings.formPlacement.fixedBar).to.have.property('delay').eq(15);
-      expect(map(data).settings.formPlacement.slideIn).to.have.property('delay').eq(15);
-      expect(map(data).settings.formPlacement.slideIn).to.have.property('position').eq('right');
-      expect(map(data).settings.formPlacement.fixedBar).to.have.property('position').eq('top');
+      expect(map(data).settings.formPlacement.popup)
+        .to.have.property('delay')
+        .eq(15);
+      expect(map(data).settings.formPlacement.fixedBar)
+        .to.have.property('delay')
+        .eq(15);
+      expect(map(data).settings.formPlacement.slideIn)
+        .to.have.property('delay')
+        .eq(15);
+      expect(map(data).settings.formPlacement.slideIn)
+        .to.have.property('position')
+        .eq('right');
+      expect(map(data).settings.formPlacement.fixedBar)
+        .to.have.property('position')
+        .eq('top');
     });
 
     it('Keeps set placement styles', () => {
@@ -147,18 +175,36 @@ describe('Form Data Load Mapper', () => {
           },
         },
       };
-      expect(map(mapData).settings.formPlacement.belowPosts).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 101 } });
-      expect(map(mapData).settings.formPlacement.popup).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 102 } });
-      expect(map(mapData).settings.formPlacement.fixedBar).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 103 } });
-      expect(map(mapData).settings.formPlacement.slideIn).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 104 } });
-      expect(map(mapData).settings.formPlacement.others).to.have.property('styles').that.deep.eq({ width: { unit: 'percent', value: 105 } });
+      expect(map(mapData).settings.formPlacement.belowPosts)
+        .to.have.property('styles')
+        .that.deep.eq({ width: { unit: 'percent', value: 101 } });
+      expect(map(mapData).settings.formPlacement.popup)
+        .to.have.property('styles')
+        .that.deep.eq({ width: { unit: 'percent', value: 102 } });
+      expect(map(mapData).settings.formPlacement.fixedBar)
+        .to.have.property('styles')
+        .that.deep.eq({ width: { unit: 'percent', value: 103 } });
+      expect(map(mapData).settings.formPlacement.slideIn)
+        .to.have.property('styles')
+        .that.deep.eq({ width: { unit: 'percent', value: 104 } });
+      expect(map(mapData).settings.formPlacement.others)
+        .to.have.property('styles')
+        .that.deep.eq({ width: { unit: 'percent', value: 105 } });
     });
 
     it('Maps animation', () => {
-      expect(map(data).settings.formPlacement.fixedBar).to.have.property('animation').that.eq('slideright');
-      expect(map(data).settings.formPlacement.popup).to.have.property('animation').that.eq('slideup');// default
-      expect(map(data).settings.formPlacement.slideIn).to.have.property('animation').that.eq('flip');
-      expect(map(data).settings.formPlacement.belowPosts).to.not.have.property('animation');
+      expect(map(data).settings.formPlacement.fixedBar)
+        .to.have.property('animation')
+        .that.eq('slideright');
+      expect(map(data).settings.formPlacement.popup)
+        .to.have.property('animation')
+        .that.eq('slideup'); // default
+      expect(map(data).settings.formPlacement.slideIn)
+        .to.have.property('animation')
+        .that.eq('flip');
+      expect(map(data).settings.formPlacement.belowPosts).to.not.have.property(
+        'animation',
+      );
     });
 
     it('It ensures fontSize is an integer', () => {

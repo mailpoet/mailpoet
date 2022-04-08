@@ -9,21 +9,13 @@ export default {
   component: Datepicker,
 };
 
-function DatepickerWrapper({
-  ...props
-}) {
+function DatepickerWrapper({ ...props }) {
   const [startDate, setStartDate] = useState(new Date());
-  const onChange = (date:Date) => {
+  const onChange = (date: Date) => {
     props.onChange(date);
     setStartDate(date);
   };
-  return (
-    <Datepicker
-      {...props}
-      selected={startDate}
-      onChange={onChange}
-    />
-  );
+  return <Datepicker {...props} selected={startDate} onChange={onChange} />;
 }
 
 export function Datepickers() {

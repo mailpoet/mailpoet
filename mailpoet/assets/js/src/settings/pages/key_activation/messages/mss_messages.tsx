@@ -26,9 +26,12 @@ type MssNotActiveMessageProps = { activationCallback: () => void };
 function MssNotActiveMessage({ activationCallback }: MssNotActiveMessageProps) {
   return (
     <div className="mailpoet_error">
-      {MailPoet.I18n.t('premiumTabMssNotActiveMessage')}
-      {' '}
-      <button type="button" className="mailpoet-button button button-primary button-small" onClick={activationCallback}>
+      {MailPoet.I18n.t('premiumTabMssNotActiveMessage')}{' '}
+      <button
+        type="button"
+        className="mailpoet-button button button-primary button-small"
+        onClick={activationCallback}
+      >
         {MailPoet.I18n.t('premiumTabMssActivateMessage')}
       </button>
     </div>
@@ -45,7 +48,9 @@ export default function MssMessages(props: Props) {
     case MssStatus.VALID_MSS_ACTIVE:
       return <ActiveMessage />;
     case MssStatus.VALID_MSS_NOT_ACTIVE:
-      return <MssNotActiveMessage activationCallback={props.activationCallback} />;
+      return (
+        <MssNotActiveMessage activationCallback={props.activationCallback} />
+      );
     case MssStatus.INVALID:
       return <NotValidMessage message={props.keyMessage} />;
     default:

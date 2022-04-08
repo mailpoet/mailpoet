@@ -7,7 +7,7 @@ type Props = {
   settingsPlacementKey: string;
 };
 
-function AnimationSettings({ settingsPlacementKey }: Props) : JSX.Element {
+function AnimationSettings({ settingsPlacementKey }: Props): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -29,7 +29,14 @@ function AnimationSettings({ settingsPlacementKey }: Props) : JSX.Element {
         { label: 'Zoom In', value: 'zoomin' },
         { label: 'Flip', value: 'flip' },
       ]}
-      onChange={compose([changeFormSettings, assocPath(`formPlacement.${settingsPlacementKey}.animation`, __, formSettings)])}
+      onChange={compose([
+        changeFormSettings,
+        assocPath(
+          `formPlacement.${settingsPlacementKey}.animation`,
+          __,
+          formSettings,
+        ),
+      ])}
     />
   );
 }

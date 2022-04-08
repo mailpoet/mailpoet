@@ -14,10 +14,7 @@ class AutomaticEmailEvent extends PureComponent {
     let action;
     if (this.props.premium) {
       action = (
-        <a
-          href="?page=mailpoet-premium"
-          target="_blank"
-        >
+        <a href="?page=mailpoet-premium" target="_blank">
           {MailPoet.I18n.t('premiumFeatureLink')}
         </a>
       );
@@ -32,7 +29,9 @@ class AutomaticEmailEvent extends PureComponent {
         </a>
       );
     } else {
-      const onClick = !disabled ? _.partial(this.props.eventsConfigurator, event.slug) : null;
+      const onClick = !disabled
+        ? _.partial(this.props.eventsConfigurator, event.slug)
+        : null;
       action = (
         <Button
           disabled={disabled}
@@ -40,7 +39,9 @@ class AutomaticEmailEvent extends PureComponent {
           role="presentation"
           automationId={`create_${event.slug}`}
           onKeyDown={(keyEvent) => {
-            if ((['keydown', 'keypress'].includes(keyEvent.type) && ['Enter', ' '].includes(keyEvent.key))
+            if (
+              ['keydown', 'keypress'].includes(keyEvent.type) &&
+              ['Enter', ' '].includes(keyEvent.key)
             ) {
               keyEvent.preventDefault();
               onClick();
@@ -55,19 +56,15 @@ class AutomaticEmailEvent extends PureComponent {
     return (
       <div data-type={event.slug} className="mailpoet-newsletter-type">
         <div className="mailpoet-newsletter-type-image">
-          {event.badge && <Badge title={event.badge.text} /> }
+          {event.badge && <Badge title={event.badge.text} />}
         </div>
         <div className="mailpoet-newsletter-type-content">
           <Heading level={4}>
-            {event.title}
-            {' '}
-            {event.soon && `(${MailPoet.I18n.t('soon')})`}
+            {event.title} {event.soon && `(${MailPoet.I18n.t('soon')})`}
           </Heading>
           <p>{event.description}</p>
           <div className="mailpoet-flex-grow" />
-          <div className="mailpoet-newsletter-type-action">
-            {action}
-          </div>
+          <div className="mailpoet-newsletter-type-action">{action}</div>
         </div>
       </div>
     );

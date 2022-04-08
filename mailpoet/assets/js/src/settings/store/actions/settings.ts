@@ -28,7 +28,9 @@ export function* saveSettings() {
 
   // trim all strings before saving
   const stringified = JSON.stringify(data);
-  const parsed = JSON.parse(stringified, (_, value) => (typeof value === 'string' ? value.trim() : value));
+  const parsed = JSON.parse(stringified, (_, value) =>
+    typeof value === 'string' ? value.trim() : value,
+  );
 
   const { success, error, res } = yield {
     type: 'CALL_API',

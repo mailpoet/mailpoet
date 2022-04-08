@@ -4,7 +4,10 @@ import { Label, Inputs } from 'settings/components';
 import Checkbox from 'common/form/checkbox/checkbox';
 
 export default function SubscribeOldCustomers() {
-  const [enabled, setEnabled] = useSetting('mailpoet_subscribe_old_woocommerce_customers', 'enabled');
+  const [enabled, setEnabled] = useSetting(
+    'mailpoet_subscribe_old_woocommerce_customers',
+    'enabled',
+  );
 
   return (
     <>

@@ -49,18 +49,29 @@ export default function Selection(): JSX.Element {
   );
 
   const selectTemplateFailed: boolean = useSelect(
-    (select) => select('mailpoet-form-editor-templates').getSelectTemplateFailed(),
+    (select) =>
+      select('mailpoet-form-editor-templates').getSelectTemplateFailed(),
     [],
   );
 
-  const { selectTemplate, selectCategory } = useDispatch('mailpoet-form-editor-templates');
+  const { selectTemplate, selectCategory } = useDispatch(
+    'mailpoet-form-editor-templates',
+  );
   return (
     <>
-      {categories.map((category) => (
-        templates[category.name].map((template, index) => (
-          index < 4 && (<link key={`thumbnail_prefetch_${template.id}`} rel="preload" href={template.thumbnail} as="image" />)
-        ))
-      ))}
+      {categories.map((category) =>
+        templates[category.name].map(
+          (template, index) =>
+            index < 4 && (
+              <link
+                key={`thumbnail_prefetch_${template.id}`}
+                rel="preload"
+                href={template.thumbnail}
+                as="image"
+              />
+            ),
+        ),
+      )}
       <div className="mailpoet-template-selection-header">
         <Heading level={4}>{MailPoet.I18n.t('selectTemplate')}</Heading>
         <Button
@@ -70,7 +81,11 @@ export default function Selection(): JSX.Element {
           {MailPoet.I18n.t('createBlankTemplate')}
         </Button>
       </div>
-      {selectTemplateFailed && <Notice type="error" scroll renderInPlace><p>{MailPoet.I18n.t('createFormError')}</p></Notice>}
+      {selectTemplateFailed && (
+        <Notice type="error" scroll renderInPlace>
+          <p>{MailPoet.I18n.t('createFormError')}</p>
+        </Notice>
+      )}
       <div data-automation-id="template_selection_list">
         <Background color="#fff" />
         <div className="mailpoet-templates">
@@ -88,7 +103,13 @@ export default function Selection(): JSX.Element {
               className="mailpoet-form-template"
             >
               <div className="mailpoet-template-thumbnail">
-                <img src={template.thumbnail} alt={template.name} width="480" height="317" loading="lazy" />
+                <img
+                  src={template.thumbnail}
+                  alt={template.name}
+                  width="480"
+                  height="317"
+                  loading="lazy"
+                />
               </div>
             </TemplateBox>
           ))}

@@ -26,7 +26,7 @@ function CheckboxGroup({
 
   const handleChange = (value: CheckboxValueType, isChecked: boolean) => {
     const index = values.indexOf(value);
-    let newValues:CheckboxValueType[] = [];
+    let newValues: CheckboxValueType[] = [];
     if (isChecked && index === -1) {
       newValues = values.concat([value]);
     }
@@ -42,7 +42,7 @@ function CheckboxGroup({
     <div>
       {options.map((props: CheckboxProps) => {
         const { label, ...attributes } = props;
-        const value = (props.value as CheckboxValueType);
+        const value = props.value as CheckboxValueType;
         return (
           <Checkbox
             checked={values.includes(value)}

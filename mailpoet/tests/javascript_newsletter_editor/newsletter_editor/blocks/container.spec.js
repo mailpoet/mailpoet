@@ -25,7 +25,9 @@ describe('Container', function () {
       });
 
       it('has a background color', function () {
-        expect(model.get('styles.block.backgroundColor')).to.match(/^(#[abcdef0-9]{6})|transparent$/);
+        expect(model.get('styles.block.backgroundColor')).to.match(
+          /^(#[abcdef0-9]{6})|transparent$/,
+        );
       });
 
       it('has a image display style', function () {
@@ -53,9 +55,11 @@ describe('Container', function () {
             },
           },
         });
-        innerModel = new (ContainerBlock.ContainerBlockModel)();
+        innerModel = new ContainerBlock.ContainerBlockModel();
 
-        expect(innerModel.get('styles.block.backgroundColor')).to.equal('#123456');
+        expect(innerModel.get('styles.block.backgroundColor')).to.equal(
+          '#123456',
+        );
         expect(innerModel.get('image.display')).to.equal('scale');
       });
 
@@ -76,16 +80,23 @@ describe('Container', function () {
       var model;
 
       it('will recursively create children', function () {
-        EditorApplication.getBlockTypeModel = sinon.stub().returns(Backbone.Model);
+        EditorApplication.getBlockTypeModel = sinon
+          .stub()
+          .returns(Backbone.Model);
 
-        model = new (ContainerBlock.ContainerBlockModel)({
-          type: 'container',
-          blocks: [testModel],
-        }, { parse: true });
+        model = new ContainerBlock.ContainerBlockModel(
+          {
+            type: 'container',
+            blocks: [testModel],
+          },
+          { parse: true },
+        );
 
         expect(model.get('blocks')).to.have.length(1);
         expect(model.get('blocks').at(0).get('type')).to.equal(testModel.type);
-        expect(model.get('blocks').at(0).get('someField')).to.equal(testModel.someField);
+        expect(model.get('blocks').at(0).get('someField')).to.equal(
+          testModel.someField,
+        );
       });
 
       it('will create nested containers and their children', function () {
@@ -94,31 +105,32 @@ describe('Container', function () {
         stub.withArgs('someType').returns(Backbone.Model);
         EditorApplication.getBlockTypeModel = stub;
 
-        model = new ModelClass({
-          type: 'container',
-          blocks: [
-            {
-              type: 'container',
-              blocks: [
-                {
-                  type: 'someType',
-                  someField: 'some text',
-                },
-                {
-                  type: 'someType',
-                  someField: 'some text 2',
-                },
-              ],
-            },
-          ],
-        }, { parse: true });
+        model = new ModelClass(
+          {
+            type: 'container',
+            blocks: [
+              {
+                type: 'container',
+                blocks: [
+                  {
+                    type: 'someType',
+                    someField: 'some text',
+                  },
+                  {
+                    type: 'someType',
+                    someField: 'some text 2',
+                  },
+                ],
+              },
+            ],
+          },
+          { parse: true },
+        );
 
         expect(model.get('blocks')).to.have.length(1);
         expect(model.get('blocks').at(0).get('blocks')).to.have.length(2);
         expect(
-          model.get('blocks').at(0)
-            .get('blocks').at(1)
-            .get('someField')
+          model.get('blocks').at(0).get('blocks').at(1).get('someField'),
         ).to.equal('some text 2');
       });
     });
@@ -131,15 +143,15 @@ describe('Container', function () {
     it('renders', function () {
       var model;
       var view;
-      model = new (ContainerBlock.ContainerBlockModel)();
-      view = new (ContainerBlock.ContainerBlockView)({ model: model });
+      model = new ContainerBlock.ContainerBlockModel();
+      view = new ContainerBlock.ContainerBlockView({ model: model });
       expect(view.render).to.not.throw();
     });
 
     describe('once rendered', function () {
       describe('on root level', function () {
         var imageSrc = 'http://example.org/someNewImage.png';
-        var model = new (ContainerBlock.ContainerBlockModel)({
+        var model = new ContainerBlock.ContainerBlockModel({
           type: 'container',
           orientation: 'vertical',
           image: {
@@ -159,7 +171,7 @@ describe('Container', function () {
         beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication);
-          view = new (ContainerBlock.ContainerBlockView)({
+          view = new ContainerBlock.ContainerBlockView({
             model: model,
             renderOptions: {
               depth: 0,
@@ -187,20 +199,22 @@ describe('Container', function () {
           var style = view.$('style').text();
           expect(style).contains('.mailpoet_editor_view_' + view.cid);
           expect(style).contains('background-color: #ffffff !important;');
-          expect(style).contains('background-image: url(http://example.org/someNewImage.png);');
+          expect(style).contains(
+            'background-image: url(http://example.org/someNewImage.png);',
+          );
           expect(style).contains('background-position: center;');
           expect(style).contains('background-size: cover;');
         });
       });
 
       describe.skip('on non-root levels', function () {
-        var model = new (ContainerBlock.ContainerBlockModel)();
+        var model = new ContainerBlock.ContainerBlockModel();
         var view;
 
         beforeEach(function () {
           global.stubChannel(EditorApplication);
           global.stubAvailableStyles(EditorApplication);
-          view = new (ContainerBlock.ContainerBlockView)({
+          view = new ContainerBlock.ContainerBlockView({
             model: model,
             renderOptions: {
               depth: 1,
@@ -235,8 +249,8 @@ describe('Container', function () {
     it('renders', function () {
       var model;
       var view;
-      model = new (ContainerBlock.ContainerBlockModel)();
-      view = new (ContainerBlock.ContainerBlockSettingsView)({ model: model });
+      model = new ContainerBlock.ContainerBlockModel();
+      view = new ContainerBlock.ContainerBlockSettingsView({ model: model });
       expect(view.render).to.not.throw();
     });
 
@@ -247,18 +261,24 @@ describe('Container', function () {
       beforeEach(function () {
         global.stubChannel(EditorApplication);
         global.stubAvailableStyles(EditorApplication);
-        model = new (ContainerBlock.ContainerBlockModel)();
-        view = new (ContainerBlock.ContainerBlockSettingsView)({ model: model });
+        model = new ContainerBlock.ContainerBlockModel();
+        view = new ContainerBlock.ContainerBlockSettingsView({ model: model });
         view.render();
       });
 
       it('updates the model when background color changes', function () {
-        view.$('.mailpoet_field_container_background_color').val('#123456').trigger('change');
+        view
+          .$('.mailpoet_field_container_background_color')
+          .val('#123456')
+          .trigger('change');
         expect(model.get('styles.block.backgroundColor')).to.equal('#123456');
       });
 
       it('updates the model background image display type changes', function () {
-        view.$('.mailpoet_field_display_type:nth(2)').attr('checked', true).trigger('change');
+        view
+          .$('.mailpoet_field_display_type:nth(2)')
+          .attr('checked', true)
+          .trigger('change');
         expect(model.get('image.display')).to.equal('tile');
       });
 
@@ -276,14 +296,16 @@ describe('Container', function () {
 
       it('displays/hides tools and highlight container block when settings active/inactive', function () {
         var settingsView;
-        var blockView = new (ContainerBlock.ContainerBlockView)({ model: model });
+        var blockView = new ContainerBlock.ContainerBlockView({ model: model });
         blockView.render();
         // Set proper depth since we want to highlight only top level containers
         blockView.renderOptions = {
           depth: 1,
         };
         expect(blockView.$el.hasClass('mailpoet_highlight')).to.equal(false);
-        settingsView = new (ContainerBlock.ContainerBlockSettingsView)({ model: model });
+        settingsView = new ContainerBlock.ContainerBlockSettingsView({
+          model: model,
+        });
         settingsView.render();
         expect(blockView.$el.hasClass('mailpoet_highlight')).to.equal(true);
         settingsView.destroy();
@@ -295,7 +317,7 @@ describe('Container', function () {
         global.MailPoet.Modal.cancel = mock;
         view.$('.mailpoet_done_editing').trigger('click');
         mock.verify();
-        delete (global.MailPoet.Modal.cancel);
+        delete global.MailPoet.Modal.cancel;
       });
     });
   });

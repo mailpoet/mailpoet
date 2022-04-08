@@ -24,8 +24,10 @@ BL.ShowSettingsBehavior = Marionette.Behavior.extend({
   },
   // eslint-disable-next-line func-names
   isIgnoredElement: function (element) {
-    return this.options.ignoreFrom
-        && this.options.ignoreFrom.length > 0
-        && jQuery(element).is(this.options.ignoreFrom);
+    return (
+      this.options.ignoreFrom &&
+      this.options.ignoreFrom.length > 0 &&
+      jQuery(element).is(this.options.ignoreFrom)
+    );
   },
 });

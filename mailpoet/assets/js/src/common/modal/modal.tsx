@@ -38,14 +38,9 @@ function Modal({
       shouldCloseOnClickOutside={shouldCloseOnClickOutside}
       className={overlayClassName}
     >
-      <ModalFrame
-        className={contentClassName}
-        fullScreen={fullScreen}
-      >
-        { title && (
-          <ModalHeader title={title} />
-        ) }
-        { isDismissible && (
+      <ModalFrame className={contentClassName} fullScreen={fullScreen}>
+        {title && <ModalHeader title={title} />}
+        {isDismissible && (
           <button
             type="button"
             onClick={onRequestClose}
@@ -54,12 +49,9 @@ function Modal({
           >
             {ModalCloseIcon}
           </button>
-        ) }
-        <div
-          className="mailpoet-modal-content"
-          role="document"
-        >
-          { children }
+        )}
+        <div className="mailpoet-modal-content" role="document">
+          {children}
         </div>
       </ModalFrame>
     </ModalOverlay>,

@@ -21,10 +21,9 @@ export default function EnableSignupConfirmation() {
     <>
       <Label
         title={t('enableSignupConfTitle')}
-        description={(
+        description={
           <>
-            {t('enableSignupConfDescription')}
-            {' '}
+            {t('enableSignupConfDescription')}{' '}
             <a
               className="mailpoet-link"
               href="https://kb.mailpoet.com/article/128-why-you-should-use-signup-confirmation-double-opt-in"
@@ -35,11 +34,13 @@ export default function EnableSignupConfirmation() {
               {t('readAboutDoubleOptIn')}
             </a>
           </>
-        )}
+        }
         htmlFor="signup_confirmation-enabled"
       />
       <Inputs>
-        {isMssActive ? <p>{t('signupConfirmationIsMandatory')}</p> : (
+        {isMssActive ? (
+          <p>{t('signupConfirmationIsMandatory')}</p>
+        ) : (
           <>
             <Radio
               id="signup_confirmation-enabled"
@@ -48,8 +49,7 @@ export default function EnableSignupConfirmation() {
               onCheck={handleChange}
               automationId="enable_signup_confirmation"
             />
-            {t('yes')}
-            {' '}
+            {t('yes')}{' '}
             <Radio
               checked={enabled === ''}
               value=""

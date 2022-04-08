@@ -20,19 +20,19 @@ import { GlobalContext } from 'context/index.jsx';
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
 const messages = {
-  onNoItemsFound: (group, search) => MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
+  onNoItemsFound: (group, search) =>
+    MailPoet.I18n.t(search ? 'noItemsFound' : 'emptyListing'),
   onTrash: (response) => {
     const count = Number(response.meta.count);
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterTrashed')
-      );
+      message = MailPoet.I18n.t('oneNewsletterTrashed');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersTrashed')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleNewslettersTrashed').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -41,13 +41,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterDeleted')
-      );
+      message = MailPoet.I18n.t('oneNewsletterDeleted');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersDeleted')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleNewslettersDeleted').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -56,13 +55,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneNewsletterRestored')
-      );
+      message = MailPoet.I18n.t('oneNewsletterRestored');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleNewslettersRestored')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleNewslettersRestored').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -107,9 +105,9 @@ const confirmEdit = (newsletter) => {
     window.location.href = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
   };
   if (
-    !newsletter.queue
-    || newsletter.status !== 'sending'
-    || newsletter.queue.status !== null
+    !newsletter.queue ||
+    newsletter.status !== 'sending' ||
+    newsletter.queue.status !== null
   ) {
     redirectToEditing();
   } else {
@@ -125,7 +123,11 @@ let newsletterActions = [
     name: 'view',
     link: function link(newsletter) {
       return (
-        <a href={newsletter.preview_url} target="_blank" rel="noopener noreferrer">
+        <a
+          href={newsletter.preview_url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {MailPoet.I18n.t('preview')}
         </a>
       );
@@ -149,19 +151,24 @@ let newsletterActions = [
         data: {
           id: newsletter.id,
         },
-      }).done((response) => {
-        MailPoet.Notice.success(
-          (MailPoet.I18n.t('newsletterDuplicated')).replace('%1$s', response.data.subject)
-        );
-        refresh();
-      }).fail((response) => {
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
-            { scroll: true }
+      })
+        .done((response) => {
+          MailPoet.Notice.success(
+            MailPoet.I18n.t('newsletterDuplicated').replace(
+              '%1$s',
+              response.data.subject,
+            ),
           );
-        }
-      });
+          refresh();
+        })
+        .fail((response) => {
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map((error) => error.message),
+              { scroll: true },
+            );
+          }
+        });
     },
   },
   {
@@ -183,7 +190,7 @@ class NewsletterListStandard extends Component {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
-      'has-row-actions'
+      'has-row-actions',
     );
 
     return (
@@ -197,27 +204,42 @@ class NewsletterListStandard extends Component {
               confirmEdit(newsletter);
             }}
           >
-            { newsletter.queue.newsletter_rendered_subject || newsletter.subject }
+            {newsletter.queue.newsletter_rendered_subject || newsletter.subject}
           </a>
-          { actions }
+          {actions}
         </td>
-        <td className="column mailpoet-listing-status-column" data-colname={MailPoet.I18n.t('status')}>
+        <td
+          className="column mailpoet-listing-status-column"
+          data-colname={MailPoet.I18n.t('status')}
+        >
           <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />
         </td>
-        <td className="column mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('lists')}>
+        <td
+          className="column mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('lists')}
+        >
           <Tags segments={newsletter.segments} dimension="large" />
         </td>
-        { (mailpoetTrackingEnabled === true) ? (
-          <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('statistics')}>
-            <Statistics newsletter={newsletter} currentTime={meta.current_time} />
+        {mailpoetTrackingEnabled === true ? (
+          <td
+            className="column mailpoet-listing-stats-column"
+            data-colname={MailPoet.I18n.t('statistics')}
+          >
+            <Statistics
+              newsletter={newsletter}
+              currentTime={meta.current_time}
+            />
           </td>
-        ) : null }
-        <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('sentOn')}>
-          { (newsletter.sent_at) ? (
+        ) : null}
+        <td
+          className="column-date mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('sentOn')}
+        >
+          {newsletter.sent_at ? (
             <>
-              { MailPoet.Date.short(newsletter.sent_at) }
+              {MailPoet.Date.short(newsletter.sent_at)}
               <br />
-              { MailPoet.Date.time(newsletter.sent_at) }
+              {MailPoet.Date.time(newsletter.sent_at)}
             </>
           ) : null}
         </td>
@@ -256,7 +278,10 @@ class NewsletterListStandard extends Component {
             sort_order="desc"
             afterGetItems={(state) => {
               if (!state.loading) {
-                const total = state.groups.reduce((count, group) => (count + group.count), 0);
+                const total = state.groups.reduce(
+                  (count, group) => count + group.count,
+                  0,
+                );
                 this.setState({ newslettersCount: total });
               }
               checkMailerStatus(state);

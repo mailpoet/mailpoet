@@ -15,7 +15,10 @@ export function useGlobalContextValue(data) {
   const users = useUsersContext(data);
   const notices = useNotices();
   return {
-    features, segments, users, notices,
+    features,
+    segments,
+    users,
+    notices,
   };
 }
 

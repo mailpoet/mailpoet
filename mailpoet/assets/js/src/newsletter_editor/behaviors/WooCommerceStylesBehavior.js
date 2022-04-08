@@ -16,11 +16,17 @@ BL.WooCommerceStylesBehavior = Marionette.Behavior.extend({
       'change #mailpoet_wc_branding_color': function (event) {
         let linkFontColor;
         const brandingColor = event.target.value;
-        const headingFontColor = (this.wcHexIsLight(brandingColor)) ? '#202020' : '#ffffff';
+        const headingFontColor = this.wcHexIsLight(brandingColor)
+          ? '#202020'
+          : '#ffffff';
         if (this.wcHexIsLight(this.view.model.get('wrapper.backgroundColor'))) {
-          linkFontColor = (this.wcHexIsLight(brandingColor)) ? headingFontColor : brandingColor;
+          linkFontColor = this.wcHexIsLight(brandingColor)
+            ? headingFontColor
+            : brandingColor;
         } else {
-          linkFontColor = (this.wcHexIsLight(brandingColor)) ? brandingColor : headingFontColor;
+          linkFontColor = this.wcHexIsLight(brandingColor)
+            ? brandingColor
+            : headingFontColor;
         }
         this.view.model.set('woocommerce.brandingColor', brandingColor);
         this.view.model.set('woocommerce.headingFontColor', headingFontColor);
@@ -36,7 +42,7 @@ BL.WooCommerceStylesBehavior = Marionette.Behavior.extend({
     const colR = parseInt(hex.substr(0, 2), 16);
     const colG = parseInt(hex.substr(2, 2), 16);
     const colB = parseInt(hex.substr(4, 2), 16);
-    const brightness = ((colR * 299) + (colG * 587) + (colB * 114)) / 1000;
+    const brightness = (colR * 299 + colG * 587 + colB * 114) / 1000;
     return brightness > 155;
   },
 });

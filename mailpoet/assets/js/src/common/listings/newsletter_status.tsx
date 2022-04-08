@@ -1,8 +1,6 @@
 import MailPoet from 'mailpoet';
 import classNames from 'classnames';
-import {
-  addDays, differenceInMinutes, isFuture, isPast,
-} from 'date-fns';
+import { addDays, differenceInMinutes, isFuture, isPast } from 'date-fns';
 import t from 'common/functions/t';
 import Tooltip from '../tooltip/tooltip';
 
@@ -15,8 +13,18 @@ function CircularProgress({ percentage }: CircularProgressProps) {
   const filled = perimeter * (percentage / 100);
   const empty = perimeter - filled;
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="8" className="mailpoet-listing-status-percentage-background" />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="8"
+        className="mailpoet-listing-status-percentage-background"
+      />
       <circle
         r="8"
         cx="12"
@@ -32,8 +40,17 @@ function CircularProgress({ percentage }: CircularProgressProps) {
 
 export function ScheduledIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-      <path className="mailpoet-listing-status-scheduled-icon" strokeLinecap="round" d="M12 7L12 12 15 15" />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+    >
+      <path
+        className="mailpoet-listing-status-scheduled-icon"
+        strokeLinecap="round"
+        d="M12 7L12 12 15 15"
+      />
     </svg>
   );
 }
@@ -55,18 +72,20 @@ function NewsletterStatus({
 }: NewsletterStatusProps) {
   const unknown = !scheduledFor && !processed && !total;
   const scheduled = scheduledFor && isFuture(scheduledFor);
-  const inProgress = (!scheduledFor || isPast(scheduledFor)) && processed < total;
+  const inProgress =
+    (!scheduledFor || isPast(scheduledFor)) && processed < total;
   const sent = (!scheduledFor || isPast(scheduledFor)) && processed >= total;
   const sentWithoutQueue = status === 'sent' && total === undefined;
   let percentage = 0;
-  let label : string | JSX.Element = t('notSentYet');
+  let label: string | JSX.Element = t('notSentYet');
   if (scheduled) {
     const scheduledDate = MailPoet.Date.short(scheduledFor);
     const scheduledTime = MailPoet.Date.time(scheduledFor);
     const now = new Date();
     const tomorrow = addDays(now, 1);
     const isScheduledForToday = MailPoet.Date.short(now) === scheduledDate;
-    const isScheduledForTomorrow = MailPoet.Date.short(tomorrow) === scheduledDate;
+    const isScheduledForTomorrow =
+      MailPoet.Date.short(tomorrow) === scheduledDate;
     if (isScheduledForToday || isScheduledForTomorrow) {
       const randomId = Math.random().toString(36).substring(2, 15);
       const dateWord = isScheduledForToday ? t('today') : t('tomorrow');
@@ -99,10 +118,14 @@ function NewsletterStatus({
       percentage = 100;
     }
   } else if (inProgress) {
-    label = `${MailPoet.Num.toLocaleFixed(processed)} / ${MailPoet.Num.toLocaleFixed(total)}`;
+    label = `${MailPoet.Num.toLocaleFixed(
+      processed,
+    )} / ${MailPoet.Num.toLocaleFixed(total)}`;
     percentage = 100 * (processed / total);
   } else if (sent) {
-    label = `${MailPoet.Num.toLocaleFixed(total)} / ${MailPoet.Num.toLocaleFixed(total)}`;
+    label = `${MailPoet.Num.toLocaleFixed(
+      total,
+    )} / ${MailPoet.Num.toLocaleFixed(total)}`;
     percentage = 100;
   } else if (sentWithoutQueue) {
     label = t('sent');
@@ -112,13 +135,14 @@ function NewsletterStatus({
     label = t('paused');
   }
   return (
-    <div className={classNames({
-      'mailpoet-listing-status': true,
-      'mailpoet-listing-status-unknown': unknown,
-      'mailpoet-listing-status-scheduled': scheduled,
-      'mailpoet-listing-status-in-progress': inProgress,
-      'mailpoet-listing-status-sent': sent || sentWithoutQueue,
-    })}
+    <div
+      className={classNames({
+        'mailpoet-listing-status': true,
+        'mailpoet-listing-status-unknown': unknown,
+        'mailpoet-listing-status-scheduled': scheduled,
+        'mailpoet-listing-status-in-progress': inProgress,
+        'mailpoet-listing-status-sent': sent || sentWithoutQueue,
+      })}
     >
       {scheduled && <ScheduledIcon />}
       <CircularProgress percentage={percentage} />

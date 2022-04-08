@@ -21,16 +21,10 @@ export default function ActivateOrCancel() {
   };
   return (
     <div className="mailpoet-settings-save">
-      <Button
-        type="button"
-        onClick={activate}
-      >
+      <Button type="button" onClick={activate}>
         {t('activate')}
       </Button>
-      <Button
-        onClick={cancel}
-        variant="tertiary"
-      >
+      <Button onClick={cancel} variant="tertiary">
         {t('orCancel')}
       </Button>
     </div>

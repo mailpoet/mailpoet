@@ -20,13 +20,11 @@ function YesNo({
 }: Props) {
   return (
     <div
-      className={
-      classnames({
+      className={classnames({
         'mailpoet-form-yesno': true,
         'mailpoet-form-yesno-error': showError,
         'mailpoet-disabled': attributes.disabled,
-      })
-    }
+      })}
       data-automation-id={automationId}
     >
       <label>

@@ -4,7 +4,9 @@ export default (state, action) => {
   const notices = state.notices.filter((notice) => notice.id !== 'save-form');
   notices.push({
     id: 'save-form',
-    content: `${MailPoet.I18n.t('formSaved')} ${MailPoet.I18n.t('formSavedAppendix')}`,
+    content: `${MailPoet.I18n.t('formSaved')} ${MailPoet.I18n.t(
+      'formSavedAppendix',
+    )}`,
     isDismissible: true,
     status: 'success',
   });

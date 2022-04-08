@@ -45,23 +45,16 @@ function Button({
       target={target}
       rel={rel}
       disabled={isDisabled}
-      className={
-        classnames(
-          className,
-          'button',
-          'mailpoet-button',
-          {
-            'mailpoet-button-with-spinner': withSpinner,
-            'mailpoet-button-disabled': isDisabled,
-            'mailpoet-full-width': isFullWidth,
-            'button-primary': !variant,
-            'button-secondary': variant === 'secondary',
-            'button-link': variant === 'tertiary',
-            'button-link button-link-delete': variant === 'destructive',
-            'button-small': dimension === 'small',
-          },
-        )
-      }
+      className={classnames(className, 'button', 'mailpoet-button', {
+        'mailpoet-button-with-spinner': withSpinner,
+        'mailpoet-button-disabled': isDisabled,
+        'mailpoet-full-width': isFullWidth,
+        'button-primary': !variant,
+        'button-secondary': variant === 'secondary',
+        'button-link': variant === 'tertiary',
+        'button-link button-link-delete': variant === 'destructive',
+        'button-small': dimension === 'small',
+      })}
       data-automation-id={automationId}
     >
       {iconStart}

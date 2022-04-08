@@ -15,16 +15,20 @@ function FormStylingBackground({ children }) {
     backgroundImageUrl,
     backgroundImageDisplay,
     fontFamily,
-  } = useSelect((select) => select('mailpoet-form-editor').getFormSettings(), []);
+  } = useSelect(
+    (select) => select('mailpoet-form-editor').getFormSettings(),
+    [],
+  );
 
   const previewSettings = useSelect(
     (select) => select('mailpoet-form-editor').getPreviewSettings(),
-    []
+    [],
   );
 
   const formWidth = useSelect(
-    (select) => select('mailpoet-form-editor').getFormWidth(previewSettings.formType),
-    [previewSettings.formType]
+    (select) =>
+      select('mailpoet-form-editor').getFormWidth(previewSettings.formType),
+    [previewSettings.formType],
   );
 
   let borderStyle;
@@ -61,7 +65,10 @@ function FormStylingBackground({ children }) {
   };
 
   // Render virtual container for widgets and below pages/post forms with width in percent
-  if (['others', 'below_post'].includes(previewSettings.formType) && formWidth.unit === 'percent') {
+  if (
+    ['others', 'below_post'].includes(previewSettings.formType) &&
+    formWidth.unit === 'percent'
+  ) {
     style.maxWidth = 600;
   }
 
@@ -79,7 +86,9 @@ function FormStylingBackground({ children }) {
       backgroundSize = 'auto';
     }
 
-    backgrounds.push(`url(${backgroundImageUrl}) ${backgroundPosition}/${backgroundSize} ${backgroundRepeat}`);
+    backgrounds.push(
+      `url(${backgroundImageUrl}) ${backgroundPosition}/${backgroundSize} ${backgroundRepeat}`,
+    );
   }
 
   if (gradient) {
@@ -105,9 +114,7 @@ function FormStylingBackground({ children }) {
 
     return (
       <div className="mailpoet-form-background" style={style}>
-        <div style={innerStyle}>
-          {children}
-        </div>
+        <div style={innerStyle}>{children}</div>
       </div>
     );
   }

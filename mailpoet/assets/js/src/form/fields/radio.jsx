@@ -2,7 +2,8 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Radio from 'common/form/radio/radio';
 
-class FormFieldRadio extends Component { // eslint-disable-line react/prefer-stateless-function, max-len
+class FormFieldRadio extends Component {
+  // eslint-disable-line react/prefer-stateless-function, max-len
   constructor(props) {
     super(props);
     this.onValueChange = this.onValueChange.bind(this);
@@ -16,26 +17,20 @@ class FormFieldRadio extends Component { // eslint-disable-line react/prefer-sta
     }
 
     const selectedValue = this.props.item[this.props.field.name];
-    const options = Object.keys(this.props.field.values).map(
-      (value) => (
-        <p key={`radio-${value}`}>
-          <Radio
-            checked={selectedValue === value}
-            value={value}
-            onCheck={this.onValueChange}
-            name={this.props.field.name}
-          >
-            { this.props.field.values[value] }
-          </Radio>
-        </p>
-      )
-    );
+    const options = Object.keys(this.props.field.values).map((value) => (
+      <p key={`radio-${value}`}>
+        <Radio
+          checked={selectedValue === value}
+          value={value}
+          onCheck={this.onValueChange}
+          name={this.props.field.name}
+        >
+          {this.props.field.values[value]}
+        </Radio>
+      </p>
+    ));
 
-    return (
-      <div>
-        { options }
-      </div>
-    );
+    return <div>{options}</div>;
   }
 }
 

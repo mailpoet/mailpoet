@@ -14,14 +14,22 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
     elementSelector: null,
     resizeHandleSelector: true, // true will use edges of the element itself
     // for blocks that use the default onResize function
-    transformationFunction: function transformationFunction(y) { return y; },
+    transformationFunction: function transformationFunction(y) {
+      return y;
+    },
     minLength: 0,
     maxLength: Infinity,
     modelField: 'styles.block.height',
     onResize: function onResize(event) {
-      var currentLength = parseFloat(this.view.model.get(this.options.modelField));
-      var newLength = currentLength + this.options.transformationFunction(event.dy);
-      newLength = Math.min(this.options.maxLength, Math.max(this.options.minLength, newLength));
+      var currentLength = parseFloat(
+        this.view.model.get(this.options.modelField),
+      );
+      var newLength =
+        currentLength + this.options.transformationFunction(event.dy);
+      newLength = Math.min(
+        this.options.maxLength,
+        Math.max(this.options.minLength, newLength),
+      );
       this.view.model.set(this.options.modelField, newLength + 'px');
     },
   },
@@ -37,19 +45,24 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
     } else {
       domElement = this.view.$(this.options.elementSelector).get(0);
     }
-    interact(domElement).resizable({
-      // axis: 'y',
-      edges: {
-        top: false,
-        left: false,
-        right: false,
-        bottom: (typeof this.options.resizeHandleSelector === 'string') ? this.view.$(this.options.resizeHandleSelector).get(0) : this.options.resizeHandleSelector,
-      },
-    })
+    interact(domElement)
+      .resizable({
+        // axis: 'y',
+        edges: {
+          top: false,
+          left: false,
+          right: false,
+          bottom:
+            typeof this.options.resizeHandleSelector === 'string'
+              ? this.view.$(this.options.resizeHandleSelector).get(0)
+              : this.options.resizeHandleSelector,
+        },
+      })
       .on('resizestart', function resizestart() {
         that.view.model.trigger('startResizing');
         document.activeElement.blur();
-      }).on('resizemove', function resizemove(event) {
+      })
+      .on('resizemove', function resizemove(event) {
         var onResize = that.options.onResize.bind(that);
         return onResize(event);
       })

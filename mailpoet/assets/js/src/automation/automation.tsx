@@ -13,24 +13,26 @@ function ApiCheck(): JSX.Element {
 }
 
 function RecreateSchemaButton(): JSX.Element {
-  const [createSchema, { loading, error }] = useMutation('system/database', { method: 'POST' });
+  const [createSchema, { loading, error }] = useMutation('system/database', {
+    method: 'POST',
+  });
 
   return (
     <div>
-      <button
-        type="button"
-        onClick={() => createSchema()}
-        disabled={loading}
-      >
+      <button type="button" onClick={() => createSchema()} disabled={loading}>
         Recreate DB schema (data will be lost)
       </button>
-      {error && (<div>{error?.data?.message ?? 'An unknown error occurred'}</div>)}
+      {error && (
+        <div>{error?.data?.message ?? 'An unknown error occurred'}</div>
+      )}
     </div>
   );
 }
 
 function DeleteSchemaButton(): JSX.Element {
-  const [deleteSchema, { loading, error }] = useMutation('system/database', { method: 'DELETE' });
+  const [deleteSchema, { loading, error }] = useMutation('system/database', {
+    method: 'DELETE',
+  });
 
   return (
     <div>
@@ -38,13 +40,16 @@ function DeleteSchemaButton(): JSX.Element {
         type="button"
         onClick={async () => {
           await deleteSchema();
-          window.location.href = '/wp-admin/admin.php?page=mailpoet-experimental';
+          window.location.href =
+            '/wp-admin/admin.php?page=mailpoet-experimental';
         }}
         disabled={loading}
       >
         Delete DB schema & deactivate feature
       </button>
-      {error && (<div>{error?.data?.message ?? 'An unknown error occurred'}</div>)}
+      {error && (
+        <div>{error?.data?.message ?? 'An unknown error occurred'}</div>
+      )}
     </div>
   );
 }

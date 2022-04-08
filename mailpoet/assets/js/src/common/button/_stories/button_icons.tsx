@@ -54,10 +54,7 @@ export function WithIcons() {
 
       <Heading level={3}>Regular buttons</Heading>
       <p>
-        <Button
-          onClick={action('icon start primary regular')}
-          iconStart={icon}
-        >
+        <Button onClick={action('icon start primary regular')} iconStart={icon}>
           Icon start
         </Button>
         <Button
@@ -90,35 +87,15 @@ export function WithIcons() {
 
       <Heading level={3}>Disabled buttons</Heading>
       <p>
-        <Button
-          isDisabled
-          iconStart={icon}
-        >
+        <Button isDisabled iconStart={icon}>
           Icon start
         </Button>
-        <Button
-          isDisabled
-          variant="secondary"
-          iconStart={icon}
-          iconEnd={icon}
-        >
+        <Button isDisabled variant="secondary" iconStart={icon} iconEnd={icon}>
           Both icons
         </Button>
-        <Button
-          isDisabled
-          variant="secondary"
-          iconStart={icon}
-        />
-        <Button
-          isDisabled
-          variant="tertiary"
-          iconStart={icon}
-        />
-        <Button
-          isDisabled
-          variant="destructive"
-          iconEnd={icon}
-        >
+        <Button isDisabled variant="secondary" iconStart={icon} />
+        <Button isDisabled variant="tertiary" iconStart={icon} />
+        <Button isDisabled variant="destructive" iconEnd={icon}>
           Icon end
         </Button>
       </p>
@@ -126,35 +103,15 @@ export function WithIcons() {
 
       <Heading level={3}>Buttons with spinner</Heading>
       <p>
-        <Button
-          withSpinner
-          iconStart={icon}
-        >
+        <Button withSpinner iconStart={icon}>
           Icon start
         </Button>
-        <Button
-          withSpinner
-          variant="secondary"
-          iconStart={icon}
-          iconEnd={icon}
-        >
+        <Button withSpinner variant="secondary" iconStart={icon} iconEnd={icon}>
           Both icons
         </Button>
-        <Button
-          withSpinner
-          variant="secondary"
-          iconStart={icon}
-        />
-        <Button
-          withSpinner
-          variant="tertiary"
-          iconStart={icon}
-        />
-        <Button
-          withSpinner
-          variant="destructive"
-          iconEnd={icon}
-        >
+        <Button withSpinner variant="secondary" iconStart={icon} />
+        <Button withSpinner variant="tertiary" iconStart={icon} />
+        <Button withSpinner variant="destructive" iconEnd={icon}>
           Icon end
         </Button>
       </p>

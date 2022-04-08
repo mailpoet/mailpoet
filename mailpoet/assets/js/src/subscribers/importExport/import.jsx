@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import ReactDOM from 'react-dom';
-import {
-  HashRouter, Switch, Route, Redirect,
-} from 'react-router-dom';
+import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
 import ScrollToTop from 'common/scroll_to_top.jsx';
 
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
@@ -18,7 +16,8 @@ const container = document.getElementById('import_container');
 const subscribersLimitForValidation = 100;
 
 function ImportSubscribers() {
-  const [stepMethodSelectionData, setStepMethodSelectionData] = useState(undefined);
+  const [stepMethodSelectionData, setStepMethodSelectionData] =
+    useState(undefined);
   const [stepDataManipulationData, setStepDataManipulationData] = useState({});
   const contextValue = useGlobalContextValue(window);
   return (
@@ -29,9 +28,7 @@ function ImportSubscribers() {
           <Switch>
             <Route
               path="/step_clean_list"
-              render={(props) => (
-                <StepCleanList {...props} />
-              )}
+              render={(props) => <StepCleanList {...props} />}
             />
             <Route
               path="/step_method_selection"
@@ -78,10 +75,7 @@ function ImportSubscribers() {
                 />
               )}
             />
-            <Route
-              path="*"
-              render={() => <Redirect to="/step_clean_list" />}
-            />
+            <Route path="*" render={() => <Redirect to="/step_clean_list" />} />
           </Switch>
         </ScrollToTop>
       </HashRouter>

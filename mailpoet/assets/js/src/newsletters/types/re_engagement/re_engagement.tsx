@@ -1,9 +1,5 @@
 import { useState } from 'react';
-import {
-  __,
-  assoc,
-  compose,
-} from 'lodash/fp';
+import { __, assoc, compose } from 'lodash/fp';
 import { useHistory } from 'react-router-dom';
 
 import MailPoet from 'mailpoet';
@@ -19,12 +15,9 @@ export function NewsletterTypeReEngagement(): JSX.Element {
   let defaultAfterTime = '';
   if (MailPoet.settings.deactivate_subscriber_after_inactive_days) {
     defaultAfterTime = (
-      (
-        Math.floor(
-          Number(
-            MailPoet.settings.deactivate_subscriber_after_inactive_days,
-          ) / 30,
-        )
+      Math.floor(
+        Number(MailPoet.settings.deactivate_subscriber_after_inactive_days) /
+          30,
       ) - 1
     ).toString();
   }
@@ -53,40 +46,51 @@ export function NewsletterTypeReEngagement(): JSX.Element {
         subject: MailPoet.I18n.t('draftNewsletterTitle'),
         options,
       },
-    }).done((response) => {
-      showTemplateSelection(response.data.id as string);
-    }).fail((response) => {
-      setLoading(false);
-      if (response.errors) {
-        setErrors(response.errors as { message:string }[]);
-      }
-    });
+    })
+      .done((response) => {
+        showTemplateSelection(response.data.id as string);
+      })
+      .fail((response) => {
+        setLoading(false);
+        if (response.errors) {
+          setErrors(response.errors as { message: string }[]);
+        }
+      });
   }
 
   return (
     <div>
       <Background color="#fff" />
 
-      {errors && (<APIErrorsNotice errors={errors} />)}
+      {errors && <APIErrorsNotice errors={errors} />}
 
-      <ListingHeadingStepsRoute emailType="re_engagement" automationId="re_engagement_heading_creation_heading" />
+      <ListingHeadingStepsRoute
+        emailType="re_engagement"
+        automationId="re_engagement_heading_creation_heading"
+      />
 
       <Grid.Column align="center" className="mailpoet-schedule-email">
         <Scheduling
           afterTimeNumber={options.afterTimeNumber}
           afterTimeType={options.afterTimeType}
-          inactiveSubscribersPeriod={
-            Number(MailPoet.settings.deactivate_subscriber_after_inactive_days)
-          }
-          updateAfterTimeNumber={compose([setOptions, assoc('afterTimeNumber', __, options)])}
-          updateAfterTimeType={compose([setOptions, assoc('afterTimeType', __, options)])}
+          inactiveSubscribersPeriod={Number(
+            MailPoet.settings.deactivate_subscriber_after_inactive_days,
+          )}
+          updateAfterTimeNumber={compose([
+            setOptions,
+            assoc('afterTimeNumber', __, options),
+          ])}
+          updateAfterTimeType={compose([
+            setOptions,
+            assoc('afterTimeType', __, options),
+          ])}
         />
 
         <Button
           isFullWidth
           onClick={() => handleNext()}
           type="button"
-          isDisabled={(!options.afterTimeNumber) || loading}
+          isDisabled={!options.afterTimeNumber || loading}
           withSpinner={loading}
         >
           {MailPoet.I18n.t('next')}

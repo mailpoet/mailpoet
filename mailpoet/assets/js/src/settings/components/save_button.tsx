@@ -7,7 +7,9 @@ import ReactStringReplace from 'react-string-replace';
 
 const showReEngagementNotice = (action, showError, showSuccess) => {
   if (action === 'deactivate') {
-    showError(<p>{MailPoet.I18n.t('re-engagementDisabledNotice')}</p>, { scroll: true });
+    showError(<p>{MailPoet.I18n.t('re-engagementDisabledNotice')}</p>, {
+      scroll: true,
+    });
     return;
   }
   if (action === 'reactivate') {
@@ -42,15 +44,29 @@ export default function SaveButton() {
   const showSuccess = notices.success;
   useEffect(() => {
     if (clicked && !isSaving) {
-      if (error) showError(error.map((err) => <p>{err}</p>), { scroll: true });
+      if (error)
+        showError(
+          error.map((err) => <p>{err}</p>),
+          { scroll: true },
+        );
       else {
-        showSuccess(<p>{MailPoet.I18n.t('settingsSaved')}</p>, { scroll: true });
+        showSuccess(<p>{MailPoet.I18n.t('settingsSaved')}</p>, {
+          scroll: true,
+        });
         if (hasReEngagementNotice) {
           showReEngagementNotice(reEngagementAction, showError, showSuccess);
         }
       }
     }
-  }, [clicked, error, isSaving, showError, showSuccess, hasReEngagementNotice, reEngagementAction]);
+  }, [
+    clicked,
+    error,
+    isSaving,
+    showError,
+    showSuccess,
+    hasReEngagementNotice,
+    reEngagementAction,
+  ]);
   const onClick = () => {
     setClicked(true);
     save();

@@ -1,9 +1,5 @@
 {
-  "extends": [
-    "airbnb",
-    "plugin:react/jsx-runtime",
-    "prettier"
-  ],
+  "extends": ["airbnb", "plugin:react/jsx-runtime", "prettier"],
   "env": {
     "browser": true
   },
@@ -14,9 +10,7 @@
       "jsx": true
     }
   },
-  "plugins": [
-    "react-hooks"
-  ],
+  "plugins": ["react-hooks"],
   "settings": {
     "import/resolver": "webpack"
   },
@@ -27,9 +21,12 @@
     "react-hooks/exhaustive-deps": "warn",
     // Exceptions
     "import/extensions": 0, // we wouldn't be able to import jQuery without this line
-    "jsx-a11y/anchor-is-valid": [ "error", {
-      "components": [ "Link" ],
-      "specialLink": [ "to" ]
-    }]
+    "jsx-a11y/anchor-is-valid": [
+      "error",
+      {
+        "components": ["Link"],
+        "specialLink": ["to"]
+      }
+    ]
   }
 }

@@ -12,15 +12,20 @@ interface Props {
 export function NewSubscribersStatus({
   newSubscribersStatus,
   setNewSubscribersStatus,
-}:Props) :JSX.Element {
-  const handleChange = useCallback((event): void => {
-    setNewSubscribersStatus(event.target.value);
-  }, [setNewSubscribersStatus]);
+}: Props): JSX.Element {
+  const handleChange = useCallback(
+    (event): void => {
+      setNewSubscribersStatus(event.target.value);
+    },
+    [setNewSubscribersStatus],
+  );
 
   return (
     <>
       <div className="mailpoet-settings-label">
-        <label htmlFor="new_subscribers_status">{MailPoet.I18n.t('newSubscribersStatus')}</label>
+        <label htmlFor="new_subscribers_status">
+          {MailPoet.I18n.t('newSubscribersStatus')}
+        </label>
         <ConsentDescription />
       </div>
       <div className="mailpoet-settings-inputs">
@@ -33,7 +38,9 @@ export function NewSubscribersStatus({
         >
           <option value="subscribed">{MailPoet.I18n.t('subscribed')}</option>
           <option value="inactive">{MailPoet.I18n.t('inactive')}</option>
-          <option value="unsubscribed">{MailPoet.I18n.t('unsubscribed')}</option>
+          <option value="unsubscribed">
+            {MailPoet.I18n.t('unsubscribed')}
+          </option>
         </Select>
       </div>
     </>

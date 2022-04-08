@@ -4,7 +4,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import FormPlacementOption from './form_placement_option';
 import Icon from './icons/fixed_bar_icon';
 
-function FixedBar():JSX.Element {
+function FixedBar(): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -16,7 +16,7 @@ function FixedBar():JSX.Element {
       active={formSettings.formPlacement.fixedBar.enabled}
       label={MailPoet.I18n.t('placeFixedBarFormOnPages')}
       icon={Icon}
-      onClick={(): void => (showPlacementSettings('fixed_bar'))}
+      onClick={(): void => showPlacementSettings('fixed_bar')}
       canBeActive
     />
   );

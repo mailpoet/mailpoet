@@ -21,12 +21,15 @@ export function getSettings(customField) {
       },
       mandatory: {
         type: 'boolean',
-        default: customField.params.required ? !!customField.params.required : false,
+        default: customField.params.required
+          ? !!customField.params.required
+          : false,
       },
       values: {
         type: 'array',
         default: customField.params.values
-          ? customFieldValuesToBlockValues(customField.params.values) : [],
+          ? customFieldValuesToBlockValues(customField.params.values)
+          : [],
       },
       customFieldId: {
         type: 'string',

@@ -7,11 +7,7 @@ type Props = {
   children: ReactNode;
 };
 
-function ModalFrame({
-  fullScreen = false,
-  className = '',
-  children,
-}: Props) {
+function ModalFrame({ fullScreen = false, className = '', children }: Props) {
   return (
     <div
       className={classnames(

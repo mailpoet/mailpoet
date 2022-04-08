@@ -16,11 +16,7 @@ function Categories({ onSelect, categories, active }: Props) {
     />
   ));
 
-  return (
-    <div className="mailpoet-categories">
-      { cats }
-    </div>
-  );
+  return <div className="mailpoet-categories">{cats}</div>;
 }
 
 export default Categories;

@@ -23,31 +23,34 @@ var ProductsDisplayOptionsSettingsView;
 Module.AbandonedCartContentBlockModel = base.BlockModel.extend({
   stale: ['_selectedProducts', '_availableProducts', '_transformedProducts'],
   defaults: function productsModelDefaults() {
-    return this._getDefaults({
-      type: 'abandonedCartContent',
-      withLayout: true,
-      amount: '2',
-      contentType: 'product',
-      postStatus: 'publish', // 'draft'|'pending'|'publish'
-      inclusionType: 'include', // 'include'|'exclude'
-      displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
-      titleFormat: 'h1', // 'h1'|'h2'|'h3'
-      titleAlignment: 'left', // 'left'|'center'|'right'
-      titleIsLink: false, // false|true
-      imageFullWidth: false, // true|false
-      titlePosition: 'abovePost', // 'abovePost'|'aboveExcerpt'
-      featuredImagePosition: 'alternate', // 'centered'|'right'|'left'|'alternate'|'none'
-      pricePosition: 'below', // 'hidden'|'above'|'below'
-      readMoreType: 'none', // 'link'|'button'|'none'
-      readMoreText: '', // 'link'|'button'
-      readMoreButton: {},
-      sortBy: 'newest', // 'newest'|'oldest',
-      showDivider: true, // true|false
-      divider: {},
-      _selectedProducts: [],
-      _availableProducts: [],
-      _transformedProducts: new (App.getBlockTypeModel('container'))(),
-    }, App.getConfig().get('blockDefaults.abandonedCartContent'));
+    return this._getDefaults(
+      {
+        type: 'abandonedCartContent',
+        withLayout: true,
+        amount: '2',
+        contentType: 'product',
+        postStatus: 'publish', // 'draft'|'pending'|'publish'
+        inclusionType: 'include', // 'include'|'exclude'
+        displayType: 'excerpt', // 'excerpt'|'full'|'titleOnly'
+        titleFormat: 'h1', // 'h1'|'h2'|'h3'
+        titleAlignment: 'left', // 'left'|'center'|'right'
+        titleIsLink: false, // false|true
+        imageFullWidth: false, // true|false
+        titlePosition: 'abovePost', // 'abovePost'|'aboveExcerpt'
+        featuredImagePosition: 'alternate', // 'centered'|'right'|'left'|'alternate'|'none'
+        pricePosition: 'below', // 'hidden'|'above'|'below'
+        readMoreType: 'none', // 'link'|'button'|'none'
+        readMoreText: '', // 'link'|'button'
+        readMoreButton: {},
+        sortBy: 'newest', // 'newest'|'oldest',
+        showDivider: true, // true|false
+        divider: {},
+        _selectedProducts: [],
+        _availableProducts: [],
+        _transformedProducts: new (App.getBlockTypeModel('container'))(),
+      },
+      App.getConfig().get('blockDefaults.abandonedCartContent'),
+    );
   },
   relations: function relations() {
     return {
@@ -61,7 +64,7 @@ Module.AbandonedCartContentBlockModel = base.BlockModel.extend({
     var PRODUCT_REFRESH_DELAY_MS = 500;
     var refreshTransformedProducts = _.debounce(
       this._refreshTransformedProducts.bind(this),
-      PRODUCT_REFRESH_DELAY_MS
+      PRODUCT_REFRESH_DELAY_MS,
     );
 
     // Attach Radio.Requests API primarily for highlighting
@@ -70,8 +73,15 @@ Module.AbandonedCartContentBlockModel = base.BlockModel.extend({
     this._refreshTransformedProducts();
     this.on('change', this._updateDefaults, this);
 
-    this.listenTo(this.get('_selectedProducts'), 'add remove reset', refreshTransformedProducts);
-    this.on('change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:pricePosition change:showDivider change:titlePosition', refreshTransformedProducts);
+    this.listenTo(
+      this.get('_selectedProducts'),
+      'add remove reset',
+      refreshTransformedProducts,
+    );
+    this.on(
+      'change:displayType change:titleFormat change:featuredImagePosition change:titleAlignment change:titleIsLink change:imageFullWidth change:pricePosition change:showDivider change:titlePosition',
+      refreshTransformedProducts,
+    );
     this.listenTo(this.get('divider'), 'change', refreshTransformedProducts);
   },
   _refreshTransformedProducts: function refreshTransformedProducts() {
@@ -80,7 +90,10 @@ Module.AbandonedCartContentBlockModel = base.BlockModel.extend({
 
     CommunicationComponent.getTransformedPosts(data)
       .done(function getTransformedPostsDone(products) {
-        that.get('_transformedProducts').get('blocks').reset(products, { parse: true });
+        that
+          .get('_transformedProducts')
+          .get('blocks')
+          .reset(products, { parse: true });
       })
       .fail(function getTransformedProductsFail() {
         MailPoet.Notice.error(MailPoet.I18n.t('failedToFetchRenderedPosts'));
@@ -89,19 +102,27 @@ Module.AbandonedCartContentBlockModel = base.BlockModel.extend({
 });
 
 Module.AbandonedCartContentBlockView = base.BlockView.extend({
-  className: 'mailpoet_block mailpoet_abandoned_cart_content_block mailpoet_droppable_block',
-  getTemplate: function getTemplate() { return window.templates.abandonedCartContentBlock; },
+  className:
+    'mailpoet_block mailpoet_abandoned_cart_content_block mailpoet_droppable_block',
+  getTemplate: function getTemplate() {
+    return window.templates.abandonedCartContentBlock;
+  },
   modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'),
-  regions: _.extend({
-    productsRegion: '.mailpoet_abandoned_cart_content_container',
-  }, base.BlockView.prototype.regions),
+  regions: _.extend(
+    {
+      productsRegion: '.mailpoet_abandoned_cart_content_container',
+    },
+    base.BlockView.prototype.regions,
+  ),
   onDragSubstituteBy: function onDragSubstituteBy() {
     return Module.AbandonedCartContentBlockWidgetView;
   },
   initialize: function initialize() {
     base.BlockView.prototype.initialize.apply(this, arguments);
 
-    this.toolsView = new Module.AbandonedCartContentBlockToolsView({ model: this.model });
+    this.toolsView = new Module.AbandonedCartContentBlockToolsView({
+      model: this.model,
+    });
   },
   events: {
     'click .mailpoet_abandoned_cart_content_block_overlay': 'showSettings',
@@ -123,7 +144,13 @@ Module.AbandonedCartContentBlockView = base.BlockView.extend({
       disableDragAndDrop: true,
       emptyContainerMessage: MailPoet.I18n.t('noPostsToDisplay'),
     };
-    this.showChildView('productsRegion', new ContainerView({ model: this.model.get('_transformedProducts'), renderOptions: renderOptions }));
+    this.showChildView(
+      'productsRegion',
+      new ContainerView({
+        model: this.model.get('_transformedProducts'),
+        renderOptions: renderOptions,
+      }),
+    );
   },
 });
 
@@ -138,7 +165,8 @@ Module.AbandonedCartContentBlockSettingsView = base.BlockSettingsView.extend({
     return window.templates.abandonedCartContentBlockSettings;
   },
   regions: {
-    displayOptionsRegion: '.mailpoet_settings_abandoned_cart_content_display_options',
+    displayOptionsRegion:
+      '.mailpoet_settings_abandoned_cart_content_display_options',
   },
   events: {
     'click .mailpoet_done_editing': 'close',
@@ -150,7 +178,9 @@ Module.AbandonedCartContentBlockSettingsView = base.BlockSettingsView.extend({
   },
   initialize: function initialize() {
     this.model.trigger('startEditing');
-    this.displayOptionsView = new ProductsDisplayOptionsSettingsView({ model: this.model });
+    this.displayOptionsView = new ProductsDisplayOptionsSettingsView({
+      model: this.model,
+    });
   },
   onRender: function onRender() {
     this.model.request('blockView');
@@ -179,13 +209,34 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
       'click .mailpoet_products_select_divider': 'showDividerSettings',
       'change .mailpoet_products_display_type': 'changeDisplayType',
       'change .mailpoet_products_title_format': 'changeTitleFormat',
-      'change .mailpoet_products_title_as_links': _.partial(this.changeBoolField, 'titleIsLink'),
-      'change .mailpoet_products_show_divider': _.partial(this.changeBoolField, 'showDivider'),
-      'change .mailpoet_products_title_alignment': _.partial(this.changeField, 'titleAlignment'),
-      'change .mailpoet_products_image_full_width': _.partial(this.changeBoolField, 'imageFullWidth'),
-      'change .mailpoet_products_featured_image_position': _.partial(this.changeField, 'featuredImagePosition'),
-      'change .mailpoet_products_price_position': _.partial(this.changeField, 'pricePosition'),
-      'change .mailpoet_products_title_position': _.partial(this.changeField, 'titlePosition'),
+      'change .mailpoet_products_title_as_links': _.partial(
+        this.changeBoolField,
+        'titleIsLink',
+      ),
+      'change .mailpoet_products_show_divider': _.partial(
+        this.changeBoolField,
+        'showDivider',
+      ),
+      'change .mailpoet_products_title_alignment': _.partial(
+        this.changeField,
+        'titleAlignment',
+      ),
+      'change .mailpoet_products_image_full_width': _.partial(
+        this.changeBoolField,
+        'imageFullWidth',
+      ),
+      'change .mailpoet_products_featured_image_position': _.partial(
+        this.changeField,
+        'featuredImagePosition',
+      ),
+      'change .mailpoet_products_price_position': _.partial(
+        this.changeField,
+        'pricePosition',
+      ),
+      'change .mailpoet_products_title_position': _.partial(
+        this.changeField,
+        'titlePosition',
+      ),
     };
   },
   templateContext: function templateContext() {
@@ -195,22 +246,28 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
   },
   showDividerSettings: function showDividerSettings() {
     var dividerModule = DividerBlock;
-    (new dividerModule.DividerBlockSettingsView({
+    new dividerModule.DividerBlockSettingsView({
       model: this.model.get('divider'),
       renderOptions: {
         displayFormat: 'subpanel',
         hideApplyToAll: true,
       },
-    })).render();
+    }).render();
   },
   changeDisplayType: function changeDisplayType(event) {
     var value = jQuery(event.target).val();
     if (value !== 'titleOnly') {
-      this.$('.mailpoet_products_title_position').removeClass('mailpoet_hidden');
-      this.$('.mailpoet_products_title_position_separator').removeClass('mailpoet_hidden');
+      this.$('.mailpoet_products_title_position').removeClass(
+        'mailpoet_hidden',
+      );
+      this.$('.mailpoet_products_title_position_separator').removeClass(
+        'mailpoet_hidden',
+      );
     } else {
       this.$('.mailpoet_products_title_position').addClass('mailpoet_hidden');
-      this.$('.mailpoet_products_title_position_separator').addClass('mailpoet_hidden');
+      this.$('.mailpoet_products_title_position_separator').addClass(
+        'mailpoet_hidden',
+      );
     }
 
     this.changeField('displayType', event);
@@ -221,9 +278,12 @@ ProductsDisplayOptionsSettingsView = base.BlockSettingsView.extend({
 });
 
 Module.AbandonedCartContentBlockWidgetView = base.WidgetView.extend({
-  className: base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
+  className:
+    base.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
   id: 'automation_editor_block_abandoned_cart_content',
-  getTemplate: function getTemplate() { return window.templates.abandonedCartContentInsertion; },
+  getTemplate: function getTemplate() {
+    return window.templates.abandonedCartContentInsertion;
+  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,
@@ -243,8 +303,9 @@ App.on('before:start', function beforeStartApp(BeforeStartApp, options) {
     blockView: Module.AbandonedCartContentBlockView,
   });
 
-  if (options.newsletter.options.group !== 'woocommerce'
-    || options.newsletter.options.event !== 'woocommerce_abandoned_shopping_cart'
+  if (
+    options.newsletter.options.group !== 'woocommerce' ||
+    options.newsletter.options.event !== 'woocommerce_abandoned_shopping_cart'
   ) {
     isAbandonedCartContentBlockActive = false;
     return;

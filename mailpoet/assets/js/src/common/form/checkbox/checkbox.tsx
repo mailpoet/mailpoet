@@ -17,13 +17,11 @@ function Checkbox({
 }: Props) {
   return (
     <label
-      className={
-      classnames({
+      className={classnames({
         'mailpoet-form-checkbox': true,
         'mailpoet-disabled': attributes.disabled,
         'mailpoet-full-width': isFullWidth,
-      })
-    }
+      })}
       data-automation-id={automationId}
     >
       <input

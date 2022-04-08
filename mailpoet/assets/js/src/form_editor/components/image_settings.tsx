@@ -16,24 +16,24 @@ function ImageSettings({
   onImageUrlChange,
   imageDisplay,
   onImageDisplayChange,
-}: Props) : JSX.Element {
+}: Props): JSX.Element {
   return (
     <div className="mailpoet-styles-settings-image-url">
-      <BaseControl.VisualLabel>
-        {name}
-      </BaseControl.VisualLabel>
+      <BaseControl.VisualLabel>{name}</BaseControl.VisualLabel>
       <div className="mailpoet-styles-settings-image-url-body">
-        <input type="text" value={imageUrl ?? ''} onChange={(event): void => onImageUrlChange(event.target.value)} />
+        <input
+          type="text"
+          value={imageUrl ?? ''}
+          onChange={(event): void => onImageUrlChange(event.target.value)}
+        />
         <MediaUpload
           value={imageUrl}
-          onSelect={(image:{ url:string }): void => onImageUrlChange(image.url)}
+          onSelect={(image: { url: string }): void =>
+            onImageUrlChange(image.url)
+          }
           allowedTypes={['image']}
           render={({ open }): JSX.Element => (
-            <Button
-              isSecondary
-              isSmall
-              onClick={open}
-            >
+            <Button isSecondary isSmall onClick={open}>
               {MailPoet.I18n.t('formSettingsStylesSelectImage')}
             </Button>
           )}

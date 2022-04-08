@@ -8,7 +8,9 @@ export default function EmailContent() {
   const [body, setBody] = useSetting('signup_confirmation', 'body');
 
   if (!enabled) return null;
-  const descriptionLines = t('emailContentDescription').split('<br />').filter((x) => x);
+  const descriptionLines = t('emailContentDescription')
+    .split('<br />')
+    .filter((x) => x);
   return (
     <>
       <Label

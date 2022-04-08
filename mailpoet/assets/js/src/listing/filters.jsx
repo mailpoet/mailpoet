@@ -8,26 +8,24 @@ import Select from 'common/form/select/select.tsx';
 class ListingFilters extends Component {
   componentDidUpdate() {
     const selectedFilters = this.props.filter;
-    this.getAvailableFilters().forEach(
-      (filter, i) => {
-        if (selectedFilters[filter] !== undefined && selectedFilters[filter]) {
-          jQuery(this[`filter-${i}`])
-            .val(selectedFilters[filter])
-            .trigger('change');
-        }
+    this.getAvailableFilters().forEach((filter, i) => {
+      if (selectedFilters[filter] !== undefined && selectedFilters[filter]) {
+        jQuery(this[`filter-${i}`])
+          .val(selectedFilters[filter])
+          .trigger('change');
       }
-    );
+    });
   }
 
   getAvailableFilters = () => {
     const filters = this.props.filters;
-    return Object.keys(filters).filter((filter) => !(
-      filters[filter].length === 0
-        || (
-          filters[filter].length === 1
-          && !filters[filter][0].value
-        )
-    ));
+    return Object.keys(filters).filter(
+      (filter) =>
+        !(
+          filters[filter].length === 0 ||
+          (filters[filter].length === 1 && !filters[filter][0].value)
+        ),
+    );
   };
 
   handleEmptyTrash = () => this.props.onEmptyTrash();
@@ -45,27 +43,25 @@ class ListingFilters extends Component {
 
   render() {
     const filters = this.props.filters;
-    const availableFilters = this.getAvailableFilters()
-      .map((filter, i) => (
-        <Select
-          isMinWidth
-          dimension="small"
-          ref={(c) => { this[`filter-${i}`] = c; }}
-          key={`filter-${filter}`}
-          name={filter}
-          automationId={`listing_filter_${filter}`}
-          onChange={this.handleFilterAction}
-        >
-          { filters[filter].map((option) => (
-            <option
-              value={option.value}
-              key={`filter-option-${option.value}`}
-            >
-              { option.label }
-            </option>
-          )) }
-        </Select>
-      ));
+    const availableFilters = this.getAvailableFilters().map((filter, i) => (
+      <Select
+        isMinWidth
+        dimension="small"
+        ref={(c) => {
+          this[`filter-${i}`] = c;
+        }}
+        key={`filter-${filter}`}
+        name={filter}
+        automationId={`listing_filter_${filter}`}
+        onChange={this.handleFilterAction}
+      >
+        {filters[filter].map((option) => (
+          <option value={option.value} key={`filter-option-${option.value}`}>
+            {option.label}
+          </option>
+        ))}
+      </Select>
+    ));
 
     let emptyTrash;
     if (this.props.group === 'trash') {
@@ -84,18 +80,15 @@ class ListingFilters extends Component {
 
     return (
       <div className="mailpoet-listing-filters">
-        { availableFilters }
-        { emptyTrash }
+        {availableFilters}
+        {emptyTrash}
       </div>
     );
   }
 }
 
 ListingFilters.propTypes = {
-  filters: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.array,
-  ]).isRequired,
+  filters: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
   onEmptyTrash: PropTypes.func.isRequired,
   onBeforeSelectFilter: PropTypes.func,
   onSelectFilter: PropTypes.func.isRequired,

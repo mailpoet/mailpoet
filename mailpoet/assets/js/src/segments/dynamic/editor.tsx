@@ -10,7 +10,7 @@ import { Form } from './form';
 
 import { createStore } from './store/store';
 
-function Editor() : JSX.Element {
+function Editor(): JSX.Element {
   const match = useRouteMatch<{ id: string }>();
 
   createStore();
@@ -28,7 +28,12 @@ function Editor() : JSX.Element {
 
       <Heading level={1} className="mailpoet-title">
         <span>{MailPoet.I18n.t('formPageTitle')}</span>
-        <Link className="mailpoet-button button button-secondary button-small" to="/segments">{MailPoet.I18n.t('backToList')}</Link>
+        <Link
+          className="mailpoet-button button button-secondary button-small"
+          to="/segments"
+        >
+          {MailPoet.I18n.t('backToList')}
+        </Link>
       </Heading>
 
       <Form segmentId={Number(match.params.id)} />

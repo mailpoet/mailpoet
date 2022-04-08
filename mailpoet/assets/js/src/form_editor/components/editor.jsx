@@ -1,9 +1,6 @@
 import '@wordpress/core-data';
 import { useSelect, useDispatch } from '@wordpress/data';
-import {
-  Popover,
-  SlotFillProvider,
-} from '@wordpress/components';
+import { Popover, SlotFillProvider } from '@wordpress/components';
 import { uploadMedia } from '@wordpress/media-utils';
 import {
   BlockEditorKeyboardShortcuts,
@@ -42,27 +39,27 @@ import Fullscreen from './fullscreen';
 export default function Editor() {
   const sidebarOpened = useSelect(
     (sel) => sel('mailpoet-form-editor').getSidebarOpened(),
-    []
+    [],
   );
 
   const isInserterOpened = useSelect(
     (sel) => sel('mailpoet-form-editor').isInserterOpened(),
-    []
+    [],
   );
 
   const formBlocks = useSelect(
     (sel) => sel('mailpoet-form-editor').getFormBlocks(),
-    []
+    [],
   );
 
   const canUserUpload = useSelect(
     (sel) => sel('core').canUser('create', 'media'),
-    []
+    [],
   );
 
   const selectedBlock = useSelect(
     (sel) => sel('core/block-editor').getSelectedBlock(),
-    []
+    [],
   );
 
   const layoutClass = classnames(
@@ -70,10 +67,12 @@ export default function Editor() {
     selectedBlock ? selectedBlock.name.replace('/', '-') : null,
     {
       'is-sidebar-opened': sidebarOpened,
-    }
+    },
   );
 
-  const { blocksChangedInBlockEditor, toggleInserter } = useDispatch('mailpoet-form-editor');
+  const { blocksChangedInBlockEditor, toggleInserter } = useDispatch(
+    'mailpoet-form-editor',
+  );
 
   // Editor settings - see @wordpress/block-editor/src/store/defaults.js
   const editorSettings = {
@@ -125,7 +124,7 @@ export default function Editor() {
                   settings={editorSettings}
                   useSubRegistry={false}
                 >
-                  {(isInserterOpened) && (
+                  {isInserterOpened && (
                     <div className="interface-interface-skeleton__secondary-sidebar">
                       <Inserter setIsInserterOpened={toggleInserter} />
                     </div>
@@ -148,7 +147,7 @@ export default function Editor() {
                       </div>
                     </BlockSelectionClearer>
                   </div>
-                  {(sidebarOpened) && (
+                  {sidebarOpened && (
                     <div className="interface-interface-skeleton__sidebar">
                       <Sidebar />
                     </div>

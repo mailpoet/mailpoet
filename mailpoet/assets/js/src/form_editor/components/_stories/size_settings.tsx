@@ -5,7 +5,7 @@ export default {
   title: 'FormEditor/Size Settings',
 };
 
-export function Settings() : JSX.Element {
+export function Settings(): JSX.Element {
   return (
     <>
       <SizeSettings
@@ -34,7 +34,7 @@ export function Settings() : JSX.Element {
   );
 }
 
-export function SettingsInSidebar() : JSX.Element {
+export function SettingsInSidebar(): JSX.Element {
   return (
     <div className="edit-post-sidebar mailpoet_form_editor_sidebar">
       <SizeSettings

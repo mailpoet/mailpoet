@@ -1,16 +1,18 @@
 [back to readme](Readme.md)
 
 # Usage Examples
+
 Common usage is a rendering of a subscription form and processing it.
 
 ## Fetching data for a subscription form
+
 ```php
 <?php
 
 if (class_exists(\MailPoet\API\API::class)) {
   // Get MailPoet API instance
   $mailpoet_api = \MailPoet\API\API::MP('v1');
-  // Get available list so that a subscriber can choose in which to subscribe 
+  // Get available list so that a subscriber can choose in which to subscribe
   $lists = $mailpoet_api->getLists();
   // Get subscriber fields to know what fields can be rendered within a form
   $subscriber_form_fields = $mailpoet_api->getSubscriberFields();
@@ -18,13 +20,14 @@ if (class_exists(\MailPoet\API\API::class)) {
 ```
 
 ## Processing a subscription form
+
 ```php
 <?php
 
 if (class_exists(\MailPoet\API\API::class)) {
   // Get MailPoet API instance
   $mailpoet_api = \MailPoet\API\API::MP('v1');
-  
+
   // Fill subscribed data from $_POST (for simplicity it expects that subscriber field ids are used as input names)
   $subscriber = [];
   $subscriber_form_fields = $mailpoet_api->getSubscriberFields();
@@ -50,7 +53,7 @@ if (class_exists(\MailPoet\API\API::class)) {
       $mailpoet_api->subscribeToLists($subscriber['email'], $list_ids);
     }
   } catch (\Exception $e) {
-    $error_message = $e->getMessage(); 
+    $error_message = $e->getMessage();
   }
 }
 ```

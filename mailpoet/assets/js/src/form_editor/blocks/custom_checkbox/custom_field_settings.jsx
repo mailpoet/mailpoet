@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   BaseControl,
-  Button, TextControl,
+  Button,
+  TextControl,
   ToggleControl,
 } from '@wordpress/components';
 import { isEmpty } from 'lodash';
@@ -25,18 +26,22 @@ function CustomFieldSettings({
   const [localIsChecked, setLocalIsChecked] = useState(isChecked);
   const [localCheckboxLabel, setLocalCheckboxLabel] = useState(checkboxLabel);
 
-  const hasUnsavedChanges = localMandatory !== mandatory
-    || localIsChecked !== isChecked
-    || localLabel !== label
-    || localCheckboxLabel !== checkboxLabel;
+  const hasUnsavedChanges =
+    localMandatory !== mandatory ||
+    localIsChecked !== isChecked ||
+    localLabel !== label ||
+    localCheckboxLabel !== checkboxLabel;
 
-  const localData = useMemo(() => ({
-    mandatory: localMandatory,
-    isChecked: localIsChecked,
-    label: localLabel,
-    checkboxLabel: localCheckboxLabel,
-    isValid: !isEmpty(localCheckboxLabel),
-  }), [localLabel, localMandatory, localIsChecked, localCheckboxLabel]);
+  const localData = useMemo(
+    () => ({
+      mandatory: localMandatory,
+      isChecked: localIsChecked,
+      label: localLabel,
+      checkboxLabel: localCheckboxLabel,
+      isValid: !isEmpty(localCheckboxLabel),
+    }),
+    [localLabel, localMandatory, localIsChecked, localCheckboxLabel],
+  );
 
   useEffect(() => {
     onChange(localData, hasUnsavedChanges);

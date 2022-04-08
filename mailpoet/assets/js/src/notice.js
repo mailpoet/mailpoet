@@ -53,10 +53,7 @@ export const MailPoetNotice = {
 
     // add data-id to the element
     if (this.options.id) {
-      this.element.attr(
-        'data-id',
-        this.options.id
-      );
+      this.element.attr('data-id', this.options.id);
     }
 
     // remove id from clone
@@ -92,7 +89,8 @@ export const MailPoetNotice = {
           // remove notice
           jQuery(this).remove();
         });
-    }.bind(this.element));
+      }.bind(this.element),
+    );
 
     return this;
   },
@@ -100,7 +98,7 @@ export const MailPoetNotice = {
     // update notice's message
     this.setMessage(
       this.options.message,
-      jQuery('[data-id="' + this.options.id + '"').first()
+      jQuery('[data-id="' + this.options.id + '"').first(),
     );
   },
   setMessage: function setMessage(message, element) {
@@ -123,8 +121,8 @@ export const MailPoetNotice = {
     this.init(options);
 
     if (
-      this.options.id !== null
-        && jQuery('[data-id="' + this.options.id + '"]').length > 0
+      this.options.id !== null &&
+      jQuery('[data-id="' + this.options.id + '"]').length > 0
     ) {
       this.updateNotice();
     } else {
@@ -168,14 +166,17 @@ export const MailPoetNotice = {
       setTimeout(
         // eslint-disable-next-line func-names
         function (target) {
-         target.trigger('close');
+          target.trigger('close');
         },
-        this.options.timeout, this.element
+        this.options.timeout,
+        this.element,
       );
     }
 
     if (this.options.hideClose === false) {
-      this.element.append('<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>');
+      this.element.append(
+        '<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>',
+      );
       // eslint-disable-next-line func-names
       this.element.find('.notice-dismiss').on('click', function () {
         jQuery(this).trigger('close');
@@ -196,41 +197,67 @@ export const MailPoetNotice = {
       Object.keys(all).forEach(function close(id) {
         jQuery('[data-id="' + all[id] + '"]').trigger('close');
       });
-    } if (all !== undefined) {
+    }
+    if (all !== undefined) {
       // single id
       jQuery('[data-id="' + all + '"]').trigger('close');
     } else {
-      jQuery('.mailpoet_notice.notice-success:not([id]), .mailpoet_notice.notice-error:not([id])')
-        .trigger('close');
+      jQuery(
+        '.mailpoet_notice.notice-success:not([id]), .mailpoet_notice.notice-error:not([id])',
+      ).trigger('close');
     }
   },
   error: function error(message, options) {
-    this.show(jQuery.extend({}, {
-      type: 'error',
-      message: message,
-    }, options));
+    this.show(
+      jQuery.extend(
+        {},
+        {
+          type: 'error',
+          message: message,
+        },
+        options,
+      ),
+    );
   },
   success: function success(message, options) {
-    this.show(jQuery.extend({}, {
-      type: 'success',
-      message: message,
-    }, options));
+    this.show(
+      jQuery.extend(
+        {},
+        {
+          type: 'success',
+          message: message,
+        },
+        options,
+      ),
+    );
   },
   system: function system(message, options) {
-    this.show(jQuery.extend({}, {
-      type: 'system',
-      static: true,
-      message: message,
-    }, options));
+    this.show(
+      jQuery.extend(
+        {},
+        {
+          type: 'system',
+          static: true,
+          message: message,
+        },
+        options,
+      ),
+    );
   },
   showApiErrorNotice: function showApiErrorNotice(response, options) {
     var errorMessage = I18n.t('ajaxFailedErrorMessage');
     if (response && response.errors && response.errors.length > 0) {
-      errorMessage = response.errors.map(error => error.message);
+      errorMessage = response.errors.map((error) => error.message);
     }
-    this.show(jQuery.extend({}, {
-      type: 'error',
-      message: errorMessage,
-    }, options));
+    this.show(
+      jQuery.extend(
+        {},
+        {
+          type: 'error',
+          message: errorMessage,
+        },
+        options,
+      ),
+    );
   },
 };

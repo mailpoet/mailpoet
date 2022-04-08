@@ -39,7 +39,10 @@ function track(name, data = []) {
 function exportMixpanel() {
   window.MailPoet.forceTrackEvent = track;
 
-  if (window.mailpoet_analytics_enabled && window.MailPoet.libs3rdPartyEnabled) {
+  if (
+    window.mailpoet_analytics_enabled &&
+    window.MailPoet.libs3rdPartyEnabled
+  ) {
     window.MailPoet.trackEvent = track;
   } else {
     window.MailPoet.trackEvent = function emptyFunction() {};

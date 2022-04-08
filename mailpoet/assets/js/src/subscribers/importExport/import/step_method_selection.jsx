@@ -36,7 +36,9 @@ function StepMethodSelection({
 
   const finish = (parsedData) => {
     setStepMethodSelectionData(parsedData);
-    history.push(getNextStepLink(parsedData, subscribersLimitForValidation, method));
+    history.push(
+      getNextStepLink(parsedData, subscribersLimitForValidation, method),
+    );
   };
 
   const previousStep = () => {
@@ -55,11 +57,8 @@ function StepMethodSelection({
 
   return (
     <div className="mailpoet-settings-grid">
-      <SelectMethod
-        activeMethod={method}
-        onMethodChange={setMethod}
-      />
-      { method === 'paste-method' && (
+      <SelectMethod activeMethod={method} onMethodChange={setMethod} />
+      {method === 'paste-method' && (
         <MethodPaste
           onPrevious={previousStep}
           onValueChange={setPastedCsvData}
@@ -68,7 +67,7 @@ function StepMethodSelection({
           data={pastedCsvData}
         />
       )}
-      { method === 'file-method' && (
+      {method === 'file-method' && (
         <MethodUpload
           onPrevious={previousStep}
           onValueChange={setFile}
@@ -77,7 +76,7 @@ function StepMethodSelection({
           data={file}
         />
       )}
-      { method === 'mailchimp-method' && (
+      {method === 'mailchimp-method' && (
         <MethodMailChimp
           onPrevious={previousStep}
           onFinish={(data) => {
@@ -88,7 +87,7 @@ function StepMethodSelection({
           }}
         />
       )}
-      { method === undefined && (
+      {method === undefined && (
         <PreviousNextStepButtons
           canGoNext={false}
           onPreviousAction={previousStep}

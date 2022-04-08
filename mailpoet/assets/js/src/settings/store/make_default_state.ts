@@ -1,7 +1,5 @@
 import MailPoet from 'mailpoet';
-import {
-  State, PremiumStatus, MssStatus, TestEmailState,
-} from './types';
+import { State, PremiumStatus, MssStatus, TestEmailState } from './types';
 import normalizeSettings from './normalize_settings';
 
 function getPremiumStatus(keyValid, premiumInstalled): PremiumStatus {
@@ -20,7 +18,9 @@ function getPremiumStatus(keyValid, premiumInstalled): PremiumStatus {
 function getMssStatus(keyValid, data): MssStatus {
   if (!keyValid) return MssStatus.INVALID;
   const mssActive = data.mta.method === 'MailPoet';
-  return mssActive ? MssStatus.VALID_MSS_ACTIVE : MssStatus.VALID_MSS_NOT_ACTIVE;
+  return mssActive
+    ? MssStatus.VALID_MSS_ACTIVE
+    : MssStatus.VALID_MSS_NOT_ACTIVE;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,7 +30,9 @@ export default function makeDefaultState(window: any): State {
   const segments = window.mailpoet_segments;
   const hosts = window.mailpoet_hosts;
   const save = { inProgress: false, error: null };
-  const data = normalizeSettings(window.mailpoet_settings as Record<string, unknown>);
+  const data = normalizeSettings(
+    window.mailpoet_settings as Record<string, unknown>,
+  );
   const flags = {
     error: false,
     newUser: !!window.mailpoet_is_new_user,
@@ -49,7 +51,9 @@ export default function makeDefaultState(window: any): State {
       window.mailpoet_premium_key_valid,
       window.mailpoet_premium_plugin_installed,
     );
-    isKeyValid = mssStatus !== MssStatus.INVALID || premiumStatus !== PremiumStatus.INVALID;
+    isKeyValid =
+      mssStatus !== MssStatus.INVALID ||
+      premiumStatus !== PremiumStatus.INVALID;
   }
 
   const keyActivation = {
@@ -75,6 +79,15 @@ export default function makeDefaultState(window: any): State {
     action: null,
   };
   return {
-    data, flags, save, keyActivation, segments, pages, paths, hosts, testEmail, reEngagement,
+    data,
+    flags,
+    save,
+    keyActivation,
+    segments,
+    pages,
+    paths,
+    hosts,
+    testEmail,
+    reEngagement,
   };
 }

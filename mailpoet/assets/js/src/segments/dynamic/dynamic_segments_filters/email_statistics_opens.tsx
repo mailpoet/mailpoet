@@ -18,13 +18,16 @@ type Props = {
   filterIndex: number;
 };
 
-export function EmailOpenStatisticsFields({ filterIndex }:Props) : JSX.Element {
+export function EmailOpenStatisticsFields({ filterIndex }: Props): JSX.Element {
   const segment: EmailFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
+    'mailpoet-dynamic-segments-form',
+  );
 
   const newslettersList: WindowNewslettersList = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getNewslettersList(),
@@ -32,7 +35,9 @@ export function EmailOpenStatisticsFields({ filterIndex }:Props) : JSX.Element {
   );
 
   const newsletterOptions = newslettersList?.map((newsletter) => {
-    const sentAt = (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet');
+    const sentAt = newsletter.sent_at
+      ? MailPoet.Date.format(newsletter.sent_at)
+      : MailPoet.I18n.t('notSentYet');
     return {
       label: newsletter.subject,
       tag: sentAt,
@@ -41,24 +46,21 @@ export function EmailOpenStatisticsFields({ filterIndex }:Props) : JSX.Element {
   });
 
   useEffect(() => {
-    if ((segment.operator !== AnyValueTypes.ANY)
-        && (segment.operator !== AnyValueTypes.ALL)
-        && (segment.operator !== AnyValueTypes.NONE)
+    if (
+      segment.operator !== AnyValueTypes.ANY &&
+      segment.operator !== AnyValueTypes.ALL &&
+      segment.operator !== AnyValueTypes.NONE
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
     // None is not allowed for Machine Opened
-    if ((segment.action === EmailActionTypes.MACHINE_OPENED)
-      && (segment.operator === AnyValueTypes.NONE)
+    if (
+      segment.action === EmailActionTypes.MACHINE_OPENED &&
+      segment.operator === AnyValueTypes.NONE
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
-  }, [
-    segment.action,
-    segment.operator,
-    filterIndex,
-    updateSegmentFilter,
-  ]);
+  }, [segment.action, segment.operator, filterIndex, updateSegmentFilter]);
 
   return (
     <>
@@ -73,7 +75,11 @@ export function EmailOpenStatisticsFields({ filterIndex }:Props) : JSX.Element {
         >
           <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
           <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-          {segment.action !== EmailActionTypes.MACHINE_OPENED ? <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option> : null}
+          {segment.action !== EmailActionTypes.MACHINE_OPENED ? (
+            <option value={AnyValueTypes.NONE}>
+              {MailPoet.I18n.t('noneOf')}
+            </option>
+          ) : null}
         </Select>
       </Grid.CenteredRow>
       <Grid.CenteredRow>
@@ -84,16 +90,11 @@ export function EmailOpenStatisticsFields({ filterIndex }:Props) : JSX.Element {
           placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
           options={newsletterOptions}
           automationId="segment-email"
-          value={
-            filter(
-              (option) => {
-                if (!segment.newsletters) return undefined;
-                const newsletterId = option.value;
-                return segment.newsletters.indexOf(newsletterId) !== -1;
-              },
-              newsletterOptions,
-            )
-          }
+          value={filter((option) => {
+            if (!segment.newsletters) return undefined;
+            const newsletterId = option.value;
+            return segment.newsletters.indexOf(newsletterId) !== -1;
+          }, newsletterOptions)}
           onChange={(options: SelectOption[]): void => {
             updateSegmentFilter(
               { newsletters: map('value', options) },

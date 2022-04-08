@@ -12,10 +12,12 @@ function ResultMessage({ subscribersCount, segments, initialMessage }) {
     let message = ReactStringReplace(initialMessage, '%1$s', () => (
       <strong key="%1$s">{subscribersCount.toLocaleString()}</strong>
     ));
-    message = ReactStringReplace(message, '%2$s', () => (
-      `"${segments.join('", "')}"`
-    ));
-    return (<p>{message}</p>);
+    message = ReactStringReplace(
+      message,
+      '%2$s',
+      () => `"${segments.join('", "')}"`,
+    );
+    return <p>{message}</p>;
   }
   return null;
 }
@@ -34,7 +36,7 @@ ResultMessage.defaultProps = {
 
 function NoAction({ createdSubscribers, updatedSubscribers }) {
   if (!createdSubscribers && !updatedSubscribers) {
-    return (<p>{MailPoet.I18n.t('importNoAction')}</p>);
+    return <p>{MailPoet.I18n.t('importNoAction')}</p>;
   }
   return null;
 }
@@ -69,9 +71,9 @@ function SuppressionListReminder({ createdSubscribers, updatedSubscribers }) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                { match }
+                {match}
               </a>
-            )
+            ),
           )}
         </p>
       </>
@@ -92,7 +94,7 @@ SuppressionListReminder.defaultProps = {
 
 function NoWelcomeEmail({ addedToSegmentWithWelcomeNotification }) {
   if (addedToSegmentWithWelcomeNotification) {
-    return (<p>{MailPoet.I18n.t('importNoWelcomeEmail')}</p>);
+    return <p>{MailPoet.I18n.t('importNoWelcomeEmail')}</p>;
   }
   return null;
 }
@@ -113,19 +115,22 @@ function StepResults({
   addedToSegmentWithWelcomeNotification,
   history,
 }) {
-  useEffect(
-    () => {
-      if (
-        (typeof (segments) === 'undefined')
-        && (errors.length === 0)
-        && (typeof createdSubscribers) === 'undefined'
-        && (typeof updatedSubscribers) === 'undefined'
-      ) {
-        history.replace('step_method_selection');
-      }
-    },
-    [segments, createdSubscribers, errors.length, history, updatedSubscribers],
-  );
+  useEffect(() => {
+    if (
+      typeof segments === 'undefined' &&
+      errors.length === 0 &&
+      typeof createdSubscribers === 'undefined' &&
+      typeof updatedSubscribers === 'undefined'
+    ) {
+      history.replace('step_method_selection');
+    }
+  }, [
+    segments,
+    createdSubscribers,
+    errors.length,
+    history,
+    updatedSubscribers,
+  ]);
   if (errors.length) {
     MailPoet.Notice.error(_.flatten(errors));
   }
@@ -147,7 +152,9 @@ function StepResults({
           updatedSubscribers={updatedSubscribers}
         />
         <NoWelcomeEmail
-          addedToSegmentWithWelcomeNotification={addedToSegmentWithWelcomeNotification}
+          addedToSegmentWithWelcomeNotification={
+            addedToSegmentWithWelcomeNotification
+          }
         />
       </div>
       <SuppressionListReminder

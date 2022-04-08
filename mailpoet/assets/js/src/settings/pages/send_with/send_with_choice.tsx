@@ -17,7 +17,8 @@ export default function SendWithChoice() {
   const [key] = useSetting('mta', 'mailpoet_api_key');
   const { mssStatus, premiumStatus } = useSelector('getKeyActivationState')();
   const isMssKeyValid = mssStatus !== null && mssStatus !== MssStatus.INVALID;
-  const isPremiumKeyValid = premiumStatus !== null && premiumStatus !== PremiumStatus.INVALID;
+  const isPremiumKeyValid =
+    premiumStatus !== null && premiumStatus !== PremiumStatus.INVALID;
   const freePlanUrl = window.mailpoet_free_plan_url;
   const setSetting = useAction('setSetting');
   const saveSettings = useAction('saveSettings');
@@ -51,7 +52,9 @@ export default function SendWithChoice() {
           <input type="radio" checked={isMssActive} onChange={mssChosen} />
           <span className="mailpoet-form-radio-control" />
           <h4 className="mailpoet-h4">{t('mssTitle')}</h4>
-          <p>{isMssActive ? t('youreSendingWithMss') : t('solveSendingProblems')}</p>
+          <p>
+            {isMssActive ? t('youreSendingWithMss') : t('solveSendingProblems')}
+          </p>
           <ul className="mailpoet-sending-method-benefits mailpoet_success">
             <li className="mailpoet_success_item">{t('mssBenefit1')}</li>
             <li className="mailpoet_success_item">{t('mssBenefit2')}</li>
@@ -61,7 +64,14 @@ export default function SendWithChoice() {
           </ul>
           {!isMssKeyValid && !isPremiumKeyValid && (
             <div className="mailpoet-sending-method-actions">
-              <a className="mailpoet-button button-primary" href={freePlanUrl} rel="noopener noreferrer" target="_blank">{t('freeUpto')}</a>
+              <a
+                className="mailpoet-button button-primary"
+                href={freePlanUrl}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {t('freeUpto')}
+              </a>
               <span>
                 &nbsp;
                 {t('or')}
@@ -71,16 +81,24 @@ export default function SendWithChoice() {
                 t('enterYourKey'),
                 /\[link\](.*?)\[\/link\]/g,
                 (match, i) => (
-                  <Link key={i} to="/premium" className="mailpoet-link">{match}</Link>
+                  <Link key={i} to="/premium" className="mailpoet-link">
+                    {match}
+                  </Link>
                 ),
               )}
             </div>
           )}
           {!isMssKeyValid && isPremiumKeyValid && (
             <div className="mailpoet-sending-method-actions">
-              <i>{t('invalidKeyForMss')}</i>
-              {' '}
-              <a className="mailpoet-button button-primary" href="https://account.mailpoet.com/" rel="noopener noreferrer" target="_blank">{t('getPlan')}</a>
+              <i>{t('invalidKeyForMss')}</i>{' '}
+              <a
+                className="mailpoet-button button-primary"
+                href="https://account.mailpoet.com/"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {t('getPlan')}
+              </a>
             </div>
           )}
         </label>
@@ -91,14 +109,13 @@ export default function SendWithChoice() {
           <span className="mailpoet-form-radio-control" />
           <h4 className="mailpoet-h4">{t('otherTitle')}</h4>
           <p>
-            {t('sendViaHost')}
-            {' '}
-            <strong>{t('notRecommended')}</strong>
-            {' '}
+            {t('sendViaHost')} <strong>{t('notRecommended')}</strong>{' '}
             {t('orViaThirdParty')}
           </p>
           <div className="mailpoet-sending-method-actions">
-            <Link to="/mta/other" className="mailpoet-link">{t('configure')}</Link>
+            <Link to="/mta/other" className="mailpoet-link">
+              {t('configure')}
+            </Link>
           </div>
         </label>
       </li>

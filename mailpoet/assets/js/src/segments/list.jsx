@@ -8,8 +8,10 @@ import Listing from 'listing/listing.jsx';
 import { ListingsEngagementScore } from '../subscribers/listings_engagement_score';
 
 const isWPUsersSegment = (segment) => segment.type === 'wp_users';
-const isWooCommerceCustomersSegment = (segment) => segment.type === 'woocommerce_users';
-const isSpecialSegment = (segmt) => isWPUsersSegment(segmt) || isWooCommerceCustomersSegment(segmt);
+const isWooCommerceCustomersSegment = (segment) =>
+  segment.type === 'woocommerce_users';
+const isSpecialSegment = (segmt) =>
+  isWPUsersSegment(segmt) || isWooCommerceCustomersSegment(segmt);
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
 const columns = [
@@ -65,13 +67,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneSegmentTrashed')
-      );
+      message = MailPoet.I18n.t('oneSegmentTrashed');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleSegmentsTrashed')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleSegmentsTrashed').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -80,13 +81,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneSegmentDeleted')
-      );
+      message = MailPoet.I18n.t('oneSegmentDeleted');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleSegmentsDeleted')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleSegmentsDeleted').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -95,13 +95,12 @@ const messages = {
     let message = null;
 
     if (count === 1) {
-      message = (
-        MailPoet.I18n.t('oneSegmentRestored')
-      );
+      message = MailPoet.I18n.t('oneSegmentRestored');
     } else {
-      message = (
-        MailPoet.I18n.t('multipleSegmentsRestored')
-      ).replace('%1$d', count.toLocaleString());
+      message = MailPoet.I18n.t('multipleSegmentsRestored').replace(
+        '%1$d',
+        count.toLocaleString(),
+      );
     }
     MailPoet.Notice.success(message);
   },
@@ -125,9 +124,7 @@ const itemActions = [
     name: 'edit',
     className: 'mailpoet-hide-on-mobile',
     link: function link(item) {
-      return (
-        <Link to={`/edit/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>
-      );
+      return <Link to={`/edit/${item.id}`}>{MailPoet.I18n.t('edit')}</Link>;
     },
     display: function display(segment) {
       return !isSpecialSegment(segment);
@@ -137,24 +134,30 @@ const itemActions = [
     name: 'duplicate_segment',
     className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('duplicate'),
-    onClick: (item, refresh) => MailPoet.Ajax.post({
-      api_version: window.mailpoet_api_version,
-      endpoint: 'segments',
-      action: 'duplicate',
-      data: {
-        id: item.id,
-      },
-    }).done((response) => {
-      MailPoet.Notice.success(
-        MailPoet.I18n.t('listDuplicated').replace('%1$s', response.data.name)
-      );
-      refresh();
-    }).fail((response) => {
-      MailPoet.Notice.error(
-        response.errors.map((error) => error.message),
-        { scroll: true }
-      );
-    }),
+    onClick: (item, refresh) =>
+      MailPoet.Ajax.post({
+        api_version: window.mailpoet_api_version,
+        endpoint: 'segments',
+        action: 'duplicate',
+        data: {
+          id: item.id,
+        },
+      })
+        .done((response) => {
+          MailPoet.Notice.success(
+            MailPoet.I18n.t('listDuplicated').replace(
+              '%1$s',
+              response.data.name,
+            ),
+          );
+          refresh();
+        })
+        .fail((response) => {
+          MailPoet.Notice.error(
+            response.errors.map((error) => error.message),
+            { scroll: true },
+          );
+        }),
     display: function display(segment) {
       return !isSpecialSegment(segment);
     },
@@ -189,33 +192,45 @@ const itemActions = [
         data: {
           type: item.type,
         },
-      }).done(() => {
-        let message = MailPoet.I18n.t('listSynchronized').replace('%1$s', item.name);
-        if (item.type === 'woocommerce_users') {
-          message = MailPoet.I18n.t('listSynchronizationWasScheduled').replace('%1$s', item.name);
-        }
-        MailPoet.Modal.loading(false);
-        MailPoet.Notice.success(message);
-        refresh();
-      }).fail((response) => {
-        MailPoet.Modal.loading(false);
-        if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
-            { scroll: true }
+      })
+        .done(() => {
+          let message = MailPoet.I18n.t('listSynchronized').replace(
+            '%1$s',
+            item.name,
           );
-        }
-      });
+          if (item.type === 'woocommerce_users') {
+            message = MailPoet.I18n.t(
+              'listSynchronizationWasScheduled',
+            ).replace('%1$s', item.name);
+          }
+          MailPoet.Modal.loading(false);
+          MailPoet.Notice.success(message);
+          refresh();
+        })
+        .fail((response) => {
+          MailPoet.Modal.loading(false);
+          if (response.errors.length > 0) {
+            MailPoet.Notice.error(
+              response.errors.map((error) => error.message),
+              { scroll: true },
+            );
+          }
+        });
     },
     display: function display(segment) {
-      return isWPUsersSegment(segment) || isWooCommerceCustomersSegment(segment);
+      return (
+        isWPUsersSegment(segment) || isWooCommerceCustomersSegment(segment)
+      );
     },
   },
   {
     name: 'view_subscribers',
     link: function link(item) {
       return (
-        <a href={item.subscribers_url} data-automation-id={`view_subscribers_${item.name}`}>
+        <a
+          href={item.subscribers_url}
+          data-automation-id={`view_subscribers_${item.name}`}
+        >
           {MailPoet.I18n.t('viewSubscribers')}
         </a>
       );
@@ -235,7 +250,7 @@ class SegmentList extends Component {
     const rowClasses = classNames(
       'manage-column',
       'column-primary',
-      'has-row-actions'
+      'has-row-actions',
     );
 
     const subscribed = Number(segment.subscribers_count.subscribed || 0);
@@ -250,30 +265,33 @@ class SegmentList extends Component {
       // the WP users and WooCommerce customers segments
       // are not editable so just display their names
       segmentName = (
-        <span className="mailpoet-listing-title">{ segment.name }</span>
+        <span className="mailpoet-listing-title">{segment.name}</span>
       );
     } else {
       segmentName = (
-        <Link
-          className="mailpoet-listing-title"
-          to={`/edit/${segment.id}`}
-        >
-          { segment.name }
+        <Link className="mailpoet-listing-title" to={`/edit/${segment.id}`}>
+          {segment.name}
         </Link>
       );
     }
 
     return (
       <div>
-        <td className={rowClasses} data-automation-id={`segment_name_${segment.name}`}>
-          { segmentName }
-          { actions }
+        <td
+          className={rowClasses}
+          data-automation-id={`segment_name_${segment.name}`}
+        >
+          {segmentName}
+          {actions}
         </td>
         <td data-colname={MailPoet.I18n.t('description')}>
-          <abbr>{ segment.description }</abbr>
+          <abbr>{segment.description}</abbr>
         </td>
-        { (mailpoetTrackingEnabled) ? (
-          <td className="column mailpoet-listing-stats-column" data-colname={MailPoet.I18n.t('averageScore')}>
+        {mailpoetTrackingEnabled ? (
+          <td
+            className="column mailpoet-listing-stats-column"
+            data-colname={MailPoet.I18n.t('averageScore')}
+          >
             <div className="mailpoet-listing-stats">
               <ListingsEngagementScore
                 id={segment.id}
@@ -281,26 +299,44 @@ class SegmentList extends Component {
               />
             </div>
           </td>
-        ) : null }
-        <td className="mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('subscribed')}>
-          <abbr>{ subscribed.toLocaleString() }</abbr>
+        ) : null}
+        <td
+          className="mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('subscribed')}
+        >
+          <abbr>{subscribed.toLocaleString()}</abbr>
         </td>
-        <td className="mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('unconfirmed')}>
-          <abbr>{ unconfirmed.toLocaleString() }</abbr>
+        <td
+          className="mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('unconfirmed')}
+        >
+          <abbr>{unconfirmed.toLocaleString()}</abbr>
         </td>
-        <td className="mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('unsubscribed')}>
-          <abbr>{ unsubscribed.toLocaleString() }</abbr>
+        <td
+          className="mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('unsubscribed')}
+        >
+          <abbr>{unsubscribed.toLocaleString()}</abbr>
         </td>
-        <td className="mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('inactive')}>
-          <abbr>{ inactive.toLocaleString() }</abbr>
+        <td
+          className="mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('inactive')}
+        >
+          <abbr>{inactive.toLocaleString()}</abbr>
         </td>
-        <td className="mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('bounced')}>
-          <abbr>{ bounced.toLocaleString() }</abbr>
+        <td
+          className="mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('bounced')}
+        >
+          <abbr>{bounced.toLocaleString()}</abbr>
         </td>
-        <td className="column-date mailpoet-hide-on-mobile" data-colname={MailPoet.I18n.t('createdOn')}>
-          { MailPoet.Date.short(segment.created_at) }
+        <td
+          className="column-date mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('createdOn')}
+        >
+          {MailPoet.Date.short(segment.created_at)}
           <br />
-          { MailPoet.Date.time(segment.created_at) }
+          {MailPoet.Date.time(segment.created_at)}
         </td>
       </div>
     );

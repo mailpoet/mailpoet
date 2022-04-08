@@ -24,7 +24,9 @@ const validateChildren = (children: ReactNode): ReactElement[] => {
     }
 
     if (child.key === null) {
-      throw new Error('Component <Tab> doesn\'t have mandatory "key" attribute');
+      throw new Error(
+        'Component <Tab> doesn\'t have mandatory "key" attribute',
+      );
     }
 
     if (keys[child.key]) {
@@ -36,14 +38,19 @@ const validateChildren = (children: ReactNode): ReactElement[] => {
   return validChildren;
 };
 
-const getActiveChild = (activeTab: string, children: ReactElement[]): ReactElement => {
+const getActiveChild = (
+  activeTab: string,
+  children: ReactElement[],
+): ReactElement => {
   const activeChild = children.find(
     (child) => isValidElement(child) && child.key === activeTab,
   );
   if (activeChild) {
-    return (activeChild);
+    return activeChild;
   }
-  throw new Error(`Child <Tab> with key ${activeTab} not found in <Tabs> children`);
+  throw new Error(
+    `Child <Tab> with key ${activeTab} not found in <Tabs> children`,
+  );
 };
 
 type Props = {
@@ -87,26 +94,35 @@ function Tabs({
   );
 
   return (
-    <div className={classnames('mailpoet-tabs', { 'mailpoet-tabs-is-open': isOpen })} data-automation-id={automationId}>
-      <button type="button" className="mailpoet-tabs-title" onClick={() => setIsOpen(!isOpen)}>
+    <div
+      className={classnames('mailpoet-tabs', {
+        'mailpoet-tabs-is-open': isOpen,
+      })}
+      data-automation-id={automationId}
+    >
+      <button
+        type="button"
+        className="mailpoet-tabs-title"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         {title(activeChild.props)}
       </button>
 
       <div className="mailpoet-tabs-wrapper">
-        {
-          validChildren.map((child: ReactElement) => (
-            <button
-              key={child.key}
-              className={classnames('mailpoet-tab', { 'mailpoet-tab-active': child === activeChild })}
-              type="button"
-              role="tab"
-              onClick={() => switchTab(child.key.toString())}
-              data-automation-id={child.props.automationId}
-            >
-              {title(child.props)}
-            </button>
-          ))
-        }
+        {validChildren.map((child: ReactElement) => (
+          <button
+            key={child.key}
+            className={classnames('mailpoet-tab', {
+              'mailpoet-tab-active': child === activeChild,
+            })}
+            type="button"
+            role="tab"
+            onClick={() => switchTab(child.key.toString())}
+            data-automation-id={child.props.automationId}
+          >
+            {title(child.props)}
+          </button>
+        ))}
       </div>
 
       <div className="mailpoet-tab-content">{activeChild}</div>

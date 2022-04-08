@@ -17,39 +17,46 @@ import ParagraphEdit from '../paragraph_edit.jsx';
 
 function CustomHtmlEdit({ attributes, setAttributes, clientId }) {
   const colorDefinitions = useSetting('color.palette');
-  const {
-    fontColor,
-    fontSize,
-    alignment,
-    fontFamily,
-  } = useSelect(
-    (select) => {
-      const settings = select('mailpoet-form-editor').getFormSettings();
-      const parentBackgroundColor = mapColorSlugToValue(
-        colorDefinitions,
-        select('mailpoet-form-editor').getClosestParentAttribute(clientId, 'backgroundColor'),
-        select('mailpoet-form-editor').getClosestParentAttribute(clientId, 'customBackgroundColor')
-      );
-      const parentTextColor = mapColorSlugToValue(
-        colorDefinitions,
-        select('mailpoet-form-editor').getClosestParentAttribute(clientId, 'textColor'),
-        select('mailpoet-form-editor').getClosestParentAttribute(clientId, 'customTextColor')
-      );
-      return {
-        backgroundColor: parentBackgroundColor || settings.backgroundColor,
-        fontColor: parentTextColor || settings.fontColor,
-        fontSize: settings.fontSize,
-        alignment: settings.alignment,
-        fontFamily: settings.fontFamily,
-      };
-    },
-    []
-  );
+  const { fontColor, fontSize, alignment, fontFamily } = useSelect((select) => {
+    const settings = select('mailpoet-form-editor').getFormSettings();
+    const parentBackgroundColor = mapColorSlugToValue(
+      colorDefinitions,
+      select('mailpoet-form-editor').getClosestParentAttribute(
+        clientId,
+        'backgroundColor',
+      ),
+      select('mailpoet-form-editor').getClosestParentAttribute(
+        clientId,
+        'customBackgroundColor',
+      ),
+    );
+    const parentTextColor = mapColorSlugToValue(
+      colorDefinitions,
+      select('mailpoet-form-editor').getClosestParentAttribute(
+        clientId,
+        'textColor',
+      ),
+      select('mailpoet-form-editor').getClosestParentAttribute(
+        clientId,
+        'customTextColor',
+      ),
+    );
+    return {
+      backgroundColor: parentBackgroundColor || settings.backgroundColor,
+      fontColor: parentTextColor || settings.fontColor,
+      fontSize: settings.fontSize,
+      alignment: settings.alignment,
+      fontFamily: settings.fontFamily,
+    };
+  }, []);
   const [renderedContent, setRenderedContent] = useState(attributes.content);
   /* eslint-disable-next-line react-hooks/exhaustive-deps -- because we use external function */
-  const setRenderedContentDebounced = useCallback(debounce((content) => {
-    setRenderedContent(content);
-  }, 300), []);
+  const setRenderedContentDebounced = useCallback(
+    debounce((content) => {
+      setRenderedContent(content);
+    }, 300),
+    [],
+  );
 
   const handleContentChange = (content) => {
     setAttributes({ content });
@@ -70,15 +77,16 @@ function CustomHtmlEdit({ attributes, setAttributes, clientId }) {
           <ToggleControl
             label={MailPoet.I18n.t('blockCustomHtmlNl2br')}
             checked={attributes.nl2br}
-            onChange={(nl2br) => (setAttributes({ nl2br }))}
+            onChange={(nl2br) => setAttributes({ nl2br })}
           />
         </PanelBody>
       </Panel>
-
     </InspectorControls>
   );
   const styles = attributes.nl2br ? ['body { white-space: pre-line; }'] : [];
-  styles.push(` body {font-family: ${getComputedStyle(document.body).fontFamily};}`);
+  styles.push(
+    ` body {font-family: ${getComputedStyle(document.body).fontFamily};}`,
+  );
   if (fontColor) {
     styles.push(` body {color: ${fontColor};}`);
   } else {
@@ -87,7 +95,9 @@ function CustomHtmlEdit({ attributes, setAttributes, clientId }) {
   if (fontSize) {
     styles.push(` body {font-size: ${fontSize}px }`);
   } else {
-    styles.push(` body {font-size: ${getComputedStyle(document.body).fontSize};}`);
+    styles.push(
+      ` body {font-size: ${getComputedStyle(document.body).fontSize};}`,
+    );
   }
   if (alignment) {
     styles.push(` body {text-align: ${alignment}}`);

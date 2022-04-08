@@ -10,7 +10,9 @@ const SingleWarning = ({ translation, subscribers }) => {
     warning = ReactStringReplace(
       translation.replace('%2$s', subscribers.join(', ')),
       '%1$s',
-      () => <strong key={translation}>{subscribers.length.toLocaleString()}</strong>
+      () => (
+        <strong key={translation}>{subscribers.length.toLocaleString()}</strong>
+      ),
     );
     warning = <p>{warning}</p>;
   }
@@ -22,9 +24,7 @@ SingleWarning.propTypes = {
   subscribers: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-function Warnings({
-  stepMethodSelectionData,
-}) {
+function Warnings({ stepMethodSelectionData }) {
   const { invalid, duplicate, role } = stepMethodSelectionData;
 
   const [detailsShown, setDetailsShown] = useState(false);
@@ -34,9 +34,19 @@ function Warnings({
     { mailpoet_hidden: !detailsShown },
   );
 
-  const invalidWarning = <SingleWarning translation={MailPoet.I18n.t('importNoticeInvalid')} subscribers={invalid} />;
+  const invalidWarning = (
+    <SingleWarning
+      translation={MailPoet.I18n.t('importNoticeInvalid')}
+      subscribers={invalid}
+    />
+  );
 
-  const duplicateWarning = <SingleWarning translation={MailPoet.I18n.t('importNoticeDuplicate')} subscribers={duplicate} />;
+  const duplicateWarning = (
+    <SingleWarning
+      translation={MailPoet.I18n.t('importNoticeDuplicate')}
+      subscribers={duplicate}
+    />
+  );
 
   let roleBasedWarning = '';
   if (role.length) {
@@ -44,7 +54,10 @@ function Warnings({
       MailPoet.I18n.t('importNoticeRoleBased'),
       /(%1\$s|\[link\].*\[\/link\]|%2\$s)/,
       (match) => {
-        if (match === '%1$s') return <strong key="role-length">{role.length.toLocaleString()}</strong>;
+        if (match === '%1$s')
+          return (
+            <strong key="role-length">{role.length.toLocaleString()}</strong>
+          );
         if (match === '%2$s') return role.join(', ');
         return (
           <a
@@ -57,24 +70,23 @@ function Warnings({
             {match.replace('[link]', '').replace('[/link]', '')}
           </a>
         );
-      }
+      },
     );
     roleBasedWarning = <p>{roleBasedWarning}</p>;
   }
 
-  if (
-    invalid.length
-    || duplicate.length
-    || role.length
-  ) {
+  if (invalid.length || duplicate.length || role.length) {
     const allWarningsCount = invalid.length + duplicate.length + role.length;
     return (
       <div className="error">
         <p>
-          {ReactStringReplace(MailPoet.I18n.t('importNoticeSkipped'), '%1$s', () => (
-            <strong key="lengths">{allWarningsCount.toLocaleString()}</strong>
-          ))}
-          {' '}
+          {ReactStringReplace(
+            MailPoet.I18n.t('importNoticeSkipped'),
+            '%1$s',
+            () => (
+              <strong key="lengths">{allWarningsCount.toLocaleString()}</strong>
+            ),
+          )}{' '}
           <a
             className="mailpoet_subscribers_data_parse_results_details_show"
             data-automation-id="show-more-details"
@@ -82,7 +94,9 @@ function Warnings({
             role="button"
             tabIndex={0}
             onKeyDown={(event) => {
-              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+              if (
+                ['keydown', 'keypress'].includes(event.type) &&
+                ['Enter', ' '].includes(event.key)
               ) {
                 event.preventDefault();
                 setDetailsShown(!detailsShown);

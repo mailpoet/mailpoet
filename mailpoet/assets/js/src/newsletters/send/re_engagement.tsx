@@ -7,20 +7,20 @@ import SenderField from './sender_address_field';
 
 interface OnValueChangeParam {
   target: {
-    name: string,
+    name: string;
     value: {
-      afterTimeNumber: number | string,
-      afterTimeType: string,
-    },
+      afterTimeNumber: number | string;
+      afterTimeType: string;
+    };
   };
 }
 
 interface Props {
   item: {
     options: {
-      afterTimeNumber: number | string,
-      afterTimeType: string,
-    }
+      afterTimeNumber: number | string;
+      afterTimeType: string;
+    };
   };
   onValueChange: (val: OnValueChangeParam) => void;
 }
@@ -30,9 +30,9 @@ function FormReEngagementScheduling(props: Props): JSX.Element {
     <Scheduling
       afterTimeNumber={props.item.options.afterTimeNumber.toString()}
       afterTimeType={props.item.options.afterTimeType}
-      inactiveSubscribersPeriod={
-        Number(MailPoet.settings.deactivate_subscriber_after_inactive_days)
-      }
+      inactiveSubscribersPeriod={Number(
+        MailPoet.settings.deactivate_subscriber_after_inactive_days,
+      )}
       updateAfterTimeNumber={(value) => {
         props.onValueChange({
           target: {
@@ -68,7 +68,9 @@ const fields = [
         type: 'text',
         validation: {
           'data-parsley-required': true,
-          'data-parsley-required-message': MailPoet.I18n.t('emptySubjectLineError'),
+          'data-parsley-required-message': MailPoet.I18n.t(
+            'emptySubjectLineError',
+          ),
           maxLength: 250,
         },
       },
@@ -79,7 +81,9 @@ const fields = [
         placeholder: MailPoet.I18n.t('preheaderLine'),
         // ignore for now until the MailPoet object is refactored to typescript
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        tooltip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t('preheaderLineTip2')}`,
+        tooltip: `${MailPoet.I18n.t('preheaderLineTip1')} ${MailPoet.I18n.t(
+          'preheaderLineTip2',
+        )}`,
         type: 'textarea',
         validation: {
           maxLength: 250,
@@ -113,11 +117,16 @@ const fields = [
     },
     transformChangedValue: function transformChangedValue(segmentIds) {
       const allSegments = this.getItems();
-      return map((id) => find((segment) => segment.id === id, allSegments), segmentIds);
+      return map(
+        (id) => find((segment) => segment.id === id, allSegments),
+        segmentIds,
+      );
     },
     validation: {
       'data-parsley-required': true,
-      'data-parsley-required-message': MailPoet.I18n.t('noSegmentsSelectedError'),
+      'data-parsley-required-message': MailPoet.I18n.t(
+        'noSegmentsSelectedError',
+      ),
     },
   },
   {

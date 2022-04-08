@@ -27,10 +27,7 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": true
   },
-  "exclude": [
-    "**/node_modules",
-    "**/vendor",
-  ]
+  "exclude": ["**/node_modules", "**/vendor"]
 }

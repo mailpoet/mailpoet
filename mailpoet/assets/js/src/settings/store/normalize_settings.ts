@@ -36,10 +36,13 @@ function asEnum(choices: string[], defaultValue: string) {
 
 function asObject<T extends Schema>(schema: T) {
   return (value: unknown): SchemaResult<T> => {
-    const object = Object.keys(schema).reduce((result, field) => ({
-      [field]: schema[field](value ? value[field] as string : undefined),
-      ...result,
-    }), {});
+    const object = Object.keys(schema).reduce(
+      (result, field) => ({
+        [field]: schema[field](value ? (value[field] as string) : undefined),
+        ...result,
+      }),
+      {},
+    );
     return object as SchemaResult<T>;
   };
 }
@@ -48,22 +51,35 @@ function asIs<T>(value: T): T {
   return value;
 }
 
-export default function normalizeSettings(data: Record<string, unknown>): Settings {
+export default function normalizeSettings(
+  data: Record<string, unknown>,
+): Settings {
   const text = asString('');
   const disabledCheckbox = asBoolean('1', '0', '0');
   const enabledCheckbox = asBoolean('1', '0', '1');
   const disabledRadio = asBoolean('1', '', '');
   const enabledRadio = asBoolean('1', '', '1');
   const emptyArray = asStringArray([]);
-  const smtpServer = asEnum(['server', 'manual', 'AmazonSES', 'SendGrid'], 'server');
+  const smtpServer = asEnum(
+    ['server', 'manual', 'AmazonSES', 'SendGrid'],
+    'server',
+  );
 
   const settingsSchema = asObject({
     sender: asObject({ name: text, address: text }),
     reply_to: asObject({ name: text, address: text }),
     bounce: asObject({ address: text }),
     subscribe: asObject({
-      on_comment: asObject({ enabled: disabledCheckbox, label: asString(t('yesAddMe')), segments: emptyArray }),
-      on_register: asObject({ enabled: disabledCheckbox, label: asString(t('yesAddMe')), segments: emptyArray }),
+      on_comment: asObject({
+        enabled: disabledCheckbox,
+        label: asString(t('yesAddMe')),
+        segments: emptyArray,
+      }),
+      on_register: asObject({
+        enabled: disabledCheckbox,
+        label: asString(t('yesAddMe')),
+        segments: emptyArray,
+      }),
     }),
     subscription: asObject({
       pages: asObject({
@@ -80,7 +96,10 @@ export default function normalizeSettings(data: Record<string, unknown>): Settin
       automated: enabledCheckbox,
       address: text,
     }),
-    subscriber_email_notification: asObject({ enabled: enabledRadio, address: text }),
+    subscriber_email_notification: asObject({
+      enabled: enabledRadio,
+      address: text,
+    }),
     reEngagement: asObject({
       page: text,
     }),
@@ -89,7 +108,10 @@ export default function normalizeSettings(data: Record<string, unknown>): Settin
     }),
     tracking: asObject({ level: asEnum(['full', 'partial', 'basic'], 'full') }),
     send_transactional_emails: disabledRadio,
-    deactivate_subscriber_after_inactive_days: asEnum(['', '90', '180', '365', '540'], '365'),
+    deactivate_subscriber_after_inactive_days: asEnum(
+      ['', '90', '180', '365', '540'],
+      '365',
+    ),
     analytics: asObject({ enabled: disabledRadio }),
     '3rd_party_libs': asObject({ enabled: disabledRadio }),
     captcha: asObject({
@@ -100,13 +122,10 @@ export default function normalizeSettings(data: Record<string, unknown>): Settin
     logging: asEnum(['everything', 'errors', 'nothing'], 'errors'),
     mta_group: asEnum(['mailpoet', 'website', 'smtp'], 'website'),
     mta: asObject({
-      method: asEnum([
-        'MailPoet',
-        'AmazonSES',
-        'SendGrid',
+      method: asEnum(
+        ['MailPoet', 'AmazonSES', 'SendGrid', 'PHPMail', 'SMTP'],
         'PHPMail',
-        'SMTP',
-      ], 'PHPMail'),
+      ),
       frequency: asObject({
         emails: asString('25'),
         interval: asString('5'),
@@ -123,13 +142,10 @@ export default function normalizeSettings(data: Record<string, unknown>): Settin
       encryption: text,
       authentication: asEnum(['1', '-1'], '1'),
       mailpoet_api_key_state: asObject({
-        state: asEnum([
-          'valid',
-          'invalid',
-          'expiring',
-          'already_used',
+        state: asEnum(
+          ['valid', 'invalid', 'expiring', 'already_used', 'check_error'],
           'check_error',
-        ], 'check_error'),
+        ),
         data: asIs,
       }),
     }),
@@ -160,13 +176,10 @@ export default function normalizeSettings(data: Record<string, unknown>): Settin
     premium: asObject({
       premium_key: text,
       premium_key_state: asObject({
-        state: asEnum([
-          'valid',
-          'invalid',
-          'expiring',
-          'already_used',
+        state: asEnum(
+          ['valid', 'invalid', 'expiring', 'already_used', 'check_error'],
           'check_error',
-        ], 'check_error'),
+        ),
         data: asIs,
       }),
     }),
@@ -177,13 +190,13 @@ export default function normalizeSettings(data: Record<string, unknown>): Settin
 
 type Schema = {
   [key: string]: ReturnType<
-  | typeof asString
-  | typeof asStringArray
-  | typeof asBoolean
-  | typeof asEnum
-  | typeof asObject
+    | typeof asString
+    | typeof asStringArray
+    | typeof asBoolean
+    | typeof asEnum
+    | typeof asObject
   >;
 };
 type SchemaResult<T extends Schema> = {
-  [key in keyof T]: ReturnType<T[key]>
+  [key in keyof T]: ReturnType<T[key]>;
 };

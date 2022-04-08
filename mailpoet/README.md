@@ -1,4 +1,5 @@
 # MailPoet
+
 The **MailPoet** plugin.
 
 To use the official Docker-based development environment, see details
@@ -16,11 +17,13 @@ below.
 ## Setup
 
 ### Requirements
+
 - PHP >= 7.3 (only for the development environment, to run the plugin PHP >= 7.2 is required)
 - NodeJS
 - WordPress
 
 ### Installation
+
 The instructions below assume you already have a working WordPress development environment:
 
 ```bash
@@ -171,8 +174,7 @@ _x('text to translate', 'context for translators', 'mailpoet');
 **in Twig views**
 
 ```html
-<%= __('text to translate') %>
-<%= _n('single text', 'plural text', $number) %>
+<%= __('text to translate') %> <%= _n('single text', 'plural text', $number) %>
 <%= _x('text to translate', 'context for translators') %>
 ```
 
@@ -183,12 +185,8 @@ The domain `mailpoet` will be added automatically by the Twig functions.
 First add the string to the translations block in the Twig view:
 
 ```html
-<% block translations %>
-  <%= localize({
-    'key': __('string to translate'),
-    ...
-  }) %>
-<% endblock %>
+<% block translations %> <%= localize({ 'key': __('string to translate'), ... })
+%> <% endblock %>
 ```
 
 Then use `MailPoet.I18n.t('key')` to get the translated string on your Javascript code.
@@ -197,9 +195,11 @@ Then use `MailPoet.I18n.t('key')` to get the translated string on your Javascrip
 
 To run the whole acceptance testing suite you need the docker daemon to be running and after that use a command: `./do test:acceptance`.
 If you want to run only a single test use the parameter `--file`:
+
 ```bash
 ./do test:acceptance --skip-deps --file tests/acceptance/ReceiveStandardEmailCest.php
 ```
+
 The argument `--skip-deps` is useful locally to speed up the run.
 
 If there are some unexpected errors you can delete all the runtime and start again.

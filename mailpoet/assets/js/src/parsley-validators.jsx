@@ -10,16 +10,18 @@ jQuery(($) => {
       const daysInYear = 365;
       const weeksInYear = 52;
 
-      const selectType = $('select[name="afterTimeType"],select#scheduling_time_interval');
+      const selectType = $(
+        'select[name="afterTimeType"],select#scheduling_time_interval',
+      );
       const afterTimeType = selectType.val();
       let isValid = true;
-      if (afterTimeType === 'hours' && (hoursInYear * maxYears) < value) {
+      if (afterTimeType === 'hours' && hoursInYear * maxYears < value) {
         isValid = false;
       }
-      if (afterTimeType === 'days' && (daysInYear * maxYears) < value) {
+      if (afterTimeType === 'days' && daysInYear * maxYears < value) {
         isValid = false;
       }
-      if (afterTimeType === 'weeks' && (weeksInYear * maxYears) < value) {
+      if (afterTimeType === 'weeks' && weeksInYear * maxYears < value) {
         isValid = false;
       }
 

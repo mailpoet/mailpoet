@@ -10,38 +10,52 @@ var base = BaseBlock;
 
 Module.SpacerBlockModel = base.BlockModel.extend({
   defaults: function defaults() {
-    return this._getDefaults({
-      type: 'spacer',
-      styles: {
-        block: {
-          backgroundColor: 'transparent',
-          height: '40px',
+    return this._getDefaults(
+      {
+        type: 'spacer',
+        styles: {
+          block: {
+            backgroundColor: 'transparent',
+            height: '40px',
+          },
         },
       },
-    }, App.getConfig().get('blockDefaults.spacer'));
+      App.getConfig().get('blockDefaults.spacer'),
+    );
   },
 });
 
 Module.SpacerBlockView = base.BlockView.extend({
   className: 'mailpoet_block mailpoet_spacer_block mailpoet_droppable_block',
-  getTemplate: function getTemplate() { return window.templates.spacerBlock; },
-  behaviors: _.defaults({
-    ResizableBehavior: {
-      elementSelector: '.mailpoet_spacer',
-      resizeHandleSelector: '.mailpoet_resize_handle',
-      minLength: 20, // TODO: Move this number to editor configuration
-      modelField: 'styles.block.height',
+  getTemplate: function getTemplate() {
+    return window.templates.spacerBlock;
+  },
+  behaviors: _.defaults(
+    {
+      ResizableBehavior: {
+        elementSelector: '.mailpoet_spacer',
+        resizeHandleSelector: '.mailpoet_resize_handle',
+        minLength: 20, // TODO: Move this number to editor configuration
+        modelField: 'styles.block.height',
+      },
+      ShowSettingsBehavior: {
+        ignoreFrom: '.mailpoet_resize_handle',
+      },
     },
-    ShowSettingsBehavior: {
-      ignoreFrom: '.mailpoet_resize_handle',
-    },
-  }, base.BlockView.prototype.behaviors),
+    base.BlockView.prototype.behaviors,
+  ),
   modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'),
-  onDragSubstituteBy: function onDragSubstituteBy() { return Module.SpacerWidgetView; },
+  onDragSubstituteBy: function onDragSubstituteBy() {
+    return Module.SpacerWidgetView;
+  },
   initialize: function initialize() {
     base.BlockView.prototype.initialize.apply(this, arguments);
 
-    this.listenTo(this.model, 'change:styles.block.backgroundColor', this.render);
+    this.listenTo(
+      this.model,
+      'change:styles.block.backgroundColor',
+      this.render,
+    );
     this.listenTo(this.model, 'change:styles.block.height', this.changeHeight);
   },
   onRender: function onRender() {
@@ -49,8 +63,13 @@ Module.SpacerBlockView = base.BlockView.extend({
     this.showChildView('toolsRegion', this.toolsView);
   },
   changeHeight: function changeHeight() {
-    this.$('.mailpoet_spacer').css('height', this.model.get('styles.block.height'));
-    this.$('.mailpoet_resize_handle_text').text(this.model.get('styles.block.height'));
+    this.$('.mailpoet_spacer').css(
+      'height',
+      this.model.get('styles.block.height'),
+    );
+    this.$('.mailpoet_resize_handle_text').text(
+      this.model.get('styles.block.height'),
+    );
   },
   onBeforeDestroy: function onBeforeDestroy() {
     this.stopListening(this.model);
@@ -58,14 +77,21 @@ Module.SpacerBlockView = base.BlockView.extend({
 });
 
 Module.SpacerBlockToolsView = base.BlockToolsView.extend({
-  getSettingsView: function getSettingsView() { return Module.SpacerBlockSettingsView; },
+  getSettingsView: function getSettingsView() {
+    return Module.SpacerBlockSettingsView;
+  },
 });
 
 Module.SpacerBlockSettingsView = base.BlockSettingsView.extend({
-  getTemplate: function getTemplate() { return window.templates.spacerBlockSettings; },
+  getTemplate: function getTemplate() {
+    return window.templates.spacerBlockSettings;
+  },
   events: function events() {
     return {
-      'change .mailpoet_field_spacer_background_color': _.partial(this.changeColorField, 'styles.block.backgroundColor'),
+      'change .mailpoet_field_spacer_background_color': _.partial(
+        this.changeColorField,
+        'styles.block.backgroundColor',
+      ),
       'click .mailpoet_done_editing': 'close',
     };
   },
@@ -73,7 +99,9 @@ Module.SpacerBlockSettingsView = base.BlockSettingsView.extend({
 
 Module.SpacerWidgetView = base.WidgetView.extend({
   id: 'automation_editor_block_spacer',
-  getTemplate: function getTemplate() { return window.templates.spacerInsertion; },
+  getTemplate: function getTemplate() {
+    return window.templates.spacerInsertion;
+  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,

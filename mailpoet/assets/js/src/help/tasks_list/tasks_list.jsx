@@ -8,23 +8,27 @@ function TasksList(props) {
 
   return (
     <table className="widefat fixed striped">
-      <thead><TaskListLabelsRow show_scheduled_at={props.show_scheduled_at} /></thead>
+      <thead>
+        <TaskListLabelsRow show_scheduled_at={props.show_scheduled_at} />
+      </thead>
       <tbody>
-        {
-          props.tasks.length ? props.tasks.map((task) => (
+        {props.tasks.length ? (
+          props.tasks.map((task) => (
             <TaskListDataRow
               key={task.id}
               task={task}
               show_scheduled_at={props.show_scheduled_at}
             />
-          )) : (
-            <tr className="mailpoet-listing-no-items">
-              <td colSpan={colsCount}>{MailPoet.I18n.t('nothingToShow')}</td>
-            </tr>
-          )
-        }
+          ))
+        ) : (
+          <tr className="mailpoet-listing-no-items">
+            <td colSpan={colsCount}>{MailPoet.I18n.t('nothingToShow')}</td>
+          </tr>
+        )}
       </tbody>
-      <tfoot><TaskListLabelsRow show_scheduled_at={props.show_scheduled_at} /></tfoot>
+      <tfoot>
+        <TaskListLabelsRow show_scheduled_at={props.show_scheduled_at} />
+      </tfoot>
     </table>
   );
 }

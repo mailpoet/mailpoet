@@ -1,6 +1,4 @@
-import {
-  find,
-} from 'lodash/fp';
+import { find } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
 import MailPoet from 'mailpoet';
@@ -19,19 +17,17 @@ interface ParamsType {
 }
 
 export function validateRadioSelect(item: WordpressRoleFormItem): boolean {
-  return (
-    (typeof item.value === 'string')
-    && (item.value.length > 0)
-  );
+  return typeof item.value === 'string' && item.value.length > 0;
 }
 
 type Props = {
   filterIndex: number;
 };
 
-export function RadioSelect({ filterIndex }:Props) : JSX.Element {
+export function RadioSelect({ filterIndex }: Props): JSX.Element {
   const segment: WordpressRoleFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
@@ -41,9 +37,12 @@ export function RadioSelect({ filterIndex }:Props) : JSX.Element {
     (select) => select('mailpoet-dynamic-segments-form').getCustomFieldsList(),
     [],
   );
-  const customField = find({ id: Number(segment.custom_field_id) }, customFieldsList);
+  const customField = find(
+    { id: Number(segment.custom_field_id) },
+    customFieldsList,
+  );
   if (!customField) return null;
-  const params = (customField.params as ParamsType);
+  const params = customField.params as ParamsType;
   if (!params || !Array.isArray(params.values)) return null;
 
   const options = params.values.map((currentValue) => ({
@@ -58,10 +57,13 @@ export function RadioSelect({ filterIndex }:Props) : JSX.Element {
       placeholder={MailPoet.I18n.t('selectValue')}
       options={options}
       value={
-          segment.value ? { value: segment.value, label: segment.value } : null
-        }
+        segment.value ? { value: segment.value, label: segment.value } : null
+      }
       onChange={(option: SelectOption): void => {
-        updateSegmentFilter({ value: option.value, operator: 'equals' }, filterIndex);
+        updateSegmentFilter(
+          { value: option.value, operator: 'equals' },
+          filterIndex,
+        );
       }}
       automationId="segment-wordpress-role"
     />

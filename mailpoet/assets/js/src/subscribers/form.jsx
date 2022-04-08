@@ -15,7 +15,10 @@ const fields = [
     label: MailPoet.I18n.t('email'),
     type: 'text',
     disabled: function disabled(subscriber) {
-      return Number(subscriber.wp_user_id > 0) || Number(subscriber.is_woocommerce_user) === 1;
+      return (
+        Number(subscriber.wp_user_id > 0) ||
+        Number(subscriber.is_woocommerce_user) === 1
+      );
     },
   },
   {
@@ -23,7 +26,10 @@ const fields = [
     label: MailPoet.I18n.t('firstname'),
     type: 'text',
     disabled: function disabled(subscriber) {
-      return Number(subscriber.wp_user_id > 0) || Number(subscriber.is_woocommerce_user) === 1;
+      return (
+        Number(subscriber.wp_user_id > 0) ||
+        Number(subscriber.is_woocommerce_user) === 1
+      );
     },
   },
   {
@@ -31,7 +37,10 @@ const fields = [
     label: MailPoet.I18n.t('lastname'),
     type: 'text',
     disabled: function disabled(subscriber) {
-      return Number(subscriber.wp_user_id > 0) || Number(subscriber.is_woocommerce_user) === 1;
+      return (
+        Number(subscriber.wp_user_id > 0) ||
+        Number(subscriber.is_woocommerce_user) === 1
+      );
     },
   },
   {
@@ -66,7 +75,7 @@ const fields = [
         .map((subscription) => subscription.segment_id);
     },
     filter: function filter(segment) {
-      return (!segment.deleted_at && segment.type === 'default');
+      return !segment.deleted_at && segment.type === 'default';
     },
     getLabel: function getLabel(segment) {
       return segment.name;
@@ -83,14 +92,15 @@ const fields = [
             label = segment.name;
 
             if (subscription.status === 'unsubscribed') {
-              const unsubscribedAt = MailPoet.Date
-                .format(subscription.updated_at);
+              const unsubscribedAt = MailPoet.Date.format(
+                subscription.updated_at,
+              );
               label += ' (%1$s)'.replace(
                 '%1$s',
                 MailPoet.I18n.t('unsubscribedOn').replace(
                   '%1$s',
-                  unsubscribedAt
-                )
+                  unsubscribedAt,
+                ),
               );
             }
           }
@@ -149,17 +159,14 @@ function beforeFormContent(subscriber) {
   if (Number(subscriber.wp_user_id) > 0) {
     return (
       <p className="description">
-        { ReactStringReplace(
+        {ReactStringReplace(
           MailPoet.I18n.t('WPUserEditNotice'),
           /\[link\](.*?)\[\/link\]/g,
           (match, i) => (
-            <a
-              key={i}
-              href={`user-edit.php?user_id=${subscriber.wp_user_id}`}
-            >
-              { match }
+            <a key={i} href={`user-edit.php?user_id=${subscriber.wp_user_id}`}>
+              {match}
             </a>
-          )
+          ),
         )}
       </p>
     );
@@ -171,7 +178,9 @@ function afterFormContent(values) {
   return (
     <>
       {values?.unsubscribes?.map((unsubscribe) => {
-        const date = moment(unsubscribe.createdAt.date).format('dddd MMMM Do YYYY [at] h:mm:ss a');
+        const date = moment(unsubscribe.createdAt.date).format(
+          'dddd MMMM Do YYYY [at] h:mm:ss a',
+        );
         let message;
         if (unsubscribe.source === 'admin') {
           message = MailPoet.I18n.t('unsubscribedAdmin')
@@ -188,12 +197,15 @@ function afterFormContent(values) {
                 key={i}
                 href={`admin.php?page=mailpoet-newsletter-editor&id=${unsubscribe.newsletterId}`}
               >
-                { unsubscribe.newsletterSubject }
+                {unsubscribe.newsletterSubject}
               </a>
-            )
+            ),
           );
         } else {
-          message = MailPoet.I18n.t('unsubscribedUnknown').replace('%1$d', date);
+          message = MailPoet.I18n.t('unsubscribedUnknown').replace(
+            '%1$d',
+            date,
+          );
         }
         return (
           <p className="description" key={message}>
@@ -202,11 +214,8 @@ function afterFormContent(values) {
         );
       })}
       <p className="description">
-        <strong>
-          { MailPoet.I18n.t('tip') }
-        </strong>
-        {' '}
-        { MailPoet.I18n.t('customFieldsTip') }
+        <strong>{MailPoet.I18n.t('tip')}</strong>{' '}
+        {MailPoet.I18n.t('customFieldsTip')}
       </p>
     </>
   );
@@ -223,7 +232,12 @@ function SubscriberForm({ match }) {
 
       <Heading level={1} className="mailpoet-title">
         <span>{MailPoet.I18n.t('subscriber')}</span>
-        <Link className="mailpoet-button button button-secondary button-small" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
+        <Link
+          className="mailpoet-button button button-secondary button-small"
+          to={backUrl}
+        >
+          {MailPoet.I18n.t('backToList')}
+        </Link>
       </Heading>
 
       <SubscribersLimitNotice />

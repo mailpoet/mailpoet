@@ -22,16 +22,16 @@ volumes:
     driver_opts:
       type: nfs
       o: addr=host.docker.internal,nolock
-      device: ":/System/Volumes/Data${PWD}/wordpress"
+      device: ':/System/Volumes/Data${PWD}/wordpress'
   nfs-mailpoet:
     driver: local
     driver_opts:
       type: nfs
       o: addr=host.docker.internal,nolock
-      device: ":/System/Volumes/Data${PWD}/mailpoet"
+      device: ':/System/Volumes/Data${PWD}/mailpoet'
   nfs-mailpoet-premium:
     driver: local
     driver_opts:
       type: nfs
       o: addr=host.docker.internal,nolock
-      device: ":/System/Volumes/Data${PWD}/mailpoet-premium"
+      device: ':/System/Volumes/Data${PWD}/mailpoet-premium'

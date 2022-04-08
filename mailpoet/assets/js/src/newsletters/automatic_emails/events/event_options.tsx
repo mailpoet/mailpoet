@@ -19,12 +19,14 @@ type Props = {
 };
 
 function getEventOptionsValues(eventOptions: EventOptionData) {
-  const values = (eventOptions && eventOptions.values) ? eventOptions.values : [];
+  const values = eventOptions && eventOptions.values ? eventOptions.values : [];
 
-  return (values) ? values.map((value) => ({
-    id: value.id,
-    name: value.name,
-  })) : values;
+  return values
+    ? values.map((value) => ({
+        id: value.id,
+        name: value.name,
+      }))
+    : values;
 }
 
 export function EventOptions({
@@ -51,10 +53,8 @@ export function EventOptions({
         values: getEventOptionsValues(eventOptions),
         multiple: eventOptions.multiple || false,
         placeholder: eventOptions.placeholder || false,
-        transformChangedValue: (_value, valueTextPair) => _.map(
-          valueTextPair,
-          (data) => ({ id: data.id, name: data.text }),
-        ),
+        transformChangedValue: (_value, valueTextPair) =>
+          _.map(valueTextPair, (data) => ({ id: data.id, name: data.text })),
         selected: () => selected,
         getLabel: _.property('name'),
         getValue: _.property('id'),

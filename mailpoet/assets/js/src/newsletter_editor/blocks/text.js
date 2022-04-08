@@ -11,30 +11,39 @@ var base = BaseBlock;
 
 Module.TextBlockModel = base.BlockModel.extend({
   defaults: function defaults() {
-    return this._getDefaults({
-      type: 'text',
-      text: 'Edit this to insert text',
-    }, App.getConfig().get('blockDefaults.text'));
+    return this._getDefaults(
+      {
+        type: 'text',
+        text: 'Edit this to insert text',
+      },
+      App.getConfig().get('blockDefaults.text'),
+    );
   },
   _updateDefaults: function updateDefaults() {},
 });
 
 Module.TextBlockView = base.BlockView.extend({
   className: 'mailpoet_block mailpoet_text_block mailpoet_droppable_block',
-  getTemplate: function getTemplate() { return window.templates.textBlock; },
+  getTemplate: function getTemplate() {
+    return window.templates.textBlock;
+  },
   modelEvents: _.omit(base.BlockView.prototype.modelEvents, 'change'), // Prevent rerendering on model change due to text editor redrawing
   behaviors: _.extend({}, base.BlockView.prototype.behaviors, {
     TextEditorBehavior: {
       toolbar1: 'formatselect bold italic forecolor | link unlink',
-      toolbar2: 'alignleft aligncenter alignright alignjustify | bullist numlist blockquote | code mailpoet_shortcodes',
-      validElements: 'p[class|style],span[class|style],a[href|class|title|target|style],h1[class|style],h2[class|style],h3[class|style],ol[class|style],ul[class|style],li[class|style],strong[class|style],em[class|style],strike,br,blockquote[class|style],table[class|style],tr[class|style],th[class|style],td[class|style],del',
+      toolbar2:
+        'alignleft aligncenter alignright alignjustify | bullist numlist blockquote | code mailpoet_shortcodes',
+      validElements:
+        'p[class|style],span[class|style],a[href|class|title|target|style],h1[class|style],h2[class|style],h3[class|style],ol[class|style],ul[class|style],li[class|style],strong[class|style],em[class|style],strike,br,blockquote[class|style],table[class|style],tr[class|style],th[class|style],td[class|style],del',
       invalidElements: 'script',
       blockFormats: 'Heading 1=h1;Heading 2=h2;Heading 3=h3;Paragraph=p',
       plugins: 'link lists code mailpoet_shortcodes paste',
       configurationFilter: function configurationFilter(originalSettings) {
         return _.extend({}, originalSettings, {
           mailpoet_shortcodes: App.getConfig().get('shortcodes').toJSON(),
-          mailpoet_shortcodes_window_title: MailPoet.I18n.t('shortcodesWindowTitle'),
+          mailpoet_shortcodes_window_title: MailPoet.I18n.t(
+            'shortcodesWindowTitle',
+          ),
         });
       },
     },
@@ -48,7 +57,9 @@ Module.TextBlockView = base.BlockView.extend({
 
     this.disableTextEditor = this.renderOptions.disableTextEditor;
   },
-  onDragSubstituteBy: function onDragSubstituteBy() { return Module.TextWidgetView; },
+  onDragSubstituteBy: function onDragSubstituteBy() {
+    return Module.TextWidgetView;
+  },
   onRender: function onRender() {
     this.toolsView = new Module.TextBlockToolsView({
       model: this.model,
@@ -72,16 +83,22 @@ Module.TextBlockView = base.BlockView.extend({
 });
 
 Module.TextBlockToolsView = base.BlockToolsView.extend({
-  getSettingsView: function getSettingsView() { return Module.TextBlockSettingsView; },
+  getSettingsView: function getSettingsView() {
+    return Module.TextBlockSettingsView;
+  },
 });
 
 Module.TextBlockSettingsView = base.BlockSettingsView.extend({
-  getTemplate: function getTemplate() { return window.templates.textBlockSettings; },
+  getTemplate: function getTemplate() {
+    return window.templates.textBlockSettings;
+  },
 });
 
 Module.TextWidgetView = base.WidgetView.extend({
   id: 'automation_editor_block_text',
-  getTemplate: function getTemplate() { return window.templates.textInsertion; },
+  getTemplate: function getTemplate() {
+    return window.templates.textInsertion;
+  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,

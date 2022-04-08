@@ -13,7 +13,12 @@ export default function StatsHeading({ email }: PropTypes): JSX.Element {
   return (
     <Heading level={1} className="mailpoet-title">
       <span>{MailPoet.I18n.t('statsHeading').replace('%s', email)}</span>
-      <Link className="mailpoet-button button button-secondary button-small" to={backUrl}>{MailPoet.I18n.t('backToList')}</Link>
+      <Link
+        className="mailpoet-button button button-secondary button-small"
+        to={backUrl}
+      >
+        {MailPoet.I18n.t('backToList')}
+      </Link>
     </Heading>
   );
 }

@@ -14,11 +14,7 @@ type Props = {
   onBeamerClick?: () => void;
 };
 
-export function TopBar({
-  children,
-  hasNews,
-  onBeamerClick,
-}: Props) {
+export function TopBar({ children, hasNews, onBeamerClick }: Props) {
   const buttonClasses = classNames(
     'mailpoet-top-bar-beamer',
     hasNews ? 'mailpoet-top-bar-beamer-dot' : '',
@@ -34,7 +30,9 @@ export function TopBar({
         onClick={onLogoClick}
         tabIndex={0}
         onKeyDown={(event) => {
-          if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+          if (
+            ['keydown', 'keypress'].includes(event.type) &&
+            ['Enter', ' '].includes(event.key)
           ) {
             event.preventDefault();
             onLogoClick();
@@ -48,9 +46,7 @@ export function TopBar({
           <MailPoetLogoMobile />
         </div>
       </a>
-      <div className="mailpoet-top-bar-children">
-        {children}
-      </div>
+      <div className="mailpoet-top-bar-children">{children}</div>
       <div className="mailpoet-flex-grow" />
       {onBeamerClick && (
         <div>
@@ -61,7 +57,9 @@ export function TopBar({
             title={t('whatsNew')}
             tabIndex={0}
             onKeyDown={(event) => {
-              if ((['keydown', 'keypress'].includes(event.type) && ['Enter', ' '].includes(event.key))
+              if (
+                ['keydown', 'keypress'].includes(event.type) &&
+                ['Enter', ' '].includes(event.key)
               ) {
                 event.preventDefault();
                 onBeamerClick();

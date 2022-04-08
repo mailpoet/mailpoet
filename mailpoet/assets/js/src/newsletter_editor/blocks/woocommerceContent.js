@@ -4,10 +4,13 @@ import BaseBlock from 'newsletter_editor/blocks/base';
 const BlockModel = BaseBlock.BlockModel.extend({
   stale: ['selected'],
   defaults() {
-    return this._getDefaults({
-      type: 'woocommerceContent',
-      selected: 'completed_order',
-    }, App.getConfig().get('blockDefaults.woocommerceContent'));
+    return this._getDefaults(
+      {
+        type: 'woocommerceContent',
+        selected: 'completed_order',
+      },
+      App.getConfig().get('blockDefaults.woocommerceContent'),
+    );
   },
 });
 
@@ -16,8 +19,12 @@ const BlockToolsView = BaseBlock.BlockToolsView.extend({
 });
 
 const WidgetView = BaseBlock.WidgetView.extend({
-  className: BaseBlock.WidgetView.prototype.className + ' mailpoet_droppable_layout_block',
-  getTemplate() { return window.templates.woocommerceContentInsertion; },
+  className:
+    BaseBlock.WidgetView.prototype.className +
+    ' mailpoet_droppable_layout_block',
+  getTemplate() {
+    return window.templates.woocommerceContentInsertion;
+  },
   behaviors: {
     DraggableBehavior: {
       cloneOriginal: true,
@@ -29,7 +36,8 @@ const WidgetView = BaseBlock.WidgetView.extend({
 });
 
 const BlockView = BaseBlock.BlockView.extend({
-  className: 'mailpoet_block mailpoet_woocommerce_content_block mailpoet_droppable_block',
+  className:
+    'mailpoet_block mailpoet_woocommerce_content_block mailpoet_droppable_block',
   initialize: function initialize() {
     BaseBlock.BlockView.prototype.initialize.apply(this, arguments);
     this.listenTo(App.getChannel(), 'changeWCEmailType', (value) => {
@@ -52,7 +60,9 @@ const BlockView = BaseBlock.BlockView.extend({
   regions: {
     toolsRegion: '.mailpoet_tools',
   },
-  onDragSubstituteBy() { return WidgetView; },
+  onDragSubstituteBy() {
+    return WidgetView;
+  },
   onRender() {
     this.toolsView = new BlockToolsView({ model: this.model });
     this.showChildView('toolsRegion', this.toolsView);
@@ -76,5 +86,8 @@ App.on('before:start', (BeforeStartApp) => {
 });
 
 export default {
-  BlockModel, BlockView, BlockToolsView, WidgetView,
+  BlockModel,
+  BlockView,
+  BlockToolsView,
+  WidgetView,
 };

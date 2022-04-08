@@ -14,19 +14,25 @@ import {
   WindowNewslettersList,
 } from '../types';
 
-const shouldDisplayLinks = (itemNewsletterId?: string): boolean => (!!itemNewsletterId);
+const shouldDisplayLinks = (itemNewsletterId?: string): boolean =>
+  !!itemNewsletterId;
 
 type Props = {
   filterIndex: number;
 };
 
-export function EmailClickStatisticsFields({ filterIndex }:Props):JSX.Element {
+export function EmailClickStatisticsFields({
+  filterIndex,
+}: Props): JSX.Element {
   const segment: EmailFormItem = useSelect(
-    (select) => select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
+    (select) =>
+      select('mailpoet-dynamic-segments-form').getSegmentFilter(filterIndex),
     [filterIndex],
   );
 
-  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch('mailpoet-dynamic-segments-form');
+  const { updateSegmentFilter, updateSegmentFilterFromEvent } = useDispatch(
+    'mailpoet-dynamic-segments-form',
+  );
 
   const newslettersList: WindowNewslettersList = useSelect(
     (select) => select('mailpoet-dynamic-segments-form').getNewslettersList(),
@@ -38,7 +44,9 @@ export function EmailClickStatisticsFields({ filterIndex }:Props):JSX.Element {
   const [loadingLinks, setLoadingLinks] = useState<boolean>(false);
 
   const newsletterOptions = newslettersList?.map((newsletter) => {
-    const sentAt = (newsletter.sent_at) ? MailPoet.Date.format(newsletter.sent_at) : MailPoet.I18n.t('notSentYet');
+    const sentAt = newsletter.sent_at
+      ? MailPoet.Date.format(newsletter.sent_at)
+      : MailPoet.I18n.t('notSentYet');
     return {
       label: newsletter.subject,
       tag: sentAt,
@@ -64,8 +72,8 @@ export function EmailClickStatisticsFields({ filterIndex }:Props):JSX.Element {
         setLoadingLinks(false);
         setLinks(loadedLinks as SelectOption[]);
       })
-      .fail((response:ErrorResponse) => {
-        setErrors(response.errors as { message:string }[]);
+      .fail((response: ErrorResponse) => {
+        setErrors(response.errors as { message: string }[]);
       });
   }
 
@@ -77,15 +85,13 @@ export function EmailClickStatisticsFields({ filterIndex }:Props):JSX.Element {
 
   useEffect(() => {
     loadLinksCB();
-  }, [
-    loadLinksCB,
-    segment.newsletter_id,
-  ]);
+  }, [loadLinksCB, segment.newsletter_id]);
 
   useEffect(() => {
-    if ((segment.operator !== AnyValueTypes.ANY)
-      && (segment.operator !== AnyValueTypes.ALL)
-      && (segment.operator !== AnyValueTypes.NONE)
+    if (
+      segment.operator !== AnyValueTypes.ANY &&
+      segment.operator !== AnyValueTypes.ALL &&
+      segment.operator !== AnyValueTypes.NONE
     ) {
       updateSegmentFilter({ operator: AnyValueTypes.ANY }, filterIndex);
     }
@@ -93,9 +99,7 @@ export function EmailClickStatisticsFields({ filterIndex }:Props):JSX.Element {
 
   return (
     <>
-      {(errors.length > 0 && (
-        <APIErrorsNotice errors={errors} />
-      ))}
+      {errors.length > 0 && <APIErrorsNotice errors={errors} />}
       <Grid.CenteredRow>
         <ReactSelect
           dimension="small"
@@ -104,7 +108,10 @@ export function EmailClickStatisticsFields({ filterIndex }:Props):JSX.Element {
           options={newsletterOptions}
           value={find(['value', segment.newsletter_id], newsletterOptions)}
           onChange={(option: SelectOption): void => {
-            updateSegmentFilter({ newsletter_id: option.value, link_ids: [] }, filterIndex);
+            updateSegmentFilter(
+              { newsletter_id: option.value, link_ids: [] },
+              filterIndex,
+            );
           }}
           automationId="segment-email"
         />
@@ -114,45 +121,50 @@ export function EmailClickStatisticsFields({ filterIndex }:Props):JSX.Element {
           isMinWidth
           key="select-operator"
           value={segment.operator}
-          onChange={(e) => updateSegmentFilterFromEvent(
-            'operator',
-            filterIndex,
-            e,
-          )}
+          onChange={(e) =>
+            updateSegmentFilterFromEvent('operator', filterIndex, e)
+          }
           automationId="select-operator"
         >
           <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
           <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-          <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+          <option value={AnyValueTypes.NONE}>
+            {MailPoet.I18n.t('noneOf')}
+          </option>
         </Select>
-        {(loadingLinks && (
-          <span>
-            {MailPoet.I18n.t('loadingDynamicSegmentItems')}
-          </span>
-        ))}
-        {
-          (!loadingLinks && shouldDisplayLinks(segment.newsletter_id))
-          && (
-            <ReactSelect
-              isMulti
-              dimension="small"
-              isFullWidth
-              automationId="segment-link-select"
-              placeholder={MailPoet.I18n.t('allLinksPlaceholder')}
-              options={links.length ? links : [{ value: 0, label: MailPoet.I18n.t('noLinksHint'), isDisabled: true }]}
-              value={filter(
-                (option) => {
-                  if (!segment.link_ids) return false;
-                  return segment.link_ids.indexOf(option.value) !== -1;
-                },
-                links,
-              )}
-              onChange={(options: SelectOption[]): void => {
-                updateSegmentFilter({ link_ids: (options || []).map((x) => x.value) }, filterIndex);
-              }}
-            />
-          )
-        }
+        {loadingLinks && (
+          <span>{MailPoet.I18n.t('loadingDynamicSegmentItems')}</span>
+        )}
+        {!loadingLinks && shouldDisplayLinks(segment.newsletter_id) && (
+          <ReactSelect
+            isMulti
+            dimension="small"
+            isFullWidth
+            automationId="segment-link-select"
+            placeholder={MailPoet.I18n.t('allLinksPlaceholder')}
+            options={
+              links.length
+                ? links
+                : [
+                    {
+                      value: 0,
+                      label: MailPoet.I18n.t('noLinksHint'),
+                      isDisabled: true,
+                    },
+                  ]
+            }
+            value={filter((option) => {
+              if (!segment.link_ids) return false;
+              return segment.link_ids.indexOf(option.value) !== -1;
+            }, links)}
+            onChange={(options: SelectOption[]): void => {
+              updateSegmentFilter(
+                { link_ids: (options || []).map((x) => x.value) },
+                filterIndex,
+              );
+            }}
+          />
+        )}
       </Grid.CenteredRow>
     </>
   );

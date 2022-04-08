@@ -4,10 +4,12 @@ function mapFormDataToParams(fieldType, data) {
       return {
         label: data.label,
         required: data.mandatory ? '1' : '',
-        values: [{
-          is_checked: data.isChecked ? '1' : '',
-          value: data.checkboxLabel,
-        }],
+        values: [
+          {
+            is_checked: data.isChecked ? '1' : '',
+            value: data.checkboxLabel,
+          },
+        ],
       };
     case 'date':
       return {

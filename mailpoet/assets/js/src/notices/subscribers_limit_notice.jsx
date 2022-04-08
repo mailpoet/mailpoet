@@ -5,13 +5,18 @@ import Notice from 'notices/notice.tsx';
 function SubscribersLimitNotice() {
   if (!MailPoet.subscribersLimitReached) return null;
   const hasValidApiKey = MailPoet.hasValidApiKey;
-  const title = MailPoet.I18n.t('subscribersLimitNoticeTitle')
-    .replace('[subscribersLimit]', MailPoet.subscribersLimit);
-  const youReachedTheLimit = MailPoet.I18n.t(hasValidApiKey ? 'yourPlanLimit' : 'freeVersionLimit')
-    .replace('[subscribersLimit]', MailPoet.subscribersLimit);
+  const title = MailPoet.I18n.t('subscribersLimitNoticeTitle').replace(
+    '[subscribersLimit]',
+    MailPoet.subscribersLimit,
+  );
+  const youReachedTheLimit = MailPoet.I18n.t(
+    hasValidApiKey ? 'yourPlanLimit' : 'freeVersionLimit',
+  ).replace('[subscribersLimit]', MailPoet.subscribersLimit);
   const upgradeLink = hasValidApiKey
     ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl(MailPoet.pluginPartialKey)
-    : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(MailPoet.subscribersCount + 1);
+    : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
+        MailPoet.subscribersCount + 1,
+      );
   const refreshSubscribers = async () => {
     await MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
@@ -25,17 +30,17 @@ function SubscribersLimitNotice() {
     MailPoet.I18n.t('youCanDisableWPUsersList'),
     /\[link](.*?)\[\/link]/g,
     (match) => (
-      <a key="goToSegments" href="?page=mailpoet-segments">{match}</a>
-    )
+      <a key="goToSegments" href="?page=mailpoet-segments">
+        {match}
+      </a>
+    ),
   );
 
   return (
     <Notice type="error" timeout={false} closable={false} renderInPlace>
       <h3>{title}</h3>
       <p>
-        {youReachedTheLimit}
-        {' '}
-        {MailPoet.I18n.t('youNeedToUpgrade')}
+        {youReachedTheLimit} {MailPoet.I18n.t('youNeedToUpgrade')}
         {MailPoet.wpSegmentState === 'active' ? (
           <>
             <br />

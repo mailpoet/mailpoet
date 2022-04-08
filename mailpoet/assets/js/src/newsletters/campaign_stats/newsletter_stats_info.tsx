@@ -9,10 +9,9 @@ type Props = {
   newsletter: NewsletterType;
 };
 
-export function NewsletterStatsInfo({
-  newsletter,
-}: Props) {
-  const newsletterDate = newsletter.queue.scheduled_at || newsletter.queue.created_at;
+export function NewsletterStatsInfo({ newsletter }: Props) {
+  const newsletterDate =
+    newsletter.queue.scheduled_at || newsletter.queue.created_at;
   return (
     <Grid.ThreeColumns className="mailpoet-stats-info">
       <div className="mailpoet-grid-span-two-columns">
@@ -26,7 +25,9 @@ export function NewsletterStatsInfo({
         </div>
         {Array.isArray(newsletter.segments) && newsletter.segments.length && (
           <div>
-            <span className="mailpoet-stats-info-key">{MailPoet.I18n.t('statsToSegments')}</span>
+            <span className="mailpoet-stats-info-key">
+              {MailPoet.I18n.t('statsToSegments')}
+            </span>
             {': '}
             <Tags dimension="large" segments={newsletter.segments} />
           </div>

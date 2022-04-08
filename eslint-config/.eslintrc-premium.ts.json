@@ -22,11 +22,7 @@
       "jsx": true
     }
   },
-  "plugins": [
-    "react-hooks",
-    "no-only-tests",
-    "@typescript-eslint"
-  ],
+  "plugins": ["react-hooks", "no-only-tests", "@typescript-eslint"],
   "settings": {
     "import/resolver": "webpack"
   },
@@ -49,19 +45,28 @@
     "import/prefer-default-export": 0, // we want to stop using default exports and start using named exports
     "react/destructuring-assignment": 0, // that would be too many changes to fix this one
     "prefer-destructuring": 0, // that would be too many changes to fix this one
-    "jsx-a11y/label-has-for": [2, {
-      "required": {"some": ["nesting", "id"]} // some of our labels are hidden and we cannot nest those
-    }],
+    "jsx-a11y/label-has-for": [
+      2,
+      {
+        "required": { "some": ["nesting", "id"] } // some of our labels are hidden and we cannot nest those
+      }
+    ],
     "jsx-a11y/anchor-is-valid": 0, // cannot fix this one, it would break wprdpress themes
-    "jsx-a11y/label-has-associated-control": [ 2, {
-      "either": "either" // control has to be either nested or associated via htmlFor
-    }]
+    "jsx-a11y/label-has-associated-control": [
+      2,
+      {
+        "either": "either" // control has to be either nested or associated via htmlFor
+      }
+    ]
   },
   "overrides": [
     {
       "files": ["**/_stories/*.tsx"],
       "rules": {
-        "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
+        "import/no-extraneous-dependencies": [
+          "error",
+          { "devDependencies": true }
+        ]
       }
     }
   ]

@@ -6,7 +6,9 @@ import Heading from '../../common/typography/heading/heading';
 function WelcomeWizardEmailCourseStep(props) {
   return (
     <>
-      <Heading level={1}>{MailPoet.I18n.t('welcomeWizardEmailCourseTitle')}</Heading>
+      <Heading level={1}>
+        {MailPoet.I18n.t('welcomeWizardEmailCourseTitle')}
+      </Heading>
 
       <div className="mailpoet-gap" />
       <p>{MailPoet.I18n.t('welcomeWizardEmailCourseText')}</p>
@@ -24,11 +26,7 @@ function WelcomeWizardEmailCourseStep(props) {
         marginHeight="0"
       />
 
-      <Button
-        isFullWidth
-        onClick={props.next}
-        type="button"
-      >
+      <Button isFullWidth onClick={props.next} type="button">
         {MailPoet.I18n.t('continue')}
       </Button>
     </>

@@ -5,7 +5,9 @@ export const MailPoetI18n = {
     translations[key] = value;
   },
   t: function t(key: string): string {
-    return translations[key] || 'TRANSLATION "%1$s" NOT FOUND'.replace('%1$s', key);
+    return (
+      translations[key] || 'TRANSLATION "%1$s" NOT FOUND'.replace('%1$s', key)
+    );
   },
   all: function all(): Record<string, string> {
     return translations;

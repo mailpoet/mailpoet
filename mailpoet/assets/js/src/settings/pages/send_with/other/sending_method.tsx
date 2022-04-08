@@ -26,7 +26,8 @@ export default function SendingMethod() {
         setGroup('smtp');
         setMethod('SendGrid');
         break;
-      default: setMethod('PHPMail');
+      default:
+        setMethod('PHPMail');
     }
   }, [provider, setGroup, setMethod]);
 

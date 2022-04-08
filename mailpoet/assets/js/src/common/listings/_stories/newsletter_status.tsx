@@ -40,7 +40,12 @@ export function NewsletterStatuses() {
       <NewsletterStatus total={200} processed={0} />
       <NewsletterStatus total={400} processed={150} />
       <NewsletterStatus scheduledFor={inPast} total={300} processed={270} />
-      <NewsletterStatus scheduledFor={inPast} total={300} processed={270} isPaused />
+      <NewsletterStatus
+        scheduledFor={inPast}
+        total={300}
+        processed={270}
+        isPaused
+      />
 
       <div className="mailpoet-gap" />
 

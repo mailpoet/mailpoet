@@ -46,16 +46,20 @@ class NewsletterNotification extends Component {
         type: 'notification',
         subject: MailPoet.I18n.t('draftPostNotificationTitle'),
       }),
-    }).done((response) => {
-      this.showTemplateSelection(response.data.id);
-    }).fail((response) => {
-      if (response.errors.length > 0) {
-        this.context.notices.error(
-          response.errors.map((error) => <p key={error.message}>{error.message}</p>),
-          { scroll: true }
-        );
-      }
-    });
+    })
+      .done((response) => {
+        this.showTemplateSelection(response.data.id);
+      })
+      .fail((response) => {
+        if (response.errors.length > 0) {
+          this.context.notices.error(
+            response.errors.map((error) => (
+              <p key={error.message}>{error.message}</p>
+            )),
+            { scroll: true },
+          );
+        }
+      });
   };
 
   showTemplateSelection = (newsletterId) => {
@@ -67,7 +71,10 @@ class NewsletterNotification extends Component {
       <div>
         <Background color="#fff" />
 
-        <ListingHeadingStepsRoute emailType="notification" automationId="post_notification_creation_heading" />
+        <ListingHeadingStepsRoute
+          emailType="notification"
+          automationId="post_notification_creation_heading"
+        />
 
         <Grid.Column align="center" className="mailpoet-schedule-email">
           <Heading level={4}>{MailPoet.I18n.t('selectFrequency')}</Heading>
@@ -78,11 +85,7 @@ class NewsletterNotification extends Component {
             onValueChange={this.handleValueChange}
           />
 
-          <Button
-            isFullWidth
-            onClick={this.handleNext}
-            type="button"
-          >
+          <Button isFullWidth onClick={this.handleNext} type="button">
             {MailPoet.I18n.t('next')}
           </Button>
         </Grid.Column>
