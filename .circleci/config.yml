@@ -144,6 +144,9 @@ jobs:
             ./do compile:all --env production
             ./do doctrine:generate-cache
             vendor/bin/codecept build
+      - run:
+          name: 'Check Prettier formatting'
+          command: ./do qa:prettier-check
       - save_cache:
           key: tools-{{ checksum "tools/install.php" }}
           paths:
