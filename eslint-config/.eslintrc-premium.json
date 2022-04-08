@@ -26,8 +26,6 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     // Exceptions
-    "arrow-parens": ["error", "always"],
-    "comma-dangle": ["error", "always-multiline"],
     "import/extensions": 0, // we wouldn't be able to import jQuery without this line
     "jsx-a11y/anchor-is-valid": [ "error", {
       "components": [ "Link" ],

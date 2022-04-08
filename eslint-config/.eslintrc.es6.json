@@ -28,8 +28,6 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     // Exceptions
-    "arrow-parens": ["error", "always"],
-    "comma-dangle": ["error", "always-multiline"],
     "no-only-tests/no-only-tests": 2,
     "no-script-url": 0,
     "class-methods-use-this": 0,
@@ -44,12 +42,7 @@
     "jsx-a11y/anchor-is-valid": 0, // cannot fix this one, it would break wprdpress themes
     "jsx-a11y/label-has-associated-control": [ 2, {
       "either": "either" // control has to be either nested or associated via htmlFor
-    }],
-    "indent": ["error", 2, {// bug in babel eslint https://github.com/babel/babel-eslint/issues/681#issuecomment-451336031 we can remove this whole exception in the future when the bug is fixed
-      "ignoredNodes": ["TemplateLiteral"],
-      "SwitchCase": 1
-    }],
-    "template-curly-spacing": "off"// bug in babel eslint https://github.com/babel/babel-eslint/issues/681#issuecomment-623101005 we can remove this whole exception in the future when the bug is fixed
+    }]
   },
   "overrides": [
     {
