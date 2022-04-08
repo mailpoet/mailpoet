@@ -38,11 +38,17 @@ class SubscriberCookieCest {
       $i->checkOption('#mailpoet_subscribe_on_register');
       $i->click('Next');
       $i->waitForText('mutestuser is your new username');
-    }
 
-    // temporarily bypass the test when MULTISITE=1 as it fails in multisite mode ATM
-    if (getenv('MULTISITE')) {
-      return;
+      /**
+       * The tracking cookie will be set once the registrant has activated
+       * the wp_user account
+       **/
+      $i->amOnMailboxAppPage();
+      $i->waitForElement('.subject.unread', 10);
+      $i->click(Locator::contains('span.subject.unread', 'Activate'));
+      $i->switchToIframe('#preview-html');
+      $i->click(Locator::contains('a', 'wp-activate.php'));
+      $i->waitForText('Your account is now active');
     }
 
     // subscriber cookie should be set right after signup
