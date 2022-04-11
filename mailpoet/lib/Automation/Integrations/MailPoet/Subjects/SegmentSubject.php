@@ -2,14 +2,14 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Subjects;
 
-use MailPoet\Automation\Engine\Workflows\AbstractSubject;
 use MailPoet\Automation\Engine\Workflows\Field;
+use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\NotFoundException;
 use MailPoet\Segments\SegmentsRepository;
 
-class SegmentSubject extends AbstractSubject {
+class SegmentSubject implements Subject {
   /** @var Field[] */
   private $fields;
 
@@ -43,10 +43,6 @@ class SegmentSubject extends AbstractSubject {
 
   public function getFields(): array {
     return $this->fields;
-  }
-
-  public function getNameField(): Field {
-    return $this->getField('name');
   }
 
   public function load(array $args): void {
