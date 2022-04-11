@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.6
 Tested up to: 5.9
-Stable tag: 3.86.0
+Stable tag: 3.87.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -217,6 +217,17 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.87.0 - 2022-04-11 =
+* Added: new condition (at least 10 emails in lifetime) before marking subscriber as inactive;
+* Added: logging for failed MailPoet key validation checks;
+* Updated: minimum required WordPress version to 5.6;
+* Updated: npm dependencies;
+* Improved: when the subscription requires an upgrade, link directly to the upgrade page;
+* Improved: show notice in the plugin when the subscription is pending approval;
+* Fixed: List-Unsubscribe header format when sending with your host;
+* Fixed: hidden MailPoet fields visible in WooCommerce checkout;
+* Fixed: Manage subscription page doesn't work when all lists are unchecked.
 
 = 3.86.0 - 2022-04-05 =
 * Improved: apply form success message styles also on Captcha confirmation page;
