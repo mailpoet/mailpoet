@@ -70,7 +70,7 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $this->block = $this->diContainer->get(AbandonedCartContent::class);
     $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
-    $this->automaticEmailScheduler = new AutomaticEmailScheduler();
+    $this->automaticEmailScheduler = $this->diContainer->get(AutomaticEmailScheduler::class);
 
     // Clear old products
     $products = $this->wp->getPosts(['post_type' => 'product']);

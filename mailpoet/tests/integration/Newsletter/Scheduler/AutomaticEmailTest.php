@@ -23,7 +23,7 @@ class AutomaticEmailTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->automaticEmailScheduler = new AutomaticEmailScheduler;
+    $this->automaticEmailScheduler = $this->diContainer->get(AutomaticEmailScheduler::class);
   }
 
   public function testItCreatesScheduledAutomaticEmailSendingTaskForUser() {
@@ -178,7 +178,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $wpMock->expects($this->any())
       ->method('currentTime')
       ->willReturn($currentTime->getTimestamp());
-    $automaticEmailScheduler = new AutomaticEmailScheduler($wpMock);
+    $automaticEmailScheduler = new AutomaticEmailScheduler(new Scheduler($wpMock), $wpMock);
     // email should only be scheduled if it matches condition ("send to segment")
     $automaticEmailScheduler->scheduleAutomaticEmail('some_group', 'some_event', $condition);
     $result = SendingQueue::findMany();

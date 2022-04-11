@@ -42,6 +42,9 @@ class PostNotificationTest extends \MailPoetTest {
   /** @var Hooks */
   private $hooks;
 
+  /** @var Scheduler */
+  private $scheduler;
+
   public function _before() {
     parent::_before();
     $this->postNotificationScheduler = $this->diContainer->get(PostNotificationScheduler::class);
@@ -50,6 +53,7 @@ class PostNotificationTest extends \MailPoetTest {
     $this->newsletterOptionsRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
     $this->newsletterOptionFieldsRepository = $this->diContainer->get(NewsletterOptionFieldsRepository::class);
     $this->hooks = $this->diContainer->get(Hooks::class);
+    $this->scheduler = $this->diContainer->get(Scheduler::class);
   }
 
   public function testItCreatesPostNotificationSendingTask() {
@@ -64,7 +68,8 @@ class PostNotificationTest extends \MailPoetTest {
     expect(SendingQueue::where('newsletter_id', $newsletter->getId())->findMany())->count(1);
     expect($queue->newsletterId)->equals($newsletter->getId());
     expect($queue->status)->equals(SendingQueue::STATUS_SCHEDULED);
-    expect($queue->scheduledAt)->equals(Scheduler::getNextRunDate('* 5 * * *'));
+
+    expect($queue->scheduledAt)->equals($this->scheduler->getNextRunDate('* 5 * * *'));
     expect($queue->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
 
     // duplicate queue record should not be created
@@ -97,7 +102,7 @@ class PostNotificationTest extends \MailPoetTest {
     expect(SendingQueue::where('newsletter_id', $newsletter->getId())->findMany())->count(2);
     expect($queue->newsletterId)->equals($newsletter->getId());
     expect($queue->status)->equals(SendingQueue::STATUS_SCHEDULED);
-    expect($queue->scheduledAt)->equals(Scheduler::getNextRunDate('* 10 * * *'));
+    expect($queue->scheduledAt)->equals($this->scheduler->getNextRunDate('* 10 * * *'));
     expect($queue->priority)->equals(SendingQueue::PRIORITY_MEDIUM);
 
     // duplicate queue record should not be created
@@ -151,11 +156,11 @@ class PostNotificationTest extends \MailPoetTest {
     ]);
 
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
-    
+
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     assert($scheduleOption instanceof NewsletterOptionEntity);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect(Scheduler::getNextRunDate($scheduleOption->getValue(), $currentTime))
+    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-01 14:00:00');
   }
 
@@ -173,11 +178,11 @@ class PostNotificationTest extends \MailPoetTest {
     ]);
 
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
-    
+
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     assert($scheduleOption instanceof NewsletterOptionEntity);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect(Scheduler::getNextRunDate($scheduleOption->getValue(), $currentTime))
+    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-03 14:00:00');
   }
 
@@ -198,7 +203,7 @@ class PostNotificationTest extends \MailPoetTest {
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     assert($scheduleOption instanceof NewsletterOptionEntity);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect(Scheduler::getNextRunDate($scheduleOption->getValue(), $currentTime))
+    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-19 14:00:00');
   }
 
@@ -219,7 +224,7 @@ class PostNotificationTest extends \MailPoetTest {
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     assert($scheduleOption instanceof NewsletterOptionEntity);
     $currentTime = 1485694800; // Sunday, 29 January 2017 @ 1:00pm (UTC)
-    expect(Scheduler::getNextRunDate($scheduleOption->getValue(), $currentTime))
+    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-02-25 14:00:00');
   }
 
@@ -240,7 +245,7 @@ class PostNotificationTest extends \MailPoetTest {
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     assert($scheduleOption instanceof NewsletterOptionEntity);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect(Scheduler::getNextRunDate($scheduleOption->getValue(), $currentTime))
+    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-01 13:01:00');
   }
 
@@ -339,7 +344,7 @@ class PostNotificationTest extends \MailPoetTest {
   }
 
   private function createNewsletterOptions(NewsletterEntity $newsletter, array $options) {
-    foreach ($options as $name => $value) { 
+    foreach ($options as $name => $value) {
       $newsletterOptionField = $this->newsletterOptionFieldsRepository->findOneBy([
         'name' => $name,
       ]);
