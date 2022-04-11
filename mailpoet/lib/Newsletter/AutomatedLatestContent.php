@@ -2,11 +2,13 @@
 
 namespace MailPoet\Newsletter;
 
+use DateTimeInterface;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Editor\Transformer;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AutomatedLatestContent {
+  const DEFAULT_POSTS_PER_PAGE = 10;
 
   /** @var LoggerFactory */
   private $loggerFactory;
@@ -45,27 +47,66 @@ class AutomatedLatestContent {
     $query->is_home = false; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
-  public function getPosts(BlockPostQuery $query) {
-    $this->newsletterId = $query->newsletterId;
+  public function getPosts($args, $postsToExclude = [], $newsletterId = false, $newerThanTimestamp = false) {
+    $this->newsletterId = $newsletterId;
     // Get posts as logged out user, so private posts hidden by other plugins (e.g. UAM) are also excluded
     $currentUserId = $this->wp->getCurrentUserId();
     $this->wp->wpSetCurrentUser(0);
 
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'loading automated latest content',
-      [
-        'args' => $query->args,
-        'posts_to_exclude' => $query->postsToExclude,
-        'newsletter_id' => $query->newsletterId,
-        'newer_than_timestamp' => $query->newerThanTimestamp,
-      ]
+      ['args' => $args, 'posts_to_exclude' => $postsToExclude, 'newsletter_id' => $newsletterId, 'newer_than_timestamp' => $newerThanTimestamp]
     );
+    $postsPerPage = (!empty($args['amount']) && (int)$args['amount'] > 0)
+      ? (int)$args['amount']
+      : self::DEFAULT_POSTS_PER_PAGE;
+    $parameters = [
+      'posts_per_page' => $postsPerPage,
+      'post_type' => (isset($args['contentType'])) ? $args['contentType'] : 'post',
+      'post_status' => (isset($args['postStatus'])) ? $args['postStatus'] : 'publish',
+      'orderby' => 'date',
+      'order' => isset($args['sortBy']) && in_array($args['sortBy'], ['newest', 'DESC']) ? 'DESC' : 'ASC',
+    ];
+    if (!empty($args['offset']) && (int)$args['offset'] > 0) {
+      $parameters['offset'] = (int)$args['offset'];
+    }
+    if (isset($args['search'])) {
+      $parameters['s'] = $args['search'];
+    }
+    if (isset($args['posts']) && is_array($args['posts'])) {
+      $parameters['post__in'] = $args['posts'];
+      $parameters['posts_per_page'] = -1; // Get all posts with matching IDs
+    }
+    if (!empty($postsToExclude)) {
+      $parameters['post__not_in'] = $postsToExclude;
+    }
+    $parameters['tax_query'] = $this->constructTaxonomiesQuery($args);
+
+    // WP posts with the type attachment have always post_status `inherit`
+    if ($parameters['post_type'] === 'attachment' && $parameters['post_status'] === 'publish') {
+      $parameters['post_status'] = 'inherit';
+    }
+
+    // This enables using posts query filters for get_posts, where by default
+    // it is disabled.
+    // However, it also enables other plugins and themes to hook in and alter
+    // the query.
+    $parameters['suppress_filters'] = false;
+
+    if ($newerThanTimestamp instanceof DateTimeInterface) {
+      $parameters['date_query'] = [
+        [
+          'column' => 'post_date',
+          'after' => $newerThanTimestamp->format('Y-m-d H:i:s'),
+        ],
+      ];
+    }
 
     // set low priority to execute 'ensureConstistentQueryType' before any other filter
     $filterPriority = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
     $this->wp->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
-    $this->_attachSentPostsFilter($query->newsletterId);
-    $parameters = $query->getQueryParams();
+    $this->_attachSentPostsFilter($newsletterId);
+
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
       'getting automated latest content',
       ['parameters' => $parameters]
@@ -74,7 +115,7 @@ class AutomatedLatestContent {
     $this->logPosts($posts);
 
     $this->wp->removeAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
-    $this->_detachSentPostsFilter($query->newsletterId);
+    $this->_detachSentPostsFilter($newsletterId);
     $this->wp->wpSetCurrentUser($currentUserId);
     return $posts;
   }
@@ -82,6 +123,43 @@ class AutomatedLatestContent {
   public function transformPosts($args, $posts) {
     $transformer = new Transformer($args);
     return $transformer->transform($posts);
+  }
+
+  public function constructTaxonomiesQuery($args) {
+    $taxonomiesQuery = [];
+    if (isset($args['terms']) && is_array($args['terms'])) {
+      $taxonomies = [];
+      // Categorize terms based on their taxonomies
+      foreach ($args['terms'] as $term) {
+        $taxonomy = $term['taxonomy'];
+        if (!isset($taxonomies[$taxonomy])) {
+          $taxonomies[$taxonomy] = [];
+        }
+        $taxonomies[$taxonomy][] = $term['id'];
+      }
+
+      foreach ($taxonomies as $taxonomy => $terms) {
+        if (!empty($terms)) {
+          $tax = [
+            'taxonomy' => $taxonomy,
+            'field' => 'id',
+            'terms' => $terms,
+          ];
+          if ($args['inclusionType'] === 'exclude') $tax['operator'] = 'NOT IN';
+          $taxonomiesQuery[] = $tax;
+        }
+      }
+      if (!empty($taxonomiesQuery)) {
+        // With exclusion we want to use 'AND', because we want posts that
+        // don't have excluded tags/categories. But with inclusion we want to
+        // use 'OR', because we want posts that have any of the included
+        // tags/categories
+        $taxonomiesQuery['relation'] = ($args['inclusionType'] === 'exclude') ? 'AND' : 'OR';
+      }
+    }
+
+    // make $taxonomies_query nested to avoid conflicts with plugins that use taxonomies
+    return empty($taxonomiesQuery) ? [] : [$taxonomiesQuery];
   }
 
   private function _attachSentPostsFilter($newsletterId) {
