@@ -15,7 +15,7 @@ use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Subscribers\SubscriberSegmentRepository;
 
 class Action implements ActionInterface {
   /** @var WelcomeScheduler */
@@ -27,19 +27,19 @@ class Action implements ActionInterface {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
-  /** @var SubscribersFinder */
-  private $subscribersFinder;
+  /** @var SubscriberSegmentRepository */
+  private $subscribersSegmentRepository;
 
   public function __construct(
     WelcomeScheduler $welcomeScheduler,
     NewslettersRepository $newslettersRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
-    SubscribersFinder $subscribersFinder
+    SubscriberSegmentRepository $subscriberSegmentRepository
   ) {
     $this->welcomeScheduler = $welcomeScheduler;
     $this->newslettersRepository = $newslettersRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
-    $this->subscribersFinder = $subscribersFinder;
+    $this->subscribersSegmentRepository = $subscriberSegmentRepository;
   }
 
   public function getKey(): string {
@@ -109,8 +109,13 @@ class Action implements ActionInterface {
       throw InvalidStateException::create();
     }
 
-    $isSubscribedToSegment = $this->subscribersFinder->findSubscribersInSegments([$subscriber->getId()], [$segment->getId()]) !== [];
-    if (!$isSubscribedToSegment) {
+    $subscriberSegment = $this->subscribersSegmentRepository->findOneBy([
+      'subscriber' => $subscriber,
+      'segment' => $segment,
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+    ]);
+
+    if ($subscriberSegment === null) {
       throw InvalidStateException::create();
     }
 
