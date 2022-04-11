@@ -9,13 +9,13 @@ use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 
 class SendWelcomeEmailAction implements Action {
   /** @var WelcomeScheduler */
@@ -30,16 +30,21 @@ class SendWelcomeEmailAction implements Action {
   /** @var SubscriberSegmentRepository */
   private $subscribersSegmentRepository;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function __construct(
     WelcomeScheduler $welcomeScheduler,
     NewslettersRepository $newslettersRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
-    SubscriberSegmentRepository $subscriberSegmentRepository
+    SubscriberSegmentRepository $subscriberSegmentRepository,
+    SubscribersRepository $subscribersRepository
   ) {
     $this->welcomeScheduler = $welcomeScheduler;
     $this->newslettersRepository = $newslettersRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->subscribersSegmentRepository = $subscriberSegmentRepository;
+    $this->subscribersRepository = $subscribersRepository;
   }
 
   public function getKey(): string {
@@ -81,7 +86,9 @@ class SendWelcomeEmailAction implements Action {
       throw InvalidStateException::create()->withMessage('A mailpoet:subscriber subject is required.');
     }
 
-    $subscriber = $subscriberSubject->getSubscriber();
+    $subscriberId = $subscriberSubject->getFields()['id']->getValue();
+    $subscriber = $this->subscribersRepository->findOneById($subscriberId);
+
     if (!$subscriber instanceof SubscriberEntity) {
       throw InvalidStateException::create()->withMessage('Could not retrieve subscriber from the subscriber subject.');
     }
@@ -95,19 +102,15 @@ class SendWelcomeEmailAction implements Action {
       throw InvalidStateException::create()->withMessage('A mailpoet:segment subject is required.');
     }
 
-    $segment = $segmentSubject->getSegment();
-    if (!$segment instanceof SegmentEntity) {
-      throw InvalidStateException::create()->withMessage('Could not retrieve the segment from the segment subject.');
-    }
-
+    $segmentId = $segmentSubject->getFields()['id']->getValue();
     $subscriberSegment = $this->subscribersSegmentRepository->findOneBy([
       'subscriber' => $subscriber,
-      'segment' => $segment,
+      'segment' => $segmentId,
       'status' => SubscriberEntity::STATUS_SUBSCRIBED,
     ]);
 
     if ($subscriberSegment === null) {
-      throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' is not subscribed to segment ID '%s'.", $subscriber->getId(), $segment->getId()));
+      throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' is not subscribed to segment ID '%s'.", $subscriber->getId(), $segmentId));
     }
 
     $previouslyScheduledNotification = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($newsletter, (int)$subscriber->getId());

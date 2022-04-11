@@ -82,7 +82,7 @@ class SubscriberSubject implements Subject {
     return ['subscriber_id' => $subscriber->getId()];
   }
 
-  public function getSubscriber(): SubscriberEntity {
+  private function getSubscriber(): SubscriberEntity {
     if (!$this->subscriber) {
       throw InvalidStateException::create()->withMessage(__('Subscriber was not loaded.', 'mailpoet'));
     }
