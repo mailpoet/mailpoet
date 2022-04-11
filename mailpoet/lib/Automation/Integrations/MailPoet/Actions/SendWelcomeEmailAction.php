@@ -78,26 +78,26 @@ class SendWelcomeEmailAction implements Action {
     $newsletter = $this->getWelcomeEmailForStep($step);
     $subscriberSubject = $workflowRun->getSubjects()['mailpoet:subscriber'] ?? null;
     if (!$subscriberSubject instanceof SubscriberSubject) {
-      throw InvalidStateException::create();
+      throw InvalidStateException::create()->withMessage('A mailpoet:subscriber subject is required.');
     }
 
     $subscriber = $subscriberSubject->getSubscriber();
     if (!$subscriber instanceof SubscriberEntity) {
-      throw InvalidStateException::create();
+      throw InvalidStateException::create()->withMessage('Could not retrieve subscriber from the subscriber subject.');
     }
 
     if ($subscriber->getStatus() !== SubscriberEntity::STATUS_SUBSCRIBED) {
-      throw InvalidStateException::create();
+      throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriber->getStatus()));
     }
 
     $segmentSubject = $workflowRun->getSubjects()['mailpoet:segment'] ?? null;
     if (!$segmentSubject instanceof SegmentSubject) {
-      throw InvalidStateException::create();
+      throw InvalidStateException::create()->withMessage('A mailpoet:segment subject is required.');
     }
 
     $segment = $segmentSubject->getSegment();
     if (!$segment instanceof SegmentEntity) {
-      throw InvalidStateException::create();
+      throw InvalidStateException::create()->withMessage('Could not retrieve the segment from the segment subject.');
     }
 
     $subscriberSegment = $this->subscribersSegmentRepository->findOneBy([
@@ -107,23 +107,23 @@ class SendWelcomeEmailAction implements Action {
     ]);
 
     if ($subscriberSegment === null) {
-      throw InvalidStateException::create();
+      throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' is not subscribed to segment ID '%s'.", $subscriber->getId(), $segment->getId()));
     }
 
     $previouslyScheduledNotification = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($newsletter, (int)$subscriber->getId());
     if (!empty($previouslyScheduledNotification)) {
-      throw InvalidStateException::create();
+      throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' was already scheduled to receive newsletter ID '%s'.", $subscriber->getId(), $newsletter->getId()));
     }
 
     $sendingTask = $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $subscriber->getId());
     if ($sendingTask === null) {
-      throw InvalidStateException::create();
+      throw InvalidStateException::create()->withMessage('Could not create sending task.');
     }
 
     $errors = $sendingTask->getErrors();
     if ($errors) {
       throw InvalidStateException::create()
-        ->withMessage(__('There was an error saving the sending task.', 'mailpoet'))
+        ->withMessage('There was an error saving the sending task.')
         ->withErrors($errors);
     }
   }
