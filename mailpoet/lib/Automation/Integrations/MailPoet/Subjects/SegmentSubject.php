@@ -34,6 +34,15 @@ class SegmentSubject implements Subject {
           return $this->getSegment()->getName();
         }
       ),
+      'id' => 
+      new Field(
+        'mailpoet:segment:id',
+        Field::TYPE_INTEGER,
+        __('Segment ID', 'mailpoet'),
+        function () {
+          return $this->getSegment()->getId();
+        }
+      ),
     ];
   }
 
@@ -58,7 +67,7 @@ class SegmentSubject implements Subject {
     return ['segment_id' => $segment->getId()];
   }
 
-  public function getSegment(): SegmentEntity {
+  private function getSegment(): SegmentEntity {
     if (!$this->segment) {
       throw InvalidStateException::create()->withMessage(__('Segment was not loaded.', 'mailpoet'));
     }
