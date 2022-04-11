@@ -54,7 +54,9 @@ class Field {
     return $this->factory;
   }
 
-  // @phpstan-ignore-next-line - there is no consistent return type
+  /**
+   * @return mixed
+   */
   public function getValue() {
     return $this->getFactory()();
   }
