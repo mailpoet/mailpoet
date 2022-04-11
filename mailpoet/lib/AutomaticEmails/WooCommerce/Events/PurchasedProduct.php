@@ -35,7 +35,7 @@ class PurchasedProduct {
       $helper = new WCHelper();
     }
     $this->helper = $helper;
-    $this->scheduler = new AutomaticEmailScheduler();
+    $this->scheduler = ContainerWrapper::getInstance()->get(AutomaticEmailScheduler::class);
     $this->loggerFactory = LoggerFactory::getInstance();
     $this->repository = ContainerWrapper::getInstance()->get(AutomaticEmailsRepository::class);
   }

@@ -45,6 +45,9 @@ class Scheduler {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var NewsletterScheduler */
+  private $scheduler;
+
   public function __construct(
     SubscribersFinder $subscribersFinder,
     LoggerFactory $loggerFactory,
@@ -52,7 +55,8 @@ class Scheduler {
     CronWorkerScheduler $cronWorkerScheduler,
     ScheduledTasksRepository $scheduledTasksRepository,
     NewslettersRepository $newslettersRepository,
-    SegmentsRepository $segmentsRepository
+    SegmentsRepository $segmentsRepository,
+    NewsletterScheduler $scheduler
   ) {
     $this->cronHelper = $cronHelper;
     $this->subscribersFinder = $subscribersFinder;
@@ -61,6 +65,7 @@ class Scheduler {
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
+    $this->scheduler = $scheduler;
   }
 
   public function process($timer = false) {
@@ -291,7 +296,7 @@ class Scheduler {
       $queue->delete();
       return;
     } else {
-      $nextRunDate = NewsletterScheduler::getNextRunDate($newsletter->schedule);
+      $nextRunDate = $this->scheduler->getNextRunDate($newsletter->schedule);
       if (!$nextRunDate) {
         $queue->delete();
         return;

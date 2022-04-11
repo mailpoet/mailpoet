@@ -40,17 +40,22 @@ class PostNotificationScheduler {
   /** @var NewsletterPostsRepository */
   private $newsletterPostsRepository;
 
+  /** @var Scheduler */
+  private $scheduler;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository,
-    NewsletterPostsRepository $newsletterPostsRepository
+    NewsletterPostsRepository $newsletterPostsRepository,
+    Scheduler $scheduler
   ) {
     $this->loggerFactory = LoggerFactory::getInstance();
     $this->newslettersRepository = $newslettersRepository;
     $this->newsletterOptionsRepository = $newsletterOptionsRepository;
     $this->newsletterOptionFieldsRepository = $newsletterOptionFieldsRepository;
     $this->newsletterPostsRepository = $newsletterPostsRepository;
+    $this->scheduler = $scheduler;
   }
 
   public function transitionHook($newStatus, $oldStatus, $post) {
@@ -100,7 +105,7 @@ class PostNotificationScheduler {
     if (!$scheduleOption) {
       return null;
     }
-    $nextRunDate = Scheduler::getNextRunDate($scheduleOption->getValue());
+    $nextRunDate = $this->scheduler->getNextRunDate($scheduleOption->getValue());
     if (!$nextRunDate) {
       return null;
     }

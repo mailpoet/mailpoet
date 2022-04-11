@@ -21,10 +21,13 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
   /** @var NewsletterSaveController */
   private $saveController;
 
+  /** @var Scheduler */
+  private $scheduler;
   public function _before() {
     parent::_before();
     $this->cleanup();
     $this->saveController = $this->diContainer->get(NewsletterSaveController::class);
+    $this->scheduler = $this->diContainer->get(Scheduler::class);
   }
 
   public function testItCanSaveANewsletter() {
@@ -168,7 +171,8 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     })->first();
     expect($task1->getScheduledAt())->notEquals($currentTime);
     assert($scheduleOption instanceof NewsletterOptionEntity); // PHPStan
-    expect($task1->getScheduledAt())->equals(Scheduler::getNextRunDate($scheduleOption->getValue()));
+
+    expect($task1->getScheduledAt())->equals($this->scheduler->getNextRunDate($scheduleOption->getValue()));
     expect($task2->getScheduledAt())->null();
   }
 

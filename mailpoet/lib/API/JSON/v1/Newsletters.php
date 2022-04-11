@@ -79,6 +79,9 @@ class Newsletters extends APIEndpoint {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var Scheduler */
+  private $scheduler;
+
   public function __construct(
     Listing\Handler $listingHandler,
     WPFunctions $wp,
@@ -93,7 +96,8 @@ class Newsletters extends APIEndpoint {
     SendPreviewController $sendPreviewController,
     NewsletterSaveController $newsletterSaveController,
     NewsletterUrl $newsletterUrl,
-    TrackingConfig $trackingConfig
+    TrackingConfig $trackingConfig,
+    Scheduler $scheduler
   ) {
     $this->listingHandler = $listingHandler;
     $this->wp = $wp;
@@ -109,6 +113,7 @@ class Newsletters extends APIEndpoint {
     $this->newsletterSaveController = $newsletterSaveController;
     $this->newsletterUrl = $newsletterUrl;
     $this->trackingConfig = $trackingConfig;
+    $this->scheduler = $scheduler;
   }
 
   public function get($data = []) {
@@ -212,7 +217,7 @@ class Newsletters extends APIEndpoint {
           APIError::BAD_REQUEST => __('This email has incorrect state.', 'mailpoet'),
         ]);
       }
-      $nextRunDate = Scheduler::getNextRunDate($scheduleOption->getValue());
+      $nextRunDate = $this->scheduler->getNextRunDate($scheduleOption->getValue());
       $queues = $newsletter->getQueues();
       foreach ($queues as $queue) {
         $task = $queue->getTask();

@@ -90,7 +90,7 @@ class AbandonedCartTest extends \MailPoetTest {
       $wcHelper,
       $subscriberCookie,
       $this->diContainer->get(SubscriberActivityTracker::class),
-      new AutomaticEmailScheduler($wp)
+      $this->diContainer->get(AutomaticEmailScheduler::class)
     );
     $result = $event->getEventDetails();
     expect($result)->notEmpty();
@@ -263,12 +263,13 @@ class AbandonedCartTest extends \MailPoetTest {
 
   private function createAbandonedCartEmail() {
     $settings = $this->diContainer->get(SettingsController::class);
+    $automaticEmailScheduler = $this->diContainer->get(AutomaticEmailScheduler::class);
     return $this->make(AbandonedCart::class, [
       'wp' => $this->wp,
       'wooCommerceHelper' => $this->wooCommerceHelperMock,
       'subscriberCookie' => new SubscriberCookie(new Cookies(), new TrackingConfig($settings)),
       'subscriberActivityTracker' => $this->subscriberActivityTrackerMock,
-      'scheduler' => new AutomaticEmailScheduler(),
+      'scheduler' => $automaticEmailScheduler,
     ]);
   }
 

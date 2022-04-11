@@ -16,14 +16,23 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
 
 class SchedulerTest extends \MailPoetTest {
+
+  /** @var Scheduler */
+  private $testee;
+
+  public function _before() {
+    parent::_before();
+    $this->testee = $this->diContainer->get(Scheduler::class);
+  }
+
   public function testItGetsActiveNewslettersFilteredByTypeAndGroup() {
     $this->_createNewsletter($type = Newsletter::TYPE_WELCOME);
 
     // no newsletters with type "notification" should be found
-    expect(Scheduler::getNewsletters(Newsletter::TYPE_NOTIFICATION))->isEmpty();
+    expect($this->testee->getNewsletters(Newsletter::TYPE_NOTIFICATION))->isEmpty();
 
     // one newsletter with type "welcome" should be found
-    expect(Scheduler::getNewsletters(Newsletter::TYPE_WELCOME))->count(1);
+    expect($this->testee->getNewsletters(Newsletter::TYPE_WELCOME))->count(1);
 
     // one automatic email belonging to "test" group should be found
     $newsletter = $this->_createNewsletter($type = Newsletter::TYPE_AUTOMATIC);
@@ -35,32 +44,32 @@ class SchedulerTest extends \MailPoetTest {
       ]
     );
 
-    expect(Scheduler::getNewsletters(Newsletter::TYPE_AUTOMATIC, 'group_does_not_exist'))->isEmpty();
-    expect(Scheduler::getNewsletters(Newsletter::TYPE_WELCOME, 'test'))->count(1);
+    expect($this->testee->getNewsletters(Newsletter::TYPE_AUTOMATIC, 'group_does_not_exist'))->isEmpty();
+    expect($this->testee->getNewsletters(Newsletter::TYPE_WELCOME, 'test'))->count(1);
   }
 
   public function testItCanGetNextRunDate() {
     // it accepts cron syntax and returns next run date
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
-    expect(Scheduler::getNextRunDate('* * * * *'))
+    expect($this->testee->getNextRunDate('* * * * *'))
       ->equals($currentTime->addMinute()->format('Y-m-d H:i:00'));
     // when invalid CRON expression is used, false response is returned
-    expect(Scheduler::getNextRunDate('invalid CRON expression'))->false();
+    expect($this->testee->getNextRunDate('invalid CRON expression'))->false();
   }
 
   public function testItCanGetPreviousRunDate() {
     // it accepts cron syntax and returns previous run date
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
-    expect(Scheduler::getPreviousRunDate('* * * * *'))
+    expect($this->testee->getPreviousRunDate('* * * * *'))
       ->equals($currentTime->subMinute()->format('Y-m-d H:i:00'));
     // when invalid CRON expression is used, false response is returned
-    expect(Scheduler::getPreviousRunDate('invalid CRON expression'))->false();
+    expect($this->testee->getPreviousRunDate('invalid CRON expression'))->false();
   }
 
   public function testItFormatsDatetimeString() {
-    expect(Scheduler::formatDatetimeString('April 20, 2016 4pm'))
+    expect($this->testee->formatDatetimeString('April 20, 2016 4pm'))
       ->equals('2016-04-20 16:00:00');
   }
 

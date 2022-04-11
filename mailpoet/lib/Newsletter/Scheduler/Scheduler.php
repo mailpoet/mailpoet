@@ -9,9 +9,17 @@ use MailPoetVendor\Carbon\Carbon;
 class Scheduler {
   const MYSQL_TIMESTAMP_MAX = '2038-01-19 03:14:07';
 
-  public static function getNextRunDate($schedule, $fromTimestamp = false) {
-    $wp = new WPFunctions();
-    $fromTimestamp = ($fromTimestamp) ? $fromTimestamp : $wp->currentTime('timestamp');
+  /** @var WPFunctions  */
+  private $wp;
+
+  public function __construct(
+    WPFunctions $wp
+  ) {
+    $this->wp = $wp;
+  }
+
+  public function getNextRunDate($schedule, $fromTimestamp = false) {
+    $fromTimestamp = ($fromTimestamp) ? $fromTimestamp : $this->wp->currentTime('timestamp');
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
       $nextRunDate = $schedule->getNextRunDate(Carbon::createFromTimestamp($fromTimestamp))
@@ -22,9 +30,8 @@ class Scheduler {
     return $nextRunDate;
   }
 
-  public static function getPreviousRunDate($schedule, $fromTimestamp = false) {
-    $wp = WPFunctions::get();
-    $fromTimestamp = ($fromTimestamp) ? $fromTimestamp : $wp->currentTime('timestamp');
+  public function getPreviousRunDate($schedule, $fromTimestamp = false) {
+    $fromTimestamp = ($fromTimestamp) ? $fromTimestamp : $this->wp->currentTime('timestamp');
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
       $previousRunDate = $schedule->getPreviousRunDate(Carbon::createFromTimestamp($fromTimestamp))
@@ -35,8 +42,8 @@ class Scheduler {
     return $previousRunDate;
   }
 
-  public static function getScheduledTimeWithDelay($afterTimeType, $afterTimeNumber, $wp = null): Carbon {
-    $wp = $wp ?? WPFunctions::get();
+  public function getScheduledTimeWithDelay($afterTimeType, $afterTimeNumber, $wp = null): Carbon {
+    $wp = $wp ?? $this->wp;
     $currentTime = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
     switch ($afterTimeType) {
       case 'minutes':
@@ -59,7 +66,7 @@ class Scheduler {
     return $currentTime;
   }
 
-  public static function getNewsletters($type, $group = false) {
+  public function getNewsletters($type, $group = false) {
     return Newsletter::getPublished()
       ->filter('filterType', $type, $group)
       ->filter('filterStatus', Newsletter::STATUS_ACTIVE)
@@ -67,7 +74,7 @@ class Scheduler {
       ->findMany();
   }
 
-  public static function formatDatetimeString($datetimeString) {
+  public function formatDatetimeString($datetimeString) {
     return Carbon::parse($datetimeString)->format('Y-m-d H:i:s');
   }
 }

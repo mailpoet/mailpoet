@@ -83,6 +83,9 @@ class NewslettersTest extends \MailPoetTest {
   /** @var Url */
   private $newsletterUrl;
 
+  /** @var Scheduler */
+  private $scheduler;
+
   public function _before() {
     parent::_before();
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
@@ -93,6 +96,7 @@ class NewslettersTest extends \MailPoetTest {
     $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
     $this->newslettersResponseBuilder = ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class);
     $this->newsletterUrl = ContainerWrapper::getInstance()->get(Url::class);
+    $this->scheduler = ContainerWrapper::getInstance()->get(Scheduler::class);
     $this->endpoint = Stub::copy(
       ContainerWrapper::getInstance()->get(Newsletters::class),
       [
@@ -286,7 +290,7 @@ class NewslettersTest extends \MailPoetTest {
 
     $sendingQueue1 = SendingTask::create();
     $sendingQueue1->newsletterId = $this->postNotification->getId();
-    $sendingQueue1->scheduledAt = Scheduler::getPreviousRunDate($schedule);
+    $sendingQueue1->scheduledAt = $this->scheduler->getPreviousRunDate($schedule);
     $sendingQueue1->status = SendingQueue::STATUS_SCHEDULED;
     $sendingQueue1->save();
     $sendingQueue2 = SendingTask::create();
@@ -296,7 +300,7 @@ class NewslettersTest extends \MailPoetTest {
     $sendingQueue2->save();
     $sendingQueue3 = SendingTask::create();
     $sendingQueue3->newsletterId = $this->postNotification->getId();
-    $sendingQueue3->scheduledAt = Scheduler::getPreviousRunDate($schedule);
+    $sendingQueue3->scheduledAt = $this->scheduler->getPreviousRunDate($schedule);
     $sendingQueue3->save();
 
     $this->entityManager->clear();
@@ -308,11 +312,11 @@ class NewslettersTest extends \MailPoetTest {
     );
     $tasks = ScheduledTask::findMany();
     // previously scheduled notification is rescheduled for future date
-    expect($tasks[0]->scheduled_at)->equals(Scheduler::getNextRunDate($schedule));
+    expect($tasks[0]->scheduled_at)->equals($this->scheduler->getNextRunDate($schedule));
     // future scheduled notifications are left intact
     expect($tasks[1]->scheduled_at)->equals($randomFutureDate);
     // previously unscheduled (e.g., sent/sending) notifications are left intact
-    expect($tasks[2]->scheduled_at)->equals(Scheduler::getPreviousRunDate($schedule));
+    expect($tasks[2]->scheduled_at)->equals($this->scheduler->getPreviousRunDate($schedule));
   }
 
   public function testItSchedulesPostNotificationsWhenStatusIsSetBackToActive() {
@@ -688,7 +692,8 @@ class NewslettersTest extends \MailPoetTest {
       $mocks['sendPreviewController'] ?? $this->diContainer->get(SendPreviewController::class),
       $this->diContainer->get(NewsletterSaveController::class),
       $this->diContainer->get(Url::class),
-      $this->diContainer->get(TrackingConfig::class)
+      $this->diContainer->get(TrackingConfig::class),
+      $this->scheduler
     );
   }
 

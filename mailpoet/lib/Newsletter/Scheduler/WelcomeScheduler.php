@@ -30,6 +30,9 @@ class WelcomeScheduler {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** @var Scheduler  */
+  private $scheduler;
+
   /** @var WPFunctions|null */
   private $wp;
 
@@ -38,12 +41,14 @@ class WelcomeScheduler {
     SegmentsRepository $segmentsRepository,
     NewslettersRepository $newslettersRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
+    Scheduler $scheduler,
     ?WPFunctions $wp = null
   ) {
     $this->subscribersRepository = $subscribersRepository;
     $this->segmentsRepository = $segmentsRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->scheduler = $scheduler;
     $this->wp = $wp;
   }
 
@@ -121,7 +126,7 @@ class WelcomeScheduler {
     $sendingTask->setSubscribers([$subscriberId]);
     $sendingTask->status = SendingQueue::STATUS_SCHEDULED;
     $sendingTask->priority = SendingQueue::PRIORITY_HIGH;
-    $sendingTask->scheduledAt = Scheduler::getScheduledTimeWithDelay(
+    $sendingTask->scheduledAt = $this->scheduler->getScheduledTimeWithDelay(
       $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE),
       $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER),
       $this->wp
