@@ -109,7 +109,14 @@ class Registration {
       $segmentIds
     );
 
-    // start subscriber tracking (by email, we don't have WP user ID yet)
-    $this->subscriberHandler->identifyByEmail($email);
+
+    /**
+     * On multisite headers are already sent at this point, tracking will start
+     * once the user has activated his account at a later stage.
+     **/
+    if (!headers_sent()) {
+      // start subscriber tracking (by email, we don't have WP user ID yet)
+      $this->subscriberHandler->identifyByEmail($email);
+    }
   }
 }
