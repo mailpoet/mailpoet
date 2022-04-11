@@ -4,33 +4,23 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Config\AccessControl;
-use MailPoet\Newsletter\AutomatedLatestContent as ALC;
-use MailPoet\Util\APIPermissionHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 
 class AutomatedLatestContent extends APIEndpoint {
-  /** @var ALC  */
+  /** @var \MailPoet\Newsletter\AutomatedLatestContent  */
   public $ALC;
-
-  /*** @var WPFunctions */
   private $wp;
-
-  /*** @var APIPermissionHelper */
-  private $permissionHelper;
-
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_EMAILS,
   ];
 
   public function __construct(
-    ALC $alc,
-    APIPermissionHelper $permissionHelper,
+    \MailPoet\Newsletter\AutomatedLatestContent $alc,
     WPFunctions $wp
   ) {
     $this->ALC = $alc;
     $this->wp = $wp;
-    $this->permissionHelper = $permissionHelper;
   }
 
   public function getPostTypes() {
@@ -75,24 +65,14 @@ class AutomatedLatestContent extends APIEndpoint {
     return $this->successResponse(array_values($terms));
   }
 
-  /**
-   * @param \WP_Post[] $posts
-   * @return \WP_Post[]
-   */
-  private function getPermittedPosts($posts) {
-    return array_filter($posts, function ($post) {
-      return $this->permissionHelper->checkReadPermission($post);
-    });
-  }
-
   public function getPosts($data = []) {
     return $this->successResponse(
-      $this->getPermittedPosts($this->ALC->getPosts($data))
+      $this->ALC->getPosts($data)
     );
   }
 
   public function getTransformedPosts($data = []) {
-    $posts = $this->getPermittedPosts($this->ALC->getPosts($data));
+    $posts = $this->ALC->getPosts($data);
     return $this->successResponse(
       $this->ALC->transformPosts($data, $posts)
     );
@@ -103,7 +83,7 @@ class AutomatedLatestContent extends APIEndpoint {
     $renderedPosts = [];
 
     foreach ($data['blocks'] as $block) {
-      $posts = $this->getPermittedPosts($this->ALC->getPosts($block, $usedPosts));
+      $posts = $this->ALC->getPosts($block, $usedPosts);
       $renderedPosts[] = $this->ALC->transformPosts($block, $posts);
 
       foreach ($posts as $post) {
