@@ -18,9 +18,6 @@ use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 
 class SendWelcomeEmailAction implements Action {
-  /** @var WelcomeScheduler */
-  private $welcomeScheduler;
-
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
@@ -28,23 +25,26 @@ class SendWelcomeEmailAction implements Action {
   private $scheduledTasksRepository;
 
   /** @var SubscriberSegmentRepository */
-  private $subscribersSegmentRepository;
+  private $subscriberSegmentRepository;
 
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var WelcomeScheduler */
+  private $welcomeScheduler;
+
   public function __construct(
-    WelcomeScheduler $welcomeScheduler,
     NewslettersRepository $newslettersRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    WelcomeScheduler $welcomeScheduler
   ) {
-    $this->welcomeScheduler = $welcomeScheduler;
     $this->newslettersRepository = $newslettersRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
-    $this->subscribersSegmentRepository = $subscriberSegmentRepository;
+    $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->subscribersRepository = $subscribersRepository;
+    $this->welcomeScheduler = $welcomeScheduler;
   }
 
   public function getKey(): string {
@@ -103,7 +103,7 @@ class SendWelcomeEmailAction implements Action {
     }
 
     $segmentId = $segmentSubject->getFields()['id']->getValue();
-    $subscriberSegment = $this->subscribersSegmentRepository->findOneBy([
+    $subscriberSegment = $this->subscriberSegmentRepository->findOneBy([
       'subscriber' => $subscriber,
       'segment' => $segmentId,
       'status' => SubscriberEntity::STATUS_SUBSCRIBED,
