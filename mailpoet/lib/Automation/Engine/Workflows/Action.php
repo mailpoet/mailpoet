@@ -2,12 +2,12 @@
 
 namespace MailPoet\Automation\Engine\Workflows;
 
-interface ActionInterface {
+interface Action {
   public function getKey(): string;
 
   public function getName(): string;
 
-  public function validate(Workflow $workflow, Step $step, array $subjects = []): AbstractValidationResult;
+  public function hasRequiredSubjects(array $subjects): bool;
 
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void;
 }

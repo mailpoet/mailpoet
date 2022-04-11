@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Integrations\MailPoet\Actions\SendWelcomeEmail;
+namespace MailPoet\Automation\Integrations\MailPoet\Actions;
 
-use MailPoet\Automation\Engine\Workflows\ActionInterface;
+use MailPoet\Automation\Engine\Workflows\Action;
 use MailPoet\Automation\Engine\Workflows\Step;
 use MailPoet\Automation\Engine\Workflows\Workflow;
 use MailPoet\Automation\Engine\Workflows\WorkflowRun;
@@ -17,7 +17,7 @@ use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 
-class Action implements ActionInterface {
+class SendWelcomeEmailAction implements Action {
   /** @var WelcomeScheduler */
   private $welcomeScheduler;
 
@@ -50,62 +50,53 @@ class Action implements ActionInterface {
     return __('Send Welcome Email', 'mailpoet');
   }
 
-  public function validate(Workflow $workflow, Step $step, array $subjects = []): ValidationResult {
-    $result = new ValidationResult();
-    if (!isset($step->getArgs()['welcomeEmailId'])) {
-      $result->addError('welcomeEmailIdRequired', 'Step arguments did not include a welcomeEmailId.');
-    } else {
-      $welcomeEmailId = (int)$step->getArgs()['welcomeEmailId'];
-      $newsletter = $this->newslettersRepository->findOneById($welcomeEmailId);
-      if ($newsletter === null) {
-        $result->addError('welcomeEmailNotFound', sprintf("Welcome Email with ID '%s' not found.", $welcomeEmailId));
-      } else {
-        $type = $newsletter->getType();
-        if ($type !== NewsletterEntity::TYPE_WELCOME) {
-          $result->addError('newsletterMustBeWelcomeType', sprintf("Newsletter must be a Welcome Email. Actual type for newsletter ID '%s' was '%s'.", $welcomeEmailId, $type));
-        } else {
-          $result->setNewsletter($newsletter);
-        }
-      }
-    }
-
+  public function hasRequiredSubjects(array $subjects): bool {
     $segmentSubject = $subjects['mailpoet:segment'] ?? null;
-    if (!$segmentSubject instanceof SegmentSubject) {
-      $result->addError('segmentSubjectRequired', "A 'mailpoet:segment' subject is required.");
-    } else {
-      $result->setSegmentSubject($segmentSubject);
-    }
-
     $subscriberSubject = $subjects['mailpoet:subscriber'] ?? null;
-    if (!$subscriberSubject instanceof SubscriberSubject) {
-      $result->addError('subscriberSubjectRequired', "A 'mailpoet:subscriber' subject is required.");
-    } else {
-      $result->setSubscriberSubject($subscriberSubject);
+
+    return $segmentSubject instanceof SegmentSubject && $subscriberSubject instanceof SubscriberSubject;
+  }
+
+  public function getWelcomeEmailForStep(Step $step): NewsletterEntity {
+    if (!isset($step->getArgs()['welcomeEmailId'])) {
+      throw InvalidStateException::create();
+    }
+    $welcomeEmailId = $step->getArgs()['welcomeEmailId'];
+    $newsletter = $this->newslettersRepository->findOneById($welcomeEmailId);
+    if ($newsletter === null) {
+      throw InvalidStateException::create()->withMessage(sprintf("Welcome Email with ID '%s' not found.", $welcomeEmailId));
+    }
+    $type = $newsletter->getType();
+    if ($type !== NewsletterEntity::TYPE_WELCOME) {
+      throw InvalidStateException::create()->withMessage(sprintf("Newsletter must be a Welcome Email. Actual type for newsletter ID '%s' was '%s'.", $welcomeEmailId, $type));
     }
 
-    return $result;
+    return $newsletter;
   }
 
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
-    $validationResult = $this->validate($workflow, $step, $workflowRun->getSubjects());
-
-    if (!$validationResult->isValid()) {
-      throw InvalidStateException::create()->withErrors($validationResult->getErrors());
+    $newsletter = $this->getWelcomeEmailForStep($step);
+    $subscriberSubject = $workflowRun->getSubjects()['mailpoet:subscriber'] ?? null;
+    if (!$subscriberSubject instanceof SubscriberSubject) {
+      throw InvalidStateException::create();
     }
 
-    $newsletter = $validationResult->getNewsletter();
-    $subscriber = $validationResult->getSubscriberSubject()->getSubscriber();
+    $subscriber = $subscriberSubject->getSubscriber();
     if (!$subscriber instanceof SubscriberEntity) {
       throw InvalidStateException::create();
     }
 
-    $segment = $validationResult->getSegmentSubject()->getSegment();
-    if (!$segment instanceof SegmentEntity) {
+    if ($subscriber->getStatus() !== SubscriberEntity::STATUS_SUBSCRIBED) {
       throw InvalidStateException::create();
     }
 
-    // Maybe unnecessary since findSubscribersInSegments is status-aware
-    if ($subscriber->getStatus() !== SubscriberEntity::STATUS_SUBSCRIBED) {
+    $segmentSubject = $workflowRun->getSubjects()['mailpoet:segment'] ?? null;
+    if (!$segmentSubject instanceof SegmentSubject) {
+      throw InvalidStateException::create();
+    }
+
+    $segment = $segmentSubject->getSegment();
+    if (!$segment instanceof SegmentEntity) {
       throw InvalidStateException::create();
     }
 
