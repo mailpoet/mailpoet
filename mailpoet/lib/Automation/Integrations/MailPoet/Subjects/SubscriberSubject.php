@@ -2,14 +2,14 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet\Subjects;
 
-use MailPoet\Automation\Engine\Workflows\AbstractSubject;
 use MailPoet\Automation\Engine\Workflows\Field;
+use MailPoet\Automation\Engine\Workflows\Subject;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\NotFoundException;
 use MailPoet\Subscribers\SubscribersRepository;
 
-class SubscriberSubject extends AbstractSubject {
+class SubscriberSubject implements Subject {
   /** @var Field[] */
   private $fields;
 
@@ -67,18 +67,6 @@ class SubscriberSubject extends AbstractSubject {
 
   public function getFields(): array {
     return $this->fields;
-  }
-
-  public function getSubscriberIdField(): Field {
-    return $this->getField('id');
-  }
-
-  public function getSubscriberEmailField(): Field {
-    return $this->getField('email');
-  }
-
-  public function getSubscriberStatusField(): Field {
-    return $this->getField('status');
   }
 
   public function load(array $args): void {
