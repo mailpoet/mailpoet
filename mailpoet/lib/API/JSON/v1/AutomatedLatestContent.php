@@ -5,7 +5,6 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Config\AccessControl;
 use MailPoet\Newsletter\AutomatedLatestContent as ALC;
-use MailPoet\Newsletter\BlockPostQuery;
 use MailPoet\Util\APIPermissionHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
@@ -88,12 +87,12 @@ class AutomatedLatestContent extends APIEndpoint {
 
   public function getPosts($data = []) {
     return $this->successResponse(
-      $this->getPermittedPosts($this->ALC->getPosts(new BlockPostQuery(['args' => $data])))
+      $this->getPermittedPosts($this->ALC->getPosts($data))
     );
   }
 
   public function getTransformedPosts($data = []) {
-    $posts = $this->getPermittedPosts($this->ALC->getPosts(new BlockPostQuery(['args' => $data])));
+    $posts = $this->getPermittedPosts($this->ALC->getPosts($data));
     return $this->successResponse(
       $this->ALC->transformPosts($data, $posts)
     );
@@ -104,8 +103,7 @@ class AutomatedLatestContent extends APIEndpoint {
     $renderedPosts = [];
 
     foreach ($data['blocks'] as $block) {
-      $query = new BlockPostQuery(['args' => $block, 'postsToExclude' => $usedPosts]);
-      $posts = $this->getPermittedPosts($this->ALC->getPosts($query));
+      $posts = $this->getPermittedPosts($this->ALC->getPosts($block, $usedPosts));
       $renderedPosts[] = $this->ALC->transformPosts($block, $posts);
 
       foreach ($posts as $post) {

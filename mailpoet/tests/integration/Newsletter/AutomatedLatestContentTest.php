@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Newsletter;
 
 use MailPoet\Newsletter\AutomatedLatestContent;
-use MailPoet\Newsletter\BlockPostQuery;
 
 class AutomatedLatestContentTest extends \MailPoetTest {
   /** @var AutomatedLatestContent */
@@ -33,8 +32,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
       'inclusionType' => 'include',
     ];
 
-    $query = new BlockPostQuery(['args' => $args]);
-    expect($query->getQueryParams()['tax_query'])->equals([
+    expect($this->alc->constructTaxonomiesQuery($args))->equals([
       [
         [
           'taxonomy' => 'post_tag',
@@ -66,7 +64,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
       'inclusionType' => 'exclude',
     ];
 
-    $query = (new BlockPostQuery(['args' => $args]))->getQueryParams()['tax_query'];
+    $query = $this->alc->constructTaxonomiesQuery($args);
 
     expect($query[0][0]['operator'])->equals('NOT IN');
     expect($query[0]['relation'])->equals('AND');
