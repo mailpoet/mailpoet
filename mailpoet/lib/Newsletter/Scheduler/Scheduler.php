@@ -42,9 +42,8 @@ class Scheduler {
     return $previousRunDate;
   }
 
-  public function getScheduledTimeWithDelay($afterTimeType, $afterTimeNumber, $wp = null): Carbon {
-    $wp = $wp ?? $this->wp;
-    $currentTime = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
+  public function getScheduledTimeWithDelay($afterTimeType, $afterTimeNumber): Carbon {
+    $currentTime = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
     switch ($afterTimeType) {
       case 'minutes':
         $currentTime->addMinutes($afterTimeNumber);
