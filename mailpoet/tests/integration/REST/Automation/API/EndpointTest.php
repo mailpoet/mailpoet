@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../Test.php';
 require_once __DIR__ . '/Endpoint.php';
 
 use MailPoet\Automation\Engine\API\API;
-use MailPoet\Automation\Engine\API\EndpointFactory;
+use MailPoet\Automation\Engine\API\EndpointContainer;
 use MailPoet\Automation\Engine\API\Request;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\REST\Automation\API\Endpoints\Endpoint;
@@ -114,8 +114,8 @@ class EndpointTest extends Test {
     rest_get_server();
 
     return new API(
-      $this->make(EndpointFactory::class, [
-        'createEndpoint' => function () use ($requestCallback) {
+      $this->make(EndpointContainer::class, [
+        'get' => function () use ($requestCallback) {
           return new Endpoint($requestCallback);
         }
       ]),
