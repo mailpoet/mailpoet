@@ -19,7 +19,7 @@ class WorkflowsPostEndpoint extends Endpoint {
 
   public function handle(Request $request): Response {
     // TODO: validation
-    $data = $request->getBody();
+    $data = $request->getParams();
     $this->createController->createWorkflow($data);
     return new Response();
   }

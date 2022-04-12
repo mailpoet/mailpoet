@@ -2,7 +2,6 @@
 
 namespace MailPoet\Automation\Engine\API;
 
-use MailPoet\Automation\Engine\Exceptions;
 use WP_REST_Request;
 
 class Request {
@@ -19,33 +18,12 @@ class Request {
     return $this->wpRequest->get_header($key);
   }
 
-  public function getUrlParams(): array {
-    return $this->wpRequest->get_url_params();
+  public function getParams(): array {
+    return $this->wpRequest->get_params();
   }
 
-  public function getUrlParam(string $name): ?string {
-    return $this->getUrlParams()[$name] ?? null;
-  }
-
-  public function getQueryParams(): array {
-    return $this->wpRequest->get_query_params();
-  }
-
-  public function getQueryParam(string $name): ?string {
-    return $this->getQueryParams()[$name] ?? null;
-  }
-
-  public function getBody(): array {
-    $json = $this->wpRequest->get_json_params();
-
-    /* @phpstan-ignore-next-line hotfix for missing 'null' in WP annotation */
-    if ($json === null) {
-      throw Exceptions::apiNoJsonBody();
-    }
-    return $json;
-  }
-
-  public function getRawBody(): string {
-    return $this->wpRequest->get_body();
+  /** @return mixed */
+  public function getParam(string $name) {
+    return $this->wpRequest->get_param($name);
   }
 }
