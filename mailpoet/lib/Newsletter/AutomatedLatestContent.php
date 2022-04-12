@@ -65,7 +65,7 @@ class AutomatedLatestContent {
       'post_type' => (isset($args['contentType'])) ? $args['contentType'] : 'post',
       'post_status' => (isset($args['postStatus'])) ? $args['postStatus'] : 'publish',
       'orderby' => 'date',
-      'order' => ($args['sortBy'] === 'newest') ? 'DESC' : 'ASC',
+      'order' => isset($args['sortBy']) && in_array($args['sortBy'], ['newest', 'DESC']) ? 'DESC' : 'ASC',
     ];
     if (!empty($args['offset']) && (int)$args['offset'] > 0) {
       $parameters['offset'] = (int)$args['offset'];
