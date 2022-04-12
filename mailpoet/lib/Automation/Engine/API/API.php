@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Engine\API;
 use MailPoet\Automation\Engine\Exceptions\Exception;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\WordPress;
+use MailPoet\Validator\Schema;
 use Throwable;
 use WP_REST_Request;
 
@@ -53,6 +54,10 @@ class API {
   }
 
   private function registerRoute(string $route, string $endpointClass, string $method): void {
+    $schema = array_map(function (Schema $field) {
+      return $field->toArray();
+    }, $endpointClass::getRequestSchema());
+
     $this->wordPress->registerRestRoute(self::PREFIX, $route, [
       'methods' => $method,
       'callback' => function (WP_REST_Request $wpRequest) use ($endpointClass) {
@@ -68,6 +73,7 @@ class API {
         $endpoint = $this->endpointFactory->createEndpoint($endpointClass);
         return $endpoint->checkPermissions();
       },
+      'args' => $schema,
     ]);
   }
 

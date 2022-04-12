@@ -2,6 +2,8 @@
 
 namespace MailPoet\Automation\Engine\API;
 
+use MailPoet\Validator\Schema;
+
 use function current_user_can;
 
 abstract class Endpoint {
@@ -9,5 +11,10 @@ abstract class Endpoint {
 
   public function checkPermissions(): bool {
     return current_user_can('administrator');
+  }
+
+  /** @return array<string, Schema> */
+  public static function getRequestSchema(): array {
+    return [];
   }
 }
