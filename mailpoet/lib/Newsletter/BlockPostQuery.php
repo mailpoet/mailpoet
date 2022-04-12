@@ -29,11 +29,19 @@ class BlockPostQuery {
   public $newsletterId = false;
 
   /***
-   * Translates to \WP_Query::date_query => ['column' => 'post_date', 'after' => {date string}]
+   * Translates to \WP_Query::date_query => array{'column': 'post_date', 'after': date string}
    *
    * @var bool|DateTimeInterface|null
    */
   public $newerThanTimestamp = false;
+
+  /**
+   * If it's a dynamic block
+   * Dynamic blocks are not allowed to query none-public posts
+   *
+   * @var bool
+   */
+  public $dynamic = true;
 
   /**
    * @param array{
@@ -51,6 +59,7 @@ class BlockPostQuery {
    *    postsToExclude?: int[],
    *    newsletterId?: int|false|null,
    *    newerThanTimestamp?: bool|DateTimeInterface|null,
+   *    dynamic?: bool,
    * } $query
    * @return void
    */
@@ -61,18 +70,17 @@ class BlockPostQuery {
     $this->postsToExclude = $query['postsToExclude'] ?? [];
     $this->newsletterId = $query['newsletterId'] ?? false;
     $this->newerThanTimestamp = $query['newerThanTimestamp'] ?? false;
+    $this->dynamic = $query['dynamic'] ?? true;
   }
 
   public function getPostType(): string {
     return $this->args['contentType'] ?? 'post';
   }
 
-  /**
-   * Returns post status
-   *
-   * @return string
-   */
   public function getPostStatus(): string {
+    if ($this->dynamic) {
+      return 'publish';
+    }
     return $this->args['postStatus'] ?? 'publish';
   }
 
