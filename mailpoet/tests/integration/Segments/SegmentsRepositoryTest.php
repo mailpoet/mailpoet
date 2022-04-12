@@ -137,6 +137,15 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->segmentsRepository->createOrUpdate('Existing Segment');
   }
 
+  public function testItChecksForDuplicateNameWhenUpdatingExistingSegmentName() {
+    $segment = $this->createDefaultSegment('Test');
+    $this->createDefaultSegment('Existing');
+    $this->segmentsRepository->flush();
+    $this->expectException(ConflictException::class);
+    $this->expectExceptionMessage("Could not create new segment with name [Existing] because a segment with that name already exists.");
+    $this->segmentsRepository->createOrUpdate('Existing', $segment->getDescription(), $segment->getType(), [], $segment->getId());
+  }
+
   private function createDefaultSegment(string $name): SegmentEntity {
     $segment = new SegmentEntity($name, SegmentEntity::TYPE_DEFAULT, 'description');
     $this->entityManager->persist($segment);
