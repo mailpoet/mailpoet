@@ -109,7 +109,7 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
     $this->deleteAllPosts();
   }
 
-  private function loginWithRole(string $role): void {
+  private function loginWithRole(string $role): \WP_User {
     $username = uniqid("testUser");
     $email = "$username@test.com";
     $existingUser = $this->wp->getUserBy("email", $email);
@@ -129,6 +129,8 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
 
     $this->wp->wpSetCurrentUser($user->ID);
     $this->createdUsers[] = $user;
+
+    return $user;
   }
 
   private function deleteAllPosts() {
@@ -216,7 +218,11 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
     expect($this->getPostTitles($result->data))->contains($publicPost["post_title"]);
     expect($this->getPostTitles($result->data))->contains($privatePost["post_title"]);
 
-    $this->loginWithRole("administrator");
+    $user = $this->loginWithRole("administrator");
+    if (is_multisite()) {
+      grant_super_admin($user->ID);
+    }
+
     $result = $this->alcAPI->getPosts(['postStatus' => "any", "contentType" => "post"]);
     expect($result->data)->count(3);
     expect($this->getPostTitles($result->data))->contains($publicPost["post_title"]);
