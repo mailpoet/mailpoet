@@ -105,7 +105,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct::class)->setPublic(true);
     // Automation
     $container->autowire(\MailPoet\Automation\Engine\API\API::class)->setPublic(true);
-    $container->autowire(\MailPoet\Automation\Engine\API\EndpointFactory::class)
+    $container->autowire(\MailPoet\Automation\Engine\API\EndpointContainer::class)
       ->setPublic(true)
       ->setArgument('$container', new Reference(ContainerWrapper::class));
     $container->autowire(\MailPoet\Automation\Engine\Builder\CreateWorkflowController::class)->setPublic(true);

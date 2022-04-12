@@ -13,17 +13,17 @@ class API {
   private const PREFIX = 'mailpoet/v1/automation';
   private const WP_REST_API_INIT_ACTION = 'rest_api_init';
 
-  /** @var EndpointFactory */
-  private $endpointFactory;
+  /** @var EndpointContainer */
+  private $endpointContainer;
 
   /** @var WordPress */
   private $wordPress;
 
   public function __construct(
-    EndpointFactory $endpointFactory,
+    EndpointContainer $endpointContainer,
     WordPress $wordPress
   ) {
-    $this->endpointFactory = $endpointFactory;
+    $this->endpointContainer = $endpointContainer;
     $this->wordPress = $wordPress;
   }
 
@@ -62,7 +62,7 @@ class API {
       'methods' => $method,
       'callback' => function (WP_REST_Request $wpRequest) use ($endpointClass) {
         try {
-          $endpoint = $this->endpointFactory->createEndpoint($endpointClass);
+          $endpoint = $this->endpointContainer->get($endpointClass);
           $request = new Request($wpRequest);
           return $endpoint->handle($request);
         } catch (Throwable $e) {
@@ -70,7 +70,7 @@ class API {
         }
       },
       'permission_callback' => function () use ($endpointClass) {
-        $endpoint = $this->endpointFactory->createEndpoint($endpointClass);
+        $endpoint = $this->endpointContainer->get($endpointClass);
         return $endpoint->checkPermissions();
       },
       'args' => $schema,
