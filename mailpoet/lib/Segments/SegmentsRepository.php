@@ -126,7 +126,10 @@ class SegmentsRepository extends Repository {
       if (!$segment instanceof SegmentEntity) {
         throw new NotFoundException("Segment with ID [{$id}] was not found.");
       }
-      $segment->setName($name);
+      if ($name !== $segment->getName()) {
+        $this->verifyNameIsUnique($name, $id);
+        $segment->setName($name);
+      }
       $segment->setDescription($description);
     } else {
       $this->verifyNameIsUnique($name, $id);
