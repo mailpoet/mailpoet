@@ -113,6 +113,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     'wp_filter',
     'wp_actions',
     'wp_current_filter',
+    'wp_rest_server',
     '_SESSION',
     '_ENV',
     '_POST',
