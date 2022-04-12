@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import map from '../../../../assets/js/src/form_editor/store/map_form_data_after_loading.jsx';
+import { mapFormDataAfterLoading as map } from '../../../../assets/js/src/form_editor/store/map_form_data_after_loading.jsx';
 
 const data = {
   id: '1',

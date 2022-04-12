@@ -1,8 +1,9 @@
 import { Link, withRouter } from 'react-router-dom';
-import MailPoet from 'mailpoet';
-import ReactStringReplace from 'react-string-replace';
-import Listing from 'listing/listing.jsx';
 import PropTypes from 'prop-types';
+import ReactStringReplace from 'react-string-replace';
+
+import { MailPoet } from 'mailpoet';
+import { Listing } from 'listing/listing.jsx';
 
 const columns = [
   {
@@ -183,7 +184,7 @@ function renderItem(item, actions) {
   );
 }
 
-function DynamicSegmentList(props) {
+function DynamicSegmentListComponent(props) {
   return (
     <>
       <Listing
@@ -217,11 +218,11 @@ function DynamicSegmentList(props) {
   );
 }
 
-DynamicSegmentList.propTypes = {
+DynamicSegmentListComponent.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   match: PropTypes.shape({
     params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   }).isRequired,
 };
 
-export default withRouter(DynamicSegmentList);
+export const DynamicSegmentList = withRouter(DynamicSegmentListComponent);

@@ -1,5 +1,5 @@
-import Badge from '../common/listings/newsletter_stats/badge';
-import MailPoet from '../mailpoet';
+import { Badge } from '../common/listings/newsletter_stats/badge';
+import { MailPoet } from '../mailpoet';
 
 interface Props {
   id: number;

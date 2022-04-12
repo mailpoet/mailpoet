@@ -1,6 +1,6 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
-export default (state, action) => {
+export const saveFormDone = (state, action) => {
   const notices = state.notices.filter((notice) => notice.id !== 'save-form');
   notices.push({
     id: 'save-form',

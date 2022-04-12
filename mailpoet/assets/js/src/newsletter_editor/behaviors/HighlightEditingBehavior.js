@@ -4,11 +4,11 @@
  * Highlights a block,column that is being hovered by mouse or edited
  */
 import Marionette from 'backbone.marionette';
-import BL from 'newsletter_editor/behaviors/BehaviorsLookup';
-import App from 'newsletter_editor/App';
+import { BehaviorsLookup } from 'newsletter_editor/behaviors/BehaviorsLookup';
+import { App } from 'newsletter_editor/App';
 import { isEventInsideElement } from 'newsletter_editor/utils';
 
-BL.HighlightEditingBehavior = Marionette.Behavior.extend({
+BehaviorsLookup.HighlightEditingBehavior = Marionette.Behavior.extend({
   modelEvents: {
     startEditing: 'onStartEditing',
     stopEditing: 'onStopEditing',

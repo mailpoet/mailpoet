@@ -4,7 +4,7 @@ import { t } from 'common/functions';
 import { useSelector } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
-export default function Roles() {
+export function Roles() {
   const isMembersPluginActive = useSelector('hasMembersPlugin')();
   return (
     <>

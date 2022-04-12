@@ -1,9 +1,9 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { Link } from 'react-router-dom';
-import classNames from 'classnames';
-import Checkbox from 'common/form/checkbox/checkbox.tsx';
+import classnames from 'classnames';
+import { Checkbox } from 'common/form/checkbox/checkbox.tsx';
 
 class ListingItem extends Component {
   handleSelectItem = (e) => {
@@ -68,7 +68,7 @@ class ListingItem extends Component {
             customAction = (
               <span
                 key={`action-${action.name}`}
-                className={classNames(action.name, action.className)}
+                className={classnames(action.name, action.className)}
               >
                 <a
                   type="button"
@@ -89,7 +89,7 @@ class ListingItem extends Component {
               <span
                 onClick={this.props.onRefreshItems}
                 key={`action-${action.name}`}
-                className={classNames(action.name, action.className)}
+                className={classnames(action.name, action.className)}
                 role="button"
                 tabIndex={index}
                 onKeyDown={(event) => {
@@ -109,7 +109,7 @@ class ListingItem extends Component {
             customAction = (
               <span
                 key={`action-${action.name}`}
-                className={classNames(action.name, action.className)}
+                className={classnames(action.name, action.className)}
               >
                 {action.link(this.props.item, this.props.location)}
               </span>
@@ -118,7 +118,7 @@ class ListingItem extends Component {
             customAction = (
               <span
                 key={`action-${action.name}`}
-                className={classNames(action.name, action.className)}
+                className={classnames(action.name, action.className)}
               >
                 <a
                   href="#"
@@ -200,7 +200,7 @@ class ListingItem extends Component {
       );
     }
 
-    const rowClasses = classNames({
+    const rowClasses = classnames({
       'mailpoet-listing-row-selected':
         this.props.item.selected || this.props.selection === 'all',
       'mailpoet-listing-row-inactive': this.props.isItemInactive(
@@ -251,4 +251,4 @@ ListingItem.defaultProps = {
   isItemToggleable: () => false,
 };
 
-export default ListingItem;
+export { ListingItem };

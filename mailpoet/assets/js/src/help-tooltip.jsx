@@ -62,4 +62,4 @@ Tooltip.defaultProps = {
   className: undefined,
 };
 
-export default Tooltip;
+export { Tooltip };

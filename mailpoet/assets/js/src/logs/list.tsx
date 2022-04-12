@@ -1,12 +1,11 @@
 import { useCallback, useState } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { curry } from 'lodash';
 import { parseISO } from 'date-fns';
 
-import Datepicker from '../common/datepicker/datepicker';
-import { Button } from '../common';
-import Input from '../common/form/input/input';
-import icon from '../listing/assets/search_icon';
+import { Datepicker } from '../common/datepicker/datepicker';
+import { Button, Input } from '../common';
+import { Icon } from '../listing/assets/search_icon';
 
 type LogData = {
   id: number;
@@ -143,7 +142,7 @@ export function List({
           </label>
           <Input
             dimension="small"
-            iconStart={icon}
+            iconStart={Icon}
             type="search"
             id="search_input"
             name="s"

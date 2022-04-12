@@ -1,9 +1,9 @@
 import jQuery from 'jquery';
 import _ from 'underscore';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import 'asyncqueue';
 
-export default (
+export const doImport = (
   subscribersToImport,
   segments,
   newSubscribersStatus,

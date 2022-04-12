@@ -1,5 +1,5 @@
 import { ComponentType, FC } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import jQuery from 'jquery';
 import { noop } from 'lodash';

@@ -1,7 +1,7 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { isErrorResponse } from '../../ajax';
 
-export default async function callApi({ endpoint, action, data }) {
+export async function callApi({ endpoint, action, data }) {
   try {
     const res = await MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,

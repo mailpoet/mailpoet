@@ -1,7 +1,7 @@
 import jQuery from 'jquery';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
-export default () => {
+export const generateColumnSelection = () => {
   const select2Config = {
     data: window.mailpoetColumnsSelect2,
     width: '15em',

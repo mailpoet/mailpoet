@@ -1,6 +1,6 @@
-import findBlock from './find_block.jsx';
+import { findBlock } from './find_block.jsx';
 
-export default (formData, formBlocks) => {
+export const validateForm = (formData, formBlocks) => {
   if (
     !formData ||
     !formData.settings ||

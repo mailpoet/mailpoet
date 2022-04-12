@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Button from '../../button/button';
-import Modal from '../modal';
-import Heading from '../../typography/heading/heading';
+import { Button } from '../../button/button';
+import { Modal } from '../modal';
+import { Heading } from '../../typography/heading/heading';
 
 const shortContent = (
   <>

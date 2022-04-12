@@ -9,7 +9,7 @@ type Props = {
   onToggle: () => void;
 };
 
-function FeatureToggle({
+export function FeatureToggle({
   isActive,
   label,
   info,
@@ -27,5 +27,3 @@ function FeatureToggle({
     </MenuItem>
   );
 }
-
-export default FeatureToggle;

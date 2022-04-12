@@ -1,4 +1,4 @@
-export default function* openWoocommerceCustomizer(newsletterId?: string) {
+export function* openWoocommerceCustomizer(newsletterId?: string) {
   let id = newsletterId;
   if (!id) {
     const { res, success, error } = yield {

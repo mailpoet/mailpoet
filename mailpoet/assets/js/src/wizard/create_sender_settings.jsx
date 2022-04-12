@@ -21,7 +21,7 @@ const freeAddress = ({ name, address }) => {
   };
 };
 
-export default ({ name, address }) => {
+export const createSenderSettings = ({ name, address }) => {
   const emailAddressDomain = address.split('@').pop().toLowerCase();
   if (window.mailpoet_free_domains.indexOf(emailAddressDomain) > -1) {
     return freeAddress({ name, address });

@@ -1,7 +1,7 @@
 import { addHours, subHours } from 'date-fns';
-import MailPoet from 'mailpoet';
-import NewsletterStatus from '../newsletter_status';
-import Heading from '../../typography/heading/heading';
+import { MailPoet } from 'mailpoet';
+import { NewsletterStatus } from '../newsletter_status';
+import { Heading } from '../../typography/heading/heading';
 
 MailPoet.I18n.add('notSentYet', 'Not sent yet!');
 MailPoet.I18n.add('sent', 'Sent');

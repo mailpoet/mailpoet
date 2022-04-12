@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { Button } from '@wordpress/components';
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
   children: ReactNode;
 };
 
-function SidebarHeader({ children, closeSidebar }: Props): JSX.Element {
+export function SidebarHeader({ children, closeSidebar }: Props): JSX.Element {
   return (
     <>
       <div className="components-panel__header interface-complementary-area-header__small">
@@ -23,5 +23,3 @@ function SidebarHeader({ children, closeSidebar }: Props): JSX.Element {
     </>
   );
 }
-
-export default SidebarHeader;

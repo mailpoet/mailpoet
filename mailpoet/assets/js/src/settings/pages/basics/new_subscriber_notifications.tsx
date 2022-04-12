@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
-import { isEmail, t, onChange, setLowercaseValue } from 'common/functions';
-import Input from 'common/form/input/input';
-import Radio from 'common/form/radio/radio';
-import { useSetting, useAction } from 'settings/store/hooks';
-import { Label, Inputs } from 'settings/components';
+import { isEmail, onChange, setLowercaseValue, t } from 'common/functions';
+import { Input } from 'common/form/input/input';
+import { Radio } from 'common/form/radio/radio';
+import { useAction, useSetting } from 'settings/store/hooks';
+import { Inputs, Label } from 'settings/components';
 
-export default function NewSubscriberNotifications() {
+export function NewSubscriberNotifications() {
   const [enabled, setEnabled] = useSetting(
     'subscriber_email_notification',
     'enabled',

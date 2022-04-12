@@ -1,10 +1,11 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import MailPoet from 'mailpoet';
-import ListingBulkActions from 'listing/bulk_actions.jsx';
-import ListingItem from 'listing/listing_item.jsx';
+import classnames from 'classnames';
+
 import { Grid } from 'common/grid';
+import { ListingBulkActions } from 'listing/bulk_actions.jsx';
+import { ListingItem } from 'listing/listing_item.jsx';
+import { MailPoet } from 'mailpoet';
 
 // eslint-disable-next-line react/prefer-stateless-function, max-len
 class ListingItems extends Component {
@@ -48,13 +49,13 @@ class ListingItems extends Component {
       this.props.selected_ids.length > 0 || this.props.selection
     );
 
-    const actionAndSelectAllRowClasses = classNames(
+    const actionAndSelectAllRowClasses = classnames(
       'mailpoet-listing-actions-and-select-all-row',
       {
         mailpoet_hidden: areBulkActionsHidden && isSelectAllHidden,
       },
     );
-    const selectAllClasses = classNames('mailpoet-listing-select-all', {
+    const selectAllClasses = classnames('mailpoet-listing-select-all', {
       mailpoet_hidden: isSelectAllHidden,
     });
 
@@ -186,4 +187,4 @@ ListingItems.defaultProps = {
   isItemToggleable: () => false,
 };
 
-export default ListingItems;
+export { ListingItems };

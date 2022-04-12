@@ -1,5 +1,6 @@
 import { Component } from 'react';
-import MailPoet from 'mailpoet';
+
+import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 
 class ListingBulkActions extends Component {
@@ -109,4 +110,4 @@ ListingBulkActions.propTypes = {
   onBulkAction: PropTypes.func.isRequired,
 };
 
-export default ListingBulkActions;
+export { ListingBulkActions };

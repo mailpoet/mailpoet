@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
-import Heading from '../../typography/heading/heading';
+import { Heading } from '../../typography/heading/heading';
 import { Grid } from '..';
-import Input from '../../form/input/input';
+import { Input } from '../../form/input/input';
 
 export default {
   title: 'Grid',

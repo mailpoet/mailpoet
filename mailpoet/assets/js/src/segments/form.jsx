@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
-import MailPoet from 'mailpoet';
-import Form from 'form/form.jsx';
 import PropTypes from 'prop-types';
-import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
-import Background from 'common/background/background';
-import Heading from 'common/typography/heading/heading';
-import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
+import { Background } from 'common/background/background';
+import { Form } from 'form/form.jsx';
+import { Heading } from 'common/typography/heading/heading';
+import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
+import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice.jsx';
+import { MailPoet } from 'mailpoet';
 
 const fields = [
   {
@@ -67,4 +67,4 @@ SegmentForm.propTypes = {
   }).isRequired,
 };
 
-export default SegmentForm;
+export { SegmentForm };

@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import ReactStringReplace from 'react-string-replace';
 
-import HelpTooltip from 'help-tooltip';
-import { t, onChange } from 'common/functions';
-import Button from 'common/button/button';
-import Input from 'common/form/input/input';
-import { Label, Inputs } from 'settings/components';
-import { useSetting, useAction, useSelector } from 'settings/store/hooks';
-import Loading from 'common/loading';
-import Notice from 'notices/notice';
+import { Tooltip } from 'help-tooltip';
+import { onChange, t } from 'common/functions';
+import { Button } from 'common/button/button';
+import { Input } from 'common/form/input/input';
+import { Inputs, Label } from 'settings/components';
+import { useAction, useSelector, useSetting } from 'settings/store/hooks';
+import { Loading } from 'common/loading';
+import { Notice } from 'notices/notice';
 import { TestEmailState } from 'settings/store/types';
 
 interface TestSendingWindow extends Window {
@@ -17,7 +17,7 @@ interface TestSendingWindow extends Window {
 
 declare let window: TestSendingWindow;
 
-export default function TestSending() {
+export function TestSending() {
   const [email, setEmail] = useState<string>(
     window.mailpoet_current_user_email,
   );
@@ -59,7 +59,7 @@ export default function TestSending() {
         >
           {t('sendTestEmail')}
         </Button>
-        <HelpTooltip
+        <Tooltip
           tooltipId="tooltip-settings-test"
           className="mailpoet_tooltip_icon"
           tooltip={

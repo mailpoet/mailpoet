@@ -1,9 +1,9 @@
 import { t } from 'common/functions';
-import Radio from 'common/form/radio/radio';
+import { Radio } from 'common/form/radio/radio';
 import { Label, Inputs } from 'settings/components';
 import { useSelector, useSetting } from 'settings/store/hooks';
 
-export default function EnableSignupConfirmation() {
+export function EnableSignupConfirmation() {
   const isMssActive = useSelector('isMssActive')();
   const [enabled, setEnabled] = useSetting('signup_confirmation', 'enabled');
   const handleChange = (value: '1' | '') => {

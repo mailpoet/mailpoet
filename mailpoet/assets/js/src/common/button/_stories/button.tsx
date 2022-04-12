@@ -1,6 +1,6 @@
 import { action } from '_storybook/action';
-import Button from '../button';
-import Heading from '../../typography/heading/heading';
+import { Button } from '../button';
+import { Heading } from '../../typography/heading/heading';
 
 export default {
   title: 'Buttons',

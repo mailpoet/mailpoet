@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 
 export function ConsentDescription(): JSX.Element {

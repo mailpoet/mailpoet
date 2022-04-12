@@ -5,4 +5,4 @@ import { createHooks } from '@wordpress/hooks';
 window.wp = window.wp || {};
 window.wp.hooks = window.wp.hooks || createHooks();
 
-export default window.wp.hooks;
+export const Hooks = window.wp.hooks;

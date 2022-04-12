@@ -1,8 +1,8 @@
 import { CSSProperties } from 'react';
 import classnames from 'classnames';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { InspectorControls } from '@wordpress/block-editor';
-import ColorSettings from 'form_editor/components/color_settings';
+import { ColorSettings } from 'form_editor/components/color_settings';
 import {
   Panel,
   PanelBody,
@@ -10,14 +10,14 @@ import {
   SelectControl,
   ToggleControl,
 } from '@wordpress/components';
-import { Attributes, Style, Types, defaultAttributes } from './divider_types';
+import { Attributes, defaultAttributes, Style, Types } from './divider_types';
 
 type Props = {
   attributes: Attributes;
   setAttributes: (attribute) => void;
 };
 
-function DividerEdit({ attributes, setAttributes }: Props): JSX.Element {
+export function DividerEdit({ attributes, setAttributes }: Props): JSX.Element {
   const attributeDividerHeight =
     attributes.dividerHeight ?? defaultAttributes.dividerHeight;
   const attributeDividerWidth =
@@ -154,4 +154,3 @@ function DividerEdit({ attributes, setAttributes }: Props): JSX.Element {
     </>
   );
 }
-export default DividerEdit;

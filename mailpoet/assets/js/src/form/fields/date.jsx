@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import Select from '../../common/form/select/select';
+import { Select } from '../../common';
 
 function FormFieldDateYear(props) {
   const yearsRange = 100;
@@ -299,4 +299,4 @@ FormFieldDate.propTypes = {
   onValueChange: PropTypes.func.isRequired,
 };
 
-export default FormFieldDate;
+export { FormFieldDate };

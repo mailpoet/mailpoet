@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import Tag from './tag';
+import { Tag } from './tag';
 
 type Segment = {
   name: string;
@@ -32,4 +32,4 @@ function Tags({ children, dimension, segments, strings }: Props) {
   );
 }
 
-export default Tags;
+export { Tags };

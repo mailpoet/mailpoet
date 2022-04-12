@@ -7,7 +7,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   automationId?: string;
 };
 
-function Toggle({
+export function Toggle({
   dimension,
   onCheck,
   automationId,
@@ -33,5 +33,3 @@ function Toggle({
     </label>
   );
 }
-
-export default Toggle;

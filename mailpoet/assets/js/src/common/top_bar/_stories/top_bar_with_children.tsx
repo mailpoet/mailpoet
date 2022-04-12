@@ -1,6 +1,6 @@
 import { action } from '_storybook/action';
 import { TopBar } from '../top_bar';
-import Button from '../../button/button';
+import { Button } from '../../button/button';
 
 export default {
   title: 'Top Bar/With Children',

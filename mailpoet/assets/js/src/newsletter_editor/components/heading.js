@@ -1,8 +1,8 @@
-import App from 'newsletter_editor/App';
+import { App } from 'newsletter_editor/App';
 import Marionette from 'backbone.marionette';
 import _ from 'underscore';
 import jQuery from 'jquery';
-import MailPoet from 'mailpoet'; // eslint-disable-line func-names
+import { MailPoet } from 'mailpoet'; // eslint-disable-line func-names
 
 var Module = {};
 
@@ -66,4 +66,4 @@ App.on('start', function (StartApp) {
   }
 });
 
-export default Module;
+export { Module as HeadingComponent };

@@ -6,12 +6,12 @@ import {
 } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
 
-import TextInputEdit from '../text_input_edit.jsx';
+import { MailPoet } from 'mailpoet';
+import { TextInputEdit } from '../text_input_edit.jsx';
 import {
-  InputStylesSettings,
   inputStylesPropTypes,
+  InputStylesSettings,
 } from '../input_styles_settings.jsx';
 
 function LastNameEdit({ attributes, setAttributes }) {
@@ -70,4 +70,4 @@ LastNameEdit.propTypes = {
   setAttributes: PropTypes.func.isRequired,
 };
 
-export default LastNameEdit;
+export { LastNameEdit };

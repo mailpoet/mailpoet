@@ -1,5 +1,5 @@
 import { InputHTMLAttributes, useState } from 'react';
-import Checkbox from './checkbox';
+import { Checkbox } from './checkbox';
 
 type CheckboxValueType = string | string[] | number;
 
@@ -15,7 +15,7 @@ type Props = {
   onChange?: (values: CheckboxValueType[]) => void;
 };
 
-function CheckboxGroup({
+export function CheckboxGroup({
   name,
   options,
   defaultValue,
@@ -60,5 +60,3 @@ function CheckboxGroup({
     </div>
   );
 }
-
-export default CheckboxGroup;

@@ -1,11 +1,12 @@
-import { Component } from 'react';
-import AutomaticEmailEvent from 'newsletters/types/automatic_emails/event.jsx';
-import MailPoet from 'mailpoet';
 import _ from 'underscore';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 
-class AutomaticEmailEventsList extends Component {
+import { AutomaticEmailEvent } from 'newsletters/types/automatic_emails/event.jsx';
+import { MailPoet } from 'mailpoet';
+
+class AutomaticEmailEventsListComponent extends Component {
   constructor(props) {
     super(props);
     this.email = this.props.email;
@@ -34,7 +35,7 @@ class AutomaticEmailEventsList extends Component {
   }
 }
 
-AutomaticEmailEventsList.propTypes = {
+AutomaticEmailEventsListComponent.propTypes = {
   email: PropTypes.shape({
     title: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
@@ -45,4 +46,6 @@ AutomaticEmailEventsList.propTypes = {
   }).isRequired,
 };
 
-export default withRouter(AutomaticEmailEventsList);
+export const AutomaticEmailEventsList = withRouter(
+  AutomaticEmailEventsListComponent,
+);

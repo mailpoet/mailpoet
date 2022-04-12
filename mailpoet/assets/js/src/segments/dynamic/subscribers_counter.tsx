@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { debounce } from 'lodash';
 import { isFormValid } from './validator';

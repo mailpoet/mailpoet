@@ -112,4 +112,4 @@ Preview.propTypes = {
   onSegmentsReorder: PropTypes.func.isRequired,
 };
 
-export default Preview;
+export { Preview };

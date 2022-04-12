@@ -1,11 +1,11 @@
 import ReactStringReplace from 'react-string-replace';
 
 import { t } from 'common/functions';
-import Radio from 'common/form/radio/radio';
+import { Radio } from 'common/form/radio/radio';
 import { Label, Inputs } from 'settings/components';
 import { useSetting, useSelector } from 'settings/store/hooks';
 
-export default function Transactional() {
+export function Transactional() {
   const [provider] = useSetting('smtp_provider');
   const isMssActive = useSelector('isMssActive')();
   const [enabled, setEnabled] = useSetting('send_transactional_emails');

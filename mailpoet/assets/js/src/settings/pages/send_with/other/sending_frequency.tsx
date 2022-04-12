@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import ReactStringReplace from 'react-string-replace';
 
-import { Label, Inputs } from 'settings/components';
-import { t, onChange } from 'common/functions';
-import Input from 'common/form/input/input';
-import Select from 'common/form/select/select';
+import { Inputs, Label } from 'settings/components';
+import { onChange, t } from 'common/functions';
+import { Input } from 'common/form/input/input';
+import { Select } from 'common/form/select/select';
 import { useSetting } from 'settings/store/hooks';
 
 const MINUTES_PER_DAY = 1440;
@@ -22,7 +22,8 @@ type Props = {
   recommendedEmails: number;
   recommendedInterval: number;
 };
-export default function SendingFrequency({
+
+export function SendingFrequency({
   recommendedEmails,
   recommendedInterval,
 }: Props) {

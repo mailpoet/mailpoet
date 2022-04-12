@@ -5,7 +5,7 @@ import { ExcludeFirstParam } from './types';
 
 type Selectors = typeof selectors;
 
-export default function useSelector<Key extends keyof Selectors>(
+export function useSelector<Key extends keyof Selectors>(
   key: Key,
   deps: any[] = [], // eslint-disable-line @typescript-eslint/no-explicit-any
 ): ExcludeFirstParam<Selectors[Key]> {

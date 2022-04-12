@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { noop } from 'lodash';
 
-import Tab from './tab';
+import { Tab } from './tab';
 
 const validateChildren = (children: ReactNode): ReactElement[] => {
   const keys = {};
@@ -60,7 +60,7 @@ type Props = {
   children: ReactNode;
 };
 
-function Tabs({
+export function Tabs({
   activeKey,
   onSwitch = noop,
   automationId = null,
@@ -130,5 +130,4 @@ function Tabs({
   );
 }
 
-export default Tabs;
 export type { Props };

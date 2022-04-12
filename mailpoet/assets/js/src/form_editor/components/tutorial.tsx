@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import Modal from 'common/modal/modal';
-import Heading from 'common/typography/heading/heading';
-import MailPoet from 'mailpoet';
+import { Modal } from 'common/modal/modal';
+import { Heading } from 'common/typography/heading/heading';
+import { MailPoet } from 'mailpoet';
 
 export function Tutorial(): JSX.Element {
   const url = useSelect(

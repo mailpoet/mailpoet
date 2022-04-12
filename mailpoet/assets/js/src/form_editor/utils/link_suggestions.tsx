@@ -1,7 +1,7 @@
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { decodeEntities } from '@wordpress/html-entities';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import type { WP_REST_API_Search_Results } from 'wp-types';
 
 /**
@@ -29,4 +29,4 @@ const fetchLinkSuggestions = async (search: string, { perPage = 20 } = {}) => {
   }));
 };
 
-export default fetchLinkSuggestions;
+export { fetchLinkSuggestions };

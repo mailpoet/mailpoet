@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
-import Button from 'common/button/button';
-import plusIcon from 'common/button/icon/plus';
+import { Button } from 'common/button/button';
+import { plusIcon } from 'common/button/icon/plus';
 
 export const onAddNewForm = () => {
   MailPoet.trackEvent('Forms > Add New');

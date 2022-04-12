@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-export default () => {
+export const useNotices = () => {
   const [state, setState] = useState({
     items: [],
     nextId: 1,

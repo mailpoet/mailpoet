@@ -2,7 +2,7 @@ type Props = {
   color: string;
 };
 
-function Background({ color }: Props) {
+export function Background({ color }: Props) {
   return (
     <style
       /* eslint-disable-next-line react/no-danger */
@@ -10,5 +10,3 @@ function Background({ color }: Props) {
     />
   );
 }
-
-export default Background;

@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
-import Button from 'common/button/button';
-import Select from 'common/form/select/select';
+import { MailPoet } from 'mailpoet';
+import { Button } from 'common/button/button';
+import { Select } from 'common/form/select/select';
 
 function LastSentQuestion({ onSubmit }) {
   const [value, setValue] = useState('over2years');
@@ -64,4 +64,4 @@ LastSentQuestion.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
 
-export default LastSentQuestion;
+export { LastSentQuestion };

@@ -4,7 +4,7 @@ export type PropTypes = {
   averageRevenueValue: string;
 };
 
-export default function WoocommerceRevenues({
+export function WoocommerceRevenues({
   revenueValue,
   count,
   averageRevenueValue,

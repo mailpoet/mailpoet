@@ -6,13 +6,13 @@ import {
 } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
 
-import TextInputEdit from '../text_input_edit.jsx';
+import { MailPoet } from 'mailpoet';
 import {
-  InputStylesSettings,
   inputStylesPropTypes,
+  InputStylesSettings,
 } from '../input_styles_settings.jsx';
+import { TextInputEdit } from '../text_input_edit.jsx';
 
 function EmailEdit({ attributes, setAttributes }) {
   const inspectorControls = (
@@ -64,4 +64,4 @@ EmailEdit.propTypes = {
   setAttributes: PropTypes.func.isRequired,
 };
 
-export default EmailEdit;
+export { EmailEdit };

@@ -1,9 +1,9 @@
 import { t, onChange } from 'common/functions';
-import Input from 'common/form/input/input';
+import { Input } from 'common/form/input/input';
 import { Label, Inputs } from 'settings/components';
 import { useSetting } from 'settings/store/hooks';
 
-export default function EmailSubject() {
+export function EmailSubject() {
   const [enabled] = useSetting('signup_confirmation', 'enabled');
   const [subject, setSubject] = useSetting('signup_confirmation', 'subject');
 

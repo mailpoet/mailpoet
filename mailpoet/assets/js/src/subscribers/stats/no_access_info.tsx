@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
-import MailPoet from 'mailpoet';
-import PremiumRequired from 'common/premium_required/premium_required';
-import Button from 'common/button/button';
+import { MailPoet } from 'mailpoet';
+import { PremiumRequired } from 'common/premium_required/premium_required';
+import { Button } from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
   hasPremiumSupport: boolean;
 };
 
-export default function NoAccessInfo({
+export function NoAccessInfo({
   limitReached,
   limitValue,
   subscribersCountTowardsLimit,

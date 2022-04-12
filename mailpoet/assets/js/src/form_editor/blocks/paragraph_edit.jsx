@@ -18,4 +18,4 @@ ParagraphEdit.defaultProps = {
   className: '',
 };
 
-export default ParagraphEdit;
+export { ParagraphEdit };

@@ -1,19 +1,19 @@
-import MailPoet from 'mailpoet';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { MailPoet } from 'mailpoet';
+import { useDispatch, useSelect } from '@wordpress/data';
 import {
-  SelectControl,
   RadioControl,
+  SelectControl,
   ToggleControl,
 } from '@wordpress/components';
-import { assocPath, compose, __ } from 'lodash/fp';
+import { __, assocPath, compose } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
-import AnimationSettings from './animation_settings';
-import PlacementSettings from './placement_settings';
-import CookieSettings from './cookie_settings';
+import { AnimationSettings } from './animation_settings';
+import { PlacementSettings } from './placement_settings';
+import { CookieSettings } from './cookie_settings';
 
 const delayValues = [0, 2, 5, 10, 15, 30, 45, 60, 120, 180, 240];
 
-function SlideInSettings(): JSX.Element {
+export function SlideInSettings(): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -96,5 +96,3 @@ function SlideInSettings(): JSX.Element {
     </>
   );
 }
-
-export default SlideInSettings;

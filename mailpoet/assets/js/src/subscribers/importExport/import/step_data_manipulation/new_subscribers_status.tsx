@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import MailPoet from 'mailpoet';
-import Select from 'common/form/select/select';
+import { MailPoet } from 'mailpoet';
+import { Select } from 'common/form/select/select';
 
 import { ConsentDescription } from './consent_description';
 

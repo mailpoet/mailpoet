@@ -1,6 +1,6 @@
 import { ChangeEvent } from 'react';
 import { select } from '@wordpress/data';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 import {
   Actions,

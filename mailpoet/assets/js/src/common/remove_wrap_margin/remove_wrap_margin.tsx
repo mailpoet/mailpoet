@@ -1,4 +1,4 @@
-function RemoveWrapMargin() {
+export function RemoveWrapMargin() {
   return (
     <style
       /* eslint-disable-next-line react/no-danger */
@@ -6,5 +6,3 @@ function RemoveWrapMargin() {
     />
   );
 }
-
-export default RemoveWrapMargin;

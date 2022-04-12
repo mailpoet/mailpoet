@@ -373,4 +373,4 @@ Selection.defaultProps = {
   dropDownParent: undefined,
 };
 
-export default Selection;
+export { Selection };

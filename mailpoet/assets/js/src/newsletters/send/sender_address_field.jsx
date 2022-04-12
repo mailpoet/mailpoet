@@ -1,7 +1,7 @@
 import { Component } from 'react';
-import FormFieldText from 'form/fields/text.jsx';
 import PropTypes from 'prop-types';
-import SenderEmailAddressWarning from 'common/sender_email_address_warning.jsx';
+import { FormFieldText } from 'form/fields/text.jsx';
+import { SenderEmailAddressWarning } from 'common/sender_email_address_warning.jsx';
 
 class SenderField extends Component {
   constructor(props) {
@@ -60,4 +60,4 @@ SenderField.defaultProps = {
   },
 };
 
-export default SenderField;
+export { SenderField };

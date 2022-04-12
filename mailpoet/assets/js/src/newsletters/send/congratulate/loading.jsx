@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
-import Loader from 'common/loader/loader';
-import Heading from 'common/typography/heading/heading';
+import { MailPoet } from 'mailpoet';
+import { Loader } from 'common/loader/loader';
+import { Heading } from 'common/typography/heading/heading';
 
 function Loading(props) {
   return (
@@ -27,4 +27,4 @@ Loading.propTypes = {
   showRichLoadingScreen: PropTypes.bool.isRequired,
 };
 
-export default Loading;
+export { Loading };

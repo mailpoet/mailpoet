@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import MailPoet from 'mailpoet';
-import Select from 'common/form/select/select';
-import Input from 'common/form/input/input';
+import { MailPoet } from 'mailpoet';
+import { Select } from 'common/form/select/select';
+import { Input } from 'common/form/input/input';
 import { Grid } from 'common/grid';
 
 import { WordpressRoleFormItem } from '../../types';

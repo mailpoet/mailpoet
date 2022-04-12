@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import Button from '../../button/button';
-import Heading from '../../typography/heading/heading';
-import Steps from '../steps';
-import StepsContent from '../steps_content';
+import { Button } from '../../button/button';
+import { Heading } from '../../typography/heading/heading';
+import { Steps } from '../steps';
+import { StepsContent } from '../steps_content';
 
 export default {
   title: 'Steps',

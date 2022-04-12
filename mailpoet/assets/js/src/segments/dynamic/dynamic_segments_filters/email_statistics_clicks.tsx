@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { find, filter } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import APIErrorsNotice from 'notices/api_errors_notice';
-import ReactSelect from 'common/form/react_select/react_select';
+import { APIErrorsNotice } from 'notices/api_errors_notice';
+import { ReactSelect } from 'common/form/react_select/react_select';
 import { Grid } from 'common/grid';
-import Select from 'common/form/select/select';
+import { Select } from 'common/form/select/select';
 import {
   AnyValueTypes,
   EmailFormItem,

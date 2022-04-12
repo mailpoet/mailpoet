@@ -4,7 +4,7 @@
  * Handles relations between different WC style settings (e.g. one color depends on another)
  */
 import Marionette from 'backbone.marionette';
-import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
+import { BehaviorsLookup } from 'newsletter_editor/behaviors/BehaviorsLookup';
 
 var BL = BehaviorsLookup;
 

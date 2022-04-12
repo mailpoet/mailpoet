@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import MailPoet from 'mailpoet';
-import StepsContent from 'common/steps/steps_content.tsx';
-import WooCommerceStep from './steps/woo_commerce_step.jsx';
-import WelcomeWizardStepLayout from './layout/step_layout.jsx';
+import { MailPoet } from 'mailpoet';
+import { StepsContent } from 'common/steps/steps_content.tsx';
+import { WizardWooCommerceStep } from './steps/woo_commerce_step.jsx';
+import { WelcomeWizardStepLayout } from './layout/step_layout.jsx';
 
 function WooCommerceController({ isWizardStep = false }) {
   const [loading, setLoading] = useState(false);
@@ -53,7 +53,7 @@ function WooCommerceController({ isWizardStep = false }) {
     <WelcomeWizardStepLayout
       illustrationUrl={window.wizard_woocommerce_illustration_url}
     >
-      <WooCommerceStep
+      <WizardWooCommerceStep
         loading={loading}
         submitForm={submit}
         isWizardStep={isWizardStep}
@@ -76,4 +76,4 @@ WooCommerceController.defaultProps = {
   isWizardStep: false,
 };
 
-export default WooCommerceController;
+export { WooCommerceController };

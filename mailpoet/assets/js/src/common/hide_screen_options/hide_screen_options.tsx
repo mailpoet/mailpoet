@@ -1,4 +1,4 @@
-function HideScreenOptions() {
+export function HideScreenOptions() {
   return (
     <style
       /* eslint-disable-next-line react/no-danger */
@@ -11,5 +11,3 @@ function HideScreenOptions() {
     />
   );
 }
-
-export default HideScreenOptions;

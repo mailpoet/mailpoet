@@ -4,10 +4,10 @@
  * Adds TinyMCE text editing capabilities to a view
  */
 import Marionette from 'backbone.marionette';
-import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
-import App from 'newsletter_editor/App';
 import tinymce from 'tinymce/tinymce';
-import tinymceMailpoetShortcodes from 'newsletter_editor/tinymce/mailpoet_shortcodes.js';
+import { BehaviorsLookup } from 'newsletter_editor/behaviors/BehaviorsLookup';
+import { App } from 'newsletter_editor/App';
+import { tinyMceAdd } from 'newsletter_editor/tinymce/mailpoet_shortcodes.js';
 
 // TinyMCE theme and plugins
 import 'tinymce/themes/silver';
@@ -48,7 +48,7 @@ BL.TextEditorBehavior = Marionette.Behavior.extend({
       return;
     }
 
-    tinymce.PluginManager.add('mailpoet_shortcodes', tinymceMailpoetShortcodes);
+    tinymce.PluginManager.add('mailpoet_shortcodes', tinyMceAdd);
 
     tinymce.init(
       this.options.configurationFilter({

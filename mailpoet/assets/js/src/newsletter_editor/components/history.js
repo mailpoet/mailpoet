@@ -1,5 +1,5 @@
-import App from 'newsletter_editor/App';
-import MailPoet from 'mailpoet';
+import { App } from 'newsletter_editor/App';
+import { MailPoet } from 'mailpoet';
 import Marionette from 'backbone.marionette';
 import Mousetrap from 'mousetrap';
 
@@ -131,4 +131,4 @@ App.on('start', function appStart(StartApp) {
   StartApp._appView.showChildView('historyRegion', new Module.HistoryView());
 });
 
-export default Module;
+export { Module as HistoryComponent };

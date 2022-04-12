@@ -3,7 +3,7 @@ import { MailPoetAjax } from './ajax';
 import { MailPoetI18n } from './i18n';
 import { MailPoetIframe } from './iframe';
 
-const MailPoet = {
+export const MailPoet = {
   Ajax: MailPoetAjax,
   I18n: MailPoetI18n,
   Iframe: MailPoetIframe,
@@ -11,5 +11,3 @@ const MailPoet = {
 
 // Expose MailPoet globally
 window.MailPoet = MailPoet;
-
-export default MailPoet;

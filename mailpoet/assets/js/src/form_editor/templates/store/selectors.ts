@@ -1,6 +1,6 @@
 import { TemplateData, StateType } from './types';
 
-export default {
+export const selectors = {
   getTemplates(state: StateType): TemplateData {
     return state.templates;
   },

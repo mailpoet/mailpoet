@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { action } from '_storybook/action';
-import Datepicker from '../datepicker';
-import Heading from '../../typography/heading/heading';
-import Icon from '../icon/calendar';
+import { Datepicker } from '../datepicker';
+import { Heading } from '../../typography/heading/heading';
+import { calendarIcon as Icon } from '../icon/calendar';
 
 export default {
   title: 'Datepickers',

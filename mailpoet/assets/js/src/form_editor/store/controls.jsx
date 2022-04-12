@@ -1,16 +1,16 @@
 import { select, dispatch } from '@wordpress/data';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { merge } from 'lodash';
 import Cookies from 'js-cookie';
 import { createBlock, unregisterBlockType } from '@wordpress/blocks';
-import CALL_API from 'common/controls/call_api';
+import { callApi as CALL_API } from 'common/controls/call_api';
 import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
-import blocksToFormBodyFactory from './blocks_to_form_body.jsx';
-import formatCustomFieldBlockName from '../blocks/format_custom_field_block_name.jsx';
-import getCustomFieldBlockSettings from '../blocks/custom_fields_blocks.jsx';
+import { blocksToFormBodyFactory } from './blocks_to_form_body.jsx';
+import { formatCustomFieldBlockName } from '../blocks/format_custom_field_block_name.jsx';
+import { getCustomFieldBlockSettings } from '../blocks/custom_fields_blocks.jsx';
 import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
-import mapFormDataBeforeSaving from './map_form_data_before_saving.jsx';
-import findBlock from './find_block.jsx';
+import { mapFormDataBeforeSaving } from './map_form_data_before_saving.jsx';
+import { findBlock } from './find_block.jsx';
 
 const formatApiErrorMessage = (response) => {
   let errorMessage = null;
@@ -31,7 +31,7 @@ const mapBlocks = (blocks, callback) =>
     return result;
   });
 
-export default {
+export const controls = {
   SAVE_FORM() {
     if (select('mailpoet-form-editor').getIsFormSaving()) {
       return;

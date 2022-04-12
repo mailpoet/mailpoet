@@ -1,14 +1,14 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { defaultBlockStyles } from 'form_editor/store/mapping/to_blocks/styles_mapper';
-import icon from './icon.jsx';
-import edit from './edit.jsx';
+import { Icon } from './icon.jsx';
+import { LastNameEdit } from './edit.jsx';
 
 export const name = 'mailpoet-form/last-name-input';
 
 export const settings = {
   title: MailPoet.I18n.t('blockLastName'),
   description: MailPoet.I18n.t('blockLastNameDescription'),
-  icon,
+  icon: Icon,
   category: 'fields',
   attributes: {
     label: {
@@ -32,7 +32,7 @@ export const settings = {
     html: false,
     multiple: false,
   },
-  edit,
+  edit: LastNameEdit,
   save() {
     return null;
   },

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useRouteMatch, useLocation } from 'react-router-dom';
-import MailPoet from 'mailpoet';
-import Loading from 'common/loading';
+import { MailPoet } from 'mailpoet';
+import { Loading } from 'common/loading';
 import { useGlobalContextValue } from 'context';
 
-import Heading from './stats/heading';
-import Summary from './stats/summary';
-import WoocommerceRevenues from './stats/woocommerce_revenues';
-import OpenedEmailsStats from './stats/opened_email_stats';
+import { StatsHeading as Heading } from './stats/heading';
+import { Summary } from './stats/summary';
+import { WoocommerceRevenues } from './stats/woocommerce_revenues';
+import { OpenedEmailsStats } from './stats/opened_email_stats';
 
 export type StatsType = {
   email: string;

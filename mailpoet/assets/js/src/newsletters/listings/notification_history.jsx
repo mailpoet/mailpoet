@@ -1,17 +1,17 @@
+import classnames from 'classnames';
 import { Link, withRouter } from 'react-router-dom';
-import classNames from 'classnames';
-import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 
-import Tags from 'common/tag/tags';
-import Listing from 'listing/listing.jsx';
-import QueueStatus from 'newsletters/listings/queue_status.jsx';
-import Statistics from 'newsletters/listings/statistics.jsx';
+import { Listing } from 'listing/listing.jsx';
+import { MailPoet } from 'mailpoet';
+import { QueueStatus } from 'newsletters/listings/queue_status.jsx';
+import { Statistics } from 'newsletters/listings/statistics.jsx';
 import {
   addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
+import { Tags } from 'common/tag/tags';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -117,7 +117,7 @@ const newsletterActions = addStatsCTAAction([
 ]);
 
 const renderItem = (newsletter, actions, meta) => {
-  const rowClasses = classNames(
+  const rowClasses = classnames(
     'manage-column',
     'column-primary',
     'has-row-actions',
@@ -173,7 +173,7 @@ const renderItem = (newsletter, actions, meta) => {
   );
 };
 
-function NewsletterListNotificationHistory(props) {
+function NewsletterListNotificationHistoryComponent(props) {
   return (
     <>
       <Link
@@ -210,7 +210,7 @@ function NewsletterListNotificationHistory(props) {
   );
 }
 
-NewsletterListNotificationHistory.propTypes = {
+NewsletterListNotificationHistoryComponent.propTypes = {
   parentId: PropTypes.string.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string,
@@ -222,4 +222,6 @@ NewsletterListNotificationHistory.propTypes = {
   }).isRequired,
 };
 
-export default withRouter(NewsletterListNotificationHistory);
+export const NewsletterListNotificationHistory = withRouter(
+  NewsletterListNotificationHistoryComponent,
+);

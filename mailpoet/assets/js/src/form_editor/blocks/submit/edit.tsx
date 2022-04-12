@@ -1,12 +1,12 @@
+import classnames from 'classnames';
 import { CSSProperties } from 'react';
 import { Panel, PanelBody, TextControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
-import MailPoet from 'mailpoet';
-import classnames from 'classnames';
 import { useSelect } from '@wordpress/data';
 
-import ParagraphEdit from '../paragraph_edit.jsx';
-import StylesSettings from './styles_settings';
+import { MailPoet } from 'mailpoet';
+import { ParagraphEdit } from '../paragraph_edit.jsx';
+import { StylesSettings } from './styles_settings';
 import {
   FormSettingsType,
   InputBlockStyles,
@@ -122,4 +122,4 @@ function SubmitEdit({ attributes, setAttributes }: Props): JSX.Element {
   );
 }
 
-export default SubmitEdit;
+export { SubmitEdit };

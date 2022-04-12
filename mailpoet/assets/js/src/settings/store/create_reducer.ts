@@ -7,9 +7,9 @@ import {
   PremiumStatus,
   TestEmailState,
 } from './types';
-import normalizeSettings from './normalize_settings';
+import { normalizeSettings } from './normalize_settings';
 
-export default function createReducer(defaultValue: State) {
+export function createReducer(defaultValue: State) {
   let keyActivation: KeyActivationState;
   return (
     state: State = defaultValue, // eslint-disable-line @typescript-eslint/default-param-last

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { Settings } from '../types';
-import useSelector from './useSelector';
+import { useSelector } from './useSelector';
 import { ValueAndSetter } from './types';
 import { useAction } from './useActions';
 /**

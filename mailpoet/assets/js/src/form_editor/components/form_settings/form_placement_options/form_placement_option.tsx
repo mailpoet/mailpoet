@@ -1,4 +1,4 @@
-import SelectionItem from '../selection_item';
+import { SelectionItem } from '../selection_item';
 
 type Props = {
   label: string;
@@ -36,4 +36,4 @@ FormPlacementOption.defaultProps = {
   canBeActive: true,
 };
 
-export default FormPlacementOption;
+export { FormPlacementOption };

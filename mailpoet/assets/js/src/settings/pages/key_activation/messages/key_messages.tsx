@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { useSelector } from 'settings/store/hooks';
 
 function KeyValidMessage() {
@@ -17,7 +17,7 @@ function KeyNotValidMessage() {
   );
 }
 
-export default function KeyMessages() {
+export function KeyMessages() {
   const { isKeyValid } = useSelector('getKeyActivationState')();
   return isKeyValid ? <KeyValidMessage /> : <KeyNotValidMessage />;
 }

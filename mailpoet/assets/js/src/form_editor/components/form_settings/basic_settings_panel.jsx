@@ -8,12 +8,12 @@ import {
   SelectControl,
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
-import Selection from './selection.jsx';
-import FormTitle from '../form_title';
+import { Selection } from './selection.jsx';
+import { FormTitle } from '../form_title';
 
 function BasicSettingsPanel({ onToggle, isOpened }) {
   const settings = useSelect(
@@ -169,4 +169,4 @@ BasicSettingsPanel.propTypes = {
   isOpened: PropTypes.bool.isRequired,
 };
 
-export default BasicSettingsPanel;
+export { BasicSettingsPanel };

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useSelector } from 'settings/store/hooks';
-import ReactSelect from 'common/form/react_select/react_select';
+import { ReactSelect } from 'common/form/react_select/react_select';
 
 type Props = {
   id: string;
@@ -10,7 +10,7 @@ type Props = {
   segmentsSelector?: 'getDefaultSegments' | 'getSegments';
 };
 
-export default function SegmentsSelect(props: Props) {
+export function SegmentsSelect(props: Props) {
   const selector = props.segmentsSelector
     ? props.segmentsSelector
     : 'getDefaultSegments';

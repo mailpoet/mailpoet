@@ -2,14 +2,14 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, SelectControl, TextControl } from '@wordpress/components';
 
-import MailPoet from 'mailpoet';
 import { isEmpty } from 'lodash';
 
-import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
-import TextFieldSettings from '../custom_text/custom_field_settings.jsx';
-import CheckboxFieldSettings from '../custom_checkbox/custom_field_settings.jsx';
-import DateFieldSettings from '../custom_date/custom_field_settings.jsx';
-import RadioAndSelectFieldSettings from '../custom_radio/custom_field_settings.jsx';
+import { MailPoet } from 'mailpoet';
+import { CustomFieldSettings as TextFieldSettings } from '../custom_text/custom_field_settings.jsx';
+import { CustomFieldSettings as CheckboxFieldSettings } from '../custom_checkbox/custom_field_settings.jsx';
+import { CustomFieldSettings as DateFieldSettings } from '../custom_date/custom_field_settings.jsx';
+import { CustomFieldSettings as RadioAndSelectFieldSettings } from '../custom_radio/custom_field_settings.jsx';
+import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
 
 export const customFieldTypes = [
   {
@@ -170,4 +170,4 @@ AddCustomFieldForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
 
-export default AddCustomFieldForm;
+export { AddCustomFieldForm };

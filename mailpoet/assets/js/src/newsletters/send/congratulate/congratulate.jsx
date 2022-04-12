@@ -1,11 +1,11 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import moment from 'moment';
 
-import Success from './success.jsx';
-import Fail from './fail.jsx';
-import Loading from './loading.jsx';
+import { Success } from './success.jsx';
+import { Fail } from './fail.jsx';
+import { Loading } from './loading.jsx';
 
 const SECONDS_WAITING_FOR_SUCCESS = 20;
 const SECONDS_MINIMUIM_LOADING_SCREEN_DISPLAYED = 6;
@@ -187,4 +187,4 @@ Congratulate.propTypes = {
   }).isRequired,
 };
 
-export default Congratulate;
+export { Congratulate };

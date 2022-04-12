@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import Button from 'common/button/button';
+import { Button } from 'common/button/button';
 import { t } from 'common/functions';
 import { GlobalContext } from 'context';
 import { useAction } from 'settings/store/hooks';

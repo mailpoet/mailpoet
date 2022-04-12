@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 import { noop } from 'lodash';
 
-import Tabs, { Props as TabProps } from './tabs';
+import { Tabs, Props as TabProps } from './tabs';
 
 function RouterAwareTabs(
   props: TabProps & {
@@ -105,4 +105,4 @@ function RoutedTabs({
   );
 }
 
-export default RoutedTabs;
+export { RoutedTabs };

@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 
 import { t, onChange } from 'common/functions';
-import Input from 'common/form/input/input';
-import Radio from 'common/form/radio/radio';
+import { Input } from 'common/form/input/input';
+import { Radio } from 'common/form/radio/radio';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
-export default function Captcha() {
+export function Captcha() {
   const [type, setType] = useSetting('captcha', 'type');
   const [token, setToken] = useSetting('captcha', 'recaptcha_site_token');
   const [secret, setSecret] = useSetting('captcha', 'recaptcha_secret_token');

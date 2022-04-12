@@ -1,4 +1,4 @@
-export { default as KeyMessages } from './key_messages';
-export { default as MssMessages } from './mss_messages';
-export { default as PremiumMessages } from './premium_messages';
-export { default as ServiceUnavailableMessage } from './service_unavailable_messages';
+export * from './key_messages';
+export * from './mss_messages';
+export * from './premium_messages';
+export * from './service_unavailable_messages';

@@ -1,11 +1,11 @@
-import Button from 'common/button/button';
-import MailPoet from 'mailpoet';
+import { Button } from 'common/button/button';
+import { MailPoet } from 'mailpoet';
 
 type Props = {
   onProceed?: () => void;
 };
 
-export default function CleanList({ onProceed }: Props): JSX.Element {
+export function CleanList({ onProceed }: Props): JSX.Element {
   return (
     <div className="mailpoet-clean-list-step-container">
       <p>{MailPoet.I18n.t('cleanListText1')}</p>

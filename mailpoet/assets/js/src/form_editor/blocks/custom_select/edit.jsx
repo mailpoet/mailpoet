@@ -1,14 +1,14 @@
 import { Panel, PanelBody, ToggleControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import ParagraphEdit from '../paragraph_edit.jsx';
-import formatLabel from '../label_formatter.jsx';
-import CustomFieldSettings from '../custom_radio/custom_field_settings.jsx';
-import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
-import convertAlignmentToMargin from '../convert_alignment_to_margin';
+import { MailPoet } from 'mailpoet';
+import { convertAlignmentToMargin } from '../convert_alignment_to_margin';
+import { CustomFieldSettings } from '../custom_radio/custom_field_settings.jsx';
+import { formatLabel } from '../label_formatter.jsx';
+import { ParagraphEdit } from '../paragraph_edit.jsx';
+import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
 
 function CustomSelectEdit({ attributes, setAttributes, clientId }) {
   const settings = useSelect(
@@ -166,4 +166,4 @@ CustomSelectEdit.propTypes = {
   clientId: PropTypes.string.isRequired,
 };
 
-export default CustomSelectEdit;
+export { CustomSelectEdit };

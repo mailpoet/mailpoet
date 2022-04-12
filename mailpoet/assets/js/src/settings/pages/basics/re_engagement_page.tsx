@@ -1,6 +1,6 @@
 import { t } from 'common/functions';
 import { useSetting } from 'settings/store/hooks';
-import { Label, Inputs, PagesSelect } from 'settings/components';
+import { Label, Inputs, PageSelect } from 'settings/components';
 
 export function ReEngagementPage(): JSX.Element {
   const [reEngagementPage, setReEngagementPage] = useSetting(
@@ -16,7 +16,7 @@ export function ReEngagementPage(): JSX.Element {
         htmlFor="re-engagement-page"
       />
       <Inputs>
-        <PagesSelect
+        <PageSelect
           value={reEngagementPage}
           preview="re_engagement"
           setValue={setReEngagementPage}

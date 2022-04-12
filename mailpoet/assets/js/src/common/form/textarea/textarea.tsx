@@ -1,6 +1,6 @@
 import { TextareaHTMLAttributes } from 'react';
 import classnames from 'classnames';
-import Tooltip from 'common/tooltip/tooltip';
+import { Tooltip } from 'common/tooltip/tooltip';
 
 type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   customLabel?: string;
@@ -10,7 +10,7 @@ type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   isCode?: boolean;
 };
 
-function Textarea({
+export function Textarea({
   className,
   customLabel,
   dimension,
@@ -48,5 +48,3 @@ function Textarea({
     </div>
   );
 }
-
-export default Textarea;

@@ -1,9 +1,9 @@
 import { SaveButton } from 'settings/components';
-import EmailCustomizer from './email_customizer';
-import CheckoutOptin from './checkout_optin';
-import SubscribeOldCustomers from './subscribe_old_customers';
+import { EmailCustomizer } from './email_customizer';
+import { CheckoutOptin } from './checkout_optin';
+import { SubscribeOldCustomers } from './subscribe_old_customers';
 
-export default function WooCommerce() {
+export function WooCommerce() {
   return (
     <div className="mailpoet-settings-grid">
       <EmailCustomizer />

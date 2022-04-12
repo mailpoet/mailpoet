@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 import { identity } from 'lodash';
-import reducerFactory from '../../../../../assets/js/src/form_editor/store/reducers/save_form_started.jsx';
+import { saveFormStartedFactory } from '../../../../../assets/js/src/form_editor/store/reducers/save_form_started.jsx';
 
 const MailPoetStub = {
   I18n: {
     t: identity,
   },
 };
-const reducer = reducerFactory(MailPoetStub);
+const reducer = saveFormStartedFactory(MailPoetStub);
 
 describe('Save Form Started Reducer', () => {
   let initialState = null;

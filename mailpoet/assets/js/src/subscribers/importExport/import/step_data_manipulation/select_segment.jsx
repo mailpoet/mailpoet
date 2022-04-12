@@ -1,15 +1,15 @@
-import { useLayoutEffect, useContext, useState } from 'react';
-import MailPoet from 'mailpoet';
+import { useContext, useLayoutEffect, useState } from 'react';
+import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 
 import { GlobalContext } from 'context/index.jsx';
 
-import Button from 'common/button/button';
+import { Button } from 'common/button/button';
 import {
   createSelection,
   destroySelection,
 } from './generate_segment_selection.jsx';
-import createNewSegment from './create_new_segment.jsx';
+import { createNewSegment } from './create_new_segment.jsx';
 
 function SelectSegment({ setSelectedSegments }) {
   const { segments: segmentsContext } = useContext(GlobalContext);
@@ -68,4 +68,4 @@ SelectSegment.propTypes = {
   setSelectedSegments: PropTypes.func.isRequired,
 };
 
-export default SelectSegment;
+export { SelectSegment };

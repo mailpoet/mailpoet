@@ -1,4 +1,4 @@
-export default (state, action) => {
+export const createCustomFieldFailed = (state, action) => {
   const notices = state.notices.filter(
     (notice) => notice.id !== 'custom-field',
   );

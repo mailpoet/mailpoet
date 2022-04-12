@@ -1,9 +1,9 @@
 import ReactStringReplace from 'react-string-replace';
 import { t } from 'common/functions';
 import { useSetting } from 'settings/store/hooks';
-import { Label, Inputs, PagesSelect } from 'settings/components';
+import { Inputs, Label, PageSelect } from 'settings/components';
 
-export default function UnsubscribePage() {
+export function UnsubscribePage() {
   const [unsubscribePage, setUnsubscribePage] = useSetting(
     'subscription',
     'pages',
@@ -49,7 +49,7 @@ export default function UnsubscribePage() {
         <div className="mailpoet-settings-inputs-row">
           {t('confirmationPageTitle')}:
         </div>
-        <PagesSelect
+        <PageSelect
           value={unsubscribeConfirmationPage}
           preview="confirm_unsubscribe"
           setValue={setUnsubscribeConfirmationPage}
@@ -60,7 +60,7 @@ export default function UnsubscribePage() {
         <div className="mailpoet-settings-inputs-row">
           {t('successPageTitle')}:
         </div>
-        <PagesSelect
+        <PageSelect
           value={unsubscribePage}
           preview="unsubscribe"
           setValue={setUnsubscribePage}

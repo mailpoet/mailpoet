@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import jQuery from 'jquery';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import Handlebars from 'handlebars';
 import { escapeHTML } from '@wordpress/escape-html';
 

@@ -1,4 +1,4 @@
-export default (MailPoet) => (state) => {
+export const saveFormStartedFactory = (MailPoet) => (state) => {
   // remove all form saving related notices
   const notices = state.notices.filter(
     (notice) =>

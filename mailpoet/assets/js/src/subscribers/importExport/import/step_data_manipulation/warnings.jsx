@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
-import classNames from 'classnames';
+import classnames from 'classnames';
 
 const SingleWarning = ({ translation, subscribers }) => {
   let warning = '';
@@ -29,7 +29,7 @@ function Warnings({ stepMethodSelectionData }) {
 
   const [detailsShown, setDetailsShown] = useState(false);
 
-  const detailClasses = classNames(
+  const detailClasses = classnames(
     'mailpoet_subscribers_data_parse_results_details',
     { mailpoet_hidden: !detailsShown },
   );
@@ -134,4 +134,4 @@ Warnings.defaultProps = {
   },
 };
 
-export default Warnings;
+export { Warnings };

@@ -7,7 +7,7 @@ import {
   ReactNode,
 } from 'react';
 import ReactDOM from 'react-dom';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 type Props = {
   type: 'success' | 'info' | 'warning' | 'error';
@@ -92,4 +92,4 @@ Notice.defaultProps = {
   onClose: undefined,
 };
 
-export default Notice;
+export { Notice };

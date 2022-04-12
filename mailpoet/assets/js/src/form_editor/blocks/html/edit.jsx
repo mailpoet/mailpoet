@@ -8,12 +8,12 @@ import {
 } from '@wordpress/components';
 import { InspectorControls, useSetting } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
 import { debounce } from 'lodash';
 import { useSelect } from '@wordpress/data';
-import { mapColorSlugToValue } from 'form_editor/store/mapping/from_blocks/styles_mapper';
 
-import ParagraphEdit from '../paragraph_edit.jsx';
+import { MailPoet } from 'mailpoet';
+import { mapColorSlugToValue } from 'form_editor/store/mapping/from_blocks/styles_mapper';
+import { ParagraphEdit } from '../paragraph_edit.jsx';
 
 function CustomHtmlEdit({ attributes, setAttributes, clientId }) {
   const colorDefinitions = useSetting('color.palette');
@@ -127,4 +127,4 @@ CustomHtmlEdit.propTypes = {
   clientId: PropTypes.string.isRequired,
 };
 
-export default CustomHtmlEdit;
+export { CustomHtmlEdit };

@@ -1,10 +1,11 @@
 /* eslint-disable func-names */
-import App from 'newsletter_editor/App';
 import Backbone from 'backbone';
 import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';
 import jQuery from 'jquery';
+
+import { App } from 'newsletter_editor/App';
 
 var Module = {};
 var SidebarView;
@@ -315,4 +316,4 @@ App.on('start', function (StartApp) {
   StartApp._appView.showChildView('sidebarRegion', sidebarView);
 });
 
-export default Module;
+export { Module as SidebarComponent };

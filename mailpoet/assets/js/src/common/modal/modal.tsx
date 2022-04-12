@@ -2,10 +2,10 @@ import { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { noop } from 'lodash';
 
-import ModalFrame from './frame';
-import ModalHeader from './header';
-import ModalOverlay from './overlay';
-import ModalCloseIcon from './close_icon';
+import { ModalFrame } from './frame';
+import { ModalHeader } from './header';
+import { ModalOverlay } from './overlay';
+import { modalCloseIcon } from './close_icon';
 
 type Props = {
   title?: string;
@@ -19,7 +19,7 @@ type Props = {
   children: ReactNode;
 };
 
-function Modal({
+export function Modal({
   title = null,
   isDismissible = true,
   shouldCloseOnEsc = true,
@@ -47,7 +47,7 @@ function Modal({
             className="mailpoet-modal-close"
             data-automation-id="mailpoet-modal-close"
           >
-            {ModalCloseIcon}
+            {modalCloseIcon}
           </button>
         )}
         <div className="mailpoet-modal-content" role="document">
@@ -58,5 +58,3 @@ function Modal({
     document.getElementById('mailpoet-modal'),
   );
 }
-
-export default Modal;

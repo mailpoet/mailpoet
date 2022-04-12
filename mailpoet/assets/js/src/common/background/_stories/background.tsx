@@ -1,4 +1,4 @@
-import Background from '../background';
+import { Background } from '../background';
 
 export default {
   title: 'Background',

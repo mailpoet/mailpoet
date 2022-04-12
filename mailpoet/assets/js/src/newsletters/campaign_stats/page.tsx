@@ -1,19 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
-import Hooks from 'wp-js-hooks';
-import MailPoet from 'mailpoet';
+import { Hooks } from 'wp-js-hooks';
+import { MailPoet } from 'mailpoet';
 import { withRouter } from 'react-router-dom';
-import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
+import { InvalidMssKeyNotice } from 'notices/invalid_mss_key_notice';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
-import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
-import RemoveWrapMargin from 'common/remove_wrap_margin/remove_wrap_margin';
-import Tabs from 'common/tabs/tabs';
-import Tab from 'common/tabs/tab';
-import Heading from 'common/typography/heading/heading';
+import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
+import { RemoveWrapMargin } from 'common/remove_wrap_margin/remove_wrap_margin';
+import { Tabs } from 'common/tabs/tabs';
+import { Tab } from 'common/tabs/tab';
+import { Heading } from 'common/typography/heading/heading';
 
 import { NewsletterGeneralStats } from './newsletter_general_stats';
 import { NewsletterType } from './newsletter_type';
 import { NewsletterStatsInfo } from './newsletter_stats_info';
-import PremiumBanner from './premium_banner.jsx';
+import { PremiumBanner } from './premium_banner.jsx';
 
 type Props = {
   match: {
@@ -33,7 +33,7 @@ type State = {
   loading: boolean;
 };
 
-function CampaignStatsPage({ match, history, location }: Props) {
+function CampaignStatsPageComponent({ match, history, location }: Props) {
   const [state, setState] = useState<State>({
     item: undefined,
     loading: true,
@@ -161,4 +161,4 @@ function CampaignStatsPage({ match, history, location }: Props) {
   );
 }
 
-export default withRouter(CampaignStatsPage);
+export const CampaignStatsPage = withRouter(CampaignStatsPageComponent);

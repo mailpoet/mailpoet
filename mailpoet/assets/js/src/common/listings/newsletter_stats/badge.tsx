@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Place } from 'react-tooltip';
-import Tag from '../../tag/tag';
-import Tooltip from '../../tooltip/tooltip';
+import { Tag } from '../../tag';
+import { Tooltip } from '../../tooltip/tooltip';
 
 type BadgeProps = {
   name: string;
@@ -42,4 +42,4 @@ Badge.defaultProps = {
   isInverted: true,
 };
 
-export default Badge;
+export { Badge };

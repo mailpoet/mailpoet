@@ -1,4 +1,4 @@
-export default (state) => {
+export const saveCustomFieldStarted = (state) => {
   const notices = state.notices.filter(
     (notice) => notice.id !== 'custom-field',
   );

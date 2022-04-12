@@ -75,7 +75,7 @@ const mapCustomField = (block, customFields, mappedCommonProperties) => {
  * @param {Array.<{name: string, slug: string, gradient: string}>} gradientDefinitions
  * @param customFields - list of all custom Fields
  */
-const blocksToFormBodyFactory = (
+export const blocksToFormBodyFactory = (
   fontSizeDefinitions,
   colorDefinitions,
   gradientDefinitions,
@@ -333,5 +333,3 @@ const blocksToFormBodyFactory = (
   };
   return mapBlocks;
 };
-
-export default blocksToFormBodyFactory;

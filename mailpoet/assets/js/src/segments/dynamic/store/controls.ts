@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { assign, has } from 'lodash/fp';
 
 import { AnyFormItem } from '../types';

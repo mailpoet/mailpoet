@@ -1,12 +1,12 @@
 import { ChangeEvent, Component } from 'react';
-import MailPoet from 'mailpoet';
-import Hooks from 'wp-js-hooks';
+import { MailPoet } from 'mailpoet';
+import { Hooks } from 'wp-js-hooks';
 import Moment from 'moment';
 
-import DateTime from 'newsletters/send/date_time.jsx';
-import SenderField from 'newsletters/send/sender_address_field.jsx';
-import GATrackingField from 'newsletters/send/ga_tracking';
-import Toggle from 'common/form/toggle/toggle';
+import { DateTime } from 'newsletters/send/date_time.jsx';
+import { SenderField } from 'newsletters/send/sender_address_field.jsx';
+import { GATrackingField } from 'newsletters/send/ga_tracking';
+import { Toggle } from 'common/form/toggle/toggle';
 import { NewsLetter, NewsletterStatus } from '../models';
 import { Field } from '../../form/types';
 
@@ -245,7 +245,7 @@ type SendButtonOptions = {
   disabled?: 'disabled';
 };
 
-export default {
+export const StandardNewsletterFields = {
   getFields: (): typeof fields => fields,
   getSendButtonOptions: (
     newsletter: Partial<NewsLetter> = {},

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import WelcomeWizardStepLayoutBody from './step_layout_body.jsx';
+import { WelcomeWizardStepLayoutBody } from './step_layout_body.jsx';
 
 function WelcomeWizardStepLayout(props) {
   return (
@@ -28,4 +28,4 @@ WelcomeWizardStepLayout.propTypes = {
   ]).isRequired,
 };
 
-export default WelcomeWizardStepLayout;
+export { WelcomeWizardStepLayout };

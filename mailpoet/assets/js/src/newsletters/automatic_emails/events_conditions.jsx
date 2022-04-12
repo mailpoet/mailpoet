@@ -1,17 +1,18 @@
-import { Component } from 'react';
-import Background from 'common/background/background';
-import Button from 'common/button/button';
-import Heading from 'common/typography/heading/heading';
-import { Grid } from 'common/grid';
-import Selection from 'form/fields/selection.jsx';
-import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
-import EventScheduling from 'newsletters/automatic_emails/events/event_scheduling.jsx';
-import EventOptions from 'newsletters/automatic_emails/events/event_options';
-import MailPoet from 'mailpoet';
 import _ from 'underscore';
-import PropTypes from 'prop-types';
-import { GlobalContext } from 'context/index.jsx';
+import { Component } from 'react';
 import jQuery from 'jquery';
+import PropTypes from 'prop-types';
+
+import { Background } from 'common/background/background';
+import { Button } from 'common/button/button';
+import { Heading } from 'common/typography/heading/heading';
+import { GlobalContext } from 'context/index.jsx';
+import { Grid } from 'common/grid';
+import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
+import { EventScheduling } from 'newsletters/automatic_emails/events/event_scheduling.jsx';
+import { EventOptions } from 'newsletters/automatic_emails/events/event_options';
+import { MailPoet } from 'mailpoet';
+import { Selection } from 'form/fields/selection.jsx';
 
 const defaultAfterTimeType = 'immediate';
 const defaultAfterTimeNumber = 1;
@@ -298,4 +299,4 @@ EventsConditions.propTypes = {
   }).isRequired,
 };
 
-export default EventsConditions;
+export { EventsConditions };

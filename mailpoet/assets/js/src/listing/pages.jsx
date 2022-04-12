@@ -1,6 +1,6 @@
 import { Component } from 'react';
-import classNames from 'classnames';
-import MailPoet from 'mailpoet';
+import classnames from 'classnames';
+import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 
 class ListingPages extends Component {
@@ -214,7 +214,7 @@ class ListingPages extends Component {
       );
     }
 
-    const classes = classNames('mailpoet-listing-pages', {
+    const classes = classnames('mailpoet-listing-pages', {
       'one-page': this.props.count <= this.props.limit,
     });
 
@@ -284,4 +284,4 @@ Arrow.defaultProps = {
   disabled: false,
 };
 
-export default ListingPages;
+export { ListingPages };

@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import Select from 'form/fields/select.jsx';
+import { FormFieldSelect as Select } from 'form/fields/select.jsx';
 import {
   intervalValues,
   timeOfDayValues,
@@ -154,4 +154,4 @@ NotificationScheduling.propTypes = {
   onValueChange: PropTypes.func.isRequired,
 };
 
-export default NotificationScheduling;
+export { NotificationScheduling };

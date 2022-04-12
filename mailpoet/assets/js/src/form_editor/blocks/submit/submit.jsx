@@ -1,13 +1,13 @@
-import MailPoet from 'mailpoet';
-import edit from './edit';
-import icon from './icon.jsx';
+import { MailPoet } from 'mailpoet';
+import { SubmitEdit } from './edit';
+import { Icon } from './icon.jsx';
 
 export const name = 'mailpoet-form/submit-button';
 
 export const settings = {
   title: MailPoet.I18n.t('blockSubmit'),
   description: MailPoet.I18n.t('blockSubmitDescription'),
-  icon,
+  icon: Icon,
   category: 'obligatory',
   attributes: {
     label: {
@@ -27,7 +27,7 @@ export const settings = {
     inserter: false,
     multiple: false,
   },
-  edit,
+  edit: SubmitEdit,
   save() {
     return null;
   },

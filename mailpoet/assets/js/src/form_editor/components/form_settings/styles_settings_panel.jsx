@@ -1,23 +1,23 @@
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   Panel,
   PanelBody,
   RangeControl,
   SelectControl,
 } from '@wordpress/components';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { partial } from 'lodash';
-import HorizontalAlignment from 'common/styles';
+import { HorizontalAlignment } from 'common/styles';
 
-import ColorSettings from 'form_editor/components/color_settings';
-import ColorGradientSettings from 'form_editor/components/color_gradient_settings';
-import FontSizeSettings from 'form_editor/components/font_size_settings';
-import ImageSettings from 'form_editor/components/image_settings';
+import { ColorSettings } from 'form_editor/components/color_settings';
+import { ColorGradientSettings } from 'form_editor/components/color_gradient_settings';
+import { FontSizeSettings } from 'form_editor/components/font_size_settings';
+import { ImageSettings } from 'form_editor/components/image_settings';
 import { CloseButtonsSettings } from 'form_editor/components/close_button_settings';
 import { formStyles as defaultFormStyles } from 'form_editor/store/defaults';
-import FontFamilySettings from '../font_family_settings';
+import { FontFamilySettings } from '../font_family_settings';
 
 function StylesSettingsPanel({ onToggle, isOpened }) {
   const { changeFormSettings } = useDispatch('mailpoet-form-editor');
@@ -161,4 +161,4 @@ StylesSettingsPanel.propTypes = {
   isOpened: PropTypes.bool.isRequired,
 };
 
-export default StylesSettingsPanel;
+export { StylesSettingsPanel };

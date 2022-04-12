@@ -1,8 +1,9 @@
 import { Panel, PanelBody } from '@wordpress/components';
-import MailPoet from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
 import PropTypes from 'prop-types';
-import CodeMirror from './codemirror_wrap.jsx';
+
+import { MailPoet } from 'mailpoet';
+import { CodemirrorWrap } from './codemirror_wrap.jsx';
 
 function CustomCssPanel({ onToggle, isOpened }) {
   const styles = useSelect(
@@ -19,7 +20,7 @@ function CustomCssPanel({ onToggle, isOpened }) {
         opened={isOpened}
         onToggle={onToggle}
       >
-        <CodeMirror value={styles} onChange={changeFormStyles} />
+        <CodemirrorWrap value={styles} onChange={changeFormStyles} />
       </PanelBody>
     </Panel>
   );
@@ -30,4 +31,4 @@ CustomCssPanel.propTypes = {
   isOpened: PropTypes.bool.isRequired,
 };
 
-export default CustomCssPanel;
+export { CustomCssPanel };

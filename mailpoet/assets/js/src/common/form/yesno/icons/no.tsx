@@ -1,4 +1,4 @@
-export default (
+export const noIcon = (
   <svg width="17" height="16" viewBox="0 0 17 16">
     <path
       fill="currentColor"

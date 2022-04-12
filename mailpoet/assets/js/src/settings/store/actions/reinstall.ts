@@ -1,6 +1,6 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
-export default function* reinstall() {
+export function* reinstall() {
   MailPoet.Modal.loading(true);
   const { success, error } = yield {
     type: 'CALL_API',

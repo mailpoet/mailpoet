@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
-import MobileIcon from './mobile_icon';
-import DesktopIcon from './desktop_icon';
+import { MobileIcon } from './mobile_icon';
+import { DesktopIcon } from './desktop_icon';
 
 function Preview({ children, onDisplayTypeChange, selectedDisplayType }) {
   const [displayType, setDisplayType] = useState(selectedDisplayType);
@@ -78,4 +78,4 @@ Preview.defaultProps = {
   selectedDisplayType: 'desktop',
 };
 
-export default Preview;
+export { Preview };

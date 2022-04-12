@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
-import MailPoet from 'mailpoet';
-import Heading from 'common/typography/heading/heading';
-import Button from 'common/button/button';
+import { MailPoet } from 'mailpoet';
+import { Heading } from 'common/typography/heading/heading';
+import { Button } from 'common/button/button';
 
 type Props = {
   label: string;
@@ -12,7 +12,7 @@ type Props = {
   className?: string;
 };
 
-function TemplateBox({
+export function TemplateBox({
   label,
   onSelect,
   children,
@@ -44,5 +44,3 @@ function TemplateBox({
     </div>
   );
 }
-
-export default TemplateBox;

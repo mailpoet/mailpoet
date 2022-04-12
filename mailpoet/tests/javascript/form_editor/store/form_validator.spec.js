@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import validate from '../../../../assets/js/src/form_editor/store/form_validator.jsx';
+import { validateForm as validate } from '../../../../assets/js/src/form_editor/store/form_validator.jsx';
 
 const emailBlock = {
   clientId: 'email',

@@ -1,45 +1,45 @@
-import MailPoet from 'mailpoet';
-import createCustomFieldDone from './reducers/create_custom_field_done.jsx';
-import createCustomFieldFailed from './reducers/create_custom_field_failed.jsx';
-import customFieldEdited from './reducers/custom_field_edited.jsx';
-import createCustomFieldStartedFactory from './reducers/create_custom_field_started.jsx';
-import changeFormName from './reducers/change_form_name.jsx';
-import changeFormSettings from './reducers/change_form_settings.jsx';
-import changeFormStyles from './reducers/change_form_styles.jsx';
-import removeNotice from './reducers/remove_notice.jsx';
+import { MailPoet } from 'mailpoet';
+import { createCustomFieldDone } from './reducers/create_custom_field_done.jsx';
+import { createCustomFieldFailed } from './reducers/create_custom_field_failed.jsx';
+import { customFieldEdited } from './reducers/custom_field_edited.jsx';
+import { createCustomFieldStartedFactory } from './reducers/create_custom_field_started.jsx';
+import { changeFormName } from './reducers/change_form_name.jsx';
+import { changeFormSettings } from './reducers/change_form_settings.jsx';
+import { changeFormStyles } from './reducers/change_form_styles.jsx';
+import { removeNotice } from './reducers/remove_notice.jsx';
 import { tutorialDismiss } from './reducers/tutorial_dismiss';
 import {
-  showPreview,
-  hidePreview,
-  previewDataSaved,
-  previewDataNotSaved,
   changePreviewSettings,
+  hidePreview,
+  previewDataNotSaved,
+  previewDataSaved,
+  showPreview,
 } from './reducers/preview.jsx';
-import saveFormDone from './reducers/save_form_done.jsx';
-import saveFormFailed from './reducers/save_form_failed.jsx';
-import saveFormStartedFactory from './reducers/save_form_started.jsx';
-import switchDefaultSidebarTab from './reducers/switch_sidebar_tab.jsx';
+import { saveFormDone } from './reducers/save_form_done.jsx';
+import { saveFormFailed } from './reducers/save_form_failed.jsx';
+import { saveFormStartedFactory } from './reducers/save_form_started.jsx';
+import { switchDefaultSidebarTab } from './reducers/switch_sidebar_tab.jsx';
 import {
-  toggleSidebar,
   toggleInserterSidebar,
+  toggleSidebar,
 } from './reducers/toggle_sidebar.ts';
-import toggleSidebarPanel from './reducers/toggle_sidebar_panel.jsx';
-import changeFormBlocks from './reducers/change_form_blocks.jsx';
-import saveCustomFieldDone from './reducers/save_custom_field_done.jsx';
-import saveCustomFieldFailed from './reducers/save_custom_field_failed.jsx';
-import saveCustomFieldStarted from './reducers/save_custom_field_started.jsx';
+import { toggleSidebarPanel } from './reducers/toggle_sidebar_panel.jsx';
+import { changeFormBlocks } from './reducers/change_form_blocks.jsx';
+import { saveCustomFieldDone } from './reducers/save_custom_field_done.jsx';
+import { saveCustomFieldFailed } from './reducers/save_custom_field_failed.jsx';
+import { saveCustomFieldStarted } from './reducers/save_custom_field_started.jsx';
 import {
-  customFieldDeleteStart,
   customFieldDeleteDone,
   customFieldDeleteFailed,
+  customFieldDeleteStart,
 } from './reducers/custom_field_delete.jsx';
-import changeActiveSidebar from './reducers/change_active_sidebar';
+import { changeActiveSidebar } from './reducers/change_active_sidebar';
 import { disableForm, enableForm } from './reducers/toggle_form';
-import toggleFullscreen from './reducers/toggle_fullscreen';
+import { toggleFullscreen } from './reducers/toggle_fullscreen';
 import {
   createHistoryRecord,
-  historyUndo,
   historyRedo,
+  historyUndo,
 } from './reducers/history_record';
 
 const createCustomFieldStarted = createCustomFieldStartedFactory(MailPoet);
@@ -133,9 +133,9 @@ const undoRedoReducer = (state, action) => {
   return state;
 };
 
-export default (defaultState) =>
-  // eslint-disable-next-line default-param-last
-  (state = defaultState, action) => {
+export const createReducer =
+  (defaultState) =>
+  (state = defaultState, action = {}) => {
     const stateAfterUndo = undoRedoReducer(state, action);
     return mainReducer(stateAfterUndo, action);
   };

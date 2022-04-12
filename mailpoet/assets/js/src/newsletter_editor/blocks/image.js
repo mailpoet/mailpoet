@@ -2,10 +2,10 @@
 /**
  * Image content block
  */
-import App from 'newsletter_editor/App';
-import BaseBlock from 'newsletter_editor/blocks/base';
+import { App } from 'newsletter_editor/App';
+import { BaseBlock } from 'newsletter_editor/blocks/base';
 import _ from 'underscore';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import jQuery from 'jquery';
 
 var Module = {};
@@ -221,4 +221,4 @@ App.on('before:start', function (BeforeStartApp) {
   });
 });
 
-export default Module;
+export { Module as ImageBlock };

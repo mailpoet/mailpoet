@@ -1,7 +1,7 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import moment from 'moment';
 
-const displayTutorial = () => {
+export const displayTutorial = () => {
   if (window.config.dragDemoUrlSettings) {
     return;
   }
@@ -23,5 +23,3 @@ const displayTutorial = () => {
     },
   });
 };
-
-export default displayTutorial;

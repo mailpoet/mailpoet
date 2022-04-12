@@ -1,3 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
-export default (value: string): boolean => MailPoet.emailRegex.test(value);
+export const isEmail = (value: string): boolean =>
+  MailPoet.emailRegex.test(value);

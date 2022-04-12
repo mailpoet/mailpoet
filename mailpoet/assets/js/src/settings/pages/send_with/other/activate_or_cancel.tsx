@@ -1,11 +1,11 @@
 import { useHistory } from 'react-router-dom';
 
-import MailPoet from 'mailpoet';
-import Button from 'common/button/button';
+import { MailPoet } from 'mailpoet';
+import { Button } from 'common/button/button';
 import { t } from 'common/functions';
 import { useAction } from 'settings/store/hooks';
 
-export default function ActivateOrCancel() {
+export function ActivateOrCancel() {
   const saveSettings = useAction('saveSettings');
   const loadSettings = useAction('loadSettings');
   const history = useHistory();

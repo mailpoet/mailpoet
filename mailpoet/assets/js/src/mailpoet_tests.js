@@ -4,7 +4,7 @@ var MailPoet = {};
 // Expose MailPoet globally
 window.MailPoet = MailPoet;
 
-export default MailPoet;
+export { MailPoet };
 
 require('i18n'); // side effect - extends MailPoet object
 require('notice'); // side effect - extends MailPoet object

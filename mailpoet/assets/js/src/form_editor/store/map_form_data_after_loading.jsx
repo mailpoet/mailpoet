@@ -1,8 +1,7 @@
-/* eslint-disable camelcase */
-import asNum from './server_value_as_num';
+import { asNum } from './server_value_as_num';
 import * as defaults from './defaults';
 
-export default function mapFormDataAfterLoading(data) {
+export function mapFormDataAfterLoading(data) {
   const mapped = {
     ...data,
     settings: {

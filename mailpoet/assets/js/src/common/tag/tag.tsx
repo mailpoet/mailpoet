@@ -10,7 +10,7 @@ type Props = {
   data?: string;
 };
 
-function Tag({
+export function Tag({
   children,
   variant,
   dimension,
@@ -31,5 +31,3 @@ function Tag({
     </div>
   );
 }
-
-export default Tag;

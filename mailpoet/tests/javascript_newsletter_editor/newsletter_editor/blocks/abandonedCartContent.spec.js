@@ -1,4 +1,4 @@
-import App from 'newsletter_editor/App';
+import { App } from 'newsletter_editor/App';
 import Communication from 'newsletter_editor/components/communication';
 import AbandonedCartContentBlock from 'newsletter_editor/blocks/abandonedCartContent';
 import ContainerBlock from 'newsletter_editor/blocks/container';

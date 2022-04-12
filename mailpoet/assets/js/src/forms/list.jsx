@@ -1,14 +1,15 @@
+import classnames from 'classnames';
 import { Component } from 'react';
-import classNames from 'classnames';
-import MailPoet from 'mailpoet';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
-import Listing from 'listing/listing.jsx';
-import withNpsPoll from 'nps_poll.jsx';
-import Tags from 'common/tag/tags';
-import Toggle from 'common/form/toggle/toggle';
+
 import { Button } from 'common';
-import plusIcon from 'common/button/icon/plus';
+import { Listing } from 'listing/listing.jsx';
+import { MailPoet } from 'mailpoet';
+import { plusIcon } from 'common/button/icon/plus';
+import { Tags } from 'common/tag/tags';
+import { Toggle } from 'common/form/toggle/toggle';
+import { withNpsPoll } from 'nps_poll.jsx';
 import { FormsHeading, onAddNewForm } from './heading';
 
 const columns = [
@@ -174,7 +175,7 @@ const itemActions = [
   },
 ];
 
-class FormList extends Component {
+class FormListComponent extends Component {
   updateStatus = (checked, e) => {
     // make the event persist so that we can still override the selected value
     // in the ajax callback
@@ -223,7 +224,7 @@ class FormList extends Component {
   }
 
   renderItem = (form, actions) => {
-    const rowClasses = classNames(
+    const rowClasses = classnames(
       'manage-column',
       'column-primary',
       'has-row-actions',
@@ -297,11 +298,11 @@ class FormList extends Component {
   }
 }
 
-FormList.propTypes = {
+FormListComponent.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   match: PropTypes.shape({
     params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   }).isRequired,
 };
 
-export default withNpsPoll(FormList);
+export const FormList = withNpsPoll(FormListComponent);

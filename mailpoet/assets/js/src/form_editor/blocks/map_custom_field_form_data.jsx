@@ -1,4 +1,4 @@
-function mapFormDataToParams(fieldType, data) {
+export function mapCustomFieldFormData(fieldType, data) {
   switch (fieldType) {
     case 'checkbox':
       return {
@@ -51,5 +51,3 @@ function mapFormDataToParams(fieldType, data) {
       throw new Error(`Invalid custom field type ${fieldType}!`);
   }
 }
-
-export default mapFormDataToParams;

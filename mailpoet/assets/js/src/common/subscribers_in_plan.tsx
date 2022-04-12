@@ -1,13 +1,13 @@
-import MailPoet from 'mailpoet';
-import HelpTooltip from 'help-tooltip.jsx';
 import ReactStringReplace from 'react-string-replace';
+import { MailPoet } from 'mailpoet';
+import { Tooltip } from 'help-tooltip.jsx';
 
 type Props = {
   subscribersInPlan: number | false;
   subscribersInPlanLimit: number | false;
 };
 
-function SubscribersInPlan({
+export function SubscribersInPlan({
   subscribersInPlan,
   subscribersInPlanLimit,
 }: Props) {
@@ -32,7 +32,7 @@ function SubscribersInPlan({
         '%s',
         () => subscribersInPlanCount,
       )}{' '}
-      <HelpTooltip
+      <Tooltip
         tooltip={MailPoet.I18n.t('subscribersInPlanTooltip')}
         place="right"
       />
@@ -40,5 +40,3 @@ function SubscribersInPlan({
     </div>
   );
 }
-
-export default SubscribersInPlan;

@@ -1,9 +1,9 @@
 import ReactStringReplace from 'react-string-replace';
 import ReactHtmlParser from 'react-html-parser';
-import MailPoet from 'mailpoet';
-import Notice from 'notices/notice';
+import { MailPoet } from 'mailpoet';
+import { Notice } from 'notices/notice';
 
-function EmailVolumeLimitNotice(): JSX.Element {
+export function EmailVolumeLimitNotice(): JSX.Element {
   if (!MailPoet.emailVolumeLimitReached) return null;
 
   const title = MailPoet.I18n.t('emailVolumeLimitNoticeTitle').replace(
@@ -72,5 +72,3 @@ function EmailVolumeLimitNotice(): JSX.Element {
     </Notice>
   );
 }
-
-export default EmailVolumeLimitNotice;

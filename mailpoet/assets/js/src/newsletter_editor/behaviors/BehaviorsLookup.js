@@ -16,4 +16,4 @@ Marionette.Behaviors.behaviorsLookup = function () {
 
 window.BehaviorsLookup = BehaviorsLookup;
 
-export default BehaviorsLookup;
+export { BehaviorsLookup };

@@ -1,11 +1,11 @@
-import MailPoet from 'mailpoet';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { MailPoet } from 'mailpoet';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { ToggleControl } from '@wordpress/components';
-import { assocPath, compose, __ } from 'lodash/fp';
+import { __, assocPath, compose } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
-import PlacementSettings from './placement_settings';
+import { PlacementSettings } from './placement_settings';
 
-function BelowPostsSettings(): JSX.Element {
+export function BelowPostsSettings(): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -52,5 +52,3 @@ function BelowPostsSettings(): JSX.Element {
     </>
   );
 }
-
-export default BelowPostsSettings;

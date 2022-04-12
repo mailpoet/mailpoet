@@ -1,8 +1,8 @@
 import { find } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import MailPoet from 'mailpoet';
-import ReactSelect from 'common/form/react_select/react_select';
+import { MailPoet } from 'mailpoet';
+import { ReactSelect } from 'common/form/react_select/react_select';
 
 import {
   WordpressRoleFormItem,

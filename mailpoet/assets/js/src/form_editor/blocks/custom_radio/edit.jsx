@@ -1,13 +1,13 @@
 import { Panel, PanelBody, ToggleControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import ParagraphEdit from '../paragraph_edit.jsx';
-import CustomFieldSettings from './custom_field_settings.jsx';
-import formatLabel from '../label_formatter.jsx';
-import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
+import { MailPoet } from 'mailpoet';
+import { CustomFieldSettings } from './custom_field_settings.jsx';
+import { formatLabel } from '../label_formatter.jsx';
+import { ParagraphEdit } from '../paragraph_edit.jsx';
+import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
 
 function CustomRadioEdit({ attributes, setAttributes, clientId }) {
   const isSaving = useSelect(
@@ -118,4 +118,4 @@ CustomRadioEdit.propTypes = {
   clientId: PropTypes.string.isRequired,
 };
 
-export default CustomRadioEdit;
+export { CustomRadioEdit };

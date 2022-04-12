@@ -4,9 +4,9 @@
  * Adds a color picker integration with the view
  */
 import Marionette from 'backbone.marionette';
-import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
-import MailPoet from 'mailpoet';
 import 'spectrum'; // eslint-disable-line func-names
+import { BehaviorsLookup } from 'newsletter_editor/behaviors/BehaviorsLookup';
+import { MailPoet } from 'mailpoet';
 
 var BL = BehaviorsLookup;
 

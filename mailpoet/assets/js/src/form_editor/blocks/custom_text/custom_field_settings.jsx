@@ -6,9 +6,9 @@ import {
   ToggleControl,
 } from '@wordpress/components';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
 
-import CustomFieldDelete from '../custom_field_delete.jsx';
+import { MailPoet } from 'mailpoet';
+import { CustomFieldDelete } from '../custom_field_delete.jsx';
 
 function CustomFieldSettings({
   label,
@@ -128,4 +128,4 @@ CustomFieldSettings.defaultProps = {
   onChange: null,
 };
 
-export default CustomFieldSettings;
+export { CustomFieldSettings };

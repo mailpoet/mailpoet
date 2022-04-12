@@ -1,14 +1,16 @@
-import MailPoet from 'mailpoet';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { MailPoet } from 'mailpoet';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { ToggleControl } from '@wordpress/components';
-import { assocPath, compose, cond, isEqual, identity, sortBy } from 'lodash/fp';
-import Selection from '../../selection';
+import { assocPath, compose, cond, identity, isEqual, sortBy } from 'lodash/fp';
+import { Selection } from '../../selection';
 
 type Props = {
   settingsPlacementKey: string;
 };
 
-function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
+export function PlacementSettings({
+  settingsPlacementKey,
+}: Props): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -336,5 +338,3 @@ function PlacementSettings({ settingsPlacementKey }: Props): JSX.Element {
     </>
   );
 }
-
-export default PlacementSettings;

@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 
 function ReviewRequest(props) {
@@ -52,4 +52,4 @@ ReviewRequest.propTypes = {
   username: PropTypes.string.isRequired,
 };
 
-export default ReviewRequest;
+export { ReviewRequest };

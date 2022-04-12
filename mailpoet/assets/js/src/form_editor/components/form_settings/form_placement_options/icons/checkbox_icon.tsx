@@ -1,6 +1,6 @@
-import { SVG, Path, G } from '@wordpress/components';
+import { G, Path, SVG } from '@wordpress/components';
 
-export default (
+export const CheckboxIcon = (
   <SVG
     width="13"
     height="13"

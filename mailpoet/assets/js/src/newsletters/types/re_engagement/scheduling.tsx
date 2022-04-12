@@ -1,9 +1,9 @@
 import ReactStringReplace from 'react-string-replace';
 
-import MailPoet from 'mailpoet';
-import Heading from 'common/typography/heading/heading';
-import Input from 'common/form/input/input';
-import Select from 'common/form/select/select';
+import { MailPoet } from 'mailpoet';
+import { Heading } from 'common/typography/heading/heading';
+import { Input } from 'common/form/input/input';
+import { Select } from 'common/form/select/select';
 import { Grid } from 'common/grid';
 import { onChange } from 'common/functions';
 

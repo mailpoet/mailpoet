@@ -1,6 +1,6 @@
 import Papa from 'papaparse';
-import MailPoet from 'mailpoet';
-import sanitizeCSVData from '../sanitize_csv_data.jsx';
+import { MailPoet } from 'mailpoet';
+import { sanitizeCSVData } from '../sanitize_csv_data.jsx';
 
 function papaParserConfig(done) {
   return {
@@ -27,7 +27,7 @@ function papaParserConfig(done) {
   };
 }
 
-const process = (csvData, done) => {
+export const processCsv = (csvData, done) => {
   const pasteSize = encodeURI(csvData).split(/%..|./).length - 1;
   MailPoet.Notice.hide();
   // get an approximate size of textarea paste in bytes
@@ -38,5 +38,3 @@ const process = (csvData, done) => {
   MailPoet.Modal.loading(true);
   Papa.parse(csvData, papaParserConfig(done));
 };
-
-export default process;

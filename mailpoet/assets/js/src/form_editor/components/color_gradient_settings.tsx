@@ -9,7 +9,7 @@ type Props = {
   onGradientChange: (value: string | undefined) => void;
 };
 
-function ColorGradientSettings({
+export function ColorGradientSettings({
   name,
   colorValue,
   gradientValue,
@@ -33,5 +33,3 @@ function ColorGradientSettings({
     </div>
   );
 }
-
-export default ColorGradientSettings;

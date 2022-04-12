@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { partial } from 'lodash';
-import blocksToFormBodyFactory from '../../../../assets/js/src/form_editor/store/blocks_to_form_body.jsx';
+import { blocksToFormBodyFactory } from '../../../../assets/js/src/form_editor/store/blocks_to_form_body.jsx';
 import {
   emailBlock,
   lastNameBlock,

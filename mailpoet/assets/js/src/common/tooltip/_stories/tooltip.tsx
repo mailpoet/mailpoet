@@ -1,5 +1,5 @@
-import Heading from 'common/typography/heading/heading';
-import Tooltip from '../tooltip';
+import { Heading } from 'common/typography/heading/heading';
+import { Tooltip } from '../tooltip';
 
 export default {
   title: 'Tooltips',

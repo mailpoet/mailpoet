@@ -1,4 +1,4 @@
-export default function DesktopIcon() {
+export function DesktopIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

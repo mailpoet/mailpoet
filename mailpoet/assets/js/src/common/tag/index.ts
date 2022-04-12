@@ -1,1 +1,2 @@
-export { default as Tag } from './tag';
+export * from './tag';
+export * from './tags';

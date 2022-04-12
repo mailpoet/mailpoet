@@ -1,4 +1,4 @@
-const AutomaticEmailEventGroupLogos = {
+export const AutomaticEmailEventGroupLogos = {
   woocommerce: (
     <svg
       version="1.1"
@@ -32,5 +32,3 @@ const AutomaticEmailEventGroupLogos = {
     </svg>
   ),
 };
-
-export default AutomaticEmailEventGroupLogos;

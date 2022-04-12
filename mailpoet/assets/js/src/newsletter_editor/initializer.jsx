@@ -1,10 +1,10 @@
-import Hooks from 'wp-js-hooks';
-import MailPoet from 'mailpoet';
+import { Hooks } from 'wp-js-hooks';
+import { MailPoet } from 'mailpoet';
 import ReactDOM from 'react-dom';
-import ListingHeadingSteps from 'newsletters/listings/heading_steps';
+import { ListingHeadingSteps } from 'newsletters/listings/heading_steps';
 import { newsletterTypesWithActivation } from 'newsletters/listings/utils';
-import fetchAutomaticEmailShortcodes from 'newsletters/automatic_emails/fetch_editor_shortcodes.jsx';
-import displayTutorial from './tutorial.jsx';
+import { fetchAutomaticEmailShortcodes } from 'newsletters/automatic_emails/fetch_editor_shortcodes.jsx';
+import { displayTutorial } from './tutorial.jsx';
 
 const renderHeading = (newsletterType) => {
   if (newsletterType !== 'wc_transactional') {

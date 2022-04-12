@@ -1,9 +1,9 @@
 import { action } from '_storybook/action';
 import { CSSProperties } from 'react';
-import Heading from '../../typography/heading/heading';
-import RoutedTabs from '../routed_tabs';
-import Tab from '../tab';
-import Tabs from '../tabs';
+import { Heading } from '../../typography/heading/heading';
+import { RoutedTabs } from '../routed_tabs';
+import { Tab } from '../tab';
+import { Tabs } from '../tabs';
 
 const wrapperStyles: CSSProperties = {
   background: '#f1f1f1',

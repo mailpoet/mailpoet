@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { t } from 'common/functions';
-import Radio from 'common/form/radio/radio';
+import { Radio } from 'common/form/radio/radio';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 

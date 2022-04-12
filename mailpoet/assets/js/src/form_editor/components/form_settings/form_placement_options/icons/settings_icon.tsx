@@ -1,6 +1,6 @@
-import { SVG, Path, G } from '@wordpress/components';
+import { G, Path, SVG } from '@wordpress/components';
 
-export default (
+export const SettingsIcon = (
   <SVG
     width="14px"
     height="14px"

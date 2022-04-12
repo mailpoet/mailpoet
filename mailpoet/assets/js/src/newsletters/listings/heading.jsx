@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top_bar/top_bar';
-import plusIcon from 'common/button/icon/plus';
+import { plusIcon } from 'common/button/icon/plus';
 
-function ListingHeading() {
+export function ListingHeading() {
   return (
     <TopBarWithBeamer>
       <Link
@@ -19,5 +19,3 @@ function ListingHeading() {
     </TopBarWithBeamer>
   );
 }
-
-export default ListingHeading;

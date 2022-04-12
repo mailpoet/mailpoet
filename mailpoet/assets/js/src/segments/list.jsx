@@ -1,10 +1,10 @@
 import { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import MailPoet from 'mailpoet';
-import classNames from 'classnames';
+import { MailPoet } from 'mailpoet';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-import Listing from 'listing/listing.jsx';
+import { Listing } from 'listing/listing.jsx';
 import { ListingsEngagementScore } from '../subscribers/listings_engagement_score';
 
 const isWPUsersSegment = (segment) => segment.type === 'wp_users';
@@ -245,9 +245,9 @@ const itemActions = [
   },
 ];
 
-class SegmentList extends Component {
+class SegmentListComponent extends Component {
   renderItem = (segment, actions) => {
-    const rowClasses = classNames(
+    const rowClasses = classnames(
       'manage-column',
       'column-primary',
       'has-row-actions',
@@ -367,11 +367,11 @@ class SegmentList extends Component {
   }
 }
 
-SegmentList.propTypes = {
+SegmentListComponent.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   match: PropTypes.shape({
     params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   }).isRequired,
 };
 
-export default withRouter(SegmentList);
+export const SegmentList = withRouter(SegmentListComponent);

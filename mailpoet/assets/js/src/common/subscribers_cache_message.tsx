@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import MailPoet from 'mailpoet';
-import Button from 'common/button/button';
+import { MailPoet } from 'mailpoet';
+import { Button } from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
-import Notice from '../notices/notice';
+import { Notice } from '../notices/notice';
 
 type Props = {
   cacheCalculation: string;

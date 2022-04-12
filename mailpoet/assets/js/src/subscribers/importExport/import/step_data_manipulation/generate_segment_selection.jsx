@@ -1,5 +1,5 @@
 import jQuery from 'jquery';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import _ from 'underscore';
 
 export function createSelection(segments, onSelectionChange) {

@@ -1,13 +1,13 @@
 import ReactDOM from 'react-dom';
-import MailPoet from 'mailpoet';
-import KnowledgeBase from 'help/knowledge_base.jsx';
-import SystemInfo from 'help/system_info.jsx';
-import SystemStatus from 'help/system_status.jsx';
-import YourPrivacy from 'help/your_privacy.jsx';
+import { MailPoet } from 'mailpoet';
+import { KnowledgeBase } from 'help/knowledge_base.jsx';
+import { SystemInfo } from 'help/system_info.jsx';
+import { SystemStatus } from 'help/system_status.jsx';
+import { YourPrivacy } from 'help/your_privacy.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
-import Notices from 'notices/notices.jsx';
-import RoutedTabs from '../common/tabs/routed_tabs';
-import Tab from '../common/tabs/tab';
+import { Notices } from 'notices/notices.jsx';
+import { RoutedTabs } from '../common/tabs/routed_tabs';
+import { Tab } from '../common';
 import { TopBar } from '../common/top_bar/top_bar';
 
 function App() {

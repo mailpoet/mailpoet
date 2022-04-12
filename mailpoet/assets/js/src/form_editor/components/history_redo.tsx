@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { redo as redoIcon } from '@wordpress/icons';
 import { displayShortcut } from '@wordpress/keycodes';
 import { useShortcut } from '@wordpress/keyboard-shortcuts';
 
-function HistoryRedo(props: Record<string, unknown>): JSX.Element {
+export function HistoryRedo(props: Record<string, unknown>): JSX.Element {
   const hasRedo = useSelect(
     (select) => select('mailpoet-form-editor').hasEditorRedo(),
     [],
@@ -52,5 +52,3 @@ function HistoryRedo(props: Record<string, unknown>): JSX.Element {
     />
   );
 }
-
-export default HistoryRedo;

@@ -2,7 +2,7 @@ import 'parsleyjs';
 import ReactDOM from 'react-dom';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { initStore } from './store';
-import Settings from './settings';
+import { Settings } from './settings';
 
 function Entry() {
   return (

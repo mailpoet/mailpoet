@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
-import Button from '../../common/button/button';
-import Heading from '../../common/typography/heading/heading';
-import List from '../../common/typography/list/list';
+import { MailPoet } from 'mailpoet';
+import { Button } from '../../common';
+import { Heading } from '../../common/typography/heading/heading';
+import { List } from '../../common/typography/list/list';
 
 export function FreeBenefitsList() {
   return (
@@ -137,7 +137,7 @@ NotFreePlanSubscribers.propTypes = {
   next: PropTypes.func.isRequired,
 };
 
-function Step(props) {
+function WelcomeWizardPitchMSSStep(props) {
   return props.subscribersCount < 1000 ? (
     <FreePlanSubscribers
       mailpoetAccountUrl={props.mailpoetAccountUrl}
@@ -151,11 +151,11 @@ function Step(props) {
   );
 }
 
-Step.propTypes = {
+WelcomeWizardPitchMSSStep.propTypes = {
   next: PropTypes.func.isRequired,
   subscribersCount: PropTypes.number.isRequired,
   mailpoetAccountUrl: PropTypes.string.isRequired,
   purchaseUrl: PropTypes.string.isRequired,
 };
 
-export default Step;
+export { WelcomeWizardPitchMSSStep };

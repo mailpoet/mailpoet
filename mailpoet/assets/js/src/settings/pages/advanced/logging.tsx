@@ -1,9 +1,9 @@
 import { t, onChange } from 'common/functions';
-import Select from 'common/form/select/select';
+import { Select } from 'common/form/select/select';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
-export default function Logging() {
+export function Logging() {
   const [level, setLevel] = useSetting('logging');
   return (
     <>

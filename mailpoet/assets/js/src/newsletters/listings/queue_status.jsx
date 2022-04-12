@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import parseDate from 'date-fns/parse';
-import APIErrorsNotice from 'notices/api_errors_notice.tsx';
-import Button from 'common/button/button';
-import NewsletterStatus from 'common/listings/newsletter_status';
+import { APIErrorsNotice } from 'notices/api_errors_notice.tsx';
+import { Button } from 'common/button/button';
+import { NewsletterStatus } from 'common/listings/newsletter_status';
 
 const QueuePropType = PropTypes.shape({
   status: PropTypes.string,
@@ -128,4 +128,4 @@ QueueStatus.propTypes = {
   }).isRequired,
 };
 
-export default QueueStatus;
+export { QueueStatus };

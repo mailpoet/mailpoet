@@ -1,10 +1,11 @@
 import { Component } from 'react';
-import MailPoet from 'mailpoet';
-import Selection from 'form/fields/selection.jsx';
-import Text from 'form/fields/text.jsx';
-import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
-import _ from 'underscore';
 import PropTypes from 'prop-types';
+import _ from 'underscore';
+
+import { MailPoet } from 'mailpoet';
+import { Selection } from 'form/fields/selection.jsx';
+import { FormFieldText } from 'form/fields/text.jsx';
+import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
 
 const defaultAfterTimeType = 'immediate';
 const defaultAfterTimeNumber = 1;
@@ -122,7 +123,7 @@ class EventScheduling extends Component {
     };
 
     return (
-      <Text
+      <FormFieldText
         field={props.field}
         item={props.item}
         onValueChange={props.onValueChange}
@@ -192,4 +193,4 @@ EventScheduling.defaultProps = {
   onValueChange: null,
 };
 
-export default EventScheduling;
+export { EventScheduling };

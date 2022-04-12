@@ -11,7 +11,7 @@ interface SendWithChoiceWindow extends Window {
 
 declare let window: SendWithChoiceWindow;
 
-export default function SendWithChoice() {
+export function SendWithChoice() {
   const history = useHistory();
   const isMssActive = useSelector('isMssActive')();
   const [key] = useSetting('mta', 'mailpoet_api_key');

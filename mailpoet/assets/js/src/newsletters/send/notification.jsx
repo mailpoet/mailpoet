@@ -1,9 +1,9 @@
 import _ from 'underscore';
-import MailPoet from 'mailpoet';
-import Hooks from 'wp-js-hooks';
-import Scheduling from 'newsletters/types/notification/scheduling.jsx';
-import SenderField from 'newsletters/send/sender_address_field.jsx';
-import GATrackingField from 'newsletters/send/ga_tracking';
+import { MailPoet } from 'mailpoet';
+import { Hooks } from 'wp-js-hooks';
+import { NotificationScheduling } from 'newsletters/types/notification/scheduling.jsx';
+import { SenderField } from 'newsletters/send/sender_address_field.jsx';
+import { GATrackingField } from 'newsletters/send/ga_tracking';
 
 let fields = [
   {
@@ -45,7 +45,7 @@ let fields = [
     name: 'options',
     label: MailPoet.I18n.t('selectFrequency'),
     type: 'reactComponent',
-    component: Scheduling,
+    component: NotificationScheduling,
   },
   {
     name: 'segments',
@@ -130,7 +130,7 @@ let fields = [
 
 fields = Hooks.applyFilters('mailpoet_newsletters_3rd_step_fields', fields);
 
-export default {
+export const NotificationNewsletterFields = {
   getFields: function getFields() {
     return fields;
   },

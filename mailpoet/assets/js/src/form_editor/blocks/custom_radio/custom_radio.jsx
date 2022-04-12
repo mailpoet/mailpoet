@@ -1,5 +1,5 @@
-import Icon from '../custom_text/icon.jsx';
-import Edit from './edit.jsx';
+import { Icon } from '../custom_text/icon.jsx';
+import { CustomRadioEdit } from './edit.jsx';
 import { customFieldValuesToBlockValues } from '../../store/form_body_to_blocks.jsx';
 
 export const name = 'mailpoet-form/custom-radio';
@@ -40,7 +40,7 @@ export function getSettings(customField) {
       html: false,
       multiple: false,
     },
-    edit: Edit,
+    edit: CustomRadioEdit,
     save() {
       return null;
     },

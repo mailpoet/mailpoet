@@ -4,7 +4,7 @@
 import { getSetting } from '@woocommerce/settings';
 
 const { defaultText } = getSetting('mailpoet_data');
-export default {
+export const marketingOptinAttributes = {
   text: {
     type: 'string',
     default: defaultText,

@@ -1,6 +1,6 @@
 import { action } from '_storybook/action';
-import Option from '../form_placement_option';
-import Icon from '../icons/sidebar_icon';
+import { FormPlacementOption } from '../form_placement_option';
+import { SidebarIcon } from '../icons/sidebar_icon';
 
 export default {
   title: 'FormEditor/Form Placement Options',
@@ -9,21 +9,21 @@ export default {
 export function Options(): JSX.Element {
   return (
     <>
-      <Option
+      <FormPlacementOption
         label="Active option"
-        icon={Icon}
+        icon={SidebarIcon}
         active
         onClick={action('active option click')}
       />
-      <Option
+      <FormPlacementOption
         label="Inactive option"
-        icon={Icon}
+        icon={SidebarIcon}
         active={false}
         onClick={action('inactive option click')}
       />
-      <Option
+      <FormPlacementOption
         label="Always inactive"
-        icon={Icon}
+        icon={SidebarIcon}
         active
         canBeActive={false}
         onClick={action('inactive option click')}
@@ -36,21 +36,21 @@ export function OptionsListInSidebar(): JSX.Element {
   return (
     <div className="edit-post-sidebar mailpoet_form_editor_sidebar">
       <div className="form-placement-option-list">
-        <Option
+        <FormPlacementOption
           label="Active option"
-          icon={Icon}
+          icon={SidebarIcon}
           active
           onClick={action('active option click')}
         />
-        <Option
+        <FormPlacementOption
           label="Inactive option"
-          icon={Icon}
+          icon={SidebarIcon}
           active={false}
           onClick={action('inactive option click')}
         />
-        <Option
+        <FormPlacementOption
           label="Always inactive"
-          icon={Icon}
+          icon={SidebarIcon}
           active
           canBeActive={false}
           onClick={action('inactive option click')}

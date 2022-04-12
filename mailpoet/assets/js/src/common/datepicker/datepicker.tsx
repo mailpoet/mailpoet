@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 type Props = ReactDatePickerProps & {
   dimension?: 'small';
@@ -9,7 +9,7 @@ type Props = ReactDatePickerProps & {
   iconEnd?: JSX.Element;
 };
 
-function Datepicker({
+export function Datepicker({
   dimension,
   isFullWidth,
   iconStart,
@@ -34,5 +34,3 @@ function Datepicker({
     </div>
   );
 }
-
-export default Datepicker;

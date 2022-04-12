@@ -1,15 +1,15 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { useSelect, useDispatch } from '@wordpress/data';
-import Categories from 'common/categories/categories';
-import Background from 'common/background/background';
-import Loading from 'common/loading';
-import TemplateBox from 'common/template_box/template_box';
-import Heading from 'common/typography/heading/heading';
+import { Categories } from 'common/categories/categories';
+import { Background } from 'common/background/background';
+import { Loading } from 'common/loading';
+import { TemplateBox } from 'common/template_box/template_box';
+import { Heading } from 'common/typography/heading/heading';
 import { Button } from 'common';
-import Notice from 'notices/notice';
+import { Notice } from 'notices/notice';
 import { TemplateData } from './store/types';
 
-export default function Selection(): JSX.Element {
+export function Selection(): JSX.Element {
   const categories = [
     {
       name: 'popup',

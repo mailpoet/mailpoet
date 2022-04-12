@@ -1,5 +1,5 @@
-import List from '../list';
-import Heading from '../../heading/heading';
+import { List } from '../list';
+import { Heading } from '../../heading/heading';
 
 export default {
   title: 'Typography',

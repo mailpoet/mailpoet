@@ -1,7 +1,7 @@
 import _ from 'underscore';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
-const fetchAutomaticEmailShortcodes = (defaultConfig, newsletter) => {
+export const fetchAutomaticEmailShortcodes = (defaultConfig, newsletter) => {
   if (newsletter.type !== 'automatic') return defaultConfig;
 
   const config = defaultConfig;
@@ -29,5 +29,3 @@ const fetchAutomaticEmailShortcodes = (defaultConfig, newsletter) => {
       }
     });
 };
-
-export default fetchAutomaticEmailShortcodes;

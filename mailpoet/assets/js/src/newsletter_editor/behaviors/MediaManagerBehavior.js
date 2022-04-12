@@ -6,8 +6,8 @@
  */
 import Marionette from 'backbone.marionette';
 import _ from 'underscore';
-import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
 import jQuery from 'jquery';
+import { BehaviorsLookup } from 'newsletter_editor/behaviors/BehaviorsLookup';
 
 var BL = BehaviorsLookup;
 var DELAY_REFRESH_FOR_MS = 500;

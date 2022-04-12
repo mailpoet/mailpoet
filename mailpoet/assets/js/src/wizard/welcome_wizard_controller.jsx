@@ -1,23 +1,24 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { partial } from 'underscore';
-import MailPoet from 'mailpoet';
-import WelcomeWizardSenderStep from './steps/sender_step.jsx';
-import WelcomeWizardMigratedUserStep from './steps/migrated_user_step.jsx';
-import WelcomeWizardEmailCourseStep from './steps/email_course_step.jsx';
-import WelcomeWizardUsageTrackingStep from './steps/usage_tracking_step.jsx';
-import WelcomeWizardPitchMSSStep from './steps/pitch_mss_step.jsx';
-import WooCommerceController from './woocommerce_controller.jsx';
-import WelcomeWizardStepLayout from './layout/step_layout.jsx';
 
-import CreateSenderSettings from './create_sender_settings.jsx';
+import { MailPoet } from 'mailpoet';
+import { WelcomeWizardSenderStep } from './steps/sender_step.jsx';
+import { WelcomeWizardMigratedUserStep } from './steps/migrated_user_step.jsx';
+import { WelcomeWizardEmailCourseStep } from './steps/email_course_step.jsx';
+import { WelcomeWizardUsageTrackingStep } from './steps/usage_tracking_step.jsx';
+import { WelcomeWizardPitchMSSStep } from './steps/pitch_mss_step.jsx';
+import { WooCommerceController } from './woocommerce_controller.jsx';
+import { WelcomeWizardStepLayout } from './layout/step_layout.jsx';
+
+import { createSenderSettings } from './create_sender_settings.jsx';
 import {
   getStepsCount,
-  redirectToNextStep,
   mapStepNumberToStepName,
+  redirectToNextStep,
 } from './steps_numbers.jsx';
-import Steps from '../common/steps/steps';
-import StepsContent from '../common/steps/steps_content';
+import { Steps } from '../common/steps/steps';
+import { StepsContent } from '../common/steps/steps_content';
 
 function WelcomeWizardStepsController(props) {
   const stepsCount = getStepsCount();
@@ -78,7 +79,7 @@ function WelcomeWizardStepsController(props) {
   );
 
   const submitSender = useCallback(() => {
-    updateSettings(CreateSenderSettings(sender)).then(() => redirect(step));
+    updateSettings(createSenderSettings(sender)).then(() => redirect(step));
   }, [redirect, sender, step]);
 
   const skipSenderStep = useCallback(
@@ -86,7 +87,7 @@ function WelcomeWizardStepsController(props) {
       e.preventDefault();
       setLoading(true);
       updateSettings(
-        CreateSenderSettings({ address: window.admin_email, name: '' }),
+        createSenderSettings({ address: window.admin_email, name: '' }),
       ).then(() => {
         if (window.is_woocommerce_active) {
           redirect(stepsCount - 1);
@@ -182,4 +183,4 @@ WelcomeWizardStepsController.propTypes = {
   }).isRequired,
 };
 
-export default WelcomeWizardStepsController;
+export { WelcomeWizardStepsController };

@@ -1,11 +1,11 @@
-import TooltipComponent from 'help-tooltip.jsx';
+import { Tooltip } from 'help-tooltip.jsx';
 import { createElement } from 'react';
 import ReactDOM from 'react-dom';
 
 export const MailPoetHelpTooltip = {
   show: function show(domContainerNode, opts) {
     ReactDOM.render(
-      createElement(TooltipComponent, {
+      createElement(Tooltip, {
         tooltip: opts.tooltip,
         tooltipId: opts.tooltipId,
         place: opts.place,
@@ -15,4 +15,4 @@ export const MailPoetHelpTooltip = {
   },
 };
 
-export default TooltipComponent;
+export { Tooltip };

@@ -1,6 +1,6 @@
-import MailPoet from 'mailpoet';
-import Icon from './icon.jsx';
-import Edit from './edit.jsx';
+import { MailPoet } from 'mailpoet';
+import { Icon } from './icon.jsx';
+import { AddCustomField } from './edit.jsx';
 
 export const name = 'mailpoet-form/add-custom-field';
 
@@ -14,7 +14,7 @@ export const settings = {
     html: false,
     multiple: false,
   },
-  edit: Edit,
+  edit: AddCustomField,
   save() {
     return null;
   },

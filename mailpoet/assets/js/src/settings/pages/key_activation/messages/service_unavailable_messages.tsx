@@ -1,6 +1,6 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
-export default function ServiceUnavailableMessages() {
+export function ServiceUnavailableMessage() {
   return (
     <div className="mailpoet_error_item mailpoet_error">
       {MailPoet.I18n.t('premiumTabKeyCannotValidate')}

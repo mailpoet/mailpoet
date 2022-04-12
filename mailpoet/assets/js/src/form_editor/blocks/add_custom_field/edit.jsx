@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import { Placeholder, Spinner } from '@wordpress/components';
 import { BlockIcon } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
-import MailPoet from 'mailpoet';
 
-import icon from './icon.jsx';
-import AddCustomFieldForm from './add_custom_field_form.jsx';
+import { MailPoet } from 'mailpoet';
+import { Icon } from './icon.jsx';
+import { AddCustomFieldForm } from './add_custom_field_form.jsx';
 
 function AddCustomField({ clientId }) {
   const { createCustomField } = useDispatch('mailpoet-form-editor');
@@ -26,7 +26,7 @@ function AddCustomField({ clientId }) {
 
   return (
     <Placeholder
-      icon={<BlockIcon icon={icon} showColors />}
+      icon={<BlockIcon icon={Icon} showColors />}
       label={MailPoet.I18n.t('blockAddCustomFieldFormHeading')}
       className="mailpoet_custom_field_add_placeholder"
     >
@@ -46,4 +46,4 @@ AddCustomField.propTypes = {
   clientId: PropTypes.string.isRequired,
 };
 
-export default AddCustomField;
+export { AddCustomField };

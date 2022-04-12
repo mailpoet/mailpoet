@@ -1,5 +1,5 @@
-import App from 'newsletter_editor/App';
-import BaseBlock from 'newsletter_editor/blocks/base';
+import { App } from 'newsletter_editor/App';
+import { BaseBlock } from 'newsletter_editor/blocks/base';
 
 const Module = {};
 const base = BaseBlock;
@@ -54,4 +54,4 @@ App.on('before:start', function beforeAppStart(BeforeStartApp) {
   });
 });
 
-export default Module;
+export { Module };

@@ -1,7 +1,7 @@
-import MailPoet from 'mailpoet';
-import Button from 'common/button/button';
+import { MailPoet } from 'mailpoet';
+import { Button } from 'common/button/button';
 
-function YourPrivacy() {
+export function YourPrivacy() {
   return (
     <>
       <p>{MailPoet.I18n.t('yourPrivacyContent1')}</p>
@@ -18,5 +18,3 @@ function YourPrivacy() {
     </>
   );
 }
-
-export default YourPrivacy;

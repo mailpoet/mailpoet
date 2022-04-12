@@ -1,7 +1,7 @@
 import { select, dispatch } from '@wordpress/data';
 import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
-import blocksToFormBodyFactory from './blocks_to_form_body';
-import mapFormDataBeforeSaving from './map_form_data_before_saving';
+import { blocksToFormBodyFactory } from './blocks_to_form_body';
+import { mapFormDataBeforeSaving } from './map_form_data_before_saving';
 import { ToggleAction, ToggleBlockInserterAction } from './actions_types';
 import { BlockInsertionPoint } from './state_types';
 

@@ -1,4 +1,4 @@
-export default (
+export const yesIcon = (
   <svg width="13" height="11" viewBox="0 0 13 11">
     <path
       fill="currentColor"

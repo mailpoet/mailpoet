@@ -19,4 +19,4 @@ WelcomeWizardStepLayoutBody.propTypes = {
   ]).isRequired,
 };
 
-export default WelcomeWizardStepLayoutBody;
+export { WelcomeWizardStepLayoutBody };

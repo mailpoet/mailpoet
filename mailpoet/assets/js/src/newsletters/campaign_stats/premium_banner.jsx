@@ -1,6 +1,6 @@
-import MailPoet from 'mailpoet';
-import Button from 'common/button/button';
-import PremiumRequired from 'common/premium_required/premium_required';
+import { MailPoet } from 'mailpoet';
+import { Button } from 'common/button/button';
+import { PremiumRequired } from 'common/premium_required/premium_required';
 
 function SkipDisplayingDetailedStats() {
   const ctaButton = (
@@ -39,7 +39,7 @@ function SkipDisplayingDetailedStats() {
   );
 }
 
-function PremiumBanner() {
+export function PremiumBanner() {
   if (!window.mailpoet_display_detailed_stats) {
     return <SkipDisplayingDetailedStats />;
   }
@@ -77,5 +77,3 @@ function PremiumBanner() {
   }
   return null;
 }
-
-export default PremiumBanner;

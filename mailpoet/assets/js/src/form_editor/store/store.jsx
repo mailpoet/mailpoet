@@ -6,14 +6,14 @@ import '@wordpress/notices';
 import { registerStore } from '@wordpress/data';
 import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
 import * as actions from './actions';
-import createReducer from './reducer.jsx';
-import selectors from './selectors.jsx';
-import controls from './controls.jsx';
-import validateForm from './form_validator.jsx';
+import { createReducer } from './reducer.jsx';
+import { selectors } from './selectors.jsx';
+import { controls } from './controls.jsx';
+import { validateForm } from './form_validator.jsx';
 import { formBodyToBlocksFactory } from './form_body_to_blocks.jsx';
-import mapFormDataAfterLoading from './map_form_data_after_loading.jsx';
+import { mapFormDataAfterLoading } from './map_form_data_after_loading.jsx';
 
-export default () => {
+export const initStore = () => {
   const customFields = window.mailpoet_custom_fields.map((field) => ({
     ...field,
     params: field.params || {},

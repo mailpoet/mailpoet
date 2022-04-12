@@ -5,14 +5,14 @@
  * block settings view.
  */
 import Backbone from 'backbone';
-import Radio from 'backbone.radio';
+import { Radio } from 'backbone.radio';
 import _ from 'underscore';
 import jQuery from 'jquery';
-import MailPoet from 'mailpoet';
-import App from 'newsletter_editor/App';
-import CommunicationComponent from 'newsletter_editor/components/communication';
-import BaseBlock from 'newsletter_editor/blocks/base';
-import DividerBlock from 'newsletter_editor/blocks/divider';
+import { MailPoet } from 'mailpoet';
+import { App } from 'newsletter_editor/App';
+import { CommunicationComponent } from 'newsletter_editor/components/communication';
+import { BaseBlock } from 'newsletter_editor/blocks/base';
+import { DividerBlock } from 'newsletter_editor/blocks/divider';
 import 'select2';
 
 var Module = {};
@@ -318,4 +318,4 @@ App.on('before:start', function beforeStartApp(BeforeStartApp, options) {
   });
 });
 
-export default Module;
+export { Module as AbandonedCartBlock };

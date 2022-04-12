@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import MailPoet from 'mailpoet';
-import Button from 'common/button/button';
+import { MailPoet } from 'mailpoet';
+import { Button } from 'common/button/button';
 import { Grid } from 'common/grid';
-import Heading from 'common/typography/heading/heading';
-import List from 'common/typography/list/list';
-import YesNo from 'common/form/yesno/yesno';
+import { Heading } from 'common/typography/heading/heading';
+import { List } from 'common/typography/list/list';
+import { YesNo } from 'common/form/yesno/yesno';
 
 function WelcomeWizardUsageTrackingStep({ loading, submitForm }) {
   const [state, setState] = useState({
@@ -154,4 +154,4 @@ WelcomeWizardUsageTrackingStep.propTypes = {
   submitForm: PropTypes.func.isRequired,
 };
 
-export default WelcomeWizardUsageTrackingStep;
+export { WelcomeWizardUsageTrackingStep };

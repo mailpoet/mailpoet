@@ -139,4 +139,4 @@ Preview.propTypes = {
   onReorder: PropTypes.func.isRequired,
 };
 
-export default Preview;
+export { Preview };

@@ -1,6 +1,6 @@
 import { useSelector } from 'settings/store/hooks';
 import { onChange, t } from 'common/functions';
-import Select from 'common/form/select/select';
+import { Select } from 'common/form/select/select';
 
 type Props = {
   id?: string;
@@ -16,7 +16,7 @@ type Props = {
     | 're_engagement';
 };
 
-export default function PageSelect(props: Props) {
+export function PageSelect(props: Props) {
   const pages = useSelector('getPages')();
   let selectedPage = pages.find((x) => x.id === parseInt(props.value, 10));
   if (!selectedPage) selectedPage = pages[0];

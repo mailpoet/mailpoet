@@ -1,10 +1,11 @@
 import { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelect } from '@wordpress/data';
-import ParagraphEdit from './paragraph_edit.jsx';
-import formatLabel from './label_formatter.jsx';
+
+import { ParagraphEdit } from './paragraph_edit.jsx';
+import { formatLabel } from './label_formatter.jsx';
 import { inputStylesPropTypes } from './input_styles_settings.jsx';
-import convertAlignmentToMargin from './convert_alignment_to_margin';
+import { convertAlignmentToMargin } from './convert_alignment_to_margin';
 
 function TextInputEdit({
   label,
@@ -127,4 +128,4 @@ TextInputEdit.defaultProps = {
   className: '',
 };
 
-export default TextInputEdit;
+export { TextInputEdit };

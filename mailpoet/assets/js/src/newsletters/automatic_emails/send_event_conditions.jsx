@@ -1,8 +1,8 @@
 import { Component } from 'react';
-import Heading from 'common/typography/heading/heading';
-import Selection from 'form/fields/selection.jsx';
-import EventScheduling from 'newsletters/automatic_emails/events/event_scheduling.jsx';
-import EventOptions from 'newsletters/automatic_emails/events/event_options';
+import { Heading } from 'common/typography/heading/heading';
+import { Selection } from 'form/fields/selection.jsx';
+import { EventScheduling } from 'newsletters/automatic_emails/events/event_scheduling.jsx';
+import { EventOptions } from 'newsletters/automatic_emails/events/event_options';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
 
@@ -197,4 +197,4 @@ SendEventConditions.defaultProps = {
   onValueChange: null,
 };
 
-export default SendEventConditions;
+export { SendEventConditions };

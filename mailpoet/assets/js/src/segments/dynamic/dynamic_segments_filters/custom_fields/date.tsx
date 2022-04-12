@@ -3,10 +3,10 @@ import { assign, range } from 'lodash/fp';
 import { format, getYear, isValid, parseISO } from 'date-fns';
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import MailPoet from 'mailpoet';
-import Select from 'common/form/select/select';
+import { MailPoet } from 'mailpoet';
+import { Select } from 'common/form/select/select';
 import { Grid } from 'common/grid';
-import Datepicker from 'common/datepicker/datepicker';
+import { Datepicker } from 'common/datepicker/datepicker';
 
 import { WordpressRoleFormItem, OnFilterChange } from '../../types';
 

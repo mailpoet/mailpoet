@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
-import Radio from 'common/form/radio/radio';
-import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
+import { MailPoet } from 'mailpoet';
+import { Radio } from 'common/form/radio/radio';
+import { PreviousNextStepButtons } from '../previous_next_step_buttons.jsx';
 
 function InitialQuestion({ onSubmit, history }) {
   const [importSource, setImportSource] = useState(undefined);
@@ -58,4 +58,4 @@ InitialQuestion.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
 
-export default InitialQuestion;
+export { InitialQuestion };

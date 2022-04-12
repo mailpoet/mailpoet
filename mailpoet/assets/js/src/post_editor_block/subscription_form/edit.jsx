@@ -1,6 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope */
 import PropTypes from 'prop-types';
-import Icon from './icon.jsx';
+import { Icon } from './icon.jsx';
 
 const wp = window.wp;
 const { Placeholder, PanelBody } = wp.components;
@@ -92,4 +92,4 @@ Edit.propTypes = {
   setAttributes: PropTypes.func.isRequired,
 };
 
-export default Edit;
+export { Edit };

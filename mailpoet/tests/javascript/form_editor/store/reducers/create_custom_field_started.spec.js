@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import reducerFactory from '../../../../../assets/js/src/form_editor/store/reducers/create_custom_field_started.jsx';
+import { createCustomFieldStartedFactory } from '../../../../../assets/js/src/form_editor/store/reducers/create_custom_field_started.jsx';
 
 const MailPoetStub = {
   I18n: {
     t: () => 'Error [name]!',
   },
 };
-const reducer = reducerFactory(MailPoetStub);
+const reducer = createCustomFieldStartedFactory(MailPoetStub);
 
 const dummyCustomField = {
   name: 'My custom field',

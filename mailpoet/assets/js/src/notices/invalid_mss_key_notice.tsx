@@ -1,5 +1,5 @@
-import Notice from 'notices/notice';
-import MailPoet from 'mailpoet';
+import { Notice } from 'notices/notice';
+import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 
 type Props = {
@@ -7,7 +7,10 @@ type Props = {
   subscribersCount: number;
 };
 
-function InvalidMssKeyNotice({ mssKeyInvalid, subscribersCount }: Props) {
+export function InvalidMssKeyNotice({
+  mssKeyInvalid,
+  subscribersCount,
+}: Props) {
   if (!mssKeyInvalid) return null;
   return (
     <Notice type="error" timeout={false} closable={false} renderInPlace>
@@ -36,5 +39,3 @@ function InvalidMssKeyNotice({ mssKeyInvalid, subscribersCount }: Props) {
     </Notice>
   );
 }
-
-export default InvalidMssKeyNotice;

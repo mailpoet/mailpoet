@@ -1,7 +1,7 @@
-import MailPoet from 'mailpoet';
-import Button from 'common/button/button';
+import { MailPoet } from 'mailpoet';
+import { Button } from 'common/button/button';
 
-function KnowledgeBase() {
+export function KnowledgeBase() {
   return (
     <>
       <p>{MailPoet.I18n.t('knowledgeBaseIntro')}</p>
@@ -89,5 +89,3 @@ function KnowledgeBase() {
     </>
   );
 }
-
-export default KnowledgeBase;

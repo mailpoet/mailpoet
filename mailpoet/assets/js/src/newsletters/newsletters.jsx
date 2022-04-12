@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import ReactDOM from 'react-dom';
 import {
   HashRouter,
@@ -6,39 +7,38 @@ import {
   Redirect,
   useParams,
 } from 'react-router-dom';
-import MailPoet from 'mailpoet';
-import _ from 'underscore';
-
-import NewsletterTypes from 'newsletters/types';
-import NewsletterTemplates from 'newsletters/templates.jsx';
-import NewsletterSend from 'newsletters/send.jsx';
-import NewsletterCongratulate from 'newsletters/send/congratulate/congratulate.jsx';
-import NewsletterTypeStandard from 'newsletters/types/standard.jsx';
-import NewsletterTypeNotification from 'newsletters/types/notification/notification.jsx';
-import NewsletterTypeWelcome from 'newsletters/types/welcome/welcome.jsx';
-import { NewsletterTypeReEngagement } from 'newsletters/types/re_engagement/re_engagement';
-import AutomaticEmailEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
-import EventsConditions from 'newsletters/automatic_emails/events_conditions.jsx';
-import NewsletterListStandard from 'newsletters/listings/standard.jsx';
-import NewsletterListWelcome from 'newsletters/listings/welcome.jsx';
-import NewsletterListNotification from 'newsletters/listings/notification.jsx';
-import NewsletterListReEngagement from 'newsletters/listings/re_engagement.jsx';
-import NewsletterListNotificationHistory from 'newsletters/listings/notification_history.jsx';
-import NewsletterSendingStatus from 'newsletters/sending_status.jsx';
-import Listings from 'newsletters/automatic_emails/listings.jsx';
-import CampaignStatsPage from 'newsletters/campaign_stats/page';
-import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
-import Notices from 'notices/notices.jsx';
-import RoutedTabs from 'common/tabs/routed_tabs';
-import Tab from 'common/tabs/tab';
-import withNpsPoll from 'nps_poll.jsx';
-import ListingHeading from 'newsletters/listings/heading.jsx';
-import ListingHeadingDisplay from 'newsletters/listings/heading_display.jsx';
-import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
-import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
-import TransactionalEmailsProposeOptInNotice from 'notices/transactional_emails_propose_opt_in_notice';
 import PropTypes from 'prop-types';
-import EmailVolumeLimitNotice from 'notices/email_volume_limit_notice';
+
+import { Listings } from 'newsletters/automatic_emails/listings.jsx';
+import { MailPoet } from 'mailpoet';
+import { NewsletterTypes } from 'newsletters/types';
+import { NewsletterTemplates } from 'newsletters/templates.jsx';
+import { NewsletterSend } from 'newsletters/send.jsx';
+import { Congratulate } from 'newsletters/send/congratulate/congratulate.jsx';
+import { NewsletterTypeStandard } from 'newsletters/types/standard.jsx';
+import { NewsletterNotification } from 'newsletters/types/notification/notification.jsx';
+import { NewsletterWelcome } from 'newsletters/types/welcome/welcome.jsx';
+import { NewsletterTypeReEngagement } from 'newsletters/types/re_engagement/re_engagement';
+import { AutomaticEmailEventsList } from 'newsletters/types/automatic_emails/events_list.jsx';
+import { EventsConditions } from 'newsletters/automatic_emails/events_conditions.jsx';
+import { NewsletterListStandard } from 'newsletters/listings/standard.jsx';
+import { NewsletterListWelcome } from 'newsletters/listings/welcome.jsx';
+import { NewsletterListNotification } from 'newsletters/listings/notification.jsx';
+import { NewsletterListReEngagement } from 'newsletters/listings/re_engagement.jsx';
+import { NewsletterListNotificationHistory } from 'newsletters/listings/notification_history.jsx';
+import { SendingStatus } from 'newsletters/sending_status.jsx';
+import { CampaignStatsPage } from 'newsletters/campaign_stats/page';
+import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
+import { Notices } from 'notices/notices.jsx';
+import { RoutedTabs } from 'common/tabs/routed_tabs';
+import { Tab } from 'common/tabs/tab';
+import { withNpsPoll } from 'nps_poll.jsx';
+import { ListingHeading } from 'newsletters/listings/heading.jsx';
+import { ListingHeadingDisplay } from 'newsletters/listings/heading_display.jsx';
+import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice.jsx';
+import { InvalidMssKeyNotice } from 'notices/invalid_mss_key_notice';
+import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional_emails_propose_opt_in_notice';
+import { EmailVolumeLimitNotice } from 'notices/email_volume_limit_notice';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
@@ -184,11 +184,11 @@ const routes = [
   },
   {
     path: '/new/notification',
-    component: NewsletterTypeNotification,
+    component: NewsletterNotification,
   },
   {
     path: '/new/welcome',
-    component: NewsletterTypeWelcome,
+    component: NewsletterWelcome,
   },
   {
     path: '/new/re-engagement',
@@ -208,7 +208,7 @@ const routes = [
   /* congratulate */
   {
     path: '/send/congratulate/:id',
-    component: NewsletterCongratulate,
+    component: Congratulate,
   },
   /* Sending options */
   {
@@ -217,7 +217,7 @@ const routes = [
   },
   {
     path: '/sending-status/:id/(.*)?',
-    component: NewsletterSendingStatus,
+    component: SendingStatus,
   },
   {
     path: '/stats/:id/(.*)?',

@@ -1,6 +1,6 @@
 import { MediaUpload } from '@wordpress/block-editor';
-import MailPoet from 'mailpoet';
-import { Button, BaseControl, SelectControl } from '@wordpress/components';
+import { MailPoet } from 'mailpoet';
+import { BaseControl, Button, SelectControl } from '@wordpress/components';
 
 type Props = {
   name: string;
@@ -10,7 +10,7 @@ type Props = {
   onImageDisplayChange: (value: string) => void;
 };
 
-function ImageSettings({
+export function ImageSettings({
   name,
   imageUrl,
   onImageUrlChange,
@@ -62,4 +62,3 @@ function ImageSettings({
     </div>
   );
 }
-export default ImageSettings;

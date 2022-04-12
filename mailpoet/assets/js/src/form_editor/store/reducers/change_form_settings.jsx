@@ -1,6 +1,6 @@
-import validateForm from '../form_validator.jsx';
+import { validateForm } from '../form_validator.jsx';
 
-export default (state, action) => {
+export const changeFormSettings = (state, action) => {
   const newState = {
     ...state,
     formData: {

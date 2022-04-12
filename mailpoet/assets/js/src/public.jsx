@@ -1,8 +1,8 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import jQuery from 'jquery';
 import Cookies from 'js-cookie';
 import Parsley from 'parsleyjs';
-import Hooks from 'wp-js-hooks';
+import { Hooks } from 'wp-js-hooks';
 
 const exitIntentEvent = 'mouseleave.mailpoet.form-exit-intent';
 
@@ -62,6 +62,7 @@ jQuery(($) => {
       form.removeClass('mailpoet_form_tight_container');
     }
   }
+
   /**
    * @param  {object} form jQuery object of MailPoet form
    * @return {string} The name of the cookie for the form

@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, TextControl, ToggleControl } from '@wordpress/components';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
 import { reduce, isEmpty, isEqualWith } from 'lodash';
 
-import SettingsPreview from './settings_preview.jsx';
-import CustomFieldDelete from '../custom_field_delete.jsx';
+import { MailPoet } from 'mailpoet';
+import { CustomFieldDelete } from '../custom_field_delete.jsx';
+import { Preview } from './settings_preview.jsx';
 
 function CustomFieldSettings({
   label,
@@ -80,7 +80,7 @@ function CustomFieldSettings({
         checked={localMandatory}
         onChange={setLocalMandatory}
       />
-      <SettingsPreview
+      <Preview
         remove={remove}
         update={update}
         values={localValues}
@@ -161,4 +161,4 @@ CustomFieldSettings.defaultProps = {
   useDragAndDrop: true,
 };
 
-export default CustomFieldSettings;
+export { CustomFieldSettings };

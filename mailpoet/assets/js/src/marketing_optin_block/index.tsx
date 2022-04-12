@@ -13,7 +13,7 @@ import {
  * Internal dependencies
  */
 import { Edit, Save } from './edit';
-import attributes from './attributes';
+import { marketingOptinAttributes } from './attributes';
 import metadata from './block.json';
 
 const categories = getCategories();
@@ -26,7 +26,7 @@ registerBlockType(metadata, {
   },
   attributes: {
     ...metadata.attributes,
-    ...attributes,
+    ...marketingOptinAttributes,
   },
   edit: Edit,
   save: Save,

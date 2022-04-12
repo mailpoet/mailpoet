@@ -1,9 +1,9 @@
 import { Component } from 'react';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
-import Select from 'common/form/select/select';
+import { Select } from 'common/form/select/select';
 
-class FormFieldSelect extends Component {
+export class FormFieldSelect extends Component {
   render() {
     if (this.props.field.values === undefined) {
       return false;
@@ -92,5 +92,3 @@ FormFieldSelect.defaultProps = {
     // no-op
   },
 };
-
-export default FormFieldSelect;

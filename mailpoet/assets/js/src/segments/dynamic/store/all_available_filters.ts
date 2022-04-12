@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 import { GroupFilterValue } from '../types';
 import { EmailSegmentOptions } from '../dynamic_segments_filters/email';

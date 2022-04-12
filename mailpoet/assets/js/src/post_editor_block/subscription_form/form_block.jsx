@@ -1,5 +1,5 @@
-import Icon from './icon.jsx';
-import Edit from './edit.jsx';
+import { Icon } from './icon.jsx';
+import { Edit } from './edit.jsx';
 
 const wp = window.wp;
 const { registerBlockType } = wp.blocks;

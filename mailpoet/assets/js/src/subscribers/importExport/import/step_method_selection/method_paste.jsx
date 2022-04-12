@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
-import Textarea from 'common/form/textarea/textarea';
-import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
+import { Textarea } from 'common/form/textarea/textarea';
+import { PreviousNextStepButtons } from '../previous_next_step_buttons.jsx';
 
 const kbLink =
   'https://kb.mailpoet.com/article/126-importing-subscribers-with-csv-files';
@@ -71,4 +71,4 @@ MethodPaste.defaultProps = {
   data: '',
 };
 
-export default MethodPaste;
+export { MethodPaste };

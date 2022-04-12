@@ -33,4 +33,4 @@ KeyValueTable.defaultProps = {
   max_width: 'auto',
 };
 
-export default KeyValueTable;
+export { KeyValueTable };

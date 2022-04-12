@@ -1,4 +1,3 @@
-import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
 import { InspectorControls } from '@wordpress/block-editor';
 import {
@@ -10,7 +9,8 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 
-import Preview from './settings_preview.jsx';
+import { MailPoet } from 'mailpoet';
+import { Preview } from './settings_preview.jsx';
 
 const findSegment = (segments, segmentId) =>
   segments.find((s) => s.id === segmentId);
@@ -116,4 +116,4 @@ SegmentSelectSettings.propTypes = {
   ).isRequired,
 };
 
-export default SegmentSelectSettings;
+export { SegmentSelectSettings };

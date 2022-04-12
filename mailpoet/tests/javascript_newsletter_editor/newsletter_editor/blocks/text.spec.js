@@ -1,5 +1,5 @@
-import EditorApplication from 'newsletter_editor/App';
-import TextBlock from 'newsletter_editor/blocks/text';
+import { App } from 'newsletter_editor/App';
+import { TextBlock } from 'newsletter_editor/blocks/text';
 
 const expect = global.expect;
 const sinon = global.sinon;
@@ -9,8 +9,8 @@ describe('Text', function () {
     var model;
     var sandbox;
     beforeEach(function () {
-      global.stubChannel(EditorApplication);
-      global.stubConfig(EditorApplication);
+      global.stubChannel(App);
+      global.stubConfig(App);
       model = new TextBlock.TextBlockModel();
       sandbox = sinon.createSandbox();
     });
@@ -28,7 +28,7 @@ describe('Text', function () {
     });
 
     it('uses defaults from config when they are set', function () {
-      global.stubConfig(EditorApplication, {
+      global.stubConfig(App, {
         blockDefaults: {
           text: {
             text: 'some custom config text',
@@ -41,7 +41,7 @@ describe('Text', function () {
     });
 
     it('do not update blockDefaults.text when changed', function () {
-      var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+      var stub = sandbox.stub(App.getConfig(), 'set');
       model.trigger('change');
       expect(stub.callCount).to.equal(0);
     });
@@ -50,7 +50,7 @@ describe('Text', function () {
   describe('block view', function () {
     var model;
     var view;
-    global.stubConfig(EditorApplication);
+    global.stubConfig(App);
     model = new TextBlock.TextBlockModel();
     view = new TextBlock.TextBlockView({ model: model });
 
@@ -63,7 +63,7 @@ describe('Text', function () {
       model = new TextBlock.TextBlockModel();
 
       beforeEach(function () {
-        global.stubConfig(EditorApplication);
+        global.stubConfig(App);
         view = new TextBlock.TextBlockView({ model: model });
         view.render();
       });

@@ -1,5 +1,5 @@
-import Heading from 'common/typography/heading/heading';
-import Tag from '../tag';
+import { Heading } from 'common/typography/heading/heading';
+import { Tag } from '../tag';
 
 export default {
   title: 'Tag',

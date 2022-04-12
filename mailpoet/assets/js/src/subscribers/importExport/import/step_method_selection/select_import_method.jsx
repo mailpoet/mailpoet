@@ -1,7 +1,7 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
-import Radio from 'common/form/radio/radio';
-import Tag from 'common/tag/tag';
+import { Radio } from 'common/form/radio/radio';
+import { Tag } from 'common/tag/tag';
 
 function SelectImportMethod({ activeMethod, onMethodChange }) {
   return (
@@ -79,4 +79,4 @@ SelectImportMethod.defaultProps = {
   activeMethod: undefined,
 };
 
-export default SelectImportMethod;
+export { SelectImportMethod };

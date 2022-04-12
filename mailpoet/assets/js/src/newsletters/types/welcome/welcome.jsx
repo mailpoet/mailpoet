@@ -1,14 +1,14 @@
 import { Component } from 'react';
 import _ from 'underscore';
-import MailPoet from 'mailpoet';
-import PropTypes from 'prop-types';
-import Background from 'common/background/background';
-import Button from 'common/button/button';
-import Heading from 'common/typography/heading/heading';
-import { Grid } from 'common/grid';
-import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
 import jQuery from 'jquery';
-import WelcomeScheduling from './scheduling.jsx';
+import PropTypes from 'prop-types';
+import { Background } from 'common/background/background';
+import { Button } from 'common/button/button';
+import { Heading } from 'common/typography/heading/heading';
+import { Grid } from 'common/grid';
+import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
+import { MailPoet } from 'mailpoet';
+import { WelcomeScheduling } from './scheduling.jsx';
 
 const field = {
   name: 'options',
@@ -123,4 +123,4 @@ NewsletterWelcome.propTypes = {
   }).isRequired,
 };
 
-export default NewsletterWelcome;
+export { NewsletterWelcome };

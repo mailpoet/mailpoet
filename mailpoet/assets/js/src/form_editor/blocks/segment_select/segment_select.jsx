@@ -1,13 +1,13 @@
-import MailPoet from 'mailpoet';
-import icon from './icon.jsx';
-import edit from './edit.jsx';
+import { MailPoet } from 'mailpoet';
+import { Icon } from './icon.jsx';
+import { SegmentSelectEdit } from './edit.jsx';
 
 export const name = 'mailpoet-form/segment-select';
 
 export const settings = {
   title: MailPoet.I18n.t('blockSegmentSelect'),
   description: MailPoet.I18n.t('blockLastNameDescription'),
-  icon,
+  icon: Icon,
   category: 'fields',
   attributes: {
     label: {
@@ -23,7 +23,7 @@ export const settings = {
     html: false,
     multiple: false,
   },
-  edit,
+  edit: SegmentSelectEdit,
   save() {
     return null;
   },

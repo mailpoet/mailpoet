@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import Checkbox from 'common/form/checkbox/checkbox';
+import { Checkbox } from 'common/form/checkbox/checkbox';
 
 class FormFieldCheckbox extends Component {
   constructor(props) {
@@ -47,4 +47,4 @@ FormFieldCheckbox.propTypes = {
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 
-export default FormFieldCheckbox;
+export { FormFieldCheckbox };

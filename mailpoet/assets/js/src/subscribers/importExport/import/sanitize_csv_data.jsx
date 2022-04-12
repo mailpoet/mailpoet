@@ -41,7 +41,7 @@ const detectAndCleanupEmail = (emailString) => {
   return email;
 };
 
-function sanitizeCSVData(csvData) {
+export function sanitizeCSVData(csvData) {
   let processedSubscribers = [];
   const parsedEmails = [];
   const duplicateEmails = [];
@@ -131,5 +131,3 @@ function sanitizeCSVData(csvData) {
   }
   return null;
 }
-
-export default sanitizeCSVData;

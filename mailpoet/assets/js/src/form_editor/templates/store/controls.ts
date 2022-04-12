@@ -1,7 +1,4 @@
-import CALL_API from 'common/controls/call_api';
-import TRACK_EVENT from 'common/controls/track_event';
+import { callApi as CALL_API } from 'common/controls/call_api';
+import { trackEvent as TRACK_EVENT } from 'common/controls/track_event';
 
-export default {
-  CALL_API,
-  TRACK_EVENT,
-};
+export { CALL_API, TRACK_EVENT };

@@ -1,5 +1,5 @@
-import FeaturesController from './features_controller';
-import MailPoetComUrlFactory from './mailpoet_com_url_factory';
+import { FeaturesController } from './features_controller';
+import { MailPoetComUrlFactory } from './mailpoet_com_url_factory';
 import { MailPoetI18n } from './i18n';
 import { MailPoetDate } from './date';
 import { MailPoetAjax } from './ajax';
@@ -67,5 +67,3 @@ declare global {
 
 // Expose MailPoet globally
 window.MailPoet = MailPoet;
-
-export default MailPoet;

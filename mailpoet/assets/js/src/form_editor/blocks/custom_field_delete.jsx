@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Button } from '@wordpress/components';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 function CustomFieldDelete({ isBusy, onDelete }) {
   const displayConfirm = useCallback(() => {
@@ -34,4 +34,4 @@ CustomFieldDelete.defaultProps = {
   onDelete: () => {},
 };
 
-export default CustomFieldDelete;
+export { CustomFieldDelete };

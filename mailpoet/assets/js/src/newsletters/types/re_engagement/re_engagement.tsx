@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { __, assoc, compose } from 'lodash/fp';
 import { useHistory } from 'react-router-dom';
 
-import MailPoet from 'mailpoet';
-import Background from 'common/background/background';
+import { MailPoet } from 'mailpoet';
+import { Background } from 'common/background/background';
 import { Grid } from 'common/grid';
-import Button from 'common/button/button';
-import APIErrorsNotice from 'notices/api_errors_notice';
+import { Button } from 'common/button/button';
+import { APIErrorsNotice } from 'notices/api_errors_notice';
 
 import { Scheduling } from './scheduling';
-import ListingHeadingStepsRoute from '../../listings/heading_steps_route';
+import { ListingHeadingStepsRoute } from '../../listings/heading_steps_route';
 
 export function NewsletterTypeReEngagement(): JSX.Element {
   let defaultAfterTime = '';

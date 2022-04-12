@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 export function* recalculateSubscribersScore(): Generator<{
   type: string;

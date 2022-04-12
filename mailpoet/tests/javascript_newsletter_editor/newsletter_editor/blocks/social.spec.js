@@ -1,6 +1,6 @@
-import EditorApplication from 'newsletter_editor/App';
-import SocialBlock from 'newsletter_editor/blocks/social';
 import Backbone from 'backbone';
+import { App } from 'newsletter_editor/App';
+import { SocialBlock } from 'newsletter_editor/blocks/social';
 
 const expect = global.expect;
 const sinon = global.sinon;
@@ -11,8 +11,8 @@ describe('Social', function () {
     var sandbox;
 
     beforeEach(function () {
-      global.stubChannel(EditorApplication);
-      global.stubConfig(EditorApplication);
+      global.stubChannel(App);
+      global.stubConfig(App);
       model = new SocialBlock.SocialBlockModel();
       sandbox = sinon.createSandbox();
     });
@@ -34,7 +34,7 @@ describe('Social', function () {
     });
 
     it('uses defaults from config when they are set', function () {
-      global.stubConfig(EditorApplication, {
+      global.stubConfig(App, {
         blockDefaults: {
           social: {
             iconSet: 'customConfigIconSet',
@@ -47,7 +47,7 @@ describe('Social', function () {
     });
 
     it('updates blockDefaults.social when changed', function () {
-      var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+      var stub = sandbox.stub(App.getConfig(), 'set');
       model.trigger('change');
       expect(stub.callCount).to.equal(1);
       expect(stub.getCall(0).args[0]).to.equal('blockDefaults.social');
@@ -55,7 +55,7 @@ describe('Social', function () {
     });
 
     it('updates blockDefaults.social when icons changed', function () {
-      var stub = sandbox.stub(EditorApplication.getConfig(), 'set');
+      var stub = sandbox.stub(App.getConfig(), 'set');
       model.get('icons').trigger('change');
       expect(stub.callCount).to.equal(1);
       expect(stub.getCall(0).args[0]).to.equal('blockDefaults.social');
@@ -66,11 +66,11 @@ describe('Social', function () {
   describe('icon model', function () {
     var model;
     before(function () {
-      global.stubChannel(EditorApplication);
-      global.stubAvailableStyles(EditorApplication, {
+      global.stubChannel(App);
+      global.stubAvailableStyles(App, {
         'socialIconSets.default.custom': 'someimage.jpg',
       });
-      global.stubConfig(EditorApplication, {
+      global.stubConfig(App, {
         socialIcons: {
           custom: {
             defaultLink: 'http://example.org',
@@ -111,8 +111,8 @@ describe('Social', function () {
     var model;
 
     beforeEach(function () {
-      global.stubChannel(EditorApplication);
-      global.stubAvailableStyles(EditorApplication, {
+      global.stubChannel(App);
+      global.stubAvailableStyles(App, {
         socialIconSets: {
           default: {
             custom: 'http://www.sott.net/images/icons/big_x.png',
@@ -155,7 +155,7 @@ describe('Social', function () {
       var view;
 
       before(function () {
-        global.stubChannel(EditorApplication);
+        global.stubChannel(App);
         model = new SocialBlock.SocialBlockModel({
           type: 'social',
           iconSet: 'default',
@@ -217,8 +217,8 @@ describe('Social', function () {
     var model;
 
     beforeEach(function () {
-      global.stubChannel(EditorApplication);
-      global.stubAvailableStyles(EditorApplication, {
+      global.stubChannel(App);
+      global.stubAvailableStyles(App, {
         socialIconSets: {
           default: {
             custom: 'someimage.png',
@@ -261,8 +261,8 @@ describe('Social', function () {
     describe('once rendered', function () {
       var view;
       beforeEach(function () {
-        global.stubChannel(EditorApplication);
-        global.stubAvailableStyles(EditorApplication, {
+        global.stubChannel(App);
+        global.stubAvailableStyles(App, {
           socialIconSets: {
             default: {
               custom: 'http://www.sott.net/images/icons/big_x.png',
@@ -307,9 +307,7 @@ describe('Social', function () {
       it('updates icons in settings if iconset changes', function () {
         view.$('.mailpoet_social_icon_set').last().trigger('click');
         expect(view.$('.mailpoet_social_icon_field_image').val()).to.equal(
-          EditorApplication.getAvailableStyles().get(
-            'socialIconSets.light.custom',
-          ),
+          App.getAvailableStyles().get('socialIconSets.light.custom'),
         );
       });
 

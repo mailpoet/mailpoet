@@ -1,16 +1,16 @@
-import { Fragment, ComponentType, useState } from 'react';
-import MailPoet from 'mailpoet';
-import Hooks from 'wp-js-hooks';
+import { ComponentType, Fragment, useState } from 'react';
+import { MailPoet } from 'mailpoet';
+import { Hooks } from 'wp-js-hooks';
 import _ from 'underscore';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-import AutomaticEmailEventsList from 'newsletters/types/automatic_emails/events_list.jsx';
-import AutomaticEmailEventGroupLogos from 'newsletters/types/automatic_emails/event_group_logos.jsx';
-import Button from 'common/button/button';
-import Heading from 'common/typography/heading/heading';
-import ModalCloseIcon from 'common/modal/close_icon';
-import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
-import APIErrorsNotice from '../notices/api_errors_notice';
+import { AutomaticEmailEventsList } from 'newsletters/types/automatic_emails/events_list.jsx';
+import { AutomaticEmailEventGroupLogos } from 'newsletters/types/automatic_emails/event_group_logos.jsx';
+import { Button } from 'common/button/button';
+import { Heading } from 'common/typography/heading/heading';
+import { modalCloseIcon } from 'common/modal/close_icon';
+import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
+import { APIErrorsNotice } from '../notices/api_errors_notice';
 import { isErrorResponse } from '../ajax';
 
 interface Props {
@@ -29,7 +29,7 @@ interface NewsletterTypesWindow extends Window {
 
 declare let window: NewsletterTypesWindow;
 
-function NewsletterTypes({
+function NewsletterTypesComponent({
   filter,
   history,
   hideClosingButton = false,
@@ -347,7 +347,7 @@ function NewsletterTypes({
               onClick={(): void => history.push('/')}
               className="mailpoet-modal-close"
             >
-              {ModalCloseIcon}
+              {modalCloseIcon}
             </button>
           </div>
         )}
@@ -362,12 +362,12 @@ function NewsletterTypes({
   );
 }
 
-NewsletterTypes.defaultProps = {
+NewsletterTypesComponent.defaultProps = {
   filter: null,
   hideScreenOptions: true,
   hideClosingButton: false,
 };
 
-export default withRouter(
-  NewsletterTypes as ComponentType<RouteComponentProps>,
+export const NewsletterTypes = withRouter(
+  NewsletterTypesComponent as ComponentType<RouteComponentProps>,
 );

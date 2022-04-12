@@ -1,4 +1,4 @@
 import { createContext } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
-export default createContext(MailPoet.FeaturesController);
+export const AppContext = createContext(MailPoet.FeaturesController);

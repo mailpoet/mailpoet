@@ -1,22 +1,22 @@
+import classnames from 'classnames';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
-import classNames from 'classnames';
 import { Link, withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
-import Toggle from 'common/form/toggle/toggle';
-import Tags from 'common/tag/tags';
+import { Toggle } from 'common/form/toggle/toggle';
+import { Tags } from 'common/tag/tags';
 import { ScheduledIcon } from 'common/listings/newsletter_status';
-import Listing from 'listing/listing.jsx';
-import Statistics from 'newsletters/listings/statistics.jsx';
+import { Listing } from 'listing/listing.jsx';
+import { MailPoet } from 'mailpoet';
+import { Statistics } from 'newsletters/listings/statistics.jsx';
 import {
   addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
   confirmEdit,
 } from 'newsletters/listings/utils.jsx';
-import NewsletterTypes from 'newsletters/types';
+import { NewsletterTypes } from 'newsletters/types';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -161,7 +161,7 @@ let newsletterActions = [
 ];
 newsletterActions = addStatsCTAAction(newsletterActions);
 
-class NewsletterListReEngagement extends Component {
+class NewsletterListReEngagementComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -277,7 +277,7 @@ class NewsletterListReEngagement extends Component {
   };
 
   renderItem = (newsletter, actions) => {
-    const rowClasses = classNames(
+    const rowClasses = classnames(
       'manage-column',
       'column-primary',
       'has-row-actions',
@@ -373,11 +373,13 @@ class NewsletterListReEngagement extends Component {
   }
 }
 
-NewsletterListReEngagement.propTypes = {
+NewsletterListReEngagementComponent.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   match: PropTypes.shape({
     params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   }).isRequired,
 };
 
-export default withRouter(NewsletterListReEngagement);
+export const NewsletterListReEngagement = withRouter(
+  NewsletterListReEngagementComponent,
+);

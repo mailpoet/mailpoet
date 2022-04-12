@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
-import Button from '../../common/button/button';
-import Heading from '../../common/typography/heading/heading';
+import { MailPoet } from 'mailpoet';
+import { Button } from '../../common';
+import { Heading } from '../../common/typography/heading/heading';
 
 function WelcomeWizardMigratedUserStep(props) {
   return (
@@ -26,4 +26,4 @@ WelcomeWizardMigratedUserStep.propTypes = {
   next: PropTypes.func.isRequired,
 };
 
-export default WelcomeWizardMigratedUserStep;
+export { WelcomeWizardMigratedUserStep };

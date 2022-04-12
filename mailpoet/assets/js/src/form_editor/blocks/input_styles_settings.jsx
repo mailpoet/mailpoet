@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import {
   Button,
   Panel,
@@ -11,7 +11,7 @@ import { useDispatch } from '@wordpress/data';
 import { partial } from 'lodash';
 import PropTypes from 'prop-types';
 
-import ColorSettings from 'form_editor/components/color_settings';
+import { ColorSettings } from 'form_editor/components/color_settings';
 
 function InputStylesSettings({ styles, onChange }) {
   const localStylesRef = useRef(styles);

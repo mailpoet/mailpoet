@@ -1,4 +1,4 @@
-export default (state, action) => ({
+export const changeFormName = (state, action) => ({
   ...state,
   formData: {
     ...state.formData,

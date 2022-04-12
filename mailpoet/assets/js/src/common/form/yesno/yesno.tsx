@@ -1,7 +1,7 @@
 import { InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
-import iconYes from './icons/yes';
-import iconNo from './icons/no';
+import { yesIcon } from './icons/yes';
+import { noIcon } from './icons/no';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   name: string;
@@ -11,7 +11,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   automationId?: string;
 };
 
-function YesNo({
+export function YesNo({
   onCheck,
   showError,
   checked,
@@ -35,7 +35,7 @@ function YesNo({
           {...attributes}
         />
         <span className="mailpoet-form-yesno-control mailpoet-form-yesno-yes">
-          {iconYes}
+          {yesIcon}
         </span>
       </label>
       <label>
@@ -46,11 +46,9 @@ function YesNo({
           {...attributes}
         />
         <span className="mailpoet-form-yesno-control mailpoet-form-yesno-no">
-          {iconNo}
+          {noIcon}
         </span>
       </label>
     </div>
   );
 }
-
-export default YesNo;
