@@ -1,13 +1,13 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Engine\API\Endpoints;
+namespace MailPoet\Automation\Engine\Endpoints\Workflows;
 
 use MailPoet\Automation\Engine\API\Endpoint;
 use MailPoet\Automation\Engine\API\Request;
 use MailPoet\Automation\Engine\API\Response;
 use MailPoet\Automation\Engine\Builder\CreateWorkflowController;
 
-class WorkflowsEndpoint extends Endpoint {
+class WorkflowsPostEndpoint extends Endpoint {
   /** @var CreateWorkflowController */
   private $createController;
 
@@ -17,14 +17,10 @@ class WorkflowsEndpoint extends Endpoint {
     $this->createController = $createController;
   }
 
-  public function get(Request $request): Response {
-    return new Response(['message' => 'Hello world.']);
-  }
-
-  public function post(Request $request): Response {
+  public function handle(Request $request): Response {
     // TODO: validation
-    $body = $request->getBody();
-    $this->createController->createWorkflow($body);
+    $data = $request->getBody();
+    $this->createController->createWorkflow($data);
     return new Response();
   }
 }
