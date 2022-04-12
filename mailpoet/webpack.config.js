@@ -283,12 +283,17 @@ const adminConfig = {
     admin: 'webpack_admin_index.jsx',
     automation: 'automation/automation.tsx',
     newsletter_editor: 'newsletter_editor/webpack_index.jsx',
+    newsletter_editor_v2: 'newsletter_editor_v2/newsletter_editor.tsx',
     form_editor: 'form_editor/form_editor.jsx',
     settings: 'settings/index.tsx',
   },
   plugins: [
     ...baseConfig.plugins,
-
+    // Isolated editor is touching process.env.GUTENBERG_PHASE to check whether to load FSE blocks.
+    // Without this plugin in ends up with "ReferenceError: process is not defined"
+    new webpack.DefinePlugin({
+      'process.env': { GUTENBERG_PHASE: null },
+    }),
     new WebpackCopyPlugin({
       patterns: [
         {
@@ -296,9 +301,6 @@ const adminConfig = {
           to: 'skins/ui/oxide',
         },
       ],
-    }),
-    new webpack.ProvidePlugin({
-      process: 'process/browser',
     }),
   ],
   optimization: {
@@ -316,6 +318,15 @@ const adminConfig = {
   externals: {
     jquery: 'jQuery',
   },
+  module: Object.assign({}, baseConfig.module, {
+    rules: [
+      ...baseConfig.module.rules,
+      {
+        test: /\.scss$/,
+        use: ['style-loader', 'css-loader', 'sass-loader'],
+      },
+    ],
+  }),
 };
 
 // Public config

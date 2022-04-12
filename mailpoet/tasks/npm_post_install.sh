@@ -21,3 +21,5 @@ sed -i -- "s/_focusedField\.focus()/_focusedField\.trigger('focus')/g" node_modu
 sed -i -- "s/  lastKeyIndex = keyPath.length-1;/  var lastKeyIndex = keyPath.length-1;/g" node_modules/backbone.supermodel/build/backbone.supermodel.js
 sed -i -- "s/  key = keyPath\[i\];/  var key = keyPath\[i\];/g" node_modules/backbone.supermodel/build/backbone.supermodel.js
 
+# Remove Isolated Block Editor node_modules to force it to use of versions installed in root
+rm -rf $INIT_CWD/node_modules/@automattic/isolated-block-editor/node_modules
