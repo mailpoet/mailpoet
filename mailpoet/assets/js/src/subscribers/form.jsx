@@ -1,13 +1,14 @@
-import { Link, useLocation, useHistory } from 'react-router-dom';
-import MailPoet from 'mailpoet';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import Form from 'form/form.jsx';
 import ReactStringReplace from 'react-string-replace';
-import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
-import Background from 'common/background/background';
-import Heading from 'common/typography/heading/heading';
-import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
+
+import { Background } from 'common/background/background';
+import { Form } from 'form/form.jsx';
+import { Heading } from 'common/typography/heading/heading';
+import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
+import { MailPoet } from 'mailpoet';
+import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice.jsx';
 
 const fields = [
   {
@@ -264,4 +265,4 @@ SubscriberForm.propTypes = {
   }).isRequired,
 };
 
-export default SubscriberForm;
+export { SubscriberForm };

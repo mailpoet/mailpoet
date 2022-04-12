@@ -1,4 +1,4 @@
-export default (state, action) => {
+export const saveFormFailed = (state, action) => {
   const notices = state.notices.filter((notice) => notice.id !== 'save-form');
   notices.push({
     id: 'save-form',

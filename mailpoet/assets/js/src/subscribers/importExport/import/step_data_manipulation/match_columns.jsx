@@ -1,4 +1,4 @@
-export default (subscribers, header) => {
+export const matchColumns = (subscribers, header) => {
   const displayedColumns = [];
   const displayedColumnsIds = [];
   let columnData;

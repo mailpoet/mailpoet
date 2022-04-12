@@ -1,14 +1,14 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { defaultBlockStyles } from 'form_editor/store/mapping/to_blocks/styles_mapper';
-import edit from './edit.jsx';
-import icon from './icon.jsx';
+import { EmailEdit } from './edit.jsx';
+import { Icon } from './icon.jsx';
 
 export const name = 'mailpoet-form/email-input';
 
 export const settings = {
   title: MailPoet.I18n.t('blockEmail'),
   description: MailPoet.I18n.t('blockEmailDescription'),
-  icon,
+  icon: Icon,
   category: 'obligatory',
   attributes: {
     label: {
@@ -29,7 +29,7 @@ export const settings = {
     inserter: false,
     multiple: false,
   },
-  edit,
+  edit: EmailEdit,
   save() {
     return null;
   },

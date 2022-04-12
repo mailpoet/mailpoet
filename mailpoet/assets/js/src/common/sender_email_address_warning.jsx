@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 
 const userHostDomain = window.location.hostname.replace('www.', '');
@@ -50,4 +50,4 @@ SenderEmailAddressWarning.propTypes = {
   mssActive: PropTypes.bool.isRequired,
 };
 
-export default SenderEmailAddressWarning;
+export { SenderEmailAddressWarning };

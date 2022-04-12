@@ -1,5 +1,5 @@
-import Textarea from '../textarea';
-import Heading from '../../../typography/heading/heading';
+import { Textarea } from '../textarea';
+import { Heading } from '../../../typography/heading/heading';
 
 export default {
   title: 'Form',

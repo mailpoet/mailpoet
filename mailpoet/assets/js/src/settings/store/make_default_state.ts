@@ -1,6 +1,6 @@
-import MailPoet from 'mailpoet';
-import { State, PremiumStatus, MssStatus, TestEmailState } from './types';
-import normalizeSettings from './normalize_settings';
+import { MailPoet } from 'mailpoet';
+import { MssStatus, PremiumStatus, State, TestEmailState } from './types';
+import { normalizeSettings } from './normalize_settings';
 
 function getPremiumStatus(keyValid, premiumInstalled): PremiumStatus {
   const pluginActive = !!MailPoet.premiumVersion;
@@ -24,7 +24,7 @@ function getMssStatus(keyValid, data): MssStatus {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function makeDefaultState(window: any): State {
+export function makeDefaultState(window: any): State {
   const pages = window.mailpoet_pages;
   const paths = window.mailpoet_paths;
   const segments = window.mailpoet_segments;

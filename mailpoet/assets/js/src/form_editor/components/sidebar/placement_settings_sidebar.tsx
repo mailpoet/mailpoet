@@ -1,16 +1,15 @@
-import { useSelect } from '@wordpress/data';
 import { Panel, PanelBody } from '@wordpress/components';
-import MailPoet from 'mailpoet';
-import PlacementSettingsPanel from 'form_editor/components/form_settings/form_placement_options/settings_panel';
-import SidebarHeader from './sidebar_header';
+import { useSelect } from '@wordpress/data';
+
+import { MailPoet } from 'mailpoet';
+import { SettingsPanel } from 'form_editor/components/form_settings/form_placement_options/settings_panel';
+import { SidebarHeader } from './sidebar_header';
 
 type Props = {
   onClose: () => void;
 };
 
-export default function PlaceMentSettingsSidebar({
-  onClose,
-}: Props): JSX.Element {
+export function PlacementSettingsSidebar({ onClose }: Props): JSX.Element {
   const previewSettings = useSelect(
     (select) => select('mailpoet-form-editor').getPreviewSettings(),
     [],
@@ -33,7 +32,7 @@ export default function PlaceMentSettingsSidebar({
       </SidebarHeader>
       <Panel>
         <PanelBody>
-          <PlacementSettingsPanel activePanel={previewSettings.formType} />
+          <SettingsPanel activePanel={previewSettings.formType} />
         </PanelBody>
       </Panel>
     </>

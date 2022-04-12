@@ -1,8 +1,8 @@
 import { useContext, useState } from 'react';
 import ReactStringReplace from 'react-string-replace';
 import jQuery from 'jquery';
-import MailPoet from 'mailpoet';
-import Modal from 'common/modal/modal';
+import { MailPoet } from 'mailpoet';
+import { Modal } from 'common/modal/modal';
 import { GlobalContext } from 'context';
 import { noop } from 'lodash';
 import { ErrorResponse, isErrorResponse } from '../ajax';
@@ -169,4 +169,4 @@ SetFromAddressModal.defaultProps = {
   setAuthorizedAddress: noop,
 };
 
-export default SetFromAddressModal;
+export { SetFromAddressModal };

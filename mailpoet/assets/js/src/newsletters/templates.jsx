@@ -1,14 +1,15 @@
-import { Component } from 'react';
-import MailPoet from 'mailpoet';
-import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
-import Loading from 'common/loading.jsx';
-import Background from 'common/background/background';
-import Categories from 'common/categories/categories';
-import TemplateBox from 'newsletters/templates/template_box.jsx';
-import ImportTemplate from 'newsletters/templates/import_template.jsx';
 import _ from 'underscore';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
+
+import { Background } from 'common/background/background';
+import { Categories } from 'common/categories/categories';
 import { GlobalContext } from 'context/index.jsx';
+import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
+import { Loading } from 'common/loading.jsx';
+import { MailPoet } from 'mailpoet';
+import { TemplateBox } from 'newsletters/templates/template_box.jsx';
+import { ImportTemplate } from 'newsletters/templates/import_template.jsx';
 
 const getEditorUrl = (id) =>
   `admin.php?page=mailpoet-newsletter-editor&id=${id}`;
@@ -342,4 +343,4 @@ NewsletterTemplates.propTypes = {
   }).isRequired,
 };
 
-export default NewsletterTemplates;
+export { NewsletterTemplates };

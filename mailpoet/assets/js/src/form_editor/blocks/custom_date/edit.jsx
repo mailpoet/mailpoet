@@ -2,14 +2,14 @@ import moment from 'moment';
 import { Panel, PanelBody } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import ParagraphEdit from '../paragraph_edit.jsx';
-import CustomFieldSettings from './custom_field_settings.jsx';
-import FormFieldDate from './date.jsx';
-import formatLabel from '../label_formatter.jsx';
-import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
+import { MailPoet } from 'mailpoet';
+import { CustomFieldSettings } from './custom_field_settings.jsx';
+import { formatLabel } from '../label_formatter.jsx';
+import { FormFieldDate } from './date.jsx';
+import { ParagraphEdit } from '../paragraph_edit.jsx';
+import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
 
 function CustomDateEdit({ attributes, setAttributes, clientId }) {
   const isSaving = useSelect(
@@ -118,4 +118,4 @@ CustomDateEdit.propTypes = {
   setAttributes: PropTypes.func.isRequired,
 };
 
-export default CustomDateEdit;
+export { CustomDateEdit };

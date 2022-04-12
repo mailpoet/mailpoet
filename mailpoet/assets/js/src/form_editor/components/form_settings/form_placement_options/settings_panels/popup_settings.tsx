@@ -1,15 +1,15 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { SelectControl, ToggleControl } from '@wordpress/components';
-import { useSelect, useDispatch } from '@wordpress/data';
-import { assocPath, compose, __ } from 'lodash/fp';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { __, assocPath, compose } from 'lodash/fp';
 import { SizeSettings } from 'form_editor/components/size_settings';
-import AnimationSettings from './animation_settings';
-import PlacementSettings from './placement_settings';
-import CookieSettings from './cookie_settings';
+import { AnimationSettings } from './animation_settings';
+import { PlacementSettings } from './placement_settings';
+import { CookieSettings } from './cookie_settings';
 
 const delayValues = [0, 2, 5, 10, 15, 30, 45, 60, 120, 180, 240];
 
-function PopUpSettings(): JSX.Element {
+export function PopUpSettings(): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -93,5 +93,3 @@ function PopUpSettings(): JSX.Element {
     </>
   );
 }
-
-export default PopUpSettings;

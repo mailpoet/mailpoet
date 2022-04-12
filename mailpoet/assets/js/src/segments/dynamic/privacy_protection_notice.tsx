@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { useSelect } from '@wordpress/data';
 
 import { EmailActionTypes, Segment } from './types';

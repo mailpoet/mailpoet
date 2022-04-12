@@ -7,7 +7,7 @@ type Props = {
   setIsInserterOpened: (boolean) => void;
 };
 
-function Inserter({ setIsInserterOpened }: Props): JSX.Element {
+export function Inserter({ setIsInserterOpened }: Props): JSX.Element {
   const insertPoint = useSelect(
     (sel) => sel('mailpoet-form-editor').getInserterPanelInsertPoint(),
     [],
@@ -28,5 +28,3 @@ function Inserter({ setIsInserterOpened }: Props): JSX.Element {
     </div>
   );
 }
-
-export default Inserter;

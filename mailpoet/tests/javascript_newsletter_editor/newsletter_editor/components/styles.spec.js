@@ -1,10 +1,8 @@
-import App from 'newsletter_editor/App';
-import StylesComponent from 'newsletter_editor/components/styles';
+import { App } from 'newsletter_editor/App';
+import { StylesComponent } from 'newsletter_editor/components/styles';
 
 const expect = global.expect;
 const sinon = global.sinon;
-
-var EditorApplication = App;
 
 describe('Styles', function () {
   it('loads and stores globally available styles', function () {
@@ -28,7 +26,7 @@ describe('Styles', function () {
         .expects('trigger')
         .once()
         .withExactArgs('autoSave');
-      EditorApplication.getChannel = function () {
+      App.getChannel = function () {
         return {
           on: function () {},
           trigger: mock,

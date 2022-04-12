@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import Notice from 'notices/notice.tsx';
+import { Notice } from 'notices/notice.tsx';
 
 function MailerStatusNotice({ error }) {
   if (!error || error.operation !== 'authorization') return null;
@@ -19,4 +19,4 @@ MailerStatusNotice.defaultProps = {
   error: null,
 };
 
-export default MailerStatusNotice;
+export { MailerStatusNotice };

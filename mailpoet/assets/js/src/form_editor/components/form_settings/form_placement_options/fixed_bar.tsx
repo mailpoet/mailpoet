@@ -1,10 +1,10 @@
-import MailPoet from 'mailpoet';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { MailPoet } from 'mailpoet';
+import { useDispatch, useSelect } from '@wordpress/data';
 
-import FormPlacementOption from './form_placement_option';
-import Icon from './icons/fixed_bar_icon';
+import { FormPlacementOption } from './form_placement_option';
+import { FixedBarIcon } from './icons/fixed_bar_icon';
 
-function FixedBar(): JSX.Element {
+export function FixedBar(): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -15,11 +15,9 @@ function FixedBar(): JSX.Element {
     <FormPlacementOption
       active={formSettings.formPlacement.fixedBar.enabled}
       label={MailPoet.I18n.t('placeFixedBarFormOnPages')}
-      icon={Icon}
+      icon={FixedBarIcon}
       onClick={(): void => showPlacementSettings('fixed_bar')}
       canBeActive
     />
   );
 }
-
-export default FixedBar;

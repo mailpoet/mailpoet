@@ -1,22 +1,20 @@
+import _ from 'underscore';
+import classnames from 'classnames';
 import { Component } from 'react';
 import ReactStringReplace from 'react-string-replace';
-
-import Listing from 'listing/listing.jsx';
-import Tags from 'common/tag/tags';
-import Toggle from 'common/form/toggle/toggle';
-import { ScheduledIcon } from 'common/listings/newsletter_status';
-import {
-  checkMailerStatus,
-  addStatsCTAAction,
-  confirmEdit,
-} from 'newsletters/listings/utils.jsx';
-import Statistics from 'newsletters/listings/statistics.jsx';
-import NewsletterTypes from 'newsletters/types';
-import classNames from 'classnames';
-import MailPoet from 'mailpoet';
-import _ from 'underscore';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
+
+import {
+  addStatsCTAAction,
+  checkMailerStatus,
+  confirmEdit,
+} from 'newsletters/listings/utils.jsx';
+import { Listing } from 'listing/listing.jsx';
+import { MailPoet } from 'mailpoet';
+import { NewsletterTypes } from 'newsletters/types';
+import { ScheduledIcon, Tags, Toggle } from 'common';
+import { Statistics } from 'newsletters/listings/statistics.jsx';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
@@ -161,7 +159,7 @@ let newsletterActions = [
 
 newsletterActions = addStatsCTAAction(newsletterActions);
 
-class Listings extends Component {
+class ListingsComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -335,7 +333,7 @@ class Listings extends Component {
   };
 
   renderItem = (newsletter, actions) => {
-    const rowClasses = classNames(
+    const rowClasses = classnames(
       'manage-column',
       'column-primary',
       'has-row-actions',
@@ -482,7 +480,7 @@ class Listings extends Component {
   }
 }
 
-Listings.propTypes = {
+ListingsComponent.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       tab: PropTypes.string,
@@ -491,4 +489,4 @@ Listings.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 
-export default withRouter(Listings);
+export const Listings = withRouter(ListingsComponent);

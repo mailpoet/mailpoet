@@ -1,12 +1,10 @@
-import App from 'newsletter_editor/App';
-import ContentComponent from 'newsletter_editor/components/content';
+import { App } from 'newsletter_editor/App';
+import { ContentComponent } from 'newsletter_editor/components/content';
 
 const expect = global.expect;
 const sinon = global.sinon;
 const Backbone = global.Backbone;
 const _ = global._;
-
-var EditorApplication = App;
 
 describe('Content', function () {
   describe('newsletter model', function () {
@@ -34,7 +32,7 @@ describe('Content', function () {
         .expects('trigger')
         .once()
         .withArgs('autoSave');
-      global.stubChannel(EditorApplication, {
+      global.stubChannel(App, {
         trigger: mock,
       });
       model.set('subject', 'another test subject');
@@ -103,26 +101,26 @@ describe('Content', function () {
       var blockDefaults = {
         button: {},
       };
-      EditorApplication._contentContainer = {
+      App._contentContainer = {
         toJSON: function () {
           return dataField;
         },
       };
-      EditorApplication.getGlobalStyles = function () {
+      App.getGlobalStyles = function () {
         return {
           toJSON: function () {
             return stylesField;
           },
         };
       };
-      EditorApplication.getNewsletter = function () {
+      App.getNewsletter = function () {
         return {
           toJSON: function () {
             return newsletterFields;
           },
         };
       };
-      EditorApplication.getConfig().set('blockDefaults', blockDefaults);
+      App.getConfig().set('blockDefaults', blockDefaults);
       json = ContentComponent.toJSON();
       expect(json).to.deep.equal(
         _.extend(

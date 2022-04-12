@@ -8,7 +8,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   automationId?: string;
 };
 
-function Radio({
+export function Radio({
   children,
   isFullWidth,
   onCheck,
@@ -34,5 +34,3 @@ function Radio({
     </label>
   );
 }
-
-export default Radio;

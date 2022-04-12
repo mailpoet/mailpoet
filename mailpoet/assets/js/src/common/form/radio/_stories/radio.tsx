@@ -1,7 +1,7 @@
 import { action } from '_storybook/action';
-import Radio from '../radio';
-import RadioGroup from '../group';
-import Heading from '../../../typography/heading/heading';
+import { Radio } from '../radio';
+import { RadioGroup } from '../group';
+import { Heading } from '../../../typography/heading/heading';
 
 export default {
   title: 'Form',

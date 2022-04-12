@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
-import MailPoet from 'mailpoet';
-import PremiumRequired from 'common/premium_required/premium_required';
-import Button from 'common/button/button';
+import { MailPoet } from 'mailpoet';
+import { PremiumRequired } from 'common/premium_required/premium_required';
+import { Button } from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
 
 type Props = {
@@ -48,7 +48,7 @@ const getCtaButton = (
   </Button>
 );
 
-function PremiumBannerWithUpgrade({
+export function PremiumBannerWithUpgrade({
   message,
   actionButton,
 }: Props): JSX.Element {
@@ -73,7 +73,7 @@ function PremiumBannerWithUpgrade({
       'premiumFeatureDescriptionSubscribersLimitReached',
     );
 
-    const link = anyValidKey
+    const link: string = anyValidKey
       ? MailPoet.MailPoetComUrlFactory.getUpgradeUrl(pluginPartialKey)
       : MailPoet.MailPoetComUrlFactory.getPurchasePlanUrl(
           +subscribersCount + 1,
@@ -94,5 +94,3 @@ function PremiumBannerWithUpgrade({
     />
   );
 }
-
-export default PremiumBannerWithUpgrade;

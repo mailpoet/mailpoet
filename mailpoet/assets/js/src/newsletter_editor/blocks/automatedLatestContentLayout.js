@@ -2,12 +2,12 @@
 /**
  * Automated latest content block with image alignment.
  */
-import App from 'newsletter_editor/App';
-import BaseBlock from 'newsletter_editor/blocks/base';
-import ButtonBlock from 'newsletter_editor/blocks/button';
-import DividerBlock from 'newsletter_editor/blocks/divider';
-import CommunicationComponent from 'newsletter_editor/components/communication';
-import MailPoet from 'mailpoet';
+import { App } from 'newsletter_editor/App';
+import { BaseBlock } from 'newsletter_editor/blocks/base';
+import { ButtonBlock } from 'newsletter_editor/blocks/button';
+import { DividerBlock } from 'newsletter_editor/blocks/divider';
+import { CommunicationComponent } from 'newsletter_editor/components/communication';
+import { MailPoet } from 'mailpoet';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';
 import jQuery from 'jquery';
@@ -531,4 +531,4 @@ App.on('start', function (StartApp) {
   Application._ALCLayoutSupervisor.refresh();
 });
 
-export default Module;
+export { Module as AutomatedLatestContentBlock };

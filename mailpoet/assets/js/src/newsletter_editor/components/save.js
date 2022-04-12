@@ -1,7 +1,7 @@
 /* eslint-disable func-names */
-import App from 'newsletter_editor/App';
-import CommunicationComponent from 'newsletter_editor/components/communication';
-import MailPoet from 'mailpoet';
+import { App } from 'newsletter_editor/App';
+import { CommunicationComponent } from 'newsletter_editor/components/communication';
+import { MailPoet } from 'mailpoet';
 import Marionette from 'backbone.marionette';
 import $ from 'jquery';
 import Blob from 'blob';
@@ -662,4 +662,4 @@ App.on('start', function (BeforeStartApp) {
   BeforeStartApp._appView.showChildView('bottomRegion', bottomSaveView);
 });
 
-export default Module;
+export { Module as SaveComponent };

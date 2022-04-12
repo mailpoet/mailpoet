@@ -1,10 +1,10 @@
-import App from 'newsletter_editor/App';
+import { App } from 'newsletter_editor/App';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore'; // eslint-disable-line func-names
 
-const Module = {};
+const ConfigComponent = {};
 
-Module.ConfigModel = SuperModel.extend({
+ConfigComponent.ConfigModel = SuperModel.extend({
   defaults: {
     availableStyles: {},
     socialIcons: {},
@@ -16,21 +16,23 @@ Module.ConfigModel = SuperModel.extend({
 });
 
 // Global and available styles for access in blocks and their settings
-Module.config = {};
-Module.getConfig = function getConfig() {
-  return Module.config;
+ConfigComponent.config = {};
+ConfigComponent.getConfig = function getConfig() {
+  return ConfigComponent.config;
 };
-Module.setConfig = function setConfig(options) {
-  Module.config = new Module.ConfigModel(options, { parse: true });
-  return Module.config;
+ConfigComponent.setConfig = function setConfig(options) {
+  ConfigComponent.config = new ConfigComponent.ConfigModel(options, {
+    parse: true,
+  });
+  return ConfigComponent.config;
 };
 
 App.on('before:start', (BeforeStartApp, options) => {
   const Application = BeforeStartApp;
   const config = _.clone(options.config);
   // Expose config methods globally
-  Application.getConfig = Module.getConfig;
-  Application.setConfig = Module.setConfig;
+  Application.getConfig = ConfigComponent.getConfig;
+  Application.setConfig = ConfigComponent.setConfig;
 
   config.blockDefaults = _.extend(
     config.blockDefaults,
@@ -40,4 +42,4 @@ App.on('before:start', (BeforeStartApp, options) => {
   Application.setConfig(config);
 });
 
-export default Module;
+export { ConfigComponent };

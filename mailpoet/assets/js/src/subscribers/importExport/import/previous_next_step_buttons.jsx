@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
-import Button from 'common/button/button';
+import { MailPoet } from 'mailpoet';
+import { Button } from 'common/button/button';
 
 function PreviousNextStepButtons({
   hidePrevious,
@@ -48,4 +48,4 @@ PreviousNextStepButtons.defaultProps = {
   onNextAction: () => {},
 };
 
-export default PreviousNextStepButtons;
+export { PreviousNextStepButtons };

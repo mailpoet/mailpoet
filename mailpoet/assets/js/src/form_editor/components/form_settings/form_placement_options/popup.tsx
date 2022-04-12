@@ -1,10 +1,10 @@
-import MailPoet from 'mailpoet';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { MailPoet } from 'mailpoet';
+import { useDispatch, useSelect } from '@wordpress/data';
 
-import FormPlacementOption from './form_placement_option';
-import Icon from './icons/popup_icon';
+import { FormPlacementOption } from './form_placement_option';
+import { PopupIcon } from './icons/popup_icon';
 
-function Popup(): JSX.Element {
+export function Popup(): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -15,11 +15,9 @@ function Popup(): JSX.Element {
     <FormPlacementOption
       active={formSettings.formPlacement.popup.enabled}
       label={MailPoet.I18n.t('placePopupFormOnPages')}
-      icon={Icon}
+      icon={PopupIcon}
       onClick={(): void => showPlacementSettings('popup')}
       canBeActive
     />
   );
 }
-
-export default Popup;

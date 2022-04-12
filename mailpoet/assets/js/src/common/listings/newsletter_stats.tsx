@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { StatsBadge } from './newsletter_stats/stats';
-import Tooltip from '../tooltip/tooltip';
-import Tag from '../tag/tag';
+import { Tooltip } from '../tooltip/tooltip';
+import { Tag } from '../tag/tag';
 
 type NewsletterStatsProps = {
   opened: number;
@@ -13,7 +13,7 @@ type NewsletterStatsProps = {
   wrapContentInLink?: (content: ReactNode, idPrefix: string) => JSX.Element;
 };
 
-function NewsletterStats({
+export function NewsletterStats({
   opened,
   clicked,
   revenues,
@@ -79,5 +79,3 @@ function NewsletterStats({
     </div>
   );
 }
-
-export default NewsletterStats;

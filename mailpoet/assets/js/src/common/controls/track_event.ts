@@ -1,11 +1,11 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 const sleep = (ms: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 
-export default async function trackEvent({
+export async function trackEvent({
   name,
   data,
   timeout = 0,

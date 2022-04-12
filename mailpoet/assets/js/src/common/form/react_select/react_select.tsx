@@ -1,6 +1,6 @@
 import { CSSProperties, ReactNode } from 'react';
 import classnames from 'classnames';
-import Select, { Props as ReactSelectProps, OptionProps } from 'react-select';
+import Select, { OptionProps, Props as ReactSelectProps } from 'react-select';
 
 export type Props = ReactSelectProps & {
   dimension?: 'small';
@@ -97,7 +97,7 @@ function MultiValueLabel(props: MultiValueLabelProps) {
   );
 }
 
-function ReactSelect({
+export function ReactSelect({
   dimension,
   isFullWidth,
   iconStart,
@@ -123,5 +123,3 @@ function ReactSelect({
     </div>
   );
 }
-
-export default ReactSelect;

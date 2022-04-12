@@ -3,10 +3,10 @@
  * @see https://developer.wordpress.org/block-editor/packages/packages-data/
  */
 import { registerStore } from '@wordpress/data';
-import selectors from './selectors';
-import createReducer from './reducer';
+import { selectors } from './selectors';
+import { createReducer } from './reducer';
 import * as actions from './actions';
-import controls from './controls';
+import * as controls from './controls';
 
 import { TemplateData, StateType, CategoryType } from './types';
 
@@ -17,7 +17,7 @@ interface StoreWindow extends Window {
 
 declare let window: StoreWindow;
 
-export default (): void => {
+export const initStore = (): void => {
   const defaultState: StateType = {
     templates: window.mailpoet_templates,
     formEditorUrl: window.mailpoet_form_edit_url,

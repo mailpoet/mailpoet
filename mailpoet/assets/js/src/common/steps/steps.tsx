@@ -1,5 +1,5 @@
 import range from 'lodash/range';
-import classNames from 'classnames';
+import classnames from 'classnames';
 import { ContentWrapperFix } from './content_wrapper_fix';
 
 type Props = {
@@ -14,7 +14,7 @@ function Steps({ count, current, titles }: Props) {
       {range(1, count + 1).map((i) => (
         <div
           key={i}
-          className={classNames('mailpoet-step', {
+          className={classnames('mailpoet-step', {
             'mailpoet-step-done': i < current,
             'mailpoet-step-active': i === current,
           })}
@@ -39,4 +39,4 @@ Steps.defaultProps = {
   titles: [],
 };
 
-export default Steps;
+export { Steps };

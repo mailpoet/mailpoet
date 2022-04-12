@@ -1,14 +1,15 @@
 import { Component } from 'react';
-import FormFieldText from 'form/fields/text.jsx';
-import FormFieldTextarea from 'form/fields/textarea.jsx';
-import FormFieldSelect from 'form/fields/select.jsx';
-import FormFieldRadio from 'form/fields/radio.jsx';
-import FormFieldCheckbox from 'form/fields/checkbox.jsx';
-import FormFieldSelection from 'form/fields/selection.jsx';
-import FormFieldDate from 'form/fields/date.jsx';
-import Heading from 'common/typography/heading/heading';
+import { FormFieldText } from 'form/fields/text.jsx';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
+
+import { FormFieldTextarea } from 'form/fields/textarea.jsx';
+import { FormFieldSelect } from 'form/fields/select.jsx';
+import { FormFieldRadio } from 'form/fields/radio.jsx';
+import { FormFieldCheckbox } from 'form/fields/checkbox.jsx';
+import { Selection } from 'form/fields/selection.jsx';
+import { FormFieldDate } from 'form/fields/date.jsx';
+import { Heading } from 'common/typography/heading/heading';
 
 class FormField extends Component {
   renderField = (data) => {
@@ -92,7 +93,7 @@ class FormField extends Component {
 
       case 'selection':
         field = (
-          <FormFieldSelection
+          <Selection
             key={`selection-field-${dataField.name}`}
             onValueChange={data.onValueChange}
             field={data.field}
@@ -208,4 +209,4 @@ FormField.defaultProps = {
   },
 };
 
-export default FormField;
+export { FormField };

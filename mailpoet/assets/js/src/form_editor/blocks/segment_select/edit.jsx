@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
 import { useSelect } from '@wordpress/data';
 
-import ParagraphEdit from '../paragraph_edit.jsx';
-import Settings from './settings.jsx';
+import { MailPoet } from 'mailpoet';
+import { ParagraphEdit } from '../paragraph_edit.jsx';
+import { SegmentSelectSettings } from './settings.jsx';
 
 function SegmentSelectEdit({ attributes, setAttributes }) {
   const segments = useSelect(
@@ -53,7 +53,7 @@ function SegmentSelectEdit({ attributes, setAttributes }) {
 
   return (
     <ParagraphEdit className={attributes.className}>
-      <Settings
+      <SegmentSelectSettings
         label={attributes.label}
         onLabelChanged={(label) => setAttributes({ label })}
         segmentsAddedIntoSelection={valuesWithNames}
@@ -91,4 +91,4 @@ SegmentSelectEdit.propTypes = {
   setAttributes: PropTypes.func.isRequired,
 };
 
-export default SegmentSelectEdit;
+export { SegmentSelectEdit };

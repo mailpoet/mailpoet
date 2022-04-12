@@ -1,12 +1,12 @@
 import ReactStringReplace from 'react-string-replace';
-import MailPoet from 'mailpoet';
-import Hooks from 'wp-js-hooks';
+import { MailPoet } from 'mailpoet';
+import { Hooks } from 'wp-js-hooks';
 import { Grid } from 'common/grid';
 import {
   StatsBadge,
   getBadgeType,
 } from 'common/listings/newsletter_stats/stats';
-import Tooltip from 'help-tooltip';
+import { Tooltip } from 'help-tooltip';
 
 import { NewsletterType } from './newsletter_type';
 

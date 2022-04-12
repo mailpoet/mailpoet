@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Notice from 'notices/notice';
-import MailPoet from 'mailpoet';
+import { Notice } from 'notices/notice';
+import { MailPoet } from 'mailpoet';
 
 type Props = {
   mailpoetInstalledDaysAgo: number;
@@ -10,7 +10,7 @@ type Props = {
   apiVersion: string;
 };
 
-function TransactionalEmailsProposeOptInNotice({
+export function TransactionalEmailsProposeOptInNotice({
   mailpoetInstalledDaysAgo,
   sendTransactionalEmails,
   mtaMethod,
@@ -68,5 +68,3 @@ function TransactionalEmailsProposeOptInNotice({
     </Notice>
   );
 }
-
-export default TransactionalEmailsProposeOptInNotice;

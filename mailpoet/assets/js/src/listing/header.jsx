@@ -1,8 +1,9 @@
-import MailPoet from 'mailpoet';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import Checkbox from 'common/form/checkbox/checkbox.tsx';
-import ListingColumn from './listing_column.jsx';
+
+import { Checkbox } from 'common/form/checkbox/checkbox.tsx';
+import { MailPoet } from 'mailpoet';
+import { ListingColumn } from './listing_column.jsx';
 
 class ListingHeader extends Component {
   constructor(props) {
@@ -75,4 +76,4 @@ ListingHeader.defaultProps = {
   sort_order: 'desc',
 };
 
-export default ListingHeader;
+export { ListingHeader };

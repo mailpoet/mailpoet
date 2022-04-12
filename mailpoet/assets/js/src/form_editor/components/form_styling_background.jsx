@@ -130,4 +130,4 @@ FormStylingBackground.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export default FormStylingBackground;
+export { FormStylingBackground };

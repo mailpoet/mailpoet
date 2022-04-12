@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react';
 import { CustomSelectControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 const standardFonts = [
   'Arial',
@@ -22,7 +22,7 @@ type Props = {
   hideLabelFromVision?: boolean;
 };
 
-function FontFamilySettings({
+export function FontFamilySettings({
   onChange,
   value,
   name,
@@ -101,8 +101,6 @@ function FontFamilySettings({
     />
   );
 }
-
-export default FontFamilySettings;
 
 export function CustomFontsStyleSheetLink(): JSX.Element {
   const customFonts = useSelect(

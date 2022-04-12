@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 import ReactDOMServer from 'react-dom/server';
 
@@ -54,7 +54,7 @@ ConfirmAlert.defaultProps = {
   confirmLabel: MailPoet.I18n.t('confirmLabel'),
 };
 
-export default function confirmAlert(props) {
+export function confirmAlert(props) {
   // the below render is only to invoke proptypes on ConfirmAlert
   ReactDOMServer.renderToString(
     <ConfirmAlert

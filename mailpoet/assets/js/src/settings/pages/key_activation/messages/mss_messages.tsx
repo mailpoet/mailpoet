@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { useSelector } from 'settings/store/hooks';
 import { MssStatus } from 'settings/store/types';
 
@@ -42,7 +42,7 @@ type Props = {
   keyMessage?: string;
   activationCallback: () => void;
 };
-export default function MssMessages(props: Props) {
+export function MssMessages(props: Props) {
   const { mssStatus } = useSelector('getKeyActivationState')();
   switch (mssStatus) {
     case MssStatus.VALID_MSS_ACTIVE:

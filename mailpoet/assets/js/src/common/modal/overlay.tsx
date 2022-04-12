@@ -20,7 +20,7 @@ type Props = {
   children: ReactNode;
 };
 
-function ModalOverlay({
+export function ModalOverlay({
   isDismissible = true,
   shouldCloseOnEsc = true,
   shouldCloseOnClickOutside = true,
@@ -78,5 +78,3 @@ function ModalOverlay({
     </div>
   );
 }
-
-export default ModalOverlay;

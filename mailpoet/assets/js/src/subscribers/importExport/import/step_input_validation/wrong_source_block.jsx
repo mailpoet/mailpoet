@@ -1,7 +1,7 @@
-import MailPoet from 'mailpoet';
-import Button from 'common/button/button';
+import { MailPoet } from 'mailpoet';
+import { Button } from 'common/button/button';
 
-function WrongSourceBlock() {
+export function WrongSourceBlock() {
   return (
     <div
       className="mailpoet-clean-list-step-container"
@@ -21,5 +21,3 @@ function WrongSourceBlock() {
     </div>
   );
 }
-
-export default WrongSourceBlock;

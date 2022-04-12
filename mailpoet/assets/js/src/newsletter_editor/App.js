@@ -6,7 +6,6 @@ import _ from 'underscore'; // eslint-disable-line func-names
 var Radio;
 var AppView;
 var EditorApplication;
-var app;
 
 // newsletter editor requires underscore on window.
 // For other code to be able to use lodash we need to make sure underscore is present on window.
@@ -69,7 +68,7 @@ EditorApplication = Marionette.Application.extend({
   },
 });
 
-app = new EditorApplication();
-window.EditorApplication = app;
+const App = new EditorApplication();
+window.EditorApplication = App;
 
-export default app;
+export { App };

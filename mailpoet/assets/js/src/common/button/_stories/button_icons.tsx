@@ -1,7 +1,7 @@
 import { action } from '_storybook/action';
-import Button from '../button';
-import Heading from '../../typography/heading/heading';
-import icon from '../icon/plus';
+import { Button } from '../button';
+import { Heading } from '../../typography/heading/heading';
+import { plusIcon } from '../icon/plus';
 
 export default {
   title: 'Buttons',
@@ -16,7 +16,7 @@ export function WithIcons() {
         <Button
           onClick={action('icon start primary small')}
           dimension="small"
-          iconStart={icon}
+          iconStart={plusIcon}
         >
           Icon start
         </Button>
@@ -24,8 +24,8 @@ export function WithIcons() {
           onClick={action('both icons secondary small')}
           dimension="small"
           variant="secondary"
-          iconStart={icon}
-          iconEnd={icon}
+          iconStart={plusIcon}
+          iconEnd={plusIcon}
         >
           Both icons
         </Button>
@@ -33,19 +33,19 @@ export function WithIcons() {
           onClick={action('only icon secondary small')}
           dimension="small"
           variant="secondary"
-          iconStart={icon}
+          iconStart={plusIcon}
         />
         <Button
           onClick={action('only icon tertiary small')}
           dimension="small"
           variant="tertiary"
-          iconStart={icon}
+          iconStart={plusIcon}
         />
         <Button
           onClick={action('icon end destructive small')}
           dimension="small"
           variant="destructive"
-          iconEnd={icon}
+          iconEnd={plusIcon}
         >
           Icon end
         </Button>
@@ -54,31 +54,34 @@ export function WithIcons() {
 
       <Heading level={3}>Regular buttons</Heading>
       <p>
-        <Button onClick={action('icon start primary regular')} iconStart={icon}>
+        <Button
+          onClick={action('icon start primary regular')}
+          iconStart={plusIcon}
+        >
           Icon start
         </Button>
         <Button
           onClick={action('both icons secondary regular')}
           variant="secondary"
-          iconStart={icon}
-          iconEnd={icon}
+          iconStart={plusIcon}
+          iconEnd={plusIcon}
         >
           Both icons
         </Button>
         <Button
           onClick={action('only icon secondary regular')}
           variant="secondary"
-          iconStart={icon}
+          iconStart={plusIcon}
         />
         <Button
           onClick={action('only icon tertiary regular')}
           variant="tertiary"
-          iconStart={icon}
+          iconStart={plusIcon}
         />
         <Button
           onClick={action('icon end destructive regular')}
           variant="destructive"
-          iconEnd={icon}
+          iconEnd={plusIcon}
         >
           Icon end
         </Button>
@@ -87,15 +90,20 @@ export function WithIcons() {
 
       <Heading level={3}>Disabled buttons</Heading>
       <p>
-        <Button isDisabled iconStart={icon}>
+        <Button isDisabled iconStart={plusIcon}>
           Icon start
         </Button>
-        <Button isDisabled variant="secondary" iconStart={icon} iconEnd={icon}>
+        <Button
+          isDisabled
+          variant="secondary"
+          iconStart={plusIcon}
+          iconEnd={plusIcon}
+        >
           Both icons
         </Button>
-        <Button isDisabled variant="secondary" iconStart={icon} />
-        <Button isDisabled variant="tertiary" iconStart={icon} />
-        <Button isDisabled variant="destructive" iconEnd={icon}>
+        <Button isDisabled variant="secondary" iconStart={plusIcon} />
+        <Button isDisabled variant="tertiary" iconStart={plusIcon} />
+        <Button isDisabled variant="destructive" iconEnd={plusIcon}>
           Icon end
         </Button>
       </p>
@@ -103,15 +111,20 @@ export function WithIcons() {
 
       <Heading level={3}>Buttons with spinner</Heading>
       <p>
-        <Button withSpinner iconStart={icon}>
+        <Button withSpinner iconStart={plusIcon}>
           Icon start
         </Button>
-        <Button withSpinner variant="secondary" iconStart={icon} iconEnd={icon}>
+        <Button
+          withSpinner
+          variant="secondary"
+          iconStart={plusIcon}
+          iconEnd={plusIcon}
+        >
           Both icons
         </Button>
-        <Button withSpinner variant="secondary" iconStart={icon} />
-        <Button withSpinner variant="tertiary" iconStart={icon} />
-        <Button withSpinner variant="destructive" iconEnd={icon}>
+        <Button withSpinner variant="secondary" iconStart={plusIcon} />
+        <Button withSpinner variant="tertiary" iconStart={plusIcon} />
+        <Button withSpinner variant="destructive" iconEnd={plusIcon}>
           Icon end
         </Button>
       </p>
@@ -122,7 +135,7 @@ export function WithIcons() {
         <Button
           onClick={action('icon start primary full-width')}
           isFullWidth
-          iconStart={icon}
+          iconStart={plusIcon}
         >
           Icon start
         </Button>
@@ -130,8 +143,8 @@ export function WithIcons() {
           onClick={action('both icons secondary full-width')}
           isFullWidth
           variant="secondary"
-          iconStart={icon}
-          iconEnd={icon}
+          iconStart={plusIcon}
+          iconEnd={plusIcon}
         >
           Both icons
         </Button>
@@ -139,19 +152,19 @@ export function WithIcons() {
           onClick={action('only icon secondary full-width')}
           isFullWidth
           variant="secondary"
-          iconStart={icon}
+          iconStart={plusIcon}
         />
         <Button
           onClick={action('only icon tertiary full-width')}
           isFullWidth
           variant="tertiary"
-          iconStart={icon}
+          iconStart={plusIcon}
         />
         <Button
           onClick={action('icon end destructive full-width')}
           isFullWidth
           variant="destructive"
-          iconEnd={icon}
+          iconEnd={plusIcon}
         >
           Icon end
         </Button>

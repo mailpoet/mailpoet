@@ -1,6 +1,6 @@
 import { createRef, Component } from 'react';
 import _ from 'underscore';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import HelpTooltip from 'help-tooltip.jsx';
 import PropTypes from 'prop-types';
 import { GlobalContext } from 'context/index.jsx';
@@ -126,4 +126,4 @@ ImportTemplate.propTypes = {
   afterImport: PropTypes.func.isRequired,
 };
 
-export default ImportTemplate;
+export { ImportTemplate };

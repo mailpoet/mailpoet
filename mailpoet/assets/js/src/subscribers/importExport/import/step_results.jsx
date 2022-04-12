@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import _ from 'underscore';
 import { withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
-import Button from 'common/button/button';
+import { Button } from 'common/button/button';
 
 function ResultMessage({ subscribersCount, segments, initialMessage }) {
   if (subscribersCount) {
@@ -107,7 +107,7 @@ NoWelcomeEmail.defaultProps = {
   addedToSegmentWithWelcomeNotification: false,
 };
 
-function StepResults({
+function StepResultsComponent({
   errors,
   createdSubscribers,
   updatedSubscribers,
@@ -184,7 +184,7 @@ function StepResults({
   );
 }
 
-StepResults.propTypes = {
+StepResultsComponent.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
     replace: PropTypes.func.isRequired,
@@ -196,7 +196,7 @@ StepResults.propTypes = {
   addedToSegmentWithWelcomeNotification: PropTypes.bool,
 };
 
-StepResults.defaultProps = {
+StepResultsComponent.defaultProps = {
   errors: [],
   segments: undefined,
   createdSubscribers: undefined,
@@ -204,4 +204,4 @@ StepResults.defaultProps = {
   addedToSegmentWithWelcomeNotification: undefined,
 };
 
-export default withRouter(StepResults);
+export const StepResults = withRouter(StepResultsComponent);

@@ -7,7 +7,7 @@ type Props = {
   onChange: (value: string | undefined) => void;
 };
 
-function ColorSettings({ name, value, onChange }: Props): JSX.Element {
+export function ColorSettings({ name, value, onChange }: Props): JSX.Element {
   const settingsColors = useSetting('color.palette');
   return (
     <div>
@@ -22,5 +22,3 @@ function ColorSettings({ name, value, onChange }: Props): JSX.Element {
     </div>
   );
 }
-
-export default ColorSettings;

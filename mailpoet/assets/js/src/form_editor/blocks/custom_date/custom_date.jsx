@@ -1,5 +1,5 @@
-import Icon from '../custom_text/icon.jsx';
-import Edit from './edit.jsx';
+import { Icon } from '../custom_text/icon.jsx';
+import { CustomDateEdit } from './edit.jsx';
 
 export const name = 'mailpoet-form/custom-date';
 
@@ -41,7 +41,7 @@ export function getSettings(customField) {
       html: false,
       multiple: false,
     },
-    edit: Edit,
+    edit: CustomDateEdit,
     save() {
       return null;
     },

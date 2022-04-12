@@ -1,16 +1,16 @@
 import { Panel, PanelBody, ToggleControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import CustomFieldSettings from './custom_field_settings.jsx';
-import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
+import { CustomFieldSettings } from './custom_field_settings.jsx';
+import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
 import {
   InputStylesSettings,
   inputStylesPropTypes,
 } from '../input_styles_settings.jsx';
-import TextInputEdit from '../text_input_edit.jsx';
+import { TextInputEdit } from '../text_input_edit.jsx';
 
 function CustomTextEdit({ attributes, setAttributes, clientId }) {
   const isSaving = useSelect(
@@ -109,4 +109,4 @@ CustomTextEdit.propTypes = {
   clientId: PropTypes.string.isRequired,
 };
 
-export default CustomTextEdit;
+export { CustomTextEdit };

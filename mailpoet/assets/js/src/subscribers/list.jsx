@@ -1,23 +1,20 @@
-import { Link, useLocation } from 'react-router-dom';
-
+import classnames from 'classnames';
 import jQuery from 'jquery';
-import MailPoet from 'mailpoet';
-import classNames from 'classnames';
+import { Link, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import Button from 'common/button/button.tsx';
-import Tags from 'common/tag/tags';
-import Listing from 'listing/listing.jsx';
-import Modal from 'common/modal/modal.tsx';
-import Selection from 'form/fields/selection.jsx';
-import SubscribersLimitNotice from 'notices/subscribers_limit_notice.jsx';
-import InvalidMssKeyNotice from 'notices/invalid_mss_key_notice';
-import EmailVolumeLimitNotice from 'notices/email_volume_limit_notice';
+import { Button, Tags } from 'common';
+import { Listing } from 'listing/listing.jsx';
+import { MailPoet } from 'mailpoet';
+import { Modal } from 'common/modal/modal.tsx';
+import { Selection } from 'form/fields/selection.jsx';
+import { SubscribersLimitNotice } from 'notices/subscribers_limit_notice.jsx';
+import { InvalidMssKeyNotice } from 'notices/invalid_mss_key_notice';
+import { EmailVolumeLimitNotice } from 'notices/email_volume_limit_notice';
 import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
-import SubscribersInPlan from 'common/subscribers_in_plan';
-
-import SubscribersHeading from './heading';
+import { SubscribersInPlan } from 'common/subscribers_in_plan';
 import { ListingsEngagementScore } from './listings_engagement_score';
+import { SubscribersHeading } from './heading';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -367,7 +364,7 @@ function SubscriberList({ match }) {
   const location = useLocation();
 
   const renderItem = (subscriber, actions) => {
-    const rowClasses = classNames(
+    const rowClasses = classnames(
       'manage-column',
       'column-primary',
       'has-row-actions',
@@ -514,4 +511,4 @@ SubscriberList.propTypes = {
   }).isRequired,
 };
 
-export default SubscriberList;
+export { SubscriberList };

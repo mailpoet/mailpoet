@@ -1,8 +1,8 @@
 import { ReactNode, useState } from 'react';
 import classnames from 'classnames';
 
-import SettingsIcon from './form_placement_options/icons/settings_icon';
-import CheckIcon from './form_placement_options/icons/checkbox_icon';
+import { SettingsIcon } from './form_placement_options/icons/settings_icon';
+import { CheckboxIcon } from './form_placement_options/icons/checkbox_icon';
 
 type Props = {
   label: string;
@@ -65,7 +65,7 @@ function SelectionItem({
             <div className="selection-item-settings-oval" />
           )}
           {active && canBeActive && (
-            <div className="selection-item-check">{CheckIcon}</div>
+            <div className="selection-item-check">{CheckboxIcon}</div>
           )}
         </div>
         {children}
@@ -82,4 +82,4 @@ SelectionItem.defaultProps = {
   automationId: undefined,
 };
 
-export default SelectionItem;
+export { SelectionItem };

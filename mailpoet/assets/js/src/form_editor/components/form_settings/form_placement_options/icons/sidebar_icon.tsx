@@ -1,6 +1,6 @@
-import { SVG, Path, Rect, G } from '@wordpress/components';
+import { G, Path, Rect, SVG } from '@wordpress/components';
 
-export default (
+export const SidebarIcon = (
   <SVG
     xmlns="http://www.w3.org/2000/svg"
     width="144"

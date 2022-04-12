@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 function PrintBoolean(props) {
   return (
@@ -25,4 +25,4 @@ PrintBoolean.defaultProps = {
   children: null,
 };
 
-export default PrintBoolean;
+export { PrintBoolean };

@@ -1,11 +1,11 @@
 import moment from 'moment';
-import MailPoet from 'mailpoet';
-import Hooks from 'wp-js-hooks';
+import { MailPoet } from 'mailpoet';
+import { Hooks } from 'wp-js-hooks';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import Tag from 'common/tag/tag';
-import NewsletterStats from 'common/listings/newsletter_stats';
+import { Tag } from 'common';
 import { trackStatsCTAClicked } from 'newsletters/listings/utils.jsx';
+import { NewsletterStats } from 'common/listings/newsletter_stats';
 
 const wrapInLink = (content, params, id, totalSent) => {
   if (totalSent <= 0 || !params.link) {
@@ -205,4 +205,4 @@ Statistics.defaultProps = {
   currentTime: undefined,
 };
 
-export default Statistics;
+export { Statistics };

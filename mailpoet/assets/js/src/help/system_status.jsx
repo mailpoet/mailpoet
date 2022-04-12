@@ -1,7 +1,7 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
-import CronStatus from './cron_status.jsx';
-import QueueStatus from './queue_status.jsx';
+import { CronStatus } from './cron_status.jsx';
+import { QueueStatus } from './queue_status.jsx';
 
 function renderStatusMessage(
   status,
@@ -101,7 +101,7 @@ function renderMSSSection(data) {
   );
 }
 
-function SystemStatus() {
+export function SystemStatus() {
   const systemStatusData = window.systemStatusData;
 
   return (
@@ -120,4 +120,3 @@ function SystemStatus() {
     </>
   );
 }
-export default SystemStatus;

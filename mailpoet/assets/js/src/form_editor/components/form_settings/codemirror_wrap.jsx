@@ -66,4 +66,4 @@ CodemirrorWrap.defaultProps = {
   },
 };
 
-export default CodemirrorWrap;
+export { CodemirrorWrap };

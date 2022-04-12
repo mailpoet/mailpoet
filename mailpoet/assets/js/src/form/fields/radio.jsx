@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import Radio from 'common/form/radio/radio';
+import { Radio } from 'common/form/radio/radio';
 
 class FormFieldRadio extends Component {
   // eslint-disable-line react/prefer-stateless-function, max-len
@@ -49,4 +49,4 @@ FormFieldRadio.defaultProps = {
   },
 };
 
-export default FormFieldRadio;
+export { FormFieldRadio };

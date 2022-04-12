@@ -1,9 +1,10 @@
 import { Component } from 'react';
 import jQuery from 'jquery';
-import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import Button from 'common/button/button.tsx';
-import Select from 'common/form/select/select.tsx';
+
+import { Button } from 'common/button/button.tsx';
+import { MailPoet } from 'mailpoet';
+import { Select } from 'common/form/select/select.tsx';
 
 class ListingFilters extends Component {
   componentDidUpdate() {
@@ -100,4 +101,4 @@ ListingFilters.defaultProps = {
   onBeforeSelectFilter: undefined,
 };
 
-export default ListingFilters;
+export { ListingFilters };

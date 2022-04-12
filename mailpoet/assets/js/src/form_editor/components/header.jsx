@@ -1,17 +1,17 @@
 import {
   Button,
-  MenuGroup,
   DropdownMenu,
+  MenuGroup,
   ToolbarItem,
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { moreVertical, plus } from '@wordpress/icons';
 import { __, _x } from '@wordpress/i18n';
-import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import FeatureToggle from './feature_toggle';
-import HistoryUndo from './history_undo';
-import HistoryRedo from './history_redo';
+import { MailPoet } from 'mailpoet';
+import { FeatureToggle } from './feature_toggle';
+import { HistoryUndo } from './history_undo';
+import { HistoryRedo } from './history_redo';
 
 function Header({ isInserterOpened, setIsInserterOpened }) {
   const sidebarOpened = useSelect(
@@ -118,4 +118,4 @@ Header.propTypes = {
   setIsInserterOpened: PropTypes.func.isRequired,
 };
 
-export default Header;
+export { Header };

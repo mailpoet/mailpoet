@@ -1,6 +1,6 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { Place } from 'react-tooltip';
-import Badge from './badge';
+import { Badge } from './badge';
 
 type StatsBadgeProps = {
   stat: string;
@@ -50,7 +50,7 @@ export const getBadgeType = (statName, rate) => {
   return stat.badgeTypes[len - 1];
 };
 
-export function StatsBadge(props: StatsBadgeProps) {
+function StatsBadge(props: StatsBadgeProps) {
   const badges = {
     excellent: {
       name: MailPoet.I18n.t('excellentBadgeName'),
@@ -116,3 +116,5 @@ export function StatsBadge(props: StatsBadgeProps) {
 StatsBadge.defaultProps = {
   isInverted: true,
 };
+
+export { StatsBadge };

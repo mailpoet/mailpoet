@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import classNames from 'classnames';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 class ListingColumn extends Component {
@@ -10,7 +10,7 @@ class ListingColumn extends Component {
   };
 
   render() {
-    const classes = classNames(
+    const classes = classnames(
       'manage-column',
       { 'column-primary': this.props.column.is_primary },
       { sortable: this.props.column.sortable },
@@ -76,4 +76,4 @@ ListingColumn.defaultProps = {
   sort_by: undefined,
 };
 
-export default ListingColumn;
+export { ListingColumn };

@@ -10,7 +10,7 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
   automationId?: string;
 };
 
-const Select = forwardRef(
+export const Select = forwardRef(
   (
     {
       children,
@@ -38,5 +38,3 @@ const Select = forwardRef(
     </div>
   ),
 );
-
-export default Select;

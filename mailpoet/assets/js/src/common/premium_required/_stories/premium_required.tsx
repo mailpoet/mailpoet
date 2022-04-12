@@ -1,5 +1,5 @@
-import PremiumRequired from '../premium_required';
-import Button from '../../button/button';
+import { PremiumRequired } from '../premium_required';
+import { Button } from '../../button/button';
 
 export default {
   title: 'Premium Required',

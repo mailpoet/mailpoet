@@ -1,12 +1,12 @@
 import { useContext } from 'react';
 
-import Button from 'common/button/button';
+import { Button } from 'common/button/button';
 import { t } from 'common/functions';
 import { GlobalContext } from 'context';
 import { useAction } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
-export default function Reinstall() {
+export function Reinstall() {
   const reinstall = useAction('reinstall');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = useContext<any>(GlobalContext);

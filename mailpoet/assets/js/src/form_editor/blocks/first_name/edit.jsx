@@ -6,9 +6,9 @@ import {
 } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
-import TextInputEdit from '../text_input_edit.jsx';
+import { TextInputEdit } from '../text_input_edit.jsx';
 import {
   InputStylesSettings,
   inputStylesPropTypes,
@@ -71,4 +71,4 @@ FirstNameEdit.propTypes = {
   setAttributes: PropTypes.func.isRequired,
 };
 
-export default FirstNameEdit;
+export { FirstNameEdit };

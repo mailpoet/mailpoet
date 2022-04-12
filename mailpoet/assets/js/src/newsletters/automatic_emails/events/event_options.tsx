@@ -1,4 +1,4 @@
-import Selection from 'form/fields/selection.jsx';
+import { Selection } from 'form/fields/selection.jsx';
 import _ from 'underscore';
 
 type EventOptionData = {
@@ -96,5 +96,3 @@ export function EventOptions({
     </div>
   );
 }
-
-export default EventOptions;

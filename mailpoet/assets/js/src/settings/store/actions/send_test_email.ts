@@ -1,10 +1,7 @@
 import { t } from 'common/functions';
 import { Settings } from 'settings/store/types';
 
-export default function* sendTestEmail(
-  recipient: string,
-  mailer: Settings['mta'],
-) {
+export function* sendTestEmail(recipient: string, mailer: Settings['mta']) {
   if (!recipient) {
     return { type: 'TEST_EMAIL_FAILED', error: [t('cantSendEmail')] };
   }

@@ -1,6 +1,6 @@
 import { InputHTMLAttributes } from 'react';
 import classnames from 'classnames';
-import Tooltip from 'common/tooltip/tooltip';
+import { Tooltip } from 'common/tooltip/tooltip';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   customLabel?: string;
@@ -11,7 +11,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   tooltip?: string;
 };
 
-function Input({
+export function Input({
   className,
   customLabel,
   dimension,
@@ -52,5 +52,3 @@ function Input({
     </div>
   );
 }
-
-export default Input;

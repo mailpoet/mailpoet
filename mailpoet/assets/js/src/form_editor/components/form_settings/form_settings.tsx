@@ -1,11 +1,11 @@
 import { useDispatch, useSelect } from '@wordpress/data';
 import { partial } from 'lodash';
-import BasicSettingsPanel from './basic_settings_panel';
-import StylesSettingsPanel from './styles_settings_panel';
-import FormPlacementPanel from './form_placement_panel';
-import CustomCssPanel from './custom_css_panel';
+import { BasicSettingsPanel } from './basic_settings_panel';
+import { StylesSettingsPanel } from './styles_settings_panel';
+import { FormPlacementPanel } from './form_placement_panel';
+import { CustomCssPanel } from './custom_css_panel';
 
-export default function FormSettings(): JSX.Element {
+export function FormSettings(): JSX.Element {
   const dispatchResult = useDispatch('mailpoet-form-editor');
   const toggleSidebarPanel: (t1: string, ...ts: []) => void =
     dispatchResult.toggleSidebarPanel;

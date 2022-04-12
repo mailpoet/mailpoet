@@ -1,23 +1,25 @@
-import { Component } from 'react';
-import MailPoet from 'mailpoet';
 import _ from 'underscore';
-import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
-import { Button } from 'common';
-import Form from 'form/form.jsx';
-import StandardNewsletterFields from 'newsletters/send/standard';
-import NotificationNewsletterFields from 'newsletters/send/notification.jsx';
-import WelcomeNewsletterFields from 'newsletters/send/welcome.jsx';
-import AutomaticEmailFields from 'newsletters/send/automatic.jsx';
-import { ReEngagementNewsletterFields } from 'newsletters/send/re_engagement';
-import HelpTooltip from 'help-tooltip.jsx';
+import { Component } from 'react';
 import jQuery from 'jquery';
-import Background from 'common/background/background';
-import { Grid } from 'common/grid';
-import { fromUrl } from 'common/thumbnail.ts';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 import slugify from 'slugify';
+import { withRouter } from 'react-router-dom';
+
+import { Background } from 'common/background/background';
+import { Button } from 'common';
+import { Form } from 'form/form.jsx';
+import { Grid } from 'common/grid';
+import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
+import { MailPoet } from 'mailpoet';
+import { StandardNewsletterFields } from 'newsletters/send/standard';
+import { NotificationNewsletterFields } from 'newsletters/send/notification.jsx';
+import { WelcomeNewsletterFields } from 'newsletters/send/welcome.jsx';
+import { AutomaticEmailFields } from 'newsletters/send/automatic.jsx';
+import { ReEngagementNewsletterFields } from 'newsletters/send/re_engagement';
+import { Tooltip } from 'help-tooltip.jsx';
+import { fromUrl } from 'common/thumbnail.ts';
+
 import { GlobalContext } from 'context/index.jsx';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
@@ -97,7 +99,7 @@ function validateNewsletter(newsletter) {
   return undefined;
 }
 
-class NewsletterSend extends Component {
+class NewsletterSendComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -640,7 +642,7 @@ class NewsletterSend extends Component {
               </Button>
             )}
             {this.state.validationError !== undefined && (
-              <HelpTooltip
+              <Tooltip
                 tooltip={<div>{this.state.validationError}</div>}
                 tooltipId="helpTooltipSendEmail"
               />
@@ -682,9 +684,9 @@ class NewsletterSend extends Component {
   }
 }
 
-NewsletterSend.contextType = GlobalContext;
+NewsletterSendComponent.contextType = GlobalContext;
 
-NewsletterSend.propTypes = {
+NewsletterSendComponent.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string,
@@ -695,4 +697,4 @@ NewsletterSend.propTypes = {
   }).isRequired,
 };
 
-export default withRouter(NewsletterSend);
+export const NewsletterSend = withRouter(NewsletterSendComponent);

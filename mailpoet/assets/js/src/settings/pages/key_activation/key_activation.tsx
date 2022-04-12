@@ -1,13 +1,13 @@
 import { useContext } from 'react';
-import MailPoet from 'mailpoet';
-import { useSelector, useAction, useSetting } from 'settings/store/hooks';
+import { MailPoet } from 'mailpoet';
+import { useAction, useSelector, useSetting } from 'settings/store/hooks';
 import { GlobalContext } from 'context';
-import Button from 'common/button/button';
+import { Button } from 'common/button/button';
 import { t } from 'common/functions';
-import Input from 'common/form/input/input';
+import { Input } from 'common/form/input/input';
 import { KeyActivationState, MssStatus } from 'settings/store/types';
-import { Label, Inputs } from 'settings/components';
-import SetFromAddressModal from 'common/set_from_address_modal';
+import { Inputs, Label } from 'settings/components';
+import { SetFromAddressModal } from 'common/set_from_address_modal';
 import {
   KeyMessages,
   MssMessages,
@@ -79,7 +79,7 @@ function Messages(
   );
 }
 
-export default function KeyActivation() {
+export function KeyActivation() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { notices } = useContext<any>(GlobalContext);
   const state = useSelector('getKeyActivationState')();

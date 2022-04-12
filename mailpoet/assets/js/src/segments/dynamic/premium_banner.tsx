@@ -1,10 +1,10 @@
 import { FunctionComponent } from 'react';
-import MailPoet from 'mailpoet';
-import PremiumBannerWithUpgrade from 'common/premium_banner_with_upgrade/premium_banner_with_upgrade';
-import Button from 'common/button/button';
+import { MailPoet } from 'mailpoet';
+import { PremiumBannerWithUpgrade } from 'common/premium_banner_with_upgrade/premium_banner_with_upgrade';
+import { Button } from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
 
-function DynamicSegmentsPremiumBanner(): JSX.Element {
+export function DynamicSegmentsPremiumBanner(): JSX.Element {
   const getBannerMessage: FunctionComponent = () => {
     const message = MailPoet.I18n.t('premiumFeatureMultipleConditions');
     return (
@@ -45,5 +45,3 @@ function DynamicSegmentsPremiumBanner(): JSX.Element {
     />
   );
 }
-
-export default DynamicSegmentsPremiumBanner;

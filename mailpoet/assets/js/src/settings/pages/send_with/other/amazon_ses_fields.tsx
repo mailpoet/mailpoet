@@ -1,11 +1,11 @@
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
-import Input from 'common/form/input/input';
-import Select from 'common/form/select/select';
+import { Input } from 'common/form/input/input';
+import { Select } from 'common/form/select/select';
 import { useSetting, useSelector } from 'settings/store/hooks';
-import SendingFrequency from './sending_frequency';
+import { SendingFrequency } from './sending_frequency';
 
-export default function AmazonSesFields() {
+export function AmazonSesFields() {
   const [region, setRegion] = useSetting('mta', 'region');
   const [accessKey, setAccessKey] = useSetting('mta', 'access_key');
   const [secretKey, setSecretKey] = useSetting('mta', 'secret_key');

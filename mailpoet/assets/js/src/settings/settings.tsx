@@ -1,9 +1,9 @@
-import MailPoet from 'mailpoet';
-import Notices from 'notices/notices.jsx';
-import Loading from 'common/loading';
+import { MailPoet } from 'mailpoet';
+import { Notices } from 'notices/notices.jsx';
+import { Loading } from 'common/loading';
 import { t } from 'common/functions';
-import RoutedTabs from 'common/tabs/routed_tabs';
-import Tab from 'common/tabs/tab';
+import { RoutedTabs } from 'common/tabs/routed_tabs';
+import { Tab } from 'common/tabs/tab';
 import { TopBar } from 'common/top_bar/top_bar';
 import {
   Advanced,
@@ -21,7 +21,7 @@ const trackTabSwitched = (tabKey: string) => {
   });
 };
 
-export default function Settings() {
+export function Settings() {
   const isSaving = useSelector('isSaving')();
   const hasWooCommerce = useSelector('hasWooCommerce')();
   return (

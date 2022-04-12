@@ -1,10 +1,10 @@
 import { t } from 'common/functions';
-import Button from 'common/button/button';
-import Checkbox from 'common/form/checkbox/checkbox';
-import { Label, Inputs } from 'settings/components';
-import { useSetting, useAction } from 'settings/store/hooks';
+import { Button } from 'common/button/button';
+import { Checkbox } from 'common/form/checkbox/checkbox';
+import { Inputs, Label } from 'settings/components';
+import { useAction, useSetting } from 'settings/store/hooks';
 
-export default function EmailCustomizer() {
+export function EmailCustomizer() {
   const [enabled, setEnabled] = useSetting(
     'woocommerce',
     'use_mailpoet_editor',

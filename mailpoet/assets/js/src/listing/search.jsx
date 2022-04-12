@@ -1,9 +1,9 @@
 import { Component } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
-import Input from 'common/form/input/input.tsx';
-import icon from './assets/search_icon.tsx';
+import { Input } from 'common/form/input/input.tsx';
+import { Icon } from './assets/search_icon.tsx';
 
 /**
  * this components has to be setup with router
@@ -69,7 +69,7 @@ class ListingSearch extends Component {
           </label>
           <Input
             dimension="small"
-            iconStart={icon}
+            iconStart={Icon}
             type="search"
             id="search_input"
             name="s"
@@ -88,4 +88,4 @@ ListingSearch.propTypes = {
   onSearch: PropTypes.func.isRequired,
 };
 
-export default ListingSearch;
+export { ListingSearch };

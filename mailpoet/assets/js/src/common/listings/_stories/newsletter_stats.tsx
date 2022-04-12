@@ -1,6 +1,6 @@
-import MailPoet from 'mailpoet';
-import NewsletterStats from '../newsletter_stats';
-import Heading from '../../typography/heading/heading';
+import { MailPoet } from 'mailpoet';
+import { NewsletterStats } from '../newsletter_stats';
+import { Heading } from '../../typography/heading/heading';
 
 MailPoet.I18n.add('excellentBadgeName', 'Excellent');
 MailPoet.I18n.add('excellentBadgeTooltip', 'Congrats!');

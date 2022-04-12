@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
-import SelectMethod from './step_method_selection/select_import_method.jsx';
-import MethodPaste from './step_method_selection/method_paste.jsx';
-import MethodUpload from './step_method_selection/method_upload.jsx';
-import MethodMailChimp from './step_method_selection/method_mailchimp.jsx';
-import processCsv from './step_method_selection/process_csv.jsx';
-import PreviousNextStepButtons from './previous_next_step_buttons';
+import { MailPoet } from 'mailpoet';
+import { SelectImportMethod } from './step_method_selection/select_import_method.jsx';
+import { MethodPaste } from './step_method_selection/method_paste.jsx';
+import { MethodUpload } from './step_method_selection/method_upload.jsx';
+import { MethodMailChimp } from './step_method_selection/method_mailchimp.jsx';
+import { processCsv } from './step_method_selection/process_csv.jsx';
+import { PreviousNextStepButtons } from './previous_next_step_buttons';
 
 const getNextStepLink = (importData, subscribersLimitForValidation, method) => {
   if (importData === undefined) {
@@ -25,7 +25,7 @@ const getNextStepLink = (importData, subscribersLimitForValidation, method) => {
   return 'step_input_validation';
 };
 
-function StepMethodSelection({
+function StepMethodSelectionComponent({
   history,
   setStepMethodSelectionData,
   subscribersLimitForValidation,
@@ -57,7 +57,7 @@ function StepMethodSelection({
 
   return (
     <div className="mailpoet-settings-grid">
-      <SelectMethod activeMethod={method} onMethodChange={setMethod} />
+      <SelectImportMethod activeMethod={method} onMethodChange={setMethod} />
       {method === 'paste-method' && (
         <MethodPaste
           onPrevious={previousStep}
@@ -97,7 +97,7 @@ function StepMethodSelection({
   );
 }
 
-StepMethodSelection.propTypes = {
+StepMethodSelectionComponent.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
@@ -105,4 +105,4 @@ StepMethodSelection.propTypes = {
   subscribersLimitForValidation: PropTypes.number.isRequired,
 };
 
-export default withRouter(StepMethodSelection);
+export const StepMethodSelection = withRouter(StepMethodSelectionComponent);

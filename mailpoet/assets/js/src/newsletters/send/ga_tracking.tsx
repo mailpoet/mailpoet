@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { Field } from '../../form/types';
 
@@ -28,11 +28,10 @@ const tip = ReactStringReplace(
   ),
 );
 
-const field: Field = {
+export const GATrackingField: Field = {
   name: 'ga_campaign',
   label: MailPoet.I18n.t('gaCampaignLine'),
   tip,
   type: 'text',
   onBeforeChange: trackCampaignNameTyped,
 };
-export default field;

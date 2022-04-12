@@ -1,4 +1,4 @@
-import App from 'newsletter_editor/App';
+import { App } from 'newsletter_editor/App';
 import WCContentBlock from 'newsletter_editor/blocks/woocommerceContent';
 
 const expect = global.expect;

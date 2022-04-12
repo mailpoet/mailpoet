@@ -1,7 +1,7 @@
 import { t } from 'common/functions';
 import { Label, Inputs } from 'settings/components';
 
-export default function GdprCompliant() {
+export function GdprCompliant() {
   return (
     <>
       <Label

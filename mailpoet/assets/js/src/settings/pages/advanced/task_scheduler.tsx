@@ -1,12 +1,12 @@
 import ReactStringReplace from 'react-string-replace';
 
 import { t } from 'common/functions';
-import Input from 'common/form/input/input';
-import Radio from 'common/form/radio/radio';
+import { Input } from 'common/form/input/input';
+import { Radio } from 'common/form/radio/radio';
 import { useSetting, useSelector } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
-export default function TaskScheduler() {
+export function TaskScheduler() {
   const [method, setMethod] = useSetting('cron_trigger', 'method');
   const paths = useSelector('getPaths')();
 

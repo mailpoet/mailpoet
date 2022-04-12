@@ -101,4 +101,4 @@ $.fn.mailpoetSerializeObject = function (coerce) {
   return obj;
 };
 
-export default $;
+export { $ };

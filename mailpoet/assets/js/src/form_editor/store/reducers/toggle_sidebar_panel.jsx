@@ -20,7 +20,7 @@ const getRequiredAction = (openedPanels, panelId, toggleTo) => {
  * @param {{toggleTo: string|undefined, id: string, type: string}} action
  * @return {object} Modified state object
  */
-export default (state, action) => {
+export const toggleSidebarPanel = (state, action) => {
   let toggleTo;
   if (action.toggleTo === true) toggleTo = 'opened';
   if (action.toggleTo === false) toggleTo = 'closed';

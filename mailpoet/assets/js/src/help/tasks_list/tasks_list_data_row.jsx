@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import parseDate from 'date-fns/parse';
 
 function TasksListDataRow(props) {
@@ -72,4 +72,4 @@ TasksListDataRow.defaultProps = {
   show_scheduled_at: false,
 };
 
-export default TasksListDataRow;
+export { TasksListDataRow };

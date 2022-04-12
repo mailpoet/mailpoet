@@ -1,7 +1,7 @@
 import { action } from '_storybook/action';
-import Checkbox from '../checkbox';
-import CheckboxGroup from '../group';
-import Heading from '../../../typography/heading/heading';
+import { Checkbox } from '../checkbox';
+import { CheckboxGroup } from '../group';
+import { Heading } from '../../../typography/heading/heading';
 
 export default {
   title: 'Form',

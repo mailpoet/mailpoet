@@ -1,10 +1,10 @@
 import { PureComponent } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
-import Badge from 'common/badge/badge';
-import Button from 'common/button/button';
-import Heading from 'common/typography/heading/heading';
+import { Badge } from 'common/badge/badge';
+import { Button } from 'common/button/button';
+import { Heading } from 'common/typography/heading/heading';
 
 class AutomaticEmailEvent extends PureComponent {
   render() {
@@ -92,4 +92,4 @@ AutomaticEmailEvent.propTypes = {
   }).isRequired,
 };
 
-export default AutomaticEmailEvent;
+export { AutomaticEmailEvent };

@@ -1,6 +1,8 @@
-import HorizontalAlignment from 'common/styles';
+import { HorizontalAlignment } from 'common/styles';
 
-function convert(alignment: HorizontalAlignment): string {
+export function convertAlignmentToMargin(
+  alignment: HorizontalAlignment,
+): string {
   if (alignment === HorizontalAlignment.Right) {
     return '0 0 0 auto';
   }
@@ -9,5 +11,3 @@ function convert(alignment: HorizontalAlignment): string {
   }
   return 'auto 0';
 }
-
-export default convert;

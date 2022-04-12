@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { t, onChange } from 'common/functions';
-import Checkbox from 'common/form/checkbox/checkbox';
-import Input from 'common/form/input/input';
+import { Checkbox } from 'common/form/checkbox/checkbox';
+import { Input } from 'common/form/input/input';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 
@@ -11,7 +11,7 @@ type Props = {
   event: 'on_comment' | 'on_register';
 };
 
-export default function SubscribeOn({ title, description, event }: Props) {
+export function SubscribeOn({ title, description, event }: Props) {
   const [enabled, setEnabled] = useSetting('subscribe', event, 'enabled');
   const [label, setLabel] = useSetting('subscribe', event, 'label');
   const [segments, setSegments] = useSetting('subscribe', event, 'segments');

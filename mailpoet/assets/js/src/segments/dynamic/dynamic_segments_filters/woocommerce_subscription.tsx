@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { filter } from 'lodash/fp';
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import ReactSelect from 'common/form/react_select/react_select';
-import Select from 'common/form/select/select';
+import { ReactSelect } from 'common/form/react_select/react_select';
+import { Select } from 'common/form/select/select';
 import { Grid } from 'common/grid';
 
 import {

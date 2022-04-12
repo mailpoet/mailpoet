@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useState, useRef } from 'react';
-import MailPoet from 'mailpoet';
-import { Spinner, SelectControl } from '@wordpress/components';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { MailPoet } from 'mailpoet';
+import { SelectControl, Spinner } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import Preview from 'common/preview/preview.jsx';
-import Modal from 'common/modal/modal';
-import PlacementSettingsPanel from 'form_editor/components/form_settings/form_placement_options/settings_panel';
+import { Modal } from 'common/modal/modal';
+import { Preview } from 'common/preview/preview.jsx';
+import { SettingsPanel } from 'form_editor/components/form_settings/form_placement_options/settings_panel';
 
-function FormPreview(): JSX.Element {
+export function FormPreview(): JSX.Element {
   const iframeElement = useRef(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const { hidePreview, changePreviewSettings } = useDispatch(
@@ -146,7 +146,7 @@ function FormPreview(): JSX.Element {
                 },
               ]}
             />
-            <PlacementSettingsPanel activePanel={previewSettings.formType} />
+            <SettingsPanel activePanel={previewSettings.formType} />
           </div>
           <Preview
             onDisplayTypeChange={onPreviewTypeChange}
@@ -178,5 +178,3 @@ function FormPreview(): JSX.Element {
     </Modal>
   );
 }
-
-export default FormPreview;

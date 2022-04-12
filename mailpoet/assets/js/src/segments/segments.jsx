@@ -1,16 +1,16 @@
 import ReactDOM from 'react-dom';
-import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 
-import MailPoet from 'mailpoet';
-import RoutedTabs from 'common/tabs/routed_tabs';
-import Tab from 'common/tabs/tab';
-import SegmentList from 'segments/list.jsx';
-import SegmentForm from 'segments/form.jsx';
+import { MailPoet } from 'mailpoet';
+import { RoutedTabs } from 'common/tabs/routed_tabs';
+import { Tab } from 'common/tabs/tab';
+import { SegmentList } from 'segments/list.jsx';
+import { SegmentForm } from 'segments/form.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
-import Notices from 'notices/notices.jsx';
-import Editor from './dynamic/editor';
-import DynamicSegmentList from './dynamic/list.jsx';
-import ListHeading from './heading';
+import { Notices } from 'notices/notices.jsx';
+import { Editor } from './dynamic/editor';
+import { DynamicSegmentList } from './dynamic/list.jsx';
+import { ListHeading } from './heading';
 
 const container = document.getElementById('segments_container');
 

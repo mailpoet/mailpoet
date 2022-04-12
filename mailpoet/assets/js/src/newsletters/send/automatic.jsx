@@ -1,6 +1,6 @@
-import MailPoet from 'mailpoet';
-import SendEventConditions from 'newsletters/automatic_emails/send_event_conditions.jsx';
-import GATrackingField from 'newsletters/send/ga_tracking';
+import { MailPoet } from 'mailpoet';
+import { SendEventConditions } from 'newsletters/automatic_emails/send_event_conditions.jsx';
+import { GATrackingField } from 'newsletters/send/ga_tracking';
 
 const emails = window.mailpoet_woocommerce_automatic_emails || [];
 
@@ -112,7 +112,7 @@ const getAutomaticEmailFields = (newsletter) => {
   return fields;
 };
 
-export default {
+export const AutomaticEmailFields = {
   getFields: function getFields(newsletter) {
     return getAutomaticEmailFields(newsletter);
   },

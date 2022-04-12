@@ -1,20 +1,20 @@
 import jQuery from 'jquery';
 import { Component } from 'react';
 import _ from 'underscore';
-import classNames from 'classnames';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
-import Categories from 'common/categories/categories';
-import ListingHeader from 'listing/header.jsx';
-import ListingPages from 'listing/pages.jsx';
-import ListingSearch from 'listing/search.jsx';
-import ListingFilters from 'listing/filters.jsx';
-import ListingItems from 'listing/listing_items.jsx';
-import MailerError from 'listing/notices.jsx';
+import { MailPoet } from 'mailpoet';
+import { Categories } from 'common/categories/categories';
+import { ListingHeader } from 'listing/header.jsx';
+import { ListingPages } from 'listing/pages.jsx';
+import { ListingSearch } from 'listing/search.jsx';
+import { ListingFilters } from 'listing/filters.jsx';
+import { ListingItems } from 'listing/listing_items.jsx';
+import { MailerError } from 'listing/notices.jsx';
 import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context/index.jsx';
 
-class Listing extends Component {
+class ListingComponent extends Component {
   constructor(props) {
     super(props);
     this.state = this.getEmptyState();
@@ -592,7 +592,7 @@ class Listing extends Component {
     // item actions
     const itemActions = this.props.item_actions || [];
 
-    const tableClasses = classNames('mailpoet-listing-table', {
+    const tableClasses = classnames('mailpoet-listing-table', {
       'mailpoet-listing-loading': this.state.loading,
     });
 
@@ -638,7 +638,7 @@ class Listing extends Component {
       extraActions = this.props.renderExtraActions(this.state);
     }
 
-    const listingClassName = classNames(
+    const listingClassName = classnames(
       'mailpoet-listing',
       this.props.className,
     );
@@ -726,10 +726,10 @@ class Listing extends Component {
   }
 }
 
-Listing.contextType = GlobalContext;
+ListingComponent.contextType = GlobalContext;
 
 /* eslint-disable react/require-default-props */
-Listing.propTypes = {
+ListingComponent.propTypes = {
   limit: PropTypes.number,
   sort_by: PropTypes.string,
   sort_order: PropTypes.string,
@@ -766,7 +766,7 @@ Listing.propTypes = {
 };
 /* eslint-enable react/require-default-props */
 
-Listing.defaultProps = {
+ListingComponent.defaultProps = {
   limit: 10,
   sort_by: null,
   sort_order: undefined,
@@ -790,4 +790,4 @@ Listing.defaultProps = {
   className: undefined,
 };
 
-export default withRouter(Listing);
+export const Listing = withRouter(ListingComponent);

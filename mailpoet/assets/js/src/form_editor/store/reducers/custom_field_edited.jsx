@@ -1,4 +1,4 @@
-export default (state) => ({
+export const customFieldEdited = (state) => ({
   ...state,
   hasUnsavedChanges: true,
 });

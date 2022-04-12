@@ -14,7 +14,7 @@ const findBlockPath = (blocks, id, path = []) =>
     return [];
   }, []);
 
-export default {
+export const selectors = {
   isFormSaved(state) {
     return typeof state.formData.id === 'number';
   },

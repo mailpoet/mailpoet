@@ -7,9 +7,9 @@
 import Marionette from 'backbone.marionette';
 import _ from 'underscore';
 import jQuery from 'jquery';
-import BehaviorsLookup from 'newsletter_editor/behaviors/BehaviorsLookup';
+import { BehaviorsLookup } from 'newsletter_editor/behaviors/BehaviorsLookup';
 import interact from 'interact';
-import App from 'newsletter_editor/App';
+import { App } from 'newsletter_editor/App';
 
 var BL = BehaviorsLookup;
 

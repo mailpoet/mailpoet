@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 declare module 'wp-js-hooks' {
-  function addFilter(
-    name: string,
-    namespace: string,
-    callback: (...args: any[]) => any,
-  ): void;
-  function applyFilters(name: string, ...args: any[]): any;
+  type Hooks = {
+    addFilter: (
+      name: string,
+      namespace: string,
+      callback: (...args: any[]) => any,
+    ) => void;
+    applyFilters: (name: string, ...args: any[]) => any;
+  };
+  export const Hooks: Hooks;
 }
 
 type ErrorResponse = {
@@ -14,6 +17,7 @@ type ErrorResponse = {
     message: string;
   }[];
 };
+
 interface JQuery {
   parsley: () => any;
 }
@@ -39,6 +43,7 @@ declare module '@woocommerce/settings' {
     defaultText: string;
     defaultStatus: boolean;
   }
+
   function getSetting(name: 'mailpoet_data'): MailPoetSettings;
   function getSetting(name: 'adminUrl'): string;
 }

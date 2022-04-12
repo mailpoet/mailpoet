@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { t, onChange } from 'common/functions';
-import Checkbox from 'common/form/checkbox/checkbox';
-import Input from 'common/form/input/input';
+import { Checkbox } from 'common/form/checkbox/checkbox';
+import { Input } from 'common/form/input/input';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 import { useSetting, useAction } from 'settings/store/hooks';
 
-export default function CheckoutOptin() {
+export function CheckoutOptin() {
   const [enabled, setEnabled] = useSetting(
     'woocommerce',
     'optin_on_checkout',

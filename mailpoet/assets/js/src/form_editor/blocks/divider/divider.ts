@@ -1,6 +1,6 @@
-import MailPoet from 'mailpoet';
-import icon from './icon.jsx';
-import edit from './edit';
+import { MailPoet } from 'mailpoet';
+import { Icon } from './icon.jsx';
+import { DividerEdit } from './edit';
 import { defaultAttributes } from './divider_types';
 
 export const name = 'mailpoet-form/divider';
@@ -8,7 +8,7 @@ export const name = 'mailpoet-form/divider';
 export const settings = {
   title: MailPoet.I18n.t('blockDivider'),
   description: null,
-  icon,
+  icon: Icon,
   category: 'design',
   attributes: {
     height: {
@@ -40,7 +40,7 @@ export const settings = {
     html: false,
     multiple: true,
   },
-  edit,
+  edit: DividerEdit,
   save(): null {
     return null;
   },

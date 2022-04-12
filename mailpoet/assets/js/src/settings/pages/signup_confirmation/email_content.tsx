@@ -1,9 +1,9 @@
 import { t, onChange } from 'common/functions';
-import Textarea from 'common/form/textarea/textarea';
+import { Textarea } from 'common/form/textarea/textarea';
 import { Label, Inputs } from 'settings/components';
 import { useSetting } from 'settings/store/hooks';
 
-export default function EmailContent() {
+export function EmailContent() {
   const [enabled] = useSetting('signup_confirmation', 'enabled');
   const [body, setBody] = useSetting('signup_confirmation', 'body');
 

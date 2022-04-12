@@ -1,9 +1,9 @@
 import { t, onChange, setLowercaseValue } from 'common/functions';
-import Input from 'common/form/input/input';
+import { Input } from 'common/form/input/input';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
 
-export default function BounceAddress() {
+export function BounceAddress() {
   const [email, setEmail] = useSetting('bounce', 'address');
 
   return (

@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import jQuery from 'jquery';
-import Button from '../../common/button/button';
+import { Button } from '../../common/button/button';
 import { Grid } from '../../common/grid';
-import Heading from '../../common/typography/heading/heading';
-import Input from '../../common/form/input/input';
+import { Heading } from '../../common/typography/heading/heading';
+import { Input } from '../../common/form/input/input';
 
 function WelcomeWizardSenderStep(props) {
   return (
@@ -95,4 +95,4 @@ WelcomeWizardSenderStep.defaultProps = {
   sender: null,
 };
 
-export default WelcomeWizardSenderStep;
+export { WelcomeWizardSenderStep };

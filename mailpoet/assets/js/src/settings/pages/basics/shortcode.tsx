@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { t } from 'common/functions';
-import Input from 'common/form/input/input';
+import { Input } from 'common/form/input/input';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
   description: string;
 };
 
-export default function Shortcode({ name, title, description }: Props) {
+export function Shortcode({ name, title, description }: Props) {
   const [segments, setSegments] = useState([]);
   const shortcode = `[${name}${
     segments.length ? ` segments="${segments.join(',')}"` : ''

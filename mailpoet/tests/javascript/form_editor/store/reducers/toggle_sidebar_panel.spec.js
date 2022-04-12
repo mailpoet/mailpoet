@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import reducer from '../../../../../assets/js/src/form_editor/store/reducers/toggle_sidebar_panel.jsx';
+import { toggleSidebarPanel as reducer } from '../../../../../assets/js/src/form_editor/store/reducers/toggle_sidebar_panel.jsx';
 
 describe('Toggle Sidebar Panel Reducer', () => {
   let initialState = null;

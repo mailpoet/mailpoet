@@ -2,12 +2,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import CleanList from 'subscribers/importExport/import/clean_list';
-import InitialQuestion from './step_input_validation/initial_question.jsx';
-import WrongSourceBlock from './step_input_validation/wrong_source_block.jsx';
-import LastSentQuestion from './step_input_validation/last_sent_question.jsx';
+import { CleanList } from 'subscribers/importExport/import/clean_list';
+import { InitialQuestion } from './step_input_validation/initial_question.jsx';
+import { WrongSourceBlock } from './step_input_validation/wrong_source_block.jsx';
+import { LastSentQuestion } from './step_input_validation/last_sent_question.jsx';
 
-function StepInputValidation({ stepMethodSelectionData, history }) {
+function StepInputValidationComponent({ stepMethodSelectionData, history }) {
   const [importSource, setImportSource] = useState(undefined);
   const [lastSent, setLastSent] = useState(undefined);
 
@@ -46,7 +46,7 @@ function StepInputValidation({ stepMethodSelectionData, history }) {
   );
 }
 
-StepInputValidation.propTypes = {
+StepInputValidationComponent.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
     replace: PropTypes.func.isRequired,
@@ -61,8 +61,8 @@ StepInputValidation.propTypes = {
   }),
 };
 
-StepInputValidation.defaultProps = {
+StepInputValidationComponent.defaultProps = {
   stepMethodSelectionData: undefined,
 };
 
-export default withRouter(StepInputValidation);
+export const StepInputValidation = withRouter(StepInputValidationComponent);

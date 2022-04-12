@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 
-import Button from '../../common/button/button';
-import Heading from '../../common/typography/heading/heading';
-import YesNo from '../../common/form/yesno/yesno';
+import { Button, TypographyHeading } from '../../common';
+import { YesNo } from '../../common/form/yesno/yesno';
 
 function WizardWooCommerceStep(props) {
   const [allowed, setAllowed] = useState(null);
@@ -32,7 +31,9 @@ function WizardWooCommerceStep(props) {
 
   return (
     <>
-      <Heading level={1}>{MailPoet.I18n.t('wooCommerceSetupTitle')}</Heading>
+      <TypographyHeading level={1}>
+        {MailPoet.I18n.t('wooCommerceSetupTitle')}
+      </TypographyHeading>
 
       <div className="mailpoet-gap" />
       <p>{MailPoet.I18n.t('wooCommerceSetupInfo')}</p>
@@ -135,4 +136,4 @@ WizardWooCommerceStep.defaultProps = {
   isWizardStep: false,
 };
 
-export default WizardWooCommerceStep;
+export { WizardWooCommerceStep };

@@ -1,7 +1,7 @@
-import App from 'newsletter_editor/App';
-import AutomatedLatestContentBlock from 'newsletter_editor/blocks/automatedLatestContentLayout';
-import ContainerBlock from 'newsletter_editor/blocks/container';
-import Communication from 'newsletter_editor/components/communication';
+import { App } from 'newsletter_editor/App';
+import { AutomatedLatestContentBlock } from 'newsletter_editor/blocks/automatedLatestContentLayout';
+import { ContainerBlock } from 'newsletter_editor/blocks/container';
+import { CommunicationComponent } from 'newsletter_editor/components/communication';
 
 /*  (ES6 -> CommonJS transform needed for inject-loader) */
 /* eslint-disable-next-line max-len  */
@@ -13,7 +13,6 @@ const Backbone = global.Backbone;
 const jQuery = global.jQuery;
 
 var EditorApplication = App;
-var CommunicationComponent = Communication;
 
 describe('Automated Latest Content Layout Supervisor', function () {
   var model;
@@ -37,9 +36,11 @@ describe('Automated Latest Content Layout Supervisor', function () {
 
     module = AutomatedLatestContentInjector({
       'newsletter_editor/components/communication': {
-        getBulkTransformedPosts: mock,
+        CommunicationComponent: {
+          getBulkTransformedPosts: mock,
+        },
       },
-    }).default;
+    }).AutomatedLatestContentBlock;
 
     model = new module.ALCLayoutSupervisor();
     model.refresh();
@@ -410,11 +411,13 @@ describe('Automated latest content layout', function () {
     before(function () {
       module = AutomatedLatestContentInjector({
         'newsletter_editor/components/communication': {
-          getPostTypes: function () {
-            return jQuery.Deferred();
+          CommunicationComponent: {
+            getPostTypes: function () {
+              return jQuery.Deferred();
+            },
           },
         },
-      }).default;
+      }).AutomatedLatestContentBlock;
     });
 
     before(function () {

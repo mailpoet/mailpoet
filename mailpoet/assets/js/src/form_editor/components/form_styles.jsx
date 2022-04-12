@@ -3,7 +3,7 @@ import { useSelect } from '@wordpress/data';
 import { transformStyles } from '@wordpress/block-editor';
 import css from 'css';
 
-export default () => {
+export const FormStyles = () => {
   const element = document.getElementById('mailpoet-form-editor-form-styles');
 
   const formStyles = useSelect(

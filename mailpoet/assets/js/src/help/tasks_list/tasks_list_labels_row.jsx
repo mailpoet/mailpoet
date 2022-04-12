@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 function TasksListLabelsRow(props) {
   return (
@@ -24,4 +24,4 @@ TasksListLabelsRow.defaultProps = {
   show_scheduled_at: false,
 };
 
-export default TasksListLabelsRow;
+export { TasksListLabelsRow };

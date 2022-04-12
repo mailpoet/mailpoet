@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import {
   Panel,
   PanelBody,
@@ -8,11 +8,11 @@ import {
 } from '@wordpress/components';
 import { partial } from 'lodash';
 
-import ColorGradientSettings from 'form_editor/components/color_gradient_settings';
-import ColorSettings from 'form_editor/components/color_settings';
-import FontSizeSetting from 'form_editor/components/font_size_settings';
+import { ColorGradientSettings } from 'form_editor/components/color_gradient_settings';
+import { ColorSettings } from 'form_editor/components/color_settings';
+import { FontSizeSettings } from 'form_editor/components/font_size_settings';
 import { InputBlockStyles } from 'form_editor/store/form_data_types';
-import FontFamilySettings from '../../components/font_family_settings';
+import { FontFamilySettings } from '../../components/font_family_settings';
 
 type Props = {
   styles: InputBlockStyles;
@@ -91,7 +91,7 @@ function StylesSettings({
                 value={styles.fontColor}
                 onChange={partial(updateStyles, 'fontColor')}
               />
-              <FontSizeSetting
+              <FontSizeSettings
                 value={styles.fontSize}
                 onChange={partial(updateStyles, 'fontSize')}
               />
@@ -156,4 +156,4 @@ function StylesSettings({
   );
 }
 
-export default StylesSettings;
+export { StylesSettings };

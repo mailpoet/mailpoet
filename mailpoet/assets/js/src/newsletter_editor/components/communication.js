@@ -1,7 +1,7 @@
 /* eslint-disable func-names */
-import App from 'newsletter_editor/App';
+import { App } from 'newsletter_editor/App';
 import _ from 'underscore';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import 'ajax';
 
 var Module = {};
@@ -102,4 +102,4 @@ App.on('start', function () {
   Module.getPostTypes();
 });
 
-export default Module;
+export { Module as CommunicationComponent };

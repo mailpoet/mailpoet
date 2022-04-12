@@ -1,12 +1,12 @@
 import { has } from 'lodash';
 import {
+  ColorDefinition,
+  FontSizeDefinition,
+  GradientDefinition,
   InputBlockStyles,
   InputBlockStylesServerData,
-  FontSizeDefinition,
-  ColorDefinition,
-  GradientDefinition,
 } from 'form_editor/store/form_data_types';
-import asNum from '../../server_value_as_num';
+import { asNum } from '../../server_value_as_num';
 
 export const defaultBlockStyles: InputBlockStyles = {
   fullWidth: true,

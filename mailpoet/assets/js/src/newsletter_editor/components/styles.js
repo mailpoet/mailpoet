@@ -1,4 +1,4 @@
-import App from 'newsletter_editor/App';
+import { App } from 'newsletter_editor/App';
 import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore'; // eslint-disable-line func-names
@@ -132,4 +132,4 @@ App.on('start', function (StartApp) {
   StartApp._appView.showChildView('stylesRegion', stylesView);
 });
 
-export default Module;
+export { Module as StylesComponent };

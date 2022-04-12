@@ -1,9 +1,9 @@
 import _ from 'underscore';
 import { Component } from 'react';
-import MailPoet from 'mailpoet';
-import Select from 'form/fields/select.jsx';
-import Selection from 'form/fields/selection.jsx';
-import Text from 'form/fields/text.jsx';
+import { MailPoet } from 'mailpoet';
+import { FormFieldSelect as Select } from 'form/fields/select.jsx';
+import { Selection } from 'form/fields/selection.jsx';
+import { FormFieldText } from 'form/fields/text.jsx';
 import { timeDelayValues } from 'newsletters/scheduling/common.jsx';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
@@ -54,7 +54,7 @@ const afterTimeTypeField = {
   values: timeDelayValues,
 };
 
-class WelcomeScheduling extends Component {
+class WelcomeSchedulingComponent extends Component {
   getCurrentValue = () => this.props.item[this.props.field.name] || {};
 
   handleValueChange = (name, value) => {
@@ -115,7 +115,7 @@ class WelcomeScheduling extends Component {
     }
     if (value.afterTimeType !== 'immediate') {
       timeNumber = (
-        <Text
+        <FormFieldText
           field={afterTimeNumberField}
           item={this.getCurrentValue()}
           onValueChange={this.handleAfterTimeNumberChange}
@@ -150,7 +150,7 @@ class WelcomeScheduling extends Component {
   }
 }
 
-WelcomeScheduling.propTypes = {
+WelcomeSchedulingComponent.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
@@ -161,4 +161,4 @@ WelcomeScheduling.propTypes = {
   onValueChange: PropTypes.func.isRequired,
 };
 
-export default withRouter(WelcomeScheduling);
+export const WelcomeScheduling = withRouter(WelcomeSchedulingComponent);

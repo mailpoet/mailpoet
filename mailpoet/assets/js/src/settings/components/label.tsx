@@ -6,7 +6,7 @@ type Props = {
   htmlFor: string;
 };
 
-export default function Label({ title, description, htmlFor }: Props) {
+export function Label({ title, description, htmlFor }: Props) {
   return (
     <div className="mailpoet-settings-label">
       <label className="mailpoet-settings-label-title" htmlFor={htmlFor}>

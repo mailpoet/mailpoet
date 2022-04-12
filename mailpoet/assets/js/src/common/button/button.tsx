@@ -19,7 +19,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
 }
 
-function Button({
+export function Button({
   children,
   dimension,
   variant,
@@ -63,5 +63,3 @@ function Button({
     </Element>
   );
 }
-
-export default Button;

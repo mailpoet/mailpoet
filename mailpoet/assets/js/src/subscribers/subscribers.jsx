@@ -1,11 +1,11 @@
 import ReactDOM from 'react-dom';
 import { HashRouter, Switch, Route } from 'react-router-dom';
 
-import SubscriberList from 'subscribers/list.jsx';
-import SubscriberForm from 'subscribers/form.jsx';
+import { SubscriberList } from 'subscribers/list.jsx';
+import { SubscriberForm } from 'subscribers/form.jsx';
 import { SubscriberStats } from 'subscribers/stats';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
-import Notices from 'notices/notices.jsx';
+import { Notices } from 'notices/notices.jsx';
 
 function App() {
   return (

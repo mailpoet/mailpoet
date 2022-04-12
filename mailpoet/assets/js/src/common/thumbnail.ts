@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import html2canvas from 'html2canvas';
 
 /**

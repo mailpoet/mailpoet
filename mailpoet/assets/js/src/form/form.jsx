@@ -1,13 +1,14 @@
+import classnames from 'classnames';
 import { createRef, Component } from 'react';
-import MailPoet from 'mailpoet';
-import classNames from 'classnames';
-import FormField from 'form/fields/field.jsx';
+import { withRouter } from 'react-router-dom';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+
+import { MailPoet } from 'mailpoet';
+import { FormField } from 'form/fields/field.jsx';
 import { Button } from 'common';
 
-class Form extends Component {
+class FormComponent extends Component {
   constructor(props) {
     super(props);
     this.formRef = createRef();
@@ -173,7 +174,7 @@ class Form extends Component {
       ));
     }
 
-    const formClasses = classNames('mailpoet_form', {
+    const formClasses = classnames('mailpoet_form', {
       mailpoet_form_loading: this.state.loading || this.props.loading,
     });
 
@@ -248,7 +249,7 @@ class Form extends Component {
   }
 }
 
-Form.propTypes = {
+FormComponent.propTypes = {
   params: PropTypes.shape({
     id: PropTypes.string,
   }),
@@ -279,7 +280,7 @@ Form.propTypes = {
   }).isRequired,
 };
 
-Form.defaultProps = {
+FormComponent.defaultProps = {
   params: {},
   location: {},
   errors: undefined,
@@ -307,4 +308,4 @@ Form.defaultProps = {
   endpoint: undefined,
 };
 
-export default withRouter(Form);
+export const Form = withRouter(FormComponent);

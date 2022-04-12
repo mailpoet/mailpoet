@@ -1,7 +1,7 @@
 import ReactStringReplace from 'react-string-replace';
-import MailPoet from 'mailpoet';
-import Tag from 'common/tag/tag';
-import Tooltip from 'help-tooltip';
+import { MailPoet } from 'mailpoet';
+import { Tag } from 'common/tag/tag';
+import { Tooltip } from 'help-tooltip';
 import { ListingsEngagementScore } from '../listings_engagement_score';
 
 export type PropTypes = {
@@ -15,7 +15,7 @@ export type PropTypes = {
   };
 };
 
-export default function Summary({
+export function Summary({
   totalSent,
   open,
   machineOpen,

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
 import classnames from 'classnames';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
-export default function FormTitle() {
+export function FormTitle() {
   const [isSelected, setIsSelected] = useState(false);
   const title = useSelect(
     (select) => select('mailpoet-form-editor').getFormName(),

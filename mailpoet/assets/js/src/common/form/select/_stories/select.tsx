@@ -1,6 +1,6 @@
-import Select from '../select';
-import Heading from '../../../typography/heading/heading';
-import icon from './assets/icon';
+import { Select } from '../select';
+import { Heading } from '../../../typography/heading/heading';
+import { Icon } from './assets/icon';
 
 export default {
   title: 'Form',
@@ -18,7 +18,7 @@ export function NativeSelect() {
           <option value="3">Opt 3</option>
         </Select>
         <div className="mailpoet-gap" />
-        <Select isMinWidth iconStart={icon}>
+        <Select isMinWidth iconStart={Icon}>
           <option value="1">Opt 1</option>
           <option value="2">Opt 2</option>
           <option value="3">Opt 3</option>
@@ -33,7 +33,7 @@ export function NativeSelect() {
           <option value="3">Option 3</option>
         </Select>
         <div className="mailpoet-gap" />
-        <Select dimension="small" iconStart={icon}>
+        <Select dimension="small" iconStart={Icon}>
           <option value="1">Option 1</option>
           <option value="2">Option 2</option>
           <option value="3">Option 3</option>
@@ -48,7 +48,7 @@ export function NativeSelect() {
           <option value="3">Option 3</option>
         </Select>
         <div className="mailpoet-gap" />
-        <Select iconStart={icon}>
+        <Select iconStart={Icon}>
           <option value="1">Option 1</option>
           <option value="2">Option 2</option>
           <option value="3">Option 3</option>
@@ -67,7 +67,7 @@ export function NativeSelect() {
           <option value="3">Option 3</option>
         </Select>
         <div className="mailpoet-gap" />
-        <Select isFullWidth iconStart={icon}>
+        <Select isFullWidth iconStart={Icon}>
           <option value="1">Option 1</option>
           <option value="2">Option 2</option>
           <option value="3">Option 3</option>

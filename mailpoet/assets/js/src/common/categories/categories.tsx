@@ -1,4 +1,4 @@
-import CategoriesItem, { Category } from './categories_item';
+import { CategoriesItem, Category } from './categories_item';
 
 type Props = {
   onSelect: (name: string) => void;
@@ -6,7 +6,7 @@ type Props = {
   active: string;
 };
 
-function Categories({ onSelect, categories, active }: Props) {
+export function Categories({ onSelect, categories, active }: Props) {
   const cats = categories.map((category) => (
     <CategoriesItem
       {...category}
@@ -18,5 +18,3 @@ function Categories({ onSelect, categories, active }: Props) {
 
   return <div className="mailpoet-categories">{cats}</div>;
 }
-
-export default Categories;

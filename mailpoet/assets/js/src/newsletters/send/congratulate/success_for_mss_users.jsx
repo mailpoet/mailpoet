@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
-import Heading from 'common/typography/heading/heading';
+import { MailPoet } from 'mailpoet';
+import { Heading } from 'common/typography/heading/heading';
 import { Button } from 'common';
 
 function getSuccessMessage(newsletter) {
@@ -56,4 +56,4 @@ MSSUserSuccess.propTypes = {
   }).isRequired,
 };
 
-export default MSSUserSuccess;
+export { MSSUserSuccess };

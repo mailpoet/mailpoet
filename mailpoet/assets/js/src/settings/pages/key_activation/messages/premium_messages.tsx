@@ -1,7 +1,7 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { useSelector } from 'settings/store/hooks/index';
 import { PremiumStatus } from 'settings/store/types';
-import Button from 'common/button/button';
+import { Button } from 'common/button/button';
 
 function ActiveMessage() {
   return (
@@ -14,6 +14,7 @@ function ActiveMessage() {
 type PremiumNotActiveMessageProps = {
   url?: string;
 };
+
 function PremiumNotActiveMessage(props: PremiumNotActiveMessageProps) {
   return (
     <>
@@ -28,6 +29,7 @@ function PremiumNotActiveMessage(props: PremiumNotActiveMessageProps) {
     </>
   );
 }
+
 function PremiumNotInstalledMessage(props: PremiumNotActiveMessageProps) {
   return (
     <>
@@ -44,6 +46,7 @@ function PremiumNotInstalledMessage(props: PremiumNotActiveMessageProps) {
 }
 
 type NotValidMessageProps = { message?: string };
+
 function NotValidMessage({ message }: NotValidMessageProps) {
   return (
     <div className="mailpoet_error">
@@ -51,6 +54,7 @@ function NotValidMessage({ message }: NotValidMessageProps) {
     </div>
   );
 }
+
 NotValidMessage.defaultProps = {
   message: '',
 };
@@ -58,7 +62,8 @@ NotValidMessage.defaultProps = {
 type Props = {
   keyMessage?: string;
 };
-export default function PremiumMessages(props: Props) {
+
+export function PremiumMessages(props: Props) {
   const {
     premiumStatus: status,
     downloadUrl,
@@ -78,6 +83,7 @@ export default function PremiumMessages(props: Props) {
       return null;
   }
 }
+
 PremiumMessages.defaultProps = {
   keyMessage: '',
 };

@@ -1,9 +1,9 @@
 import { useLayoutEffect } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import ReactDOMServer from 'react-dom/server';
 import satismeter from 'satismeter-loader';
-import ReviewRequest from 'review_request.jsx';
-import getTrackingData from 'analytics.js';
+import { ReviewRequest } from 'review_request.jsx';
+import { getTrackingData } from 'analytics.js';
 
 const useNpsPoll = () => {
   useLayoutEffect(() => {
@@ -76,10 +76,8 @@ const useNpsPoll = () => {
   return null;
 };
 
-const withNpsPoll = (Component) =>
+export const withNpsPoll = (Component) =>
   function useNpsPollWithComponent(props) {
     useNpsPoll();
     return <Component {...props} />;
   };
-
-export default withNpsPoll;

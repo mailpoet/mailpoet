@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
-import Select from 'common/form/select/select';
+import { Select } from 'common/form/select/select';
 import { useSetting } from 'settings/store/hooks';
 
-export default function SendingMethod() {
+export function SendingMethod() {
   const [provider, setProvider] = useSetting('smtp_provider');
   const [, setGroup] = useSetting('mta_group');
   const [, setMethod] = useSetting('mta', 'method');

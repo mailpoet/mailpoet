@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
 
@@ -22,7 +22,7 @@ const resumeMailerSending = () => {
     });
 };
 
-function MailerError(props) {
+export function MailerError(props) {
   if (
     !props.mta_log.error ||
     props.mta_log.status !== 'paused' ||
@@ -202,5 +202,3 @@ function MailerCheckSettingsNotice() {
     </p>
   );
 }
-
-export default MailerError;

@@ -1,8 +1,8 @@
 import { createContext } from 'react';
-import useFeaturesContext from './useFeaturesContext.jsx';
-import useSegmentsContext from './useSegmentsContext.jsx';
-import useUsersContext from './useUsersContext.jsx';
-import useNotices from './useNotices.jsx';
+import { useFeaturesContext } from './useFeaturesContext.jsx';
+import { useSegmentsContext } from './useSegmentsContext.jsx';
+import { useUsersContext } from './useUsersContext.jsx';
+import { useNotices } from './useNotices.jsx';
 
 /**
  * Builds the value of the global context.

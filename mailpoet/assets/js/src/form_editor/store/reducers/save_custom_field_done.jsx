@@ -1,6 +1,6 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
-export default (state, action) => {
+export const saveCustomFieldDone = (state, action) => {
   const notices = state.notices.filter(
     (notice) => notice.id !== 'custom-field',
   );

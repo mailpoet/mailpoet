@@ -1,8 +1,8 @@
 import { t } from 'common/functions';
-import { Label, Inputs, PagesSelect } from 'settings/components';
+import { Label, Inputs, PageSelect } from 'settings/components';
 import { useSetting } from 'settings/store/hooks';
 
-export default function ConfirmationPage() {
+export function ConfirmationPage() {
   const [enabled] = useSetting('signup_confirmation', 'enabled');
   const [page, setPage] = useSetting('subscription', 'pages', 'confirmation');
 
@@ -15,7 +15,7 @@ export default function ConfirmationPage() {
         htmlFor="subscription-pages-confirmation"
       />
       <Inputs>
-        <PagesSelect
+        <PageSelect
           value={page}
           preview="confirm"
           setValue={setPage}

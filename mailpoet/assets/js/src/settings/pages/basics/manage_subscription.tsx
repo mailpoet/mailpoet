@@ -1,14 +1,9 @@
 import ReactStringReplace from 'react-string-replace';
 import { t } from 'common/functions';
 import { useSetting } from 'settings/store/hooks';
-import {
-  Label,
-  Inputs,
-  SegmentsSelect,
-  PagesSelect,
-} from 'settings/components';
+import { Inputs, Label, PageSelect, SegmentsSelect } from 'settings/components';
 
-export default function ManageSubscription() {
+export function ManageSubscription() {
   const [page, setPage] = useSetting('subscription', 'pages', 'manage');
   const [segments, setSegments] = useSetting('subscription', 'segments');
   return (
@@ -39,7 +34,7 @@ export default function ManageSubscription() {
         htmlFor="subscription-manage-page"
       />
       <Inputs>
-        <PagesSelect
+        <PageSelect
           value={page}
           preview="manage"
           setValue={setPage}

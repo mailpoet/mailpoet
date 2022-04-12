@@ -1,6 +1,6 @@
 import { select } from '@wordpress/data';
 
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 import { STORE_NAME } from 'settings/store/store_name';
 import {

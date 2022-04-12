@@ -8,7 +8,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   automationId?: string;
 };
 
-function Checkbox({
+export function Checkbox({
   children,
   isFullWidth,
   onCheck,
@@ -34,5 +34,3 @@ function Checkbox({
     </label>
   );
 }
-
-export default Checkbox;

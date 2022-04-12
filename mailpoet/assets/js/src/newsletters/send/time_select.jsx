@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import Select from 'common/form/select/select.tsx';
+import { Select } from 'common/form/select/select.tsx';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class TimeSelect extends Component {
@@ -41,4 +41,4 @@ TimeSelect.defaultProps = {
   validation: {},
 };
 
-export default TimeSelect;
+export { TimeSelect };

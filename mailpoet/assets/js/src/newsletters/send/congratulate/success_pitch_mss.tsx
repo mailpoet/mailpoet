@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
-import Heading from 'common/typography/heading/heading';
-import WelcomeWizardStepLayoutBody from '../../../wizard/layout/step_layout_body.jsx';
+import { Heading } from 'common/typography/heading/heading';
+import { WelcomeWizardStepLayoutBody } from '../../../wizard/layout/step_layout_body.jsx';
 import {
-  FreeBenefitsList,
   Controls,
+  FreeBenefitsList,
 } from '../../../wizard/steps/pitch_mss_step.jsx';
 
 type Props = {
@@ -33,7 +33,7 @@ function getHeader(newsletterType: string): string {
   );
 }
 
-function PitchMss(props: Props): JSX.Element {
+export function PitchMss(props: Props): JSX.Element {
   const [isClosing, setIsClosing] = useState(false);
   return (
     <>
@@ -70,5 +70,3 @@ function PitchMss(props: Props): JSX.Element {
     </>
   );
 }
-
-export default PitchMss;

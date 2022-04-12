@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { useSelect } from '@wordpress/data';
 
-function UnsavedChangesNotice() {
+export function UnsavedChangesNotice() {
   const hasUnsavedChanges = useSelect(
     (sel) => sel('mailpoet-form-editor').hasUnsavedChanges(),
     [],
@@ -24,5 +24,3 @@ function UnsavedChangesNotice() {
 
   return null;
 }
-
-export default UnsavedChangesNotice;

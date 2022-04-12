@@ -1,21 +1,21 @@
 import { Fragment, FunctionComponent, useState } from 'react';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 
-import Hooks from 'wp-js-hooks';
-import MailPoet from 'mailpoet';
-import Button from 'common/button/button';
-import Heading from 'common/typography/heading/heading';
-import Input from 'common/form/input/input';
-import Select from 'common/form/react_select/react_select';
-import Textarea from 'common/form/textarea/textarea';
+import { Hooks } from 'wp-js-hooks';
+import { MailPoet } from 'mailpoet';
+import { Button } from 'common/button/button';
+import { Heading } from 'common/typography/heading/heading';
+import { Input } from 'common/form/input/input';
+import { ReactSelect } from 'common/form/react_select/react_select';
+import { Textarea } from 'common/form/textarea/textarea';
 import { Grid } from 'common/grid';
 import { SubscribersCounter } from './subscribers_counter';
 import { FormFilterFields } from './form_filter_fields';
 import { isFormValid } from './validator';
-import plusIcon from '../../common/button/icon/plus';
-import APIErrorsNotice from '../../notices/api_errors_notice';
+import { plusIcon } from '../../common/button/icon/plus';
+import { APIErrorsNotice } from '../../notices/api_errors_notice';
 import { PrivacyProtectionNotice } from './privacy_protection_notice';
-import DynamicSegmentsPremiumBanner from './premium_banner';
+import { DynamicSegmentsPremiumBanner } from './premium_banner';
 
 import {
   FilterRow,
@@ -142,7 +142,7 @@ export function Form({ segmentId }: Props): JSX.Element {
                 >
                   <FilterBefore filterRows={filterRows} index={index} />
                   <Grid.CenteredRow>
-                    <Select
+                    <ReactSelect
                       dimension="small"
                       placeholder={MailPoet.I18n.t('selectActionPlaceholder')}
                       options={segmentFilters}

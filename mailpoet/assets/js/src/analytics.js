@@ -1,8 +1,8 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 let trackingDataLoading = null;
 
-function getTrackingData() {
+export function getTrackingData() {
   if (!trackingDataLoading) {
     trackingDataLoading = MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -12,5 +12,3 @@ function getTrackingData() {
   }
   return trackingDataLoading;
 }
-
-export default getTrackingData;

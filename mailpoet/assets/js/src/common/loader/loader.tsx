@@ -3,7 +3,7 @@ type Props = {
   size?: number;
 };
 
-function Loader({ variant, size }: Props) {
+export function Loader({ variant, size }: Props) {
   let color = '#ff5301';
   if (variant === 'light') color = '#ffe0d0';
   if (variant === 'dark') color = '#1d2327';
@@ -51,5 +51,3 @@ function Loader({ variant, size }: Props) {
     </svg>
   );
 }
-
-export default Loader;

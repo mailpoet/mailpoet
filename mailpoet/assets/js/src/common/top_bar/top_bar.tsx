@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
-import classNames from 'classnames';
+import classnames from 'classnames';
 import { useHistory } from 'react-router-dom';
-import t from 'common/functions/t';
+import { t } from 'common/functions/t';
 import { withFeatureAnnouncement } from 'announcements/with_feature_announcement';
 import { MailPoetLogo } from './mailpoet_logo';
 import { MailPoetLogoMobile } from './mailpoet_logo_mobile';
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export function TopBar({ children, hasNews, onBeamerClick }: Props) {
-  const buttonClasses = classNames(
+  const buttonClasses = classnames(
     'mailpoet-top-bar-beamer',
     hasNews ? 'mailpoet-top-bar-beamer-dot' : '',
   );

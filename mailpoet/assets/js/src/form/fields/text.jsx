@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import Input from 'common/form/input/input';
+import { Input } from 'common/form/input/input';
 
 // eslint-disable-next-line react/prefer-stateless-function, max-len
 class FormFieldText extends Component {
@@ -87,4 +87,4 @@ FormFieldText.defaultProps = {
   },
 };
 
-export default FormFieldText;
+export { FormFieldText };

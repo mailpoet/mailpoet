@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
-import MailPoet from 'mailpoet';
-import Button from 'common/button/button';
+import { MailPoet } from 'mailpoet';
+import { Button } from 'common/button/button';
 import { useAction, useSelector } from 'settings/store/hooks';
 import { GlobalContext } from 'context';
 import ReactStringReplace from 'react-string-replace';
@@ -30,7 +30,7 @@ const showReEngagementNotice = (action, showError, showSuccess) => {
   }
 };
 
-export default function SaveButton() {
+export function SaveButton() {
   const [clicked, setClicked] = useState(false);
   const isSaving = useSelector('isSaving')();
   const hasError = useSelector('hasErrorFlag')();

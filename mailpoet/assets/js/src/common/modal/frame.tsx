@@ -7,7 +7,11 @@ type Props = {
   children: ReactNode;
 };
 
-function ModalFrame({ fullScreen = false, className = '', children }: Props) {
+export function ModalFrame({
+  fullScreen = false,
+  className = '',
+  children,
+}: Props) {
   return (
     <div
       className={classnames(
@@ -22,5 +26,3 @@ function ModalFrame({ fullScreen = false, className = '', children }: Props) {
     </div>
   );
 }
-
-export default ModalFrame;

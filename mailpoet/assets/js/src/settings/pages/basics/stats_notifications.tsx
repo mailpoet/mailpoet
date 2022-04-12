@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
-import { isEmail, t, onChange, setLowercaseValue } from 'common/functions';
-import Checkbox from 'common/form/checkbox/checkbox';
-import Input from 'common/form/input/input';
-import { useSetting, useAction } from 'settings/store/hooks';
-import { Label, Inputs } from 'settings/components';
+import { isEmail, onChange, setLowercaseValue, t } from 'common/functions';
+import { Checkbox } from 'common/form/checkbox/checkbox';
+import { Input } from 'common/form/input/input';
+import { useAction, useSetting } from 'settings/store/hooks';
+import { Inputs, Label } from 'settings/components';
 
-export default function StatsNotifications() {
+export function StatsNotifications() {
   const [enabled, setEnabled] = useSetting('stats_notifications', 'enabled');
   const [automated, setAutomated] = useSetting(
     'stats_notifications',

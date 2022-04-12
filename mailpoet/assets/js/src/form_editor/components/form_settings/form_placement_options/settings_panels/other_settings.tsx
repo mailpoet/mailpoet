@@ -1,13 +1,13 @@
 import { FunctionComponent, useState } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { curry } from 'lodash';
 import { assocPath } from 'lodash/fp';
 import { TextareaControl } from '@wordpress/components';
 import { SizeSettings } from 'form_editor/components/size_settings';
 
-function OtherSettings(): JSX.Element {
+export function OtherSettings(): JSX.Element {
   const [copyAreaContent, setCopyAreaContent] = useState(null);
 
   const formExports = useSelect(
@@ -114,5 +114,3 @@ function OtherSettings(): JSX.Element {
     </>
   );
 }
-
-export default OtherSettings;

@@ -2,12 +2,12 @@
 import { Panel, PanelBody, ToggleControl } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import ParagraphEdit from '../paragraph_edit.jsx';
-import CustomFieldSettings from './custom_field_settings.jsx';
-import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
+import { ParagraphEdit } from '../paragraph_edit.jsx';
+import { CustomFieldSettings } from './custom_field_settings.jsx';
+import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
 
 function CustomCheckboxEdit({ attributes, setAttributes, clientId }) {
   const isSaving = useSelect(
@@ -146,4 +146,4 @@ CustomCheckboxEdit.propTypes = {
   clientId: PropTypes.string.isRequired,
 };
 
-export default CustomCheckboxEdit;
+export { CustomCheckboxEdit };

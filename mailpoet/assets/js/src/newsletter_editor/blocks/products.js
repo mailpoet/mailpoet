@@ -15,12 +15,12 @@ import Marionette from 'backbone.marionette';
 import Radio from 'backbone.radio';
 import _ from 'underscore';
 import jQuery from 'jquery';
-import MailPoet from 'mailpoet';
-import App from 'newsletter_editor/App';
-import CommunicationComponent from 'newsletter_editor/components/communication';
-import BaseBlock from 'newsletter_editor/blocks/base';
-import ButtonBlock from 'newsletter_editor/blocks/button';
-import DividerBlock from 'newsletter_editor/blocks/divider';
+import { MailPoet } from 'mailpoet';
+import { App } from 'newsletter_editor/App';
+import { CommunicationComponent } from 'newsletter_editor/components/communication';
+import { BaseBlock } from 'newsletter_editor/blocks/base';
+import { ButtonBlock } from 'newsletter_editor/blocks/button';
+import { DividerBlock } from 'newsletter_editor/blocks/divider';
 import 'select2';
 
 var Module = {};
@@ -686,4 +686,4 @@ App.on('before:start', function beforeStartApp(BeforeStartApp) {
   });
 });
 
-export default Module;
+export { Module as ProductsBlock };

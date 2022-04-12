@@ -1,4 +1,4 @@
-export default function mapFormDataBeforeSaving(data) {
+export function mapFormDataBeforeSaving(data) {
   const mappedData = {
     ...data,
     settings: {

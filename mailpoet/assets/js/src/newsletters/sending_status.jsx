@@ -1,13 +1,14 @@
+import classnames from 'classnames';
 import { useState, useEffect, memo } from 'react';
-import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
+
 import { Link } from 'react-router-dom';
-import Listing from 'listing/listing.jsx';
+import { Listing } from 'listing/listing.jsx';
 import {
   checkCronStatus,
   checkMailerStatus,
 } from 'newsletters/listings/utils.jsx';
+import { MailPoet } from 'mailpoet';
 
 const columns = [
   {
@@ -66,6 +67,7 @@ function SendingStatus(props) {
     </>
   );
 }
+
 SendingStatus.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string,
@@ -127,6 +129,7 @@ function StatsLink({ newsletter }) {
     </p>
   );
 }
+
 StatsLink.propTypes = {
   newsletter: PropTypes.shape({
     id: PropTypes.string,
@@ -163,7 +166,7 @@ function ListingItem({
       .fail((res) => MailPoet.Notice.showApiErrorNotice(res));
   };
 
-  const rowClasses = classNames(
+  const rowClasses = classnames(
     'manage-column',
     'column-primary',
     'has-row-actions',
@@ -224,6 +227,7 @@ function ListingItem({
     </>
   );
 }
+
 ListingItem.propTypes = {
   error: PropTypes.string,
   email: PropTypes.string.isRequired,
@@ -238,4 +242,4 @@ ListingItem.defaultProps = {
   error: '',
 };
 
-export default SendingStatus;
+export { SendingStatus };

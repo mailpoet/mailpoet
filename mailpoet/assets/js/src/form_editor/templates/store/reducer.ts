@@ -1,4 +1,4 @@
-import { StateType, CategoryActionType, ActionType } from './types';
+import { ActionType, CategoryActionType, StateType } from './types';
 
 export const selectTemplateFailed = (state: StateType): StateType => ({
   ...state,
@@ -20,7 +20,8 @@ export const selectCategory = (
   activeCategory: action.category,
 });
 
-export default (defaultState: StateType) =>
+export const createReducer =
+  (defaultState: StateType) =>
   (
     state: StateType = defaultState, // eslint-disable-line @typescript-eslint/default-param-last
     action: ActionType,

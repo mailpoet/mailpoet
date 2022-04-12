@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
-import TaskListDataRow from './tasks_list_data_row.jsx';
-import TaskListLabelsRow from './tasks_list_labels_row.jsx';
+import { MailPoet } from 'mailpoet';
+import { TasksListDataRow } from './tasks_list_data_row.jsx';
+import { TasksListLabelsRow } from './tasks_list_labels_row.jsx';
 
 function TasksList(props) {
   const colsCount = props.show_scheduled_at ? 6 : 5;
@@ -9,12 +9,12 @@ function TasksList(props) {
   return (
     <table className="widefat fixed striped">
       <thead>
-        <TaskListLabelsRow show_scheduled_at={props.show_scheduled_at} />
+        <TasksListLabelsRow show_scheduled_at={props.show_scheduled_at} />
       </thead>
       <tbody>
         {props.tasks.length ? (
           props.tasks.map((task) => (
-            <TaskListDataRow
+            <TasksListDataRow
               key={task.id}
               task={task}
               show_scheduled_at={props.show_scheduled_at}
@@ -27,7 +27,7 @@ function TasksList(props) {
         )}
       </tbody>
       <tfoot>
-        <TaskListLabelsRow show_scheduled_at={props.show_scheduled_at} />
+        <TasksListLabelsRow show_scheduled_at={props.show_scheduled_at} />
       </tfoot>
     </table>
   );
@@ -35,11 +35,11 @@ function TasksList(props) {
 
 TasksList.propTypes = {
   show_scheduled_at: PropTypes.bool,
-  tasks: PropTypes.arrayOf(TaskListDataRow.propTypes.task).isRequired,
+  tasks: PropTypes.arrayOf(TasksListDataRow.propTypes.task).isRequired,
 };
 
 TasksList.defaultProps = {
   show_scheduled_at: false,
 };
 
-export default TasksList;
+export { TasksList };

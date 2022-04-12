@@ -1,7 +1,7 @@
-import App from 'newsletter_editor/App';
+import { App } from 'newsletter_editor/App';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 var Module = {};
 
@@ -130,4 +130,4 @@ App.on('start', function appOnStart(Application, options) {
   );
 });
 
-export default Module;
+export { Module as ContentComponent };

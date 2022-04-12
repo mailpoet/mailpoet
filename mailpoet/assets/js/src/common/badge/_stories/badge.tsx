@@ -1,4 +1,4 @@
-import Badge from '../badge';
+import { Badge } from '../badge';
 
 export default {
   title: 'Badge',

@@ -1,7 +1,7 @@
-import App from 'newsletter_editor/App';
-import Communication from 'newsletter_editor/components/communication';
-import PostsBlock from 'newsletter_editor/blocks/posts';
-import ContainerBlock from 'newsletter_editor/blocks/container';
+import { App } from 'newsletter_editor/App';
+import { CommunicationComponent } from 'newsletter_editor/components/communication';
+import { PostsBlock } from 'newsletter_editor/blocks/posts';
+import { ContainerBlock } from 'newsletter_editor/blocks/container';
 
 const expect = global.expect;
 const sinon = global.sinon;
@@ -9,7 +9,6 @@ const Backbone = global.Backbone;
 const jQuery = global.jQuery;
 
 var EditorApplication = App;
-var CommunicationComponent = Communication;
 
 describe('Posts', function () {
   Backbone.Radio = {

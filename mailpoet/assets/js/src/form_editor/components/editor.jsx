@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import '@wordpress/core-data';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { Popover, SlotFillProvider } from '@wordpress/components';
@@ -13,19 +14,19 @@ import {
   SETTINGS_DEFAULTS,
 } from '@wordpress/block-editor';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
-import classnames from 'classnames';
-import fetchLinkSuggestions from '../utils/link_suggestions';
-import Header from './header.jsx';
+
+import { fetchLinkSuggestions } from '../utils/link_suggestions';
+import { Header } from './header.jsx';
 import { Tutorial } from './tutorial';
-import Sidebar from './sidebar/sidebar';
-import Inserter from './inserter';
-import Notices from './notices.jsx';
-import UnsavedChangesNotice from './unsaved_changes_notice.jsx';
-import FormStyles from './form_styles.jsx';
-import Preview from './preview/preview';
-import FormStylingBackground from './form_styling_background.jsx';
+import { Sidebar } from './sidebar/sidebar';
+import { Inserter } from './inserter';
+import { Notices } from './notices.jsx';
+import { UnsavedChangesNotice } from './unsaved_changes_notice.jsx';
+import { FormStyles } from './form_styles.jsx';
+import { FormPreview } from './preview/preview';
+import { FormStylingBackground } from './form_styling_background.jsx';
 import { CustomFontsStyleSheetLink } from './font_family_settings';
-import Fullscreen from './fullscreen';
+import { Fullscreen } from './fullscreen';
 
 /**
  * This component renders the form editor app.
@@ -36,7 +37,7 @@ import Fullscreen from './fullscreen';
  * To find out more about how block editor components are used visit
  * https://developer.wordpress.org/block-editor/packages/packages-block-editor/
  */
-export default function Editor() {
+export function Editor() {
   const sidebarOpened = useSelect(
     (sel) => sel('mailpoet-form-editor').getSidebarOpened(),
     [],
@@ -161,7 +162,7 @@ export default function Editor() {
           </div>
         </SlotFillProvider>
       </ShortcutProvider>
-      <Preview />
+      <FormPreview />
       <Tutorial />
     </>
   );

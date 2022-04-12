@@ -1,8 +1,8 @@
 import { registerBlockType, setCategories } from '@wordpress/blocks';
 import { select } from '@wordpress/data';
-import MailPoet from 'mailpoet';
-import formatCustomFieldBlockName from './format_custom_field_block_name.jsx';
-import getCustomFieldBlocksSettings from './custom_fields_blocks.jsx';
+import { MailPoet } from 'mailpoet';
+import { formatCustomFieldBlockName } from './format_custom_field_block_name.jsx';
+import { getCustomFieldBlockSettings } from './custom_fields_blocks.jsx';
 
 import * as divider from './divider/divider';
 import * as email from './email/email.jsx';
@@ -19,7 +19,7 @@ import * as paragraph from './paragraph/paragraph';
 import * as image from './image/image';
 
 export const registerCustomFieldBlock = (customField) => {
-  const namesMap = getCustomFieldBlocksSettings(customField);
+  const namesMap = getCustomFieldBlockSettings(customField);
 
   if (!namesMap[customField.type]) return null;
 

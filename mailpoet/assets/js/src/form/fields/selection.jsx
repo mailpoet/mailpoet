@@ -392,4 +392,4 @@ Selection.defaultProps = {
   item: undefined,
 };
 
-export default Selection;
+export { Selection };

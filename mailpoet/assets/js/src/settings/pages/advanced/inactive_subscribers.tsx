@@ -1,9 +1,9 @@
 import { t } from 'common/functions';
-import Radio from 'common/form/radio/radio';
+import { Radio } from 'common/form/radio/radio';
 import { useSetting } from 'settings/store/hooks';
-import { Label, Inputs } from 'settings/components';
+import { Inputs, Label } from 'settings/components';
 
-export default function InactiveSubscribers() {
+export function InactiveSubscribers() {
   const [duration, setDuration] = useSetting(
     'deactivate_subscriber_after_inactive_days',
   );

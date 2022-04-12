@@ -1,7 +1,7 @@
 import { Location } from 'history';
-import MailPoet from 'mailpoet';
-import HideScreenOptions from '../../common/hide_screen_options/hide_screen_options';
-import Steps from '../../common/steps/steps';
+import { MailPoet } from 'mailpoet';
+import { HideScreenOptions } from '../../common/hide_screen_options/hide_screen_options';
+import { Steps } from '../../common/steps/steps';
 
 export const mapPathToSteps = (location: Location): number | null => {
   const stepsMap = [
@@ -101,4 +101,4 @@ function ListingHeadingSteps({
   return null;
 }
 
-export default ListingHeadingSteps;
+export { ListingHeadingSteps };

@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import _ from 'underscore';
 
 function handleFocus(event) {
@@ -26,7 +26,7 @@ function printData(data) {
   return <p>{MailPoet.I18n.t('systemInfoDataError')}</p>;
 }
 
-function SystemInfo() {
+export function SystemInfo() {
   const systemInfoData = window.systemInfoData;
   return (
     <>
@@ -38,5 +38,3 @@ function SystemInfo() {
     </>
   );
 }
-
-export default SystemInfo;

@@ -1,9 +1,9 @@
 import { t } from 'common/functions';
 import { useSetting } from 'settings/store/hooks';
-import { Label, Inputs } from 'settings/components';
-import Checkbox from 'common/form/checkbox/checkbox';
+import { Inputs, Label } from 'settings/components';
+import { Checkbox } from 'common/form/checkbox/checkbox';
 
-export default function SubscribeOldCustomers() {
+export function SubscribeOldCustomers() {
   const [enabled, setEnabled] = useSetting(
     'mailpoet_subscribe_old_woocommerce_customers',
     'enabled',

@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
-import MailPoet from 'mailpoet';
-import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
+import { MailPoet } from 'mailpoet';
+import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
 import _ from 'underscore';
-import Scheduling from 'newsletters/types/notification/scheduling.jsx';
-import Background from 'common/background/background';
-import Button from 'common/button/button';
-import Heading from 'common/typography/heading/heading';
+import { NotificationScheduling } from 'newsletters/types/notification/scheduling.jsx';
+import { Background } from 'common/background/background';
+import { Button } from 'common/button/button';
+import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
 import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context/index.jsx';
@@ -14,10 +14,10 @@ import { GlobalContext } from 'context/index.jsx';
 const field = {
   name: 'options',
   type: 'reactComponent',
-  component: Scheduling,
+  component: NotificationScheduling,
 };
 
-class NewsletterNotification extends Component {
+class NewsletterNotificationComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -79,7 +79,7 @@ class NewsletterNotification extends Component {
         <Grid.Column align="center" className="mailpoet-schedule-email">
           <Heading level={4}>{MailPoet.I18n.t('selectFrequency')}</Heading>
 
-          <Scheduling
+          <NotificationScheduling
             item={this.state}
             field={field}
             onValueChange={this.handleValueChange}
@@ -94,12 +94,14 @@ class NewsletterNotification extends Component {
   }
 }
 
-NewsletterNotification.contextType = GlobalContext;
+NewsletterNotificationComponent.contextType = GlobalContext;
 
-NewsletterNotification.propTypes = {
+NewsletterNotificationComponent.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
 };
 
-export default withRouter(NewsletterNotification);
+export const NewsletterNotification = withRouter(
+  NewsletterNotificationComponent,
+);

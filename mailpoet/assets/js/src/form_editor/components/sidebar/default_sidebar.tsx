@@ -2,16 +2,16 @@ import { useEffect } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import classnames from 'classnames';
-import MailPoet from 'mailpoet';
-import FormSettings from 'form_editor/components/form_settings/form_settings';
-import BlockSettings from './block_settings.jsx';
-import SidebarHeader from './sidebar_header';
+import { MailPoet } from 'mailpoet';
+import { FormSettings } from 'form_editor/components/form_settings/form_settings';
+import { BlockSettings } from './block_settings.jsx';
+import { SidebarHeader } from './sidebar_header';
 
 type Props = {
   onClose: () => void;
 };
 
-export default function DefaultSidebar({ onClose }: Props): JSX.Element {
+export function DefaultSidebar({ onClose }: Props): JSX.Element {
   const activeTab = useSelect(
     (select) => select('mailpoet-form-editor').getDefaultSidebarActiveTab(),
     [],

@@ -1,7 +1,7 @@
 import { action } from '_storybook/action';
-import Select from '../react_select';
-import Heading from '../../../typography/heading/heading';
-import icon from './assets/icon';
+import { ReactSelect as Select } from '../react_select';
+import { Heading } from '../../../typography/heading/heading';
+import { Icon } from './assets/icon';
 
 export default {
   title: 'Form',
@@ -46,7 +46,7 @@ export function ReactSelect() {
         <div className="mailpoet-gap" />
         <Select
           dimension="small"
-          iconStart={icon}
+          iconStart={Icon}
           options={options}
           isMulti
           placeholder="Select multiple values"
@@ -63,7 +63,7 @@ export function ReactSelect() {
         />
         <div className="mailpoet-gap" />
         <Select
-          iconStart={icon}
+          iconStart={Icon}
           options={options}
           defaultValue={options[2]}
           onChange={action('regular single')}
@@ -77,7 +77,7 @@ export function ReactSelect() {
         />
         <div className="mailpoet-gap" />
         <Select
-          iconStart={icon}
+          iconStart={Icon}
           options={options}
           isMulti
           defaultValue={[options[2], options[1]]}
@@ -104,7 +104,7 @@ export function ReactSelect() {
         <div className="mailpoet-gap" />
         <Select
           isFullWidth
-          iconStart={icon}
+          iconStart={Icon}
           options={options}
           placeholder="Select single value"
           onChange={action('full-width single')}

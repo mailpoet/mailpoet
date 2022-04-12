@@ -1,4 +1,4 @@
-export default (state, action) => ({
+export const switchDefaultSidebarTab = (state, action) => ({
   ...state,
   sidebar: {
     ...state.sidebar,

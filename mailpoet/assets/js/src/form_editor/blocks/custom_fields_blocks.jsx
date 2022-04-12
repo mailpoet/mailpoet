@@ -5,7 +5,7 @@ import * as customRadio from './custom_radio/custom_radio.jsx';
 import * as customCheckbox from './custom_checkbox/custom_checkbox.jsx';
 import * as customSelect from './custom_select/custom_select.jsx';
 
-export default function getCustomFieldBlocksSettings(customField) {
+export function getCustomFieldBlockSettings(customField) {
   return {
     date: {
       name: customDate.name,

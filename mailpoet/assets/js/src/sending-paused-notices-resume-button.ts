@@ -1,5 +1,5 @@
 import jQuery from 'jquery';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 const loadAuthorizedEmailAddresses = async () => {
   if (MailPoet.mtaMethod !== 'MailPoet') {

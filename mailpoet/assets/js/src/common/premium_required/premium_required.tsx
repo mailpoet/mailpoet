@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import Badge from 'common/badge/badge';
-import Heading from 'common/typography/heading/heading';
+import { Badge } from 'common/badge/badge';
+import { Heading } from 'common/typography/heading/heading';
 
 type Props = {
   title: string;
@@ -8,7 +8,7 @@ type Props = {
   actionButton: ReactNode;
 };
 
-function PremiumRequired({ title, message, actionButton }: Props) {
+export function PremiumRequired({ title, message, actionButton }: Props) {
   return (
     <div className="mailpoet-premium-required">
       <div className="mailpoet-premium-required-message">
@@ -21,5 +21,3 @@ function PremiumRequired({ title, message, actionButton }: Props) {
     </div>
   );
 }
-
-export default PremiumRequired;

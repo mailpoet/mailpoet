@@ -1,6 +1,6 @@
-import { SVG, Path, Rect, G } from '@wordpress/components';
+import { G, Path, Rect, SVG } from '@wordpress/components';
 
-export default (
+export const FixedBarIcon = (
   <SVG
     width="144"
     height="120"

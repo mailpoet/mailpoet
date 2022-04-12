@@ -1,30 +1,28 @@
+import classnames from 'classnames';
 import { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
 
-import Button from 'common/button/button';
-import Toggle from 'common/form/toggle/toggle';
-import Tags from 'common/tag/tags';
+import { Button } from 'common/button/button';
 import { ScheduledIcon } from 'common/listings/newsletter_status';
-import Listing from 'listing/listing.jsx';
-
-import {
-  checkCronStatus,
-  checkMailerStatus,
-  confirmEdit,
-} from 'newsletters/listings/utils.jsx';
-import NewsletterTypes from 'newsletters/types';
-
-import classNames from 'classnames';
-import MailPoet from 'mailpoet';
-
+import { Listing } from 'listing/listing.jsx';
+import { MailPoet } from 'mailpoet';
+import { NewsletterTypes } from 'newsletters/types';
 import {
   timeOfDayValues,
   weekDayValues,
   monthDayValues,
   nthWeekDayValues,
 } from 'newsletters/scheduling/common.jsx';
+import { Tags } from 'common/tag/tags';
+import { Toggle } from 'common/form/toggle/toggle';
+
+import {
+  checkCronStatus,
+  checkMailerStatus,
+  confirmEdit,
+} from 'newsletters/listings/utils.jsx';
 
 const messages = {
   onNoItemsFound: (group, search) =>
@@ -167,7 +165,7 @@ const newsletterActions = [
   },
 ];
 
-class NewsletterListNotification extends Component {
+class NewsletterListNotificationComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -312,7 +310,7 @@ class NewsletterListNotification extends Component {
   };
 
   renderItem = (newsletter, actions) => {
-    const rowClasses = classNames(
+    const rowClasses = classnames(
       'manage-column',
       'column-primary',
       'has-row-actions',
@@ -400,11 +398,13 @@ class NewsletterListNotification extends Component {
   }
 }
 
-NewsletterListNotification.propTypes = {
+NewsletterListNotificationComponent.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   match: PropTypes.shape({
     params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   }).isRequired,
 };
 
-export default withRouter(NewsletterListNotification);
+export const NewsletterListNotification = withRouter(
+  NewsletterListNotificationComponent,
+);

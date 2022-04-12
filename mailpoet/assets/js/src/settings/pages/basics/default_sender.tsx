@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { Label, Inputs } from 'settings/components';
 import { isEmail, t, onChange, setLowercaseValue } from 'common/functions';
-import Input from 'common/form/input/input';
+import { Input } from 'common/form/input/input';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
-import SenderEmailAddressWarning from 'common/sender_email_address_warning.jsx';
+import { SenderEmailAddressWarning } from 'common/sender_email_address_warning.jsx';
 
-export default function DefaultSender() {
+export function DefaultSender() {
   const isMssActive = useSelector('isMssActive')();
   const [senderName, setSenderName] = useSetting('sender', 'name');
   const [senderEmail, setSenderEmail] = useSetting('sender', 'address');

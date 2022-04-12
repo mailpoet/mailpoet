@@ -7,18 +7,18 @@ import {
 } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import ParagraphEdit from '../paragraph_edit.jsx';
-import CustomFieldSettings from '../custom_text/custom_field_settings.jsx';
-import formatLabel from '../label_formatter.jsx';
-import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
+import { MailPoet } from 'mailpoet';
+import { convertAlignmentToMargin } from '../convert_alignment_to_margin';
+import { CustomFieldSettings } from '../custom_text/custom_field_settings.jsx';
+import { formatLabel } from '../label_formatter.jsx';
 import {
-  InputStylesSettings,
   inputStylesPropTypes,
+  InputStylesSettings,
 } from '../input_styles_settings.jsx';
-import convertAlignmentToMargin from '../convert_alignment_to_margin';
+import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
+import { ParagraphEdit } from '../paragraph_edit.jsx';
 
 function CustomTextAreaEdit({ name, attributes, setAttributes, clientId }) {
   const id = `${name.replace(/[^a-zA-Z]/g, '')}_${Math.random()
@@ -238,4 +238,4 @@ CustomTextAreaEdit.propTypes = {
   name: PropTypes.string.isRequired,
 };
 
-export default CustomTextAreaEdit;
+export { CustomTextAreaEdit };

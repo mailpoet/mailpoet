@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
 import { Button } from 'common';
-import Heading from 'common/typography/heading/heading';
+import { Heading } from 'common/typography/heading/heading';
 
 function Fail(props) {
   const [isClosing, setIsClosing] = useState(false);
@@ -57,4 +57,4 @@ Fail.propTypes = {
   failClicked: PropTypes.func.isRequired,
 };
 
-export default Fail;
+export { Fail };

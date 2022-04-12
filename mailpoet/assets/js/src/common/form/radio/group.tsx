@@ -1,5 +1,5 @@
 import { InputHTMLAttributes, useState } from 'react';
-import Radio from './radio';
+import { Radio } from './radio';
 
 type RadioValueType = string | string[] | number;
 
@@ -15,7 +15,7 @@ type Props = {
   onChange?: (value: RadioValueType) => void;
 };
 
-function RadioGroup({
+export function RadioGroup({
   name,
   options,
   defaultValue,
@@ -51,5 +51,3 @@ function RadioGroup({
     </div>
   );
 }
-
-export default RadioGroup;

@@ -1,13 +1,15 @@
-import MailPoet from 'mailpoet';
-import { assocPath, compose, __ } from 'lodash/fp';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { MailPoet } from 'mailpoet';
+import { __, assocPath, compose } from 'lodash/fp';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { SelectControl } from '@wordpress/components';
 
 type Props = {
   settingsPlacementKey: string;
 };
 
-function AnimationSettings({ settingsPlacementKey }: Props): JSX.Element {
+export function AnimationSettings({
+  settingsPlacementKey,
+}: Props): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -40,5 +42,3 @@ function AnimationSettings({ settingsPlacementKey }: Props): JSX.Element {
     />
   );
 }
-
-export default AnimationSettings;

@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
-import ScrollToTop from 'common/scroll_to_top.jsx';
+import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { ScrollToTop } from 'common/scroll_to_top.jsx';
 
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
-import Notices from 'notices/notices.jsx';
-import StepMethodSelection from './import/step_method_selection.jsx';
-import StepInputValidation from './import/step_input_validation.jsx';
-import StepDataManipulation from './import/step_data_manipulation.jsx';
-import StepResults from './import/step_results.jsx';
-import StepCleanList from './import/step_clean_list';
+import { Notices } from 'notices/notices.jsx';
+import { StepMethodSelection } from './import/step_method_selection.jsx';
+import { StepInputValidation } from './import/step_input_validation.jsx';
+import { StepDataManipulation } from './import/step_data_manipulation.jsx';
+import { StepResults } from './import/step_results.jsx';
+import { StepCleanList } from './import/step_clean_list';
 
 const container = document.getElementById('import_container');
 

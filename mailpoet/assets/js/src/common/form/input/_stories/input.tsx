@@ -1,6 +1,6 @@
-import Input from '../input';
-import Heading from '../../../typography/heading/heading';
-import icon from './assets/icon';
+import { Input } from '../input';
+import { Heading } from '../../../typography/heading/heading';
+import { Icon } from './assets/icon';
 
 export default {
   title: 'Form',
@@ -18,22 +18,22 @@ export function Inputs() {
           type="text"
           placeholder="Small input with iconStart"
           dimension="small"
-          iconStart={icon}
+          iconStart={Icon}
         />
         <div className="mailpoet-gap" />
         <Input
           type="text"
           placeholder="Small input with iconEnd"
           dimension="small"
-          iconEnd={icon}
+          iconEnd={Icon}
         />
         <div className="mailpoet-gap" />
         <Input
           type="text"
           placeholder="Small input with both icons"
           dimension="small"
-          iconStart={icon}
-          iconEnd={icon}
+          iconStart={Icon}
+          iconEnd={Icon}
         />
       </div>
       <br />
@@ -44,20 +44,20 @@ export function Inputs() {
         <Input
           type="text"
           placeholder="Regular input with iconStart"
-          iconStart={icon}
+          iconStart={Icon}
         />
         <div className="mailpoet-gap" />
         <Input
           type="text"
           placeholder="Regular input with iconEnd"
-          iconEnd={icon}
+          iconEnd={Icon}
         />
         <div className="mailpoet-gap" />
         <Input
           type="text"
           placeholder="Regular input with both icons"
-          iconStart={icon}
-          iconEnd={icon}
+          iconStart={Icon}
+          iconEnd={Icon}
         />
         <div className="mailpoet-gap" />
         <Input disabled type="text" placeholder="Disabled input" />
@@ -70,20 +70,20 @@ export function Inputs() {
           type="text"
           placeholder="Full-width input with iconStart"
           isFullWidth
-          iconStart={icon}
+          iconStart={Icon}
         />
         <Input
           type="text"
           placeholder="Full-width input with iconEnd"
           isFullWidth
-          iconEnd={icon}
+          iconEnd={Icon}
         />
         <Input
           type="text"
           placeholder="Full-width input with both icons"
           isFullWidth
-          iconStart={icon}
-          iconEnd={icon}
+          iconStart={Icon}
+          iconEnd={Icon}
         />
       </div>
       <br />

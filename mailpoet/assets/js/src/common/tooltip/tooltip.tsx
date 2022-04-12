@@ -1,7 +1,7 @@
-import classNames from 'classnames';
+import classnames from 'classnames';
 import ReactTooltip, { TooltipProps } from 'react-tooltip';
 
-function Tooltip({
+export function Tooltip({
   effect,
   textColor,
   backgroundColor,
@@ -17,7 +17,7 @@ function Tooltip({
       textColor={textColor || '#1d2327'}
       backgroundColor={backgroundColor || '#fafbfe'}
       borderColor={borderColor || '#e5e9f8'}
-      className={classNames('mailpoet-tooltip', className)}
+      className={classnames('mailpoet-tooltip', className)}
       border={border === undefined ? true : border}
       {...props}
     >
@@ -25,5 +25,3 @@ function Tooltip({
     </ReactTooltip>
   );
 }
-
-export default Tooltip;

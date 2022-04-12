@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
-import Button from 'common/button/button';
-import Input from 'common/form/input/input';
-import Selection from 'form/fields/selection.jsx';
+import { MailPoet } from 'mailpoet';
+import { Button } from 'common/button/button';
+import { Input } from 'common/form/input/input';
+import { Selection } from 'form/fields/selection.jsx';
 import ReactStringReplace from 'react-string-replace';
-import PreviousNextStepButtons from '../previous_next_step_buttons.jsx';
+import { PreviousNextStepButtons } from '../previous_next_step_buttons.jsx';
 
 function MethodMailChimp({ onFinish, onPrevious }) {
   const [key, setKey] = useState('');
@@ -160,4 +160,4 @@ MethodMailChimp.defaultProps = {
   onPrevious: () => {},
 };
 
-export default MethodMailChimp;
+export { MethodMailChimp };

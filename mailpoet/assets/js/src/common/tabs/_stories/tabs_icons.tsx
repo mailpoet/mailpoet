@@ -1,10 +1,10 @@
 import { action } from '_storybook/action';
 import { CSSProperties } from 'react';
-import Heading from '../../typography/heading/heading';
-import RoutedTabs from '../routed_tabs';
-import Tab from '../tab';
-import Tabs from '../tabs';
-import icon from './assets/icon';
+import { Heading } from '../../typography/heading/heading';
+import { RoutedTabs } from '../routed_tabs';
+import { Tab } from '../tab';
+import { Tabs } from '../tabs';
+import { Icon } from './assets/icon';
 
 const wrapperStyles: CSSProperties = {
   background: '#f1f1f1',
@@ -24,13 +24,13 @@ export function WithIcons() {
     <div style={wrapperStyles}>
       <Heading level={3}>Tabs</Heading>
       <Tabs activeKey="first" onSwitch={action('onSwitchTabs')}>
-        <Tab key="first" title="Before" iconStart={icon}>
+        <Tab key="first" title="Before" iconStart={Icon}>
           First tab content
         </Tab>
-        <Tab key="second" title="After" iconEnd={icon}>
+        <Tab key="second" title="After" iconEnd={Icon}>
           Second tab content
         </Tab>
-        <Tab key="third" title="Both" iconStart={icon} iconEnd={icon}>
+        <Tab key="third" title="Both" iconStart={Icon} iconEnd={Icon}>
           Third tab content
         </Tab>
       </Tabs>
@@ -39,23 +39,23 @@ export function WithIcons() {
 
       <Heading level={3}>Nested tabs</Heading>
       <Tabs activeKey="first" onSwitch={action('onSwitchNestedTabsRoot')}>
-        <Tab key="first" title="Before" iconStart={icon}>
+        <Tab key="first" title="Before" iconStart={Icon}>
           <Tabs activeKey="first" onSwitch={action('onSwitchNestedTabsChild')}>
-            <Tab key="first" title="Before" iconStart={icon}>
+            <Tab key="first" title="Before" iconStart={Icon}>
               First tab content
             </Tab>
-            <Tab key="second" title="After" iconEnd={icon}>
+            <Tab key="second" title="After" iconEnd={Icon}>
               Second tab content
             </Tab>
-            <Tab key="third" title="Both" iconStart={icon} iconEnd={icon}>
+            <Tab key="third" title="Both" iconStart={Icon} iconEnd={Icon}>
               Third tab content
             </Tab>
           </Tabs>
         </Tab>
-        <Tab key="second" title="After" iconEnd={icon}>
+        <Tab key="second" title="After" iconEnd={Icon}>
           Second tab content
         </Tab>
-        <Tab key="third" title="Both" iconStart={icon} iconEnd={icon}>
+        <Tab key="third" title="Both" iconStart={Icon} iconEnd={Icon}>
           Third tab content
         </Tab>
       </Tabs>
@@ -66,13 +66,13 @@ export function WithIcons() {
         Routed tabs (work Back/Forward browser buttons)
       </Heading>
       <RoutedTabs activeKey="first" onSwitch={action('onSwitchRoutedTabs')}>
-        <Tab key="first" title="Before" iconStart={icon}>
+        <Tab key="first" title="Before" iconStart={Icon}>
           First tab content
         </Tab>
-        <Tab key="second" title="After" iconEnd={icon}>
+        <Tab key="second" title="After" iconEnd={Icon}>
           Second tab content
         </Tab>
-        <Tab key="third" title="Both" iconStart={icon} iconEnd={icon}>
+        <Tab key="third" title="Both" iconStart={Icon} iconEnd={Icon}>
           Third tab content
         </Tab>
       </RoutedTabs>

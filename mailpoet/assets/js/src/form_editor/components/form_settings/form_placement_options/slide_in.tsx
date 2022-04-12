@@ -1,10 +1,10 @@
-import MailPoet from 'mailpoet';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { MailPoet } from 'mailpoet';
+import { useDispatch, useSelect } from '@wordpress/data';
 
-import Icon from './icons/slide_in_icon';
-import FormPlacementOption from './form_placement_option';
+import { SlideInIcon } from './icons/slide_in_icon';
+import { FormPlacementOption } from './form_placement_option';
 
-function SlideIn(): JSX.Element {
+export function SlideIn(): JSX.Element {
   const formSettings = useSelect(
     (select) => select('mailpoet-form-editor').getFormSettings(),
     [],
@@ -15,11 +15,9 @@ function SlideIn(): JSX.Element {
     <FormPlacementOption
       active={formSettings.formPlacement.slideIn.enabled}
       label={MailPoet.I18n.t('placeSlideInFormOnPages')}
-      icon={Icon}
+      icon={SlideInIcon}
       onClick={(): void => showPlacementSettings('slide_in')}
       canBeActive
     />
   );
 }
-
-export default SlideIn;

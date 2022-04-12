@@ -1,11 +1,12 @@
-import PropTypes from 'prop-types';
 import { Component } from 'react';
-import MailPoet from 'mailpoet';
-import ListingHeadingStepsRoute from 'newsletters/listings/heading_steps_route';
+import PropTypes from 'prop-types';
+
+import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
+import { MailPoet } from 'mailpoet';
 import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context/index.jsx';
 
-class NewsletterStandard extends Component {
+class NewsletterStandardComponent extends Component {
   componentDidMount() {
     // No options for this type, create a newsletter upon mounting
     MailPoet.Ajax.post({
@@ -47,12 +48,12 @@ class NewsletterStandard extends Component {
   }
 }
 
-NewsletterStandard.contextType = GlobalContext;
+NewsletterStandardComponent.contextType = GlobalContext;
 
-NewsletterStandard.propTypes = {
+NewsletterStandardComponent.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
 };
 
-export default withRouter(NewsletterStandard);
+export const NewsletterTypeStandard = withRouter(NewsletterStandardComponent);

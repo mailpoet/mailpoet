@@ -1,11 +1,11 @@
 import { Component } from 'react';
-import MailPoet from 'mailpoet';
 import PropTypes from 'prop-types';
-import Datepicker from 'common/datepicker/datepicker.tsx';
-
 import { registerLocale } from 'react-datepicker';
 import locale from 'date-fns/locale/en-US';
 import buildLocalizeFn from 'date-fns/locale/_lib/buildLocalizeFn';
+
+import { Datepicker } from 'common/datepicker/datepicker.tsx';
+import { MailPoet } from 'mailpoet';
 
 const monthValues = {
   abbreviated: [
@@ -157,4 +157,4 @@ DateText.defaultProps = {
   maxDate: null,
 };
 
-export default DateText;
+export { DateText };

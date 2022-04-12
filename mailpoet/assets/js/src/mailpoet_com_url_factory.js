@@ -1,4 +1,4 @@
-const MailPoetComUrlFactory = (referralId) => {
+export const MailPoetComUrlFactory = (referralId) => {
   const baseUrl = 'https://www.mailpoet.com/';
   const baseShopUrl = 'https://account.mailpoet.com/';
 
@@ -47,5 +47,3 @@ const MailPoetComUrlFactory = (referralId) => {
     },
   };
 };
-
-export default MailPoetComUrlFactory;

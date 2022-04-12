@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
-import Notices from 'notices/notices.jsx';
+import { Notices } from 'notices/notices.jsx';
 
 function ExperimentalFeatures() {
   const [flags, setFlags] = useState(null);

@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import classnames from 'classnames';
 
 export type Category = {
   name: string;
@@ -12,7 +12,7 @@ type Props = Category & {
   active?: boolean;
 };
 
-function CategoriesItem({
+export function CategoriesItem({
   onSelect,
   name,
   label,
@@ -20,7 +20,7 @@ function CategoriesItem({
   automationId,
   active,
 }: Props) {
-  const classes = classNames('mailpoet-categories-item', { active: !!active });
+  const classes = classnames('mailpoet-categories-item', { active: !!active });
 
   return (
     <a
@@ -44,5 +44,3 @@ function CategoriesItem({
     </a>
   );
 }
-
-export default CategoriesItem;

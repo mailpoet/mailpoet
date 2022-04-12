@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { undo as undoIcon } from '@wordpress/icons';
 import { displayShortcut } from '@wordpress/keycodes';
 import { useShortcut } from '@wordpress/keyboard-shortcuts';
 
-function HistoryUndo(props: Record<string, unknown>): JSX.Element {
+export function HistoryUndo(props: Record<string, unknown>): JSX.Element {
   const hasUndo = useSelect(
     (select) => select('mailpoet-form-editor').hasEditorUndo(),
     [],
@@ -52,5 +52,3 @@ function HistoryUndo(props: Record<string, unknown>): JSX.Element {
     />
   );
 }
-
-export default HistoryUndo;

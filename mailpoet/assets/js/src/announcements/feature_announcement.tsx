@@ -1,5 +1,5 @@
-import classNames from 'classnames';
-import MailPoet from 'mailpoet';
+import classnames from 'classnames';
+import { MailPoet } from 'mailpoet';
 import { withFeatureAnnouncement } from './with_feature_announcement';
 
 type Props = {
@@ -7,8 +7,8 @@ type Props = {
   onBeamerClick: () => void;
 };
 
-function FeatureAnnouncement({ hasNews, onBeamerClick }: Props) {
-  const buttonClasses = classNames(
+function FeatureAnnouncementComponent({ hasNews, onBeamerClick }: Props) {
+  const buttonClasses = classnames(
     'button mailpoet_feature_announcement_button',
     hasNews ? 'mailpoet_feature_announcement_dot' : '',
   );
@@ -27,4 +27,7 @@ function FeatureAnnouncement({ hasNews, onBeamerClick }: Props) {
   );
 }
 
-export default withFeatureAnnouncement(FeatureAnnouncement);
+const FeatureAnnouncement = withFeatureAnnouncement(
+  FeatureAnnouncementComponent,
+);
+export { FeatureAnnouncement };

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-export default function useSegmentsContext(data) {
+export function useSegmentsContext(data) {
   return useMemo(
     () => ({
       all: data.mailpoetSegments,

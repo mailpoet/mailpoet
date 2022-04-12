@@ -1,4 +1,4 @@
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import _ from 'lodash';
 
 import { AnyFormItem, Segment, SegmentConnectTypes } from './types';

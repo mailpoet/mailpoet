@@ -1,9 +1,9 @@
 import { useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 
-import generateColumnSelection from './generate_column_selection.jsx';
-import matchColumns from './match_columns.jsx';
+import { generateColumnSelection } from './generate_column_selection.jsx';
+import { matchColumns } from './match_columns.jsx';
 
 const MAX_SUBSCRIBERS_SHOWN = 10;
 
@@ -171,4 +171,4 @@ MatchTable.defaultProps = {
   header: [],
 };
 
-export default MatchTable;
+export { MatchTable };

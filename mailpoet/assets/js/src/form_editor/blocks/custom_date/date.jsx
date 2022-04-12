@@ -310,4 +310,4 @@ FormFieldDate.defaultProps = {
   addDefaultClasses: false,
 };
 
-export default FormFieldDate;
+export { FormFieldDate };

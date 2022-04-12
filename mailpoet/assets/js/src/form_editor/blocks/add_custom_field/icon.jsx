@@ -1,6 +1,6 @@
 import { G, Path, SVG } from '@wordpress/components';
 
-export default (
+export const Icon = (
   <SVG xmlns="http://www.w3.org/2000/svg" viewBox="0 0 694 694">
     <G>
       <Path

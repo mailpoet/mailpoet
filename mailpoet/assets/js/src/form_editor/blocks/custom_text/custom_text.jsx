@@ -1,6 +1,6 @@
 import { defaultBlockStyles } from 'form_editor/store/mapping/to_blocks/styles_mapper';
-import Icon from './icon.jsx';
-import Edit from './edit.jsx';
+import { Icon } from './icon.jsx';
+import { CustomTextEdit } from './edit.jsx';
 
 export const name = 'mailpoet-form/custom-text';
 
@@ -42,7 +42,7 @@ export function getSettings(customField) {
       html: false,
       multiple: false,
     },
-    edit: Edit,
+    edit: CustomTextEdit,
     save() {
       return null;
     },

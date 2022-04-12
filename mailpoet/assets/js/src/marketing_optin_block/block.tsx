@@ -3,13 +3,13 @@
  * External dependencies
  */
 import { CheckboxControl } from '@woocommerce/blocks-checkout';
-import { useState, useEffect, RawHTML } from '@wordpress/element';
+import { RawHTML, useEffect, useState } from '@wordpress/element';
 import { getSetting } from '@woocommerce/settings';
 
 const { optinEnabled, defaultText, defaultStatus } =
   getSetting('mailpoet_data');
 
-function Block({
+export function FrontendBlock({
   text,
   checkoutExtensionData,
 }: {
@@ -36,5 +36,3 @@ function Block({
     </CheckboxControl>
   );
 }
-
-export default Block;

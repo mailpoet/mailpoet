@@ -1,8 +1,8 @@
 import ReactDOM from 'react-dom';
 import { Route, HashRouter } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context/index.jsx';
-import Notices from 'notices/notices.jsx';
-import FormList from './list.jsx';
+import { Notices } from 'notices/notices.jsx';
+import { FormList } from './list.jsx';
 
 function App() {
   return (

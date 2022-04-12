@@ -1,10 +1,10 @@
 import { Component } from 'react';
-import MailPoet from 'mailpoet';
+import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 
-import Button from 'common/button/button';
-import TemplateBoxWrap from 'common/template_box/template_box';
-import confirmAlert from 'common/confirm_alert.jsx';
+import { Button } from 'common/button/button';
+import { TemplateBox as TemplateBoxWrap } from 'common/template_box/template_box';
+import { confirmAlert } from 'common/confirm_alert.jsx';
 import { GlobalContext } from 'context/index.jsx';
 
 /**
@@ -161,4 +161,4 @@ TemplateBox.defaultProps = {
   thumbnail: null,
 };
 
-export default TemplateBox;
+export { TemplateBox };

@@ -1,8 +1,8 @@
-import MailPoet from 'mailpoet';
-import classNames from 'classnames';
+import { MailPoet } from 'mailpoet';
+import classnames from 'classnames';
 import { addDays, differenceInMinutes, isFuture, isPast } from 'date-fns';
-import t from 'common/functions/t';
-import Tooltip from '../tooltip/tooltip';
+import { t } from 'common/functions/t';
+import { Tooltip } from '../tooltip/tooltip';
 
 type CircularProgressProps = {
   percentage: number;
@@ -63,7 +63,7 @@ type NewsletterStatusProps = {
   status?: string;
 };
 
-function NewsletterStatus({
+export function NewsletterStatus({
   scheduledFor,
   processed,
   total,
@@ -136,7 +136,7 @@ function NewsletterStatus({
   }
   return (
     <div
-      className={classNames({
+      className={classnames({
         'mailpoet-listing-status': true,
         'mailpoet-listing-status-unknown': unknown,
         'mailpoet-listing-status-scheduled': scheduled,
@@ -150,5 +150,3 @@ function NewsletterStatus({
     </div>
   );
 }
-
-export default NewsletterStatus;

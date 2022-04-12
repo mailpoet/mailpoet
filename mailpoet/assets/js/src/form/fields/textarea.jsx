@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import Textarea from 'common/form/textarea/textarea';
+import { Textarea } from 'common/form/textarea/textarea';
 
 function FormFieldTextarea(props) {
   return (
@@ -39,4 +39,4 @@ FormFieldTextarea.propTypes = {
   onValueChange: PropTypes.func.isRequired,
 };
 
-export default FormFieldTextarea;
+export { FormFieldTextarea };
