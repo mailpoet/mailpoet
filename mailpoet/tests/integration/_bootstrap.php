@@ -137,6 +137,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $this->entityManager->clear();
     $this->restoreGlobals();
     wp_set_current_user(0);
+    $this->cleanUpCustomEntities();
     parent::tearDown();
   }
 
@@ -200,6 +201,12 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
       foreach (self::$savedGlobals[$globalName] ?? [] as $key => $value) {
         $GLOBALS[$globalName][$key] = is_object($value) ? clone $value : $value;
       }
+    }
+  }
+
+  protected function cleanUpCustomEntities() {
+    if (post_type_exists('product')) {
+      unregister_post_type('product');
     }
   }
 }
