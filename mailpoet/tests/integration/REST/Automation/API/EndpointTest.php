@@ -32,7 +32,6 @@ class EndpointTest extends Test {
       'integer-2' => '-123',
       'boolean-1' => '0',
       'boolean-2' => 'true',
-      'extra' => 'raw',
     ]]);
 
     $this->assertInstanceOf(Request::class, $request);
@@ -46,7 +45,6 @@ class EndpointTest extends Test {
       'integer-2' => -123,
       'boolean-1' => false,
       'boolean-2' => true,
-      'extra' => 'raw',
     ], $request->getParams());
   }
 
@@ -66,7 +64,6 @@ class EndpointTest extends Test {
       'integer-2' => -123,
       'boolean-1' => 0,
       'boolean-2' => true,
-      'extra' => 'raw',
     ]]);
 
     $this->assertInstanceOf(Request::class, $request);
@@ -80,7 +77,6 @@ class EndpointTest extends Test {
       'integer-2' => -123,
       'boolean-1' => false,
       'boolean-2' => true,
-      'extra' => 'raw',
     ], $request->getParams());
   }
 
@@ -97,6 +93,18 @@ class EndpointTest extends Test {
         'params' => ['required'],
       ],
     ], $response);
+  }
+
+  public function testExtraParam(): void {
+    $path = strtolower(__FUNCTION__);
+    $request = null;
+    $this->registerTestingGetRoute($path, function (Request $req) use (&$request) {
+      $request = $req;
+    });
+
+    $this->get("$this->prefix/$path", ['query' => ['required' => 'required', 'extra' => 'extra']]);
+    $this->assertInstanceOf(Request::class, $request);
+    $this->assertSame($request->getParams(), ['required' => 'required']);
   }
 
   private function registerTestingGetRoute(string $path, callable $requestCallback = null): void {

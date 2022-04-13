@@ -60,9 +60,10 @@ class API {
 
     $this->wordPress->registerRestRoute(self::PREFIX, $route, [
       'methods' => $method,
-      'callback' => function (WP_REST_Request $wpRequest) use ($endpointClass) {
+      'callback' => function (WP_REST_Request $wpRequest) use ($endpointClass, $schema) {
         try {
           $endpoint = $this->endpointContainer->get($endpointClass);
+          $wpRequest = $this->sanitizeUnknownParams($wpRequest, $schema);
           $request = new Request($wpRequest);
           return $endpoint->handle($request);
         } catch (Throwable $e) {
@@ -86,5 +87,16 @@ class API {
       error_log((string)$e); // phpcs:ignore Squiz.PHP.DiscouragedFunctions
     }
     return $response;
+  }
+
+  private function sanitizeUnknownParams(WP_REST_Request $wpRequest, array $args): WP_REST_Request {
+    // Remove all params that are not declared in the schema, so we use just the validated ones.
+    // Note that this doesn't work recursively for object properties as it is harder to solve
+    // with features like oneOf, anyOf, additional properties, or pattern properties.
+    $extraParams = array_diff(array_keys($wpRequest->get_params()), array_keys($args));
+    foreach ($extraParams as $extraParam) {
+      unset($wpRequest[(string)$extraParam]);
+    }
+    return $wpRequest;
   }
 }
