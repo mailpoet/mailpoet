@@ -11,7 +11,7 @@ class WorkflowsPostTest extends AutomationTest {
 
   public function testGuestNotAllowed(): void {
     wp_set_current_user(0);
-    $data = $this->post(self::ENDPOINT_PATH);
+    $data = $this->post(self::ENDPOINT_PATH, ['json' => ['name' => 'Testing workflow', 'steps' => []]]);
 
     $this->assertSame([
       'code' => 'rest_forbidden',
