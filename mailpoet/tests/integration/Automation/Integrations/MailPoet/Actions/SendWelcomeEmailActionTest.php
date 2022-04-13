@@ -39,6 +39,12 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
 
   /** @var SegmentSubject */
   private $segmentSubject;
+  
+  /** @var Step */
+  private $step;
+  
+  /** @var Workflow */
+  private $workflow;
 
   public function _before() {
     parent::_before();
@@ -48,23 +54,25 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
     $this->action = $this->diContainer->get(SendWelcomeEmailAction::class);
     $this->subscriberSubject = $this->diContainer->get(SubscriberSubject::class);
     $this->segmentSubject = $this->diContainer->get(SegmentSubject::class);
+    $this->step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null);
+    $this->workflow = new Workflow('test-workflow', []);
   }
 
   public function testItKnowsWhenItHasAllRequiredSubjects() {
-    expect($this->action->hasRequiredSubjects([]))->false();
-    expect($this->action->hasRequiredSubjects($this->getSubjects()))->true();
+    expect($this->action->isValid([], $this->step, $this->workflow))->false();
+    expect($this->action->isValid($this->getSubjects(), $this->step, $this->workflow))->true();
   }
 
   public function testItRequiresASubscriberSubject() {
     $subjects = $this->getSubjects();
     unset($subjects[$this->subscriberSubject->getKey()]);
-    expect($this->action->hasRequiredSubjects($subjects))->false();
+    expect($this->action->isValid($subjects, $this->step, $this->workflow))->false();
   }
 
   public function testItRequiresASegmentSubject() {
     $subjects = $this->getSubjects();
     unset($subjects[$this->segmentSubject->getKey()]);
-    expect($this->action->hasRequiredSubjects($subjects))->false();
+    expect($this->action->isValid($subjects, $this->step, $this->workflow))->false();
   }
 
   public function testHappyPath() {

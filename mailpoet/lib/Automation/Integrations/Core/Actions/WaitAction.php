@@ -38,8 +38,7 @@ class WaitAction implements Action {
     // TODO: call a step complete ($id) hook instead?
   }
 
-  public function hasRequiredSubjects(array $subjects): bool {
-    // This action does not require any subjects
+  public function isValid(array $subjects, Step $step, Workflow $workflow): bool {
     return true;
   }
 }

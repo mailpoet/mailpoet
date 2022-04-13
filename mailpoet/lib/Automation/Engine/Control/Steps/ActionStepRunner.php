@@ -23,7 +23,7 @@ class ActionStepRunner {
     if (!$action) {
       throw new InvalidStateException();
     }
-    if (!$action->hasRequiredSubjects($workflowRun->getSubjects())) {
+    if (!$action->isValid($workflowRun->getSubjects(), $step, $workflow)) {
       throw new InvalidStateException();
     }
     $action->run($workflow, $workflowRun, $step);

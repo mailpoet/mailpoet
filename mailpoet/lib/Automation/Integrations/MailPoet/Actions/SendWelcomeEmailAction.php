@@ -55,7 +55,7 @@ class SendWelcomeEmailAction implements Action {
     return __('Send Welcome Email', 'mailpoet');
   }
 
-  public function hasRequiredSubjects(array $subjects): bool {
+  public function isValid(array $subjects, Step $step, Workflow $workflow): bool {
     $segmentSubject = $subjects['mailpoet:segment'] ?? null;
     $subscriberSubject = $subjects['mailpoet:subscriber'] ?? null;
 
