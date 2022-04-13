@@ -22,21 +22,31 @@ class Validator {
       && is_array($newsletterEntity->getBody())
       && $newsletterEntity->getBody()['content']
     ) {
-      $body = json_encode($newsletterEntity->getBody()['content']);
-      if ($body === false) {
-        return __('Poet, please add prose to your masterpiece before you send it to your followers.');
+      $content = $newsletterEntity->getBody()['content'];
+      $encodedBody = json_encode($content);
+      if ($encodedBody === false) {
+        return $this->emptyContentErrorMessage();
+      } else {
+        $blocks = $content['blocks'] ?? [];
+        if (empty($blocks)) {
+          return $this->emptyContentErrorMessage();
+        }
       }
 
       if (
         $this->bridge->isMailpoetSendingServiceEnabled()
-        && (strpos($body, '[link:subscription_unsubscribe_url]') === false)
-        && (strpos($body, '[link:subscription_unsubscribe]') === false)
+        && (strpos($encodedBody, '[link:subscription_unsubscribe_url]') === false)
+        && (strpos($encodedBody, '[link:subscription_unsubscribe]') === false)
       ) {
         return __('All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.');
       }
     } else {
-      return __('Poet, please add prose to your masterpiece before you send it to your followers.');
+      return $this->emptyContentErrorMessage();
     }
     return null;
+  }
+  
+  private function emptyContentErrorMessage(): string {
+    return __('Poet, please add prose to your masterpiece before you send it to your followers.');
   }
 }

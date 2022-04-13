@@ -22,6 +22,7 @@ use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Newsletter\Validator;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\UnexpectedValueException;
@@ -79,6 +80,9 @@ class Newsletters extends APIEndpoint {
   /** @var TrackingConfig */
   private $trackingConfig;
 
+  /** @var Validator */
+  private $validator;
+
   /** @var Scheduler */
   private $scheduler;
 
@@ -97,7 +101,8 @@ class Newsletters extends APIEndpoint {
     NewsletterSaveController $newsletterSaveController,
     NewsletterUrl $newsletterUrl,
     TrackingConfig $trackingConfig,
-    Scheduler $scheduler
+    Scheduler $scheduler,
+    Validator $validator
   ) {
     $this->listingHandler = $listingHandler;
     $this->wp = $wp;
@@ -114,6 +119,7 @@ class Newsletters extends APIEndpoint {
     $this->newsletterUrl = $newsletterUrl;
     $this->trackingConfig = $trackingConfig;
     $this->scheduler = $scheduler;
+    $this->validator = $validator;
   }
 
   public function get($data = []) {
@@ -182,6 +188,13 @@ class Newsletters extends APIEndpoint {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
+    }
+
+    if ($status === NewsletterEntity::STATUS_ACTIVE) {
+      $validationError = $this->validator->validate($newsletter);
+      if ($validationError !== null) {
+        return $this->errorResponse([APIError::FORBIDDEN => $validationError], [], Response::STATUS_FORBIDDEN);
+      }
     }
 
     // if the re-engagement email doesn't contain the re-engage link, it can't be activated

@@ -36,6 +36,7 @@ use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
+use MailPoet\Newsletter\Validator;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
@@ -695,14 +696,15 @@ class NewslettersTest extends \MailPoetTest {
       $this->diContainer->get(NewsletterSaveController::class),
       $this->diContainer->get(Url::class),
       $this->diContainer->get(TrackingConfig::class),
-      $this->scheduler
+      $this->scheduler,
+      $this->diContainer->get(Validator::class)
     );
   }
 
   private function createNewsletter(string $subject, string $type): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject($subject);
-    $newsletter->setBody(Fixtures::get('newsletter_body_template'));
+    $newsletter->setBody((array)json_decode(Fixtures::get('newsletter_body_template'), true));
     $newsletter->setType($type);
     $newsletter->setHash(Security::generateHash());
     $this->newsletterRepository->persist($newsletter);
