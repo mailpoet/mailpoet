@@ -39,6 +39,6 @@ class WaitAction implements Action {
   }
 
   public function isValid(array $subjects, Step $step, Workflow $workflow): bool {
-    return true;
+    return (int)($step->getArgs()['seconds'] ?? null) > 0;
   }
 }

@@ -9,6 +9,7 @@ use MailPoet\Automation\Integrations\MailPoet\Actions\SendWelcomeEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Exception;
@@ -39,12 +40,18 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
 
   /** @var SegmentSubject */
   private $segmentSubject;
-  
+
   /** @var Step */
   private $step;
-  
+
   /** @var Workflow */
   private $workflow;
+
+  /** @var SegmentEntity */
+  private $segment;
+
+  /** @var NewsletterEntity */
+  private $welcomeEmail;
 
   public function _before() {
     parent::_before();
@@ -54,7 +61,10 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
     $this->action = $this->diContainer->get(SendWelcomeEmailAction::class);
     $this->subscriberSubject = $this->diContainer->get(SubscriberSubject::class);
     $this->segmentSubject = $this->diContainer->get(SegmentSubject::class);
-    $this->step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null);
+
+    $this->segment = (new Segment())->create();
+    $this->welcomeEmail = (new Newsletter())->withWelcomeTypeForSegment($this->segment->getId())->create();
+    $this->step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => $this->welcomeEmail->getId()]);
     $this->workflow = new Workflow('test-workflow', []);
   }
 
@@ -73,6 +83,17 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
     $subjects = $this->getSubjects();
     unset($subjects[$this->segmentSubject->getKey()]);
     expect($this->action->isValid($subjects, $this->step, $this->workflow))->false();
+  }
+
+  public function testItIsNotValidIfStepHasNoWelcomeEmail(): void {
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, []);
+    expect($this->action->isValid($this->getSubjects(), $step, $this->workflow))->false();
+  }
+
+  public function testItRequiresAWelcomeEmailType(): void {
+    $newsletter = (new Newsletter())->withPostNotificationsType()->create();
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => $newsletter->getId()]);
+    expect($this->action->isValid($this->getSubjects(), $step, $this->workflow))->false();
   }
 
   public function testHappyPath() {
@@ -251,27 +272,6 @@ class SendWelcomeEmailActionTest extends \MailPoetTest {
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($welcomeEmail, (int)$subscriber->getId());
     expect($scheduled)->count(0);
-  }
-
-  public function testItCanRetrieveAWelcomeEmailFromAStep(): void {
-    $segment = (new Segment())->create();
-    $welcomeEmail = (new Newsletter())->withWelcomeTypeForSegment($segment->getId())->create();
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => $welcomeEmail->getId()]);
-    $retrievedEmail = $this->action->getWelcomeEmailForStep($step);
-    expect($retrievedEmail)->equals($welcomeEmail);
-  }
-
-  public function testItFailsIfWelcomeEmailIdDoesNotExist(): void {
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => 'thisIdDefinitelyDoesNotExist']);
-    $this->expectException(InvalidStateException::class);
-    $this->action->getWelcomeEmailForStep($step);
-  }
-
-  public function testItRequiresAWelcomeEmailType(): void {
-    $newsletter = (new Newsletter())->withPostNotificationsType()->create();
-    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', null, ['welcomeEmailId' => $newsletter->getId()]);
-    $this->expectException(InvalidStateException::class);
-    $this->action->getWelcomeEmailForStep($step);
   }
 
   private function getLoadedSubscriberSubject(SubscriberEntity $subscriber): SubscriberSubject {

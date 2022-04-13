@@ -56,13 +56,19 @@ class SendWelcomeEmailAction implements Action {
   }
 
   public function isValid(array $subjects, Step $step, Workflow $workflow): bool {
+    try {
+      $this->getWelcomeEmailForStep($step);
+    } catch (InvalidStateException $exception) {
+      return false;
+    }
+    
     $segmentSubject = $subjects['mailpoet:segment'] ?? null;
     $subscriberSubject = $subjects['mailpoet:subscriber'] ?? null;
 
     return $segmentSubject instanceof SegmentSubject && $subscriberSubject instanceof SubscriberSubject;
   }
 
-  public function getWelcomeEmailForStep(Step $step): NewsletterEntity {
+  private function getWelcomeEmailForStep(Step $step): NewsletterEntity {
     if (!isset($step->getArgs()['welcomeEmailId'])) {
       throw InvalidStateException::create();
     }
