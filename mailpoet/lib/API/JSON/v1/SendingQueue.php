@@ -17,8 +17,8 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Newsletter\Validator;
 use MailPoet\Segments\SubscribersFinder;
-use MailPoet\Services\Bridge;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
@@ -36,9 +36,6 @@ class SendingQueue extends APIEndpoint {
   /** @var NewslettersRepository */
   private $newsletterRepository;
 
-  /** @var Bridge */
-  private $bridge;
-
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
 
@@ -51,24 +48,27 @@ class SendingQueue extends APIEndpoint {
   /** @var Scheduler */
   private $scheduler;
 
+  /** @var Validator */
+  private $validator;
+
   public function __construct(
     SubscribersFeature $subscribersFeature,
     NewslettersRepository $newsletterRepository,
     SendingQueuesRepository $sendingQueuesRepository,
-    Bridge $bridge,
     SubscribersFinder $subscribersFinder,
     ScheduledTasksRepository $scheduledTasksRepository,
     MailerFactory $mailerFactory,
-    Scheduler $scheduler
+    Scheduler $scheduler,
+    Validator $validator
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
     $this->newsletterRepository = $newsletterRepository;
-    $this->bridge = $bridge;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->mailerFactory = $mailerFactory;
     $this->scheduler = $scheduler;
+    $this->validator = $validator;
   }
 
   public function add($data = []) {
@@ -97,7 +97,7 @@ class SendingQueue extends APIEndpoint {
       ]);
     }
 
-    $validationError = $this->validateNewsletter($newsletterEntity);
+    $validationError = $this->validator->validate($newsletterEntity);
     if ($validationError) {
       return $this->errorResponse([
         APIError::BAD_REQUEST => $validationError,
@@ -176,30 +176,6 @@ class SendingQueue extends APIEndpoint {
         $newsletter->getQueue()->asArray()
       );
     }
-  }
-
-  private function validateNewsletter(NewsletterEntity $newsletterEntity): ?string {
-    if (
-      $newsletterEntity->getBody()
-      && is_array($newsletterEntity->getBody())
-      && $newsletterEntity->getBody()['content']
-    ) {
-      $body = json_encode($newsletterEntity->getBody()['content']);
-      if ($body === false) {
-        return __('Poet, please add prose to your masterpiece before you send it to your followers.');
-      }
-
-      if (
-        $this->bridge->isMailpoetSendingServiceEnabled()
-        && (strpos($body, '[link:subscription_unsubscribe_url]') === false)
-        && (strpos($body, '[link:subscription_unsubscribe]') === false)
-      ) {
-        return __('All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.');
-      }
-    } else {
-      return __('Poet, please add prose to your masterpiece before you send it to your followers.');
-    }
-    return null;
   }
 
   public function pause($data = []) {
