@@ -7,8 +7,22 @@ import {
   name as todoBlockName,
   settings as todoBlockSettings,
 } from './blocks/todo';
+
+import {
+  name as columnName,
+  settings as columnSettings,
+} from './blocks/column';
+
+import {
+  name as columnsName,
+  settings as columnsSettings,
+} from './blocks/columns';
+
 // Add Custom Block Type
 registerBlockType(todoBlockName, todoBlockSettings);
+registerBlockType(columnName, columnSettings);
+registerBlockType(columnsName, columnsSettings);
+
 const settings = {
   iso: {
     blocks: {
