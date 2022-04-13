@@ -69,10 +69,10 @@ class SendWelcomeEmailAction implements Action {
   }
 
   private function getWelcomeEmailForStep(Step $step): NewsletterEntity {
-    if (!isset($step->getArgs()['welcomeEmailId'])) {
+    $welcomeEmailId = $step->getArgs()['welcomeEmailId'] ?? null;
+    if ($welcomeEmailId === null) {
       throw InvalidStateException::create();
     }
-    $welcomeEmailId = $step->getArgs()['welcomeEmailId'];
     $newsletter = $this->newslettersRepository->findOneById($welcomeEmailId);
     if ($newsletter === null) {
       throw InvalidStateException::create()->withMessage(sprintf("Welcome Email with ID '%s' not found.", $welcomeEmailId));
