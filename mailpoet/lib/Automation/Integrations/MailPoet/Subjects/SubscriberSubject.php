@@ -26,7 +26,7 @@ class SubscriberSubject implements Subject {
 
     $this->fields = [
       'id' => new Field(
-        'mailpoet:subscriber:email',
+        'mailpoet:subscriber:id',
         Field::TYPE_INTEGER,
         __('Subscriber ID', 'mailpoet'),
         function() {
