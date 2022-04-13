@@ -68,23 +68,6 @@ class SendWelcomeEmailAction implements Action {
     return $segmentSubject instanceof SegmentSubject && $subscriberSubject instanceof SubscriberSubject;
   }
 
-  private function getWelcomeEmailForStep(Step $step): NewsletterEntity {
-    $welcomeEmailId = $step->getArgs()['welcomeEmailId'] ?? null;
-    if ($welcomeEmailId === null) {
-      throw InvalidStateException::create();
-    }
-    $newsletter = $this->newslettersRepository->findOneById($welcomeEmailId);
-    if ($newsletter === null) {
-      throw InvalidStateException::create()->withMessage(sprintf("Welcome Email with ID '%s' not found.", $welcomeEmailId));
-    }
-    $type = $newsletter->getType();
-    if ($type !== NewsletterEntity::TYPE_WELCOME) {
-      throw InvalidStateException::create()->withMessage(sprintf("Newsletter must be a Welcome Email. Actual type for newsletter ID '%s' was '%s'.", $welcomeEmailId, $type));
-    }
-
-    return $newsletter;
-  }
-
   public function run(Workflow $workflow, WorkflowRun $workflowRun, Step $step): void {
     $newsletter = $this->getWelcomeEmailForStep($step);
     $subscriberSubject = $workflowRun->getSubjects()['mailpoet:subscriber'] ?? null;
@@ -135,5 +118,22 @@ class SendWelcomeEmailAction implements Action {
         ->withMessage('There was an error saving the sending task.')
         ->withErrors($errors);
     }
+  }
+  
+  private function getWelcomeEmailForStep(Step $step): NewsletterEntity {
+    $welcomeEmailId = $step->getArgs()['welcomeEmailId'] ?? null;
+    if ($welcomeEmailId === null) {
+      throw InvalidStateException::create();
+    }
+    $newsletter = $this->newslettersRepository->findOneById($welcomeEmailId);
+    if ($newsletter === null) {
+      throw InvalidStateException::create()->withMessage(sprintf("Welcome Email with ID '%s' not found.", $welcomeEmailId));
+    }
+    $type = $newsletter->getType();
+    if ($type !== NewsletterEntity::TYPE_WELCOME) {
+      throw InvalidStateException::create()->withMessage(sprintf("Newsletter must be a Welcome Email. Actual type for newsletter ID '%s' was '%s'.", $welcomeEmailId, $type));
+    }
+
+    return $newsletter;
   }
 }
