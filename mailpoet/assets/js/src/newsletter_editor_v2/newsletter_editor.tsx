@@ -1,6 +1,14 @@
 import { render } from '@wordpress/element';
 import IsolatedBlockEditor from '@automattic/isolated-block-editor';
 
+import { registerBlockType } from '@wordpress/blocks';
+
+import {
+  name as todoBlockName,
+  settings as todoBlockSettings,
+} from './blocks/todo';
+// Add Custom Block Type
+registerBlockType(todoBlockName, todoBlockSettings);
 const settings = {
   iso: {
     blocks: {
@@ -12,6 +20,7 @@ const settings = {
         'core/spacer',
         'core/column',
         'core/columns',
+        'mailpoet/todo-block',
       ],
       disallowBlocks: [],
     },
@@ -41,7 +50,8 @@ const loadInitialContent = (parse) => {
   const html =
     '<!-- wp:paragraph -->\n' +
     '<p>Hello reader!</p>\n' +
-    '<!-- /wp:paragraph -->';
+    '<!-- /wp:paragraph -->\n\n' +
+    '<!-- wp:mailpoet/todo-block {"originalBlock":"Text"} /-->';
   return parse(html);
 };
 
