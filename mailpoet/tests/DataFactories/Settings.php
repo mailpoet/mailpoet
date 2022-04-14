@@ -214,4 +214,8 @@ class Settings {
     $this->settings->set('installed_at', $date);
     return $this;
   }
+
+  public function withTransactionEmailsViaMailPoet() {
+    $this->settings->set('send_transactional_emails', true);
+  }
 }

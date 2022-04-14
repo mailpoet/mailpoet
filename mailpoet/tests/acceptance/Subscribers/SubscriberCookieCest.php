@@ -18,7 +18,10 @@ class SubscriberCookieCest {
   public function setSubscriberCookieOnSignup(AcceptanceTester $i) {
     $i->wantTo('Set subscriber cookie on signup');
 
-    (new Settings())->withSubscribeOnRegisterEnabled();
+    (new Settings())
+      ->withSubscribeOnRegisterEnabled()
+      ->withTransactionEmailsViaMailPoet();
+
     $email = 'test-user@example.com';
 
     // signup
@@ -46,8 +49,9 @@ class SubscriberCookieCest {
       $i->amOnMailboxAppPage();
       $i->waitForElement('.subject.unread', 10);
       $i->click(Locator::contains('span.subject.unread', 'Activate'));
-      $i->switchToIframe('#preview-html');
+      $i->waitForText('To activate your user');
       $i->click(Locator::contains('a', 'wp-activate.php'));
+      $i->switchToNextTab();
       $i->waitForText('Your account is now active');
     }
 
