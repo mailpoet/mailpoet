@@ -306,15 +306,16 @@ class WooCommerce {
     $now = (Carbon::createFromTimestamp($this->wp->currentTime('timestamp')))->format('Y-m-d H:i:s');
     $source = Source::WOOCOMMERCE_USER;
     foreach ($emails as $email) {
-      $subscribersValues[] = "(1, '{$email}', '{$status}', '{$now}', '{$now}', '{$source}')";
+      $email = strval($this->connection->quote($email));
+      $subscribersValues[] = "(1, {$email}, '{$status}', '{$now}', '{$now}', '{$source}')";
     }
 
     // Update existing subscribers
     $this->connection->executeQuery('
       UPDATE ' . $subscribersTable . ' mps
       SET mps.is_woocommerce_user = 1
-      WHERE mps.email IN ("' . implode('","', $emails) . '")
-    ');
+      WHERE mps.email IN (:emails)
+    ', ['emails' => $emails], ['emails' => Connection::PARAM_STR_ARRAY]);
 
     // Insert new subscribers
     $this->connection->executeQuery('
