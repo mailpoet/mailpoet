@@ -309,10 +309,17 @@ class WooCommerce {
       $subscribersValues[] = "(1, '{$email}', '{$status}', '{$now}', '{$now}', '{$source}')";
     }
 
+    // Update existing subscribers
+    $this->connection->executeQuery('
+      UPDATE ' . $subscribersTable . ' mps
+      SET mps.is_woocommerce_user = 1
+      WHERE mps.email IN ("' . implode('","', $emails) . '")
+    ');
+
+    // Insert new subscribers
     $this->connection->executeQuery('
       INSERT IGNORE INTO ' . $subscribersTable . ' (`is_woocommerce_user`, `email`, `status`, `created_at`, `last_subscribed_at`, `source`) VALUES
       ' . implode(',', $subscribersValues) . '
-      ON DUPLICATE KEY UPDATE is_woocommerce_user = 1
     ');
 
     return count($emails);
@@ -485,6 +492,7 @@ class WooCommerce {
     if ($this->needsCollationChange()) {
       $collation = "COLLATE $this->mailpoetEmailCollation";
     }
+
     $this->connection->executeQuery("
       CREATE TEMPORARY TABLE {$tmpTableName}
         (`email` varchar(150) NOT NULL, UNIQUE(`email`)) {$collation}
