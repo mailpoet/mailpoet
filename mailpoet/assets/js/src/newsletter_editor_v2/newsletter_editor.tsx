@@ -9,6 +9,11 @@ import {
 } from './blocks/todo';
 
 import {
+  name as footerBlockName,
+  settings as footerBlockSettings,
+} from './blocks/footer';
+
+import {
   name as columnName,
   settings as columnSettings,
 } from './blocks/column';
@@ -19,6 +24,7 @@ import {
 } from './blocks/columns';
 
 // Add Custom Block Type
+registerBlockType(footerBlockName, footerBlockSettings);
 registerBlockType(todoBlockName, todoBlockSettings);
 registerBlockType(columnName, columnSettings);
 registerBlockType(columnsName, columnsSettings);
@@ -35,6 +41,7 @@ const settings = {
         'core/column',
         'core/columns',
         'mailpoet/todo-block',
+        footerBlockName,
       ],
       disallowBlocks: [],
     },
@@ -61,11 +68,7 @@ const settings = {
 
 const saveContent = (html) => console.log(html); // eslint-disable-line no-console
 const loadInitialContent = (parse) => {
-  const html =
-    '<!-- wp:paragraph -->\n' +
-    '<p>Hello reader!</p>\n' +
-    '<!-- /wp:paragraph -->\n\n' +
-    '<!-- wp:mailpoet/todo-block {"originalBlock":"Text"} /-->';
+  const html = window.mailpoet_email_content;
   return parse(html);
 };
 

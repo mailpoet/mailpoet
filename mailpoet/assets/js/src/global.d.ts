@@ -111,4 +111,5 @@ interface Window {
   mailpoet_date_display_format?: string;
   mailpoet_date_storage_format?: string;
   mailpoet_current_date_time?: string;
+  mailpoet_email_content?: string;
 }

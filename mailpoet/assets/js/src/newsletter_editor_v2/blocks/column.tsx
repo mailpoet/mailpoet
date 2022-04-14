@@ -10,6 +10,9 @@ const settingsReset = {
 const settings = {
   ...column.metadata,
   ...column.settings,
+  attributes: {
+    ...column.settings.attributes,
+  },
   ...settingsReset,
   category: 'design',
   supports: {

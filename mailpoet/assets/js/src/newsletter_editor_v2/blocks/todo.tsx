@@ -12,7 +12,7 @@ export const settings = {
   },
   supports: {
     html: false,
-    multiple: false,
+    multiple: true,
   },
   edit: function Edit({ attributes }): JSX.Element {
     return <p>Todo {attributes.originalBlock}</p>;
