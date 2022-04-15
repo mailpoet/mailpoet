@@ -14,6 +14,11 @@ import {
 } from './blocks/footer';
 
 import {
+  name as headerBlockName,
+  settings as headerBlockSettings,
+} from './blocks/header';
+
+import {
   name as columnName,
   settings as columnSettings,
 } from './blocks/column';
@@ -24,6 +29,7 @@ import {
 } from './blocks/columns';
 
 // Add Custom Block Type
+registerBlockType(headerBlockName, headerBlockSettings);
 registerBlockType(footerBlockName, footerBlockSettings);
 registerBlockType(todoBlockName, todoBlockSettings);
 registerBlockType(columnName, columnSettings);
@@ -42,6 +48,7 @@ const settings = {
         'core/columns',
         'mailpoet/todo-block',
         footerBlockName,
+        headerBlockName,
       ],
       disallowBlocks: [],
     },

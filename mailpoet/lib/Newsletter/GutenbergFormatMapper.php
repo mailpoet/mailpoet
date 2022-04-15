@@ -23,6 +23,9 @@ class GutenbergFormatMapper {
         case 'footer':
           $result .= '<!-- wp:mailpoet/footer --><p class="wp-block-mailpoet-footer">' . str_replace(["</p>\n<p>", "\n", '<p>', '</p>'], ['<br/>', '<br/>', '', ''], $block['text']) . '</p><!-- /wp:mailpoet/footer -->';
           break;
+        case 'header':
+          $result .= '<!-- wp:mailpoet/header --><p class="wp-block-mailpoet-header">' . str_replace(["</p>\n<p>", "\n", '<p>', '</p>'], ['<br/>', '<br/>', '', ''], $block['text']) . '</p><!-- /wp:mailpoet/header -->';
+          break;
         default:
           $result .= '<!-- wp:mailpoet/todo {"originalBlock":"' . $block['type'] . '"} /-->';
       }
