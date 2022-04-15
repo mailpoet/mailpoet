@@ -23,6 +23,7 @@ use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Tasks\Sending;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
@@ -170,7 +171,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->diContainer->get(Scheduler::class),
       new Validator(Stub::make(Bridge::class, [
         'isMailpoetSendingServiceEnabled' => true,
-      ]))
+      ]), $this->diContainer->get(TrackingConfig::class))
     );
     $response = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
     $response = $response->getData();

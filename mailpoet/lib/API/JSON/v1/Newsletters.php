@@ -24,7 +24,6 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Newsletter\Validator;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\TrackingConfig;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\Security;
@@ -100,7 +99,6 @@ class Newsletters extends APIEndpoint {
     SendPreviewController $sendPreviewController,
     NewsletterSaveController $newsletterSaveController,
     NewsletterUrl $newsletterUrl,
-    TrackingConfig $trackingConfig,
     Scheduler $scheduler,
     Validator $validator
   ) {
@@ -117,7 +115,6 @@ class Newsletters extends APIEndpoint {
     $this->sendPreviewController = $sendPreviewController;
     $this->newsletterSaveController = $newsletterSaveController;
     $this->newsletterUrl = $newsletterUrl;
-    $this->trackingConfig = $trackingConfig;
     $this->scheduler = $scheduler;
     $this->validator = $validator;
   }
@@ -195,28 +192,6 @@ class Newsletters extends APIEndpoint {
       if ($validationError !== null) {
         return $this->errorResponse([APIError::FORBIDDEN => $validationError], [], Response::STATUS_FORBIDDEN);
       }
-    }
-
-    // if the re-engagement email doesn't contain the re-engage link, it can't be activated
-    if ($newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT && $status === NewsletterEntity::STATUS_ACTIVE) {
-      if (strpos($newsletter->getContent(), '[link:subscription_re_engage_url]') === false) {
-        return $this->errorResponse([
-          APIError::FORBIDDEN => __(
-            'A re-engagement email must include a link with [link:subscription_re_engage_url] shortcode.',
-            'mailpoet'
-          ),
-        ], [], Response::STATUS_FORBIDDEN);
-      }
-    }
-
-    $tracking_enabled = $this->trackingConfig->isEmailTrackingEnabled();
-    if (!$tracking_enabled && $newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT && $status === NewsletterEntity::STATUS_ACTIVE) {
-      return $this->errorResponse([
-        APIError::FORBIDDEN => __(
-          'Re-engagement emails are disabled because open and click tracking is disabled in MailPoet → Settings → Advanced.',
-          'mailpoet'
-        ),
-      ], [], Response::STATUS_FORBIDDEN);
     }
 
     $this->newslettersRepository->prefetchOptions([$newsletter]);
