@@ -40,7 +40,6 @@ use MailPoet\Newsletter\Validator;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\TrackingConfig;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\Security;
@@ -695,7 +694,6 @@ class NewslettersTest extends \MailPoetTest {
       $mocks['sendPreviewController'] ?? $this->diContainer->get(SendPreviewController::class),
       $this->diContainer->get(NewsletterSaveController::class),
       $this->diContainer->get(Url::class),
-      $this->diContainer->get(TrackingConfig::class),
       $this->scheduler,
       $this->diContainer->get(Validator::class)
     );
