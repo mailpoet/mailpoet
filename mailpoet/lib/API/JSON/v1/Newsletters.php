@@ -25,7 +25,6 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
 use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
-use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\Security;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -64,9 +63,6 @@ class Newsletters extends APIEndpoint {
   /** @var Emoji */
   private $emoji;
 
-  /** @var SubscribersFeature */
-  private $subscribersFeature;
-
   /** @var SendPreviewController */
   private $sendPreviewController;
 
@@ -92,7 +88,6 @@ class Newsletters extends APIEndpoint {
     NewslettersResponseBuilder $newslettersResponseBuilder,
     PostNotificationScheduler $postNotificationScheduler,
     Emoji $emoji,
-    SubscribersFeature $subscribersFeature,
     SendPreviewController $sendPreviewController,
     NewsletterSaveController $newsletterSaveController,
     NewsletterUrl $newsletterUrl,
@@ -108,7 +103,6 @@ class Newsletters extends APIEndpoint {
     $this->newslettersResponseBuilder = $newslettersResponseBuilder;
     $this->postNotificationScheduler = $postNotificationScheduler;
     $this->emoji = $emoji;
-    $this->subscribersFeature = $subscribersFeature;
     $this->sendPreviewController = $sendPreviewController;
     $this->newsletterSaveController = $newsletterSaveController;
     $this->newsletterUrl = $newsletterUrl;
@@ -169,12 +163,6 @@ class Newsletters extends APIEndpoint {
       return $this->badRequest([
         APIError::BAD_REQUEST => __('You need to specify a status.', 'mailpoet'),
       ]);
-    }
-
-    if ($status === NewsletterEntity::STATUS_ACTIVE && $this->subscribersFeature->check()) {
-      return $this->errorResponse([
-        APIError::FORBIDDEN => __('Subscribers limit reached.', 'mailpoet'),
-      ], [], Response::STATUS_FORBIDDEN);
     }
 
     $newsletter = $this->getNewsletter($data);
