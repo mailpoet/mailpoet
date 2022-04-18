@@ -30,6 +30,53 @@ jQuery(($) => {
     },
   });
 
+  /**
+   * @param  {object} form jQuery object of MailPoet form
+   * @return {string} The name of the cookie for the form
+   */
+  function getFormCookieName(form) {
+    const formId = form.find('input[name="data[form_id]"]').val();
+    return `popup_form_dismissed_${formId}`;
+  }
+
+  /**
+   * Sets the cookie for the form after successful subscription
+   * Uses fixed cookie expiration time of 182 days
+   *
+   * @param  {object} form jQuery object of MailPoet form
+   */
+  function setFormCookieAfterSubscription(form) {
+    const formDiv = form.parent('.mailpoet_form');
+    if (formDiv.data('is-preview')) return;
+    const formCookieName = getFormCookieName(form);
+    Cookies.set(formCookieName, '1', { expires: 182, path: '/' });
+  }
+
+  function updateCaptcha(e) {
+    const captcha = $('img.mailpoet_captcha');
+    if (!captcha.length) return false;
+    const captchaSrc = captcha.attr('src');
+    const hashPos = captchaSrc.indexOf('#');
+    const newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
+    captcha.attr('src', `${newSrc}#${new Date().getTime()}`);
+    if (e) e.preventDefault();
+    return true;
+  }
+
+  function displaySuccessMessage(form) {
+    setFormCookieAfterSubscription(form);
+    // hide all form elements instead of .mailpoet_message
+    form.children().not('.mailpoet_message').css('visibility', 'hidden');
+    // add class that form was successfully send
+    form.toggleClass('mailpoet_form_successfully_send');
+    // display success message
+    form.find('.mailpoet_validate_success').show();
+    // hide elements marked with a class
+    form.find('.mailpoet_form_hide_on_success').each(function hideOnSuccess() {
+      $(this).hide();
+    });
+  }
+
   function renderCaptcha(element, iteration) {
     if (!window.recaptcha || !window.grecaptcha.ready) {
       if (iteration < 20) {
@@ -64,28 +111,6 @@ jQuery(($) => {
   }
 
   /**
-   * @param  {object} form jQuery object of MailPoet form
-   * @return {string} The name of the cookie for the form
-   */
-  function getFormCookieName(form) {
-    const formId = form.find('input[name="data[form_id]"]').val();
-    return `popup_form_dismissed_${formId}`;
-  }
-
-  /**
-   * Sets the cookie for the form after successful subscription
-   * Uses fixed cookie expiration time of 182 days
-   *
-   * @param  {object} form jQuery object of MailPoet form
-   */
-  function setFormCookieAfterSubscription(form) {
-    const formDiv = form.parent('.mailpoet_form');
-    if (formDiv.data('is-preview')) return;
-    const formCookieName = getFormCookieName(form);
-    Cookies.set(formCookieName, '1', { expires: 182, path: '/' });
-  }
-
-  /**
    * Sets the cookie for the form after dismissing the form
    * Uses cookie expiration time defined on the form
    *
@@ -108,17 +133,6 @@ jQuery(($) => {
     const link = document.createElement('a');
     link.href = url;
     return window.location.hostname === link.hostname;
-  }
-
-  function updateCaptcha(e) {
-    const captcha = $('img.mailpoet_captcha');
-    if (!captcha.length) return false;
-    const captchaSrc = captcha.attr('src');
-    const hashPos = captchaSrc.indexOf('#');
-    const newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
-    captcha.attr('src', `${newSrc}#${new Date().getTime()}`);
-    if (e) e.preventDefault();
-    return true;
   }
 
   function renderFontFamily(fontName, formDiv) {
@@ -158,20 +172,6 @@ jQuery(($) => {
     if (showOverlay) {
       formDiv.prev('.mailpoet_form_popup_overlay').addClass('active');
     }
-  }
-
-  function displaySuccessMessage(form) {
-    setFormCookieAfterSubscription(form);
-    // hide all form elements instead of .mailpoet_message
-    form.children().not('.mailpoet_message').css('visibility', 'hidden');
-    // add class that form was successfully send
-    form.toggleClass('mailpoet_form_successfully_send');
-    // display success message
-    form.find('.mailpoet_validate_success').show();
-    // hide elements marked with a class
-    form.find('.mailpoet_form_hide_on_success').each(function hideOnSuccess() {
-      $(this).hide();
-    });
   }
 
   function hideSucessMessage(form) {
