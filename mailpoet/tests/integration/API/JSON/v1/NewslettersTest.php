@@ -19,18 +19,14 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Listing\Handler;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Newsletter\Listing\NewsletterListingRepository;
-use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
-use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -41,7 +37,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter;
-use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -183,7 +179,6 @@ class NewslettersTest extends \MailPoetTest {
     $this->endpoint = $this->createNewslettersEndpointWithMocks([
       'wp' => $wp,
       'cronHelper' => $this->cronHelper,
-      'subscribersFeature' => Stub::make(SubscribersFeature::class),
     ]);
     $response = $this->endpoint->get(['id' => $this->newsletter->getId()]);
 
@@ -233,7 +228,9 @@ class NewslettersTest extends \MailPoetTest {
   public function testItReturnsErrorIfSubscribersLimitReached() {
     $endpoint = $this->createNewslettersEndpointWithMocks([
       'cronHelper' => $this->cronHelper,
-      'subscribersFeature' => Stub::make(SubscribersFeature::class, ['check' => true]),
+      'newsletterValidator' => $this->getServiceWithOverrides(NewsletterValidator::class, [
+        'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true])
+      ])
     ]);
     $res = $endpoint->setStatus([
       'id' => $this->newsletter->getId(),
@@ -375,7 +372,6 @@ class NewslettersTest extends \MailPoetTest {
     $this->endpoint = $this->createNewslettersEndpointWithMocks([
       'wp' => $wp,
       'cronHelper' => $this->cronHelper,
-      'subscribersFeature' => Stub::make(SubscribersFeature::class),
     ]);
 
     $response = $this->endpoint->duplicate(['id' => $this->newsletter->getId()]);
@@ -647,7 +643,6 @@ class NewslettersTest extends \MailPoetTest {
       'wp' => $wp,
       'cronHelper' => $this->cronHelper,
       'emoji' => $emoji,
-      'subscribersFeature' => Stub::make(SubscribersFeature::class),
     ]);
 
     $response = $this->endpoint->showPreview($data);
@@ -679,23 +674,7 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   private function createNewslettersEndpointWithMocks(array $mocks): Newsletters {
-    return new Newsletters(
-      $this->diContainer->get(Handler::class),
-      $mocks['wp'] ?? $this->diContainer->get(WPFunctions::class),
-      $this->diContainer->get(SettingsController::class),
-      $mocks['cronHelper'] ?? $this->diContainer->get(CronHelper::class),
-      $this->diContainer->get(NewslettersRepository::class),
-      $this->diContainer->get(NewsletterListingRepository::class),
-      $this->diContainer->get(NewslettersResponseBuilder::class),
-      $this->diContainer->get(PostNotificationScheduler::class),
-      $mocks['emoji'] ?? $this->diContainer->get(Emoji::class),
-      $mocks['subscribersFeature'] ?? $this->diContainer->get(SubscribersFeature::class),
-      $mocks['sendPreviewController'] ?? $this->diContainer->get(SendPreviewController::class),
-      $this->diContainer->get(NewsletterSaveController::class),
-      $this->diContainer->get(Url::class),
-      $this->scheduler,
-      $this->diContainer->get(NewsletterValidator::class)
-    );
+    return $this->getServiceWithOverrides(Newsletters::class, $mocks);
   }
 
   private function createNewsletterOptionField(string $name, string $type): NewsletterOptionFieldEntity {

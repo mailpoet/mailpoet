@@ -23,8 +23,8 @@ use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
-use MailPoet\Settings\TrackingConfig;
 use MailPoet\Tasks\Sending;
+use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
 class SendingQueueTest extends \MailPoetTest {
@@ -141,38 +141,27 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItRejectsNewsletterWithoutUnsubscribeLink() {
-    $newsletter = new NewsletterEntity();
-    $newsletter->setSubject('subject');
-    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter->setBody([
-      'content' =>
-        [
-          'type' => 'container',
-          'columnLayout' => false,
-          'orientation' => 'vertical',
-          'blocks' => [
-            [
-              'type' => 'header',
-              'link' => '',
-              'text' => 'Hello!'
+    $newsletter = (new Newsletter())->withBody([
+        'content' =>
+          [
+            'type' => 'container',
+            'columnLayout' => false,
+            'orientation' => 'vertical',
+            'blocks' => [
+              [
+                'type' => 'header',
+                'link' => '',
+                'text' => 'Hello!'
+              ]
             ]
           ]
         ]
+      )->create();
+    $sendingQueue = $this->getServiceWithOverrides(SendingQueueAPI::class, [
+      'newsletterValidator' => $this->getServiceWithOverrides(NewsletterValidator::class, [
+        'bridge' => Stub::make(Bridge::class, ['isMailpoetSendingServiceEnabled' => true])
+      ])
     ]);
-    $this->entityManager->persist($newsletter);
-    $this->entityManager->flush();
-    $sendingQueue = new SendingQueueAPI(
-      $this->diContainer->get(SubscribersFeature::class),
-      $this->diContainer->get(NewslettersRepository::class),
-      $this->diContainer->get(SendingQueuesRepository::class),
-      $this->diContainer->get(SubscribersFinder::class),
-      $this->diContainer->get(ScheduledTasksRepository::class),
-      $this->diContainer->get(MailerFactory::class),
-      $this->diContainer->get(Scheduler::class),
-      new NewsletterValidator(Stub::make(Bridge::class, [
-        'isMailpoetSendingServiceEnabled' => true,
-      ]), $this->diContainer->get(TrackingConfig::class))
-    );
     $response = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
     $response = $response->getData();
     expect($response['errors'][0])->array();
