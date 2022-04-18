@@ -3,7 +3,6 @@
 namespace MailPoet\Test\API\JSON\v1;
 
 use Codeception\Stub\Expected;
-use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
@@ -26,6 +25,7 @@ use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
@@ -36,13 +36,12 @@ use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
-use MailPoet\Newsletter\Validator;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
-use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
@@ -113,8 +112,8 @@ class NewslettersTest extends \MailPoetTest {
         ),
       ]
     );
-    $this->newsletter = $this->createNewsletter('My Standard Newsletter', NewsletterEntity::TYPE_STANDARD);
-    $this->postNotification = $this->createNewsletter('My Post Notification', NewsletterEntity::TYPE_NOTIFICATION);
+    $this->newsletter = (new Newsletter())->withDefaultBody()->withSubject('My Standard Newsletter')->create();
+    $this->postNotification = (new Newsletter())->withPostNotificationsType()->withSubject('My Post Notification')->loadBodyFrom('newsletterWithALC.json')->create();
 
     $this->createNewsletterOptionField(NewsletterOptionFieldEntity::NAME_IS_SCHEDULED, NewsletterEntity::TYPE_STANDARD);
     $this->createNewsletterOptionField(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT, NewsletterEntity::TYPE_STANDARD);
@@ -129,7 +128,7 @@ class NewslettersTest extends \MailPoetTest {
       if (!$sentAt) {
         continue;
       }
-      $sentNewsletters[$i] = $this->createNewsletter("Sent newsletter {$i}", NewsletterEntity::TYPE_STANDARD);
+      $sentNewsletters[$i] = (new Newsletter())->withSubject("Sent newsletter {$i}")->create();
       $sentNewsletters[$i]->setSentAt($sentAt);
     }
     $this->newsletterRepository->flush();
@@ -695,19 +694,8 @@ class NewslettersTest extends \MailPoetTest {
       $this->diContainer->get(NewsletterSaveController::class),
       $this->diContainer->get(Url::class),
       $this->scheduler,
-      $this->diContainer->get(Validator::class)
+      $this->diContainer->get(NewsletterValidator::class)
     );
-  }
-
-  private function createNewsletter(string $subject, string $type): NewsletterEntity {
-    $newsletter = new NewsletterEntity();
-    $newsletter->setSubject($subject);
-    $newsletter->setBody((array)json_decode(Fixtures::get('newsletter_body_template'), true));
-    $newsletter->setType($type);
-    $newsletter->setHash(Security::generateHash());
-    $this->newsletterRepository->persist($newsletter);
-    $this->newsletterRepository->flush();
-    return $newsletter;
   }
 
   private function createNewsletterOptionField(string $name, string $type): NewsletterOptionFieldEntity {

@@ -14,10 +14,10 @@ use MailPoet\Mailer\MailerFactory;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
-use MailPoet\Newsletter\Validator;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -45,11 +45,11 @@ class SendingQueue extends APIEndpoint {
   /** @var MailerFactory */
   private $mailerFactory;
 
+  /** @var NewsletterValidator */
+  private $newsletterValidator;
+  
   /** @var Scheduler */
   private $scheduler;
-
-  /** @var Validator */
-  private $validator;
 
   public function __construct(
     SubscribersFeature $subscribersFeature,
@@ -59,7 +59,7 @@ class SendingQueue extends APIEndpoint {
     ScheduledTasksRepository $scheduledTasksRepository,
     MailerFactory $mailerFactory,
     Scheduler $scheduler,
-    Validator $validator
+    NewsletterValidator $newsletterValidator
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
@@ -68,7 +68,7 @@ class SendingQueue extends APIEndpoint {
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->mailerFactory = $mailerFactory;
     $this->scheduler = $scheduler;
-    $this->validator = $validator;
+    $this->newsletterValidator = $newsletterValidator;
   }
 
   public function add($data = []) {
@@ -97,7 +97,7 @@ class SendingQueue extends APIEndpoint {
       ]);
     }
 
-    $validationError = $this->validator->validate($newsletterEntity);
+    $validationError = $this->newsletterValidator->validate($newsletterEntity);
     if ($validationError) {
       return $this->errorResponse([
         APIError::BAD_REQUEST => $validationError,

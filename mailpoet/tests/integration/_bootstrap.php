@@ -183,6 +183,29 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     return $method->invokeArgs($object, $parameters);
   }
 
+  /**
+   * Retrieve a clone of a DI service with specific private/protected properties replaced
+   *
+   * @template T of object
+   * @param class-string<T> $id
+   * @param array<string, Object> $overrides
+   *  string = protected/private property name
+   *  Object = replacement for that property
+   * @return T
+   */
+  public function getServiceWithOverrides(string $id, array $overrides) {
+    $instance = $this->diContainer->get($id);
+    $clone = clone $instance;
+    $reflection = new \ReflectionClass($clone);
+    foreach ($overrides as $propertyName => $override) {
+      $property = $reflection->getProperty($propertyName);
+      $property->setAccessible(true);
+      $property->setValue($clone, $override);
+      $property->setAccessible(false);
+    }
+    return $clone;
+  }
+
   public static function markTestSkipped(string $message = ''): void {
     $branchName = getenv('CIRCLE_BRANCH');
     if ($branchName === 'master' || $branchName === 'release') {

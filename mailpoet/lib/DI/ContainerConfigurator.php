@@ -391,7 +391,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\AutomaticEmailsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\NewsletterHtmlSanitizer::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Url::class)->setPublic(true);
-    $container->autowire(\MailPoet\Newsletter\Validator::class)->setPublic(true);
+    $container->autowire(\MailPoet\Newsletter\NewsletterValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Links\Links::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Listing\NewsletterListingRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\Options\NewsletterOptionsRepository::class)->setPublic(true);

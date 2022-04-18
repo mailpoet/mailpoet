@@ -13,12 +13,12 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
-use MailPoet\Newsletter\Validator;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -86,7 +86,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(MailerFactory::class),
       $this->diContainer->get(Scheduler::class),
-      $this->diContainer->get(Validator::class)
+      $this->diContainer->get(NewsletterValidator::class)
     );
     $res = $sendingQueue->add(['newsletter_id' => $this->newsletter->getId()]);
     expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
@@ -169,7 +169,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->diContainer->get(MailerFactory::class),
       $this->diContainer->get(Scheduler::class),
-      new Validator(Stub::make(Bridge::class, [
+      new NewsletterValidator(Stub::make(Bridge::class, [
         'isMailpoetSendingServiceEnabled' => true,
       ]), $this->diContainer->get(TrackingConfig::class))
     );
