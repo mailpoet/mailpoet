@@ -96,11 +96,21 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
     $apiPermissionHelper = $this->diContainer->get(APIPermissionHelper::class);
     $this->alcAPI = new ALCAPI($alc, $apiPermissionHelper, $this->wp);
 
+    if (is_multisite()) {
+      // switch to the first blog in a network install, this should be removed when we add full support for MU
+      switch_to_blog(1);
+    }
+
     $this->deleteAllPosts();
   }
 
   public function _after() {
     parent::_after();
+
+    // we've switched to blog_id=1
+    if (is_multisite()) {
+      restore_current_blog();
+    }
 
     foreach ($this->createdUsers as $user) {
       wp_delete_user($user->ID);
