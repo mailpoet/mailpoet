@@ -70,7 +70,7 @@ class Renderer {
       if (
         $captchaEnabled
         && $block['type'] === FormEntity::SUBMIT_BLOCK_TYPE
-        && $this->settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA
+        && Captcha::isRecaptcha($this->settings->get('captcha.type'))
       ) {
         $html .= $this->renderReCaptcha();
       }
@@ -89,8 +89,15 @@ class Renderer {
   }
 
   private function renderReCaptcha(): string {
-    $siteKey = $this->settings->get('captcha.recaptcha_site_token');
-    return '<div class="mailpoet_recaptcha" data-sitekey="' . $siteKey . '">
+    if ($this->settings->get('captcha.type') === Captcha::TYPE_RECAPTCHA) {
+      $siteKey = $this->settings->get('captcha.recaptcha_site_token');
+      $size = '';
+    } else {
+      $siteKey = $this->settings->get('captcha.recaptcha_invisible_site_token');
+      $size = 'invisible';
+    }
+
+    $html = '<div class="mailpoet_recaptcha" data-sitekey="' . $siteKey . '" ' . ($size === 'invisible' ? 'data-size="invisible"' : '') . '>
       <div class="mailpoet_recaptcha_container"></div>
       <noscript>
         <div>
@@ -108,5 +115,7 @@ class Renderer {
       </noscript>
       <input class="mailpoet_recaptcha_field" type="hidden" name="recaptcha">
     </div>';
+
+    return $html;
   }
 }

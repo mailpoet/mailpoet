@@ -77,6 +77,76 @@ jQuery(($) => {
     });
   }
 
+  function submitSubscribeForm(form, formData, parsley) {
+    form.addClass('mailpoet_form_sending');
+    // ajax request
+    MailPoet.Ajax.post({
+      url: window.MailPoetForm.ajax_url,
+      token: formData.token,
+      api_version: formData.api_version,
+      endpoint: 'subscribers',
+      action: 'subscribe',
+      data: formData.data,
+    })
+      .fail((response) => {
+        if (
+          response.meta !== undefined &&
+          response.meta.redirect_url !== undefined
+        ) {
+          // go to page
+          window.top.location.href = response.meta.redirect_url;
+        } else {
+          if (response.meta && response.meta.refresh_captcha) {
+            updateCaptcha();
+          }
+          form
+            .find('.mailpoet_validate_error')
+            .html(response.errors.map((error) => error.message).join('<br />'))
+            .show();
+        }
+      })
+      .done((response) => {
+        if (window.grecaptcha && formData.recaptcha) {
+          window.grecaptcha.reset(formData.recaptcha);
+        }
+        return response;
+      })
+      .done((response) => {
+        // successfully subscribed
+        if (
+          response.meta !== undefined &&
+          response.meta.redirect_url !== undefined
+        ) {
+          setFormCookieAfterSubscription(form);
+          // go to page
+          window.location.href = response.meta.redirect_url;
+        } else {
+          displaySuccessMessage(form);
+        }
+
+        // reset form
+        form.trigger('reset');
+        // reset validation
+        parsley.reset();
+        // reset captcha
+        if (window.grecaptcha && formData.recaptcha) {
+          window.grecaptcha.reset(formData.recaptcha);
+        }
+
+        // resize iframe
+        if (
+          window.frameElement !== null &&
+          MailPoet !== undefined &&
+          MailPoet.Iframe
+        ) {
+          MailPoet.Iframe.autoSize(window.frameElement);
+        }
+      })
+      .always(() => {
+        form.removeClass('mailpoet_form_sending');
+      });
+  }
+
   function renderCaptcha(element, iteration) {
     if (!window.recaptcha || !window.grecaptcha.ready) {
       if (iteration < 20) {
@@ -85,12 +155,31 @@ jQuery(($) => {
       return;
     }
     const recaptcha = $(element);
+    const form = $(recaptcha).parent('form');
     const sitekey = recaptcha.attr('data-sitekey');
+    let size = recaptcha.attr('data-size');
+
+    // Users should not be able to change the size if it is equal to 'invisible' as this would
+    // change the type of the ReCaptcha.
+    if (size !== 'invisible') {
+      size = Hooks.applyFilters('mailpoet_re_captcha_size', 'compact');
+    }
+
     const container = recaptcha.find('> .mailpoet_recaptcha_container').get(0);
     const field = recaptcha.find('> .mailpoet_recaptcha_field');
     if (sitekey) {
-      const size = Hooks.applyFilters('mailpoet_re_captcha_size', 'compact');
-      const widgetId = window.grecaptcha.render(container, { sitekey, size });
+      const params = { sitekey, size };
+
+      if (size === 'invisible') {
+        params.callback = function invisibleReCaptchaCallback(token) {
+          const formData = form.mailpoetSerializeObject() || {};
+          formData.data.recaptcha = token;
+
+          submitSubscribeForm(form, formData, form.parsley());
+        };
+      }
+
+      const widgetId = window.grecaptcha.render(container, params);
       field.val(widgetId);
     }
   }
@@ -299,88 +388,36 @@ jQuery(($) => {
           }, 2500);
           return false;
         }
-        const formData = form.mailpoetSerializeObject() || {};
+
         // check if we're on the same domain
         if (isSameDomain(window.MailPoetForm.ajax_url) === false) {
           // non ajax post request
           return true;
         }
 
+        const formData = form.mailpoetSerializeObject() || {};
+        const size = form.children('.mailpoet_recaptcha').attr('data-size');
+
         if (window.grecaptcha && formData.recaptcha) {
-          formData.data.recaptcha = window.grecaptcha.getResponse(
-            formData.recaptcha,
-          );
+          // The API for the invisible and checkbox ReCaptchas is slightly different. For the
+          // former, we need to call execute() and then the ReCaptcha API calls the callback set
+          // inside renderCaptcha() with a token if the captcha was solved successfully. The
+          // callback then calls submitSubscribeForm() with the token. For the latter, we get the
+          // token here after calling getResponse() and then we can call submitSubscribeForm()
+          // directly.
+          if (size === 'invisible') {
+            window.grecaptcha.execute();
+          } else {
+            formData.data.recaptcha = window.grecaptcha.getResponse(
+              formData.recaptcha,
+            );
+          }
         }
 
-        form.addClass('mailpoet_form_sending');
-        // ajax request
-        MailPoet.Ajax.post({
-          url: window.MailPoetForm.ajax_url,
-          token: formData.token,
-          api_version: formData.api_version,
-          endpoint: 'subscribers',
-          action: 'subscribe',
-          data: formData.data,
-        })
-          .fail((response) => {
-            if (
-              response.meta !== undefined &&
-              response.meta.redirect_url !== undefined
-            ) {
-              // go to page
-              window.top.location.href = response.meta.redirect_url;
-            } else {
-              if (response.meta && response.meta.refresh_captcha) {
-                updateCaptcha();
-              }
-              form
-                .find('.mailpoet_validate_error')
-                .html(
-                  response.errors.map((error) => error.message).join('<br />'),
-                )
-                .show();
-            }
-          })
-          .done((response) => {
-            if (window.grecaptcha && formData.recaptcha) {
-              window.grecaptcha.reset(formData.recaptcha);
-            }
-            return response;
-          })
-          .done((response) => {
-            // successfully subscribed
-            if (
-              response.meta !== undefined &&
-              response.meta.redirect_url !== undefined
-            ) {
-              setFormCookieAfterSubscription(form);
-              // go to page
-              window.location.href = response.meta.redirect_url;
-            } else {
-              displaySuccessMessage(form);
-            }
+        if (size !== 'invisible') {
+          submitSubscribeForm(form, formData, parsley);
+        }
 
-            // reset form
-            form.trigger('reset');
-            // reset validation
-            parsley.reset();
-            // reset captcha
-            if (window.grecaptcha && formData.recaptcha) {
-              window.grecaptcha.reset(formData.recaptcha);
-            }
-
-            // resize iframe
-            if (
-              window.frameElement !== null &&
-              MailPoet !== undefined &&
-              MailPoet.Iframe
-            ) {
-              MailPoet.Iframe.autoSize(window.frameElement);
-            }
-          })
-          .always(() => {
-            form.removeClass('mailpoet_form_sending');
-          });
         return false;
       });
     });
