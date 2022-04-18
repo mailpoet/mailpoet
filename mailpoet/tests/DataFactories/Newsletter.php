@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\DataFactories;
 
+use Codeception\Util\Fixtures;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
@@ -12,6 +13,7 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -55,6 +57,10 @@ class Newsletter {
     assert(is_string($body));
     $this->data['body'] = json_decode($body, true);
     return $this;
+  }
+
+  public function withDefaultBody() {
+    return $this->withBody(json_decode(Fixtures::get('newsletter_body_template'), true));
   }
 
   /**
@@ -137,6 +143,11 @@ class Newsletter {
       12 => '1', # nthWeekDay
       13 => '0 0 * * *', # schedule
     ]);
+    return $this;
+  }
+
+  public function withReengagementType() {
+    $this->data['type'] = NewsletterEntity::TYPE_RE_ENGAGEMENT;
     return $this;
   }
 
@@ -332,6 +343,7 @@ class Newsletter {
       $newsletter->setSenderAddress('john.doe@example.com');
       $newsletter->setSenderName('John Doe');
     }
+    $newsletter->setHash(Security::generateHash());
     if (isset($this->data['parent'])) $newsletter->setParent($this->data['parent']);
     if (isset($this->data['deleted_at'])) $newsletter->setDeletedAt($this->data['deleted_at']);
     return $newsletter;

@@ -7,7 +7,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Validator\ValidationException;
 
-class Validator {
+class NewsletterValidator {
   
   /** @var Bridge */
   private $bridge;
@@ -27,7 +27,8 @@ class Validator {
     try {
       $this->validateBody($newsletterEntity);
       $this->validateUnsubscribeRequirements($newsletterEntity);
-      $this->validateReengagementRequirements($newsletterEntity);
+      $this->validateReEngagementRequirements($newsletterEntity);
+      $this->validateAutomaticLatestContentRequirements($newsletterEntity);
     } catch (ValidationException $exception) {
       return __($exception->getMessage(), 'mailpoet');
     }
@@ -61,7 +62,7 @@ class Validator {
     }
   }
 
-  private function validateReengagementRequirements(NewsletterEntity $newsletterEntity): void {
+  private function validateReEngagementRequirements(NewsletterEntity $newsletterEntity): void {
     if ($newsletterEntity->getType() !== NewsletterEntity::TYPE_RE_ENGAGEMENT) {
       return;
     }
@@ -72,6 +73,19 @@ class Validator {
 
     if (!$this->trackingConfig->isEmailTrackingEnabled()) {
       throw new ValidationException('Re-engagement emails are disabled because open and click tracking is disabled in MailPoet → Settings → Advanced.');
+    }
+  }
+
+  private function validateAutomaticLatestContentRequirements(NewsletterEntity $newsletterEntity) {
+    if ($newsletterEntity->getType() !== NewsletterEntity::TYPE_NOTIFICATION) {
+      return;
+    }
+    $content = $newsletterEntity->getContent();
+    if (
+      strpos($content, '"type":"automatedLatestContent"') === false && 
+      strpos($content, '"type":"automatedLatestContentLayout"') === false
+    ) {
+      throw new ValidationException('Please add an “Automatic Latest Content” widget to the email from the right sidebar.');
     }
   }
 }

@@ -17,12 +17,12 @@ use MailPoet\Listing;
 use MailPoet\Newsletter\Listing\NewsletterListingRepository;
 use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
-use MailPoet\Newsletter\Validator;
 use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -76,11 +76,8 @@ class Newsletters extends APIEndpoint {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
-  /** @var TrackingConfig */
-  private $trackingConfig;
-
-  /** @var Validator */
-  private $validator;
+  /** @var NewsletterValidator */
+  private $newsletterValidator;
 
   /** @var Scheduler */
   private $scheduler;
@@ -100,7 +97,7 @@ class Newsletters extends APIEndpoint {
     NewsletterSaveController $newsletterSaveController,
     NewsletterUrl $newsletterUrl,
     Scheduler $scheduler,
-    Validator $validator
+    NewsletterValidator $newsletterValidator
   ) {
     $this->listingHandler = $listingHandler;
     $this->wp = $wp;
@@ -116,7 +113,7 @@ class Newsletters extends APIEndpoint {
     $this->newsletterSaveController = $newsletterSaveController;
     $this->newsletterUrl = $newsletterUrl;
     $this->scheduler = $scheduler;
-    $this->validator = $validator;
+    $this->newsletterValidator = $newsletterValidator;
   }
 
   public function get($data = []) {
@@ -188,7 +185,7 @@ class Newsletters extends APIEndpoint {
     }
 
     if ($status === NewsletterEntity::STATUS_ACTIVE) {
-      $validationError = $this->validator->validate($newsletter);
+      $validationError = $this->newsletterValidator->validate($newsletter);
       if ($validationError !== null) {
         return $this->errorResponse([APIError::FORBIDDEN => $validationError], [], Response::STATUS_FORBIDDEN);
       }
