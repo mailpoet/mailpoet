@@ -248,7 +248,7 @@ class NewsletterListWelcomeComponent extends Component {
         } else {
           sendingEvent = ReactStringReplace(
             MailPoet.I18n.t('welcomeEventWPUserWithRole'),
-            '"%1$s"',
+            '%1$s',
             (match, i) => (
               <Tag variant="list" key={i}>
                 {mailpoetRoles[newsletter.options.role]}
@@ -278,7 +278,7 @@ class NewsletterListWelcomeComponent extends Component {
 
         sendingEvent = ReactStringReplace(
           MailPoet.I18n.t('welcomeEventSegment'),
-          '"%1$s"',
+          '%1$s',
           (match, i) => (
             <Tag variant="list" key={i}>
               {segment.name}
