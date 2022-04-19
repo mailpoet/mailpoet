@@ -50,6 +50,8 @@ const settings = {
         'core/social-links',
         'core/columns',
         'mailpoet/todo-block',
+        'core/button',
+        'core/buttons',
         footerBlockName,
         headerBlockName,
       ],
