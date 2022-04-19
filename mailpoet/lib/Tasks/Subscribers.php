@@ -51,8 +51,10 @@ class Subscribers {
       ->where('subscriber_id', $subcriberId)
       ->findResultSet()
       ->set('failed', ScheduledTaskSubscriber::FAIL_STATUS_FAILED)
+      ->set('processed', ScheduledTaskSubscriber::STATUS_PROCESSED)
       ->set('error', $errorMessage)
       ->save();
+    $this->checkCompleted();
   }
 
   private function checkCompleted($count = null) {
