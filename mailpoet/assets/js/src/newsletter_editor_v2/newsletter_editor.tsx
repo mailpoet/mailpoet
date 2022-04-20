@@ -1,7 +1,8 @@
 import { render } from '@wordpress/element';
 import IsolatedBlockEditor from '@automattic/isolated-block-editor';
-
 import { registerBlockType } from '@wordpress/blocks';
+
+import { registerButton } from './blocks/button';
 
 import {
   name as todoBlockName,
@@ -27,6 +28,9 @@ import {
   name as columnsName,
   settings as columnsSettings,
 } from './blocks/columns';
+
+// Register hooks for button
+registerButton();
 
 // Add Custom Block Type
 registerBlockType(headerBlockName, headerBlockSettings);

@@ -51,6 +51,9 @@ class GutenbergFormatMapper {
     $styles = [];
     $styles['border'] = [
       'radius' => $blockStyles['borderRadius'],
+      'style' => $blockStyles['borderStyle'],
+      'width' => $blockStyles['borderWidth'],
+      'color' => $blockStyles['borderColor'],
     ];
     $styles['spacing']['padding'] = [
       'left' => strval(ceil(($width - $renderWidth) / 2)) . 'px',
@@ -66,6 +69,9 @@ class GutenbergFormatMapper {
     $attributes['style'] = $styles;
     $linkStyles = [
       "border-radius:{$blockStyles['borderRadius']}",
+      "border-color:{$blockStyles['borderColor']}",
+      "border-style:{$blockStyles['borderStyle']}",
+      "border-width:{$blockStyles['borderWidth']}",
       "background-color:{$blockStyles['backgroundColor']}",
       "color:{$blockStyles['fontColor']}",
       "padding-top:{$styles['spacing']['padding']['top']}",
@@ -82,6 +88,9 @@ class GutenbergFormatMapper {
     }
     if (isset($blockStyles['backgroundColor'])) {
       $linkClasses[] = 'has-background';
+    }
+    if (isset($blockStyles['borderColor'])) {
+      $linkClasses[] = 'has-border-color';
     }
     $buttonClasses = ['wp-block-button'];
     $buttonClasses[] = 'has-custom-width';
