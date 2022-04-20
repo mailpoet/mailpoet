@@ -218,6 +218,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
+= 3.87.2 - 2022-04-19 =
+* Added: description of 3rd party libraries usage;
+* Fixed: "none of" condition for "MailPoet custom field" segment doesn't work;
+* Fixed: block toolbar in form editor is not visible for top block.
+
 = 3.87.1 - 2022-04-14 =
 * Improved: minor changes and fixes.
 
