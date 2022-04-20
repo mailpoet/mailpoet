@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Cron\Workers\SendingQueue;
 
+use Codeception\Stub;
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use MailPoet\Config\Populator;
@@ -25,9 +26,12 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Mailer\SubscriberError;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
@@ -99,14 +103,7 @@ class SendingQueueTest extends \MailPoetTest {
     $populator = $this->diContainer->get(Populator::class);
     $populator->up();
     $this->wp = $this->diContainer->get(WPFunctions::class);
-    $this->subscriber = new SubscriberEntity();
-    $this->subscriber->setEmail('john@doe.com');
-    $this->subscriber->setFirstName('John');
-    $this->subscriber->setLastName('Doe');
-    $this->subscriber->setStatus(Subscriber::STATUS_SUBSCRIBED);
-    $this->subscriber->setSource('administrator');
-    $this->entityManager->persist($this->subscriber);
-    $this->entityManager->flush();
+    $this->subscriber = $this->createSubscriber('john@doe.com', 'John', 'Doe');
     $this->segment = Segment::create();
     $this->segment->name = 'segment';
     $this->segment->save();
@@ -127,7 +124,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->queue = SendingTask::create();
     $this->queue->newsletterId = $this->newsletter->id;
     $this->queue->setSubscribers([$this->subscriber->getId()]);
-    $this->queue->countCotal = 1;
+    $this->queue->countTotal = 1;
     $this->queue->save();
 
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
@@ -605,6 +602,90 @@ class SendingQueueTest extends \MailPoetTest {
       ->where('queue_id', $this->queue->id)
       ->findOne();
     expect($statistics)->notEquals(false);
+  }
+
+  public function testItHandlesSendingErrorCorrectly() {
+    $wrongSubscriber = $this->createSubscriber('doe@john.com>', 'Doe', 'John');
+    $queue = SendingTask::create();
+    $queue->newsletterId = $this->newsletter->id;
+    $queue->setSubscribers([
+      $this->subscriber->getId(),
+      $wrongSubscriber->getId(),
+    ]);
+    $queue->countTotal = 2;
+    $queue->save();
+    // Error that simulates sending error from the bridge
+    $mailerError = new MailerError(
+      MailerError::OPERATION_SEND,
+      MailerError::LEVEL_SOFT,
+      'Error while sending.',
+      null,
+      [new SubscriberError($wrongSubscriber->getEmail(), 'must be an email')]
+    );
+    $sendingQueueWorker = $this->make(
+      $this->getSendingQueueWorker($this->makeEmpty(NewslettersRepository::class))
+    );
+    $sendingQueueWorker->__construct(
+      $this->sendingErrorHandler,
+      $this->sendingThrottlingHandler,
+      $this->statsNotificationsWorker,
+      $this->loggerFactory,
+      $this->makeEmpty(NewslettersRepository::class),
+      $this->cronHelper,
+      $this->subscribersFinder,
+      $this->segmentsRepository,
+      $this->wp,
+      $this->tasksLinks,
+      $this->scheduledTasksRepository,
+      $this->make(
+        new MailerTask($this->diContainer->get(MailerFactory::class)),
+        [
+          'sendBulk' => Stub::consecutive(['response' => false, 'error' => $mailerError], $this->mailerTaskDummyResponse),
+        ]
+      )
+    );
+
+    $sendingQueueWorker->sendNewsletters(
+      $queue,
+      [$this->subscriber->getId(), $wrongSubscriber->getId()],
+      [],
+      [$this->subscriber->getEmail(), $wrongSubscriber->getEmail()],
+      ['newsletter_id' => 1, 'subscriber_id' => 1, 'queue_id' => $queue->id],
+      microtime(true)
+    );
+
+    // load queue and compare data after first sending
+    $updatedQueue = SendingQueue::findOne($queue->id);
+    if (!$updatedQueue instanceof SendingQueue) {
+      throw new InvalidStateException();
+    }
+    $updatedQueue = SendingTask::createFromQueue($updatedQueue);
+    expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))->equals([$this->subscriber->getId()]);
+    expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))->equals([$wrongSubscriber->getId()]);
+    expect($updatedQueue->countTotal)->equals(2);
+    expect($updatedQueue->countProcessed)->equals(1);
+    expect($updatedQueue->countToProcess)->equals(1);
+
+    $sendingQueueWorker->sendNewsletters(
+      $queue,
+      [$this->subscriber->getId()],
+      [],
+      [$this->subscriber->getEmail()],
+      ['newsletter_id' => 1, 'subscriber_id' => 1, 'queue_id' => $queue->id],
+      microtime(true)
+    );
+
+    // load queue and compare data after second sending
+    $updatedQueue = SendingQueue::findOne($queue->id);
+    if (!$updatedQueue instanceof SendingQueue) {
+      throw new InvalidStateException();
+    }
+    $updatedQueue = SendingTask::createFromQueue($updatedQueue);
+    expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_UNPROCESSED))->equals([]);
+    expect($updatedQueue->getSubscribers(ScheduledTaskSubscriber::STATUS_PROCESSED))->equals([$this->subscriber->getId(), $wrongSubscriber->getId()]);
+    expect($updatedQueue->countTotal)->equals(2);
+    expect($updatedQueue->countProcessed)->equals(2);
+    expect($updatedQueue->countToProcess)->equals(0);
   }
 
   public function testItUpdatesUpdateTime() {
@@ -1127,6 +1208,18 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->persist($newsletter);
     $this->entityManager->flush();
     return $newsletter;
+  }
+
+  private function createSubscriber(string $email, string $firstName, string $lastName): SubscriberEntity {
+    $subscriber = new SubscriberEntity();
+    $subscriber->setEmail($email);
+    $subscriber->setFirstName($firstName);
+    $subscriber->setLastName($lastName);
+    $subscriber->setStatus(Subscriber::STATUS_SUBSCRIBED);
+    $subscriber->setSource('administrator');
+    $this->entityManager->persist($subscriber);
+    $this->entityManager->flush();
+    return $subscriber;
   }
 
   private function createSegment(string $name, string $type): SegmentEntity {
