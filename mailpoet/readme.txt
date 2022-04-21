@@ -107,11 +107,14 @@ Please note:
 **Official translations**
 
 * Arabic
+* Catalan
 * Chinese
+* Czech
 * Danish
 * Dutch
 * French (FR)
 * German
+* Greek
 * Italian
 * Japanese
 * Mexican
@@ -127,9 +130,7 @@ Please note:
 
 * Albanian
 * British
-* Catalan
 * French (CA)
-* Greek
 * Hebrew
 * Hungarian
 * Norwegian
