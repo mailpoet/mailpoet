@@ -19,25 +19,18 @@ import {
   settings as headerBlockSettings,
 } from './blocks/header';
 
-import {
-  name as columnName,
-  settings as columnSettings,
-} from './blocks/column';
-
-import {
-  name as columnsName,
-  settings as columnsSettings,
-} from './blocks/columns';
+import { registerColumns } from './blocks/columns';
+import { registerColumn } from './blocks/column';
 
 // Register hooks for button
 registerButton();
+registerColumns();
+registerColumn();
 
 // Add Custom Block Type
 registerBlockType(headerBlockName, headerBlockSettings);
 registerBlockType(footerBlockName, footerBlockSettings);
 registerBlockType(todoBlockName, todoBlockSettings);
-registerBlockType(columnName, columnSettings);
-registerBlockType(columnsName, columnsSettings);
 
 const settings = {
   iso: {
