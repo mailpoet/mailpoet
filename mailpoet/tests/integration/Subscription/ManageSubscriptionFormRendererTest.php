@@ -69,7 +69,7 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
     if ($segment) {
       $subscriberSegment = new SubscriberSegmentEntity($segment, $subscriber, SubscriberEntity::STATUS_SUBSCRIBED);
       $this->entityManager->persist($subscriberSegment);
-      $subscriber->getSegments()->add($subscriberSegment);
+      $subscriber->getSubscriberSegments()->add($subscriberSegment);
     }
 
     $this->entityManager->persist($subscriber);
