@@ -162,8 +162,15 @@ class SubscriberEntity {
    */
   private $subscriberSegments;
 
+  /**
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\SubscriberCustomFieldEntity", mappedBy="subscriber", orphanRemoval=true)
+   * @var Collection<int, SubscriberCustomFieldEntity>
+   */
+  private $subscriberCustomFields;
+
   public function __construct() {
     $this->subscriberSegments = new ArrayCollection();
+    $this->subscriberCustomFields = new ArrayCollection();
   }
 
   /**
@@ -430,6 +437,13 @@ class SubscriberEntity {
     })->filter(function ($segment) {
       return $segment !== null;
     });
+  }
+
+  /**
+   * @return Collection<int, SubscriberCustomFieldEntity>
+   */
+  public function getSubscriberCustomFields() {
+    return $this->subscriberCustomFields;
   }
 
   /**
