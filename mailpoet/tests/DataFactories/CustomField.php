@@ -48,6 +48,7 @@ class CustomField {
         throw new \Exception('Subscriber failed to create');
       }
       $scfe = new SubscriberCustomFieldEntity($subscriber, $customField, $subscriberData['value']);
+      $subscriber->getSubscriberCustomFields()->add($scfe);
       $this->entityManager->persist($scfe);
     }
     $this->entityManager->flush();
