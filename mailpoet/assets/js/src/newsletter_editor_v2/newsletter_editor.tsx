@@ -49,6 +49,7 @@ const settings = {
         'mailpoet/todo-block',
         'core/button',
         'core/buttons',
+        'core/blockquote',
         footerBlockName,
         headerBlockName,
       ],

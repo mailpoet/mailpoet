@@ -2,6 +2,8 @@
 
 namespace MailPoet\Newsletter;
 
+use MailPoet\Util\pQuery\pQuery;
+
 class GutenbergFormatMapper {
   const NEWSLETTER_WIDTH = 600;
 
@@ -31,12 +33,50 @@ class GutenbergFormatMapper {
         case 'button':
           $result .= $this->mapButton($block);
           break;
+        case 'text':
+          $result .= $this->mapText($block);
+          break;
         default:
           $result .= '<!-- wp:mailpoet/todo {"originalBlock":"' . $block['type'] . '"} /-->';
       }
     }
     return $result;
   }
+
+  private function mapText(array $block): string {
+    $parsed = pQuery::parseStr($block['text']);
+    $result = '';
+    $childCount = $parsed->childCount(true);
+    for ($i = 0; $i < $childCount; $i++) {
+      $child = $parsed->getChild($i, true);
+      switch ($child->getTag()) {
+        case 'p':
+          $result .= '<!-- wp:paragraph -->' . $child->toString() . '<!-- /wp:paragraph -->';
+          break;
+        case 'h1':
+        case 'h2':
+        case 'h3':
+          $result .= '<!-- wp:heading -->' . $child->toString() . '<!-- /wp:heading -->';
+          break;
+        case 'ol':
+          $result .= '<!-- wp:list {"ordered": true} -->' . $child->toString() . '<!-- /wp:list -->';
+          break;
+        case 'ul':
+          $result .= '<!-- wp:list -->' . $child->toString() . '<!-- /wp:list -->';
+          break;
+        case 'blockquote':
+          $result .= '<!-- wp:quote --><blockquote class="wp-block-quote">' . $child->getInnerText() . '</blockquote><!-- /wp:quote -->';
+          break;
+      }
+    }
+    return $result;
+  }
+
+  /**
+  "type": "text",
+  "text": "<h2>Heading+1</h2>\n<p>Paragraph+with+text.+<strong>Bold</strong>.+<em>Itallic</em>.+<span+style=\"color:+#eb1c1c\">Custom+colored</span>.+<span+style=\"color:+#2dc26b\">Colored+from+selection</span>.+<a+href=\"https://example.com\"+title=\"Title+link\"+target=\"_blank\">Link</a></p>\n<p+style=\"text-align:+left\">Text+align+left.</p>\n<p+style=\"text-align:+right\">Text+align+right.</p>\n<p+style=\"text-align:+center\">Text+align+middle.</p>\n<p+style=\"text-align:+justify\">Text+aligned+justify.</p>\n<blockquote>\n<p+style=\"text-align:+justify\">Quote+text</p>\n</blockquote>\n<ol>\n<li+style=\"text-align:+justify\">Numbered+list</li>\n<li+style=\"text-align:+justify\">Numbered+list</li>\n</ol>\n<ul>\n<li>bullet+list\n<ul>\n<li>nested+bullet+list</li>\n</ul>\n</li>\n</ul>\n<p></p>\n<p+style=\"text-align:+center\"><a+href=\"[link:subscription_unsubscribe_url]\"+target=\"_blank\">Unsubscribe</a></p>"
+  },
+   */
 
   private function mapButton(array $block): string {
     $blockStyles = $block['styles']['block'];
