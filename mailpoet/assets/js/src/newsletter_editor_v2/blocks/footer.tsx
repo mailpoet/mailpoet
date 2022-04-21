@@ -4,6 +4,7 @@ export const name = 'mailpoet/footer';
 
 export const settings = {
   title: 'Email Footer',
+  apiVersion: 2,
   description: 'Email Footer Content',
   category: 'text',
   attributes: {

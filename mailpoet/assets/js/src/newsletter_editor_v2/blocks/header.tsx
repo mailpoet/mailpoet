@@ -4,6 +4,7 @@ export const name = 'mailpoet/header';
 
 export const settings = {
   title: 'Email Header',
+  apiVersion: 2,
   description: 'Email Header Content',
   category: 'text',
   attributes: {
