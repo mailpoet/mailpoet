@@ -70,10 +70,10 @@ class ManageSubscriptionFormRenderer {
     $this->segmentsRepository = $segmentsRepository;
   }
 
-  public function renderForm(SubscriberEntity $subscriberEntity, string $formState = self::FORM_STATE_NOT_SUBMITTED): string {
-    $basicFields = $this->getBasicFields($subscriberEntity);
-    $customFields = $this->getCustomFields($subscriberEntity);
-    $segmentField = $this->getSegmentField($subscriberEntity);
+  public function renderForm(SubscriberEntity $subscriber, string $formState = self::FORM_STATE_NOT_SUBMITTED): string {
+    $basicFields = $this->getBasicFields($subscriber);
+    $customFields = $this->getCustomFields($subscriber);
+    $segmentField = $this->getSegmentField($subscriber);
 
     $form = array_merge(
       $basicFields,
@@ -95,16 +95,16 @@ class ManageSubscriptionFormRenderer {
     $templateData = [
       'actionUrl' => admin_url('admin-post.php'),
       'redirectUrl' => $this->urlHelper->getCurrentUrl(),
-      'email' => $subscriberEntity->getEmail(),
-      'token' => $this->linkTokens->getToken($subscriberEntity),
+      'email' => $subscriber->getEmail(),
+      'token' => $this->linkTokens->getToken($subscriber),
       'editEmailInfo' => __('Need to change your email address? Unsubscribe using the form below, then simply sign up again.', 'mailpoet'),
       'formHtml' => $this->formRenderer->renderBlocks($form, [], null, $honeypot = false, $captcha = false),
       'formState' => $formState,
     ];
 
-    if ($subscriberEntity->isWPUser() || $subscriberEntity->getIsWoocommerceUser()) {
+    if ($subscriber->isWPUser() || $subscriber->getIsWoocommerceUser()) {
       $wpCurrentUser = $this->wp->wpGetCurrentUser();
-      if ($wpCurrentUser->user_email === $subscriberEntity->getEmail()) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      if ($wpCurrentUser->user_email === $subscriber->getEmail()) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         $templateData['editEmailInfo'] = Helpers::replaceLinkTags(
           __('[link]Edit your profile[/link] to update your email.', 'mailpoet'),
           $this->wp->getEditProfileUrl(),
