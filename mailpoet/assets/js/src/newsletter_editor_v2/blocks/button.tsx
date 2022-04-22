@@ -20,7 +20,7 @@ export const registerButton = () => {
               <PanelBody title={__('Border')}>
                 <SelectControl
                   label={__('Border Style')}
-                  value={attributes.style.border.style}
+                  value={attributes.style?.border?.style}
                   options={[
                     {
                       label: __('None'),
@@ -85,14 +85,16 @@ export const registerButton = () => {
     if (blockType.name !== 'core/button') {
       return element;
     }
-    const { borderStyle } = attributes;
-    if (borderStyle) {
+    const borderStyle = attributes.style?.border?.style;
+    if (borderStyle && element.props?.children?.props) {
       // eslint-disable-next-line no-param-reassign
       element.props.children.props.style.borderStyle = borderStyle;
       // eslint-disable-next-line no-param-reassign
-      element.props.children.props.style.borderWidth = '2px';
+      element.props.children.props.style.borderWidth =
+        attributes.style?.border?.width;
       // eslint-disable-next-line no-param-reassign
-      element.props.children.props.style.borderColor = '#ff000';
+      element.props.children.props.style.borderColor =
+        attributes.style?.border?.color;
     }
     return element;
   };
