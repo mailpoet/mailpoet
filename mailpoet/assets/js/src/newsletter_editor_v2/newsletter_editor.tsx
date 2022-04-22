@@ -62,8 +62,6 @@ function EmailEditor() {
         'core/heading',
         'core/list',
         'core/image',
-        'core/gallery',
-        'core/media-text',
         'core/spacer',
         'core/separator',
         'core/column',
