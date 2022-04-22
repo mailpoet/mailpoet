@@ -28,7 +28,8 @@ class ValidatorFactory {
     // annotation reader exists only in dev environment, on production cache is pre-generated
     $annotationReader = $this->annotationReaderProvider->getAnnotationReader();
     if ($annotationReader) {
-      $builder->enableAnnotationMapping($annotationReader);
+      $builder->setDoctrineAnnotationReader($annotationReader)
+        ->enableAnnotationMapping(true);
     }
 
     // metadata cache (for production cache is pre-generated at build time)

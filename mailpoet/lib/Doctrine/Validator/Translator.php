@@ -4,7 +4,7 @@ namespace MailPoet\Doctrine\Validator;
 
 use MailPoetVendor\Symfony\Contracts\Translation\TranslatorTrait;
 
-class Translator implements \MailPoetVendor\Symfony\Component\Translation\TranslatorInterface {
+class Translator implements \MailPoetVendor\Symfony\Contracts\Translation\TranslatorInterface {
 
   use TranslatorTrait;
 
