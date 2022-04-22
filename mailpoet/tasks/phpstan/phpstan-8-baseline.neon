@@ -132,7 +132,7 @@ parameters:
 			path: ../../lib/Cache/TransientCache.php
 
 		-
-			message: "#^Cannot call method getWrappedConnection\\(\\) on mixed\\.$#"
+			message: "#^Parameter \\#1 \\$pdo of method MailPoet\\\\Config\\\\Database\\:\\:init\\(\\) expects PDO, MailPoetVendor\\\\Doctrine\\\\DBAL\\\\Driver\\\\Connection given\\.$#"
 			count: 1
 			path: ../../lib/Config/DatabaseInitializer.php
 
@@ -1680,4 +1680,3 @@ parameters:
 			message: "#^Part \\$table \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
 			count: 1
 			path: ../../tests/integration/_bootstrap.php
-
