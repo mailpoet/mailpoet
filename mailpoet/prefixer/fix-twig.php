@@ -160,26 +160,6 @@ $replacements = [
     ],
   ],
   [
-    'file' => '../vendor-prefixed/twig/twig/src/Node/CheckSecurityNode.php',
-    'find' => [
-      '\'\\\\Twig\\\\Extension\\\\SandboxExtension\'',
-    ],
-    'replace' => [
-      '\'\\\\MailPoetVendor\\\\Twig\\\\Extension\\\\SandboxExtension\'',
-    ],
-  ],
-  [
-    'file' => '../vendor-prefixed/twig/twig/src/Environment.php',
-    'find' => [
-      '\'\\\\Twig\\\\Template\'',
-      '\'Twig\\\\Extension\\\\AbstractExtension\'',
-    ],
-    'replace' => [
-      '\'\\\\MailPoetVendor\\\\Twig\\\\Template\'',
-      '\'MailPoetVendor\\\\Twig\\\\Extension\\\\AbstractExtension\'',
-    ],
-  ],
-  [
     'file' => '../vendor-prefixed/twig/twig/src/Token.php',
     'find' => [
       '\'Twig\\\\Token::\'',
@@ -229,10 +209,10 @@ $replacements = [
   [
     'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/FunctionExpression.php',
     'find' => [
-      '\'twig_constant_is_defined(',
+      'twig_constant_is_defined',
     ],
     'replace' => [
-      '\'\\\\MailPoetVendor\\\\twig_constant_is_defined(',
+      '\\\\MailPoetVendor\\\\twig_constant_is_defined',
     ],
   ],
   [

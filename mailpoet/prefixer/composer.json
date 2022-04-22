@@ -20,7 +20,7 @@
     "symfony/polyfill-php72": "1.23.0",
     "symfony/polyfill-php80": "1.23.1",
     "symfony/validator": "4.4.39",
-    "twig/twig": "2.14.11"
+    "twig/twig": "3.3.10"
   },
   "scripts": {
     "post-update-cmd": "@process",
