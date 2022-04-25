@@ -96,7 +96,8 @@ class SubscribersTest extends \MailPoetTest {
       $container->get(SubscriberListingRepository::class),
       $container->get(SegmentsRepository::class),
       $container->get(SubscriberSaveController::class),
-      $container->get(SubscriberSubscribeController::class)
+      $container->get(SubscriberSubscribeController::class),
+      $container->get(SettingsController::class)
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
@@ -943,6 +944,13 @@ class SubscribersTest extends \MailPoetTest {
     $this->entityManager->flush();
     $response = $this->endpoint->sendConfirmationEmail(['id' => $this->subscriber1->getId()]);
     expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+  }
+
+  public function testItDisplaysProperErrorMessageWhenConfirmationEmailsAreDisabled() {
+    $this->settings->set('signup_confirmation.enabled', false);
+    $response = $this->endpoint->sendConfirmationEmail(['id' => $this->subscriber1->getId()]);
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals('Sign-up confirmation is disabled in your <a href="admin.php?page=mailpoet-settings#/signup">MailPoet settings</a>. Please enable it to resend confirmation emails or update your subscriber’s status manually.');
   }
 
   public function testItKeepsSpecialSegmentsUnchangedAfterSaving() {
