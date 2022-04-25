@@ -147,23 +147,28 @@ class GutenbergFormatMapper {
 
   private function mapImage(array $block): string {
     $src = esc_url($block['src']);
-    $linkDestination = 'none';
+    $attributes = [
+      'linkDestination' => 'none',
+      'alignment' => 'center',
+      'id' => 15, // @Todo: fill with correct data
+      'sizeSlug' => 'large', // @Todo fill with correct data
+      'width' => false,
+      'height' => false,
+    ];
 
     // to be filled
-    $size = 'size-large';
-    $sizeSlug = 'large';
-    $imageId = '1';
+    $size = 'size-large';// @Todo: fill with correct data
 
     $width = '';
-    if (isset($block['width'])) {
-      $width = esc_attr($block['width']);
-      $width = "width=$width";
+    if (isset($block['width']) && $block['fullWidth'] === true) {
+      $attributes['width'] = floatval(esc_attr($block['width']));
+      $width = sprintf('width="%s"', $attributes['width']);
     }
 
     $height = '';
-    if (isset($block['height'])) {
-      $height = esc_attr($block['height']);
-      $height = "height=$height";
+    if (isset($block['height'])) { // @Todo: figure out if height should be added ( if so, how to calculate correct height? )
+      //$attributes['height'] = floatval(esc_attr($block['height']));
+      //$height = sprintf('height="%s"', $attributes['height']);
     }
 
     $alt = "";
@@ -175,36 +180,34 @@ class GutenbergFormatMapper {
       '%src' => $src,
       '%alt' => $alt,
       '%width' => $width,
-      '%height' => $height,
-      '%imageId' => $imageId,
+      '%imageId' => $attributes['id'],
     ]);
 
-    if (isset($block['link'])) {
+    if (!empty($block['link'])) {
       $link = esc_url($block['link']);
       $image = strtr('<a href="%link">%image</a>', [
         '%link' => $link,
         '%image' => $image,
       ]);
-      $linkDestination = 'custom';
+      $attributes['linkDestination'] = 'custom';
     }
 
-    $alignment = 'center';
     $alignmentCls = 'aligncenter';
     if (isset($block['styles'], $block['styles']['block'], $block['styles']['block']['textAlign'])) {
-      $alignment = esc_attr($block['styles']['block']['textAlign']);
-      $alignmentCls = "align${$alignment}";
+      $attributes['alignment'] = esc_attr($block['styles']['block']['textAlign']);
+      $alignmentCls = "align{$attributes['alignment']}";
     }
 
-    return strtr('<!-- wp:image {"align":"%alignment","id":%imageId,"sizeSlug":"%sizeSlug","linkDestination":"%linkDestination"} -->
-      <figure class="wp-block-image %size %alignmentCls">%img</figure><!-- /wp:image -->',
+    $attributes = array_filter($attributes);
+
+    return strtr('<!-- wp:image %attributes -->
+      <figure class="wp-block-image %size %extraCls %alignmentCls">%img</figure><!-- /wp:image -->',
       [
-        '%imageId' => $imageId,
+        '%attributes' => json_encode($attributes),
         '%img' => $image,
         '%size' => $size,
-        '%sizeSlug' => $sizeSlug,
-        '%linkDestination' => $linkDestination,
-        '%alignment' => $alignment,
         '%alignmentCls' => $alignmentCls,
+        '%extraCls' => $block['fullWidth'] === false ? 'is-resized' : '',
       ]);
   }
 }
