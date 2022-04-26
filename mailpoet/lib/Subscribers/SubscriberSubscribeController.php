@@ -216,7 +216,7 @@ class SubscriberSubscribeController {
       }
     }
 
-    if (Captcha::isReCaptcha($captchaSettings['type']) && empty($data['recaptcha'])) {
+    if (Captcha::isReCaptcha($captchaSettings['type']) && empty($data['recaptchaResponseToken'])) {
       return ['error' => __('Please check the CAPTCHA.', 'mailpoet')];
     }
 
@@ -227,7 +227,7 @@ class SubscriberSubscribeController {
         $secretToken = $captchaSettings['recaptcha_secret_token'];
       }
 
-      $response = empty($data['recaptcha']) ? $data['recaptcha-no-js'] : $data['recaptcha'];
+      $response = empty($data['recaptchaResponseToken']) ? $data['recaptcha-no-js'] : $data['recaptchaResponseToken'];
       $response = $this->wp->wpRemotePost('https://www.google.com/recaptcha/api/siteverify', [
         'body' => [
           'secret' => $secretToken,
