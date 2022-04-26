@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter;
 
+use MailPoet\Newsletter\GutenbergFormat\Divider;
 use MailPoet\Util\pQuery\pQuery;
 
 class GutenbergFormatMapper {
@@ -38,6 +39,9 @@ class GutenbergFormatMapper {
           break;
         case 'image':
           $result .= $this->mapImage($block);
+          break;
+        case 'divider':
+          $result .= $this->mapDivider($block);
           break;
         default:
           $result .= '<!-- wp:mailpoet/todo {"originalBlock":"' . $block['type'] . '"} /-->';
@@ -212,5 +216,19 @@ class GutenbergFormatMapper {
         '%alignmentCls' => $alignmentCls,
         '%extraCls' => $block['fullWidth'] === false ? 'is-resized' : '',
       ]);
+  }
+
+  /**
+   * Receives divider block settings and converts them to core/separator settings
+   * @param array $block
+   * @return string
+   */
+  private function mapDivider(array $block): string {
+    $divider = new Divider($block);
+    return strtr('<!-- wp:separator %attributes --><hr class="wp-block-separator %classNames"/><!-- /wp:separator -->', [
+        '%attributes' => \json_encode($divider->getAttributes()),
+        '%classNames' => $divider->getClassNames(),
+      ]
+    );
   }
 }
