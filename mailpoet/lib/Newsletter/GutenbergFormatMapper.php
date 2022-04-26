@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter;
 
 use MailPoet\Newsletter\GutenbergFormat\Divider;
+use MailPoet\Newsletter\GutenbergFormat\Spacer;
 use MailPoet\Util\pQuery\pQuery;
 
 class GutenbergFormatMapper {
@@ -43,6 +44,10 @@ class GutenbergFormatMapper {
         case 'divider':
           $result .= $this->mapDivider($block);
           break;
+        case 'spacer':
+          $result .= $this->mapSpacer($block);
+          break;
+
         default:
           $result .= '<!-- wp:mailpoet/todo {"originalBlock":"' . $block['type'] . '"} /-->';
       }
@@ -230,5 +235,9 @@ class GutenbergFormatMapper {
         '%classNames' => $divider->getClassNames(),
       ]
     );
+  }
+
+  private function mapSpacer(array $block): string {
+    return (new Spacer($block))->getBlockMarkup();
   }
 }
