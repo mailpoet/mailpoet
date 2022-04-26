@@ -1,13 +1,11 @@
+import '@wordpress/core-data';
 import { render } from '@wordpress/element';
 import IsolatedBlockEditor, {
   BlockEditorSettings,
   EditorSettings,
   IsoSettings,
 } from '@automattic/isolated-block-editor';
-import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
 import { registerBlockType } from '@wordpress/blocks';
-import { mediaUpload } from '@wordpress/editor';
-import { useSelect } from '../wp-data-hooks';
 
 import { registerButton } from './blocks/button';
 import { registerColumns } from './blocks/columns';
@@ -29,6 +27,7 @@ import {
   settings as headerBlockSettings,
 } from './blocks/header';
 
+import { getEditorSettings } from './settings';
 // Register hooks for button
 registerButton();
 registerColumns();
@@ -47,16 +46,7 @@ const loadInitialContent = (parse) => {
 };
 
 function EmailEditor() {
-  const canUserUpload = useSelect(
-    (sel) => sel('core').canUser('create', 'media'),
-    [],
-  );
-  const editor: EditorSettings = {
-    ...SETTINGS_DEFAULTS,
-    allowedMimeTypes: 'image/*',
-    mediaUpload: canUserUpload ? mediaUpload : null,
-  };
-
+  const editor: EditorSettings = getEditorSettings();
   const iso: IsoSettings = {
     blocks: {
       allowBlocks: [
