@@ -12,6 +12,7 @@ import { useSelect } from '../wp-data-hooks';
 import { registerButton } from './blocks/button';
 import { registerColumns } from './blocks/columns';
 import { registerColumn } from './blocks/column';
+import { registerSpacer } from './blocks/spacer';
 
 import {
   name as todoBlockName,
@@ -32,6 +33,7 @@ import {
 registerButton();
 registerColumns();
 registerColumn();
+registerSpacer();
 
 // Add Custom Block Type
 registerBlockType(headerBlockName, headerBlockSettings);
@@ -111,4 +113,5 @@ function EmailEditor() {
     />
   );
 }
+
 render(<EmailEditor />, document.querySelector('#mailpoet-email-editor'));
