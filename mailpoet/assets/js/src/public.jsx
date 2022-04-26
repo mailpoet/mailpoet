@@ -155,7 +155,7 @@ jQuery(($) => {
       return;
     }
     const recaptcha = $(element);
-    const form = $(recaptcha).parent('form');
+    const form = $(recaptcha).closest('form');
     const sitekey = recaptcha.attr('data-sitekey');
     let size = recaptcha.attr('data-size');
 
@@ -396,7 +396,7 @@ jQuery(($) => {
         }
 
         const formData = form.mailpoetSerializeObject() || {};
-        const size = form.children('.mailpoet_recaptcha').attr('data-size');
+        const size = form.find('.mailpoet_recaptcha').attr('data-size');
 
         if (window.grecaptcha && formData.recaptcha) {
           // The API for the invisible and checkbox ReCaptchas is slightly different. For the
