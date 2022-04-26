@@ -106,8 +106,8 @@ jQuery(($) => {
         }
       })
       .done((response) => {
-        if (window.grecaptcha && formData.recaptcha) {
-          window.grecaptcha.reset(formData.recaptcha);
+        if (window.grecaptcha && formData.recaptchaWidgetId) {
+          window.grecaptcha.reset(formData.recaptchaWidgetId);
         }
         return response;
       })
@@ -129,8 +129,8 @@ jQuery(($) => {
         // reset validation
         parsley.reset();
         // reset captcha
-        if (window.grecaptcha && formData.recaptcha) {
-          window.grecaptcha.reset(formData.recaptcha);
+        if (window.grecaptcha && formData.recaptchaWidgetId) {
+          window.grecaptcha.reset(formData.recaptchaWidgetId);
         }
 
         // resize iframe
@@ -171,9 +171,11 @@ jQuery(($) => {
       const params = { sitekey, size };
 
       if (size === 'invisible') {
-        params.callback = function invisibleReCaptchaCallback(token) {
+        params.callback = function invisibleReCaptchaCallback(
+          recaptchaResponseToken,
+        ) {
           const formData = form.mailpoetSerializeObject() || {};
-          formData.data.recaptcha = token;
+          formData.data.recaptchaResponseToken = recaptchaResponseToken;
 
           submitSubscribeForm(form, formData, form.parsley());
         };
@@ -398,7 +400,7 @@ jQuery(($) => {
         const formData = form.mailpoetSerializeObject() || {};
         const size = form.find('.mailpoet_recaptcha').attr('data-size');
 
-        if (window.grecaptcha && formData.recaptcha) {
+        if (window.grecaptcha && formData.recaptchaWidgetId) {
           // The API for the invisible and checkbox ReCaptchas is slightly different. For the
           // former, we need to call execute() and then the ReCaptcha API calls the callback set
           // inside renderCaptcha() with a token if the captcha was solved successfully. The
@@ -408,9 +410,8 @@ jQuery(($) => {
           if (size === 'invisible') {
             window.grecaptcha.execute();
           } else {
-            formData.data.recaptcha = window.grecaptcha.getResponse(
-              formData.recaptcha,
-            );
+            formData.data.recaptchaResponseToken =
+              window.grecaptcha.getResponse(formData.recaptchaWidgetId);
           }
         }
 

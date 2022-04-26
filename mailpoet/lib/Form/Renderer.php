@@ -113,7 +113,7 @@ class Renderer {
           </div>
         </div>
       </noscript>
-      <input class="mailpoet_recaptcha_field" type="hidden" name="recaptcha">
+      <input class="mailpoet_recaptcha_field" type="hidden" name="recaptchaWidgetId">
     </div>';
 
     return $html;
