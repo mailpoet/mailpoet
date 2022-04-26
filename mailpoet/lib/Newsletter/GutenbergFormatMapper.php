@@ -70,6 +70,9 @@ class GutenbergFormatMapper {
         case 'blockquote':
           $result .= '<!-- wp:quote --><blockquote class="wp-block-quote">' . $child->getInnerText() . '</blockquote><!-- /wp:quote -->';
           break;
+        default:
+          $result .= '<!-- wp:html -->' . $child->toString() . '<!-- /wp:html -->';
+          break;
       }
     }
     return $result;
