@@ -1,59 +1,40 @@
-import { useBlockProps, RichText } from '@wordpress/block-editor';
+import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';
 
 export const name = 'mailpoet/footer';
+
+const footerTemplate = [
+  [
+    'core/paragraph',
+    {
+      content:
+        '<a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> | <a href="[link:subscription_manage_url]">Manage Subscription</a>',
+    },
+  ],
+  ['core/paragraph', { content: 'Add your address' }],
+];
 
 export const settings = {
   title: 'Email Footer',
   apiVersion: 2,
   description: 'Email Footer Content',
   category: 'text',
-  attributes: {
-    content: {
-      type: 'array',
-      source: 'children',
-      selector: 'p',
-      default: [
-        'Footer content!',
-        {
-          type: 'a',
-          props: {
-            children: ['Unsubscribe'],
-            href: '[link:unsubscribe]',
-          },
-        },
-      ],
-    },
-  },
   supports: {
     html: false,
     multiple: true,
   },
-  edit: function Edit(props) {
-    const {
-      attributes: { content },
-      setAttributes,
-    } = props;
+  edit: function Edit() {
     const blockProps = useBlockProps();
-    const onChangeContent = (newContent) => {
-      setAttributes({ content: newContent });
-    };
     return (
-      <RichText
-        {...blockProps}
-        tagName="p"
-        onChange={onChangeContent}
-        value={content}
-      />
+      <div {...blockProps}>
+        <InnerBlocks
+          allowedBlocks={['core/paragraph']}
+          template={footerTemplate}
+          templateLock={false}
+        />
+      </div>
     );
   },
-  save: (props) => {
-    const blockProps = useBlockProps.save();
-    return (
-      <RichText.Content
-        {...blockProps}
-        tagName="p"
-        value={props.attributes.content}
-      />
-    );
+  save: function Save() {
+    return <InnerBlocks.Content />;
   },
 };

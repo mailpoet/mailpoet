@@ -27,7 +27,7 @@ class GutenbergFormatMapper {
           $result .= '<!-- wp:column --><div class="wp-block-column">' . $this->mapBlocks($block['blocks']) . '</div><!-- /wp:column -->';
           break;
         case 'footer':
-          $result .= '<!-- wp:mailpoet/footer --><p class="wp-block-mailpoet-footer">' . str_replace(["</p>\n<p>", "\n", '<p>', '</p>'], ['<br/>', '<br/>', '', ''], $block['text']) . '</p><!-- /wp:mailpoet/footer -->';
+          $result .= $this->mapFooter($block);
           break;
         case 'header':
           $result .= '<!-- wp:mailpoet/header --><p class="wp-block-mailpoet-header">' . str_replace(["</p>\n<p>", "\n", '<p>', '</p>'], ['<br/>', '<br/>', '', ''], $block['text']) . '</p><!-- /wp:mailpoet/header -->';
@@ -53,6 +53,10 @@ class GutenbergFormatMapper {
       }
     }
     return $result;
+  }
+
+  private function mapFooter(array $block): string {
+    return '<!-- wp:mailpoet/footer {"className":"wp-block-mailpoet-footer"} -->' . $this->mapText($block) . '<!-- /wp:mailpoet/footer -->';
   }
 
   private function mapText(array $block): string {
