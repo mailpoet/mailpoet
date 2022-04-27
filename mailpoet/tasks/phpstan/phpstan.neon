@@ -49,7 +49,7 @@ parameters:
       count: 2
       path: ../../lib/Automation/Engine/Storage/WorkflowRunStorage.php
     -
-      message: "#^Cannot cast string|void to string.$#"
+      message: "#^Cannot cast string|void to string\\.$#"
       count: 3
       path: ../../lib/Automation/Engine/Storage/WorkflowStorage.php
   reportUnmatchedIgnoredErrors: true
