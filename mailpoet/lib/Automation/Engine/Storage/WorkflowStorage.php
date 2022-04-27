@@ -36,6 +36,16 @@ class WorkflowStorage {
     return $data ? Workflow::fromArray((array)$data) : null;
   }
 
+  /** @return Workflow[] */
+  public function getWorkflows(): array {
+    $table = esc_sql($this->table);
+    $query = "SELECT * FROM $table ORDER BY id DESC";
+    $data = $this->wpdb->get_results($query, ARRAY_A);
+    return array_map(function (array $workflowData) {
+      return Workflow::fromArray($workflowData);
+    }, (array)$data);
+  }
+
   /** @return string[] */
   public function getActiveTriggerKeys(): array {
     $table = esc_sql($this->table);
