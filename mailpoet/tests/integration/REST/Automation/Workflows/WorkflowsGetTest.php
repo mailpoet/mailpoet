@@ -22,6 +22,6 @@ class WorkflowsGetTest extends AutomationTest {
 
   public function testRequest(): void {
     $data = $this->get(self::ENDPOINT_PATH);
-    $this->assertSame(['data' => ['message' => 'Hello world.']], $data);
+    $this->assertSame(['data' => []], $data);
   }
 }
