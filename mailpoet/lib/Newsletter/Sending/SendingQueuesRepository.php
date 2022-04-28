@@ -48,6 +48,19 @@ class SendingQueuesRepository extends Repository {
       ->getOneOrNullResult();
   }
 
+  public function countAllByNewsletterAndTaskStatus(NewsletterEntity $newsletter, string $status): int {
+    return intval($this->entityManager->createQueryBuilder()
+      ->select('count(s.task)')
+      ->from(SendingQueueEntity::class, 's')
+      ->join('s.task', 't')
+      ->where('t.status = :status')
+      ->andWhere('s.newsletter = :newsletter')
+      ->setParameter('status', $status)
+      ->setParameter('newsletter', $newsletter)
+      ->getQuery()
+      ->getSingleScalarResult());
+  }
+
   public function getTaskIdsByNewsletterId(int $newsletterId): array {
     $results = $this->entityManager->createQueryBuilder()
       ->select('IDENTITY(s.task) as task_id')

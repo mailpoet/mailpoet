@@ -92,6 +92,29 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 
+  public function testItReturnsCountOfQueuesByNewsletterAndTaskStatus() {
+    $taskStatus = ScheduledTaskEntity::STATUS_PAUSED;
+
+    $task1 = $this->createTask();
+    $task1->setStatus($taskStatus);
+    $queue1 = $this->createQueue($task1);
+    $newsletter = $queue1->getNewsletter();
+
+    $task2 = $this->createTask();
+    $task2->setStatus($taskStatus);
+    $this->createQueue($task2, $newsletter);
+
+    $task3 = $this->createTask();
+    $task3->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->createQueue($task3, $newsletter);
+
+    $this->entityManager->flush();
+
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    // should return the two queues with tasks of the type STATUS_PAUSED and exclude the queue with task of the type STATUS_SCHEDULED
+    $this->assertSame(2, $this->repository->countAllByNewsletterAndTaskStatus($newsletter, $taskStatus));
+  }
+
   private function createTaskSubscriber(ScheduledTaskEntity $task, SubscriberEntity $subscriber, int $processed) {
     $taskSubscriber = new ScheduledTaskSubscriberEntity(
       $task,
@@ -107,11 +130,13 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     return $task;
   }
 
-  private function createQueue(ScheduledTaskEntity $task): SendingQueueEntity {
-    $newsletter = new NewsletterEntity();
-    $newsletter->setType('type');
-    $newsletter->setSubject('Subject');
-    $this->entityManager->persist($newsletter);
+  private function createQueue(ScheduledTaskEntity $task, NewsletterEntity $newsletter = null): SendingQueueEntity {
+    if (!$newsletter) {
+      $newsletter = new NewsletterEntity();
+      $newsletter->setType('type');
+      $newsletter->setSubject('Subject');
+      $this->entityManager->persist($newsletter);
+    }
 
     $queue = new SendingQueueEntity();
     $queue->setNewsletter($newsletter);
@@ -134,5 +159,6 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
   }
 }
