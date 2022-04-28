@@ -2,11 +2,16 @@
 
 namespace MailPoet\Test\Subscribers\ImportExport;
 
-use MailPoet\Models\CustomField;
-use MailPoet\Models\Segment;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
+use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
+use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Test\DataFactories\CustomField as CustomFieldFactory;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoetVendor\Carbon\Carbon;
 
 class ImportExportFactoryTest extends \MailPoetTest {
   /** @var ImportExportFactory */
@@ -14,42 +19,43 @@ class ImportExportFactoryTest extends \MailPoetTest {
   /** @var ImportExportFactory */
   public $importFactory;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
   public function _before() {
     parent::_before();
-    $segment1 = Segment::createOrUpdate(['name' => 'Unconfirmed Segment']);
-    $segment2 = Segment::createOrUpdate(['name' => 'Confirmed Segment']);
 
-    $subscriber1 = Subscriber::createOrUpdate([
-      'first_name' => 'John',
-      'last_name' => 'Mailer',
-      'status' => Subscriber::STATUS_UNCONFIRMED,
-      'email' => 'john@mailpoet.com',
-    ]);
+    $segmentFactory = new SegmentFactory();
+    $subscriberFactory = new SubscriberFactory();
+    $customFieldFactory = new CustomFieldFactory();
 
-    $subscriber2 = Subscriber::createOrUpdate([
-      'first_name' => 'Mike',
-      'last_name' => 'Smith',
-      'status' => Subscriber::STATUS_SUBSCRIBED,
-      'email' => 'mike@mailpoet.com',
-    ]);
+    $segment1 = $segmentFactory->withName('Unconfirmed Segment')->create();
+    $segment2 = $segmentFactory->withName('Confirmed Segment')->create();
 
-    $association = SubscriberSegment::create();
-    $association->subscriberId = $subscriber1->id;
-    $association->segmentId = $segment1->id;
-    $association->save();
+    $subscriberFactory
+      ->withFirstName('John')
+      ->withLastName('Mailer')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withEmail('john@mailpoet.com')
+      ->withSegments([$segment1])
+      ->create();
 
-    $association = SubscriberSegment::create();
-    $association->subscriberId = $subscriber2->id;
-    $association->segmentId = $segment2->id;
-    $association->save();
+    $subscriberFactory
+      ->withFirstName('Mike')
+      ->withLastName('Smith')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withEmail('mike@mailpoet.com')
+      ->withSegments([$segment2])
+      ->create();
 
-    CustomField::createOrUpdate([
-      'name' => 'Birthday',
-      'type' => 'date',
-    ]);
+    $customFieldFactory
+      ->withName('Birthday')
+      ->withType(CustomFieldEntity::TYPE_DATE)
+      ->create();
 
     $this->importFactory = new ImportExportFactory('import');
     $this->exportFactory = new ImportExportFactory('export');
+    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
   }
 
   public function testItCanGetSegmentsWithSubscriberCount() {
@@ -66,16 +72,14 @@ class ImportExportFactoryTest extends \MailPoetTest {
     expect($segments[0]['count'])->equals(1);
     expect($segments[1]['count'])->equals(0);
 
-    $subscriber = Subscriber::where(
-      'email', 'mike@mailpoet.com'
-    )->findOne();
-    expect($subscriber->deletedAt)->null();
-    $subscriber->trash();
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'mike@mailpoet.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    expect($subscriber->getDeletedAt())->null();
 
-    $subscriber = Subscriber::where(
-      'email', 'mike@mailpoet.com'
-    )->whereNull('deleted_at')->findOne();
-    expect($subscriber)->false();
+    $this->subscribersRepository->bulkTrash([$subscriber->getId()]);
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'mike@mailpoet.com', 'deletedAt' => null]);
+    expect($subscriber)->null();
 
     $segments = $this->importFactory->getSegments();
     expect($segments[0]['count'])->equals(0);
@@ -85,10 +89,13 @@ class ImportExportFactoryTest extends \MailPoetTest {
   public function testItCanGetPublicSegmentsForExport() {
     $segments = $this->exportFactory->getSegments();
     expect(count($segments))->equals(2);
-    $subscriber = Subscriber::where('email', 'john@mailpoet.com')
-      ->findOne();
-    $subscriber->deletedAt = date('Y-m-d H:i:s');
-    $subscriber->save();
+
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'john@mailpoet.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $subscriber->setDeletedAt(new Carbon());
+    $this->subscribersRepository->persist($subscriber);
+    $this->subscribersRepository->flush();
+
     $segments = $this->exportFactory->getSegments();
     expect(count($segments))->equals(1);
   }
@@ -301,10 +308,10 @@ class ImportExportFactoryTest extends \MailPoetTest {
   }
 
   public function _after() {
-    Subscriber::deleteMany();
-    Segment::deleteMany();
-    SubscriberSegment::deleteMany();
-    CustomField::deleteMany();
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(CustomFieldEntity::class);
     $this->clearSubscribersCountCache();
   }
 }
