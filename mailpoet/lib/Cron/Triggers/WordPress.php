@@ -80,8 +80,11 @@ class WordPress {
   }
 
   private function checkRunInterval() {
-    $lastRunAt = (int)$this->settings->get(self::LAST_RUN_AT_SETTING, 0);
     $runInterval = $this->wp->applyFilters('mailpoet_cron_trigger_wordpress_run_interval', self::RUN_INTERVAL);
+    if ($runInterval === -1) {
+      return true;
+    }
+    $lastRunAt = (int)$this->settings->get(self::LAST_RUN_AT_SETTING, 0);
     $runIntervalElapsed = (time() - $lastRunAt) >= $runInterval;
     if ($runIntervalElapsed) {
       $this->settings->set(self::LAST_RUN_AT_SETTING, time());
