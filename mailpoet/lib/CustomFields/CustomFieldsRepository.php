@@ -38,4 +38,17 @@ class CustomFieldsRepository extends Repository {
     $this->entityManager->flush();
     return $field;
   }
+
+  public function findAllAsArray() {
+    $customFieldsTable = $this->entityManager->getClassMetadata(CustomFieldEntity::class)->getTableName();
+
+    $query = $this->entityManager
+      ->getConnection()
+      ->createQueryBuilder()
+      ->select('*')
+      ->from($customFieldsTable)
+      ->execute();
+
+    return $query->fetchAllAssociative();
+  }
 }
