@@ -90,7 +90,12 @@ class AutomatedLatestContent extends APIEndpoint {
    * Fetches products for Abandoned Cart Content dynamic block
    */
   public function getTransformedPosts(array $data = []): SuccessResponse {
-    $posts = $this->getPermittedPosts($this->ALC->getPosts(new BlockPostQuery(['args' => $data])));
+    $posts = $this->getPermittedPosts($this->ALC->getPosts(new BlockPostQuery([
+      'args' => $data,
+      // If the request is for Posts block then we are fetching data for a static block
+      'dynamic' => !(isset($data['type']) && $data['type'] === "posts"),
+    ]
+    )));
     return $this->successResponse(
       $this->ALC->transformPosts($data, $posts)
     );
