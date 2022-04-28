@@ -78,6 +78,47 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     expect($subscriber2->getEmailCount())->equals(8);
   }
 
+  public function testItStartsFromLastIdInTaskMeta() {
+    $subscriber1 = $this->createSubscriber('s1@email.com', 100);
+    $this->createCompletedSendingTasksForSubscriber($subscriber1, 80, 90);
+    $subscriber2 = $this->createSubscriber('s2@email.com', 90);
+    $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 80);
+
+    $task = new ScheduledTaskEntity();
+    $meta = ['highest_subscriber_id' => 2, 'last_subscriber_id' => 2];
+    $task->setMeta($meta);
+    $this->worker->processTaskStrategy($task, microtime(true));
+
+    $this->entityManager->clear();
+    $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
+    assert($subscriber1 instanceof SubscriberEntity);
+    expect($subscriber1->getEmailCount())->equals(0);
+    $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
+    assert($subscriber2 instanceof SubscriberEntity);
+    expect($subscriber2->getEmailCount())->equals(8);
+  }
+
+  public function testItWorksIfTaskMetaIsString() {
+    // Test backwards fix for [MAILPOET-4282]
+    $subscriber1 = $this->createSubscriber('s1@email.com', 100);
+    $this->createCompletedSendingTasksForSubscriber($subscriber1, 80, 90);
+    $subscriber2 = $this->createSubscriber('s2@email.com', 90);
+    $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 80);
+
+    $task = new ScheduledTaskEntity();
+    $meta = ['highest_subscriber_id' => 2, 'last_subscriber_id' => "2"];
+    $task->setMeta($meta);
+    $this->worker->processTaskStrategy($task, microtime(true));
+
+    $this->entityManager->clear();
+    $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
+    assert($subscriber1 instanceof SubscriberEntity);
+    expect($subscriber1->getEmailCount())->equals(0);
+    $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
+    assert($subscriber2 instanceof SubscriberEntity);
+    expect($subscriber2->getEmailCount())->equals(8);
+  }
+
   public function testItUpdatesSubscribersEmailCountsAfterFirstRun() {
     $subscriber1 = $this->createSubscriber('s1@email.com', 100, SubscriberEntity::STATUS_SUBSCRIBED, 80);
 
