@@ -23,12 +23,6 @@ export const registerSpacer = () => {
     };
   };
 
-  addFilter(
-    'blocks.registerBlockType',
-    'mailpoet/spacer-add-settings',
-    addAttributes,
-  );
-
   const withBackgroundColorSettings = createHigherOrderComponent(
     (BlockEdit) =>
       function SpacerWithBackgroundColor(props) {
@@ -39,6 +33,15 @@ export const registerSpacer = () => {
           attributes: { backgroundColor },
           setAttributes,
         } = props;
+        const clientId = props.clientId as string;
+        const styles = backgroundColor
+          ? `
+            #block-${clientId} {
+              background-color: ${backgroundColor as string}
+            }
+          `
+          : '';
+
         return (
           <>
             <BlockEdit {...props} />
@@ -47,7 +50,7 @@ export const registerSpacer = () => {
                 <ColorPicker
                   color={backgroundColor}
                   enableAlpha
-                  copyFormat="rgb"
+                  copyFormat="hex"
                   onChange={(bgColor) =>
                     setAttributes({ backgroundColor: bgColor })
                   }
@@ -55,22 +58,33 @@ export const registerSpacer = () => {
                 />
               </PanelBody>
             </InspectorControls>
+            <style id={`${clientId}-styles`}>{styles}</style>
           </>
         );
       },
     'withBackgroundColorSettings',
   );
 
-  const withBackgroundColorProps = (element, blockType, attributes) => {
+  const withBackgroundColorProps = (props, blockType, attributes) => {
     if (blockType.name !== 'core/spacer' || !attributes.backgroundColor) {
-      return element;
+      return props;
     }
 
-    // eslint-disable-next-line no-param-reassign
-    element.props.style.backgroundColor = attributes.backgroundColor;
-
-    return element;
+    const { backgroundColor } = attributes;
+    return {
+      ...props,
+      style: {
+        ...props.style,
+        backgroundColor,
+      },
+    };
   };
+
+  addFilter(
+    'blocks.registerBlockType',
+    'mailpoet/spacer-add-settings',
+    addAttributes,
+  );
 
   addFilter(
     'editor.BlockEdit',
@@ -79,8 +93,8 @@ export const registerSpacer = () => {
   );
 
   addFilter(
-    'blocks.getSaveElement',
-    'mailpeot/spacer-settings-save1',
+    'blocks.getSaveContent.extraProps',
+    'mailpeot/spacer-settings-extraProps',
     withBackgroundColorProps,
   );
 };
