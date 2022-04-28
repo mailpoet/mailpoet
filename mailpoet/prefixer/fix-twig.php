@@ -15,6 +15,60 @@ $replacements = [
     ],
   ],
   [
+    'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/Binary/EqualBinary.php',
+    'find' => [
+      'twig_compare(\'',
+    ],
+    'replace' => [
+      '\\\\MailPoetVendor\\\\twig_compare(\'',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/Binary/GreaterBinary.php',
+    'find' => [
+      'twig_compare(\'',
+    ],
+    'replace' => [
+      '\\\\MailPoetVendor\\\\twig_compare(\'',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/Binary/GreaterEqualBinary.php',
+    'find' => [
+      'twig_compare(\'',
+    ],
+    'replace' => [
+      '\\\\MailPoetVendor\\\\twig_compare(\'',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/Binary/LessBinary.php',
+    'find' => [
+      'twig_compare(\'',
+    ],
+    'replace' => [
+      '\\\\MailPoetVendor\\\\twig_compare(\'',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/Binary/LessEqualBinary.php',
+    'find' => [
+      'twig_compare(\'',
+    ],
+    'replace' => [
+      '\\\\MailPoetVendor\\\\twig_compare(\'',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/Binary/NotEqualBinary.php',
+    'find' => [
+      'twig_compare(\'',
+    ],
+    'replace' => [
+      '\\\\MailPoetVendor\\\\twig_compare(\'',
+    ],
+  ],
+  [
     'file' => '../vendor-prefixed/twig/twig/src/Node/Expression/Binary/NotInBinary.php',
     'find' => [
       '\'!twig_in_filter(\'',
