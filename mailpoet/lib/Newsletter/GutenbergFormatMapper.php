@@ -47,7 +47,9 @@ class GutenbergFormatMapper {
         case 'spacer':
           $result .= $this->mapSpacer($block);
           break;
-
+        case 'social':
+          $result .= $this->mapSocialIcons($block);
+          break;
         default:
           $result .= '<!-- wp:mailpoet/todo {"originalBlock":"' . $block['type'] . '"} /-->';
       }
@@ -243,5 +245,24 @@ class GutenbergFormatMapper {
 
   private function mapSpacer(array $block): string {
     return (new Spacer($block))->getBlockMarkup();
+  }
+
+  private function mapSocialIcons(array $block): string {
+    $result = '<!-- wp:social-links {"layout":{"type":"flex","justifyContent":"' . $block['styles']['block']['textAlign'] . '"}} --><ul class="wp-block-social-links">';
+    foreach ($block['icons'] as $icon) {
+      $linkAttributes = [
+        'service' => $icon['iconType'], // Todo may not work for all icon types
+      ];
+      if (!empty($icon['link'])) {
+        $linkAttributes['url'] = $icon['link'];
+      }
+      if (!empty($icon['text'])) {
+        $linkAttributes['label'] = $icon['text'];
+      }
+      $result .= '<!-- wp:social-link ' . json_encode($linkAttributes) . ' /-->';
+    }
+    $result .= '</ul><!-- /wp:social-links -->';
+    return $result;
+
   }
 }
