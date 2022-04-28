@@ -64,19 +64,19 @@ export function Captcha() {
             >
               {t('readMore')}
             </a>
-            <p>
-              {(type === 'recaptcha' || type === 'recaptcha-invisible') && (
+            {(type === 'recaptcha' || type === 'recaptcha-invisible') && (
+              <p>
                 <span>{t('reCaptchaDescription')} </span>
-              )}
-              <a
-                className="mailpoet-link"
-                href="https://www.google.com/recaptcha/admin"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {t('signupForCaptchaKey')}
-              </a>
-            </p>
+                <a
+                  className="mailpoet-link"
+                  href="https://www.google.com/recaptcha/admin"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {t('signupForCaptchaKey')}
+                </a>
+              </p>
+            )}
           </>
         }
         htmlFor=""
