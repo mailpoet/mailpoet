@@ -2,9 +2,9 @@
 
 namespace MailPoet\Subscribers\ImportExport;
 
+use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Models\CustomField;
 use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\Util\Helpers;
 
@@ -18,11 +18,15 @@ class ImportExportFactory {
   /** @var SegmentsSimpleListRepository */
   private $segmentsListRepository;
 
+  /** @var CustomFieldsRepository */
+  private $customFieldsRepository;
+
   public function __construct(
     $action = null
   ) {
     $this->action = $action;
     $this->segmentsListRepository = ContainerWrapper::getInstance()->get(SegmentsSimpleListRepository::class);
+    $this->customFieldsRepository = ContainerWrapper::getInstance()->get(CustomFieldsRepository::class);
   }
 
   public function getSegments() {
@@ -80,7 +84,7 @@ class ImportExportFactory {
   }
 
   public function getSubscriberCustomFields() {
-    return CustomField::findArray();
+    return $this->customFieldsRepository->findAllAsArray();
   }
 
   public function formatSubscriberCustomFields($subscriberCustomFields) {
