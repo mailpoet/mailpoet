@@ -91,6 +91,10 @@ class CronHelper {
   }
 
   public function deactivateDaemon($daemon) {
+    // We do not need to deactivate an inactive daemon
+    if (isset($daemon['status']) && $daemon['status'] === self::DAEMON_STATUS_INACTIVE) {
+      return;
+    }
     $daemon['status'] = self::DAEMON_STATUS_INACTIVE;
     $this->settings->set(
       self::DAEMON_SETTING,
