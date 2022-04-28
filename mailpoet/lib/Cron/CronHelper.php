@@ -10,7 +10,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class CronHelper {
   const DAEMON_EXECUTION_LIMIT = 20; // seconds
-  const DAEMON_REQUEST_TIMEOUT = 5; // seconds
+  const DAEMON_REQUEST_TIMEOUT = 0.0001; // seconds
   const DAEMON_SETTING = 'cron_daemon';
   const DAEMON_STATUS_ACTIVE = 'active';
   const DAEMON_STATUS_INACTIVE = 'inactive';
@@ -106,7 +106,7 @@ class CronHelper {
     $url = $this->getCronUrl(
       CronDaemonEndpoint::ACTION_PING_RESPONSE
     );
-    $result = $this->queryCronUrl($url);
+    $result = $this->queryCronUrl($url, true);
     if (is_wp_error($result)) return $result->get_error_message();
     $response = $this->wp->wpRemoteRetrieveBody($result);
     $response = substr(trim($response), -strlen(DaemonHttpRunner::PING_SUCCESS_RESPONSE)) === DaemonHttpRunner::PING_SUCCESS_RESPONSE ?
@@ -155,13 +155,13 @@ class CronHelper {
     return null;
   }
 
-  public function queryCronUrl($url) {
+  public function queryCronUrl(string $url, bool $waitForResponse = false) {
     $args = $this->wp->applyFilters(
       'mailpoet_cron_request_args',
       [
-        'blocking' => true,
+        'blocking' => $waitForResponse,
         'sslverify' => false,
-        'timeout' => self::DAEMON_REQUEST_TIMEOUT,
+        'timeout' => $waitForResponse ? 5 : self::DAEMON_REQUEST_TIMEOUT,
         'user-agent' => 'MailPoet Cron',
       ]
     );

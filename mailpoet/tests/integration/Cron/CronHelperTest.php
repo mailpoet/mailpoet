@@ -34,7 +34,7 @@ class CronHelperTest extends \MailPoetTest {
 
   public function testItDefinesConstants() {
     expect(CronHelper::DAEMON_EXECUTION_LIMIT)->equals(20);
-    expect(CronHelper::DAEMON_REQUEST_TIMEOUT)->equals(5);
+    expect(CronHelper::DAEMON_REQUEST_TIMEOUT)->equals(0.0001);
     expect(CronHelper::DAEMON_SETTING)->equals('cron_daemon');
   }
 
@@ -159,11 +159,11 @@ class CronHelperTest extends \MailPoetTest {
         'run_start' => null,
       ],
       [
-        'run_access' => $time - 4,
+        'run_access' => $time - 0.00001,
         'run_start' => null,
       ],
       [
-        'run_access' => $time - 4,
+        'run_access' => $time - 0.00001,
         'run_start' => $time - 10,
       ],
     ];
