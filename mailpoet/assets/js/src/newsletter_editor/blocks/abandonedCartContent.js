@@ -5,7 +5,7 @@
  * block settings view.
  */
 import Backbone from 'backbone';
-import { Radio } from 'backbone.radio';
+import Radio from 'backbone.radio';
 import _ from 'underscore';
 import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
