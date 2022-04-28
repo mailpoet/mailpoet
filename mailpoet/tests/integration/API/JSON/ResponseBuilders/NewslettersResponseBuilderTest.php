@@ -6,6 +6,7 @@ use Codeception\Util\Stub;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatistics;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
@@ -41,7 +42,8 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
     ]);
     $newsletterRepository = Stub::make(NewslettersRepository::class);
     $newsletterUrl = $this->diContainer->get(Url::class);
-    $responseBuilder = new NewslettersResponseBuilder($em, $newsletterRepository, $newsletterStatsRepository, $newsletterUrl);
+    $sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $responseBuilder = new NewslettersResponseBuilder($em, $newsletterRepository, $newsletterStatsRepository, $newsletterUrl, $sendingQueuesRepository);
     $response = $responseBuilder->build($newsletter, [
       NewslettersResponseBuilder::RELATION_CHILDREN_COUNT,
       NewslettersResponseBuilder::RELATION_TOTAL_SENT,
