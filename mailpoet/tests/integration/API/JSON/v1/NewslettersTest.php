@@ -33,6 +33,7 @@ use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
@@ -107,7 +108,8 @@ class NewslettersTest extends \MailPoetTest {
             $this->diContainer->get(EntityManager::class),
             $this->makeEmpty(WCHelper::class)
           ),
-          $this->diContainer->get(Url::class)
+          $this->diContainer->get(Url::class),
+          $this->diContainer->get(SendingQueuesRepository::class)
         ),
       ]
     );
