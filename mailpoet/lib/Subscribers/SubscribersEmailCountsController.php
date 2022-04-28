@@ -126,6 +126,6 @@ class SubscribersEmailCountsController {
 
     $subscribersInRange = $result->fetchAllAssociative();
 
-    return [$subscribersInRange[0]['count'], $subscribersInRange[0]['max']];
+    return [(int)$subscribersInRange[0]['count'], (int)$subscribersInRange[0]['max']];
   }
 }
