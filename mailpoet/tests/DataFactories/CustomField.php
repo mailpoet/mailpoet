@@ -40,6 +40,11 @@ class CustomField {
     return $this;
   }
 
+  public function withType(string $type): CustomField {
+    $this->data['type'] = $type;
+    return $this;
+  }
+
   public function create(): CustomFieldEntity {
     $customField = $this->repository->createOrUpdate($this->data);
     foreach ($this->data['subscribers'] as $subscriberData) {
