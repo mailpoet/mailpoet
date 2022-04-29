@@ -10,6 +10,7 @@ import { registerBlockType } from '@wordpress/blocks';
 import { registerButton } from './blocks/button';
 import { registerColumns } from './blocks/columns';
 import { registerColumn } from './blocks/column';
+import { registerLink } from './blocks/social_link';
 import { registerSpacer } from './blocks/spacer';
 
 import {
@@ -33,6 +34,7 @@ registerButton();
 registerColumns();
 registerColumn();
 registerSpacer();
+registerLink();
 
 // Add Custom Block Type
 registerBlockType(headerBlockName, headerBlockSettings);
