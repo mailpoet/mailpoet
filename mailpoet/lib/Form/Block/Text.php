@@ -34,8 +34,10 @@ class Text {
   public function render(array $block, array $formSettings): string {
     $type = 'text';
     $automationId = ' ';
+    $autocomplete = 'on';
     if ($block['id'] === 'email') {
       $type = 'email';
+      $autocomplete = 'email';
     }
 
     if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
@@ -54,7 +56,7 @@ class Text {
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
-    $html .= '<input type="' . $type . '" class="mailpoet_text" ';
+    $html .= '<input type="' . $type . '" autocomplete="' . $autocomplete . '" class="mailpoet_text" ';
 
     $html .= 'name="data[' . $name . ']" ';
 
