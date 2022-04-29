@@ -235,12 +235,7 @@ class GutenbergFormatMapper {
    * @return string
    */
   private function mapDivider(array $block): string {
-    $divider = new Divider($block);
-    return strtr('<!-- wp:separator %attributes --><hr class="wp-block-separator %classNames"/><!-- /wp:separator -->', [
-        '%attributes' => \json_encode($divider->getAttributes()),
-        '%classNames' => $divider->getClassNames(),
-      ]
-    );
+    return (new Divider($block))->getBlockMarkup();
   }
 
   private function mapSpacer(array $block): string {

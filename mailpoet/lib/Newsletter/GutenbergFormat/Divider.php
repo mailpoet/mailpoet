@@ -2,24 +2,22 @@
 
 namespace MailPoet\Newsletter\GutenbergFormat;
 
-class Divider {
-
-  /*** @var array $styles */
-  private $styles;
-
-  public function __construct(
-    array $block
-  ) {
-    $this->styles = $block['styles']['block'];
+class Divider extends GutenbergFormatter {
+  public function getBlockMarkup(): string {
+    return strtr('<!-- wp:separator %attributes --><hr class="wp-block-separator %classNames"/><!-- /wp:separator -->', [
+        '%attributes' => \json_encode($this->getAttributes()),
+        '%classNames' => $this->getClassNames(),
+      ]
+    );
   }
 
-  public function getAttributes(): array {
+  private function getAttributes(): array {
     return [
         'className' => $this->getStyleClassName(),
     ];
   }
 
-  public function getClassNames(): string {
+  private function getClassNames(): string {
     // @Todo: extract the following classNames from $this->styles
     return implode(" ", [
       'has-text-color',
