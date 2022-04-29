@@ -1108,11 +1108,6 @@ parameters:
 
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
-			count: 2
-			path: ../../lib/Subscribers/SubscribersEmailCountsController.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
 			count: 3
 			path: ../../lib/Subscribers/Statistics/SubscriberStatisticsRepository.php
 
