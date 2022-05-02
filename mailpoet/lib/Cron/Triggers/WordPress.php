@@ -4,6 +4,7 @@ namespace MailPoet\Cron\Triggers;
 
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Supervisor;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\Beamer as BeamerWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
@@ -45,8 +46,8 @@ class WordPress {
   /** @var CronHelper */
   private $cronHelper;
 
-  /** @var MailPoet */
-  private $mailpoetTrigger;
+  /** @var Supervisor  */
+  private $supervisor;
 
   /** @var SettingsController */
   private $settings;
@@ -62,13 +63,13 @@ class WordPress {
 
   public function __construct(
     CronHelper $cronHelper,
-    MailPoet $mailpoetTrigger,
+    Supervisor $supervisor,
     SettingsController $settings,
     ServicesChecker $serviceChecker,
     WPFunctions $wp,
     EntityManager $entityManager
   ) {
-    $this->mailpoetTrigger = $mailpoetTrigger;
+    $this->supervisor = $supervisor;
     $this->settings = $settings;
     $this->wp = $wp;
     $this->cronHelper = $cronHelper;
@@ -80,9 +81,13 @@ class WordPress {
     if (!$this->checkRunInterval()) {
       return false;
     }
-    return ($this->checkExecutionRequirements()) ?
-      $this->mailpoetTrigger->run() :
-      self::stop();
+    if (!$this->checkExecutionRequirements()) {
+      $this->stop();
+      return;
+    }
+
+    $this->supervisor->init();
+    return $this->supervisor->checkDaemon();
   }
 
   private function checkRunInterval() {
