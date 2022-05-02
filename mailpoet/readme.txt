@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.6
 Tested up to: 5.9
-Stable tag: 3.88.1
+Stable tag: 3.88.2
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.88.2 - 2022-05-02 =
+* Changed: minimum PHP version bumped to 7.2.5.
 
 = 3.88.1 - 2022-04-28 =
 * Fixed: Abandoned Cart Email cannot be edited.
