@@ -30,28 +30,12 @@ class AdvancedSettingsCest {
   public function toggleTaskScheduler(\AcceptanceTester $i) {
     $i->wantTo('Toggle the newsletter task schedule between cron options');
     $chooseWordPressCron = '[data-automation-id="wordress_cron_radio"]';
-    $chooseMailPoetCron = '[data-automation-id="mailpoet_cron_radio"]';
     $chooseLinuxCron = '[data-automation-id="linux_cron_radio"]';
     $systemInfoWordPressCron = "Task Scheduler method: WordPress";
-    $systemInfoMailPoetCron = "Task Scheduler method: MailPoet";
     $systemInfoLinuxCron = "Task Scheduler method: Linux Cron";
     $submitButton = '[data-automation-id="settings-submit-button"]';
     $successMessage = "Settings saved";
-    //switch to MailPoet cron
     $i->login();
-    $i->amOnMailPoetPage('Settings');
-    $i->click('[data-automation-id="settings-advanced-tab"]');
-    $i->waitForElement($chooseMailPoetCron);
-    $i->click($chooseMailPoetCron);
-    $i->click($submitButton);
-    $i->waitForText($successMessage);
-    $i->waitForElement($chooseMailPoetCron);
-    //check System Info to make sure the value changed
-    $i->amOnMailPoetPage('Help');
-    $i->waitForText('Knowledge Base');
-    $i->click('System Info');
-    $i->waitForText('The information below is useful');
-    $i->waitForText($systemInfoMailPoetCron);
     //switch to linux cron
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="settings-advanced-tab"]');
