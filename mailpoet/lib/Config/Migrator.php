@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Cron\CronTrigger;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Models\Newsletter;
@@ -92,6 +93,7 @@ class Migrator {
     $this->migratePurchasedInCategoryDynamicFilters();
     $this->migrateEmailActionsFilters();
     $this->updateDefaultInactiveSubscriberTimeRange();
+    $this->disableMailPoetCronTrigger();
     return $output;
   }
 
@@ -185,6 +187,14 @@ class Migrator {
       'KEY task_id (task_id)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  public function disableMailPoetCronTrigger() {
+    $method = $this->settings->get(CronTrigger::SETTING_NAME . '.method');
+    if ($method !== 'MailPoet') {
+      return;
+    }
+    $this->settings->set(CronTrigger::SETTING_NAME . '.method', CronTrigger::METHOD_WORDPRESS);
   }
 
   public function scheduledTaskSubscribers() {
