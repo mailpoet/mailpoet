@@ -220,7 +220,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 == Changelog ==
 
 = 3.88.2 - 2022-05-02 =
-* Changed: minimum PHP version bumped to 7.2.5.
+* Improved: show error message when trying to send confirmation email with signup confirmation disabled;
+* Changed: minimum PHP version bumped to 7.2.5;
+* Fixed: drafts and future posts can't be included in newsletter.
 
 = 3.88.1 - 2022-04-28 =
 * Fixed: Abandoned Cart Email cannot be edited.
