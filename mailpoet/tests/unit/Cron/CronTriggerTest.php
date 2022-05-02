@@ -11,10 +11,8 @@ use MailPoet\Settings\SettingsController;
 class CronTriggerTest extends \MailPoetUnitTest {
   public function testItDefinesConstants() {
     expect(CronTrigger::METHOD_LINUX_CRON)->same('Linux Cron');
-    expect(CronTrigger::METHOD_MAILPOET)->same('MailPoet');
     expect(CronTrigger::METHOD_WORDPRESS)->same('WordPress');
     expect(CronTrigger::METHODS)->equals([
-      'mailpoet' => 'MailPoet',
       'wordpress' => 'WordPress',
       'linux_cron' => 'Linux Cron',
       'none' => 'Disabled',
@@ -41,24 +39,22 @@ class CronTriggerTest extends \MailPoetUnitTest {
 
   public function testItIgnoresExceptionsThrownFromCronTriggerMethods() {
     $settingsMock = Stub::makeEmpty(SettingsController::class, [
-      'get' => CronTrigger::METHOD_MAILPOET,
+      'get' => CronTrigger::METHOD_WORDPRESS,
     ]);
-    $mailpoetTrigger = $this->makeEmpty(MailPoet::class, [
+    $wordPressTrigger = $this->makeEmpty(WordPress::class, [
       'run' => function () {
         throw new \Exception();
       },
     ]);
-    $cronTrigger = $this->createCronTrigger($settingsMock, $mailpoetTrigger);
+    $cronTrigger = $this->createCronTrigger($settingsMock, $wordPressTrigger);
     expect($cronTrigger->init())->null();
   }
 
   private function createCronTrigger(
     SettingsController $settings,
-    MailPoet $mailpoetTrigger = null,
     WordPress $wordpressTrigger = null
   ) {
-    $mailpoetTrigger = $mailpoetTrigger ?: $this->make(MailPoet::class, ['run' => true]);
     $wordpressTrigger = $wordpressTrigger ?: $this->make(WordPress::class, ['run' => true]);
-    return new CronTrigger($mailpoetTrigger, $wordpressTrigger, $settings);
+    return new CronTrigger($wordpressTrigger, $settings);
   }
 }
