@@ -1,5 +1,3 @@
-import ReactStringReplace from 'react-string-replace';
-
 import { t } from 'common/functions';
 import { Input } from 'common/form/input/input';
 import { Radio } from 'common/form/radio/radio';
@@ -41,33 +39,6 @@ export function TaskScheduler() {
           />
           <label htmlFor="cron_trigger-method-wordpress">
             {t('websiteVisitors')}
-          </label>
-        </div>
-        <div className="mailpoet-settings-inputs-row">
-          <Radio
-            id="cron_trigger-method-mailpoet"
-            value="MailPoet"
-            checked={method === 'MailPoet'}
-            onCheck={setMethod}
-            automationId="mailpoet_cron_radio"
-          />
-          <label htmlFor="cron_trigger-method-mailpoet">
-            {ReactStringReplace(
-              t('mailpoetScript'),
-              /\[link\](.*?)\[\/link\]/,
-              (text) => (
-                <a
-                  className="mailpoet-link"
-                  key={text}
-                  href="https://kb.mailpoet.com/article/131-hosts-which-mailpoet-task-scheduler-wont-work"
-                  data-beacon-article="57ce0b05c6979108399a0456"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {text}
-                </a>
-              ),
-            )}
           </label>
         </div>
         <div className="mailpoet-settings-inputs-row">
