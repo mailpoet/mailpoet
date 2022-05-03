@@ -1,7 +1,7 @@
 <?php
 
 $tools = [
-  'https://github.com/composer/composer/releases/download/2.2.9/composer.phar' => 'composer.phar',
+  'https://github.com/composer/composer/releases/download/2.3.5/composer.phar' => 'composer.phar',
   'https://github.com/humbug/php-scoper/releases/download/0.17.2/php-scoper.phar' => 'php-scoper.phar',
   'https://github.com/nette/tracy/releases/download/v2.9.1/tracy.phar' => 'tracy.phar',
 ];
