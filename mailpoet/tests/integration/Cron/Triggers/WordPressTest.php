@@ -9,17 +9,15 @@ use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\SendingQueue\Migration as MigrationWorker;
 use MailPoet\Cron\Workers\SubscribersStatsReport;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SettingEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class WordPressTest extends \MailPoetTest {
 
@@ -39,9 +37,9 @@ class WordPressTest extends \MailPoetTest {
     $this->settings->set('cron_trigger', [
       'method' => 'none',
     ]);
-    ScheduledTask::where('type', Beamer::TASK_TYPE)->deleteMany();
+
     $future = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 600);
-    $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED, $future);
+    $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     $this->_addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     $this->wordpressTrigger = $this->diContainer->get(WordPress::class);
   }
@@ -53,7 +51,7 @@ class WordPressTest extends \MailPoetTest {
     });
     $currentTime = time();
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $currentTime);
-    $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
+    $this->_addQueue(SendingQueueEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->run())->equals(false);
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->equals($currentTime);
     WPFunctions::get()->removeAllFilters('mailpoet_cron_trigger_wordpress_run_interval');
@@ -66,7 +64,7 @@ class WordPressTest extends \MailPoetTest {
     });
     $timeInThePast = (time() - $runInterval) - 1;
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $timeInThePast);
-    $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
+    $this->_addQueue(SendingQueueEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->run())->notEmpty();
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->greaterThan($timeInThePast);
     WPFunctions::get()->removeAllFilters('mailpoet_cron_trigger_wordpress_run_interval');
@@ -75,7 +73,7 @@ class WordPressTest extends \MailPoetTest {
   public function testItCanResetRunInterval() {
     $currentTime = time();
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $currentTime);
-    $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
+    $this->_addQueue(SendingQueueEntity::STATUS_SCHEDULED);
     WordPress::resetRunInterval();
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->isEmpty();
     expect($this->wordpressTrigger->run())->notEmpty();
@@ -83,7 +81,7 @@ class WordPressTest extends \MailPoetTest {
 
   public function testItRequiresScheduledQueuesToExecute() {
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
-    $this->_addQueue($status = SendingQueue::STATUS_SCHEDULED);
+    $this->_addQueue(SendingQueueEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
@@ -123,25 +121,24 @@ class WordPressTest extends \MailPoetTest {
 
   public function testItExecutesWhenMigrationIsDue() {
     $this->_enableMigration();
-    $this->_addScheduledTask(MigrationWorker::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
+    $this->_addScheduledTask(MigrationWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenAuthorizedEmailsCheckIsDue() {
     $this->_enableMigration();
-    $this->_addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
+    $this->_addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenBeamerTaskIsDue() {
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    $this->_addScheduledTask(Beamer::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
+    $this->_addScheduledTask(Beamer::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItDoesNotExecuteWhenMigrationIsCompleted() {
     $this->_enableMigration();
-    $this->_addScheduledTask(MigrationWorker::TASK_TYPE, $status = ScheduledTask::STATUS_COMPLETED);
+    $this->_addScheduledTask(MigrationWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
@@ -153,7 +150,7 @@ class WordPressTest extends \MailPoetTest {
         'interval' => SettingsController::DEFAULT_SENDING_FREQUENCY_INTERVAL,
       ],
     ]);
-    $this->_addScheduledTask(BounceWorker::TASK_TYPE, $status = ScheduledTask::STATUS_SCHEDULED);
+    $this->_addScheduledTask(BounceWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
@@ -242,7 +239,7 @@ class WordPressTest extends \MailPoetTest {
       [
         'newsletter_id' => 1,
         'status' => $status,
-        'scheduled_at' => ($status === SendingQueue::STATUS_SCHEDULED) ?
+        'scheduled_at' => ($status === SendingQueueEntity::STATUS_SCHEDULED) ?
           Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')) :
           null,
       ]
@@ -251,18 +248,16 @@ class WordPressTest extends \MailPoetTest {
   }
 
   public function _addScheduledTask($type, $status, $scheduledAt = null) {
-    if (!$scheduledAt && $status === ScheduledTask::STATUS_SCHEDULED) {
+    if (!$scheduledAt && $status === ScheduledTaskEntity::STATUS_SCHEDULED) {
       $scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     }
-    $task = ScheduledTask::create();
-    $task->hydrate(
-      [
-        'type' => $type,
-        'status' => $status,
-        'scheduled_at' => $scheduledAt,
-      ]
-    );
-    return $task->save();
+
+    $task = new ScheduledTaskEntity();
+    $task->setType($type);
+    $task->setStatus($status);
+    $task->setScheduledAt($scheduledAt);
+    $this->entityManager->persist($task);
+    $this->entityManager->flush();
   }
 
   public function _enableMigration() {
@@ -274,8 +269,8 @@ class WordPressTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->diContainer->get(SettingsRepository::class)->truncate();
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    $this->truncateEntity(SettingEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
   }
 }
