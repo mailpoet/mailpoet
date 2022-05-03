@@ -25,6 +25,13 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  public function cleanupCachedFiles() {
+    $this->say('Cleaning up generated folder.');
+    $this->_exec('rm -rf ' . __DIR__ . '/generated/*');
+    $this->say('Cleaning up PHPStan cache.');
+    $this->_exec('rm -rf ' . __DIR__ . '/temp/*');
+  }
+
   public function update() {
     return $this->taskExecStack()
       ->stopOnFail()
