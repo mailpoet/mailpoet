@@ -22,6 +22,7 @@ class RoboFile extends \Robo\Tasks {
       ->exec('npm ci --prefer-offline')
       ->exec('cd .. && npm ci --prefer-offline')
       ->exec('cd ../eslint-config && npm ci --prefer-offline')
+      ->addCode([$this, 'cleanupCachedFiles'])
       ->run();
   }
 
