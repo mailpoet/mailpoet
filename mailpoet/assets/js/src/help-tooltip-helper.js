@@ -14,5 +14,3 @@ export const MailPoetHelpTooltip = {
     );
   },
 };
-
-export { Tooltip };

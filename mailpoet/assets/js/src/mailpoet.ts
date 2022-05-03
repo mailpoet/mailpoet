@@ -8,7 +8,7 @@ import { MailPoetNotice } from './notice';
 // side effect - extends MailPoet object in initializeMixpanelWhenLoaded
 import { MailPoetForceTrackEvent, MailPoetTrackEvent } from './analytics_event';
 import { MailPoetNum } from './num';
-import { MailPoetHelpTooltip } from './help-tooltip';
+import { MailPoetHelpTooltip } from './help-tooltip-helper';
 import { MailPoetIframe } from './iframe';
 
 // A placeholder for MailPoet object
