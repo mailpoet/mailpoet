@@ -86,7 +86,10 @@ class MailPoetMapper {
           $message .= ' ' . $e->getMessage();
         }
         break;
+      case API::RESPONSE_CODE_INTERNAL_SERVER_ERROR:
+      case API::RESPONSE_CODE_BAD_GATEWAY:
       case API::RESPONSE_CODE_TEMPORARY_UNAVAILABLE:
+      case API::RESPONSE_CODE_GATEWAY_TIMEOUT:
         $message = __('Email service is temporarily not available, please try again in a few minutes.', 'mailpoet');
         $retryInterval = self::TEMPORARY_UNAVAILABLE_RETRY_INTERVAL;
         break;
