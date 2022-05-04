@@ -24,6 +24,16 @@ chown www-data:www-data wp-content/plugins
 chown www-data:www-data wp-content/uploads
 chmod 755 wp-content/plugins
 chmod -R 777 wp-content/uploads
+chmod -R 777 /mailhog-data
+
+# deleting configs in case are set in previous run
+wp config delete MULTISITE > /dev/null 2>&1
+wp config delete WP_ALLOW_MULTISITE > /dev/null 2>&1
+wp config delete SUBDOMAIN_INSTALL > /dev/null 2>&1
+wp config delete DOMAIN_CURRENT_SITE > /dev/null 2>&1
+wp config delete PATH_CURRENT_SITE > /dev/null 2>&1
+wp config delete SITE_ID_CURRENT_SITE > /dev/null 2>&1
+wp config delete BLOG_ID_CURRENT_SITE > /dev/null 2>&1
 
 # disable automatic updates
 wp config set WP_AUTO_UPDATE_CORE false --raw
@@ -33,13 +43,14 @@ mysqladmin --host=mysql --user=root --password=wordpress drop wordpress --force
 mysqladmin --host=mysql --user=root --password=wordpress create wordpress --force
 
 # install WordPress
-WP_CORE_INSTALL_PARAMS="--url=test.local --title=tests --admin_user=admin --admin_email=test@test.com --admin_password=password --skip-email"
+WP_CORE_INSTALL_PARAMS="--url=$HTTP_HOST --title=tests --admin_user=admin --admin_email=test@test.com --admin_password=password --skip-email"
 if [[ -z "$MULTISITE" || "$MULTISITE" -eq "0" ]]; then
   echo 'Installing WordPress (single site mode)'
   wp core install $WP_CORE_INSTALL_PARAMS
 else
   echo 'Installing WordPress (multisite mode)'
   wp core multisite-install $WP_CORE_INSTALL_PARAMS
+  wp site create --slug=$WP_TEST_MULTISITE_SLUG
 fi
 
 # Load Composer dependencies
@@ -51,6 +62,8 @@ if [[ -z "${SKIP_DEPS}" ]]; then
   cd - >/dev/null
 fi
 
+# extra plugins are not supported for integration tests yest
+if [[ $TEST_TYPE == "acceptance" ]]; then
 # Install WooCommerce
 if [[ ! -d "/wp-core/wp-content/plugins/woocommerce" ]]; then
   cd /wp-core/wp-content/plugins
@@ -105,6 +118,13 @@ if [[ ! -d "/wp-core/wp-content/plugins/woo-gutenberg-products-block" ]]; then
   unzip -q -o "$WOOCOMMERCE_BLOCKS_ZIP" -d /wp-core/wp-content/plugins/
 fi
 
+# activate all plugins which source code want to access in tests runtime
+wp plugin activate woocommerce
+wp plugin activate woocommerce-subscriptions
+wp plugin activate woocommerce-memberships
+wp plugin activate woo-gutenberg-products-block
+fi # end of check for enabling extra plugins
+
 # add configuration
 CONFIG=''
 CONFIG+="define('WP_DEBUG', true);\n"
@@ -119,12 +139,6 @@ CONFIG+="if (!isset(\$_SERVER['SERVER_NAME'])) \$_SERVER['SERVER_NAME'] = '';\n"
 
 sed -i "s/define( *'WP_DEBUG', false *);/$CONFIG/" /wp-core/wp-config.php
 
-# activate all plugins which source code want to access in tests runtime
-wp plugin activate woocommerce
-wp plugin activate woocommerce-subscriptions
-wp plugin activate woocommerce-memberships
-wp plugin activate woo-gutenberg-products-block
-
 # activate theme
 wp theme activate twentytwentyone
 
@@ -132,14 +146,18 @@ if [[ $CIRCLE_JOB == *"_oldest"* ]]; then
   wp theme activate twentynineteen
 fi
 
-# print info about installed plugins
-wp plugin get woocommerce
-wp plugin get woocommerce-subscriptions
-wp plugin get woocommerce-memberships
-wp plugin get woo-gutenberg-products-block
-
+if [[ $TEST_TYPE == "acceptance" ]]; then
+  # print info about installed plugins
+  wp plugin get woocommerce
+  wp plugin get woocommerce-subscriptions
+  wp plugin get woocommerce-memberships
+  wp plugin get woo-gutenberg-products-block
+fi
 # activate MailPoet
 wp plugin activate mailpoet/mailpoet.php
+if [[ $MULTISITE == "1" ]]; then
+  wp plugin activate mailpoet/mailpoet.php --url=http://test.local/php7_multisite/
+fi
 
 if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
   # Copy MailPoet Premium to plugin path
@@ -150,12 +168,11 @@ fi
 
 cd /wp-core/wp-content/plugins/mailpoet
 # Remove Doctrine Annotations (no need since generated metadata are packed)
-if [[ $CIRCLE_JOB ]]; then
+if [[ $TEST_TYPE == "acceptance" ]] && [[ $CIRCLE_JOB ]]; then
   rm -rf ./vendor-prefixed/doctrine/annotations
   ./tools/vendor/composer.phar dump-autoload
 fi
-
-/project/vendor/bin/codecept run acceptance $@
+/project/vendor/bin/codecept run $TEST_TYPE $@
 exitcode=$?
 
 exit $exitcode
