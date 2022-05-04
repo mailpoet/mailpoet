@@ -184,4 +184,19 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error->getMessage())->stringContainsString("You’ll soon be able to send once our team reviews your account.");
   }
 
+
+  public function testGetUnavailableServiceError() {
+    $apiResult = [
+      'code' => API::RESPONSE_CODE_GATEWAY_TIMEOUT,
+      'status' => API::SENDING_STATUS_SEND_ERROR,
+      'message' => 'Service is temporary unavailable',
+    ];
+
+    $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
+    expect($error)->isInstanceOf(MailerError::class);
+    expect($error->getRetryInterval())->equals(MailPoetMapper::TEMPORARY_UNAVAILABLE_RETRY_INTERVAL);
+    expect($error->getOperation())->equals(MailerError::OPERATION_SEND);
+    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    expect($error->getMessage())->equals('Email service is temporarily not available, please try again in a few minutes.');
+  }
 }
