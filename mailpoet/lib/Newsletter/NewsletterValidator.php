@@ -37,7 +37,7 @@ class NewsletterValidator {
       $this->validateReEngagementRequirements($newsletterEntity);
       $this->validateAutomaticLatestContentRequirements($newsletterEntity);
     } catch (ValidationException $exception) {
-      return __($exception->getMessage(), 'mailpoet');
+      return $exception->getMessage();
     }
     return null;
   }
@@ -51,12 +51,12 @@ class NewsletterValidator {
     $hasUnsubscribeLink = strpos($content, '[link:subscription_unsubscribe]') !== false;
 
     if (!$hasUnsubscribeLink && !$hasUnsubscribeUrl) {
-      throw new ValidationException('All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.');
+      throw new ValidationException(__('All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.', 'mailpoet'));
     }
   }
 
   private function validateBody(NewsletterEntity $newsletterEntity): void {
-    $emptyBodyErrorMessage = 'Poet, please add prose to your masterpiece before you send it to your followers.';
+    $emptyBodyErrorMessage = __('Poet, please add prose to your masterpiece before you send it to your followers.', 'mailpoet');
     $content = $newsletterEntity->getContent();
 
     if ($content === '') {
@@ -75,11 +75,11 @@ class NewsletterValidator {
     }
 
     if (strpos($newsletterEntity->getContent(), '[link:subscription_re_engage_url]') === false) {
-      throw new ValidationException('A re-engagement email must include a link with [link:subscription_re_engage_url] shortcode.');
+      throw new ValidationException(__('A re-engagement email must include a link with [link:subscription_re_engage_url] shortcode.', 'mailpoet'));
     }
 
     if (!$this->trackingConfig->isEmailTrackingEnabled()) {
-      throw new ValidationException('Re-engagement emails are disabled because open and click tracking is disabled in MailPoet → Settings → Advanced.');
+      throw new ValidationException(__('Re-engagement emails are disabled because open and click tracking is disabled in MailPoet → Settings → Advanced.', 'mailpoet'));
     }
   }
 
@@ -92,13 +92,13 @@ class NewsletterValidator {
       strpos($content, '"type":"automatedLatestContent"') === false && 
       strpos($content, '"type":"automatedLatestContentLayout"') === false
     ) {
-      throw new ValidationException('Please add an “Automatic Latest Content” widget to the email from the right sidebar.');
+      throw new ValidationException(__('Please add an “Automatic Latest Content” widget to the email from the right sidebar.', 'mailpoet'));
     }
   }
 
   private function validateSubscriberLimit(): void {
     if ($this->subscribersFeature->check()) {
-      throw new ValidationException('Subscribers limit reached.');
+      throw new ValidationException(__('Subscribers limit reached.', 'mailpoet'));
     }
   }
 }
