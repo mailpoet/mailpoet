@@ -99,6 +99,9 @@ jQuery(($) => {
           if (response.meta && response.meta.refresh_captcha) {
             updateCaptcha();
           }
+          if (window.grecaptcha && formData.recaptchaWidgetId) {
+            window.grecaptcha.reset(formData.recaptchaWidgetId);
+          }
           form
             .find('.mailpoet_validate_error')
             .html(response.errors.map((error) => error.message).join('<br />'))
