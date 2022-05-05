@@ -15,7 +15,6 @@ use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
@@ -76,7 +75,6 @@ class SendingQueueTest extends \MailPoetTest {
         'check' => true,
       ])
     ]);
-
     $res = $sendingQueue->add(['newsletter_id' => $this->newsletter->getId()]);
     expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
     $res = $sendingQueue->resume(['newsletter_id' => $this->newsletter->getId()]);
@@ -129,32 +127,15 @@ class SendingQueueTest extends \MailPoetTest {
     expect($scheduled->format('Y-m-d H:i:s'))->equals('2018-11-11 11:00:00');
   }
 
-  public function testItRejectsNewsletterWithoutUnsubscribeLink() {
-    $newsletter = (new Newsletter())->withBody([
-        'content' =>
-          [
-            'type' => 'container',
-            'columnLayout' => false,
-            'orientation' => 'vertical',
-            'blocks' => [
-              [
-                'type' => 'header',
-                'link' => '',
-                'text' => 'Hello!'
-              ]
-            ]
-          ]
-        ]
-      )->create();
+  public function testItRejectsInvalidNewsletters() {
+    $newsletter = (new Newsletter())->create();
     $sendingQueue = $this->getServiceWithOverrides(SendingQueueAPI::class, [
-      'newsletterValidator' => $this->getServiceWithOverrides(NewsletterValidator::class, [
-        'bridge' => Stub::make(Bridge::class, ['isMailpoetSendingServiceEnabled' => true])
-      ])
+      'newsletterValidator' => Stub::make(NewsletterValidator::class, ['validate' => 'some error'])
     ]);
     $response = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
     $response = $response->getData();
     expect($response['errors'][0])->array();
-    expect($response['errors'][0]['message'])->stringContainsString('Unsubscribe');
+    expect($response['errors'][0]['message'])->stringContainsString('some error');
     expect($response['errors'][0]['error'])->stringContainsString('bad_request');
   }
 
