@@ -1506,11 +1506,6 @@ parameters:
 			path: ../../tests/acceptance/Subscribers/SubscriberCookieCest.php
 
 		-
-			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Entities\\\\NewsletterEntity\\:\\:setBody\\(\\) expects array\\|null, mixed given\\.$#"
-			count: 1
-			path: ../../tests/integration/API/JSON/v1/SendingQueueTest.php
-
-		-
 			message: "#^Parameter \\#1 \\$needle of method Codeception\\\\Verify\\\\Verify\\:\\:stringContainsString\\(\\) expects string, mixed given\\.$#"
 			count: 4
 			path: ../../tests/integration/API/JSON/v1/ServicesTest.php
