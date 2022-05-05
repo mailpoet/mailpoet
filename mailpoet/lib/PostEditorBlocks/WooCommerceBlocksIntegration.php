@@ -5,12 +5,15 @@ namespace MailPoet\PostEditorBlocks;
 use Automattic\WooCommerce\Blocks\Domain\Services\ExtendRestApi;
 use Automattic\WooCommerce\Blocks\Package;
 use Automattic\WooCommerce\Blocks\StoreApi\Schemas\CheckoutSchema;
+use Automattic\WooCommerce\StoreApi\Schemas\ExtendSchema;
+use Automattic\WooCommerce\StoreApi\StoreApi;
 use MailPoet\Config\Env;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Subscriber;
 use MailPoet\Segments\WooCommerce as WooSegment;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -30,18 +33,23 @@ class WooCommerceBlocksIntegration {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var WooHelper  */
+  private $wooHelper;
+
   public function __construct(
     WPFunctions $wp,
     SettingsController $settings,
     WooCommerceSubscription $woocommerceSubscription,
     WooSegment $wooSegment,
-    SubscribersRepository $subscribersRepository
+    SubscribersRepository $subscribersRepository,
+    WooHelper $wooHelper
   ) {
     $this->wp = $wp;
     $this->settings = $settings;
     $this->woocommerceSubscription = $woocommerceSubscription;
     $this->wooSegment = $wooSegment;
     $this->subscribersRepository = $subscribersRepository;
+    $this->wooHelper = $wooHelper;
   }
 
   public function init() {
@@ -49,8 +57,21 @@ class WooCommerceBlocksIntegration {
       'woocommerce_blocks_checkout_block_registration',
       [$this, 'registerCheckoutFrontendBlocks']
     );
+    $addDataAttributesToBlockHook = '__experimental_woocommerce_blocks_checkout_update_order_from_request';
+    $hooksVersionMatrix = [
+      '7.2.0' => 'woocommerce_store_api_checkout_update_order_from_request',
+      '6.3.0' => 'woocommerce_blocks_checkout_update_order_from_request',
+    ];
+    foreach ($hooksVersionMatrix as $version => $hook) {
+      if (!$this->wooHelper->isWooCommerceBlocksActive($version)) {
+        continue;
+      }
+
+      $addDataAttributesToBlockHook = $hook;
+      break;
+    }
     $this->wp->addAction(
-      '__experimental_woocommerce_blocks_checkout_update_order_from_request',
+      $addDataAttributesToBlockHook,
       [$this, 'processCheckoutBlockOptin'],
       10,
       2
@@ -92,7 +113,10 @@ class WooCommerceBlocksIntegration {
     if (!$this->settings->get('woocommerce.optin_on_checkout.enabled', false)) {
       return;
     }
-    $extend = Package::container()->get(ExtendRestApi::class);
+
+    $extend = $this->wooHelper->isWooCommerceBlocksActive('7.2') ?
+      StoreApi::container()->get(ExtendSchema::class) :
+      Package::container()->get(ExtendRestApi::class);
     $extend->register_endpoint_data(
       [
         'endpoint' => CheckoutSchema::IDENTIFIER,
