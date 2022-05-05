@@ -330,13 +330,15 @@ class WordPress {
         count(*) as count,
         case when scheduled_at <= :now then :past else :future end as scheduled_in
       from $scheduledTasksTableName
-      where deleted_at is null
+      where deleted_at is null AND (status != :statusCompleted OR status IS NULL OR `type` = :typeMigration)
       group by type, status, scheduled_in";
 
     $stmt = $this->entityManager->getConnection()->prepare($sql);
     $stmt->bindValue('now', date('Y-m-d H:i:s', $this->wp->currentTime('timestamp')));
     $stmt->bindValue('past', self::SCHEDULED_IN_THE_PAST);
     $stmt->bindValue('future', self::SCHEDULED_IN_THE_FUTURE);
+    $stmt->bindValue('statusCompleted', ScheduledTaskEntity::STATUS_COMPLETED);
+    $stmt->bindValue('typeMigration', MigrationWorker::TASK_TYPE);
     $rows = $stmt->executeQuery()->fetchAllAssociative();
 
     $this->tasksCounts = [];
