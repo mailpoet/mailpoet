@@ -139,20 +139,6 @@ class SendingQueueTest extends \MailPoetTest {
     expect($response['errors'][0]['error'])->stringContainsString('bad_request');
   }
 
-  public function testItRejectsNewslettersWithoutContentBlocks() {
-    $newsletter = new NewsletterEntity();
-    $newsletter->setSubject('subject');
-    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
-    $newsletter->setBody(['content' => ['type' => 'container', 'columnLayout' => false, 'orientation' => 'vertical']]);
-    $this->entityManager->persist($newsletter);
-    $this->entityManager->flush();
-    $sendingQueue = $this->diContainer->get(SendingQueueAPI::class);
-    $response = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
-    $result = $response->getData();
-    expect($result['errors'][0])->array();
-    expect($result['errors'][0]['message'])->stringContainsString('Poet, please add prose to your masterpiece before you send it to your followers');
-  }
-
   private function _createOrUpdateNewsletterOptions(NewsletterEntity $newsletter, $newsletterType, $options) {
     $newsletterOptionFieldRepository = $this->diContainer->get(NewsletterOptionFieldsRepository::class);
     $newsletterOptionRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
