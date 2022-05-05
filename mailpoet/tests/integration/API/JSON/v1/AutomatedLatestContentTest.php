@@ -36,7 +36,8 @@ class AutomatedLatestContentTest extends \MailPoetTest {
   }
 
   public function testItGetTerms() {
-    $response = $this->endpoint->getTerms();
+
+    $response = $this->endpoint->getTerms(['taxonomies' => ['category']]);
 
     $this->assertInstanceOf(SuccessResponse::class, $response);
     $this->assertCount(1, $response->data);
