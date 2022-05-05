@@ -175,7 +175,7 @@ class NewslettersTest extends \MailPoetTest {
     $wp = Stub::make(new WPFunctions, [
       'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
     ]);
-    $this->endpoint = $this->createNewslettersEndpointWithMocks([
+    $this->endpoint = $this->getServiceWithOverrides(Newsletters::class, [
       'wp' => $wp,
       'cronHelper' => $this->cronHelper,
     ]);
@@ -225,7 +225,7 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   public function testItReturnsErrorIfSubscribersLimitReached() {
-    $endpoint = $this->createNewslettersEndpointWithMocks([
+    $endpoint = $this->getServiceWithOverrides(Newsletters::class, [
       'cronHelper' => $this->cronHelper,
       'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true])
     ]);
@@ -366,7 +366,7 @@ class NewslettersTest extends \MailPoetTest {
     $wp = Stub::make(new WPFunctions, [
       'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
-    $this->endpoint = $this->createNewslettersEndpointWithMocks([
+    $this->endpoint = $this->getServiceWithOverrides(Newsletters::class, [
       'wp' => $wp,
       'cronHelper' => $this->cronHelper,
     ]);
@@ -587,7 +587,7 @@ class NewslettersTest extends \MailPoetTest {
 
   public function testItCanSendAPreview() {
     $subscriber = 'test@subscriber.com';
-    $endpoint = $this->createNewslettersEndpointWithMocks([
+    $endpoint = $this->getServiceWithOverrides(Newsletters::class, [
       'sendPreviewController' => $this->make(SendPreviewController::class, [
         'sendPreview' => null,
       ]),
@@ -603,7 +603,7 @@ class NewslettersTest extends \MailPoetTest {
 
   public function testItReturnsMailerErrorWhenSendingFailed() {
     $subscriber = 'test@subscriber.com';
-    $endpoint = $this->createNewslettersEndpointWithMocks([
+    $endpoint = $this->getServiceWithOverrides(Newsletters::class, [
       'sendPreviewController' => $this->make(SendPreviewController::class, [
         'sendPreview' => Expected::once(function () {
           throw new SendPreviewException('The email could not be sent: failed');
@@ -636,7 +636,7 @@ class NewslettersTest extends \MailPoetTest {
       'applyFilters' => asCallable([WPHooksHelper::class, 'applyFilters']),
       'doAction' => asCallable([WPHooksHelper::class, 'doAction']),
     ]);
-    $this->endpoint = $this->createNewslettersEndpointWithMocks([
+    $this->endpoint = $this->getServiceWithOverrides(Newsletters::class, [
       'wp' => $wp,
       'cronHelper' => $this->cronHelper,
       'emoji' => $emoji,
@@ -668,10 +668,6 @@ class NewslettersTest extends \MailPoetTest {
     $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
-  }
-
-  private function createNewslettersEndpointWithMocks(array $mocks): Newsletters {
-    return $this->getServiceWithOverrides(Newsletters::class, $mocks);
   }
 
   private function createNewsletterOptionField(string $name, string $type): NewsletterOptionFieldEntity {
