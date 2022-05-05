@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\API\JSON\v1;
 
-use Codeception\Util\Fixtures;
 use Codeception\Util\Stub;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SendingQueue as SendingQueueAPI;
@@ -29,12 +28,10 @@ class SendingQueueTest extends \MailPoetTest {
     parent::_before();
     $this->clean();
 
-    $this->newsletter = new NewsletterEntity();
-    $this->newsletter->setSubject('My Standard Newsletter');
-    $this->newsletter->setBody(json_decode(Fixtures::get('newsletter_body_template'), true));
-    $this->newsletter->setType(NewsletterEntity::TYPE_STANDARD);
-    $this->entityManager->persist($this->newsletter);
-    $this->entityManager->flush();
+    $this->newsletter = (new Newsletter())
+      ->withSubject('My Standard Newsletter')
+      ->withDefaultBody()
+      ->create();
 
     $settings = SettingsController::getInstance();
     $settings->set('sender', [
@@ -128,11 +125,10 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItRejectsInvalidNewsletters() {
-    $newsletter = (new Newsletter())->create();
     $sendingQueue = $this->getServiceWithOverrides(SendingQueueAPI::class, [
       'newsletterValidator' => Stub::make(NewsletterValidator::class, ['validate' => 'some error'])
     ]);
-    $response = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
+    $response = $sendingQueue->add(['newsletter_id' => $this->newsletter->getId()]);
     $response = $response->getData();
     expect($response['errors'][0])->array();
     expect($response['errors'][0]['message'])->stringContainsString('some error');
