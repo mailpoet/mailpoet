@@ -1,5 +1,6 @@
 <?php
 
+use Codeception\Stub;
 use MailPoet\Automation\Engine\Engine;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Migrations\Migrator;
@@ -184,26 +185,19 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
   }
 
   /**
-   * Retrieve a clone of a DI service with specific private/protected properties replaced
+   * Retrieve a clone of a DI service with properties overridden by name, including
+   * protected and private properties. 
    *
    * @template T of object
    * @param class-string<T> $id
    * @param array<string, Object> $overrides
-   *  string = protected/private property name
-   *  Object = replacement for that property
+   *  string = property name
+   *  Object = replacement
    * @return T
    */
   public function getServiceWithOverrides(string $id, array $overrides) {
     $instance = $this->diContainer->get($id);
-    $clone = clone $instance;
-    $reflection = new \ReflectionClass($clone);
-    foreach ($overrides as $propertyName => $override) {
-      $property = $reflection->getProperty($propertyName);
-      $property->setAccessible(true);
-      $property->setValue($clone, $override);
-      $property->setAccessible(false);
-    }
-    return $clone;
+    return Stub::copy($instance, $overrides);
   }
 
   public static function markTestSkipped(string $message = ''): void {
