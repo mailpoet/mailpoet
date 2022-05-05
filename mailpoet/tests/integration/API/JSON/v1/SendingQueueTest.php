@@ -11,15 +11,10 @@ use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Mailer\MailerFactory;
-use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
-use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\Newsletter\Sending\SendingQueuesRepository;
-use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
@@ -76,18 +71,12 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItReturnsErrorIfSubscribersLimitReached() {
-    $sendingQueue = new SendingQueueAPI(
-      Stub::make(SubscribersFeature::class, [
+    $sendingQueue = $this->getServiceWithOverrides(SendingQueueAPI::class, [
+      'subscribersFeature' => Stub::make(SubscribersFeature::class, [
         'check' => true,
-      ]),
-      $this->diContainer->get(NewslettersRepository::class),
-      $this->diContainer->get(SendingQueuesRepository::class),
-      $this->diContainer->get(SubscribersFinder::class),
-      $this->diContainer->get(ScheduledTasksRepository::class),
-      $this->diContainer->get(MailerFactory::class),
-      $this->diContainer->get(Scheduler::class),
-      $this->diContainer->get(NewsletterValidator::class)
-    );
+      ])
+    ]);
+
     $res = $sendingQueue->add(['newsletter_id' => $this->newsletter->getId()]);
     expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
     $res = $sendingQueue->resume(['newsletter_id' => $this->newsletter->getId()]);
