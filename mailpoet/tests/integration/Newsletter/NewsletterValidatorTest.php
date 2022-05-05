@@ -7,7 +7,6 @@ use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Test\DataFactories\Newsletter;
-use MailPoet\Util\License\Features\Subscribers;
 
 class NewsletterValidatorTest extends \MailPoetTest {
   /** @var NewsletterValidator */
@@ -106,14 +105,4 @@ class NewsletterValidatorTest extends \MailPoetTest {
     $validationError = $this->newsletterValidator->validate($newsletter);
     expect($validationError)->null();
   }
-
-  public function testItIsNotValidIfSubscriberLimitReached() {
-    $newsletter = (new Newsletter())->withDefaultBody()->create();
-    $validator = $this->getServiceWithOverrides(NewsletterValidator::class, [
-      'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true])
-    ]);
-    $validationError = $validator->validate($newsletter);
-    expect($validationError)->equals('Subscribers limit reached.');
-  }
-
 }

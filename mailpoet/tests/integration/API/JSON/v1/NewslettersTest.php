@@ -22,7 +22,6 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
@@ -226,9 +225,7 @@ class NewslettersTest extends \MailPoetTest {
   public function testItReturnsErrorIfSubscribersLimitReached() {
     $endpoint = $this->createNewslettersEndpointWithMocks([
       'cronHelper' => $this->cronHelper,
-      'newsletterValidator' => $this->getServiceWithOverrides(NewsletterValidator::class, [
-        'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true])
-      ])
+      'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true])
     ]);
     $res = $endpoint->setStatus([
       'id' => $this->newsletter->getId(),
