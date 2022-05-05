@@ -5,10 +5,15 @@ namespace MailPoet\Cron\Workers\StatsNotifications;
 use Codeception\Stub;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\CronWorkerRunner;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsClicks;
@@ -17,7 +22,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
-use MailPoetVendor\Idiorm\ORM;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class AutomatedEmailsTest extends \MailPoetTest {
@@ -37,10 +42,11 @@ class AutomatedEmailsTest extends \MailPoetTest {
   /** @var CronWorkerRunner */
   private $cronWorkerRunner;
 
+  /** @var NewsletterEntity */
+  private $newsletter;
+
   public function _before() {
     parent::_before();
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
     ScheduledTask::createOrUpdate([
       'type' => AutomatedEmails::TASK_TYPE,
       'status' => null,
@@ -71,6 +77,24 @@ class AutomatedEmailsTest extends \MailPoetTest {
       'address' => 'email@example.com',
     ]);
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+
+    $newsletterFactory = new NewsletterFactory();
+    $this->newsletter = $newsletterFactory
+      ->withSubject('Subject')
+      ->withWelcomeTypeForSegment(1)
+      ->withActiveStatus()
+      ->create();
+  }
+
+  public function _after() {
+    parent::_after();
+
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(StatisticsClickEntity::class);
+    $this->truncateEntity(StatisticsOpenEntity::class);
   }
 
   public function testItDoesntWorkIfDisabled() {
@@ -110,15 +134,9 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   public function testItRenders() {
-    Newsletter::createOrUpdate([
-      'id' => 8763,
-      'subject' => 'Subject',
-      'type' => 'welcome',
-      'status' => 'active',
-    ]);
-    $this->createQueue(8763, 10);
-    $this->createClicks(8763, 5);
-    $this->createOpens(8763, 2);
+    $this->createQueue($this->newsletter->getId(), 10);
+    $this->createClicks($this->newsletter->getId(), 5);
+    $this->createOpens($this->newsletter->getId(), 2);
     $this->renderer->expects($this->exactly(2))
       ->method('render');
     $this->renderer->expects($this->at(0))
@@ -138,16 +156,9 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   public function testItSends() {
-    Newsletter::createOrUpdate([
-      'id' => 8763,
-      'subject' => 'Subject',
-      'type' => 'welcome',
-      'status' => 'active',
-    ]);
-    $this->createQueue(8763, 10);
-    $this->createClicks(8763, 5);
-    $this->createOpens(8763, 2);
-
+    $this->createQueue($this->newsletter->getId(), 10);
+    $this->createClicks($this->newsletter->getId(), 5);
+    $this->createOpens($this->newsletter->getId(), 2);
 
     $this->renderer->expects($this->exactly(2))
       ->method('render');
@@ -168,15 +179,9 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   public function testItPreparesContext() {
-    Newsletter::createOrUpdate([
-      'id' => 8764,
-      'subject' => 'Subject',
-      'type' => 'welcome',
-      'status' => 'active',
-    ]);
-    $this->createClicks(8764, 5);
-    $this->createOpens(8764, 2);
-    $this->createQueue(8764, 10);
+    $this->createClicks($this->newsletter->getId(), 5);
+    $this->createOpens($this->newsletter->getId(), 2);
+    $this->createQueue($this->newsletter->getId(), 10);
     $this->renderer->expects($this->exactly(2)) // html + text template
       ->method('render')
       ->with(
@@ -189,15 +194,9 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   public function testItAddsNewsletterStatsToContext() {
-    Newsletter::createOrUpdate([
-      'id' => 8765,
-      'subject' => 'Subject',
-      'type' => 'welcome',
-      'status' => 'active',
-    ]);
-    $this->createClicks(8765, 5);
-    $this->createOpens(8765, 2);
-    $this->createQueue(8765, 10);
+    $this->createClicks($this->newsletter->getId(), 5);
+    $this->createOpens($this->newsletter->getId(), 2);
+    $this->createQueue($this->newsletter->getId(), 10);
 
     $this->renderer->expects($this->exactly(2)) // html + text template
       ->method('render')
