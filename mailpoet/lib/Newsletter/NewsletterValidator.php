@@ -5,7 +5,6 @@ namespace MailPoet\Newsletter;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\TrackingConfig;
-use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Validator\ValidationException;
 
 class NewsletterValidator {
@@ -16,22 +15,16 @@ class NewsletterValidator {
   /** @var TrackingConfig */
   private $trackingConfig;
 
-  /** @var SubscribersFeature */
-  private $subscribersFeature;
-
   public function __construct(
     Bridge $bridge,
-    TrackingConfig $trackingConfig,
-    SubscribersFeature $subscribersFeature
+    TrackingConfig $trackingConfig
   ) {
     $this->bridge = $bridge;
     $this->trackingConfig = $trackingConfig;
-    $this->subscribersFeature = $subscribersFeature;
   }
   
   public function validate(NewsletterEntity $newsletterEntity): ?string {
     try {
-      $this->validateSubscriberLimit();
       $this->validateBody($newsletterEntity);
       $this->validateUnsubscribeRequirements($newsletterEntity);
       $this->validateReEngagementRequirements($newsletterEntity);
@@ -93,12 +86,6 @@ class NewsletterValidator {
       strpos($content, '"type":"automatedLatestContentLayout"') === false
     ) {
       throw new ValidationException(__('Please add an “Automatic Latest Content” widget to the email from the right sidebar.', 'mailpoet'));
-    }
-  }
-
-  private function validateSubscriberLimit(): void {
-    if ($this->subscribersFeature->check()) {
-      throw new ValidationException(__('Subscribers limit reached.', 'mailpoet'));
     }
   }
 }
