@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   codeception_acceptance:
-    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.0-cli_20220126.1}
+    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.0-cli_20220605.0}
     depends_on:
       - smtp
       - wordpress
@@ -37,6 +37,8 @@ services:
       - ../..:/project
       - ../..:/wp-core/wp-content/plugins/mailpoet
       - ./codeception/docker-entrypoint.sh:/docker-entrypoint.sh
+      - ../../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
+      - ../../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     entrypoint: /docker-entrypoint.sh
     environment:
       WP_ROOT: /wp-core
@@ -54,7 +56,7 @@ services:
     ports:
       - 1025:1025
       - 8025:8025
-    user: root
+    user: ${UID:-1000}:${GID:-1000}
     environment:
       MH_STORAGE: maildir
       MH_MAILDIR_PATH: /mailhog-data
@@ -108,7 +110,6 @@ services:
     ports:
       - 4444
       - 5900:5900
-
 volumes:
   wp-core:
   mailhog-data:
