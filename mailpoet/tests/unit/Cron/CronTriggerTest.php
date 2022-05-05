@@ -3,10 +3,12 @@
 namespace MailPoet\Test\Cron;
 
 use Codeception\Stub;
+use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Triggers\MailPoet;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Settings\SettingsController;
+use MailPoet\WP\Functions as WPFunctions;
 
 class CronTriggerTest extends \MailPoetUnitTest {
   public function testItDefinesConstants() {
@@ -52,9 +54,13 @@ class CronTriggerTest extends \MailPoetUnitTest {
 
   private function createCronTrigger(
     SettingsController $settings,
-    WordPress $wordpressTrigger = null
+    WordPress $wordpressTrigger = null,
+    WPFunctions $wp = null,
+    CronHelper $cronHelper = null
   ) {
     $wordpressTrigger = $wordpressTrigger ?: $this->make(WordPress::class, ['run' => true]);
-    return new CronTrigger($wordpressTrigger, $settings);
+    $wp = $wp ?: $this->make(WPFunctions::class, ['addAction' => true]);
+    $cronHelper = $cronHelper ?: $this->make(CronHelper::class, []);
+    return new CronTrigger($wordpressTrigger, $settings, $wp, $cronHelper);
   }
 }

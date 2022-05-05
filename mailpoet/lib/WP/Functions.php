@@ -836,4 +836,18 @@ class Functions {
   public function isWpError($value): bool {
     return is_wp_error($value);
   }
+
+  /**
+   * @return bool|WP_Error
+   */
+  public function wpScheduleSingleEvent(int $timestamp, string $hook, array $args = [], bool $wpError = false) {
+    return wp_schedule_single_event($timestamp, $hook, $args, $wpError);
+  }
+
+  /**
+   * @return bool|int|WP_Error
+   */
+  public function wpUnscheduleHook(string $hook, bool $wpError = false) {
+    return wp_unschedule_hook($hook, $wpError);
+  }
 }
