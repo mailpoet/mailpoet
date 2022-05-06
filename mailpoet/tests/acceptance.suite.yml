@@ -12,6 +12,7 @@ modules:
         url: 'http://test.local'
         urlReplacement: true
         tablePrefix: 'mp_'
+        letCron: true
     - WPLoader:
         # use 'loadOnly' (as recommended by https://wpbrowser.wptestkit.dev/summary/modules/wploader)
         # set 'domain' which is needed by multisite (tests fail silently without it)
