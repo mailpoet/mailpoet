@@ -5,13 +5,15 @@ namespace MailPoet\Test\DataGenerator\Generators;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsClicks;
 use MailPoet\Models\StatisticsNewsletters;
-use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending;
@@ -268,7 +270,7 @@ class WooCommercePastRevenues implements Generator {
   public function runBefore() {
     // Turn off CURRENT_TIMESTAMP to be able to save generated value
     ORM::rawExecute(
-      "ALTER TABLE `" . StatisticsClicks::$_table . "`
+      "ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName() . "`
       CHANGE `updated_at` `updated_at` timestamp NULL;"
     );
 
@@ -283,14 +285,14 @@ class WooCommercePastRevenues implements Generator {
     ORM::rawExecute("ALTER TABLE `" . ScheduledTask::$_table . "` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . StatisticsOpens::$_table . "` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . StatisticsClicks::$_table . "` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName() . "` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName() . "` DISABLE KEYS");
     ORM::rawExecute("SET UNIQUE_CHECKS = 0;");
   }
 
   public function runAfter() {
     ORM::rawExecute(
-      "ALTER TABLE `" . StatisticsClicks::$_table . "`
+      "ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName() . "`
       CHANGE `updated_at` `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;"
     );
 
@@ -305,8 +307,8 @@ class WooCommercePastRevenues implements Generator {
     ORM::rawExecute("ALTER TABLE `" . ScheduledTask::$_table . "` ENABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` ENABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` ENABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . StatisticsOpens::$_table . "` ENABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . StatisticsClicks::$_table . "` ENABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName() . "` ENABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . $this->entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName() . "` ENABLE KEYS");
     ORM::rawExecute("SET UNIQUE_CHECKS = 1;");
   }
 
@@ -419,24 +421,29 @@ class WooCommercePastRevenues implements Generator {
   }
 
   private function openSentNewsletter(array $sentNewsletterData, $subscriberId, $createdAt) {
-    StatisticsOpens::createOrUpdate([
-      'subscriber_id' => $subscriberId,
-      'newsletter_id' => $sentNewsletterData['newsletter_id'],
-      'queue_id' => $sentNewsletterData['queue_id'],
-      'created_at' => $createdAt,
-    ])->save();
+    $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $sentNewsletterData['newsletter_id']);
+    $sendingQueueEntity = $this->entityManager->getReference(SendingQueueEntity::class, $sentNewsletterData['queue_id']);
+    $subscriberEntity = $this->entityManager->getReference(SubscriberEntity::class, $subscriberId);
+
+    $statisticsOpen = new StatisticsOpenEntity($newsletterEntity, $sendingQueueEntity, $subscriberEntity);
+    $statisticsOpen->setCreatedAt(new Carbon($createdAt));
+
+    $this->entityManager->persist($statisticsOpen);
+    $this->entityManager->flush();
   }
 
   private function clickSentNewsletter(array $sentNewsletterData, $subscriberId, $createdAt) {
-    StatisticsClicks::createOrUpdate([
-      'subscriber_id' => $subscriberId,
-      'newsletter_id' => $sentNewsletterData['newsletter_id'],
-      'queue_id' => $sentNewsletterData['queue_id'],
-      'link_id' => $sentNewsletterData['link_id'],
-      'count' => 1,
-      'created_at' => $createdAt,
-      'updated_at' => $createdAt,
-    ])->save();
+    $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $sentNewsletterData['newsletter_id']);
+    $sendingQueueEntity = $this->entityManager->getReference(SendingQueueEntity::class, $sentNewsletterData['queue_id']);
+    $subscriberEntity = $this->entityManager->getReference(SubscriberEntity::class, $subscriberId);
+    $newsletterLinkEntity = $this->entityManager->getReference(NewsletterLinkEntity::class, $sentNewsletterData['link_id']);
+
+    $statisticsClick = new StatisticsClickEntity($newsletterEntity, $sendingQueueEntity, $subscriberEntity, $newsletterLinkEntity, 1);
+    $statisticsClick->setCreatedAt(new Carbon($createdAt));
+    $statisticsClick->setUpdatedAt(new Carbon($createdAt));
+
+    $this->entityManager->persist($statisticsClick);
+    $this->entityManager->flush();
   }
 
   /**
