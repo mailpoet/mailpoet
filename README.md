@@ -40,6 +40,21 @@ environment:
     XDEBUG_MODE: debug, develop
 ```
 
+## Xdebug for integration tests
+
+- In Languages & Preferences > PHP > Servers create a new sever named `MailPoetTest`, set the host to `localhost` and port to `80` and set following path mappings:
+
+```shell
+wordpress        -> /wp-core
+mailpoet         -> /wp-core/wp-content/plugins/mailpoet
+mailpoet-premium -> /wp-core/wp-content/plugins/mailpoet-premium
+mailpoet/vendor/bin/codecept -> /project/vendor/bin/codecept
+mailpoet/vendor/bin/wp -> /usr/local/bin/wp
+```
+
+- Add `XDEBUG_TRIGGER: 1` environment to `mailpoet/tests/docker/docker-compose.yml` -> codeception service to start triggering Xdebug
+- Make PHPStorm listen to connections by clicking on the phone icon
+
 ## 💾 NFS volume sharing for Mac
 
 NFS volumes can bring more stability and performance on Docker for Mac. To setup NFS volume sharing run:
