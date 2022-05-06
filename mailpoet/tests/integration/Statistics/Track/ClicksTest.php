@@ -13,8 +13,6 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsClicks;
-use MailPoet\Models\StatisticsOpens;
 use MailPoet\Newsletter\Shortcodes\Categories\Link as LinkShortcodeCategory;
 use MailPoet\Newsletter\Shortcodes\Shortcodes;
 use MailPoet\Settings\TrackingConfig;
@@ -49,6 +47,12 @@ class ClicksTest extends \MailPoetTest {
 
   /** @var Clicks */
   private $clicks;
+
+  /** @var StatisticsClicksRepository */
+  private $statisticsClicksRepository;
+
+  /** @var StatisticsOpensRepository */
+  private $statisticsOpensRepository;
 
   public function _before() {
     parent::_before();
@@ -107,6 +111,9 @@ class ClicksTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersRepository::class),
       $this->diContainer->get(TrackingConfig::class)
     );
+
+    $this->statisticsClicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
+    $this->statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
   }
 
   public function testItAbortsWhenTrackDataIsEmptyOrMissingLink() {
@@ -151,8 +158,9 @@ class ClicksTest extends \MailPoetTest {
       'redirectToUrl' => null,
     ], $this);
     $clicks->track($data);
-    expect(StatisticsClicks::findMany())->isEmpty();
-    expect(StatisticsOpens::findMany())->isEmpty();
+
+    expect($this->statisticsClicksRepository->findAll())->isEmpty();
+    expect($this->statisticsOpensRepository->findAll())->isEmpty();
   }
 
   public function testItTracksClickAndOpenEvent() {
@@ -171,8 +179,9 @@ class ClicksTest extends \MailPoetTest {
       'redirectToUrl' => null,
     ], $this);
     $clicks->track($data);
-    expect(StatisticsClicks::findMany())->notEmpty();
-    expect(StatisticsOpens::findMany())->notEmpty();
+
+    expect($this->statisticsClicksRepository->findAll())->notEmpty();
+    expect($this->statisticsOpensRepository->findAll())->notEmpty();
   }
 
   public function testItTracksUserAgent() {
@@ -424,9 +433,10 @@ class ClicksTest extends \MailPoetTest {
       'redirectToUrl' => null,
     ], $this);
     $clicks->track($this->trackData);
-    expect(StatisticsClicks::findMany()[0]->count)->equals(1);
+
+    expect($this->statisticsClicksRepository->findAll()[0]->getCount())->equals(1);
     $clicks->track($this->trackData);
-    expect(StatisticsClicks::findMany()[0]->count)->equals(2);
+    expect($this->statisticsClicksRepository->findAll()[0]->getCount())->equals(2);
   }
 
   public function testItConvertsShortcodesToUrl() {
