@@ -26,6 +26,8 @@ services:
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_TABLE_PREFIX: mp_
       TEST_TYPE: acceptance
+      PHP_IDE_CONFIG: 'serverName=MailPoetTest'
+
   codeception_integration:
     image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.0-cli_20220605.0}
     depends_on:
@@ -50,6 +52,7 @@ services:
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_TABLE_PREFIX: mp_
       TEST_TYPE: integration
+      PHP_IDE_CONFIG: 'serverName=MailPoetTest'
 
   smtp:
     image: mailhog/mailhog:v1.0.0
