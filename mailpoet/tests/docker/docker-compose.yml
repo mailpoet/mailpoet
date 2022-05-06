@@ -53,6 +53,7 @@ services:
 
   smtp:
     image: mailhog/mailhog:v1.0.0
+    hostname: mailhog
     ports:
       - 1025:1025
       - 8025:8025
