@@ -46,9 +46,6 @@ class Text {
 
     $styles = $this->inputStylesRenderer->renderForTextInput($block['styles'] ?? [], $formSettings);
 
-    if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
-      $automationId = 'data-automation-id="form_' . $block['id'] . '" ';
-    }
     $name = $this->rendererHelper->getFieldName($block);
 
     $html = '';
