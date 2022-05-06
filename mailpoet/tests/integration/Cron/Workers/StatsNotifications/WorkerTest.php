@@ -6,7 +6,11 @@ use MailPoet\Config\Renderer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsClickEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
+use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -16,14 +20,16 @@ use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsClicks;
-use MailPoet\Models\StatisticsOpens;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
+use MailPoet\Test\DataFactories\StatisticsClicks as StatisticsClicksFactory;
+use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Idiorm\ORM;
@@ -46,10 +52,10 @@ class WorkerTest extends \MailPoetTest {
   /** @var CronHelper */
   private $cronHelper;
 
-  /** @var Newsletter */
+  /** @var NewsletterEntity */
   private $newsletter;
 
-  /** @var SendingQueue */
+  /** @var SendingQueueEntity */
   private $queue;
 
   /** @var StatsNotificationsRepository */
@@ -100,14 +106,10 @@ class WorkerTest extends \MailPoetTest {
       'enabled' => true,
       'address' => 'email@example.com',
     ]);
-    $this->newsletter = Newsletter::createOrUpdate([
-      'subject' => 'Email Subject1',
-      'type' => Newsletter::TYPE_STANDARD,
-    ]);
-    $sendingTask = ScheduledTask::createOrUpdate([
-      'type' => 'sending',
-      'status' => ScheduledTask::STATUS_COMPLETED,
-    ]);
+    $this->newsletter = (new NewsletterFactory())
+      ->withSubject('Rendered Email Subject')
+      ->withSendingQueue(['count_processed' => 5])
+      ->create();
     $statsNotificationsTask = ScheduledTask::createOrUpdate([
       'type' => Worker::TASK_TYPE,
       'status' => ScheduledTask::STATUS_SCHEDULED,
@@ -116,19 +118,14 @@ class WorkerTest extends \MailPoetTest {
     ]);
     $cmd = $this->entityManager->getClassMetadata(StatsNotificationEntity::class);
     ORM::raw_execute('INSERT INTO ' . $cmd->getTableName() . '(newsletter_id, task_id) VALUES ('
-      . $this->newsletter->id()
+      . $this->newsletter->getId()
       . ','
       . $statsNotificationsTask->id()
       . ')'
     );
-    $this->queue = SendingQueue::createOrUpdate([
-      'newsletter_rendered_subject' => 'Rendered Email Subject',
-      'task_id' => $sendingTask->id(),
-      'newsletter_id' => $this->newsletter->id(),
-      'count_processed' => 5,
-    ]);
+    $this->queue = $this->newsletter->getLatestQueue();
 
-    $newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->id);
+    $newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
     $this->newsletterLinkFactory = new NewsletterLinkFactory($newsletterEntity);
 
@@ -137,55 +134,31 @@ class WorkerTest extends \MailPoetTest {
       ->withHash('xyz')
       ->create();
 
-    StatisticsClicks::createOrUpdate([
-      'newsletter_id' => $this->newsletter->id(),
-      'queue_id' => $this->queue->id(),
-      'subscriber_id' => '5',
-      'link_id' => $link->getId(),
-      'count' => 5,
-      'created_at' => '2018-01-02 15:16:17',
-    ]);
+    $subscriber1 = (new SubscriberFactory())->create();
+    (new StatisticsClicksFactory($link, $subscriber1))->withCount(5)->create();
 
     $link2 = $this->newsletterLinkFactory
       ->withUrl('Link url2')
       ->withHash('xyzd')
       ->create();
-    StatisticsClicks::createOrUpdate([
-      'newsletter_id' => $this->newsletter->id(),
-      'queue_id' => $this->queue->id(),
-      'subscriber_id' => '6',
-      'link_id' => $link2->getId(),
-      'count' => 5,
-      'created_at' => '2018-01-02 15:16:17',
-    ]);
-    StatisticsClicks::createOrUpdate([
-      'newsletter_id' => $this->newsletter->id(),
-      'queue_id' => $this->queue->id(),
-      'subscriber_id' => '7',
-      'link_id' => $link2->getId(),
-      'count' => 5,
-      'created_at' => '2018-01-02 15:16:17',
-    ]);
-    StatisticsOpens::createOrUpdate([
-      'subscriber_id' => '10',
-      'newsletter_id' => $this->newsletter->id(),
-      'queue_id' => $this->queue->id(),
-      'created_at' => '2017-01-02 12:23:45',
-    ]);
-    StatisticsOpens::createOrUpdate([
-      'subscriber_id' => '11',
-      'newsletter_id' => $this->newsletter->id(),
-      'queue_id' => $this->queue->id(),
-      'created_at' => '2017-01-02 21:23:45',
-    ]);
+
+    $subscriber2 = (new SubscriberFactory())->create();
+    (new StatisticsClicksFactory($link2, $subscriber2))->withCount(5)->create();
+    $subscriber3 = (new SubscriberFactory())->create();
+    (new StatisticsClicksFactory($link2, $subscriber3))->withCount(5)->create();
+
+    $subscriber4 = (new SubscriberFactory())->create();
+    (new StatisticsOpensFactory($this->newsletter, $subscriber4))->create();
+    $subscriber5 = (new SubscriberFactory())->create();
+    (new StatisticsOpensFactory($this->newsletter, $subscriber5))->create();
+
     $this->createStatisticsUnsubscribe([
       'subscriber' => $this->createSubscriber(),
-      'newsletter' => $this->newslettersRepository->findOneById($this->newsletter->id()),
-      'queue' => $this->sendingQueuesRepository->findOneById($this->queue->id()),
+      'newsletter' => $this->newslettersRepository->findOneById($this->newsletter->getId()),
+      'queue' => $this->sendingQueuesRepository->findOneById($this->queue->getId()),
       'created_at' => '2017-01-02 21:23:45',
     ]);
 
-    // need as for now we are creating the clicks outside of Doctrine using the old StatisticsClicks class
     $this->entityManager->refresh($link);
     $this->entityManager->refresh($link2);
   }
@@ -260,32 +233,13 @@ class WorkerTest extends \MailPoetTest {
       ->withHash('xyzd')
       ->create();
 
-    StatisticsClicks::createOrUpdate([
-      'newsletter_id' => $this->newsletter->id(),
-      'queue_id' => $this->queue->id(),
-      'subscriber_id' => '6',
-      'link_id' => $link->getId(),
-      'count' => 1505,
-      'created_at' => '2018-01-02 15:16:17',
-    ]);
-    StatisticsClicks::createOrUpdate([
-      'newsletter_id' => $this->newsletter->id(),
-      'queue_id' => $this->queue->id(),
-      'subscriber_id' => '7',
-      'link_id' => $link->getId(),
-      'count' => 2,
-      'created_at' => '2018-01-02 15:16:17',
-    ]);
-    StatisticsClicks::createOrUpdate([
-      'newsletter_id' => $this->newsletter->id(),
-      'queue_id' => $this->queue->id(),
-      'subscriber_id' => '8',
-      'link_id' => $link->getId(),
-      'count' => 2,
-      'created_at' => '2018-01-02 15:16:17',
-    ]);
+    $subscriber1 = (new SubscriberFactory())->create();
+    (new StatisticsClicksFactory($link, $subscriber1))->withCount(1505)->create();
+    $subscriber2 = (new SubscriberFactory())->create();
+    (new StatisticsClicksFactory($link, $subscriber2))->withCount(2)->create();
+    $subscriber3 = (new SubscriberFactory())->create();
+    (new StatisticsClicksFactory($link, $subscriber3))->withCount(2)->create();
 
-    // need as for now we are creating the clicks outside of Doctrine using the old StatisticsClicks class
     $this->entityManager->refresh($link);
 
     $this->renderer->expects($this->exactly(2)) // html + text template
@@ -323,7 +277,7 @@ class WorkerTest extends \MailPoetTest {
     ]);
     $cmd = $this->entityManager->getClassMetadata(StatsNotificationEntity::class);
     ORM::raw_execute('INSERT INTO ' . $cmd->getTableName() . '(newsletter_id, task_id) VALUES ('
-      . $this->newsletter->id()
+      . $this->newsletter->getId()
       . ','
       . $statsNotificationsTask->id()
       . ')'
@@ -361,10 +315,11 @@ class WorkerTest extends \MailPoetTest {
   }
 
   private function cleanup() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . StatisticsClicks::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(StatisticsClickEntity::class);
+    $this->truncateEntity(StatisticsOpenEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(StatisticsUnsubscribeEntity::class);
   }
 
