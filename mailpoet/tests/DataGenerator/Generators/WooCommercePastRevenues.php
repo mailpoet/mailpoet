@@ -33,6 +33,13 @@ class WooCommercePastRevenues implements Generator {
   const POST_NOTIFICATIONS_HISTORY = 30;
   const STANDARD_NEWSLETTER = 30;
 
+  /** @var EntityManager */
+  private $entityManager;
+
+  public function __construct() {
+    $this->entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+  }
+
   public function generate() {
     // Reset hooks to prevent revenues calculation during generating
     remove_all_actions('woocommerce_order_status_completed');
@@ -259,8 +266,6 @@ class WooCommercePastRevenues implements Generator {
   }
 
   public function runBefore() {
-    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
-
     // Turn off CURRENT_TIMESTAMP to be able to save generated value
     ORM::rawExecute(
       "ALTER TABLE `" . StatisticsClicks::$_table . "`
@@ -274,7 +279,7 @@ class WooCommercePastRevenues implements Generator {
     ORM::rawExecute("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . Subscriber::$_table . "` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . SubscriberSegment::$_table . "` DISABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . $entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` DISABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . ScheduledTask::$_table . "` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` DISABLE KEYS");
@@ -284,8 +289,6 @@ class WooCommercePastRevenues implements Generator {
   }
 
   public function runAfter() {
-    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
-
     ORM::rawExecute(
       "ALTER TABLE `" . StatisticsClicks::$_table . "`
       CHANGE `updated_at` `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;"
@@ -298,7 +301,7 @@ class WooCommercePastRevenues implements Generator {
     ORM::rawExecute("ALTER TABLE `{$prefix}postmeta` DISABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . Subscriber::$_table . "` ENABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . SubscriberSegment::$_table . "` ENABLE KEYS");
-    ORM::rawExecute("ALTER TABLE `" . $entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` ENABLE KEYS");
+    ORM::rawExecute("ALTER TABLE `" . $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName() . "` ENABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . ScheduledTask::$_table . "` ENABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . ScheduledTaskSubscriber::$_table . "` ENABLE KEYS");
     ORM::rawExecute("ALTER TABLE `" . SendingQueue::$_table . "` ENABLE KEYS");
@@ -357,8 +360,7 @@ class WooCommercePastRevenues implements Generator {
     ]);
     $queue->save();
 
-    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
-    $entityManager->refresh($newsletter);
+    $this->entityManager->refresh($newsletter);
 
     // Add subscribers to task and stats sent
     $batchData = [];
@@ -399,12 +401,12 @@ class WooCommercePastRevenues implements Generator {
     // Newsletter segment
     NewsletterSegment::createOrUpdate(['newsletter_id' => $newsletter->getId(), 'segment_id' => $segmentId])->save();
 
-    $entityManager->refresh($newsletter);
+    $this->entityManager->refresh($newsletter);
 
     if ($newsletter->getStatus() === \MailPoet\Models\Newsletter::STATUS_DRAFT) {
       $newsletter->setStatus(\MailPoet\Models\Newsletter::STATUS_SENT);
       $newsletter->setSentAt(Carbon::createFromFormat('Y-m-d H:i:s', $sentAt));
-      $entityManager->flush();
+      $this->entityManager->flush();
     }
 
     return [
