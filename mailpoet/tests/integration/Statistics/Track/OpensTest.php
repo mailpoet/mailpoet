@@ -10,7 +10,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
-use MailPoet\Models\StatisticsOpens;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\Track\Opens;
 use MailPoet\Statistics\UserAgentsRepository;
@@ -98,7 +97,7 @@ class OpensTest extends \MailPoetTest {
       'returnResponse' => Expected::exactly(1),
     ], $this);
     $opens->track(false);
-    expect(StatisticsOpens::findMany())->isEmpty();
+    expect($this->statisticsOpensRepository->findAll())->isEmpty();
   }
 
   public function testItDoesNotTrackOpenEventFromWpUserWhenPreviewIsEnabled() {
@@ -113,7 +112,7 @@ class OpensTest extends \MailPoetTest {
       'returnResponse' => null,
     ], $this);
     $opens->track($data);
-    expect(StatisticsOpens::findMany())->isEmpty();
+    expect($this->statisticsOpensRepository->findAll())->isEmpty();
   }
 
   public function testItReturnsNothingWhenImageDisplayIsDisabled() {
@@ -129,7 +128,7 @@ class OpensTest extends \MailPoetTest {
       'returnResponse' => null,
     ], $this);
     $opens->track($this->trackData);
-    expect(StatisticsOpens::findMany())->notEmpty();
+    expect($this->statisticsOpensRepository->findAll())->notEmpty();
   }
 
   public function testItDoesNotTrackRepeatedOpenEvents() {
@@ -143,7 +142,7 @@ class OpensTest extends \MailPoetTest {
     for ($count = 0; $count <= 2; $count++) {
       $opens->track($this->trackData);
     }
-    expect(count(StatisticsOpens::findMany()))->equals(1);
+    expect(count($this->statisticsOpensRepository->findAll()))->equals(1);
   }
 
   public function testItReturnsImageAfterTracking() {
@@ -208,7 +207,7 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
     $this->trackData->userAgent = 'User agent3';
     $opens->track($this->trackData);
-    expect(count(StatisticsOpens::findMany()))->equals(1);
+    expect(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $opens = $this->statisticsOpensRepository->findAll();
     expect($opens)->count(1);
     $open = $opens[0];
@@ -229,7 +228,7 @@ class OpensTest extends \MailPoetTest {
     $humanUserAgentName = 'Human User Agent';
     $this->trackData->userAgent = $humanUserAgentName;
     $opens->track($this->trackData);
-    expect(count(StatisticsOpens::findMany()))->equals(1);
+    expect(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
@@ -243,7 +242,7 @@ class OpensTest extends \MailPoetTest {
     $machineUserAgentName = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $this->trackData->userAgent = $machineUserAgentName;
     $opens->track($this->trackData);
-    expect(count(StatisticsOpens::findMany()))->equals(1);
+    expect(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
@@ -267,7 +266,7 @@ class OpensTest extends \MailPoetTest {
     $machineUserAgentName = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $this->trackData->userAgent = $machineUserAgentName;
     $opens->track($this->trackData);
-    expect(count(StatisticsOpens::findMany()))->equals(1);
+    expect(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
@@ -281,7 +280,7 @@ class OpensTest extends \MailPoetTest {
     $humanUserAgentName = 'Human User Agent';
     $this->trackData->userAgent = $humanUserAgentName;
     $opens->track($this->trackData);
-    expect(count(StatisticsOpens::findMany()))->equals(1);
+    expect(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
@@ -304,7 +303,7 @@ class OpensTest extends \MailPoetTest {
     // Track Unknown User Agent
     $this->trackData->userAgent = null;
     $opens->track($this->trackData);
-    expect(count(StatisticsOpens::findMany()))->equals(1);
+    expect(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
@@ -315,7 +314,7 @@ class OpensTest extends \MailPoetTest {
     $machineUserAgentName = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $this->trackData->userAgent = $machineUserAgentName;
     $opens->track($this->trackData);
-    expect(count(StatisticsOpens::findMany()))->equals(1);
+    expect(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
@@ -335,7 +334,7 @@ class OpensTest extends \MailPoetTest {
     // Track Unknown User Agent
     $this->trackData->userAgent = null;
     $opens->track($this->trackData);
-    expect(count(StatisticsOpens::findMany()))->equals(1);
+    expect(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
@@ -346,7 +345,7 @@ class OpensTest extends \MailPoetTest {
     $humanUserAgentName = 'User Agent';
     $this->trackData->userAgent = $humanUserAgentName;
     $opens->track($this->trackData);
-    expect(count(StatisticsOpens::findMany()))->equals(1);
+    expect(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
