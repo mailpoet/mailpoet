@@ -12,6 +12,16 @@ import { controls } from './controls.jsx';
 import { validateForm } from './form_validator.jsx';
 import { formBodyToBlocksFactory } from './form_body_to_blocks.jsx';
 import { mapFormDataAfterLoading } from './map_form_data_after_loading.jsx';
+import { FormEditorWindow, State } from './state_types';
+import { OmitFirstArgs } from '../../types';
+
+const storeName = 'mailpoet-form-editor';
+
+declare let window: FormEditorWindow;
+
+declare module '@wordpress/data' {
+  function select(key: typeof storeName): OmitFirstArgs<typeof selectors>;
+}
 
 export const initStore = () => {
   const customFields = window.mailpoet_custom_fields.map((field) => ({
@@ -75,6 +85,9 @@ export const initStore = () => {
     isFormSaving: false,
     isCustomFieldSaving: false,
     isCustomFieldCreating: false,
+    isPreviewShown: false,
+    isPreviewReady: false,
+    isCustomFieldDeleting: false,
     inserterPanel: null,
     notices: [],
     hasUnsavedChanges: false,
@@ -112,5 +125,5 @@ export const initStore = () => {
     resolvers: {},
   };
 
-  registerStore('mailpoet-form-editor', config);
+  registerStore<State>('mailpoet-form-editor', config);
 };
