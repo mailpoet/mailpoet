@@ -21,15 +21,12 @@ function convertSavedData(data: Record<string, string | number>): AnyFormItem {
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export async function LOAD_SEGMENT({
-  segmentId,
-}: {
-  segmentId: number;
-}): Promise<{
+export async function LOAD_SEGMENT(actionData): Promise<{
   success: boolean;
   res?: AnyFormItem;
   error?: string[];
 }> {
+  const segmentId: number = actionData.segmentId;
   try {
     const res = await MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
@@ -52,14 +49,11 @@ export async function LOAD_SEGMENT({
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export async function SAVE_SEGMENT({
-  segment,
-}: {
-  segment: AnyFormItem;
-}): Promise<{
+export async function SAVE_SEGMENT(actionData): Promise<{
   success: boolean;
   error?: string[];
 }> {
+  const segment: AnyFormItem = actionData.segment;
   try {
     await MailPoet.Ajax.post({
       api_version: MailPoet.apiVersion,
