@@ -1,35 +1,20 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Mailer\WordPress;
 
-/**
- * This class and its usage should be removed
- * in favor of the new loading method when support
- * for WordPress below 5.5 is dropped.
- */
-
 class PHPMailerLoader {
   /**
-   * Conditionally load PHPMailer the old or the new way
-   * to not get a deprecated file notice.
+   * Load PHPMailer because is not autoloaded
    */
-  public static function load() {
-    if (class_exists('PHPMailer')) {
-      return false;
+  public static function load(): void {
+    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+      require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
     }
-    if (is_readable(ABSPATH . WPINC . '/PHPMailer/PHPMailer.php')) {
-      // WordPress 5.5+
-      if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
-        require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
-      }
-      if (!class_exists('PHPMailer\PHPMailer\Exception')) {
-        require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
-      }
-      class_alias(\PHPMailer\PHPMailer\PHPMailer::class, 'PHPMailer');
-      class_alias(\PHPMailer\PHPMailer\Exception::class, 'phpmailerException');
-    } else {
-      // WordPress < 5.5
-      require_once ABSPATH . WPINC . '/class-phpmailer.php';
+    if (!class_exists('PHPMailer\PHPMailer\Exception')) {
+      require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
+    }
+    if (!class_exists('PHPMailer\PHPMailer\SMTP')) {
+      require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
     }
   }
 }

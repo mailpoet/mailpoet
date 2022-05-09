@@ -6,6 +6,7 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 use MailPoet\Mailer\WordPress\PHPMailerLoader;
+use PHPMailer\PHPMailer\PHPMailer;
 
 PHPMailerLoader::load();
 
@@ -55,7 +56,7 @@ class PHPMail implements MailerMethod {
   }
 
   public function buildMailer() {
-    $mailer = new \PHPMailer(true);
+    $mailer = new PHPMailer(true);
     // send using PHP's mail() function
     $mailer->isMail();
     return $mailer;
@@ -88,7 +89,7 @@ class PHPMail implements MailerMethod {
     //   sendmail command which expects only NL as line endings (POSIX). Since quoted-printable
     //   requires CRLF some of those commands convert LF to CRLF which can break the email body
     //   because it already (correctly) uses CRLF. Such CRLF then (wrongly) becomes CRCRLF.
-    if (\PHPMailer::hasLineLongerThanMax($mailer->Body)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    if (PHPMailer::hasLineLongerThanMax($mailer->Body)) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $mailer->Encoding = 'base64'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
 

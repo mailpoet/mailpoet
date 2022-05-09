@@ -9,6 +9,7 @@ use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Subscribers\SubscribersRepository;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 class WordpressMailerTest extends \MailPoetTest {
@@ -26,7 +27,7 @@ class WordpressMailerTest extends \MailPoetTest {
 
     $wpMailer = new WordPressMailer($mailerFactoryMock, new MetaInfo, $this->subscribersRepository);
     $wpMailer->From = 'email-from@example.com';
-    $this->expectException(\phpmailerException::class);
+    $this->expectException(PHPMailerException::class);
     $wpMailer->send();
   }
 
@@ -191,7 +192,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $errorMessage = null;
     try {
       $wpMailer->send();
-    } catch (\phpmailerException $e) {
+    } catch (PHPMailerException $e) {
       $errorMessage = $e->getMessage();
     }
 
@@ -213,7 +214,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->Body = 'body';
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->ContentType = 'application/json';
-    $this->expectException(\phpmailerException::class);
+    $this->expectException(PHPMailerException::class);
     $wpMailer->send();
   }
 
@@ -238,7 +239,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $errorMessage = null;
     try {
       $wpMailer->send();
-    } catch (\phpmailerException $e) {
+    } catch (PHPMailerException $e) {
       $errorMessage = $e->getMessage();
     }
 

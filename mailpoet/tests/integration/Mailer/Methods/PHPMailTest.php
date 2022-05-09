@@ -7,6 +7,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 use MailPoet\Mailer\Methods\PHPMail;
+use PHPMailer\PHPMailer\PHPMailer;
 
 class PHPMailTest extends \MailPoetTest {
   public $extraParams;
@@ -52,7 +53,7 @@ class PHPMailTest extends \MailPoetTest {
 
   public function testItCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
-    expect($mailer)->isInstanceOf('PHPMailer');
+    expect($mailer)->isInstanceOf(PHPMailer::class);
 
     // uses PHP's mail() function
     expect($mailer->Mailer)->equals('mail'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
