@@ -411,7 +411,7 @@ jQuery(($) => {
           // token here after calling getResponse() and then we can call submitSubscribeForm()
           // directly.
           if (size === 'invisible') {
-            window.grecaptcha.execute();
+            window.grecaptcha.execute(formData.recaptchaWidgetId);
           } else {
             formData.data.recaptchaResponseToken =
               window.grecaptcha.getResponse(formData.recaptchaWidgetId);
