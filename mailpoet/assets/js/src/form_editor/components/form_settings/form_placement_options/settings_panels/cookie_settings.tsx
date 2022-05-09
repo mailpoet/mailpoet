@@ -21,15 +21,15 @@ export function CookieSettings({ settingsPlacementKey }: Props): JSX.Element {
       value={formSettings.formPlacement[settingsPlacementKey].cookieExpiration}
       options={[
         {
-          value: 0,
+          value: '0',
           label: MailPoet.I18n.t('formPlacementCookieExpirationAlways'),
         },
         {
-          value: 1,
+          value: '1',
           label: MailPoet.I18n.t('formPlacementCookieExpirationDay'),
         },
         ...cookieExpirationValues.map((cookieExpirationValue) => ({
-          value: cookieExpirationValue,
+          value: `${cookieExpirationValue}`,
           label: MailPoet.I18n.t('formPlacementCookieExpirationDays').replace(
             '%1s',
             cookieExpirationValue.toString(),
