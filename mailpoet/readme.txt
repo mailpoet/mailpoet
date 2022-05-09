@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.6
 Tested up to: 5.9
-Stable tag: 3.88.2
+Stable tag: 3.89.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.89.0 - 2022-05-09 =
+* Updated: Removed MailPoet Task Scheduler;
+* Improved: faster page load;
+* Improved: compatibility with WooCommerce Blocks 7.2;
+* Improved: tested with WordPress 6;
+* Fixed: TypeError when calculating lifetime emails takes longer than usual.
 
 = 3.88.2 - 2022-05-03 =
 * Improved: show error message when trying to send confirmation email with signup confirmation disabled;
