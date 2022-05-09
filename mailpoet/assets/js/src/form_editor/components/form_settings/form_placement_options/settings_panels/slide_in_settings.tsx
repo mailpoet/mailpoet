@@ -83,7 +83,7 @@ export function SlideInSettings(): JSX.Element {
               assocPath('formPlacement.slideIn.delay', __, formSettings),
             ])}
             options={delayValues.map((delayValue) => ({
-              value: delayValue,
+              value: `${delayValue}`,
               label: MailPoet.I18n.t('formPlacementDelaySeconds').replace(
                 '%1s',
                 `${delayValue}`,

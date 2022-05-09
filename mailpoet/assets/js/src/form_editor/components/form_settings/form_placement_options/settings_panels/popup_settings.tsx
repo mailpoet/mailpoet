@@ -62,7 +62,7 @@ export function PopUpSettings(): JSX.Element {
               assocPath('formPlacement.popup.delay', __, formSettings),
             ])}
             options={delayValues.map((delayValue) => ({
-              value: delayValue,
+              value: `${delayValue}`,
               label: MailPoet.I18n.t('formPlacementDelaySeconds').replace(
                 '%1s',
                 `${delayValue}`,
