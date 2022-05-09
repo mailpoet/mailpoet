@@ -19,9 +19,6 @@ $dbConfig->defineTables();
 // This needs to be set because \MailPoet\Doctrine\TablePrefixMetadataFactory can't construct without it
 MailPoet\Config\Env::$dbPrefix = 'wp_';
 
-// Classes needed in runtime
-class_alias(\PHPMailer\PHPMailer\PHPMailer::class, 'PHPMailer');
-class_alias(\PHPMailer\PHPMailer\Exception::class, 'phpmailerException');
 // Load tracy
 $tracyPath = __DIR__ . '/../../tools/vendor/tracy.phar';
 require_once($tracyPath);

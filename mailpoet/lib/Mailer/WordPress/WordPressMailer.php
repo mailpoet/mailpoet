@@ -7,10 +7,12 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Subscribers\SubscribersRepository;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use PHPMailer\PHPMailer\PHPMailer;
 
 PHPMailerLoader::load();
 
-class WordPressMailer extends \PHPMailer {
+class WordPressMailer extends PHPMailer {
   /** @var MailerFactory */
   private $mailerFactory;
 
@@ -36,7 +38,7 @@ class WordPressMailer extends \PHPMailer {
   }
 
   public function send() {
-    // We need this so that the \PHPMailer class will correctly prepare all the headers.
+    // We need this so that the PHPMailer class will correctly prepare all the headers.
     $this->Mailer = 'mail'; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     // Prepare everything (including the message) for sending.
@@ -71,7 +73,7 @@ class WordPressMailer extends \PHPMailer {
         $sendWithMailer($useFallback = true);
       } catch (\Exception $fallbackMailerException) {
         // throw exception passing the original (primary mailer) error
-        throw new \phpmailerException($e->getMessage(), $e->getCode(), $e);
+        throw new PHPMailerException($e->getMessage(), $e->getCode(), $e);
       }
     }
     return true;
@@ -94,7 +96,7 @@ class WordPressMailer extends \PHPMailer {
       $email['body']['text'] = $this->AltBody;
       $email['body']['html'] = $this->Body;
     } else {
-      throw new \phpmailerException('Unsupported email content type has been used. Please use only text or HTML emails.');
+      throw new PHPMailerException('Unsupported email content type has been used. Please use only text or HTML emails.');
     }
     return $email;
     // phpcs:enable
