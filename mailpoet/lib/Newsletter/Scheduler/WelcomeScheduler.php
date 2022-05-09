@@ -114,7 +114,9 @@ class WelcomeScheduler {
       }
     }
     $previouslyScheduledNotification = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($newsletter, $subscriberId);
-    if (!empty($previouslyScheduledNotification)) return;
+    if (!empty($previouslyScheduledNotification)) {
+      return;
+    }
     $sendingTask = SendingTask::create();
     $sendingTask->newsletterId = $newsletter->getId();
     $sendingTask->setSubscribers([$subscriberId]);

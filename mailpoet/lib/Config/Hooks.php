@@ -261,6 +261,11 @@ class Hooks {
       6, 2
     );
     $this->wp->addAction(
+      'add_user_role',
+      [$this->wpSegment, 'synchronizeUser'],
+      6, 1
+    );
+    $this->wp->addAction(
       'delete_user',
       [$this->wpSegment, 'synchronizeUser'],
       1
