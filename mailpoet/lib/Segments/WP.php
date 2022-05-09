@@ -162,7 +162,7 @@ class WP {
 
       // welcome email
       $scheduleWelcomeNewsletter = false;
-      if (in_array($currentFilter, ['profile_update', 'user_register'])) {
+      if (in_array($currentFilter, ['profile_update', 'user_register', 'add_user_role'])) {
         $scheduleWelcomeNewsletter = true;
       }
       if ($scheduleWelcomeNewsletter === true) {
