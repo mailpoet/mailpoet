@@ -108,8 +108,8 @@ class Workflow {
     $workflow = new self($data['name'], self::parseSteps(Json::decode($data['steps'])));
     $workflow->id = (int)$data['id'];
     $workflow->status = $data['status'];
-    $workflow->createdAt = $data['created_at'];
-    $workflow->updatedAt = $data['updated_at'];
+    $workflow->createdAt = new DateTimeImmutable($data['created_at']);
+    $workflow->updatedAt = new DateTimeImmutable($data['updated_at']);
     return $workflow;
   }
 
