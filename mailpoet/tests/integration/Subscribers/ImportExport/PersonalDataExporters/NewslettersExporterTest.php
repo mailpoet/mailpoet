@@ -2,12 +2,15 @@
 
 namespace MailPoet\Subscribers\ImportExport\PersonalDataExporters;
 
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
-use MailPoet\Models\StatisticsOpens;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Url;
+use MailPoet\Test\DataFactories\StatisticsOpens as StatisticsOpensFactory;
+use MailPoetVendor\Carbon\Carbon;
 
 class NewslettersExporterTest extends \MailPoetTest {
 
@@ -128,18 +131,19 @@ class NewslettersExporterTest extends \MailPoetTest {
       'subscriber_id' => $subscriber->id(),
       'queue_id' => $queue2->id(),
     ]]);
-    StatisticsOpens::createOrUpdate([
-      'subscriber_id' => $subscriber->id(),
-      'newsletter_id' => $newsletter1->id(),
-      'queue_id' => $queue1->id(),
-      'created_at' => '2017-01-02 12:23:45',
-    ]);
-    StatisticsOpens::createOrUpdate([
-      'subscriber_id' => $subscriber2->id(),
-      'newsletter_id' => $newsletter1->id(),
-      'queue_id' => $queue1->id(),
-      'created_at' => '2017-01-02 21:23:45',
-    ]);
+
+    $newsletter1Entity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter1->id());
+    $subscriber1Entity = $this->entityManager->getReference(SubscriberEntity::class, $subscriber->id());
+    $subscriber2Entity = $this->entityManager->getReference(SubscriberEntity::class, $subscriber2->id());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter1Entity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1Entity);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber2Entity);
+    $statisticsOpensEntity = (new StatisticsOpensFactory($newsletter1Entity, $subscriber1Entity))->create();
+    $statisticsOpensEntity->setCreatedAt(new Carbon('2017-01-02 12:23:45'));
+    $this->entityManager->persist($statisticsOpensEntity);
+    $this->entityManager->flush();
+    (new StatisticsOpensFactory($newsletter1Entity, $subscriber2Entity))->create();
+
     $result = $this->exporter->export('user21@with.newsletters');
     expect(count($result['data']))->equals(2);
     expect($result['data'][0]['data'])->contains(['name' => 'Opened', 'value' => 'Yes']);
