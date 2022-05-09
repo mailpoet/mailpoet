@@ -82,7 +82,7 @@ class WelcomeScheduler {
         $newRole = $wpUser['roles'];
         if (
           $newsletterRole === self::WORDPRESS_ALL_ROLES ||
-          !array_diff($oldRole, $newRole)
+          !array_diff($newRole, $oldRole)
         ) {
           continue;
         }
