@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { selectors } from '../../../../assets/js/src/form_editor/store/selectors.jsx';
+import { selectors } from '../../../../assets/js/src/form_editor/store/selectors';
 
 describe('Selectors', () => {
   describe('getClosestParentAttribute', () => {
