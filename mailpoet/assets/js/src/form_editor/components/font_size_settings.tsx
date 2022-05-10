@@ -3,7 +3,7 @@ import { useSetting } from '@wordpress/block-editor';
 
 type Props = {
   value: number | undefined;
-  onChange: (value: string | undefined) => void;
+  onChange: (value?: number) => void;
 };
 
 export function FontSizeSettings({ value, onChange }: Props): JSX.Element {
