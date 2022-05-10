@@ -1,3 +1,5 @@
+import { ColorPalette, FontSizePicker } from '@wordpress/components';
+
 export * from '../segments/dynamic/types';
 
 // Inspired by: https://neliosoftware.com/blog/adding-typescript-to-wordpress-data-stores/
@@ -15,4 +17,11 @@ export type OmitFirstArgs<O extends object> = {
 declare module '@wordpress/block-editor' {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/naming-convention,no-underscore-dangle
   export const __experimentalLibrary: any;
+
+  // types for 'useSetting' are missing in @types/wordpress__block-editor
+  export function useSetting(path: string): unknown;
+  export function useSetting(path: 'color.palette'): ColorPalette.Color[];
+  export function useSetting(
+    path: 'typography.fontSizes',
+  ): FontSizePicker.FontSize[];
 }
