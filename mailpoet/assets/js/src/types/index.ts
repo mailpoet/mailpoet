@@ -11,3 +11,8 @@ export type OmitFirstArg<F> = F extends (
 export type OmitFirstArgs<O extends object> = {
   [K in keyof O]: OmitFirstArg<O[K]>;
 };
+
+declare module '@wordpress/block-editor' {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/naming-convention,no-underscore-dangle
+  export const __experimentalLibrary: any;
+}
