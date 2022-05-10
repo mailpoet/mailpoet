@@ -1,13 +1,12 @@
 import { MailPoet } from 'mailpoet';
 import { select } from '@wordpress/data';
 import { STORE_NAME } from './store_name';
-import { Settings } from './types';
 
 export { callApi as CALL_API } from 'common/controls/call_api';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function TRACK_SETTINGS_SAVED() {
-  const settings: Settings = select(STORE_NAME).getSettings();
+  const settings = select(STORE_NAME).getSettings();
   const data = {
     'Sending method type': settings.mta_group || null,
     'Sending frequency (emails)':

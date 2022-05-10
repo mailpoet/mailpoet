@@ -102,7 +102,7 @@ export function FormPreview(): JSX.Element {
   };
   let iframeSrc = `${previewPageUrl}&data=${btoa(JSON.stringify(urlData))}`;
   // Add anchor to scroll to certain types of form
-  if (['below_post'].includes(previewSettings.formType as string)) {
+  if (['below_post'].includes(previewSettings.formType)) {
     iframeSrc += `#mailpoet_form_preview_${formId}`;
   }
   return (
