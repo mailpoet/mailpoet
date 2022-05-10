@@ -251,15 +251,18 @@ export const controls = {
     dispatch('core/block-editor').resetBlocks(fixedBlocks);
   },
 
-  STORE_LOCALLY({ key, value }) {
-    window.localStorage.setItem(key, JSON.stringify(value));
+  STORE_LOCALLY(actionData) {
+    window.localStorage.setItem(
+      actionData.key,
+      JSON.stringify(actionData.value),
+    );
   },
 
   CALL_API,
 
-  ENSURE_BROWSER_URL({ formId }) {
+  ENSURE_BROWSER_URL(actionData) {
     let url = select('mailpoet-form-editor').getFormEditorUrl();
-    url = `${url}${formId}`;
+    url = `${url}${actionData.formId}`;
     if (window.location !== url) {
       window.history.replaceState(null, '', url);
     }
