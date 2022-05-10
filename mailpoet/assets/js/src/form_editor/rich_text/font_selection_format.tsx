@@ -1,4 +1,4 @@
-import { applyFormat } from '@wordpress/rich-text';
+import { applyFormat, FormatConfiguration, Value } from '@wordpress/rich-text';
 import { MailPoet } from 'mailpoet';
 import { BlockFormatControls } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
@@ -10,26 +10,6 @@ const title = 'Font Selection';
 
 const supportedBlocks = ['core/paragraph', 'core/heading'];
 
-type Attributes = {
-  font?: string;
-  style?: string;
-};
-
-type Format = {
-  attributes?: Attributes;
-  type?: string;
-  unregisteredAttributes?: Attributes;
-};
-
-type Value = {
-  formats: Format[][];
-  replacements: (string | object)[];
-  text: string;
-  activeFormats?: Format[];
-  start?: number;
-  end?: number;
-};
-
 type Props = {
   value: Value;
   onChange: (object) => void;
@@ -39,12 +19,12 @@ type Props = {
 };
 
 function Edit({ value, onChange, activeAttributes }: Props): JSX.Element {
-  const selectedBlock = useSelect(
+  const selectedBlock = useSelect<{ name: string }>(
     (sel) => sel('core/block-editor').getSelectedBlock(),
     [],
   );
 
-  if (!supportedBlocks.includes(selectedBlock.name as string)) {
+  if (!supportedBlocks.includes(selectedBlock.name)) {
     return null;
   }
 
@@ -72,7 +52,7 @@ function Edit({ value, onChange, activeAttributes }: Props): JSX.Element {
   );
 }
 
-const settings = {
+const settings: FormatConfiguration & { name: string } = {
   name,
   title,
   tagName: 'span',
