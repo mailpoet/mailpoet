@@ -221,17 +221,9 @@ export function* showPreview() {
   const formData = select('mailpoet-form-editor').getFormData();
   const formBlocks = select('mailpoet-form-editor').getFormBlocks();
   const blocksToFormBody = blocksToFormBodyFactory(
-    SETTINGS_DEFAULTS.fontSizes as {
-      name: string;
-      slug: string;
-      size: number;
-    }[],
-    SETTINGS_DEFAULTS.colors as { name: string; slug: string; color: string }[],
-    SETTINGS_DEFAULTS.gradients as {
-      name: string;
-      slug: string;
-      gradient: string;
-    }[],
+    SETTINGS_DEFAULTS.fontSizes,
+    SETTINGS_DEFAULTS.colors,
+    SETTINGS_DEFAULTS.gradients,
     customFields,
   );
   const { success, error } = yield {
