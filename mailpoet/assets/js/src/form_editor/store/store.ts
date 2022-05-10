@@ -62,13 +62,13 @@ export const initStore = () => {
     }
   }
 
-  let fullscreenStatus = null;
+  let fullscreenStatus;
   try {
     fullscreenStatus = JSON.parse(
       window.localStorage.getItem('mailpoet_form_view_options'),
     );
   } catch (e) {
-    fullscreenStatus = 'disabled';
+    fullscreenStatus = false;
   }
 
   const defaultState = {
