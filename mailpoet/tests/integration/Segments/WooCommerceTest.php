@@ -19,7 +19,7 @@ use MailPoet\WooCommerce\Helper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
-require_once('WPUserWithExtraProps.php');
+require_once('WPTestUser.php');
 
 class WooCommerceTest extends \MailPoetTest {
   public $customerRoleAdded;
@@ -691,7 +691,7 @@ class WooCommerceTest extends \MailPoetTest {
    * Those tests are testing user synchronisation, so we need data in wp_users table which has not been synchronised to
    * mailpoet database yet. We cannot use wp_insert_user functions because they would do the sync on insert.
    *
-   * @return WPUserWithExtraProps
+   * @return WPTestUser
    */
   private function insertRegisteredCustomer($number = null, $firstName = null, $lastName = null) {
     global $wpdb;
@@ -732,7 +732,7 @@ class WooCommerceTest extends \MailPoetTest {
       ", ['id' => $id, 'lastName' => $lastName]);
     }
     // add customer role
-    $user = new WPUserWithExtraProps($id);
+    $user = new WPTestUser($id);
     $user->add_role('customer');
     $this->userEmails[] = $user->user_email; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     return $user;
