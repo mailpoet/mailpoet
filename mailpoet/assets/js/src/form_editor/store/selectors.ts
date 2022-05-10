@@ -101,9 +101,9 @@ export const selectors = {
     }
     return previewSettings;
   },
-  getFormWidth(state: State, displayType) {
+  getFormWidth(state: State, formType: State['previewSettings']['formType']) {
     const settings = state.formData.settings;
-    switch (displayType) {
+    switch (formType) {
       case 'below_post':
         return settings.formPlacement.belowPosts.styles.width;
       case 'popup':
@@ -115,7 +115,7 @@ export const selectors = {
       case 'others':
         return settings.formPlacement.others.styles.width;
       default:
-        throw Error(`Invalid form display type ${displayType}`);
+        throw Error(`Invalid form display type ${formType as string}`);
     }
   },
   getIsCustomFieldSaving(state: State) {
