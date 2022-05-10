@@ -105,7 +105,7 @@ export type State = {
   };
   previewSettings: {
     displayType: 'desktop' | 'mobile';
-    formType: 'below_post' | 'fixed_bar' | 'popup' | 'slide_in' | 'others';
+    formType: 'below_posts' | 'fixed_bar' | 'popup' | 'slide_in' | 'others';
   };
   fullscreenStatus: boolean;
   editorUrl: string;

@@ -88,7 +88,7 @@ export const selectors = {
     };
     const settings = state.formData.settings;
     if (settings.formPlacement.belowPosts.enabled) {
-      previewSettings.formType = 'below_post';
+      previewSettings.formType = 'below_posts';
     }
     if (settings.formPlacement.popup.enabled) {
       previewSettings.formType = 'popup';
@@ -104,7 +104,7 @@ export const selectors = {
   getFormWidth(state: State, formType: State['previewSettings']['formType']) {
     const settings = state.formData.settings;
     switch (formType) {
-      case 'below_post':
+      case 'below_posts':
         return settings.formPlacement.belowPosts.styles.width;
       case 'popup':
         return settings.formPlacement.popup.styles.width;

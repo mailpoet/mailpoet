@@ -102,7 +102,7 @@ export function FormPreview(): JSX.Element {
   };
   let iframeSrc = `${previewPageUrl}&data=${btoa(JSON.stringify(urlData))}`;
   // Add anchor to scroll to certain types of form
-  if (['below_post'].includes(previewSettings.formType)) {
+  if (['below_posts'].includes(previewSettings.formType)) {
     iframeSrc += `#mailpoet_form_preview_${formId}`;
   }
   return (
@@ -129,7 +129,7 @@ export function FormPreview(): JSX.Element {
               options={[
                 { value: 'others', label: MailPoet.I18n.t('placeFormOthers') },
                 {
-                  value: 'below_post',
+                  value: 'below_posts',
                   label: MailPoet.I18n.t('placeFormBellowPages'),
                 },
                 {
