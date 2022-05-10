@@ -15,6 +15,14 @@ const standardFonts = [
   'Verdana',
 ];
 
+type Option = {
+  key: string;
+  name: string;
+  selectable: boolean;
+  value?: string;
+  style?: CSSProperties;
+};
+
 type Props = {
   onChange: (value: string | undefined) => void;
   value?: string;
@@ -42,7 +50,7 @@ export function FontFamilySettings({
     cursor: 'default',
     marginLeft: 16,
   });
-  const options = [
+  const options: Option[] = [
     {
       key: MailPoet.I18n.t('formFontsDefaultTheme'),
       name: MailPoet.I18n.t('formFontsDefaultTheme'),
@@ -90,8 +98,9 @@ export function FontFamilySettings({
     <CustomSelectControl
       options={options}
       onChange={(selected): void => {
-        if (selected.selectedItem.selectable) {
-          onChange(selected.selectedItem.value as string);
+        const selectedItem = selected.selectedItem as Option;
+        if (selectedItem.selectable) {
+          onChange(selectedItem.value);
         }
       }}
       value={selectedValue}
