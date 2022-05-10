@@ -164,6 +164,11 @@ class Newsletter {
     return $this;
   }
 
+  public function withAutomaticType() {
+    $this->data['type'] = 'automatic';
+    return $this;
+  }
+
   /**
    * @return Newsletter
    */
