@@ -1,3 +1,5 @@
+import { State } from './state_types';
+
 const findBlockPath = (blocks, id, path = []) =>
   blocks.reduce((result, block) => {
     if (result.length) {
@@ -15,66 +17,66 @@ const findBlockPath = (blocks, id, path = []) =>
   }, []);
 
 export const selectors = {
-  isFormSaved(state) {
+  isFormSaved(state: State): boolean {
     return typeof state.formData.id === 'number';
   },
-  isFormEnabled(state) {
+  isFormEnabled(state: State): boolean {
     return state.formData.status === 'enabled';
   },
-  isFullscreenEnabled(state) {
+  isFullscreenEnabled(state: State) {
     return state.fullscreenStatus;
   },
-  isInserterOpened(state) {
+  isInserterOpened(state: State) {
     return !!state.inserterPanel;
   },
-  getInserterPanelInsertPoint(state) {
+  getInserterPanelInsertPoint(state: State) {
     return state.inserterPanel;
   },
-  getSidebarOpened(state) {
+  getSidebarOpened(state: State) {
     return state.sidebarOpened;
   },
-  getFormName(state) {
+  getFormName(state: State) {
     return state.formData.name;
   },
-  getFormData(state) {
+  getFormData(state: State) {
     return state.formData;
   },
-  getFormStyles(state) {
+  getFormStyles(state: State) {
     return state.formData.styles;
   },
-  getFormExports(state) {
+  getFormExports(state: State) {
     return Object.fromEntries(
       Object.entries(state.formExports).map(([k, v]) => [
         k,
-        v.replace(':form_id:', state.formData.id),
+        v.replace(':form_id:', `${state.formData.id}`),
       ]),
     );
   },
-  getFormSettings(state) {
+  getFormSettings(state: State) {
     return state.formData.settings;
   },
-  getAllAvailableSegments(state) {
+  getAllAvailableSegments(state: State) {
     return state.segments;
   },
-  getAllAvailableCustomFields(state) {
+  getAllAvailableCustomFields(state: State) {
     return state.customFields;
   },
-  getAllAvailablePages(state) {
+  getAllAvailablePages(state: State) {
     return state.allWpPages.map((page) => ({
       id: page.id,
       title: page.name,
     }));
   },
-  getIsFormSaving(state) {
+  getIsFormSaving(state: State) {
     return state.isFormSaving;
   },
-  getIsPreviewShown(state) {
+  getIsPreviewShown(state: State) {
     return state.isPreviewShown;
   },
-  getIsPreviewReady(state) {
+  getIsPreviewReady(state: State) {
     return state.isPreviewReady;
   },
-  getPreviewSettings(state) {
+  getPreviewSettings(state: State) {
     // Use previously used value
     if (state.previewSettings) {
       return state.previewSettings;
@@ -99,7 +101,7 @@ export const selectors = {
     }
     return previewSettings;
   },
-  getFormWidth(state, displayType) {
+  getFormWidth(state: State, displayType) {
     const settings = state.formData.settings;
     switch (displayType) {
       case 'below_post':
@@ -116,92 +118,92 @@ export const selectors = {
         throw Error(`Invalid form display type ${displayType}`);
     }
   },
-  getIsCustomFieldSaving(state) {
+  getIsCustomFieldSaving(state: State) {
     return state.isCustomFieldSaving;
   },
-  getIsCustomFieldDeleting(state) {
+  getIsCustomFieldDeleting(state: State) {
     return state.isCustomFieldDeleting;
   },
-  getDismissibleNotices(state) {
+  getDismissibleNotices(state: State) {
     return state.notices.filter((notice) => notice.isDismissible === true);
   },
-  getNonDismissibleNotices(state) {
+  getNonDismissibleNotices(state: State) {
     return state.notices.filter((notice) => notice.isDismissible === false);
   },
-  getNotice(state, id) {
+  getNotice(state: State, id) {
     return state.notices.find((notice) => notice.id === id);
   },
-  getFormErrors(state) {
+  getFormErrors(state: State) {
     return state.formErrors;
   },
-  getDefaultSidebarActiveTab(state) {
+  getDefaultSidebarActiveTab(state: State) {
     return state.sidebar.activeTab;
   },
-  getSidebarOpenedPanels(state) {
+  getSidebarOpenedPanels(state: State) {
     return state.sidebar.openedPanels;
   },
-  getFormBlocks(state) {
+  getFormBlocks(state: State) {
     return state.formBlocks;
   },
-  getDateSettingsData(state) {
+  getDateSettingsData(state: State) {
     return state.dateSettingData;
   },
-  getIsCustomFieldCreating(state) {
+  getIsCustomFieldCreating(state: State) {
     return state.isCustomFieldCreating;
   },
-  hasUnsavedChanges(state) {
+  hasUnsavedChanges(state: State) {
     return state.hasUnsavedChanges;
   },
-  getEditorUrl(state) {
+  getEditorUrl(state: State) {
     return state.editorUrl;
   },
-  getPreviewPageUrl(state) {
+  getPreviewPageUrl(state: State) {
     return state.previewPageUrl;
   },
-  getCloseIconsUrl(state) {
+  getCloseIconsUrl(state: State) {
     return state.closeIconsUrl;
   },
-  getAllCustomFonts(state) {
+  getAllCustomFonts(state: State) {
     return state.customFonts;
   },
-  getActiveSidebar(state) {
+  getActiveSidebar(state: State) {
     return state.sidebar.activeSidebar;
   },
-  getAllWPPosts(state) {
+  getAllWPPosts(state: State) {
     return state.allWpPosts;
   },
-  getAllWPPages(state) {
+  getAllWPPages(state: State) {
     return state.allWpPages;
   },
-  getAllWPCategories(state) {
+  getAllWPCategories(state: State) {
     return state.allWpCategories;
   },
-  getAllWPTags(state) {
+  getAllWPTags(state: State) {
     return state.allWpTags;
   },
-  getAllWooCommerceProducts(state) {
+  getAllWooCommerceProducts(state: State) {
     return state.allWooCommerceProducts;
   },
-  getAllWooCommerceCategories(state) {
+  getAllWooCommerceCategories(state: State) {
     return state.allWooCommerceCategories;
   },
-  getAllWooCommerceTags(state) {
+  getAllWooCommerceTags(state: State) {
     return state.allWooCommerceTags;
   },
-  getTutorialSeen(state) {
+  getTutorialSeen(state: State) {
     return state.tutorialSeen;
   },
-  getFormEditorUrl(state) {
+  getFormEditorUrl(state: State) {
     return state.formEditorUrl;
   },
-  getTutorialUrl(state) {
+  getTutorialUrl(state: State) {
     return state.tutorialUrl;
   },
   /**
    * Goes thru all parents of the block and return
    * the attribute value from the closest parent which has the attribute defined
    */
-  getClosestParentAttribute(state, blockId, attributeName) {
+  getClosestParentAttribute(state: State, blockId, attributeName) {
     const blockPath = findBlockPath(state.formBlocks, blockId);
     return blockPath.reduce((result, block) => {
       if (block.attributes && block.attributes[attributeName] !== undefined) {
@@ -210,7 +212,7 @@ export const selectors = {
       return result;
     }, null);
   },
-  hasEditorUndo(state) {
+  hasEditorUndo(state: State) {
     let length = state.editorHistory.length;
     // We add a record with the current state at the end of the history on click,
     // then we have to decrease the length by this record for correct behavior
@@ -220,10 +222,10 @@ export const selectors = {
 
     return length > 0 && length > state.editorHistoryOffset;
   },
-  hasEditorRedo(state) {
+  hasEditorRedo(state: State) {
     return state.editorHistoryOffset > 0;
   },
-  isUserAdministrator(state) {
+  isUserAdministrator(state: State) {
     return state.user.isAdministrator;
   },
-};
+} as const;

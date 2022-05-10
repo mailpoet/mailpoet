@@ -7,7 +7,7 @@ import { registerStore } from '@wordpress/data';
 import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
 import * as actions from './actions';
 import { createReducer } from './reducer.jsx';
-import { selectors } from './selectors.jsx';
+import { selectors } from './selectors';
 import { controls } from './controls.jsx';
 import { validateForm } from './form_validator.jsx';
 import { formBodyToBlocksFactory } from './form_body_to_blocks.jsx';
