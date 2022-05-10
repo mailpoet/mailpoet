@@ -77,7 +77,7 @@ export function SlideInSettings(): JSX.Element {
           <AnimationSettings settingsPlacementKey="slideIn" />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
-            value={formSettings.formPlacement.slideIn.delay}
+            value={`${formSettings.formPlacement.slideIn.delay}`}
             onChange={compose([
               changeFormSettings,
               assocPath('formPlacement.slideIn.delay', __, formSettings),
