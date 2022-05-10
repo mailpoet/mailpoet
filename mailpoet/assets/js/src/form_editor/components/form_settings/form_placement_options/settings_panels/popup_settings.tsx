@@ -56,7 +56,7 @@ export function PopUpSettings(): JSX.Element {
           <AnimationSettings settingsPlacementKey="popup" />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
-            value={formSettings.formPlacement.popup.delay}
+            value={`${formSettings.formPlacement.popup.delay}`}
             onChange={compose([
               changeFormSettings,
               assocPath('formPlacement.popup.delay', __, formSettings),

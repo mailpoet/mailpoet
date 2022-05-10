@@ -77,7 +77,7 @@ export function FixedBarSettings(): JSX.Element {
           <AnimationSettings settingsPlacementKey="fixedBar" />
           <SelectControl
             label={MailPoet.I18n.t('formPlacementDelay')}
-            value={formSettings.formPlacement.fixedBar.delay}
+            value={`${formSettings.formPlacement.fixedBar.delay}`}
             onChange={compose([
               changeFormSettings,
               assocPath('formPlacement.fixedBar.delay', __, formSettings),
