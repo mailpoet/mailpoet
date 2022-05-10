@@ -24,4 +24,13 @@ declare module '@wordpress/block-editor' {
   export function useSetting(
     path: 'typography.fontSizes',
   ): FontSizePicker.FontSize[];
+
+  // types for 'gradients' are missing in @types/wordpress__block-editor
+  export interface EditorSettings {
+    gradients: {
+      name: string;
+      slug: string;
+      gradient: string;
+    }[];
+  }
 }
