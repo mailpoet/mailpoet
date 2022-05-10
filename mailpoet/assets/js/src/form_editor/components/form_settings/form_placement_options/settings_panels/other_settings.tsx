@@ -78,9 +78,12 @@ export function OtherSettings(): JSX.Element {
       <TextareaControl
         key="copyTextArea"
         readOnly
-        onClick={(event): void => event.target.select()}
+        onClick={(event): void =>
+          (event.target as HTMLTextAreaElement).select()
+        }
         rows={8}
         value={copyAreaContent}
+        onChange={() => {}}
       />
     );
   };
