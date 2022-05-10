@@ -5,15 +5,11 @@ const sleep = (ms: number) =>
     setTimeout(resolve, ms);
   });
 
-export async function trackEvent({
-  name,
-  data,
-  timeout = 0,
-}: {
-  name: string;
-  data: object;
-  timeout: number;
-}) {
+export async function trackEvent(actionData) {
+  const name: string = actionData.name;
+  const data: object = actionData.data;
+  const timeout: number = actionData.timeout ?? 0;
+
   MailPoet.trackEvent(name, data);
   return sleep(timeout);
 }
