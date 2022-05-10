@@ -19,15 +19,21 @@ import metadata from './block.json';
 const categories = getCategories();
 setCategories([...categories, { slug: 'mailpoet', title: 'MailPoet' }]);
 
-registerBlockType(metadata, {
-  icon: {
-    src: <Icon icon={megaphone} />,
-    foreground: '#7f54b3',
-  },
-  attributes: {
-    ...metadata.attributes,
-    ...marketingOptinAttributes,
-  },
-  edit: Edit,
-  save: Save,
-});
+// Attributes are in metadata vs. settings are used strangely here.
+// Needs more investigation to enable correct types.
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument */
+registerBlockType(
+  metadata as any,
+  {
+    icon: {
+      src: <Icon icon={megaphone} />,
+      foreground: '#7f54b3',
+    },
+    attributes: {
+      ...metadata.attributes,
+      ...marketingOptinAttributes,
+    },
+    edit: Edit,
+    save: Save,
+  } as any,
+);
