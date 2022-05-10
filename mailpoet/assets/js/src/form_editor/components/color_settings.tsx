@@ -13,7 +13,6 @@ export function ColorSettings({ name, value, onChange }: Props): JSX.Element {
     <div>
       <BaseControl.VisualLabel>{name}</BaseControl.VisualLabel>
       <ColorPalette
-        label={name}
         value={value}
         onChange={onChange}
         colors={settingsColors}
