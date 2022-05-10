@@ -27,8 +27,7 @@ export function ImageSettings({
           onChange={(event): void => onImageUrlChange(event.target.value)}
         />
         <MediaUpload
-          value={imageUrl}
-          onSelect={(image: { url: string }): void =>
+          onSelect={(image: { id: number; url: string }): void =>
             onImageUrlChange(image.url)
           }
           allowedTypes={['image']}
