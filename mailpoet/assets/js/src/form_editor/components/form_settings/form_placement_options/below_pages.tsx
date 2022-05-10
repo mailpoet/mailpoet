@@ -17,7 +17,7 @@ export function BelowPages(): JSX.Element {
       active={formSettings.formPlacement.belowPosts.enabled}
       label={MailPoet.I18n.t('placeFormBellowPages')}
       icon={BelowPageIcon}
-      onClick={(): void => showPlacementSettings('below_post')}
+      onClick={(): void => showPlacementSettings('below_posts')}
       canBeActive
     />
   );

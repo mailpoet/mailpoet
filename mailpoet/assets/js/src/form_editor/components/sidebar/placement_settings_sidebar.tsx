@@ -20,7 +20,7 @@ export function PlacementSettingsSidebar({ onClose }: Props): JSX.Element {
         <h3 className="mailpoet-sidebar-header-heading">
           {previewSettings.formType === 'others' &&
             MailPoet.I18n.t('placeFormOthers')}
-          {previewSettings.formType === 'below_post' &&
+          {previewSettings.formType === 'below_posts' &&
             MailPoet.I18n.t('placeFormBellowPages')}
           {previewSettings.formType === 'fixed_bar' &&
             MailPoet.I18n.t('placeFixedBarFormOnPages')}
