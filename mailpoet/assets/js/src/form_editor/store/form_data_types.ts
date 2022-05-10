@@ -1,8 +1,16 @@
+import { SizeDefinition } from '../components/size_settings';
+
 type PlacementStyles = {
-  width: {
-    unit: string;
-    value: number;
-  };
+  width: SizeDefinition;
+};
+
+type FormPlacementBase = {
+  enabled: boolean;
+  styles: PlacementStyles;
+  categories: string[] | number[];
+  tags: string[] | number[];
+  posts: { all: boolean | '' | '1'; selected: string[] };
+  pages: { all: boolean | '' | '1'; selected: string[] };
 };
 
 export type FormSettingsType = {
@@ -20,6 +28,30 @@ export type FormSettingsType = {
   fixedBarStyles: PlacementStyles;
   fontFamily?: string;
   formPadding: number;
+  formPlacement: {
+    popup: FormPlacementBase & {
+      exitIntentEnabled: boolean;
+      delay: number | `${number}`;
+      cookieExpiration: number | `${number}`;
+      animation: string;
+    };
+    fixedBar: FormPlacementBase & {
+      delay: number;
+      cookieExpiration: number;
+      animation: string;
+      position: 'top' | 'bottom';
+    };
+    belowPosts: FormPlacementBase;
+    slideIn: FormPlacementBase & {
+      delay: number;
+      cookieExpiration: number;
+      animation: string;
+      position: 'left' | 'right';
+    };
+    others: {
+      styles: PlacementStyles;
+    };
+  };
   inputPadding: number;
   otherStyles: PlacementStyles;
   placeFixedBarFormOnAllPages: boolean;
