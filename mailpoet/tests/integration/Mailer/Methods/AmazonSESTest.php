@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Test\Mailer\Methods;
 
@@ -102,34 +102,40 @@ class AmazonSESTest extends \MailPoetTest {
     expect($body['Version'])->equals('2010-12-01');
     expect($body['Source'])->equals($this->sender['from_name_email']);
     expect($body['RawMessage.Data'])
-      ->equals($this->mailer->encodeMessage($this->mailer->message));
+      ->equals($this->mailer->encodeMessage($this->mailer->rawMessage));
   }
 
   public function testItCanCreateMessage() {
-    $message = $this->mailer
-      ->createMessage($this->newsletter, $this->subscriber, $this->extraParams);
-    expect($message->getTo())
-      ->equals(['blackhole@mailpoet.com' => 'Recipient']);
-    expect($message->getFrom())
-      ->equals([$this->sender['from_email'] => $this->sender['from_name']]);
-    expect($message->getSender())
-      ->equals([$this->sender['from_email'] => null]);
-    expect($message->getReplyTo())
-      ->equals([$this->replyTo['reply_to_email'] => $this->replyTo['reply_to_name']]);
-    expect($message->getSubject())
-      ->equals($this->newsletter['subject']);
-    expect($message->getBody())
-      ->equals($this->newsletter['body']['html']);
-    expect($message->getChildren()[0]->getContentType())
-      ->equals('text/plain');
-    expect($message->getHeaders()->get('List-Unsubscribe')->getValue())
-      ->equals('<' . $this->extraParams['unsubscribe_url'] . '>');
+    $mailer = $this->mailer->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extraParams);
+    expect($mailer->CharSet)->equals('UTF-8'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->getToAddresses())->equals([[
+      'blackhole@mailpoet.com',
+      'Recipient',
+    ]]);
+    expect($mailer->getAllRecipientAddresses())->equals(['blackhole@mailpoet.com' => true]);
+    expect($mailer->From)->equals($this->sender['from_email']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->FromName)->equals($this->sender['from_name']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->getReplyToAddresses())->equals([
+      $this->replyTo['reply_to_email'] => [
+        $this->replyTo['reply_to_email'],
+        $this->replyTo['reply_to_name'],
+      ],
+    ]);
+    expect($mailer->Sender)->equals($this->returnPath); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->ContentType)->equals('text/html'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->Subject)->equals($this->newsletter['subject']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->Body)->equals($this->newsletter['body']['html']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->AltBody)->equals($this->newsletter['body']['text']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->getCustomHeaders())->equals([[
+      'List-Unsubscribe',
+      '<http://www.mailpoet.com>',
+    ]]);
   }
 
   public function testItCanCreateRequest() {
     $request = $this->mailer->request($this->newsletter, $this->subscriber);
     // preserve the original message
-    $rawMessage = $this->mailer->encodeMessage($this->mailer->message);
+    $rawMessage = $this->mailer->encodeMessage($this->mailer->rawMessage);
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     // substitute the message to synchronize hashes
     $body['RawMessage.Data'] = $rawMessage;
@@ -230,7 +236,7 @@ class AmazonSESTest extends \MailPoetTest {
     );
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
-    expect($result['error']->getMessage())->stringContainsString('does not comply with RFC 2822');
+    expect($result['error']->getMessage())->stringContainsString('Invalid address');
   }
 
   public function testItChecksBlacklistBeforeSending() {
