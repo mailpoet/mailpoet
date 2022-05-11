@@ -4,20 +4,21 @@ namespace MailPoet\Newsletter\Scheduler;
 
 use Codeception\Util\Fixtures;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterPostEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class AutomaticEmailTest extends \MailPoetTest {
 
@@ -27,23 +28,35 @@ class AutomaticEmailTest extends \MailPoetTest {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var NewsletterEntity */
+  private $newsletter;
+
+  /** @var NewsletterOptionFactory */
+  private $newsletterOptionFactory;
+
+  /** @var NewsletterFactory */
+  private $newsletterFactory;
+
   public function _before() {
     parent::_before();
     $this->automaticEmailScheduler = $this->diContainer->get(AutomaticEmailScheduler::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
-  }
 
-  public function testItCreatesScheduledAutomaticEmailSendingTaskForUser() {
-    $newsletter = $this->_createNewsletter();
-    $this->_createNewsletterOptions(
-      $newsletter->id,
+    $this->newsletterFactory = new NewsletterFactory();
+    $this->newsletter = $this->newsletterFactory->withActiveStatus()->withAutomaticType()->create();
+    $this->newsletterOptionFactory = new NewsletterOptionFactory();
+    $this->newsletterOptionFactory->createMultipleOptions(
+      $this->newsletter,
       [
         'sendTo' => 'user',
         'afterTimeType' => 'hours',
         'afterTimeNumber' => 2,
       ]
     );
-    $newsletter = $this->newslettersRepository->findOneById($newsletter->id);
+  }
+
+  public function testItCreatesScheduledAutomaticEmailSendingTaskForUser() {
+    $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
@@ -66,16 +79,7 @@ class AutomaticEmailTest extends \MailPoetTest {
   }
 
   public function testItAddsMetaToSendingQueueWhenCreatingAutomaticEmailSendingTask() {
-    $newsletter = $this->_createNewsletter();
-    $this->_createNewsletterOptions(
-      $newsletter->id,
-      [
-        'sendTo' => 'user',
-        'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2,
-      ]
-    );
-    $newsletter = $this->newslettersRepository->findOneById($newsletter->id);
+    $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
@@ -90,16 +94,7 @@ class AutomaticEmailTest extends \MailPoetTest {
   }
 
   public function testItCreatesAutomaticEmailSendingTaskForSegment() {
-    $newsletter = $this->_createNewsletter();
-    $this->_createNewsletterOptions(
-      $newsletter->id,
-      [
-        'sendTo' => 'segment',
-        'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2,
-      ]
-    );
-    $newsletter = $this->newslettersRepository->findOneById($newsletter->id);
+    $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
 
     $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, $subscriber = null, $meta = null);
@@ -118,15 +113,11 @@ class AutomaticEmailTest extends \MailPoetTest {
   }
 
   public function testItDoesNotScheduleAutomaticEmailWhenGroupDoesNotMatch() {
-    $newsletter = $this->_createNewsletter();
-    $this->_createNewsletterOptions(
-      $newsletter->id,
+    $this->newsletterOptionFactory->createMultipleOptions(
+      $this->newsletter,
       [
         'group' => 'some_group',
         'event' => 'some_event',
-        'sendTo' => 'user',
-        'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2,
       ]
     );
 
@@ -136,15 +127,11 @@ class AutomaticEmailTest extends \MailPoetTest {
   }
 
   public function testItDoesNotScheduleAutomaticEmailWhenEventDoesNotMatch() {
-    $newsletter = $this->_createNewsletter();
-    $this->_createNewsletterOptions(
-      $newsletter->id,
+    $this->newsletterOptionFactory->createMultipleOptions(
+      $this->newsletter,
       [
         'group' => 'some_group',
         'event' => 'some_event',
-        'sendTo' => 'user',
-        'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2,
       ]
     );
 
@@ -155,20 +142,17 @@ class AutomaticEmailTest extends \MailPoetTest {
 
   public function testItSchedulesAutomaticEmailWhenConditionMatches() {
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    $newsletter1 = $this->_createNewsletter();
-    $this->_createNewsletterOptions(
-      $newsletter1->id,
+    $this->newsletterOptionFactory->createMultipleOptions(
+      $this->newsletter,
       [
         'group' => 'some_group',
         'event' => 'some_event',
-        'sendTo' => 'user',
-        'afterTimeType' => 'hours',
-        'afterTimeNumber' => 2,
       ]
     );
-    $newsletter2 = $this->_createNewsletter();
-    $this->_createNewsletterOptions(
-      $newsletter2->id,
+
+    $newsletter2 = $this->newsletterFactory->withAutomaticType()->withActiveStatus()->create();
+    $this->newsletterOptionFactory->createMultipleOptions(
+      $newsletter2,
       [
         'group' => 'some_group',
         'event' => 'some_event',
@@ -190,7 +174,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $automaticEmailScheduler->scheduleAutomaticEmail('some_group', 'some_event', $condition);
     $result = SendingQueue::findMany();
     expect($result)->count(1);
-    expect($result[0]->newsletter_id)->equals($newsletter2->id);
+    expect($result[0]->newsletter_id)->equals($newsletter2->getId());
     // scheduled task should be created
     $task = $result[0]->getTasks()->findOne();
     expect($task->id)->greaterOrEquals(1);
@@ -200,44 +184,15 @@ class AutomaticEmailTest extends \MailPoetTest {
       ->equals($currentTime->addHours(2)->format('Y-m-d H:i'));
   }
 
-  private function _createNewsletter() {
-    $newsletter = Newsletter::create();
-    $newsletter->type = Newsletter::TYPE_AUTOMATIC;
-    $newsletter->status = Newsletter::STATUS_ACTIVE;
-    $newsletter->save();
-    expect($newsletter->getErrors())->false();
-    return $newsletter;
-  }
-
-  private function _createNewsletterOptions($newsletterId, $options) {
-    foreach ($options as $option => $value) {
-      $newsletterOptionField = NewsletterOptionField::where('name', $option)->findOne();
-      if (!$newsletterOptionField) {
-        $newsletterOptionField = NewsletterOptionField::create();
-        $newsletterOptionField->name = $option;
-        $newsletterOptionField->newsletterType = Newsletter::TYPE_AUTOMATIC;
-        $newsletterOptionField->save();
-        expect($newsletterOptionField->getErrors())->false();
-      }
-
-      $newsletterOption = NewsletterOption::create();
-      $newsletterOption->optionFieldId = (int)$newsletterOptionField->id;
-      $newsletterOption->newsletterId = $newsletterId;
-      $newsletterOption->value = $value;
-      $newsletterOption->save();
-      expect($newsletterOption->getErrors())->false();
-    }
-  }
-
   public function _after() {
     Carbon::setTestNow();
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(NewsletterPostEntity::class);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
   }
 }

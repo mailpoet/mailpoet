@@ -2,21 +2,26 @@
 
 namespace MailPoet\Test\Models;
 
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\NewsletterSegmentEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Security;
+use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class NewsletterTest extends \MailPoetTest {
   public $sendingQueue;
@@ -24,6 +29,9 @@ class NewsletterTest extends \MailPoetTest {
   public $segment1;
   /** @var Newsletter */
   public $newsletter;
+
+  /** @var NewsletterOptionFactory */
+  private $newsletterOptionFactory;
 
   public function _before() {
     parent::_before();
@@ -53,6 +61,8 @@ class NewsletterTest extends \MailPoetTest {
     $this->sendingQueue->newsletter_id = $this->newsletter->id;
     $this->sendingQueue->status = ScheduledTask::STATUS_SCHEDULED;
     $this->sendingQueue->save();
+
+    $this->newsletterOptionFactory = new NewsletterOptionFactory();
   }
 
   public function testItCanBeCreated() {
@@ -186,22 +196,14 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItCanHaveOptions() {
-    $newsletterOptions = [
-      'name' => 'event',
-      'newsletter_type' => Newsletter::TYPE_WELCOME,
-    ];
-    $optionField = NewsletterOptionField::create();
-    $optionField->hydrate($newsletterOptions);
-    $optionField->save();
-    $association = NewsletterOption::create();
-    $association->newsletterId = $this->newsletter->id;
-    $association->optionFieldId = (int)$optionField->id;
-    $association->value = 'list';
-    $association->save();
-    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_WELCOME)
+    $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $this->newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $newsletterOption = $this->newsletterOptionFactory->create($newsletterEntity, 'event', 'list');
+
+    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_STANDARD)
       ->findOne($this->newsletter->id);
     assert($newsletter instanceof Newsletter);
-    expect($newsletter->event)->equals($association->value);
+    expect($newsletter->event)->equals($newsletterOption->getValue());
   }
 
   public function testItGeneratesHashOnNewsletterSave() {
@@ -446,24 +448,12 @@ class NewsletterTest extends \MailPoetTest {
         'type' => Newsletter::TYPE_AUTOMATIC,
       ]
     );
-    $newsletterOptionField = NewsletterOptionField::create();
-    $newsletterOptionField->hydrate(
-      [
-        'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
-        'name' => 'meta',
-      ]
-    );
-    $newsletterOptionField->save();
-    $newsletterOption = NewsletterOption::create();
+
     $meta = ['some' => 'value'];
-    $newsletterOption->hydrate(
-      [
-        'newsletter_id' => $newsletter->id,
-        'option_field_id' => $newsletterOptionField->id,
-        'value' => json_encode($meta),
-      ]
-    );
-    $newsletterOption->save();
+    $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $this->assertIsString(json_encode($meta));
+    $this->newsletterOptionFactory->create($newsletterEntity, 'meta', json_encode($meta));
 
     // by default meta option does not exist on newsletter object
     expect($newsletter->getMeta())->isEmpty();
@@ -532,13 +522,13 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterSegment::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
+    $this->truncateEntity(NewsletterSegmentEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(SegmentEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(StatisticsClickEntity::class);
     $this->truncateEntity(StatisticsOpenEntity::class);
     $this->truncateEntity(StatisticsUnsubscribeEntity::class);
