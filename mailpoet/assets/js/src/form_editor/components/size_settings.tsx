@@ -46,7 +46,7 @@ export function SizeSettings({
           { label: 'px', value: 'pixel' },
           { label: '%', value: 'percent' },
         ]}
-        onChange={(unit: 'pixel' | 'percent'): void => {
+        onChange={(unit: SizeDefinition['unit']): void => {
           const newValue = {
             value: unit === 'pixel' ? defaultPixelValue : defaultPercentValue,
             unit,
