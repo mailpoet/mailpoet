@@ -2,14 +2,33 @@ import ReactDOM from 'react-dom';
 import { CreateTestingWorkflowButton } from './testing';
 import { useMutation, useQuery } from './api';
 
-function ApiCheck(): JSX.Element {
+function Workflows(): JSX.Element {
   const { data, loading, error } = useQuery('workflows');
 
   if (!data || loading) {
-    return <div>Calling API...</div>;
+    return <div>Loading workflows...</div>;
   }
 
-  return <div>{error ? 'API error!' : 'API OK ✓'}</div>;
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  return (
+    <div>
+      {data.data.map((workflow) => (
+        <div key={workflow.id}>
+          [{workflow.id}] {workflow.name} ({workflow.status})
+          <a
+            href={`admin.php?page=mailpoet-automation-editor&id=${
+              workflow.id as number
+            }`}
+          >
+            EDIT
+          </a>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function RecreateSchemaButton(): JSX.Element {
@@ -57,10 +76,10 @@ function DeleteSchemaButton(): JSX.Element {
 function App(): JSX.Element {
   return (
     <div>
-      <ApiCheck />
       <CreateTestingWorkflowButton />
       <RecreateSchemaButton />
       <DeleteSchemaButton />
+      <Workflows />
     </div>
   );
 }
