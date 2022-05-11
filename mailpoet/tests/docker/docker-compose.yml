@@ -58,7 +58,7 @@ services:
           - test.local
 
   mysql:
-    image: circleci/mysql:${MYSQL_IMAGE_VERSION:-5.7.27-ram}
+    image: cimg/mysql:${MYSQL_IMAGE_VERSION:-5.7.36}
     # Command used for MySQL 8+ because it needs default-authentication-plugin
     # parameter and there needs to be some fallback for other MySQL versions.
     # --verbose can be changed to any other useless parameter
