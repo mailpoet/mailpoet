@@ -41,9 +41,6 @@
       "lib-3rd-party",
       "vendor-prefixed"
     ],
-    "exclude-from-classmap": [
-      "vendor-prefixed/swiftmailer"
-    ],
     "files": [
       "lib/exceptions.php",
       "vendor-prefixed/symfony/polyfill-ctype/bootstrap.php",
@@ -52,8 +49,7 @@
       "vendor-prefixed/symfony/polyfill-php72/bootstrap.php",
       "vendor-prefixed/symfony/polyfill-php80/bootstrap.php",
       "vendor-prefixed/symfony/polyfill-intl-idn/bootstrap.php",
-      "vendor-prefixed/symfony/polyfill-intl-normalizer/bootstrap.php",
-      "vendor-prefixed/swiftmailer/swiftmailer/lib/swift_required.php"
+      "vendor-prefixed/symfony/polyfill-intl-normalizer/bootstrap.php"
     ],
     "psr-4": {
       "MailPoet\\": "lib/",
