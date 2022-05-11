@@ -24,6 +24,7 @@ class Export {
           'mailpoet_form_iframe' => ':form_id:',
         ], WPFunctions::get()->trailingslashit(WPFunctions::get()->siteUrl()));
 
+        $onload = "var _this = this; window.addEventListener('message', function(e) {if(e.data.MailPoetIframeHeight){_this.style.height = e.data.MailPoetIframeHeight;}})";
         // generate iframe
         return join(' ', [
           '<iframe',
@@ -31,12 +32,12 @@ class Export {
           'height="100%"',
           'scrolling="no"',
           'frameborder="0"',
-          'src="' . $iframeUrl . '"',
+          'src="' . esc_url($iframeUrl) . '"',
           'class="mailpoet_form_iframe"',
           'id="mailpoet_form_iframe"',
           'vspace="0"',
           'tabindex="0"',
-          'onload="if (window[\'MailPoet\']) MailPoet.Iframe.autoSize(this);"',
+          sprintf('onload="%s"', $onload),
           'marginwidth="0"',
           'marginheight="0"',
           'hspace="0"',
