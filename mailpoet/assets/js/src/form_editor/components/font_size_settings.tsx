@@ -1,10 +1,7 @@
 import { FontSizePicker } from '@wordpress/components';
 import { useSetting } from '@wordpress/block-editor';
 
-type Props = {
-  value: number | undefined;
-  onChange: (value?: number) => void;
-};
+type Props = Pick<FontSizePicker.Props, 'value' | 'onChange'>;
 
 export function FontSizeSettings({ value, onChange }: Props): JSX.Element {
   const fontSizes = useSetting('typography.fontSizes');
