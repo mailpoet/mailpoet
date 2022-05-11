@@ -33,10 +33,7 @@ $console->writeln('Loading WP core... (' . $wpLoadFile . ')');
 $console->writeln('Cleaning up database...');
 $models = [
   'CustomField',
-  'Form',
   'Newsletter',
-  'NewsletterLink',
-  'NewsletterLink',
   'NewsletterSegment',
   'NewsletterOption',
   'NewsletterOptionField',
@@ -50,12 +47,14 @@ $models = [
   'StatisticsOpens',
   'StatisticsClicks',
   'StatisticsNewsletters',
-  'StatisticsUnsubscribes',
 ];
 
 $entities = [
+  MailPoet\Entities\FormEntity::class,
+  MailPoet\Entities\NewsletterLinkEntity::class,
   MailPoet\Entities\NewsletterTemplateEntity::class,
   MailPoet\Entities\SettingEntity::class,
+  MailPoet\Entities\StatisticsUnsubscribeEntity::class,
 ];
 
 $connection = ContainerWrapper::getInstance(WP_DEBUG)->get(Connection::class);
