@@ -656,16 +656,6 @@ parameters:
 			path: ../../lib/Mailer/MailerLog.php
 
 		-
-			message: "#^Parameter \\#1 \\$timeout of method MailPoetVendor\\\\Swift_Transport_EsmtpTransport\\:\\:setTimeout\\(\\) expects int, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Mailer/Methods/SMTP.php
-
-		-
-			message: "#^Parameter \\#1 \\$transport of class MailPoetVendor\\\\Swift_Mailer constructor expects MailPoetVendor\\\\Swift_Transport, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Mailer/Methods/SMTP.php
-
-		-
 			message: "#^Method MailPoet\\\\Models\\\\DynamicSegmentFilter\\:\\:__get\\(\\) should return string\\|null but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Models/DynamicSegmentFilter.php
