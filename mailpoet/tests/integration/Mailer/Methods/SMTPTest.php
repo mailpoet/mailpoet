@@ -75,46 +75,55 @@ class SMTPTest extends \MailPoetTest {
 
   public function testItCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->getTransport()->getHost())
+    expect($mailer->Host)
       ->equals($this->settings['host']);
-    expect($mailer->getTransport()->getPort())
+    expect($mailer->Port)
       ->equals($this->settings['port']);
-    expect($mailer->getTransport()->getUsername())
+    expect($mailer->Username)
       ->equals($this->settings['login']);
-    expect($mailer->getTransport()->getPassword())
+    expect($mailer->Password)
       ->equals($this->settings['password']);
-    expect($mailer->getTransport()->getEncryption())
+    expect($mailer->SMTPSecure)
       ->equals($this->settings['encryption']);
   }
 
   public function testItCanCreateMessage() {
-    $message = $this->mailer
-      ->createMessage($this->newsletter, $this->subscriber, $this->extraParams);
-    expect($message->getTo())
-      ->equals(['blackhole@mailpoet.com' => 'Recipient']);
-    expect($message->getFrom())
-      ->equals([$this->sender['from_email'] => $this->sender['from_name']]);
-    expect($message->getSender())
-      ->equals([$this->sender['from_email'] => null]);
-    expect($message->getReplyTo())
-      ->equals([$this->replyTo['reply_to_email'] => $this->replyTo['reply_to_name']]);
-    expect($message->getSubject())
-      ->equals($this->newsletter['subject']);
-    expect($message->getBody())
-      ->equals($this->newsletter['body']['html']);
-    expect($message->getChildren()[0]->getContentType())
-      ->equals('text/plain');
-    expect($message->getHeaders()->get('List-Unsubscribe')->getValue())
-      ->equals('<' . $this->extraParams['unsubscribe_url'] . '>');
+    $mailer = $this->mailer
+      ->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extraParams);
+    expect($mailer->CharSet)->equals('UTF-8'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->getToAddresses())->equals([
+        ['blackhole@mailpoet.com', 'Recipient'],
+    ]);
+    expect($mailer->getAllRecipientAddresses())->equals(['blackhole@mailpoet.com' => true]);
+    expect($mailer->From)->equals($this->sender['from_email']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->FromName)->equals($this->sender['from_name']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->getReplyToAddresses())->equals([
+      'reply-to@mailpoet.com' => ['reply-to@mailpoet.com', 'Reply To'],
+    ]);
+    expect($mailer->Sender)->equals($this->returnPath); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->ContentType)->equals('text/html'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->Subject)->equals($this->newsletter['subject']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->Body)->equals($this->newsletter['body']['html']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->AltBody)->equals($this->newsletter['body']['text']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    expect($mailer->getCustomHeaders())->equals([['List-Unsubscribe', '<http://www.mailpoet.com>']]);
   }
 
   public function testItCanProcessSubscriber() {
     expect($this->mailer->processSubscriber('test@test.com'))
-      ->equals(['test@test.com' => '']);
+      ->equals([
+        'email' => 'test@test.com',
+        'name' => '',
+      ]);
     expect($this->mailer->processSubscriber('First <test@test.com>'))
-      ->equals(['test@test.com' => 'First']);
+      ->equals([
+        'email' => 'test@test.com',
+        'name' => 'First',
+      ]);
     expect($this->mailer->processSubscriber('First Last <test@test.com>'))
-      ->equals(['test@test.com' => 'First Last']);
+      ->equals([
+        'email' => 'test@test.com',
+        'name' => 'First Last',
+      ]);
   }
 
   public function testItCantSendWithoutProperAuthentication() {
@@ -158,7 +167,7 @@ class SMTPTest extends \MailPoetTest {
 
   public function testItAppliesTimeoutFilter() {
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->getTransport()->getTimeout())->equals(\MailPoet\Mailer\Methods\SMTP::SMTP_CONNECTION_TIMEOUT);
+    expect($mailer->Timeout)->equals(\MailPoet\Mailer\Methods\SMTP::SMTP_CONNECTION_TIMEOUT);
     (new WPFunctions)->addFilter(
       'mailpoet_mailer_smtp_connection_timeout',
       function() {
@@ -166,7 +175,7 @@ class SMTPTest extends \MailPoetTest {
       }
     );
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->getTransport()->getTimeout())->equals(20);
+    expect($mailer->Timeout)->equals(20);
   }
 
   public function testItChecksBlacklistBeforeSending() {
