@@ -16,6 +16,10 @@ if (!defined('ABSPATH')) {
   define('ABSPATH', '/');
 }
 
+if (!defined('WPINC')) {
+  define('WPINC', getenv('WP_ROOT') . '/wp-includes');
+}
+
 if (!defined('WP_DEBUG')) {
   define('WP_DEBUG', false);
 }
