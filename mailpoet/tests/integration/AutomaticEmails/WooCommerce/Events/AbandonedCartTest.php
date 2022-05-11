@@ -3,10 +3,14 @@
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce as WooCommerceEmail;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
@@ -16,12 +20,12 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\Track\SubscriberActivityTracker;
 use MailPoet\Statistics\Track\SubscriberCookie;
+use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 use WC_Cart;
 use WooCommerce;
@@ -279,13 +283,20 @@ class AbandonedCartTest extends \MailPoetTest {
     $newsletter->status = Newsletter::STATUS_ACTIVE;
     $newsletter->save();
 
-    $this->createNewsletterOptions($newsletter, [
-      'group' => WooCommerceEmail::SLUG,
-      'event' => AbandonedCart::SLUG,
-      'afterTimeType' => 'hours',
-      'afterTimeNumber' => self::SCHEDULE_EMAIL_AFTER_HOURS,
-      'sendTo' => 'user',
-    ]);
+    $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $newsletterOptionFactory = new NewsletterOptionFactory();
+    $newsletterOptionFactory->createMultipleOptions(
+      $newsletterEntity,
+      [
+        'group' => WooCommerceEmail::SLUG,
+        'event' => AbandonedCart::SLUG,
+        'afterTimeType' => 'hours',
+        'afterTimeNumber' => self::SCHEDULE_EMAIL_AFTER_HOURS,
+        'sendTo' => 'user',
+      ]
+    );
+
     return $newsletter;
   }
 
@@ -304,37 +315,6 @@ class AbandonedCartTest extends \MailPoetTest {
     $scheduledTask->save();
 
     return $task;
-  }
-
-  private function createNewsletterOptions(Newsletter $newsletter, array $options) {
-    foreach ($options as $option => $value) {
-      $newsletterOptionField = NewsletterOptionField::where('name', $option)
-        ->where('newsletter_type', $newsletter->type)
-        ->findOne();
-
-      if (!$newsletterOptionField) {
-        $newsletterOptionField = NewsletterOptionField::create();
-        $newsletterOptionField->hydrate([
-          'newsletter_type' => $newsletter->type,
-          'name' => $option,
-        ]);
-        $newsletterOptionField->save();
-      }
-
-      $newsletterOption = NewsletterOption::where('newsletter_id', $newsletter->id)
-        ->where('option_field_id', $newsletterOptionField->id)
-        ->findOne();
-
-      if (!$newsletterOption) {
-        $newsletterOption = NewsletterOption::create();
-        $newsletterOption->hydrate([
-          'newsletter_id' => $newsletter->id,
-          'option_field_id' => $newsletterOptionField->id,
-          'value' => $value,
-        ]);
-        $newsletterOption->save();
-      }
-    }
   }
 
   private function createSubscriber() {
@@ -379,13 +359,13 @@ class AbandonedCartTest extends \MailPoetTest {
   }
 
   private function cleanup() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
   }
 
   public function _after() {
