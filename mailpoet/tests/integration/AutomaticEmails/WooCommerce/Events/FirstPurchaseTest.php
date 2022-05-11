@@ -7,19 +7,23 @@ use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerceStubs\OrderDetails;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Tasks\Sending;
+use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Idiorm\ORM;
 
 require_once __DIR__ . '/../WooCommerceStubs/OrderDetails.php';
 
@@ -290,46 +294,23 @@ class FirstPurchaseTest extends \MailPoetTest {
   }
 
   public function _createNewsletterOption(array $options, $newsletterId) {
-    foreach ($options as $option => $value) {
-      $newsletterOptionField = NewsletterOptionField::where('name', $option)
-        ->where('newsletter_type', Newsletter::TYPE_AUTOMATIC)
-        ->findOne();
-      if (!$newsletterOptionField) {
-        $newsletterOptionField = NewsletterOptionField::create();
-        $newsletterOptionField->hydrate(
-          [
-            'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
-            'name' => $option,
-          ]
-        );
-        $newsletterOptionField->save();
-      }
-
-      $newsletterOption = NewsletterOption::where('newsletter_id', $newsletterId)
-        ->where('option_field_id', $newsletterOptionField->id)
-        ->findOne();
-      if (!$newsletterOption) {
-        $newsletterOption = NewsletterOption::create();
-        $newsletterOption->hydrate(
-          [
-            'newsletter_id' => $newsletterId,
-            'option_field_id' => $newsletterOptionField->id,
-            'value' => $value,
-          ]
-        );
-        $newsletterOption->save();
-      }
-    }
+    $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletterId);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $newsletterOptionFactory = new NewsletterOptionFactory();
+    $newsletterOptionFactory->createMultipleOptions(
+      $newsletterEntity,
+      $options
+    );
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
     WPFunctions::set(new WPFunctions);
   }
 }

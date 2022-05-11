@@ -4,19 +4,24 @@ namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use Codeception\Util\Fixtures;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Tasks\Sending;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class PurchasedInCategoryTest extends \MailPoetTest {
@@ -27,18 +32,26 @@ class PurchasedInCategoryTest extends \MailPoetTest {
   /** @var PurchasedInCategory */
   private $event;
 
+  /** @var NewsletterOptionsRepository */
+  private $newsletterOptionsRepository;
+
+  /** @var NewsletterOptionFieldsRepository */
+  private $newsletterOptionFieldsRepository;
+
   public function _before() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
     WPFunctions::set(new WPFunctions);
     WPFunctions::get()->removeAllFilters('woocommerce_payment_complete');
     $this->woocommerceHelper = $this->createMock(WCHelper::class);
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
+    $this->newsletterOptionFieldsRepository = $this->diContainer->get(NewsletterOptionFieldsRepository::class);
+    $this->newsletterOptionsRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
   }
 
   public function testItGetsEventDetails() {
@@ -85,7 +98,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $this->_createSubscriber($customerEmail);
 
     $this->event->scheduleEmail(3);
-    $scheduledTask = Sending::getByNewsletterId($newsletter->id);
+    $scheduledTask = Sending::getByNewsletterId($newsletter->getId());
     $queue = $scheduledTask->queue();
     // We only want to record the ID for the category that triggered the newsletter
     expect($queue->getMeta())->equals(['orderedProductCategories' => ['15']]);
@@ -111,7 +124,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
 
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
     $this->event->scheduleEmail(3);
-    $queue1 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    $queue1 = SendingQueue::where('newsletter_id', $newsletter->getId())->findMany();
     expect($queue1)->notEmpty();
 
     $order = $this->getOrderMock(['15', '17']);
@@ -126,7 +139,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
       ->will($this->returnValue($customerEmail));
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
     $this->event->scheduleEmail(4);
-    $queue2 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    $queue2 = SendingQueue::where('newsletter_id', $newsletter->getId())->findMany();
     expect($queue2)->count(count($queue1));
   }
 
@@ -149,7 +162,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
 
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
     $this->event->scheduleEmail(3);
-    $queue1 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    $queue1 = SendingQueue::where('newsletter_id', $newsletter->getId())->findMany();
     expect($queue1)->notEmpty();
 
     $order = $this->getOrderMock(['15']);
@@ -164,7 +177,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
       ->will($this->returnValue($customerEmail));
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
     $this->event->scheduleEmail(4);
-    $queue2 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    $queue2 = SendingQueue::where('newsletter_id', $newsletter->getId())->findMany();
     expect($queue1)->count(count($queue2));
   }
 
@@ -187,10 +200,10 @@ class PurchasedInCategoryTest extends \MailPoetTest {
 
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
     $this->event->scheduleEmail(3);
-    $queue1 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    $queue1 = SendingQueue::where('newsletter_id', $newsletter->getId())->findMany();
     expect($queue1)->count(1);
 
-    $this->assertInstanceOf(Newsletter::class, $newsletter);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $this->updateEmailTriggerIds($newsletter, ['16']);
     $order = $this->getOrderMock(['16']);
     $this->woocommerceHelper = $this->createMock(WCHelper::class);
@@ -204,7 +217,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
       ->will($this->returnValue($customerEmail));
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
     $this->event->scheduleEmail(4);
-    $queue2 = SendingQueue::where('newsletter_id', $newsletter->id)->findMany();
+    $queue2 = SendingQueue::where('newsletter_id', $newsletter->getId())->findMany();
     expect($queue2)->count(2);
   }
 
@@ -239,16 +252,17 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     return $orderMock;
   }
 
-  private function _createNewsletter(): Newsletter {
-    $newsletter = Newsletter::createOrUpdate(
-      [
-        'subject' => 'WooCommerce',
-        'preheader' => 'preheader',
-        'type' => Newsletter::TYPE_AUTOMATIC,
-        'status' => Newsletter::STATUS_ACTIVE,
-      ]
-    );
-    $this->_createNewsletterOption(
+  private function _createNewsletter(): NewsletterEntity {
+    $newsletterFactory = new NewsletterFactory();
+    $newsletter = $newsletterFactory
+      ->withSubject('WooCommerce')
+      ->withAutomaticType()
+      ->withActiveStatus()
+      ->create();
+
+    $newsletterOptionFactory = new NewsletterOptionFactory();
+    $newsletterOptionFactory->createMultipleOptions(
+      $newsletter,
       [
         'sendTo' => 'user',
         'group' => WooCommerce::SLUG,
@@ -261,9 +275,9 @@ class PurchasedInCategoryTest extends \MailPoetTest {
               ['id' => '15'],
             ],
           ]),
-      ],
-      $newsletter->id
+      ]
     );
+
     return $newsletter;
   }
 
@@ -284,45 +298,14 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     return $subscriber;
   }
 
-  public function _createNewsletterOption(array $options, $newsletterId) {
-    foreach ($options as $option => $value) {
-      $newsletterOptionField = NewsletterOptionField::where('name', $option)
-        ->where('newsletter_type', Newsletter::TYPE_AUTOMATIC)
-        ->findOne();
-      if (!$newsletterOptionField) {
-        $newsletterOptionField = NewsletterOptionField::create();
-        $newsletterOptionField->hydrate(
-          [
-            'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
-            'name' => $option,
-          ]
-        );
-        $newsletterOptionField->save();
-      }
+  private function updateEmailTriggerIds(NewsletterEntity $newsletter, array $triggerIds) {
+    $metaOptionField = $this->newsletterOptionFieldsRepository->findOneBy(['name' => 'meta']);
+    $this->assertInstanceOf(NewsletterOptionFieldEntity::class, $metaOptionField);
 
-      $newsletterOption = NewsletterOption::where('newsletter_id', $newsletterId)
-        ->where('option_field_id', $newsletterOptionField->id)
-        ->findOne();
-      if (!$newsletterOption) {
-        $newsletterOption = NewsletterOption::create();
-        $newsletterOption->hydrate(
-          [
-            'newsletter_id' => $newsletterId,
-            'option_field_id' => $newsletterOptionField->id,
-            'value' => $value,
-          ]
-        );
-        $newsletterOption->save();
-      }
-    }
-  }
-
-  private function updateEmailTriggerIds(Newsletter $newsletter, array $triggerIds) {
-    $metaOptionField = NewsletterOptionField::where('name', 'meta')->findOne();
-    $this->assertInstanceOf(NewsletterOptionField::class, $metaOptionField);
-    $newsletterMetaOption = NewsletterOption::where(['newsletter_id' => $newsletter->id, 'option_field_id' => $metaOptionField->id])->findOne();
-    $this->assertInstanceOf(NewsletterOption::class, $newsletterMetaOption);
-    $optionValue = json_decode($newsletterMetaOption->value, true);
+    $newsletterMetaOption = $this->newsletterOptionsRepository->findOneBy(['newsletter' => $newsletter, 'optionField' => $metaOptionField]);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $newsletterMetaOption);
+    $this->assertIsString($newsletterMetaOption->getValue());
+    $optionValue = json_decode($newsletterMetaOption->getValue(), true);
     $this->assertIsArray($optionValue);
     $optionValue['option'] = [];
     foreach ($triggerIds as $triggerId) {
@@ -330,7 +313,9 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     }
     $newValue = json_encode($optionValue);
     $this->assertIsString($newValue);
-    $newsletterMetaOption->set('value', $newValue);
-    $newsletterMetaOption->save();
+
+    $newsletterMetaOption->setValue($newValue);
+    $this->entityManager->persist($newsletterMetaOption);
+    $this->entityManager->flush($newsletterMetaOption);
   }
 }

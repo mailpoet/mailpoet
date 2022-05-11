@@ -8,26 +8,39 @@ use Codeception\Util\Fixtures;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerceStubs\ItemDetails;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerceStubs\OrderDetails;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
+use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Tasks\Sending;
+use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Idiorm\ORM;
 
 require_once __DIR__ . '/../WooCommerceStubs/ItemDetails.php';
 require_once __DIR__ . '/../WooCommerceStubs/OrderDetails.php';
 
 class PurchasedProductTest extends \MailPoetTest {
+  /** @var NewsletterOptionFieldsRepository */
+  private $newsletterOptionFieldsRepository;
+
+  /** @var NewsletterOptionsRepository */
+  private $newsletterOptionsRepository;
+
   public function _before() {
     WPFunctions::get()->removeAllFilters('woocommerce_payment_complete');
+    $this->newsletterOptionFieldsRepository = $this->diContainer->get(NewsletterOptionFieldsRepository::class);
+    $this->newsletterOptionsRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
   }
 
   public function testItGetsEventDetails() {
@@ -246,53 +259,37 @@ class PurchasedProductTest extends \MailPoetTest {
   }
 
   private function updateEmailTriggerIds(Newsletter $newsletter, array $triggerIds) {
-    $metaOptionField = NewsletterOptionField::where('name', 'meta')->findOne();
-    $this->assertInstanceOf(NewsletterOptionField::class, $metaOptionField);
-    $newsletterMetaOption = NewsletterOption::where(['newsletter_id' => $newsletter->id, 'option_field_id' => $metaOptionField->id])->findOne();
-    $this->assertInstanceOf(NewsletterOption::class, $newsletterMetaOption);
-    $optionValue = json_decode($newsletterMetaOption->value, true);
+    $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter->id);
+
+    $metaOptionField = $this->newsletterOptionFieldsRepository->findOneBy(['name' => 'meta']);
+    $this->assertInstanceOf(NewsletterOptionFieldEntity::class, $metaOptionField);
+
+    $newsletterMetaOption = $this->newsletterOptionsRepository->findOneBy(['newsletter' => $newsletterEntity, 'optionField' => $metaOptionField]);
+    $this->assertInstanceOf(NewsletterOptionEntity::class, $newsletterMetaOption);
+    $this->assertIsString($newsletterMetaOption->getValue());
+    $optionValue = json_decode($newsletterMetaOption->getValue(), true);
     $this->assertIsArray($optionValue);
+
     $optionValue['option'] = [];
     foreach ($triggerIds as $triggerId) {
       $optionValue['option'][] = ['id' => $triggerId];
     }
     $newValue = json_encode($optionValue);
     $this->assertIsString($newValue);
-    $newsletterMetaOption->set('value', $newValue);
-    $newsletterMetaOption->save();
+
+    $newsletterMetaOption->setValue($newValue);
+    $this->entityManager->persist($newsletterMetaOption);
+    $this->entityManager->flush($newsletterMetaOption);
   }
 
-  private function _createNewsletterOption(array $options, $newsletterId) {
-    foreach ($options as $option => $value) {
-      $newsletterOptionField = NewsletterOptionField::where('name', $option)
-        ->where('newsletter_type', Newsletter::TYPE_AUTOMATIC)
-        ->findOne();
-      if (!$newsletterOptionField) {
-        $newsletterOptionField = NewsletterOptionField::create();
-        $newsletterOptionField->hydrate(
-          [
-            'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
-            'name' => $option,
-          ]
-        );
-        $newsletterOptionField->save();
-      }
-
-      $newsletterOption = NewsletterOption::where('newsletter_id', $newsletterId)
-        ->where('option_field_id', $newsletterOptionField->id)
-        ->findOne();
-      if (!$newsletterOption) {
-        $newsletterOption = NewsletterOption::create();
-        $newsletterOption->hydrate(
-          [
-            'newsletter_id' => $newsletterId,
-            'option_field_id' => $newsletterOptionField->id,
-            'value' => $value,
-          ]
-        );
-        $newsletterOption->save();
-      }
-    }
+  public function _createNewsletterOption(array $options, $newsletterId) {
+    $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletterId);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $newsletterOptionFactory = new NewsletterOptionFactory();
+    $newsletterOptionFactory->createMultipleOptions(
+      $newsletterEntity,
+      $options
+    );
   }
 
   private function createWooSubscriber(array $data = []) {
@@ -313,13 +310,13 @@ class PurchasedProductTest extends \MailPoetTest {
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
     WPFunctions::set(new WPFunctions);
   }
 }
