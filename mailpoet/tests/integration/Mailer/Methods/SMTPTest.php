@@ -137,25 +137,22 @@ class SMTPTest extends \MailPoetTest {
     expect($result['response'])->false();
   }
 
-  public function testItAppliesTransportFilter() {
+  public function testItAppliesSMTPOptionsFilter() {
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->getTransport()->getStreamOptions())->isEmpty();
+    expect($mailer->SMTPOptions)->isEmpty();
     (new WPFunctions)->addFilter(
-      'mailpoet_mailer_smtp_transport_agent',
-      function($transport) {
-        $transport->setStreamOptions(
-          [
-            'ssl' => [
-              'verify_peer' => false,
-              'verify_peer_name' => false,
-            ],
-          ]
-        );
-        return $transport;
+      'mailpoet_mailer_smtp_options',
+      function() {
+        return [
+          'ssl' => [
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+          ],
+        ];
       }
     );
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->getTransport()->getStreamOptions())->equals(
+    expect($mailer->SMTPOptions)->equals(
       [
         'ssl' => [
           'verify_peer' => false,
