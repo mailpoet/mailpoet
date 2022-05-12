@@ -133,15 +133,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   public function testItRenders() {
-    $newsletter = $this->newsletterFactory
-      ->withSubject('Subject')
-      ->withWelcomeTypeForSegment(1)
-      ->withActiveStatus()
-      ->withSendingQueue(['count_processed' => 10])
-      ->create();
-
-    $this->createClicks($newsletter, 5);
-    $this->createOpens($newsletter, 2);
+    $this->createNewsletterClicksAndOpens();
     $this->renderer->expects($this->exactly(2))
       ->method('render');
     $this->renderer->expects($this->at(0))
@@ -161,15 +153,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   public function testItSends() {
-    $newsletter = $this->newsletterFactory
-      ->withSubject('Subject')
-      ->withWelcomeTypeForSegment(1)
-      ->withActiveStatus()
-      ->withSendingQueue(['count_processed' => 10])
-      ->create();
-
-    $this->createClicks($newsletter, 5);
-    $this->createOpens($newsletter, 2);
+    $this->createNewsletterClicksAndOpens();
 
     $this->renderer->expects($this->exactly(2))
       ->method('render');
@@ -190,15 +174,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   public function testItPreparesContext() {
-    $newsletter = $this->newsletterFactory
-      ->withSubject('Subject')
-      ->withWelcomeTypeForSegment(1)
-      ->withActiveStatus()
-      ->withSendingQueue(['count_processed' => 10])
-      ->create();
-
-    $this->createClicks($newsletter, 5);
-    $this->createOpens($newsletter, 2);
+    $this->createNewsletterClicksAndOpens();
     $this->renderer->expects($this->exactly(2)) // html + text template
       ->method('render')
       ->with(
@@ -211,15 +187,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
   }
 
   public function testItAddsNewsletterStatsToContext() {
-    $newsletter = $this->newsletterFactory
-      ->withSubject('Subject')
-      ->withWelcomeTypeForSegment(1)
-      ->withActiveStatus()
-      ->withSendingQueue(['count_processed' => 10])
-      ->create();
-
-    $this->createClicks($newsletter, 5);
-    $this->createOpens($newsletter, 2);
+    $this->createNewsletterClicksAndOpens();
 
     $this->renderer->expects($this->exactly(2)) // html + text template
       ->method('render')
@@ -249,5 +217,17 @@ class AutomatedEmailsTest extends \MailPoetTest {
       $subscriber = (new SubscriberFactory())->create();
       (new StatisticsOpensFactory($newsletter, $subscriber))->create();
     }
+  }
+
+  private function createNewsletterClicksAndOpens() {
+    $newsletter = $this->newsletterFactory
+      ->withSubject('Subject')
+      ->withWelcomeTypeForSegment(1)
+      ->withActiveStatus()
+      ->withSendingQueue(['count_processed' => 10])
+      ->create();
+
+    $this->createClicks($newsletter, 5);
+    $this->createOpens($newsletter, 2);
   }
 }
