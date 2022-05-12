@@ -1699,8 +1699,3 @@ parameters:
 			message: "#^Parameter \\#1 \\$value of function count expects array\\|Countable, mixed given\\.$#"
 			count: 5
 			path: ../../tests/integration/Subscribers/ImportExport/ImportExportFactoryTest.php
-
-		-
-			message: "#^Part \\$table \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
-			count: 1
-			path: ../../tests/integration/_bootstrap.php

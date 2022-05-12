@@ -31,50 +31,16 @@ $console = new \Codeception\Lib\Console\Output([]);
 $console->writeln('Loading WP core... (' . $wpLoadFile . ')');
 
 $console->writeln('Cleaning up database...');
-$models = [
-  'CustomField',
-  'Newsletter',
-  'NewsletterSegment',
-  'NewsletterOption',
-  'NewsletterOptionField',
-  'Segment',
-  'ScheduledTask',
-  'ScheduledTaskSubscriber',
-  'SendingQueue',
-  'Subscriber',
-  'SubscriberCustomField',
-  'SubscriberSegment',
-  'StatisticsOpens',
-  'StatisticsClicks',
-  'StatisticsNewsletters',
-];
-
-$entities = [
-  MailPoet\Entities\FormEntity::class,
-  MailPoet\Entities\NewsletterLinkEntity::class,
-  MailPoet\Entities\NewsletterTemplateEntity::class,
-  MailPoet\Entities\SettingEntity::class,
-  MailPoet\Entities\StatisticsUnsubscribeEntity::class,
-];
 
 $connection = ContainerWrapper::getInstance(WP_DEBUG)->get(Connection::class);
-$destroy = function($model) use ($connection) {
-  $modelName = '\MailPoet\Models\\' . $model;
-  if (!class_exists($modelName)) {
-    throw new \RuntimeException("Class $modelName doesn't exist.");
-  }
-  $class = new \ReflectionClass($modelName);
-  $table = $class->getStaticPropertyValue('_table');
-  $connection->executeUpdate("TRUNCATE $table");
-};
-array_map($destroy, $models);
-
 $entityManager = ContainerWrapper::getInstance(WP_DEBUG)->get(EntityManager::class);
-foreach ($entities as $entity) {
-  $tableName = $entityManager->getClassMetadata($entity)->getTableName();
-  $connection->query('SET FOREIGN_KEY_CHECKS=0');
-  $connection->executeUpdate("TRUNCATE $tableName");
-  $connection->query('SET FOREIGN_KEY_CHECKS=1');
+$entitiesMeta = $entityManager->getMetadataFactory()->getAllMetadata();
+foreach ($entitiesMeta as $entityMeta) {
+  $tableName = $entityMeta->getTableName();
+  $console->writeln("Truncating up {$tableName}...");
+  $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0');
+  $connection->executeStatement("TRUNCATE $tableName");
+  $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1');
 }
 
 // save plugin version to avoid running migrations (that cause $GLOBALS serialization errors)
