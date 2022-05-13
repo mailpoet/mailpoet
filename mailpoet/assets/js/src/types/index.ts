@@ -1,4 +1,5 @@
 import { ColorPalette, FontSizePicker } from '@wordpress/components';
+import { store as interfaceStore } from '@wordpress/interface';
 import { store as preferencesStore } from '@wordpress/preferences';
 
 import './wordpress_modules';
@@ -42,7 +43,13 @@ declare module '@wordpress/block-editor' {
 }
 
 declare module '@wordpress/data' {
+  type InterfaceStore = 'core/interface' | typeof interfaceStore;
   type PreferencesStore = 'core/preferences' | typeof preferencesStore;
+
+  // there are no @types/wordpress__interface yet
+  function select(key: InterfaceStore): {
+    getActiveComplementaryArea: (scope: string) => string | undefined | null;
+  };
 
   // there are no @types/wordpress__preferences yet
   function select(key: PreferencesStore): {

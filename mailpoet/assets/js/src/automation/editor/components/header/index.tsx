@@ -1,8 +1,9 @@
 import { Button, Icon, NavigableMenu } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { wordpress } from '@wordpress/icons';
+import { PinnedItems } from '@wordpress/interface';
 import { MoreMenu } from './more_menu';
-import { store } from '../../store';
+import { store, storeName } from '../../store';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/header/index.js
@@ -42,6 +43,7 @@ export function Header(): JSX.Element {
         <Button isPrimary className="editor-post-publish-button">
           Publish
         </Button>
+        <PinnedItems.Slot scope={storeName} />
         <MoreMenu />
       </div>
     </div>
