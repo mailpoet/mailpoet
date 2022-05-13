@@ -79,6 +79,7 @@ const logicalSteps: Item[] = [
 
 export const initialState: State = {
   workflowData: { ...window.mailpoet_automation_workflow },
+  selectedStep: undefined,
   inserter: {
     actionSteps,
     logicalSteps,

@@ -11,6 +11,11 @@ export function reducer(state: State, action: Action): State {
           isOpened: !state.inserterSidebar.isOpened,
         },
       };
+    case 'SET_SELECTED_STEP':
+      return {
+        ...state,
+        selectedStep: action.value,
+      };
     default:
       return state;
   }

@@ -23,3 +23,10 @@ export function toggleInserterSidebar() {
     type: 'TOGGLE_INSERTER_SIDEBAR',
   } as const;
 }
+
+export function selectStep(value) {
+  return {
+    type: 'SET_SELECTED_STEP',
+    value,
+  } as const;
+}
