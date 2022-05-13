@@ -57,6 +57,7 @@ declare module '@wordpress/components' {
   export const __unstableCompositeItem: typeof CompositeItem;
   export const __unstableUseCompositeState: typeof useCompositeState;
 
+  export const SearchControl: any;
   export const ToolbarItem: any;
 }
 
