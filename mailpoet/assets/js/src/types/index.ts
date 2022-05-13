@@ -90,6 +90,11 @@ declare module '@wordpress/data' {
     registerShortcut: (options: any) => object;
   };
 
+  // function "batch" is missing in data registry
+  interface DataRegistry {
+    batch: (callback: () => void) => void;
+  }
+
   // types for "createRegistrySelector" are not correct
   export function createRegistrySelector<
     S extends typeof select,

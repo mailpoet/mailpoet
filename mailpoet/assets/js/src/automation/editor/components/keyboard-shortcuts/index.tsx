@@ -5,13 +5,14 @@ import {
   store as keyboardShortcutsStore,
 } from '@wordpress/keyboard-shortcuts';
 import { __ } from '@wordpress/i18n';
-import { store, workflowSidebarKey } from '../../store';
+import { stepSidebarKey, store, workflowSidebarKey } from '../../store';
 
 // See: https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/keyboard-shortcuts/index.js
 
 export function KeyboardShortcuts(): null {
-  const { isSidebarOpened } = useSelect((select) => ({
+  const { isSidebarOpened, selectedStep } = useSelect((select) => ({
     isSidebarOpened: select(store).isSidebarOpened,
+    selectedStep: select(store).getSelectedStep,
   }));
 
   const { openSidebar, closeSidebar, toggleFeature } = useDispatch(store);
@@ -50,7 +51,10 @@ export function KeyboardShortcuts(): null {
     if (isSidebarOpened()) {
       closeSidebar();
     } else {
-      openSidebar(workflowSidebarKey);
+      const sidebarToOpen = selectedStep()
+        ? stepSidebarKey
+        : workflowSidebarKey;
+      openSidebar(sidebarToOpen);
     }
   });
 
