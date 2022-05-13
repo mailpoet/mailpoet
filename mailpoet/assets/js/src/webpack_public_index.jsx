@@ -6,4 +6,4 @@
 
 import 'mailpoet'; // side effect - assigns MailPoet to window
 import 'jquery.serialize_object'; // side effect - extends jQuery
-import 'public.jsx'; // side effect - assigns to window, sets up form validation, etc.
+import 'public.tsx'; // side effect - assigns to window, sets up form validation, etc.

@@ -128,6 +128,7 @@
     "@storybook/builder-webpack5": "^6.4.19",
     "@storybook/manager-webpack5": "^6.4.19",
     "@storybook/react": "^6.4.19",
+    "@types/grecaptcha": "^3.0.4",
     "@types/jquery": "^3.5.14",
     "@types/lodash": "^4.14.180",
     "@types/react": "^17.0.43",
