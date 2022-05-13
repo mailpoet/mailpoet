@@ -7,7 +7,6 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending;
@@ -124,7 +123,7 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
 
     // create previous completed task
     $previousEmailCountsTask = $this->createRunningTask();
-    $previousEmailCountsTask->setStatus(ScheduledTask::STATUS_COMPLETED);
+    $previousEmailCountsTask->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
     $previousEmailCountsTask->setCreatedAt(Carbon::now()->subDays(2));
     $previousEmailCountsTask->setScheduledAt(Carbon::now()->subDays(1));
     $previousEmailCountsTask->setUpdatedAt(Carbon::now()->subDays(1));

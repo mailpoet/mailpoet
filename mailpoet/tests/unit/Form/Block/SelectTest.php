@@ -2,11 +2,11 @@
 
 namespace MailPoet\Test\Form\Block;
 
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Select;
 use MailPoet\Form\BlockStylesRenderer;
 use MailPoet\Form\BlockWrapperRenderer;
-use MailPoet\Models\Subscriber;
 use MailPoet\WP\Functions;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -52,19 +52,19 @@ class SelectTest extends \MailPoetUnitTest {
         'values' => [
           [
             'value' => [
-              Subscriber::STATUS_SUBSCRIBED => Subscriber::STATUS_SUBSCRIBED,
+              SubscriberEntity::STATUS_SUBSCRIBED => SubscriberEntity::STATUS_SUBSCRIBED,
             ],
             'is_checked' => false,
           ],
           [
             'value' => [
-              Subscriber::STATUS_UNSUBSCRIBED => Subscriber::STATUS_UNSUBSCRIBED,
+              SubscriberEntity::STATUS_UNSUBSCRIBED => SubscriberEntity::STATUS_UNSUBSCRIBED,
             ],
             'is_checked' => false,
           ],
           [
             'value' => [
-              Subscriber::STATUS_BOUNCED => Subscriber::STATUS_BOUNCED,
+              SubscriberEntity::STATUS_BOUNCED => SubscriberEntity::STATUS_BOUNCED,
             ],
             'is_checked' => false,
             'is_disabled' => false,
@@ -77,9 +77,9 @@ class SelectTest extends \MailPoetUnitTest {
 
   public function testItRendersSelectBlock() {
     $rendered = $this->selectBlock->render($this->block, []);
-    expect($rendered)->stringContainsString(Subscriber::STATUS_SUBSCRIBED);
-    expect($rendered)->stringContainsString(Subscriber::STATUS_UNSUBSCRIBED);
-    expect($rendered)->stringContainsString(Subscriber::STATUS_BOUNCED);
+    expect($rendered)->stringContainsString(SubscriberEntity::STATUS_SUBSCRIBED);
+    expect($rendered)->stringContainsString(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    expect($rendered)->stringContainsString(SubscriberEntity::STATUS_BOUNCED);
   }
 
   public function testItRendersSelectedOption() {
@@ -97,6 +97,6 @@ class SelectTest extends \MailPoetUnitTest {
   public function testItDoesNotRenderHiddenOptions() {
     $this->block['params']['values'][2]['is_hidden'] = true;
     $rendered = $this->selectBlock->render($this->block, []);
-    expect($rendered)->stringNotContainsString(Subscriber::STATUS_BOUNCED);
+    expect($rendered)->stringNotContainsString(SubscriberEntity::STATUS_BOUNCED);
   }
 }

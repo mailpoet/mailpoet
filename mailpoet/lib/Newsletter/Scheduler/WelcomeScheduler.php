@@ -5,8 +5,8 @@ namespace MailPoet\Newsletter\Scheduler;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
@@ -120,8 +120,8 @@ class WelcomeScheduler {
     $sendingTask = SendingTask::create();
     $sendingTask->newsletterId = $newsletter->getId();
     $sendingTask->setSubscribers([$subscriberId]);
-    $sendingTask->status = SendingQueue::STATUS_SCHEDULED;
-    $sendingTask->priority = SendingQueue::PRIORITY_HIGH;
+    $sendingTask->status = SendingQueueEntity::STATUS_SCHEDULED;
+    $sendingTask->priority = SendingQueueEntity::PRIORITY_HIGH;
     $sendingTask->scheduledAt = $this->scheduler->getScheduledTimeWithDelay(
       $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE),
       $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER)

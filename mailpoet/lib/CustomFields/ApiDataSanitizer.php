@@ -3,7 +3,7 @@
 namespace MailPoet\CustomFields;
 
 use InvalidArgumentException;
-use MailPoet\Models\CustomField;
+use MailPoet\Entities\CustomFieldEntity;
 
 class ApiDataSanitizer {
 
@@ -69,19 +69,19 @@ class ApiDataSanitizer {
 
   private function getExtraParams($data) {
     $type = strtolower($data['type']);
-    if (in_array($type, [CustomField::TYPE_TEXT, CustomField::TYPE_TEXTAREA], true)) {
+    if (in_array($type, [CustomFieldEntity::TYPE_TEXT, CustomFieldEntity::TYPE_TEXTAREA], true)) {
       return $this->getExtraParamsForText($data['params']);
     }
 
-    if (in_array($type, [CustomField::TYPE_RADIO, CustomField::TYPE_SELECT], true)) {
+    if (in_array($type, [CustomFieldEntity::TYPE_RADIO, CustomFieldEntity::TYPE_SELECT], true)) {
       return $this->getExtraParamsForSelect($data['params']);
     }
 
-    if ($type === CustomField::TYPE_CHECKBOX) {
+    if ($type === CustomFieldEntity::TYPE_CHECKBOX) {
       return $this->getExtraParamsForCheckbox($data['params']);
     }
 
-    if ($type === CustomField::TYPE_DATE) {
+    if ($type === CustomFieldEntity::TYPE_DATE) {
       return $this->getExtraParamsForDate($data['params']);
     }
 
