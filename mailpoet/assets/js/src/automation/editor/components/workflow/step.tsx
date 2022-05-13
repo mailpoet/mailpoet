@@ -1,10 +1,10 @@
 import { useContext } from 'react';
 import { __unstableCompositeItem as CompositeItem } from '@wordpress/components';
-import { useDispatch } from '@wordpress/data';
+import { useDispatch, useRegistry } from '@wordpress/data';
 import { WorkflowCompositeContext } from './context';
 import { Step as StepType } from './types';
 import { DelayIcon, EmailIcon, TriggerIcon } from '../icons';
-import { store } from '../../store';
+import { stepSidebarKey, store } from '../../store';
 
 // mocked data
 function getIcon(step: StepType): JSX.Element | null {
@@ -59,8 +59,9 @@ type Props = {
 };
 
 export function Step({ step }: Props): JSX.Element {
-  const { selectStep } = useDispatch(store);
+  const { openSidebar, selectStep } = useDispatch(store);
   const compositeState = useContext(WorkflowCompositeContext);
+  const { batch } = useRegistry();
 
   return (
     <CompositeItem
@@ -69,9 +70,12 @@ export function Step({ step }: Props): JSX.Element {
       className="mailpoet-automation-editor-step"
       key={step.id}
       focusable
-      onClick={() => {
-        selectStep(step);
-      }}
+      onClick={() =>
+        batch(() => {
+          openSidebar(stepSidebarKey);
+          selectStep(step);
+        })
+      }
     >
       <div className="mailpoet-automation-editor-step-icon">
         {getIcon(step)}
