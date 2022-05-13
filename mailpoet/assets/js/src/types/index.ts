@@ -1,5 +1,6 @@
 import { ColorPalette, FontSizePicker } from '@wordpress/components';
 import { store as interfaceStore } from '@wordpress/interface';
+import { store as keyboardShortcutsStore } from '@wordpress/keyboard-shortcuts';
 import { store as preferencesStore } from '@wordpress/preferences';
 
 import './wordpress_modules';
@@ -44,6 +45,11 @@ declare module '@wordpress/block-editor' {
 
 declare module '@wordpress/data' {
   type InterfaceStore = 'core/interface' | typeof interfaceStore;
+
+  type KeyboardShortcutsStore =
+    | 'core/keyboard-shortcuts'
+    | typeof keyboardShortcutsStore.name;
+
   type PreferencesStore = 'core/preferences' | typeof preferencesStore;
 
   // there are no @types/wordpress__interface yet
@@ -51,9 +57,19 @@ declare module '@wordpress/data' {
     getActiveComplementaryArea: (scope: string) => string | undefined | null;
   };
 
+  // there are no @types/wordpress__keyboard-shortcuts yet
+  function select(key: KeyboardShortcutsStore): {
+    getShortcutRepresentation: (scope: string) => unknown;
+  };
+
   // there are no @types/wordpress__preferences yet
   function select(key: PreferencesStore): {
     get: <T>(scope: string, name: string) => T;
+  };
+
+  // there are no @types/wordpress__keyboard-shortcuts yet
+  function dispatch(key: KeyboardShortcutsStore): {
+    registerShortcut: (options: any) => object;
   };
 
   // types for "createRegistrySelector" are not correct

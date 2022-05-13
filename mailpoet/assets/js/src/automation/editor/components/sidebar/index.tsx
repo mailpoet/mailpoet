@@ -7,15 +7,11 @@ import {
   ComplementaryArea,
   store as interfaceStore,
 } from '@wordpress/interface';
+import { store as keyboardShortcutsStore } from '@wordpress/keyboard-shortcuts';
 import { Header } from './header';
 import { StepSidebar } from './step';
 import { WorkflowSidebar } from './workflow';
-import {
-  stepSidebarKey,
-  store,
-  storeName,
-  workflowSidebarKey,
-} from '../../store';
+import { stepSidebarKey, storeName, workflowSidebarKey } from '../../store';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/5caeae34b3fb303761e3b9432311b26f4e5ea3a6/packages/edit-post/src/components/sidebar/plugin-sidebar/index.js
@@ -29,9 +25,12 @@ const sidebarActiveByDefault = Platform.select({
 type Props = ComponentProps<typeof ComplementaryArea>;
 
 export function Sidebar(props: Props): JSX.Element {
-  const { sidebarName } = useSelect(
+  const { keyboardShortcut, sidebarKey } = useSelect(
     (select) => ({
-      sidebarName:
+      keyboardShortcut: select(
+        keyboardShortcutsStore,
+      ).getShortcutRepresentation('core/edit-post/toggle-sidebar'),
+      sidebarKey:
         select(interfaceStore).getActiveComplementaryArea(storeName) ??
         workflowSidebarKey,
     }),
@@ -41,8 +40,8 @@ export function Sidebar(props: Props): JSX.Element {
   const workflowName = 'Testing workflow';
   return (
     <ComplementaryArea
-      identifier={sidebarName}
-      header={<Header sidebarName={sidebarName} />}
+      identifier={sidebarKey}
+      header={<Header sidebarKey={sidebarKey} />}
       closeLabel={__('Close settings')}
       headerClassName="edit-post-sidebar__panel-tabs"
       title={__('Settings')}
@@ -51,11 +50,12 @@ export function Sidebar(props: Props): JSX.Element {
       panelClassName="edit-post-sidebar"
       smallScreenTitle={workflowName || __('(no title)')}
       scope={storeName}
+      toggleShortcut={keyboardShortcut}
       isActiveByDefault={sidebarActiveByDefault}
       {...props}
     >
-      {sidebarName === workflowSidebarKey && <WorkflowSidebar />}
-      {sidebarName === stepSidebarKey && <StepSidebar />}
+      {sidebarKey === workflowSidebarKey && <WorkflowSidebar />}
+      {sidebarKey === stepSidebarKey && <StepSidebar />}
     </ComplementaryArea>
   );
 }

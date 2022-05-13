@@ -7,7 +7,9 @@ import {
   InterfaceSkeleton,
   FullscreenMode,
 } from '@wordpress/interface';
+import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import { Header } from './components/header';
+import { KeyboardShortcuts } from './components/keyboard-shortcuts';
 import { Sidebar } from './components/sidebar';
 import { store, storeName } from './store';
 
@@ -34,17 +36,20 @@ function Editor(): JSX.Element {
   );
 
   return (
-    <SlotFillProvider>
-      <FullscreenMode isActive={isFullscreenActive} />
-      <Sidebar />
-      <InterfaceSkeleton
-        className={className}
-        header={<Header />}
-        content={<div>Content</div>}
-        sidebar={<ComplementaryArea.Slot scope={storeName} />}
-        secondarySidebar={<div>Secondary sidebar</div>}
-      />
-    </SlotFillProvider>
+    <ShortcutProvider>
+      <SlotFillProvider>
+        <FullscreenMode isActive={isFullscreenActive} />
+        <KeyboardShortcuts />
+        <Sidebar />
+        <InterfaceSkeleton
+          className={className}
+          header={<Header />}
+          content={<div>Content</div>}
+          sidebar={<ComplementaryArea.Slot scope={storeName} />}
+          secondarySidebar={<div>Secondary sidebar</div>}
+        />
+      </SlotFillProvider>
+    </ShortcutProvider>
   );
 }
 

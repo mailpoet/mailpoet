@@ -13,6 +13,15 @@ declare module '@wordpress/interface' {
   export const PinnedItems: any;
 }
 
+// there are no @types/wordpress__keyboard-shortcuts yet
+declare module '@wordpress/keyboard-shortcuts' {
+  import { StoreDescriptor } from '@wordpress/data';
+
+  export const store: { name: 'core/keyboard-shortcuts' } & StoreDescriptor;
+  export const ShortcutProvider: any;
+  export const useShortcut: any;
+}
+
 // there are no @types/wordpress__preferences yet
 declare module '@wordpress/preferences' {
   import { StoreDescriptor } from '@wordpress/data';

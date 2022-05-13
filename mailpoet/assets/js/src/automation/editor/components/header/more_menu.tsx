@@ -1,4 +1,5 @@
 import { MenuGroup } from '@wordpress/components';
+import { displayShortcut } from '@wordpress/keycodes';
 import { __, _x } from '@wordpress/i18n';
 import { MoreMenuDropdown } from '@wordpress/interface';
 import { PreferenceToggleMenuItem } from '@wordpress/preferences';
@@ -25,6 +26,7 @@ export function MoreMenu(): JSX.Element {
             info={__('Work without distraction')}
             messageActivated={__('Fullscreen mode activated')}
             messageDeactivated={__('Fullscreen mode deactivated')}
+            shortcut={displayShortcut.secondary('f')}
           />
         </MenuGroup>
       )}
