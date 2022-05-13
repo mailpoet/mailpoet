@@ -2,6 +2,7 @@
 
 // there are no @types/wordpress__interface yet
 declare module '@wordpress/interface' {
+  export const FullscreenMode: any;
   export const InterfaceSkeleton: any;
 }
 
