@@ -1,6 +1,7 @@
 import { createReduxStore, register, StoreDescriptor } from '@wordpress/data';
 import * as actions from './actions';
 import { storeName } from './constants';
+import { initialState } from './initial_state';
 import { reducer } from './reducer';
 import * as selectors from './selectors';
 import { State } from './types';
@@ -17,6 +18,7 @@ export const store = createReduxStore<State>(storeName, {
   actions: actions as any,
   selectors,
   reducer,
+  initialState,
 }) as StoreType;
 
 type StoreKey = typeof storeName | StoreType;
