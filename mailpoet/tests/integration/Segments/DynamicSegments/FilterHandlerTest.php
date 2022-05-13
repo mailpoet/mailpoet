@@ -14,6 +14,7 @@ use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class FilterHandlerTest extends \MailPoetTest {
 
@@ -26,7 +27,7 @@ class FilterHandlerTest extends \MailPoetTest {
   /** @var SubscriberEntity */
   private $subscriber2;
 
-  public function _before() {
+  public function _before(): void {
     $this->cleanWpUsers();
     $this->filterHandler = $this->diContainer->get(FilterHandler::class);
     $this->tester->createWordPressUser('user-role-test1@example.com', 'editor');
@@ -53,7 +54,7 @@ class FilterHandlerTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
-  public function testItAppliesFilter() {
+  public function testItAppliesFilter(): void {
     $segment = $this->getSegment('editor');
     $statement = $this->filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
     assert($statement instanceof Statement);
@@ -80,7 +81,7 @@ class FilterHandlerTest extends \MailPoetTest {
     return $segment;
   }
 
-  private function getQueryBuilder() {
+  private function getQueryBuilder(): QueryBuilder {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager
       ->getConnection()
@@ -89,7 +90,7 @@ class FilterHandlerTest extends \MailPoetTest {
       ->from($subscribersTable);
   }
 
-  public function _after() {
+  public function _after(): void {
     $this->cleanWpUsers();
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SegmentEntity::class);
@@ -100,7 +101,7 @@ class FilterHandlerTest extends \MailPoetTest {
     $this->truncateEntity(ScheduledTaskEntity::class);
   }
 
-  private function cleanWpUsers() {
+  private function cleanWpUsers(): void {
     $emails = ['user-role-test1@example.com', 'user-role-test2@example.com', 'user-role-test3@example.com'];
     foreach ($emails as $email) {
       $this->tester->deleteWordPressUser($email);
