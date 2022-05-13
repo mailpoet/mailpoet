@@ -1,6 +1,7 @@
 import { Button, Icon, NavigableMenu } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { wordpress } from '@wordpress/icons';
+import { MoreMenu } from './more_menu';
 import { store } from '../../store';
 
 // See:
@@ -41,6 +42,7 @@ export function Header(): JSX.Element {
         <Button isPrimary className="editor-post-publish-button">
           Publish
         </Button>
+        <MoreMenu />
       </div>
     </div>
   );

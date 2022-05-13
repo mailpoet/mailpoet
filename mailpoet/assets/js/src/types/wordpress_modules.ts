@@ -3,6 +3,7 @@
 // there are no @types/wordpress__interface yet
 declare module '@wordpress/interface' {
   export const FullscreenMode: any;
+  export const MoreMenuDropdown: any;
   export const InterfaceSkeleton: any;
 }
 
@@ -11,4 +12,5 @@ declare module '@wordpress/preferences' {
   import { StoreDescriptor } from '@wordpress/data';
 
   export const store: { name: 'core/preferences' } & StoreDescriptor;
+  export const PreferenceToggleMenuItem: any;
 }
