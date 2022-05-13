@@ -4,3 +4,10 @@
 declare module '@wordpress/interface' {
   export const InterfaceSkeleton: any;
 }
+
+// there are no @types/wordpress__preferences yet
+declare module '@wordpress/preferences' {
+  import { StoreDescriptor } from '@wordpress/data';
+
+  export const store: { name: 'core/preferences' } & StoreDescriptor;
+}
