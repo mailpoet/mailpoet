@@ -43,6 +43,10 @@ declare module '@wordpress/block-editor' {
   }
 }
 
+declare module '@wordpress/components' {
+  export const ToolbarItem: any;
+}
+
 declare module '@wordpress/data' {
   type InterfaceStore = 'core/interface' | typeof interfaceStore;
 
