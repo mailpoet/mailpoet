@@ -1,0 +1,14 @@
+.mailpoet-automation-editor-add-step-button {
+  appearance: none;
+  background: #dcdcde;
+  border: none;
+  border-radius: 2px;
+  height: 16px;
+  margin: 0;
+  outline: 4px solid #fbfbfb;
+  padding: 0;
+  text-align: left;
+  width: 16px;
+
+  &:focus { outline: -webkit-focus-ring-color auto 1px; }
+}

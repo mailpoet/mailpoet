@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import {
   __unstableComposite as Composite,
   __unstableUseCompositeState as useCompositeState,
@@ -6,6 +6,7 @@ import {
 import { useSelect } from '@wordpress/data';
 import { WorkflowCompositeContext } from './context';
 import { EmptyWorkflow } from './empty-workflow';
+import { Separator } from './separator';
 import { Step } from './step';
 import { store } from '../../store';
 
@@ -67,8 +68,11 @@ export function Workflow(): JSX.Element {
       >
         <div className="mailpoet-automation-editor-workflow-wrapper">
           <div />
-          {steps.map((step) => (
-            <Step step={step} key={step.id} />
+          {steps.map((step, i) => (
+            <Fragment key={step.id}>
+              {i > 0 && <Separator />}
+              <Step step={step} key={step.id} />
+            </Fragment>
           ))}
           <div />
         </div>
