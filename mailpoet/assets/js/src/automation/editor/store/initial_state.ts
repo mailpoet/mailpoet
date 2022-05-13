@@ -8,8 +8,10 @@ import {
   share,
   tag,
 } from '@wordpress/icons';
-import { State } from './types';
+import { AutomationEditorWindow, State } from './types';
 import { Item } from '../components/inserter/item';
+
+declare let window: AutomationEditorWindow;
 
 // mocked data
 const actionSteps: Item[] = [
@@ -76,6 +78,7 @@ const logicalSteps: Item[] = [
 ];
 
 export const initialState: State = {
+  workflowData: { ...window.mailpoet_automation_workflow },
   inserter: {
     actionSteps,
     logicalSteps,
