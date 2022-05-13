@@ -1,0 +1,83 @@
+import { useContext } from 'react';
+import { __unstableCompositeItem as CompositeItem } from '@wordpress/components';
+import { WorkflowCompositeContext } from './context';
+import { Step as StepType } from './types';
+import { DelayIcon, EmailIcon, TriggerIcon } from '../icons';
+
+// mocked data
+function getIcon(step: StepType): JSX.Element | null {
+  if (step.type === 'trigger') {
+    return <TriggerIcon />;
+  }
+
+  if (step.key === 'core:wait') {
+    return <DelayIcon />;
+  }
+
+  if (step.key === 'mailpoet:send-welcome-email') {
+    return <EmailIcon />;
+  }
+
+  return null;
+}
+
+// mocked data
+function getTitle(step: StepType): string {
+  if (step.type === 'trigger') {
+    return 'Trigger';
+  }
+
+  if (step.key === 'core:wait') {
+    return 'Delay';
+  }
+
+  if (step.key === 'mailpoet:send-welcome-email') {
+    return 'Send welcome email';
+  }
+
+  return '';
+}
+
+// mocked data
+function getSubtitle(step: StepType): string {
+  if (step.key === 'mailpoet:segment:subscribed') {
+    return 'Subscribed to segment';
+  }
+  if (step.key === 'core:wait') {
+    return `${step.args.seconds as number} seconds`;
+  }
+  if (step.key === 'mailpoet:send-welcome-email') {
+    return `Email ID: ${step.args.welcomeEmailId as number}`;
+  }
+  return step.key;
+}
+
+type Props = {
+  step: StepType;
+};
+
+export function Step({ step }: Props): JSX.Element {
+  const compositeState = useContext(WorkflowCompositeContext);
+
+  return (
+    <CompositeItem
+      state={compositeState}
+      role="treeitem"
+      className="mailpoet-automation-editor-step"
+      key={step.id}
+      focusable
+    >
+      <div className="mailpoet-automation-editor-step-icon">
+        {getIcon(step)}
+      </div>
+      <div>
+        <div className="mailpoet-automation-editor-step-title">
+          {getTitle(step)}
+        </div>
+        <div className="mailpoet-automation-editor-step-subtitle">
+          {getSubtitle(step)}
+        </div>
+      </div>
+    </CompositeItem>
+  );
+}
