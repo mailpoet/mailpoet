@@ -1,9 +1,15 @@
 import classnames from 'classnames';
 import ReactDOM from 'react-dom';
+import { SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { InterfaceSkeleton, FullscreenMode } from '@wordpress/interface';
+import {
+  ComplementaryArea,
+  InterfaceSkeleton,
+  FullscreenMode,
+} from '@wordpress/interface';
 import { Header } from './components/header';
-import { store } from './store';
+import { Sidebar } from './components/sidebar';
+import { store, storeName } from './store';
 
 // See: https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
 
@@ -21,16 +27,17 @@ function Editor(): JSX.Element {
   );
 
   return (
-    <>
+    <SlotFillProvider>
       <FullscreenMode isActive={isFullscreenActive} />
+      <Sidebar />
       <InterfaceSkeleton
         className={className}
         header={<Header />}
         content={<div>Content</div>}
-        sidebar={<div>Sidebar</div>}
+        sidebar={<ComplementaryArea.Slot scope={storeName} />}
         secondarySidebar={<div>Secondary sidebar</div>}
       />
-    </>
+    </SlotFillProvider>
   );
 }
 
