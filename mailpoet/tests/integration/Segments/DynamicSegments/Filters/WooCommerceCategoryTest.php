@@ -30,7 +30,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   /** @var int[] */
   private $categoryIds;
 
-  public function _before() {
+  public function _before(): void {
     $this->wooCommerceCategory = $this->diContainer->get(WooCommerceCategory::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
 
@@ -61,7 +61,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->addToOrder(4, $this->orderIds[3], $this->productIds[1], $customerId4PendingPayment);
   }
 
-  public function testItGetsSubscribersThatPurchasedProductsInAnyCategory() {
+  public function testItGetsSubscribersThatPurchasedProductsInAnyCategory(): void {
     $expectedEmails = ['customer1@example.com', 'customer2@example.com'];
     $segmentFilter = $this->getSegmentFilter($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ANY);
     $queryBuilder = $this->wooCommerceCategory->apply($this->getQueryBuilder(), $segmentFilter);
@@ -73,7 +73,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->assertSame($expectedEmails, $emails);
   }
 
-  public function testItGetsSubscribersThatDidNotPurchasedProducts() {
+  public function testItGetsSubscribersThatDidNotPurchasedProducts(): void {
     $expectedEmails = [
       'a1@example.com',
       'a2@example.com',
@@ -91,7 +91,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->assertSame($expectedEmails, $emails);
   }
 
-  public function testItGetsSubscribersThatPurchasedAllProducts() {
+  public function testItGetsSubscribersThatPurchasedAllProducts(): void {
     $segmentFilter = $this->getSegmentFilter($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ALL);
     $queryBuilder = $this->wooCommerceCategory->apply($this->getQueryBuilder(), $segmentFilter);
     $statement = $queryBuilder->execute();
@@ -168,7 +168,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     return $orderId;
   }
 
-  private function createProduct(string $name, array $terms) {
+  private function createProduct(string $name, array $terms): int {
     $productData = [
       'post_type' => 'product',
       'post_status' => 'publish',
@@ -181,11 +181,13 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     return $productId;
   }
 
-  private function createCategory(string $name) {
-    return wp_create_category($name);
+  private function createCategory(string $name): int {
+    $categoryId =  wp_create_category($name);
+    $this->assertIsInt($categoryId);
+    return $categoryId;
   }
 
-  private function addToOrder(int $orderItemId, int $orderId, int $productId, int $customerId) {
+  private function addToOrder(int $orderItemId, int $orderId, int $productId, int $customerId): void {
     global $wpdb;
     $this->connection->executeQuery("
       INSERT INTO {$wpdb->prefix}wc_order_product_lookup (order_item_id, order_id, product_id, customer_id, variation_id, product_qty, date_created)
@@ -201,11 +203,11 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     return $subscriber;
   }
 
-  public function _after() {
+  public function _after(): void {
     $this->cleanUp();
   }
 
-  private function cleanUp() {
+  private function cleanUp(): void {
     global $wpdb;
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);

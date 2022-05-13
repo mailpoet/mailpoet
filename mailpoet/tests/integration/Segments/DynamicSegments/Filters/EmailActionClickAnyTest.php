@@ -15,6 +15,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class EmailActionClickAnyTest extends \MailPoetTest {
   /** @var EmailActionClickAny */
@@ -22,12 +23,16 @@ class EmailActionClickAnyTest extends \MailPoetTest {
 
   /** @var NewsletterEntity */
   private $newsletter;
+  /** @var SubscriberEntity */
   public $subscriberOpenedNotClicked;
+  /** @var SubscriberEntity */
   public $subscriberNotSent;
+  /** @var SubscriberEntity */
   public $subscriberNotOpened;
+  /** @var SubscriberEntity */
   public $subscriberOpenedClicked;
 
-  public function _before() {
+  public function _before(): void {
     $this->cleanData();
     $this->emailAction = $this->diContainer->get(EmailActionClickAny::class);
     $this->newsletter = new NewsletterEntity();
@@ -59,7 +64,7 @@ class EmailActionClickAnyTest extends \MailPoetTest {
     $this->addClickedToLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked);
   }
 
-  public function testGetClickedAnyLink() {
+  public function testGetClickedAnyLink(): void {
     $subscriberClickedExcludedLinks = $this->createSubscriber('opened_clicked_excluded@example.com');
     $this->createStatsNewsletter($subscriberClickedExcludedLinks);
     $this->createStatisticsOpens($subscriberClickedExcludedLinks);
@@ -78,7 +83,7 @@ class EmailActionClickAnyTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
   }
 
-  private function getQueryBuilder() {
+  private function getQueryBuilder(): QueryBuilder {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager
       ->getConnection()
@@ -100,7 +105,7 @@ class EmailActionClickAnyTest extends \MailPoetTest {
     return $dynamicSegmentFilter;
   }
 
-  private function createSubscriber(string $email) {
+  private function createSubscriber(string $email): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
     $subscriber->setLastName('Last');
@@ -111,7 +116,7 @@ class EmailActionClickAnyTest extends \MailPoetTest {
     return $subscriber;
   }
 
-  private function createStatsNewsletter(SubscriberEntity $subscriber) {
+  private function createStatsNewsletter(SubscriberEntity $subscriber): StatisticsNewsletterEntity {
     $queue = $this->newsletter->getLatestQueue();
     assert($queue instanceof SendingQueueEntity);
     $stats = new StatisticsNewsletterEntity($this->newsletter, $queue, $subscriber);
@@ -120,7 +125,7 @@ class EmailActionClickAnyTest extends \MailPoetTest {
     return $stats;
   }
 
-  private function createStatisticsOpens(SubscriberEntity $subscriber) {
+  private function createStatisticsOpens(SubscriberEntity $subscriber): StatisticsOpenEntity {
     $queue = $this->newsletter->getLatestQueue();
     assert($queue instanceof SendingQueueEntity);
     $open = new StatisticsOpenEntity($this->newsletter, $queue, $subscriber);
@@ -129,7 +134,7 @@ class EmailActionClickAnyTest extends \MailPoetTest {
     return $open;
   }
 
-  private function addClickedToLink(string $link, NewsletterEntity $newsletter, SubscriberEntity $subscriber) {
+  private function addClickedToLink(string $link, NewsletterEntity $newsletter, SubscriberEntity $subscriber): void {
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $link = new NewsletterLinkEntity($this->newsletter, $queue, $link, uniqid());
@@ -146,11 +151,11 @@ class EmailActionClickAnyTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
-  public function _after() {
+  public function _after(): void {
     $this->cleanData();
   }
 
-  private function cleanData() {
+  private function cleanData(): void {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(StatisticsOpenEntity::class);

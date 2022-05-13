@@ -9,6 +9,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class MailPoetCustomFieldsTest extends \MailPoetTest {
 
@@ -18,7 +19,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
   /** @var SubscriberEntity[] */
   private $subscribers = [];
 
-  public function _before() {
+  public function _before(): void {
     $this->cleanData();
     $this->filter = $this->diContainer->get(MailPoetCustomFields::class);
     $this->subscribers = [];
@@ -28,7 +29,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
-  public function testItFiltersSubscribersWithTextEquals() {
+  public function testItFiltersSubscribersWithTextEquals(): void {
     $subscriber = $this->subscribers[2];
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, 'some value'));
@@ -53,7 +54,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
   }
 
-  public function testItFiltersSubscribersWithTextContains() {
+  public function testItFiltersSubscribersWithTextContains(): void {
     $subscriber = $this->subscribers[1];
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, 'some value'));
@@ -78,7 +79,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
   }
 
-  public function testItFiltersSubscribersTextNotEquals() {
+  public function testItFiltersSubscribersTextNotEquals(): void {
     $subscriber = $this->subscribers[1];
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, 'something else'));
@@ -104,7 +105,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
   }
 
-  public function testItFiltersSubscribersTextMoreThan() {
+  public function testItFiltersSubscribersTextMoreThan(): void {
     $subscriber = $this->subscribers[1];
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, '3'));
@@ -130,7 +131,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
   }
 
-  public function testItFiltersSubscribersTextLessThan() {
+  public function testItFiltersSubscribersTextLessThan(): void {
     $subscriber = $this->subscribers[1];
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_TEXT);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, '1'));
@@ -156,7 +157,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
   }
 
-  public function testItFiltersRadio() {
+  public function testItFiltersRadio(): void {
     $subscriber = $this->subscribers[1];
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_RADIO);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, 'Option 2'));
@@ -181,7 +182,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
   }
 
-  public function testItFiltersCheckboxChecked() {
+  public function testItFiltersCheckboxChecked(): void {
     $subscriber = $this->subscribers[1];
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_CHECKBOX);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($subscriber, $customField, '1'));
@@ -206,7 +207,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($subscriber->getEmail());
   }
 
-  public function testItFiltersCheckboxUnChecked() {
+  public function testItFiltersCheckboxUnChecked(): void {
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_CHECKBOX);
     $this->entityManager->persist($customField);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '1'));
@@ -231,7 +232,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());
   }
 
-  public function testItFiltersMonthDate() {
+  public function testItFiltersMonthDate(): void {
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_DATE);
     $this->entityManager->persist($customField);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '2021-04-01 00:00:00'));
@@ -257,7 +258,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
   }
 
-  public function testItFiltersDateYear() {
+  public function testItFiltersDateYear(): void {
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_DATE);
     $this->entityManager->persist($customField);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '2017-03-14 00:00:00'));
@@ -283,7 +284,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
   }
 
-  public function testItFiltersDateYearBefore() {
+  public function testItFiltersDateYearBefore(): void {
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_DATE);
     $this->entityManager->persist($customField);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '2016-03-14 00:00:00'));
@@ -310,7 +311,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
   }
 
-  public function testItFiltersDateMonthYear() {
+  public function testItFiltersDateMonthYear(): void {
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_DATE);
     $this->entityManager->persist($customField);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '2016-04-01 00:00:00'));
@@ -336,7 +337,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());
   }
 
-  public function testItFiltersDateMonthYearBefore() {
+  public function testItFiltersDateMonthYearBefore(): void {
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_DATE);
     $this->entityManager->persist($customField);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '2016-04-01 00:00:00'));
@@ -363,7 +364,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[0]->getEmail());
   }
 
-  public function testItFiltersFullDate() {
+  public function testItFiltersFullDate(): void {
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_DATE);
     $this->entityManager->persist($customField);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '2016-04-01 00:00:00'));
@@ -389,7 +390,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());
   }
 
-  public function testItFiltersFullDateAfter() {
+  public function testItFiltersFullDateAfter(): void {
     $customField = $this->createCustomField(CustomFieldEntity::TYPE_DATE);
     $this->entityManager->persist($customField);
     $this->entityManager->persist(new SubscriberCustomFieldEntity($this->subscribers[0], $customField, '2016-04-01 00:00:00'));
@@ -416,7 +417,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     expect($filteredSubscriber->getEmail())->equals($this->subscribers[1]->getEmail());
   }
 
-  private function getSegmentFilter($segmentFilterData): DynamicSegmentFilterEntity {
+  private function getSegmentFilter(DynamicSegmentFilterData $segmentFilterData): DynamicSegmentFilterEntity {
     $segment = new SegmentEntity('Dynamic Segment', SegmentEntity::TYPE_DYNAMIC, 'description');
     $this->entityManager->persist($segment);
     $dynamicSegmentFilter = new DynamicSegmentFilterEntity($segment, $segmentFilterData);
@@ -435,7 +436,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     return $subscriber;
   }
 
-  private function createCustomField($type, $params = []): CustomFieldEntity {
+  private function createCustomField(string $type, array $params = []): CustomFieldEntity {
     $customField = new CustomFieldEntity();
     $customField->setType($type);
     $customField->setParams($params);
@@ -443,7 +444,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     return $customField;
   }
 
-  private function cleanData() {
+  private function cleanData(): void {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(CustomFieldEntity::class);
     $this->truncateEntity(SubscriberCustomFieldEntity::class);
@@ -451,7 +452,7 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }
 
-  private function getQueryBuilder() {
+  private function getQueryBuilder(): QueryBuilder {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager
       ->getConnection()

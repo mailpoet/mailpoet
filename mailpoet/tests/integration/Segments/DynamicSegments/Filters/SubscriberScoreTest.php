@@ -7,13 +7,14 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class SubscriberScoreTest extends \MailPoetTest {
 
   /** @var SubscriberScore */
   private $filter;
 
-  public function _before() {
+  public function _before(): void {
     $this->filter = $this->diContainer->get(SubscriberScore::class);
     $this->cleanUp();
 
@@ -50,7 +51,7 @@ class SubscriberScoreTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
-  public function testGetHigherThan() {
+  public function testGetHigherThan(): void {
     $segmentFilter = $this->getSegmentFilter(SubscriberScore::HIGHER_THAN, '80');
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -63,7 +64,7 @@ class SubscriberScoreTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals('e12345@example.com');
   }
 
-  public function testGetLowerThan() {
+  public function testGetLowerThan(): void {
     $segmentFilter = $this->getSegmentFilter(SubscriberScore::LOWER_THAN, '30');
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -81,7 +82,7 @@ class SubscriberScoreTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals('e12@example.com');
   }
 
-  public function testGetEquals() {
+  public function testGetEquals(): void {
     $segmentFilter = $this->getSegmentFilter(SubscriberScore::EQUALS, '50');
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -94,7 +95,7 @@ class SubscriberScoreTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals('e123@example.com');
   }
 
-  public function testGetNotEquals() {
+  public function testGetNotEquals(): void {
     $segmentFilter = $this->getSegmentFilter(SubscriberScore::NOT_EQUALS, '50');
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -120,7 +121,7 @@ class SubscriberScoreTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals('e12345@example.com');
   }
 
-  public function testGetUnknown() {
+  public function testGetUnknown(): void {
     $segmentFilter = $this->getSegmentFilter(SubscriberScore::UNKNOWN, '');
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -134,7 +135,7 @@ class SubscriberScoreTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals('e123456@example.com');
   }
 
-  public function testGetNotUnknown() {
+  public function testGetNotUnknown(): void {
     $segmentFilter = $this->getSegmentFilter(SubscriberScore::NOT_UNKNOWN, '');
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -164,7 +165,7 @@ class SubscriberScoreTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals('e12345@example.com');
   }
 
-  private function getQueryBuilder() {
+  private function getQueryBuilder(): QueryBuilder {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager
       ->getConnection()
@@ -186,7 +187,7 @@ class SubscriberScoreTest extends \MailPoetTest {
     return $dynamicSegmentFilter;
   }
 
-  private function cleanUp() {
+  private function cleanUp(): void {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);

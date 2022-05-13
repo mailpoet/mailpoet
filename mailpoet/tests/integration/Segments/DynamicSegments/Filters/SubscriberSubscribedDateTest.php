@@ -8,13 +8,14 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class SubscriberSubscribedDateTest extends \MailPoetTest {
 
   /** @var SubscriberSubscribedDate */
   private $filter;
 
-  public function _before() {
+  public function _before(): void {
     $this->filter = $this->diContainer->get(SubscriberSubscribedDate::class);
     $this->cleanUp();
 
@@ -45,7 +46,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
-  public function testGetBefore() {
+  public function testGetBefore(): void {
     $segmentFilter = $this->getSegmentFilter(SubscriberSubscribedDate::BEFORE, CarbonImmutable::now()->subDays(3)->format('Y-m-d'));
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -58,7 +59,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals('e12345@example.com');
   }
 
-  public function testGetAfter() {
+  public function testGetAfter(): void {
     $segmentFilter = $this->getSegmentFilter(SubscriberSubscribedDate::AFTER, CarbonImmutable::now()->subDays(2)->format('Y-m-d'));
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -76,7 +77,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals('e12@example.com');
   }
 
-  public function testGetOn() {
+  public function testGetOn(): void {
     $segmentFilter = $this->getSegmentFilter(SubscriberSubscribedDate::ON, CarbonImmutable::now()->subDays(2)->format('Y-m-d'));
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -91,7 +92,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     $this->assertSame('e123@example.com', $subscriber->getEmail());
   }
 
-  public function testGetNotOn() {
+  public function testGetNotOn(): void {
     $segmentFilter = $this->getSegmentFilter(SubscriberSubscribedDate::NOT_ON, CarbonImmutable::now()->subDays(2)->format('Y-m-d'));
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -118,7 +119,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     $this->assertSame('e12345@example.com', $subscriber4->getEmail());
   }
 
-  public function testGetInTheLast() {
+  public function testGetInTheLast(): void {
     $segmentFilter = $this->getSegmentFilter(SubscriberSubscribedDate::IN_THE_LAST, '2');
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -136,7 +137,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals('e12@example.com');
   }
 
-  public function testGetNotInTheLast() {
+  public function testGetNotInTheLast(): void {
     $segmentFilter = $this->getSegmentFilter(SubscriberSubscribedDate::NOT_IN_THE_LAST, '3');
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -154,7 +155,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals('e12345@example.com');
   }
 
-  private function getQueryBuilder() {
+  private function getQueryBuilder(): QueryBuilder {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager
       ->getConnection()
@@ -176,7 +177,7 @@ class SubscriberSubscribedDateTest extends \MailPoetTest {
     return $dynamicSegmentFilter;
   }
 
-  private function cleanUp() {
+  private function cleanUp(): void {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);

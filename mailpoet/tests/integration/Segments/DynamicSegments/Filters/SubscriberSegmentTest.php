@@ -9,6 +9,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class SubscriberSegmentTest extends \MailPoetTest {
   /** @var SubscriberSegment */
@@ -19,7 +20,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
   /** @var SegmentEntity */
   private $segment2;
 
-  public function _before() {
+  public function _before(): void {
     $this->filter = $this->diContainer->get(SubscriberSegment::class);
 
     $this->cleanUp();
@@ -51,7 +52,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
-  public function testSubscribedAnyOf() {
+  public function testSubscribedAnyOf(): void {
     $segmentFilter = $this->getSegmentFilter(DynamicSegmentFilterData::OPERATOR_ANY, [$this->segment1->getId(), $this->segment2->getId()]);
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -69,7 +70,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals('a2@example.com');
   }
 
-  public function testSubscribedAllOf() {
+  public function testSubscribedAllOf(): void {
     $segmentFilter = $this->getSegmentFilter(DynamicSegmentFilterData::OPERATOR_ALL, [$this->segment1->getId(), $this->segment2->getId()]);
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -84,7 +85,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     expect($subscriber->getEmail())->equals('a1@example.com');
   }
 
-  public function testSubscribedNoneOf() {
+  public function testSubscribedNoneOf(): void {
     $segmentFilter = $this->getSegmentFilter(DynamicSegmentFilterData::OPERATOR_NONE, [$this->segment1->getId()]);
     $statement = $this->filter->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -115,7 +116,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     return $dynamicSegmentFilter;
   }
 
-  private function getQueryBuilder() {
+  private function getQueryBuilder(): QueryBuilder {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager
       ->getConnection()
@@ -124,7 +125,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
       ->from($subscribersTable);
   }
 
-  private function cleanUp() {
+  private function cleanUp(): void {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);

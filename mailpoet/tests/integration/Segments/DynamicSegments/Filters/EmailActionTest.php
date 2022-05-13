@@ -15,6 +15,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class EmailActionTest extends \MailPoetTest {
   /** @var EmailAction */
@@ -27,12 +28,16 @@ class EmailActionTest extends \MailPoetTest {
   /** @var NewsletterEntity */
   private $newsletter3;
 
+  /** @var SubscriberEntity */
   public $subscriberOpenedNotClicked;
+  /** @var SubscriberEntity */
   public $subscriberNotSent;
+  /** @var SubscriberEntity */
   public $subscriberNotOpened;
+  /** @var SubscriberEntity */
   public $subscriberOpenedClicked;
 
-  public function _before() {
+  public function _before(): void {
     $this->cleanData();
     $this->emailAction = $this->diContainer->get(EmailAction::class);
     $this->newsletter = new NewsletterEntity();
@@ -99,7 +104,7 @@ class EmailActionTest extends \MailPoetTest {
     $this->createStatisticsOpens($subscriberOpenedNotClicked4, $this->newsletter3);
   }
 
-  public function testGetOpened() {
+  public function testGetOpened(): void {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_OPENED, [
       'newsletters' => [$this->newsletter->getId()],
     ]);
@@ -115,7 +120,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('opened_not_clicked@example.com');
   }
 
-  public function testGetOpenedOperatorAny() {
+  public function testGetOpenedOperatorAny(): void {
     $segmentFilter = $this->getSegmentFilter(
       EmailAction::ACTION_OPENED,
       [
@@ -141,7 +146,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber4->getEmail())->equals('opened_not_clicked4@example.com');
   }
 
-  public function testGetOpenedOperatorAll() {
+  public function testGetOpenedOperatorAll(): void {
     $segmentFilter = $this->getSegmentFilter(
       EmailAction::ACTION_OPENED,
       [
@@ -158,7 +163,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('opened_not_clicked4@example.com');
   }
 
-  public function testGetOpenedOperatorNone() {
+  public function testGetOpenedOperatorNone(): void {
     $segmentFilter = $this->getSegmentFilter(
       EmailAction::ACTION_OPENED,
       [
@@ -175,7 +180,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('not_opened@example.com');
   }
 
-  public function testGetClickedWithoutSavedLinks() {
+  public function testGetClickedWithoutSavedLinks(): void {
     $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
@@ -189,7 +194,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
   }
 
-  public function testGetClickedWithAnyOfLinks() {
+  public function testGetClickedWithAnyOfLinks(): void {
     // 2 Links each clicked by a different subscriber
     $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
     $subscriberClickedOther = $this->createSubscriber('second_click@example.com');
@@ -208,7 +213,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
   }
 
-  public function testGetClickedWithAllOfLinks() {
+  public function testGetClickedWithAllOfLinks(): void {
     // 2 Links both clicked by $this->subscriberOpenedClicked and second one clicked only by other subscriber
     $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
     $link2 = $this->createClickedLink('http://example2.com', $this->newsletter, $this->subscriberOpenedClicked); // id 2
@@ -229,7 +234,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
   }
 
-  public function testGetClickedWithAllOfAndNoSavedLinks() {
+  public function testGetClickedWithAllOfAndNoSavedLinks(): void {
     // 2 Links both clicked by $this->subscriberOpenedClicked and second one clicked only by other subscriber
     $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
     $link2 = $this->createClickedLink('http://example2.com', $this->newsletter, $this->subscriberOpenedClicked); // id 2
@@ -250,7 +255,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('opened_clicked@example.com');
   }
 
-  public function testGetClickedWrongLink() {
+  public function testGetClickedWrongLink(): void {
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
       'link_ids' => [2],
@@ -262,7 +267,7 @@ class EmailActionTest extends \MailPoetTest {
     expect(count($result))->equals(0);
   }
 
-  public function testGetClickedWithNoneOfLinks() {
+  public function testGetClickedWithNoneOfLinks(): void {
     $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
@@ -281,7 +286,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('not_opened@example.com');
   }
 
-  public function testGetClickedWithNoneAndNoSavedLinks() {
+  public function testGetClickedWithNoneAndNoSavedLinks(): void {
     $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked); // id 1
     $segmentFilter = $this->getSegmentFilter(EmailAction::ACTION_CLICKED, [
       'newsletter_id' => (int)$this->newsletter->getId(),
@@ -300,7 +305,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('not_opened@example.com');
   }
 
-  public function testOpensNotIncludeMachineOpens() {
+  public function testOpensNotIncludeMachineOpens(): void {
     $subscriberOpenedMachine = $this->createSubscriber('opened_machine@example.com');
     $this->createStatsNewsletter($subscriberOpenedMachine, $this->newsletter);
     $open = $this->createStatisticsOpens($subscriberOpenedMachine, $this->newsletter);
@@ -317,7 +322,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($result)->equals(2);
   }
 
-  public function testMachineOpensAny() {
+  public function testMachineOpensAny(): void {
     $subscriberOpenedMachine = $this->createSubscriber('opened_machine@example.com');
     $this->createStatsNewsletter($subscriberOpenedMachine, $this->newsletter);
     $open = $this->createStatisticsOpens($subscriberOpenedMachine, $this->newsletter);
@@ -340,7 +345,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($result)->equals(1);
   }
 
-  public function testMachineOpensAll() {
+  public function testMachineOpensAll(): void {
     $subscriberOpenedMachine = $this->createSubscriber('opened_machine@example.com');
     $this->createStatsNewsletter($subscriberOpenedMachine, $this->newsletter);
     $this->createStatsNewsletter($subscriberOpenedMachine, $this->newsletter2);
@@ -370,7 +375,7 @@ class EmailActionTest extends \MailPoetTest {
     expect($result)->equals(1);
   }
 
-  private function getQueryBuilder() {
+  private function getQueryBuilder(): QueryBuilder {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager
       ->getConnection()
@@ -389,7 +394,7 @@ class EmailActionTest extends \MailPoetTest {
     return $dynamicSegmentFilter;
   }
 
-  private function createSubscriber(string $email) {
+  private function createSubscriber(string $email): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
     $subscriber->setLastName('Last');
@@ -400,7 +405,7 @@ class EmailActionTest extends \MailPoetTest {
     return $subscriber;
   }
 
-  private function createStatsNewsletter(SubscriberEntity $subscriber, NewsletterEntity $newsletter) {
+  private function createStatsNewsletter(SubscriberEntity $subscriber, NewsletterEntity $newsletter): StatisticsNewsletterEntity {
     $queue = $this->newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $stats = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber);
@@ -409,7 +414,7 @@ class EmailActionTest extends \MailPoetTest {
     return $stats;
   }
 
-  private function createStatisticsOpens(SubscriberEntity $subscriber, NewsletterEntity $newsletter) {
+  private function createStatisticsOpens(SubscriberEntity $subscriber, NewsletterEntity $newsletter): StatisticsOpenEntity {
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $open = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
@@ -436,7 +441,7 @@ class EmailActionTest extends \MailPoetTest {
     return $link;
   }
 
-  private function addClickToLink(NewsletterLinkEntity $link, SubscriberEntity $subscriberEntity) {
+  private function addClickToLink(NewsletterLinkEntity $link, SubscriberEntity $subscriberEntity): StatisticsClickEntity {
     $newsletter = $link->getNewsletter();
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $queue = $link->getQueue();
@@ -453,11 +458,11 @@ class EmailActionTest extends \MailPoetTest {
     return $click;
   }
 
-  public function _after() {
+  public function _after(): void {
     $this->cleanData();
   }
 
-  private function cleanData() {
+  private function cleanData(): void {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(StatisticsOpenEntity::class);

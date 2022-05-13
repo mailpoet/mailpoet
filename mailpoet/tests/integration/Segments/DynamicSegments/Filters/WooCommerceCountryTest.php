@@ -72,7 +72,7 @@ class WooCommerceCountryTest extends \MailPoetTest {
     expect($subscriber3->getEmail())->equals('customer3@example.com');
   }
 
-  public function testItAppliesFilterNone() {
+  public function testItAppliesFilterNone(): void {
     $segmentFilter = $this->getSegmentFilter(['CZ','US'], DynamicSegmentFilterData::OPERATOR_NONE);
     $queryBuilder = $this->wooCommerceCountry->apply($this->getQueryBuilder(), $segmentFilter);
     $statement = $queryBuilder->execute();
@@ -118,7 +118,7 @@ class WooCommerceCountryTest extends \MailPoetTest {
     return $dynamicSegmentFilter;
   }
 
-  private function createCustomerLookupData(array $data) {
+  private function createCustomerLookupData(array $data): void {
     global $wpdb;
     $connection = $this->entityManager->getConnection();
     $customerLookupTable = $wpdb->prefix . 'wc_customer_lookup';

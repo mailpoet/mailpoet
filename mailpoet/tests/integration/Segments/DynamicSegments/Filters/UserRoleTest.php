@@ -6,12 +6,15 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class UserRoleTest extends \MailPoetTest {
 
+  /** @var UserRole */
   private $userRole;
 
-  public function _before() {
+  public function _before(): void {
     global $wpdb;
     $this->userRole = $this->diContainer->get(UserRole::class);
     $this->cleanup();
@@ -30,10 +33,9 @@ class UserRoleTest extends \MailPoetTest {
     $this->tester->createWordPressUser('user-role-test6@example.com', 'subscriber');
   }
 
-  public function testItAppliesFilter() {
+  public function testItAppliesFilter(): void {
     $segmentFilter = $this->getSegmentFilter('editor');
-    $queryBuilder = $this->userRole->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $result = $this->applyFilter($this->userRole, $this->getQueryBuilder(), $segmentFilter);
     expect(count($result))->equals(2);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -43,10 +45,9 @@ class UserRoleTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
   }
 
-  public function testItAppliesFilterAny() {
+  public function testItAppliesFilterAny(): void {
     $segmentFilter = $this->getSegmentFilter(['editor', 'author']);
-    $queryBuilder = $this->userRole->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $result = $this->applyFilter($this->userRole, $this->getQueryBuilder(), $segmentFilter);
     expect(count($result))->equals(3);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -59,10 +60,9 @@ class UserRoleTest extends \MailPoetTest {
     expect($subscriber3->getEmail())->equals('user-role-test4@example.com');
   }
 
-  public function testItAppliesFilterNone() {
+  public function testItAppliesFilterNone(): void {
     $segmentFilter = $this->getSegmentFilter(['administrator', 'author', 'subscriber'], DynamicSegmentFilterData::OPERATOR_NONE);
-    $queryBuilder = $this->userRole->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $result = $this->applyFilter($this->userRole, $this->getQueryBuilder(), $segmentFilter);
     expect(count($result))->equals(2);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -72,24 +72,22 @@ class UserRoleTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
   }
 
-  public function testItAppliesFilterAll() {
+  public function testItAppliesFilterAll(): void {
     $segmentFilter = $this->getSegmentFilter(['subscriber', 'merchant'], DynamicSegmentFilterData::OPERATOR_ALL);
-    $queryBuilder = $this->userRole->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $result = $this->applyFilter($this->userRole, $this->getQueryBuilder(), $segmentFilter);
     expect(count($result))->equals(1);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     expect($subscriber1->getEmail())->equals('user-role-test5@example.com');
   }
 
-  public function testItDoesntGetSubString() {
+  public function testItDoesntGetSubString(): void {
     $segmentFilter = $this->getSegmentFilter('edit');
-    $queryBuilder = $this->userRole->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $result = $this->applyFilter($this->userRole, $this->getQueryBuilder(), $segmentFilter);
     expect(count($result))->equals(0);
   }
 
-  private function getQueryBuilder() {
+  private function getQueryBuilder(): QueryBuilder {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager
       ->getConnection()
@@ -97,6 +95,13 @@ class UserRoleTest extends \MailPoetTest {
       ->orderBy('email')
       ->select("$subscribersTable.id")
       ->from($subscribersTable);
+  }
+
+  private function applyFilter(UserRole $userRole, QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $segmentFilter): array {
+    $queryBuilder = $userRole->apply($queryBuilder, $segmentFilter);
+    $statement = $queryBuilder->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    return $statement->fetchAll();
   }
 
   /**
@@ -120,17 +125,17 @@ class UserRoleTest extends \MailPoetTest {
     return $dynamicSegmentFilter;
   }
 
-  public function _after() {
+  public function _after(): void {
     parent::_after();
     $this->cleanup();
   }
 
-  private function cleanup() {
+  private function cleanup(): void {
     $this->cleanWpUsers();
     $this->truncateEntity(SubscriberEntity::class);
   }
 
-  private function cleanWpUsers() {
+  private function cleanWpUsers(): void {
     $emails = [
       'user-role-test1@example.com',
       'user-role-test2@example.com',
