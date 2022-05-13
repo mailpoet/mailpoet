@@ -33,6 +33,10 @@ class Functions {
     return call_user_func_array('do_action', func_get_args());
   }
 
+  public function trailingslashit(string $url) {
+    return trailingslashit($url);
+  }
+
   /**
    * @param string $tag
    * @param mixed ...$args
