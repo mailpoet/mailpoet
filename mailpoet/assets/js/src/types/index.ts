@@ -1,5 +1,7 @@
 import { ColorPalette, FontSizePicker } from '@wordpress/components';
 
+import './wordpress_modules';
+
 export * from '../segments/dynamic/types';
 
 // Inspired by: https://neliosoftware.com/blog/adding-typescript-to-wordpress-data-stores/
