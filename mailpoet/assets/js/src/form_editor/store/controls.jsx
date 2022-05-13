@@ -14,7 +14,7 @@ import { findBlock } from './find_block.jsx';
 
 const formatApiErrorMessage = (response) => {
   let errorMessage = null;
-  if (response.errors.length > 0) {
+  if (Array.isArray(response.errors) && response.errors.length > 0) {
     errorMessage = response.errors.map((error) => error.message);
     errorMessage = errorMessage.join(', ');
   }
