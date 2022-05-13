@@ -1,1 +1,1 @@
-export type Feature = 'fullscreenMode';
+export type Feature = 'fullscreenMode' | 'showIconLabels';

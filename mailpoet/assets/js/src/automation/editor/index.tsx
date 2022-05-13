@@ -19,10 +19,12 @@ function Editor(): JSX.Element {
   const {
     isFullscreenActive,
     isSidebarOpened,
+    showIconLabels,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(store).isFeatureActive('fullscreenMode'),
       isSidebarOpened: select(store).isSidebarOpened(),
+      showIconLabels: select(store).isFeatureActive('showIconLabels'),
     }),
     [],
   );
@@ -32,6 +34,7 @@ function Editor(): JSX.Element {
     'interface-interface-skeleton',
     {
       'is-sidebar-opened': isSidebarOpened,
+      'show-icon-labels': showIconLabels,
     },
   );
 

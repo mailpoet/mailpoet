@@ -11,7 +11,12 @@ import { store as keyboardShortcutsStore } from '@wordpress/keyboard-shortcuts';
 import { Header } from './header';
 import { StepSidebar } from './step';
 import { WorkflowSidebar } from './workflow';
-import { stepSidebarKey, storeName, workflowSidebarKey } from '../../store';
+import {
+  stepSidebarKey,
+  store,
+  storeName,
+  workflowSidebarKey,
+} from '../../store';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/5caeae34b3fb303761e3b9432311b26f4e5ea3a6/packages/edit-post/src/components/sidebar/plugin-sidebar/index.js
@@ -25,7 +30,7 @@ const sidebarActiveByDefault = Platform.select({
 type Props = ComponentProps<typeof ComplementaryArea>;
 
 export function Sidebar(props: Props): JSX.Element {
-  const { keyboardShortcut, sidebarKey } = useSelect(
+  const { keyboardShortcut, sidebarKey, showIconLabels } = useSelect(
     (select) => ({
       keyboardShortcut: select(
         keyboardShortcutsStore,
@@ -33,6 +38,7 @@ export function Sidebar(props: Props): JSX.Element {
       sidebarKey:
         select(interfaceStore).getActiveComplementaryArea(storeName) ??
         workflowSidebarKey,
+      showIconLabels: select(store).isFeatureActive('showIconLabels'),
     }),
     [],
   );
@@ -52,6 +58,7 @@ export function Sidebar(props: Props): JSX.Element {
       scope={storeName}
       toggleShortcut={keyboardShortcut}
       isActiveByDefault={sidebarActiveByDefault}
+      showIconLabels={showIconLabels}
       {...props}
     >
       {sidebarKey === workflowSidebarKey && <WorkflowSidebar />}
