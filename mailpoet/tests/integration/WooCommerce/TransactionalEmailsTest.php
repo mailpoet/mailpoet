@@ -6,7 +6,6 @@ use Codeception\Stub;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SettingEntity;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -58,7 +57,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
 
   public function testInitCreatesTransactionalEmailAndSavesItsId() {
     $this->transactionalEmails->init();
-    $email = $this->newslettersRepository->findOneBy(['type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL]);
+    $email = $this->newslettersRepository->findOneBy(['type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL]);
     assert($email instanceof NewsletterEntity);
     $id = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID, null);
     expect($email)->notEmpty();
@@ -69,7 +68,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
   public function testInitDoesntCreateTransactionalEmailIfSettingAlreadySet() {
     $this->settings->set(TransactionalEmails::SETTING_EMAIL_ID, 1);
     $this->transactionalEmails->init();
-    $email = $this->newslettersRepository->findOneBy(['type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL]);
+    $email = $this->newslettersRepository->findOneBy(['type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL]);
     expect($email)->equals(null);
   }
 
@@ -99,7 +98,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
     $optionOriginalValue = $this->wp->getOption('woocommerce_email_footer_text');
     $this->wp->updateOption('woocommerce_email_footer_text', '<div><p>Text <a href="http://example.com">Link</a></p></div>');
     $this->transactionalEmails->init();
-    $email = $this->newslettersRepository->findOneBy(['type' => Newsletter::TYPE_WC_TRANSACTIONAL_EMAIL]);
+    $email = $this->newslettersRepository->findOneBy(['type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL]);
     assert($email instanceof NewsletterEntity);
     $body = $email->getBody();
     assert(is_array($body));

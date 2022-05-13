@@ -2,13 +2,12 @@
 
 namespace MailPoet\Util\Notices;
 
-use MailPoet\Models\Subscriber;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Idiorm\ORM;
 
 class InactiveSubscribersNoticeTest extends \MailPoetTest {
   public function testItDisplays() {
@@ -74,13 +73,13 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
 
   private function cleanup() {
     $this->diContainer->get(SettingsRepository::class)->truncate();
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    $this->truncateEntity(SubscriberEntity::class);
   }
 
   private function createSubscribers($count) {
     for ($i = 0; $i < $count; $i++) {
       $subscriberFactory = new SubscriberFactory();
-      $subscriberFactory->withStatus(Subscriber::STATUS_INACTIVE);
+      $subscriberFactory->withStatus(SubscriberEntity::STATUS_INACTIVE);
       $subscriberFactory->create();
     }
   }

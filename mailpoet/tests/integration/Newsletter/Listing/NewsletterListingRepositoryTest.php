@@ -8,7 +8,6 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\Handler;
-use MailPoet\Models\Newsletter;
 
 class NewsletterListingRepositoryTest extends \MailPoetTest {
   public function testItAppliesGroup() {
@@ -161,7 +160,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     // get 'woocommerce' group
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
       'params' => [
-        'type' => Newsletter::TYPE_AUTOMATIC,
+        'type' => NewsletterEntity::TYPE_AUTOMATIC,
         'group' => 'woocommerce',
       ],
     ]));
@@ -170,14 +169,14 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     // get 'unicorns' group
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
       'params' => [
-        'type' => Newsletter::TYPE_AUTOMATIC,
+        'type' => NewsletterEntity::TYPE_AUTOMATIC,
         'group' => 'unicorns',
       ],
     ]));
     expect($newsletters)->count(1);
 
     // get all emails group
-    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition(['type' => Newsletter::TYPE_AUTOMATIC]));
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition(['type' => NewsletterEntity::TYPE_AUTOMATIC]));
     expect($newsletters)->count(2);
   }
 

@@ -19,7 +19,6 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoetVendor\Carbon\Carbon;
@@ -240,13 +239,13 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
   public function testItGetsAllArchiveNewsletters() {
     $types = [
-      Newsletter::TYPE_STANDARD,
-      Newsletter::TYPE_STANDARD, // should be returned
-      Newsletter::TYPE_WELCOME,
-      Newsletter::TYPE_AUTOMATIC,
-      Newsletter::TYPE_NOTIFICATION,
-      Newsletter::TYPE_NOTIFICATION_HISTORY, // should be returned
-      Newsletter::TYPE_NOTIFICATION_HISTORY,
+      NewsletterEntity::TYPE_STANDARD,
+      NewsletterEntity::TYPE_STANDARD, // should be returned
+      NewsletterEntity::TYPE_WELCOME,
+      NewsletterEntity::TYPE_AUTOMATIC,
+      NewsletterEntity::TYPE_NOTIFICATION,
+      NewsletterEntity::TYPE_NOTIFICATION_HISTORY, // should be returned
+      NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
     ];
 
     list($newsletters, $sendingQueues) = $this->createNewslettersAndSendingTasks($types);

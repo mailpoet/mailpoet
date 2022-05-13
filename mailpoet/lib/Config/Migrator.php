@@ -5,8 +5,8 @@ namespace MailPoet\Config;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\FormEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\Subscriber;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
@@ -242,7 +242,7 @@ class Migrator {
       'first_name varchar(255) NOT NULL DEFAULT "",',
       'last_name varchar(255) NOT NULL DEFAULT "",',
       'email varchar(150) NOT NULL,',
-      'status varchar(12) NOT NULL DEFAULT "' . Subscriber::STATUS_UNCONFIRMED . '",',
+      'status varchar(12) NOT NULL DEFAULT "' . SubscriberEntity::STATUS_UNCONFIRMED . '",',
       'subscribed_ip varchar(45) NULL,',
       'confirmed_ip varchar(45) NULL,',
       'confirmed_at timestamp NULL,',
@@ -278,7 +278,7 @@ class Migrator {
       'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
       'subscriber_id int(11) unsigned NOT NULL,',
       'segment_id int(11) unsigned NOT NULL,',
-      'status varchar(12) NOT NULL DEFAULT "' . Subscriber::STATUS_SUBSCRIBED . '",',
+      'status varchar(12) NOT NULL DEFAULT "' . SubscriberEntity::STATUS_SUBSCRIBED . '",',
       'created_at timestamp NULL,', // must be NULL, see comment at the top
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY  (id),',
@@ -321,7 +321,7 @@ class Migrator {
       'type varchar(20) NOT NULL DEFAULT "standard",',
       'sender_address varchar(150) NOT NULL DEFAULT "",',
       'sender_name varchar(150) NOT NULL DEFAULT "",',
-      'status varchar(20) NOT NULL DEFAULT "' . Newsletter::STATUS_DRAFT . '",',
+      'status varchar(20) NOT NULL DEFAULT "' . NewsletterEntity::STATUS_DRAFT . '",',
       'reply_to_address varchar(150) NOT NULL DEFAULT "",',
       'reply_to_name varchar(150) NOT NULL DEFAULT "",',
       'preheader varchar(250) NOT NULL DEFAULT "",',

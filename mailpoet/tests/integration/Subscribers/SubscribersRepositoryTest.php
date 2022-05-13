@@ -8,7 +8,6 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Models\CustomField;
 use MailPoet\Segments\SegmentsRepository;
 
 class SubscribersRepositoryTest extends \MailPoetTest {
@@ -328,7 +327,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
   private function createCustomField(string $name): CustomFieldEntity {
     $customField = new CustomFieldEntity();
     $customField->setName($name);
-    $customField->setType(CustomField::TYPE_TEXT);
+    $customField->setType(CustomFieldEntity::TYPE_TEXT);
     $this->entityManager->persist($customField);
     $this->entityManager->flush();
     return $customField;
