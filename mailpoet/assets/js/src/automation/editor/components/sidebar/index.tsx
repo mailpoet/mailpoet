@@ -30,20 +30,21 @@ const sidebarActiveByDefault = Platform.select({
 type Props = ComponentProps<typeof ComplementaryArea>;
 
 export function Sidebar(props: Props): JSX.Element {
-  const { keyboardShortcut, sidebarKey, showIconLabels } = useSelect(
-    (select) => ({
-      keyboardShortcut: select(
-        keyboardShortcutsStore,
-      ).getShortcutRepresentation('core/edit-post/toggle-sidebar'),
-      sidebarKey:
-        select(interfaceStore).getActiveComplementaryArea(storeName) ??
-        workflowSidebarKey,
-      showIconLabels: select(store).isFeatureActive('showIconLabels'),
-    }),
-    [],
-  );
+  const { keyboardShortcut, sidebarKey, showIconLabels, workflowName } =
+    useSelect(
+      (select) => ({
+        keyboardShortcut: select(
+          keyboardShortcutsStore,
+        ).getShortcutRepresentation('core/edit-post/toggle-sidebar'),
+        sidebarKey:
+          select(interfaceStore).getActiveComplementaryArea(storeName) ??
+          workflowSidebarKey,
+        showIconLabels: select(store).isFeatureActive('showIconLabels'),
+        workflowName: select(store).getWorkflowData().name,
+      }),
+      [],
+    );
 
-  const workflowName = 'Testing workflow';
   return (
     <ComplementaryArea
       identifier={sidebarKey}
