@@ -4,6 +4,7 @@ import { store as preferencesStore } from '@wordpress/preferences';
 import { storeName } from './constants';
 import { Feature, State } from './types';
 import { Item } from '../components/inserter/item';
+import { Workflow } from '../components/workflow/types';
 
 export const isFeatureActive = createRegistrySelector(
   (select) =>
@@ -26,4 +27,8 @@ export function getInserterActionSteps(state: State): Item[] {
 
 export function getInserterLogicalSteps(state: State): Item[] {
   return state.inserter.logicalSteps;
+}
+
+export function getWorkflowData(state: State): Workflow {
+  return state.workflowData;
 }
