@@ -3,6 +3,14 @@ import { store as interfaceStore } from '@wordpress/interface';
 import { store as keyboardShortcutsStore } from '@wordpress/keyboard-shortcuts';
 import { store as preferencesStore } from '@wordpress/preferences';
 
+/* eslint-disable-next-line import/no-extraneous-dependencies -- we're only defining types here  */
+import {
+  Composite,
+  CompositeGroup,
+  CompositeItem,
+  useCompositeState,
+} from 'reakit/Composite';
+
 import './wordpress_modules';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- some general types in this file need to use "any"  */
@@ -44,6 +52,11 @@ declare module '@wordpress/block-editor' {
 }
 
 declare module '@wordpress/components' {
+  export const __unstableComposite: typeof Composite;
+  export const __unstableCompositeGroup: typeof CompositeGroup;
+  export const __unstableCompositeItem: typeof CompositeItem;
+  export const __unstableUseCompositeState: typeof useCompositeState;
+
   export const ToolbarItem: any;
 }
 
