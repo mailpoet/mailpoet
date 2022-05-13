@@ -21,6 +21,11 @@ class AutomationEditor {
   }
 
   public function render() {
+    // Gutenberg styles
+    $this->wp->wpEnqueueStyle('wp-edit-post');
+    $this->wp->wpEnqueueStyle('wp-format-library');
+    $this->wp->wpEnqueueMedia();
+
     $this->pageRenderer->displayPage('automation/editor.html', [
       'sub_menu' => 'mailpoet-automation',
       'api' => [
