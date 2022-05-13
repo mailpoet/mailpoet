@@ -2,6 +2,7 @@
 
 // there are no @types/wordpress__interface yet
 declare module '@wordpress/interface' {
+  export const ComplementaryArea: any;
   export const FullscreenMode: any;
   export const MoreMenuDropdown: any;
   export const InterfaceSkeleton: any;
