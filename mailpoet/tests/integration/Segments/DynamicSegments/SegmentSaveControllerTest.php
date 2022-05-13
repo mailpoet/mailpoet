@@ -13,13 +13,13 @@ class SegmentSaveControllerTest extends \MailPoetTest {
   /** @var SegmentSaveController */
   private $saveController;
 
-  public function _before() {
+  public function _before(): void {
     parent::_before();
     $this->cleanup();
     $this->saveController = $this->diContainer->get(SegmentSaveController::class);
   }
 
-  public function testItCanSaveASegment() {
+  public function testItCanSaveASegment(): void {
     $segmentData = [
       'name' => 'Test Segment',
       'description' => 'Description',
@@ -46,7 +46,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     ]);
   }
 
-  public function testItCanRemoveRedundantFilter() {
+  public function testItCanRemoveRedundantFilter(): void {
     $segment = $this->createSegment('Test Segment');
     $this->addDynamicFilter($segment, ['editor']);
     $this->addDynamicFilter($segment, ['administrator']);
@@ -80,7 +80,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     ]);
   }
 
-  public function testItCheckDuplicateSegment() {
+  public function testItCheckDuplicateSegment(): void {
     $name = 'Test name';
     $this->createSegment($name);
     $segmentData = [
@@ -97,7 +97,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $this->saveController->save($segmentData);
   }
 
-  public function testItValidatesSegmentFilterData() {
+  public function testItValidatesSegmentFilterData(): void {
     $name = 'Test name';
     $this->createSegment($name);
     $segmentData = [
@@ -132,7 +132,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     return $dynamicFilter;
   }
 
-  private function cleanup() {
+  private function cleanup(): void {
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }

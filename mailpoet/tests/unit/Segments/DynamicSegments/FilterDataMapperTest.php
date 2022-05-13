@@ -19,7 +19,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
   /** @var FilterDataMapper */
   private $mapper;
 
-  public function _before() {
+  public function _before(): void {
     parent::_before();
     $wp = $this->makeEmpty(WPFunctions::class, [
       'hasFilter' => false,
@@ -27,28 +27,28 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->mapper = new FilterDataMapper($wp);
   }
 
-  public function testItChecksFiltersArePresent() {
+  public function testItChecksFiltersArePresent(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Filters are missing');
     $this->expectExceptionCode(InvalidFilterException::MISSING_FILTER);
     $this->mapper->map([]);
   }
 
-  public function testItChecksFilterTypeIsPresent() {
+  public function testItChecksFilterTypeIsPresent(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Segment type is not set');
     $this->expectExceptionCode(InvalidFilterException::MISSING_TYPE);
     $this->mapper->map(['filters' => [['someFilter']]]);
   }
 
-  public function testItChecksFilterTypeIsValid() {
+  public function testItChecksFilterTypeIsValid(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Invalid type');
     $this->expectExceptionCode(InvalidFilterException::INVALID_TYPE);
     $this->mapper->map(['filters' => [['segmentType' => 'noexistent']]]);
   }
 
-  public function testItMapsEmailFilter() {
+  public function testItMapsEmailFilter(): void {
     $data = ['filters' => [[
         'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
         'action' => EmailAction::ACTION_OPENED,
@@ -71,7 +71,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
-  public function testItMapsEmailFilterForClicksWithoutLink() {
+  public function testItMapsEmailFilterForClicksWithoutLink(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => EmailAction::ACTION_CLICKED,
@@ -93,7 +93,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
-  public function testItMapsEmailFilterForClicksWithLinks() {
+  public function testItMapsEmailFilterForClicksWithLinks(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => EmailAction::ACTION_CLICKED,
@@ -118,7 +118,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
-  public function testItChecksOperatorForEmailFilterForClicksWithLinks() {
+  public function testItChecksOperatorForEmailFilterForClicksWithLinks(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => EmailAction::ACTION_CLICKED,
@@ -132,7 +132,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->mapper->map($data);
   }
 
-  public function testItChecksFilterEmailAction() {
+  public function testItChecksFilterEmailAction(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing action');
     $this->expectExceptionCode(InvalidFilterException::MISSING_ACTION);
@@ -142,7 +142,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]]]);
   }
 
-  public function testItChecksFilterEmailNewsletter() {
+  public function testItChecksFilterEmailNewsletter(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing newsletter');
     $this->expectExceptionCode(InvalidFilterException::MISSING_NEWSLETTER_ID);
@@ -152,7 +152,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]]]);
   }
 
-  public function testItChecksFilterEmailActionIsSupported() {
+  public function testItChecksFilterEmailActionIsSupported(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Invalid email action');
     $this->expectExceptionCode(InvalidFilterException::INVALID_EMAIL_ACTION);
@@ -163,7 +163,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]]]);
   }
 
-  public function testItMapsUserRoleFilter() {
+  public function testItMapsUserRoleFilter(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'wordpressRole' => ['editor'],
@@ -184,7 +184,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
-  public function testItChecksUserRoleFilterRole() {
+  public function testItChecksUserRoleFilterRole(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing role');
     $this->expectExceptionCode(InvalidFilterException::MISSING_ROLE);
@@ -193,7 +193,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]]]);
   }
 
-  public function testItChecksSubscribedDateValue() {
+  public function testItChecksSubscribedDateValue(): void {
     $this->expectException(InvalidFilterException::class);
     $this->mapper->map(['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
@@ -201,7 +201,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]]]);
   }
 
-  public function testItCreatesSubscribedDate() {
+  public function testItCreatesSubscribedDate(): void {
     $filters = $this->mapper->map(['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_USER_ROLE,
       'action' => SubscriberSubscribedDate::TYPE,
@@ -222,7 +222,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
-  public function testItMapsWooCommerceCategory() {
+  public function testItMapsWooCommerceCategory(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceCategory::ACTION_CATEGORY,
@@ -245,7 +245,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
-  public function testItChecksWooCommerceAction() {
+  public function testItChecksWooCommerceAction(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing action');
     $this->expectExceptionCode(InvalidFilterException::MISSING_ACTION);
@@ -255,7 +255,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]]]);
   }
 
-  public function testItChecksWooCommerceCategoryId() {
+  public function testItChecksWooCommerceCategoryId(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing category');
     $this->expectExceptionCode(InvalidFilterException::MISSING_CATEGORY_ID);
@@ -266,7 +266,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]]]);
   }
 
-  public function testItChecksWooCommerceCategoryOperator() {
+  public function testItChecksWooCommerceCategoryOperator(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing operator');
     $this->expectExceptionCode(InvalidFilterException::MISSING_OPERATOR);
@@ -278,7 +278,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]]]);
   }
 
-  public function testItMapsWooCommerceProduct() {
+  public function testItMapsWooCommerceProduct(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceProduct::ACTION_PRODUCT,
@@ -301,7 +301,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
-  public function testItChecksWooCommerceProductId() {
+  public function testItChecksWooCommerceProductId(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing product');
     $this->expectExceptionCode(InvalidFilterException::MISSING_PRODUCT_ID);
@@ -311,7 +311,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]]]);
   }
 
-  public function testItCreatesEmailOpens() {
+  public function testItCreatesEmailOpens(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => EmailOpensAbsoluteCountAction::TYPE,
@@ -334,7 +334,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
-  public function testItMapsLinkClicksAny() {
+  public function testItMapsLinkClicksAny(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => EmailActionClickAny::TYPE,
@@ -353,7 +353,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
-  public function testItCreatesEmailOpensWithOperator() {
+  public function testItCreatesEmailOpensWithOperator(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => EmailOpensAbsoluteCountAction::TYPE,
@@ -377,7 +377,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
-  public function testItCreatesEmailOpensWithMissingOpens() {
+  public function testItCreatesEmailOpensWithMissingOpens(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => EmailOpensAbsoluteCountAction::TYPE,
@@ -387,7 +387,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->mapper->map($data);
   }
 
-  public function testItCreatesEmailOpensWithMissingDays() {
+  public function testItCreatesEmailOpensWithMissingDays(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
       'action' => EmailOpensAbsoluteCountAction::TYPE,
@@ -397,7 +397,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->mapper->map($data);
   }
 
-  public function testItMapsWooCommerceNumberOfOrders() {
+  public function testItMapsWooCommerceNumberOfOrders(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS,
@@ -423,7 +423,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     expect($filter->getData())->equals($expectedResult);
   }
 
-  public function testItRaisesExceptionWhenMappingWooCommerceNumberOfOrders() {
+  public function testItRaisesExceptionWhenMappingWooCommerceNumberOfOrders(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing required fields');
     $this->expectExceptionCode(InvalidFilterException::MISSING_NUMBER_OF_ORDERS_FIELDS);
@@ -434,7 +434,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]]]);
   }
 
-  public function testItMapsWooCommerceSubscription() {
+  public function testItMapsWooCommerceSubscription(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION,
       'action' => WooCommerceSubscription::ACTION_HAS_ACTIVE,
@@ -457,7 +457,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
-  public function testItChecksWooCommerceSubscriptionAction() {
+  public function testItChecksWooCommerceSubscriptionAction(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing action');
     $this->expectExceptionCode(InvalidFilterException::MISSING_ACTION);
@@ -469,7 +469,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->mapper->map($data);
   }
 
-  public function testItChecksWooCommerceSubscriptionProductIds() {
+  public function testItChecksWooCommerceSubscriptionProductIds(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing product');
     $this->expectExceptionCode(InvalidFilterException::MISSING_PRODUCT_ID);
@@ -481,7 +481,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->mapper->map($data);
   }
 
-  public function testItChecksWooCommerceSubscriptionMissingOperator() {
+  public function testItChecksWooCommerceSubscriptionMissingOperator(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing product');
     $this->expectExceptionCode(InvalidFilterException::MISSING_PRODUCT_ID);
@@ -492,7 +492,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     $this->mapper->map($data);
   }
 
-  public function testItCreatesWooCommerceCustomerCountry() {
+  public function testItCreatesWooCommerceCustomerCountry(): void {
     $data = ['filters' => [[
       'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
       'action' => WooCommerceCountry::ACTION_CUSTOMER_COUNTRY,
@@ -514,7 +514,7 @@ class FilterDataMapperTest extends \MailPoetUnitTest {
     ]);
   }
 
-  public function testItRaisesExceptionCountryIsMissingForWooCommerceCustomerCountry() {
+  public function testItRaisesExceptionCountryIsMissingForWooCommerceCustomerCountry(): void {
     $this->expectException(InvalidFilterException::class);
     $this->expectExceptionMessage('Missing country');
     $this->expectExceptionCode(InvalidFilterException::MISSING_COUNTRY);
