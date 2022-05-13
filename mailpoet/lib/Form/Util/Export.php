@@ -22,7 +22,7 @@ class Export {
         // generate url to load iframe's content
         $iframeUrl = WPFunctions::get()->addQueryArg([
           'mailpoet_form_iframe' => ':form_id:',
-        ], WPFunctions::get()->siteUrl());
+        ], WPFunctions::get()->trailingslashit(WPFunctions::get()->siteUrl()));
 
         // generate iframe
         return join(' ', [
