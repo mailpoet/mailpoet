@@ -17,3 +17,9 @@ export const toggleFeature =
   (feature: Feature) =>
   ({ registry }) =>
     registry.dispatch(preferencesStore).toggle(storeName, feature);
+
+export function toggleInserterSidebar() {
+  return {
+    type: 'TOGGLE_INSERTER_SIDEBAR',
+  } as const;
+}
