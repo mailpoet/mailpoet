@@ -9,6 +9,7 @@
 <% block after_javascript %>
 <script type="text/javascript">
   var mailpoet_automation_api = <%= json_encode(api) %>;
+  var mailpoet_automation_workflow = <%= workflow ? json_encode(workflow) : 'undefined' %>;
 </script>
 <%= javascript('automation_editor.js')%>
 <% endblock %>
