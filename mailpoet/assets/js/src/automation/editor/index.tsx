@@ -12,6 +12,7 @@ import { Header } from './components/header';
 import { InserterSidebar } from './components/inserter-sidebar';
 import { KeyboardShortcuts } from './components/keyboard-shortcuts';
 import { Sidebar } from './components/sidebar';
+import { Workflow } from './components/workflow';
 import { store, storeName } from './store';
 
 // See: https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
@@ -50,7 +51,7 @@ function Editor(): JSX.Element {
         <InterfaceSkeleton
           className={className}
           header={<Header />}
-          content={<div>Content</div>}
+          content={<Workflow />}
           sidebar={<ComplementaryArea.Slot scope={storeName} />}
           secondarySidebar={isInserterOpened ? <InserterSidebar /> : null}
         />
