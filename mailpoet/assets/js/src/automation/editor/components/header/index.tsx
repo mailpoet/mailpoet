@@ -2,6 +2,7 @@ import { Button, Icon, NavigableMenu } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { wordpress } from '@wordpress/icons';
 import { PinnedItems } from '@wordpress/interface';
+import { InserterToggle } from './inserter_toggle';
 import { MoreMenu } from './more_menu';
 import { store, storeName } from '../../store';
 
@@ -34,7 +35,7 @@ export function Header(): JSX.Element {
           role="toolbar"
         >
           <div className="edit-post-header-toolbar__left">
-            <div>Automations</div>
+            <InserterToggle />
           </div>
         </NavigableMenu>
       </div>
