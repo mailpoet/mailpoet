@@ -54,7 +54,7 @@ class EmailAction implements Filter {
     }
   }
 
-  private function applyForClickedActions(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData, string $parameterSuffix) {
+  private function applyForClickedActions(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData, string $parameterSuffix): QueryBuilder {
     $operator = $filterData->getParam('operator') ?? DynamicSegmentFilterData::OPERATOR_ANY;
     $action = $filterData->getAction();
     $newsletterId = $filterData->getParam('newsletter_id');
@@ -119,7 +119,7 @@ class EmailAction implements Filter {
     return $queryBuilder;
   }
 
-  private function applyForOpenedActions(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData, string $parameterSuffix) {
+  private function applyForOpenedActions(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData, string $parameterSuffix): QueryBuilder {
     $operator = $filterData->getParam('operator') ?? DynamicSegmentFilterData::OPERATOR_ANY;
     $action = $filterData->getAction();
     $newsletters = $filterData->getParam('newsletters');

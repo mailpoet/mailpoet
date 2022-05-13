@@ -26,10 +26,12 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
   ];
   private const SUBSCRIBER_EMAILS = self::ACTIVE_EMAILS + self::INACTIVE_EMAILS;
 
+  /** @var array */
   private $subscriptions = [];
+  /** @var array */
   private $products = [];
 
-  public function _before() {
+  public function _before(): void {
 
     Database::createLookUpTables();
 
@@ -48,7 +50,7 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
     }
   }
 
-  public function testAllSubscribersFoundWithOperatorAny() {
+  public function testAllSubscribersFoundWithOperatorAny(): void {
     $testee = $this->diContainer->get(WooCommerceSubscription::class);
     $queryBuilder = $this->getQueryBuilder();
     $filter = $this->getSegmentFilter(
@@ -64,7 +66,7 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
     }
   }
 
-  public function testAllSubscribersFoundWithOperatorNoneOf() {
+  public function testAllSubscribersFoundWithOperatorNoneOf(): void {
     $product = $this->createProduct("Another newsletter");
     $notToBeFoundEmail = "not-to-be-found@example.com";
     $subscriberId = $this->tester->createWordPressUser($notToBeFoundEmail, "subscriber");
@@ -92,7 +94,7 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
     $this->tester->deleteWordPressUser($notToBeFoundEmail);
   }
 
-  public function testAllSubscribersFoundWithOperatorAllOf() {
+  public function testAllSubscribersFoundWithOperatorAllOf(): void {
     $this->createProduct("Another newsletter");
     $notToBeFoundEmail = "not-to-be-found@example.com";
     $toBeFoundEmail = "find-me@example.com";
@@ -210,7 +212,7 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
       ->from($subscribersTable);
   }
 
-  public function _after() {
+  public function _after(): void {
     $this->cleanUp();
 
     global $wpdb;
@@ -218,7 +220,7 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
     $this->connection->executeQuery("DROP TABLE IF EXISTS {$wpdb->prefix}woocommerce_order_items");
   }
 
-  public function cleanUp() {
+  public function cleanUp(): void {
     global $wpdb;
     foreach (self::SUBSCRIBER_EMAILS as $email) {
       $this->tester->deleteWordPressUser($email);

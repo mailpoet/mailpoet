@@ -14,12 +14,13 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
   /** @var EmailOpensAbsoluteCountAction */
   private $action;
 
-  public function _before() {
+  public function _before(): void {
     $this->cleanData();
     $this->action = $this->diContainer->get(EmailOpensAbsoluteCountAction::class);
     $newsletter1 = $this->createNewsletter();
@@ -90,7 +91,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
-  public function testGetOpened() {
+  public function testGetOpened(): void {
     $segmentFilter = $this->getSegmentFilter(2, 'more', 3);
     $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
@@ -101,7 +102,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('opened-3-newsletters@example.com');
   }
 
-  public function testGetMachineOpened() {
+  public function testGetMachineOpened(): void {
     $segmentFilter = $this->getSegmentFilter(1, 'more', 5, EmailOpensAbsoluteCountAction::MACHINE_TYPE);
     $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
@@ -112,7 +113,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     expect($subscriber1->getEmail())->equals('opened-3-newsletters@example.com');
   }
 
-  public function testGetOpenedOld() {
+  public function testGetOpenedOld(): void {
     $segmentFilter = $this->getSegmentFilter(2, 'more', 7);
     $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -128,7 +129,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('opened-old-opens@example.com');
   }
 
-  public function testGetOpenedLess() {
+  public function testGetOpenedLess(): void {
     $segmentFilter = $this->getSegmentFilter(3, 'less', 3);
     $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -144,7 +145,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     expect($subscriber2->getEmail())->equals('opened-old-opens@example.com');
   }
 
-  public function testGetOpenedEquals() {
+  public function testGetOpenedEquals(): void {
     $segmentFilter = $this->getSegmentFilter(1, 'equals', 3);
     $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -158,7 +159,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $this->assertSame('opened-old-opens@example.com', $subscriber1->getEmail());
   }
 
-  public function testGetOpenedNotEquals() {
+  public function testGetOpenedNotEquals(): void {
     $segmentFilter = $this->getSegmentFilter(2, 'not_equals', 3);
     $statement = $this->action->apply($this->getQueryBuilder(), $segmentFilter)
       ->orderBy('email')
@@ -175,7 +176,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     $this->assertSame('opened-old-opens@example.com', $subscriber2->getEmail());
   }
 
-  private function getQueryBuilder() {
+  private function getQueryBuilder(): QueryBuilder {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager
       ->getConnection()
@@ -198,7 +199,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     return $dynamicSegmentFilter;
   }
 
-  private function createSubscriber(string $email) {
+  private function createSubscriber(string $email): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);
     $subscriber->setLastName('Last');
@@ -209,7 +210,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     return $subscriber;
   }
 
-  private function createNewsletter() {
+  private function createNewsletter(): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject('newsletter 1');
     $newsletter->setStatus('sent');
@@ -225,7 +226,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     return $newsletter;
   }
 
-  private function createStatsNewsletter(SubscriberEntity $subscriber, NewsletterEntity $newsletter) {
+  private function createStatsNewsletter(SubscriberEntity $subscriber, NewsletterEntity $newsletter): StatisticsNewsletterEntity {
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $stats = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber);
@@ -234,7 +235,7 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     return $stats;
   }
 
-  private function createStatisticsOpens(SubscriberEntity $subscriber, NewsletterEntity $newsletter) {
+  private function createStatisticsOpens(SubscriberEntity $subscriber, NewsletterEntity $newsletter): StatisticsOpenEntity {
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $open = new StatisticsOpenEntity($newsletter, $queue, $subscriber);
@@ -243,11 +244,11 @@ class EmailOpensAbsoluteCountActionTest extends \MailPoetTest {
     return $open;
   }
 
-  public function _after() {
+  public function _after(): void {
     $this->cleanData();
   }
 
-  private function cleanData() {
+  private function cleanData(): void {
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(ScheduledTaskEntity::class);
     $this->truncateEntity(SendingQueueEntity::class);

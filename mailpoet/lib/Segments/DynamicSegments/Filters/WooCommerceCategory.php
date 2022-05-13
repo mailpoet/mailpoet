@@ -148,7 +148,7 @@ class WooCommerceCategory implements Filter {
       ->from($table);
   }
 
-  private function getCategoriesWithChildren(array $categoriesId) {
+  private function getCategoriesWithChildren(array $categoriesId): array {
     $allIds = [];
 
     foreach ($categoriesId as $categoryId) {
@@ -158,7 +158,7 @@ class WooCommerceCategory implements Filter {
     return array_unique($allIds);
   }
 
-  private function getAllCategoryIds(int $categoryId) {
+  private function getAllCategoryIds(int $categoryId): array {
     $subcategories = $this->wp->getTerms('product_cat', ['child_of' => $categoryId]);
     if (!is_array($subcategories) || empty($subcategories)) return [$categoryId];
     $ids = array_map(function($category) {

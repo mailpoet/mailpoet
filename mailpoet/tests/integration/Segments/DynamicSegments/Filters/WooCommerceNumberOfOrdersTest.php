@@ -8,14 +8,17 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
+use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
-
+  /** @var WooCommerceNumberOfOrders */
   private $numberOfOrders;
 
+  /** @var array */
   private $orders;
 
-  public function _before() {
+  public function _before(): void {
     $this->numberOfOrders = $this->diContainer->get(WooCommerceNumberOfOrders::class);
     Database::loadSQL('createWCLookupTables');
     $this->cleanUp();
@@ -30,30 +33,29 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $this->orders[] = $this->createOrder($customerId3, Carbon::now());
   }
 
-  public function testItGetsCustomersThatPlacedTwoOrdersInTheLastDay() {
+  public function testItGetsCustomersThatPlacedTwoOrdersInTheLastDay(): void {
     $segmentFilter = $this->getSegmentFilter('=', 2, 1);
-    $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $result = $this->applyFilter($this->numberOfOrders, $this->getQueryBuilder(), $segmentFilter);
     $this->assertSame(1, count($result));
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $this->assertSame('customer2@example.com', $subscriber1->getEmail());
   }
 
-  public function testItGetsCustomersThatPlacedZeroOrdersInTheLastDay() {
+  public function testItGetsCustomersThatPlacedZeroOrdersInTheLastDay(): void {
     $segmentFilter = $this->getSegmentFilter('=', 0, 1);
-    $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $result = $this->applyFilter($this->numberOfOrders, $this->getQueryBuilder(), $segmentFilter);
+
     $this->assertSame(1, count($result));
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $this->assertSame('customer1@example.com', $subscriber1->getEmail());
   }
 
-  public function testItGetsCustomersThatDidNotPlaceTwoOrdersInTheLastWeek() {
+  public function testItGetsCustomersThatDidNotPlaceTwoOrdersInTheLastWeek(): void {
     $segmentFilter = $this->getSegmentFilter('!=', 2, 7);
-    $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $result = $this->applyFilter($this->numberOfOrders, $this->getQueryBuilder(), $segmentFilter);
+
     $this->assertSame(2, count($result));
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -63,14 +65,13 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $this->assertSame('customer3@example.com', $subscriber2->getEmail());
   }
 
-  public function testItGetsCustomersThatPlacedAtLeastOneOrderInTheLastWeek() {
+  public function testItGetsCustomersThatPlacedAtLeastOneOrderInTheLastWeek(): void {
     $segmentFilter = $this->getSegmentFilter('>', 0, 7);
-    $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
-    $result = $queryBuilder->execute()->fetchAll();
+    $result = $this->applyFilter($this->numberOfOrders, $this->getQueryBuilder(), $segmentFilter);
     $this->assertSame(3, count($result));
   }
 
-  private function getQueryBuilder() {
+  private function getQueryBuilder(): QueryBuilder {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $this->entityManager
       ->getConnection()
@@ -79,7 +80,14 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
       ->from($subscribersTable);
   }
 
-  private function getSegmentFilter($comparisonType, $ordersCount, $days): DynamicSegmentFilterEntity {
+  private function applyFilter(WooCommerceNumberOfOrders $numberOfOrders, QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $segmentFilter): array {
+    $queryBuilder = $numberOfOrders->apply($queryBuilder, $segmentFilter);
+    $statement = $queryBuilder->execute();
+    $this->assertInstanceOf(Statement::class, $statement);
+    return $statement->fetchAll();
+  }
+
+  private function getSegmentFilter(string $comparisonType, int $ordersCount, int $days): DynamicSegmentFilterEntity {
     $data = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS, [
       'number_of_orders_type' => $comparisonType,
       'number_of_orders_count' => $ordersCount,
@@ -121,11 +129,11 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     return $orderId;
   }
 
-  public function _after() {
+  public function _after(): void {
     $this->cleanUp();
   }
 
-  private function cleanUp() {
+  private function cleanUp(): void {
     global $wpdb;
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);

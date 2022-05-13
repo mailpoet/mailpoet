@@ -25,7 +25,7 @@ class WooCommerceProductTest extends \MailPoetTest {
   /** @var int[] */
   private $orderIds;
 
-  public function _before() {
+  public function _before(): void {
     $this->wooCommerceProduct = $this->diContainer->get(WooCommerceProduct::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
 
@@ -53,7 +53,7 @@ class WooCommerceProductTest extends \MailPoetTest {
     $this->addToOrder(4, $this->orderIds[3], $this->productIds[0], $customerIdPendingPayment);
   }
 
-  public function testItGetsSubscribersThatPurchasedAnyProducts() {
+  public function testItGetsSubscribersThatPurchasedAnyProducts(): void {
     $expectedEmails = ['customer1@example.com', 'customer2@example.com'];
     $segmentFilter = $this->getSegmentFilter($this->productIds, DynamicSegmentFilterData::OPERATOR_ANY);
     $queryBuilder = $this->wooCommerceProduct->apply($this->getQueryBuilder(), $segmentFilter);
@@ -65,7 +65,7 @@ class WooCommerceProductTest extends \MailPoetTest {
     $this->assertSame($expectedEmails, $emails);
   }
 
-  public function testItGetsSubscribersThatDidNotPurchasedProducts() {
+  public function testItGetsSubscribersThatDidNotPurchasedProducts(): void {
     $expectedEmails = [
       'a1@example.com',
       'a2@example.com',
@@ -83,7 +83,7 @@ class WooCommerceProductTest extends \MailPoetTest {
     $this->assertSame($expectedEmails, $emails);
   }
 
-  public function testItGetsSubscribersThatPurchasedAllProducts() {
+  public function testItGetsSubscribersThatPurchasedAllProducts(): void {
     $segmentFilter = $this->getSegmentFilter($this->productIds, DynamicSegmentFilterData::OPERATOR_ALL);
     $queryBuilder = $this->wooCommerceProduct->apply($this->getQueryBuilder(), $segmentFilter);
     $statement = $queryBuilder->execute();
@@ -160,16 +160,19 @@ class WooCommerceProductTest extends \MailPoetTest {
     return $orderId;
   }
 
-  private function createProduct(string $name) {
+  private function createProduct(string $name): int
+  {
     $productData = [
       'post_type' => 'product',
       'post_status' => 'publish',
       'post_title' => $name,
     ];
-    return wp_insert_post($productData);
+    $productId =  wp_insert_post($productData);
+    $this->assertIsInt($productId);
+    return $productId;
   }
 
-  private function addToOrder(int $orderItemId, int $orderId, int $productId, int $customerId) {
+  private function addToOrder(int $orderItemId, int $orderId, int $productId, int $customerId): void {
     global $wpdb;
     $this->connection->executeQuery("
       INSERT INTO {$wpdb->prefix}wc_order_product_lookup (order_item_id, order_id, product_id, customer_id, variation_id, product_qty, date_created)
@@ -185,11 +188,11 @@ class WooCommerceProductTest extends \MailPoetTest {
     return $subscriber;
   }
 
-  public function _after() {
+  public function _after(): void {
     $this->cleanUp();
   }
 
-  private function cleanUp() {
+  private function cleanUp(): void {
     global $wpdb;
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
