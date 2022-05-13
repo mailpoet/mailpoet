@@ -3,6 +3,7 @@ import jQuery from 'jquery';
 import Cookies from 'js-cookie';
 import Parsley from 'parsleyjs';
 import { Hooks } from 'wp-js-hooks';
+import { Response } from './ajax';
 
 const exitIntentEvent = 'mouseleave.mailpoet.form-exit-intent';
 
@@ -80,7 +81,12 @@ jQuery(($) => {
   function submitSubscribeForm(form, formData, parsley) {
     form.addClass('mailpoet_form_sending');
     // ajax request
-    MailPoet.Ajax.post({
+    MailPoet.Ajax.post<
+      Response,
+      {
+        meta: { redirect_url: string; refresh_captcha: boolean };
+      } & ErrorResponse
+    >({
       url: window.MailPoetForm.ajax_url,
       token: formData.token,
       api_version: formData.api_version,
@@ -150,7 +156,7 @@ jQuery(($) => {
       });
   }
 
-  function renderCaptcha(element, iteration) {
+  function renderCaptcha(element, iteration: number) {
     if (!window.recaptcha || !window.grecaptcha.ready) {
       if (iteration < 20) {
         setTimeout(renderCaptcha, 400, element, iteration + 1);
@@ -189,7 +195,7 @@ jQuery(($) => {
     }
   }
 
-  $('.mailpoet_recaptcha').each((index, element) => {
+  $('.mailpoet_recaptcha').each((_unused, element) => {
     setTimeout(renderCaptcha, 400, element, 1);
   });
 
@@ -242,8 +248,8 @@ jQuery(($) => {
     formDiv
       .find('input[data-font-family]')
       .each(function applyFontFamilyToInput() {
-        const element = $(this);
-        const inputFontFamily = element.data('font-family');
+        const element = $(this as HTMLFormElement);
+        const inputFontFamily = element.data('font-family') as string;
         const inputOriginalFontFamily = element.css('font-family');
         const inputNewFontFamily = `"${inputFontFamily}", ${inputOriginalFontFamily}`;
         element.css('font-family', inputNewFontFamily);
@@ -284,7 +290,7 @@ jQuery(($) => {
   function showForm(formDiv, showOverlay = false) {
     const form = formDiv.find('form');
     let delay = form.data('delay');
-    delay = parseInt(delay, 10);
+    delay = parseInt(delay as string, 10);
     if (Number.isNaN(delay)) {
       delay = 0;
     }
@@ -311,7 +317,7 @@ jQuery(($) => {
 
   $(document).on('keyup', (e) => {
     if (e.key === 'Escape') {
-      $('div.mailpoet_form').each((index, element) => {
+      $('div.mailpoet_form').each((_, element: HTMLFormElement) => {
         if ($(element).children('.mailpoet_form_close_icon').length !== 0) {
           closeForm($(element));
         }
@@ -320,7 +326,7 @@ jQuery(($) => {
   });
 
   (() => {
-    $('.mailpoet_form').each((index, element) => {
+    $('.mailpoet_form').each((_, element) => {
       $(element)
         .children(
           '.mailpoet_paragraph, .mailpoet_form_image, .mailpoet_form_paragraph',
@@ -328,10 +334,10 @@ jQuery(($) => {
         .last()
         .addClass('last');
     });
-    $('form.mailpoet_form').each((index, element) => {
-      const form = $(element);
+    $('form.mailpoet_form').each((_, element: HTMLFormElement) => {
+      const form = $(element) as JQuery<HTMLFormElement>;
       if (form.data('font-family')) {
-        renderFontFamily(form.data('font-family'), form.parent());
+        renderFontFamily(form.data('font-family') as string, form.parent());
       }
     });
     $('.mailpoet_form_close_icon').on('click', (event) => {
@@ -342,7 +348,7 @@ jQuery(($) => {
     });
 
     $('div.mailpoet_form_fixed_bar, div.mailpoet_form_slide_in').each(
-      (index, element) => {
+      (_, element) => {
         const formDiv = $(element);
         const formCookieName = getFormCookieName(formDiv);
         const cookieValue = Cookies.get(formCookieName);
@@ -351,7 +357,7 @@ jQuery(($) => {
       },
     );
 
-    $('div.mailpoet_form_popup').each((index, element) => {
+    $('div.mailpoet_form_popup').each((_, element) => {
       const formDiv = $(element);
       const formCookieName = getFormCookieName(formDiv);
       const cookieValue = Cookies.get(formCookieName);
@@ -361,7 +367,7 @@ jQuery(($) => {
     });
 
     $(window).on('resize', () => {
-      $('.mailpoet_form').each((index, element) => {
+      $('.mailpoet_form').each((_, element) => {
         // Detect form is placed in tight container
         const formDiv = $(element);
         checkFormContainer(formDiv);
@@ -369,7 +375,7 @@ jQuery(($) => {
     });
 
     // setup form validation
-    $('form.mailpoet_form').each((index, element) => {
+    $('form.mailpoet_form').each((_, element) => {
       const form = $(element);
       // Detect form is placed in tight container
       checkFormContainer(form.closest('div.mailpoet_form'));

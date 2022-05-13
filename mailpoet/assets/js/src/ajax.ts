@@ -21,7 +21,7 @@ export const isErrorResponse = (error: any): error is ErrorResponse =>
   'errors' in error &&
   Array.isArray(error.errors);
 
-type ResponseType = JQuery.Deferred<Response, ErrorResponse>;
+type ResponseType<R = Response, ER = ErrorResponse> = JQuery.Deferred<R, ER>;
 
 function buildErrorResponse(message): ErrorResponse {
   return {
@@ -59,7 +59,9 @@ export const MailPoetAjax = {
     token: null,
     data: {},
   },
-  post: function post(options): ResponseType {
+  post: function post<R = Response, ER = ErrorResponse>(
+    options,
+  ): ResponseType<R, ER> {
     return this.request('post', options);
   },
   get: function get(options): ResponseType {

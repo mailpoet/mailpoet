@@ -1,4 +1,9 @@
-export const findBlock = (blocks, name) =>
+import { BlockInstance } from '@wordpress/blocks';
+
+export const findBlock = (
+  blocks: Array<BlockInstance>,
+  name,
+): BlockInstance | null =>
   blocks.reduce((result, block) => {
     if (result) {
       return result;
