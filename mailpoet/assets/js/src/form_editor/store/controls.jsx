@@ -2,15 +2,19 @@ import { select, dispatch } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
 import { merge } from 'lodash';
 import Cookies from 'js-cookie';
-import { createBlock, unregisterBlockType } from '@wordpress/blocks';
+import {
+  createBlock,
+  unregisterBlockType,
+  getBlockType,
+} from '@wordpress/blocks';
 import { callApi as CALL_API } from 'common/controls/call_api';
 import { SETTINGS_DEFAULTS } from '@wordpress/block-editor';
 import { blocksToFormBodyFactory } from './blocks_to_form_body.jsx';
-import { formatCustomFieldBlockName } from '../blocks/format_custom_field_block_name.jsx';
-import { getCustomFieldBlockSettings } from '../blocks/custom_fields_blocks.jsx';
 import { registerCustomFieldBlock } from '../blocks/blocks.jsx';
 import { mapFormDataBeforeSaving } from './map_form_data_before_saving.jsx';
 import { findBlock } from './find_block.jsx';
+import { formatCustomFieldBlockName } from '../blocks/format_custom_field_block_name';
+import { getCustomFieldBlockSettings } from '../blocks/custom_fields_blocks';
 
 const formatApiErrorMessage = (response) => {
   let errorMessage = null;
@@ -165,13 +169,15 @@ export const controls = {
           actionData.customFieldId,
           actionData.clientId,
         );
-        dispatch('core/block-editor').removeBlock(actionData.clientId);
-        unregisterBlockType(
-          formatCustomFieldBlockName(
-            namesMap[customField.type].name,
-            customField,
-          ),
+        const customFieldBlockName = formatCustomFieldBlockName(
+          namesMap[customField.type].name,
+          customField,
         );
+        const customFieldBlock = getBlockType(customFieldBlockName);
+        if (customFieldBlock) {
+          unregisterBlockType(customFieldBlockName);
+        }
+        dispatch('core/block-editor').removeBlock(actionData.clientId);
       })
       .fail((response) => {
         dispatch('mailpoet-form-editor').deleteCustomFieldFailed(
