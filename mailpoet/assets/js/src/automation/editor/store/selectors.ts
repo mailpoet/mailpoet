@@ -29,6 +29,12 @@ export function getInserterLogicalSteps(state: State): Item[] {
   return state.inserter.logicalSteps;
 }
 
+export function getInserterPopoverAnchor(
+  state: State,
+): HTMLElement | undefined {
+  return state.inserterPopover.anchor;
+}
+
 export function getWorkflowData(state: State): Workflow {
   return state.workflowData;
 }

@@ -15,6 +15,9 @@ export type State = {
   inserterSidebar: {
     isOpened: boolean;
   };
+  inserterPopover: {
+    anchor?: HTMLElement;
+  };
 };
 
 export type Feature = 'fullscreenMode' | 'showIconLabels';

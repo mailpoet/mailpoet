@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import ReactDOM from 'react-dom';
-import { SlotFillProvider } from '@wordpress/components';
+import { Popover, SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import {
   ComplementaryArea,
@@ -55,6 +55,7 @@ function Editor(): JSX.Element {
           sidebar={<ComplementaryArea.Slot scope={storeName} />}
           secondarySidebar={isInserterOpened ? <InserterSidebar /> : null}
         />
+        <Popover.Slot />
       </SlotFillProvider>
     </ShortcutProvider>
   );

@@ -24,6 +24,13 @@ export function toggleInserterSidebar() {
   } as const;
 }
 
+export function setInserterPopoverAnchor(anchor?: HTMLElement) {
+  return {
+    type: 'SET_INSERTER_POPOVER_ANCHOR',
+    anchor,
+  } as const;
+}
+
 export function selectStep(value) {
   return {
     type: 'SET_SELECTED_STEP',
