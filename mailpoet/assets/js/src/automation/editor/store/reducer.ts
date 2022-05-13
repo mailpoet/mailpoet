@@ -11,6 +11,14 @@ export function reducer(state: State, action: Action): State {
           isOpened: !state.inserterSidebar.isOpened,
         },
       };
+    case 'SET_INSERTER_POPOVER_ANCHOR':
+      return {
+        ...state,
+        inserterPopover: {
+          ...state.inserterPopover,
+          anchor: action.anchor,
+        },
+      };
     case 'SET_SELECTED_STEP':
       return {
         ...state,

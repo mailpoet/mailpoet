@@ -8,6 +8,7 @@ import { WorkflowCompositeContext } from './context';
 import { EmptyWorkflow } from './empty-workflow';
 import { Separator } from './separator';
 import { Step } from './step';
+import { InserterPopover } from '../inserter-popover';
 import { store } from '../../store';
 
 export function Workflow(): JSX.Element {
@@ -76,6 +77,7 @@ export function Workflow(): JSX.Element {
           ))}
           <div />
         </div>
+        <InserterPopover />
       </Composite>
     </WorkflowCompositeContext.Provider>
   );
