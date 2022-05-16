@@ -14,13 +14,13 @@ class SegmentsRepositoryTest extends \MailPoetTest {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
-  public function _before() {
+  public function _before(): void {
     parent::_before();
     $this->cleanup();
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
   }
 
-  public function testItCanBulkTrashDefaultSegments() {
+  public function testItCanBulkTrashDefaultSegments(): void {
     $segment1 = $this->createDefaultSegment('Segment 1');
     $segment2 = $this->createDefaultSegment('Segment 2');
     $this->entityManager->flush();
@@ -32,7 +32,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     expect($segment2->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
   }
 
-  public function testItCanBulkTrashDynamicSegments() {
+  public function testItCanBulkTrashDynamicSegments(): void {
     $segment1 = $this->createDynamicSegmentEntityForEditorUsers();
     $segment2 = $this->createDynamicSegmentEntityForEditorUsers();
     $this->entityManager->flush();
@@ -44,7 +44,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     expect($segment2->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
   }
 
-  public function testItSkipTrashingForActivelyUsedDefaultSegments() {
+  public function testItSkipTrashingForActivelyUsedDefaultSegments(): void {
     $segment1 = $this->createDefaultSegment('Segment 1');
     $segment2 = $this->createDefaultSegment('Segment 2');
     $this->addActiveNewsletterToSegment($segment1);
@@ -57,7 +57,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     expect($segment2->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
   }
 
-  public function testItSkipTrashingForActivelyUsedDynamicSegments() {
+  public function testItSkipTrashingForActivelyUsedDynamicSegments(): void {
     $segment1 = $this->createDynamicSegmentEntityForEditorUsers();
     $segment2 = $this->createDynamicSegmentEntityForEditorUsers();
     $this->addActiveNewsletterToSegment($segment2);
@@ -70,7 +70,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     expect($segment2->getDeletedAt())->null();
   }
 
-  public function testItReturnsCountsOfSegmentsWithMultipleFilters() {
+  public function testItReturnsCountsOfSegmentsWithMultipleFilters(): void {
     // No Segments
     $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();
     expect($count)->equals(0);
@@ -108,14 +108,14 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     expect($count)->equals(2);
   }
 
-  public function testItCanCheckForUniqueNames() {
+  public function testItCanCheckForUniqueNames(): void {
     $this->createDefaultSegment('Test');
     $this->segmentsRepository->flush();
     expect($this->segmentsRepository->isNameUnique('Test', null))->false();
     expect($this->segmentsRepository->isNameUnique('Unique Name', null))->true();
   }
 
-  public function testItCanForcefullyVerifyUniquenessOfName() {
+  public function testItCanForcefullyVerifyUniquenessOfName(): void {
     $this->createDefaultSegment('Test');
     $this->segmentsRepository->flush();
     try {
@@ -129,7 +129,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->segmentsRepository->verifyNameIsUnique('Test', null);
   }
 
-  public function testItChecksForDuplicateNameWhenCreatingNewSegment() {
+  public function testItChecksForDuplicateNameWhenCreatingNewSegment(): void {
     $this->createDefaultSegment('Existing Segment');
     $this->segmentsRepository->flush();
     $this->expectException(ConflictException::class);
@@ -137,7 +137,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->segmentsRepository->createOrUpdate('Existing Segment');
   }
 
-  public function testItChecksForDuplicateNameWhenUpdatingExistingSegmentName() {
+  public function testItChecksForDuplicateNameWhenUpdatingExistingSegmentName(): void {
     $segment = $this->createDefaultSegment('Test');
     $this->createDefaultSegment('Existing');
     $this->segmentsRepository->flush();
@@ -166,7 +166,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     return $segment;
   }
 
-  private function addActiveNewsletterToSegment(SegmentEntity $segmentEntity) {
+  private function addActiveNewsletterToSegment(SegmentEntity $segmentEntity): void {
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject('Subject');
     $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION);
@@ -176,14 +176,14 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($newsletterSegment);
   }
 
-  private function cleanup() {
+  private function cleanup(): void {
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
     $this->truncateEntity(NewsletterEntity::class);
     $this->truncateEntity(NewsletterSegmentEntity::class);
   }
 
-  public function _after() {
+  public function _after(): void {
     parent::_after();
     $this->cleanup();
   }
