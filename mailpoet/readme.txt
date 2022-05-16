@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.6
 Tested up to: 5.9
-Stable tag: 3.89.0
+Stable tag: 3.89.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.89.1 - 2022-05-16 =
+* Improved: error handling when using MailPoet Sending Service;
+* Changed: removed deprecated code;
+* Changed: automatic emails can no longer be activated without an unsubscribe link when sending with MSS;
+* Fixed: users added via MemberPress now receive welcome emails targeted to custom roles.
 
 = 3.89.0 - 2022-05-09 =
 * Updated: Removed MailPoet Task Scheduler;
