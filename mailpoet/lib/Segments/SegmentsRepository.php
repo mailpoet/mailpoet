@@ -48,6 +48,9 @@ class SegmentsRepository extends Repository {
     return SegmentEntity::class;
   }
 
+  /**
+   * @return SegmentEntity|null
+   */
   public function getWPUsersSegment() {
     return $this->findOneBy(['type' => SegmentEntity::TYPE_WP_USERS]);
   }
@@ -172,12 +175,19 @@ class SegmentsRepository extends Repository {
     return $segment;
   }
 
-  public function bulkDelete(array $ids, $type = SegmentEntity::TYPE_DEFAULT) {
+  /**
+   * @param array  $ids   Array of segment ids to delete
+   * @param string $type  Type of segment to delete
+   *
+   * @return int Number of segments deleted
+   */
+  public function bulkDelete(array $ids, $type = SegmentEntity::TYPE_DEFAULT): int {
     if (empty($ids)) {
       return 0;
     }
 
-    return $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids, $type) {
+    $count = 0;
+    $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids, $type, &$count) {
       $subscriberSegmentTable = $entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
       $segmentTable = $entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
       $segmentFiltersTable = $entityManager->getClassMetadata(DynamicSegmentFilterEntity::class)->getTableName();
@@ -199,15 +209,15 @@ class SegmentsRepository extends Repository {
         'ids' => $ids,
       ], ['ids' => Connection::PARAM_INT_ARRAY]);
 
-      return $entityManager->getConnection()->executeStatement("
-         DELETE s FROM $segmentTable s
-         WHERE s.`id` IN (:ids)
-         AND s.`type` = :type
-      ", [
-        'ids' => $ids,
-        'type' => $type,
-      ], ['ids' => Connection::PARAM_INT_ARRAY]);
+      $queryBuilder = $entityManager->createQueryBuilder();
+      $count = $queryBuilder->delete(SegmentEntity::class, 's')
+        ->where('s.id IN (:ids)')
+        ->andWhere('s.type = :type')
+        ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
+        ->setParameter('type', $type, \PDO::PARAM_STR)
+        ->getQuery()->execute();
     });
+    return $count;
   }
 
   public function bulkTrash(array $ids, string $type = SegmentEntity::TYPE_DEFAULT): int {
