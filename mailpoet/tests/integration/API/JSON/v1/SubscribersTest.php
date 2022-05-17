@@ -24,6 +24,9 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\CustomField;
+use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterOption;
+use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
@@ -40,8 +43,6 @@ use MailPoet\Subscribers\SubscriberSubscribeController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Test\DataFactories\DynamicSegment;
-use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
-use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
@@ -987,23 +988,32 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   private function _createWelcomeNewsletter() {
-    $newsletterFactory = new NewsletterFactory();
-    $welcomeNewsletter = $newsletterFactory
-      ->withActiveStatus()
-      ->create();
-    $welcomeNewsletter->setType(NewsletterEntity::TYPE_WELCOME);
-    $this->entityManager->persist($welcomeNewsletter);
-    $this->entityManager->flush();
+    $welcomeNewsletter = Newsletter::create();
+    $welcomeNewsletter->type = Newsletter::TYPE_WELCOME;
+    $welcomeNewsletter->status = Newsletter::STATUS_ACTIVE;
+    $welcomeNewsletter->save();
+    expect($welcomeNewsletter->getErrors())->false();
 
-    $newsletterOptionFactory = new NewsletterOptionFactory();
-    $newsletterOptionFactory->createMultipleOptions(
-      $welcomeNewsletter,
-      [
-        'event' => 'segment',
-        'segment' => $this->segment1->getId(),
-        'schedule' => '* * * * *',
-      ]
-    );
+    $welcomeNewsletterOptions = [
+      'event' => 'segment',
+      'segment' => $this->segment1->getId(),
+      'schedule' => '* * * * *',
+    ];
+
+    foreach ($welcomeNewsletterOptions as $option => $value) {
+      $newsletterOptionField = NewsletterOptionField::create();
+      $newsletterOptionField->name = $option;
+      $newsletterOptionField->newsletterType = Newsletter::TYPE_WELCOME;
+      $newsletterOptionField->save();
+      expect($newsletterOptionField->getErrors())->false();
+
+      $newsletterOption = NewsletterOption::create();
+      $newsletterOption->optionFieldId = (int)$newsletterOptionField->id;
+      $newsletterOption->newsletterId = $welcomeNewsletter->id;
+      $newsletterOption->value = (string)$value;
+      $newsletterOption->save();
+      expect($newsletterOption->getErrors())->false();
+    }
   }
 
   public function _after() {
