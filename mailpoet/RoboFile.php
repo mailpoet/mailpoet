@@ -1148,6 +1148,7 @@ class RoboFile extends \Robo\Tasks {
 
   private function runTestsInContainer(array $opts) {
     $testType = $opts['test_type'] ?? 'acceptance';
+    $this->doctrineGenerateCache();
 
     return $this->taskExec(
       'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
