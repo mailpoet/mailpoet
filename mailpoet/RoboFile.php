@@ -116,7 +116,7 @@ class RoboFile extends \Robo\Tasks {
     $this->collectionBuilder()
       ->taskExec('mkdir -p ' . __DIR__ . '/lang')
       ->taskExec(
-        'php tasks/makepot/grunt-makepot.php wp-plugin . lang/mailpoet.pot mailpoet .mp_svn,assets,lang,node_modules,plugin_repository,tasks,tests,vendor'
+        'php -d memory_limit=-1 tasks/makepot/grunt-makepot.php wp-plugin . lang/mailpoet.pot mailpoet .mp_svn,assets,lang,node_modules,plugin_repository,tasks,tests,vendor'
       )->run();
   }
 
