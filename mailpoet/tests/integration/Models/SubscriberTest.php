@@ -3,17 +3,20 @@
 namespace MailPoet\Test\Models;
 
 use Codeception\Util\Fixtures;
-use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SubscriberCustomFieldEntity;
-use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\CustomField;
+use MailPoet\Models\Newsletter;
+use MailPoet\Models\NewsletterOption;
+use MailPoet\Models\NewsletterOptionField;
+use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
+use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberCustomField;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\SettingsRepository;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Idiorm\ORM;
 
 class SubscriberTest extends \MailPoetTest {
   public $saved;
@@ -877,9 +880,16 @@ class SubscriberTest extends \MailPoetTest {
   }
 
   public function _after() {
-    $this->truncateEntity(SubscriberEntity::class);
-    $this->truncateEntity(SegmentEntity::class);
-    $this->truncateEntity(SubscriberSegmentEntity::class);
-    $this->truncateEntity(SubscriberCustomFieldEntity::class);
+    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    ORM::raw_execute('TRUNCATE ' . Segment::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberSegment::$_table);
+    ORM::raw_execute('TRUNCATE ' . CustomField::$_table);
+    ORM::raw_execute('TRUNCATE ' . SubscriberCustomField::$_table);
+    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
+    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
+    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
+    $this->diContainer->get(SettingsRepository::class)->truncate();
   }
 }
