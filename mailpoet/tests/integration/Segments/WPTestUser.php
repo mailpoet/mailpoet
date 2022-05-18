@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Segments;
 
 class WPTestUser extends \WP_User {
+  /** @var int */
   public $orderId;
 
   /**
@@ -11,7 +12,7 @@ class WPTestUser extends \WP_User {
    * for cases, where we do not want to trigger the synchronization but just want to
    * assign a role to a user.
    */
-  public function add_role($role)
+  public function add_role($role): void
   {
     if (empty($role)) {
       return;

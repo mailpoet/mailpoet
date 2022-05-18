@@ -15,14 +15,14 @@ class SegmentSaveControllerTest extends \MailPoetTest {
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
-  public function _before() {
+  public function _before(): void {
     parent::_before();
     $this->cleanup();
     $this->saveController = $this->diContainer->get(SegmentSaveController::class);
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
   }
 
-  public function testItCanSaveASegment() {
+  public function testItCanSaveASegment(): void {
     $segmentData = [
       'name' => 'Segment one',
       'description' => 'Description',
@@ -34,7 +34,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     expect($segment->getType())->equals(SegmentEntity::TYPE_DEFAULT);
   }
 
-  public function testItDuplicatesSegment() {
+  public function testItDuplicatesSegment(): void {
     $segment = $this->createSegment('Segment two');
     $subscriber1 = $this->createSubscriber('subscribed@mailpoet.com');
     $subscriber2 = $this->createSubscriber('unsubscribed@mailpoet.com');
@@ -55,7 +55,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     expect($subscriberDuplicate2->getStatus())->equals($subscriberSegment2->getStatus());
   }
 
-  public function testItCheckDuplicateSegment() {
+  public function testItCheckDuplicateSegment(): void {
     $name = 'Test name';
     $this->createSegment($name);
     $segmentData = [
@@ -99,7 +99,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     return $subscriberSegment;
   }
 
-  private function cleanup() {
+  private function cleanup(): void {
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
