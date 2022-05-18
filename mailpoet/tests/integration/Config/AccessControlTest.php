@@ -60,6 +60,12 @@ class AccessControlTest extends \MailPoetTest {
         return ['custom_manage_segments_role'];
       }
     );
+    $wp->addFilter(
+      'mailpoet_permission_manage_automations',
+      function() {
+        return ['custom_manage_automations_role'];
+      }
+    );
 
     expect($this->accessControl->getDefaultPermissions())->equals(
       [
@@ -83,6 +89,9 @@ class AccessControlTest extends \MailPoetTest {
         ],
         AccessControl::PERMISSION_MANAGE_SEGMENTS => [
           'custom_manage_segments_role',
+        ],
+        AccessControl::PERMISSION_MANAGE_AUTOMATIONS => [
+          'custom_manage_automations_role',
         ],
       ]
     );

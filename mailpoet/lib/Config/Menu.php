@@ -419,7 +419,7 @@ class Menu {
         true,
         $this->setPageTitle('Automation Editor'),
         'Automation Editor',
-        AccessControl::PERMISSION_MANAGE_EMAILS,
+        AccessControl::PERMISSION_MANAGE_AUTOMATIONS,
         'mailpoet-automation-editor',
         [$this, 'automationEditor']
       );
