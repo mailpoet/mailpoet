@@ -45,7 +45,7 @@ export type Settings = {
     address: string;
   };
   cron_trigger: {
-    method: 'WordPress' | 'MailPoet' | 'Linux Cron';
+    method: 'WordPress' | 'Action Scheduler' | 'Linux Cron';
   };
   tracking: {
     level: 'full' | 'basic' | 'partial';
