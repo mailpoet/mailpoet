@@ -20,6 +20,7 @@ class StatisticsUnsubscribeEntity {
   const SOURCE_MANAGE = 'manage';
   const SOURCE_ADMINISTRATOR = 'admin';
   const SOURCE_ORDER_CHECKOUT = 'order_checkout';
+  const SOURCE_AUTOMATION = 'automation';
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
