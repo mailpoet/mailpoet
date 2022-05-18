@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron;
 
+use MailPoet\Cron\ActionScheduler\ActionScheduler;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -22,16 +23,21 @@ class DaemonActionSchedulerRunner {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var ActionScheduler */
+  private $actionScheduler;
+
   public function __construct(
     Daemon $daemon,
     CronHelper $cronHelper,
     WordPress $wordpressTrigger,
-    WPFunctions $wp
+    WPFunctions $wp,
+    ActionScheduler $actionScheduler
   ) {
     $this->cronHelper = $cronHelper;
     $this->daemon = $daemon;
     $this->wordpressTrigger = $wordpressTrigger;
     $this->wp = $wp;
+    $this->actionScheduler = $actionScheduler;
   }
 
   public function init() {
@@ -39,8 +45,8 @@ class DaemonActionSchedulerRunner {
     $this->wp->addAction(self::DAEMON_TRIGGER_SCHEDULER_ACTION, [$this, 'trigger']);
     $this->wp->addAction('wp_ajax_nopriv_' . self::RUN_ACTION_SCHEDULER, [$this, 'runActionScheduler'], 0);
     $this->wp->addAction('action_scheduler_after_process_queue', [$this, 'afterProcess']);
-    if (!as_has_scheduled_action(self::DAEMON_TRIGGER_SCHEDULER_ACTION)) {
-      as_schedule_recurring_action($this->wp->currentTime('timestamp'), 20, self::DAEMON_TRIGGER_SCHEDULER_ACTION);
+    if (!$this->actionScheduler->hasScheduledAction(self::DAEMON_TRIGGER_SCHEDULER_ACTION)) {
+      $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp'), 20, self::DAEMON_TRIGGER_SCHEDULER_ACTION);
     }
   }
 
@@ -52,14 +58,14 @@ class DaemonActionSchedulerRunner {
   public function trigger() {
     $hasJobsToDo = $this->wordpressTrigger->checkExecutionRequirements();
     if (!$hasJobsToDo) {
-      as_unschedule_action(self::DAEMON_RUN_SCHEDULER_ACTION);
+      $this->actionScheduler->unscheduleAction(self::DAEMON_RUN_SCHEDULER_ACTION);
       return;
     }
-    if (as_has_scheduled_action(self::DAEMON_RUN_SCHEDULER_ACTION)) {
+    if ($this->actionScheduler->hasScheduledAction(self::DAEMON_RUN_SCHEDULER_ACTION)) {
       return;
     }
     // Start recurring action with minimal interval to ensure continuous execution of the daemon
-    as_schedule_recurring_action($this->wp->currentTime('timestamp') - 1, 1, self::DAEMON_RUN_SCHEDULER_ACTION);
+    $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp') - 1, 1, self::DAEMON_RUN_SCHEDULER_ACTION);
     $this->triggerRemoteExecutor();
   }
 
@@ -97,7 +103,7 @@ class DaemonActionSchedulerRunner {
       sleep(2); // Add short sleep to ensure next action ready to be processed since minimal schedule interval is 1 second
       $this->triggerRemoteExecutor();
     } else {
-      as_unschedule_action(self::DAEMON_RUN_SCHEDULER_ACTION);
+      $this->actionScheduler->unscheduleAction(self::DAEMON_RUN_SCHEDULER_ACTION);
     }
   }
 
