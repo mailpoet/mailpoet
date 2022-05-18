@@ -31,6 +31,18 @@ export function TaskScheduler() {
       <Inputs>
         <div className="mailpoet-settings-inputs-row">
           <Radio
+            id="cron_trigger-method-action-scheduler"
+            value="Action Scheduler"
+            checked={method === 'Action Scheduler'}
+            onCheck={setMethod}
+            automationId="action_scheduler_cron_radio"
+          />
+          <label htmlFor="cron_trigger-method-cron">
+            {t('actionSchedulerCron')}
+          </label>
+        </div>
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
             id="cron_trigger-method-wordpress"
             value="WordPress"
             checked={method === 'WordPress'}

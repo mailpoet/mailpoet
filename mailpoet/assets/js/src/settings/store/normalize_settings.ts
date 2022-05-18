@@ -102,7 +102,10 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       page: text,
     }),
     cron_trigger: asObject({
-      method: asEnum(['WordPress', 'MailPoet', 'Linux Cron'], 'WordPress'),
+      method: asEnum(
+        ['WordPress', 'Action Scheduler', 'Linux Cron'],
+        'WordPress',
+      ),
     }),
     tracking: asObject({ level: asEnum(['full', 'partial', 'basic'], 'full') }),
     send_transactional_emails: disabledRadio,
