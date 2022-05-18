@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { __unstableCompositeItem as CompositeItem } from '@wordpress/components';
+import { Icon, plus } from '@wordpress/icons';
 import { WorkflowCompositeContext } from './context';
-import { PlusIcon } from '../icons';
 
 type Props = {
   onClick?: (element: HTMLButtonElement) => void;
@@ -21,7 +21,7 @@ export function AddStepButton({ onClick }: Props): JSX.Element {
         onClick(button);
       }}
     >
-      <PlusIcon />
+      <Icon icon={plus} size={16} />
     </CompositeItem>
   );
 }
