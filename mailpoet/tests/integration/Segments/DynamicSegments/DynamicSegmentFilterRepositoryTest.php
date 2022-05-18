@@ -16,7 +16,7 @@ class DynamicSegmentFilterRepositoryTest extends \MailPoetTest {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
-  public function _before() {
+  public function _before(): void {
     parent::_before();
     $this->cleanup();
     $this->dynamicSegmentFilterRepository = $this->diContainer->get(DynamicSegmentFilterRepository::class);
@@ -60,12 +60,12 @@ class DynamicSegmentFilterRepositoryTest extends \MailPoetTest {
     return $filter;
   }
 
-  private function cleanup() {
+  private function cleanup(): void {
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }
 
-  public function _after() {
+  public function _after(): void {
     parent::_after();
     $this->cleanup();
   }

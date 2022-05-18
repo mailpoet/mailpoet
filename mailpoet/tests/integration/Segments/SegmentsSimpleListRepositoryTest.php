@@ -15,7 +15,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
   /** @var SegmentsSimpleListRepository */
   private $segmentsListRepository;
 
-  public function _before() {
+  public function _before(): void {
     parent::_before();
     $segmentRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->cleanup();
@@ -51,7 +51,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
     $this->segmentsListRepository = $this->diContainer->get(SegmentsSimpleListRepository::class);
   }
 
-  public function testItReturnsCorrectlyFormattedOutput() {
+  public function testItReturnsCorrectlyFormattedOutput(): void {
     [$list] = $this->segmentsListRepository->getListWithAssociatedSubscribersCounts();
     expect($list['id'])->string();
     expect($list['name'])->string();
@@ -59,7 +59,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
     expect($list['subscribers'])->int();
   }
 
-  public function testItReturnsSegmentsWithSubscribedSubscribersCount() {
+  public function testItReturnsSegmentsWithSubscribedSubscribersCount(): void {
     $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts();
     expect($segments)->count(5);
     // Default 1
@@ -79,7 +79,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
     expect($segments[4]['subscribers'])->equals(1);
   }
 
-  public function testItReturnsSegmentsWithSubscribedSubscribersCountFilteredBySegmentType() {
+  public function testItReturnsSegmentsWithSubscribedSubscribersCountFilteredBySegmentType(): void {
     $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts([SegmentEntity::TYPE_DEFAULT, SegmentEntity::TYPE_WP_USERS]);
     expect($segments)->count(3);
     // Default 1
@@ -93,7 +93,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
     expect($segments[2]['subscribers'])->equals(1);
   }
 
-  public function testItReturnsSegmentsWithAssociatedSubscribersCount() {
+  public function testItReturnsSegmentsWithAssociatedSubscribersCount(): void {
     $segments = $this->segmentsListRepository->getListWithAssociatedSubscribersCounts();
     expect($segments)->count(5);
     // Default 1
@@ -113,7 +113,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
     expect($segments[4]['subscribers'])->equals(1);
   }
 
-  public function testItCanAddSegmentForSubscribersWithoutList() {
+  public function testItCanAddSegmentForSubscribersWithoutList(): void {
     $segments = $this->segmentsListRepository->getListWithAssociatedSubscribersCounts();
     $segments = $this->segmentsListRepository->addVirtualSubscribersWithoutListSegment($segments);
     expect($segments)->count(6);
@@ -154,14 +154,14 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
     return $segment;
   }
 
-  private function cleanup() {
+  private function cleanup(): void {
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
     $this->truncateEntity(DynamicSegmentFilterEntity::class);
   }
 
-  public function _after() {
+  public function _after(): void {
     parent::_after();
     $this->cleanup();
   }
