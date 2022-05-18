@@ -17,7 +17,7 @@ class CronTrigger {
     'none' => 'Disabled',
   ];
 
-  const DEFAULT_METHOD = 'WordPress';
+  const DEFAULT_METHOD = self::METHOD_ACTION_SCHEDULER;
   const SETTING_NAME = 'cron_trigger';
 
   /** @var WordPress */

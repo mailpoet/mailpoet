@@ -19,7 +19,7 @@ class CronTriggerTest extends \MailPoetUnitTest {
       'action_scheduler' => 'Action Scheduler',
       'none' => 'Disabled',
     ]);
-    expect(CronTrigger::DEFAULT_METHOD)->equals('WordPress');
+    expect(CronTrigger::DEFAULT_METHOD)->equals('Action Scheduler');
     expect(CronTrigger::SETTING_NAME)->equals('cron_trigger');
   }
 
