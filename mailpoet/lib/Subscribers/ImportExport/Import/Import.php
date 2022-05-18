@@ -551,7 +551,7 @@ class Import {
   }
 
   public function synchronizeWPUsers($wpUsers) {
-    return array_walk($wpUsers, [$this->wpSegment, 'synchronizeUser']);
+    return array_map([$this->wpSegment, 'synchronizeUser'], $wpUsers);
   }
 
   public function addSubscribersToSegments($subscribersIds, $segmentsIds) {
