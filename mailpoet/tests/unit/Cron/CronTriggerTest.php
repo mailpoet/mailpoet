@@ -4,7 +4,7 @@ namespace MailPoet\Test\Cron;
 
 use Codeception\Stub;
 use MailPoet\Cron\CronTrigger;
-use MailPoet\Cron\Triggers\MailPoet;
+use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Settings\SettingsController;
 
@@ -12,9 +12,11 @@ class CronTriggerTest extends \MailPoetUnitTest {
   public function testItDefinesConstants() {
     expect(CronTrigger::METHOD_LINUX_CRON)->same('Linux Cron');
     expect(CronTrigger::METHOD_WORDPRESS)->same('WordPress');
+    expect(CronTrigger::METHOD_ACTION_SCHEDULER)->same('Action Scheduler');
     expect(CronTrigger::METHODS)->equals([
       'wordpress' => 'WordPress',
       'linux_cron' => 'Linux Cron',
+      'action_scheduler' => 'Action Scheduler',
       'none' => 'Disabled',
     ]);
     expect(CronTrigger::DEFAULT_METHOD)->equals('WordPress');
@@ -52,9 +54,11 @@ class CronTriggerTest extends \MailPoetUnitTest {
 
   private function createCronTrigger(
     SettingsController $settings,
-    WordPress $wordpressTrigger = null
+    WordPress $wordpressTrigger = null,
+    DaemonActionSchedulerRunner $actionSchedulerRunner = null
   ) {
     $wordpressTrigger = $wordpressTrigger ?: $this->make(WordPress::class, ['run' => true]);
-    return new CronTrigger($wordpressTrigger, $settings);
+    $actionSchedulerRunner = $actionSchedulerRunner ?: $this->make(DaemonActionSchedulerRunner::class, ['init' => true]);
+    return new CronTrigger($wordpressTrigger, $settings, $actionSchedulerRunner);
   }
 }
