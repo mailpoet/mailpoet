@@ -46,6 +46,10 @@ class Renderer {
     $this->setupSyntax();
   }
 
+  public function getTwig(): TwigEnvironment {
+    return $this->renderer;
+  }
+
   public function setupTranslations() {
     $this->renderer->addExtension(new Twig\I18n(Env::$pluginName));
   }
