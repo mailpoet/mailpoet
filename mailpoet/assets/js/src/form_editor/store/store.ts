@@ -57,6 +57,12 @@ export const initStore = () => {
           `mailpoet_form_preview_settings${formData.id}`,
         ),
       );
+
+      // Back compatibility - "below_post" was renamed to "below_posts"
+      // but local storage can have the old value, let's normalize it.
+      if (previewSettings.formType === 'below_post') {
+        previewSettings.formType = 'below_posts';
+      }
     } catch (e) {
       // We just keep it null
     }
