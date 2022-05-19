@@ -44,7 +44,6 @@ class DaemonActionSchedulerRunner {
     $this->wp->addAction(self::DAEMON_RUN_SCHEDULER_ACTION, [$this, 'run']);
     $this->wp->addAction(self::DAEMON_TRIGGER_SCHEDULER_ACTION, [$this, 'trigger']);
     $this->wp->addAction('wp_ajax_nopriv_' . self::RUN_ACTION_SCHEDULER, [$this, 'runActionScheduler'], 0);
-    $this->wp->addAction('action_scheduler_after_process_queue', [$this, 'afterProcess']);
     if (!$this->actionScheduler->hasScheduledAction(self::DAEMON_TRIGGER_SCHEDULER_ACTION)) {
       $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp'), 20, self::DAEMON_TRIGGER_SCHEDULER_ACTION);
     }
@@ -73,6 +72,7 @@ class DaemonActionSchedulerRunner {
    * Run daemon that processes scheduled tasks for limited time (default 20 seconds)
    */
   public function run(): void {
+    $this->wp->addAction('action_scheduler_after_process_queue', [$this, 'afterProcess']);
     $this->daemon->run($this->cronHelper->createDaemon($this->cronHelper->createToken()));
   }
 
