@@ -7,7 +7,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 
 class RequirementsChecker {
-  const TEST_FOLDER_PERMISSIONS = 'TempAndCacheFolderCreation';
+  const TEST_FOLDER_PERMISSIONS = 'TempFolderCreation';
   const TEST_PDO_EXTENSION = 'PDOExtension';
   const TEST_XML_EXTENSION = 'XmlExtension';
   const TEST_VENDOR_SOURCE = 'VendorSource';
@@ -41,7 +41,7 @@ class RequirementsChecker {
     return $results;
   }
 
-  public function checkTempAndCacheFolderCreation() {
+  public function checkTempFolderCreation() {
     $paths = [
       'temp_path' => Env::$tempPath,
     ];
