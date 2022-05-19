@@ -1,6 +1,10 @@
 <?php
 
-// phpcs:ignore PSR1.Classes.ClassDeclaration
+// phpcs:disable PSR1.Classes.ClassDeclaration
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+
+use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
+
 class RoboFile extends \Robo\Tasks {
   const ZIP_BUILD_PATH = __DIR__ . '/mailpoet.zip';
 
@@ -1011,6 +1015,22 @@ class RoboFile extends \Robo\Tasks {
     require_once __DIR__ . '/tests/DataGenerator/_bootstrap.php';
     $generator = new \MailPoet\Test\DataGenerator\DataGenerator(new \Codeception\Lib\Console\Output([]));
     $generator->run($generatorName);
+  }
+
+  public function twigGenerateCache() {
+
+    $templatePath = __DIR__ . '/views/'; // \MailPoet\Config\Env::$viewsPath . '/'
+    define('ABSPATH', (dirname(__DIR__) . '/wordpress'));
+    $renderer = new \MailPoet\Config\Renderer(
+      false,
+      __DIR__ . '/generated/twig',
+      new TwigFileSystem($templatePath)
+    );
+    $twig = $renderer->getTwig();
+    foreach ($this->rsearch($templatePath, ['html']) as $template) {
+      $path = substr($template, strlen($templatePath));
+      $twig->load($path);
+    }
   }
 
   protected function rsearch($folder, $extensions = []) {
