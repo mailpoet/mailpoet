@@ -2,6 +2,7 @@ import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { CronStatus } from './cron_status.jsx';
 import { QueueStatus } from './queue_status.jsx';
+import { ActionSchedulerStatus } from './action_scheduler_status';
 
 function renderStatusMessage(
   status,
@@ -103,6 +104,7 @@ function renderMSSSection(data) {
 
 export function SystemStatus() {
   const systemStatusData = window.systemStatusData;
+  const actionSchedulerData = window.actionSchedulerData;
 
   return (
     <>
@@ -116,7 +118,10 @@ export function SystemStatus() {
       {renderCronSection(systemStatusData)}
       {renderMSSSection(systemStatusData)}
       <CronStatus status_data={systemStatusData.cronStatus} />
-      <QueueStatus status_data={systemStatusData.queueStatus} />
+      <ActionSchedulerStatus {...actionSchedulerData} />
+      {actionSchedulerData ? (
+        <QueueStatus status_data={systemStatusData.queueStatus} />
+      ) : null}
     </>
   );
 }
