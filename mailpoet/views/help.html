@@ -7,6 +7,7 @@
   <script type="text/javascript">
     var systemInfoData = <%= json_encode(systemInfoData) %>;
     var systemStatusData = <%= json_encode(systemStatusData) %>;
+    var actionSchedulerData = <%= json_encode(actionSchedulerData) %>;
   </script>
 
   <div id="help_container"></div>
@@ -73,6 +74,12 @@
   'updatedAt': __('Updated At'),
   'nothingToShow': __('Nothing to show.'),
   'preview': _x('Preview', 'Text of a link to email preview page.'),
+  'actionSchedulerStatus': __('WP Cron / Action Scheduler Status'),
+  'version': __('Version'),
+  'storage': __('Storage type'),
+  'latestActionSchedulerTrigger': _x('Next scheduler trigger run', 'Label for the next date and time of background job trigger run.'),
+  'latestActionSchedulerCompletedTrigger': _x('Last scheduler trigger run', 'Label for the last date and time of background job trigger run.'),
+  'latestActionSchedulerCompletedRun': _x('Last scheduler worker run', 'Label for the last date and time of background job worker run.'),
 }) %>
 <% endblock %>
 

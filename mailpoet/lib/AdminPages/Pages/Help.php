@@ -4,6 +4,7 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\Helpscout\Beacon;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Router\Endpoints\CronDaemon;
@@ -74,7 +75,39 @@ class Help {
       [
         'systemInfoData' => $systemInfoData,
         'systemStatusData' => $systemStatusData,
+        'actionSchedulerData' => $this->getActionSchedulerData(),
       ]
     );
+  }
+
+  private function getActionSchedulerData(): ?array {
+    if (!class_exists(\ActionScheduler_Store::class)) {
+      return null;
+    }
+    $actionSchedulerData = [];
+    $actionSchedulerData['version'] = \ActionScheduler_Versions::instance()->latest_version();
+    $actionSchedulerData['storage'] = str_replace('ActionScheduler_', '', get_class(\ActionScheduler_Store::instance()));
+    $actionSchedulerData['latestTrigger'] = $this->getLatestActionSchedulerActionDate(DaemonActionSchedulerRunner::DAEMON_TRIGGER_SCHEDULER_ACTION);
+    $actionSchedulerData['latestCompletedTrigger'] = $this->getLatestActionSchedulerActionDate(DaemonActionSchedulerRunner::DAEMON_TRIGGER_SCHEDULER_ACTION, 'complete');
+    $actionSchedulerData['latestCompletedRun'] = $this->getLatestActionSchedulerActionDate(DaemonActionSchedulerRunner::DAEMON_RUN_SCHEDULER_ACTION, 'complete');
+    return $actionSchedulerData;
+  }
+
+  private function getLatestActionSchedulerActionDate(string $hook, string $status = null): ?string {
+    $query = [
+      'per_page' => 1,
+      'order' => 'DESC',
+      'hook' => $hook,
+    ];
+    if ($status) {
+      $query['status'] = $status;
+    }
+    $store = \ActionScheduler_Store::instance();
+    $action = $store->query_actions($query);
+    if (!empty($action)) {
+      $dateObject = $store->get_date( $action[0] );
+      return $dateObject->format('Y-m-d H:i:s');
+    }
+    return null;
   }
 }
