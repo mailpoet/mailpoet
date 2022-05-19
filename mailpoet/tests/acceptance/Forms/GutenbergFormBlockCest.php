@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Subscription\Captcha;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 
@@ -29,7 +30,8 @@ class GutenbergFormBlockCest {
     $settings
       ->withConfirmationEmailSubject()
       ->withConfirmationEmailBody()
-      ->withConfirmationEmailEnabled();
+      ->withConfirmationEmailEnabled()
+      ->withCaptchaType(Captcha::TYPE_DISABLED);
   }
 
   public function subscriptionGutenbergBlock(\AcceptanceTester $i): void {

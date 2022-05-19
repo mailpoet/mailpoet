@@ -33,14 +33,14 @@ class AssetsController {
   public function printScripts() {
     ob_start();
     $captcha = $this->settings->get('captcha');
-    if (!empty($captcha['type']) && $captcha['type'] === Captcha::TYPE_RECAPTCHA) {
+    if (!empty($captcha['type']) && Captcha::isReCaptcha($captcha['type'])) {
       echo '<script src="' . self::RECAPTCHA_API_URL . '" async defer></script>';
     }
 
     $this->wp->wpPrintScripts('jquery');
     $this->wp->wpPrintScripts('mailpoet_vendor');
     $this->wp->wpPrintScripts('mailpoet_public');
-    
+
     $scripts = ob_get_contents();
     ob_end_clean();
     if ($scripts === false) {
@@ -62,7 +62,7 @@ class AssetsController {
 
   public function setupFrontEndDependencies() {
     $captcha = $this->settings->get('captcha');
-    if (!empty($captcha['type']) && $captcha['type'] === Captcha::TYPE_RECAPTCHA) {
+    if (!empty($captcha['type']) && Captcha::isRecaptcha($captcha['type'])) {
       $this->wp->wpEnqueueScript(
         'mailpoet_recaptcha',
         self::RECAPTCHA_API_URL

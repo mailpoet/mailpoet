@@ -216,15 +216,21 @@ class SubscriberSubscribeController {
       }
     }
 
-    if ($captchaSettings['type'] === Captcha::TYPE_RECAPTCHA && empty($data['recaptcha'])) {
+    if (Captcha::isReCaptcha($captchaSettings['type']) && empty($data['recaptchaResponseToken'])) {
       return ['error' => __('Please check the CAPTCHA.', 'mailpoet')];
     }
 
-    if ($captchaSettings['type'] === Captcha::TYPE_RECAPTCHA) {
-      $response = empty($data['recaptcha']) ? $data['recaptcha-no-js'] : $data['recaptcha'];
+    if (Captcha::isReCaptcha($captchaSettings['type'])) {
+      if ($captchaSettings['type'] === Captcha::TYPE_RECAPTCHA_INVISIBLE) {
+        $secretToken = $captchaSettings['recaptcha_invisible_secret_token'];
+      } else {
+        $secretToken = $captchaSettings['recaptcha_secret_token'];
+      }
+
+      $response = empty($data['recaptchaResponseToken']) ? $data['recaptcha-no-js'] : $data['recaptchaResponseToken'];
       $response = $this->wp->wpRemotePost('https://www.google.com/recaptcha/api/siteverify', [
         'body' => [
-          'secret' => $captchaSettings['recaptcha_secret_token'],
+          'secret' => $secretToken,
           'response' => $response,
         ],
       ]);

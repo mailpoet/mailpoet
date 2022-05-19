@@ -116,7 +116,7 @@ class RoboFile extends \Robo\Tasks {
     $this->collectionBuilder()
       ->taskExec('mkdir -p ' . __DIR__ . '/lang')
       ->taskExec(
-        'php tasks/makepot/grunt-makepot.php wp-plugin . lang/mailpoet.pot mailpoet .mp_svn,assets,lang,node_modules,plugin_repository,tasks,tests,vendor'
+        'php -d memory_limit=-1 tasks/makepot/grunt-makepot.php wp-plugin . lang/mailpoet.pot mailpoet .mp_svn,assets,lang,node_modules,plugin_repository,tasks,tests,vendor'
       )->run();
   }
 
@@ -180,36 +180,13 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  public function testIntegration(array $opts = ['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
-    if (getenv('MAILPOET_DEV_SITE')) {
-      $run = $this->confirm("You are about to run tests on the development site. Your DB data will be erased. \nDo you want to proceed?", false);
-      if (!$run) {
-        return;
-      }
-    }
-    $command = 'vendor/bin/codecept run integration -vvv';
-
-    if ($opts['multisite']) {
-      $command = 'MULTISITE=true ' . $command;
-    }
-
-    if ($opts['file']) {
-      $command .= ' -f ' . $opts['file'];
-    }
-
-    if ($opts['xml']) {
-      $command .= ' --xml';
-    }
-
-    if ($opts['debug']) {
-      $command .= ' --debug';
-    }
-
-    return $this->_exec($command);
+  public function testIntegration(array $opts = ['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false, 'skip-deps' => false]) {
+    return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration']));
   }
 
-  public function testMultisiteIntegration($opts = ['file' => null, 'xml' => false, 'multisite' => true]) {
-    return $this->testIntegration($opts);
+  public function testMultisiteIntegration($opts = ['file' => null, 'xml' => false, 'multisite' => true, 'skip-deps' => false]) {
+    return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration']));
+
   }
 
   public function testCoverage($opts = ['file' => null, 'xml' => false]) {
@@ -272,24 +249,11 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testAcceptance($opts = ['file' => null, 'skip-deps' => false, 'timeout' => null]) {
-    return $this->taskExec(
-      'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
-      ($opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
-      ($opts['timeout'] ? '-e WAIT_TIMEOUT=' . (int)$opts['timeout'] . ' ' : '') .
-      'codeception --steps --debug -vvv ' .
-      '-f ' . ($opts['file'] ? $opts['file'] : '')
-    )->dir(__DIR__ . '/tests/docker')->run();
+    return $this->runTestsInContainer($opts);
   }
 
   public function testAcceptanceMultisite($opts = ['file' => null, 'skip-deps' => false, 'timeout' => null]) {
-    return $this->taskExec(
-      'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
-      ($opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
-      ($opts['timeout'] ? '-e WAIT_TIMEOUT=' . (int)$opts['timeout'] . ' ' : '') .
-      '-e MULTISITE=1 ' .
-      'codeception --steps --debug -vvv ' .
-      '-f ' . ($opts['file'] ? $opts['file'] : '')
-    )->dir(__DIR__ . '/tests/docker')->run();
+    return $this->runTestsInContainer(array_merge($opts, ['multisite' => true]));
   }
 
   public function deleteDocker() {
@@ -1180,5 +1144,20 @@ class RoboFile extends \Robo\Tasks {
       'driver' => \MailPoet\Doctrine\ConnectionFactory::DRIVER,
       'platform' => new $platformClass,
     ], $configuration);
+  }
+
+  private function runTestsInContainer(array $opts) {
+    $testType = $opts['test_type'] ?? 'acceptance';
+    $this->doctrineGenerateCache();
+
+    return $this->taskExec(
+      'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
+      (isset($opts['skip-deps']) && $opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
+      (isset($opts['timeout']) && $opts['timeout'] ? '-e WAIT_TIMEOUT=' . (int)$opts['timeout'] . ' ' : '') .
+      (isset($opts['multisite']) && $opts['multisite'] ? '-e MULTISITE=1 ' : '-e MULTISITE=0 ') .
+      "codeception_{$testType} --steps --debug -vvv " .
+      (isset($opts['xml']) && $opts['xml'] ? '--xml ' : '') .
+      '-f ' . (isset($opts['file']) && $opts['file'] ? $opts['file'] : '')
+    )->dir(__DIR__ . '/tests/docker')->run();
   }
 }

@@ -1,10 +1,37 @@
 version: '3.9'
 
 services:
-  codeception:
-    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.0-cli_20220126.1}
+  codeception_acceptance:
+    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.0-cli_20220605.0}
     depends_on:
-      - mailhog
+      - smtp
+      - wordpress
+      - chrome
+    volumes:
+      - wp-core:/wp-core
+      - mailhog-data:/mailhog-data
+      - ../..:/project
+      - ../..:/wp-core/wp-content/plugins/mailpoet
+      - ./codeception/docker-entrypoint.sh:/docker-entrypoint.sh
+      - ../../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
+      - ../../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    entrypoint: /docker-entrypoint.sh
+    environment:
+      WP_ROOT: /wp-core
+      WP_ROOT_MULTISITE: /wp-core
+      WP_TEST_MULTISITE_SLUG: php7_multisite
+      HTTP_HOST: test.local
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_TABLE_PREFIX: mp_
+      TEST_TYPE: acceptance
+      PHP_IDE_CONFIG: 'serverName=MailPoetTest'
+
+  codeception_integration:
+    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.0-cli_20220605.0}
+    depends_on:
+      - smtp
       - wordpress
     volumes:
       - wp-core:/wp-core
@@ -12,20 +39,28 @@ services:
       - ../..:/project
       - ../..:/wp-core/wp-content/plugins/mailpoet
       - ./codeception/docker-entrypoint.sh:/docker-entrypoint.sh
+      - ../../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
+      - ../../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     entrypoint: /docker-entrypoint.sh
     environment:
       WP_ROOT: /wp-core
+      WP_ROOT_MULTISITE: /wp-core
+      WP_TEST_MULTISITE_SLUG: php7_multisite
+      HTTP_HOST: test.local
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_TABLE_PREFIX: mp_
+      TEST_TYPE: integration
+      PHP_IDE_CONFIG: 'serverName=MailPoetTest'
 
-  mailhog:
+  smtp:
     image: mailhog/mailhog:v1.0.0
+    hostname: mailhog
     ports:
       - 1025:1025
       - 8025:8025
-    user: root
+    user: ${UID:-1000}:${GID:-1000}
     environment:
       MH_STORAGE: maildir
       MH_MAILDIR_PATH: /mailhog-data
@@ -35,8 +70,7 @@ services:
   wordpress:
     image: mailpoet/wordpress:${WORDPRESS_IMAGE_VERSION:-wp-5.9_php8.0_20220127.1}
     depends_on:
-      - chrome
-      - mailhog
+      - smtp
       - mysql
     volumes:
       - wp-core:/var/www/html
@@ -80,7 +114,6 @@ services:
     ports:
       - 4444
       - 5900:5900
-
 volumes:
   wp-core:
   mailhog-data:

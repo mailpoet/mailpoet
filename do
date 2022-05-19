@@ -65,7 +65,7 @@ elif [ "$1" = "acceptance" ]; then
   else
     cd mailpoet
   fi
-  COMPOSE_HTTP_TIMEOUT=200 docker-compose run codeception -e KEEP_DEPS=1 --steps --debug -vvv
+  COMPOSE_HTTP_TIMEOUT=200 docker-compose run codeception_acceptance -e KEEP_DEPS=1 --steps --debug -vvv
   cd ..
 
 elif [ "$1" = "build" ]; then
@@ -82,9 +82,12 @@ else
   docker_service="wordpress"
   plugin_directory="mailpoet"
   params=("$@")
-  if [ "$1" = "--test" -o "$2" = "--test" ]; then
-    docker_service="test_wordpress"
+
+  if [ "$1" = "--test" -o "$2" = "--test"  ]; then
     params=("${params[@]:1}")
+    cd mailpoet
+   ./do ${params[*]}
+   exit 1
   fi
   if [ "$1" = "--premium" -o "$2" = "--premium" ]; then
     plugin_directory="mailpoet-premium"

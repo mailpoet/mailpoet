@@ -1,10 +1,20 @@
 import { useMutation } from './api';
 import { id } from './id';
 
-const createWaitStep = () => ({
+const createSendWelcomeEmailStep = () => ({
+  id: id(),
+  type: 'action',
+  key: 'mailpoet:send-welcome-email',
+  args: {
+    welcomeEmailId: 1,
+  },
+});
+
+const createWaitStep = (nextStepId: string) => ({
   id: id(),
   type: 'action',
   key: 'core:wait',
+  next_step_id: nextStepId,
   args: {
     seconds: 60,
   },
@@ -18,13 +28,15 @@ const createTrigger = (nextStepId: string) => ({
 });
 
 const createWorkflow = () => {
-  const wait = createWaitStep();
+  const sendWelcomeEmail = createSendWelcomeEmailStep();
+  const wait = createWaitStep(sendWelcomeEmail.id);
   const trigger = createTrigger(wait.id);
   return {
     name: `Test ${new Date().toISOString()}`,
     steps: {
       [trigger.id]: trigger,
       [wait.id]: wait,
+      [sendWelcomeEmail.id]: sendWelcomeEmail,
     },
   };
 };

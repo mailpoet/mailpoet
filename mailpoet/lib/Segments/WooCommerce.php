@@ -489,9 +489,10 @@ class WooCommerce {
     // Insert WC customer emails to a temporary table and ensure matching collations
     // between MailPoet and WooCommerce emails for left join to use an index
     $tmpTableName = Env::$dbPrefix . 'tmp_wc_emails';
-    $collation = '';
     if ($this->needsCollationChange()) {
       $collation = "COLLATE $this->mailpoetEmailCollation";
+    } else {
+      $collation = "COLLATE $this->wpPostmetaValueCollation";
     }
 
     $this->connection->executeQuery("

@@ -8,15 +8,46 @@ import { Label, Inputs } from 'settings/components';
 
 export function Captcha() {
   const [type, setType] = useSetting('captcha', 'type');
-  const [token, setToken] = useSetting('captcha', 'recaptcha_site_token');
-  const [secret, setSecret] = useSetting('captcha', 'recaptcha_secret_token');
+  const [recaptchaCheckboxToken, setRecaptchaCheckboxToken] = useSetting(
+    'captcha',
+    'recaptcha_site_token',
+  );
+  const [recaptchaCheckboxSecret, setRecaptchaCheckboxSecret] = useSetting(
+    'captcha',
+    'recaptcha_secret_token',
+  );
+  const [recaptchaInvisibleToken, setRecaptchaInvisibleToken] = useSetting(
+    'captcha',
+    'recaptcha_invisible_site_token',
+  );
+  const [recaptchaInvisibleSecret, setRecaptchaInvisibleSecret] = useSetting(
+    'captcha',
+    'recaptcha_invisible_secret_token',
+  );
   const hasBuiltInCaptcha = useSelector('isBuiltInCaptchaSupported')();
   const setErrorFlag = useAction('setErrorFlag');
-  const missingToken = type === 'recaptcha' && token.trim() === '';
-  const missingSecret = type === 'recaptcha' && secret.trim() === '';
+  const missingRecaptchaCheckboxToken =
+    type === 'recaptcha' && recaptchaCheckboxToken.trim() === '';
+  const missingRecaptchaCheckboxSecret =
+    type === 'recaptcha' && recaptchaCheckboxSecret.trim() === '';
+  const missingRecaptchaInvisibleToken =
+    type === 'recaptcha-invisible' && recaptchaInvisibleToken.trim() === '';
+  const missingRecaptchaInvisibleSecret =
+    type === 'recaptcha-invisible' && recaptchaInvisibleSecret.trim() === '';
   useEffect(() => {
-    setErrorFlag(missingToken || missingSecret);
-  }, [missingSecret, missingToken, setErrorFlag]);
+    setErrorFlag(
+      missingRecaptchaCheckboxToken ||
+        missingRecaptchaCheckboxSecret ||
+        missingRecaptchaInvisibleSecret ||
+        missingRecaptchaInvisibleToken,
+    );
+  }, [
+    missingRecaptchaCheckboxSecret,
+    missingRecaptchaCheckboxToken,
+    missingRecaptchaInvisibleSecret,
+    missingRecaptchaInvisibleToken,
+    setErrorFlag,
+  ]);
 
   return (
     <>
@@ -27,12 +58,25 @@ export function Captcha() {
             {t('captchaDescription')}{' '}
             <a
               className="mailpoet-link"
-              href="https://www.google.com/recaptcha/admin"
+              href="https://kb.mailpoet.com/article/182-add-a-captcha-to-subscription-forms"
               rel="noopener noreferrer"
               target="_blank"
             >
-              {t('signupForCaptchaKey')}
+              {t('readMore')}
             </a>
+            {(type === 'recaptcha' || type === 'recaptcha-invisible') && (
+              <p>
+                <span>{t('reCaptchaDescription')} </span>
+                <a
+                  className="mailpoet-link"
+                  href="https://www.google.com/recaptcha/admin"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {t('signupForCaptchaKey')}
+                </a>
+              </p>
+            )}
           </>
         }
         htmlFor=""
@@ -58,18 +102,18 @@ export function Captcha() {
             checked={type === 'recaptcha'}
             onCheck={setType}
           />
-          <label htmlFor="google-captcha">{t('googleReCaptcha')}</label>
+          <label htmlFor="google-captcha">{t('googleReCaptchaCheckbox')}</label>
         </div>
         {type === 'recaptcha' && (
           <div className="mailpoet-settings-inputs-row">
             <Input
               dimension="small"
               type="text"
-              value={token}
-              onChange={onChange(setToken)}
+              value={recaptchaCheckboxToken}
+              onChange={onChange(setRecaptchaCheckboxToken)}
               placeholder={t('yourReCaptchaKey')}
             />
-            {missingToken && (
+            {missingRecaptchaCheckboxToken && (
               <span className="mailpoet_error_item mailpoet_error">
                 {t('fillReCaptchaKeys')}
               </span>
@@ -78,11 +122,51 @@ export function Captcha() {
             <Input
               dimension="small"
               type="text"
-              value={secret}
-              onChange={onChange(setSecret)}
+              value={recaptchaCheckboxSecret}
+              onChange={onChange(setRecaptchaCheckboxSecret)}
               placeholder={t('yourReCaptchaSecret')}
             />
-            {missingSecret && (
+            {missingRecaptchaCheckboxSecret && (
+              <span className="mailpoet_error_item mailpoet_error">
+                {t('fillReCaptchaKeys')}
+              </span>
+            )}
+          </div>
+        )}
+        <div className="mailpoet-settings-inputs-row">
+          <Radio
+            id="google-captcha-invisible"
+            value="recaptcha-invisible"
+            checked={type === 'recaptcha-invisible'}
+            onCheck={setType}
+          />
+          <label htmlFor="google-captcha-invisible">
+            {t('googleReCaptchaInvisible')}
+          </label>
+        </div>
+        {type === 'recaptcha-invisible' && (
+          <div className="mailpoet-settings-inputs-row">
+            <Input
+              dimension="small"
+              type="text"
+              value={recaptchaInvisibleToken}
+              onChange={onChange(setRecaptchaInvisibleToken)}
+              placeholder={t('yourReCaptchaKey')}
+            />
+            {missingRecaptchaInvisibleToken && (
+              <span className="mailpoet_error_item mailpoet_error">
+                {t('fillReCaptchaKeys')}
+              </span>
+            )}
+            <br />
+            <Input
+              dimension="small"
+              type="text"
+              value={recaptchaInvisibleSecret}
+              onChange={onChange(setRecaptchaInvisibleSecret)}
+              placeholder={t('yourReCaptchaSecret')}
+            />
+            {missingRecaptchaInvisibleSecret && (
               <span className="mailpoet_error_item mailpoet_error">
                 {t('fillReCaptchaKeys')}
               </span>

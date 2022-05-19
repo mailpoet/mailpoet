@@ -346,7 +346,7 @@ jobs:
           name: 'Set up virtual host'
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
       - run:
-          name: 'Pull acceptance test docker images'
+          name: 'Pull test docker images'
           # Pull docker images with 3 retries
           command: i='0';while ! docker-compose -f tests/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
       - when:
@@ -356,7 +356,7 @@ jobs:
                 name: Download WooCommerce Core
                 command: |
                   cd tests/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip << parameters.woo_core_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception
+                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip << parameters.woo_core_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
       - when:
           condition: << parameters.woo_subscriptions_version >>
           steps:
@@ -364,7 +364,7 @@ jobs:
                 name: Download WooCommerce Subscriptions
                 command: |
                   cd tests/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception
+                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
       - when:
           condition: << parameters.woo_memberships_version >>
           steps:
@@ -372,7 +372,7 @@ jobs:
                 name: Download WooCommerce Memberships
                 command: |
                   cd tests/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-memberships-zip << parameters.woo_memberships_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception
+                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-memberships-zip << parameters.woo_memberships_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
       - when:
           condition: << parameters.woo_blocks_version >>
           steps:
@@ -380,7 +380,7 @@ jobs:
                 name: Download WooCommerce Blocks
                 command: |
                   cd tests/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-blocks-zip << parameters.woo_blocks_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception
+                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-blocks-zip << parameters.woo_blocks_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
       - run:
           name: Group acceptance tests
           command: |
@@ -394,7 +394,7 @@ jobs:
           command: |
             mkdir -m 777 -p tests/_output/exceptions
             cd tests/docker
-            docker-compose run -e SKIP_DEPS=1 -e CIRCLE_BRANCH=${CIRCLE_BRANCH} -e CIRCLE_JOB=${CIRCLE_JOB} -e MULTISITE=<< parameters.multisite >> codeception -g circleci_split_group --steps --debug -vvv --html --xml
+            docker-compose run -e SKIP_DEPS=1 -e CIRCLE_BRANCH=${CIRCLE_BRANCH} -e CIRCLE_JOB=${CIRCLE_JOB} -e MULTISITE=<< parameters.multisite >> codeception_acceptance -g circleci_split_group --steps --debug -vvv --html --xml
       - run:
           name: Check exceptions
           command: |
@@ -438,29 +438,47 @@ jobs:
           path: /tmp/fake-mailer/
           destination: fake-mailer
   integration_tests:
+    working_directory: /home/circleci/mailpoet/mailpoet
+    machine:
+      image: ubuntu-2004:202111-01
+    environment:
+      CODECEPTION_IMAGE_VERSION: << parameters.codeception_image_version >>
     parameters:
-      executor:
+      codeception_image_version:
         type: string
-        default: wpcli_php_mysql_latest
-      setup_command:
-        type: string
-        default: source ../.circleci/setup.bash && setup php7
+        default: ''
+      multisite:
+        type: integer
+        default: 0
       run_command:
         type: string
-        default: ./do test:integration --xml
-    executor: << parameters.executor >>
+        default: |
+          mkdir -m 777 -p tests/_output/exceptions
+          cd tests/docker
+          docker-compose run -e SKIP_DEPS=1 \
+            -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
+            -e CIRCLE_JOB=${CIRCLE_JOB} \
+            -e WP_TEST_MAILER_ENABLE_SENDING=${WP_TEST_MAILER_ENABLE_SENDING} \
+            -e WP_TEST_ENABLE_NETWORK_TESTS=${WP_TEST_ENABLE_NETWORK_TESTS} \
+            -e WP_TEST_MAILER_MAILPOET_API=${WP_TEST_MAILER_MAILPOET_API} \
+            -e WP_TEST_MAILER_SENDGRID_API=${WP_TEST_MAILER_SENDGRID_API} \
+            -e WP_TEST_MAILER_AMAZON_ACCESS=${WP_TEST_MAILER_AMAZON_ACCESS} \
+            -e WP_TEST_MAILER_AMAZON_REGION=${WP_TEST_MAILER_AMAZON_REGION} \
+            -e WP_TEST_MAILER_AMAZON_SECRET=${WP_TEST_MAILER_AMAZON_SECRET} \
+            -e WP_TEST_IMPORT_MAILCHIMP_API=${WP_TEST_IMPORT_MAILCHIMP_API} \
+            -e WP_TEST_IMPORT_MAILCHIMP_LISTS=${WP_TEST_IMPORT_MAILCHIMP_LISTS} \
+            -e WP_TEST_MAILER_SMTP_HOST=${WP_TEST_MAILER_SMTP_HOST} \
+            -e WP_TEST_MAILER_SMTP_LOGIN=${WP_TEST_MAILER_SMTP_LOGIN} \
+            -e WP_TEST_MAILER_SMTP_PASSWORD=${WP_TEST_MAILER_SMTP_PASSWORD} \
+            -e MULTISITE=<< parameters.multisite >> \
+            codeception_integration --steps --debug -vvv --html --xml
     steps:
       - attach_workspace:
           at: /home/circleci/mailpoet
       - run:
-          name: 'Set up virtual host'
-          command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
-      - run:
-          name: 'Prepare example.com for testing'
-          command: echo 127.0.0.1 example.com | sudo tee -a /etc/hosts
-      - run:
-          name: 'Set up test environment'
-          command: << parameters.setup_command >>
+          name: 'Pull test docker images'
+          # Pull docker images with 3 retries
+          command: i='0';while ! docker-compose -f tests/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
       - run:
           name: 'PHP Integration tests'
           command: << parameters.run_command >>
@@ -470,8 +488,8 @@ jobs:
           path: tests/_output
           destination: codeception
       - store_artifacts:
-          path: /tmp/fake-mailer/
-          destination: fake-mailer
+          path: /mailhog-data
+          destination: mailhog-data
   build_release_zip:
     executor: wpcli_php_mysql_latest
     resource_class: medium+
@@ -560,9 +578,8 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           <<: *only_master_and_release
+          multisite: 1
           name: integration_tests_multisite
-          setup_command: source ../.circleci/setup.bash && setup php7_multisite
-          run_command: ./do test:multisite-integration --xml
           requires:
             - unit_tests
             - static_analysis_php7
@@ -629,7 +646,7 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_oldest
-          executor: wpcli_php_mysql_oldest
+          codeception_image_version: 7.2-cli_20220605.0
           requires:
             - build
       - build_premium:

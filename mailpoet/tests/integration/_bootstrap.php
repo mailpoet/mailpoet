@@ -23,10 +23,6 @@ if ((boolean)getenv('MULTISITE') === true) {
 }
 require_once($wpLoadFile);
 
-if (!defined('MP_SETTINGS_TABLE')) {
-  die('MailPoet must be activated in the tests site (usually http://localhost:8003) before running the integration tests');
-}
-
 $console = new \Codeception\Lib\Console\Output([]);
 $console->writeln('Loading WP core... (' . $wpLoadFile . ')');
 

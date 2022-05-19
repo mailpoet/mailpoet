@@ -9,7 +9,12 @@ services:
   chrome:
     image: seleniarm/standalone-chromium:4.0.0-20211213
 
-  codeception:
+  codeception_acceptance:
+    volumes:
+      - nfs-mailpoet:/project
+      - nfs-mailpoet:/wp-core/wp-content/plugins/mailpoet
+
+  codeception_integration:
     volumes:
       - nfs-mailpoet:/project
       - nfs-mailpoet:/wp-core/wp-content/plugins/mailpoet
