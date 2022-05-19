@@ -75,8 +75,6 @@ services:
     volumes:
       - wp-core:/var/www/html
       - ../..:/var/www/html/wp-content/plugins/mailpoet
-    tmpfs:
-      - /var/www/html/wp-content/uploads/mailpoet/cache
     ports:
       - 8080:80
     environment:
