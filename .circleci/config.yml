@@ -135,7 +135,6 @@ jobs:
       - run:
           name: 'Set up test environment'
           command: |
-            # install plugin dependencies
             COMPOSER_DEV_MODE=1 php tools/install.php
             ./tools/vendor/composer.phar validate --no-check-all --no-check-publish
             ./tools/vendor/composer.phar validate --no-check-all --no-check-publish --working-dir=prefixer
@@ -144,6 +143,9 @@ jobs:
             ./do compile:all --env production
             ./do doctrine:generate-cache
             vendor/bin/codecept build
+            wp core download --skip-content --path=../wordpress
+            ./do twig:generate-cache
+            rm ../wordpress -rf
       - run:
           name: 'Check Prettier formatting'
           command: ./do qa:prettier-check
