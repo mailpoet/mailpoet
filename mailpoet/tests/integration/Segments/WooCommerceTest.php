@@ -24,7 +24,7 @@ require_once('WPTestUser.php');
 
 class WooCommerceTest extends \MailPoetTest {
   /** @var bool */
-  public $customerRoleAdded;
+  public $customerRoleAdded = false;
 
   /** @var string[] */
   private $userEmails = [];
@@ -621,7 +621,7 @@ class WooCommerceTest extends \MailPoetTest {
   }
 
   private function removeCustomerRole(): void {
-    if (!empty($this->customerRoleAdded)) {
+    if ($this->customerRoleAdded) {
       remove_role('customer');
     }
   }
