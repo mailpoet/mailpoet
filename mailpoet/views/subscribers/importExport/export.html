@@ -20,7 +20,7 @@
     <!-- Result message -->
   </div>
   <div class="mailpoet-settings-grid">
-    {{#if segments}}
+    <% if not segments is empty %>
       <div class="mailpoet-settings-label">
         <label for="export_lists">
           <%= __('Pick one or multiple lists') %>
@@ -31,7 +31,7 @@
           <select id="export_lists" data-placeholder="<%= _x('Select', 'Verb') %>" multiple="multiple"></select>
         </div>
       </div>
-    {{/if}}
+    <% endif %>
 
     <div class="mailpoet-settings-label">
       <label for="export_columns">
