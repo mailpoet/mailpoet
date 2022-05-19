@@ -499,6 +499,6 @@ class ContainerConfigurator implements IContainerConfigurator {
   }
 
   public static function getCdnAssetsUrl(): \MailPoet\Util\CdnAssetUrl {
-    return new \MailPoet\Util\CdnAssetUrl(Env::$baseUrl);
+    return new \MailPoet\Util\CdnAssetUrl((string)Env::$baseUrl);
   }
 }
