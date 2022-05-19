@@ -31,7 +31,7 @@ class PreviewPostNotificationNewsletterCest {
 
   public function previewPostNotificationNewsletterInEditor(\AcceptanceTester $i) {
     $i->wantTo('Preview and send post notification newsletter inside editor');
-    $this->settings->withCronTriggerMethod('WordPress');
+    $this->settings->withCronTriggerMethod('Action Scheduler');
     $newsletterName = 'Preview in Browser Post Notification';
     $newsletter = new Newsletter();
     $newsletter->withSubject($newsletterName)->withPostNotificationsType()->create();

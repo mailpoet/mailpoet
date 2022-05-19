@@ -16,7 +16,7 @@ class ReceiveStandardEmailCest {
 
   public function receiveStandardEmail(\AcceptanceTester $i) {
     $i->wantTo('Receive a standard newsletter as a subscriber');
-    $this->settings->withCronTriggerMethod('WordPress');
+    $this->settings->withCronTriggerMethod('Action Scheduler');
 
     // try some special characters in the subject to ensure they are received correctly
     $specialChars = '… © & ěščřžýáíéůėę€żąß∂‍‍‍';

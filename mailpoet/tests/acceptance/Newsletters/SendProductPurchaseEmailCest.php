@@ -17,7 +17,7 @@ class SendProductPurchaseEmailCest {
     $this->settingsFactory->withWooCommerceListImportPageDisplayed(true);
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $this->settingsFactory->withConfirmationEmailDisabled();
-    $this->settingsFactory->withCronTriggerMethod('WordPress');
+    $this->settingsFactory->withCronTriggerMethod('Action Scheduler');
   }
 
   public function sendProductPurchaseEmail(\AcceptanceTester $i) {

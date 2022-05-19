@@ -14,7 +14,7 @@ class RevenueTrackingCookieCest {
   public function _before(\AcceptanceTester $i) {
     $this->settings = new Settings();
     $i->activateWooCommerce();
-    $this->settings->withCronTriggerMethod('WordPress');
+    $this->settings->withCronTriggerMethod('Action Scheduler');
   }
 
   public function cookieIsStoredOnClick(\AcceptanceTester $i) {

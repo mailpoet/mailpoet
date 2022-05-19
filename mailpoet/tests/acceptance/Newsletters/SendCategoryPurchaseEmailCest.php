@@ -15,7 +15,7 @@ class SendCategoryPurchaseEmailCest {
     $settingsFactory->withWooCommerceListImportPageDisplayed(true);
     $settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $settingsFactory->withConfirmationEmailDisabled();
-    $settingsFactory->withCronTriggerMethod('WordPress');
+    $settingsFactory->withCronTriggerMethod('Action Scheduler');
   }
 
   public function sendCategoryPurchaseEmail(\AcceptanceTester $i) {
@@ -70,7 +70,7 @@ class SendCategoryPurchaseEmailCest {
     $i->orderProduct($product, $userEmail, true, false);
 
     $this->verifyNoScheduledSending($i, $emailSubject);
-    
+
     $i->amOnMailboxAppPage();
     $i->dontSee($emailSubject);
     $i->dontSee($userEmail);

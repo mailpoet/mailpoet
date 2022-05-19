@@ -22,7 +22,7 @@ class ManageSubscriptionLinkCest {
     $this->settings = new Settings();
     $this->settings
       ->withConfirmationEmailEnabled()
-      ->withCronTriggerMethod('WordPress');
+      ->withCronTriggerMethod('Action Scheduler');
   }
 
   public function manageSubscriptionLink(\AcceptanceTester $i) {

@@ -30,7 +30,7 @@ class PreviewStandardNewsletterCest {
 
   public function previewStandardNewsletterInEditor(\AcceptanceTester $i) {
     $i->wantTo('Preview and send newsletter inside editor');
-    $this->settings->withCronTriggerMethod('WordPress');
+    $this->settings->withCronTriggerMethod('Action Scheduler');
     $newsletterName = 'Preview in Browser Newsletter';
     $newsletter = new Newsletter();
     $newsletter->withSubject($newsletterName)->create();
