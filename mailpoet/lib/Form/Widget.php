@@ -3,7 +3,6 @@
 namespace MailPoet\Form;
 
 use MailPoet\API\JSON\API;
-use MailPoet\Config\Renderer as ConfigRenderer;
 use MailPoet\Config\RendererFactory;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
@@ -256,7 +255,7 @@ class Widget extends \WP_Widget {
       $data['api_version'] = API::CURRENT_VERSION;
 
       // render form
-      $renderer = new ConfigRenderer();
+      $renderer = (new RendererFactory())->getRenderer();
       try {
         $output = $renderer->render('form/front_end_form.html', $data);
         $output = WPFunctions::get()->doShortcode($output);
