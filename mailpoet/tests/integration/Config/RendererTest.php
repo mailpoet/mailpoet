@@ -6,6 +6,8 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\Env;
 use MailPoet\Config\Renderer;
+use MailPoet\Config\RendererFactory;
+use MailPoet\Config\TwigFileSystemCache;
 use MailPoetVendor\Twig\Environment as TwigEnvironment;
 
 class RendererTest extends \MailPoetTest {
@@ -14,16 +16,15 @@ class RendererTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->renderer = new Renderer($caching = false, $debugging = false);
+    $this->renderer = (new RendererFactory())->getRenderer();
   }
 
   public function testItUsesCorrectAssetsManifestFilenames() {
-    $renderer = Stub::make(new Renderer(),
+    $renderer = Stub::make($this->renderer,
       ['getAssetManifest' => function($manifest) {
         return $manifest;
       }]
     );
-    $renderer->__construct();
     expect($renderer->assetsManifestJs)->equals(Env::$assetsPath . '/dist/js/manifest.json');
     expect($renderer->assetsManifestCss)->equals(Env::$assetsPath . '/dist/css/manifest.json');
   }
@@ -68,11 +69,6 @@ class RendererTest extends \MailPoetTest {
     $renderer->assetsManifestJs = $assetsManifestJs;
     expect($renderer->getJsAsset('script1.js'))->equals('script1.hash.js');
     expect($renderer->getJsAsset('script2.js'))->equals('script2.hash.js');
-  }
-
-  public function testItWillNotEnableCacheWhenWpDebugIsOn() {
-    $result = $this->renderer->detectCache();
-    expect($result)->equals(false);
   }
 
   public function testItDelegatesRenderingToTwig() {
