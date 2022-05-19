@@ -6,32 +6,28 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Twig;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Twig\Environment as TwigEnv;
 use MailPoetVendor\Twig\Extension\DebugExtension;
 use MailPoetVendor\Twig\Lexer as TwigLexer;
 use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
 
 class Renderer {
   protected $cachePath;
-  protected $cachingEnabled;
   protected $debuggingEnabled;
   protected $renderer;
   public $assetsManifestJs;
   public $assetsManifestCss;
 
   public function __construct(
-    $cachingEnabled = false,
-    $debuggingEnabled = false
+    bool $debuggingEnabled,
+    string $cachePath,
+    TwigFileSystem $fileSystem
   ) {
-    $this->cachingEnabled = $cachingEnabled;
     $this->debuggingEnabled = $debuggingEnabled;
-    $this->cachePath = Env::$cachePath;
-
-    $fileSystem = new TwigFileSystem(Env::$viewsPath);
-    $this->renderer = new TwigEnv(
+    $this->cachePath = $cachePath;
+    $this->renderer = new TwigEnvironment(
       $fileSystem,
       [
-        'cache' => $this->detectCache(),
+        'cache' => new TwigFileSystemCache($cachePath),
         'debug' => $this->debuggingEnabled,
         'auto_reload' => true,
       ]
@@ -91,10 +87,6 @@ class Renderer {
       'interpolation' => ['%{', '}'],
     ]);
     $this->renderer->setLexer($lexer);
-  }
-
-  public function detectCache() {
-    return $this->cachingEnabled ? $this->cachePath : false;
   }
 
   public function setupDebug() {
