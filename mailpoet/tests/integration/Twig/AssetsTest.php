@@ -21,7 +21,7 @@ class AssetsTest extends \MailPoetTest {
         'assets_manifest_css' => false,
         'version' => $this->version,
       ],
-      new CdnAssetUrl('http://localhost/')
+      new CdnAssetUrl()
     );
   }
 
@@ -37,7 +37,7 @@ class AssetsTest extends \MailPoetTest {
         'assets_manifest_js' => $manifest,
         'version' => $this->version,
       ],
-      new CdnAssetUrl('http://localhost/')
+      new CdnAssetUrl()
     );
 
     expect($assetsExtension->generateJavascript('script1.js', 'script2.js'))->equals(
@@ -67,7 +67,7 @@ class AssetsTest extends \MailPoetTest {
         'assets_manifest_css' => $manifest,
         'version' => $this->version,
       ],
-      new CdnAssetUrl('http://localhost/')
+      new CdnAssetUrl()
     );
 
     expect($assetsExtension->generateStylesheet('style1.css', 'style2.css'))->equals(
