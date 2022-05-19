@@ -20,11 +20,15 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class ImportTest extends \MailPoetTest {
+  /** @var array */
   public $subscribersCustomFields;
+  /** @var array */
   public $subscribersData;
   /** @var Import */
   public $import;
+  /** @var array */
   public $subscribersFields;
+  /** @var array */
   public $testData;
   /** @var SegmentEntity */
   public $segment1;
@@ -55,7 +59,7 @@ class ImportTest extends \MailPoetTest {
   /** @var SubscriberSegmentRepository */
   private $subscriberSegmentRepository;
 
-  public function _before() {
+  public function _before(): void {
     $this->wpSegment = $this->diContainer->get(WP::class);
     $this->customFieldsRepository = $this->diContainer->get(CustomFieldsRepository::class);
     $this->importExportRepository = $this->diContainer->get(ImportExportRepository::class);
@@ -129,7 +133,7 @@ class ImportTest extends \MailPoetTest {
     );
   }
 
-  public function testItConstructs() {
+  public function testItConstructs(): void {
     expect(is_array($this->import->subscribersData))->true();
     expect($this->import->segmentsIds)->equals($this->testData['segments']);
     expect(is_array($this->import->subscribersFields))->true();
@@ -139,7 +143,7 @@ class ImportTest extends \MailPoetTest {
     expect($this->import->updatedAt)->notEmpty();
   }
 
-  public function testItChecksForRequiredDataFields() {
+  public function testItChecksForRequiredDataFields(): void {
     $data = $this->testData;
     // exception should be thrown when one or more fields do not exist
     unset($data['timestamp']);
@@ -153,7 +157,7 @@ class ImportTest extends \MailPoetTest {
     $this->import->validateImportData($this->testData);
   }
 
-  public function testItValidatesColumnNames() {
+  public function testItValidatesColumnNames(): void {
     $data = $this->testData;
     $data['columns']['test) values ((ExtractValue(1,CONCAT(0x5c, (SELECT version())))))%23'] = true;
     try {
@@ -164,13 +168,14 @@ class ImportTest extends \MailPoetTest {
     }
   }
 
-  public function testItValidatesSubscribersEmail() {
+  public function testItValidatesSubscribersEmail(): void {
     // invalid email is removed from data object
     $data['email'] = [
       'àdam@smîth.com',
       'jane@doe.com',
     ];
     $result = $this->import->validateSubscribersData($data);
+    $this->assertIsArray($result);
     expect($result['email'])->count(1);
     expect($result['email'][0])->equals('jane@doe.com');
 
@@ -183,7 +188,7 @@ class ImportTest extends \MailPoetTest {
     expect($result)->equals($data);
   }
 
-  public function testItValidatesSubscribersConfirmedAt() {
+  public function testItValidatesSubscribersConfirmedAt(): void {
     // required email column
     $data['email'] = [
       'adam@smith.com',
@@ -195,6 +200,7 @@ class ImportTest extends \MailPoetTest {
       '2019-05-31 18:42:35',
     ];
     $result = $this->import->validateSubscribersData($data);
+    $this->assertIsArray($result);
     expect($result['confirmed_at'])->count(1);
     expect($result['confirmed_at'][0])->equals('2019-05-31 18:42:35');
 
@@ -204,13 +210,14 @@ class ImportTest extends \MailPoetTest {
       '2015-10-13T16:19:20-04:00',
     ];
     $result = $this->import->validateSubscribersData($data);
+    $this->assertIsArray($result);
     expect($result['confirmed_at'])->equals([
       '2020-09-17 11:11:11',
       '2015-10-13 16:19:20',
     ]);
   }
 
-  public function testItValidatesSubscribersConfirmedIP() {
+  public function testItValidatesSubscribersConfirmedIP(): void {
     // required email column
     $data['email'] = [
       'adam@smith.com',
@@ -222,6 +229,7 @@ class ImportTest extends \MailPoetTest {
       '192.68.69.32',
     ];
     $result = $this->import->validateSubscribersData($data);
+    $this->assertIsArray($result);
     expect($result['confirmed_ip'])->count(2);
     expect($result['confirmed_ip'][0])->isEmpty();
     expect($result['confirmed_ip'][1])->equals('192.68.69.32');
@@ -232,6 +240,7 @@ class ImportTest extends \MailPoetTest {
       '192.68.69.32',
     ];
     $result = $this->import->validateSubscribersData($data);
+    $this->assertIsArray($result);
     expect($result['confirmed_ip'])->count(2);
     expect($result['confirmed_ip'][0])->isEmpty();
     expect($result['confirmed_ip'][1])->equals('192.68.69.32');
@@ -242,6 +251,7 @@ class ImportTest extends \MailPoetTest {
       '192.68.69.32',
     ];
     $result = $this->import->validateSubscribersData($data);
+    $this->assertIsArray($result);
     expect($result['confirmed_ip'])->count(2);
     expect($result['confirmed_ip'][0])->isEmpty();
     expect($result['confirmed_ip'][1])->equals('192.68.69.32');
@@ -252,10 +262,11 @@ class ImportTest extends \MailPoetTest {
       '2001:0db8:85a3:08d3:1319:8a2e:0370:7334', //IPv6
     ];
     $result = $this->import->validateSubscribersData($data);
+    $this->assertIsArray($result);
     expect($result['confirmed_ip'])->equals($data['confirmed_ip']);
   }
 
-  public function testItThrowsErrorWhenNoValidSubscribersAreFoundDuringImport() {
+  public function testItThrowsErrorWhenNoValidSubscribersAreFoundDuringImport(): void {
     $data = [
       'subscribers' => [
         [
@@ -285,7 +296,7 @@ class ImportTest extends \MailPoetTest {
     }
   }
 
-  public function testItTransformsSubscribers() {
+  public function testItTransformsSubscribers(): void {
     $customField = $this->subscribersCustomFields[0];
     expect($this->import->subscribersData['first_name'][0])
       ->equals($this->testData['subscribers'][0][0]);
@@ -297,7 +308,7 @@ class ImportTest extends \MailPoetTest {
       ->equals($this->testData['subscribers'][0][3]);
   }
 
-  public function testItSplitsSubscribers() {
+  public function testItSplitsSubscribers(): void {
     $subscribersData = $this->subscribersData;
     $subscribersDataExisting = [
       [
@@ -344,6 +355,7 @@ class ImportTest extends \MailPoetTest {
     list($existingSubscribers, $newSubscribers, $wpUsers, ) = $this->import->splitSubscribersData(
       $subscribersData
     );
+    $this->assertIsArray($existingSubscribers);
     expect($existingSubscribers['email'][0])->equals($subscribersData['email'][2]);
     expect($existingSubscribers['email'][1])->equals($subscribersData['email'][3]);
     foreach ($newSubscribers as $field => $value) {
@@ -352,7 +364,7 @@ class ImportTest extends \MailPoetTest {
     expect($wpUsers)->equals([$subscribersDataExisting[0]['wp_user_id']]);
   }
 
-  public function testItAddsMissingRequiredFieldsToSubscribersObject() {
+  public function testItAddsMissingRequiredFieldsToSubscribersObject(): void {
     $data = [
       'subscribers' => [
         [
@@ -394,7 +406,7 @@ class ImportTest extends \MailPoetTest {
     expect($result['data']['created_at'][0])->equals($import->createdAt);
   }
 
-  public function testItGetsSubscriberFields() {
+  public function testItGetsSubscriberFields(): void {
     $data = [
       'one',
       'two',
@@ -408,7 +420,7 @@ class ImportTest extends \MailPoetTest {
       ]);
   }
 
-  public function testItGetsCustomSubscribersFields() {
+  public function testItGetsCustomSubscribersFields(): void {
     $data = [
       'one',
       'two',
@@ -418,7 +430,7 @@ class ImportTest extends \MailPoetTest {
     expect($fields)->equals([39]);
   }
 
-  public function testItAddsOrUpdatesSubscribers() {
+  public function testItAddsOrUpdatesSubscribers(): void {
     $subscribersData = [
       'data' => $this->subscribersData,
       'fields' => $this->subscribersFields,
@@ -442,7 +454,7 @@ class ImportTest extends \MailPoetTest {
       ->equals($subscribersData['data']['first_name'][1]);
   }
 
-  public function testItDeletesTrashedSubscribers() {
+  public function testItDeletesTrashedSubscribers(): void {
     $subscribersData = [
       'data' => $this->subscribersData,
       'fields' => $this->subscribersFields,
@@ -475,7 +487,7 @@ class ImportTest extends \MailPoetTest {
     expect(count($dbSubscribers))->equals(1);
   }
 
-  public function testItCreatesOrUpdatesCustomFields() {
+  public function testItCreatesOrUpdatesCustomFields(): void {
     $subscribersData = [
       'data' => $this->subscribersData,
       'fields' => $this->subscribersFields,
@@ -514,7 +526,7 @@ class ImportTest extends \MailPoetTest {
       ->equals($subscribersData['data'][$customField][1]);
   }
 
-  public function testItAddsSubscribersToSegments() {
+  public function testItAddsSubscribersToSegments(): void {
     $subscribersData = [
       'data' => $this->subscribersData,
       'fields' => $this->subscribersFields,
@@ -546,7 +558,7 @@ class ImportTest extends \MailPoetTest {
     }
   }
 
-  public function testItDeletesExistingTrashedSubscribers() {
+  public function testItDeletesExistingTrashedSubscribers(): void {
     $subscribersData = [
       'data' => $this->subscribersData,
       'fields' => $this->subscribersFields,
@@ -562,7 +574,7 @@ class ImportTest extends \MailPoetTest {
     );
   }
 
-  public function testItUpdatesSubscribers() {
+  public function testItUpdatesSubscribers(): void {
     $result = $this->import->process();
     expect($result['updated'])->equals(0);
     $result = $this->import->process();
@@ -572,7 +584,7 @@ class ImportTest extends \MailPoetTest {
     expect($result['updated'])->equals(0);
   }
 
-  public function testItDoesNotUpdateExistingSubscribersStatusWhenStatusColumnIsNotPresent() {
+  public function testItDoesNotUpdateExistingSubscribersStatusWhenStatusColumnIsNotPresent(): void {
     $subscriber = $this->createSubscriber(
       'Adam',
       'Smith',
@@ -586,7 +598,7 @@ class ImportTest extends \MailPoetTest {
     expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
-  public function testItImportsNewsSubscribersWithAllAdditionalParameters() {
+  public function testItImportsNewsSubscribersWithAllAdditionalParameters(): void {
     $data = $this->testData;
     $data['columns']['status'] = ['index' => 4];
     $data['subscribers'][0][] = 'unsubscribed';
@@ -613,7 +625,7 @@ class ImportTest extends \MailPoetTest {
     expect($lastSubscribed2->getTimestamp())->equals($this->testData['timestamp'], 1);
   }
 
-  public function testItDoesNotUpdateExistingSubscribersLastSubscribedAtWhenItIsPresent() {
+  public function testItDoesNotUpdateExistingSubscribersLastSubscribedAtWhenItIsPresent(): void {
     $data = $this->testData;
     $data['columns']['last_subscribed_at'] = ['index' => 4];
     $data['subscribers'][0][] = '2018-12-12 12:12:00';
@@ -635,7 +647,7 @@ class ImportTest extends \MailPoetTest {
     expect($updatedSubscriber->getLastSubscribedAt())->equals(Carbon::createFromFormat('Y-m-d H:i:s', '2017-12-12 12:12:00'));
   }
 
-  public function testItSynchronizesWpUsers() {
+  public function testItSynchronizesWpUsers(): void {
     $this->tester->createWordPressUser('mary@jane.com', 'editor');
     $beforeImport = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
     assert($beforeImport instanceof SubscriberEntity);
@@ -651,7 +663,7 @@ class ImportTest extends \MailPoetTest {
     $this->tester->deleteWordPressUser('mary@jane.com');
   }
 
-  public function testItDoesUpdateStatusExistingSubscriberWhenExistingSubscribersStatusIsSet() {
+  public function testItDoesUpdateStatusExistingSubscriberWhenExistingSubscribersStatusIsSet(): void {
     $data = $this->testData;
     $data['existingSubscribersStatus'] = SubscriberEntity::STATUS_SUBSCRIBED;
     $lastSubscribedAt = Carbon::createFromFormat('Y-m-d H:i:s', '2020-08-08 08:08:00');
@@ -672,7 +684,7 @@ class ImportTest extends \MailPoetTest {
     expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
-  public function testItDoesStatusNewSubscriberWhenNewSubscribersStatusIsSet() {
+  public function testItDoesStatusNewSubscriberWhenNewSubscribersStatusIsSet(): void {
     $data = $this->testData;
     $data['newSubscribersStatus'] = SubscriberEntity::STATUS_UNSUBSCRIBED;
     $import = $this->createImportInstance($data);
@@ -685,7 +697,7 @@ class ImportTest extends \MailPoetTest {
     expect($newSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
-  public function testItRunsImport() {
+  public function testItRunsImport(): void {
     $result = $this->import->process();
     expect($result['created'])->equals(2);
     $subscriber = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
@@ -710,7 +722,7 @@ class ImportTest extends \MailPoetTest {
     }
   }
 
-  public function testItImportsSubscribersWithCustomFormat() {
+  public function testItImportsSubscribersWithCustomFormat(): void {
     WPFunctions::set(Stub::make(new WPFunctions, [
       'getOption' => 'd/m/Y',
     ]));
@@ -735,7 +747,7 @@ class ImportTest extends \MailPoetTest {
     WPFunctions::set(new WPFunctions());
   }
 
-  public function testItOnlyAppliesCustomFormatToSitesWithCustomFormat() {
+  public function testItOnlyAppliesCustomFormatToSitesWithCustomFormat(): void {
     WPFunctions::set(Stub::make(new WPFunctions, [
       'getOption' => 'm/d/Y',
     ]));
@@ -812,7 +824,7 @@ class ImportTest extends \MailPoetTest {
     return $subscriber;
   }
 
-  public function _after() {
+  public function _after(): void {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SegmentEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
