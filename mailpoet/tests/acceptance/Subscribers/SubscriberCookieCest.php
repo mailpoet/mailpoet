@@ -113,7 +113,7 @@ class SubscriberCookieCest {
   }
 
   public function setSubscriberCookieOnLinkClick(AcceptanceTester $i) {
-    (new Settings())->withCronTriggerMethod('WordPress');
+    (new Settings())->withCronTriggerMethod('Action Scheduler');
 
     $subject = 'Testing newsletter';
     $newsletter = (new Newsletter())

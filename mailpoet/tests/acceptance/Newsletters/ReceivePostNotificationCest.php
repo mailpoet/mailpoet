@@ -27,7 +27,7 @@ class ReceivePostNotificationCest {
 
     $this->settings
       ->withTrackingDisabled()
-      ->withCronTriggerMethod('WordPress');
+      ->withCronTriggerMethod('Action Scheduler');
 
     $segmentFactory = new Segment();
     $segment = $segmentFactory->withName('Receive Post Notification List')->create();

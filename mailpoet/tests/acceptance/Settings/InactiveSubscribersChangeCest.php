@@ -25,7 +25,7 @@ class InactiveSubscribersChangeCest {
     $this->settings
       ->withDeactivateSubscriberAfter6Months()
       ->withTrackingEnabled()
-      ->withCronTriggerMethod('WordPress');
+      ->withCronTriggerMethod('Action Scheduler');
   }
 
   public function inactiveSubscribersSettingsChange(\AcceptanceTester $i) {

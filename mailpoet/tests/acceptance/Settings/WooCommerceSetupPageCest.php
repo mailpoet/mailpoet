@@ -28,7 +28,7 @@ class WooCommerceSetupPageCest {
   public function setupPageImportTest(\AcceptanceTester $i) {
     $this->settings
       ->withWooCommerceListImportPageDisplayed(false)
-      ->withCronTriggerMethod('WordPress');
+      ->withCronTriggerMethod('Action Scheduler');
     $order = $this->orderFactory->create();
     $guestUserData = $order['billing'];
     $registeredCustomer = $this->customerFactory->withEmail('customer1@email.com')->create();

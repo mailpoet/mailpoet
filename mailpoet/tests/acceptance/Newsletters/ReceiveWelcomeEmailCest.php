@@ -19,7 +19,7 @@ class ReceiveWelcomeEmailCest {
 
   public function receiveWelcomeEmail(\AcceptanceTester $i) {
     $i->wantTo('Receive a welcome email as a subscriber');
-    $this->settings->withCronTriggerMethod('WordPress');
+    $this->settings->withCronTriggerMethod('Action Scheduler');
     $segmentName = 'Receive Welcome Email List';
     $segmentFactory = new Segment();
     $subscribersList = $segmentFactory->withName($segmentName)->create();
