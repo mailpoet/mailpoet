@@ -29,6 +29,10 @@ echo '[BUILD] Building DI Container cache'
 echo '[BUILD] Generating Doctrine Cache'
 ./do doctrine:generate-cache
 
+# Generate Twig cache
+echo '[BUILD] Twig templates cache'
+./do twig:generate-cache
+
 # Backup dev libraries
 echo '[BUILD] Backup dev dependencies'
 if [ -d 'vendor' ]; then
