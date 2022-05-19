@@ -8,6 +8,7 @@ use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\Config\AccessControl;
 use MailPoet\Config\Capabilities;
 use MailPoet\Config\Renderer;
+use MailPoet\Config\RendererFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use WP_Role;
 
@@ -21,7 +22,7 @@ class CapabilitiesTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $renderer = new Renderer();
+    $renderer = (new RendererFactory())->getRenderer();
     $this->caps = new Capabilities($renderer);
     $this->accessControl = new AccessControl();
   }
@@ -101,7 +102,7 @@ class CapabilitiesTest extends \MailPoetTest {
     $wp = Stub::make(new WPFunctions, [
       'addAction' => asCallable([WPHooksHelper::class, 'addAction']),
     ]);
-    $this->caps = new Capabilities(new Renderer, $wp);
+    $this->caps = new Capabilities((new RendererFactory())->getRenderer(), $wp);
 
     $this->caps->setupMembersCapabilities();
 
