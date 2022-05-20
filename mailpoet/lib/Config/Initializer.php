@@ -164,6 +164,9 @@ class Initializer {
   }
 
   public function init() {
+    // Initialize Action Scheduler. Needs to be called early otherwise some tools doesn't work properly
+    require_once __DIR__ . '/../../vendor/woocommerce/action-scheduler/action-scheduler.php';
+
     // load translations and setup translations update/download
     $this->setupLocalizer();
 
