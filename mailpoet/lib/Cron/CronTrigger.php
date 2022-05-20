@@ -45,8 +45,6 @@ class CronTrigger {
       if ($currentMethod === self::METHOD_WORDPRESS) {
         return $this->wordpressTrigger->run();
       } elseif ($currentMethod === self::METHOD_ACTION_SCHEDULER) {
-        // register Action Scheduler
-        require_once __DIR__ . '/../../vendor/woocommerce/action-scheduler/action-scheduler.php';
         $this->cronActionScheduler->init();
       }
       return false;
