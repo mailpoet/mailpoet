@@ -137,6 +137,7 @@ class SubscriberCookieCest {
     $i->selectOptionInSelect2('Test list');
     $i->click('Send');
     $i->waitForEmailSendingOrSent();
+    $i->triggerMailPoetActionScheduler();
 
     // click on a preview link
     $i->resetCookie(self::SUBSCRIBER_COOKIE_NAME);

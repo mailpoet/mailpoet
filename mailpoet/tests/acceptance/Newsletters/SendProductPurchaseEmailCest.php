@@ -38,6 +38,8 @@ class SendProductPurchaseEmailCest {
     $userEmail = 'user2@email.test';
     $i->orderProduct($product, $userEmail);
 
+    $i->triggerMailPoetActionScheduler();
+
     $i->checkEmailWasReceived($emailSubject);
     $i->click(Locator::contains('span.subject', $emailSubject));
     $i->waitForText($userEmail, 20);

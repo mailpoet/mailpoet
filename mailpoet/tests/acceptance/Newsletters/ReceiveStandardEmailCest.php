@@ -49,6 +49,8 @@ class ReceiveStandardEmailCest {
     $i->click('Send');
     $i->waitForEmailSendingOrSent();
 
+    $i->triggerMailPoetActionScheduler();
+
     $i->wantTo('confirm newsletter is received');
     $i->checkEmailWasReceived('Hi, John Doe ' . $specialChars);
     $i->click(Locator::contains('span.subject', 'Hi, John Doe ' . $specialChars));

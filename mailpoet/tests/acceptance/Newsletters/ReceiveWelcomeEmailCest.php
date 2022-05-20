@@ -52,6 +52,7 @@ class ReceiveWelcomeEmailCest {
     $i->click('I confirm my subscription!');
     $i->switchToNextTab();
     $i->reloadPage();
+    $i->triggerMailPoetActionScheduler();
     // check for welcome email
     $i->checkEmailWasReceived($welcomeNewsletterName);
     $i->click(Locator::contains('span.subject', $welcomeNewsletterName));

@@ -45,6 +45,8 @@ class RevenueTrackingCookieCest {
     $i->click('Send');
     $i->waitForEmailSendingOrSent();
 
+    $i->triggerMailPoetActionScheduler();
+
     $i->logOut();
     $i->checkEmailWasReceived($newsletterSubject);
 
@@ -82,6 +84,8 @@ class RevenueTrackingCookieCest {
     $i->selectOptionInSelect2($segmentName);
     $i->click('Send');
     $i->waitForEmailSendingOrSent();
+
+    $i->triggerMailPoetActionScheduler();
 
     $i->logOut();
     $i->checkEmailWasReceived($newsletterSubject);

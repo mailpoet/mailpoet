@@ -47,6 +47,9 @@ class WooCommerceSetupPageCest {
     $i->moveMouseOver('[data-automation-id="segment_name_WooCommerce Customers"]');
     $i->click('[data-automation-id="view_subscribers_WooCommerce Customers"]');
     $i->waitForListingItemsToLoad();
+
+    $i->triggerMailPoetActionScheduler();
+
     $i->canSee($registeredCustomer['email']);
     $i->reloadPage();
     // It takes more time to sync guest user
