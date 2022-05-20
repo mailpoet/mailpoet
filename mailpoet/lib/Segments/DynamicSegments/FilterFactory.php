@@ -153,23 +153,17 @@ class FilterFactory {
     return $this->emailAction;
   }
 
-  /**
-   * @return WooCommerceMembership
-   */
-  private function wooCommerceMembership() {
+  private function wooCommerceMembership(): WooCommerceMembership {
     return $this->wooCommerceMembership;
   }
 
-  /**
-   * @return WooCommerceSubscription
-   */
-  private function wooCommerceSubscription() {
+  private function wooCommerceSubscription(): WooCommerceSubscription {
     return $this->wooCommerceSubscription;
   }
 
   /**
    * @param ?string $action
-   * @return WooCommerceCategory|WooCommerceCountry|WooCommerceNumberOfOrders|WooCommerceProduct|WooCommerceTotalSpent
+   * @return Filter
    */
   private function wooCommerce(?string $action) {
     if ($action === WooCommerceProduct::ACTION_PRODUCT) {

@@ -48,10 +48,7 @@ class SegmentsRepository extends Repository {
     return SegmentEntity::class;
   }
 
-  /**
-   * @return SegmentEntity|null
-   */
-  public function getWPUsersSegment() {
+  public function getWPUsersSegment(): ?SegmentEntity {
     return $this->findOneBy(['type' => SegmentEntity::TYPE_WP_USERS]);
   }
 
@@ -175,13 +172,7 @@ class SegmentsRepository extends Repository {
     return $segment;
   }
 
-  /**
-   * @param array  $ids   Array of segment ids to delete
-   * @param string $type  Type of segment to delete
-   *
-   * @return int Number of segments deleted
-   */
-  public function bulkDelete(array $ids, $type = SegmentEntity::TYPE_DEFAULT): int {
+  public function bulkDelete(array $ids, string $type = SegmentEntity::TYPE_DEFAULT): int {
     if (empty($ids)) {
       return 0;
     }
