@@ -1027,7 +1027,7 @@ class RoboFile extends \Robo\Tasks {
       new TwigFileSystem($templatePath)
     );
     $twig = $renderer->getTwig();
-    foreach ($this->rsearch($templatePath, ['html']) as $template) {
+    foreach ($this->rsearch($templatePath, ['html','hbs','txt']) as $template) {
       $path = substr($template, strlen($templatePath));
       $twig->load($path);
     }
