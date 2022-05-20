@@ -6,6 +6,8 @@ use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response;
 use MailPoet\Config\AccessControl;
+use MailPoet\Cron\CronTrigger;
+use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -19,6 +21,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
@@ -47,9 +50,15 @@ class SendingQueue extends APIEndpoint {
 
   /** @var NewsletterValidator */
   private $newsletterValidator;
-  
+
   /** @var Scheduler */
   private $scheduler;
+
+  /** @var SettingsController */
+  private $settings;
+
+  /** @var DaemonActionSchedulerRunner */
+  private $actionSchedulerRunner;
 
   public function __construct(
     SubscribersFeature $subscribersFeature,
@@ -59,6 +68,8 @@ class SendingQueue extends APIEndpoint {
     ScheduledTasksRepository $scheduledTasksRepository,
     MailerFactory $mailerFactory,
     Scheduler $scheduler,
+    SettingsController $settings,
+    DaemonActionSchedulerRunner $actionSchedulerRunner,
     NewsletterValidator $newsletterValidator
   ) {
     $this->subscribersFeature = $subscribersFeature;
@@ -68,6 +79,8 @@ class SendingQueue extends APIEndpoint {
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->mailerFactory = $mailerFactory;
     $this->scheduler = $scheduler;
+    $this->settings = $settings;
+    $this->actionSchedulerRunner = $actionSchedulerRunner;
     $this->newsletterValidator = $newsletterValidator;
   }
 
@@ -172,6 +185,7 @@ class SendingQueue extends APIEndpoint {
     if (!empty($errors)) {
       return $this->errorResponse($errors);
     } else {
+      $this->triggerSending($newsletterEntity);
       return $this->successResponse(
         $newsletter->getQueue()->asArray()
       );
@@ -224,12 +238,26 @@ class SendingQueue extends APIEndpoint {
         ]);
       } else {
         $this->sendingQueuesRepository->resume($queue);
+        $this->triggerSending($newsletter);
         return $this->successResponse();
       }
     } else {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet'),
       ]);
+    }
+  }
+
+  /**
+   * In case the newsletter was switched to sending trigger the background job immediately.
+   * This is done so that user immediately sees that email is sending and doesn't have to wait on WP Cron to start it.
+   */
+  private function triggerSending(NewsletterEntity $newsletter): void {
+    if (
+      $newsletter->getStatus() === NewsletterEntity::STATUS_SENDING
+      && $this->settings->get('cron_trigger.method') === CronTrigger::METHOD_ACTION_SCHEDULER
+    ) {
+      $this->actionSchedulerRunner->trigger();
     }
   }
 }
