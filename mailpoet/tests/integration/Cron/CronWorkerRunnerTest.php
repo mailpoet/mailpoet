@@ -6,6 +6,7 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronWorkerRunner;
+use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\SimpleWorkerMockImplementation;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -26,9 +27,14 @@ class CronWorkerRunnerTest extends \MailPoetTest {
   private $scheduledTasksRepository;
 
   public function _before() {
-    $this->cronWorkerRunner = $this->diContainer->get(CronWorkerRunner::class);
     $this->cronHelper = $this->diContainer->get(CronHelper::class);
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->cronWorkerRunner = new CronWorkerRunner(
+      $this->cronHelper,
+      $this->diContainer->get(CronWorkerScheduler::class),
+      $this->diContainer->get(WPFunctions::class),
+      $this->scheduledTasksRepository
+    );
   }
 
   public function testItCanInitBeforeProcessing() {
