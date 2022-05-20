@@ -397,6 +397,10 @@ class Functions {
     return register_activation_hook($file, $function);
   }
 
+  public function registerDeactivationHook($file, $function) {
+    return register_deactivation_hook($file, $function);
+  }
+
   public function registerPostType($postType, $args = []) {
     return register_post_type($postType, $args);
   }
