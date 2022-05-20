@@ -23,7 +23,7 @@ class MailChimpTest extends \MailPoetTest {
     $this->lists = explode(",", (string)getenv('WP_TEST_IMPORT_MAILCHIMP_LISTS'));
   }
 
-  public function _before() {
+  public function _before(): void {
     WPFunctions::set(Stub::make(new WPFunctions, [
       '__' => function ($value) {
         return $value;
@@ -31,7 +31,7 @@ class MailChimpTest extends \MailPoetTest {
     ]));
   }
 
-  public function testItCanGetAPIKey() {
+  public function testItCanGetAPIKey(): void {
     $validApiKeyFormat = '12345678901234567890123456789012-ab1';
     // key must consist of two parts separated by hyphen
     expect($this->mailchimp->getAPIKey('invalid_api_key_format'))->false();
@@ -49,14 +49,14 @@ class MailChimpTest extends \MailPoetTest {
       ->equals($validApiKeyFormat);
   }
 
-  public function testItCanGetDatacenter() {
+  public function testItCanGetDatacenter(): void {
     $validApiKeyFormat = '12345678901234567890123456789012-ab1';
     $dataCenter = 'ab1';
     expect($this->mailchimp->getDataCenter($validApiKeyFormat))
       ->equals($dataCenter);
   }
 
-  public function testItFailsWithIncorrectAPIKey() {
+  public function testItFailsWithIncorrectAPIKey(): void {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
 
     try {
@@ -69,7 +69,7 @@ class MailChimpTest extends \MailPoetTest {
     }
   }
 
-  public function testItCanGetLists() {
+  public function testItCanGetLists(): void {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     try {
       $lists = $this->mailchimp->getLists();
@@ -81,7 +81,7 @@ class MailChimpTest extends \MailPoetTest {
     expect($lists[0]['name'])->notEmpty();
   }
 
-  public function testItFailsWithIncorrectLists() {
+  public function testItFailsWithIncorrectLists(): void {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
 
     try {
@@ -99,7 +99,7 @@ class MailChimpTest extends \MailPoetTest {
     }
   }
 
-  public function testItCanGetSubscribers() {
+  public function testItCanGetSubscribers(): void {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
 
     try {
@@ -115,7 +115,7 @@ class MailChimpTest extends \MailPoetTest {
     expect($subscribers['subscribersCount'])->equals(1);
   }
 
-  public function testItFailsWhenSubscribersDataTooLarge() {
+  public function testItFailsWhenSubscribersDataTooLarge(): void {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $mailchimp = clone($this->mailchimp);
     $mailchimp->maxPostSize = 10;
@@ -177,7 +177,7 @@ class MailChimpTest extends \MailPoetTest {
     expect($this->mailchimp->isSubscriberAllowed($subscribed))->true();
   }
 
-  public function _after() {
+  public function _after(): void {
     WPFunctions::set(new WPFunctions);
   }
 }

@@ -20,7 +20,7 @@ class MailChimp {
   private $mapper;
 
   public function __construct(
-    $apiKey
+    string $apiKey
   ) {
     $this->apiKey = $this->getAPIKey($apiKey);
     $this->maxPostSize = (int)Helpers::getMaxPostSize('bytes');
@@ -58,7 +58,7 @@ class MailChimp {
     return $lists;
   }
 
-  public function getSubscribers($lists = []): array {
+  public function getSubscribers(array $lists = []): array {
     if (!$this->apiKey || !$this->dataCenter) {
       $this->throwException('API');
     }
@@ -111,13 +111,21 @@ class MailChimp {
     ];
   }
 
+  /**
+   * @param string|false $apiKey
+   * @return false|string
+   */
   public function getDataCenter($apiKey) {
     if (!$apiKey) return false;
     $apiKeyParts = explode('-', $apiKey);
     return end($apiKeyParts);
   }
 
-  public function getAPIKey($apiKey) {
+  /**
+   * @param string $apiKey
+   * @return false|string
+   */
+  public function getAPIKey(string $apiKey) {
     return (preg_match(self::API_KEY_REGEX, $apiKey)) ? $apiKey : false;
   }
 
