@@ -66,6 +66,7 @@ class ReceivePostNotificationCest {
     $stmt = $entityManager->getConnection()->prepare($sql);
     $stmt->executeStatement();
 
+    $i->triggerMailPoetActionScheduler();
 
     // confirm newsletter has been sent
     $i->amOnMailpoetPage('Emails');

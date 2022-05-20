@@ -42,6 +42,8 @@ class SendCategoryPurchaseEmailCest {
     $userEmail = Security::generateRandomString() . '-user@email.example';
     $i->orderProduct($product, $userEmail);
 
+    $i->triggerMailPoetActionScheduler();
+
     $i->checkEmailWasReceived($emailSubject);
     $i->click(Locator::contains('span.subject', $emailSubject));
     $i->waitForText($userEmail, 20);

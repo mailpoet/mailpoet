@@ -37,6 +37,9 @@ class SendFirstPurchaseEmailCest {
 
     $userEmail = 'user@email.test';
     $i->orderProduct($product, $userEmail);
+
+    $i->triggerMailPoetActionScheduler();
+
     $i->checkEmailWasReceived($emailSubject);
 
     $i->click(Locator::contains('span.subject', $emailSubject));

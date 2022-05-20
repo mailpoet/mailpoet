@@ -677,4 +677,45 @@ class AcceptanceTester extends \Codeception\Actor {
     }
     return (int)$result === 0;
   }
+
+  /**
+   * Some tests rely on background job processing.
+   * The processing runs in 1 minute interval (default Action Scheduler interval)
+   * This method triggers the processing immediately so that tests don't have to wait.
+   */
+  public function triggerMailPoetActionScheduler(): void {
+    $i = $this;
+    // Set Action Scheduler in WP Cron to run immediately
+    $wpCronOption = $i->grabOptionFromDatabase('cron');
+    if (!is_array($wpCronOption)) {
+      return;
+    }
+    $actionSchedulerRunKey = null;
+    foreach ($wpCronOption as $timestampKey => $cronRun) {
+      if (is_array($cronRun) && array_key_exists('action_scheduler_run_queue' ,$cronRun)) {
+        $actionSchedulerRunKey = $timestampKey;
+      }
+    }
+    if (!$actionSchedulerRunKey) {
+      return;
+    }
+    $actionSchedulerJob = $wpCronOption[$actionSchedulerRunKey];
+    $wpCronOption[time() - 100] = $actionSchedulerJob;
+    unset($wpCronOption[$actionSchedulerRunKey]);
+    unset($wpCronOption['version']);
+    ksort($wpCronOption);
+    $wpCronOption['version'] = 2;
+    $i->importSql([
+      "UPDATE mp_options SET option_value = '" . serialize($wpCronOption) . "' WHERE option_name = 'cron';",
+      "DELETE FROM mp_options WHERE option_name = '_transient_doing_cron';", // Remove WP Cron lock
+    ]);
+
+    // Schedule MailPoet trigger in action scheduler to run immediately
+    $i->importSql([
+      "UPDATE mp_actionscheduler_actions SET scheduled_date_gmt = SUBTIME(now(), '01:00:00'), scheduled_date_local = SUBTIME(now(), '01:00:00') WHERE hook = 'mailpoet/cron/daemon-trigger' AND status = 'pending';",
+    ]);
+
+    //Page reload triggers WP Cron and it triggers Action Scheduler
+    $i->reloadPage();
+  }
 }
