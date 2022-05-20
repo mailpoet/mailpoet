@@ -199,12 +199,14 @@ class ManageSubscribersCest {
     $i->waitForElementVisible('[data-automation-id="listing_item_1"]');
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
     $i->waitForText('Subscriber');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->seeOptionIsSelected('[data-automation-id="subscriber-status"]', 'Unsubscribed');
     $i->see('Unsubscribed at', $unsubscribedMessage);
     // tag is visible
     $i->see('My tag');
     $i->selectOptionInSelect2('Cooking');
     $i->selectOptionInSelect2('Camping');
+    $i->waitForElementClickable('[data-automation-id="subscriber-status"]');
     $i->selectOption('[data-automation-id="subscriber-status"]', 'Subscribed');
     // remove tag
     $i->click(Locator::firstElement('.mailpoet-form-field-tags button[aria-label="Remove item"]'));
@@ -227,19 +229,20 @@ class ManageSubscribersCest {
     $i->amOnMailPoetPage ('Subscribers');
 
     // Filter inactive subscribers
+    $i->waitForElement('[data-automation-id="filters_inactive"]');
     $i->click('[data-automation-id="filters_inactive"]');
     $i->waitForListingItemsToLoad();
     $i->seeNumberOfElements('[data-automation-id^="listing_item_"]', self::INACTIVE_SUBSCRIBERS_COUNT);
 
     // Check inactive status in subscriber detail
     $i->click('@example.com');
-    $i->waitForText('Subscriber');
+    $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->seeOptionIsSelected('[data-automation-id="subscriber-status"]', 'Inactive');
 
     // Check correct list counts
     $i->amOnMailpoetPage('Lists');
     $i->waitForListingItemsToLoad();
-    $i->see(self::INACTIVE_LIST_NAME);
+    $i->waitForText(self::INACTIVE_LIST_NAME);
     $this->seeListCountByStatus($i, self::INACTIVE_SUBSCRIBERS_COUNT, self::INACTIVE_LIST_NAME, 'Inactive');
     $this->seeListCountByStatus($i, self::ACTIVE_SUBSCRIBERS_COUNT, self::INACTIVE_LIST_NAME, 'Subscribed');
   }
