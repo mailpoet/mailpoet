@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscribers;
 
+use MailPoet\ConflictException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -85,6 +86,22 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     expect($subscriber->getLastSubscribedAt())->notNull();
     expect($subscriber->getSegments())->count(1);
     expect($subscriber->getSubscriberSegments())->count(1);
+  }
+
+  public function testItThrowsExceptionWhenUpdatingSubscriberEmailIfNotUnique(): void {
+    $subscriber = $this->createSubscriber('second@test.com', SubscriberEntity::STATUS_UNCONFIRMED);
+    $subscriber2 = $this->createSubscriber('third@test.com', SubscriberEntity::STATUS_UNCONFIRMED);
+
+    $data = [
+      'id' => $subscriber->getId(),
+      'email' => $subscriber2->getEmail(),
+    ];
+
+    $this->entityManager->clear();
+    $this->expectException(ConflictException::class);
+    $this->expectExceptionMessage("A subscriber with E-mail '{$subscriber2->getEmail()}' already exists.");
+
+    $this->saveController->save($data);
   }
 
   public function testItDeletesOrphanSubscriberSegmentsOnUpdate(): void {
