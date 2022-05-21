@@ -5,6 +5,7 @@ namespace MailPoet\Test\API\JSON\v1;
 use Codeception\Util\Fixtures;
 use MailPoet\API\JSON\Error;
 use MailPoet\API\JSON\ErrorResponse;
+use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
 use MailPoet\API\JSON\v1\Subscribers;
@@ -193,6 +194,7 @@ class SubscribersTest extends \MailPoetTest {
 
     $response = $this->endpoint->save($validData);
     expect($response->status)->equals(APIResponse::STATUS_OK);
+    $this->assertInstanceOf(SuccessResponse::class, $response);
     $this->entityManager->clear();
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneBy(['email' => 'raul.doe@mailpoet.com']);
@@ -209,6 +211,8 @@ class SubscribersTest extends \MailPoetTest {
     $this->entityManager->clear();
     $response = $this->endpoint->save(/* missing data */);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    $this->assertInstanceOf(ErrorResponse::class, $response);
+
     expect($response->errors[0]['message'])
       ->equals('Please enter your email address');
 
@@ -219,6 +223,7 @@ class SubscribersTest extends \MailPoetTest {
     $this->entityManager->clear();
     $response = $this->endpoint->save($invalidData);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    $this->assertInstanceOf(ErrorResponse::class, $response);
     expect($response->errors[0]['message'])
       ->equals('Your email address is invalid!');
     expect($subscriber->getSource())->equals('administrator');
@@ -239,6 +244,7 @@ class SubscribersTest extends \MailPoetTest {
     ];
 
     $response = $this->endpoint->save($validData);
+    $this->assertInstanceOf(SuccessResponse::class, $response);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     $this->entityManager->clear();
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
@@ -261,12 +267,35 @@ class SubscribersTest extends \MailPoetTest {
     ];
 
     $response = $this->endpoint->save($subscriberData);
+    $this->assertInstanceOf(SuccessResponse::class, $response);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       $this->responseBuilder->build($this->subscriber2)
     );
     expect($response->data['first_name'])->equals('Super Jane');
     expect($response->data['source'])->equals('api');
+  }
+
+  public function testItCanUpdateEmailOfAnExistingSubscriber(){
+    $subscriberData = $this->responseBuilder->build($this->subscriber2);
+    $subscriberData['email'] = 'newjane@mailpoet.com';
+    $response = $this->endpoint->save($subscriberData);
+    $this->assertInstanceOf(SuccessResponse::class, $response);
+    expect($response->status)->equals(APIResponse::STATUS_OK);
+    expect($response->data)->equals(
+      $this->responseBuilder->build($this->subscriber2)
+    );
+    expect($response->data['email'])->equals('newjane@mailpoet.com');
+    expect($response->data['first_name'])->equals($subscriberData['first_name']);
+  }
+
+  public function testItCannotUpdateEmailOfAnExistingSubscriberIfEmailIsNotUnique(){
+    $subscriberData = $this->responseBuilder->build($this->subscriber2);
+    $subscriberData['email'] = $this->subscriber1->getEmail();
+    $response = $this->endpoint->save($subscriberData);
+    $this->assertInstanceOf(ErrorResponse::class, $response);
+    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    expect($response->errors[0]['message'])->equals("A subscriber with E-mail '{$this->subscriber1->getEmail()}' already exists.");
   }
 
   public function testItCanRemoveListsFromAnExistingSubscriber() {
@@ -279,6 +308,7 @@ class SubscribersTest extends \MailPoetTest {
     ];
 
     $response = $this->endpoint->save($subscriberData);
+    $this->assertInstanceOf(SuccessResponse::class, $response);
     expect($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->equals(
       $this->responseBuilder->build($this->subscriber2)

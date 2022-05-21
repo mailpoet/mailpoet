@@ -4,9 +4,12 @@ namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\ErrorResponse;
 use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\SubscribersResponseBuilder;
+use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\Config\AccessControl;
+use MailPoet\ConflictException;
 use MailPoet\Doctrine\Validator\ValidationException;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -146,13 +149,24 @@ class Subscribers extends APIEndpoint {
     );
   }
 
-  public function save($data = []) {
+  /**
+   * @param array $data
+   * @return ErrorResponse|SuccessResponse
+   */
+  public function save(array $data = []) {
     try {
       $subscriber = $this->saveController->save($data);
     } catch (ValidationException $validationException) {
       return $this->badRequest([$this->getErrorMessage($validationException)]);
+    } catch (ConflictException $conflictException) {
+      return $this->badRequest([
+        APIError::BAD_REQUEST => $conflictException->getMessage(),
+      ]);
+    } catch (\Exception $unknownException) {
+      return $this->badRequest([
+        APIError::UNKNOWN => __('Saving subscriber failed.', 'mailpoet'),
+      ]);
     }
-
     return $this->successResponse(
       $this->subscribersResponseBuilder->build($subscriber)
     );
