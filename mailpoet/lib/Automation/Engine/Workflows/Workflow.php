@@ -31,12 +31,17 @@ class Workflow {
   /** @param Step[] $steps */
   public function __construct(
     string $name,
-    array $steps
+    array $steps,
+    int $id = null
   ) {
     $this->name = $name;
     $this->steps = [];
     foreach ($steps as $step) {
       $this->steps[$step->getId()] = $step;
+    }
+
+    if ($id) {
+      $this->id = $id;
     }
 
     $now = new DateTimeImmutable();
