@@ -35,11 +35,16 @@ class WorkflowRun {
   public function __construct(
     int $workflowId,
     string $triggerKey,
-    array $subjects
+    array $subjects,
+    int $id = null
   ) {
     $this->workflowId = $workflowId;
     $this->triggerKey = $triggerKey;
     $this->subjects = $subjects;
+
+    if ($id) {
+      $this->id = $id;
+    }
 
     $now = new DateTimeImmutable();
     $this->createdAt = $now;
