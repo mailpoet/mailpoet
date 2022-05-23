@@ -80,25 +80,33 @@ class CustomFonts {
     $this->wp = $wp;
   }
 
+  private function displayCustomFonts(): bool {
+    $display = $this->wp->applyFilters('mailpoet_display_custom_fonts', true);
+    return (bool)$display;
+  }
+
   public function enqueueStyle() {
-    $displayCustomFonts = $this->wp->applyFilters('mailpoet_display_custom_fonts', true);
-    if ($displayCustomFonts) {
-      // Due to a conflict with the WooCommerce Payments plugin, we need to load custom fonts in more requests.
-      // When we load all custom fonts in one request, a form from WC Payments isn't displayed correctly.
-      // It looks that the larger file size overloads the Stripe SDK.
-      foreach (array_chunk(self::FONTS, self::FONT_CHUNK_SIZE) as $key => $fonts) {
-        $this->wp->wpEnqueueStyle('mailpoet_custom_fonts_' . $key, $this->generateLink($fonts));
-      }
+    if (!$this->displayCustomFonts()) {
+      return;
+    }
+
+    // Due to a conflict with the WooCommerce Payments plugin, we need to load custom fonts in more requests.
+    // When we load all custom fonts in one request, a form from WC Payments isn't displayed correctly.
+    // It looks that the larger file size overloads the Stripe SDK.
+    foreach (array_chunk(self::FONTS, self::FONT_CHUNK_SIZE) as $key => $fonts) {
+      $this->wp->wpEnqueueStyle('mailpoet_custom_fonts_' . $key, $this->generateLink($fonts));
     }
   }
 
-  public function generateHtmlCustomFontLink() {
-    $output = '';
+  public function generateHtmlCustomFontLink(): string {
+    if (!$this->displayCustomFonts()) {
+      return '';
+    }
 
+    $output = '';
     foreach (array_chunk(self::FONTS, self::FONT_CHUNK_SIZE) as $key => $fonts) {
       $output .= sprintf('<link href="%s" rel="stylesheet">', $this->generateLink($fonts));
     }
-
     return $output;
   }
 
