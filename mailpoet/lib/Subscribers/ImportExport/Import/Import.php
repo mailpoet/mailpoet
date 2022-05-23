@@ -41,7 +41,7 @@ class Import {
   public $createdAt;
   /** @var Carbon */
   public $updatedAt;
-  /** @var array */
+  /** @var array<string, mixed> */
   public $requiredSubscribersFields;
   const DB_QUERY_CHUNK_SIZE = 100;
   const STATUS_DONT_UPDATE = 'dont_update';
@@ -394,11 +394,11 @@ class Import {
 
   /**
    * @param array $subscribers
-   * @param mixed $fieldName
+   * @param string $fieldName
    * @param mixed $fieldValue
    * @return array
    */
-  private function addField(array $subscribers, $fieldName, $fieldValue): array {
+  private function addField(array $subscribers, string $fieldName, $fieldValue): array {
     if (in_array($fieldName, $subscribers['fields'])) return $subscribers;
 
     $subscribersCount = count($subscribers['data'][key($subscribers['data'])]);
