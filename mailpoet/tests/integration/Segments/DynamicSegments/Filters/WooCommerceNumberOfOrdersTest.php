@@ -7,9 +7,11 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Subscribers\Source;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   /** @var WooCommerceNumberOfOrders */
@@ -18,7 +20,13 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   /** @var array */
   private $orders;
 
+  /**
+   * @var SubscriberFactory
+   */
+  private $subscriberFactory;
+
   public function _before(): void {
+    $this->subscriberFactory = new SubscriberFactory();
     $this->numberOfOrders = $this->diContainer->get(WooCommerceNumberOfOrders::class);
     Database::loadSQL('createWCLookupTables');
     $this->cleanUp();
@@ -69,6 +77,22 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $segmentFilter = $this->getSegmentFilter('>', 0, 7);
     $result = $this->applyFilter($this->numberOfOrders, $this->getQueryBuilder(), $segmentFilter);
     $this->assertSame(3, count($result));
+  }
+
+  public function testItGetsNoneCustomerSubscriberInLastDays() {
+    $createdSub = $this->subscriberFactory
+      ->withSource(Source::API)
+      ->withCreatedAt(Carbon::now()->subDays(5))
+      ->create();
+    $segmentFilter = $this->getSegmentFilter('=', 0, 30);
+    $queryBuilder = $this->numberOfOrders->apply($this->getQueryBuilder(), $segmentFilter);
+    $compatibilityResult = $queryBuilder->execute();
+    $this->assertInstanceOf(Statement::class, $compatibilityResult);
+    $result = $compatibilityResult->fetchAllAssociative();
+    $this->assertSame(1, count($result));
+    $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['inner_subscriber_id']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
+    $this->assertSame($createdSub->getEmail(), $subscriber1->getEmail());
   }
 
   private function getQueryBuilder(): QueryBuilder {
@@ -150,4 +174,5 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_customer_lookup");
     $this->connection->executeQuery("TRUNCATE TABLE {$wpdb->prefix}wc_order_stats");
   }
+
 }

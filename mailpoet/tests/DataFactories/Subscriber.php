@@ -7,6 +7,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use DateTimeInterface;
 
 class Subscriber {
 
@@ -19,7 +20,7 @@ class Subscriber {
   public function __construct() {
     $this->data = [
       'email' => bin2hex(random_bytes(7)) . '@example.com', // phpcs:ignore
-      'status' => 'subscribed',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
     ];
     $this->segments = [];
   }
@@ -101,6 +102,15 @@ class Subscriber {
     foreach ($segments as $segment) {
       $this->segments[$segment->getId()] = $segment;
     }
+    return $this;
+  }
+
+  /**
+   * @param DateTimeInterface $createdAt
+   * @return $this
+   */
+  public function withCreatedAt(DateTimeInterface $createdAt) {
+    $this->data['setCreatedAt'] = $createdAt;
     return $this;
   }
 
