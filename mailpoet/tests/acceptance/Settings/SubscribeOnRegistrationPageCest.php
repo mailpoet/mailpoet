@@ -20,6 +20,7 @@ class SubscribeOnRegistrationPageCest {
     $i->selectOptionInReactSelect($regseg, '[data-automation-id="subscribe-on_register-segments-selection"]');
     //save settings
     $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForText('Settings saved');
     $i->logOut();
     $i->amOnPage('/wp-login.php?action=register');
     $i->waitForElement(['css' => '.registration-form-mailpoet']);
@@ -53,6 +54,7 @@ class SubscribeOnRegistrationPageCest {
     $i->click('[data-automation-id="subscribe-on_register-checkbox"]');
     //save settings
     $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForText('Settings saved');
     $i->logOut();
     $i->amOnPage('/wp-login.php?action=register');
     $i->waitForElement(['css' => '.registration-form-mailpoet']);
