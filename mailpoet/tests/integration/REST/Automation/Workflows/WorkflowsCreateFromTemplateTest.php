@@ -1,0 +1,26 @@
+<?php declare(strict_types = 1);
+
+namespace MailPoet\REST\Automation\Workflows;
+
+require_once __DIR__ . '/../AutomationTest.php';
+
+use MailPoet\Automation\Engine\Storage\WorkflowStorage;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\REST\Automation\AutomationTest;
+
+class WorkflowsCreateFromTemplateTest extends AutomationTest {
+  private const ENDPOINT_PATH = '/mailpoet/v1/automation/workflows/create-from-template';
+
+  public function testCreateWorkflowFromTemplate(): void {
+    $storage = ContainerWrapper::getInstance()->get(WorkflowStorage::class);
+    $countBefore = count($storage->getWorkflows());
+    $this->post(self::ENDPOINT_PATH, [
+      'json' => [
+        'name' => 'Testing workflow from template',
+        'template' => 'delayed-email-after-signup'
+      ],
+    ]);
+    $countAfter = count($storage->getWorkflows());
+    expect($countAfter)->equals($countBefore + 1);
+  }
+}

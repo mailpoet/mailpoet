@@ -1,5 +1,8 @@
 import ReactDOM from 'react-dom';
-import { CreateTestingWorkflowButton } from './testing';
+import {
+  CreateTestingWorkflowButton,
+  CreateWorkflowFromTemplateButton,
+} from './testing';
 import { useMutation, useQuery } from './api';
 
 function Workflows(): JSX.Element {
@@ -77,6 +80,7 @@ function App(): JSX.Element {
   return (
     <div>
       <CreateTestingWorkflowButton />
+      <CreateWorkflowFromTemplateButton />
       <RecreateSchemaButton />
       <DeleteSchemaButton />
       <Workflows />
