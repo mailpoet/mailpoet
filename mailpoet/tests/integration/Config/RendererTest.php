@@ -20,16 +20,22 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItUsesCorrectAssetsManifestFilenames() {
-    $this->markTestSkipped("Not sure yet, how to fix this test.");
-    $renderer = Stub::make($this->renderer,
-    [
-      'getAssetManifest' => function($manifest) {
+    $renderer = Stub::make(new Renderer(
+      false,
+      Env::$cachePath,
+      new TwigFileSystem(Env::$viewsPath)
+    ),
+      ['getAssetManifest' => function($manifest) {
         return $manifest;
-      }
-    ]);
-    $path = Env::$assetsPath;
-    expect($renderer->assetsManifestJs)->equals( $path . '/dist/js/manifest.json');
-    expect($renderer->assetsManifestCss)->equals($path . '/dist/css/manifest.json');
+      }]
+    );
+    $renderer->__construct(
+      false,
+      Env::$cachePath,
+      new TwigFileSystem(Env::$viewsPath)
+    );
+    expect($renderer->assetsManifestJs)->equals(Env::$assetsPath . '/dist/js/manifest.json');
+    expect($renderer->assetsManifestCss)->equals(Env::$assetsPath . '/dist/css/manifest.json');
   }
 
   public function testItGetsAssetManifest() {
