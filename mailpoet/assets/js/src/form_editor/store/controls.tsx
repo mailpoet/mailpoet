@@ -281,7 +281,7 @@ export const controls = {
     const { formId } = actionData as Record<string, string>;
     let url = select('mailpoet-form-editor').getFormEditorUrl();
     url = `${url}${formId}`;
-    if (window.location !== url) {
+    if (window.location.href !== url) {
       window.history.replaceState(null, '', url);
     }
   },
