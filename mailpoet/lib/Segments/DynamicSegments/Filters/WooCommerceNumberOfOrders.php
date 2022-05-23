@@ -31,8 +31,8 @@ class WooCommerceNumberOfOrders implements Filter {
     global $wpdb;
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $filterData = $filter->getFilterData();
-    $type = $filterData->getParam('number_of_orders_type');
-    $count = $filterData->getParam('number_of_orders_count');
+    $type = strval($filterData->getParam('number_of_orders_type'));
+    $count = intval($filterData->getParam('number_of_orders_count'));
     $days = $filterData->getParam('number_of_orders_days');
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
     $collation = $this->collationChecker->getCollateIfNeeded(
@@ -44,31 +44,60 @@ class WooCommerceNumberOfOrders implements Filter {
 
     $date = Carbon::now()->subDays($days);
 
-    $queryBuilder->innerJoin(
-      $subscribersTable,
-      $wpdb->prefix . 'wc_customer_lookup',
-      'customer',
-      "$subscribersTable.email = customer.email $collation"
-    )->leftJoin(
-      'customer',
-      $wpdb->prefix . 'wc_order_stats',
-      'orderStats',
-      'customer.customer_id = orderStats.customer_id AND orderStats.date_created >= :date' . $parameterSuffix . ' AND orderStats.status NOT IN ("wc-cancelled", "wc-failed")'
-    )->setParameter('date' . $parameterSuffix, $date->toDateTimeString())
+    $subQuery = $this->entityManager->getConnection()
+      ->createQueryBuilder()
+      ->from($wpdb->prefix . 'wc_customer_lookup', "customer")
+      ->select("customer.email $collation as email")
+      ->addSelect("orderStats.order_id as oder_stats_id")
+      ->leftJoin(
+        'customer',
+        $wpdb->prefix . 'wc_order_stats',
+        'orderStats',
+        'customer.customer_id = orderStats.customer_id AND orderStats.date_created >= :date' . $parameterSuffix . ' AND orderStats.status NOT IN ("wc-cancelled", "wc-failed")'
+      );
+
+    $queryBuilder->add('join', [
+      $subscribersTable => [
+        /**
+         * Based the combination of $type and $count we may need to include none-customer subscribers
+         * in this case we'll need to leftJoin subscribers table to result of the sub-query defined above,
+         * in all other cases innerJoin gets us the expected records.
+         */
+        'joinType' => $this-> shouldIncludeNoneCustomerSubscribers($type, $count) ? 'left' : 'inner',
+        'joinTable' => "({$subQuery->getSQL()})",
+        'joinAlias' => 'selectedCustomers',
+        'joinCondition' => "$subscribersTable.email = selectedCustomers.email $collation",
+      ],
+    ], \true)
+      ->setParameter('date' . $parameterSuffix, $date->toDateTimeString())
       ->groupBy('inner_subscriber_id');
 
     if ($type === '=') {
-      $queryBuilder->having('COUNT(orderStats.order_id) = :count' . $parameterSuffix);
+      $queryBuilder->having('COUNT(oder_stats_id) = :count' . $parameterSuffix);
     } elseif ($type === '!=') {
-      $queryBuilder->having('COUNT(orderStats.order_id) != :count' . $parameterSuffix);
+      $queryBuilder->having('COUNT(oder_stats_id) != :count' . $parameterSuffix);
     } elseif ($type === '>') {
-      $queryBuilder->having('COUNT(orderStats.order_id) > :count' . $parameterSuffix);
+      $queryBuilder->having('COUNT(oder_stats_id) > :count' . $parameterSuffix);
     } elseif ($type === '<') {
-      $queryBuilder->having('COUNT(orderStats.order_id) < :count' . $parameterSuffix);
+      $queryBuilder->having('COUNT(oder_stats_id) < :count' . $parameterSuffix);
     }
 
-    $queryBuilder->setParameter('count' . $parameterSuffix, $count);
+    $queryBuilder->setParameter('count' . $parameterSuffix, $count, 'integer');
 
     return $queryBuilder;
+  }
+
+  private function shouldIncludeNoneCustomerSubscribers(string $type, int $count): bool {
+    if ($type === '=') {
+      return $count === 0;
+    } elseif ($type === '!=') {
+      return true;
+    } elseif ($type === '>') {
+      return $count < 0;
+    } elseif ($type === '<') {
+      return true;
+    }
+
+    return false;
   }
 }
