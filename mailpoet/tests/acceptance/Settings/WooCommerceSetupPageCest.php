@@ -49,6 +49,7 @@ class WooCommerceSetupPageCest {
     $i->waitForListingItemsToLoad();
 
     $i->triggerMailPoetActionScheduler();
+    $i->waitForListingItemsToLoad();
 
     $i->canSee($registeredCustomer['email']);
     $i->reloadPage();
@@ -58,6 +59,7 @@ class WooCommerceSetupPageCest {
       try {
         $i->wait(2);
         $i->reloadPage();
+        $i->waitForListingItemsToLoad();
         $i->see($guestUserData['email']);
         return;
       } catch (Exception $e) {
