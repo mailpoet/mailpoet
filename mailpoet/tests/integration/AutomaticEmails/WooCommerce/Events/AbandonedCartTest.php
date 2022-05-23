@@ -12,6 +12,7 @@ use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
+use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\Track\SubscriberActivityTracker;
@@ -48,6 +49,9 @@ class AbandonedCartTest extends \MailPoetTest {
   /** @var SubscriberActivityTracker&MockObject */
   private $subscriberActivityTrackerMock;
 
+  /** @var AutomaticEmailScheduler */
+  private $automaticEmailScheduler;
+
   public function _before() {
     $this->cleanup();
 
@@ -67,6 +71,8 @@ class AbandonedCartTest extends \MailPoetTest {
     ]);
     $this->wp = $wp;
     WPFunctions::set($this->wp);
+
+    $this->automaticEmailScheduler = new AutomaticEmailScheduler(new Scheduler($this->wp));
 
     $this->wooCommerceMock = $this->mockWooCommerceClass(WooCommerce::class, []);
     $this->wooCommerceCartMock = $this->mockWooCommerceClass(WC_Cart::class, ['is_empty', 'get_cart']);
@@ -263,7 +269,8 @@ class AbandonedCartTest extends \MailPoetTest {
 
   private function createAbandonedCartEmail() {
     $settings = $this->diContainer->get(SettingsController::class);
-    $automaticEmailScheduler = $this->diContainer->get(AutomaticEmailScheduler::class);
+    $automaticEmailScheduler = $this->automaticEmailScheduler;
+
     return $this->make(AbandonedCart::class, [
       'wp' => $this->wp,
       'wooCommerceHelper' => $this->wooCommerceHelperMock,
