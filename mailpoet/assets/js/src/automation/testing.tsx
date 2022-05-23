@@ -41,6 +41,11 @@ const createWorkflow = () => {
   };
 };
 
+const createWorkflowFromTemplate = () => ({
+  name: `Test from template ${new Date().toISOString()}`,
+  template: 'delayed-email-after-signup',
+});
+
 export function CreateTestingWorkflowButton(): JSX.Element {
   const [createSchema, { loading, error }] = useMutation('workflows', {
     method: 'POST',
@@ -58,6 +63,34 @@ export function CreateTestingWorkflowButton(): JSX.Element {
         disabled={loading}
       >
         Create testing workflow
+      </button>
+      {error && (
+        <div>{error?.data?.message ?? 'An unknown error occurred'}</div>
+      )}
+    </div>
+  );
+}
+
+export function CreateWorkflowFromTemplateButton(): JSX.Element {
+  const [createSchema, { loading, error }] = useMutation(
+    'workflows/create-from-template',
+    {
+      method: 'POST',
+    },
+  );
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() =>
+          createSchema({
+            body: JSON.stringify(createWorkflowFromTemplate()),
+          })
+        }
+        disabled={loading}
+      >
+        Create testing workflow from template
       </button>
       {error && (
         <div>{error?.data?.message ?? 'An unknown error occurred'}</div>
