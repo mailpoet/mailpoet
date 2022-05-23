@@ -490,6 +490,50 @@ class WPTest extends \MailPoetTest {
     expect($wpSubscriber->countConfirmations)->equals(0);
   }
 
+  public function testItDecodesHtmlEntitesInFirstAndLastName(): void {
+    $args = [
+      'user_login' => 'html-entities',
+      'user_email' => 'user-sync-test-html-entities@example.com',
+      'first_name' => 'Family & friends',
+      'last_name' => 'Family & friends lastname',
+      'role' => 'subscriber',
+      'user_pass' => 'password',
+    ];
+    $userId = wp_insert_user($args);
+    assert(is_numeric($userId));
+    $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
+    $subscriber = $subscriberRepository->findOneBy(['email' => 'user-sync-test-html-entities@example.com']);
+    /**
+     * @var SubscriberEntity $subscriber
+     */
+    $firstName = $subscriber->getFirstName();
+    $this->assertEquals($args['first_name'], $subscriber->getFirstName());
+    $this->assertEquals($args['last_name'], $subscriber->getLastName());
+    wp_delete_user($userId);
+  }
+
+  public function testItDecodesHtmlEntitesInDisplayName(): void {
+    $args = [
+      'user_login' => 'entities-display-name',
+      'user_email' => 'user-sync-test-html-entities-display-name@example.com',
+      'first_name' => '',
+      'last_name' => '',
+      'display_name' => 'Family & Frieds',
+      'role' => 'subscriber',
+      'user_pass' => 'password',
+    ];
+
+    $userId = wp_insert_user($args);
+    assert(is_numeric($userId));
+    $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
+    $subscriber = $subscriberRepository->findOneBy(['email' => 'user-sync-test-html-entities-display-name@example.com']);
+    /**
+     * @var SubscriberEntity $subscriber
+     */
+    $this->assertEquals($args['display_name'], $subscriber->getFirstName());
+    wp_delete_user($userId);
+  }
+
   public function testItDoesNotTrashNewUsersWhoHaveSomeSegmentsToDisabledWPSegment(): void {
     $this->disableWpSegment();
     $randomNumber = rand();
