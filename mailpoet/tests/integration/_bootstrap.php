@@ -6,6 +6,7 @@ use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Migrations\Migrator;
 use MailPoet\Automation\Integrations\MailPoet\MailPoetIntegration;
 use MailPoet\Cache\TransientCache;
+use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Features\FeatureFlagsController;
@@ -115,11 +116,14 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $this->diContainer = ContainerWrapper::getInstance(WP_DEBUG);
     $this->connection = $this->diContainer->get(Connection::class);
     $this->entityManager = $this->diContainer->get(EntityManager::class);
+    // Cleanup scheduled tasks from previous tests and deactivate cron
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->diContainer->get(\MailPoet\Cron\DaemonActionSchedulerRunner::class)->deactivate();
+    $this->diContainer->get(SettingsController::class)->set('cron_trigger.method', CronTrigger::METHOD_LINUX_CRON);
+    // Reset caches
     $this->diContainer->get(FeaturesController::class)->resetCache();
     $this->diContainer->get(SettingsController::class)->resetCache();
 
-    // Cleanup scheduled tasks from previous tests
-    $this->truncateEntity(ScheduledTaskEntity::class);
     $this->entityManager->clear();
     $this->clearSubscribersCountCache();
     if (!self::$savedGlobals) {
@@ -155,7 +159,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 
   /**
    * Retrieve a clone of a DI service with properties overridden by name, including
-   * protected and private properties. 
+   * protected and private properties.
    *
    * @template T of object
    * @param class-string<T> $id
