@@ -42,10 +42,14 @@ class CronTrigger {
   public function init() {
     $currentMethod = $this->settings->get(self::SETTING_NAME . '.method');
     try {
+      if ($currentMethod === self::METHOD_ACTION_SCHEDULER) {
+        $this->cronActionScheduler->init();
+        return true;
+      } else {
+        $this->cronActionScheduler->deactivate();
+      }
       if ($currentMethod === self::METHOD_WORDPRESS) {
         return $this->wordpressTrigger->run();
-      } elseif ($currentMethod === self::METHOD_ACTION_SCHEDULER) {
-        $this->cronActionScheduler->init();
       }
       return false;
     } catch (\Exception $e) {
