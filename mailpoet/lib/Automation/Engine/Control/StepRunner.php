@@ -11,6 +11,7 @@ use MailPoet\Automation\Engine\Storage\WorkflowRunStorage;
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Engine\Workflows\Step;
+use MailPoet\Automation\Engine\Workflows\StepRunner as StepRunnerInterface;
 use MailPoet\Automation\Engine\Workflows\WorkflowRun;
 use Throwable;
 
@@ -30,6 +31,9 @@ class StepRunner {
   /** @var WorkflowStorage */
   private $workflowStorage;
 
+  /** @var array<string, StepRunnerInterface> */
+  private $stepRunners;
+
   public function __construct(
     ActionScheduler $actionScheduler,
     ActionStepRunner $actionStepRunner,
@@ -46,6 +50,12 @@ class StepRunner {
 
   public function initialize(): void {
     $this->wordPress->addAction(Hooks::WORKFLOW_STEP, [$this, 'run']);
+    $this->addStepRunner(Step::TYPE_ACTION, $this->actionStepRunner);
+    $this->wordPress->doAction(Hooks::STEP_RUNNER_INITIALIZE, [$this]);
+  }
+
+  public function addStepRunner(string $stepType, StepRunnerInterface $stepRunner): void {
+    $this->stepRunners[$stepType] = $stepRunner;
   }
 
   /** @param mixed $args */
@@ -98,8 +108,8 @@ class StepRunner {
     }
 
     $stepType = $step->getType();
-    if ($stepType === Step::TYPE_ACTION) {
-      $this->actionStepRunner->run($step, $workflow, $workflowRun);
+    if (isset($this->stepRunners[$stepType])) {
+      $this->stepRunners[$stepType]->run($step, $workflow, $workflowRun);
     } else {
       throw new InvalidStateException();
     }
