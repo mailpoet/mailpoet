@@ -16,10 +16,10 @@ class Step {
   private $key;
 
   /** @var string|null */
-  private $nextStepId;
+  protected $nextStepId;
 
   /** @var array */
-  private $args;
+  protected $args;
 
   public function __construct(
     string $id,
