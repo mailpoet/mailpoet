@@ -295,7 +295,7 @@ class SubscribersTest extends \MailPoetTest {
     $response = $this->endpoint->save($subscriberData);
     $this->assertInstanceOf(ErrorResponse::class, $response);
     expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals("A subscriber with E-mail '{$this->subscriber1->getEmail()}' already exists.");
+    expect($response->errors[0]['message'])->equals('A subscriber with E-mail "' . $this->subscriber1->getEmail() . '" already exists.');
   }
 
   public function testItCanRemoveListsFromAnExistingSubscriber() {

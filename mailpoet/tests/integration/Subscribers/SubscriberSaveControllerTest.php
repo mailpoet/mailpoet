@@ -99,7 +99,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $this->expectException(ConflictException::class);
-    $this->expectExceptionMessage("A subscriber with E-mail '{$subscriber2->getEmail()}' already exists.");
+    $this->expectExceptionMessage('A subscriber with E-mail "' . $subscriber2->getEmail() . '" already exists.');
 
     $this->saveController->save($data);
   }
