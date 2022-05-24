@@ -49,6 +49,11 @@ class DaemonActionSchedulerRunner {
     }
   }
 
+  public function deactivate() {
+    $this->actionScheduler->unscheduleAction(self::DAEMON_TRIGGER_SCHEDULER_ACTION);
+    $this->actionScheduler->unscheduleAction(self::DAEMON_RUN_SCHEDULER_ACTION);
+  }
+
   /**
    * In regular intervals checks if there are scheduled tasks to execute.
    * In case there are tasks it spawns a recurring action.

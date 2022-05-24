@@ -7,7 +7,6 @@ use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Automation\Engine\Engine;
 use MailPoet\Automation\Engine\Hooks as AutomationHooks;
 use MailPoet\Automation\Integrations\MailPoet\MailPoetIntegration;
-use MailPoet\Cron\ActionScheduler\ActionScheduler;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\Features\FeaturesController;
@@ -107,8 +106,8 @@ class Initializer {
   /** @var PersonalDataExporters */
   private $personalDataExporters;
 
-  /** @var ActionScheduler */
-  private $actionScheduler;
+  /** @var DaemonActionSchedulerRunner */
+  private $actionSchedulerRunner;
 
   const INITIALIZED = 'MAILPOET_INITIALIZED';
 
@@ -139,7 +138,7 @@ class Initializer {
     MailPoetIntegration $automationMailPoetIntegration,
     FeaturesController $featuresController,
     PersonalDataExporters $personalDataExporters,
-    ActionScheduler $actionScheduler
+    DaemonActionSchedulerRunner $actionSchedulerRunner
   ) {
     $this->rendererFactory = $rendererFactory;
     $this->accessControl = $accessControl;
@@ -167,7 +166,7 @@ class Initializer {
     $this->automationMailPoetIntegration = $automationMailPoetIntegration;
     $this->featuresController = $featuresController;
     $this->personalDataExporters = $personalDataExporters;
-    $this->actionScheduler = $actionScheduler;
+    $this->actionSchedulerRunner = $actionSchedulerRunner;
   }
 
   public function init() {
@@ -456,9 +455,7 @@ class Initializer {
   }
 
   public function runDeactivation() {
-    // Unschedule recurring action scheduler actions
-    $this->actionScheduler->unscheduleAction(DaemonActionSchedulerRunner::DAEMON_RUN_SCHEDULER_ACTION);
-    $this->actionScheduler->unscheduleAction(DaemonActionSchedulerRunner::DAEMON_TRIGGER_SCHEDULER_ACTION);
+    $this->actionSchedulerRunner->deactivate();
   }
 
   private function setupWoocommerceTransactionalEmails() {
