@@ -152,6 +152,7 @@ class Subscribers extends APIEndpoint {
   /**
    * @param array $data
    * @return ErrorResponse|SuccessResponse
+   * @throws \Exception
    */
   public function save(array $data = []) {
     try {
@@ -162,11 +163,8 @@ class Subscribers extends APIEndpoint {
       return $this->badRequest([
         APIError::BAD_REQUEST => $conflictException->getMessage(),
       ]);
-    } catch (\Exception $unknownException) {
-      return $this->badRequest([
-        APIError::UNKNOWN => __('Saving subscriber failed.', 'mailpoet'),
-      ]);
-    }
+    };
+
     return $this->successResponse(
       $this->subscribersResponseBuilder->build($subscriber)
     );
