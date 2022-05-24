@@ -3,26 +3,32 @@
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce as WooCommerceEmail;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\Track\SubscriberActivityTracker;
 use MailPoet\Statistics\Track\SubscriberCookie;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 use PHPUnit\Framework\MockObject\MockObject;
 use WC_Cart;
 use WooCommerce;
@@ -49,11 +55,32 @@ class AbandonedCartTest extends \MailPoetTest {
   /** @var SubscriberActivityTracker&MockObject */
   private $subscriberActivityTrackerMock;
 
+  /** @var NewsletterOptionFieldsRepository */
+  private $newsletterOptionFieldsRepository;
+
+  /** @var NewsletterOptionsRepository */
+  private $newsletterOptionsRepository;
+
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
+
   /** @var AutomaticEmailScheduler */
   private $automaticEmailScheduler;
 
   public function _before() {
     $this->cleanup();
+
+    $this->newsletterOptionFieldsRepository = $this->diContainer->get(NewsletterOptionFieldsRepository::class);
+    $this->newsletterOptionsRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
+    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
 
     $this->currentTime = Carbon::createFromTimestamp((new WPFunctions())->currentTime('timestamp'));
     Carbon::setTestNow($this->currentTime);
@@ -96,11 +123,12 @@ class AbandonedCartTest extends \MailPoetTest {
       $wcHelper,
       $subscriberCookie,
       $this->diContainer->get(SubscriberActivityTracker::class),
-      $this->diContainer->get(AutomaticEmailScheduler::class)
+      $this->diContainer->get(AutomaticEmailScheduler::class),
+      $this->diContainer->get(SubscribersRepository::class)
     );
     $result = $event->getEventDetails();
-    expect($result)->notEmpty();
-    expect($result['slug'])->equals(AbandonedCart::SLUG);
+    $this->assertNotEmpty($result);
+    $this->assertEquals($result['slug'], AbandonedCart::SLUG);
   }
 
   public function testItRegistersWooCommerceCartEvents() {
@@ -136,7 +164,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $abandonedCartEmail = $this->createAbandonedCartEmail();
     $abandonedCartEmail->init();
     $abandonedCartEmail->handleCartChange();
-    expect(ScheduledTask::findMany())->count(1);
+    $this->assertCount(1, $this->scheduledTasksRepository->findAll());
   }
 
   public function testItFindsUserByCookie() {
@@ -150,14 +178,14 @@ class AbandonedCartTest extends \MailPoetTest {
     );
 
     $_COOKIE['mailpoet_subscriber'] = json_encode([
-      'subscriber_id' => $subscriber->id,
+      'subscriber_id' => $subscriber->getId(),
     ]);
 
     $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
     $abandonedCartEmail = $this->createAbandonedCartEmail();
     $abandonedCartEmail->init();
     $abandonedCartEmail->handleCartChange();
-    expect(ScheduledTask::findMany())->count(1);
+    $this->assertCount(1, $this->scheduledTasksRepository->findAll());
   }
 
   public function testItSchedulesEmailWhenItemAddedToCart() {
@@ -173,13 +201,13 @@ class AbandonedCartTest extends \MailPoetTest {
     $abandonedCartEmail->handleCartChange();
 
     $expectedTime = $this->getExpectedScheduledTime();
-    $scheduledTasks = ScheduledTask::findMany();
-    expect($scheduledTasks)->count(1);
-    expect($scheduledTasks[0]->status)->same(ScheduledTask::STATUS_SCHEDULED);
-    expect($scheduledTasks[0]->scheduled_at)->same($expectedTime->format('Y-m-d H:i:s'));
-    /** @var SendingQueue $sendingQueue */
-    $sendingQueue = SendingQueue::where('task_id', $scheduledTasks[0]->id)->findOne();
-    expect($sendingQueue->getMeta())->same([AbandonedCart::TASK_META_NAME => [123, 456]]);
+    $scheduledTasks = $this->scheduledTasksRepository->findAll();
+    $this->assertCount(1, $scheduledTasks);
+    $this->assertEquals($scheduledTasks[0]->getStatus(), ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->assertEquals($scheduledTasks[0]->getScheduledAt(), $expectedTime);
+    $sendingQueue = $this->sendingQueuesRepository->findOneBy(['task' => $scheduledTasks[0]]);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $this->assertEquals($sendingQueue->getMeta(), [AbandonedCart::TASK_META_NAME => [123, 456]]);
   }
 
   public function testItPostponesEmailWhenCartEdited() {
@@ -196,10 +224,11 @@ class AbandonedCartTest extends \MailPoetTest {
     $abandonedCartEmail->handleCartChange();
 
     $expectedTime = $this->getExpectedScheduledTime();
-    $scheduledTasks = ScheduledTask::findMany();
-    expect($scheduledTasks)->count(1);
-    expect($scheduledTasks[0]->status)->same(ScheduledTask::STATUS_SCHEDULED);
-    expect($scheduledTasks[0]->scheduled_at)->same($expectedTime->format('Y-m-d H:i:s'));
+    $this->entityManager->clear();
+    $scheduledTasks = $this->scheduledTasksRepository->findAll();
+    $this->assertCount(1, $scheduledTasks);
+    $this->assertEquals($scheduledTasks[0]->getStatus(), ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->assertEquals($scheduledTasks[0]->getScheduledAt(), $expectedTime);
   }
 
   public function testItCancelsEmailWhenCartEmpty() {
@@ -215,9 +244,9 @@ class AbandonedCartTest extends \MailPoetTest {
     $abandonedCartEmail->init();
     $abandonedCartEmail->handleCartChange();
 
-    expect(ScheduledTask::findMany())->count(0);
-    expect(ScheduledTaskSubscriber::findMany())->count(0);
-    expect(SendingQueue::findMany())->count(0);
+    $this->assertCount(0, $this->scheduledTasksRepository->findAll());
+    $this->assertCount(0, $this->scheduledTaskSubscribersRepository->findAll());
+    $this->assertCount(0, $this->sendingQueuesRepository->findAll());
   }
 
   public function testItSchedulesNewEmailWhenEmailAlreadySent() {
@@ -234,15 +263,16 @@ class AbandonedCartTest extends \MailPoetTest {
     $abandonedCartEmail->handleCartChange();
 
     $expectedTime = $this->getExpectedScheduledTime();
-    expect(ScheduledTask::findMany())->count(2);
+    $this->entityManager->clear();
+    $this->assertCount(2, $this->scheduledTasksRepository->findAll());
 
-    $completed = ScheduledTask::where('status', ScheduledTask::STATUS_COMPLETED)->findOne();
-    assert($completed instanceof ScheduledTask);
-    expect($completed->scheduledAt)->same($scheduledInPast->format('Y-m-d H:i:s'));
+    $completed = $this->scheduledTasksRepository->findOneBy(['status' => ScheduledTaskEntity::STATUS_COMPLETED]);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $completed);
+    $this->assertEquals($completed->getScheduledAt(), $scheduledInPast);
 
-    $scheduled = ScheduledTask::where('status', ScheduledTask::STATUS_SCHEDULED)->findOne();
-    assert($scheduled instanceof ScheduledTask);
-    expect($scheduled->scheduledAt)->same($expectedTime->format('Y-m-d H:i:s'));
+    $scheduled = $this->scheduledTasksRepository->findOneBy(['status' => ScheduledTaskEntity::STATUS_SCHEDULED]);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduled);
+    $this->assertEquals($scheduled->getScheduledAt(), $expectedTime);
   }
 
   public function testItPostponesEmailWhenSubscriberIsActiveOnSite() {
@@ -256,19 +286,21 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
     $abandonedCartEmail = $this->createAbandonedCartEmail();
     $abandonedCartEmail->init();
-    $subscriberEntity = $this->entityManager->find(SubscriberEntity::class, $subscriber->id);
+    $subscriberEntity = $this->entityManager->find(SubscriberEntity::class, $subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberEntity);
     $abandonedCartEmail->handleSubscriberActivity($subscriberEntity);
 
     $expectedTime = $this->getExpectedScheduledTime();
-    $scheduledTasks = ScheduledTask::findMany();
-    expect($scheduledTasks)->count(1);
-    expect($scheduledTasks[0]->status)->same(ScheduledTask::STATUS_SCHEDULED);
-    expect($scheduledTasks[0]->scheduled_at)->same($expectedTime->format('Y-m-d H:i:s'));
+    $this->entityManager->clear();
+    $scheduledTasks = $this->scheduledTasksRepository->findAll();
+    $this->assertCount(1, $scheduledTasks);
+    $this->assertEquals($scheduledTasks[0]->getStatus(), ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->assertEquals($scheduledTasks[0]->getScheduledAt(), $expectedTime);
   }
 
   private function createAbandonedCartEmail() {
     $settings = $this->diContainer->get(SettingsController::class);
+    $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $automaticEmailScheduler = $this->automaticEmailScheduler;
 
     return $this->make(AbandonedCart::class, [
@@ -277,14 +309,15 @@ class AbandonedCartTest extends \MailPoetTest {
       'subscriberCookie' => new SubscriberCookie(new Cookies(), new TrackingConfig($settings)),
       'subscriberActivityTracker' => $this->subscriberActivityTrackerMock,
       'scheduler' => $automaticEmailScheduler,
+      'subscribersRepository' => $subscribersRepository,
     ]);
   }
 
-  private function createNewsletter() {
-    $newsletter = Newsletter::create();
-    $newsletter->type = Newsletter::TYPE_AUTOMATIC;
-    $newsletter->status = Newsletter::STATUS_ACTIVE;
-    $newsletter->save();
+  private function createNewsletter(): NewsletterEntity {
+    $newsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_AUTOMATIC)
+      ->withActiveStatus()
+      ->create();
 
     $this->createNewsletterOptions($newsletter, [
       'group' => WooCommerceEmail::SLUG,
@@ -296,69 +329,69 @@ class AbandonedCartTest extends \MailPoetTest {
     return $newsletter;
   }
 
-  private function createSendingTask(Newsletter $newsletter, Subscriber $subscriber, Carbon $scheduleAt) {
-    $task = SendingTask::create();
-    $task->newsletterId = $newsletter->id;
-    $task->setSubscribers([$subscriber->id]);
-    $task->updateProcessedSubscribers([$subscriber->id]);
-    $task->save();
+  private function createSendingTask(NewsletterEntity $newsletter, SubscriberEntity $subscriber, Carbon $scheduleAt): ScheduledTaskEntity {
+    $scheduledTask = new ScheduledTaskEntity();
+    $scheduledTask->setType(SendingTask::TASK_TYPE);
+    $this->entityManager->persist($scheduledTask);
+    $this->entityManager->flush();
 
-    $scheduledTask = $task->task();
-    $scheduledTask->scheduledAt = $scheduleAt;
-    $scheduledTask->status = $this->currentTime < $scheduleAt
-      ? ScheduledTask::STATUS_SCHEDULED
-      : ScheduledTask::STATUS_COMPLETED;
-    $scheduledTask->save();
+    $sendingQueue = new SendingQueueEntity();
+    $sendingQueue->setNewsletter($newsletter);
+    $sendingQueue->setTask($scheduledTask);
+    $this->entityManager->persist($sendingQueue);
+    $this->entityManager->flush();
 
-    return $task;
+    $sendingQueueSubscriber = new ScheduledTaskSubscriberEntity($scheduledTask, $subscriber, ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
+    $this->entityManager->persist($sendingQueueSubscriber);
+    $this->entityManager->flush();
+
+    $scheduledTask->setScheduledAt($scheduleAt);
+    $scheduledTask->setStatus(($this->currentTime < $scheduleAt) ? ScheduledTaskEntity::STATUS_SCHEDULED : ScheduledTaskEntity::STATUS_COMPLETED);
+    $this->entityManager->flush();
+
+    return $scheduledTask;
   }
 
-  private function createNewsletterOptions(Newsletter $newsletter, array $options) {
+  private function createNewsletterOptions(NewsletterEntity $newsletter, array $options): void {
     foreach ($options as $option => $value) {
-      $newsletterOptionField = NewsletterOptionField::where('name', $option)
-        ->where('newsletter_type', $newsletter->type)
-        ->findOne();
+      $newsletterOptionField = $this->newsletterOptionFieldsRepository->findOneBy([
+        'name' => $option,
+        'newsletterType' => $newsletter->getType(),
+      ]);
 
       if (!$newsletterOptionField) {
-        $newsletterOptionField = NewsletterOptionField::create();
-        $newsletterOptionField->hydrate([
-          'newsletter_type' => $newsletter->type,
-          'name' => $option,
-        ]);
-        $newsletterOptionField->save();
+        $newsletterOptionField = new NewsletterOptionFieldEntity();
+        $newsletterOptionField->setNewsletterType($newsletter->getType());
+        $newsletterOptionField->setName($option);
+        $this->newsletterOptionFieldsRepository->persist($newsletterOptionField);
+        $this->newsletterOptionFieldsRepository->flush();
       }
 
-      $newsletterOption = NewsletterOption::where('newsletter_id', $newsletter->id)
-        ->where('option_field_id', $newsletterOptionField->id)
-        ->findOne();
+      $newsletterOption = $this->newsletterOptionsRepository->findOneBy([
+        'newsletter' => $newsletter,
+        'optionField' => $newsletterOptionField,
+      ]);
 
       if (!$newsletterOption) {
-        $newsletterOption = NewsletterOption::create();
-        $newsletterOption->hydrate([
-          'newsletter_id' => $newsletter->id,
-          'option_field_id' => $newsletterOptionField->id,
-          'value' => $value,
-        ]);
-        $newsletterOption->save();
+        $newsletterOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
+        $newsletterOption->setValue($value);
+        $this->newsletterOptionsRepository->persist($newsletterOption);
+        $this->newsletterOptionsRepository->flush();
       }
     }
   }
 
-  private function createSubscriber() {
-    $subscriber = Subscriber::create();
-    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $subscriber->email = 'subscriber@example.com';
-    $subscriber->firstName = 'First';
-    $subscriber->lastName = 'Last';
-    $subscriber->wpUserId = 123;
-    return $subscriber->save();
+  private function createSubscriber(): SubscriberEntity {
+    return (new SubscriberFactory())
+      ->withWpUserId(123)
+      ->create();
   }
 
-  private function createSubscriberAsCurrentUser() {
+  private function createSubscriberAsCurrentUser(): SubscriberEntity {
     $subscriber = $this->createSubscriber();
     $this->wp->method('wpGetCurrentUser')->willReturn(
       $this->makeEmpty(WP_User::class, [
-        'ID' => $subscriber->wpUserId,
+        'ID' => $subscriber->getWpUserId(),
         'exists' => true,
       ])
     );
@@ -386,13 +419,13 @@ class AbandonedCartTest extends \MailPoetTest {
   }
 
   private function cleanup() {
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
   }
 
   public function _after() {
