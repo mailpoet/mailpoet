@@ -38,7 +38,7 @@ class Newsletter {
     $this->data = [
       'subject' => 'Some subject',
       'preheader' => 'Some preheader',
-      'type' => 'standard',
+      'type' => NewsletterEntity::TYPE_STANDARD,
       'status' => 'draft',
       'sender_address' => null,
       ];
@@ -68,6 +68,14 @@ class Newsletter {
    */
   public function withBody($body) {
     $this->data['body'] = $body;
+    return $this;
+  }
+
+  /**
+   * @return Newsletter
+   */
+  public function withType(string $type) {
+    $this->data['type'] = $type;
     return $this;
   }
 
