@@ -142,6 +142,8 @@ class ManageSubscriptionLinkCest {
     $i->selectOptionInSelect2($segmentName);
     $i->click('Send');
 
+    $i->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
+
     // Reloading page is faster than waiting for regular AJAX request to refresh it
     for ($index = 0; $index < 15; $index++) {
       try {
