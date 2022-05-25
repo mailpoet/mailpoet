@@ -2,18 +2,20 @@
 
 namespace MailPoet\Test\Newsletter\Scheduler;
 
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterPostEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
 use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class SchedulerTest extends \MailPoetTest {
 
@@ -26,26 +28,26 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItGetsActiveNewslettersFilteredByTypeAndGroup() {
-    $this->_createNewsletter($type = Newsletter::TYPE_WELCOME);
+    $this->_createNewsletter(NewsletterEntity::TYPE_WELCOME);
 
     // no newsletters with type "notification" should be found
-    expect($this->testee->getNewsletters(Newsletter::TYPE_NOTIFICATION))->isEmpty();
+    expect($this->testee->getNewsletters(NewsletterEntity::TYPE_NOTIFICATION))->isEmpty();
 
     // one newsletter with type "welcome" should be found
-    expect($this->testee->getNewsletters(Newsletter::TYPE_WELCOME))->count(1);
+    expect($this->testee->getNewsletters(NewsletterEntity::TYPE_WELCOME))->count(1);
 
     // one automatic email belonging to "test" group should be found
-    $newsletter = $this->_createNewsletter($type = Newsletter::TYPE_AUTOMATIC);
+    $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_AUTOMATIC);
     $this->_createNewsletterOptions(
       $newsletter->id,
-      Newsletter::TYPE_AUTOMATIC,
+      NewsletterEntity::TYPE_AUTOMATIC,
       [
-        'group' => 'test',
+        NewsletterOptionFieldEntity::NAME_GROUP => 'test',
       ]
     );
 
-    expect($this->testee->getNewsletters(Newsletter::TYPE_AUTOMATIC, 'group_does_not_exist'))->isEmpty();
-    expect($this->testee->getNewsletters(Newsletter::TYPE_WELCOME, 'test'))->count(1);
+    expect($this->testee->getNewsletters(Newsletter::TYPE_WELCOME, 'group_does_not_exist'))->isEmpty();
+    expect($this->testee->getNewsletters(Newsletter::TYPE_AUTOMATIC, 'test'))->count(1);
   }
 
   public function testItCanGetNextRunDate() {
@@ -107,13 +109,13 @@ class SchedulerTest extends \MailPoetTest {
 
   public function _after() {
     Carbon::setTestNow();
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
     $this->truncateEntity(NewsletterPostEntity::class);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
   }
 }

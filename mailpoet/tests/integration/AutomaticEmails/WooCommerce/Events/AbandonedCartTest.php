@@ -10,6 +10,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
@@ -99,7 +100,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->wp = $wp;
     WPFunctions::set($this->wp);
 
-    $this->automaticEmailScheduler = new AutomaticEmailScheduler(new Scheduler($this->wp));
+    $this->automaticEmailScheduler = new AutomaticEmailScheduler(new Scheduler($this->wp, $this->diContainer->get(NewslettersRepository::class)));
 
     $this->wooCommerceMock = $this->mockWooCommerceClass(WooCommerce::class, []);
     $this->wooCommerceCartMock = $this->mockWooCommerceClass(WC_Cart::class, ['is_empty', 'get_cart']);

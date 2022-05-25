@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Newsletter\Editor;
 
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -24,7 +25,8 @@ class SchedulerTest extends \MailPoetUnitTest {
     $wp = $this->makeEmpty(WPFunctions::class, [
       'currentTime' => $this->currentTime->getTimestamp(),
     ]);
-    $this->testee = new Scheduler($wp);
+    $newslettersRepository = $this->makeEmpty(NewslettersRepository::class);
+    $this->testee = new Scheduler($wp, $newslettersRepository);
   }
 
   public function testItScheduleTimeWithDelayByHours(): void {

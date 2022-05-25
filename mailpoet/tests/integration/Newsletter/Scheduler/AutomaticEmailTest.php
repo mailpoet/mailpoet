@@ -3,6 +3,8 @@
 namespace MailPoet\Newsletter\Scheduler;
 
 use Codeception\Util\Fixtures;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterOption;
@@ -11,6 +13,7 @@ use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -21,9 +24,13 @@ class AutomaticEmailTest extends \MailPoetTest {
   /** @var AutomaticEmailScheduler */
   private $automaticEmailScheduler;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
   public function _before() {
     parent::_before();
     $this->automaticEmailScheduler = $this->diContainer->get(AutomaticEmailScheduler::class);
+    $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
   }
 
   public function testItCreatesScheduledAutomaticEmailSendingTaskForUser() {
@@ -36,15 +43,15 @@ class AutomaticEmailTest extends \MailPoetTest {
         'afterTimeNumber' => 2,
       ]
     );
-    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
-    assert($newsletter instanceof Newsletter);
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
 
     $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, $subscriber->id, $meta = null);
     // new scheduled task should be created
-    $task = SendingTask::getByNewsletterId($newsletter->id);
+    $task = SendingTask::getByNewsletterId($newsletter->getId());
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     expect($task->id)->greaterOrEquals(1);
@@ -68,8 +75,8 @@ class AutomaticEmailTest extends \MailPoetTest {
         'afterTimeNumber' => 2,
       ]
     );
-    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
-    assert($newsletter instanceof Newsletter);
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $subscriber = Subscriber::create();
     $subscriber->hydrate(Fixtures::get('subscriber_template'));
     $subscriber->save();
@@ -77,7 +84,7 @@ class AutomaticEmailTest extends \MailPoetTest {
 
     $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, $subscriber->id, $meta);
     // new queue record should be created with meta data
-    $queue = SendingQueue::where('newsletter_id', $newsletter->id)->findOne();
+    $queue = SendingQueue::where('newsletter_id', $newsletter->getId())->findOne();
     assert($queue instanceof SendingQueue);
     expect($queue->getMeta())->equals($meta);
   }
@@ -92,12 +99,12 @@ class AutomaticEmailTest extends \MailPoetTest {
         'afterTimeNumber' => 2,
       ]
     );
-    $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
-    assert($newsletter instanceof Newsletter);
+    $newsletter = $this->newslettersRepository->findOneById($newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
 
     $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, $subscriber = null, $meta = null);
     // new scheduled task should be created
-    $task = SendingTask::getByNewsletterId($newsletter->id);
+    $task = SendingTask::getByNewsletterId($newsletter->getId());
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     expect($task->id)->greaterOrEquals(1);
@@ -170,15 +177,15 @@ class AutomaticEmailTest extends \MailPoetTest {
         'afterTimeNumber' => 2,
       ]
     );
-    $condition = function($email) {
-      return $email->sendTo === 'segment';
+    $condition = function(NewsletterEntity $email) {
+      return $email->getOptionValue(NewsletterOptionFieldEntity::NAME_SEND_TO) === 'segment';
     };
 
     $wpMock = $this->createMock(WPFunctions::class);
     $wpMock->expects($this->any())
       ->method('currentTime')
       ->willReturn($currentTime->getTimestamp());
-    $automaticEmailScheduler = new AutomaticEmailScheduler(new Scheduler($wpMock));
+    $automaticEmailScheduler = new AutomaticEmailScheduler(new Scheduler($wpMock, $this->diContainer->get(NewslettersRepository::class)));
     // email should only be scheduled if it matches condition ("send to segment")
     $automaticEmailScheduler->scheduleAutomaticEmail('some_group', 'some_event', $condition);
     $result = SendingQueue::findMany();
