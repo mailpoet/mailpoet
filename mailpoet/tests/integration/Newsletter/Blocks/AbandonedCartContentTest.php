@@ -8,7 +8,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterPostEntity;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
 use MailPoet\WP\Functions as WPFunctions;
@@ -198,8 +197,7 @@ class AbandonedCartContentTest extends \MailPoetTest {
   private function createSendingTask($newsletter, $subscriberId = null, $meta = null) {
     $subscriberId = $subscriberId ?: 1; // dummy default value
     $meta = $meta ?: [AbandonedCart::TASK_META_NAME => array_slice($this->productIds, 0, 3)];
-    $sendingTask = $this->automaticEmailScheduler
-      ->createAutomaticEmailSendingTask(Newsletter::findOne($newsletter->getId()), $subscriberId, $meta);
+    $sendingTask = $this->automaticEmailScheduler->createAutomaticEmailSendingTask($newsletter, $subscriberId, $meta);
     return $sendingTask;
   }
 

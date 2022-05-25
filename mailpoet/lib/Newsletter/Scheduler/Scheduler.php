@@ -2,7 +2,8 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
-use MailPoet\Models\Newsletter;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -12,10 +13,15 @@ class Scheduler {
   /** @var WPFunctions  */
   private $wp;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
   public function __construct(
-    WPFunctions $wp
+    WPFunctions $wp,
+    NewslettersRepository $newslettersRepository
   ) {
     $this->wp = $wp;
+    $this->newslettersRepository = $newslettersRepository;
   }
 
   public function getNextRunDate($schedule, $fromTimestamp = false) {
@@ -65,12 +71,11 @@ class Scheduler {
     return $currentTime;
   }
 
-  public function getNewsletters($type, $group = false) {
-    return Newsletter::getPublished()
-      ->filter('filterType', $type, $group)
-      ->filter('filterStatus', Newsletter::STATUS_ACTIVE)
-      ->filter('filterWithOptions', $type)
-      ->findMany();
+  /**
+   * @return NewsletterEntity[]
+   */
+  public function getNewsletters(string $type, ?string $group = null): array {
+    return $this->newslettersRepository->findActiveByTypeAndGroup($type, $group);
   }
 
   public function formatDatetimeString($datetimeString) {

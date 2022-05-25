@@ -467,7 +467,7 @@ class WelcomeTest extends \MailPoetTest {
       $this->segmentRepository,
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
-      new Scheduler($wpMock)
+      new Scheduler($wpMock, $this->diContainer->get(NewslettersRepository::class))
     );
   }
 
