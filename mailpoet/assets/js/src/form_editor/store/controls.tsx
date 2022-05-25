@@ -187,7 +187,7 @@ export const controls = {
         if (customFieldBlock) {
           unregisterBlockType(customFieldBlockName);
         }
-        dispatch('core/block-editor').removeBlock(actionData.clientId);
+        dispatch('core/block-editor').removeBlock(clientId);
       })
       .fail((response) => {
         dispatch('mailpoet-form-editor').deleteCustomFieldFailed(

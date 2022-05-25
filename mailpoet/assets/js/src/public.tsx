@@ -36,7 +36,7 @@ jQuery(($) => {
    * @return {string} The name of the cookie for the form
    */
   function getFormCookieName(form) {
-    const formId = form.find('input[name="data[form_id]"]').val();
+    const formId = form.find('input[name="data[form_id]"]').val() as string;
     return `popup_form_dismissed_${formId}`;
   }
 
@@ -53,7 +53,7 @@ jQuery(($) => {
     Cookies.set(formCookieName, '1', { expires: 182, path: '/' });
   }
 
-  function updateCaptcha(e) {
+  function updateCaptcha(e?: Event) {
     const captcha = $('img.mailpoet_captcha');
     if (!captcha.length) return false;
     const captchaSrc = captcha.attr('src');
@@ -78,9 +78,14 @@ jQuery(($) => {
     });
   }
 
-  function submitSubscribeForm(form, formData, parsley) {
+  function submitSubscribeForm(
+    form,
+    formData: ReturnType<JQuery['mailpoetSerializeObject']>,
+    parsley,
+  ) {
     form.addClass('mailpoet_form_sending');
     // ajax request
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     MailPoet.Ajax.post<
       Response,
       {
@@ -166,7 +171,7 @@ jQuery(($) => {
     const recaptcha = $(element);
     const form = $(recaptcha).closest('form');
     const sitekey = recaptcha.attr('data-sitekey');
-    let size = recaptcha.attr('data-size');
+    let size = recaptcha.attr('data-size') as ReCaptchaV2.Size;
 
     // Users should not be able to change the size if it is equal to 'invisible' as this would
     // change the type of the ReCaptcha.
@@ -177,13 +182,15 @@ jQuery(($) => {
     const container = recaptcha.find('> .mailpoet_recaptcha_container').get(0);
     const field = recaptcha.find('> .mailpoet_recaptcha_field');
     if (sitekey) {
-      const params = { sitekey, size };
+      const params: ReCaptchaV2.Parameters = { sitekey, size };
 
       if (size === 'invisible') {
         params.callback = function invisibleReCaptchaCallback(
           recaptchaResponseToken,
         ) {
-          const formData = form.mailpoetSerializeObject() || {};
+          const formData =
+            form.mailpoetSerializeObject() ||
+            ({} as ReturnType<JQuery['mailpoetSerializeObject']>);
           formData.data.recaptchaResponseToken = recaptchaResponseToken;
 
           submitSubscribeForm(form, formData, form.parsley());
@@ -235,7 +242,10 @@ jQuery(($) => {
     return window.location.hostname === link.hostname;
   }
 
-  function renderFontFamily(fontName, formDiv) {
+  function renderFontFamily(
+    fontName: string,
+    formDiv: JQuery<HTMLFormElement>,
+  ) {
     const originalFontFamily = formDiv.css('font-family');
     const newFontFamily = `"${fontName}", ${originalFontFamily}`;
     formDiv.css('font-family', newFontFamily);
@@ -406,8 +416,12 @@ jQuery(($) => {
           return true;
         }
 
-        const formData = form.mailpoetSerializeObject() || {};
-        const size = form.find('.mailpoet_recaptcha').attr('data-size');
+        const formData =
+          form.mailpoetSerializeObject() ||
+          ({} as ReturnType<JQuery['mailpoetSerializeObject']>);
+        const size = form
+          .find('.mailpoet_recaptcha')
+          .attr('data-size') as ReCaptchaV2.Size;
 
         if (window.grecaptcha && formData.recaptchaWidgetId) {
           // The API for the invisible and checkbox ReCaptchas is slightly different. For the
@@ -417,6 +431,7 @@ jQuery(($) => {
           // token here after calling getResponse() and then we can call submitSubscribeForm()
           // directly.
           if (size === 'invisible') {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             window.grecaptcha.execute(formData.recaptchaWidgetId);
           } else {
             formData.data.recaptchaResponseToken =
