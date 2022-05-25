@@ -20,7 +20,14 @@ type ErrorResponse = {
 
 interface JQuery {
   parsley: () => any;
-  mailpoetSerializeObject: () => Record<string, any>;
+  mailpoetSerializeObject: () => {
+    recaptchaWidgetId: number;
+    token: string;
+    api_version: string;
+    data: {
+      recaptchaResponseToken: string;
+    };
+  };
 }
 
 /* Type definitions for components used from external libraries */
