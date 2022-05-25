@@ -11,6 +11,8 @@ class DaemonActionSchedulerRunner {
   const DAEMON_TRIGGER_SCHEDULER_ACTION = 'mailpoet/cron/daemon-trigger';
   const RUN_ACTION_SCHEDULER = 'mailpoet-cron-action-scheduler-run';
 
+  const DAEMON_EXECUTION_LIMIT = 10; // 10 seconds
+
   /** @var Daemon */
   private $daemon;
 
@@ -78,6 +80,7 @@ class DaemonActionSchedulerRunner {
    */
   public function run(): void {
     $this->wp->addAction('action_scheduler_after_process_queue', [$this, 'afterProcess']);
+    $this->wp->addAction('mailpoet_cron_get_execution_limit', [$this, 'getDaemonExecutionLimit']);
     $this->daemon->run($this->cronHelper->createDaemon($this->cronHelper->createToken()));
   }
 
@@ -98,6 +101,14 @@ class DaemonActionSchedulerRunner {
    */
   public function ensureConcurrency(int $concurrency): int {
     return ($concurrency) < 2 ? 2 : $concurrency;
+  }
+
+  /**
+   * We need to set lower execution limit for MailPoet daemon because we share the space (execution time limit) with others
+   * @return int
+   */
+  public function getDaemonExecutionLimit(): int {
+    return self::DAEMON_EXECUTION_LIMIT;
   }
 
   /**
