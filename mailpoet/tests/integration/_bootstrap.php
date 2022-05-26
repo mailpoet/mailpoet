@@ -23,6 +23,14 @@ if ((boolean)getenv('MULTISITE') === true) {
 }
 require_once($wpLoadFile);
 
+/**
+ * Setting env from .evn file
+ * Note that the following are override in the docker-compose file
+ * WP_ROOT, WP_ROOT_MULTISITE, WP_TEST_MULTISITE_SLUG
+ */
+$dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . '/../..');
+$dotenv->load();
+
 $console = new \Codeception\Lib\Console\Output([]);
 $console->writeln('Loading WP core... (' . $wpLoadFile . ')');
 
