@@ -255,13 +255,4 @@ class AmazonSESTest extends \MailPoetTest {
     expect($result['error'])->isInstanceOf(MailerError::class);
     expect($result['error']->getMessage())->stringContainsString('AmazonSES has returned an unknown error.');
   }
-
-  public function testItCanSend() {
-    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
-    $result = $this->mailer->send(
-      $this->newsletter,
-      $this->subscriber
-    );
-    expect($result['response'])->true();
-  }
 }
