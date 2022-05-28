@@ -22,6 +22,7 @@ use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -49,13 +50,17 @@ class Menu {
   /** @var FeaturesController */
   private $featuresController;
 
+  /** @var CustomFonts  */
+  private $customFonts;
+
   public function __construct(
     AccessControl $accessControl,
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
     ContainerWrapper $container,
     Router $router,
-    FeaturesController $featuresController
+    FeaturesController $featuresController,
+    CustomFonts $customFonts
   ) {
     $this->accessControl = $accessControl;
     $this->wp = $wp;
@@ -63,6 +68,7 @@ class Menu {
     $this->container = $container;
     $this->router = $router;
     $this->featuresController = $featuresController;
+    $this->customFonts = $customFonts;
   }
 
   public function init() {
@@ -82,36 +88,46 @@ class Menu {
 
     $this->router->checkRedirects();
 
-    if (self::isOnMailPoetAdminPage()) {
-      $this->wp->doAction('mailpoet_conflict_resolver_styles');
-      $this->wp->doAction('mailpoet_conflict_resolver_scripts');
+    $this->registerMailPoetMenu();
 
-      if (
-        isset($_REQUEST['page'])
-        && sanitize_text_field(wp_unslash($_REQUEST['page'])) === 'mailpoet-newsletter-editor'
-      ) {
-        // Disable WP emojis to not interfere with the newsletter editor emoji handling
-        $this->disableWPEmojis();
-        $this->wp->addAction('admin_head', function() {
-          echo '<link href="https://fonts.googleapis.com/css?family='
-            . 'Arvo:400,400i,700,700i'
-            . '|Lato:400,400i,700,700i'
-            . '|Lora:400,400i,700,700i'
-            . '|Merriweather:400,400i,700,700i'
-            . '|Merriweather+Sans:400,400i,700,700i'
-            . '|Noticia+Text:400,400i,700,700i'
-            . '|Open+Sans:400,400i,700,700i'
-            . '|Playfair+Display:400,400i,700,700i'
-            . '|Roboto:400,400i,700,700i'
-            . '|Source+Sans+Pro:400,400i,700,700i'
-            . '|Oswald:400,400i,700,700i'
-            . '|Raleway:400,400i,700,700i'
-            . '|Permanent+Marker:400,400i,700,700i'
-            . '|Pacifico:400,400i,700,700i'
-            . '" rel="stylesheet">';
-        });
-      }
+    if (!self::isOnMailPoetAdminPage()) {
+      return;
     }
+    $this->wp->doAction('mailpoet_conflict_resolver_styles');
+    $this->wp->doAction('mailpoet_conflict_resolver_scripts');
+
+    if (
+      !isset($_REQUEST['page'])
+      && sanitize_text_field(wp_unslash($_REQUEST['page'])) !== 'mailpoet-newsletter-editor'
+    ) {
+      return;
+    }
+    // Disable WP emojis to not interfere with the newsletter editor emoji handling
+    $this->disableWPEmojis();
+    if (!$this->customFonts->displayCustomFonts()) {
+      return;
+    }
+    $this->wp->addAction('admin_head', function () {
+      echo '<link href="https://fonts.googleapis.com/css?family='
+        . 'Arvo:400,400i,700,700i'
+        . '|Lato:400,400i,700,700i'
+        . '|Lora:400,400i,700,700i'
+        . '|Merriweather:400,400i,700,700i'
+        . '|Merriweather+Sans:400,400i,700,700i'
+        . '|Noticia+Text:400,400i,700,700i'
+        . '|Open+Sans:400,400i,700,700i'
+        . '|Playfair+Display:400,400i,700,700i'
+        . '|Roboto:400,400i,700,700i'
+        . '|Source+Sans+Pro:400,400i,700,700i'
+        . '|Oswald:400,400i,700,700i'
+        . '|Raleway:400,400i,700,700i'
+        . '|Permanent+Marker:400,400i,700,700i'
+        . '|Pacifico:400,400i,700,700i'
+        . '" rel="stylesheet">';
+    });
+  }
+
+  private function registerMailPoetMenu() {
 
     // Main page
     $this->wp->addMenuPage(
