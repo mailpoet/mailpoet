@@ -59,7 +59,7 @@ class SMTP extends PHPMailerMethod {
     /** @phpstan-ignore-next-line - we cannot annotate the return type from a filter */
     $mailer->Timeout = $this->wp->applyFilters('mailpoet_mailer_smtp_connection_timeout', self::SMTP_CONNECTION_TIMEOUT); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-    if ($this->authentication) {
+    if ($this->authentication === 1) {
       $mailer->SMTPAuth = true; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $mailer->Username = $this->login; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $mailer->Password = $this->password; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps

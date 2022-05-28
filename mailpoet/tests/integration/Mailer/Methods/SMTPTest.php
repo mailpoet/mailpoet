@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Test\Mailer\Methods;
 
@@ -51,7 +51,7 @@ class SMTPTest extends \MailPoetTest {
     $this->mailer = new SMTP(
       $this->settings['host'],
       $this->settings['port'],
-      $this->settings['authentication'],
+      (int)$this->settings['authentication'],
       $this->settings['encryption'],
       $this->sender,
       $this->replyTo,
