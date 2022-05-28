@@ -2,6 +2,7 @@
 
 namespace MailPoet\Form\Util;
 
+use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions;
 
 class CustomFonts {
@@ -74,14 +75,19 @@ class CustomFonts {
   /** @var Functions */
   private $wp;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function __construct(
-    Functions $wp
+    Functions $wp,
+    SettingsController $settings
   ) {
     $this->wp = $wp;
+    $this->settings = $settings;
   }
 
-  private function displayCustomFonts(): bool {
-    $display = $this->wp->applyFilters('mailpoet_display_custom_fonts', true);
+  public function displayCustomFonts(): bool {
+    $display = $this->wp->applyFilters('mailpoet_display_custom_fonts', $this->settings->get('3rd_party_libs.enabled') === '1');
     return (bool)$display;
   }
 
