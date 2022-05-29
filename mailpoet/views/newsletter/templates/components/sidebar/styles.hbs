@@ -20,11 +20,13 @@
                 <option value="{{ this }}" {{#ifCond this '==' ../model.text.fontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
             {{/each}}
             </optgroup>
+            {{#if availableStyles.fonts.custom.length}}
             <optgroup label="<%= __('Custom fonts')%>">
             {{#each availableStyles.fonts.custom}}
                 <option value="{{ this }}" {{#ifCond this '==' ../model.text.fontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
             {{/each}}
             </optgroup>
+            {{/if}}
             </select>
             <select id="mailpoet_text_font_size" name="text-size" class="mailpoet_font_size mailpoet_select mailpoet_select_small">
             {{#each availableStyles.textSizes}}
@@ -43,11 +45,13 @@
                   <option value="{{ this }}" {{#ifCond this '==' ../model.h1.fontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
               {{/each}}
               </optgroup>
+              {{#if availableStyles.fonts.custom.length}}
               <optgroup label="<%= __('Custom fonts')%>">
               {{#each availableStyles.fonts.custom}}
                   <option value="{{ this }}" {{#ifCond this '==' ../model.h1.fontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
               {{/each}}
               </optgroup>
+              {{/if}}
               </select>
               <select id="mailpoet_h1_font_size" name="h1-size" class="mailpoet_font_size mailpoet_select mailpoet_select_small">
               {{#each availableStyles.headingSizes}}
@@ -65,11 +69,13 @@
                   <option value="{{ this }}" {{#ifCond this '==' ../model.h2.fontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
               {{/each}}
               </optgroup>
+              {{#if availableStyles.fonts.custom.length}}
               <optgroup label="<%= __('Custom fonts')%>">
               {{#each availableStyles.fonts.custom}}
                   <option value="{{ this }}" {{#ifCond this '==' ../model.h2.fontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
               {{/each}}
               </optgroup>
+              {{/if}}
               </select>
               <select id="mailpoet_h2_font_size" name="h2-size" class="mailpoet_font_size mailpoet_select mailpoet_select_small">
               {{#each availableStyles.headingSizes}}
@@ -87,11 +93,13 @@
                   <option value="{{ this }}" {{#ifCond this '==' ../model.h3.fontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
               {{/each}}
               </optgroup>
+              {{#if availableStyles.fonts.custom.length}}
               <optgroup label="<%= __('Custom fonts')%>">
               {{#each availableStyles.fonts.custom}}
                   <option value="{{ this }}" {{#ifCond this '==' ../model.h3.fontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
               {{/each}}
               </optgroup>
+              {{/if}}
               </select>
               <select id="mailpoet_h3_font_size" name="h3-size" class="mailpoet_font_size mailpoet_select mailpoet_select_small">
               {{#each availableStyles.headingSizes}}
