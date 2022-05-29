@@ -1,5 +1,9 @@
 # MailPoet
 
+
+
+
+
 The **MailPoet** plugin.
 
 To use the official Docker-based development environment, see details
