@@ -2,8 +2,8 @@
 
 // phpcs:disable PSR1.Classes.ClassDeclaration
 // phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
-
 use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
+use Robo\Symfony\ConsoleIO;
 
 class RoboFile extends \Robo\Tasks {
   const ZIP_BUILD_PATH = __DIR__ . '/mailpoet.zip';
@@ -858,6 +858,44 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  /**
+   * This command displays how many pull request each person did recently
+   */
+  public function displayReviewers(ConsoleIO $io) {
+    $io->progressStart(2);
+    $freePluginGithubController = $this->createGitHubController();
+    $logins = $freePluginGithubController->calculateReviewers();
+
+    $io->progressAdvance();
+    $shopGithubController = $this->createGitHubController('shop');
+    $loginsShop = $shopGithubController->calculateReviewers();
+    $io->progressFinish();
+
+    $printReviewers = function ($logins, $header) use ($io) {
+      $io->title($header);
+      $outputList = [];
+      foreach ($logins as $login => $num) {
+        $outputList[] = [$login => $num];
+      }
+      $io->definitionList(...$outputList);
+    };
+
+    arsort($logins);
+    $printReviewers($logins, 'Free plugin');
+
+    arsort($loginsShop);
+    $printReviewers($loginsShop, 'Shop');
+
+    foreach ($loginsShop as $loginShop => $num) {
+      if (!isset($logins[$loginShop])) {
+        $logins[$loginShop] = 0;
+      }
+      $logins[$loginShop] += $num;
+    }
+    arsort($logins);
+    $printReviewers($logins, 'Full');
+  }
+
   public function releaseCheckPullRequest($version) {
     $this->createGitHubController()
       ->checkReleasePullRequestPassed($version);
@@ -884,7 +922,7 @@ class RoboFile extends \Robo\Tasks {
   public function releaseVersionAssign($version = null, $opts = []) {
     $version = $this->releaseVersionGetNext($version);
     try {
-      list($version, $output) = $this->getReleaseVersionController()
+      [$version, $output] = $this->getReleaseVersionController()
         ->assignVersionToCompletedTickets($version);
     } catch (\Exception $e) {
       $this->yell($e->getMessage(), 40, 'red');
@@ -1093,12 +1131,12 @@ class RoboFile extends \Robo\Tasks {
     );
   }
 
-  protected function createGitHubController() {
+  protected function createGitHubController($project = \MailPoetTasks\Release\GitHubController::PROJECT_MAILPOET) {
     $help = "Use your GitHub username and a token from https://github.com/settings/tokens with 'repo' scopes.";
     return new \MailPoetTasks\Release\GitHubController(
       $this->getEnv('WP_GITHUB_USERNAME', $help),
       $this->getEnv('WP_GITHUB_TOKEN', $help),
-      \MailPoetTasks\Release\GitHubController::PROJECT_MAILPOET
+      $project
     );
   }
 
