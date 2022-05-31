@@ -44,7 +44,7 @@ class GitHubController {
       'json' => [
         'title' => 'Release ' . $version,
         'head' => self::RELEASE_SOURCE_BRANCH,
-        'base' => 'master',
+        'base' => 'trunk',
       ],
     ]);
     $response = json_decode($response->getBody()->getContents(), true);
@@ -69,7 +69,7 @@ class GitHubController {
       'query' => [
         'state' => 'all',
         'head' => self::RELEASE_SOURCE_BRANCH,
-        'base' => 'master',
+        'base' => 'trunk',
         'direction' => 'desc',
       ],
     ]);
