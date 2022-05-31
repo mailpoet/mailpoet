@@ -7,11 +7,11 @@ on:
     types: [created]
 
 jobs:
-  check:
+  size_check:
     runs-on: ubuntu-latest
     steps:
       - uses: khan/pull-request-comment-trigger@v1.1.0
-        id: trigger-check
+        id: check
         with:
           trigger: '#check-size'
           reaction: rocket
