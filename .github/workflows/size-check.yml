@@ -37,10 +37,20 @@ jobs:
           mv ./mailpoet.zip ./mailpoet-new.zip
           SIZE_NEW=$(stat --format="%s" mailpoet-new.zip)
           SIZE_DELTA=$((SIZE_NEW-SIZE_BASE))
-          echo "::set-output name=SIZE_BASE::$(echo {$SIZE_BASE})"
-          echo "::set-output name=SIZE_NEW::$(echo {$SIZE_NEW})"
-          echo "::set-output name=SIZE_DELTA::$(echo {$SIZE_DELTA})"
-      - name: Send Message
-        run: |
-          echo "Delta is: ${{ steps.process-zips.outputs.SIZE_DELTA }}"
-          echo "New is: ${{ steps.process-zips.outputs.SIZE_NEW }}"
+          echo "::set-output name=SIZE_DELTA::$(echo $SIZE_DELTA)"
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Delta of mailpoet
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Hello developer!
+            Delta for mailpoet.zip for your changes is ${{ steps.process-zips.outputs.SIZE_DELTA }} Bytes.
+          edit-mode: replace
