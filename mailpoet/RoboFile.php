@@ -959,6 +959,77 @@ class RoboFile extends \Robo\Tasks {
     $this->say("Release '$version[name]' info was published on Slack.");
   }
 
+  public function apiGenerateDocs() {
+    $normalizeRequiredProps = function (array $schema) use (&$normalizeRequiredProps): array {
+      if (isset($schema['properties'])) {
+        $schema['required'] = [];
+        foreach ($schema['properties'] as $name => $value) {
+          $schema['properties'][$name] = $normalizeRequiredProps($value);
+          if (isset($value['required']) && $value['required'] === true) {
+            $schema['required'][] = $name;
+            unset($schema['properties'][$name]['required']);
+          }
+        }
+      }
+
+      if (isset($schema['additionalProperties'])) {
+        $schema['additionalProperties'] = $normalizeRequiredProps($schema['additionalProperties']);
+      }
+      // TODO: array items
+      return $schema;
+    };
+
+    $paths = [];
+    foreach (\MailPoet\Automation\Engine\Engine::ROUTES as $route => $methods) {
+      foreach ($methods as $method => $endpoint) {
+        $method = strtolower($method);
+        $properties = array_map(function ($parameter) {
+          return $parameter->toArray();
+        }, $endpoint::getRequestSchema());
+
+        $definition = [
+          'summary' => $route,
+          'description' => 'Description',
+          'operationId' => $route . "/$method",
+        ];
+
+        if ($method === 'get') {
+          $definition['parameters'] = $properties;
+        } else {
+          $schema = [
+            'schema' => $normalizeRequiredProps([
+              'type' => 'object',
+              'properties' => count($properties) > 0 ? $properties : (object)$properties,
+            ]),
+          ];
+          $definition['requestBody'] = [
+            'content' => ['application/json' => $schema],
+          ];
+        }
+
+        $paths["/$route"][$method] = $definition;
+      }
+    }
+
+    $schema = [
+      'openapi' => '3.1.0',
+      'info' => [
+        'version' => 'dev',
+        'title' => 'MailPoet API',
+        'description' => 'MailPoet API docs',
+      ],
+      'servers' => [
+        [
+          'url' => '/wp-json/automation/v1',
+        ],
+      ],
+      'paths' => $paths,
+    ];
+
+    $this->_exec('mkdir -p ' . __DIR__ . '/api-docs');
+    file_put_contents(__DIR__ . '/api-docs/schema.json', json_encode($schema));
+  }
+
   public function downloadWooCommerceBlocksZip($tag = null) {
     $this->createWpOrgDownloader('woo-gutenberg-products-block')
       ->downloadPluginZip('woo-gutenberg-products-block.zip', __DIR__ . '/tests/plugins/', $tag);
