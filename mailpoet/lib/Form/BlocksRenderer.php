@@ -101,6 +101,9 @@ class BlocksRenderer {
 
   public function renderBlock(array $block, array $formSettings, ?int $formId): string {
     $html = '';
+    if ($formId) {
+      $formSettings['id'] = $formId;
+    }
     switch ($block['type']) {
       case FormEntity::HTML_BLOCK_TYPE:
         $html .= $this->html->render($block, $formSettings);
