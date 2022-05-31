@@ -7,7 +7,7 @@ slack-fail-post-step: &slack-fail-post-step
   post-steps:
     - slack/notify:
         channel: mailpoet-dev-feeds
-        branch_pattern: 'master,release'
+        branch_pattern: 'trunk,release'
         event: fail
         custom: |
           {
@@ -64,11 +64,11 @@ anchors:
     environment:
       TZ: /usr/share/zoneinfo/Etc/UTC
 
-  only_master_and_release: &only_master_and_release
+  only_trunk_and_release: &only_trunk_and_release
     filters:
       branches:
         only:
-          - master
+          - trunk
           - release
 
   multisite_acceptance_config: &multisite_acceptance_config
@@ -76,7 +76,7 @@ anchors:
     requires:
       - unit_tests
       - static_analysis_php8
-    <<: *only_master_and_release
+    <<: *only_trunk_and_release
 
 executors:
   wpcli_php_oldest:
@@ -577,7 +577,7 @@ workflows:
           name: acceptance_tests_multisite
       - integration_tests:
           <<: *slack-fail-post-step
-          <<: *only_master_and_release
+          <<: *only_trunk_and_release
           multisite: 1
           name: integration_tests_multisite
           requires:
@@ -601,7 +601,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - trunk
     jobs:
       - build:
           <<: *slack-fail-post-step
