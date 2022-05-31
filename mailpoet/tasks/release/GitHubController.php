@@ -39,6 +39,57 @@ class GitHubController {
     ]);
   }
 
+  /**
+   * @return array{login: string, count: int}
+   */
+  public function calculateReviewers(): array {
+    // load pull requests
+    $response = $this->httpClient->get('pulls', [
+      'query' => [
+        'per_page' => '100', // 100 is maximum, if we want more we need to implement paging
+        'state' => 'all',
+      ],
+    ]);
+    $response = json_decode($response->getBody()->getContents(), true);
+    $logins = [];
+    foreach ($response as $item) {
+      $author = $item['user']['login'];
+      // calculate reviewers - here we only get reviewers if the review has not yet started
+      $reviewers = $item['requested_reviewers'];
+      foreach ($reviewers as $reviewer) {
+        if ($reviewer['login'] === self::QA_GITHUB_LOGIN) continue;
+        if ($reviewer['login'] === $author) continue;
+        $logins[$reviewer['login']] = ($logins[$reviewer['login']] ?? 0) + 1;
+      }
+
+      $single = [];
+      $pullRequestNumber = $item['number'];
+      // load all performed reviews (approved, request changes, add a comment)
+      $reviews = $this->httpClient->get("pulls/$pullRequestNumber/reviews");
+      $reviews = json_decode($reviews->getBody()->getContents(), true);
+      foreach ($reviews as $review) {
+        $log = $review['user']['login'];
+        if ($log === self::QA_GITHUB_LOGIN) continue;
+        if ($log === $author) continue;
+        // each person only once for each pull request. We don't want to count them more times if they added more comments
+        $single[$log] = $log;
+      }
+      foreach ($single as $log) {
+        $logins[$log] = ($logins[$log] ?? 0) + 1;
+      }
+    }
+
+    // merge Alex
+    if (!isset($logins['alex-mailpoet'])) {
+      $logins['alex-mailpoet'] = 0;
+    }
+    if (isset($logins['wxa'])) {
+      $logins['alex-mailpoet'] += $logins['wxa'];
+      unset($logins['wxa']);
+    }
+    return $logins;
+  }
+
   public function createReleasePullRequest($version) {
     $response = $this->httpClient->post('pulls', [
       'json' => [
