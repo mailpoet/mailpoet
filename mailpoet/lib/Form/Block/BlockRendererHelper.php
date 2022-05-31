@@ -104,28 +104,39 @@ class BlockRendererHelper {
 
   public function renderLabel(array $block, array $formSettings): string {
     $html = '';
+    $forId = '';
+
     if (
       isset($block['params']['hide_label'])
       && $block['params']['hide_label']
     ) {
       return $html;
     }
-    if (
-      isset($block['params']['label_within'])
-      && $block['params']['label_within']
-    ) {
-      return $html;
-    }
+
     $automationId = null;
     if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
       $automationId = 'data-automation-id="form_' . $block['id'] . '_label" ';
+      if (isset($formSettings['id'])) {
+        $forId = 'for="form_' . $block['id'] . '_' . $formSettings['id'] . '" ';
+      }
     }
+
     if (
       isset($block['params']['label'])
       && strlen(trim($block['params']['label'])) > 0
     ) {
+      $labelClass = 'class="mailpoet_' . $block['type'] . '_label" ';
+
+      if (
+        isset($block['params']['label_within'])
+        && $block['params']['label_within']
+      ) {
+        $labelClass = 'class="screen-reader-text" ';
+      }
+
       $html .= '<label '
-        . 'class="mailpoet_' . $block['type'] . '_label" '
+        . $forId
+        . $labelClass
         . $this->renderFontStyle($formSettings, $block['styles'] ?? [])
         . ($automationId ?? '')
         . '>';

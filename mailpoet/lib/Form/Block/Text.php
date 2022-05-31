@@ -34,6 +34,7 @@ class Text {
   public function render(array $block, array $formSettings): string {
     $type = 'text';
     $automationId = ' ';
+    $id = '';
     $autocomplete = 'on';
     if ($block['id'] === 'email') {
       $type = 'email';
@@ -41,19 +42,25 @@ class Text {
     }
 
     if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
+
       $automationId = 'data-automation-id="form_' . $this->wp->escAttr($block['id']) . '" ';
+
+      if (isset($formSettings['id'])) {
+        $id = 'id="form_' . $this->wp->escAttr($block['id']) . '_' . $this->wp->escAttr($formSettings['id']) . '" ';
+      }
     }
 
     $styles = $this->inputStylesRenderer->renderForTextInput($block['styles'] ?? [], $formSettings);
 
     $name = $this->rendererHelper->getFieldName($block);
 
-    $html = '';
-    $html .= $this->inputStylesRenderer->renderPlaceholderStyles($block, 'input[name="data[' . $name . ']"]');
+    $html = $this->inputStylesRenderer->renderPlaceholderStyles($block, 'input[name="data[' . $name . ']"]');
 
     $html .= $this->rendererHelper->renderLabel($block, $formSettings);
 
     $html .= '<input type="' . $type . '" autocomplete="' . $autocomplete . '" class="mailpoet_text" ';
+
+    $html .= $id;
 
     $html .= 'name="data[' . $name . ']" ';
 
