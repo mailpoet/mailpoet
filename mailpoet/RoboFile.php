@@ -1033,6 +1033,18 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  public function apiPublishDocs() {
+    $branch = getenv('CIRCLE_BRANCH');
+    if (!$branch) {
+      $this->yell("Please provide a branch in a 'CIRCLE_BRANCH' environment variable.", 40, 'red');
+      exit(1);
+    }
+    $this->apiGenerateDocs();
+    return $this->taskExec("npx @redocly/cli push --branch $branch schema.json '@mailpoet/MailPoet API@v1'")
+      ->dir(__DIR__ . '/api-docs')
+      ->run();
+  }
+
   public function downloadWooCommerceBlocksZip($tag = null) {
     $this->createWpOrgDownloader('woo-gutenberg-products-block')
       ->downloadPluginZip('woo-gutenberg-products-block.zip', __DIR__ . '/tests/plugins/', $tag);

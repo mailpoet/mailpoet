@@ -507,6 +507,9 @@ jobs:
       - run:
           name: 'Build'
           command: ./build.sh
+      - run:
+          name: 'Build & publish API docs'
+          command: ./do api:publish-docs
       - store_artifacts:
           path: /home/circleci/mailpoet/mailpoet/mailpoet.zip
       - persist_to_workspace:
