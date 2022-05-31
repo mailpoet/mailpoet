@@ -2,21 +2,12 @@ name: 'Package size check'
 
 on:
   pull_request:
-    types: [opened]
-  issue_comment:
-    types: [created]
+    branches: trunk
 
 jobs:
   size_check:
     runs-on: ubuntu-latest
     steps:
-      - uses: khan/pull-request-comment-trigger@v1.1.0
-        id: check
-        with:
-          trigger: '#check-size'
-          reaction: rocket
-        env:
-          GITHUB_TOKEN: '${{ secrets.WP_GITHUB_TOKEN }}'
       - uses: actions/checkout@v3
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
