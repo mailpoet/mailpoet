@@ -1028,6 +1028,9 @@ class RoboFile extends \Robo\Tasks {
 
     $this->_exec('mkdir -p ' . __DIR__ . '/api-docs');
     file_put_contents(__DIR__ . '/api-docs/schema.json', json_encode($schema));
+    return $this->taskExec('npx redoc-cli build schema.json')
+      ->dir(__DIR__ . '/api-docs')
+      ->run();
   }
 
   public function downloadWooCommerceBlocksZip($tag = null) {
