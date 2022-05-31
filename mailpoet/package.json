@@ -182,6 +182,7 @@
     "phplint": "^2.0.5",
     "postcss-cli": "^9.1.0",
     "postcss-scss": "^4.0.3",
+    "redoc-cli": "^0.13.15",
     "sass": "^1.49.9",
     "sinon": "^13.0.1",
     "sinon-chai": "^3.7.0",
