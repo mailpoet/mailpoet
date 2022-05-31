@@ -8,10 +8,22 @@
   vertical-align: middle;
 
   input {
+    border: 0;
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
     height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
     position: absolute;
-    visibility: hidden;
     width: 1px;
+    word-wrap: normal !important;
+
+    &:focus {
+      ~ .mailpoet-form-checkbox-control {
+        border: 2px solid $color-input-border;
+      }
+    }
   }
 
   &.mailpoet-full-width + .mailpoet-form-checkbox.mailpoet-full-width { margin-top: $grid-gap; }
