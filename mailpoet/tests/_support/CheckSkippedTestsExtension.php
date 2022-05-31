@@ -13,7 +13,7 @@ class CheckSkippedTestsExtension extends Extension {
   public function checkErrorsAfterTests(SuiteEvent $e) {
     $branch = getenv('CIRCLE_BRANCH');
     $skipped = $e->getResult()->skipped();
-    if (in_array($branch, ['master', 'release']) && (count($skipped) !== 0)) {
+    if (in_array($branch, ['trunk', 'release']) && (count($skipped) !== 0)) {
       throw new \PHPUnit\Framework\ExpectationFailedException("Failed, Cannot skip tests on branch $branch.");
     }
   }
