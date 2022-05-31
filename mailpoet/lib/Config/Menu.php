@@ -98,7 +98,7 @@ class Menu {
 
     if (
       !isset($_REQUEST['page'])
-      && sanitize_text_field(wp_unslash($_REQUEST['page'])) !== 'mailpoet-newsletter-editor'
+      || sanitize_text_field(wp_unslash($_REQUEST['page'])) !== 'mailpoet-newsletter-editor'
     ) {
       return;
     }
