@@ -745,10 +745,10 @@ class RoboFile extends \Robo\Tasks {
       $this->yell('Please make sure your working directory is clean before running release.', 40, 'red');
       exit(1);
     }
-    // checkout master and pull from remote
+    // checkout trunk and pull from remote
     $this->taskGitStack()
       ->stopOnFail()
-      ->checkout('master')
+      ->checkout('trunk')
       ->exec('git pull --ff-only')
       ->run();
     // make sure release branch doesn't exist on github
