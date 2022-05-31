@@ -37,7 +37,7 @@ jobs:
         run: |
           cd mailpoet
           touch .env
-          ./do release:download-zip master
+          ./do release:download-zip trunk
           mv ./mailpoet.zip ./mailpoet-base.zip
           stat --format="%s" mailpoet-base.zip
           echo "Running on: ${{ steps.branch-name.outputs.current_branch }}"
