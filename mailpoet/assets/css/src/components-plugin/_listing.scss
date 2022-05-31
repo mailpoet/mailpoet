@@ -396,14 +396,12 @@ a.mailpoet-listing-title {
 
   .mailpoet-form-checkbox-control {
     margin-right: 0;
-    opacity: 1;
   }
 
   thead &,
-  tr:hover &,
-  input:checked + {
+  tr:hover & {
     .mailpoet-form-checkbox-control {
-      opacity: 1;
+      border: 2px solid $color-input-border;
     }
   }
 }
