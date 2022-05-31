@@ -53,13 +53,13 @@ class API {
     $this->registerRoute($route, $endpoint, 'DELETE');
   }
 
-  private function registerRoute(string $route, string $endpointClass, string $method): void {
+  public function registerRoute(string $route, string $endpointClass, string $method): void {
     $schema = array_map(function (Schema $field) {
       return $field->toArray();
     }, $endpointClass::getRequestSchema());
 
     $this->wordPress->registerRestRoute(self::PREFIX, $route, [
-      'methods' => $method,
+      'methods' => strtoupper($method),
       'callback' => function (WP_REST_Request $wpRequest) use ($endpointClass, $schema) {
         try {
           $endpoint = $this->endpointContainer->get($endpointClass);

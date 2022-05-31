@@ -13,6 +13,17 @@ use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Integrations\Core\CoreIntegration;
 
 class Engine {
+  public const ROUTES = [
+    'workflows' => [
+      'get' => WorkflowsGetEndpoint::class,
+      'post' => WorkflowsPostEndpoint::class,
+    ],
+    'system/database' => [
+      'post' => DatabasePostEndpoint::class,
+      'delete' => DatabaseDeleteEndpoint::class,
+    ],
+  ];
+
   /** @var API */
   private $api;
 
@@ -69,10 +80,11 @@ class Engine {
 
   private function registerApiRoutes(): void {
     $this->wordPress->addAction(Hooks::API_INITIALIZE, function (API $api) {
-      $api->registerGetRoute('workflows', WorkflowsGetEndpoint::class);
-      $api->registerPostRoute('workflows', WorkflowsPostEndpoint::class);
-      $api->registerPostRoute('system/database', DatabasePostEndpoint::class);
-      $api->registerDeleteRoute('system/database', DatabaseDeleteEndpoint::class);
+      foreach (self::ROUTES as $route => $methods) {
+        foreach ($methods as $method => $endpoint) {
+          $api->registerRoute($route, $endpoint, $method);
+        }
+      }
     });
   }
 
