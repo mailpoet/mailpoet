@@ -51,7 +51,6 @@ class CircleCiController {
     $this->checkZipBuildJobStatus($job);
 
     $releaseZipUrl = $this->getReleaseZipUrl($job['job_number']);
-
     $this->httpClient->get($releaseZipUrl, [
       'save_to' => $targetPath,
       'query' => [
@@ -103,6 +102,7 @@ class CircleCiController {
     }
     throw new \Exception('No release ZIP build found');
   }
+
 
   private function checkZipBuildJobStatus(array $job) {
     if ($job['status'] !== self::JOB_STATUS_SUCCESS) {
