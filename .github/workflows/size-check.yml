@@ -20,6 +20,7 @@ jobs:
       - name: Install deps
         run: cd mailpoet;composer install
       - name: Download ZIP files
+        id: process-zips
         env:
           WP_CIRCLECI_USERNAME: ${{ secrets.WP_CIRCLECI_USERNAME }}
           WP_CIRCLECI_TOKEN: ${{ secrets.WP_CIRCLECI_TOKEN }}
@@ -30,8 +31,16 @@ jobs:
           touch .env
           ./do release:download-zip trunk
           mv ./mailpoet.zip ./mailpoet-base.zip
-          stat --format="%s" mailpoet-base.zip
+          SIZE_BASE=$(stat --format="%s" mailpoet-base.zip)
           echo "Running on: ${{ steps.branch-name.outputs.current_branch }}"
           ./do release:download-zip MAILPOET-3985-pregenerate-twig-templates
           mv ./mailpoet.zip ./mailpoet-new.zip
-          stat --format="%s" mailpoet-new.zip
+          SIZE_NEW=$(stat --format="%s" mailpoet-new.zip)
+          SIZE_DELTA=$((SIZE_NEW-SIZE_BASE))
+          echo "::set-output name=SIZE_BASE::$(echo {$SIZE_BASE})"
+          echo "::set-output name=SIZE_NEW::$(echo {$SIZE_NEW})"
+          echo "::set-output name=SIZE_DELTA::$(echo {$SIZE_DELTA})"
+      - name: Send Message
+        run: |
+          echo "Delta is: ${{ steps.process-zips.outputs.SIZE_DELTA }}"
+          echo "New is: ${{ steps.process-zips.outputs.SIZE_NEW }}"
