@@ -121,6 +121,7 @@
     "@babel/preset-typescript": "^7.16.7",
     "@babel/register": "^7.17.7",
     "@mailpoet/eslint-config": "file:../eslint-config",
+    "@redocly/cli": "^1.0.0-beta.100",
     "@storybook/addon-actions": "^6.4.19",
     "@storybook/addon-links": "^6.4.19",
     "@storybook/addon-storysource": "^6.4.19",
