@@ -11,5 +11,24 @@ jobs:
         with:
           php-version: '8.0'
           tools: composer
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v5.2
       - name: Install deps
         run: cd mailpoet;composer install
+      - name: Download ZIP files
+        env:
+          WP_CIRCLECI_USERNAME: ${{ secrets.WP_CIRCLECI_USERNAME }}
+          WP_CIRCLECI_TOKEN: ${{ secrets.WP_CIRCLECI_TOKEN }}
+          WP_GITHUB_USERNAME: ${{ secrets.WP_GITHUB_USERNAME }}
+          WP_GITHUB_TOKEN: ${{ secrets.WP_GITHUB_TOKEN }}
+        run: |
+          cd mailpoet
+          touch .env
+          ./do release:download-zip master
+          mv ./mailpoet.zip ./mailpoet-base.zip
+          stat --format="%s" mailpoet-base.zip
+          echo "Running on: ${{ steps.branch-name.outputs.current_branch }}"
+          ./do release:download-zip MAILPOET-3985-pregenerate-twig-templates
+          mv ./mailpoet.zip ./mailpoet-new.zip
+          stat --format="%s" mailpoet-new.zip
