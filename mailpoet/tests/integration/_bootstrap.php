@@ -163,7 +163,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 
   public static function markTestSkipped(string $message = ''): void {
     $branchName = getenv('CIRCLE_BRANCH');
-    if ($branchName === 'master' || $branchName === 'release') {
+    if ($branchName === 'trunk' || $branchName === 'release') {
       self::fail('Cannot skip tests on this branch.');
     } else {
       parent::markTestSkipped($message);
