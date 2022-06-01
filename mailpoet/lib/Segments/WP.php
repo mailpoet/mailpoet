@@ -145,7 +145,6 @@ class WP {
     // or who are not WooCommerce customers at the same time since customers are added to the WooCommerce list
     if ($addingNewUserToDisabledWPSegment && !$otherActiveSegments && !$isWooCustomer) {
       $data['deleted_at'] = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
-      $data['status'] = SubscriberEntity::STATUS_UNCONFIRMED;
     }
 
     $subscriber = Subscriber::createOrUpdate($data);
