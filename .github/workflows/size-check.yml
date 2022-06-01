@@ -29,28 +29,19 @@ jobs:
         run: |
           cd mailpoet
           touch .env
-          ./do release:download-zip trunk
-          mv ./mailpoet.zip ./mailpoet-base.zip
-          SIZE_BASE=$(stat --format="%s" mailpoet-base.zip)
-          echo "Running on: ${{ steps.branch-name.outputs.current_branch }}"
-          ./do release:download-zip MAILPOET-3985-pregenerate-twig-templates
-          mv ./mailpoet.zip ./mailpoet-new.zip
-          SIZE_NEW=$(stat --format="%s" mailpoet-new.zip)
-          SIZE_DELTA=$((SIZE_NEW-SIZE_BASE))
-          echo "::set-output name=SIZE_DELTA::$(echo $SIZE_DELTA)"
+          MESSAGE=$(./do branch:zip-delta MAILPOET-3985-pregenerate-twig-templates)
+          echo "::set-output name=SIZE_DELTA_MESSAGE::$(echo $MESSAGE)"
       - name: Find Comment
         uses: peter-evans/find-comment@v2
         id: find-comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
-          body-includes: Delta of mailpoet
+          body-includes: Delta for mailpoet
       - name: Create or update comment
         uses: peter-evans/create-or-update-comment@v2
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            Hello developer!
-            Delta for mailpoet.zip for your changes is ${{ steps.process-zips.outputs.SIZE_DELTA }} Bytes.
+          body: ${{ steps.process-zips.outputs.SIZE_DELTA_MESSAGE }}
           edit-mode: replace

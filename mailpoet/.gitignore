@@ -10,7 +10,7 @@ tests/plugins
 .env
 /views/cache/**
 temp
-mailpoet.zip
+mailpoet*.zip
 tests/javascript_newsletter_editor/testBundles
 assets/dist
 .vagrant

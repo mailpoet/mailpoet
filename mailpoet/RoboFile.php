@@ -932,6 +932,22 @@ class RoboFile extends \Robo\Tasks {
     $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path) / pow(1024, 2)));
   }
 
+  public function branchZipDelta(string $branch) {
+    $circleciController = $this->createCircleCiController();
+    try {
+      $mainZip = $circleciController->downloadParentBuildFromMain(__DIR__ . '/mailpoet_trunk.zip', $branch);
+    } catch (\Exception $e) {
+      // If there is no zip for the parent commit on trunk fallback to the latest build on trunk
+      $mainZip = $circleciController->downloadLatestBuild(__DIR__ . '/mailpoet_trunk.zip', 'trunk');
+    }
+    $branchZip = $circleciController->downloadLatestBuild(__DIR__ . '/mailpoet_branch.zip', $branch);
+    $mainSize = filesize($mainZip);
+    $branchSize = filesize($branchZip);
+    $delta = $branchSize - $mainSize;
+    $message = "Hello developer!\n Delta for mailpoet.zip for your changes is $delta Bytes.";
+    $this->say($message);
+  }
+
   public function releasePublishGithub($version = null) {
     $jiraController = $this->createJiraController();
     $version = $jiraController->getVersion($version);
