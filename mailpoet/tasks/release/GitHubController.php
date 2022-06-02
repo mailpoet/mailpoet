@@ -142,7 +142,7 @@ class GitHubController {
       $response = $this->httpClient->get('commits/' . urlencode($branch));
       $data = json_decode($response->getBody()->getContents(), true);
     } catch (ClientException $e) {
-      if ($e->getCode() === 404) {
+      if ($e->getCode() === 404 || $e->getCode() === 422) {
         return null;
       }
       throw $e;
