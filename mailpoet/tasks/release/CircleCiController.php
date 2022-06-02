@@ -37,19 +37,20 @@ class CircleCiController {
     $circleCiProject = $project === self::PROJECT_MAILPOET ? 'mailpoet' : 'mailpoet-premium';
     $this->zipFilename = $project === self::PROJECT_MAILPOET ? self::FREE_ZIP_FILENAME : self::PREMIUM_ZIP_FILENAME;
     $this->httpClient = new Client([
-      'auth' => [$token, ''],
+      'auth' => [null, $token],
       'headers' => [
         'Accept' => 'application/json',
       ],
-      'base_uri' => 'https://circleci.com/api/v1.1/project/github/' . urlencode($username) . "/$circleCiProject/",
+      'base_uri' => 'https://circleci.com/api/v2/project/gh/' . urlencode($username) . "/$circleCiProject/",
     ]);
     $this->githubController = $githubController;
   }
 
   public function downloadLatestBuild($targetPath) {
     $job = $this->getLatestZipBuildJob();
-    $this->checkZipBuildJob($job);
-    $releaseZipUrl = $this->getReleaseZipUrl($job['build_num']);
+    $this->checkZipBuildJobStatus($job);
+
+    $releaseZipUrl = $this->getReleaseZipUrl($job['job_number']);
 
     $this->httpClient->get($releaseZipUrl, [
       'save_to' => $targetPath,
@@ -60,34 +61,50 @@ class CircleCiController {
     return $targetPath;
   }
 
-  private function getLatestZipBuildJob() {
-    $response = $this->httpClient->get('tree/' . urlencode(self::RELEASE_BRANCH));
-    $jobs = json_decode($response->getBody()->getContents(), true);
+  private function getLatestZipBuildJob(): array {
+    // Latest Pipeline for release branch
+    $params = [
+      'query' => ['branch' => urlencode(self::RELEASE_BRANCH)],
+    ];
+    $response = $this->httpClient->get('pipeline', $params);
+    $pipelines = json_decode($response->getBody()->getContents(), true);
+    $latestPipelineId = $pipelines['items'][0]['id'] ?? null;
+    $latestPipelineRevision = $pipelines['items'][0]['vcs']['revision'] ?? null;
 
-    foreach ($jobs as $job) {
-      if ($job['workflows']['job_name'] === self::RELEASE_ZIP_JOB_NAME) {
+    if ($latestPipelineId === null) {
+      throw new \Exception('No release ZIP build found');
+    }
+
+    // ensure we're downloading latest revision on given branch
+    $latestRevision = $this->githubController->getLatestCommitRevisionOnBranch(self::RELEASE_BRANCH);
+    if ($latestRevision === null || $latestPipelineRevision !== $latestRevision) {
+      throw new \Exception(
+        "Found latest pipeline run from revision '$latestPipelineRevision' but the latest one on Github is '$latestRevision'"
+      );
+    }
+
+    $responseWorkflows = $this->httpClient->get('https://circleci.com/api/v2/pipeline/' . urlencode($latestPipelineId) . '/workflow');
+    $workflows = json_decode($responseWorkflows->getBody()->getContents(), true);
+    $latestWorkFlowId = $workflows['items'][0]['id'] ?? null;
+    if ($latestWorkFlowId === null) {
+      throw new \Exception('No release ZIP build found');
+    }
+
+    $responseJob = $this->httpClient->get('https://circleci.com/api/v2/workflow/' . urlencode($latestWorkFlowId) . '/job');
+    $jobs = json_decode($responseJob->getBody()->getContents(), true);
+
+    foreach ($jobs['items'] as $job) {
+      if ($job['name'] === self::RELEASE_ZIP_JOB_NAME) {
         return $job;
       }
     }
     throw new \Exception('No release ZIP build found');
   }
 
-  private function checkZipBuildJob(array $job) {
+  private function checkZipBuildJobStatus(array $job) {
     if ($job['status'] !== self::JOB_STATUS_SUCCESS) {
       $expectedStatus = self::JOB_STATUS_SUCCESS;
       throw new \Exception("Job has invalid status '$job[status]', '$expectedStatus' expected");
-    }
-
-    if ($job['has_artifacts'] === false) {
-      throw new \Exception('Job has no artifacts');
-    }
-
-    // ensure we're downloading latest revision on given branch
-    $revision = $this->githubController->getLatestCommitRevisionOnBranch(self::RELEASE_BRANCH);
-    if ($revision === null || $job['vcs_revision'] !== $revision) {
-      throw new \Exception(
-        "Found ZIP was built from revision '$revision' but the latest one is '$job[vcs_revision]'"
-      );
     }
   }
 
@@ -96,7 +113,7 @@ class CircleCiController {
     $artifacts = json_decode($response->getBody()->getContents(), true);
 
     $pattern = preg_quote($this->zipFilename, '~');
-    foreach ($artifacts as $artifact) {
+    foreach ($artifacts['items'] as $artifact) {
       if (preg_match("~/$pattern$~", $artifact['path'])) {
         return $artifact['url'];
       }
