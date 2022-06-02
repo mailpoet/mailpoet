@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Utils\Json;
 class Workflow {
   public const STATUS_ACTIVE = 'active';
   public const STATUS_INACTIVE = 'inactive';
+  public const STATUS_DRAFT = 'draft';
 
   /** @var int */
   private $id;
@@ -53,6 +54,10 @@ class Workflow {
 
   public function getStatus(): string {
     return $this->status;
+  }
+
+  public function setDraft(): void {
+    $this->status = self::STATUS_DRAFT;
   }
 
   public function getCreatedAt(): DateTimeImmutable {

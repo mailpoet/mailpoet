@@ -23,4 +23,18 @@ class WorkflowsCreateFromTemplateTest extends AutomationTest {
     $countAfter = count($storage->getWorkflows());
     expect($countAfter)->equals($countBefore + 1);
   }
+
+  public function testWorkflowsCreatedFromTemplatesAreCreatedInDraftStatus(): void {
+    $storage = ContainerWrapper::getInstance()->get(WorkflowStorage::class);
+    $this->post(self::ENDPOINT_PATH, [
+      'json' => [
+        'name' => 'Testing workflow from template',
+        'template' => 'delayed-email-after-signup'
+      ],
+    ]);
+    $allWorkflows = $storage->getWorkflows();
+    $createdWorkflow = array_pop($allWorkflows);
+    expect($createdWorkflow->getStatus())->equals('draft');
+  }
+
 }
