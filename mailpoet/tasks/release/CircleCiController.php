@@ -77,7 +77,10 @@ class CircleCiController {
 
     // ensure we're downloading latest revision on given branch
     $latestRevision = $this->githubController->getLatestCommitRevisionOnBranch(self::RELEASE_BRANCH);
-    if ($latestRevision === null || $latestPipelineRevision !== $latestRevision) {
+    if ($latestRevision === null) {
+      throw new \Exception("Couldn't find a Github revision for " . self::RELEASE_BRANCH . ". Does the branch exist?");
+    }
+    if ($latestPipelineRevision !== $latestRevision) {
       throw new \Exception(
         "Found latest pipeline run from revision '$latestPipelineRevision' but the latest one on Github is '$latestRevision'"
       );
