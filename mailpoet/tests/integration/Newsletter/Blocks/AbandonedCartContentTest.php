@@ -10,6 +10,7 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
+use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AbandonedCartContentTest extends \MailPoetTest {
@@ -172,26 +173,10 @@ class AbandonedCartContentTest extends \MailPoetTest {
   }
 
   private function setGroupAndEventOptions($newsletter, $group = WooCommerceEmail::SLUG, $event = AbandonedCart::SLUG) {
-    $newsletterOptionField = new NewsletterOptionFieldEntity();
-    $newsletterOptionField->setName('group');
-    $newsletterOptionField->setNewsletterType(NewsletterEntity::TYPE_AUTOMATIC);
-    $this->entityManager->persist($newsletterOptionField);
-
-    $newsletterOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
-    $newsletterOption->setValue($group);
-    $this->entityManager->persist($newsletterOption);
-
-    $newsletterOptionField = new NewsletterOptionFieldEntity();
-    $newsletterOptionField->setName('event');
-    $newsletterOptionField->setNewsletterType(NewsletterEntity::TYPE_AUTOMATIC);
-    $this->entityManager->persist($newsletterOptionField);
-
-    $newsletterOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
-    $newsletterOption->setValue($event);
-    $this->entityManager->persist($newsletterOption);
-
-    $this->entityManager->flush();
-    $this->entityManager->refresh($newsletter);
+    (new NewsletterOption())->createMultipleOptions($newsletter, [
+      NewsletterOptionFieldEntity::NAME_GROUP => $group,
+      NewsletterOptionFieldEntity::NAME_EVENT => $event,
+    ]);
   }
 
   private function createSendingTask($newsletter, $subscriberId = null, $meta = null) {

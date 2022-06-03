@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Test\API\JSON\v1;
 
@@ -11,22 +11,25 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\NewsletterValidator;
-use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
-use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 
 class SendingQueueTest extends \MailPoetTest {
   /** @var NewsletterEntity */
   private $newsletter;
 
+  /** @var NewsletterOption */
+  private $newsletterOptionsFactory;
+
   public function _before() {
     parent::_before();
     $this->clean();
+    $this->newsletterOptionsFactory = new NewsletterOption();
 
     $this->newsletter = (new Newsletter())
       ->withSubject('My Standard Newsletter')
@@ -44,15 +47,11 @@ class SendingQueueTest extends \MailPoetTest {
     $newsletter = $this->newsletter;
     $newsletter->setStatus(NewsletterEntity::STATUS_SCHEDULED);
     $this->entityManager->flush();
-    $newletterOptions = [
+    $newsletterOptions = [
       'isScheduled' => 1,
       'scheduledAt' => '2018-10-10 10:00:00',
     ];
-    $this->_createOrUpdateNewsletterOptions(
-      $newsletter,
-      NewsletterEntity::TYPE_STANDARD,
-      $newletterOptions
-    );
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, $newsletterOptions);
 
     $sendingQueue = $this->diContainer->get(SendingQueueAPI::class);
     $result = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
@@ -62,7 +61,7 @@ class SendingQueueTest extends \MailPoetTest {
     expect($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $scheduled = $scheduledTask->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduled);
-    expect($scheduled->format('Y-m-d H:i:s'))->equals($newletterOptions['scheduledAt']);
+    expect($scheduled->format('Y-m-d H:i:s'))->equals($newsletterOptions['scheduledAt']);
     expect($scheduledTask->getType())->equals(Sending::TASK_TYPE);
   }
 
@@ -82,15 +81,11 @@ class SendingQueueTest extends \MailPoetTest {
     $newsletter = $this->newsletter;
     $newsletter->setStatus(NewsletterEntity::STATUS_SCHEDULED);
     $this->entityManager->flush();
-    $newletterOptions = [
+    $newsletterOptions = [
       'isScheduled' => 1,
       'scheduledAt' => '2018-10-10 10:00:00',
     ];
-    $this->_createOrUpdateNewsletterOptions(
-      $newsletter,
-      NewsletterEntity::TYPE_STANDARD,
-      $newletterOptions
-    );
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, $newsletterOptions);
     $sendingQueue = $this->diContainer->get(SendingQueueAPI::class);
 
     // add scheduled task
@@ -103,14 +98,10 @@ class SendingQueueTest extends \MailPoetTest {
     expect($scheduled->format('Y-m-d H:i:s'))->equals('2018-10-10 10:00:00');
 
     // update scheduled time
-    $newletterOptions = [
+    $newsletterOptions = [
       'scheduledAt' => '2018-11-11 11:00:00',
     ];
-    $this->_createOrUpdateNewsletterOptions(
-      $newsletter,
-      NewsletterEntity::TYPE_STANDARD,
-      $newletterOptions
-    );
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, $newsletterOptions);
     $result = $sendingQueue->add(['newsletter_id' => $newsletter->getId()]);
     $repo = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->entityManager->clear();
@@ -133,30 +124,6 @@ class SendingQueueTest extends \MailPoetTest {
     expect($response['errors'][0])->array();
     expect($response['errors'][0]['message'])->stringContainsString('some error');
     expect($response['errors'][0]['error'])->stringContainsString('bad_request');
-  }
-
-  private function _createOrUpdateNewsletterOptions(NewsletterEntity $newsletter, $newsletterType, $options) {
-    $newsletterOptionFieldRepository = $this->diContainer->get(NewsletterOptionFieldsRepository::class);
-    $newsletterOptionRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
-
-    foreach ($options as $option => $value) {
-      $newsletterOptionField = $newsletterOptionFieldRepository->findOneBy(['name' => $option]);
-      if (!$newsletterOptionField instanceof NewsletterOptionFieldEntity) {
-        $newsletterOptionField = new NewsletterOptionFieldEntity();
-        $newsletterOptionField->setName($option);
-        $newsletterOptionField->setNewsletterType($newsletterType);
-        $this->entityManager->persist($newsletterOptionField);
-      }
-
-      $newsletterOption = $newsletterOptionRepository->findOneBy(['newsletter' => $newsletter, 'optionField' => $newsletterOptionField]);
-      if (!$newsletterOption instanceof NewsletterOptionEntity) {
-        $newsletterOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
-        $newsletter->getOptions()->add($newsletterOption);
-        $this->entityManager->persist($newsletterOption);
-      }
-      $newsletterOption->setValue($value);
-    }
-    $this->entityManager->flush();
   }
 
   public function clean() {
