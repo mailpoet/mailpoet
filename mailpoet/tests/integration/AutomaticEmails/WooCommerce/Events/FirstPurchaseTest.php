@@ -1,30 +1,53 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
-use Codeception\Util\Fixtures;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerceStubs\OrderDetails;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
-use MailPoet\Models\Segment;
-use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Tasks\Sending;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Idiorm\ORM;
 
 require_once __DIR__ . '/../WooCommerceStubs/OrderDetails.php';
 
 class FirstPurchaseTest extends \MailPoetTest {
+  /** @var NewsletterFactory */
+  private $newsletterFactory;
+
+  /** @var NewsletterOptionFactory */
+  private $newsletterOptionFactory;
+
+  /** @var ScheduledTasksRepository */
+  private $scheduledTasksRepository;
+
+  /** @var SegmentsRepository */
+  private $segmentsRepository;
+
+  /** @var SendingQueuesRepository */
+  private $sendingQueueRepository;
+
   public function _before() {
+    $this->newsletterFactory = new NewsletterFactory();
+    $this->newsletterOptionFactory = new NewsletterOptionFactory();
+    $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
+    $this->sendingQueueRepository = $this->diContainer->get(SendingQueuesRepository::class);
     WPFunctions::get()->removeAllFilters('mailpoet_newsletter_shortcode');
   }
 
@@ -46,7 +69,7 @@ class FirstPurchaseTest extends \MailPoetTest {
 
   public function testDateShortcodeHandlerReturnsShortcodeWhenQueueIsMissing() {
     $event = new FirstPurchase();
-    $shortcode = $event::ORDER_DATE_SHORTCODE;
+    $shortcode = FirstPurchase::ORDER_DATE_SHORTCODE;
     WPFunctions::set(Stub::make(new WPFunctions, [
       'dateI18n' => 'success',
     ]));
@@ -56,8 +79,8 @@ class FirstPurchaseTest extends \MailPoetTest {
 
   public function testDateShortcodeHandlerReturnsCurrentDateWhenDateIsMissingInQueueMeta() {
     $event = new FirstPurchase();
-    $shortcode = $event::ORDER_DATE_SHORTCODE;
-    $queue = SendingQueue::create();
+    $shortcode = FirstPurchase::ORDER_DATE_SHORTCODE;
+    $queue = $this->createSendingQueue($this->newsletterFactory->create());
 
     WPFunctions::set(Stub::make(new WPFunctions, [
       'dateI18n' => 'success',
@@ -68,8 +91,8 @@ class FirstPurchaseTest extends \MailPoetTest {
 
   public function testDateShortcodeHandlerReturnsSystemFormattedDate() {
     $event = new FirstPurchase();
-    $shortcode = $event::ORDER_DATE_SHORTCODE;
-    $queue = SendingQueue::create();
+    $shortcode = FirstPurchase::ORDER_DATE_SHORTCODE;
+    $queue = $this->createSendingQueue($this->newsletterFactory->create());
     WPFunctions::set(Stub::make(new WPFunctions, [
       'dateI18n' => 'success',
     ]));
@@ -92,7 +115,7 @@ class FirstPurchaseTest extends \MailPoetTest {
       },
     ]);
     $event = new FirstPurchase($helper);
-    $shortcode = $event::ORDER_TOTAL_SHORTCODE;
+    $shortcode = FirstPurchase::ORDER_TOTAL_SHORTCODE;
     $result = $event->handleOrderTotalShortcode($shortcode, true, true, false);
     expect($result)->equals(0);
   }
@@ -104,8 +127,8 @@ class FirstPurchaseTest extends \MailPoetTest {
       },
     ]);
     $event = new FirstPurchase($helper);
-    $shortcode = $event::ORDER_TOTAL_SHORTCODE;
-    $queue = SendingQueue::create();
+    $shortcode = FirstPurchase::ORDER_TOTAL_SHORTCODE;
+    $queue = $this->createSendingQueue($this->newsletterFactory->create());
     $result = $event->handleOrderTotalShortcode($shortcode, true, true, $queue);
     expect($result)->equals(0);
   }
@@ -117,9 +140,8 @@ class FirstPurchaseTest extends \MailPoetTest {
       },
     ]);
     $event = new FirstPurchase($helper);
-    $shortcode = $event::ORDER_TOTAL_SHORTCODE;
-    $queue = SendingQueue::create();
-    $queue->meta = ['order_amount' => 15];
+    $shortcode = FirstPurchase::ORDER_TOTAL_SHORTCODE;
+    $queue = $this->createSendingQueue($this->newsletterFactory->create(), ['order_amount' => 15]);
     $result = $event->handleOrderTotalShortcode($shortcode, true, true, $queue);
     expect($result)->equals(15);
   }
@@ -182,11 +204,10 @@ class FirstPurchaseTest extends \MailPoetTest {
     ]);
 
     $customerEmail = 'test@example.com';
-    $subscriber = Subscriber::createOrUpdate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $customerEmail;
-    $subscriber->isWoocommerceUser = 1;
-    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $subscriber->save();
+    $subscriber = (new SubscriberFactory())->withEmail($customerEmail)
+      ->withIsWooCommerceUser()
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
 
     $event = new FirstPurchase($helper);
     $result = $event->scheduleEmailWhenOrderIsPlaced(12);
@@ -207,45 +228,38 @@ class FirstPurchaseTest extends \MailPoetTest {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_processing');
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_completed');
     $orderId = $this->_runTestItSchedulesEmailForState('processing');
-    $tasksCountBeforeStatusChange = count(ScheduledTask::where('type', Sending::TASK_TYPE)->findMany());
+    $tasksCountBeforeStatusChange = count($this->scheduledTasksRepository->findBy(['type' => Sending::TASK_TYPE]));
     WPFunctions::get()->doAction('woocommerce_order_status_completed', $orderId);
-    $tasksCountAfterStatusChange = count(ScheduledTask::where('type', Sending::TASK_TYPE)->findMany());
+    $tasksCountAfterStatusChange = count($this->scheduledTasksRepository->findBy(['type' => Sending::TASK_TYPE]));
     expect($tasksCountAfterStatusChange)->equals($tasksCountBeforeStatusChange);
   }
 
   public function _runTestItSchedulesEmailForState($orderState) {
-    $newsletter = Newsletter::createOrUpdate(
-      [
-        'subject' => 'WooCommerce',
-        'preheader' => 'preheader',
-        'type' => Newsletter::TYPE_AUTOMATIC,
-        'status' => Newsletter::STATUS_ACTIVE,
-      ]
-    );
-    $this->_createNewsletterOption(
-      [
-        'group' => WooCommerce::SLUG,
-        'event' => FirstPurchase::SLUG,
-        'afterTimeType' => 'days',
-        'afterTimeNumber' => 1,
-        'sendTo' => 'user',
-      ],
-      $newsletter->id
-    );
-    $customerEmail = 'test@example.com';
-    $subscriber = Subscriber::createOrUpdate(Fixtures::get('subscriber_template'));
-    $subscriber->email = $customerEmail;
-    $subscriber->isWoocommerceUser = 1;
-    $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
-    $subscriber->save();
-
-    $subscriberSegment = SubscriberSegment::create();
-    $subscriberSegment->hydrate([
-      'subscriber_id' => $subscriber->id,
-      'segment_id' => Segment::getWooCommerceSegment()->id,
-      'status' => Subscriber::STATUS_SUBSCRIBED,
+    $newsletter = $this->newsletterFactory
+      ->withSubject('WooCommerce')
+      ->withType(NewsletterEntity::TYPE_AUTOMATIC)
+      ->withActiveStatus()
+      ->create();
+    $this->newsletterOptionFactory->createMultipleOptions($newsletter, [
+      'group' => WooCommerce::SLUG,
+      'event' => FirstPurchase::SLUG,
+      'afterTimeType' => 'days',
+      'afterTimeNumber' => 1,
+      'sendTo' => 'user',
     ]);
-    $subscriberSegment->save();
+    $customerEmail = 'test@example.com';
+    $subscriber = (new SubscriberFactory())->withEmail($customerEmail)
+      ->withIsWooCommerceUser()
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->create();
+
+    $subscriberSegment = new SubscriberSegmentEntity(
+      $this->segmentsRepository->getWooCommerceSegment(),
+      $subscriber,
+      SubscriberEntity::STATUS_SUBSCRIBED
+    );
+    $this->entityManager->persist($subscriberSegment);
+    $this->entityManager->flush();
 
     $dateCreated = new \DateTime('2018-12-12');
     $helper = Stub::make(WCHelper::class, [
@@ -269,67 +283,48 @@ class FirstPurchaseTest extends \MailPoetTest {
     $orderId = 12;
 
     // ensure there are no existing scheduled tasks
-    $scheduledTask = Sending::getByNewsletterId($newsletter->id);
-    expect($scheduledTask)->false();
+    $scheduledTask = $this->sendingQueueRepository->findOneBy(['newsletter' => $newsletter]);
+    $this->assertNull($scheduledTask);
 
     // check the customer doesn't exist yet, so he is eligible for this email
     WPFunctions::get()->doAction('woocommerce_checkout_posted_data', ['billing_email' => $customerEmail]);
 
     // when 'woocommerce_order_status_$order_state' hook is triggered, an email should be scheduled
     WPFunctions::get()->doAction('woocommerce_order_status_' . $orderState, $orderId);
-    $scheduledTask = Sending::getByNewsletterId($newsletter->id);
-    $meta = $scheduledTask->queue()->getMeta();
-    expect($meta)->equals(
-      [
-        'order_amount' => 'order_total',
-        'order_date' => $dateCreated->getTimestamp(),
-        'order_id' => $orderId,
-      ]
-    );
+    $sendingQueue = $this->sendingQueueRepository->findOneBy(['newsletter' => $newsletter]);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $meta = $sendingQueue->getMeta();
+    expect($meta)->equals([
+      'order_amount' => 'order_total',
+      'order_date' => $dateCreated->getTimestamp(),
+      'order_id' => $orderId,
+    ]);
     return $orderId;
   }
 
-  public function _createNewsletterOption(array $options, $newsletterId) {
-    foreach ($options as $option => $value) {
-      $newsletterOptionField = NewsletterOptionField::where('name', $option)
-        ->where('newsletter_type', Newsletter::TYPE_AUTOMATIC)
-        ->findOne();
-      if (!$newsletterOptionField) {
-        $newsletterOptionField = NewsletterOptionField::create();
-        $newsletterOptionField->hydrate(
-          [
-            'newsletter_type' => Newsletter::TYPE_AUTOMATIC,
-            'name' => $option,
-          ]
-        );
-        $newsletterOptionField->save();
-      }
+  private function createSendingQueue(NewsletterEntity $newsletter, array $meta = []): SendingQueueEntity {
+    $task = new ScheduledTaskEntity();
+    $this->entityManager->persist($task);
+    $this->entityManager->flush();
 
-      $newsletterOption = NewsletterOption::where('newsletter_id', $newsletterId)
-        ->where('option_field_id', $newsletterOptionField->id)
-        ->findOne();
-      if (!$newsletterOption) {
-        $newsletterOption = NewsletterOption::create();
-        $newsletterOption->hydrate(
-          [
-            'newsletter_id' => $newsletterId,
-            'option_field_id' => $newsletterOptionField->id,
-            'value' => $value,
-          ]
-        );
-        $newsletterOption->save();
-      }
-    }
+    $sendingQueue = new SendingQueueEntity();
+    $sendingQueue->setNewsletter($newsletter);
+    $sendingQueue->setMeta($meta);
+    $sendingQueue->setTask($task);
+    $this->entityManager->persist($sendingQueue);
+    $this->entityManager->flush();
+    return $sendingQueue;
   }
 
   public function _after() {
-    ORM::raw_execute('TRUNCATE ' . Newsletter::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOption::$_table);
-    ORM::raw_execute('TRUNCATE ' . NewsletterOptionField::$_table);
-    ORM::raw_execute('TRUNCATE ' . Subscriber::$_table);
-    ORM::raw_execute('TRUNCATE ' . SendingQueue::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTask::$_table);
-    ORM::raw_execute('TRUNCATE ' . ScheduledTaskSubscriber::$_table);
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(NewsletterOptionEntity::class);
+    $this->truncateEntity(NewsletterOptionFieldEntity::class);
+    $this->truncateEntity(SubscriberEntity::class);
+    $this->truncateEntity(SubscriberSegmentEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->truncateEntity(ScheduledTaskSubscriberEntity::class);
     WPFunctions::set(new WPFunctions);
   }
 }
