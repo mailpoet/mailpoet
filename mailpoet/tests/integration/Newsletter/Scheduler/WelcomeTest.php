@@ -15,6 +15,7 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -91,6 +92,7 @@ class WelcomeTest extends \MailPoetTest {
     $welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
     assert($task instanceof ScheduledTaskEntity);
@@ -115,6 +117,7 @@ class WelcomeTest extends \MailPoetTest {
     $welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
     assert($task instanceof ScheduledTaskEntity);
@@ -139,6 +142,7 @@ class WelcomeTest extends \MailPoetTest {
     $welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
     assert($task instanceof ScheduledTaskEntity);
@@ -164,6 +168,7 @@ class WelcomeTest extends \MailPoetTest {
     $welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
     assert($task instanceof ScheduledTaskEntity);
@@ -213,6 +218,7 @@ class WelcomeTest extends \MailPoetTest {
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $task = $queue->getTask();
     assert($task instanceof ScheduledTaskEntity);
     $scheduledAt = $task->getScheduledAt();
@@ -374,14 +380,15 @@ class WelcomeTest extends \MailPoetTest {
       ]
     );
     $this->welcomeScheduler->scheduleWPUserWelcomeNotification(
-      $subscriberId = $this->subscriber->getId(),
-      $wpUser = ['roles' => ['administrator']]
+      $this->subscriber->getId(),
+      ['roles' => ['administrator']]
     );
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     // queue is created and scheduled for delivery one day later
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $task = $queue->getTask();
     assert($task instanceof ScheduledTaskEntity);
     $scheduledAt = $task->getScheduledAt();
@@ -402,13 +409,14 @@ class WelcomeTest extends \MailPoetTest {
     );
     $this->welcomeScheduler->scheduleWPUserWelcomeNotification(
       $this->subscriber->getId(),
-      $wpUser = ['roles' => ['administrator']]
+      ['roles' => ['administrator']]
     );
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     // queue is created and scheduled for delivery one day later
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $task = $queue->getTask();
     assert($task instanceof ScheduledTaskEntity);
     $scheduledAt = $task->getScheduledAt();
@@ -427,24 +435,9 @@ class WelcomeTest extends \MailPoetTest {
     return $newsletter;
   }
 
-  private function configureNewsletterWithOptions(NewsletterEntity $newsletter, array $options) {
-    foreach ($options as $optionFieldName => $optionValue) {
-      $optionField = $this->entityManager->getRepository(NewsletterOptionFieldEntity::class)->findOneBy([
-        'name' => $optionFieldName,
-        'newsletterType' => NewsletterEntity::TYPE_WELCOME,
-      ]);
-      if (!$optionField instanceof NewsletterOptionFieldEntity) {
-        $optionField = new NewsletterOptionFieldEntity();
-        $optionField->setNewsletterType(NewsletterEntity::TYPE_WELCOME);
-        $optionField->setName($optionFieldName);
-        $this->entityManager->persist($optionField);
-      }
-      $option = new NewsletterOptionEntity($newsletter, $optionField);
-      $option->setValue($optionValue);
-      $this->entityManager->persist($option);
-      $newsletter->getOptions()->add($option);
-    }
-    $this->entityManager->flush();
+  private function configureNewsletterWithOptions(NewsletterEntity $newsletter, array $options): NewsletterEntity {
+    $newsletterOptionsFactory = new NewsletterOption();
+    $newsletterOptionsFactory->createMultipleOptions($newsletter, $options);
     return $newsletter;
   }
 

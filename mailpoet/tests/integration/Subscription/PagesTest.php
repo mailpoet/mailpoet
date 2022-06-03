@@ -32,6 +32,7 @@ use MailPoet\Subscription\CaptchaRenderer;
 use MailPoet\Subscription\ManageSubscriptionFormRenderer;
 use MailPoet\Subscription\Pages;
 use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -144,17 +145,7 @@ class PagesTest extends \MailPoetTest {
       'afterTimeType' => 'days',
       'afterTimeNumber' => 1,
     ];
-    foreach ($newsletterOptions as $option => $value) {
-      $newsletterOptionField = new NewsletterOptionFieldEntity();
-      $newsletterOptionField->setName($option);
-      $newsletterOptionField->setNewsletterType($newsletter->getType());
-      $this->entityManager->persist($newsletterOptionField);
-
-      $newsletterOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
-      $newsletterOption->setValue((string)$value);
-      $newsletter->getOptions()->add($newsletterOption);
-      $this->entityManager->persist($newsletterOption);
-    }
+    (new NewsletterOptionFactory())->createMultipleOptions($newsletter, $newsletterOptions);
 
     // confirm subscription and ensure that welcome email is scheduled
     $subscription->confirm();

@@ -15,9 +15,9 @@ use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\NewsletterPostsRepository;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionsFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 use MailPoetVendor\Carbon\Carbon;
@@ -36,14 +36,14 @@ class PostNotificationTest extends \MailPoetTest {
   /** @var NewsletterOptionsRepository */
   private $newsletterOptionsRepository;
 
-  /** @var NewsletterOptionFieldsRepository */
-  private $newsletterOptionFieldsRepository;
-
   /** @var Hooks */
   private $hooks;
 
   /** @var Scheduler */
   private $scheduler;
+
+  /** @var NewsletterOptionsFactory */
+  private $newsletterOptionsFactory;
 
   public function _before() {
     parent::_before();
@@ -51,14 +51,14 @@ class PostNotificationTest extends \MailPoetTest {
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->newsletterPostsRepository = $this->diContainer->get(NewsletterPostsRepository::class);
     $this->newsletterOptionsRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
-    $this->newsletterOptionFieldsRepository = $this->diContainer->get(NewsletterOptionFieldsRepository::class);
+    $this->newsletterOptionsFactory = new NewsletterOptionsFactory();
     $this->hooks = $this->diContainer->get(Hooks::class);
     $this->scheduler = $this->diContainer->get(Scheduler::class);
   }
 
   public function testItCreatesPostNotificationSendingTask() {
     $newsletter = $this->createNewsletter();
-    $this->createNewsletterOptions($newsletter, [
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
       NewsletterOptionFieldEntity::NAME_SCHEDULE => '* 5 * * *',
     ]);
 
@@ -83,7 +83,7 @@ class PostNotificationTest extends \MailPoetTest {
 
   public function testItCreatesPostNotificationSendingTaskIfAPausedNotificationExists() {
     $newsletter = $this->createNewsletter();
-    $this->createNewsletterOptions($newsletter, [
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
       NewsletterOptionFieldEntity::NAME_SCHEDULE => '* 5 * * *',
     ]);
 
@@ -128,7 +128,7 @@ class PostNotificationTest extends \MailPoetTest {
 
   public function testItSchedulesPostNotification() {
     $newsletter = $this->createNewsletter();
-    $this->createNewsletterOptions($newsletter, [
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
       NewsletterOptionFieldEntity::NAME_SCHEDULE => '0 5 * * *',
     ]);
 
@@ -146,7 +146,7 @@ class PostNotificationTest extends \MailPoetTest {
 
   public function testItProcessesPostNotificationScheduledForDailyDelivery() {
     $newsletter = $this->createNewsletter();
-    $this->createNewsletterOptions($newsletter, [
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
       NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_DAILY,
       NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
       NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
@@ -168,7 +168,7 @@ class PostNotificationTest extends \MailPoetTest {
     $newsletter = $this->createNewsletter();
 
     // weekly notification is scheduled every Tuesday at 14:00
-    $this->createNewsletterOptions($newsletter, [
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
       NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_WEEKLY,
       NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
       NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
@@ -190,7 +190,7 @@ class PostNotificationTest extends \MailPoetTest {
     $newsletter = $this->createNewsletter();
 
     // monthly notification is scheduled every 20th day at 14:00
-    $this->createNewsletterOptions($newsletter, [
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
       NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_MONTHLY,
       NewsletterOptionFieldEntity::NAME_MONTH_DAY => 19,
       NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
@@ -211,7 +211,7 @@ class PostNotificationTest extends \MailPoetTest {
     $newsletter = $this->createNewsletter();
 
     // monthly notification is scheduled every last Saturday at 14:00
-    $this->createNewsletterOptions($newsletter, [
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
       NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_NTHWEEKDAY,
       NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
       NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => 'L', // L = last
@@ -232,7 +232,7 @@ class PostNotificationTest extends \MailPoetTest {
     $newsletter = $this->createNewsletter();
 
     // notification is scheduled immediately (next minute)
-    $this->createNewsletterOptions($newsletter, [
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
       NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
       NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
       NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
@@ -252,7 +252,7 @@ class PostNotificationTest extends \MailPoetTest {
   public function testUnsearchablePostTypeDoesNotSchedulePostNotification() {
     $newsletter = $this->createNewsletter();
 
-    $this->createNewsletterOptions($newsletter, [
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
       NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
       NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
     ]);
@@ -283,7 +283,7 @@ class PostNotificationTest extends \MailPoetTest {
   public function testSchedulerWontRunIfUnsentNotificationHistoryExists() {
     $newsletter = $this->createNewsletter();
 
-    $this->createNewsletterOptions($newsletter, [
+    $this->newsletterOptionsFactory->createMultipleOptions($newsletter, [
       NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
       NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
     ]);
@@ -341,26 +341,6 @@ class PostNotificationTest extends \MailPoetTest {
     $this->newsletterPostsRepository->persist($newsletterPost);
     $this->newsletterPostsRepository->flush();
     return $newsletterPost;
-  }
-
-  private function createNewsletterOptions(NewsletterEntity $newsletter, array $options) {
-    foreach ($options as $name => $value) {
-      $newsletterOptionField = $this->newsletterOptionFieldsRepository->findOneBy([
-        'name' => $name,
-      ]);
-      if ($newsletterOptionField === null) {
-        $newsletterOptionField = new NewsletterOptionFieldEntity();
-        $newsletterOptionField->setName($name);
-        $newsletterOptionField->setNewsletterType(NewsletterEntity::TYPE_NOTIFICATION);
-        $this->newsletterOptionFieldsRepository->persist($newsletterOptionField);
-      }
-
-      $scheduleOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
-      $scheduleOption->setValue($value);
-      $newsletter->getOptions()->add($scheduleOption);
-      $this->newsletterOptionsRepository->persist($scheduleOption);
-    }
-    $this->newsletterOptionsRepository->flush();
   }
 
   public function _after() {

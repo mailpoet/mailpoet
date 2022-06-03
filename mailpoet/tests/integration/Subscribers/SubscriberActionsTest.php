@@ -15,6 +15,7 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\SettingsRepository;
+use MailPoet\Test\DataFactories\NewsletterOption;
 
 class SubscriberActionsTest extends \MailPoetTest {
 
@@ -82,10 +83,7 @@ class SubscriberActionsTest extends \MailPoetTest {
       NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE => 'days',
       NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER => 1,
     ];
-    foreach ($newsletterOptions as $option => $value) {
-      $newsletterOptionField = $this->createNewsletterOptionField($option, $newsletter->getType());
-      $newsletterOption = $this->createNewsletterOption($newsletter, $newsletterOptionField, (string)$value);
-    }
+    (new NewsletterOption())->createMultipleOptions($newsletter, $newsletterOptions);
 
     $this->settings->set('signup_confirmation.enabled', false);
     $subscriber = $this->subscriberActions->subscribe($this->testData, [$segment->getId()]);
@@ -112,10 +110,7 @@ class SubscriberActionsTest extends \MailPoetTest {
       'afterTimeType' => 'days',
       'afterTimeNumber' => 1,
     ];
-    foreach ($newsletterOptions as $option => $value) {
-      $newsletterOptionField = $this->createNewsletterOptionField($option, $newsletter->getType());
-      $newsletterOption = $this->createNewsletterOption($newsletter, $newsletterOptionField, (string)$value);
-    }
+    (new NewsletterOption())->createMultipleOptions($newsletter, $newsletterOptions);
 
     $this->settings->set('signup_confirmation.enabled', true);
     $subscriber = $this->subscriberActions->subscribe($this->testData, [$segment->getId()]);
@@ -270,28 +265,6 @@ class SubscriberActionsTest extends \MailPoetTest {
     $this->entityManager->persist($newsletter);
     $this->entityManager->flush();
     return $newsletter;
-  }
-
-  private function createNewsletterOptionField(string $option, string $type): NewsletterOptionFieldEntity {
-    $newsletterOptionField = new NewsletterOptionFieldEntity();
-    $newsletterOptionField->setName($option);
-    $newsletterOptionField->setNewsletterType($type);
-    $this->entityManager->persist($newsletterOptionField);
-    $this->entityManager->flush();
-    return $newsletterOptionField;
-  }
-
-  private function createNewsletterOption(
-    NewsletterEntity $newsletter,
-    NewsletterOptionFieldEntity $optionField,
-    string $value
-  ): NewsletterOptionEntity {
-    $newsletterOption = new NewsletterOptionEntity($newsletter, $optionField);
-    $newsletterOption->setValue($value);
-    $newsletter->getOptions()->add($newsletterOption);
-    $this->entityManager->persist($newsletterOption);
-    $this->entityManager->flush();
-    return $newsletterOption;
   }
 
   public function _after() {

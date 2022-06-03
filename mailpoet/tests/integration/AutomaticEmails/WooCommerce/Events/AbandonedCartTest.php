@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
@@ -11,13 +11,11 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
-use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
+use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
-use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\Track\SubscriberActivityTracker;
@@ -25,6 +23,7 @@ use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\Cookies;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -56,12 +55,6 @@ class AbandonedCartTest extends \MailPoetTest {
   /** @var SubscriberActivityTracker&MockObject */
   private $subscriberActivityTrackerMock;
 
-  /** @var NewsletterOptionFieldsRepository */
-  private $newsletterOptionFieldsRepository;
-
-  /** @var NewsletterOptionsRepository */
-  private $newsletterOptionsRepository;
-
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
@@ -77,8 +70,6 @@ class AbandonedCartTest extends \MailPoetTest {
   public function _before() {
     $this->cleanup();
 
-    $this->newsletterOptionFieldsRepository = $this->diContainer->get(NewsletterOptionFieldsRepository::class);
-    $this->newsletterOptionsRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
@@ -320,7 +311,7 @@ class AbandonedCartTest extends \MailPoetTest {
       ->withActiveStatus()
       ->create();
 
-    $this->createNewsletterOptions($newsletter, [
+    (new NewsletterOptionFactory())->createMultipleOptions($newsletter, [
       'group' => WooCommerceEmail::SLUG,
       'event' => AbandonedCart::SLUG,
       'afterTimeType' => 'hours',
@@ -351,36 +342,6 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     return $scheduledTask;
-  }
-
-  private function createNewsletterOptions(NewsletterEntity $newsletter, array $options): void {
-    foreach ($options as $option => $value) {
-      $newsletterOptionField = $this->newsletterOptionFieldsRepository->findOneBy([
-        'name' => $option,
-        'newsletterType' => $newsletter->getType(),
-      ]);
-
-      if (!$newsletterOptionField) {
-        $newsletterOptionField = new NewsletterOptionFieldEntity();
-        $newsletterOptionField->setNewsletterType($newsletter->getType());
-        $newsletterOptionField->setName($option);
-        $this->newsletterOptionFieldsRepository->persist($newsletterOptionField);
-        $this->newsletterOptionFieldsRepository->flush();
-      }
-
-      $newsletterOption = $this->newsletterOptionsRepository->findOneBy([
-        'newsletter' => $newsletter,
-        'optionField' => $newsletterOptionField,
-      ]);
-
-      if (!$newsletterOption) {
-        $newsletterOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
-        $newsletterOption->setValue($value);
-        $newsletter->getOptions()->add($newsletterOption);
-        $this->newsletterOptionsRepository->persist($newsletterOption);
-        $this->newsletterOptionsRepository->flush();
-      }
-    }
   }
 
   private function createSubscriber(): SubscriberEntity {
