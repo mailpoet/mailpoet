@@ -376,6 +376,7 @@ class AbandonedCartTest extends \MailPoetTest {
       if (!$newsletterOption) {
         $newsletterOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
         $newsletterOption->setValue($value);
+        $newsletter->getOptions()->add($newsletterOption);
         $this->newsletterOptionsRepository->persist($newsletterOption);
         $this->newsletterOptionsRepository->flush();
       }
