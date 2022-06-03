@@ -2,7 +2,9 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
-use MailPoet\Models\Newsletter;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\SendingQueue;
@@ -19,11 +21,11 @@ class AutomaticEmailScheduler {
     $this->scheduler = $scheduler;
   }
 
-  public function scheduleAutomaticEmail($group, $event, $schedulingCondition = false, $subscriberId = false, $meta = false, $metaModifier = null) {
-    $newsletters = $this->scheduler->getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
+  public function scheduleAutomaticEmail(string $group, string $event, $schedulingCondition = false, $subscriberId = false, $meta = false, $metaModifier = null) {
+    $newsletters = $this->scheduler->getNewsletters(NewsletterEntity::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) return false;
     foreach ($newsletters as $newsletter) {
-      if ($newsletter->event !== $event) continue;
+      if ($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EVENT) !== $event) continue;
       if (is_callable($schedulingCondition) && !$schedulingCondition($newsletter)) continue;
 
       /**
@@ -41,19 +43,19 @@ class AutomaticEmailScheduler {
     }
   }
 
-  public function scheduleOrRescheduleAutomaticEmail($group, $event, $subscriberId, $meta = false) {
-    $newsletters = $this->scheduler->getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
+  public function scheduleOrRescheduleAutomaticEmail(string $group, string $event, int $subscriberId, array $meta): void {
+    $newsletters = $this->scheduler->getNewsletters(NewsletterEntity::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) {
-      return false;
+      return;
     }
 
     foreach ($newsletters as $newsletter) {
-      if ($newsletter->event !== $event) {
+      if ($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EVENT) !== $event) {
         continue;
       }
 
       // try to find existing scheduled task for given subscriber
-      $task = ScheduledTask::findOneScheduledByNewsletterIdAndSubscriberId($newsletter->id, $subscriberId);
+      $task = ScheduledTask::findOneScheduledByNewsletterIdAndSubscriberId($newsletter->getId(), $subscriberId);
       if ($task) {
         $this->rescheduleAutomaticEmailSendingTask($newsletter, $task, $meta);
       } else {
@@ -62,38 +64,38 @@ class AutomaticEmailScheduler {
     }
   }
 
-  public function rescheduleAutomaticEmail($group, $event, $subscriberId) {
-    $newsletters = $this->scheduler->getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
+  public function rescheduleAutomaticEmail(string $group, string $event, int $subscriberId): void {
+    $newsletters = $this->scheduler->getNewsletters(NewsletterEntity::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) {
-      return false;
+      return;
     }
 
     foreach ($newsletters as $newsletter) {
-      if ($newsletter->event !== $event) {
+      if ($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EVENT) !== $event) {
         continue;
       }
 
       // try to find existing scheduled task for given subscriber
-      $task = ScheduledTask::findOneScheduledByNewsletterIdAndSubscriberId($newsletter->id, $subscriberId);
+      $task = ScheduledTask::findOneScheduledByNewsletterIdAndSubscriberId($newsletter->getId(), $subscriberId);
       if ($task) {
         $this->rescheduleAutomaticEmailSendingTask($newsletter, $task);
       }
     }
   }
 
-  public function cancelAutomaticEmail($group, $event, $subscriberId) {
-    $newsletters = $this->scheduler->getNewsletters(Newsletter::TYPE_AUTOMATIC, $group);
+  public function cancelAutomaticEmail(string $group, string $event, int $subscriberId): void {
+    $newsletters = $this->scheduler->getNewsletters(NewsletterEntity::TYPE_AUTOMATIC, $group);
     if (empty($newsletters)) {
-      return false;
+      return;
     }
 
     foreach ($newsletters as $newsletter) {
-      if ($newsletter->event !== $event) {
+      if ($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_EVENT) !== $event) {
         continue;
       }
 
       // try to find existing scheduled task for given subscriber
-      $task = ScheduledTask::findOneScheduledByNewsletterIdAndSubscriberId($newsletter->id, $subscriberId);
+      $task = ScheduledTask::findOneScheduledByNewsletterIdAndSubscriberId($newsletter->getId(), $subscriberId);
       if ($task) {
         SendingQueue::where('task_id', $task->id)->deleteMany();
         ScheduledTaskSubscriber::where('task_id', $task->id)->deleteMany();
@@ -102,29 +104,35 @@ class AutomaticEmailScheduler {
     }
   }
 
-  public function createAutomaticEmailSendingTask($newsletter, $subscriberId, $meta = false) {
+  public function createAutomaticEmailSendingTask(NewsletterEntity $newsletter, $subscriberId, $meta = false) {
     $sendingTask = SendingTask::create();
-    $sendingTask->newsletterId = $newsletter->id;
-    if ($newsletter->sendTo === 'user' && $subscriberId) {
+    $sendingTask->newsletterId = $newsletter->getId();
+    if ($newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_SEND_TO) === 'user' && $subscriberId) {
       $sendingTask->setSubscribers([$subscriberId]);
     }
     if ($meta) {
       $sendingTask->__set('meta', $meta);
     }
-    $sendingTask->status = SendingQueue::STATUS_SCHEDULED;
-    $sendingTask->priority = SendingQueue::PRIORITY_MEDIUM;
+    $sendingTask->status = SendingQueueEntity::STATUS_SCHEDULED;
+    $sendingTask->priority = SendingQueueEntity::PRIORITY_MEDIUM;
 
-    $sendingTask->scheduledAt = $this->scheduler->getScheduledTimeWithDelay($newsletter->afterTimeType, $newsletter->afterTimeNumber);
+    $sendingTask->scheduledAt = $this->scheduler->getScheduledTimeWithDelay(
+      $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE),
+      $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER)
+    );
     return $sendingTask->save();
   }
 
-  private function rescheduleAutomaticEmailSendingTask($newsletter, ScheduledTask $task, $meta = false) {
+  private function rescheduleAutomaticEmailSendingTask(NewsletterEntity $newsletter, ScheduledTask $task, $meta = false) {
     $sendingTask = SendingTask::createFromScheduledTask($task);
     if ($meta) {
       $sendingTask->__set('meta', $meta);
     }
     // compute new 'scheduled_at' from now
-    $sendingTask->scheduledAt = $this->scheduler->getScheduledTimeWithDelay($newsletter->afterTimeType, $newsletter->afterTimeNumber);
+    $sendingTask->scheduledAt = $this->scheduler->getScheduledTimeWithDelay(
+      $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE),
+      $newsletter->getOptionValue(NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER)
+    );
     $sendingTask->save();
   }
 }
