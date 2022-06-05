@@ -116,9 +116,10 @@ class BlockRendererHelper {
     $automationId = null;
     if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
       $automationId = 'data-automation-id="form_' . $block['id'] . '_label" ';
-      if (isset($formSettings['id'])) {
-        $forId = 'for="form_' . $block['id'] . '_' . $formSettings['id'] . '" ';
-      }
+    }
+
+    if (isset($formSettings['id'])) {
+      $forId = 'for="form_' . $block['id'] . '_' . $formSettings['id'] . '" ';
     }
 
     if (

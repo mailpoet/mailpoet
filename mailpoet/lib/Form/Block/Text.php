@@ -42,12 +42,11 @@ class Text {
     }
 
     if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
-
       $automationId = 'data-automation-id="form_' . $this->wp->escAttr($block['id']) . '" ';
+    }
 
-      if (isset($formSettings['id'])) {
-        $id = 'id="form_' . $this->wp->escAttr($block['id']) . '_' . $this->wp->escAttr($formSettings['id']) . '" ';
-      }
+    if (isset($formSettings['id'])) {
+      $id = 'id="form_' . $this->wp->escAttr($block['id']) . '_' . $this->wp->escAttr($formSettings['id']) . '" ';
     }
 
     $styles = $this->inputStylesRenderer->renderForTextInput($block['styles'] ?? [], $formSettings);
