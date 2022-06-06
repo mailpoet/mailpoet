@@ -34,7 +34,6 @@ class CreateWorkflowFromTemplateController {
         throw UnexpectedValueException::create()->withMessage('Template not found.');
     }
 
-    $workflow->setDraft();
     $this->storage->createWorkflow($workflow);
     return $workflow;
   }

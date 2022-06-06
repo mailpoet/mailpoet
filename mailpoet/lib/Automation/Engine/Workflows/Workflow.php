@@ -17,7 +17,7 @@ class Workflow {
   private $name;
 
   /** @var string */
-  private $status = self::STATUS_INACTIVE;
+  private $status = self::STATUS_DRAFT;
 
   /** @var DateTimeImmutable */
   private $createdAt;
@@ -54,10 +54,6 @@ class Workflow {
 
   public function getStatus(): string {
     return $this->status;
-  }
-
-  public function setDraft(): void {
-    $this->status = self::STATUS_DRAFT;
   }
 
   public function getCreatedAt(): DateTimeImmutable {
