@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Workflows\Workflow;
 use MailPoet\Automation\Integrations\Core\Actions\WaitAction;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendWelcomeEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
+use MailPoet\Util\Security;
 
 class Templates {
 
@@ -66,6 +67,6 @@ class Templates {
   }
 
   private function uniqueId(): string {
-    return bin2hex(random_bytes(7));
+    return Security::generateRandomString(16);
   }
 }
