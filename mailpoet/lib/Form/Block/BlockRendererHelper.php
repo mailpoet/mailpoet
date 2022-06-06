@@ -132,7 +132,7 @@ class BlockRendererHelper {
         isset($block['params']['label_within'])
         && $block['params']['label_within']
       ) {
-        $labelClass = 'class="screen-reader-text" ';
+        $labelClass = 'class="mailpoet-screen-reader-text" ';
       }
 
       $html .= '<label '
