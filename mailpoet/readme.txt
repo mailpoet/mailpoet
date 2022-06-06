@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.6
 Tested up to: 5.9
-Stable tag: 3.89.3
+Stable tag: 3.89.4
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.89.4 - 2022-06-06 =
+* Improved: better handle trying to change a subscriber email to an existing one;
+* Fixed: SMTP configuration doesn't work without authentication;
+* Fixed: subscribers without orders don't show in "0 orders" segment;
+* Fixed: creating custom field can break Form editor;
+* Fixed: Google Fonts libraries loading in iframe even when 3rd-party libraries are disabled.
 
 = 3.89.3 - 2022-05-24 =
 * Added: Google reCAPTCHA v2 Invisible;
