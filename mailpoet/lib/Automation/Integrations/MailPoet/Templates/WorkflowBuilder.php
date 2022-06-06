@@ -9,7 +9,7 @@ use MailPoet\Automation\Integrations\MailPoet\Actions\SendWelcomeEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\SegmentSubscribedTrigger;
 use MailPoet\Util\Security;
 
-class Templates {
+class WorkflowBuilder {
 
   /** @var WaitAction */
   private $waitAction;
@@ -30,7 +30,7 @@ class Templates {
     $this->sendWelcomeEmailAction = $sendWelcomeEmailAction;
   }
 
-  public function delayedEmailAfterSignup(string $name): Workflow {
+  public function delayedEmailAfterSignupWorkflow(string $name): Workflow {
     $triggerStep = $this->segmentSubscribedTriggerStep();
 
     $waitStep = $this->waitStep(60 * 60);
@@ -38,7 +38,7 @@ class Templates {
 
     $sendEmailStep = $this->sendEmailActionStep();
     $waitStep->setNextStepId($sendEmailStep->getId());
-    
+
     $steps = [
       $triggerStep,
       $waitStep,

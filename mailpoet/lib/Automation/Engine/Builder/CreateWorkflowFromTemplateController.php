@@ -4,19 +4,19 @@ namespace MailPoet\Automation\Engine\Builder;
 
 use MailPoet\Automation\Engine\Storage\WorkflowStorage;
 use MailPoet\Automation\Engine\Workflows\Workflow;
-use MailPoet\Automation\Integrations\MailPoet\Templates\Templates;
+use MailPoet\Automation\Integrations\MailPoet\Templates\WorkflowBuilder;
 use MailPoet\UnexpectedValueException;
 
 class CreateWorkflowFromTemplateController {
   /** @var WorkflowStorage */
   private $storage;
   
-  /** @var Templates */
+  /** @var WorkflowBuilder */
   private $templates;
 
   public function __construct(
     WorkflowStorage $storage,
-    Templates $templates
+    WorkflowBuilder $templates
   ) {
     $this->storage = $storage;
     $this->templates = $templates;
@@ -28,7 +28,7 @@ class CreateWorkflowFromTemplateController {
 
     switch ($template) {
       case 'delayed-email-after-signup':
-        $workflow = $this->templates->delayedEmailAfterSignup($name);
+        $workflow = $this->templates->delayedEmailAfterSignupWorkflow($name);
         break;
       default:
         throw UnexpectedValueException::create()->withMessage('Template not found.');
