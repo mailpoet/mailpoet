@@ -79,6 +79,12 @@ class CleanupExtension extends Extension {
 
     // cleanup EntityManager for data factories that are using it
     ContainerWrapper::getInstance()->get(EntityManager::class)->clear();
+    
+    // Without clearing the cache WordPress will think data exist that doesn't, e.g. users created in previous tests
+    global $wp_object_cache;
+    if ($wp_object_cache) {
+      $wp_object_cache->flush();
+    }
   }
 
   private function createDsnConnectionString() {
