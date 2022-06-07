@@ -38,7 +38,7 @@ class Analytics extends AbstractExtension {
     ];
   }
 
-  private function analytics() {
+  private function getAnalytics() {
 
     if ($this->analytics === null) {
       $this->analytics = ContainerWrapper::getInstance()->get(AnalyticsGenerator::class);
@@ -50,18 +50,18 @@ class Analytics extends AbstractExtension {
   }
 
   public function generateAnalytics() {
-    return $this->analytics()->generateAnalytics();
+    return $this->getAnalytics()->generateAnalytics();
   }
 
   public function isEnabled() {
-    return $this->analytics()->isEnabled();
+    return $this->getAnalytics()->isEnabled();
   }
 
   public function getPublicId() {
-    return $this->analytics()->getPublicId();
+    return $this->getAnalytics()->getPublicId();
   }
 
   public function isPublicIdNew() {
-    return $this->analytics()->isPublicIdNew();
+    return $this->getAnalytics()->isPublicIdNew();
   }
 }
