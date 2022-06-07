@@ -11,7 +11,7 @@ class DaemonActionSchedulerRunner {
   const DAEMON_TRIGGER_SCHEDULER_ACTION = 'mailpoet/cron/daemon-trigger';
   const RUN_ACTION_SCHEDULER = 'mailpoet-cron-action-scheduler-run';
 
-  const DAEMON_EXECUTION_LIMIT = 10; // 10 seconds
+  const EXECUTION_LIMIT_MARGIN = 10; // 10 seconds
 
   /** @var Daemon */
   private $daemon;
@@ -27,6 +27,13 @@ class DaemonActionSchedulerRunner {
 
   /** @var ActionScheduler */
   private $actionScheduler;
+
+  /**
+   * The inital value is set based on default cron execution limit battle tested in MailPoet custom cron runner (an older version of the background processing).
+   * The default limit in PHP is 30s so it leaves 10 execution margin.
+   * @var int
+   */
+  private $remainingExecutionLimit = 20;
 
   public function __construct(
     Daemon $daemon,
@@ -46,6 +53,7 @@ class DaemonActionSchedulerRunner {
     $this->wp->addAction(self::DAEMON_RUN_SCHEDULER_ACTION, [$this, 'run']);
     $this->wp->addAction(self::DAEMON_TRIGGER_SCHEDULER_ACTION, [$this, 'trigger']);
     $this->wp->addAction('wp_ajax_nopriv_' . self::RUN_ACTION_SCHEDULER, [$this, 'runActionScheduler'], 0);
+    $this->wp->addFilter('action_scheduler_maximum_execution_time_likely_to_be_exceeded', [$this, 'storeRemainingExecutionLimit'], 10, 5);
     if (!$this->actionScheduler->hasScheduledAction(self::DAEMON_TRIGGER_SCHEDULER_ACTION)) {
       $this->actionScheduler->scheduleRecurringAction($this->wp->currentTime('timestamp'), 20, self::DAEMON_TRIGGER_SCHEDULER_ACTION);
     }
@@ -104,11 +112,10 @@ class DaemonActionSchedulerRunner {
   }
 
   /**
-   * We need to set lower execution limit for MailPoet daemon because we share the space (execution time limit) with others
-   * @return int
+   * Callback for a hook for adjusting the execution for the cron daemon
    */
   public function getDaemonExecutionLimit(): int {
-    return self::DAEMON_EXECUTION_LIMIT;
+    return $this->remainingExecutionLimit;
   }
 
   /**
@@ -121,6 +128,17 @@ class DaemonActionSchedulerRunner {
     } else {
       $this->actionScheduler->unscheduleAction(self::DAEMON_RUN_SCHEDULER_ACTION);
     }
+  }
+
+  /**
+   * This method is hooked into action_scheduler_maximum_execution_time_likely_to_be_exceeded
+   * and used to listen on how many execution time is needed.
+   * The execution limit is then used for the daemon run
+   */
+  public function storeRemainingExecutionLimit($likelyExceeded, $runner, $processedActions, $executionTime, $maxExecutionTime) {
+    $newLimit = floor(($maxExecutionTime - $executionTime) - self::EXECUTION_LIMIT_MARGIN);
+    $this->remainingExecutionLimit = intval(max($newLimit, 0));
+    return $likelyExceeded;
   }
 
   /**
