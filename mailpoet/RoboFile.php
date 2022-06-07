@@ -1020,7 +1020,6 @@ class RoboFile extends \Robo\Tasks {
   public function twigGenerateCache() {
 
     $templatePath = __DIR__ . '/views/'; // \MailPoet\Config\Env::$viewsPath . '/'
-    define('ABSPATH', (dirname(__DIR__) . '/wordpress'));
     $renderer = new \MailPoet\Config\Renderer(
       false,
       __DIR__ . '/generated/twig',
