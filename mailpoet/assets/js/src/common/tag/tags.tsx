@@ -3,6 +3,7 @@ import { Tag } from './tag';
 
 type Segment = {
   name: string;
+  id?: string;
 };
 
 type Props = {
@@ -17,11 +18,21 @@ function Tags({ children, dimension, segments, strings }: Props) {
     <div className="mailpoet-tags">
       {children}
       {segments &&
-        segments.map((segment) => (
-          <Tag key={segment.name} dimension={dimension} variant="list">
-            {segment.name}
-          </Tag>
-        ))}
+        segments.map((segment) =>
+          segment.id ? (
+            <a
+              href={`admin.php?page=mailpoet-subscribers#/filter[segment=${segment.id}]`}
+            >
+              <Tag key={segment.name} dimension={dimension} variant="list">
+                {segment.name}
+              </Tag>
+            </a>
+          ) : (
+            <Tag key={segment.name} dimension={dimension} variant="list">
+              {segment.name}
+            </Tag>
+          ),
+        )}
       {strings &&
         strings.map((string) => (
           <Tag key={string} dimension={dimension} variant="list">
