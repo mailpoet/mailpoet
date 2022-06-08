@@ -3,6 +3,7 @@
   box-shadow: 0 2px 4px 0 rgba(229, 233, 248, .4), 0 5px 30px 0 $color-tertiary-light;
   max-width: 400px;
   padding: $grid-gap-half;
+  z-index: 9990; // Allow tooltip to display over #adminmenuwrap (lefthand menu) core style
 
   &.show {
     opacity: 1;
