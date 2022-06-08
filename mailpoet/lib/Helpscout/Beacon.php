@@ -44,9 +44,14 @@ class Beacon {
     }
 
     $cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
-    $cronPingUrl = $cronHelper->getCronUrl(
-      CronDaemon::ACTION_PING
-    );
+    try {
+      $cronPingUrl = $cronHelper->getCronUrl(
+        CronDaemon::ACTION_PING
+      );
+    } catch (\Exception $e) {
+      $cronPingUrl = __('Can‘t generate cron URL.', 'mailpoet') . ' (' . $e->getMessage() . ')';
+    }
+
     return [
       'name' => $currentUser->display_name, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       'email' => $sender['address'],
