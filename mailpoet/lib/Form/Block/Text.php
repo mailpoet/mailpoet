@@ -34,10 +34,16 @@ class Text {
   public function render(array $block, array $formSettings): string {
     $type = 'text';
     $automationId = ' ';
-    $autocomplete = 'on';
+
     if ($block['id'] === 'email') {
       $type = 'email';
       $autocomplete = 'email';
+    } else if ($block['id'] === 'first_name') {
+      $autocomplete = 'given-name';
+    } else if ($block['id'] === 'last_name') {
+      $autocomplete = 'family-name';
+    } else {
+      $autocomplete = 'on';
     }
 
     if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
