@@ -202,7 +202,7 @@ jQuery(($) => {
     }
   }
 
-  $('.mailpoet_recaptcha').each((_unused, element) => {
+  $('.mailpoet_recaptcha').each((_, element) => {
     setTimeout(renderCaptcha, 400, element, 1);
   });
 
