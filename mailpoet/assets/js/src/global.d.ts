@@ -123,4 +123,5 @@ interface Window {
   MailPoetForm?: {
     ajax_url: string;
   };
+  mailpoet_authorized_emails?: string[];
 }
