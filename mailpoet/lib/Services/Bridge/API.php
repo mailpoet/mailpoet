@@ -6,7 +6,8 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use WP_Error;
 
-class API {
+class
+API {
   const SENDING_STATUS_OK = 'ok';
   const SENDING_STATUS_CONNECTION_ERROR = 'connection_error';
   const SENDING_STATUS_SEND_ERROR = 'send_error';
@@ -36,7 +37,7 @@ class API {
   public $urlMessages = 'https://bridge.mailpoet.com/api/v0/messages';
   public $urlBounces = 'https://bridge.mailpoet.com/api/v0/bounces/search';
   public $urlStats = 'https://bridge.mailpoet.com/api/v0/stats';
-  public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v0/authorized_email_addresses';
+  public $urlAuthorizedEmailAddresses = 'https://bridge.mailpoet.com/api/v1/authorized_email_address';
 
   public function __construct(
     $apiKey,
@@ -166,16 +167,17 @@ class API {
     return $isSuccess;
   }
 
-  public function getAuthorizedEmailAddresses() {
+  public function getAuthorizedEmailAddresses(): ?array {
     $result = $this->request(
       $this->urlAuthorizedEmailAddresses,
       null,
       'GET'
     );
-    if ($this->wp->wpRemoteRetrieveResponseCode($result) === 200) {
-      return json_decode($this->wp->wpRemoteRetrieveBody($result), true);
+    if ($this->wp->wpRemoteRetrieveResponseCode($result) !== 200) {
+      return null;
     }
-    return false;
+    $data = json_decode($this->wp->wpRemoteRetrieveBody($result), true);
+    return is_array($data) ? $data : null;
   }
 
   public function setKey($apiKey) {
