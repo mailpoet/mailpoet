@@ -43,13 +43,19 @@ class Help {
 
   public function render() {
     $systemInfoData = $this->helpscoutBeacon->getData(true);
-    $cronPingResponse = $this->cronHelper->pingDaemon();
+    try {
+      $cronPingUrl = $this->cronHelper->getCronUrl(CronDaemon::ACTION_PING);
+      $cronPingResponse = $this->cronHelper->pingDaemon();
+    } catch (\Exception $e) {
+      $cronPingResponse = __('Can‘t generate cron URL.', 'mailpoet') . ' (' . $e->getMessage() . ')';
+      $cronPingUrl = $cronPingResponse;
+    }
 
     $mailerLog = MailerLog::getMailerLog();
     $mailerLog['sent'] = MailerLog::sentSince();
     $systemStatusData = [
       'cron' => [
-        'url' => $this->cronHelper->getCronUrl(CronDaemon::ACTION_PING),
+        'url' => $cronPingUrl,
         'isReachable' => $this->cronHelper->validatePingResponse($cronPingResponse),
         'pingResponse' => $cronPingResponse,
       ],
