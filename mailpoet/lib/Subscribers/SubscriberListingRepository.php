@@ -271,9 +271,6 @@ class SubscriberListingRepository extends ListingRepository {
       } else {
         $count = $this->subscribersCountsController->getSegmentStatisticsCount($segment);
       }
-      if (!$count[$key]) {
-        continue;
-      }
 
       $segmentList[] = [
         'label' => sprintf('%s (%s)', $segment->getName(), number_format((float)$count[$key])),
