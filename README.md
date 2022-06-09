@@ -126,7 +126,7 @@ To switch the environment to PHP 7.4/8.0:
    wordpress:
      build:
        context: .
-       dockerfile: docker/php74/Dockerfile # OR docker/php80/Dockerfile
+       dockerfile: dev/php74/Dockerfile # OR dev/php80/Dockerfile
    ```
 
 2. Run `docker-compose build wordpress`.
