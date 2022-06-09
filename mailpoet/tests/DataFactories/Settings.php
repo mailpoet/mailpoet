@@ -2,7 +2,9 @@
 
 namespace MailPoet\Test\DataFactories;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 
@@ -10,8 +12,11 @@ class Settings {
   /** @var SettingsController */
   private $settings;
 
+  private $authorizedEmailsController;
+
   public function __construct() {
     $this->settings = SettingsController::getInstance();
+    $this->authorizedEmailsController = ContainerWrapper::getInstance()->get(AuthorizedEmailsController::class);
     $this->settings->resetCache();
   }
 
@@ -100,6 +105,7 @@ class Settings {
     $this->settings->set('mta.mailpoet_api_key', $mailPoetSendingKey);
     $this->settings->set('mta.mailpoet_api_key_state.state', 'valid');
     $this->settings->set('mta.mailpoet_api_key_state.code', 200);
+    $this->authorizedEmailsController->checkAuthorizedEmailAddresses();
     return $this;
   }
 
