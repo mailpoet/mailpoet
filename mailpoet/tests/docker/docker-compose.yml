@@ -68,7 +68,7 @@ services:
       - mailhog-data:/mailhog-data
 
   wordpress:
-    image: mailpoet/wordpress:${WORDPRESS_IMAGE_VERSION:-wp-5.9_php8.0_20220127.1}
+    image: mailpoet/wordpress:${WORDPRESS_IMAGE_VERSION:-wp-6.0_php8.0_20220609.1}
     depends_on:
       - smtp
       - mysql
