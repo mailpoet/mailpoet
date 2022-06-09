@@ -42,7 +42,7 @@ class Heading {
     if ($classes) {
       $result[] = $classes;
     }
-    if (isset($block['params']['anchor'])) {
+    if (!empty($block['params']['anchor'])) {
       $result[] = $this->renderAnchor($block);
     }
     $styles = $this->renderStyle($block);
@@ -86,10 +86,10 @@ class Heading {
 
   private function renderStyle(array $block): string {
     $styles = [];
-    if (isset($block['params']['align'])) {
+    if (!empty($block['params']['align'])) {
       $styles[] = 'text-align: ' . $block['params']['align'];
     }
-    if (isset($block['params']['text_color'])) {
+    if (!empty($block['params']['text_color'])) {
       $styles[] = 'color: ' . $block['params']['text_color'];
     }
     if (!empty($block['params']['font_size'])) {
