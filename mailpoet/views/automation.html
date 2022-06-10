@@ -1,23 +1,15 @@
 <% extends 'layout.html' %>
 
 <% block content %>
-
 <div class="wrap">
-  <h1 class="mailpoet-h1">Automation</h1>
+  <h1 class="wp-heading-inline">Automation</h1>
 
-  <div class="mailpoet_notice notice notice-error">
-    <p>
-      <strong>This is a testing page for MailPoet automation.</strong>
-    </p>
+  <div id="mailpoet_automation"></div>
+
+  <div>
+    <a href="<%= admin_url('admin.php?page=mailpoet-automation-editor') %>">Automation Editor</a>
   </div>
 </div>
-
-<div>
-  <a href="<%= admin_url('admin.php?page=mailpoet-automation-editor') %>">Automation Editor</a>
-</div>
-
-<div id="mailpoet_automation"></div>
-
 <% endblock %>
 
 <% block after_javascript %>

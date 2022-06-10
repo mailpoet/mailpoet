@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+import { Search, TableCard } from '@woocommerce/components';
 import {
   CreateTestingWorkflowButton,
   CreateWorkflowFromTemplateButton,
@@ -8,29 +9,75 @@ import { useMutation, useQuery } from './api';
 function Workflows(): JSX.Element {
   const { data, loading, error } = useQuery('workflows');
 
-  if (!data || loading) {
-    return <div>Loading workflows...</div>;
-  }
-
   if (error) {
     return <div>Error: {error}</div>;
   }
 
+  const workflows = data?.data ?? [];
+
+  const rows = workflows.map((workflow) => [
+    {
+      value: workflow.name,
+      display: (
+        <a
+          href={`admin.php?page=mailpoet-automation-editor&id=${
+            workflow.id as number
+          }`}
+        >
+          {workflow.name}
+        </a>
+      ),
+    },
+    {
+      value: workflow.status,
+      display: workflow.status,
+    },
+  ]);
+
+  const headers = [
+    { key: 'name', label: 'Name' },
+    { key: 'status', label: 'Status' },
+  ];
+
   return (
-    <div>
-      {data.data.map((workflow) => (
-        <div key={workflow.id}>
-          [{workflow.id}] {workflow.name} ({workflow.status})
-          <a
-            href={`admin.php?page=mailpoet-automation-editor&id=${
-              workflow.id as number
-            }`}
-          >
-            EDIT
-          </a>
-        </div>
-      ))}
-    </div>
+    <TableCard
+      title=""
+      isLoading={!data || loading}
+      rows={rows}
+      headers={headers}
+      query={{ page: 2 }}
+      rowsPerPage={7}
+      totalRows={workflows.length}
+      hasSearch
+      actions={[
+        <ul className="subsubsub" style={{ width: '400px' }}>
+          <li>
+            <a href="/">All</a> |
+          </li>
+          <li>
+            <a href="/">Activated</a> |
+          </li>
+          <li>
+            <a href="/">Drafts</a>
+          </li>
+        </ul>,
+        <Search
+          allowFreeTextSearch
+          inlineTags
+          key="search"
+          //onChange={ onSearchChange }
+          //placeholder={
+          //  labels.placeholder ||
+          //  __( 'Search by item name', 'woocommerce' )
+          //}
+          //selected={ searchedLabels }
+          showClearButton
+          type="custom"
+          disabled={!data || loading || data.length === 0}
+          autocompleter={{}}
+        />,
+      ]}
+    />
   );
 }
 
@@ -79,11 +126,11 @@ function DeleteSchemaButton(): JSX.Element {
 function App(): JSX.Element {
   return (
     <div>
+      <Workflows />
       <CreateTestingWorkflowButton />
       <CreateWorkflowFromTemplateButton />
       <RecreateSchemaButton />
       <DeleteSchemaButton />
-      <Workflows />
     </div>
   );
 }
