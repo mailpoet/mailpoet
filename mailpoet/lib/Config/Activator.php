@@ -37,15 +37,23 @@ class Activator {
   public function activate() {
     $isRunning = $this->wp->getTransient(self::TRANSIENT_ACTIVATE_KEY);
     if ($isRunning === false) {
-      $this->wp->setTransient(self::TRANSIENT_ACTIVATE_KEY, '1', self::TRANSIENT_EXPIRATION);
+      $this->lockActivation();
       try {
         $this->processActivate();
       } finally {
-        $this->wp->deleteTransient(self::TRANSIENT_ACTIVATE_KEY);
+        $this->unlockActivation();
       }
     } else {
       throw new InvalidStateException(__('MailPoet version update is in progress, please refresh the page in a minute.', 'mailpoet'));
     }
+  }
+
+  private function lockActivation(): void {
+    $this->wp->setTransient(self::TRANSIENT_ACTIVATE_KEY, '1', self::TRANSIENT_EXPIRATION);
+  }
+
+  private function unlockActivation(): void {
+    $this->wp->deleteTransient(self::TRANSIENT_ACTIVATE_KEY);
   }
 
   private function processActivate(): void {
@@ -62,10 +70,12 @@ class Activator {
   }
 
   public function deactivate() {
+    $this->lockActivation();
     $this->migrator->down();
 
     $caps = new Capabilities();
     $caps->removeWPCapabilities();
+    $this->unlockActivation();
   }
 
   public function updateDbVersion() {
