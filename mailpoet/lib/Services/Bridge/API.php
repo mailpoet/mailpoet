@@ -6,8 +6,7 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use WP_Error;
 
-class
-API {
+class API {
   const SENDING_STATUS_OK = 'ok';
   const SENDING_STATUS_CONNECTION_ERROR = 'connection_error';
   const SENDING_STATUS_SEND_ERROR = 'send_error';
