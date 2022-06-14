@@ -53,13 +53,33 @@ jQuery(($) => {
     Cookies.set(formCookieName, '1', { expires: 182, path: '/' });
   }
 
+  function playCaptcha(e?: Event) {
+    e.preventDefault();
+    const audio = document.querySelector('#mailpoet_captcha_player') as HTMLAudioElement;
+    if (! audio) {
+      return;
+    }
+    audio.play();
+  }
+
   function updateCaptcha(e?: Event) {
-    const captcha = $('img.mailpoet_captcha');
-    if (!captcha.length) return false;
-    const captchaSrc = captcha.attr('src');
-    const hashPos = captchaSrc.indexOf('#');
-    const newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
-    captcha.attr('src', `${newSrc}#${new Date().getTime()}`);
+    const captcha = document.querySelector('img.mailpoet_captcha');
+    const audioCaptcha = document.querySelector('#mailpoet_captcha_player') as HTMLAudioElement;
+    const audioCaptchaSource = audioCaptcha.querySelector('source');
+    if (!captcha) {
+      return false;
+    }
+    let captchaSrc = captcha.getAttribute('src');
+    let hashPos = captchaSrc.indexOf('#');
+    let newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
+    captcha.setAttribute('src', `${newSrc}#${new Date().getTime()}`);
+
+    captchaSrc = audioCaptchaSource.getAttribute('src');
+    hashPos = captchaSrc.indexOf('&cachebust=');
+    newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
+    audioCaptchaSource.setAttribute('src', `${newSrc}&cachebust=${new Date().getTime()}`);
+    audioCaptcha.load();
+
     if (e) e.preventDefault();
     return true;
   }
@@ -447,7 +467,8 @@ jQuery(($) => {
       });
     });
 
-    $('.mailpoet_captcha_update').on('click', updateCaptcha);
+    $('#mailpoet_captcha_update').on('click', updateCaptcha);
+    $('#mailpoet_captcha_audio').on('click', playCaptcha);
 
     // Manage subscription form
     $('.mailpoet-manage-subscription').on('submit', (event) => {
