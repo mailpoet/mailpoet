@@ -50,6 +50,20 @@ class SubscriptionUrlFactory {
     );
   }
 
+  public function getCaptchaAudioUrl($sessionId, $type) {
+    $post = $this->getPost($this->settings->get('subscription.pages.captcha'));
+    $url = $this->getSubscriptionUrl(
+      $post,
+      'captchaAudio',
+      null,
+      [
+        'captcha_session_id' => $sessionId,
+        'type' => $type,
+      ]
+    );
+    return $url;
+  }
+
   public function getConfirmationUrl(SubscriberEntity $subscriber = null) {
     $post = $this->getPost($this->settings->get('subscription.pages.confirmation'));
     return $this->getSubscriptionUrl($post, 'confirm', $subscriber);
