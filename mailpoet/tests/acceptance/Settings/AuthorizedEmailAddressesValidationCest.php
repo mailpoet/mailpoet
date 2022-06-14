@@ -49,7 +49,7 @@ class AuthorizedEmailAddressesValidationCest {
     $i->reloadPage();
     $i->cantSee($errorMessagePrefix);
   }
-/*
+
   public function authorizedEmailsInNewslettersValidation(\AcceptanceTester $i) {
     $subject = 'Subject Unauthorized Welcome Email';
     (new Newsletter())->withSubject($subject)
@@ -102,5 +102,4 @@ class AuthorizedEmailAddressesValidationCest {
     $i->click('Send');
     $i->waitForElement('.parsley-invalidFromAddress');
   }
-*/
 }
