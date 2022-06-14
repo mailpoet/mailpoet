@@ -124,6 +124,7 @@ interface Window {
   mailpoet_current_date_time?: string;
   mailpoet_urls: Record<string, string>;
   recaptcha?: unknown;
+  grecaptcha?: any;
   MailPoetForm?: {
     ajax_url: string;
   };
