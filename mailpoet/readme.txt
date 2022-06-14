@@ -3,7 +3,7 @@ Contributors: mailpoet
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 5.6
 Tested up to: 5.9
-Stable tag: 3.89.4
+Stable tag: 3.90.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,16 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 3.90.0 - 2022-06-14 =
+* Updated: js-cookie library to version 3;
+* Improved: autocomplete's accessibility for first and last name;
+* Improved: added labels to inputs in public forms to improve accessibility;
+* Improved: list badge now links to its subscribers;
+* Improved: some 3rd party plugins should no longer falsely mark MailPoet as malware;
+* Improved: checkbox and radio buttons are focusable;
+* Fixed: invalid HTML markup in rendered email;
+* Fixed: Unhandled error for inaccessible cron worker.
 
 = 3.89.4 - 2022-06-06 =
 * Improved: better handle trying to change a subscriber email to an existing one;
