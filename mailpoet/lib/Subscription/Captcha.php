@@ -3,6 +3,7 @@
 namespace MailPoet\Subscription;
 
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Config\Env;
 use MailPoet\Subscribers\SubscriberIPsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
@@ -102,6 +103,32 @@ class Captcha {
     $user = $this->wp->wpGetCurrentUser();
     $roles = $this->wp->applyFilters('mailpoet_subscription_captcha_exclude_roles', ['administrator', 'editor']);
     return !empty(array_intersect($roles, (array)$user->roles));
+  }
+
+  public function renderAudio($sessionId, $return=false) {
+
+    $audioPath = Env::$assetsPath . '/audio/';
+    $this->captchaSession->init($sessionId);
+    $captcha = (string)$this->captchaSession->getCaptchaHash();
+
+    $audio = null;
+    foreach (str_split($captcha) as $character) {
+      $file = $audioPath . strtoupper($character) . '.mp3';
+      if (! file_exists($file)) {
+        throw new \RuntimeException("File not found.");
+      }
+      $audio .= file_get_contents($file);
+    }
+
+    if ($return) {
+      return $audio;
+    }
+
+    header("Cache-Control: no-store, no-cache, must-revalidate");
+    header('Content-Type: audio/mpeg');
+
+    echo $audio;
+    exit;
   }
 
   public function renderImage($width = null, $height = null, $sessionId = null, $return = false) {

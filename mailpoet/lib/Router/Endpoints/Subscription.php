@@ -11,6 +11,7 @@ class Subscription {
   const ENDPOINT = 'subscription';
   const ACTION_CAPTCHA = 'captcha';
   const ACTION_CAPTCHA_IMAGE = 'captchaImage';
+  const ACTION_CAPTCHA_AUDIO = 'captchaAudio';
   const ACTION_CONFIRM = 'confirm';
   const ACTION_MANAGE = 'manage';
   const ACTION_UNSUBSCRIBE = 'unsubscribe';
@@ -20,6 +21,7 @@ class Subscription {
   public $allowedActions = [
     self::ACTION_CAPTCHA,
     self::ACTION_CAPTCHA_IMAGE,
+    self::ACTION_CAPTCHA_AUDIO,
     self::ACTION_CONFIRM,
     self::ACTION_MANAGE,
     self::ACTION_UNSUBSCRIBE,
@@ -64,6 +66,11 @@ class Subscription {
     $height = !empty($data['height']) ? (int)$data['height'] : null;
     $sessionId = !empty($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
     return $this->captcha->renderImage($width, $height, $sessionId);
+  }
+
+  public function captchaAudio($data) {
+    $sessionId = !empty($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
+    return $this->captcha->renderAudio($sessionId);
   }
 
   public function confirm($data) {
