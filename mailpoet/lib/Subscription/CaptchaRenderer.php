@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Config\Env;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Renderer as FormRenderer;
@@ -115,11 +116,20 @@ class CaptchaRenderer {
     $width = 220;
     $height = 60;
     $captchaUrl = $this->subscriptionUrlFactory->getCaptchaImageUrl($width, $height, $this->captchaSession->getId());
+    $mp3CaptchaUrl = $this->subscriptionUrlFactory->getCaptchaAudioUrl($this->captchaSession->getId(), 'mp3');
+    $oggCaptchaUrl = $this->subscriptionUrlFactory->getCaptchaAudioUrl($this->captchaSession->getId(), 'ogg');
 
+    $reloadIcon = Env::$assetsUrl . '/img/icons/image-rotate.svg';
+    $playIcon = Env::$assetsUrl . '/img/icons/controls-volumeon.svg';
     $formHtml .= '<div class="mailpoet_form_hide_on_success">';
     $formHtml .= '<p class="mailpoet_paragraph">';
-    $formHtml .= '<img class="mailpoet_captcha mailpoet_captcha_update" src="' . $captchaUrl . '" width="' . $width . '" height="' . $height . '" title="' . __('Click to refresh the CAPTCHA', 'mailpoet') . '" />';
+    $formHtml .= '<img class="mailpoet_captcha" src="' . $captchaUrl . '" width="' . $width . '" height="' . $height . '" title="' . esc_attr__('Click to refresh the CAPTCHA', 'mailpoet') . '" />';
     $formHtml .= '</p>';
+    $formHtml .= '<button type="button" id="mailpoet_captcha_update" class="mailpoet_icon_button" title="' . esc_attr(__('Reload captcha', 'mailpoet')) . '"><img src="' . $reloadIcon . '" alt="" /></button>';
+    $formHtml .= '<button type="button" id="mailpoet_captcha_audio" class="mailpoet_icon_button" title="' . esc_attr(__('Play captcha', 'mailpoet')) . '"><img src="' . $playIcon . '" alt="" /></button>';
+    $formHtml .= '<audio id="mailpoet_captcha_player">';
+    $formHtml .= '<source src="' . $mp3CaptchaUrl . '" type="audio/mpeg">';
+    $formHtml .= '</audio>';
 
     // subscription form
     $formHtml .= $this->formRenderer->renderBlocks($form, [], null, $honeypot = false);
@@ -139,7 +149,7 @@ class CaptchaRenderer {
     $showErrorMessage = false
   ) {
     $settings = $formModel->getSettings() ?? [];
-    $formHtml = '<div class="mailpoet_message">';
+    $formHtml = '<div class="mailpoet_message" role="region" aria-live="polite">';
     $formHtml .= '<p class="mailpoet_validate_success" ' . ($showSuccessMessage ? '' : ' style="display:none;"') . '>' . $settings['success_message'] . '</p>';
     $formHtml .= '<p class="mailpoet_validate_error" ' . ($showErrorMessage ? '' : ' style="display:none;"') . '>' . __('The characters you entered did not match the CAPTCHA image. Please try again with this new image.', 'mailpoet') . '</p>';
     $formHtml .= '</div>';
