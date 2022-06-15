@@ -86,11 +86,14 @@ class MarketingOptinBlock implements IntegrationInterface {
    */
   private function registerEditorTranslations() {
     $handle = 'mailpoet-marketing-optin-block-editor-script';
-    $editorTranslations = $this->wp->getWpScripts()->print_translations($handle, false);
-    // mailpoet-marketing-optin-block-editor-script is not enqueued
-    if ($editorTranslations === false) {
-      return;
-    }
+    $editorTranslations = <<<JS
+( function( domain, translations ) {
+	var localeData = translations.locale_data[ domain ] || translations.locale_data.messages;
+	localeData[""].domain = domain;
+	wp.i18n.setLocaleData( localeData, domain );
+} )( "mailpoet", { "locale_data": { "messages": { "": {} } } } );
+JS;
+
     $translations = [
       '' => ['domain' => 'messages'],
       'marketing-opt-in-label' => [__('Marketing opt-in', 'mailpoet')],
