@@ -178,7 +178,7 @@ class PurchasedProduct {
 
   private function getProductIdsMatchingNewsletterTrigger(NewsletterEntity $automaticEmail, array $orderedProductIds): array {
     $automaticEmailMetaValue = $automaticEmail->getOptionValue(NewsletterOptionFieldEntity::NAME_META);
-    $optionValue = (is_string($automaticEmailMetaValue) && Helpers::isJson($automaticEmailMetaValue)) ? json_decode($automaticEmailMetaValue, true) : $automaticEmailMetaValue;
+    $optionValue = Helpers::isJson($automaticEmailMetaValue) ? json_decode($automaticEmailMetaValue, true) : $automaticEmailMetaValue;
 
     if (!is_array($optionValue) || empty($optionValue['option'])) {
       return [];
