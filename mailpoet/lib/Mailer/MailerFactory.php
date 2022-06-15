@@ -57,7 +57,8 @@ class MailerFactory {
           $sender,
           $replyTo,
           $returnPath,
-          new AmazonSESMapper()
+          new AmazonSESMapper(),
+          $this->wp
         );
         break;
       case Mailer::METHOD_MAILPOET:
