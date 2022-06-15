@@ -7,6 +7,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\AmazonSES;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
+use MailPoet\WP\Functions as WPFunctions;
 
 class AmazonSESTest extends \MailPoetTest {
   public $extraParams;
@@ -51,7 +52,8 @@ class AmazonSESTest extends \MailPoetTest {
       $this->sender,
       $this->replyTo,
       $this->returnPath,
-      new AmazonSESMapper()
+      new AmazonSESMapper(),
+      new WPFunctions()
     );
     $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
     $this->newsletter = [
@@ -88,7 +90,8 @@ class AmazonSESTest extends \MailPoetTest {
         $this->sender,
         $this->replyTo,
         $this->returnPath,
-        new AmazonSESMapper()
+        new AmazonSESMapper(),
+        new WPFunctions()
       );
       $this->fail('Unsupported region exception was not thrown');
     } catch (\Exception $e) {
@@ -254,5 +257,34 @@ class AmazonSESTest extends \MailPoetTest {
     expect($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
     expect($result['error']->getMessage())->stringContainsString('AmazonSES has returned an unknown error.');
+  }
+
+  public function testItCanSend() {
+    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
+
+    $mockedWp = $this->createMock(WPFunctions::class);
+    /**
+     * We don't want to send a real email through AmazonSES, thus mocking
+     */
+    $mockedWp->method('wpRemotePost')
+      ->willReturn(['response' => true]);
+    $mockedWp->method('wpRemoteRetrieveResponseCode')
+      ->willReturn(200);
+
+    $mailer = new AmazonSES(
+      $this->settings['region'],
+      $this->settings['access_key'],
+      $this->settings['secret_key'],
+      $this->sender,
+      $this->replyTo,
+      $this->returnPath,
+      new AmazonSESMapper(),
+      $mockedWp
+    );
+    $result = $mailer->send(
+      $this->newsletter,
+      $this->subscriber
+    );
+    expect($result['response'])->true();
   }
 }
