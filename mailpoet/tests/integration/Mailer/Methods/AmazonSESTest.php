@@ -260,8 +260,6 @@ class AmazonSESTest extends \MailPoetTest {
   }
 
   public function testItCanSend() {
-    if (getenv('WP_TEST_MAILER_ENABLE_SENDING') !== 'true') $this->markTestSkipped();
-
     $mockedWp = $this->createMock(WPFunctions::class);
     /**
      * We don't want to send a real email through AmazonSES, thus mocking
