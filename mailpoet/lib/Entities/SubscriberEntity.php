@@ -168,9 +168,16 @@ class SubscriberEntity {
    */
   private $subscriberCustomFields;
 
+  /**
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\SubscriberTagEntity", mappedBy="subscriber", orphanRemoval=true)
+   * @var Collection<int, SubscriberTagEntity>
+   */
+  private $subscriberTags;
+
   public function __construct() {
     $this->subscriberSegments = new ArrayCollection();
     $this->subscriberCustomFields = new ArrayCollection();
+    $this->subscriberTags = new ArrayCollection();
   }
 
   /**
@@ -444,6 +451,13 @@ class SubscriberEntity {
    */
   public function getSubscriberCustomFields() {
     return $this->subscriberCustomFields;
+  }
+
+  /**
+   * @return Collection<int, SubscriberTagEntity>
+   */
+  public function getSubscriberTags() {
+    return $this->subscriberTags;
   }
 
   /**
