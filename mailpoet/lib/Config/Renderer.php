@@ -27,7 +27,7 @@ class Renderer {
       [
         'cache' => new TwigFileSystemCache($cachePath),
         'debug' => $this->debuggingEnabled,
-        'auto_reload' => true,
+        'auto_reload' => false,
       ]
     );
 
