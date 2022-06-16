@@ -18,7 +18,8 @@ class Renderer {
   public function __construct(
     bool $debuggingEnabled,
     string $cachePath,
-    TwigFileSystem $fileSystem
+    TwigFileSystem $fileSystem,
+    bool $autoReload = false
   ) {
     $this->debuggingEnabled = $debuggingEnabled;
     $this->cachePath = $cachePath;
@@ -27,7 +28,7 @@ class Renderer {
       [
         'cache' => new TwigFileSystemCache($cachePath),
         'debug' => $this->debuggingEnabled,
-        'auto_reload' => true,
+        'auto_reload' => $autoReload,
       ]
     );
 
