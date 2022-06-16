@@ -12,10 +12,12 @@ class RendererFactory {
   public function getRenderer() {
     if (!$this->renderer) {
       $debugging = WP_DEBUG;
+      $autoReload = defined('MAILPOET_DEVELOPMENT') && MAILPOET_DEVELOPMENT;
       $this->renderer = new Renderer(
         $debugging,
         Env::$cachePath,
-        new TwigFileSystem(Env::$viewsPath)
+        new TwigFileSystem(Env::$viewsPath),
+        $autoReload
       );
     }
     return $this->renderer;
