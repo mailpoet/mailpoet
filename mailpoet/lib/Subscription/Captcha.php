@@ -105,7 +105,7 @@ class Captcha {
     return !empty(array_intersect($roles, (array)$user->roles));
   }
 
-  public function renderAudio($sessionId, $return=false) {
+  public function renderAudio($sessionId, $return = false) {
 
     $audioPath = Env::$assetsPath . '/audio/';
     $this->captchaSession->init($sessionId);
@@ -113,8 +113,8 @@ class Captcha {
 
     $audio = null;
     foreach (str_split($captcha) as $character) {
-      $file = $audioPath . strtoupper($character) . '.mp3';
-      if (! file_exists($file)) {
+      $file = $audioPath . strtolower($character) . '.mp3';
+      if (!file_exists($file)) {
         throw new \RuntimeException("File not found.");
       }
       $audio .= file_get_contents($file);
@@ -127,6 +127,7 @@ class Captcha {
     header("Cache-Control: no-store, no-cache, must-revalidate");
     header('Content-Type: audio/mpeg');
 
+    //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
     echo $audio;
     exit;
   }
