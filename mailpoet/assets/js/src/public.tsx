@@ -55,16 +55,20 @@ jQuery(($) => {
 
   function playCaptcha(e?: Event) {
     e.preventDefault();
-    const audio = document.querySelector('#mailpoet_captcha_player') as HTMLAudioElement;
-    if (! audio) {
+    const audio = document.querySelector<HTMLAudioElement>(
+      '#mailpoet_captcha_player',
+    );
+    if (!audio) {
       return;
     }
-    audio.play();
+    audio.play().catch(() => {});
   }
 
   function updateCaptcha(e?: Event) {
     const captcha = document.querySelector('img.mailpoet_captcha');
-    const audioCaptcha = document.querySelector('#mailpoet_captcha_player') as HTMLAudioElement;
+    const audioCaptcha = document.querySelector<HTMLAudioElement>(
+      '#mailpoet_captcha_player',
+    );
     const audioCaptchaSource = audioCaptcha.querySelector('source');
     if (!captcha) {
       return false;
@@ -77,7 +81,10 @@ jQuery(($) => {
     captchaSrc = audioCaptchaSource.getAttribute('src');
     hashPos = captchaSrc.indexOf('&cachebust=');
     newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
-    audioCaptchaSource.setAttribute('src', `${newSrc}&cachebust=${new Date().getTime()}`);
+    audioCaptchaSource.setAttribute(
+      'src',
+      `${newSrc}&cachebust=${new Date().getTime()}`,
+    );
     audioCaptcha.load();
 
     if (e) e.preventDefault();
@@ -218,7 +225,7 @@ jQuery(($) => {
       }
 
       const widgetId = window.grecaptcha.render(container, params);
-      field.val(widgetId);
+      field.val(widgetId as string);
     }
   }
 
