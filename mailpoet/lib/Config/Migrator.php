@@ -72,6 +72,8 @@ class Migrator {
       'feature_flags',
       'dynamic_segment_filters',
       'user_agents',
+      'tags',
+      'subscriber_tag',
     ];
   }
 
@@ -632,6 +634,33 @@ class Migrator {
       'created_at timestamp NULL,',
       'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
       'PRIMARY KEY (id)',
+    ];
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  public function tags(): string {
+    $attributes = [
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'name varchar(255) NOT NULL,',
+      'description text NOT NULL DEFAULT "",',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
+      'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY (id),',
+      'UNIQUE KEY name (name)',
+    ];
+    return $this->sqlify(__FUNCTION__, $attributes);
+  }
+
+  public function subscriberTag(): string {
+    $attributes = [
+      'id int(11) unsigned NOT NULL AUTO_INCREMENT,',
+      'subscriber_id int(11) unsigned NOT NULL,',
+      'tag_id int(11) unsigned NOT NULL,',
+      'created_at timestamp NULL,', // must be NULL, see comment at the top
+      'updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,',
+      'PRIMARY KEY (id),',
+      'UNIQUE KEY subscriber_tag (subscriber_id, tag_id),',
+      'KEY tag_id (tag_id)',
     ];
     return $this->sqlify(__FUNCTION__, $attributes);
   }
