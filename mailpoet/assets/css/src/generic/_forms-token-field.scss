@@ -1,0 +1,15 @@
+.mailpoet-form-token-field {
+  background: $color-input-background;
+  border: 1px solid $color-input-border !important;
+  border-radius: $form-control-border-radius !important;
+  box-sizing: border-box;
+  display: inline-flex;
+  max-width: 100%;
+  min-height: $form-control-height;
+  min-width: 0;
+  padding: 0;
+  position: relative;
+  text-align: left;
+  vertical-align: top;
+  width: $grid-column;
+}
