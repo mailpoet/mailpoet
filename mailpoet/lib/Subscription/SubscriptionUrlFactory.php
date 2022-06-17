@@ -57,6 +57,7 @@ class SubscriptionUrlFactory {
       'captchaAudio',
       null,
       [
+        'cacheBust' => time(),
         'captcha_session_id' => $sessionId,
         'type' => $type,
       ]
