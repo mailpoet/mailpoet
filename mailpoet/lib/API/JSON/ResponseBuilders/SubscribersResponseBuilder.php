@@ -92,6 +92,7 @@ class SubscribersResponseBuilder {
       'count_confirmations' => $subscriberEntity->getConfirmationsCount(),
       'unsubscribe_token' => $subscriberEntity->getUnsubscribeToken(),
       'link_token' => $subscriberEntity->getLinkToken(),
+      'tags' => $this->buildTags($subscriberEntity),
     ];
 
     return $this->buildCustomFields($subscriberEntity, $data);
@@ -151,6 +152,25 @@ class SubscribersResponseBuilder {
       }
     }
     return $data;
+  }
+
+  private function buildTags(SubscriberEntity $subscriber): array {
+    $result = [];
+    foreach ($subscriber->getSubscriberTags() as $subscriberTag) {
+      $tag = $subscriberTag->getTag();
+      if (!$tag) {
+        continue;
+      }
+      $result[] = [
+        'id' => $subscriberTag->getId(),
+        'subscriber_id' => (string)$subscriber->getId(),
+        'tag_id' => (string)$tag->getId(),
+        'created_at' => ($createdAt = $subscriberTag->getCreatedAt()) ? $createdAt->format(self::DATE_FORMAT) : null,
+        'updated_at' => $subscriberTag->getUpdatedAt()->format(self::DATE_FORMAT),
+        'name' => $tag->getName(),
+      ];
+    }
+    return $result;
   }
 
   /**
