@@ -67,6 +67,7 @@ export function TopBar({ children, hasNews, onBeamerClick }: Props) {
             }}
           >
             <BeamerIcon />
+            <span>{t('topBarUpdates')}</span>
           </a>
           <span id="beamer-empty-element" />
         </div>
