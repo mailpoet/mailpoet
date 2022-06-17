@@ -116,8 +116,7 @@ class CaptchaRenderer {
     $width = 220;
     $height = 60;
     $captchaUrl = $this->subscriptionUrlFactory->getCaptchaImageUrl($width, $height, $this->captchaSession->getId());
-    $mp3CaptchaUrl = $this->subscriptionUrlFactory->getCaptchaAudioUrl($this->captchaSession->getId(), 'mp3');
-    $oggCaptchaUrl = $this->subscriptionUrlFactory->getCaptchaAudioUrl($this->captchaSession->getId(), 'ogg');
+    $mp3CaptchaUrl = $this->subscriptionUrlFactory->getCaptchaAudioUrl($this->captchaSession->getId());
 
     $reloadIcon = Env::$assetsUrl . '/img/icons/image-rotate.svg';
     $playIcon = Env::$assetsUrl . '/img/icons/controls-volumeon.svg';
