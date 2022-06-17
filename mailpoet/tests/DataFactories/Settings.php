@@ -126,7 +126,7 @@ class Settings {
     return $this;
   }
 
-  public function withMisconfiguredSendingMethodSmtpMailhog() {
+  public function withMisconfiguredSendingMethodSmtp() {
     $this->withSendingMethodSmtpMailhog();
     $this->settings->set('mta.host', 'unknown_server');
   }
