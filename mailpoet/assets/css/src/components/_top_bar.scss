@@ -3,9 +3,7 @@ $beamer-dot-size: 8px;
 .mailpoet-top-bar {
   align-items: center;
   background-color: $color-white;
-  box-shadow:
-    0 -1px 0 0 $color-tertiary-light,
-    0 2px 4px 0 opacify($color-tertiary-light, .5);
+  box-shadow: inset 0 -1px 0 $color-tertiary-light;
   display: flex;
   flex-direction: row;
   height: 64px;
