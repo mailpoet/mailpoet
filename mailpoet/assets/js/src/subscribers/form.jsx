@@ -110,6 +110,17 @@ const fields = [
       return label;
     },
   },
+  {
+    name: 'tags',
+    label: MailPoet.I18n.t('tags'),
+    type: 'tokenField',
+    placeholder: MailPoet.I18n.t('addNewTag'),
+    suggestedValues: [],
+    endpoint: 'tags',
+    getName: function getName(tag) {
+      return Object.prototype.hasOwnProperty.call(tag, 'name') ? tag.name : tag;
+    },
+  },
 ];
 
 const customFields = window.mailpoet_custom_fields || [];

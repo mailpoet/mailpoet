@@ -145,7 +145,10 @@ class FormComponent extends Component {
   };
 
   handleValueChange = (e) => {
-    const { name, value } = e.target;
+    // Because we need to support events that don't have the original event we need to check that the property target exists
+    const { name, value } = Object.prototype.hasOwnProperty.call(e, 'target')
+      ? e.target
+      : e;
     if (this.props.onChange) {
       return this.props.onChange(e);
     }

@@ -218,3 +218,7 @@ progress::-moz-progress-bar {
     font-style: italic;
   }
 }
+
+.mailpoet-form-field-tags label.components-form-token-field__label {
+  display: none;
+}
