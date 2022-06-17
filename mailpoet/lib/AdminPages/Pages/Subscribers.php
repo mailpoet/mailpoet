@@ -69,6 +69,9 @@ class Subscribers {
   }
 
   public function render() {
+    // Gutenberg components styles
+    $this->wp->wpEnqueueStyle('wp-components');
+
     $installer = new Installer(Installer::PREMIUM_PLUGIN_SLUG);
     $pluginInformation = $installer->retrievePluginInformation();
 

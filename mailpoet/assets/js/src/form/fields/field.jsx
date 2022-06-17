@@ -10,6 +10,7 @@ import { FormFieldCheckbox } from 'form/fields/checkbox.jsx';
 import { Selection } from 'form/fields/selection.jsx';
 import { FormFieldDate } from 'form/fields/date.jsx';
 import { Heading } from 'common/typography/heading/heading';
+import { FormFieldTokenField } from 'form/fields/tokenField';
 
 class FormField extends Component {
   renderField = (data) => {
@@ -126,6 +127,18 @@ class FormField extends Component {
             item={data.item}
             automationId={data.automationId}
             inline={data.inline}
+            description={data.description}
+          />
+        );
+        break;
+
+      case 'tokenField':
+        field = (
+          <FormFieldTokenField
+            onValueChange={data.onValueChange}
+            field={data.field}
+            item={data.item}
+            automationId={data.automationId}
             description={data.description}
           />
         );
