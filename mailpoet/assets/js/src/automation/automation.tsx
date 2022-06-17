@@ -1,5 +1,8 @@
 import ReactDOM from 'react-dom';
-import { Search, TableCard } from '@woocommerce/components';
+import { Workflow } from './list/workflow';
+import { AutomationListing } from './list/automation-listing';
+import { Onboarding } from './onboarding/onboarding';
+import { Loading } from '../common';
 import {
   CreateTestingWorkflowButton,
   CreateWorkflowFromTemplateButton,
@@ -13,71 +16,14 @@ function Workflows(): JSX.Element {
     return <div>Error: {error}</div>;
   }
 
-  const workflows = data?.data ?? [];
-
-  const rows = workflows.map((workflow) => [
-    {
-      value: workflow.name,
-      display: (
-        <a
-          href={`admin.php?page=mailpoet-automation-editor&id=${
-            workflow.id as number
-          }`}
-        >
-          {workflow.name}
-        </a>
-      ),
-    },
-    {
-      value: workflow.status,
-      display: workflow.status,
-    },
-  ]);
-
-  const headers = [
-    { key: 'name', label: 'Name' },
-    { key: 'status', label: 'Status' },
-  ];
-
-  return (
-    <TableCard
-      title=""
-      isLoading={!data || loading}
-      rows={rows}
-      headers={headers}
-      query={{ page: 2 }}
-      rowsPerPage={7}
-      totalRows={workflows.length}
-      hasSearch
-      actions={[
-        <ul className="subsubsub" style={{ width: '400px' }}>
-          <li>
-            <a href="/">All</a> |
-          </li>
-          <li>
-            <a href="/">Activated</a> |
-          </li>
-          <li>
-            <a href="/">Drafts</a>
-          </li>
-        </ul>,
-        <Search
-          allowFreeTextSearch
-          inlineTags
-          key="search"
-          //onChange={ onSearchChange }
-          //placeholder={
-          //  labels.placeholder ||
-          //  __( 'Search by item name', 'woocommerce' )
-          //}
-          //selected={ searchedLabels }
-          showClearButton
-          type="custom"
-          disabled={!data || loading || data.length === 0}
-          autocompleter={{}}
-        />,
-      ]}
-    />
+  const workflows: Workflow[] = data?.data ?? [];
+  if (loading) {
+    return <Loading />;
+  }
+  return workflows.length === 0 ? (
+    Onboarding()
+  ) : (
+    <AutomationListing workflows={workflows} loading={loading} />
   );
 }
 
