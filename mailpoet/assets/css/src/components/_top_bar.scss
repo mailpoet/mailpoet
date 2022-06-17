@@ -44,8 +44,8 @@ $beamer-dot-size: 8px;
 
 .mailpoet-top-bar-logo-desktop {
   display: block;
-  height: 30px;
-  width: 100px;
+  height: 23px;
+  width: 75px;
 
   @include respond-to(small-screen) {
     display: none;
