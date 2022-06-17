@@ -55,9 +55,8 @@ jQuery(($) => {
 
   function playCaptcha(e?: Event) {
     e.preventDefault();
-    const audio = document.querySelector<HTMLAudioElement>(
-      '#mailpoet_captcha_player',
-    );
+    const audioSelector = '.mailpoet_captcha_player';
+    const audio = document.querySelector<HTMLAudioElement>(audioSelector);
     if (!audio) {
       return;
     }
@@ -65,10 +64,11 @@ jQuery(($) => {
   }
 
   function updateCaptcha(e?: Event) {
-    const captcha = document.querySelector('img.mailpoet_captcha');
-    const audioCaptcha = document.querySelector<HTMLAudioElement>(
-      '#mailpoet_captcha_player',
-    );
+    const imgSelector = 'img.mailpoet_captcha';
+    const audioSelector = '.mailpoet_captcha_player';
+    const captcha = document.querySelector(imgSelector);
+    const audioCaptcha =
+      document.querySelector<HTMLAudioElement>(audioSelector);
     const audioCaptchaSource = audioCaptcha.querySelector('source');
     if (!captcha) {
       return false;
@@ -474,8 +474,8 @@ jQuery(($) => {
       });
     });
 
-    $('#mailpoet_captcha_update').on('click', updateCaptcha);
-    $('#mailpoet_captcha_audio').on('click', playCaptcha);
+    $('.mailpoet_captcha_update').on('click', updateCaptcha);
+    $('.mailpoet_captcha_audio').on('click', playCaptcha);
 
     // Manage subscription form
     $('.mailpoet-manage-subscription').on('submit', (event) => {
