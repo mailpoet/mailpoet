@@ -472,6 +472,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoetVendor\csstidy::class)->setClass(\MailPoetVendor\csstidy::class);
     // Cache
     $container->autowire(\MailPoet\Cache\TransientCache::class)->setPublic(true);
+    // Tags
+    $container->autowire(\MailPoet\Tags\TagRepository::class)->setPublic(true);
     return $container;
   }
 
