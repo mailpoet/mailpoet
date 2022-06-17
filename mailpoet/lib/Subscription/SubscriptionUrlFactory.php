@@ -50,7 +50,7 @@ class SubscriptionUrlFactory {
     );
   }
 
-  public function getCaptchaAudioUrl($sessionId, $type) {
+  public function getCaptchaAudioUrl($sessionId) {
     $post = $this->getPost($this->settings->get('subscription.pages.captcha'));
     $url = $this->getSubscriptionUrl(
       $post,
@@ -59,7 +59,6 @@ class SubscriptionUrlFactory {
       [
         'cacheBust' => time(),
         'captcha_session_id' => $sessionId,
-        'type' => $type,
       ]
     );
     return $url;
