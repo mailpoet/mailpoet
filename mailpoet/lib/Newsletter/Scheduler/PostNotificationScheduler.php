@@ -137,7 +137,7 @@ class PostNotificationScheduler {
     $timeOfDayOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_TIME_OF_DAY);
     $hour = $timeOfDayOption ? (int)$timeOfDayOption->getValue() / self::SECONDS_IN_HOUR : null;
 
-    $weekDayOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_WEK_DAY);
+    $weekDayOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_WEEK_DAY);
     $weekDay = $weekDayOption ? $weekDayOption->getValue() : null;
 
     $monthDayOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_MONTH_DAY);
