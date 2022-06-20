@@ -9,6 +9,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Gregwar\Captcha\CaptchaBuilder;
+use MailPoetVendor\Gregwar\Captcha\PhraseBuilder;
 
 class Captcha {
   const TYPE_BUILTIN = 'built-in';
@@ -110,7 +111,11 @@ class Captcha {
     $audioPath = Env::$assetsPath . '/audio/';
     $this->captchaSession->init($sessionId);
     $captcha = (string)$this->captchaSession->getCaptchaHash();
-
+    if (! $captcha) {
+      $builder = new PhraseBuilder();
+      $captcha = $builder->build();
+      $this->captchaSession->setCaptchaHash($captcha);
+    }
     $audio = null;
     foreach (str_split($captcha) as $character) {
       $file = $audioPath . strtolower($character) . '.mp3';
@@ -144,13 +149,17 @@ class Captcha {
     $captchaDirectory = dirname((string)$reflector->getFileName());
     $font = $captchaDirectory . '/Font/captcha' . $fontNumber . '.ttf';
 
-    $builder = CaptchaBuilder::create()
+    $this->captchaSession->init($sessionId);
+    $phrase = $this->captchaSession->getCaptchaHash();
+    if (!$phrase) {
+      $phrase = null;
+    }
+    $builder = CaptchaBuilder::create($phrase)
       ->setBackgroundColor(255, 255, 255)
       ->setTextColor(1, 1, 1)
       ->setMaxBehindLines(0)
       ->build($width ?: 220, $height ?: 60, $font);
 
-    $this->captchaSession->init($sessionId);
     $this->captchaSession->setCaptchaHash($builder->getPhrase());
 
     if ($return) {
