@@ -116,6 +116,7 @@ div.mailpoet-listing-bulk-actions-container {
 
 .mailpoet-listing-table {
   border-spacing: 0;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
 
   .mailpoet-listing & {
     background: #fff;
@@ -156,7 +157,7 @@ div.mailpoet-listing-bulk-actions-container {
 
   thead th,
   thead th a {
-    color: $color-text-light !important;
+    color: #2c3338 !important;
     font-size: $font-size-extra-small;
     font-weight: 600;
     letter-spacing: 1px;
@@ -166,8 +167,7 @@ div.mailpoet-listing-bulk-actions-container {
   }
 
   thead th {
-    border-bottom: 1px solid $color-tertiary-light;
-    box-shadow: 0 4px 4px -2px rgba($color-tertiary-light, .5);
+    border-bottom: 1px solid $color-wordpress-border;
     text-align: left;
     white-space: nowrap;
 
@@ -386,7 +386,6 @@ a.mailpoet-listing-title {
 }
 
 .mailpoet-listing-check-column {
-  border-left: 6px solid transparent;
   padding: 8px 0 8px 10px;
   width: $form-control-choice-height;
 
@@ -403,7 +402,7 @@ a.mailpoet-listing-title {
 }
 
 .mailpoet-listing-row-inactive {
-  background: rgba($color-tertiary-light, .2);
+  background: $color-grey-0;
 }
 
 .mailpoet-listing-row-selected {
