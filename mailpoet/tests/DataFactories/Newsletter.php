@@ -5,7 +5,6 @@ namespace MailPoet\Test\DataFactories;
 use Codeception\Util\Fixtures;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -34,7 +33,11 @@ class Newsletter {
   /** @var array */
   private $taskSubscribers;
 
+  /** @var NewsletterOption */
+  private $newsletterOptionFactory;
+
   public function __construct() {
+    $this->newsletterOptionFactory = new NewsletterOption();
     $this->data = [
       'subject' => 'Some subject',
       'preheader' => 'Some preheader',
@@ -128,12 +131,12 @@ class Newsletter {
 
   public function withImmediateSendingSettings() {
     $this->withOptions([
-      8 => 'immediately', # intervalType
-      9 => '0', # timeOfDay
-      10 => '1', # intervalType
-      11 => '0', # monthDay
-      12 => '1', # nthWeekDay
-      13 => '* * * * *', # schedule
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => 'immediately',
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => '0',
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => '1',
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => '0',
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => '1',
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
     ]);
     return $this;
   }
@@ -142,14 +145,14 @@ class Newsletter {
    * @return Newsletter
    */
   public function withPostNotificationsType() {
-    $this->data['type'] = 'notification';
+    $this->data['type'] = NewsletterEntity::TYPE_NOTIFICATION;
     $this->withOptions([
-      8 => 'daily', # intervalType
-      9 => '0', # timeOfDay
-      10 => '1', # intervalType
-      11 => '0', # monthDay
-      12 => '1', # nthWeekDay
-      13 => '0 0 * * *', # schedule
+      NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => 'daily', # intervalType
+      NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => '0', # timeOfDay
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => '1', # intervalType
+      NewsletterOptionFieldEntity::NAME_MONTH_DAY => '0', # monthDay
+      NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => '1', # nthWeekDay
+      NewsletterOptionFieldEntity::NAME_SCHEDULE => '0 0 * * *', # schedule
     ]);
     return $this;
   }
@@ -172,13 +175,13 @@ class Newsletter {
    * @return Newsletter
    */
   public function withWelcomeTypeForSegment($segmentId = 2) {
-    $this->data['type'] = 'welcome';
+    $this->data['type'] = NewsletterEntity::TYPE_WELCOME;
     $this->withOptions([
-      3 => 'segment', // event
-      4 => $segmentId, // segment
-      5 => 'subscriber', // role
-      6 => '1', // afterTimeNumber
-      7 => 'immediate', // afterTimeType
+      NewsletterOptionFieldEntity::NAME_EVENT => 'segment',
+      NewsletterOptionFieldEntity::NAME_SEGMENT => $segmentId,
+      NewsletterOptionFieldEntity::NAME_ROLE => 'subscriber',
+      NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER => '1',
+      NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE => 'immediate',
     ]);
     return $this;
   }
@@ -189,10 +192,10 @@ class Newsletter {
   public function withAutomaticTypeWooCommerceFirstPurchase() {
     $this->data['type'] = 'automatic';
     $this->withOptions([
-      14 => 'woocommerce', // group
-      15 => 'woocommerce_first_purchase',
-      16 => 'user', // sendTo
-      19 => 'immediate', // afterTimeType
+      NewsletterOptionFieldEntity::NAME_GROUP => 'woocommerce',
+      NewsletterOptionFieldEntity::NAME_EVENT => 'woocommerce_first_purchase',
+      NewsletterOptionFieldEntity::NAME_SEND_TO => 'user',
+      NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE => 'immediate',
     ]);
     return $this;
   }
@@ -216,11 +219,11 @@ class Newsletter {
     }, $products);
 
     $this->withOptions([
-      14 => 'woocommerce', // group
-      15 => 'woocommerce_product_purchased',
-      16 => 'user', // sendTo
-      19 => 'immediate', // afterTimeType
-      20 => json_encode(['option' => $productsOption]),
+      NewsletterOptionFieldEntity::NAME_GROUP => 'woocommerce',
+      NewsletterOptionFieldEntity::NAME_EVENT => 'woocommerce_product_purchased',
+      NewsletterOptionFieldEntity::NAME_SEND_TO => 'user',
+      NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE => 'immediate',
+      NewsletterOptionFieldEntity::NAME_META => json_encode(['option' => $productsOption]),
     ]);
     return $this;
   }
@@ -247,11 +250,11 @@ class Newsletter {
     }
 
     $this->withOptions([
-      14 => 'woocommerce', // group
-      15 => 'woocommerce_product_purchased_in_category',
-      16 => 'user', // sendTo
-      19 => 'immediate', // afterTimeType
-      20 => json_encode(['option' => $options]),
+      NewsletterOptionFieldEntity::NAME_GROUP => 'woocommerce',
+      NewsletterOptionFieldEntity::NAME_EVENT => 'woocommerce_product_purchased_in_category',
+      NewsletterOptionFieldEntity::NAME_SEND_TO => 'user',
+      NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE => 'immediate',
+      NewsletterOptionFieldEntity::NAME_META => json_encode(['option' => $options]),
     ]);
     return $this;
   }
@@ -320,13 +323,11 @@ class Newsletter {
     $newsletter = $this->createNewsletter();
     $entityManager->persist($newsletter);
 
-    foreach ($this->options as $optionId => $optionValue) {
-      $newsletterOption = $this->createOption($newsletter, $optionId, $optionValue);
-      $entityManager->persist($newsletterOption);
-    }
+    $this->newsletterOptionFactory->createMultipleOptions($newsletter, $this->options);
 
     foreach ($this->segments as $segment) {
       $newsletterSegment = new NewsletterSegmentEntity($newsletter, $segment);
+      $newsletter->getNewsletterSegments()->add($newsletterSegment);
       $entityManager->persist($newsletterSegment);
     }
 
@@ -355,14 +356,6 @@ class Newsletter {
     if (isset($this->data['parent'])) $newsletter->setParent($this->data['parent']);
     if (isset($this->data['deleted_at'])) $newsletter->setDeletedAt($this->data['deleted_at']);
     return $newsletter;
-  }
-
-  private function createOption(NewsletterEntity $newsletter, int $optionId, string $optionValue): NewsletterOptionEntity {
-    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
-    $newsletterOptionField = $entityManager->getReference(NewsletterOptionFieldEntity::class, $optionId);
-    $newsletterOption = new NewsletterOptionEntity($newsletter, $newsletterOptionField);
-    $newsletterOption->setValue($optionValue);
-    return $newsletterOption;
   }
 
   private function createQueue(NewsletterEntity $newsletter) {
