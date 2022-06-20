@@ -243,6 +243,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
       NewsletterEntity::TYPE_STANDARD, // should be returned
       NewsletterEntity::TYPE_WELCOME,
       NewsletterEntity::TYPE_AUTOMATIC,
+      NewsletterEntity::TYPE_AUTOMATION,
       NewsletterEntity::TYPE_NOTIFICATION,
       NewsletterEntity::TYPE_NOTIFICATION_HISTORY, // should be returned
       NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
@@ -258,7 +259,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     end($newsletters)->setDeletedAt(new Carbon());
     $this->entityManager->flush();
 
-    expect($this->repository->findAll())->count(7);
+    expect($this->repository->findAll())->count(8);
 
     // archives return only:
     // 1. STANDARD and NOTIFICATION HISTORY newsletters
@@ -269,7 +270,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     expect($results)->count(2);
     expect($results[0]->getId())->equals($newsletters[1]->getId());
     expect($results[0]->getType())->equals(NewsletterEntity::TYPE_STANDARD);
-    expect($results[1]->getId())->equals($newsletters[5]->getId());
+    expect($results[1]->getId())->equals($newsletters[6]->getId());
     expect($results[1]->getType())->equals(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
   }
 
