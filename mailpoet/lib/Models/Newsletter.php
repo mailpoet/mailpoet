@@ -44,6 +44,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
   const TYPE_AUTOMATIC = NewsletterEntity::TYPE_AUTOMATIC;
+  const TYPE_AUTOMATION = NewsletterEntity::TYPE_AUTOMATION;
   const TYPE_STANDARD = NewsletterEntity::TYPE_STANDARD;
   const TYPE_WELCOME = NewsletterEntity::TYPE_WELCOME;
   const TYPE_NOTIFICATION = NewsletterEntity::TYPE_NOTIFICATION;

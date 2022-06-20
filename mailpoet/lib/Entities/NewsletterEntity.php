@@ -23,6 +23,7 @@ use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
 class NewsletterEntity {
   // types
   const TYPE_AUTOMATIC = 'automatic';
+  const TYPE_AUTOMATION = 'automation';
   const TYPE_STANDARD = 'standard';
   const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
