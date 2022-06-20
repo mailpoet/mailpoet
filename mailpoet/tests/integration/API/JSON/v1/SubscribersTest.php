@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Test\API\JSON\v1;
 
@@ -25,9 +25,6 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Form\Util\FieldNameObfuscator;
 use MailPoet\Listing\Handler;
 use MailPoet\Models\CustomField;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterOption;
-use MailPoet\Models\NewsletterOptionField;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
@@ -44,6 +41,9 @@ use MailPoet\Subscribers\SubscriberSubscribeController;
 use MailPoet\Subscription\Captcha;
 use MailPoet\Subscription\CaptchaSession;
 use MailPoet\Test\DataFactories\DynamicSegment;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\Segment as SegmentFactory;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\UnexpectedValueException;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
@@ -84,7 +84,6 @@ class SubscribersTest extends \MailPoetTest {
     parent::_before();
     $this->cleanup();
     $container = ContainerWrapper::getInstance();
-    $settings = $container->get(SettingsController::class);
     $wp = $container->get(Functions::class);
     $this->captchaSession = new CaptchaSession($container->get(Functions::class));
     $this->responseBuilder = $container->get(SubscribersResponseBuilder::class);
@@ -102,34 +101,33 @@ class SubscribersTest extends \MailPoetTest {
     );
     $this->obfuscatedEmail = $obfuscator->obfuscate('email');
     $this->obfuscatedSegments = $obfuscator->obfuscate('segments');
-    $this->segment1 = new SegmentEntity('Segment 1', SegmentEntity::TYPE_DEFAULT, 'Segment 1');
-    $this->segment2 = new SegmentEntity('Segment 2', SegmentEntity::TYPE_DEFAULT, 'Segment 2');
+    $this->segment1 = (new SegmentFactory())
+      ->withName('Segment 1')
+      ->withType(SegmentEntity::TYPE_DEFAULT)
+      ->create();
+    $this->segment2 = (new SegmentFactory())
+      ->withName('Segment 2')
+      ->withType(SegmentEntity::TYPE_DEFAULT)
+      ->create();
     $this->entityManager->persist($this->segment1);
     $this->entityManager->persist($this->segment2);
 
-    $this->subscriber1 = new SubscriberEntity();
-    $this->subscriber1->setEmail('john@mailpoet.com');
-    $this->subscriber1->setFirstName('John');
-    $this->subscriber1->setLastName('Doe');
-    $this->subscriber1->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
-    $this->subscriber1->setSource(Source::API);
-    $this->entityManager->persist($this->subscriber1);
+    $this->subscriber1 = (new SubscriberFactory())
+      ->withEmail('john@mailpoet.com')
+      ->withFirstName('John')
+      ->withLastName('Doe')
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withSource(Source::API)
+      ->create();
 
-    $this->subscriber2 = new SubscriberEntity();
-    $this->subscriber2->setEmail('jane@mailpoet.com');
-    $this->subscriber2->setFirstName('Jane');
-    $this->subscriber2->setLastName('Doe');
-    $this->subscriber2->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
-    $this->subscriber2->setSource(Source::API);
-    $this->entityManager->persist($this->subscriber2);
-    $this->entityManager->flush();
-
-    $this->entityManager->persist(
-      new SubscriberSegmentEntity($this->segment1, $this->subscriber2, SubscriberEntity::STATUS_SUBSCRIBED)
-    );
-    $this->entityManager->persist(
-      new SubscriberSegmentEntity($this->segment2, $this->subscriber2, SubscriberEntity::STATUS_SUBSCRIBED)
-    );
+    $this->subscriber2 = (new SubscriberFactory())
+      ->withEmail('jane@mailpoet.com')
+      ->withFirstName('Jane')
+      ->withLastName('Doe')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSource(Source::API)
+      ->withSegments([$this->segment1, $this->segment2])
+      ->create();
 
     $this->form = new FormEntity('My Form');
     $body = Fixtures::get('form_body_template');
@@ -313,7 +311,9 @@ class SubscribersTest extends \MailPoetTest {
     expect($response->data)->equals(
       $this->responseBuilder->build($this->subscriber2)
     );
-    expect($this->subscriber2->getSegments()->count())->equals(0);
+    expect($this->subscriber2->getSubscriberSegments()->filter(function (SubscriberSegmentEntity $subscriberSegment) {
+      return $subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED;
+    })->count())->equals(0);
   }
 
   public function testItCanRestoreASubscriber() {
@@ -1029,33 +1029,12 @@ class SubscribersTest extends \MailPoetTest {
     expect($segments->get(1)->getId())->equals($wcSegment->id);
   }
 
-  private function _createWelcomeNewsletter() {
-    $welcomeNewsletter = Newsletter::create();
-    $welcomeNewsletter->type = Newsletter::TYPE_WELCOME;
-    $welcomeNewsletter->status = Newsletter::STATUS_ACTIVE;
-    $welcomeNewsletter->save();
-    expect($welcomeNewsletter->getErrors())->false();
-
-    $welcomeNewsletterOptions = [
-      'event' => 'segment',
-      'segment' => $this->segment1->getId(),
-      'schedule' => '* * * * *',
-    ];
-
-    foreach ($welcomeNewsletterOptions as $option => $value) {
-      $newsletterOptionField = NewsletterOptionField::create();
-      $newsletterOptionField->name = $option;
-      $newsletterOptionField->newsletterType = Newsletter::TYPE_WELCOME;
-      $newsletterOptionField->save();
-      expect($newsletterOptionField->getErrors())->false();
-
-      $newsletterOption = NewsletterOption::create();
-      $newsletterOption->optionFieldId = (int)$newsletterOptionField->id;
-      $newsletterOption->newsletterId = $welcomeNewsletter->id;
-      $newsletterOption->value = (string)$value;
-      $newsletterOption->save();
-      expect($newsletterOption->getErrors())->false();
-    }
+  private function _createWelcomeNewsletter(): void {
+    $newsletterFactory = new NewsletterFactory();
+    $newsletterFactory
+      ->withActiveStatus()
+      ->withWelcomeTypeForSegment($this->segment1->getId())
+      ->create();
   }
 
   public function _after() {
