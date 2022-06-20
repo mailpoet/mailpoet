@@ -150,7 +150,7 @@ class PostNotificationTest extends \MailPoetTest {
       NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_DAILY,
       NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
       NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
-      NewsletterOptionFieldEntity::NAME_WEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => null,
       NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 50400, // 2 p.m.
       NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
     ]);
@@ -172,7 +172,7 @@ class PostNotificationTest extends \MailPoetTest {
       NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_WEEKLY,
       NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
       NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
-      NewsletterOptionFieldEntity::NAME_WEK_DAY => Carbon::TUESDAY,
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => Carbon::TUESDAY,
       NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 50400, // 2 p.m.
       NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
     ]);
@@ -194,7 +194,7 @@ class PostNotificationTest extends \MailPoetTest {
       NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_MONTHLY,
       NewsletterOptionFieldEntity::NAME_MONTH_DAY => 19,
       NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
-      NewsletterOptionFieldEntity::NAME_WEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => null,
       NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 50400, // 2 p.m.
       NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
     ]);
@@ -215,7 +215,7 @@ class PostNotificationTest extends \MailPoetTest {
       NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_NTHWEEKDAY,
       NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
       NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => 'L', // L = last
-      NewsletterOptionFieldEntity::NAME_WEK_DAY => Carbon::SATURDAY,
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => Carbon::SATURDAY,
       NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => 50400, // 2 p.m.
       NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
     ]);
@@ -236,7 +236,7 @@ class PostNotificationTest extends \MailPoetTest {
       NewsletterOptionFieldEntity::NAME_INTERVAL_TYPE => PostNotificationScheduler::INTERVAL_IMMEDIATELY,
       NewsletterOptionFieldEntity::NAME_MONTH_DAY => null,
       NewsletterOptionFieldEntity::NAME_NTH_WEEK_DAY => null,
-      NewsletterOptionFieldEntity::NAME_WEK_DAY => null,
+      NewsletterOptionFieldEntity::NAME_WEEK_DAY => null,
       NewsletterOptionFieldEntity::NAME_TIME_OF_DAY => null,
       NewsletterOptionFieldEntity::NAME_SCHEDULE => '* * * * *',
     ]);
