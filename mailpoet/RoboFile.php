@@ -867,7 +867,7 @@ class RoboFile extends \Robo\Tasks {
     $logins = $freePluginGithubController->calculateReviewers();
 
     $io->progressAdvance();
-    $shopGithubController = $this->createGitHubController('shop');
+    $shopGithubController = $this->createGitHubController(\MailPoetTasks\Release\GitHubController::PROJECT_SHOP);
     $loginsShop = $shopGithubController->calculateReviewers();
     $io->progressFinish();
 

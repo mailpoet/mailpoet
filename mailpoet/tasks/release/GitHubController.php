@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\ClientException;
 class GitHubController {
   const PROJECT_MAILPOET = 'MAILPOET';
   const PROJECT_PREMIUM = 'PREMIUM';
+  const PROJECT_SHOP = 'SHOP';
 
   const FREE_ZIP_FILENAME = 'mailpoet.zip';
   const PREMIUM_ZIP_FILENAME = 'mailpoet-premium.zip';
@@ -275,6 +276,12 @@ class GitHubController {
   }
 
   private function getGithubPathByProject(string $project): string {
-    return urlencode($project === self::PROJECT_MAILPOET ? 'mailpoet' : 'mailpoet-premium');
+    $url = 'mailpoet-premium';
+    if ($project === self::PROJECT_MAILPOET) {
+      $url = 'mailpoet';
+    } elseif ($project === self::PROJECT_SHOP) {
+      $url = 'shop';
+    }
+    return urlencode($url);
   }
 }
