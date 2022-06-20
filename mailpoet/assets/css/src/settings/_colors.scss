@@ -4,6 +4,7 @@ $color-transparent: rgba(#fff, 0);
 $color-white: #fff;
 $color-black: #000;
 $color-wordpress-text: #3c434a;
+$color-wordpress-border: #c3c4c7;
 $color-wordpress-heading: #1d2327;
 
 // Primary (blueish) color
@@ -24,6 +25,7 @@ $color-secondary-light-hover: darken($color-secondary-light, 10%);
 $color-tertiary: $color-wordpress-heading;
 $color-tertiary-hover: darken($color-tertiary, 10%);
 $color-tertiary-light: #dcdcde;
+$color-grey-0: #f6f7f7;
 $color-tertiary-light-hover: darken($color-tertiary-light, 10%);
 $color-tertiary-light-background: rgba($color-tertiary-light, .3);
 $color-destructive: #b52727;
