@@ -34,7 +34,7 @@ class DeprecatedFilterNotice {
 
   public function display(): Notice {
     $message = Helpers::replaceLinkTags(
-      __('The <i>mailpoet_mailer_smtp_transport_agent</i> filter no longer works. Please replace it with <i>mailpoet_mailer_smtp_options<i>. Read more in [link]documentation[/link].', 'mailpoet'),
+      __('The <i>mailpoet_mailer_smtp_transport_agent</i> filter no longer works. Please replace it with <i>mailpoet_mailer_smtp_options</i>. Read more in [link]documentation[/link].', 'mailpoet'),
       'https://kb.mailpoet.com/article/193-tls-encryption-does-not-work',
       ['target' => '_blank']
     );
