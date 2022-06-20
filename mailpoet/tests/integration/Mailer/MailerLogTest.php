@@ -44,6 +44,19 @@ class MailerLogTest extends \MailPoetTest {
     expect(MailerLog::sentSince())->equals($expectedCount);
   }
 
+  public function testItResetsErrorOnIncrementCountEvenForMSS() {
+    $settings = SettingsController::getInstance();
+    $mailerConfig = $settings->get(Mailer::MAILER_CONFIG_SETTING_NAME);
+    $mailerConfig['method'] = Mailer::METHOD_MAILPOET;
+    $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, $mailerConfig);
+    $mailerLog = MailerLog::getMailerLog();
+    $mailerLog['error'] = ['operation' => 'send', 'error_message' => ''];
+    $this->settings->set(MailerLog::SETTING_NAME, $mailerLog);
+    expect(MailerLog::incrementSentCount())->null();
+    $mailerLog = MailerLog::getMailerLog();
+    expect($mailerLog['error'])->null();
+  }
+
   public function testItCreatesMailer() {
     $resultExpectedGreaterThan = time() - 1;
     $mailerLog = MailerLog::createMailerLog();
