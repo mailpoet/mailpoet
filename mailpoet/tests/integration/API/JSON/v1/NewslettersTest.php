@@ -22,8 +22,6 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
-use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
 use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\Newsletter\Scheduler\Scheduler;
@@ -36,6 +34,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
@@ -60,12 +59,6 @@ class NewslettersTest extends \MailPoetTest {
   /** @var NewslettersRepository */
   private $newsletterRepository;
 
-  /** @var NewsletterOptionFieldsRepository */
-  private $newsletterOptionFieldsRepository;
-
-  /** @var NewsletterOptionsRepository */
-  private $newsletterOptionsRepository;
-
   /** @var SegmentsRepository */
   private $segmentRepository;
 
@@ -85,8 +78,6 @@ class NewslettersTest extends \MailPoetTest {
     parent::_before();
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->newsletterRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
-    $this->newsletterOptionFieldsRepository = ContainerWrapper::getInstance()->get(NewsletterOptionFieldsRepository::class);
-    $this->newsletterOptionsRepository = ContainerWrapper::getInstance()->get(NewsletterOptionsRepository::class);
     $this->segmentRepository = ContainerWrapper::getInstance()->get(SegmentsRepository::class);
     $this->newsletterSegmentRepository = ContainerWrapper::getInstance()->get(NewsletterSegmentRepository::class);
     $this->newslettersResponseBuilder = ContainerWrapper::getInstance()->get(NewslettersResponseBuilder::class);
@@ -109,10 +100,6 @@ class NewslettersTest extends \MailPoetTest {
     );
     $this->newsletter = (new Newsletter())->withDefaultBody()->withSubject('My Standard Newsletter')->create();
     $this->postNotification = (new Newsletter())->withPostNotificationsType()->withSubject('My Post Notification')->loadBodyFrom('newsletterWithALC.json')->create();
-
-    $this->createNewsletterOptionField(NewsletterOptionFieldEntity::NAME_IS_SCHEDULED, NewsletterEntity::TYPE_STANDARD);
-    $this->createNewsletterOptionField(NewsletterOptionFieldEntity::NAME_SCHEDULED_AT, NewsletterEntity::TYPE_STANDARD);
-    $this->createNewsletterOptionField(NewsletterOptionFieldEntity::NAME_SCHEDULE, NewsletterEntity::TYPE_NOTIFICATION);
   }
 
   public function testItKeepsUnsentNewslettersAtTheTopWhenSortingBySentAtDate() {
@@ -281,7 +268,7 @@ class NewslettersTest extends \MailPoetTest {
   public function testItReschedulesPastDuePostNotificationsWhenStatusIsSetBackToActive() {
     $schedule = sprintf('0 %d * * *', Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->hour); // every day at current hour
     $randomFutureDate = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addDays(10)->format('Y-m-d H:i:s'); // 10 days from now
-    $this->createOrUpdateNewsletterOption($this->postNotification, NewsletterOptionFieldEntity::NAME_SCHEDULE, $schedule);
+    (new NewsletterOption())->create($this->postNotification, NewsletterOptionFieldEntity::NAME_SCHEDULE, $schedule);
 
     $sendingQueue1 = SendingTask::create();
     $sendingQueue1->newsletterId = $this->postNotification->getId();
@@ -316,7 +303,7 @@ class NewslettersTest extends \MailPoetTest {
 
   public function testItSchedulesPostNotificationsWhenStatusIsSetBackToActive() {
     $schedule = '* * * * *';
-    $this->createOrUpdateNewsletterOption($this->postNotification, NewsletterOptionFieldEntity::NAME_SCHEDULE, $schedule);
+    (new NewsletterOption())->create($this->postNotification, NewsletterOptionFieldEntity::NAME_SCHEDULE, $schedule);
 
     $this->endpoint->setStatus(
       [
@@ -668,29 +655,6 @@ class NewslettersTest extends \MailPoetTest {
     $this->truncateEntity(SendingQueueEntity::class);
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
-  }
-
-  private function createNewsletterOptionField(string $name, string $type): NewsletterOptionFieldEntity {
-    $optionField = new NewsletterOptionFieldEntity();
-    $optionField->setName($name);
-    $optionField->setNewsletterType($type);
-    $this->newsletterOptionFieldsRepository->persist($optionField);
-    $this->newsletterOptionFieldsRepository->flush();
-    return $optionField;
-  }
-
-  private function createOrUpdateNewsletterOption(NewsletterEntity $newsletter, string $name, string $value): NewsletterOptionEntity {
-    $option = $newsletter->getOption($name);
-    if (!$option) {
-      $optionField = $this->newsletterOptionFieldsRepository->findOneBy(['name' => $name]);
-      assert($optionField instanceof NewsletterOptionFieldEntity);
-      $option = new NewsletterOptionEntity($newsletter, $optionField);
-      $newsletter->getOptions()->add($option);
-    }
-    $option->setValue($value);
-    $this->newsletterOptionsRepository->persist($option);
-    $this->newsletterOptionsRepository->flush();
-    return $option;
   }
 
   private function createNewsletterSegment(
