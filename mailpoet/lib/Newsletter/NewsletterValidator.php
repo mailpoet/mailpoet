@@ -85,7 +85,7 @@ class NewsletterValidator {
       strpos($content, '"type":"automatedLatestContent"') === false && 
       strpos($content, '"type":"automatedLatestContentLayout"') === false
     ) {
-      throw new ValidationException(__('Please add an “Automatic Latest Content” widget to the email from the right sidebar.', 'mailpoet'));
+      throw new ValidationException(_x('Please add an “Automatic Latest Content” widget to the email from the right sidebar.', '(Please reuse the current translation used for the string “Automatic Latest Content”) This Error message is displayed when a user tries to send a “Post Notification” email without any “Automatic Latest Content” widget inside', 'mailpoet'));
     }
   }
 }

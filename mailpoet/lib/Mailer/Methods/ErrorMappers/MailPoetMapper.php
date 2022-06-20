@@ -200,7 +200,7 @@ class MailPoetMapper {
   }
 
   private function getPendingApprovalMessage(): string {
-    $message = __("Your subscription is currently [link]pending approval[/link].You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to your authorized emails.", 'mailpoet');
+    $message = __("Your subscription is currently [link]pending approval[/link]. You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to your authorized emails.", 'mailpoet');
     $message = Helpers::replaceLinkTags(
       $message,
       'https://kb.mailpoet.com/article/350-pending-approval-subscription',
