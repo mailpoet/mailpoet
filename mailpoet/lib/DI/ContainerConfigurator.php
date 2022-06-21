@@ -410,7 +410,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Settings\UserFlagsRepository::class)->setPublic(true);
     // Subscription
     $container->autowire(\MailPoet\Subscription\Captcha::class)->setPublic(true);
-    $container->autowire(\MailPoet\Subscription\CaptchaRenderer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Subscription\CaptchaFormRenderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\CaptchaSession::class);
     $container->autowire(\MailPoet\Subscription\Comment::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Form::class)->setPublic(true);

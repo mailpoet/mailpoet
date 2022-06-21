@@ -9,7 +9,7 @@ use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Util\Url as UrlHelper;
 
-class CaptchaRenderer {
+class CaptchaFormRenderer {
   /** @var UrlHelper */
   private $urlHelper;
 

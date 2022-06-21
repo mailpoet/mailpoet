@@ -40,7 +40,7 @@ class Pages {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var CaptchaRenderer */
+  /** @var CaptchaFormRenderer */
   private $captchaRenderer;
 
   /** @var WelcomeScheduler */
@@ -85,7 +85,7 @@ class Pages {
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
-    CaptchaRenderer $captchaRenderer,
+    CaptchaFormRenderer $captchaRenderer,
     WelcomeScheduler $welcomeScheduler,
     LinkTokens $linkTokens,
     SubscriptionUrlFactory $subscriptionUrlFactory,

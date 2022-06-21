@@ -27,7 +27,7 @@ use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Subscription\CaptchaRenderer;
+use MailPoet\Subscription\CaptchaFormRenderer;
 use MailPoet\Subscription\ManageSubscriptionFormRenderer;
 use MailPoet\Subscription\Pages;
 use MailPoet\Subscription\SubscriptionUrlFactory;
@@ -222,7 +222,7 @@ class PagesTest extends \MailPoetTest {
     return new Pages(
       $newSubscriberNotificationsMock ?? $container->get(NewSubscriberNotificationMailer::class),
       $container->get(WPFunctions::class),
-      $container->get(CaptchaRenderer::class),
+      $container->get(CaptchaFormRenderer::class),
       $container->get(WelcomeScheduler::class),
       $container->get(LinkTokens::class),
       $container->get(SubscriptionUrlFactory::class),
